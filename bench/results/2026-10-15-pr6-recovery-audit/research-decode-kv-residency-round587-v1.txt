@@ -1,0 +1,65 @@
+# Round 587 — decode QSA/KV residency と mode-1 transfer
+
+2026-10-15 JST。指定された既存 `research-index.json`、`decode-ledger-final.ja.md`、`boundary-service-main-review.ja.md`、`boundary-audit-long-pair.ja.md`、R574、R584を先に確認し、configured root SYCL sourceを静的に追跡した。唯一の書込先は本レポート。製品変更/build/test/GPU/Git/service/cleanup、active service log読取は行っていない。禁止された B/prefill-only contract、record.json、private Codex/envscanは読んでいない。
+
+## 結論
+
+34K+の通常decodeで `--kv int8 --kv-resident 32768 --max-context 262144` を使うと、main QSA KV stateは**mode 1 streaming**になる。全262,144-cellのint8 K/V正本はpinned host memoryに置き、VRAMは各QSA層32,768 cells分を保持する。decode側の `qsa_kv_resolve` はindexerがそのwindowで選んだセルIDから4-cell pageの集合を作り、resident mapで未登録と判明したpageだけをpinned host mappingからVRAM slotへコピーする。既にslotにあるpageは再コピーしない。従って「各window/layerで全historyをH2D」は誤りで、transfer量はその呼出しの選択集合のcache miss分だけ。residentで選択集合全体がhitならstage payloadは0 B。ただしmode 1のlookup taskとcopy-kernel enqueue自体は通るため、厳密なresolve bypassではない。
+
+「32768-cell residentなら34K履歴が全て収まる」とも言えない。容量はより大きな論理historyを常駐させるLRU/CLOCK様cacheであり、どの過去pageが残るかは最近のQSA選択履歴で決まる。34K入力中、位置が32,768を越えた時に古いKVを除外する仕組みではない。32Kを越える選択pageもhost正本からmiss stageでattentionへ戻せる。
+
+## decode path の実動作
+
+`qsa_real_shapes()`はQSAが12層、KV head 2、head_dim 256、page size 4、indexer top-k 2048 cellsと定義する (`include/strata/kernels/qsa.hpp:95-135`)。selection widthは `min(n_kv, 2048 + 4 - 1)` なので長いhistoryでは2,051 cells、最大で約513 distinct 4-cell pages/one queryとなる。Verifier pathは各QSA層でselectionを作った直後に `qsa_kv_resolve()`、その後同じpage tableでsplit decode attentionを起動する (`src/core/verify.cpp:748-759`)。通常単token `qsa_layer` も同じresolveを呼ぶ (`src/core/layer.cpp:954`)。Verifierが複数queryを一緒に処理するときはその窓の全query選択pageを一回のresolveでunionする。
+
+`kv_plan()`ではresident cellsをpage-size 4に切上げ、main streaming mode 1を設定する。最低resident値は20,480 cells。configured residentが `max_cells` 以上ならmode 0の全residentに戻る。32,768/49,152/65,536はいずれも256K contextでmode 1のまま (`src/core/layer.cpp:493-535`)。
+
+Mode 1の `kv_stream_resolve()` single taskはquery/widthごとのIDを走査し、連続duplicate pageを落とし、resident pageをhit/referenceとして記録、`page_table[block] == -1`のunique pageだけをmiss listへ積む。CLOCK sweepは今回のquery群が使うpageをvictimにせず、必要なslotだけ割り当てる。次のSYCL copy kernelは `placed` 個だけを `host[b] -> slot` として読む (`src/kernels/sycl/kv_stream.cpp:119-231`)。各callのselectionが全hitなら `placed == 0`、copy kernelはslot全体をlaunchするものの `ctl[2] == 0` ですべてreturnし、KV payload read/writeは発生しない。既存u64 countersは全期間のplaced misses、per-query unique-page lookups、call数を数えるが、per-window出力はしない。`lookups - misses`からhit数は出せない: page hit lookupはqueryごとに重複計上され、missing blockは同windowのquery間で一度だけstageされる。
+
+Append側の動作も区別が必要。stream modeではdevice append kernelが生成tokenのK/V圧縮値を**host正本へ常に書き**、そのpageがresidentの場合だけVRAM slotにも書く (`include/strata/kernels/kv_stream.hpp:7-19`, `src/kernels/sycl/kv.cpp:45-171`)。これはmapped pinned memoryへのdevice storeで、明示的な `cudaMemcpy`/`q.memcpy` H2D/D2Hではない。論理payload上は新規QSA K/V 1 cell/layerあたり1,056 Bがhost側に書かれ、12 QSA層合計12,672 B per appended token position。Verifierはaccept判定前にwindow内draft分もappendするため、後でrejectされたrowのhost writeも発生する。実PCIe wire bytesはcache-line/transaction granularityやruntime挙動を含み、ソースだけから同一視できない。VerifierでrejectされたdraftではKV commit/rollback規則があるため、これを単純に生成output件数で掛けて転送実績と扱わない。
+
+## K8の正確な容量算術
+
+実形状は1 cell/layerあたりK,V codeが `2 heads × 256 × 2` bytes = 1,024 B、scaleが `2 heads × (256/64 groups) × 2(K,V) × 2` bytes = 32 B、合計1,056 B。4-cell pageは4,224 B。12層でlogical KV cellあたり12,672 B (`src/core/layer.cpp:520-529`, `src/kernels/sycl/kv_stream.cpp:47-56`, `include/strata/kernels/kv_stream.hpp:7-8`)。
+
+| resident/layer | 12層VRAM KV pool payload | 対32768の増分 | 意味 |
+| --- | ---: | ---: | --- |
+| 32768 | 415,236,096 B = 396 MiB | — | 基準 |
+| 49152 | 622,854,144 B = 594 MiB | 207,618,048 B = 198 MiB | 16K cells追加 |
+| 65536 | 830,472,192 B = 792 MiB | 415,236,096 B = 396 MiB | 32K cells追加 |
+
+これらはKV pool payloadの正確な差分。実allocationにはpoolごとの64 B paddingが各QSA層にあり、基準/候補の全poolに768 B加算されるが、差分では相殺する。stream residency mapはpage slotあたり5 int32を使うため差分は49,152候補で+983,040 B、65,536候補で+1,966,080 B (12層合計)。従って `qsa_state_bytes` 上で見える追加はそれぞれ198 MiB + 960 KiB、および396 MiB + 1.875 MiBで、他のstate領域/allocator granularityは別。
+
+262,144 logical cellsのint8 host正本は`kv_pool_bytes`計算から3,321,888,768 B payload (3.094 GiB)に、各層のhost allocation slack 1,024 B×12を足した3,321,901,056 B。residentを32Kから49K/64Kへ増やしてもこのpinned-host要求は減らず、256K上限も縮まらない。ホストメモリ総量が128 GiBであることだけではdriverのpinned allocation上限を保証しない。allocation失敗時はstate initが失敗を返し、CLIの`--kv-resident`指定を黙ってfully resident/RAM fallbackへ変換しない。この設定は256Kの物理履歴をhost backingし、attention選択pageだけdeviceへstageする設計である。
+
+## 設定候補と現在の admission 条件
+
+最大256K境界を維持する比較候補は最大3つ:
+
+1. `--max-context 262144 --kv int8 --kv-resident 32768` (現条件、396 MiB KV pool)。
+2. 同じcontext/format、`--kv-resident 49152` (+198 MiB payloadと+960 KiB map)。
+3. 同じcontext/format、`--kv-resident 65536` (+396 MiB payloadと+1.875 MiB map)。
+
+この順序は検証優先順で、候補2/3のadmissionやhit率/速度を認定するものではない。各requestのmodel weights、QSA state、Verifier/decode graph、MTP、Prefill ownerが揃った状態で `cudaMemGetInfo` を読み、少なくとも同一の512 MiB free reserveを残す条件で次段へ進む。既存ledgerの「二回目MTP return後2,312 MiB free」は別request境界の観測であり、現在のlive free値ではない。これを各候補の入場許可に使わない。R574のsource reviewにあるPrefill borrowed-buffer/cache-tail leaseも、Prefill経路のVRAM fitには独立条件として維持する。今回、Prefill stagingがresident K/Vの動的decode resolveと同じtransfer挙動をするとは推定していない。256K host fallbackを切らないこと、pinned host allocationを各contextで確認することも条件。
+
+K8候補のincrementは、単一resolveが正しく処理するための最低容量ではない。長history queryのselection widthは最大2,051cells/query、QSA verifierの最大Tは8 (`include/strata/kernels/verify_kernels.hpp` の `kVerifyMaxT`) なので、distinct page数の理論上限は8×ceil(2,051/4)=4,104 pages。mode-1最小20,480 residentは5,120 pagesで、1 resolveのunion上限を既に上回る。通常MTP4のactual batchはさらに小さい。従って32K→49K/64Kはsingle-window correctness capacityではなくcross-window reuse headroomを増やす候補だが、missesがVRAM増分を正当化する証拠は今のreceiptにない。32K logical residentはstatic prefix保証ではなく、selectionはmax-context内の任意blockを含み得る。
+
+## Counter最小案 (新実装ではなく提案)
+
+現 `KvStreamMap::ctl`には累計 miss pages、selection page lookups、resolve calls、overflow flagがすでにあり、`kv_stream_counters()`は最後にsynchronous readするdebug accessor。ただしper-window差分とhost append量が記録されない。追加実験を行う場合、default OFFの一request/window bounded observerを既存 map controlに小さく足す。
+
+- resolve single taskでresident lookupごとにhit-reference countを明示加算し、既存`lookups`(per-query page references)と`placed`(window unionのunique misses)とは別counterとして積む。`placed_pages × 4,224`を「device staging kernelのlogical host-read payload bytes」= staged-H2D payload counterとして記録。`overflow` set時はそのwindowのhit/byte証拠をinvalidにする。全選択pageが既にresidentならhit-reference countは選択ごとに計上され、payload bytesは0。bytesはkernelがmapped sourceから読むpayloadで、明示DMA計測やwire-byte計測ではない。
+- append kernelは各tokenの`kv_head==0, group==0, isv==0, lane==0`だけをwriterにし、1 token/layerあたり1回で1,056 Bのhost-store payloadをcounterへ加算する。MTP verifier stagingとreject/commitを実際に通ったcall/window単位で数え、全window集約だけへ潰さない。これを「device-to-host mapped-store logical payload」と呼び、D2H DMA/PCIe wire bytesと表示しない。device-side counter updateは同一control ownerで他のresolve counterと直列/atomic安全性を設計し、per-thread/per-cell atomicsを導入しない。
+- countersは各layer mapにあり、計12 maps×少数u64。既存 observer budgetを無断で拡張せず、独立した明示byte cap/ownerをbuild reviewで設ける。graph replay内ではcounterをCPUへsync/readしない。既存正常 window end/drain boundaryでだけsnapshotし、request/window ID, layer, QSA resolve calls, per-query unique lookups, hit page references, staged unique blocks/bytes, appended host-store cells/bytes, overflow/incomplete statusを書き、diagnostic disabledの性能測定では一切allocate/update/readしない。
+
+最小受入単位は各window/layerの`(selected_page_references, hit_page_references, staged_unique_blocks, staged_payload_bytes, host_store_cells, host_store_payload_bytes, overflow)`。H2D/D2H名はDMA測定へ誤読されやすいため、receiptではpayload/read/storeの区別を保つ。実PCIe transaction/latencyを得るならそれ専用のactive GPU run/collectorが必要で、今回の静的調査では行わない。
+
+## 測定値の境界と参照した証跡
+
+decode ledgerの実requestは34603 input/max128を2回、normal MTP4、K8 32768/max-context262144という親taskの固定既知条件。確定値はGPU-boundary wait 7.713/6.886 s、CPU pool call wall 8.363/7.186 s、CPU route share97.00/96.94%。これらはQSA staging byteが原因である証拠ではない。この報告はこれらを加算分解しない。boundary long-pairは最大context auditではなくFP32 residual placement差の限定選択row比較で、decode KV transfer量を示さない。
+
+過去 `bench/results/2026-10-14-primary-transfer-ceiling/RESULTS.md` のordinary-host→VRAM 256 MiB H2D burst medians 2.2487/2.2401/3.0572 GB/sは実SYCL stackだが、bulk `q.memcpy` 別shapeのcontrol。mapped-host kernel reads/writesのrateやこのdecode windowを予測しない。古い6 GB/s級controlは本判断に使っていない。H2D/D2H payload、時間、cache hit率の現decode per-window observationはまだない。
+
+現行root source refs: `include/strata/kernels/qsa.hpp`; `include/strata/kernels/kv_stream.hpp`; `src/core/layer.cpp`; `src/kernels/sycl/kv_stream.cpp`; `src/kernels/sycl/kv.cpp`; `src/core/verify.cpp`; `src/program/generate.cpp`. Current configured SYCL resolver was inspected directly; legacy prefill source/codepath was not used to infer decode behavior.
+
+Final status: bounded static source report only. No new measurement, source/config change, implementation/adoption, performance conclusion, physical 256K runtime qualification, or prefill extrapolation.

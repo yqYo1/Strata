@@ -1,0 +1,343 @@
+{
+  "review_id": "R838",
+  "reviewed_on": "2026-10-16",
+  "reviewer": {
+    "provider": "native Codex",
+    "model": "gpt-6-luna",
+    "reasoning_effort": "max"
+  },
+  "review_purpose": "Read-only scope, depth, novelty, source-claim, local-source, and retrieval review of R835 and R836. No build, test, GPU/profiler work, process inspection, Git action, cleanup, worker contact, XeStrata source access, or product edit was performed.",
+  "inputs": {
+    "agents_md": {
+      "path": "AGENTS.md",
+      "sha256": "7f750320bef4146a2872086922d84fc9fa7a8351ae655b7876c912856e3747fe"
+    },
+    "artifact_retention": {
+      "path": "docs/ARTIFACT_RETENTION.md",
+      "sha256": "fdf86d7ea576d6f0400ec7e643b5ddca5c3c577dd053d66c2fd05220e64b1cc1"
+    },
+    "research_index": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+      "sha256": "e176d1307ac51a34d2d31dc465c5e4c98fb8bdcc54d9fc7227cabe33922a0618",
+      "modified": false
+    },
+    "reports_and_specs": [
+      {
+        "round": 835,
+        "purpose_class": "knowledge collection",
+        "report": "bench/results/2026-10-15-pr6-recovery-audit/research-round835-v1.txt",
+        "report_sha256": "d3c1f6ee7c2920807936f0d21e8036441ac494d4978399302fa95be9f2910c2e",
+        "report_bytes": 12355,
+        "whitespace_word_count": 1784,
+        "primary_url_count": 5,
+        "spec": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round835-spec-v1.txt",
+        "spec_sha256": "2ed4c9f7c025b2e731fe6f042262d548819809fcd0d833ea6f54523aa3c6e306"
+      },
+      {
+        "round": 836,
+        "purpose_class": "decision support",
+        "report": "bench/results/2026-10-15-pr6-recovery-audit/research-round836-v1.txt",
+        "report_sha256": "98deadb721df86f650da587bb7eb89a11d9e3305ef97150deb8da667748a447d",
+        "report_bytes": 11483,
+        "whitespace_word_count": 1553,
+        "primary_url_count": 5,
+        "spec": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round836-spec-v1.txt",
+        "spec_sha256": "2c8a5f54a374fac61f2f5968a2e38da8238c026d8f6594f97d36089f8821ae15"
+      }
+    ],
+    "prior_review_metadata_only": [
+      {
+        "round": 776,
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round776-v1.json",
+        "sha256": "9b9d5dd22847830d2b602a559b921e8c987db57665348b8a060e131421400716",
+        "use": "R763 broad pipeline/residency and stencil coverage; R773 chunk/tile/tail scope."
+      },
+      {
+        "round": 780,
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round780-v1.json",
+        "sha256": "6c073b4aa3c12207cd26e1e5aa8a2de597e87b5d6a48355c12180f6b016d8b4e",
+        "use": "Existing R778 sparse storage-conversion and R779 transaction/page-gather scopes; used to avoid recommending a repeat."
+      },
+      {
+        "round": 785,
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round785-v1.json",
+        "sha256": "3fae7f1b7c42eba1a1a557f8029e38ddbe4f9bb1880bf7877c71d3d0cd782341",
+        "use": "R782 framework typed-activation/persistent-state contracts and R783 GEMM source design."
+      },
+      {
+        "round": 812,
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round812-v1.json",
+        "sha256": "0545bece97b85a6b0f3cd728b4cc1ed4545428bc2b5efb603a2e514f952fa495",
+        "use": "R811 Intel 2D-message descriptors, alignment, ragged edges, and prefetch bounds."
+      },
+      {
+        "round": 823,
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round823-v1.json",
+        "sha256": "52bd044c56a694d77bb3aa830ec0424c8445c65260bd6e3f282307dc9cf901c2",
+        "use": "R820 typed checkpoint-state materialization versus rematerialization; no BMG capability inference."
+      },
+      {
+        "round": 824,
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round824-v1.json",
+        "sha256": "a0f6776e50ae514a52c9e8f0f68a0cda6129ca2c8824478e20ba1ac6fb4f5dc3",
+        "use": "R822 general low-precision non-GEMM kernel families and its profile-conditioned retrieval gate."
+      },
+      {
+        "round": 830,
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round830-v1.json",
+        "sha256": "13e63236d25cea96734ba7abbd36e82bf767130d208e6c117a73cfa70ff09fb9",
+        "use": "R828 lossy FP8 activation transport and R829 lossless GPU-state compression."
+      },
+      {
+        "round": 834,
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round834-v1.json",
+        "sha256": "1ab0a14e569ea7382af305da3fdea4d2ef3bf596b8040b4997021c95bdfec983",
+        "use": "R832 pipeline-role/barrier/slot ownership and its R835 stencil-temporal-blocking follow-up."
+      }
+    ],
+    "local_source_files_read": [
+      {
+        "path": "src/prefill/prefill.cpp",
+        "sha256": "d01662ae6c46bfdd2556da1345c5f9edb79f91694391eee2b2b0aebfeab831ce",
+        "use": "Projection output types, native16 GDN call sequence, arena sizing, and persistent-state allocation."
+      },
+      {
+        "path": "src/prefill/sycl/native16.cpp",
+        "sha256": "d953ae8dcb69be601c57ddf62bbd85ad054c3e7c0a90806461b49f96d18da891",
+        "use": "Native16 residual mix output types and recurrence output conversion."
+      },
+      {
+        "path": "src/prefill/sycl/postops.cpp",
+        "sha256": "f048a75d8c18dad5981a93206dcff107085714741326adc6d4cfd77c6927a78f",
+        "use": "FP32 gate and beta transformations."
+      },
+      {
+        "path": "src/kernels/sycl/fused_gdn.cpp",
+        "sha256": "70abf4fd1359477a2e170b54f2172ba148a2ae21306e8145e070ebd0db7d995f",
+        "use": "Float-pointer convolution and recurrence interfaces, state update, output stores, and convolution-history commit."
+      },
+      {
+        "path": "src/kernels/sycl/gdn.cpp",
+        "sha256": "3de5ac1aa35184534834e8fd0957068509a0ecf5080a666354a98cd134d56117",
+        "use": "Float-pointer standalone GDN kernels."
+      },
+      {
+        "path": "include/strata/kernels/gdn.hpp",
+        "sha256": "f44626e3f52813b9be289aee72f708e9ad61aa9b3a0e43037ba5ff8b358fc638",
+        "use": "Strata recurrence state layout, head pairing, and operator contracts."
+      }
+    ]
+  },
+  "current_context": {
+    "status_supplied_by_parent": "Compiled source 6354f0b4; vLLM public GEMM BF16 plus optional typed QSA model mechanics pass over 48 layers; a 39K QSA diagnostic remains active; no final speed or bottleneck profile is available. Persistent GDN state remains FP32 and most GDN activations remain FP32.",
+    "independently_revalidated": false,
+    "local_source_trace": "Confirmed against the current readable files and their hashes above. This was not a Git revision check.",
+    "profile_consequence": "There is no supplied closed profile showing GDN is a material long-prefill bottleneck. R836 body is held for retrieval; no typed GDN or speed recommendation follows."
+  },
+  "report_reviews": {
+    "R835": {
+      "classification": "knowledge_collection",
+      "reviewer_read_report": true,
+      "scope_depth": {
+        "judgment": "Strong fit and substantive depth; within 1,300-1,800 words and the seven-URL ceiling.",
+        "evidence": "At 1,784 words and five primary URLs, it compares one-step spatial tiling, one-step plane/window reuse, and multi-step overlap or time-skew. It gives explicit halo/work and storage arithmetic, physical-boundary and tail limitations, one measured loss case and one architecture-dependent win case, and a bounded selection rule."
+      },
+      "novelty_and_redundancy": {
+        "judgment": "Material focused increment, with adjacent but nonduplicative background.",
+        "new_increment": "The center is reuse across successive time levels and the crossover among halo recomputation, plane reuse, capacity, boundary policy, and repeated-use count.",
+        "prior_scope_comparison": "R763 is a broad pipeline/residency and stencil survey; R773 concerns model-prefill chunk/tile/tail geometry; R832 concerns in-kernel roles, prefetch distance, barriers, and stage ownership. R835's temporal reuse and halo-cost model remain distinct when kept at this focus."
+      },
+      "primary_source_verification": {
+        "status": "Material claims were checked against the cited primary documentation and papers. The CiteseerX PDF endpoint did not render as a normal page; its indexed text from the primary PDF exposed the relevant claims, so that source check has a retrieval limitation.",
+        "confirmed": [
+          {
+            "source": "https://www.intel.com/content/www/us/en/developer/articles/technical/iso3dfd-code-walkthrough.html",
+            "claims": "Intel's dated ISO3DFD walkthrough describes the 16th-order radius-eight stencil, 9-value front plus 8-value back window, one new Z value per sweep step, XY local_accessor staging, one SYCL kernel per time level, the exact local tile extent form, and its Gen9/Gen12LP performance caution. The page marks its sample MIT licensed.",
+            "limit": "The article is a mutable webpage; no linked sample commit was pinned. It is documentation evidence, not a performance result for other devices."
+          },
+          {
+            "source": "https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html",
+            "claims": "SYCL 2020 revision 12 specifies local_accessor storage per work-group and group_barrier coordination among work-items in that group.",
+            "limit": "The specification does not promise a local-memory capacity, implementation speed, or hardware mapping; group_barrier does not provide a grid-wide barrier."
+          },
+          {
+            "source": "https://citeseerx.ist.psu.edu/document?doi=acbcff3902d71c2ea6d889fa2c44bada0d56d6b1&repid=rep1&type=pdf",
+            "claims": "The indexed primary paper text confirms the radius-one 3-D seven-point diffusion workload, its own-value boundary rule, Fermi's L1 reuse and negative explicit-staging result, and Kepler results including 287 GFLOP/s and 1.23x over SHM-WARP for TEMP.",
+            "limit": "Direct PDF page rendering failed; keep claims attributed to the paper's Fermi/Kepler hardware and its stated boundary rule."
+          },
+          {
+            "source": "https://arxiv.org/html/2001.01473v4",
+            "claims": "AN5D version 4 reports first-order Tesla V100 temporal-blocking depths of roughly 8-15 for 2-D and 3-5 for 3-D, with high-order 3-D box counterexamples from register pressure and halo ratio.",
+            "limit": "These are tuned CUDA/V100 results, not general defaults."
+          },
+          {
+            "source": "https://arxiv.org/html/2305.07390v1",
+            "claims": "EBISU version 1 reports A100 3-D seven-point rates of 151 versus 197 GCells/s for SM-overlap versus device tiling. It also reports that LST can consume on-chip space and reduce blocking depth; removing LST changed nominal throughput from 2.7 to 2.9 TB/s while useful throughput fell from 2.4 to 2.3 TB/s.",
+            "limit": "The report preserves these as one CUDA/A100 counterexample, not a transferable SYCL or BMG measurement."
+          }
+        ],
+        "arithmetic": "The B=32,T=4 2-D and B=16,T=4/8 3-D update, footprint, byte, and boundary-share examples recompute from the displayed formulas. They are idealized box-halo counts, not measured traffic, occupancy, or exact star-stencil work."
+      },
+      "corrections": [],
+      "applicability_and_evidence_limits": {
+        "main_result": "No Strata implementation, local performance, Xe2/BMG behavior, or adoption claim is established.",
+        "limits": "The report correctly separates within-step plane/window reuse from across-step temporal reuse and labels rectangular halo arithmetic as a screening model. Physical-boundary percentages apply to the stated non-periodic boundary interpretation; actual boundary injection and stencil shape remain workload-specific."
+      },
+      "main_retrieval": {
+        "main_original_needed_now": false,
+        "sections_now": [],
+        "retrieve_when": "A concrete general GPU/ASIC stencil question needs a comparison of temporal depth, halo recomputation, plane reuse, or boundary cost.",
+        "sections_when_triggered": [
+          "Assumptions and reusable model",
+          "What the designs actually reuse",
+          "Halo, storage, and amortization arithmetic",
+          "Measured counterevidence and evidence limits"
+        ]
+      },
+      "reusable_index_topics": [
+        "Across-time halo expansion versus a one-step sliding-plane/register window.",
+        "Local capacity, tile count, physical boundaries, and short temporal tails as time-depth crossover terms.",
+        "Cache hierarchy and useful-work accounting can reverse apparent temporal-blocking wins."
+      ],
+      "outcome": "Retain as knowledge archive. Main should not read the collection body on arrival."
+    },
+    "R836": {
+      "classification": "decision_support",
+      "reviewer_read_report": true,
+      "scope_depth": {
+        "judgment": "Strong and source-specific; within 1,200-1,800 words and the eight-URL ceiling.",
+        "evidence": "At 1,553 words and five primary URLs, it traces actual local typed/FP32 boundaries, sizes the three large GDN intermediates, compares a vLLM prefill wrapper contract with an FLA recurrent kernel, and gives numerical, state, ordering, projection, and full-path gates."
+      },
+      "novelty_and_redundancy": {
+        "judgment": "Useful source-specific increment over overlapping precision and state surveys.",
+        "new_increment": "It maps the actual integrated native16 GDN call path and names QKV, Z, hbuf, redundant y, gate scalars, convolution history, and recurrent state with per-token byte counts. It asks whether direct typed producer outputs and typed consumers can be added while retaining FP32 local recurrence and persistent state.",
+        "prior_scope_comparison": "R782 covers framework activation and persistent-state contracts; R820 covers state materialization versus rematerialization; R822 covers general non-GEMM low-precision kernels; R828/R829 cover lossy and lossless transport. R836's local-source path and precise GDN convolution/recurrence seam are incremental, not a duplicate generic dtype survey."
+      },
+      "local_source_cross_check": {
+        "status": "The listed live source files confirm the report's main call graph and tensor types.",
+        "confirmed": [
+          "Native16 mix writes BF16 m.mixed_bf and FP16 m.mixed_h; native_proj writes FP32 QKV and Z; FP32 AB feeds FP32 gate/beta transforms.",
+          "Float-pointer GDN convolution and recurrence consume/produce FP32 block tensors; the recurrence also writes an FP16 output. The native16 branch consumes that FP16 output for the output projection.",
+          "The recurrence state is FP32 with physical (S, H_v, S) storage and h modulo h_k head pairing; convolution history is separate FP32 storage.",
+          "The computed GDN reservation demand is 144,128 bytes/token. At T=8192 its arithmetic sum is 1126 MiB, but the actual shared arena extent is max(GDN, QSA, MoE) demand, not the sum of all three."
+        ],
+        "limits": "Source tracing and hashes are local-file evidence, not a Git revision assertion or performance profile. The assignment-supplied 6354f0b4 identifier was not independently checked."
+      },
+      "primary_source_verification": {
+        "status": "Immutable vLLM and FLA commits and their root licenses were checked; the FLA chunk-size contract was checked at the same pinned commit.",
+        "confirmed": [
+          {
+            "source": "https://github.com/vllm-project/vllm/blob/fb3fec970e1efc9b0069c81279bd82c84634c2bb/vllm/model_executor/layers/mamba/gdn/qwen_gdn_linear_attn.py",
+            "claims": "The pinned fi_chunk_gated_delta_rule wrapper optionally normalizes Q/K, preserves Q/K/V input tensor dtypes at the call boundary, converts initial state, gate, and beta to FP32, passes exp(g), and returns the FlashInfer result.",
+            "limit": "This proves wrapper arguments only; it does not inspect FlashInfer's internals for hidden conversion, prove output-state layout, show SYCL support, or establish BMG support."
+          },
+          {
+            "source": "https://github.com/vllm-project/vllm/blob/fb3fec970e1efc9b0069c81279bd82c84634c2bb/LICENSE",
+            "claims": "The pinned vLLM root license is Apache-2.0."
+          },
+          {
+            "source": "https://github.com/fla-org/flash-linear-attention/blob/15396e604df6a4699950d7f20457b391b0cd8e74/fla/ops/gated_delta_rule/fused_recurrent.py",
+            "claims": "The pinned Triton recurrence loads Q/K/V, gate and beta to FP32 local values, loads the initial carry into FP32 local state, applies decay and beta-scaled update, stores output in its output tensor type, and stores final state through the final-state tensor's type.",
+            "limit": "This is a Triton implementation reference; it establishes no BMG/SYCL support or equivalence to Strata's physical state layout."
+          },
+          {
+            "source": "https://github.com/fla-org/flash-linear-attention/blob/15396e604df6a4699950d7f20457b391b0cd8e74/fla/ops/gated_delta_rule/chunk.py",
+            "claims": "The pinned chunk API documents chunk sizes 16, 32, or 64 and initial/final-state shapes.",
+            "limit": "The chunked WY decomposition is different from Strata's recurrence and needs separate state/output parity."
+          },
+          {
+            "source": "https://github.com/fla-org/flash-linear-attention/blob/15396e604df6a4699950d7f20457b391b0cd8e74/LICENSE",
+            "claims": "The pinned FLA root license is MIT."
+          }
+        ]
+      },
+      "corrections": [
+        {
+          "issue": "The report says FLA final state is written in the requested state-output dtype.",
+          "correction": "At the pinned fused_recurrent.py revision, output_final_state allocates final_state explicitly with dtype=torch.float32. The kernel casts output to the output tensor dtype, but the final state has no requested dtype option in this wrapper and is FP32.",
+          "severity": "material source-claim correction"
+        },
+        {
+          "issue": "The 1126 MiB T=8192 number could be read as the current chunk arena allocation.",
+          "correction": "Label it the source-derived GDN reservation demand. The local planner allocates one shared region sized as max(GDN, QSA, MoE); it is neither a measured peak nor necessarily the selected region extent.",
+          "severity": "precision correction; the report already disclaims a measured peak"
+        }
+      ],
+      "numerical_and_control_flow_review": {
+        "judgment": "The report accurately withholds semantic equivalence and identifies the key incompatibilities.",
+        "confirmed_gates": [
+          "Keep FP32 gate/beta transforms, recurrent accumulation and persistent carry separate from block storage.",
+          "Preserve Strata's convolution tap order/history commit, Q/K normalization and readout scale, beta and decay transforms, modulo head map, physical state layout, output norm/gate, chunk state, queue dependency, and 262144-context quality comparison.",
+          "Test FP16 and BF16 separately; do not assume native_proj can directly produce typed output or substitute native_proj16's IQ-dequant-to-F16 route without comparing actual weights and tensors."
+        ],
+        "additional_limit": "The report should describe vLLM as an API-boundary pattern only. The wrapper does not prove that the called FlashInfer implementation consumes these tensors without internal materialization."
+      },
+      "applicability_and_evidence_limits": {
+        "main_result": "No performance, numerical acceptance, BMG capability, or implementation adoption is established.",
+        "unsupported_by_sources": [
+          "BMG/Xe2 support for the vLLM, FlashInfer, or FLA implementation.",
+          "Direct native GGUF projection to 16-bit output with unchanged Strata weight semantics.",
+          "Semantic equivalence of the FLA state layout or recurrence schedule to Strata.",
+          "A long-prefill benefit before a closed profile selects GDN as material."
+        ]
+      },
+      "main_retrieval": {
+        "main_original_needed_now": false,
+        "sections_now": [],
+        "retrieve_when": "A closed long-prefill profile names GDN as a material component and Main has a concrete typed projection/conv/recurrence interface question.",
+        "sections_when_triggered": [
+          "What the current native16 path actually does",
+          "Small typed boundaries and byte accounting",
+          "Two source designs, not adoption claims",
+          "Hard gates before any typed GDN implementation"
+        ],
+        "read_order": "Start with current path and byte accounting; retrieve source-design and hard-gate sections only for a concrete interface decision."
+      },
+      "reusable_index_topics_and_corrections": {
+        "topics": [
+          "Native16 GDN currently has FP32 global QKV/Z/hbuf intermediates and a dual FP32/FP16 recurrence output.",
+          "Direct typed producer output may avoid an extra conversion pass; it does not qualify the native GGUF projection's typed-output capability.",
+          "Keep FP32 GDN persistent state, local recurrence math, gate/beta, and convolution history distinct from block tensor storage."
+        ],
+        "corrections": [
+          "Pinned FLA fused-recurrent final state is explicitly FP32, not request-selected.",
+          "vLLM wrapper evidence is limited to input tensors passed at the call boundary; inspect called library internals before asserting no conversion.",
+          "1126 MiB is GDN reservation demand, not the planner's necessarily allocated shared arena size."
+        ]
+      },
+      "outcome": "Retain as decision support with the FLA final-state correction recorded. No exact section is needed by Main until a GDN profile or design question exists."
+    }
+  },
+  "cross_report_assessment": {
+    "comparison": "The reports are independent: R835 is a non-LLM stencil knowledge collection about time-step reuse and halo/capacity crossover; R836 is source-specific decision support for Strata's current native16 GDN seam.",
+    "main_collection_body_policy": "Hold both original bodies. R835 is not an implementation recommendation; R836 is conditional on a measured GDN decision."
+  },
+  "next_knowledge_collection_scopes": [
+    {
+      "priority": 1,
+      "purpose_label": "knowledge collection",
+      "title": "Bank-aware local-memory layouts for tiled GPU and ASIC kernels",
+      "finite_question": "For non-LLM kernels that stage multidimensional tiles in banked on-chip memory, compare row padding, XOR/swizzled addressing, and conflict-free transpose mappings. How do bank count/width, vector width, tile shape, lane mapping, and access phase change bank serialization and local-storage use, and when can padding or address arithmetic cost more than it saves? Include one measured win and one counterexample.",
+      "breadth_and_counterevidence": "Use official GPU/SYCL vendor documentation and original GPU/ASIC papers or technical blogs. Derive bank-index examples for at least two layout strategies and compare them on a transpose or neighborhood tile. Separate published hardware results from source-level bank arithmetic. Include cases where the same mapping helps one access phase but hurts another or where padding increases resource pressure. Exclude temporal blocking/halo reuse, producer-consumer scheduling/barriers, global-memory sector/page transactions, generic GEMM tile tuning, and Strata adoption claims. Do not infer BMG/Xe2 bank geometry or support from another architecture.",
+      "report_budget": "1,300-1,700 words; at most 7 substantive primary sources; one strategy/geometry table; exact source URLs and applicability/evidence limits.",
+      "schedulable_now": true,
+      "prerequisites": "Public-source access only; local bottleneck measurements are not required for this durable knowledge collection.",
+      "prerequisite_evidence": "AGENTS.md requests transferable SYCL and GPU/ASIC optimization research beyond current bottlenecks. Reviewed metadata describes R811's 2D-message descriptors/alignment, R832's pipeline roles and slot ownership, and R835's temporal stencil halo costs; none is centered on bank-index mapping and conflict-free layout transforms. R778/R779 cover sparse formats and global transaction/page-gather effects, which this scope explicitly excludes.",
+      "novelty_guard": "Keep the investigation on bank mapping and local layout transforms. Do not recast it as another pipeline, stencil-temporal-blocking, global-memory coalescing, or GEMM survey.",
+      "prior_review_metadata_used": [
+        "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round776-v1.json",
+        "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round780-v1.json",
+        "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round812-v1.json",
+        "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round834-v1.json"
+      ]
+    }
+  ],
+  "handling": {
+    "research_index_modified": false,
+    "collection_body_to_main": "held; no exact retrieval sections needed now",
+    "worker_contact_or_steering": false,
+    "other_files_written": false,
+    "product_work": false
+  },
+  "operational_digest_ja_400_chars": "R835は1,784語・一次5 URLで予算内。時間再利用とhalo費用の比較はR763/R773/R832と区別でき、式とFermi/Kepler・A100反例を確認。R836は1,553語・5 URL。現行GDN型境界はソースと整合。修正: FLA commit 15396e6のfinal_stateは指定dtypeでなく常にFP32。GDNプロファイル未完了のため両本文は保留。"
+}

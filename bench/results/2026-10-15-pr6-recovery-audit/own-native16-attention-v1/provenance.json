@@ -1,0 +1,87 @@
+{
+  "created_at_utc": "2026-10-15T21:37:47.816095+00:00",
+  "status": "SOURCE_ONLY_UNRUN",
+  "base_commit": "375a6d6ee905859ef176997262e3baef6e739ad2",
+  "base_access": "read-only git show; no moving production source read",
+  "project_license": "MIT, root LICENSE at base; copyright 2026 Niko1221 and Strata contributors",
+  "dispatch_requested_implementation_model": "gpt-6.1-sol",
+  "implementation_origin": "Project-owned MIT prompt_attention.cpp at immutable base plus original worker additions; no other engine implementation source",
+  "external_own_fixture": {
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/own-prompt-heads8-v2/files/tests/sycl/prompt_heads8.cpp",
+    "sha256": "31cb331094fc42b77fa5d7babdfb41e7eaacb06c9e83f135ad3bee72f4cc484e",
+    "use": "Explicitly allowed independent FP64 oracle and fixture ownership/bench structure; no head8 kernel or proposal implementation adoption"
+  },
+  "design_reports": [
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round782-v1.txt",
+      "sha256": "3a6ef792921ff1c881df3438396a3c267571437e4e1cfaec58d15cc7b6885e2d",
+      "sections_used": [
+        "Operator-contract table: Attention Q/K/V and output",
+        "Mapping to Strata: typed producer-consumer contract",
+        "Source pins and licenses"
+      ],
+      "use": "Design-contract evidence only; no third-party implementation copied"
+    },
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round783-v1.txt",
+      "sha256": "5dd2cad9263bd435c7cb788db02e614a4535c96cdf36cd443886b628e2d9794e",
+      "sections_used": [
+        "Relevant oneMKL/joint_matrix dtype and FP32 accumulation discussion",
+        "Constraints and bounded validation",
+        "Sources"
+      ],
+      "use": "Design-contract evidence only; no third-party implementation copied"
+    }
+  ],
+  "official_api_contracts": [
+    {
+      "purpose": "API contract only; no copied implementation or sample source",
+      "name": "sycl_ext_intel_matrix.asciidoc",
+      "commit": "a13d57a7f99adac86be159be55030e4cead7fd25",
+      "url": "https://raw.githubusercontent.com/intel/llvm/a13d57a7f99adac86be159be55030e4cead7fd25/sycl/doc/extensions/experimental/sycl_ext_matrix/sycl_ext_intel_matrix.asciidoc",
+      "bytes": 27083,
+      "sha256": "1859bbaa290e2fd74665779d7e40e4840b2fc0f2b70ba20db517d467dad3ca2c",
+      "checked_at_utc": "2026-10-15T21:33:27.334152+00:00"
+    },
+    {
+      "purpose": "API contract only; no copied implementation or sample source",
+      "name": "sycl_ext_oneapi_matrix.asciidoc",
+      "commit": "cf12c3783cc6a7adaf76e54c6a4f11f81ec8599b",
+      "url": "https://raw.githubusercontent.com/intel/llvm/cf12c3783cc6a7adaf76e54c6a4f11f81ec8599b/sycl/doc/extensions/experimental/sycl_ext_matrix/sycl_ext_oneapi_matrix.asciidoc",
+      "bytes": 58222,
+      "sha256": "ee7a11e7d4d424e8c9ab7647e6d368c12f06221b870d47d654bf17a4de638f37",
+      "checked_at_utc": "2026-10-15T21:33:26.124625+00:00"
+    },
+    {
+      "purpose": "USM membership/device queries and collective contract only",
+      "url": "https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html",
+      "version": "SYCL 2020 revision 12 as returned through web tool",
+      "sections": [
+        "4.8.4 Unified shared memory pointer queries",
+        "Group functions and barriers"
+      ],
+      "pin_limit": "No byte hash: direct retrieval returned HTTP403; reference was read using web tool, not used as implementation source"
+    }
+  ],
+  "excluded_sources": [
+    "XeStrata source/helpers/tests/archives",
+    "pending query-register proposals",
+    "head8 implementation proposals",
+    "SGLang/vLLM/Intel implementation source or sample code"
+  ],
+  "delegation": "No child agents created",
+  "changes_outside_package": false,
+  "execution": {
+    "build": "UNRUN",
+    "compile": "UNRUN",
+    "tests": "UNRUN",
+    "GPU": "UNRUN",
+    "profiler": "UNRUN",
+    "process_inspection": "NOT_PERFORMED",
+    "environment_mutation": "NOT_PERFORMED",
+    "cleanup": "NOT_PERFORMED",
+    "services": "NOT_TOUCHED",
+    "Git_mutation": "NOT_PERFORMED"
+  },
+  "provenance_decision": "Original MIT proposal; Main must review source and independently qualify before adoption"
+}

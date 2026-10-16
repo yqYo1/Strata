@@ -1,0 +1,52 @@
+{
+  "status": "source-only-uncompiled-unexecuted",
+  "production_applied": false,
+  "bank_v2_changed": false,
+  "build_executed": false,
+  "host_tests_executed": false,
+  "gpu_executed": false,
+  "fullphysical_pass": false,
+  "task_quality_tested": false,
+  "restore_tested": false,
+  "cli": "--consume-prompt",
+  "default": false,
+  "input_physical_limit": 262144,
+  "terminal_route": "native MTP4 Verifier T1 at input_count-1 -> commit1 -> wait_commit -> existing cleanup",
+  "completion_tokens": 0,
+  "model_scope": "fresh standalone SYCL native single GPU, PLE, resident target KV, suffix0; explicit competing-mode rejects",
+  "measurement_scope": {
+    "batched": "successful final-layer residual callbacks, contiguous chunk shapes",
+    "mtp": "successful callback input pairs only; not target state or all retained KV",
+    "qsa": "12 observed device last-completed-block-origin words, 48B total",
+    "gdn": "geometry plus verifier run/commit, no per-layer position measurement",
+    "ple": "host token predecessors after commit, not entire history tensor",
+    "cleanup": "existing manual cleanup reached; process-owner exit/faults external"
+  },
+  "base_files": {
+    "include/strata/core/mtp.hpp": "b33f413e4554c8bf3319ff13c65d2b85a08703568fb82a2481c887759e3ea948",
+    "include/strata/program/consume_prompt.hpp": null,
+    "src/program/generate.cpp": "00cd8e359ad92d7a1e09bb397d51423cc390e6fb265328c5cb48edb33a57b0c6"
+  },
+  "proposed_files": {
+    "include/strata/core/mtp.hpp": "2293329d9ce837aafc51bdce2e4d9f143b01b1b463e6f0cdb7b0969dcd673d52",
+    "include/strata/program/consume_prompt.hpp": "1743c9281f607b7d567f8923fe2fcaeb686946af7e9831c19182ea86c5b290dc",
+    "src/program/generate.cpp": "ca91e23c505b4d02de4cb33e48ccbffcdd4ce018e3582d3fbba7aadb35ce6eaa"
+  },
+  "inputs": {
+    "research-physical-model-context-harness-round698-v1.txt": "165afabc8ee004a32d42d1271fe07aeccff5f9714b4a09282887e3819eafce6d",
+    "research-physical-context-mtp-terminal-round700-v1.txt": "15af6903cb0dad50bdadff080612317c16f1d3122adf2709a224e41fc11cda60",
+    "main-review-round696-698.ja.md": "71a1a55ca5d10edaf64bda5cfc39277e9cc99c677351d0f1c0d85494b5a0bc1b"
+  },
+  "files": {
+    "README.md": "6d13944fb96036d588e4dac4ee4c9e735e2554b325166b6bd238063df42fd83d",
+    "host_fixture.cpp": "291d6648f907fd023b5be1157abdf4de5baccf11664a477c6de23a39b102e410",
+    "main-execution-recipe.md": "ad9b76f5b174a0a497561ef10d7ea4384f9dfe5f2829aff99298961cf8c444c0",
+    "proposed/include/strata/core/mtp.hpp": "2293329d9ce837aafc51bdce2e4d9f143b01b1b463e6f0cdb7b0969dcd673d52",
+    "proposed/include/strata/program/consume_prompt.hpp": "1743c9281f607b7d567f8923fe2fcaeb686946af7e9831c19182ea86c5b290dc",
+    "proposed/src/program/generate.cpp": "ca91e23c505b4d02de4cb33e48ccbffcdd4ce018e3582d3fbba7aadb35ce6eaa",
+    "retention.json": "623bbb6747e879e8c929d1d3187d42c96c35f83dd3dde3c7328471ee95841310",
+    "source-hashes.json": "fa46f9c92a1af5ae9ed5bbb42dbe750b5fd4fc1042451988f039e9d74ae6fce9",
+    "source.diff": "256dcaa5778dd78316a621810c1b654b94bdcfec512a21c2b037c0881ea3b004",
+    "verify_receipt.py": "d3d87b66adef7590a01f984d3bd853309abd02e3b19506ec31818378feece98a"
+  }
+}

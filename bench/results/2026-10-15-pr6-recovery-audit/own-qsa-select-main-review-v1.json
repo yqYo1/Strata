@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "complete": true,
+  "GPU_executed": false,
+  "proposal_patch_sha256": "2ef1034936bf5f51d50a6245cb71c014fe5323c94f6c3d24cbc67ace6778f15a",
+  "adjunct_diff_sha256": "40cc437726299fc190e9aaa4a99dafbf20938dbf35212729f8659aefd8d5ce8d",
+  "reports": {
+    "research-exact-selection-radix-round738-v1.txt": "a2d88c2f095f1f860b53bfd6c06ccb9cd91b4897657acc566974af95c78cb9f1",
+    "research-selection-count-mapping-round740-v1.txt": "66442cb93ef5dccf3e2e73595207e5dac3b3bbe71fa05033a236472197d3eb6a"
+  },
+  "build_receipt_sha256": "c88247cecea0702f8307a9f9fe4abec5505242266b6ea5b345189c255c545d4c",
+  "main_review": [
+    "Full Sol patch and331line fixture reviewed; Main exact cyclic adjunct reviewed. Original order, score kernel, final gt/eq/scans/emission byte-identical tobase, assertion checked.",
+    "Radix4 prefix mask/remaining weighted rank invariant audited: each global bin is integer subset<=n<=INT_MAX; all16 reductions converged, all8rounds preserve exact threshold. Final output remains ascendingID with lowestID ties, zero-weight spare.",
+    "Cyclic mapping partitions b0..nb exactly once for count only; final ordering partition unchanged. All keys still loaded eachround. No memory transaction/speed claim.",
+    "Fixture expanded-cell oracle selects rank then sorts IDs.674rows/17batches,actual78452 andsynthetic78453,physical262141..262144,8patterns inclNaNs/zero/ties,invalidsteps,guards/inputimmutability; Drain precedes all successful queued allocations destruction.",
+    "Benchmark all256query oracle outside timed loop, warmup drained, sourcecounts/nq256/n78453/cap2051/tail1 clearly synthetic;5repeats, score producer excluded.",
+    "Bothflag1 rejected before kernel submit; default32bit original and separate radix/cyclic specializations; no post-runtime env writes.",
+    "Actual strict configured SYCL compile/link succeeded; existing prompt component48eeb remains untouched forMain actualJIT resource consumer."
+  ],
+  "metadata_limit": "Build references dictionary has two basename manifest.json keys; latter overwrites former. Both distinct patch hashes and final source pins are retained; source packages/manifests are separately committed. This metadata collision is not a source/compile qualification.",
+  "scope": "Main own source/bounds/algorithm/compile review permitting bounded component runs only. No model speed/taskquality/RESTORE/context qualification.",
+  "finished_utc": "2026-10-15T16:57:09.338093+00:00"
+}

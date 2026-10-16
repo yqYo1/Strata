@@ -1,0 +1,606 @@
+{
+  "schema": "main-parallel-iq-component-v1",
+  "mode": "quick",
+  "active": false,
+  "passed": true,
+  "complete": true,
+  "GPU_executed": true,
+  "commands": [
+    {
+      "label": "journal-before",
+      "argv": [
+        "journalctl",
+        "-k",
+        "-b",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-parallel-iq-component-quick-root-v1",
+        "LANG": "C",
+        "LC_ALL": "C"
+      },
+      "started_utc": "2026-10-15T03:06:22.200660+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3671362,
+          "start_ticks": 38234632,
+          "sid": 3671362,
+          "pgid": 3671362
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 382346.322313488,
+      "pid": 3671362,
+      "spawn_return_monotonic": 382346.324348623,
+      "direct_identity": {
+        "pid": 3671362,
+        "state": "R",
+        "ppid": 3671327,
+        "pgid": 3671362,
+        "sid": 3671362,
+        "start_ticks": 38234632,
+        "rss_bytes": 434176
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T03:06:22.325100+00:00",
+      "elapsed_seconds": 0.12408458697609603,
+      "logs": {
+        "journal-before.stdout": {
+          "bytes": 156,
+          "sha256": "c2fc4af1e9b7805d119fab9be126c77e3a1e400347ab9f984a4f5d946a29239e"
+        },
+        "journal-before.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "device-off",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-parallel-iq-component-build-root-v1/parallel_iq_fixture",
+        "off",
+        "quick",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-parallel-iq-component-quick-root-v1/off"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "GIT_TERMINAL_PROMPT": "0",
+        "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+        "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+        "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0",
+        "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+        "PYTHONPATH": "/home/yayoi/orca/workspaces/Strata/sycl/tools:/home/yayoi/orca/workspaces/Strata/sycl",
+        "PIP_CONFIG_FILE": "/dev/null",
+        "PYTHONUNBUFFERED": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-parallel-iq-component-quick-root-v1/cache-off",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_MMQ_XMX": "1",
+        "STRATA_SYCL_MMQ_XMX_TILE": "8",
+        "STRATA_SYCL_MMQ_XMX_EXACT": "1",
+        "STRATA_SYCL_MMQ_XMX_PACK": "0",
+        "STRATA_SYCL_MMQ_XMX_COMPACT": "1",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "STRATA_PREFILL_RING": "8",
+        "STRATA_PREFILL_MMQ": "0",
+        "STRATA_PREFILL_MOE_COMPACT_FP16": "1",
+        "STRATA_WATCHDOG_S": "480",
+        "STRATA_SYCL_PROMPT_DIRECT": "0",
+        "STRATA_PREFILL_LAYER_MAJOR": "1",
+        "STRATA_PREFILL_LAYER_MAJOR_R_DTYPE": "fp32",
+        "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "4096",
+        "STRATA_PREFILL_RELEASE_MTP_EXPERTS": "1",
+        "STRATA_PREFILL_PHASE_AUDIT": "0",
+        "STRATA_PREFILL_BOUNDARY_AUDIT": "0",
+        "STRATA_SYCL_KV_COPY_GROUPS": "0",
+        "STRATA_CPU_GU_REUSE_OBSERVER": "0",
+        "STRATA_DECODE_ROUTE_LEDGER": "0",
+        "STRATA_DECODE_SERVICE_CPU": "0",
+        "STRATA_IQ_SINGLE_EXACT": "0",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+        "STRATA_SYCL_PARALLEL_IQ_DEQUANT": "0"
+      },
+      "started_utc": "2026-10-15T03:06:22.326082+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3671393,
+          "start_ticks": 38234644,
+          "sid": 3671393,
+          "pgid": 3671393
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 382346.447598507,
+      "pid": 3671393,
+      "spawn_return_monotonic": 382346.449873866,
+      "direct_identity": {
+        "pid": 3671393,
+        "state": "D",
+        "ppid": 3671327,
+        "pgid": 3671393,
+        "sid": 3671393,
+        "start_ticks": 38234644,
+        "rss_bytes": 131072
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 265662464,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T03:06:31.305855+00:00",
+      "elapsed_seconds": 8.979524939029943,
+      "logs": {
+        "device-off.stdout": {
+          "bytes": 1242,
+          "sha256": "2429c907206b795e8ad620b7cd9c43f23e3a51a7eb02dff4f7c7e8f766949a78"
+        },
+        "device-off.stderr": {
+          "bytes": 312925,
+          "sha256": "87be23a738fb70fae29ad24ade2a2de5442ac123ff325dd651d05e38d9fa3ac0"
+        }
+      }
+    },
+    {
+      "label": "journal-after-off",
+      "argv": [
+        "journalctl",
+        "-k",
+        "-b",
+        "--after-cursor",
+        "s=9944479cfd1a45c28a589619cb8f2881;i=c215eea;b=cfda0b6a7c134fe2bdf58f9202770840;m=59032e9db6;t=65dd852a87564;x=972fb965cd13756a",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-parallel-iq-component-quick-root-v1",
+        "LANG": "C",
+        "LC_ALL": "C"
+      },
+      "started_utc": "2026-10-15T03:06:31.306553+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3671926,
+          "start_ticks": 38235542,
+          "sid": 3671926,
+          "pgid": 3671926
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 382355.428127859,
+      "pid": 3671926,
+      "spawn_return_monotonic": 382355.430247213,
+      "direct_identity": {
+        "pid": 3671926,
+        "state": "R",
+        "ppid": 3671327,
+        "pgid": 3671926,
+        "sid": 3671926,
+        "start_ticks": 38235542,
+        "rss_bytes": 356352
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T03:06:31.430562+00:00",
+      "elapsed_seconds": 0.1237587119685486,
+      "logs": {
+        "journal-after-off.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "journal-after-off.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "device-on",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-parallel-iq-component-build-root-v1/parallel_iq_fixture",
+        "on",
+        "quick",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-parallel-iq-component-quick-root-v1/on"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "GIT_TERMINAL_PROMPT": "0",
+        "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+        "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+        "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0",
+        "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+        "PYTHONPATH": "/home/yayoi/orca/workspaces/Strata/sycl/tools:/home/yayoi/orca/workspaces/Strata/sycl",
+        "PIP_CONFIG_FILE": "/dev/null",
+        "PYTHONUNBUFFERED": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-parallel-iq-component-quick-root-v1/cache-on",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_MMQ_XMX": "1",
+        "STRATA_SYCL_MMQ_XMX_TILE": "8",
+        "STRATA_SYCL_MMQ_XMX_EXACT": "1",
+        "STRATA_SYCL_MMQ_XMX_PACK": "0",
+        "STRATA_SYCL_MMQ_XMX_COMPACT": "1",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "STRATA_PREFILL_RING": "8",
+        "STRATA_PREFILL_MMQ": "0",
+        "STRATA_PREFILL_MOE_COMPACT_FP16": "1",
+        "STRATA_WATCHDOG_S": "480",
+        "STRATA_SYCL_PROMPT_DIRECT": "0",
+        "STRATA_PREFILL_LAYER_MAJOR": "1",
+        "STRATA_PREFILL_LAYER_MAJOR_R_DTYPE": "fp32",
+        "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "4096",
+        "STRATA_PREFILL_RELEASE_MTP_EXPERTS": "1",
+        "STRATA_PREFILL_PHASE_AUDIT": "0",
+        "STRATA_PREFILL_BOUNDARY_AUDIT": "0",
+        "STRATA_SYCL_KV_COPY_GROUPS": "0",
+        "STRATA_CPU_GU_REUSE_OBSERVER": "0",
+        "STRATA_DECODE_ROUTE_LEDGER": "0",
+        "STRATA_DECODE_SERVICE_CPU": "0",
+        "STRATA_IQ_SINGLE_EXACT": "0",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+        "STRATA_SYCL_PARALLEL_IQ_DEQUANT": "1"
+      },
+      "started_utc": "2026-10-15T03:06:31.433302+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3671934,
+          "start_ticks": 38235555,
+          "sid": 3671934,
+          "pgid": 3671934
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 382355.554926149,
+      "pid": 3671934,
+      "spawn_return_monotonic": 382355.556884049,
+      "direct_identity": {
+        "pid": 3671934,
+        "state": "R",
+        "ppid": 3671327,
+        "pgid": 3671934,
+        "sid": 3671934,
+        "start_ticks": 38235555,
+        "rss_bytes": 290816
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 265256960,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T03:06:40.405895+00:00",
+      "elapsed_seconds": 8.972279066976625,
+      "logs": {
+        "device-on.stdout": {
+          "bytes": 1242,
+          "sha256": "2429c907206b795e8ad620b7cd9c43f23e3a51a7eb02dff4f7c7e8f766949a78"
+        },
+        "device-on.stderr": {
+          "bytes": 318224,
+          "sha256": "96f691915b359a5174492c8c39c7b384d52ad47ab4d7105031f868d127902478"
+        }
+      }
+    },
+    {
+      "label": "journal-after-on",
+      "argv": [
+        "journalctl",
+        "-k",
+        "-b",
+        "--after-cursor",
+        "s=9944479cfd1a45c28a589619cb8f2881;i=c215eea;b=cfda0b6a7c134fe2bdf58f9202770840;m=59032e9db6;t=65dd852a87564;x=972fb965cd13756a",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-parallel-iq-component-quick-root-v1",
+        "LANG": "C",
+        "LC_ALL": "C"
+      },
+      "started_utc": "2026-10-15T03:06:40.406909+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3672483,
+          "start_ticks": 38236452,
+          "sid": 3672483,
+          "pgid": 3672483
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 382364.528663525,
+      "pid": 3672483,
+      "spawn_return_monotonic": 382364.530611175,
+      "direct_identity": {
+        "pid": 3672483,
+        "state": "R",
+        "ppid": 3671327,
+        "pgid": 3672483,
+        "sid": 3672483,
+        "start_ticks": 38236452,
+        "rss_bytes": 471040
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T03:06:40.529862+00:00",
+      "elapsed_seconds": 0.12249423703178763,
+      "logs": {
+        "journal-after-on.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "journal-after-on.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "compare-full-arrays",
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/parallel-iq-dequant-v1/compare_captures.py",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-parallel-iq-component-quick-root-v1/off",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-parallel-iq-component-quick-root-v1/on",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-parallel-iq-component-quick-root-v1/comparison.json"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-parallel-iq-component-quick-root-v1",
+        "LANG": "C",
+        "LC_ALL": "C"
+      },
+      "started_utc": "2026-10-15T03:06:40.532844+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3672490,
+          "start_ticks": 38236465,
+          "sid": 3672490,
+          "pgid": 3672490
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 382364.654507245,
+      "pid": 3672490,
+      "spawn_return_monotonic": 382364.656542871,
+      "direct_identity": {
+        "pid": 3672490,
+        "state": "R",
+        "ppid": 3671327,
+        "pgid": 3672490,
+        "sid": 3672490,
+        "start_ticks": 38236465,
+        "rss_bytes": 462848
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 16613376,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T03:06:41.117864+00:00",
+      "elapsed_seconds": 0.5846342170261778,
+      "logs": {
+        "compare-full-arrays.stdout": {
+          "bytes": 57,
+          "sha256": "a85082400a6216e61dda8eccd2efda0ef85ae50807fb19271d1c677dc10a539a"
+        },
+        "compare-full-arrays.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "journal-final",
+      "argv": [
+        "journalctl",
+        "-k",
+        "-b",
+        "--after-cursor",
+        "s=9944479cfd1a45c28a589619cb8f2881;i=c215eea;b=cfda0b6a7c134fe2bdf58f9202770840;m=59032e9db6;t=65dd852a87564;x=972fb965cd13756a",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-parallel-iq-component-quick-root-v1",
+        "LANG": "C",
+        "LC_ALL": "C"
+      },
+      "started_utc": "2026-10-15T03:06:41.120133+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3672520,
+          "start_ticks": 38236524,
+          "sid": 3672520,
+          "pgid": 3672520
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 382365.241853583,
+      "pid": 3672520,
+      "spawn_return_monotonic": 382365.243662402,
+      "direct_identity": {
+        "pid": 3672520,
+        "state": "R",
+        "ppid": 3671327,
+        "pgid": 3672520,
+        "sid": 3672520,
+        "start_ticks": 38236524,
+        "rss_bytes": 454656
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T03:06:41.239536+00:00",
+      "elapsed_seconds": 0.11893744400003925,
+      "logs": {
+        "journal-final.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "journal-final.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "arms": [
+    {
+      "arm": "off",
+      "exit_code": 0,
+      "fresh_faults": [],
+      "driver_dump_exists": false,
+      "boot_unchanged": true,
+      "completion": {
+        "complete": true,
+        "arm": "off",
+        "mode": "quick",
+        "cases": 42,
+        "negative_checks": 20,
+        "f32_cases": 6,
+        "expected_product_launches_per_valid_case": 1,
+        "fixture_markers_per_half_case": 2
+      }
+    },
+    {
+      "arm": "on",
+      "exit_code": 0,
+      "fresh_faults": [],
+      "driver_dump_exists": false,
+      "boot_unchanged": true,
+      "completion": {
+        "complete": true,
+        "arm": "on",
+        "mode": "quick",
+        "cases": 42,
+        "negative_checks": 20,
+        "f32_cases": 6,
+        "expected_product_launches_per_valid_case": 1,
+        "fixture_markers_per_half_case": 2
+      }
+    }
+  ],
+  "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "binary_sha256": "053092aa2c627e30947e9a47ed40fb5f3d820b435582168f24b3c93b721f5013",
+  "build_receipt_sha256": "ced8c5b8cf3d7899b5091f141467604d7022b87709c23587ba54e1a95a2ebeda",
+  "recipe_sha256": "d7e7a9b10b5e5d4d161c5db67cec32d76e1fb828d7b6495acdd39f41e94bd7ca",
+  "product_applied": false,
+  "performance_qualified": false,
+  "source_pins": {
+    "bench/results/2026-10-15-pr6-recovery-audit/parallel-iq-dequant-v1/gpu_fixture.cpp": "8c4533a2f7fb664d3dce8a53404aa528a4600d66e0b0818506f79919531953d1",
+    "bench/results/2026-10-15-pr6-recovery-audit/parallel-iq-dequant-v1/fixture_common.hpp": "9e33eab5a601631f8ea81846d87abe51495b30f7993a15eb3453045764713e7a",
+    "bench/results/2026-10-15-pr6-recovery-audit/parallel-iq-dequant-v1/proposed/src/kernels/sycl/iq.cpp": "726c041d5ad88b2483efee6aa05619f5ddfffd499359ee3aa1bee30441e18d41",
+    "bench/results/2026-10-15-pr6-recovery-audit/parallel-iq-dequant-v1/proposed/include/strata/sycl/iq_parallel_decode.hpp": "282f95240c9ce614df0d05f9944a52d8154be64a01ba5ff898f0248e860bc234"
+  },
+  "adopted": false,
+  "retention_consumer": "Complete OFF/ON comparison; retain first useful divergence if any. Review raw arrays after comparator and compact hashes are verified.",
+  "limits": {
+    "text_bytes": 67108864,
+    "job_bytes": 536870912,
+    "arm_capture_bytes": 134217728
+  },
+  "journal_before_cursor": "s=9944479cfd1a45c28a589619cb8f2881;i=c215eea;b=cfda0b6a7c134fe2bdf58f9202770840;m=59032e9db6;t=65dd852a87564;x=972fb965cd13756a",
+  "comparison_sha256": "e23b3a6fd8f0b1a65225338cff0e61c16fb72fc65e3cb1ae56744b4e138eb543",
+  "cases": 42,
+  "comparison_report": "parallel-iq-component-quick-arrays-v1.json",
+  "fresh_faults": [],
+  "driver_dump_exists": false,
+  "boot_unchanged": true,
+  "finished_utc": "2026-10-15T03:06:41.240348+00:00"
+}

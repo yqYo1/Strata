@@ -1,0 +1,432 @@
+#include "strata/kernels/kv_q4.hpp"
+#include "strata/kernels/qsa_decode_attn.hpp"
+#include "strata/kernels/qsa_prompt_attn.hpp"
+#include "strata/sycl/runtime.hpp"
+#include <algorithm>
+#include <bit>
+#include <cmath>
+#include <cstring>
+#include <cstdlib>
+#include <iostream>
+#include <fstream>
+#include <chrono>
+#include <string>
+#include <stdexcept>
+#include <vector>
+using namespace strata;
+using namespace strata::kernels;
+namespace {
+std::shared_ptr<sycl_backend::Runtime> runtime;
+std::ofstream dump;
+int repetitions = 0;
+int benchmark_nq = 0;
+template <class T> struct Buffer {
+  sycl_backend::Allocation mem;
+  Buffer(size_t n)
+      : mem(runtime, n * sizeof(T), sycl_backend::MemoryKind::Device) {}
+  T *data() { return mem.as<T>(); }
+  void put(const std::vector<T> &v) {
+    runtime->wait(
+        runtime->compute().memcpy(data(), v.data(), v.size() * sizeof(T)));
+  }
+  std::vector<T> get() {
+    std::vector<T> v(mem.size() / sizeof(T));
+    runtime->wait(runtime->compute().memcpy(v.data(), data(), mem.size()));
+    return v;
+  }
+};
+void check(bool c, const char *what) {
+  if (!c)
+    throw std::runtime_error(what);
+}
+uint16_t half(float x) { return std::bit_cast<uint16_t>(_Float16(x)); }
+float decode(uint16_t x) { return float(std::bit_cast<_Float16>(x)); }
+void attention(const float *q, const QsaAttnPools &p, const int32_t *ids,
+               const int32_t *steps, int64_t cap, const QsaShapes &s,
+               float *scratch, float *out, int64_t nq) {
+#ifdef STRATA_TEST_PROMPT_MATRIX
+  (void)scratch;
+  check(qsa_prompt_attn_batch(q, p, ids, steps, cap, s, out, nq,
+                              &runtime->compute()),
+        "matrix attention unavailable");
+#else
+  qsa_decode_attn_batch(q, p, ids, steps, cap, s, scratch, out, nq,
+                        &runtime->compute());
+#endif
+}
+void run(int format, int page_size, bool masked, bool scaled = false,
+         bool one_valid = false) {
+  constexpr int cells = 2113, cap = 2051, heads = 24, kvheads = 2,
+                dim = 256;
+  const int nq = benchmark_nq ? benchmark_nq : 3;
+  auto s = qsa_real_shapes();
+  s.page_size = page_size;
+  const int pages = (cells + page_size - 1) / page_size,
+            rows = pages * page_size * kvheads;
+  std::vector<int32_t> table(pages);
+  for (int i = 0; i < pages; ++i)
+    table[i] = pages - 1 - i;
+  if (masked)
+    for (int i = 0; i < pages; i += 3)
+      table[i] = -1;
+  std::vector<uint16_t> k16(rows * dim), v16(k16.size()), ks(rows * 4),
+      vs(ks.size());
+  std::vector<int8_t> k8(rows * dim), v8(k8.size());
+  std::vector<uint8_t> k4(rows * 144), v4(k4.size());
+  for (size_t i = 0; i < k16.size(); ++i) {
+    k16[i] = half(float(std::sin(i * .073)));
+    v16[i] = half(float(std::cos(i * .017)));
+    k8[i] = int8_t(int(i * 7 % 255) - 127);
+    v8[i] = int8_t(int(i * 11 % 255) - 127);
+  }
+  for (size_t i = 0; i < ks.size(); ++i) {
+    ks[i] = half(.007f + float(i % 7) * .0001f);
+    vs[i] = half(.008f + float(i % 11) * .0002f);
+  }
+  for (int i = 0; i < rows * 8; ++i) {
+    uint16_t a = half(.11f + float(i % 7) * .002f),
+             b = half(-.09f - float(i % 9) * .003f);
+    std::memcpy(k4.data() + i * 18, &a, 2);
+    std::memcpy(v4.data() + i * 18, &b, 2);
+    for (int j = 0; j < 16; ++j) {
+      k4[i * 18 + 2 + j] = uint8_t((i * 7 + j * 13) % 256);
+      v4[i * 18 + 2 + j] = uint8_t((i * 11 + j * 19) % 256);
+    }
+  }
+  auto load = [&](bool value, int row, int d) {
+    if (format == 0)
+      return decode((value ? v16 : k16)[row * dim + d]);
+    if (format == 1 || (format == 3 && !value))
+      return float((value ? v8 : k8)[row * dim + d]) *
+             decode((value ? vs : ks)[row * 4 + d / 64]);
+    const auto &data = value ? v4 : k4;
+    const int block = row * 8 + d / 32;
+    uint16_t scale;
+    std::memcpy(&scale, data.data() + block * 18, 2);
+    uint8_t b = data[block * 18 + 2 + d % 16];
+    return float(int(d % 32 < 16 ? b & 15 : b >> 4) - 8) * decode(scale);
+  };
+  std::vector<float> query(nq * heads * dim);
+  for (size_t i = 0; i < query.size(); ++i)
+    query[i] = float(std::sin(i * .019)) *
+               (scaled ? (i / (heads * dim) == 0 ? 64.f : 0x1p-20f) : 1.f);
+  std::vector<int32_t> ids(nq * cap), steps(nq * kStepCount);
+  std::vector<int> counts(nq, cap);
+  counts[0] = 13;
+  counts[1] = 67;
+  for (int b = 0; b < nq; ++b) {
+    steps[b * 4 + 3] = counts[b];
+    for (int i = 0; i < cap; ++i)
+      ids[b * cap + i] = (i * 17 + b * 3) % cells;
+    if (scaled)
+      ids[b * cap + 5] = -1;
+  }
+  if (one_valid) {
+    // One logical resident cell per query. Queries alternate: empty tiles before
+    // the only mass, or empty tiles after it. The FP64 oracle below is unchanged.
+    std::fill(ids.begin(), ids.end(), -1);
+    for (int b = 0; b < nq; ++b)
+      ids[b * cap + (b % 2 ? 0 : counts[b] - 1)] = page_size;
+  }
+  Buffer<uint16_t> dk16(k16.size()), dv16(v16.size()), dks(ks.size()),
+      dvs(vs.size());
+  Buffer<int8_t> dk8(k8.size()), dv8(v8.size());
+  Buffer<uint8_t> dk4(k4.size()), dv4(v4.size());
+  Buffer<int32_t> dt(table.size()), di(ids.size()), ds(steps.size());
+  Buffer<float> q(query.size());
+  dk16.put(k16);
+  dv16.put(v16);
+  dks.put(ks);
+  dvs.put(vs);
+  dk8.put(k8);
+  dv8.put(v8);
+  dk4.put(k4);
+  dv4.put(v4);
+  dt.put(table);
+  di.put(ids);
+  ds.put(steps);
+  q.put(query);
+  QsaAttnPools p;
+  p.page_table = dt.data();
+  if (format == 0) {
+    p.k_pool = dk16.data();
+    p.v_pool = dv16.data();
+  }
+  if (format == 1 || format == 3) {
+    p.k_q = dk8.data();
+    p.k_scale = dks.data();
+  }
+  if (format == 1) {
+    p.v_q = dv8.data();
+    p.v_scale = dvs.data();
+  }
+  if (format == 2) {
+    p.k_q4 = dk4.data();
+    p.v_q4 = dv4.data();
+  }
+  if (format == 3)
+    p.v_q4 = dv4.data();
+  const size_t stride = qsa_decode_attn_scratch_floats(cap, s);
+  Buffer<float> scratch(nq * stride + 16), out(query.size() + 16),
+      single(query.size() + 16), ss(stride + 16);
+  scratch.put(std::vector<float>(nq * stride + 16, 1234.f));
+  out.put(std::vector<float>(query.size() + 16, 1234.f));
+  single.put(std::vector<float>(query.size() + 16, 1234.f));
+  struct Drain {
+    ~Drain() { try { runtime->wait(); } catch (...) { std::abort(); } }
+  } drain; // Destroyed before any allocation owner, including exceptional paths.
+  attention(q.data(), p, di.data(), ds.data(), cap, s, scratch.data(),
+            out.data(), nq);
+  auto y = out.get();
+  if (dump.is_open()) {
+    dump.write(reinterpret_cast<const char *>(y.data()), y.size()*sizeof(float));
+    check(bool(dump), "output dump failed");
+  }
+  if (repetitions) {
+    runtime->wait();
+    const auto begin = std::chrono::steady_clock::now();
+    for (int r = 0; r < repetitions; ++r)
+      attention(q.data(), p, di.data(), ds.data(), cap, s, scratch.data(),
+                out.data(), nq);
+    runtime->wait();
+    const double ms = std::chrono::duration<double, std::milli>(
+        std::chrono::steady_clock::now() - begin).count();
+    check(out.get() == y, "repeated output exact");
+    std::cout << "bounded_component nq=" << nq
+              << " cap=2051 counts=13,67,then_all2051 limited_oracle_queries=0,1,2,last repeats="
+              << repetitions << " total_ms=" << ms << "\n";
+  }
+
+
+  if (!benchmark_nq) {
+  for (int b = 0; b < nq; ++b)
+    attention(q.data() + b * heads * dim, p, di.data() + b * cap,
+              ds.data() + b * kStepCount, cap, s, ss.data(),
+              single.data() + b * heads * dim, 1);
+  check(y == single.get(), "split attention batch/single exact");
+  }
+  double worst = 0;
+  for (size_t i = 0; i < query.size(); ++i)
+    check(std::isfinite(y[i]), "full output finite");
+  for (int b = 0; b < nq; ++b) {
+    if (benchmark_nq && b != 0 && b != 1 && b != 2 && b != nq - 1)
+      continue; // Benchmark-only limited scalar oracle; all outputs dumped.
+    for (int h = 0; h < heads; ++h) {
+      std::vector<double> weights(counts[b]);
+      double mx = -INFINITY, sum = 0;
+      for (int j = 0; j < counts[b]; ++j) {
+        int cell = ids[b * cap + j],
+            page = cell < 0 ? -1 : table[cell / page_size];
+        if (page < 0) {
+          weights[j] = -INFINITY;
+          continue;
+        }
+        int row = (page * kvheads + h / 12) * page_size + cell % page_size;
+        double dot = 0;
+        for (int d = 0; d < dim; ++d)
+          dot += double(query[(b * heads + h) * dim + d]) * load(false, row, d);
+        weights[j] = dot / 16.;
+        mx = std::max(mx, weights[j]);
+      }
+      for (auto &w : weights) {
+        w = std::isfinite(w) ? std::exp(w - mx) : 0.;
+        sum += w;
+      }
+      for (int d = 0; d < dim; ++d) {
+        double ref = 0;
+        for (int j = 0; j < counts[b]; ++j) {
+          int cell = ids[b * cap + j],
+              page = cell < 0 ? -1 : table[cell / page_size];
+          if (page < 0)
+            continue;
+          int row = (page * kvheads + h / 12) * page_size + cell % page_size;
+          ref += weights[j] * load(true, row, d);
+        }
+        if (sum)
+          ref /= sum;
+        float actual = y[(b * heads + h) * dim + d];
+        double err = std::abs(actual - ref);
+        worst = std::max(worst, err);
+#ifdef STRATA_TEST_PROMPT_MATRIX
+        constexpr double tolerance = 1e-5;
+#else
+        const double tolerance = scaled ? 1e-5 : 2e-6;
+#endif
+        check(std::isfinite(actual) && err < tolerance * (1 + std::abs(ref)),
+              "split attention double oracle");
+      }
+    }
+  }
+  for (size_t i = query.size(); i < y.size(); ++i)
+    check(y[i] == 1234.f, "output guard");
+  const auto work = scratch.get();
+  for (size_t i = nq * stride; i < work.size(); ++i)
+    check(work[i] == 1234.f, "scratch guard");
+  if (benchmark_nq) {
+    std::cout << "benchmark oracle=FP64_queries_0_1_2_last max_abs=" << worst
+              << " full_finite=PASS tail_canaries=PASS cross_arm_numerical=EXTERNAL_REQUIRED\n";
+    return;
+  }
+  // Reuse the same buffers with all pages missing, then with zero widths.
+  dt.put(std::vector<int32_t>(pages, -1));
+  attention(q.data(), p, di.data(), ds.data(), cap, s, scratch.data(),
+            out.data(), nq);
+  auto zero = out.get();
+  for (size_t i = 0; i < query.size(); ++i)
+    check(zero[i] == 0, "all-masked attention");
+  ds.put(std::vector<int32_t>(steps.size(), 0));
+  attention(q.data(), p, di.data(), ds.data(), cap, s, scratch.data(),
+            out.data(), nq);
+  check(out.get() == zero, "empty attention");
+  for (int invalid : {-1, cap + 1}) {
+    for (int b = 0; b < nq; ++b)
+      steps[b * kStepCount + kStepWidth] = invalid;
+    ds.put(steps);
+    attention(q.data(), p, di.data(), ds.data(), cap, s, scratch.data(),
+              out.data(), nq);
+    check(out.get() == zero, "invalid selected-cell width");
+  }
+  std::cout << "split format=" << format << " page=" << page_size
+            << " masked=" << masked << " one_valid=" << one_valid
+            << " max_abs=" << worst << "\n";
+}
+} // namespace
+// Independent logical-tile proof: each map must write every [dim,slot] once.
+void logical_tile() {
+  constexpr int HD=256, CH=32, WG=128, page_size=4, kvheads=2;
+  const int table[] = {3, -1, 0, 2};
+  std::vector<int8_t> pool(4*page_size*kvheads*HD);
+  for (size_t i=0;i<pool.size();++i) pool[i]=int8_t(int(i*7%255)-127);
+  for (int count : {0,1,13,31,32}) for (int head=0;head<kvheads;++head) {
+    int64_t rows[CH];
+    for (int c=0;c<CH;++c) {
+      const int cell = c==5 ? -1 : (c*7)%16;
+      const int page = cell<0 ? -1 : table[cell/page_size];
+      rows[c] = c<count && page>=0
+          ? (page*kvheads+head)*page_size+cell%page_size : -1;
+    }
+    std::vector<uint16_t> old(HD*CH), candidate(HD*CH);
+    std::vector<int> writes(HD*CH);
+    for (int tid=0;tid<WG;++tid) for(int i=tid;i<HD*CH;i+=WG) {
+      const int d=i/CH,c=i%CH;
+      old[i]=half(rows[c]>=0 ? float(pool[rows[c]*HD+d]) : 0.f);
+      const int nc=i/HD,nd=i%HD;
+      candidate[nd*CH+nc]=half(rows[nc]>=0 ? float(pool[rows[nc]*HD+nd]) : 0.f);
+      ++writes[nd*CH+nc];
+    }
+    check(old==candidate,"logical K tile exact");
+    for(int w:writes) check(w==1,"logical tile unique complete coverage");
+    constexpr int KP = 40;
+    constexpr uint16_t sentinel = 0x7e55;
+    std::vector<uint16_t> padded(HD*KP, sentinel);
+    std::vector<int> padded_writes(HD*KP);
+    for (int tid=0;tid<WG;++tid) for(int i=tid;i<HD*CH;i+=WG) {
+      const int c=i/HD,d=i%HD;
+      padded[d*KP+c]=half(rows[c]>=0 ? float(pool[rows[c]*HD+d]) : 0.f);
+      ++padded_writes[d*KP+c];
+    }
+    for(int d=0;d<HD;++d) for(int c=0;c<KP;++c) {
+      if(c<CH) {
+        check(padded[d*KP+c]==old[d*CH+c], "pitch40 logical tile exact");
+        check(padded_writes[d*KP+c]==1, "pitch40 unique complete coverage");
+      } else {
+        check(padded[d*KP+c]==sentinel && padded_writes[d*KP+c]==0,
+              "pitch40 padding untouched");
+      }
+    }
+    // Enumerate each QK matrix-load footprint: no padding may be consumed.
+    for(int k=0;k<HD;k+=16) for(int cell : {0,16}) {
+      check(((k*KP+cell)*sizeof(uint16_t))%4==0, "QK offset alignment");
+      for(int r=0;r<16;++r) for(int c=0;c<16;++c) {
+        check(cell+c<CH && (k+r)*KP+cell+c<HD*KP, "QK footprint bounds");
+        check(padded[(k+r)*KP+cell+c]==old[(k+r)*CH+cell+c],
+              "QK pitch40 consumed operand exact");
+      }
+    }
+  }
+}
+int main(int argc, char **argv) {
+  try {
+    // No process-environment writes, including before/after runtime creation.
+    // Optional dumps support numerical comparison across softmax routes.
+    const bool bench = argc == 6 && std::string(argv[1]) == "--bench";
+    check(argc == 1 || argc == 3 || bench,
+          "usage: fixture [--dump PATH] | --bench 128|256 repeats1..20 --dump PATH");
+    auto integer = [](const char *text) {
+      char *end = nullptr;
+      const long n = std::strtol(text, &end, 10);
+      check(end != text && *end == '\0', "invalid integer");
+      return n;
+    };
+    if (bench) {
+      const long n = integer(argv[2]);
+      check(n == 128 || n == 256, "benchmark nq must be 128 or 256");
+      benchmark_nq = int(n);
+      const long r = integer(argv[3]);
+      check(r >= 1 && r <= 20, "benchmark repeats must be 1..20");
+      repetitions = int(r);
+      check(std::string(argv[4]) == "--dump", "benchmark requires --dump");
+    }
+    if (argc != 1) {
+      if (!bench) check(std::string(argv[1]) == "--dump", "expected --dump");
+      dump.open(argv[bench ? 5 : 2], std::ios::binary | std::ios::trunc);
+      check(bool(dump), "cannot open dump");
+    }
+    logical_tile();
+    runtime = sycl_backend::runtime_for();
+
+    if (repetitions) {
+      run(1, 4, false);
+    } else {
+      for (int fmt = 0; fmt < 4; ++fmt)
+        for (int page : {1, 4, 16})
+          run(fmt, page, page != 1);
+      for (int fmt = 0; fmt < 4; ++fmt)
+        run(fmt, 16, true, true);
+      for (int fmt = 0; fmt < 4; ++fmt)
+        run(fmt, 4, true, true, true);
+    }
+    auto s = qsa_real_shapes();
+    auto reject = [](auto f) {
+      bool caught = false;
+      try {
+        f();
+      } catch (const std::invalid_argument &) {
+        caught = true;
+      }
+      check(caught, "invalid split attention accepted");
+    };
+    reject([&] { qsa_decode_attn_scratch_floats(0, s); });
+    s.head_dim = 128;
+    reject([&] { qsa_decode_attn_scratch_floats(10, s); });
+#ifdef STRATA_TEST_PROMPT_MATRIX
+    check(!qsa_prompt_attn_batch(nullptr, {}, nullptr, nullptr, 10, s, nullptr,
+                                 1, nullptr),
+          "unsupported matrix shape");
+    check(qsa_prompt_attn_batch(nullptr, {}, nullptr, nullptr, 0, s, nullptr, 0,
+                                nullptr),
+          "empty matrix batch");
+#endif
+    s = qsa_real_shapes();
+    Buffer<float> q(24 * 256), out(24 * 256),
+        scratch(qsa_decode_attn_scratch_floats(1, s));
+    Buffer<int32_t> ids(1), steps(4), table(1);
+    QsaAttnPools p;
+    p.page_table = table.data();
+    reject([&] {
+      qsa_decode_attn_step(q.data(), p, ids.data(), steps.data(), 1, s,
+                           scratch.data(), out.data(), nullptr);
+    });
+    runtime->wait();
+    if (dump.is_open()) {
+      dump.flush();
+      check(bool(dump), "output dump flush failed");
+      dump.close();
+      check(!dump.fail(), "output dump close failed");
+    }
+  } catch (const std::exception &e) {
+    if (runtime) { try { runtime->wait(); } catch (...) {} }
+    std::cerr << e.what() << "\n";
+    return 1;
+  }
+}

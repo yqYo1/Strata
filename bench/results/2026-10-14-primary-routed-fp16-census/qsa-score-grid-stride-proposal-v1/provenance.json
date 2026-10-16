@@ -1,0 +1,35 @@
+{
+  "status": "proposal-only; unbuilt; fixtures uncompiled/unrun; unapplied; unadopted",
+  "scope": "root SYCL qsa_block_scores only; no Git state read or mutation",
+  "base_sha256": {
+    "src/kernels/sycl/qsa_select.cpp": "45084756ca5e8e36085dae46581049c81366a45cdfde23e8c6f38defbba0c809",
+    "include/strata/kernels/qsa_select.hpp": "c7c6f484c89541f1e64efbdfc942fcd3eeb719637d3cd1a99ee2f4491b3116cc",
+    "include/strata/kernels/qsa.hpp": "87c02222284f842fcecb46a422b119af769c72c3914edc8da5b2ee782456dc74",
+    "include/strata/sycl/launch.hpp": "9c5aaf14e4b92232d4dcd4e2e68071201d436d287a9615088a9428d88f53b1ce",
+    "cmake/sycl_backend.cmake": "9d18df97b0bf3cf20f0b45245ce214d018bc9c98e10f85898cdc6d6df7adf945",
+    "src/core/verify.cpp": "640e0270be833ddff0218331a7db18043605af3ced2682787f6b06abdcf6316c",
+    "src/core/layer.cpp": "4273fc8c08bb0c58ad471d963f232a457dbc96ea6bd20fa1b45d27fee3428cfb",
+    "AGENTS.md": "2a0eed78b3f2d9cdb01cfad0ac791fff4c22568fd903f9a8a005327c0aac128b",
+    "docs/ARTIFACT_RETENTION.md": "577bed900716a76d3e443a481f46caad9cccd34b10fb86e0676a7122eaa083db",
+    "bench/results/2026-10-14-primary-routed-fp16-census/research-index.json": "e4d6b633fee6dbc7a2de727a2d819830faf44a6098bc222dd4f528a5a887fb88",
+    "bench/results/2026-10-14-primary-routed-fp16-census/research/research-long-context-qsa-indexer-budget-round550-v1.txt": "1fb07ebcc328d988c1a34740eaf94f6b21854d9b4138b947d9750d5672b6b48a",
+    "bench/results/2026-10-14-primary-routed-fp16-census/research-round549-550-review.ja.md": "a12455ca5d48c0f9b06eb7354a5a6947c5cdd4ad95785798d735109ca8a54aea"
+  },
+  "proposed_sha256": {
+    "src/kernels/sycl/qsa_select.cpp": "6dec0d5febfcdb82a7686145c9d0f762194d220977447b07afb2d2e325701969",
+    "include/strata/kernels/qsa_score_grid_stride.hpp": "c7ddbfd332de2629e248275ba35b3d568dc61dfc3fe3f757f0bbfa8a9ee14de8"
+  },
+  "patch_sha256": "fc44bc560960cbe02f79467713d9577b37a5d949a209b8cce4f8f1507ee0b8b4",
+  "policy": {
+    "env": "STRATA_SYCL_QSA_SCORE_GRID_STRIDE",
+    "enabled_value": "1",
+    "default": "off",
+    "latch": "first valid qsa_block_scores call per process",
+    "work_groups_per_query": "min(original validated active bound, 4096)",
+    "device_validity_bound": "original validated active bound"
+  },
+  "generator": "artifact fabrication only; no product import/compilation/execution",
+  "fixture": "actual shared traversal plus byte-extracted actual host validator; independent baseline enumeration; CPU-only; unrun",
+  "prior_artifacts": "Stager affinity/error and MTP ledger proposals left untouched",
+  "owner_and_next_review": "Main; after active benchmark and requested PR6 audit boundary; review source pins then serial CPU/SYCL correctness and performance"
+}

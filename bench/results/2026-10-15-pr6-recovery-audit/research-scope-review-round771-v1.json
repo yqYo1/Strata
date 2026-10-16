@@ -1,0 +1,132 @@
+{
+  "round": 771,
+  "reviewed_on": "2026-10-16",
+  "review_purpose": "Review R768-R770 collection reports for scope, depth, novelty, redundancy, applicability and evidence limits; pin report/spec/review hashes; keep originals retrieval-only unless a current decision needs them; propose gated next scopes and prevent dispatch of unmet conditional work.",
+  "inputs": {
+    "agents_md": {
+      "path": "AGENTS.md",
+      "sha256": "1bbf39be039b3fc38b1b0ec56770b4bf3f05e54cd9b277e21d0fff5fd8023daf"
+    },
+    "artifact_retention": {
+      "path": "docs/ARTIFACT_RETENTION.md",
+      "sha256": "577bed900716a76d3e443a481f46caad9cccd34b10fb86e0676a7122eaa083db"
+    },
+    "research_index": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+      "sha256": "218c2a0f9b81afff4a6fcd52b2f6e3da319a06d1bf63ccddb3ddb8e772b98a1b"
+    },
+    "prior_scope_review": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round767-v1.json",
+      "sha256": "6393d0128f81e8ce477e8b516d4900765311ca14e7ae9352935470bbeb4dc193"
+    },
+    "referenced_reviews": [
+      {
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-wave764-766-main-review-v1.ja.md",
+        "sha256": "4da57d78ca6c2c21b01265e34ccb5c1afc5d47633d22b73e60aab7e009bf3b68",
+        "note": "R770 names this prior review; hash is pinned as recorded by R767. It was not independently reread for R771."
+      }
+    ],
+    "assignment_specs": [
+      {
+        "round": 768,
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round768-spec-v1.txt",
+        "sha256": "9318266e6a0ffc06805b2279d60af4479434341543c382b8072d81a83ef848f5"
+      },
+      {
+        "round": 769,
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round769-spec-v1.txt",
+        "sha256": "70f48419706f5f77ca7c31f7a48c141299275181885252d5a50ae87c184f5b13"
+      },
+      {
+        "round": 770,
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round770-spec-v1.txt",
+        "sha256": "a1675e98c1c5d3282b7fe4a9905ceec190d6fa2e32b3163e046c358994464116"
+      }
+    ],
+    "current_status_supplied_by_main": {
+      "source_integration_commit": "dfca0e14",
+      "nll_observer": "Default-OFF observer integrated; host and 129-input paired-GPU mechanics passed.",
+      "quality_gate": "No FP16 quality/admission accepted; no per-layer paired quality/task data yet.",
+      "verification_limit": "These current-status statements were supplied with the review task and were not independently checked with Git, source inspection, builds or hardware."
+    }
+  },
+  "main_originals_needed_now": [],
+  "reports": [
+    {
+      "round": 768,
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-knowledge-round768-v1.txt",
+      "sha256": "f5bbc716d54143fb92c32c75893f66e5d03bea1d80eeaf275b34f6164dee6043",
+      "purpose_class": "knowledge_archive_conditional_candidate",
+      "main_original_needed_now": false,
+      "retrieval_brief": "Compare only if a concrete implementation question remains about moving variable expert-count metadata from host grouping to a true device-side consumer. Covers grouped oneMKL with host descriptors, uncertain device-USM descriptor placement, bounded expert/tile buckets and a custom fixed-bound consumer; includes a skewed-route experiment outline.",
+      "scope_depth_review": "Coherent and within its 1,200–1,600 word budget (1,296 words). Six primary/API or research references support distinct consumer designs, explicit metadata-contract uncertainty, bounded descriptor arithmetic, failure checks and counterexamples for queues/fusion. It adds a useful consumer-interface comparison beyond R761's stable grouping and R754/R755's host-count boundary, though the route context recurs. No material filler.",
+      "provenance_limit": "The report lists official SYCL/oneMKL/Level Zero references and non-LLM GPU/database studies; no source text, installed library behavior, B570 execution or performance claim was independently verified in this review. The proposal is design/literature evidence only.",
+      "main_correction_to_retain": "The supplied prior attribution puts host grouping at about 0.196 CPU seconds versus 25.793 CPU seconds for residual host-copy submission; the 131.610-second route-inclusive interval contains earlier queued work. Do not infer count handoff is a current bottleneck. Device-only oneMKL group metadata remains unverified for the installed version.",
+      "outcome": "Successful knowledge collection; retain in the indexed library. Do not dispatch a duplicate survey. Main needs the original only if fresh full-boundary evidence makes this specific consumer choice live."
+    },
+    {
+      "round": 769,
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-knowledge-round769-v1.txt",
+      "sha256": "7c8c2c91d82c406fa5ea7ab733f0145006c2b006d3d897d608845e17f25b0337",
+      "purpose_class": "knowledge_archive",
+      "main_original_needed_now": false,
+      "retrieval_brief": "Retrieve for a concrete long-prefill scheduling decision among sequential one-buffer work, a resident prefix plus one scratch window, and two-window copy/compute overlap. It supplies event dependencies, reuse/lifetime constraints, shape-derived workspace totals and a bounded end-to-end comparison outline.",
+      "scope_depth_review": "Coherent and within its 1,200–1,600 word budget (1,513 words). It narrows R763's broad residency/transfer themes to three schedules, causal event-DAG edges, slot lifetime, headroom and overlap counterexamples, using six official/API or non-LLM pipeline references. The fixed-size comparison complements the earlier broad survey without repeating it as filler.",
+      "provenance_limit": "Cited SYCL/Intel documentation and CUDA-era non-LLM studies are presented as transferable constraints, not B570 evidence. This review did not verify the cited pages, current runtime behavior, device copy engines or measured overlap.",
+      "main_correction_to_retain": "The 320 MiB chunk, 1.25 GiB prefix and 1.875 GiB two-window subtotal are shape-derived under a separate-scratch assumption, not observed allocator/VRAM totals. Queue names and inclusive waits do not establish overlap or removable copy latency; require event/timeline evidence and current memory headroom before adoption.",
+      "outcome": "Successful knowledge collection; retain for retrieval. No current implementation choice supplied with R771 requires Main to read the original now."
+    },
+    {
+      "round": 770,
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-knowledge-round770-v1.txt",
+      "sha256": "452dfdd347dd02825c46375988e18bb7fc02d083f0a02e56b813bc2b3f9bb0a2",
+      "purpose_class": "conditional_assignment_gate_failure",
+      "main_original_needed_now": false,
+      "retrieval_brief": "Dispatch audit only: the R764 prerequisite for localized residual-precision errors was absent, so no literature comparison was conducted. Keep the report available as a record of the failed conditional assignment; it has no new empirical, hardware or literature findings.",
+      "scope_depth_review": "The 434-word gate note is far below the 1,000–1,400 word research budget because the assignment correctly stopped before the unmet conditional investigation. Its gate logic agrees with the current supplied status: no per-layer paired conversion/NLL/task data. Do not assess it as a completed literature report or treat its summary of earlier receipts as new evidence.",
+      "provenance_limit": "The report points to prior index entries and R764/R767 material but adds no source verification. R771 did not independently validate those receipts or hardware/source claims.",
+      "main_correction_to_retain": "Do not dispatch selective-precision follow-up until a matched natural-input FP32/FP16/BF16 screen provides per-layer/per-branch conversion summaries, accumulated storage results, teacher-forced NLL and an independent task outcome that actually localize a material issue. The default-OFF NLL observer's host and 129-input mechanics checks do not satisfy this gate.",
+      "outcome": "Preserve R770 as failed because its stated prerequisite was absent. Do not count it as a successful research assignment, new measurement, quality result or literature finding."
+    }
+  ],
+  "cross_report_assessment": {
+    "novelty_and_redundancy": "R768's main addition is whether an actual consumer can avoid host metadata handoff; R769's is the event/lifetime and memory cost of three fixed scheduling patterns. Both reuse earlier diagnostic numbers as attribution guardrails, not as new measurements. R770 did not perform research. Current index hash 218c... differs from the hash pinned in R767 and its report registry still ends at R767; R771 supplies hashes and retrieval metadata for indexing.",
+    "applicability_and_evidence_limits": "R768 and R769 are research references only. No source/API, local runtime, hardware behavior or performance claim from their cited material was independently verified. Their local numeric context is inherited from assignment metadata and prior reports. The R770 failure must remain a failure in any index or orchestration record.",
+    "dispatch_correction": "Before creating a conditional Orca assignment, evaluate an explicit eligibility field against named prerequisite evidence. Carry priority/title metadata only after the gate passes; if it fails, record not-schedulable and do not launch a worker. R770 is the concrete example of copying conditional metadata without this check."
+  },
+  "next_three_research_scopes": [
+    {
+      "priority": 1,
+      "purpose_label": "long_prefill_chunk_size_knowledge_collection",
+      "title": "Chunk-size choices for causal long prefill under GPU memory limits",
+      "finite_question": "For long causal or recurrent GPU prefill, compare smaller, current-size and larger chunks, including how to treat a short tail. Which workload and device conditions justify each choice when GEMM/tile utilization, launch amortization, live workspace, memory traffic and shared-state dependencies all matter?",
+      "breadth_and_counterevidence": "Use current SYCL/Intel primary documentation and original non-LLM GPU/ASIC papers or engineering blogs. Compare at least three chunk-size strategies and a tail strategy; include evidence where a smaller chunk reduces live memory but loses throughput to launch or tile underfill, and where a larger chunk worsens residency or memory pressure. Keep design estimates separate from measured results. Do not repeat R769's buffer/queue-overlap comparison, R667's execution-order audit, or claim B570 performance.",
+      "report_budget": "1,300–1,800 words; at most 7 substantive primary sources, exact links, applicability limits and a counterevidence table.",
+      "schedulable_now": true,
+      "prerequisites": "Long-prefill chunk tuning remains in scope; this is bounded knowledge collection and does not require a new local measurement before research.",
+      "prerequisite_evidence": "AGENTS.md keeps long-prefill chunk-size tuning active; R769 compares fixed 8,192-row buffers but does not compare chunk sizes. Any implementation choice still requires Main's measured full-path and physical-context validation."
+    },
+    {
+      "priority": 2,
+      "purpose_label": "decision_support_if_host_submission_remains_material",
+      "title": "Reusable command submission for a dynamic long-prefill graph",
+      "finite_question": "If current full-boundary attribution shows host command/copy submission is material outside waits, compare direct per-command submission with reusable SYCL/Level Zero command lists or graph-like replay for a chunked prefill DAG. Which approach lowers repeated host work while preserving dynamic pointers, event dependencies, cancellation, async-error reporting and safe resource retirement?",
+      "breadth_and_counterevidence": "Use official SYCL, oneAPI and Level Zero references plus original non-LLM GPU command-replay or launch-overhead studies. Compare at least two replay mechanisms with ordinary submission, and include counterevidence for re-record/update overhead, unsupported dynamic arguments, queue ordering, portability and cases where device work or completion waiting dominates. Avoid repeating R751's wait-policy survey, R765's UR host-copy source audit or R769's transfer/compute overlap analysis.",
+      "report_budget": "1,200–1,700 words; at most 6 substantive primary sources, exact links and a capability/applicability matrix.",
+      "schedulable_now": false,
+      "prerequisites": "A fresh, closed attribution after current source integration must show repeated command/copy submission is a material part of the active long-prefill critical path, separately from busy completion waits and host computation.",
+      "prerequisite_evidence": "The current index has prior v3 attribution with 25.793 CPU seconds in residual host-copy submission and 165.704 seconds in explicit waits, but no fresh post-integration full-boundary timing was supplied for R771. Do not dispatch on the historical CPU totals alone."
+    },
+    {
+      "priority": 3,
+      "purpose_label": "decision_support_if_storage_error_is_localized",
+      "title": "Selective residual precision after a matched storage-quality screen",
+      "finite_question": "Only if a matched FP32/FP16/BF16 screen localizes material error or task loss, compare fixed per-model storage, per-layer/per-branch storage and sparse higher-precision exceptions. Which evidence supports each strategy, and when do extra bytes, casts or dispatch erase the expected gain?",
+      "breadth_and_counterevidence": "Use same-family evidence where available plus original non-LLM activation-compression work. Distinguish storage-only cast/restore from changed live arithmetic and training quantization. Include outlier and correlated-quality counterexamples and independent task metrics; do not restate generic FP16-versus-BF16 facts or invent an acceptance threshold.",
+      "report_budget": "1,000–1,400 words; at most 6 primary sources, exact links and explicit evidence limits.",
+      "schedulable_now": false,
+      "prerequisites": "A natural-input matched FP32/FP16/BF16 measurement must produce per-layer/per-branch conversion tails, accumulated storage results, teacher-forced NLL and an independent task outcome that establish a localized material issue.",
+      "prerequisite_evidence": "Main explicitly reports that these paired per-layer quality/task data do not yet exist. The integrated default-OFF observer passed host and 129-input paired-GPU mechanics only; that does not satisfy the quality gate. This candidate must not be assigned until the named result exists."
+    }
+  ]
+}

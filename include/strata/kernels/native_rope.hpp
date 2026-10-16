@@ -9,6 +9,8 @@ bool native_rope_enabled();
 // Pinned CUDA text-only IMRoPE: F32 rows, 64 rotated channels, equal text positions in all four
 // IMRoPE sections. Each device position must be nonnegative. The position buffer remains live
 // through graph replay. Supports head_dim 128/256 and exact x==out; partial overlap is rejected.
+// SYCL computes the 32 float32 frequencies with strict host libm and captures
+// them as kernel arguments; CUDA fast-math bit identity is not promised.
 // Explicit stream required. No allocation or synchronization.
 //
 // The scaling (rope_scaling.hpp) rides in as the resolved process config: none reproduces the

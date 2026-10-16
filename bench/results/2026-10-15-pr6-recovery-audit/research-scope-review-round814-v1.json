@@ -1,0 +1,46 @@
+{
+  "review_id": "R814",
+  "classification": "knowledge_collection",
+  "report": "research-round813-v1.txt",
+  "report_sha256": "c300d4579575557c934882f4a4ec821022521c50e4de10fdb7c4139faa798be1",
+  "report_word_count": 1787,
+  "reviewer_read_report": true,
+  "Main_body_read": "unread/hold",
+  "launch": {
+    "cli_exit_code": 0,
+    "effective_agent": "codex",
+    "effective_model": "gpt-6-luna",
+    "receipt_state": "ready; input accepted",
+    "run_id": "run_c8f478972ec8"
+  },
+  "scope_assessment": {
+    "judgment": "Substantive design synthesis extending R807's dense GEMM seam into routed grouped scheduling, multi-chunk expert residency, and a gate/up epilogue.",
+    "novelty": "Moderate and bounded: index metadata already records dequant reuse/LRU thrash (R601), deferred and expert-major MoE (R621-R623), small-M and scheduling census (R627-R628), bounded expert waves (R633), and grouped GEMM/superchunks (R701-R702). The new value is joining per-expert row counts to a residency capacity/reuse model and activation intermediate traffic. Index metadata alone cannot establish how much detail duplicates the archived bodies.",
+    "depth": "Good for a source-only collection: three concrete candidates, explicit work and byte formulas, ownership/event lifetime constraints, precision boundaries, and stated UNRUN status. The 1,787-word report meets its assignment budget and does not claim measured gains.",
+    "R807_boundary": "R807 was reviewed as an actual Xe2 dense-kernel selection/adaptation seam; R813 addresses route histograms, expert-group scheduling and bounded layer-weight staging. This is a meaningful extension, though source-policy overlap with earlier grouped-MoE rounds remains."
+  },
+  "source_pin_license_review": {
+    "judgment": "Precise enough for design-reference retrieval: seven primary files are identified by immutable commit URLs and per-file SHA-256; the report says local bytes matched those pins.",
+    "reuse_holds": [
+      "vLLM Xe2 tile-policy header has no per-file license marker and unresolved origin; report correctly withholds reuse.",
+      "Intel LLM Scaler file lacks its own SPDX marker; repo-level Apache-2.0 and its in-repo adaptation comment are recorded, with reuse still not cleared.",
+      "SGLang and vLLM license scope and adaptation lineage are described per relevant files."
+    ],
+    "review_limit": "This review assessed the report's pin/license precision; it did not independently fetch or recompute upstream source hashes."
+  },
+  "applicability_and_limits": [
+    "vLLM Xe2 work-counter scheduling, SGLang Triton dispatch/fusion, and Intel FP8 SYCL chunking are algorithm references, not Strata drop-in kernels; formats, APIs, queue ownership, device assumptions, and eligibility conditions differ.",
+    "The 9.375 MiB/expert and 4.6875 GiB/512-expert values are correct FP16 payload arithmetic for the stated per-expert shapes. They do not prove a 10-GiB allocation fits: the live packed bank, KV, state, scratch, workspace, allocator overhead and slack remain unknown.",
+    "No local route histogram, group reuse trace, live allocation map, runtime, quality or speed result is supplied. The report's capacity and break-even equations are hypotheses to populate with Main evidence.",
+    "Current BF16 quality is not accepted (59/64 top-1 in Main's screen). BF16 in the report remains a candidate format requiring a passing quality gate; this collection does not qualify it."
+  ],
+  "next_research": {
+    "schedulable_now": false,
+    "recommendation": "No fresh scope now. Reconsider only after Main has actual per-expert route counts across chunks, a live memory-byte map, and the R810 source review outcome; those facts are needed to choose a concrete unresolved design question."
+  },
+  "handling": {
+    "R810_interference": "none; no contact, steering, package reads, or modifications",
+    "index_modified": false,
+    "other_files_written": false
+  }
+}

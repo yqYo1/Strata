@@ -1,0 +1,27 @@
+Round 711 independent arithmetic review — 2026-10-15
+Scope: capacity arithmetic, byte totals, rounding, partial FP16 staging, separate-bank delta, and runtime-reserve sensitivity only. No source/runtime/GPU activity.
+
+Inputs and report ordering
+- `research-index.ja.md` requested by the task is absent under the stated audit directory. `research-index.json` is present and was read; it indexes prior reports. Read `prefill-capacity-current.ja.md`, `prefill-capacity-plan.ja.md`, `prefill-capacity-alias-delta-v1.json`, `prefill-capacity-metadata-v2.json`, `prefill-capacity-fp16-admission-v1.json`, and `prefill-no-workspace-review.ja.md` before recalculating.
+- The current report is the post-workspace-removal + scratch-alias calculation. The earlier plan and metadata-v2 have older workspace/reservation assumptions and must not be mixed into the current headline table.
+
+Independent byte arithmetic
+- GPU total: 10,666,115,072 B = 9.9336 GiB = 10.6661 decimal GB.
+- Maximum combined single layer: 1,440,161,792 B = 1.3413 GiB = 1.4402 decimal GB. Components sum exactly: packed experts 1,363,148,800 + canonical 32,366,592 + native dense 44,646,400 B.
+- Separate fixed max expert and dense banks: 1,505,173,376 B. Delta from the combined maximum is exactly 65,011,584 B (0.0605 GiB). This is a distinct, more conservative reservation because the component maxima occur in different layers; it is not the max combined layer.
+- Current main-table work sizes with alias enabled and unused SYCL workspace removed: C4096 1,226,622,208 B (1.1424 GiB); C8192 2,311,569,920 B (2.1528 GiB). These agree with the capacity alias-delta record. They are source/allocation accounting, not a combined max-layer + max-context inference measurement.
+- Subtracting max combined layer, work, GDN 117,669,888 B, PLE history 368,640 B, token IDs (16,384/32,768 B), small-owner allowance 16 MiB, and runtime allowance 512 MiB from total gives available KV+hidden bytes: C4096 7,327,628,032 B (6.8244 GiB); C8192 6,242,663,936 B (5.8139 GiB). Recomputed exactly.
+
+KV and hidden formulas
+- 256K means 262,144 tokens. Hidden is 4 x 2,560 x 2 = 20,480 B/token, hence 5,368,709,120 B = exactly 5 GiB at 256K. This is one reusable prefix bank, not 48 simultaneous copies.
+- The table reserves all 12 QSA layers' KV plus shared indexer/page/RoPE/etc. per the current formula. For C divisible by four: K8V8 = 14,476*C + 43,200 B; K8V4 = 11,596*C + 43,200 B. At 262,144: respectively 3,794,839,744 B (3.5342 GiB) and 3,039,865,024 B (2.8311 GiB). KV payload-only figures would be smaller and are not the table's basis.
+- With KV and full hidden at the same context C, rounding C down to a multiple of four gives these independently reproduced limits: C4096 K8V8 209,620; K8V4 228,444. C8192 K8V8 178,584; K8V4 194,616. The C8192 work reservation remains the largest 8192-chunk work size even when solving for smaller C, as assumed in the source table.
+- With all-12-layer KV fixed at 262,144 first, byte-only hidden ceilings are 172,499 / 209,363 rows for C4096 K8V8/K8V4 and 119,522 / 156,386 for C8192. These are not realizable partial-planner row counts because a separate FP16 conversion staging chunk is needed when some hidden remains in RAM.
+- Partial hidden planner calculation: subtract the full 262,144 KV and one conversion staging chunk (4096*20,480=83,886,080 B = 80 MiB; 8192*20,480=167,772,160 B = 160 MiB), then floor to a whole chunk. Results exactly match current table: C4096 167,936 / 204,800; C8192 106,496 / 147,456. This distinction is validated by the host planner receipt, but does not establish physical 262K GPU admission.
+- If all hidden fits on GPU, the partial conversion staging term does not apply. The different “max same-length KV+hidden” values above are therefore not derived from the partial-prefix table.
+
+Reserve sensitivity and caveats
+- Increasing only runtime headroom from 512 MiB to 1 GiB reduces KV+hidden allowance by exactly 536,870,912 B. Recomputed same-length maxima: C4096 K8V8 194,264 / K8V4 211,704; C8192 K8V8 163,224 / K8V4 177,880. Recomputed partial planner rows after staging and chunk rounding: 139,264 / 176,128; 81,920 / 114,688. All agree with current report/receipt.
+- Clear arithmetic defect found: none in the current headline table within this scope. The prior plan's older values (e.g. 205,060 same-length C4096 K8V8 and 164,716 hidden rows) belong to pre-alias/pre-workspace-removal assumptions and are not evidence that current values are wrong.
+- Unverified design assumptions remain material: one combined weight bank can be resized/rewritten per layer; decode/cache/head/MTP weights are absent; small-owner and runtime reservations are chosen allowances, not measured maxima; all-12 KV is resident; FP16 hidden quality is not qualified; K8V4 is hypothetical for this long-prefill path; and 262,144-token combined physical model admission has not been demonstrated. The alternative “only active QSA layer KV on GPU” changes ownership/transfer behavior and cannot be substituted into the all-12-KV result without separate accounting.
+- Separate-bank sensitivity: replacing the combined layer reservation with two separately fixed maximum banks costs 65,011,584 B. The delta JSON contains corresponding lower capacities; do not apply this delta twice or treat the 1.505 GB banks as a same-layer sum observation.

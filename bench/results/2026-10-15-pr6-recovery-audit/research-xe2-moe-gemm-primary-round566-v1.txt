@@ -1,0 +1,58 @@
+# Xe2 MoE prefill GEMM 候補調査 — Round 566
+
+Date: 2026-10-15 JST. Read-only research for the configured Strata SYCL path on Arc B570, Ryzen 5 5600X and 128 GB system RAM. This report is the only write. No source, branch, build, test, GPU, profiler, service/process, cleanup or Git action was performed. The excluded private record was not opened; no private environment/home/log scan was performed.
+
+## 結論
+
+最優先の新しい候補は、現在のper-expert FP16 GEMM出力と別SwiGLU kernelを、FP32 accumulationを保って一つのXe2 XMX GEMM+SwiGLU epilogueへまとめる試作である。FP16 activations/weights、FP32 GEMM result、FP16 hidden outputという現契約に寄せられ、active expertごとにGEMM後のkernel submissionを一つ省ける。IntelLabs/Xe-FuseはIntel Xe上のSwiGLU GEMM epilogueとMoE batched kernelを公開しているが、このGGUF native quant化weightsや今回の可変expert row数、B570上での性能を実証していない。参考実装の直接移植ではなく、同じ計算契約の候補として隔離評価する。
+
+次点はoneMKL grouped GEMMの再評価。ただしこれは既報R496ですでに候補化され、group-of-four Downだけのsynthetic試験が約2.85%速く、group-of-twoは大半が遅かった。さらに、現在のcompact pathは一expert分のgather scratchと二枚のdequant scratchを再利用するため、複数expertの入力とFP16 weightを同時に保持してからgroup callする追加領域・準備が必要になる。APIを一回にまとめるだけでは改善せず、scratch増加とデquant/gather費用を含めると、融合epilogueより優先度は低い。
+
+copyとcomputeを別queueに戻す重ね合わせは候補から外す。現在のSYCL prefillはB570/oneAPI 2026.1の実shapeで二queue ringが停滞したため、同じin-order queueへcopyとGEMMを集約している。Host Stagerの並行準備はすでにある。ここを単純に別queue化する根拠はなく、R502の実測とqueue/event lifetime契約を越える新しい重ね合わせ案は、まずtransfer dependencyの実critical pathを計測してからにする。
+
+## 現行shape・呼出し契約
+
+現source `src/prefill/prefill.cpp:2724-2810` では、active expertごとにnative packed GU/Down weightsをFP16へGPU dequantizeし、compact modeではactivation rowsをscratch先頭にgatherする。その後 `gemm.f16` を呼び、GU出力をFP32に書き、`swiglu_interleaved` でFP16 `Hh` を生成し、Down GEMMはFP32 `Dm` の各expert global row offsetへ書く。`src/prefill/sycl/gemm.cpp:18-29,96-127` のoneMKL GEMMはFP16×FP16 operands / FP32 outputの現routeであり、`src/prefill/sycl/postops.cpp:217-225` はinterleaved SiLU(gate)×upをFP16へsaturateする。両operationはcallerの同じin-order compute queueに並び、host-side per-call waitはない（`include/strata/sycl/launch.hpp:47-63`）。
+
+入力は `X[ne,2560]` とGU weight [1280,2560]で、出力FP32 [ne,1280]。その後のSwiGLUはinterleaved 640-wide gate/upからFP16 [ne,640]を作る。DownはFP16 [ne,640] × weight [2560,640]からFP32 [ne,2560]を作る。論理演算数はGUが1 rowあたり6,553,600 FLOP、Downが3,276,800 FLOP（MACを2 FLOPとして数えたuseful arithmetic）である。censusの各role 16,588,800 routed rowsに当てるとGU 108.72 TFLOP、Down 54.36 TFLOP、合計163.08 TFLOPとなる。これは数学上の演算数で、XMXのissued work、実測throughput、memory trafficや物理bandwidthではない。
+
+censusは34,560 input tokens、9 chunk、48 MoE layers、90,297 expert calls/role。active-call neはp50=12、p90=428、p99=3,245、最大4,096。ne<=16はcallsの55.13%だがrowsの1.386%にとどまる。row-weighted p50は1,490。従って小M submission対策だけではrow workの大半を説明しない。過去の61.535 s Down marker bucketは非exclusiveで、GEMM service時間とはみなせない。
+
+R566時点でMain完了済みの`gemm-orientation-microbench-v2.json`はactual `ld=N`、same binary/oneMKL、ABBA 320 samples。synthetic hot operandsのcomponent probeでは4096 rowsのGU median per-call wallはrow/column descriptorで約546.7/547.6 µs、Downは378.1/370.3 µs。receipt自身がperformance-qualified=false、native seven-format rotation/model unqualifiedと記録する。よってorientation差を製品変更理由とせず、本ラウンドでは再調査対象に数えない。製品GEMMはそのまま。
+
+## 候補 1 — GEMM+SwiGLU epilogueをXe2 XMXで一launch化（優先）
+
+**根拠と対応条件。** IntelのoneAPI GPU最適化ガイドはXMXをDPAS systolic arrayとして説明し、FP16等の対応型とoneMKLのXMX利用を記す。ただし型対応は実際のcompile dispatchやB570上の速さの証拠ではない。B570のIntel公式製品仕様はXe2、144 XMX engines、380 GB/s board memory bandwidthを掲げる。これらはhardware capability/contextであり、Strata kernelの計測値として使わない。[Intel XMX guide](https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2024-1/xmx.html)、[B570 specifications](https://www.intel.com/content/www/us/en/products/sku/241676/intel-arc-b570-graphics/specifications.html)
+
+IntelLabs/Xe-Fuseは、GEMM visitorで`SwiGLU<ScaleRows<Acc>>`等のepilogueを表し、MoE向けbatched expert kernelも示す。これは別repoの実作者実装例で、SwiGLU結合の可能性を裏付ける。[Xe-Fuse epilogue and MoE examples](https://github.com/IntelLabs/Xe-Fuse#moe-expert-batched-gemm) (README sections “Composition Examples”, lines 382-406 and “MoE Expert Batched GEMM”, 437-448)
+
+**現状との差。** Strataはすでにcompact FP16 scratch、native format dequant、per-expert routing/gather、FP32 GEMM result、FP16 hidden contractを持つ。追加候補は単なるbuffer削減でなく、GU GEMMのFP32 accumulatorからその場でinterleaved SiLU×upを算出し、同じsaturating FP16 `Hh`を直接storeして`swiglu_interleaved` launchと中間FP32 GU write/readを消すもの。Xe-Fuse READMEのMoE例はBF16型のconfigとfixed `M_per_expert` batch形を示すため、既存source formatsや可変neにそのまま合わない。custom SYCL-TLA/CUTLASS kernelを起点としても、oneMKLの現target dispatchを下回る恐れがある。
+
+**評価入口と成功条件。** まず既存GEMM+SwiGLUと融合候補を同じFP16 dequant weights、`X` rows、ne、queue、FP32 accumulation、`hsat((g/(1+exp(-g)))*u)`式で比較し、current censusの主要shape（少なくとも1,12,428,1490,1792,3245,3855,4096）に加えて利用可能なら正確な全histogramを重み付けする。native 7 GU/Down format-pair由来のweight rotationとcold/dequant-inclusive経路は後段で分けて測る。最初にHh全row parity（finite、絶対/relative error、saturation/underflow）、output guard、source dequant lifetime、同一queue orderingを確認する。host-submit、full queue drain、model-prefill wallを分け、無計測系のpaired long-prefillがrun varianceを越えて改善し、first logits/task-quality gateを通ってから採用を検討する。decode/MTP結果は別評価であり、prefill改善から推論しない。融合後もDown FP32 outputとFP32 route-combineは維持する。
+
+## 候補 2 — oneMKL grouped GEMMでper-expert submissionsを束ねる（条件付き、低優先）
+
+oneMKL 2026.0のIntel公式DPC++仕様はgrouped `gemm_batch`について、groupごとの行列寸法/transpose/alpha/beta、operationごとのdevice pointer arrays、group sizesを受け取りSYCL eventを返す契約を示す。FP16 A/BからFP32 Cの型組合せもlisted. 異なるexpert row数は、同じneごとに同shape groupへ分ければ表現可能で、実行形状に対応するAPI上の道はある。[oneMKL 2026.0 gemm_batch](https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-dpcpp/2026-0/gemm-batch.html)
+
+**既報との差。** R496の先行調査/4-expert probeはgroup API一般の候補化を済ませたが、現在のroute histogramで全expertをまとめる評価ではない。今回の新しい価値があるとすれば、正確な異なるneごとのgroup計画、metadata生成時間、scratch拡張まで計上したempirical histogram-weighted model-path評価に限定される。Current `Gemm::f16` は1 callで1 expert。compact gatherは一expert分の`Xs`を上書きし、dequant scratchはDQ=2枚を順に再利用するため、group submission前に多数expertのactivation/weight dataを同時に保持するにはnew packing/scratchか異なるproducer-consumer scheduleが要る。よってAPI呼び出し数を減らす代わりに、memory footprint/packing/dequantを増やす可能性がある。
+
+**成功条件。** Existing R496 resultを再利用して「改善」とはせず、まずhost-only shape/metadata studyでhistogram全体のdistinct neと必要pointer/scratch bytesを出す。そのstorageを含めた同binary component testで、individual group latencyだけでなくgather+dequant+submit+drain合計をcurrent pathと比較する。Grouped event前に全pointer-arrayとhost metadataがcompletionまで保持されること、同じin-order queueのGU→SwiGLU→Down order、Down output global offsets、beta/ld、finite/numerical parityを確認する。追加scratchがcompact prefill region/request capacityを毀損するなら止める。改善が測定誤差より十分大きく、7-format rotating pathとformal prefillでも再現し、decodeは別Armで無退行を確認したときのみ次へ進める。oneMKL contractはgroup launchが内部でfuseすることも速くなることも保証しない。
+
+## 見送った案 — 別copy queueとcompute queueの重ね合わせ
+
+現source `src/prefill/prefill.cpp:730-740,1818-1850,2724-2810` はSYCL時に`m.copy=m.cs`を使う。Host Stagerは並列threadでblob準備する一方、copy/dequant/gather/GEMMは一つのin-order queueへ投入し、active slotはGPUがblobを読み終えた後に記録する。R502の既報はB570/oneAPI 2026.1の二queue ringが実用expert matrixサイズで停滞するためsame-queue defaultを推奨し、別queue間には明示event edgeが必要とする。今回新しく候補とするasync changeには、R502の結論を越える具体的な技法/一次source/ target success evidenceが見つからなかった。Mainが後でこの方向を再開する場合は、まず既存queue/copy submissionとdevice activityのcritical pathを分離して記録し、successful overlap、no stall/fault、same buffer/lease lifetimeを確認する。二queue化だけを試すのは再提案しない。
+
+## ハードウェア・適用範囲
+
+Intel公式B570 pageはXe2、144 XMX engines、10 GB GDDR6、380 GB/s仕様を掲載。AMD公式5600X pageは6 cores/12 threadsを掲載する。[Intel Arc B570 specs](https://www.intel.com/content/www/us/en/products/sku/241676/intel-arc-b570-graphics/specifications.html)、[AMD Ryzen 5 5600X specs](https://www.amd.com/en/products/processors/desktops/ryzen/5000-series/amd-ryzen-5-5600x.html)。5600Xはhost submissionやStager threadが競合する際のtarget identityに留め、CPU throughputは今回計測していない。
+
+XMX engine数、380 GB/s board specification、useful FLOP算出、synthetic hot GEMM elapsed timeは別々のquantityである。いずれもphysical memory traffic/attained bandwidthやmodel speedを直接示さない。candidate selectionはsource matching + measured per-shape samples + full route coverage + prefill wallが必要。
+
+## 既報を避けた確認
+
+全`bench/results/**/research-index.json` registriesを列挙/読込し、GEMM/ MoE/ grouped/async関連の既報テキストを検索した。R496がgrouped GEMMを候補化し、R524/R563がMoE shape/orientation targetsを記し、R564 reviewがcorrected current queue/QSA contextを記す。R566ではgrouped APIの一般論、compact scratch、same queue async契約、MoE phase bucket解釈、orientation A/Bを新案として再提示しない。指定のR563 report、R564 Main review、prior registryとorientation v2 receiptも確認した。
+
+References:
+- Current source: `src/prefill/prefill.cpp:730-740,1818-1850,2724-2810`; `src/prefill/sycl/gemm.cpp:18-29,96-127`; `src/prefill/sycl/postops.cpp:217-225`; `include/strata/sycl/launch.hpp:47-63`.
+- Prior evidence: `bench/results/2026-10-14-pre-Xe-replay/research/research-fp16-grouped-gemm-runtime-quality-round496-v1.txt`; `bench/results/2026-10-14-primary-routed-fp16-census/research/research-shape-weighted-gemm-targets-round524-v1.txt`; `bench/results/2026-10-14-pre-Xe-model-compare/research/research-primary-prefill-copy-queue-contract-round502-v1.txt`; `bench/results/2026-10-15-pr6-recovery-audit/research-own-prefill-gemm-down-gap-round563-v1.txt`; `bench/results/2026-10-15-pr6-recovery-audit/main-review-round563-564.ja.md`; `gemm-orientation-microbench-v2.json`.
+- Intel oneMKL grouped GEMM docs and Xe-Fuse sources are official/reference implementation contracts; no external performance result qualifies the Strata model.

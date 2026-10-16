@@ -1,0 +1,386 @@
+{
+  "schema": "strata-own-dense-prefill-nll-package-provenance-v3",
+  "status": "SOURCE ONLY; no application/build/test/model/runtime/GPU qualification",
+  "base_commit": "f27189d626f4a428982d25bb07f441b52345784c",
+  "base_snapshot_sha256": "b8dcd9882160fcdb7b506c7af12f528390309222d854bf96a93e4210b37115a8",
+  "root_license": {
+    "path": "LICENSE",
+    "bytes": 1093,
+    "sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
+    "identifier": "MIT",
+    "notice_preserved_as": "base/LICENSE",
+    "basis": "Actual root LICENSE read and captured byte-identically; AGENTS at f27189d6 requires newly authored project files to follow this LICENSE."
+  },
+  "original_v2": {
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/own-dense-prefill-nll-v2",
+    "base_commit": "a276e658f11fd4419d60d28c5d477364a56f52bf",
+    "source_diff_sha256": "c4febed46b321c782ec0ea08f55347c6846a713c83baf1b5c8cfa87f0c022079",
+    "manifest_sha256": "fb7d55fd3a2b3c0786c8728ffe4e4323816a5f7cd8e564355a097f3b60767d74",
+    "prepare_sha256": "6d43ff8c47d36ceaddd1133c25c0e4fb51bf53e97cbdbc4c8e9f149a11e8e127",
+    "README_sha256": "45e6f1d30b27d74dde6ed75bb07bf24e6c28d47f8365dd68f6c6f2776245141f",
+    "unchanged": true,
+    "retention": "Original v2 remains untouched as Main review/provenance consumer; no deletion performed."
+  },
+  "implementation_origin": {
+    "statement": "Reuse of the same agent-authored v2 implementation, designed using current own-production code. Independent of XeStrata and old NLL v1 implementation; not clean-room or independent of existing own-production design.",
+    "current_prefill_logits_origin": {
+      "path": "include/strata/program/prefill_logits.hpp",
+      "commit": "f5903fdcddc2e86fd88b75d2a04ac276c7f62a1c",
+      "sha256": "ae38a167d585785c705cb0d51185bc5ee922d8360a3174630b717857d5b2fa73",
+      "basis": "Main explicitly identifies this as own production; read-only Git addition metadata confirms the exact introduction commit. Existing production writer/callback patterns were substantive design references."
+    },
+    "external_implementation_or_template_used": false,
+    "XeStrata_implementation_read_or_used": false,
+    "old_NLL_v1_implementation_read_or_used": false,
+    "old_v1_metadata_only_in_v2": "Only filenames and an initial compact portion of artifact-manifest.json were inspected; no implementation, fixture, generator, source diff or base/proposed mirror was read or reused.",
+    "scope_of_current_origin_confirmation": "Own-source dependency hashes/history recorded; no global historical derivation clearance is claimed. Upstream foundations and later fork edits remain their existing provenance."
+  },
+  "metadata_transformation": {
+    "source": "Project-only .claude/skills/strata-upstream-sync/SKILL.md SPDX metadata was mistakenly reused as a convention in v2 before reading root LICENSE.",
+    "exact_metadata_origin": [
+      "SPDX-FileCopyrightText: 2026 yayoi",
+      "SPDX-License-Identifier: LGPL-3.0-or-later"
+    ],
+    "change": "Only the five newly authored file license identifiers change from LGPL-3.0-or-later to MIT; copyright metadata is preserved verbatim. source.diff reflects the same four proposed-source header changes.",
+    "implementation_template_from_skill": false,
+    "implementation_from_skill": false,
+    "copyright_limit": "The v2 author metadata came from that convention, not an independent determination of copyright ownership; preserving it follows Main explicit instruction.",
+    "reason": "Correct the mistaken license metadata to match the actual repository MIT LICENSE under Main authorization; changing metadata is not asserted to resolve hidden derivation."
+  },
+  "consulted_production_sources": [
+    {
+      "path": "src/program/generate.cpp",
+      "bytes": 496230,
+      "sha256": "623c099dd1001ad61e53c51dd0f0ab16b2bbf8d8e9ad0b4e50d78b5724660584",
+      "design_dependency": "Existing startup validation, standalone final-prefill callback, production head calls, selected-logit/MTP composition and restoration boundaries; the selected diagnostic design is own fork f5903fdc, while the file has upstream foundation and later fork changes.",
+      "repository_addition_commits": [
+        "f2a08d4b2da99bb0638dd03dc1d097d132f0af68"
+      ],
+      "last_change_commit_at_base": "96cd84bc25cde121967c8c3e377f402749ba4c78",
+      "origin_limit": "Local Git metadata pins repository history; it is not by itself an independent historical derivation/license audit."
+    },
+    {
+      "path": "include/strata/program/prefill_logits.hpp",
+      "bytes": 7858,
+      "sha256": "ae38a167d585785c705cb0d51185bc5ee922d8360a3174630b717857d5b2fa73",
+      "design_dependency": "Substantive own-production design reference for exclusive creation, complete coverage, flush/close, no-clobber hard-link completion publication, and one-row host storage.",
+      "repository_addition_commits": [
+        "f5903fdcddc2e86fd88b75d2a04ac276c7f62a1c"
+      ],
+      "last_change_commit_at_base": "f5903fdcddc2e86fd88b75d2a04ac276c7f62a1c",
+      "origin_limit": "Local Git metadata pins repository history; it is not by itself an independent historical derivation/license audit."
+    },
+    {
+      "path": "include/strata/prefill/draft_uploads.hpp",
+      "bytes": 3218,
+      "sha256": "2d32126e28c67751d14bde6cd46f1db60b92aa3939b17a6f78fd66bc10955908",
+      "design_dependency": "Existing checked DraftUploadGuard directly reused to drain partially submitted head/readback uses before host/borrowed storage can unwind.",
+      "repository_addition_commits": [
+        "332cc37242fb9456dbb3dcee7437945fd1605a6d"
+      ],
+      "last_change_commit_at_base": "332cc37242fb9456dbb3dcee7437945fd1605a6d",
+      "origin_limit": "Local Git metadata pins repository history; it is not by itself an independent historical derivation/license audit."
+    },
+    {
+      "path": "include/strata/prefill/prefill.hpp",
+      "bytes": 8531,
+      "sha256": "dc23be25e15138ff4ce58a2696be7e0f67ded25b79107366da0103681668828d",
+      "design_dependency": "Existing on_chunk contract, callback row lifetime, model geometry, initialization and MTP draft API.",
+      "repository_addition_commits": [
+        "f2a08d4b2da99bb0638dd03dc1d097d132f0af68"
+      ],
+      "last_change_commit_at_base": "1025e0ed04816891c1df84c26ebf1bbc062784eb",
+      "origin_limit": "Local Git metadata pins repository history; it is not by itself an independent historical derivation/license audit."
+    },
+    {
+      "path": "src/prefill/prefill.cpp",
+      "bytes": 209970,
+      "sha256": "100701c1bafa2007dd92da04894b859007c9fe6425fa340bea55d37d59c0a4fd",
+      "design_dependency": "Existing final chunk callback synchronization, FP32 residual access and prefill behavior; current scoped-selector fix bytes preserved.",
+      "repository_addition_commits": [
+        "f2a08d4b2da99bb0638dd03dc1d097d132f0af68"
+      ],
+      "last_change_commit_at_base": "f27189d626f4a428982d25bb07f441b52345784c",
+      "origin_limit": "Local Git metadata pins repository history; it is not by itself an independent historical derivation/license audit."
+    },
+    {
+      "path": "src/prefill/layer_major.inc",
+      "bytes": 32243,
+      "sha256": "f16c023d35d181b1c88650d134c7a982d19f9dcb105c5400054af97f285509bc",
+      "design_dependency": "Existing final-layer-only callback forwarding, increasing chunk order, residual pack/store/restore and owner lifetime boundaries.",
+      "repository_addition_commits": [
+        "8ff4bc2f61528dbaf0c483572afb32f887b8771e"
+      ],
+      "last_change_commit_at_base": "3d873f9ca050db105122b8b18c8a8e1275aecdde",
+      "origin_limit": "Local Git metadata pins repository history; it is not by itself an independent historical derivation/license audit."
+    },
+    {
+      "path": "include/strata/core/native_head.hpp",
+      "bytes": 3385,
+      "sha256": "a212993bbcd2acaf4e6cb8599d2f6c3b87e0d60f93fe93b0559d10eeafaa9d0f",
+      "design_dependency": "Existing single-row native head interface and head release ownership API; no new batched head introduced.",
+      "repository_addition_commits": [
+        "f2a08d4b2da99bb0638dd03dc1d097d132f0af68"
+      ],
+      "last_change_commit_at_base": "5d3fc3c0862bb18f62aadc6cccfcf3a94c7bdecd",
+      "origin_limit": "Local Git metadata pins repository history; it is not by itself an independent historical derivation/license audit."
+    },
+    {
+      "path": "src/core/native_head.cpp",
+      "bytes": 13257,
+      "sha256": "6a6942d485ad3ed5e43c0dd7977e92e4594d6adee0648d03edc0e60df6ff91d8",
+      "design_dependency": "Existing NativeHead::run implementation, scratch ownership and launch/error contracts.",
+      "repository_addition_commits": [
+        "f2a08d4b2da99bb0638dd03dc1d097d132f0af68"
+      ],
+      "last_change_commit_at_base": "5d3fc3c0862bb18f62aadc6cccfcf3a94c7bdecd",
+      "origin_limit": "Local Git metadata pins repository history; it is not by itself an independent historical derivation/license audit."
+    },
+    {
+      "path": "src/core/layer.cpp",
+      "bytes": 104898,
+      "sha256": "4273fc8c08bb0c58ad471d963f232a457dbc96ea6bd20fa1b45d27fee3428cfb",
+      "design_dependency": "Existing lm_head_mix/lm_head production GR/head path and scratch behavior.",
+      "repository_addition_commits": [
+        "f2a08d4b2da99bb0638dd03dc1d097d132f0af68"
+      ],
+      "last_change_commit_at_base": "e442e85e46a64b967864e7ecd0dfbe53a3bdbf08",
+      "origin_limit": "Local Git metadata pins repository history; it is not by itself an independent historical derivation/license audit."
+    },
+    {
+      "path": "include/strata/core/canonical_bank_policy.hpp",
+      "bytes": 1341,
+      "sha256": "e109a52c2fccf88b8f17b108aabdf7f5e0b76b30f7fe3bc8670b84c281e9490c",
+      "design_dependency": "Existing persistent global output-weight policy for the current bank route.",
+      "repository_addition_commits": [
+        "96cd84bc25cde121967c8c3e377f402749ba4c78"
+      ],
+      "last_change_commit_at_base": "96cd84bc25cde121967c8c3e377f402749ba4c78",
+      "origin_limit": "Local Git metadata pins repository history; it is not by itself an independent historical derivation/license audit."
+    },
+    {
+      "path": "include/strata/core/canonical_dense_bank.hpp",
+      "bytes": 14961,
+      "sha256": "25f046a7899f5959a046348587c71d35b6211c9568494e77609ec7a30c5fc29a",
+      "design_dependency": "Existing bank residency/persistent owner declarations, inspected by scoped searches.",
+      "repository_addition_commits": [
+        "96cd84bc25cde121967c8c3e377f402749ba4c78"
+      ],
+      "last_change_commit_at_base": "96cd84bc25cde121967c8c3e377f402749ba4c78",
+      "origin_limit": "Local Git metadata pins repository history; it is not by itself an independent historical derivation/license audit."
+    },
+    {
+      "path": "include/strata/core/prefill_head_scope.hpp",
+      "bytes": 2218,
+      "sha256": "2ebabef8e097ec13aa72ccbf503ebd711e60aa03a06e1fcbfee1d3a4bbfa669d",
+      "design_dependency": "Existing head-retirement declaration/policy, searched during route review.",
+      "repository_addition_commits": [
+        "5d3fc3c0862bb18f62aadc6cccfcf3a94c7bdecd"
+      ],
+      "last_change_commit_at_base": "5d3fc3c0862bb18f62aadc6cccfcf3a94c7bdecd",
+      "origin_limit": "Local Git metadata pins repository history; it is not by itself an independent historical derivation/license audit."
+    },
+    {
+      "path": "include/strata/core/coupled_draft.hpp",
+      "bytes": 5109,
+      "sha256": "9b1773764c3867599a42a48aa41444bf79441254e9250de542d5427f093f599b",
+      "design_dependency": "Existing coupled-draft environment/default semantics used to exclude incompatible routes.",
+      "repository_addition_commits": [
+        "164396563523d0b367f13f4cc7bccf7831000f04"
+      ],
+      "last_change_commit_at_base": "8979c320e9b24d150a8d5bff08944ab69cc58e20",
+      "origin_limit": "Local Git metadata pins repository history; it is not by itself an independent historical derivation/license audit."
+    },
+    {
+      "path": "CMakeLists.txt",
+      "bytes": 73984,
+      "sha256": "47c283f6a6621b98cc7c1fd1dfce8c6daee73ffbeb9c0bbce97707edb460d200",
+      "design_dependency": "Existing configured SYCL source resolver, root target/options, compiler warnings and source contract.",
+      "repository_addition_commits": [
+        "f2a08d4b2da99bb0638dd03dc1d097d132f0af68"
+      ],
+      "last_change_commit_at_base": "77be46f2f46512064bb79954faccc6e0f5c65605",
+      "origin_limit": "Local Git metadata pins repository history; it is not by itself an independent historical derivation/license audit."
+    },
+    {
+      "path": "cmake/sycl_backend.cmake",
+      "bytes": 28260,
+      "sha256": "f5f8d6c15725b80fe648371f71d9d56ded245234036f08d634511997fc11ed0b",
+      "design_dependency": "Existing SYCL target/source wiring; the proposal retains v2 target additions unchanged.",
+      "repository_addition_commits": [
+        "310432c9c935cebf0561fbbf0d3574433472f561"
+      ],
+      "last_change_commit_at_base": "29349cd120bbed36f7d9e945acfcb70cbecefdc9",
+      "origin_limit": "Local Git metadata pins repository history; it is not by itself an independent historical derivation/license audit."
+    }
+  ],
+  "review_evidence": [
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/main-review-round743-744.ja.md",
+      "bytes": 3077,
+      "sha256": "56d40a0345b8af1a677682f73d161c90dd85d35c250a647ceb82b24ede591181"
+    },
+    {
+      "path": "AGENTS.md",
+      "bytes": 7956,
+      "sha256": "b7cca45a8df8aa338f247f739d0eae3a0b1e3c4385fe32caf32d9fa8cefec95f"
+    }
+  ],
+  "normalized_v2_to_v3_source_comparison": [
+    {
+      "path": "files/cmake/sycl_backend.cmake",
+      "v2_sha256": "0163e55ddd6f65141ca657c3f97d6dd3550ed12bcc67a1f5c4799c6171e14f3f",
+      "v3_sha256": "0163e55ddd6f65141ca657c3f97d6dd3550ed12bcc67a1f5c4799c6171e14f3f",
+      "license_identifiers_corrected": 0,
+      "normalization": "only replace SPDX-License-Identifier: LGPL-3.0-or-later with SPDX-License-Identifier: MIT",
+      "normalized_v2_sha256": "0163e55ddd6f65141ca657c3f97d6dd3550ed12bcc67a1f5c4799c6171e14f3f",
+      "normalized_equal": true,
+      "all_other_bytes_identical": true
+    },
+    {
+      "path": "files/include/strata/program/dense_prefill_nll.hpp",
+      "v2_sha256": "9ef6d1bc71c03a9f6773e30583781af7c23490685c22cfe1663ccb17c6ebe810",
+      "v3_sha256": "bb30107d937447dd2f8693bd7413ae349d1434fc2eeeffe3e13c0f2af7f4052f",
+      "license_identifiers_corrected": 1,
+      "normalization": "only replace SPDX-License-Identifier: LGPL-3.0-or-later with SPDX-License-Identifier: MIT",
+      "normalized_v2_sha256": "bb30107d937447dd2f8693bd7413ae349d1434fc2eeeffe3e13c0f2af7f4052f",
+      "normalized_equal": true,
+      "all_other_bytes_identical": true
+    },
+    {
+      "path": "files/src/program/dense_prefill_nll.cpp",
+      "v2_sha256": "e2863a583b1f62177f21030f721ac8d1823bf5805045f7f4355ed959ff334b58",
+      "v3_sha256": "3ae6177e93b6dde0328ce71f289a0ca7a70940b9a52d7dc2375488efbff23b42",
+      "license_identifiers_corrected": 1,
+      "normalization": "only replace SPDX-License-Identifier: LGPL-3.0-or-later with SPDX-License-Identifier: MIT",
+      "normalized_v2_sha256": "3ae6177e93b6dde0328ce71f289a0ca7a70940b9a52d7dc2375488efbff23b42",
+      "normalized_equal": true,
+      "all_other_bytes_identical": true
+    },
+    {
+      "path": "files/src/program/generate.cpp",
+      "v2_sha256": "d05e9142917af145c1ba6d428180f8981f260c8a20b23ecf27bcc2033c9fe25a",
+      "v3_sha256": "d05e9142917af145c1ba6d428180f8981f260c8a20b23ecf27bcc2033c9fe25a",
+      "license_identifiers_corrected": 0,
+      "normalization": "only replace SPDX-License-Identifier: LGPL-3.0-or-later with SPDX-License-Identifier: MIT",
+      "normalized_v2_sha256": "d05e9142917af145c1ba6d428180f8981f260c8a20b23ecf27bcc2033c9fe25a",
+      "normalized_equal": true,
+      "all_other_bytes_identical": true
+    },
+    {
+      "path": "files/tests/cpu/dense_prefill_nll.cpp",
+      "v2_sha256": "a42fe493193af651ecaecb8f97efdcc53ede3dce4980f5bf4e975986c2b3b7c1",
+      "v3_sha256": "8834884e3586ed72c39dc56bea06d41be37e92c9ae51df0c4c718faa714e8a35",
+      "license_identifiers_corrected": 1,
+      "normalization": "only replace SPDX-License-Identifier: LGPL-3.0-or-later with SPDX-License-Identifier: MIT",
+      "normalized_v2_sha256": "8834884e3586ed72c39dc56bea06d41be37e92c9ae51df0c4c718faa714e8a35",
+      "normalized_equal": true,
+      "all_other_bytes_identical": true
+    },
+    {
+      "path": "files/tools/compare_dense_prefill_nll.py",
+      "v2_sha256": "f76104fd3152877c75f9cf4f833eb6f83b5bb4cd34ea2f4a1f44953214191a14",
+      "v3_sha256": "0a6f0b621efd74bc94ed2e8bad88be09c7ec9ff92b42560332f6e1f76551931c",
+      "license_identifiers_corrected": 1,
+      "normalization": "only replace SPDX-License-Identifier: LGPL-3.0-or-later with SPDX-License-Identifier: MIT",
+      "normalized_v2_sha256": "0a6f0b621efd74bc94ed2e8bad88be09c7ec9ff92b42560332f6e1f76551931c",
+      "normalized_equal": true,
+      "all_other_bytes_identical": true
+    },
+    {
+      "path": "prepare.py",
+      "v2_sha256": "6d43ff8c47d36ceaddd1133c25c0e4fb51bf53e97cbdbc4c8e9f149a11e8e127",
+      "v3_sha256": "bcbcac531209c54133d98ab36ed0fcafcff7210b3d40b13aa26d30cd85b4e052",
+      "license_identifiers_corrected": 1,
+      "normalization": "only replace SPDX-License-Identifier: LGPL-3.0-or-later with SPDX-License-Identifier: MIT",
+      "normalized_v2_sha256": "bcbcac531209c54133d98ab36ed0fcafcff7210b3d40b13aa26d30cd85b4e052",
+      "normalized_equal": true,
+      "all_other_bytes_identical": true
+    }
+  ],
+  "normalized_source_diff_comparison": {
+    "v2_source_diff_sha256": "c4febed46b321c782ec0ea08f55347c6846a713c83baf1b5c8cfa87f0c022079",
+    "normalized_v2_source_diff_sha256": "fca81a0f6aac0ae805b438ab5368cf5f91120179e33c2df5fd100d8679f20689",
+    "v3_source_diff_sha256": "fca81a0f6aac0ae805b438ab5368cf5f91120179e33c2df5fd100d8679f20689",
+    "normalized_equal": true,
+    "necessary_exact_base_context_changes": []
+  },
+  "source_snapshot_changes_since_v2": [
+    {
+      "path": "src/kernels/sycl/qsa_select.cpp",
+      "v2_base_sha256": "5f43363c89959d03f061d19bce11b6f8fb026014783362fc48431d13402d2e9a",
+      "v3_actual_sha256": "377ad7713ebf9af859cd02614871de705a998af3f5f5cf5f551b881a43d29bfa"
+    },
+    {
+      "path": "src/prefill/prefill.cpp",
+      "v2_base_sha256": "a019ef42e2e6fa4553b89f5b319c079fb0dd8161baccaa307cd53887d5cbd75e",
+      "v3_actual_sha256": "100701c1bafa2007dd92da04894b859007c9fe6425fa340bea55d37d59c0a4fd"
+    },
+    {
+      "path": "include/strata/kernels/qsa_select.hpp",
+      "v2_base_sha256": "c7c6f484c89541f1e64efbdfc942fcd3eeb719637d3cd1a99ee2f4491b3116cc",
+      "v3_actual_sha256": "b35332883920f679aa65ed859ad78ed93c30b7a450ec3efe75ab61e392ae200c"
+    }
+  ],
+  "scope_fix_preservation": {
+    "commit": "f27189d626f4a428982d25bb07f441b52345784c",
+    "files": [
+      {
+        "path": "include/strata/kernels/qsa_select.hpp",
+        "bytes": 5349,
+        "sha256": "b35332883920f679aa65ed859ad78ed93c30b7a450ec3efe75ab61e392ae200c",
+        "included_in_333_source_snapshot": true,
+        "touched_by_nll_patch": false
+      },
+      {
+        "path": "src/kernels/sycl/qsa_select.cpp",
+        "bytes": 9935,
+        "sha256": "377ad7713ebf9af859cd02614871de705a998af3f5f5cf5f551b881a43d29bfa",
+        "included_in_333_source_snapshot": true,
+        "touched_by_nll_patch": false
+      },
+      {
+        "path": "src/prefill/prefill.cpp",
+        "bytes": 209970,
+        "sha256": "100701c1bafa2007dd92da04894b859007c9fe6425fa340bea55d37d59c0a4fd",
+        "included_in_333_source_snapshot": true,
+        "touched_by_nll_patch": false
+      },
+      {
+        "path": "tests/sycl/qsa_select_radix.cpp",
+        "bytes": 16330,
+        "sha256": "1d2167420d5acf6346f5c58b43385d0b5d2d9e24f8506a2d54d55839b454aaf4",
+        "included_in_333_source_snapshot": false,
+        "touched_by_nll_patch": false
+      }
+    ],
+    "nll_patch_touches_scope_fix_files": false,
+    "note": "Three scope files are in the complete 333-file production source snapshot; the fourth test is separately hash-pinned here and left untouched. The NLL patch has no hunks for any of the four."
+  },
+  "engine_and_file_format": "All implementation schema/version strings remain v2. Only the source proposal package is v3; no additional features, optimizations or code fixes.",
+  "unrun": [
+    "prepare.py execution",
+    "patch application/check",
+    "configure",
+    "build",
+    "CPU tests",
+    "native inference",
+    "FP32 repeats",
+    "FP16 quality",
+    "all-GPU admission",
+    "fault checks",
+    "physical262144/RESTORE",
+    "performance"
+  ],
+  "actions": "Only read-only source/license/Git metadata and new-package creation/hash/diff comparison were performed. No product/v2/report modifications, Git mutations, builds/tests/GPU/model/runtime actions, environment/service changes or cleanup.",
+  "source_metadata_audit": {
+    "kind": "read-only byte/hash comparisons only; not execution of proposed tools or CPU tests",
+    "original_v2_package_file_count": 342,
+    "original_v2_mismatches": [],
+    "actual_source_recheck_count": 333,
+    "actual_source_mismatches": [],
+    "HEAD_matches_pinned_base": true,
+    "LICENSE_matches_pinned_bytes": true,
+    "source_normalization_mismatches": []
+  }
+}

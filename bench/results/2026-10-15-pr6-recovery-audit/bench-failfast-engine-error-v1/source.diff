@@ -1,0 +1,143 @@
+--- a/tools/strata_bench.py
++++ b/tools/strata_bench.py
+@@ -368,20 +368,28 @@
+ 
+ 
+ # ---------------------------------------------------------------------------------------------------- the suite
++class EngineRequestError(RuntimeError):
++    """A returned failed digest stopped an explicitly opted-in benchmark."""
++
++
+ class Suite:
+     def __init__(self, base, key, ctx, runs, think, log=print, want_clients=0, want_long=False, quick=False,
+-                 want_long_generation=False, long_generation_only=False, journal=None):
++                 want_long_generation=False, long_generation_only=False, journal=None, fail_fast_engine_error=False):
+         self.base, self.key, self.ctx, self.runs, self.think, self.log = base, key, ctx, runs, think, log
+         self.clients, self.want_long = want_clients, want_long
+         self.quick = quick
+         self.want_long_generation = want_long_generation
+         self.long_generation_only = long_generation_only
+         self.journal = journal
++        self.fail_fast_engine_error = fail_fast_engine_error
+         self.nonce = str(int(time.time()))
+         self.tokens_per_word, self.overhead = 1.1, 40
+         self.out: dict = {"chat": {}, "prompts": {}, "agent": {}, "clients": {}, "skipped": {}, "failures": []}
+ 
+     def request(self, phase, run, turn, messages, max_tokens, think=False, **kwargs):
++        # Defensive guard also covers callers that catch the terminal exception.
++        if self.fail_fast_engine_error and self.out.get("terminal_failure"):
++            raise EngineRequestError(self.out["terminal_failure"]["error"])
+         request_index = None
+         if self.journal:
+             payload = json.dumps(chat_body(messages, max_tokens, think, kwargs.get("tools"),
+@@ -404,6 +412,17 @@
+             self.journal.append("result", phase, run, turn, request_index=request_index, sample=row)
+         if raw.get("_interrupted") is not None:
+             raise raw["_interrupted"]
++        if self.fail_fast_engine_error:
++            sample = {"phase": phase, "run": run, "turn": turn,
++                      "request_index": request_index, "sample": row}
++            self.out.setdefault("request_samples", []).append(sample)
++            if row.get("err") or not row.get("ok"):
++                reason = row.get("err") or "no token came back"
++                failure = {**sample, "classification": "engine_request_error", "error": reason}
++                self.out["terminal_failure"] = failure
++                self.fail(phase, row)
++                # The sole result row has already been fsynced; never add interrupted.
++                raise EngineRequestError(reason)
+         return raw
+ 
+     def run_long_generation(self):
+@@ -630,6 +649,8 @@
+             scope="Six actual sequential turns; body and reasoning replayed; complete sessions only in summaries")
+ 
+     def run_clients(self, n: int):
++        if self.fail_fast_engine_error:
++            raise ValueError("--fail-fast-engine-error cannot be combined with --clients")
+         self.log(f"concurrency: {n} requests at once x {self.runs} rounds, {BURST_MAX_TOKENS} new tokens each")
+         rows = []
+         for rd in range(self.runs):
+@@ -1174,8 +1195,12 @@
+     ap.add_argument("--compare", metavar="DIR", help="a results folder (or its results.json) to put beside this run")
+     ap.add_argument("--compare-only", metavar="NEW", help="print --compare of two existing results folders and stop")
+     ap.add_argument("--ready-timeout", type=float, default=1800, help="seconds to wait for the model to load")
++    ap.add_argument("--fail-fast-engine-error", action="store_true",
++                    help="stop after the first returned failed request digest (default off; incompatible with --clients)")
+     ap.add_argument("--quiet", action="store_true")
+     a = ap.parse_args(argv)
++    if a.fail_fast_engine_error and a.clients:
++        ap.error("--fail-fast-engine-error cannot be combined with --clients")
+     say = (lambda *x, **k: None) if a.quiet else (lambda *x, **k: print(*x, **k, flush=True))
+ 
+     if a.compare_only:
+@@ -1236,26 +1261,35 @@
+         journal.append("identity", "suite", source=client_fingerprint(),
+                        model=pre.get("model"), quant=pre.get("quant"), context=pre.get("context"),
+                        thinking=a.think, long_generation_thinking=long_generation.THINKING,
+-                       workload_version=long_generation.WORKLOAD_VERSION, requested_runs=max(1, a.runs))
++                       workload_version=long_generation.WORKLOAD_VERSION, requested_runs=max(1, a.runs),
++                       fail_fast_engine_error=a.fail_fast_engine_error)
+         suite = Suite(base, key, pre.get("context"), max(1, a.runs), a.think, log=say, want_clients=a.clients, want_long=a.long,
+                       want_long_generation=a.long_generation or a.long_generation_only,
+-                      long_generation_only=a.long_generation_only, journal=journal)
++                      long_generation_only=a.long_generation_only, journal=journal,
++                      fail_fast_engine_error=a.fail_fast_engine_error)
+         slots = pre.get("parallel_slots") or 1
+         if a.clients and a.clients > slots:
+             say(f"Note: the server runs {slots} request(s) at a time (--batch), so {a.clients} clients will partly wait their turn.")
+         say("Running the suite (long generation may take much longer than the standard suite) ..."
+             if suite.want_long_generation else "Running the suite (about 3-10 minutes) ...")
+         try:
+-            out = suite.run()
+-            machine = collect_machine(base, key, cfg)             # again: VRAM and the cache after the work
++            terminal_error = None
++            try:
++                out = suite.run()
++            except EngineRequestError as error:
++                terminal_error = error
++                out = suite.out
++            # Do not ask a failed server for post-run metadata.
++            machine = pre if terminal_error else collect_machine(base, key, cfg)
+             if not machine.get("gpu"):
+                 machine["gpu"] = pre.get("gpu")
+             res = {"schema": SCHEMA, "tool": "tools/strata_bench.py", "date": datetime.date.today().isoformat(),
+-                   "params": {"runs": suite.runs, "think": a.think, "clients": a.clients, "long": a.long, "started_server": started,
++                   "params": {"fail_fast_engine_error": a.fail_fast_engine_error, "runs": suite.runs, "think": a.think, "clients": a.clients, "long": a.long, "started_server": started,
+                               "long_generation": suite.want_long_generation, "long_generation_only": a.long_generation_only,
+                               "command": "python tools/strata_bench.py" + "".join(
+                                   f" {x}" for x in (f"--clients {a.clients}" if a.clients else "", "--long" if a.long else "",
+-                                                    "--think" if a.think else "", f"--runs {a.runs}" if a.runs != 3 else "",
++                                                    "--think" if a.think else "",
++                                                    "--fail-fast-engine-error" if a.fail_fast_engine_error else "", f"--runs {a.runs}" if a.runs != 3 else "",
+                                                     "--long-generation-only" if a.long_generation_only else
+                                                     "--long-generation" if a.long_generation else "") if x)},
+                    "elapsed_s": time.time() - t0, "machine": machine, "results": out,
+@@ -1268,12 +1302,26 @@
+                        "calibration": [suite.tokens_per_word, suite.overhead],
+                        "agent_files": [(n, hashlib.sha256(v.encode()).hexdigest()) for n, v in suite.agent_files()],
+                        "agent_max_tokens": AGENT_THINK_MAX_TOKENS if a.think else AGENT_MAX_TOKENS},
+-                   "complete": True}
++                   "complete": terminal_error is None}
++            if terminal_error is not None:
++                res.update(terminal="failed", qualified=False, terminal_failure=out["terminal_failure"])
++                # Save JSON before rendering: a partial suite need not support every report table.
++                partial = directory / "results.tmp"
++                with partial.open("w", encoding="utf-8") as handle:
++                    json.dump(redact_obj(res, red), handle, indent=1, ensure_ascii=False)
++                    handle.flush()
++                    os.fsync(handle.fileno())
++                os.replace(partial, directory / "results.json")
++                journal.state(terminal="failed", complete=False, qualified=False,
++                              error=str(terminal_error)[:300])
++                say("Benchmark stopped after a failed request; partial results: " + str(directory / "results.json"))
++                return 1
+             parent = Path(a.out) if a.out else ROOT / "bench" / "results"
+             d = write_results(res, parent, red, log_excerpt(log_path) if log_path else [], directory=directory)
+             journal.state(complete=True, terminal="complete", qualified=False)
+         except BaseException as error:
+-            journal.state(terminal="interrupted", complete=False, error=repr(error)[:300])
++            journal.state(terminal="failed" if suite.out.get("terminal_failure") else "interrupted",
++                          complete=False, qualified=False, error=repr(error)[:300])
+             raise
+         say("\nResults (median, range over the runs):")
+         say(red(short_table(res)))

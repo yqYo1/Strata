@@ -1,0 +1,37 @@
+# layer26 phase診断のMain適用・build
+
+2026-10-15 JST。proposal c85f9c7689d4081dfbcbd63b849c7a83050b001054912c7e7e9ae34f7e3c63faを
+Mainがexclusive lock下で適用した。defaultOFFの有限診断であり、数値修正や高速化採用ではない。
+layer26でGDN入出力、attention残差、FFN入力、router、grouping、MoE出力、最終残差を選択6行以下だけ採る。
+FP32保存残差のlong layer-majorのみ許可。FP16保存/短入力/非layer-majorの拒否をsourceで確認。
+追加raw8MiB/text1MiB/host1MiB、既存boundary ownerと累積admission、samecomputequeueのcheckeddrain、
+Restore/leaseより長いdestination所有権を確認した。copy同期がrace条件を変える限界を残す。
+
+Main fixtureはhelperのelements値をそのままoracleにせずliteral byte数を確認し、groupingのID/slot/
+count/offset/source/order異常とrawcollision等を検査する。通常とASan/UBSanが通過、既存boundaryCPUも通過。
+実SYCL本体buildが通りbinary b65d5d81eae4ccaa15be2ea34ccccbc2e05b2e6bd13487578e739a18850b0344。
+全command、source/binary/compilerflag proofはphase-audit-build-v1.json。
+
+元compare.pyのfirst_selected_differenceはrow/phaseソート順だった。元artifact/hashは保持し、
+compare_layer26_phase_v2.pyを別作成して実record順で比較する。phase-order-v1.jsonは独立synthetic
+同chunk二行のケースで、行1の遅いfinal_Rより行6の早いGDN入力差を先に報告することを確認した。
+元13negative comparatorケースと新ordering2ケースは別receipt。CPU/host結果からGPU正しさを認定しない。
+
+check_phase_audit_v1.py smallが同binaryのOFF、phase-only、boundary+phaseを実行中。
+新binaryの小入力gate後に34Kfixed/autoを同一設定で比較する。raw consumerはMain layer26切分け、
+次のreviewはpaired比較が閉じた時。full256K、RESTORE、cleanbench、quality、1000/70目標は未達。
+
+# 研究R590/R591のMain確認
+
+R590のPR622リンクは誤ってyqYo1を指す。Mainが実在と内容を再確認した正しい一次URLは
+https://github.com/Niko1221/Strata/pull/622 。IQ2_Sの246→284usはAlderLake上の別model外部結果であり、
+Zen3上での棄却実測とは扱わない。IQ2_S nt>=2 gate/up pipelineは未実装・format×nt寄与も未観測。
+原reportはbyte/hash不変で残す。agentの禁止Git read-only実行の自己申告も原文に保存される。
+
+R591のprovider rawenviron/ITT内部SetEnvはpinned公式unicontrol.hをMainも確認した。
+https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/tools/unitrace/src/unicontrol.h
+ただしstrict one-window exclusive/no-new-host-wait/hardaggregate64MiBを理由にprovider自作へ進むのは
+今回の目的に必須ではない。別診断の既存成功queue境界外に有限hosthandshakeを置き、公式external
+session CLIで有効化後ackを返してから対象windowを発行するproposalをSolへ依頼した。
+clean速度と混ぜず侵入/coverage/予算超過を明示し、まずChrome無しdevice-timing集計を候補とする。
+追加のユーザー承認は既存の継続最適化・profiler依頼の範囲で不要。現時点で実collectorは動かしていない。

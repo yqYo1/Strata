@@ -1,0 +1,184 @@
+Native 16-bit SYCL GEMM source proposal v1
+=======================================
+
+STATUS: UNBUILT, UNTESTED, UNRUN. No production files were edited. Main owns
+full patch review, integration, builds, tests, profiling and GPU measurement.
+Exact Strata base: 375a6d6ee905859ef176997262e3baef6e739ad2.
+This is a finite producer component; the long-prefill path is not converted.
+
+Contents and integration
+------------------------
+
+`touchedbase/` contains exact Git bytes for the four modified existing files.
+`proposedfiles/` contains those four candidate files plus the two new files.
+`source.diff` is a standard unified patch generated only from that base, never
+from the mutable live worktree. Hashes and absent-at-base entries are in
+`manifest.json`. Main must review the complete patch and reconcile newer live
+changes before integration. Do not overwrite live files from these snapshots.
+
+The root CMakeLists.txt includes cmake/sycl_backend.cmake when
+STRATA_ENABLE_SYCL=ON. That backend selects strata_prefill; the proposal adds
+src/prefill/sycl/gemm16.cpp to this library. The executable strata links this
+library. The new manual sycl_gemm16_test target is EXCLUDE_FROM_ALL, outside the
+STRATA_SYCL_TESTS block, with no add_test/automatic execution. Compiler options
+retain -fno-fast-math and -ffp-contract=off. No compile/configure was attempted;
+actual compiler/device lowering and the active build directory remain Main's
+verification obligations. Old gemm.cpp definitions and oneMKL calls are unchanged.
+
+API and mathematical contract
+-----------------------------
+
+Under STRATA_ENABLE_SYCL, Gemm adds f16_out16 / bf16_out16 with
+(X, W, Y, T, N, K, output_bf16=false, ldy=0, beta=0). X[T,K] and W[N,K]
+are row-major uint16 bit representations in the named input format. Y[T,N]
+is FP16 or BF16 according to output_bf16. The same-format choice for both
+inputs is deliberate. The old float-output methods remain the FP32 reference.
+
+Each call computes X * transpose(W) with native typed half or native typed
+sycl::ext::oneapi::bfloat16 joint matrices, an explicitly float accumulator,
+and an explicitly float FMA for beta*old_Y + accumulator. Only the resulting
+scalar is rounded to the selected 16-bit output representation. beta=0 never
+reads old Y, including NaN bits. No full global FP32 output, global scratch,
+CPU GEMM, oneMKL fallback, dequantization change or range clamp is introduced.
+NaNs/infinities follow the SYCL native operations and conversion; finite-input
+range/underflow behavior is a qualification question tested by the fixture.
+
+Initial geometry accepts arbitrary positive T (including 1, 3 and 17), N/K
+positive multiples of 16, ldy=0 or ldy>=N, finite beta including 0/1 and other
+values. Negative ldy is rejected. Odd N/K explicitly throw before submission;
+Main may initially restrict production dimensions to these documented bounds.
+Output padding is untouched. Rectangle counts, byte sizes, address ranges and
+global launch size are checked before submission. No per-call allocations,
+queue waits or environment reads/writes are in the new GEMM; null stream uses
+the existing synchronous finish convention, while explicit stream is async.
+CPU profiling uses the existing gemm_submit region around submission only.
+
+The workgroup is 64 items / four size-16 subgroups and computes 16x32 outputs.
+Each subgroup holds one 8x16 float matrix accumulator; matrix K is 16. A
+single K=32 stage uses 16*32 input elements plus 32*32 weight elements, both
+16 bit: exactly 3072 bytes of aligned SLM per group, no SLM float outputs.
+W's row-major tile is read as column-major B[K,N], preserving contiguous K
+reads. Row/column/K loads are individually guarded into zero-filled SLM.
+Both barriers and all subgroup matrix operations are converged. Tail stores
+are predicated only within the coordinate callback. This conservative design
+makes no occupancy or performance claim; repeated whole-dependency-path
+measurements and numerical checks are still required.
+
+The first valid call caches an Intel-GPU matrix-combination capability query
+on its Gemm instance; supported C and D must both be FP32 at 8x16x16. It also
+checks subgroup/workgroup/SLM bounds. Half output needs fp16 support. There is
+no software fallback if unsupported. Host calls on the same Gemm must be
+serialized, consistent with init/rebind ownership. Context/stream ownership
+cannot be replaced while an instance is active. Tuple support does not prove
+successful compiler lowering for all input/layout variants: Main must build
+and execute all four typed I/O variants.
+
+Registered device spans (necessary narrow runtime addition)
+----------------------------------------------------------
+
+Existing validate_spans checks alignment/overlap/address arithmetic, but does
+not know allocation extents. The proposal therefore additionally registers
+MemoryKind::Device Allocation extents and runtime identity in runtime.cpp,
+including core arenas and cudaMalloc adapter allocations. validate_device_span
+checks containment and the queue's context/device before GEMM submission;
+ordinary host pointers, host USM and independently allocated foreign device
+USM are rejected. No new driver/Level Zero dependency or compiler dependency
+is added. Two-byte global pointer alignment is supported through scalar bit
+loads/stores and separately aligned typed SLM. Inputs may alias each other;
+Y cannot overlap either input, including the covered strided output interval.
+
+Registry lookup does not wait, submit or access tensor contents. Allocation
+moves preserve the registered address. Deallocation retains existing checked
+drain behavior, frees and retires the address under the registry mutex. The
+registry is initialized before runtime_for's static runtime owners to keep
+teardown ordering valid. Direct Allocation construction also initializes the
+registry before its owner completes construction. Caller ownership still
+must keep buffers alive until explicit queues finish; validation does not
+provide a lease against concurrent destruction or synchronize other queues.
+This small addition changes allocation bookkeeping for all SYCL allocations;
+Main must review lifecycle/concurrency and run the existing runtime/compat and
+FP32 GEMM fixtures as well as the new test before adoption.
+
+Source-only validation fixture
+------------------------------
+
+The independent host oracle decodes IEEE fields to double and implements RNE
+with explicit integer/fraction arithmetic; it does not use SYCL or Strata's
+16-bit conversion helpers. All four format pairs are checked separately.
+--smoke covers 68 numerical cases: 1/3/17 rows, N/K 16/32/48, padded/odd
+strides and ldy=0, beta 0/1/.5/-.25/.1, cancellation, signed small values,
+FP16/BF16 subnormals, normal boundaries and maximum finite inputs. Cross-format
+range conversions explicitly require signed infinity where the rounded result
+overflows. Subnormal preservation is checked; a hardware flush is not silently
+accepted. Numerical comparison permits the FP32 reduction/FMA bound based on
+sum(abs(products)) plus half one output-format ULP, with different FP16/BF16
+ULPs. This is a component criterion, not bitwise full-model acceptance.
+
+The K=48 cancellation fixture has consecutive 16-wide sums +32768, +16,
+-32768, whose FP32 result is 16. Rounding the matrix accumulator to half or
+BF16 between those updates loses the middle 16. Input and output buffers have
+17-word guards, deliberately placing the live pointer at 2 mod 4; complete
+input/guard copies and all output stride guards are checked after execution.
+Prelaunch rejects cover shape/stride overflow, unsupported N/K, finite-beta
+validation, missing initialization, nulls, byte misalignment, overlap, ordinary
+host/host-USM/foreign-device-USM pointers and insufficient registered extents.
+Allocation move and stale-range rejection are checked. A separately wrong
+queue context/device and concurrent ownership stress are not exercised by
+this one-compute-queue fixture; Main must assess them as runtime changes.
+
+--bench takes one of six named shapes, one input/output format pair and 1..3
+repetitions. Shapes are T=16/160/8192 with (N,K)=(1280,2560) or (2560,640).
+Device tensors are bounded below 96 MiB; uploads/readback use one host tensor
+at a time. Each process owns one used compute queue, one warmup, and a bounded
+sample count. Every completion wall-time sample is emitted separately; timings
+include validation/submission/wait, and exclude uploads/readback. Constant,
+exactly representable inputs allow every output and guard to be verified.
+No performance or correctness result exists yet. No raw diagnostic artifacts
+were created and no cleanup was performed.
+
+Future commands for Main only — ALL UNRUN
+-----------------------------------------
+
+Use Main's reviewed build directory/toolchain recipe and serialized GPU lock.
+No configure command is proposed because Main owns the actual current resolver.
+
+  cmake --build <reviewed-sycl-build> --target sycl_gemm16_test -j <owned-jobs>
+
+First debug invocation inherits Main's qualified frozen pre-exec environment;
+set these exact additional values in the native child's environment before
+exec, never by setenv/unsetenv after SYCL/provider initialization:
+
+  UR_ENABLE_LAYERS=UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION
+  UR_LOG_TRACING='level:info;flush:info;output:stderr'
+  <reviewed-sycl-build>/sycl_gemm16_test --smoke
+
+Use a finite deadline (e.g. 120 s), private output directory and 64 MiB maximum
+raw text-log budget under Main's supervisor. Preserve build/source identities,
+exact effective environment and outcome. Trace settings affect timings; run
+bench in a separate clean process whose environment was frozen before exec.
+
+  <reviewed-sycl-build>/sycl_gemm16_test --bench 0 fp16 fp16 3
+  <reviewed-sycl-build>/sycl_gemm16_test --bench 1 fp16 bf16 3
+  <reviewed-sycl-build>/sycl_gemm16_test --bench 2 bf16 bf16 3
+  <reviewed-sycl-build>/sycl_gemm16_test --bench 5 bf16 fp16 3
+
+These heavy commands are examples, not a completed sweep or measured result.
+Main should first qualify every format with smoke, inspect device lowering and
+fault evidence, and only then select representative shapes with finite owned
+deadlines (e.g. 180 s per bench). Retain individual samples and failure status.
+After source adoption, Main separately integrates direct 16-bit consumers in
+prefill.cpp; this proposal touches neither it nor postops.cpp, decode, KV,
+GGUF formats, GDN state precision, CUDA/HIP or model dispatch thresholds.
+
+Provenance
+----------
+
+See provenance.json for immutable hashes and distinctions between original
+implementation, local own API patterns and external architecture/API references.
+The vLLM dtype policy is a design reference only: half/BF16 storage and float
+accumulator/epilogue. Root Apache-2.0 and the sibling BSD-3-Clause notice were
+checked. No vLLM/CUTLASS templates or foreign tests/helpers were copied, adapted
+or included. Installed Intel 2026.1 headers were consulted for API signatures;
+their LLVM SPDX and Intel modification notices are recorded without copying
+their implementation. All newly authored files use the repository MIT license.
+XeStrata source/helpers/tests/archive proposals were not consulted or used.

@@ -104,6 +104,20 @@ struct LoadReport {
     double upload_ms = 0.0;
 };
 
+// Original converted engine bytes captured at the actual startup upload.
+// On successful adoption this moves into the exclusive bank owner; no reread or D2H.
+struct EngineSnapshot {
+    struct Row { WeightRef original; uint64_t offset=0; uint64_t engine_fingerprint=0; };
+    std::vector<uint8_t> bytes;
+    std::map<std::string,Row> rows;
+    std::string pack_dir;
+    const void* loaded_arena=nullptr;
+    const void* loaded_table=nullptr;
+    uint64_t arena_alignment=0;
+    bool complete=false;
+};
+class CanonicalDenseBank;
+
 class WeightTable {
 public:
     /// The arena size the index asks for, readable WITHOUT loading anything - so a caller can size its
@@ -126,7 +140,8 @@ public:
     /// With `skip`, the named tensors are not read: their rows keep their metadata with `data == nullptr` and
     /// `resident == false`, and the other tensors are packed into the compacted arena `pool_bytes` sized.
     bool load(const std::string& pack_dir, void* arena_base, uint64_t arena_bytes, std::string& err,
-              const std::set<std::string>* skip = nullptr);
+              const std::set<std::string>* skip = nullptr, EngineSnapshot* capture = nullptr,
+              uint64_t capture_ram_limit = (3ULL<<30));
 
     const WeightRef* find(const std::string& name) const;
     const std::map<std::string, WeightRef>& all() const { return table_; }
@@ -134,6 +149,7 @@ public:
 
 private:
     friend class NativeDense;
+    friend class CanonicalDenseBank;
     std::map<std::string, WeightRef> table_;
     LoadReport report_;
 };

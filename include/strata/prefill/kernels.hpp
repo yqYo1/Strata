@@ -60,9 +60,6 @@ void swiglu_pair(const float* g, const float* u, uint16_t* h16, int64_t n, void*
 /// dst[i] = src[i] for n int32s, as a kernel: either side may be mapped host memory, and the copy never waits
 /// behind the copy engine's queue (the prompt path's grouping tables, while the expert stream fills it).
 void copy_i32(int32_t* dst, const int32_t* src, int64_t n, void* stream);
-/// dst[0, n) = src[0, n) in 16-byte loads (both 16-byte aligned; src may be mapped host memory: read over PCIe by
-/// the kernel, not queued on a copy engine).
-void copy_f32_wide(float* dst, const float* src, int64_t n, void* stream);
 /// Gather rows: dst16[i, :] = x16[src[i], :] (n rows of `width` BF16).
 void gather_rows16(const uint16_t* x16, const int32_t* src, uint16_t* dst16, int64_t n, int64_t width, void* stream);
 /// bo[t, :] = shared[t, :] * sigmoid(sg[t]) + sum_k w[t, k] * D[slot[t, k], :]
@@ -91,6 +88,10 @@ void kv_append(const float* K, const float* V, int64_t T, int64_t pos0, const in
 
 /// fp32 -> fp16 bits and fp32 -> bf16, n elements (the two activation images of the prompt GEMMs).
 void to_f16(const float* x, uint16_t* y, int64_t n, void* stream);
+#if defined(STRATA_ENABLE_SYCL)
+/// Exact FP16 bits -> FP32, including subnormals/Inf/NaN. Layer-major storage restore only.
+void from_f16(const uint16_t* x, float* y, int64_t n, void* stream);
+#endif
 void to_bf16(const float* x, uint16_t* y, int64_t n, void* stream, uint16_t* ylo = nullptr);
 /// y = fp32(fp16(x)): what an FP16 store of x would read back (the FP16 indexer-key experiment)
 void round_f16(const float* x, float* y, int64_t n, void* stream);

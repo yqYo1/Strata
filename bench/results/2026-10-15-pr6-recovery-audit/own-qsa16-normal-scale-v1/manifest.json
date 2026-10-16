@@ -1,0 +1,211 @@
+{
+  "schema_version": 1,
+  "package": "own-qsa16-normal-scale-v1",
+  "package_absolute_path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa16-normal-scale-v1",
+  "task_id": "task_bc6b93e48cd4",
+  "dispatch_id": "ctx_3145ab12ad02",
+  "created_utc": "2026-10-16T02:32:29.708052+00:00",
+  "status": "SOURCE_ONLY_REVIEWED_PROPOSAL_UNRUN_NOT_INTEGRATED",
+  "base_commit": "6354f0b4ff3731466795410e11ca9ef785c9d326",
+  "base_receipt": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-engine-build-v2.json",
+    "sha256": "990635731be1198706abeb682817fdab247f8f51d31bab971d3d4f4db53cb639",
+    "pin_field": "source_pins",
+    "source_commit_verified_equal": true
+  },
+  "base_acquisition": "Exact live file bytes match Main immutable build receipt; captured only the two changed preexisting file preimages, no Git or stale mirror. New helper base is absent.",
+  "base_preimages_and_proposals": [
+    {
+      "path": "include/strata/sycl/prompt_bf16_score_scale.hpp",
+      "base_presence": "absent",
+      "base_preimage_package_path": null,
+      "base_sha256": null,
+      "base_bytes": 0,
+      "proposed_sha256": "16bf710e984c4b351675a6e7126ba149e5167ce8d02f0b268a9368b25470c3fb",
+      "proposed_bytes": 1423,
+      "proposed_package_path": "files/include/strata/sycl/prompt_bf16_score_scale.hpp"
+    },
+    {
+      "path": "src/kernels/sycl/prompt_attention.cpp",
+      "base_presence": "present",
+      "base_preimage_package_path": "base/src/kernels/sycl/prompt_attention.cpp",
+      "base_sha256": "0d1b0be4282b4535749bbda6436d0be923d0bdafc06ae6115a0bc1688f2bd500",
+      "base_bytes": 35458,
+      "proposed_sha256": "9467759d6f522a389ce148f5718243f8b1a0a8452682e5e39cd3e9f585453e2e",
+      "proposed_bytes": 36446,
+      "proposed_package_path": "files/src/kernels/sycl/prompt_attention.cpp"
+    },
+    {
+      "path": "tests/sycl/prompt_native16.cpp",
+      "base_presence": "present",
+      "base_preimage_package_path": "base/tests/sycl/prompt_native16.cpp",
+      "base_sha256": "4e78657ccc90d2d36d65a46c36c88e0c7ba20f490afa7c471ebd78d30fcaf0f3",
+      "base_bytes": 22646,
+      "proposed_sha256": "9da7cc3f91a5ac6464dcd7c0698d1a77d8b4155da513734ba09ac77dca154a9e",
+      "proposed_bytes": 31589,
+      "proposed_package_path": "files/tests/sycl/prompt_native16.cpp"
+    }
+  ],
+  "patch": {
+    "path": "proposal.patch",
+    "format": "Unified a/ b/ paths; apply against exact pinned preimages only",
+    "sha256": "2d893dedee458d70b5cd3129c3bfd39f7d9d04c88dec06bd97e70df7899fcf08",
+    "product_path_count": 3
+  },
+  "provenance": {
+    "path": "provenance.json",
+    "new_code_license": "Repository MIT LICENSE",
+    "new_code_origin": "Original R844 mathematical implementation and independent test additions; task-supplied exponent-domain concept",
+    "external_code_copy_or_adaptation": false,
+    "inherited": "Pinned qualified MIT Strata source, R787/R818 review metadata recorded separately",
+    "XeStrata_engine_helper_test_source": false,
+    "knowledge_collection_bodies_read": []
+  },
+  "implementation": {
+    "flag": "STRATA_SYCL_PREFILL_NATIVE16_QSA_SCALE_FAST",
+    "enabled_value": "exact string 1 only",
+    "default": "OFF",
+    "read": "Host function-local static once, before first supported nonempty BF16 attention submit; owning process sets immutable environment before exec",
+    "dispatch": "template<bool ScaleFast>, if constexpr in score apply only",
+    "exact_domain": "Input IEEE binary32 normal finite, E in1..254; target E+n in1..254. Mask preserves sign/mantissa, exact normal result without rounding. Compare shift bounds before sum to avoid int overflow.",
+    "fallback": "Original sycl::ldexp(value,shift) for every excluded input or target; same already-rounded product and int arguments",
+    "multiplication": "value * (ks[(cell+c)*KG+g] * .0625f), followed by shift -shifts[head+r]; unchanged nesting/order, no qdown precompute",
+    "FP32_prefix_bytes": 19531,
+    "FP32_prefix_sha256": "6a20f24d4100b7517dbd6d3f2d894c7f0a6167e5a6dc68894f15f24324f4dc85",
+    "FP32_prefix_byte_identical": true,
+    "old_OFF_math": "Original score expression in constexpr false branch; all other old typed launch body bytes preserved",
+    "other_path_changes": false,
+    "new_Runtime_context_queue": false,
+    "compiler_flag_changes": false,
+    "SLM_WG_SG_or_barrier_changes": false
+  },
+  "fixture": {
+    "existing_path": "tests/sycl/prompt_native16.cpp",
+    "existing_full_attention_cases": 112,
+    "existing_oracles_tolerances_cases_CLI": "Preserved; source-review.json pins old run() bytes and normalizes only additive main calls",
+    "shared_helper": "Same inline implementation as production, no duplicated exponent transform in oracle",
+    "independent_normal_oracle": "Host FP64 std::ldexp on exact input, verifies exact normal representability and raw binary32 equality",
+    "normal_cases": 1032256,
+    "fallback_cases": 36880,
+    "product_cases": 4180,
+    "fallback_oracle": "Direct original device sycl::ldexp and raw bits incl +/-zero, subnormal, infinity, qNaN/sNaN payloads; no payload canonicalization in comparator",
+    "product_oracle": "Identical original multiply nesting + direct old device ldexp; independent FP64 reference for exact normal domains starting from GPU rounded product",
+    "both_flag_modes": "Main-only separate children, no in-process setenv/unsetenv; unchanged full attention dump byte equality required after complete successful fixtures",
+    "execution": "UNRUN"
+  },
+  "review": {
+    "source_review": "source-review.json",
+    "Main_review_brief": "REVIEW.ja.md",
+    "complete_patch_review": "Worker read complete unified patch; Main full review remains required before integration",
+    "decision": "Bounded opt-in candidate; not performance adopted",
+    "limits": "Actual compiler may already optimize ldexp; integer guards/divergence/register pressure can erase/reverse gains. No compiler or ISA evidence gathered."
+  },
+  "measurement_context": {
+    "origin": "Coordinator task text, not worker measurements",
+    "clean_BF16_bulk_median_tok_s": 394.9,
+    "clean_optional_typed_QSA_median_tok_s": 384.8,
+    "independent_processes_per_arm": 3,
+    "typed_attention_interval_s": 36.2963,
+    "prior_FP32_attention_interval_s": 33.961,
+    "typed_projection_interval_s": 1.20636,
+    "prior_projection_interval_s": 0.919497,
+    "typed_host_outside_wait_s": 19.1927,
+    "prior_host_outside_wait_s": 19.1238,
+    "interpretation": "Nonexclusive windows are not exclusive GPU service or evidence of ldexp causality."
+  },
+  "execution": {
+    "configure": "UNRUN",
+    "build": "UNRUN",
+    "syntax_check": "UNRUN",
+    "link": "UNRUN",
+    "unit_tests": "UNRUN",
+    "GPU": "UNRUN",
+    "ISA": "UNRUN",
+    "performance": "UNRUN",
+    "numerical": "UNRUN",
+    "fault_checks": "UNRUN",
+    "whole_model_quality": "UNRUN",
+    "physical262144": "UNRUN",
+    "RESTORE": "UNRUN"
+  },
+  "qualification_commands_and_environment": "qualification-plan.json; exact prospective argv and pre-exec env, Main-exclusive owned serial processes after qualified freeze release",
+  "retention": {
+    "policy": "docs/ARTIFACT_RETENTION.md",
+    "owner": "Main/R844",
+    "consumer": "Main source review then optional exclusive integration and numerical/performance qualification",
+    "byte_budget": 524288,
+    "observed_bytes_excluding_manifest": 171498,
+    "next_review": "Before integration/build; after exactness and clean long-input performance decision",
+    "raw_traces_tensor_captures_binaries_created": false,
+    "cleanup_performed": false
+  },
+  "scope_compliance": {
+    "writes": "Exact assigned proposal package only",
+    "live_product_edits": false,
+    "Git_commands": false,
+    "build_test_syntaxcheck_or_candidate_import": false,
+    "GPU_profiler_process_inspection": false,
+    "install_cleanup": false,
+    "protected_record_read": false,
+    "other_workers_contacted_or_steered": false,
+    "workers_spawned": false
+  },
+  "payload_files": [
+    {
+      "path": "LICENSE",
+      "bytes": 1093,
+      "sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0"
+    },
+    {
+      "path": "REVIEW.ja.md",
+      "bytes": 7446,
+      "sha256": "67abd50a73b0c3cd1409c9fbba39ff0a382cdae1f64e36b277710793640f3b5f"
+    },
+    {
+      "path": "base/src/kernels/sycl/prompt_attention.cpp",
+      "bytes": 35458,
+      "sha256": "0d1b0be4282b4535749bbda6436d0be923d0bdafc06ae6115a0bc1688f2bd500"
+    },
+    {
+      "path": "base/tests/sycl/prompt_native16.cpp",
+      "bytes": 22646,
+      "sha256": "4e78657ccc90d2d36d65a46c36c88e0c7ba20f490afa7c471ebd78d30fcaf0f3"
+    },
+    {
+      "path": "files/include/strata/sycl/prompt_bf16_score_scale.hpp",
+      "bytes": 1423,
+      "sha256": "16bf710e984c4b351675a6e7126ba149e5167ce8d02f0b268a9368b25470c3fb"
+    },
+    {
+      "path": "files/src/kernels/sycl/prompt_attention.cpp",
+      "bytes": 36446,
+      "sha256": "9467759d6f522a389ce148f5718243f8b1a0a8452682e5e39cd3e9f585453e2e"
+    },
+    {
+      "path": "files/tests/sycl/prompt_native16.cpp",
+      "bytes": 31589,
+      "sha256": "9da7cc3f91a5ac6464dcd7c0698d1a77d8b4155da513734ba09ac77dca154a9e"
+    },
+    {
+      "path": "proposal.patch",
+      "bytes": 15012,
+      "sha256": "2d893dedee458d70b5cd3129c3bfd39f7d9d04c88dec06bd97e70df7899fcf08"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 3203,
+      "sha256": "6aa1f7f6e5d9e8b454eeab8f9faf3fea7b81a0d14613a31f23fd65db37c90a8d"
+    },
+    {
+      "path": "qualification-plan.json",
+      "bytes": 15181,
+      "sha256": "8d69b759e17bb885fa194cd03e3692df73e71de2623b5cd3552019e11fd588b8"
+    },
+    {
+      "path": "source-review.json",
+      "bytes": 2001,
+      "sha256": "f1bbd6ac537274f9f92d190d351bc0e2ce290577c3dd08526c925d1348f9c984"
+    }
+  ],
+  "self_hash": "Manifest excludes itself; external completion receipt carries its SHA256."
+}

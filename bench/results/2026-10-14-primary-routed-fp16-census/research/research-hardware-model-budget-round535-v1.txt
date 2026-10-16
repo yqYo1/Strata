@@ -1,0 +1,71 @@
+# R535 — model work and attained hardware budget for the primary B570 host
+
+Date: 2026-10-14 JST. Read-only source/evidence calculation for the fixed native68da/client/recipes screen and its 34,560-token routed-FP16 census. This report is the sole write. No product/Git edits, build/test, GPU/profiler work, live-run reads, process/service operation, reset, or cleanup occurred. I did not inspect the prohibited prefill-GEMM-only record or large model blobs. The results below are geometry and arithmetic budgets plus prior attained operation rates; they do not attribute the active screen's critical path or claim a hardware maximum.
+
+## Finding
+
+The exact MoE geometry is small per expert but large in aggregate. For each selected expert row, GU performs 6.5536 MFLOP and Down performs 3.2768 MFLOP, for 9.8304 MFLOP total. At top-k 10 across 48 MoE layers, this is 4.718592 GFLOP per input token, before shared experts, attention, routing, embeddings and other dense work. The 34,560-token census therefore represents 163.075 TFLOP of routed GU+Down work. A 64K input completed at 1,000 input tokens/s has a 65.536 s budget and needs at least 4.719 TFLOP/s of useful routed-MoE arithmetic alone.
+
+Transfer has little bulk-rate headroom under a proportional projection of the measured census: its requested routed-source payload was 5.319 MB per input token, or 5.319 GB/s at 1,000 tokens/s. That is 82.5% of the prior attained 6.447 GB/s large Host-USM H2D rate. This comparison is conditional: the census bytes count requested source copies, while the prior rate is a separate 256 MiB bulk operation; neither measures completed link traffic for this request. Actual per-copy setup, source staging, dequantization, dependencies, overlap and route variation are not included. Thus scheduling gains alone have a narrow apparent transfer margin if the compact route repeats this byte rate; a large architectural byte reduction or additional weight reuse would materially improve the budget if those bytes are exposed on the request tail. The active path's true critical path remains unmeasured.
+
+## Geometry and per-role budget
+
+`include/strata/core/layout.hpp` fixes `n_embd=2560`, `n_ff=640`, 48 layers, 512 experts, and an attention cadence that yields 12 QSA plus 36 GDN layers. The long census records top-k 10, compact FP16 MoE enabled, and MMQ disabled. Its actual routed GEMMs are `X[ne,2560] × W_GU[1280,2560]^T` and `H[ne,640] × W_Down[2560,640]^T`; each input and weight operand is FP16 and the output is FP32.
+
+| Routed operation | Parameters per expert | Expanded FP16 weight bytes per expert | FLOPs per routed row |
+| --- | ---: | ---: | ---: |
+| GU | 3,276,800 | 6,553,600 B (6.25 MiB) | 6,553,600 |
+| Down | 1,638,400 | 3,276,800 B (3.125 MiB) | 3,276,800 |
+| Combined | 4,915,200 | 9,830,400 B (9.375 MiB) | 9,830,400 |
+
+The combined parameter count is the routed expert subset only. Ten selected experts in each of 48 layers correspond to 2.359296 billion selected expert parameters per token, before non-MoE work. It is not the model's full active parameter count and should not be substituted for the model card's advertised active-size label.
+
+The actual source formats vary across layers. The 48 GU/Down native format pairs are `(18,20)` on 14 layers, `(22,20)` on 15, `(21,20)` on 9, `(22,42)` on 5, `(18,42)` on 3, `(21,42)` on 1, and `(23,20)` on 1. Applying their exact per-expert blob sizes from R524 yields 58,137,600 native bytes for GU and 40,089,600 for Down per full 48-layer set of one expert ID; over all 512 experts this is 50,292,326,400 bytes (50.293 GB) of packed expert blobs. Expanding every expert weight to FP16 would instead occupy 241,591,910,400 bytes (241.592 GB). This is the expert weight arena only, not the complete model. Native packed bytes, expanded FP16 bytes and the actual transfers in one request describe different stages.
+
+For the 34,560-token census, GU and Down each have 90,297 active expert calls and 16,588,800 routed rows. Their total useful work is 108.716 TFLOP GU plus 54.358 TFLOP Down. Average rows per active call are 183.73; the recorded distribution is highly skewed: call p50/p90/p99 is 12/428/3,245 rows, and 55.13% of calls have at most 16 rows while carrying only 1.39% of rows. The small-call cohort can therefore impose substantial dispatch/staging overhead even though it carries little arithmetic. Do not replace the exact histogram with an M=80 or M=184 synthetic mean.
+
+The prefill census's selected routed weights go through the compact FP16 GPU path; the CPU still participates in source staging, host grouping and dequant preparation. The separate decode path uses native quantized CPU experts for misses and GPU-resident experts for cache hits. The number of decode misses, per-format CPU rows and cache-hit work is not in this prefill census, so a CPU/GPU split of decode FLOPs cannot be computed from it. The measured CPU 0.818 TFLOP/s is a six-core FP32 register-FMA control, not a roofline for packed IQ integer-dot kernels. Likewise 36.87 GB/s RAM read and 37.58 GB/s non-temporal logical copy are separate controls, not counters for this request.
+
+## Request byte and time budgets
+
+The completed census records 183,862,579,200 requested bytes over 89,743 Stager copy attempts, or 5.319 GB per batched input token. At the target of 1,000 tokens/s that implies 5.319 GB/s requested-payload service if payload scales linearly with this input and must be serviced in that second. A proportional 65,536-token projection is 348.6 GB. It is an estimate from one route/input, not a measured 64K payload. The observed bytes are native source blob requests, not expanded FP16 weights and not successful/completed PCIe traffic. Average source payload per Stager attempt is about 2.048 MB.
+
+Prior host controls measured Host-USM H2D at 6.447 GB/s and pageable H2D at 4.605 GB/s, both attained rates for 256 MiB operations. The Host-USM rate gives 28.52 s for the observed 183.86 GB if every requested byte moved once at that rate. The 64K proportional payload would take 54.1 s, leaving 11.4 s of the 65.536 s target budget for all other exposed work. This is a conditional quotient, not a minimum-time proof: it transfers copy-request bytes into a bulk rate and assumes linear routes and no other copy-engine traffic. The screen also records 75.519 s of accumulated host `stage_one` elapsed time during its 34K diagnostic; R521 established this includes waiting and H2D submission, overlaps the GPU intervals, and is not Stager worker memcpy service. Do not add it to the phase timeline or extrapolate it as a CPU copy rate.
+
+The B570 has 10 GB GDDR6 and a vendor-listed 380 GB/s graphics-memory bandwidth. Prior local operation tests attained 330.07 GB/s for a 256 MiB VRAM copy, counting logical read plus write bytes. These rates have different conventions: PCIe transfer counts payload once, while the VRAM-copy rate counts both logical directions. The prior physical topology review found an external PCIe Gen4 x4 path; its 7.877 GB/s encoded-data figure is an interface calculation before packet overhead, not an attained application rate. None of these is an absolute device ceiling or direct traffic measurement for the live request.
+
+| Prior attained operation result | Rate | Scope and relevance |
+| --- | ---: | --- |
+| CPU FP32 register FMA | 0.818 TFLOP/s | Six physical cores; not quantized CPU MoE capacity |
+| Host RAM read | 36.87 GB/s | Six cores, 512 MiB data beyond LLC |
+| Host non-temporal copy | 37.58 GB/s | Logical read plus write bytes |
+| Host-USM H2D / D2H | 6.447 / 5.643 GB/s | Large 256 MiB payloads, attained |
+| Pageable H2D / D2H | 4.605 / 5.274 GB/s | Separate pageable-memory path |
+| VRAM copy | 330.07 GB/s | 256 MiB logical read plus write |
+| GU / Down GEMM at M=8192 | 52.69 / 41.61 TFLOP/s | Hot FP16 operands, FP32 output; large-shape reference |
+| GU / Down GEMM at M=80, rotating eight weights | 13.16 / 10.08 TFLOP/s | Synthetic production-shaped reference; not this histogram |
+| Host packed-copy pool | 13.74 GB/s | Three workers, one-way payload |
+
+For the arithmetic target, 4.719 TFLOP/s is below those two GEMM reference rates, including the M=80 fixture. That comparison only establishes that the required arithmetic rate is plausible relative to isolated GEMM operation results. The real workload has many smaller shapes, seven source-format pairs, dequantization and 89,743 staging attempts; the available controls do not measure its aggregate GEMM or complete prefill rate. Current nonexclusive phase intervals report 6.004 s GU and 61.535 s Down inside a 207.576 s diagnostic, but R521/R524 explain they include queue markers/gaps and adjacent work. They cannot be divided into operation FLOPs to claim model GEMM throughput.
+
+The 128-slot GPU expert cache shown in the prior model configuration stores at most about 0.34 GB at the largest recorded blob size. That is below 0.7% of the 50.293 GB native expert arena. It can improve selected decode hits, but it cannot make the whole expert set resident or by itself remove a major fraction of a full-arena prefill stream. Do not apply the older 4K full-stream byte formula in R470 to this screen: the current census is the compact route and its observed 183.86 GB was much smaller than that distinct schedule's projected repeated full-arena traffic.
+
+## Scheduling versus architecture
+
+This evidence supports a conditional choice rather than a bottleneck verdict. If the compact route's requested payloads are on the exposed critical path, their 64K/1,000-token/s budget already consumes most of the prior large-copy attained rate; queue ordering, copy batching, and staging improvements could recover fixed per-copy and exposed wait costs, but cannot create much more bulk-link throughput. A larger chunk or retaining/reusing expanded expert weights across chunks would change the byte count and is therefore an architectural opportunity, subject to exact 64K memory fit, source/lease correctness, route coverage and numerical parity. The previous 4K full-stream schedule has a different budget and cannot be assumed equivalent. If the current copies overlap useful compute, reducing their wall-time contribution through scheduling may be enough; the existing nonexclusive markers do not establish whether that overlap or tail exposure occurs.
+
+For arithmetic, compute appears less restrictive on paper: 4.719 TFLOP/s useful routed work is modest versus the isolated B570 GEMM results. The row histogram and source-format mix make dispatch/dequant/materialization and short-call scheduling more credible candidates than a large-M kernel peak comparison. That remains an inference from operation rates and shape counts, not a measured bottleneck. A decision needs the existing clean matched 64K run's normal completion and wall time plus a bounded, joined view of completed H2D payloads, dequant, per-shape GU/Down service, queue dependencies, and CPU work. Preserve distinct host enqueue, copy completion, device GEMM, CPU service and full-request wall measurements; do not sum overlapping intervals.
+
+Current evidence therefore does not establish that scheduling alone can reach PP1000, that an architecture change is necessary, or that either GPU or CPU execution is the bottleneck. The useful planning threshold is concrete: at the observed byte/token rate, 1 GB/s of exposed-copy capacity corresponds to about 188 input tokens/s of payload service, while the target requires 5.319 GB/s continuously; measured copy/overlap attribution should decide whether that budget is actually exposed. (This conversion is arithmetic on requested payload, not a speed prediction.)
+
+## Evidence and primary specifications
+
+- Model geometry: `include/strata/core/layout.hpp`; actual census counts, shapes, payload semantics, phase intervals and scope: `bench/results/2026-10-14-primary-routed-fp16-census/long-phase-summary.json` and `README.ja.md`.
+- Native role geometry and format-pair census: `bench/results/2026-10-14-primary-routed-fp16-census/research/research-shape-weighted-gemm-targets-round524-v1.txt`.
+- Prior hardware rates and operation scopes: `bench/results/2026-10-14-pre-Xe-model-compare/historical-hardware/HARDWARE_LIMITS.md`, `ATTAINED_CAPACITY_AND_DECISION_BUDGET.md`, and `component-capacity-matrix-v2.json` (2026-10-10, same Ryzen 5 5600X / B570 / 128 GB class host).
+- Prior copy-path scope: `bench/results/2026-10-14-primary-model-baseline/research/research-primary-transfer-ceiling-measurement-round480-v1.txt`; prior distinct full-stream budget: `research-primary-prefill-transfer-roofline-round470-v1.txt`.
+- Prior corrections and limits: census `research-index.json`, especially R521–R534; long-generation `research-index.json`, R530. R519's 48 value heads must not be counted as 48 GDN layers: the geometry is 36 GDN + 12 QSA.
+- Intel lists B570 Xe2, 18 Xe cores, 144 XMX engines, 10 GB GDDR6, PCIe 4.0 x8 interface configuration and 380 GB/s memory bandwidth on its [official specifications page](https://www.intel.com/content/www/us/en/products/sku/241676/intel-arc-b570-graphics/specifications.html). The 380 GB/s is vendor specification, not this host's application rate.
+- AMD lists the Ryzen 5 5600X at 6 cores / 12 threads, up to 4.6 GHz and DDR4-3200 on its [official product page](https://www.amd.com/en/products/processors/desktops/ryzen/5000-series/amd-ryzen-5-5600x.html). Memory-channel population/timing and observed application bandwidth must come from this host's measurements, not the CPU specification alone.
+
+Arithmetic uses decimal FLOP/s and byte/s. `1 TFLOP = 10^12 FLOP`; the 64K deadline is `65,536 / 1,000 = 65.536 s`. GEMM FLOPs count multiply and add as two operations. All projected byte/time values above retain their stated source and copy semantics.

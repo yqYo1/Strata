@@ -1,0 +1,675 @@
+--- a/include/strata/core/mtp.hpp
++++ b/include/strata/core/mtp.hpp
+@@ -25,6 +25,7 @@
+ 
+ #include <cuda_runtime.h>
+ 
++#include <array>
+ #include <cstdint>
+ #include <string>
+ #include <vector>
+@@ -84,6 +85,14 @@
+     void set_draft_history(const int32_t* tail, int64_t n_tail, int32_t next);
+     bool coupled() const { return coupled_active_; }
+ 
++    /// Prompt-only expert retirement. Caller must own the entire prompt/decode
++    /// boundary; no concurrent public calls are allowed. Both methods reject a
++    /// duplicate transition. KV-only prompt graphs, draft KV, dense weights and
++    /// the borrowed window_R_ remain untouched. Failed queue retirement is fatal.
++    bool detach_prefill_experts(std::string& err);
++    bool restore_prefill_experts(std::string& err);
++    double ms_expert_detach = 0, ms_expert_restore = 0, ms_expert_recapture = 0;
++
+     double ms_draft = 0, ms_prefill = 0;
+     int64_t rounds = 0;
+ 
+@@ -101,6 +110,12 @@
+     }
+ 
+ private:
++    bool upload_experts_checked(bool original, std::string& err);
++    bool experts_detached_ = false, expert_source_valid_ = false;
++    bool expert_recapture_timing_ = false;
++    uint64_t expert_bytes_ = 0;
++    std::array<uint8_t, 32> expert_source_sha256_{};
++    std::vector<uint8_t> expert_host_source_; // immutable opt-in RAM restore owner
+     bool record_forward(int T, int step_row0, cudaStream_t cs, std::string& err);
+     bool capture_prefill(int T, std::string& err);
+     bool capture_prefill_dev(int T, std::string& err);   ///< E-4: without the mapped staging (inputs copied on device)
+@@ -183,4 +198,18 @@
+     int64_t cap_ = 0, attn_scratch_floats_ = 0;
+ };
+ 
++// Explicit close reports reload failure. An unclosed scope fails closed rather
++// than unwinding over a possibly live reader or returning to decode without
++// weights. The caller closes only AFTER Prefill::run has destroyed its locals.
++class MtpPrefillExpertScope {
++    MtpDrafter* owner_ = nullptr;
++public:
++    MtpPrefillExpertScope() = default;
++    MtpPrefillExpertScope(const MtpPrefillExpertScope&) = delete;
++    MtpPrefillExpertScope& operator=(const MtpPrefillExpertScope&) = delete;
++    ~MtpPrefillExpertScope() noexcept;
++    bool open(MtpDrafter& mtp, std::string& err);
++    bool close(std::string& err);
++};
++
+ }  // namespace strata::core
+--- a/src/core/mtp.cpp
++++ b/src/core/mtp.cpp
+@@ -1,5 +1,7 @@
+ // src/core/mtp.cpp - see include/strata/core/mtp.hpp.
+ #include "strata/core/mtp.hpp"
++#include "strata/core/mtp_expert_source.hpp"
++#include "strata/core/conversation_memory.hpp"
+ #include "strata/core/coupled_draft.hpp"
+ #include "strata/core/on_device.hpp"
+ 
+@@ -7,6 +9,7 @@
+ #include "strata/core/peer_experts.hpp"
+ #include "strata/kernels/bf16_gemv.hpp"
+ #include "strata/kernels/cpu/expert.hpp"
++#include "strata/kernels/cpu/expert_layout.hpp"
+ #include "strata/kernels/elementwise.hpp"
+ #include "strata/kernels/fused_gr.hpp"
+ #include "strata/kernels/gr.hpp"
+@@ -37,11 +40,24 @@
+ #include <exception>
+ #include <fstream>
+ #include <limits>
++#include <memory>
+ #include <sstream>
+ #include <vector>
+ 
+ namespace strata::core {
+ namespace {
++
++bool expert_release_requested() {
++    const char* v = std::getenv("STRATA_PREFILL_RELEASE_MTP_EXPERTS");
++    return v && std::strcmp(v, "1") == 0;
++}
++
++[[noreturn]] void expert_failstop(const char* what, cudaError_t status) noexcept {
++    std::fprintf(stderr, "strata mtp: %s (%s); stopping with all owners live\n",
++                 what, cudaGetErrorString(status));
++    std::fflush(stderr);
++    std::_Exit(EXIT_FAILURE);
++}
+ 
+ constexpr float EPS = 1e-6f;
+ constexpr int GGML_Q8_0 = 8;
+@@ -104,7 +120,11 @@
+ }  // namespace
+ 
+ MtpDrafter::~MtpDrafter() {
+-    if (cs_) cudaStreamSynchronize(cs_);
++    if (cs_) {
++        const auto status = cudaStreamSynchronize(cs_);
++        if (expert_source_valid_ && status != cudaSuccess)
++            expert_failstop("expert owner teardown did not drain", status);
++    }
+     for (auto& e : prefill_exec_) if (e) cudaGraphExecDestroy(e);
+     for (auto& e : prefill_dev_exec_) if (e) cudaGraphExecDestroy(e);
+     if (pf_dev_) cudaFree(pf_dev_);
+@@ -182,7 +202,15 @@
+         vram_ += blob.size();
+     }
+     // ---- the 512 routed experts, one blob each
+-    {
++    if (expert_release_requested()) {
++#if !defined(STRATA_ENABLE_SYCL)
++        err = "mtp: expert retirement is only available in the SYCL engine"; return false;
++#else
++        // Hash the bytes actually loaded, once. Default-off uses the original
++        // loader with no extra source scan, allocation, kernel or wait.
++        if (!upload_experts_checked(true, err)) return false;
++#endif
++    } else {
+         const uint64_t bytes = (uint64_t) g.n_expert * strata::kernels::cpu::BLOB;
+         // Loader fix (0.1.15+loaderfix.2): each 64 MiB read below reached the disk as ~16k 4095-byte reads under
+         // MSVC's `basic_filebuf::xsgetn`, which is what made 675 MiB of drafter experts take minutes.
+@@ -305,6 +333,182 @@
+     return true;
+ }
+ 
++// The opt-in loader retains immutable original bytes in RAM. Restoration never
++// reads model files or saves a VRAM copy; each bounded H2D view stays owned.
++bool MtpDrafter::upload_experts_checked(bool original, std::string& err) try {
++    if (!g_ || g_->n_expert <= 0 ||
++        uint64_t(g_->n_expert) > std::numeric_limits<uint64_t>::max() / strata::kernels::cpu::BLOB) {
++        err = "mtp: expert source byte count overflow"; return false;
++    }
++    const uint64_t bytes = uint64_t(g_->n_expert) * strata::kernels::cpu::BLOB;
++    if (!bytes || bytes > std::numeric_limits<size_t>::max() ||
++        bytes > std::numeric_limits<uint64_t>::max()/8 ||
++        vram_ > std::numeric_limits<uint64_t>::max() - bytes || experts_ ||
++        (original && (expert_source_valid_ || !expert_host_source_.empty())) ||
++        (!original && (!expert_source_valid_ || bytes != expert_bytes_ || expert_host_source_.size() != bytes))) {
++        err = "mtp: invalid expert upload state or byte count"; return false;
++    }
++    constexpr uint64_t chunk_limit = 64ull << 20, host_floor = 8ull << 30;
++    std::vector<uint8_t> original_source;
++    std::array<uint8_t,32> digest = expert_source_sha256_;
++    if (original) {
++        if (!conversation_memory_admit(conversation_available_memory(), bytes + (1ull << 20), host_floor)) {
++            err = "mtp: original expert RAM source exceeds available memory minus 8 GiB"; return false;
++        }
++        const std::string path = rt_dir_ + "/experts.bin";
++        FILE* raw = std::fopen(path.c_str(), "rb");
++        if (!raw) { err = "mtp: cannot open expert source " + path; return false; }
++        auto close_file = [](FILE* f) { if (f) std::fclose(f); };
++        std::unique_ptr<FILE, decltype(close_file)> file(raw, close_file);
++        if (STRATA_FILE_SEEK64(raw, 0, SEEK_END) != 0) {
++            err = "mtp: cannot seek expert source"; return false;
++        }
++        const auto length = STRATA_FILE_TELL64(raw);
++        if (length < 0 || uint64_t(length) != bytes || STRATA_FILE_SEEK64(raw, 0, SEEK_SET) != 0) {
++            err = "mtp: expert source must have exactly " + std::to_string(bytes) + " bytes"; return false;
++        }
++        original_source.resize(size_t(bytes));
++        detail::MtpExpertSha256 hash;
++        for (uint64_t off = 0; off < bytes;) {
++            const size_t count = size_t(std::min(chunk_limit, bytes - off));
++            if (std::fread(original_source.data() + off, 1, count, raw) != count) {
++                err = "mtp: expert source short read or read error"; return false;
++            }
++            hash.update(original_source.data() + off, count);
++            off += count;
++        }
++        if (std::fgetc(raw) != EOF || std::ferror(raw)) {
++            err = "mtp: expert source changed length or failed while reading"; return false;
++        }
++        digest = hash.finish();
++    }
++    const auto& source = original ? original_source : expert_host_source_;
++    auto free_checked = [](uint8_t* p) noexcept {
++        if (p) {
++            const auto status = cudaFree(p);
++            if (status != cudaSuccess) expert_failstop("unpublished expert free failed", status);
++        }
++    };
++    uint8_t* allocation = nullptr;
++    const auto alloc_status = cudaMalloc(reinterpret_cast<void**>(&allocation), size_t(bytes));
++    if (alloc_status != cudaSuccess) {
++        if (allocation) expert_failstop("failed expert allocation returned ownership", alloc_status);
++        err = "mtp: expert restore allocation failed: " + std::string(cudaGetErrorString(alloc_status));
++        return false;
++    }
++    // Declared after the local source: pending always retires/frees before the
++    // initial host snapshot can unwind. Compat calls return errors, not throws.
++    std::unique_ptr<uint8_t, decltype(free_checked)> pending(allocation, free_checked);
++    for (uint64_t off = 0; off < bytes;) {
++        const size_t count = size_t(std::min(chunk_limit, bytes - off));
++        const auto copied = cs_ ? cudaMemcpyAsync(allocation + off, source.data() + off, count, cudaMemcpyHostToDevice, cs_)
++                                : cudaMemcpy(allocation + off, source.data() + off, count, cudaMemcpyHostToDevice);
++        const auto completed = cs_ ? cudaStreamSynchronize(cs_) : cudaDeviceSynchronize();
++        if (completed != cudaSuccess) expert_failstop("expert upload retirement is ambiguous", completed);
++        if (copied != cudaSuccess) {
++            err = "mtp: expert source upload failed: " + std::string(cudaGetErrorString(copied)); return false;
++        }
++        off += count;
++    }
++    // The private RAM source is never modified or exposed to writers after this
++    // move. Restore needs no full-file read, host copy, SHA scan or new host slab.
++    if (original) expert_host_source_ = std::move(original_source);
++    experts_ = pending.release();
++    vram_ += bytes;
++    expert_bytes_ = bytes;
++    if (original) { expert_source_sha256_ = digest; expert_source_valid_ = true; }
++    if (original) {
++        char digest_text[65];
++        static constexpr char hex[] = "0123456789abcdef";
++        for (size_t i = 0; i < digest.size(); ++i) {
++            digest_text[2*i] = hex[digest[i] >> 4]; digest_text[2*i+1] = hex[digest[i] & 15];
++        }
++        digest_text[64] = '\0';
++        std::fprintf(stderr, "strata mtp: expert source original=1 bytes=%llu source=owned-RAM sha256=%s\n",
++                     (unsigned long long)bytes, digest_text);
++    } else {
++        std::fprintf(stderr, "strata mtp: expert source original=0 bytes=%llu source=owned-RAM\n",
++                     (unsigned long long)bytes);
++    }
++    return true;
++} catch (const std::exception& e) {
++    err = std::string("mtp: expert source upload: ") + e.what(); return false;
++}
++
++bool MtpDrafter::detach_prefill_experts(std::string& err) {
++    const OnDevice on_device(device_);
++    int current = -1;
++    if (cudaGetDevice(&current) != cudaSuccess || current != device_) {
++        err = "mtp: cannot select expert owner device"; return false;
++    }
++    if (!g_ || max_t_ != 4 || g_->n_expert != 512 || !strata::kernels::cpu::expert_layout().native ||
++        peer_portable() || !expert_source_valid_ || experts_detached_ || !experts_ || !cs_ ||
++        !expert_bytes_ || vram_ < expert_bytes_) {
++        err = "mtp: detach requires single-device native MTP4 and a ready validated opt-in load"; return false;
++    }
++    const auto started = Clock::now();
++    const auto drained = cudaStreamSynchronize(cs_);
++    if (drained != cudaSuccess) expert_failstop("cannot retire expert graph readers", drained);
++    auto retire = [](auto& graphs) {
++        for (auto& e : graphs) if (e) {
++            const auto destroyed = cudaGraphExecDestroy(e);
++            if (destroyed != cudaSuccess) expert_failstop("expert graph destroy failed", destroyed);
++            e = nullptr;
++        }
++    };
++    retire(round_exec_); retire(step_exec_);
++    retire(round_exec_c_); retire(step_exec_c_);
++    // window_R_ is borrowed from Verifier. Do not clear or retarget it: retiring
++    // expert consumers must not silently change that independent owner contract.
++    const auto freed = cudaFree(experts_);
++    if (freed != cudaSuccess) expert_failstop("expert detach free failed", freed);
++    experts_ = nullptr;
++    vram_ -= expert_bytes_;
++    experts_detached_ = true;
++    expert_recapture_timing_ = true;
++    ms_expert_detach += ms_since(started);
++    return true;
++}
++
++bool MtpDrafter::restore_prefill_experts(std::string& err) {
++    const OnDevice on_device(device_);
++    int current = -1;
++    if (cudaGetDevice(&current) != cudaSuccess || current != device_) {
++        err = "mtp: cannot select expert owner device"; return false;
++    }
++    if (!experts_detached_ || experts_ || !cs_ || !expert_source_valid_) {
++        err = "mtp: restore requires detached experts"; return false;
++    }
++    const auto started = Clock::now();
++    // KV-only prompt consumers may still use dense/arena/KV storage. Keep all of
++    // those owners alive if their final completion cannot be established.
++    const auto drained = cudaStreamSynchronize(cs_);
++    if (drained != cudaSuccess) expert_failstop("cannot retire prompt before expert restore", drained);
++    if (!upload_experts_checked(false, err)) return false;
++    experts_detached_ = false;
++    ms_expert_restore += ms_since(started);
++    std::fprintf(stderr, "strata mtp: experts restored bytes=%llu, cumulative detach=%.3f ms reload=%.3f ms "
++                         "decode graph recapture=%.3f ms (lazy, later captures accumulate)\n",
++                 (unsigned long long)expert_bytes_, ms_expert_detach, ms_expert_restore, ms_expert_recapture);
++    return true;
++}
++
++MtpPrefillExpertScope::~MtpPrefillExpertScope() noexcept {
++    if (owner_) expert_failstop("expert scope left without checked close", cudaErrorUnknown);
++}
++bool MtpPrefillExpertScope::open(MtpDrafter& mtp, std::string& err) {
++    if (owner_) { err = "mtp: expert scope is already open"; return false; }
++    if (!mtp.detach_prefill_experts(err)) return false;
++    owner_ = &mtp;
++    return true;
++}
++bool MtpPrefillExpertScope::close(std::string& err) {
++    if (!owner_) return true; // idempotent close; direct restore still rejects duplicates
++    if (!owner_->restore_prefill_experts(err)) return false;
++    owner_ = nullptr;
++    return true;
++}
++
+ uint64_t MtpDrafter::bind_bytes(uint64_t head_row_bytes, int64_t n_vocab) const {
+     uint64_t bytes = head_logits_ ? 0 : (uint64_t) max_t_ * (uint64_t) n_vocab * sizeof(float);
+     if (dhead_ == nullptr) {
+@@ -460,6 +664,9 @@
+     SessionState& ss = *ss_;
+     // step_row0 >= 0: the full layer on step rows [step_row0, +T); step_row0 < 0: K/V only on rows [-1 - step_row0, +T)
+     const bool full = step_row0 >= 0;
++    if (full && (!experts_ || experts_detached_)) {
++        err = "mtp: full forward requires restored routed experts"; return false;
++    }
+     const int row0 = full ? step_row0 : -1 - step_row0;
+     if (full && T != 1) { err = "mtp: the full layer runs one row at a time (its attention scratch is sized for one)"; return false; }
+     const int64_t N = g.n_embd, HC = g.hc, K = ss.k, NH = g.n_head, HD = g.head_dim, NKV = g.n_head_kv;
+@@ -624,6 +831,47 @@
+ }
+ 
+ namespace {
++// After expert restore, a failed instantiate/upload must never leave an exec
++// that a later `if (exec)` would reuse. Keep graph/allocation owners on any
++// ambiguous queue or destroy result, and fail closed.
++bool finish_expert_capture(cudaStream_t cs, bool ok, cudaGraphExec_t& exec,
++                           const char* what, std::string& err) {
++    cudaGraph_t graph = nullptr;
++    const auto ended = cudaStreamEndCapture(cs, &graph);
++    if (ended != cudaSuccess) expert_failstop("expert recapture did not end", ended);
++    auto destroy_graph = [&]() {
++        if (graph) {
++            const auto status = cudaGraphDestroy(graph);
++            if (status != cudaSuccess) expert_failstop("expert source graph destroy failed", status);
++            graph = nullptr;
++        }
++    };
++    if (!ok) { destroy_graph(); return false; }
++    const auto instantiated = cudaGraphInstantiate(&exec, graph, 0);
++    destroy_graph();
++    if (instantiated != cudaSuccess) {
++        // A failed API is not allowed to publish an ambiguous exec handle.
++        if (exec) {
++            const auto status = cudaGraphExecDestroy(exec);
++            if (status != cudaSuccess) expert_failstop("failed expert exec destroy", status);
++            exec = nullptr;
++        }
++        err = std::string("mtp: ") + what + " instantiate: " + cudaGetErrorString(instantiated);
++        return false;
++    }
++    const auto uploaded = cudaGraphUpload(exec, cs);
++    const auto completed = cudaStreamSynchronize(cs);
++    if (completed != cudaSuccess) expert_failstop("expert recapture upload did not retire", completed);
++    if (uploaded != cudaSuccess) {
++        const auto status = cudaGraphExecDestroy(exec);
++        if (status != cudaSuccess) expert_failstop("failed expert upload exec destroy", status);
++        exec = nullptr;
++        err = std::string("mtp: ") + what + " upload: " + cudaGetErrorString(uploaded);
++        return false;
++    }
++    return true;
++}
++
+ bool finish_capture(cudaStream_t cs, bool ok, cudaGraphExec_t& exec, const char* what, std::string& err) {
+     cudaGraph_t graph = nullptr;
+     const cudaError_t ce = cudaStreamEndCapture(cs, &graph);
+@@ -662,9 +910,11 @@
+     return finish_capture(cs_, ok, prefill_dev_exec_[T], "prefill (device inputs)", err);
+ }
+ 
+-bool MtpDrafter::capture_round(int T, bool coupled, std::string& err) {
++bool MtpDrafter::capture_round(int T, bool coupled, std::string& err) try {
++    if (!experts_ || experts_detached_) { err = "mtp: round requires restored experts"; return false; }
+     cudaGraphExec_t& exec = coupled ? round_exec_c_[T] : round_exec_[T];
+     if (exec) return true;
++    const auto recapture_start = expert_recapture_timing_ ? Clock::now() : Clock::time_point{};
+     using namespace strata::kernels;
+     const int64_t HCN = g_->hc * g_->n_embd;
+     if (cudaStreamBeginCapture(cs_, cudaStreamCaptureModeThreadLocal) != cudaSuccess) { err = "mtp: begin capture"; return false; }
+@@ -691,14 +941,29 @@
+         coupled_rec_ = false;
+     }
+     if (ok) mtp_select(R_, HCN, out_ids_, row_ + 1, Rin_, tok_, m_out_, 0, cs_, probs_, m_prob_);
+-    return finish_capture(cs_, ok, exec, coupled ? "round (coupled)" : "round", err);
++    const bool captured = expert_recapture_timing_
++        ? finish_expert_capture(cs_, ok, exec, coupled ? "round (coupled)" : "round", err)
++        : finish_capture(cs_, ok, exec, coupled ? "round (coupled)" : "round", err);
++    if (expert_recapture_timing_) {
++        const double elapsed = ms_since(recapture_start);
++        ms_expert_recapture += elapsed;
++        std::fprintf(stderr, "strata mtp: expert decode recapture kind=round coupled=%d ok=%d "
++                             "ms=%.3f cumulative_ms=%.3f\n", int(coupled), int(captured), elapsed, ms_expert_recapture);
++    }
++    return captured;
++} catch (...) {
++    if (expert_recapture_timing_)
++        expert_failstop("expert recapture threw before checked ownership close", cudaErrorUnknown);
++    throw;
+ }
+ 
+ // Chain step j (1..max_t-2): one row at the cell staged in step row `max_t + j - 1`, from the previous step's
+ // residual and token (left in Rin_[0] / tok_[0] by mtp_select); draft j and its probability to the mapped outputs.
+-bool MtpDrafter::capture_step(int j, bool coupled, std::string& err) {
++bool MtpDrafter::capture_step(int j, bool coupled, std::string& err) try {
++    if (!experts_ || experts_detached_) { err = "mtp: step requires restored experts"; return false; }
+     cudaGraphExec_t& exec = coupled ? step_exec_c_[j] : step_exec_[j];
+     if (exec) return true;
++    const auto recapture_start = expert_recapture_timing_ ? Clock::now() : Clock::time_point{};
+     using namespace strata::kernels;
+     const int64_t HCN = g_->hc * g_->n_embd;
+     const int row = max_t_ + j - 1;
+@@ -710,7 +975,20 @@
+     bool ok = record_forward(1, row, cs_, err);
+     coupled_rec_ = false;
+     if (ok) mtp_select(R_, HCN, out_ids_, row_ + 1, Rin_, tok_, m_out_, j, cs_, probs_, m_prob_);
+-    return finish_capture(cs_, ok, exec, coupled ? "step (coupled)" : "step", err);
++    const bool captured = expert_recapture_timing_
++        ? finish_expert_capture(cs_, ok, exec, coupled ? "step (coupled)" : "step", err)
++        : finish_capture(cs_, ok, exec, coupled ? "step (coupled)" : "step", err);
++    if (expert_recapture_timing_) {
++        const double elapsed = ms_since(recapture_start);
++        ms_expert_recapture += elapsed;
++        std::fprintf(stderr, "strata mtp: expert decode recapture kind=step coupled=%d ok=%d "
++                             "ms=%.3f cumulative_ms=%.3f\n", int(coupled), int(captured), elapsed, ms_expert_recapture);
++    }
++    return captured;
++} catch (...) {
++    if (expert_recapture_timing_)
++        expert_failstop("expert recapture threw before checked ownership close", cudaErrorUnknown);
++    throw;
+ }
+ 
+ void MtpDrafter::kv_restore(int64_t upto) {
+@@ -862,6 +1140,7 @@
+ bool MtpDrafter::draft(int T, const int32_t* tokens, int64_t p, int a, int32_t* drafts, std::string& err,
+                        float* probs, float min_p, int* n_drafts) {
+     const OnDevice on_device(device_);
++    if (!experts_ || experts_detached_) { err = "mtp: draft requires restored experts"; return false; }
+     if (T < 1 || T > max_t_ || a < 0 || a >= T) { err = "mtp: draft arguments out of range"; return false; }
+     const bool cp = coupled_active_;   // coupled draft sampling for this request: its own graphs
+     if (!capture_round(T, cp, err)) return false;
+@@ -916,6 +1195,7 @@
+ bool MtpDrafter::draft_first(int T, const float* R_row, int32_t token, int64_t cell, int32_t* drafts, std::string& err,
+                              float* probs, float min_p, int* n_drafts) {
+     const OnDevice on_device(device_);
++    if (!experts_ || experts_detached_) { err = "mtp: first draft requires restored experts"; return false; }
+     // row 0 is the real pair; rows 1.. repeat it and only write cells the next round overwrites
+     const int64_t HCN = g_->hc * g_->n_embd;
+     for (int t = 0; t < T; ++t)
+--- a/src/program/generate.cpp
++++ b/src/program/generate.cpp
+@@ -111,6 +111,67 @@
+ #include <vector>
+ 
+ namespace {
++
++// The two real batched prompt call sites share this boundary. Prefill::run owns
++// layer-major residual/cache temporaries; its return (including cancel/error)
++// destroys them before the expert reload begins. Short segments/windows never
++// detach. No feature-specific allocation, scan, kernel or wait when default off.
++bool run_prompt_with_mtp_experts(strata::prefill::Prefill& prompt, strata::core::MtpDrafter& mtp,
++                                 bool supported, const int64_t* tokens, int64_t n, int64_t pos0,
++                                 std::string& err) {
++    const char* release = std::getenv("STRATA_PREFILL_RELEASE_MTP_EXPERTS");
++    if (!release || std::strcmp(release, "1") != 0)
++        return prompt.run(tokens, n, pos0, err);
++    const char* layer_major = std::getenv("STRATA_PREFILL_LAYER_MAJOR");
++    if (!layer_major || std::strcmp(layer_major, "1") != 0) {
++        err = "MTP expert release requires exact STRATA_PREFILL_LAYER_MAJOR=1"; return false;
++    }
++    if (prompt.chunk() <= 0 || n <= prompt.chunk()) return prompt.run(tokens, n, pos0, err);
++#if !defined(STRATA_ENABLE_SYCL)
++    (void) mtp; (void) supported;
++    err = "MTP expert release requires the SYCL engine"; return false;
++#else
++    if (!supported) {
++        err = "MTP expert release requires single-GPU native MTP4 without split/peer/remote experts"; return false;
++    }
++    auto memory_mark = [](const char* phase) {
++        size_t available = 0, total = 0;
++        const auto status = cudaMemGetInfo(&available, &total);
++        if (status != cudaSuccess || available > total) {
++            std::fprintf(stderr, "strata: MTP expert memory telemetry failed at %s; stopping with owners live\n", phase);
++            std::fflush(stderr); std::_Exit(EXIT_FAILURE);
++        }
++        std::fprintf(stderr, "strata mtp: prompt expert phase=%s free_bytes=%llu total_bytes=%llu\n", phase,
++                     (unsigned long long)available, (unsigned long long)total);
++    };
++    memory_mark("before-detach");
++    strata::core::MtpPrefillExpertScope release_scope;
++    if (!release_scope.open(mtp, err)) return false;
++    memory_mark("after-detach");
++    auto restore = [&]() {
++        memory_mark("after-prompt-before-restore");
++        std::string restore_error;
++        if (!release_scope.close(restore_error)) {
++            // Serve's cancellation path may otherwise swallow a false return
++            // and continue. Never return to a persistent owner without experts.
++            std::fprintf(stderr, "strata: MTP expert restore failed: %s; stopping with owners live\n",
++                         restore_error.c_str());
++            std::fflush(stderr); std::_Exit(EXIT_FAILURE);
++        }
++        memory_mark("after-restore");
++    };
++    bool ok = false;
++    try {
++        ok = prompt.run(tokens, n, pos0, err);
++    } catch (...) {
++        restore(); // the callee's checked lifetime guards have already run
++        throw;
++    }
++    restore(); // keep the original prompt failure/cancellation error unchanged
++    return ok;
++#endif
++}
++
+ // Windows' WDDM driver model: native Windows, or WSL2 (its GPU goes through /dev/dxg to the Windows driver).  There,
+ // pinning a large arena into two CUDA contexts leaves WDDM refusing every later allocation (the 5080 + 3090 rig);
+ // a Linux driver has no such limit (#253: the 8 GiB cap cost a 4090 + 3060 split 3x of its prompt speed).
+@@ -5862,7 +5923,11 @@
+                     return 1;
+                 }
+                 const auto tsp = Clock::now();
+-                const bool sp_ok = win ? read_windows(at, to, err) : sp.run(ids.data() + at, to - at, at, err);
++                const bool sp_ok = win ? read_windows(at, to, err) : run_prompt_with_mtp_experts(
++                    sp, mtp, native_pack && o.spec == 4 && !o.mtp.empty() && !multi_gpu &&
++                    o.layer_split.empty() && o.peer_device < 0 && !peer.valid() &&
++                    std::all_of(o.expert_cache_remote.begin(), o.expert_cache_remote.end(), [](auto slots) { return slots <= 0; }),
++                    ids.data() + at, to - at, at, err);
+                 if (trace) {
+                     std::fprintf(stderr, "strata trace: read %lld tokens (%s) in %.1f ms\n", (long long) (to - at),
+                                  win ? "windows" : "batched",
+@@ -6428,7 +6493,11 @@
+         }
+ #endif
+         const Clock::time_point tp0 = Clock::now();
+-        if (!prefill.run(o.tokens.data(), n_batched, 0, err)) {
++        if (!run_prompt_with_mtp_experts(prefill, mtp,
++                native_pack && o.spec == 4 && !o.mtp.empty() && !multi_gpu &&
++                o.layer_split.empty() && o.peer_device < 0 && !peer.valid() &&
++                std::all_of(o.expert_cache_remote.begin(), o.expert_cache_remote.end(), [](auto slots) { return slots <= 0; }),
++                o.tokens.data(), n_batched, 0, err)) {
+             std::fprintf(stderr, "strata generate: %s\n", err.c_str());
+             return 1;
+         }
+--- /dev/null
++++ b/include/strata/core/mtp_expert_source.hpp
+@@ -0,0 +1,78 @@
++#pragma once
++
++// Streaming source identity for opt-in MTP expert retirement. No device or
++// filesystem dependency: hash exactly the owned bytes submitted by the loader.
++#include <algorithm>
++#include <array>
++#include <cstddef>
++#include <cstdint>
++#include <cstring>
++#include <limits>
++#include <stdexcept>
++
++namespace strata::core::detail {
++
++class MtpExpertSha256 {
++    uint32_t h_[8] = {0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
++                      0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19};
++    uint8_t block_[64] = {};
++    size_t used_ = 0;
++    uint64_t bytes_ = 0;
++    static uint32_t rr(uint32_t x, unsigned n) { return (x >> n) | (x << (32 - n)); }
++    void compress(const uint8_t* p) {
++        static constexpr uint32_t k[64] = {
++            0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
++            0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
++            0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
++            0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
++            0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
++            0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
++            0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
++            0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2};
++        uint32_t w[64];
++        for (int i = 0; i < 16; ++i)
++            w[i] = (uint32_t(p[4*i]) << 24) | (uint32_t(p[4*i+1]) << 16) |
++                   (uint32_t(p[4*i+2]) << 8) | uint32_t(p[4*i+3]);
++        for (int i = 16; i < 64; ++i) {
++            const uint32_t s0 = rr(w[i-15],7) ^ rr(w[i-15],18) ^ (w[i-15] >> 3);
++            const uint32_t s1 = rr(w[i-2],17) ^ rr(w[i-2],19) ^ (w[i-2] >> 10);
++            w[i] = w[i-16] + s0 + w[i-7] + s1;
++        }
++        uint32_t a=h_[0], b=h_[1], c=h_[2], d=h_[3], e=h_[4], f=h_[5], g=h_[6], h=h_[7];
++        for (int i = 0; i < 64; ++i) {
++            const uint32_t t1 = h + (rr(e,6)^rr(e,11)^rr(e,25)) + ((e&f)^(~e&g)) + k[i] + w[i];
++            const uint32_t t2 = (rr(a,2)^rr(a,13)^rr(a,22)) + ((a&b)^(a&c)^(b&c));
++            h=g; g=f; f=e; e=d+t1; d=c; c=b; b=a; a=t1+t2;
++        }
++        h_[0]+=a; h_[1]+=b; h_[2]+=c; h_[3]+=d; h_[4]+=e; h_[5]+=f; h_[6]+=g; h_[7]+=h;
++    }
++public:
++    void update(const uint8_t* p, size_t n) {
++        if (n > std::numeric_limits<uint64_t>::max()/8 - bytes_)
++            throw std::overflow_error("mtp expert source hash is too long");
++        bytes_ += n;
++        while (n) {
++            const size_t take = std::min(n, 64 - used_);
++            std::memcpy(block_ + used_, p, take);
++            p += take; n -= take; used_ += take;
++            if (used_ == 64) { compress(block_); used_ = 0; }
++        }
++    }
++    std::array<uint8_t, 32> finish() const {
++        auto x = *this;
++        const uint64_t bits = bytes_ * 8;
++        x.block_[x.used_++] = 0x80;
++        if (x.used_ > 56) {
++            std::memset(x.block_ + x.used_, 0, 64 - x.used_);
++            x.compress(x.block_); x.used_ = 0;
++        }
++        std::memset(x.block_ + x.used_, 0, 56 - x.used_);
++        for (unsigned i = 0; i < 8; ++i) x.block_[63-i] = uint8_t(bits >> (i*8));
++        x.compress(x.block_);
++        std::array<uint8_t, 32> digest{};
++        for (unsigned i = 0; i < 32; ++i) digest[i] = uint8_t(x.h_[i/4] >> (24 - 8*(i%4)));
++        return digest;
++    }
++};
++
++} // namespace strata::core::detail
+--- /dev/null
++++ b/tools/test_mtp_expert_source.cpp
+@@ -0,0 +1,41 @@
++// CPU-only, no GPU calls. Proposed fixture; not built or run by its author.
++// Compile after integration with: c++ -std=c++17 -Iinclude tools/test_mtp_expert_source.cpp -o /tmp/mtp-expert-sha
++#include "strata/core/mtp_expert_source.hpp"
++#include <cstdio>
++#include <string>
++
++using strata::core::detail::MtpExpertSha256;
++static std::string hex(const std::array<uint8_t, 32>& d) {
++    static constexpr char chars[] = "0123456789abcdef";
++    std::string s;
++    for (auto c : d) { s += chars[c >> 4]; s += chars[c & 15]; }
++    return s;
++}
++int main() {
++    // SHA256 empty/abc/448-bit and million-'a' standard known-answer vectors.
++    struct Case { std::string input; const char* expected; };
++    const Case cases[] = {
++        {"", "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
++        {"abc", "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"},
++        {"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq",
++         "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1"},
++        {std::string(1000000, 'a'), "cdc76e5c9914fb9281a1c7e284d73e67f1809a48a497200e046d39ccc7112cd0"},
++    };
++    for (const auto& c : cases) for (size_t chunk : {size_t(1), size_t(55), size_t(56), size_t(63), size_t(64), size_t(65), size_t(8192)}) {
++        MtpExpertSha256 h;
++        for (size_t off = 0; off < c.input.size();) {
++            const auto n = std::min(chunk, c.input.size() - off);
++            h.update(reinterpret_cast<const uint8_t*>(c.input.data() + off), n);
++            off += n;
++        }
++        if (hex(h.finish()) != c.expected || hex(h.finish()) != c.expected) {
++            std::fprintf(stderr, "SHA256 KAT failed: bytes=%zu chunk=%zu\n", c.input.size(), chunk); return 1;
++        }
++        // A finalized snapshot must not mutate the source for a second hash.
++        const uint8_t extra = 0;
++        h.update(&extra, 1);
++        if (hex(h.finish()) == c.expected) return 2;
++    }
++    std::puts("PASS MTP expert source SHA256 known-answer streaming vectors");
++    return 0;
++}

@@ -1,0 +1,100 @@
+{
+  "schema": "strata-natural-screen-failure-forensics-v1",
+  "recorded_utc": "2026-10-16T02:53:27.595035+00:00",
+  "original_receipt": "own-vllm-quality-screen-v1.json",
+  "original_receipt_sha256": "bf9d6f0036bff3d6c8f49a384ecc03d849453a41e3ab93b2d90fd4c9833a4f18",
+  "original_status_preserved": true,
+  "passed": false,
+  "quality_accepted": false,
+  "GPU_executed_by_this_analysis": false,
+  "original_native_arm": "fp32-b",
+  "native16": "0",
+  "QSA16": "0",
+  "backend": "own",
+  "normal_first_control": true,
+  "failed_command_error": "RuntimeError('utility deadline')",
+  "exit_code": -15,
+  "elapsed_seconds": 903.684570094978,
+  "formal_original_ownership_closed": false,
+  "observation_complete": false,
+  "direct_child_reaped": true,
+  "session_empty": true,
+  "survivors": [],
+  "original_PID_start_absence": [
+    {
+      "original": {
+        "pid": 356600,
+        "start_ticks": 46681251,
+        "sid": 356600,
+        "pgid": 356600
+      },
+      "current": null,
+      "original_identity_absent": true
+    },
+    {
+      "original": {
+        "pid": 356600,
+        "state": "R",
+        "ppid": 326405,
+        "pgid": 356600,
+        "sid": 356600,
+        "start_ticks": 46681251,
+        "rss_bytes": 487424
+      },
+      "current": null,
+      "original_identity_absent": true
+    }
+  ],
+  "fresh_faults": [
+    {
+      "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+      "__SEQNUM": "203875198",
+      "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT0: Engine reset: engine_class=ccs, logical_mask: 0x1, guc_id=2, state=0x289",
+      "PRIORITY": "6",
+      "_UDEV_SYSNAME": "0000:05:00.0",
+      "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+      "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+      "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+      "_HOSTNAME": "jitakusaba01",
+      "_SOURCE_MONOTONIC_TIMESTAMP": "467712345443",
+      "_KERNEL_SUBSYSTEM": "pci",
+      "SYSLOG_FACILITY": "0",
+      "_TRANSPORT": "kernel",
+      "_RUNTIME_SCOPE": "system",
+      "__MONOTONIC_TIMESTAMP": "467716128025",
+      "__REALTIME_TIMESTAMP": "1792118952006855",
+      "SYSLOG_IDENTIFIER": "kernel",
+      "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c26e37e;b=cfda0b6a7c134fe2bdf58f9202770840;m=6ce60dbd19;t=65dec358794c7;x=dd264cb5a21411d4"
+    }
+  ],
+  "driver_dump_exists": false,
+  "partial_capture": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-quality-v1/fp32-b/nll.bin",
+    "bytes": 8192,
+    "sha256": "5ec517f0b337cee2a39e8453146ff5f409b636f95dab437287bc35ee5132cb6e",
+    "complete_records": 677,
+    "trailing_record_bytes": 4,
+    "metadata_complete": false,
+    "header_rows": 0,
+    "prefix_control_exact": 677,
+    "prefix_differences": []
+  },
+  "native_stderr": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-quality-v1/owned/screen-fp32-b.stderr",
+    "bytes": 52036,
+    "sha256": "8027a3d7293c4102a227368d33955dbfd0834516a272363ea0f567bb9f119a02"
+  },
+  "interpretation": "Normal FP32-a completed. FP32-b dense NLL final-layer first callback produced a partial file then stopped progressing. Owner900s deadline SIGTERM/reap/sessionempty; kernel engine reset occurred around termination, ordering/cause unproved. Formal observation closure staysfalse and failed receipt is NEVER a healthy qualification prior. No candidate16 arms executed, no claim of hardware unavailability or exoneration of current source.",
+  "stack": "Main read/proc syscall running, kernel stack EACCES; ptrace_scope1 and siblingdiagnostic parent constraint; no privileged operation/ptrace-policy change/user intervention attempted.",
+  "next": "Quarantine repeated long dense-NLL GPU path; source audit head/scratch/queue lifetimes and capture observability before any rerun. R846/publicfixture/R844 GPU execution andPR10 promotion held pending a distinct reviewed healthy gate; no unbind/reset/reboot/service mutation.",
+  "retention": {
+    "owner": "Main",
+    "consumer": "unresolved dense-NLL stall, source/lifetime and control-prefix analysis",
+    "representative_paths": [
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-quality-v1/owned/screen-fp32-b.stderr",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-quality-v1/fp32-b/nll.bin"
+    ],
+    "raw_budget": 134217728,
+    "review": "At rootcause/minimaldiagnostic replacement or2026-10-16T23Z; keepfirstsuccessfulFP32a canonical sparse/dense capture until newprecisioncomparison replacesit"
+  }
+}

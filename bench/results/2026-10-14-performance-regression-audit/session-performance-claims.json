@@ -1,0 +1,3926 @@
+{
+  "session": {
+    "id": "01a0fc19-f45e-7c80-be7c-d1e00e327d4b",
+    "timestamp": "2026-10-02T10:12:34.534Z",
+    "cwd": "/home/yayoi/orca/workspaces/Strata/sycl"
+  },
+  "original_path": "/home/yayoi/.codex/sessions/2026/10/02/rollout-2026-10-02T19-12-34-01a0fc19-f45e-7c80-be7c-d1e00e327d4b.jsonl",
+  "snapshot_bytes": 873883929,
+  "scanned_complete_line_bytes": 873883929,
+  "scanned_prefix_sha256": "10414815914e58d4508ffee7a9010232273110c25cb841ff29ffcdecb1c32003",
+  "first_Xe_user_request": {
+    "timestamp": "2026-10-10T14:33:07.004Z",
+    "line": 121508,
+    "byte_offset": 540865064,
+    "text": "アップストリームより早いと主張するforkを見つけたのでこの環境で評価し、優れていれば実装を取り入れて下さい\nhttps://github.com/MistVVK/XeStrata\ngit workflowに従いghqを使用して取得して下さい"
+  },
+  "claims": [
+    {
+      "timestamp": "2026-10-02T10:34:08.723Z",
+      "line": 246,
+      "byte_offset": 869398,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "4e21357a3ad2760ce5b3c829bff7feb9495184cec419c5e1f890aa57cfadcd5f",
+      "metric_lines": [
+        "prefill の行列積には、インストール済みの oneMKL の SYCL GEMM を接続しています。FP16/BF16 の両方と、量子化重みを分割して展開する経路を用意しました。いま、出力の行間隔や加算を含めて CPU 参照値と比較しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T10:43:36.991Z",
+      "line": 385,
+      "byte_offset": 1274119,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "691665c72bd0a1b1839de8e43d75b44fc407ac955fc12b231869dd63ba900e5f",
+      "metric_lines": [
+        "prefill の正規化を検証したところ、BF16 の補正成分に、出力経路によって末尾ビットが異なるケースが見つかりました。省メモリの再計算経路でも同じ値になるよう、浮動小数点演算の設定と順序を確認しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T10:49:56.056Z",
+      "line": 465,
+      "byte_offset": 1464269,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "280c6b3a98052443c5a2afdf675c0f052ed833f2fc15b6b14082d335f3cbfdd8",
+      "metric_lines": [
+        "prefill の GDN は、decode で検証済みの処理を長いプロンプトにも使えるよう拡張しました。各層の状態を GPU 内に保持したまま複数トークンを処理します。実モデルと同じ寸法で、17トークン一括・逐次 decode・5＋12トークン分割の結果を比較しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T11:00:01.937Z",
+      "line": 589,
+      "byte_offset": 1791636,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "0e9bb863a52123d62569279b3181e82584395121abedb77783ff31628e5c87e8",
+      "metric_lines": [
+        "prefill の追加分を含め、28テストがすべて通りました。FP16/INT8 の KV 保存は、非居住ページを飛ばしつつ RAM 側・転送用バッファへ正しく保存できています。実行ファイルのリンクに残る専門家処理と制御ベクトルの接続を進めています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T11:09:31.924Z",
+      "line": 793,
+      "byte_offset": 2322380,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "4a05f01ab07f72049011fecb69f3c0d48b334f600f9c2f2559c58c334a5d744e",
+      "metric_lines": [
+        "prefill の行列積・状態更新・KV保存・RoPEと制御ベクトルを実装し、コミット・pushしました。B570で既存28テストと追加2テストを通過しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T11:20:54.975Z",
+      "line": 1224,
+      "byte_offset": 3955759,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "c2419a653c10de160a6be95c947c5d6a3b7b1e666523604e2dbd574102ca6338",
+      "metric_lines": [
+        "比較用の実測報告が見つかりました。RTX 3070 8 GB、IQ3_S、8K 入力では、通常生成が約29 tok/s、MTP 有効時が約30～37 tok/sです。CPU・転送経路などの条件差が残るため、現時点では比較候補として記録しました。[測定報告](https://github.com/CC-David-CC/Strata-a5500/blob/12fa2196a5a89c6feb577ce65b18b225de0c50e6/docs/benchmarks/2026-10-01-serving.md)"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T11:23:39.237Z",
+      "line": 1365,
+      "byte_offset": 4283971,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "7e7c78458b83479a2c4905677ec190c1701ac2b625a59ed78e6322176b0583de",
+      "metric_lines": [
+        "短い質問「2+2 に数字だけで答える」で、モデルは `4` を生成しました。32位置分の計算が完走し、生成区間は約1.06 tok/sでした。まだ CPU 側で全 expert を処理する経路なので、約29 tok/s の比較候補には大きく届いていません。まず再現性を確かめ、その後 GPU キャッシュを使う経路を接続します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T11:24:41.917Z",
+      "line": 1395,
+      "byte_offset": 4391553,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "d979240665502d4df90260ce2e611807e4bcff80a0b90cdb3e3a6bd0da801a9f",
+      "metric_lines": [
+        "同じ入力を別プロセスで再実行したところ、32位置分の logits がバイト単位で一致しました。ファイルキャッシュが温まった再実行では約7.14 tok/sでした。最初の約1.06 tok/sとは条件が異なるため、両方を区別して記録します。次に、同じ GGUF を使う CPU 参照実装との比較を準備しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T11:30:19.947Z",
+      "line": 1599,
+      "byte_offset": 5041984,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "29122966bd19e9c5d51b5b5ce5fa43965e8a912d0477a42b6ad854194a4df6d7",
+      "metric_lines": [
+        "prefill では、640列の重みを誤って拒否する条件が見つかりました。量子化ブロックには正しく揃っている幅なので、不要な256列単位の制限を外し、640列を含む分割 GEMM の参照テストを追加しました。テストは通過し、実モデルで再確認しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T11:46:02.533Z",
+      "line": 2164,
+      "byte_offset": 6505121,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "c59b8765f0b0a24c74ef933d6336d0fdfed4f29afb82110074e09b0799f7eb0f",
+      "metric_lines": [
+        "実モデルの prefill が完走し、「2+2」の回答も逐次処理と同じ `4` になりました。この試行では24トークンの prefill が3.17秒、生成が6.40 tok/sです。転送と計算を一つのキューにまとめた構成で、停止を避けられることを確認できました。速度目標にはまだ届いていません。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T11:48:22.727Z",
+      "line": 2275,
+      "byte_offset": 6725379,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "579e36e3fef19545164f180c0dda2f89bf09258be395021fd61227877a0c8336",
+      "metric_lines": [
+        "logits を位置合わせして比較したところ、prefill 後の8位置すべてで最大値のトークンが逐次処理と一致しました。ただし logits 自体は同一ではなく、最小 cosine は0.9645です。最初の回答位置を CPU 参照と比べると0.9948でした。行数修正は、EOS で生成が早く終わるケースも確認しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T11:54:26.685Z",
+      "line": 2530,
+      "byte_offset": 7503569,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "2d870720bcdb46410f12f5c7fa3dc43bf89e82208688667877a6a261baaf0a7b",
+      "metric_lines": [
+        "速度の大きな差も確認できました。expert を毎回 GGUF から組み立てる mmap 経路から、通常の RAM 常駐経路に切り替えると、この入力の生成は6.80→13.70 tok/sになりました。170位置の logits はビット単位で一致しています。次に、使える VRAM を expert キャッシュへ回した場合を測ります。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T11:57:20.086Z",
+      "line": 2621,
+      "byte_offset": 7762692,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "9e430be6d9115dee288f23738d62973c2744e9a96e4f85e1ce0ded88ba181314",
+      "metric_lines": [
+        "VRAM 自動キャッシュでは、この短い生成区間が14.72 tok/sでした。CPU expert 処理は減りましたが、GPU 側の dense 処理と層ごとの待ち時間が残っています。GPU のみの計測も取り、次は GR の射影処理を、加算順序を保ちながら速くできるか試します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T12:22:59.671Z",
+      "line": 3203,
+      "byte_offset": 9810492,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "f781194016843f6f1c27536683517f349fa88063a809304e8382c86196fa7ad4",
+      "metric_lines": [
+        "167トークンの入力でも正答「blue」を生成し、CPUモデル参照とは167位置中165位置でargmaxが一致しました。ただし、この精度確認用の経路は今回6.67 tok/sと遅く、通常のキャッシュ経路への置き換えには向きません。診断用として測定結果とともに保存し、速度の改善を続けます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T13:05:49.083Z",
+      "line": 3830,
+      "byte_offset": 13986900,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "a1c4c9ef8aeeac40010a2b358222551fb69d250cfe28c240a8d6011e33c81c34",
+      "metric_lines": [
+        "出力ヘッドの改善をコミットして push しました。128トークンの生成結果は変更前後で一致し、生成速度は13.57→13.79 token/sでした。ヘッド単体は約4.02→1.52 msに短縮しましたが、全体ではCPU側のexpert処理が大きく残っています。次は、SYCLで無効になっているMTP検証経路と、CPU・GPU間の同期方式を調べます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T13:19:06.788Z",
+      "line": 4151,
+      "byte_offset": 15634173,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "941faa4f9e8b61f0f1cb524b6117cd0b46900f9f58c95929e0113a891048d7a8",
+      "metric_lines": [
+        "誤ったdraftをすべて拒否する試験と、8トークンを2組に分けて一部を拒否する試験でも、32トークンの出力が通常生成と一致しました。状態復元の基本動作は確認できています。正解draftを使った速度は16.72 token/sでしたが、これはMTP自身の予測と処理時間を含まない参考値です。MTP重みの取得とハッシュ検証は完了し、実行用の変換を進めています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T13:32:54.949Z",
+      "line": 4400,
+      "byte_offset": 16286263,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "d06f2859d7b3909e96fc3eb30f87ca66e279ce4683f61b691cbb834813556e3a",
+      "metric_lines": [
+        "バッファ選択の修正後、実MTPで32トークンを生成でき、通常生成と出力が一致しました。draftは20/36個を受理し、平均2.54トークン/roundでした。一方、この短い実行の速度は7.58 token/sで、まだ通常生成より遅い結果です。128トークンでも測定し、初回のグラフ準備がどの程度影響しているかを確認しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T13:35:43.026Z",
+      "line": 4438,
+      "byte_offset": 16361832,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "f0e42d01a5419846ec08c77b4a8d3bf6962e64d8af569575eb7f0229b88093bb",
+      "metric_lines": [
+        "128トークンではMTPが10.28 token/s、同じ設定の通常生成が14.44 token/sでした。MTPはまだ速くなっていません。また、実行中のexpert入れ替えを含むMTPでは、60トークン目から通常生成と出力が分かれました。現在、入れ替えを止めて再比較し、配置変更と検証器の差を切り分けています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T13:41:05.517Z",
+      "line": 4510,
+      "byte_offset": 16571413,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "2d980a54d4ad63c5291d65901c64ac1a9d43be0415b0d0a99296e45cd5902a7d",
+      "metric_lines": [
+        "expertの入れ替えを止めた比較では、MTPの128トークンすべてが通常生成と一致しました。draft確率の閾値をsetupと同じ0.5にすると、検証窓が1～4トークンに変わり、速度は10.69→13.12 token/sになりました。通常生成の14.44 token/sには届いていません。いまは常駐エンジンに同じ要求を2回送り、状態を再利用する経路も確認しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T14:01:12.953Z",
+      "line": 4701,
+      "byte_offset": 17245701,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "e82283fef51fb58d94cf3d948dbdf4ae37313367a838250c1d30e5faf204aaf1",
+      "metric_lines": [
+        "共有 expert の GPU 計算中に、CPU expert の処理を開始できるようになりました。最初の32トークンでは速度が14.37→15.39 tok/sとなり、全 logits が変更前とビット単位で一致しています。回帰テストを終えたうえで、128トークンの交互測定で効果を確かめます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T14:03:11.325Z",
+      "line": 4768,
+      "byte_offset": 17815458,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "61cb64a86e2bb58aae1de9d9a73c5d363ce3552d32cb3f172df86e09bea3fa6f",
+      "metric_lines": [
+        "回帰テストは通過しました。128トークンの1組目では14.65→15.58 tok/sで、CPUを開始できる境界の6,144回中6,115回で共有 expert のGPU処理がまだ動いていました。残り2組も同じ条件で測定し、出力トークンの一致も確認します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T14:05:50.979Z",
+      "line": 4825,
+      "byte_offset": 18151310,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "da2a277604fedb55ac43983f1e2d590dcf13b17e6ebb8f3ab3e84a7493f8fb25",
+      "metric_lines": [
+        "3組の測定が揃いました。中央値は14.48→15.60 tok/s（約7.7%改善）で、6回すべての128出力トークンが一致しました。この変更と測定記録をコミットしてpushします。目標の約29 tok/sにはまだ届いていません。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T14:07:56.381Z",
+      "line": 4863,
+      "byte_offset": 18490307,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "05578436e3fe9b9f7d787215e013c2266d83d995c5a5a0d76d0dcc0df1b10946",
+      "metric_lines": [
+        "pushは完了しました。次の切り分けでは、GPU cache のヒット率を約10%から約50%に上げるとCPU時間は22.7→12.1 ms/tokenに減りましたが、全体の速度は15.36 tok/sでした。GPU expert の処理が待ち時間を増やしているため、GPU投影の時間を個別に測って最適化する箇所を選びます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T14:32:54.458Z",
+      "line": 5232,
+      "byte_offset": 20530596,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "25a8483547db5d9204703871d1391eb4f2c2752a7ea8836c9dfb57f8b29a6fc4",
+      "metric_lines": [
+        "128トークン生成の中央値は15.54→17.22 tok/sでした。ただし、新旧の文章は20トークン目から分岐しています。異なる文章では後半のlogitsをそのまま比較できないため、同じ入力での投影差を調べてから、この変更を確定します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T14:57:57.550Z",
+      "line": 5724,
+      "byte_offset": 21889110,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "b1af52d93b2934a4cc3ec90276e73a24b6f4a0cd5c08c748acbea164a9c40d96",
+      "metric_lines": [
+        "165トークンの固定入力でも、全 logits がビット単位で一致しました。速度比較の最初の2組は、変更前が15.81／15.46 tok/s、変更後が17.38／17.27 tok/sです。残り1組を測り終えたら、条件と結果を保存してコミットします。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T15:01:13.272Z",
+      "line": 5781,
+      "byte_offset": 22012171,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "74c84b5219abd3e2591fa4063e25392b93130809a187636fe46c005352033911",
+      "metric_lines": [
+        "Q3_K の変更は検証できました。8回すべてで128トークンの出力が一致し、生成速度の中央値は15.28→17.235 tok/s、約12.8%向上しています。SSD停止が入った測定も含めて結果を保存します。約29 tok/sの目標にはまだ届いていないため、次は GPU キャッシュ上の Q2_0 expert 演算を調べます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T15:15:07.538Z",
+      "line": 5926,
+      "byte_offset": 22445272,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "b737d1b1f3097259c64adeacc917392dc76414434cdf7a6f522667f7adc2d299",
+      "metric_lines": [
+        "Q2_0 の最初の32トークン試験で、全 logits が変更前とビット単位で一致しました。GPU キャッシュのヒット数も同じです。この1組では13.85→16.30 tok/sに上がりました。プロファイルでキャッシュを埋める条件と、実際の expert 入力を使った照合も確認します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T15:18:54.178Z",
+      "line": 5987,
+      "byte_offset": 22563638,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "1b719d88592ad1e95f8d3288c731c38814e9fa22cdac77e9cb8ac127c3f6c00e",
+      "metric_lines": [
+        "実際の48層の入力を再生した expert 試験でも、元の SPMD 出力とビット単位で一致しました。10 experts の GPU 処理時間の中央値は0.445→0.158 ms、約2.8倍です。生成全体の比較も最初の2組で17.00／16.64→19.09／19.02 tok/sに上がっています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T15:32:31.266Z",
+      "line": 6098,
+      "byte_offset": 22967489,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "298c0d7c92f2865cc072b4bf1ef2438432888ba9b59239f0bdc85c7f6fef9948",
+      "metric_lines": [
+        "Q2_0 の最終版を3組で測り直し、中央値は16.82→18.96 tok/s、約12.7%向上しました。6回すべてで128トークンの出力とキャッシュヒット数が一致しています。空キャッシュ・固定プロファイルの両条件の logits 照合も通ったので、結果をコミットします。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T16:02:59.440Z",
+      "line": 6352,
+      "byte_offset": 23851847,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "1cde8ae7a887ed84b6c4e0fe34f84ce48f97fae87bce425f8772130523ff2138",
+      "metric_lines": [
+        "128トークンの3組比較では、グラフ化で中央値が18.93→19.51 tok/s、約3.1%向上しました。全128トークンとキャッシュヒット数は6回とも一致しています。この変更を保存し、次は毎層の小さな metadata 転送をまとめて、残る投入コストを減らします。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T16:13:10.055Z",
+      "line": 6603,
+      "byte_offset": 24808931,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "1730e19377fd89e20d88aed3f78003688a6a4f7103b4a42ea096b85043f2cf60",
+      "metric_lines": [
+        "実モデルの32ステップ・全248,320 logits もビット単位で一致しました。128トークン測定は途中ですが、最初の2組では `19.43→19.67`、`19.42→19.93 tok/s` です。残りの測定で再現性を確認します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T16:14:25.441Z",
+      "line": 6622,
+      "byte_offset": 24879809,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "bdea92072bd8ef9cd36e231e5227c66118d6935a95e1ab973ea77515936ce2ea",
+      "metric_lines": [
+        "3組の測定が終わり、中央値は `19.43→19.67 tok/s`（約1.2%増）でした。全6回の128トークン出力とキャッシュヒット数は一致しています。3組目は変更後の方が遅く、速度差は小さいため、その結果も記録します。次は GPU 側で合計約9 msかかっている hyper-connection の読み出しを調べます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T17:27:12.605Z",
+      "line": 7455,
+      "byte_offset": 26851783,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "c4767ed2692d1a7368a4b4fa57ac0aca6357f2beef10347465c9b29e1d495ce0",
+      "metric_lines": [
+        "通常生成の3組の測定では、中央値は `20.13→19.99 tok/s` で、速度改善は確認できませんでした。32ステップと165ステップの全 logits は一致しています。単体測定だけで効果を判断せず、同じ重みを繰り返し使う MTP 検証でも比較します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T17:43:40.066Z",
+      "line": 7739,
+      "byte_offset": 28222744,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "6b8f52f08ab15612b6b9bfce44d7d5cd6562781e3d6f9e3747e7171e9e512b86",
+      "metric_lines": [
+        "キャッシュの自動設定は4,321スロットになり、ヒット率は76.6%でしたが、生成は14.97 token/sでした。容量を増やすだけでは速くなっていません。容量別の試行の一部はビルドと重なったため、ビルド終了後に測り直します。並行して、単体測定で約3.5 msを占める IQ4_XS 射影の ESIMD 版を実装しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T17:55:33.064Z",
+      "line": 7947,
+      "byte_offset": 28790225,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "284fa3574e4cd37c52548e15fe6e539635dedaf93b800c42089285f9b8837995",
+      "metric_lines": [
+        "128トークン生成の3組では、中央値が19.66→20.51 token/s（約4.3%向上）となり、6回とも全128出力が一致しました。一方、3トークンをまとめる射影では新方式が遅いため、IQ4_XS の ESIMD は1トークン処理に限定します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T18:05:11.988Z",
+      "line": 8058,
+      "byte_offset": 29058839,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "571187e12366a16c2f831f7a827a46da63335afdc0c327b6a531702b8aab84a4",
+      "metric_lines": [
+        "ビルドと重ならない再測定でも、3,584スロットでは15.10 token/sに低下しました。logits の読み戻し完了待ちが約1.7→11.1 msと大きく延びているため、GPU メモリの空きと GPU 単体の時間を比較して原因を絞ります。PLE を RAM に読み込んだ試行では、PLE 待ちは1.65→0.017 msに減り、生成は21.31 token/sでした。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T18:28:54.673Z",
+      "line": 8302,
+      "byte_offset": 29964863,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "bcf02493133fcf2f76d47f73b122870b5e194d78787bdc496b027750b0d15606",
+      "metric_lines": [
+        "自動設定の3組の測定は、中央値16.01→21.25 token/s（約32.7%向上）でした。キャッシュ容量が4,321→3,038に変わるため、生成文も途中から変わっています。同じキャッシュ容量で比較した32位置の logits はすべて一致しており、計算結果の変更ではなく、自動設定の改善として記録します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T18:42:51.894Z",
+      "line": 8536,
+      "byte_offset": 30894847,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "d68abe7bf218a8ac0ec4fc49e40d63954ddd9573cab905a169ff35b94e5214ee",
+      "metric_lines": [
+        "1組目は20.97 → 20.54 token/sでした。キャッシュ増量で CPU の専門家処理は8.29 → 5.69 ms/tokenに短縮しましたが、全体の生成速度は上がっていません。VRAM削減の効果と生成速度の効果を分けて評価し、残り2組でも確認します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T18:44:43.890Z",
+      "line": 8567,
+      "byte_offset": 30957275,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "7bc6242f0f39f84f5d8e84771c66c1ef35c3794c9052fe874176e5cf2ba97d40",
+      "metric_lines": [
+        "3組の中央値は20.97 → 20.49 token/sで、自動キャッシュ増量による速度改善は確認できませんでした。VRAM削減と固定容量での数値一致は確認済みです。容量を同じにした生成比較を追加し、キュー共有自体に速度への影響があるか切り分けます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T18:47:38.079Z",
+      "line": 8614,
+      "byte_offset": 31058743,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "22a91e86220698baf9056454811978d74ac2fe08da918a42a7791cb8655776d6",
+      "metric_lines": [
+        "同じ3,038スロットに固定した追加比較は21.21 → 21.07 token/sで、128個の出力トークンも一致しました。速度差については単発なので判断を保留します。約1.41 GiBのVRAM削減を確定した変更として記録・コミットし、次は GPU 上の量子化計算のコストを下げます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T19:00:13.081Z",
+      "line": 8823,
+      "byte_offset": 31798320,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "8c2475368861129cad06c1957a60d39d56873b25e398265b9221ccc4a56369a8",
+      "metric_lines": [
+        "実モデルの32行・165行の全 logits と、6回の生成で得た128個の出力トークンが一致しました。生成速度の中央値は20.37 → 20.56 token/s（+0.9%）です。3回目の変更後測定ではPLE読み出し時間が増えたため、大きな改善とは言えませんが、計算量削減の効果は確認できています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T19:19:24.889Z",
+      "line": 9039,
+      "byte_offset": 32467792,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "0af58f26e51c2fffdd16d0fd896905f3dbdbb6a00cf731899b91ecde6e455897",
+      "metric_lines": [
+        "38個のQ4_K行列は全行でビット単位の一致を確認でき、単独の計算時間は2.22 → 0.89 msになりました。実モデルの32行・165行の logits も完全一致です。生成測定はRAM読み出しで進めており、1組目は21.29 → 21.61 token/sでした。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T19:23:38.313Z",
+      "line": 9078,
+      "byte_offset": 32557796,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "8c77709ca8fc8ba231f3b35a816ec2a08e70a1e9abd3d0ed102cfe3cc1e0a91a",
+      "metric_lines": [
+        "Q4_K変更後の生成速度は、3組の中央値で21.01 → 21.61 token/s（+2.9%）でした。単独カーネルの改善に比べると全体への効果は小さいため、次はレイヤーごとのグラフ起動と完了通知にかかる時間を減らします。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T19:47:40.453Z",
+      "line": 9273,
+      "byte_offset": 33039562,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "fb1df810e19cd57f746877f69ac388e344dc1236504feb085259dd4c078b4431",
+      "metric_lines": [
+        "完了イベントを直接使う変更は、通常生成の全32行の logits、MTPの32トークン出力と採用数が一致しました。生成速度の3組の中央値は21.90 → 22.10 token/s（+0.9%）です。次は量子化カーネルの読み出し方を検証し、Intel GPUのL1/L2キャッシュ指定が効くか測ります。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T19:50:41.783Z",
+      "line": 9309,
+      "byte_offset": 33166963,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "981abe166b7bbf5bde981461444fbc740ee4138b585c07d2f19eb82753199795",
+      "metric_lines": [
+        "直近の変更は push 済みで、作業ツリーもクリーンです。通常生成はまだ約22 tok/sなので、次は ESIMD の読み出しキャッシュ指定を測定し、繰り返し読む量子化入力のコストを減らせるか確認します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T19:59:54.774Z",
+      "line": 9584,
+      "byte_offset": 34281106,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "66e689b0ab03077391172d2169a4f3ec3f778ee4db4b1461a6fc112f68ee8aad",
+      "metric_lines": [
+        "新しい初期配置では、物語生成の CPU expert 時間は52.1→43.3 ms/roundに減りましたが、MTP 採用率も変わり、全体は15.50→14.31 tok/sでした。コード生成は18.78→19.79 tok/sです。まだ既定値の変更は見送ります。GPU側は通常生成で速くなった Q4_K が複数トークンでは元の経路を使っているため、次はそこを測定します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T20:08:30.955Z",
+      "line": 9720,
+      "byte_offset": 34744400,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "b46c532bc17a00182da71b8e8e44814b391574f9270e3aa83ab23d9c3cf702c8",
+      "metric_lines": [
+        "MTP の128トークン生成を3組交互に測ると、中央値は15.31→15.65 tok/sでした。単独のカーネル測定ほど全体の差は大きくありません。全試行の出力と採用された draft が一致することを確認して、この変更と測定結果を保存します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T20:24:55.447Z",
+      "line": 9924,
+      "byte_offset": 35628967,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "9fbef9f32a17855f9915c8e12665fcfa26fd48546a453243f49e234a74b790ac",
+      "metric_lines": [
+        "Q5_K のカーネル単体は速くなりましたが、128トークン生成の中央値は15.70→15.47 tok/sで、全体の改善は確認できませんでした。6試行の出力 ID と draft 採用数は一致しています。単体測定と生成時間を分けて記録し、次は verifier 内でGPUとCPUの処理を重ねる変更を検証します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T20:55:55.526Z",
+      "line": 10202,
+      "byte_offset": 36772378,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "bbb742656db2ff70dc7601954bd4dfadbe7604e744469618b94bf91587e379ce",
+      "metric_lines": [
+        "同じ 128 トークンを生成する 3 組の測定では、中央値が **15.67 → 16.44 tok/s（約 4.9% 改善）**でした。全組で生成トークン、投機の採用数、キャッシュヒット数が一致しています。CPU が戻る時点で、GPU 側の共有・ヒット処理も約 99.8% 完了していました。目標の約 29 tok/s にはまだ届いていません。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T21:45:07.363Z",
+      "line": 10731,
+      "byte_offset": 38785784,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "8f1865deb5050406146de73a0cf9098bef39c079dde117fbdfec0a625c680fe7",
+      "metric_lines": [
+        "XMX 版の生成速度の中央値は **16.78 → 16.85 tok/s**で、この条件では差は小さいままでした。一方、大きな RAM ページの試験は、両方のプロンプトで読み込みと生成が遅くなったため、変更を戻しました。XMX 版については、通常生成の経路と、符号付きゼロ・極小値などの境界条件を追加で確認しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T21:55:54.339Z",
+      "line": 10839,
+      "byte_offset": 39174548,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "df484f7214ba554ad3f1b0e3a2bdf80d380ae2ebee31053a94755b8f577fc000",
+      "metric_lines": [
+        "Q2 の XMX カーネルは、通常生成でも全 logits が一致し、3 組の測定では中央値が 21.25 → 22.86 token/s でした。測定条件と各回の結果を記録して変更を確定し、続けて Python サーバー経由の API をこの環境で確認します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T22:14:29.278Z",
+      "line": 11217,
+      "byte_offset": 40677003,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "4ab7e0b0902dc72b789c07eb20ca856cf469bb9ae20febdf6d23969c1efc3b76",
+      "metric_lines": [
+        "32 トークン分の全 logits はビット単位で一致しました。ただ、速度測定ではホスト側の処理時間が少し減っても、生成速度は今のところ約 22.7 token/s で横ばいです。3 組目まで保存し、GPU がホストメモリを直接読む部分のコストも切り分けます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T22:18:36.747Z",
+      "line": 11268,
+      "byte_offset": 40807622,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "db47cf90c01c3e5b59747b5a62381880c2aecdffa5a975206b95fc30d4d2b959",
+      "metric_lines": [
+        "直接読み込みの試作は、中央値が 22.86 → 22.74 token/s で改善しませんでした。次の試作では転送をグラフ内の DMA コピーに戻し、post と次レイヤーのルーティングも一つのグラフにまとめます。CPU が読むルーティング結果は、グラフの完了を確認してから渡す順序を維持します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T22:25:18.300Z",
+      "line": 11342,
+      "byte_offset": 40966891,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "f12735ee5dea3da577cf2ed8d264e781cdd96e7e3f23dab8ae19e9e51b0a6baf",
+      "metric_lines": [
+        "DMA と次レイヤーのルーティングをまとめた版でも、32 トークンの全 logits と、165 位置の固定入力による全 logits が一致しました。最初の速度比較は 22.85 → 23.03 token/s と小幅です。残りの測定でばらつきを確認し、自動キャッシュ設定では既存のグラフを正しく再利用することも検証します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T22:37:10.997Z",
+      "line": 11469,
+      "byte_offset": 41386739,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "8e9fff35acbb004f9d89b5e40fff2cca835cf240e8bb350f47efbe8b036d3753",
+      "metric_lines": [
+        "3 組の中央値は 22.90 → 23.03 token/s（約 0.6%）で、改善幅は小さいままでした。全生成 ID とキャッシュヒット数は一致し、自動キャッシュ設定の 8 トークン分の全 logits、MTP の 32 トークン出力も一致しています。記録と変更を確定した後、改善幅の大きい候補を引き続き測ります。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T22:45:19.143Z",
+      "line": 11553,
+      "byte_offset": 41688222,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "fbf248656088d07c3dd06216a509d2482d61cb0c36d84765eea6a9e0c25a7f9f",
+      "metric_lines": [
+        "通常生成は現在約23 tok/sです。次はSYCLのグラフ記録方式を比較し、GPUへの投入時間やメモリ使用量を減らせるか確認します。実モデルでの速度と出力一致を確認してから採用します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T22:55:49.112Z",
+      "line": 11798,
+      "byte_offset": 42672081,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "4b35c705d7a16a5a70266bde63f9097503b70438754f04262797958725ddb77f",
+      "metric_lines": [
+        "3組の測定が終わり、中央値は従来方式22.98 tok/s、直接記録方式21.52 tok/sでした。速度向上を確認できなかったため、直接記録方式は採用せず、結果を保存します。次はMTPのキャッシュ入れ替えを少量ずつ行い、コピー負担とCPU処理量のバランスを測ります。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T22:59:07.220Z",
+      "line": 11849,
+      "byte_offset": 42759152,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "79b83bbd0c93de58658101bc05a9385cf86768cc101517c7f141e94d6b573a4a",
+      "metric_lines": [
+        "小規模なキャッシュ入れ替えでは、文章生成が16.07から19.18 tok/sへ上がりました。4ラウンドごとに最大64個を入れ替えた測定です。キャッシュ命中率とCPU処理時間も改善しています。まだ各設定1回なので、128個の場合とコード生成も確認します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T23:05:24.706Z",
+      "line": 11953,
+      "byte_offset": 43141614,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "e94eded60792508b1ee34ffc878301abfd656f4e157ca385635375ab0656d44f",
+      "metric_lines": [
+        "コード生成でも、最大64個の入れ替えで23.26から25.32 tok/sへ改善しました。128個では25.56 tok/sでしたが、コピー処理の負担も増えています。入れ替える頻度も比較してから、候補設定を複数回測定します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T23:07:36.608Z",
+      "line": 11971,
+      "byte_offset": 43186209,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "ebb7cfb31ff898b89922da52b9408cea2184b83bda73f4a78a10f58dbba499f3",
+      "metric_lines": [
+        "頻度を変えた設定も、文章生成は約19 tok/s、コード生成は約25 tok/sでした。まずコピー量が少ない「4ラウンドごとに最大64個」を候補にし、入れ替えなしと両プロンプトで3組ずつ比較します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T23:25:48.303Z",
+      "line": 12149,
+      "byte_offset": 43685723,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "035379eb8e7eaeb6796dc9ddb6b858ac86899717a0c498c7058d59c4851030d8",
+      "metric_lines": [
+        "文章生成の3組では、コピー完了を待つ方式の中央値は14.00 tok/s、従来方式は14.17 tok/sでした。速度向上は出ていませんが、待つ方式では生成IDとキャッシュ命中数が毎回一致しました。先の設定探索よりCPU処理が遅くなっているため、その数値と直接比較して速度改善を判断することは避けます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T23:36:11.839Z",
+      "line": 12231,
+      "byte_offset": 43992044,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "c0979a2366f8e4ae8c6e18e31c3421e2bb6e21426bf10b72718d87657ed119f5",
+      "metric_lines": [
+        "常駐プロセスでも連続リクエストとキャンセル後の再開が通りました。キャッシュが温まったコード生成は27.31、28.88 tok/sでした。ただし最初の文章リクエストは遅く、生成開始後のグラフ準備が含まれています。この初回の待ち時間も確認します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-02T23:56:58.123Z",
+      "line": 12409,
+      "byte_offset": 44703982,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "d28f1ebe22080873439f7d5175b6073820e512b0a8fa3449890b37f121fdadd1",
+      "metric_lines": [
+        "同じサーバーで繰り返したコード生成は約27～29 tok/sまで来ています。初回生成の待ち時間がまだ大きいため、検証処理のグラフ作成時間とメモリ使用量を調べ、現在の設定でHTTP APIも確認します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T00:05:08.212Z",
+      "line": 12669,
+      "byte_offset": 45702476,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "99e96718d5615c507630dbb2d4bede7cec457ba30b6e6805bd962f6cf342dcac",
+      "metric_lines": [
+        "最初の比較では、native recordingで検証グラフ作成後の空きVRAMが約241 MiB残り、初回の物語生成は10.5から19.4 tok/sになりました。出力とキャッシュの利用回数は一致しています。CPU負荷による変動もあるため、あと2組を交互に測り、初回の改善が再現するか確認します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T00:09:28.021Z",
+      "line": 12755,
+      "byte_offset": 46024954,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "be4cf3e9ad8c64d698964b1359ab45e9199881d0939169638f931ae00e5956d1",
+      "metric_lines": [
+        "2組目でも、初回の物語生成は11.8から18.4 tok/sへ改善しました。一方、繰り返し生成の速度はCPU負荷で上下しています。初回と繰り返しを分けて集計し、改善が見られる範囲を明確にします。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T00:12:49.061Z",
+      "line": 12795,
+      "byte_offset": 46083970,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "94dfa2fc5a98a5562dfd6b5efb904eabd9995eb0b3bfe167eeef1c68de0076f6",
+      "metric_lines": [
+        "3組の中央値では、初回の物語生成は10.5から18.4 tok/s、初回のコード生成は16.2から20.1 tok/sになりました。繰り返しのコード生成は26.0から24.2 tok/sへ下がっているため、全面的な既定値への採用はまだ保留します。まず、グラフの種類ごとに記録方式を変える試験で、この差を絞り込みます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T00:19:14.208Z",
+      "line": 12877,
+      "byte_offset": 46280543,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "d432c016a611d4eb5f65000063412927def9406c1f714ec4001c242f76cf9566",
+      "metric_lines": [
+        "1～3トークンのグラフだけをnative recordingにした試験では、空きVRAMが約147 MiB残り、初回の物語生成は18.2 tok/s、繰り返しのコード生成は25.7 tok/sでした。8トークンを分割する検証、位置0からの検証、GPU処理を完了させてからエラーを返す試験も通っています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T00:23:50.247Z",
+      "line": 12922,
+      "byte_offset": 46382446,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "82d1842548ffa9bfde513ffed738e4fd30cf02afef05732d821b1a02df8e8950",
+      "metric_lines": [
+        "短いグラフだけをnative recordingにした3回の測定は、中央値で初回の物語生成19.1 tok/s、繰り返しの物語生成22.0 tok/s、繰り返しのコード生成25.7 tok/sでした。通常方式の繰り返しコード生成26.0 tok/sに近く、初回待ち時間とVRAM使用量を改善できるため、この方式を採用して既定設定で再確認します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T01:02:45.302Z",
+      "line": 13295,
+      "byte_offset": 47278851,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "077d9e71c226889403b9989f3617d18ef29056025e70595e1e579f1df7e5a6e0",
+      "metric_lines": [
+        "IQ4_XSの試作には単体での速度上の利点がなく、従来の計算処理を維持しました。一方、ドラフトの確率しきい値を上げる設定試験では、繰り返しのコード生成が29.1 tok/s、物語生成が約25 tok/sになっています。次に、複数回の比較で再現するか確認します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T01:09:19.735Z",
+      "line": 13346,
+      "byte_offset": 47404998,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "220c91425c228e370d9a598f54fef9c16a5fc3a2c88963e064c4f6c6c4c4f81f",
+      "metric_lines": [
+        "しきい値0.9は、しきい値0.5との比較でも繰り返しのコード生成が約30 tok/sまで来ています。同じ設定での出力とキャッシュ回数も再現しています。設定によるキャッシュ配置の変化を分けて確認するため、配置を固定した検証も準備しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T01:13:41.050Z",
+      "line": 13451,
+      "byte_offset": 48172796,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "d1ab0c66886ba050cf615c9c67d59823fe6838906af2e2a43faef464d1434b7c",
+      "metric_lines": [
+        "3 回ずつの測定では、閾値 0.9 で同一設定の出力・キャッシュ統計・キャンセル復帰が再現しました。反復リクエストの中央値はコード生成 29.70 tok/s、短編生成 25.46 tok/s です。初回はそれぞれ 26.02、21.27 tok/s なので、約 29 tok/s を確認できた条件は明記します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T01:19:41.474Z",
+      "line": 13572,
+      "byte_offset": 48440565,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "ba364fe12ac5a4cce25dce0e5c81e275d6f792e73e9cd837b28bc4c347182c7c",
+      "metric_lines": [
+        "| コード生成 | 26.02 tok/s | **29.70 tok/s** |",
+        "| 短編生成 | 21.27 tok/s | **25.46 tok/s** |",
+        "約 29 tok/s はコード生成の反復条件で達成しました。NVIDIA と条件を揃えた直接比較は未実施です。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T06:53:11.197Z",
+      "line": 14180,
+      "byte_offset": 51304607,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "a85ef1af600e04ddb6afc6a2dca927de0387509fe756e23eb34e3614a00e6a6b",
+      "metric_lines": [
+        "IQ3_S の初回測定では、文章生成が約 12.5〜14.4 token/s、コード生成が約 16.6 token/s でした。Q2_0 より大きい expert が GPU キャッシュを占め、常駐できる数が 3,792 から 1,649 に減っています。CPU 側の待ち時間が主な負荷なので、MTP の閾値と CPU ワーカー数を中心に調整します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T07:16:33.873Z",
+      "line": 14465,
+      "byte_offset": 52094876,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "3885c5a0cf9f03bd6a6b4693c1c5590070e106af9c4a214cffccee3a6bf2f91d",
+      "metric_lines": [
+        "自動設定では、同じ約 4.09 GiB のキャッシュに置ける expert が 1,649 から 2,137 に増えました。現時点ではコード生成が約 18.8〜19.4 token/s、文章生成が約 14.8 token/s です。MTP を使わない通常生成も通過しており、最後にキャッシュ更新量を調整してから、選んだ設定の再測定と HTTP 検証を行います。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T07:46:38.909Z",
+      "line": 14702,
+      "byte_offset": 52675829,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "1b3555d2b39d48c5ee2b8f396a27377c9f78992b1835bbf89d6cb8ef99b10f98",
+      "metric_lines": [
+        "3 組の再測定では、キャッシュ変更後の中央値は文章生成 12.94／14.37 token/s、コード生成 16.43／18.30 token/s（初回／再実行）でした。改善幅は約 2〜5% です。HTTP の OpenAI・Anthropic API、ストリーミング、中断後の復帰、従来のモデル名による接続も通過し、既定のローカル設定を IQ3_S に切り替えました。Q2_0 の設定は別ファイルに保存しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T08:16:19.507Z",
+      "line": 14834,
+      "byte_offset": 53059832,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "c91cc4f28069810982078cdf56ef28c7d0c7b62ccfd57ffebfd749b420cba37c",
+      "metric_lines": [
+        "| 文章・初回 | 12.27 token/s | **12.94 token/s** |",
+        "| 文章・再実行 | 14.07 token/s | **14.37 token/s** |",
+        "| コード生成・初回 | 15.71 token/s | **16.43 token/s** |",
+        "| コード生成・再実行 | 17.81 token/s | **18.30 token/s** |",
+        "この表はモデル起動と入力処理を含みません。初回入力処理だけでも、37／45 トークンで中央値 **6.97／8.79 秒**かかっています。また、バックグラウンド負荷は隔離していません。**IQ3_S は、以前の Q2_0 のコード生成 29.70 token/s には届いていません。**"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T14:30:05.288Z",
+      "line": 14891,
+      "byte_offset": 53362422,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "92e05748f299c5383d16102f4fdedb115a4dfcb2f8cfafb63d2e2500206feee6",
+      "metric_lines": [
+        "この PC での IQ3_S の速度は、繰り返しの文章生成で **14.37 token/s**、コード生成で **18.30 token/s** でした。以前の Q2_0 より遅く、IQ3_S では約 29 token/s に届いていません。",
+        "| 初回の文章生成 | 12.27 | 12.94 token/s | +5.4% |",
+        "| 同じ文章プロンプトの再実行 | 14.07 | 14.37 token/s | +2.1% |",
+        "| 初回のコード生成 | 15.71 | 16.43 token/s | +4.6% |",
+        "| 同じコードプロンプトの再実行 | 17.81 | 18.30 token/s | +2.7% |",
+        "以前の Q2_0 の再実行時は文章 **25.46**、コード **29.70 token/s** でした。ただし、今回は同時条件での量子化間比較ではなく、回答品質の比較も実施していません。",
+        "| 量子化 expert の高速 prefill | CUDA の fused INT8・native MMQ・新しい転送処理を SYCL に未移植。入力処理の主要な改善候補 |"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T14:49:24.398Z",
+      "line": 15497,
+      "byte_offset": 55748788,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "7c5089f70e3ec938fd90bba28107998bbf1ca5468cdb11ff65ebeea310ecc40b",
+      "metric_lines": [
+        "rebase 後のブランチを push しました。IQ3_S の文章・コード生成、繰り返しリクエスト、キャンセル後の再開も成功しています。通常 decode の２条件では、以前の全語彙 logit 25 行と全ビットが一致しました。本当のキャッシュ無効条件でも、CPU 参照と全25位置の最大トークンが一致しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T16:32:20.000Z",
+      "line": 16039,
+      "byte_offset": 58711857,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "a8f54df2d7d619196e40a44d24e031d5f7d76e5ad27468aaded2baf6a2a404f3",
+      "metric_lines": [
+        "4種類の追加は数値テストが通り、commit・push 済みです。次に、prefill の expert 計算を GGUF の量子化ブロックから直接行う経路を実装しています。現在の FP16 展開バッファを使わず、8行を超える入力と expert ごとの行割り当てにも対応させています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T16:42:03.290Z",
+      "line": 16204,
+      "byte_offset": 59234661,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "ceeb102efce5b0e5a4068311b3794fdb59cee258335ee489e6ca77bcdfc1d56f",
+      "metric_lines": [
+        "量子化 prefill は、17種類の形式のテストと IQ3_S の連続生成・キャンセル後の復帰を通過しました。現在は CPU 参照との照合を進めています。続いて Intel の行列演算を使う attention に対応します。画像エンコーダーの取得と SHA-256 確認も完了しました。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T17:39:14.246Z",
+      "line": 17678,
+      "byte_offset": 65411441,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "12da9d345730b03c542fcaa0824730b5826eb3923ea47c781a385c1d004d359a",
+      "metric_lines": [
+        "基準値は、文章生成が初回 12.96／繰り返し 14.66 token/s、コード生成が 16.48／18.65 token/s でした。各3回とも生成トークン列は一致しています。実モデル7種類の expert 組み合わせの比較も通り、長い入力について転送と GPU 計算の時間内訳を測っています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T18:28:24.861Z",
+      "line": 19070,
+      "byte_offset": 69384523,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "fcee8c26eb33b2a6f72ce06015a9d922d000ab403ad67af1dcc77f2bb30e5b4a",
+      "metric_lines": [
+        "短い文章・コードの最終結果が揃いました。採用予定の設定では、繰り返し要求の生成速度が文章で14.59→15.89 token/s、コードで18.52→19.85 token/sになりました（各3回の中央値）。初回の入力処理も短縮しており、長文でも効果を再確認しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T18:34:11.388Z",
+      "line": 19220,
+      "byte_offset": 69571259,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "8d35eb4e71d8094127dfde2a0841144f27a2586e8bff9daf3672e5830dc74b08",
+      "metric_lines": [
+        "長文の3回中央値は46.90秒→14.08秒、約3.33倍でした。既定のIQ3_S設定へ`prefill=1024`・CPUワーカー数5を反映し、元の設定もバックアップしました。現在、その保存済み設定を使ってHTTP APIの回帰確認を実行しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T18:37:04.119Z",
+      "line": 19298,
+      "byte_offset": 69673292,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "09c3df26831a7dcb14b6a7698a09693892d21ffce9f874c30d533a57d161d602",
+      "metric_lines": [
+        "| 文章生成・繰り返し要求 | 14.59 → **15.89 token/s（+8.9%）** |",
+        "| コード生成・繰り返し要求 | 18.52 → **19.85 token/s（+7.1%）** |"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T19:32:54.785Z",
+      "line": 19307,
+      "byte_offset": 69689423,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "3f46b212034e929f26410ea6d54e0e0208f70ed08a086096b4ced3ed2e44f75b",
+      "metric_lines": [
+        "目標をprefill 1,000 token/s・生成70 token/sとして、最適化を続けます。まず現在のコードと実測を確認し、CPU側のエキスパート処理、GPUとの転送、入力処理の内訳から次の改善箇所を絞ります。このB570／5600X向けの専用ビルドも比較対象にします。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T19:37:39.410Z",
+      "line": 19525,
+      "byte_offset": 70685258,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "497bb7e00d6bf1328ba16fe45141817d674bb67bf021f4abd5131b442a2f2435",
+      "metric_lines": [
+        "Zen 3専用ビルドで、文章・コードの生成トークンは従来版と一致し、キャンセル後の復帰も通りました。1回の測定では繰り返し生成が文章16.05、コード20.10 token/sでした。フラグ変更だけでは目標との差は大きいため、次はMoEの行列演算と重みの配置を変える試作へ進みます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T20:09:33.206Z",
+      "line": 20703,
+      "byte_offset": 73059420,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "41ef9064f05bb564d215436b481d7ca1fb7b1ce78d34722037504edf2ae91b2c",
+      "metric_lines": [
+        "連続推論は、すべての完了リクエストで生成トークン列が一致し、prefill・生成中のキャンセルと復帰も通りました。ただし初回プロンプト処理は今回 7.51 秒で、前回の 3.57 秒より遅くなっています。反復時の生成速度はほぼ同程度なので、現時点では改善と判定せず、初回遅延と長い入力での効果を分けて測ります。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T20:12:49.894Z",
+      "line": 20811,
+      "byte_offset": 73337359,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "80210e3a87726a87c5c867448b2257664aec186c8995a7df99ae217407e3b831",
+      "metric_lines": [
+        "長い入力では、最初の 2 組とも実推論全体の prefill が約 14.08 秒から 9.64〜9.71 秒へ短縮し、出力も一致しています。これは初回コンパイル済みの条件での結果です。3 組目を確認し、初回遅延の課題とは分けて記録します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T20:14:01.450Z",
+      "line": 20851,
+      "byte_offset": 73395058,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "62f1fb90e17326e6cc6321f89ce098a4fb66f3f48c2fb0d1281f8ace74b13a4d",
+      "metric_lines": [
+        "3 組の比較が完了しました。826 トークンの prefill は中央値で **14.084 秒 → 9.652 秒（58.65 → 85.58 token/s）**、約 1.46 倍です。6 回とも出力は一致しました。生成速度の改善や初回遅延の解消を示す結果ではないため、次は B570 向け事前コンパイル版を検証します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T20:35:09.716Z",
+      "line": 21619,
+      "byte_offset": 76269243,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "836bc88446d29919a96dfe5bf680b2a8037e194dc48e174333e3e4c8c39b0a5b",
+      "metric_lines": [
+        "空のコンパイルキャッシュでの JIT 実行では、最初の短いプロンプトの prefill に約 18.8 秒かかっています。起動時のモデル読み込み時間は別に記録しています。続く AOT 実行と、キャッシュを再利用した反復測定で、この初回コストと通常時の速度を分けて評価します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T20:38:19.978Z",
+      "line": 21681,
+      "byte_offset": 76394167,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "32c04f23d9a4b516ed06131b7bb80b6f86d565c26e681ce05ead7e61fe43aa1c",
+      "metric_lines": [
+        "最初の比較は出力がすべて一致しました。空キャッシュからの最初の prefill は、JIT の 19.86 秒に対して AOT は 3.53 秒でした。一方、AOT は反復生成が少し遅い傾向も出ています。全 ESIMD カーネルへのレジスタ数指定が影響している可能性があるため、3 組の反復測定を終えてから判断します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T20:43:34.961Z",
+      "line": 21768,
+      "byte_offset": 76542646,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "bd0525093d5c7e5415e6fd9d3821dd6b2baccbef714a41a922e2471bdb515c59",
+      "metric_lines": [
+        "AOT の反復生成は、3 回とも文章側で約 15.2 token/s となり、JIT の約 15.9 token/s より低い傾向です。次は XMX の中間値の保持量を半分にし、元と同じ加算結果を保ちながら 128 レジスタで動かせるか試します。初回コストの改善と通常時の速度を両立させる狙いです。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T21:03:30.093Z",
+      "line": 22217,
+      "byte_offset": 77537649,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "cff4b63fc57a3536154ba1a9810e9b43b207d8779815faaa3a47aead03080dc1",
+      "metric_lines": [
+        "最初の実モデル試験は、全出力トークンの一致と中断・復帰を含めて通りました。反復生成は文章15.95、コード20.01 token/sで、先のAOT版で見られた低下は今回は出ていません。長文prefillと生成の交互測定で再現性を確認します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T21:07:27.657Z",
+      "line": 22363,
+      "byte_offset": 77944805,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "81b198f2626eeedfa43cde458df89f7221fbedb463e26777e22ffcd5354ebf42",
+      "metric_lines": [
+        "長文prefillの3組比較が終わり、中央値は85.90 → 92.00 token/s、約7.1%改善しました。全6回で出力は一致しています。目標の1,000 token/sにはまだ差がありますが、レジスタ使用量の削減が実推論の改善につながりました。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T21:08:52.645Z",
+      "line": 22400,
+      "byte_offset": 77996930,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "3b03e6b773dde0227a0c95b3a47d49f839b856f19d8184f5670f42fdb5b07bbe",
+      "metric_lines": [
+        "生成比較の最初の新AOT版は、文章15.92・コード20.03 token/sで、出力一致と中断後の復帰も通っています。残りの比較を進めながら、測定条件・バイナリのハッシュ・不採用案の結果も記録しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T21:12:12.896Z",
+      "line": 22467,
+      "byte_offset": 78108184,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "71106bddf12d9f1dbabb4fb88cb5d5ae77181accb54dc36f0d85a0f35008927a",
+      "metric_lines": [
+        "生成比較は4回まで完了し、すべて同じ出力と正常な中断・復帰を確認できています。新AOT版の反復生成は文章15.81～15.92、コード19.93～20.03 token/sです。残り2回の後、JIT・AOT両方の全テストに進みます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T21:14:13.447Z",
+      "line": 22502,
+      "byte_offset": 78144740,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "6abd092857f7bf97b9eec34c87dcd56b7df4afc5f9206979f130180a2ccbca93",
+      "metric_lines": [
+        "生成の中央値は、反復文章が旧JIT版15.81／新AOT版15.89、反復コードが19.73／19.99 token/sとなっています。先のAOT版で見られた約4%の低下は再現していません。最後の復帰チェックが終わり次第、全テストと画像を含むAPI経由の確認を実行します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T21:25:58.464Z",
+      "line": 22850,
+      "byte_offset": 78655444,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "6ba1c8d810950fd850a98efd9070d1d37c20a0aaf3b6c71e27a06a3783fae11c",
+      "metric_lines": [
+        "長文prefillを **85.90 → 92.00 token/s（約7.1%改善）**できました。生成は文章15.89、コード19.99 token/sです。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T21:32:58.293Z",
+      "line": 23017,
+      "byte_offset": 79254067,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "4594c1504835f9b8f3f3213f320336295d2fbfefb01005bcc1217f6aae371909",
+      "metric_lines": [
+        "IQ3_Sではexpert領域の約99.6%がTHPになり、最初の比較は反復文章15.59 → 15.94、反復コード19.80 → 20.11 token/sでした。起動は21.5 → 23.0秒に増えています。差が小さいので、順序を入れ替えた追加測定で判断します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T21:57:25.056Z",
+      "line": 23431,
+      "byte_offset": 80219826,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "8ad85b6cf4f59062a216face060ba020e1f6dd32cdbecc4c8968edc258008149",
+      "metric_lines": [
+        "4,008トークンの試験では、塊サイズを1,024から4,096にするとprefillが49.87秒から26.64秒へ短縮し、出力8トークンも一致しました。ただしまだ150 token/s程度です。次はXMXが重みを読む配置を見直し、既存の一時バッファ内で並べ替える案を試します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T22:08:10.961Z",
+      "line": 23742,
+      "byte_offset": 81100703,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "89908e7d86cbba2aa7a02843034c720fd76f5968bc44a7185d051925ebf6f66c",
+      "metric_lines": [
+        "最初の実推論では、4,007トークンのprefillが26.76秒から25.51秒へ短縮しました（149.74 → 157.08 token/s、約4.9%向上）。出力8トークンは一致しています。繰り返し測定で差を確認し、短い入力や通常の生成にも影響がないか調べます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T22:12:21.648Z",
+      "line": 23826,
+      "byte_offset": 81351403,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "4a3d3ae9857d6d488dcab13a79289de22454039dc123a344bd8c50f0b854a4ea",
+      "metric_lines": [
+        "実行順を入れ替えた測定でも短縮を確認できています。次は827トークンの既存ベンチマークと、文章・コード生成、キャンセル後の復帰を確認します。目標のprefill 1,000 token/sにはまだ大きな差があり、この改善を次の最適化につなげます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T22:13:42.108Z",
+      "line": 23860,
+      "byte_offset": 81386625,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "c767da9cc666fa6fec01fbf1f2df33a02bf23a11d8a41035cf633fe7b9190451",
+      "metric_lines": [
+        "3組の比較が完了しました。中央値は150.67 → 157.06 token/s（約4.2%向上）で、全6回の出力が一致しました。追加した境界条件のテストと、AOT/JIT両方の全テストを実行してから、通常の生成を検証します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-03T23:44:25.150Z",
+      "line": 25448,
+      "byte_offset": 85644509,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "1b54ba3083955c7c61f5ea398e2972776f072a0810e2d285f1fb9dc2318cfda0",
+      "metric_lines": [
+        "AOT版の全体ビルドも完了し、最後の40テストを実行しています。今回のGPU変更は小幅な前進として記録済みです。目標のprefill 1,000 token/s・生成70 token/sにはまだ届いていないため、生成時のCPU処理を引き続き詰めます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T00:04:29.017Z",
+      "line": 25830,
+      "byte_offset": 86644048,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "22a749dba0b787d150ec71278eec73ea972811b1837789c46ca61804e6fd92b1",
+      "metric_lines": [
+        "3組の比較が完了しました。生成速度の中央値は文章の再実行で15.78→15.97 token/s、コードの再実行で19.66→20.09 token/sでした。4条件で約1.1～2.2%の改善、全出力一致です。境界条件テストを通したうえで、この機種向けの設定として反映します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T01:03:48.981Z",
+      "line": 26734,
+      "byte_offset": 88493096,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "f88969ef3ab66fc346063689e915d80692df691ea7e04b37341881457ef70499",
+      "metric_lines": [
+        "基準側の4,007トークン入力は約150.5 token/sでした。現在の比較は重みの再配置を無効にした通常設定です。以前の再配置ありの値とは分けて、同じ条件の変更前後を比較しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T01:38:25.744Z",
+      "line": 27383,
+      "byte_offset": 89756463,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "569157fc6a491c91ea547305658c3629c93177caa7c328271ec1b9c19923b332",
+      "metric_lines": [
+        "比較用の旧版は、今回も長文 prefill が約151 token/s でした。試作版の測定完了を待っています。16行版の準備には、行末の余りと packing の両方を確認するテストも追加しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T01:49:41.607Z",
+      "line": 27612,
+      "byte_offset": 90128306,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "221d6f52796fcae7ca9b398041b23b5685688a28f4c0a35d650ed17485654580",
+      "metric_lines": [
+        "16行設定でも初回コンパイルが入りましたが、出力 ID は一致しています。8行設定のウォーム状態では、長文 prefill は約150.8 token/s でした。続けて16行設定の長文と、両設定の短文再測定を確認します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T01:59:17.830Z",
+      "line": 27746,
+      "byte_offset": 90352653,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "15efeddfe03679252dda85854f9cd567705bf3c0d862f80ed895566eaa2c7a54",
+      "metric_lines": [
+        "検証記録はコミット・push 済みです。目標の prefill 1000／生成70 token/s は未達のため、最適化を続けます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T03:18:07.888Z",
+      "line": 28903,
+      "byte_offset": 93816964,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "dbd635578300d7a62d6788e16f98e9e78c3fb711629905d96e11883b92a954ad",
+      "metric_lines": [
+        "バッファ再利用テストは JIT・AOT の両方で通りました。現在、同じバイナリで試作をオン・オフし、826 token と4,007 token の prefill を比較しています。生成される8 token も既存結果と照合します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T03:33:57.040Z",
+      "line": 29143,
+      "byte_offset": 94429982,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "e019e8c917a9533302656d5c8b2aa16d132a0d927144f84203d14d68f1ddbad2",
+      "metric_lines": [
+        "文章・コード生成、prefill／decode 中のキャンセル、復帰後の出力はすべて一致しました。最終ビルドも測定したバイナリと完全一致しています。元の設定をバックアップし、既存の2つのローカルテキスト設定でこの最適化を有効にしました。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T03:37:27.292Z",
+      "line": 29178,
+      "byte_offset": 94485292,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "c4c59684abadbe97c4671c07560506250ae427d5f501ec417ba79c8196205bef",
+      "metric_lines": [
+        "重複する GPU イベント処理を省き、826 token の prefill が中央値で **約2.7%向上（90.5 → 93.0 token/s）**しました。4,007 token はほぼ横ばいです。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T04:10:53.345Z",
+      "line": 29783,
+      "byte_offset": 97911097,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "a772fea2173569578e65d0b1f318f0bb9c7b232019bca26fea8e2a023dec4709",
+      "metric_lines": [
+        "速度の3組の比較が完了し、中央値は151.48 → 161.65 token/s（約6.71%向上）でした。継続生成テストでは、基準側が正常終了理由の `stop` を返し、測定スクリプトがそれを未対応として止まりました。エンジンの終了条件を確認してスクリプトを修正し、検証をやり直します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T04:22:35.683Z",
+      "line": 29995,
+      "byte_offset": 98376567,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "3ac05134ebd1cac54bd96753561d4e6850d12107a1c8a22b5b0b8c56e590ecf9",
+      "metric_lines": [
+        "長い一括prefillを **151.48 → 161.65 token/s（6.71%向上）** に改善しました。3組の比較で再現し、128トークン生成・キャンセル・復帰後の出力も一致しました。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T04:57:30.620Z",
+      "line": 30519,
+      "byte_offset": 99335930,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "3f657199f930ef66b617587712cd98b61b4620228bacc2bcbe83c7bf071b30e5",
+      "metric_lines": [
+        "採用済みバイナリの確認測定は、長いprefillが161.64 token/s、短い方が93.63 token/sでした。新しい版の有効時中央値はそれぞれ168.32、94.89 token/sです。現在、通常設定と長文設定のサーバー検証を順に実行しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T05:02:40.656Z",
+      "line": 30598,
+      "byte_offset": 99475303,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "cdd31edfa9a2eb1f2c98b7eeb69aeea1554af6acea597bbe732d19b4567f7ddf",
+      "metric_lines": [
+        "- 4,007トークン：**168.32 token/s（+4.70%）**",
+        "- 826トークン：**94.89 token/s（+1.21%）**"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T05:13:30.045Z",
+      "line": 30780,
+      "byte_offset": 99999846,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "4856c0b10c272f27a049d2e6dc0bbf7b99f2d9fd5d0bdd35d0f6a8b72dd4d844",
+      "metric_lines": [
+        "4,007 token の prefill では、Attention が GPU 時間の約 4.87 秒を占めることが分かりました。計測結果を保存し、次に Attention の出力処理と共有メモリ使用量を減らす変更を試します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T05:20:38.474Z",
+      "line": 30980,
+      "byte_offset": 100609561,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "0f15cfc2535916ee0e7d1f6be40b88e332747c4f72942d9754a8bcd05462302b",
+      "metric_lines": [
+        "最初の 4,007 token 比較では、直接出力を有効にすると 166.67 → 180.23 token/s、約 8.1% 改善しました。生成された 8 token の ID も一致しています。短い入力と交互の再測定で、この差が再現するか確認します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T05:21:58.943Z",
+      "line": 31023,
+      "byte_offset": 100678693,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "d5fad4f7edb57bf3926e53a5604d20da8f09d7a1ff6a7a28172339c9949b8e58",
+      "metric_lines": [
+        "826 token の初回比較も 94.79 → 95.90 token/s と改善しました。現在、短い入力・長い入力それぞれで 3 組の交互測定を揃えています。その後、JIT ビルドと継続サーバーでの生成・キャンセル復帰を検証します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T05:24:36.579Z",
+      "line": 31071,
+      "byte_offset": 100783227,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "26aebf96e4e2c2bed0ad2ac4c8c4a5be51a874e8041f558156fa54cbb61c53c3",
+      "metric_lines": [
+        "826 token は 3 組とも改善し、中央値で 94.88 → 95.90 token/s（約 1.1%）でした。長い入力の残りの測定を進めています。採用判断には、速度の再現性に加えて、長文の継続生成とキャンセル後の復帰も含めます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T05:25:51.027Z",
+      "line": 31096,
+      "byte_offset": 100814902,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "563ad12a1330d827d38e5f594340c30b23a8211a81963e0c2e8559bf3ad506cf",
+      "metric_lines": [
+        "長い入力の 2 組目は 168.25 → 179.98 token/s でした。初回より差は小さいものの、約 7% の改善が再現しています。最後の組まで測り、中央値で評価します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T05:27:32.691Z",
+      "line": 31126,
+      "byte_offset": 100851626,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "c154b5592866e1ca8dece9ccb0a2c9c5e80248773f3f5acf5509998498878aa4",
+      "metric_lines": [
+        "3 組の測定が揃いました。中央値は 4,007 token で **168.25 → 180.23 token/s（+7.12%）**、826 token で **94.88 → 95.90 token/s（+1.08%）**。全 12 回で出力 ID が一致しました。長い文脈を使う Attention 単体比較もビット一致し、採用前の最終検証に進んでいます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T05:29:21.719Z",
+      "line": 31157,
+      "byte_offset": 100900009,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "4aabfebf31e021b8ff9eebd6806ef370b30149a5e4df23c4dbfb6d120d90827b",
+      "metric_lines": [
+        "直前の採用済みバイナリも再測定し、4,007 token で 168.30 token/s と、今回のオフ測定に近い結果を確認しました。Attention 単体の中央値は 70.38 → 48.48 ms。現在は JIT ビルドとサーバー動作の検証中です。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T05:33:34.109Z",
+      "line": 31221,
+      "byte_offset": 100999185,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "cb15831f496bcf03102bf3ca5c4d9c45ae60571a62f6efbbe24e1a42e2d20ec2",
+      "metric_lines": [
+        "通常の文章・コード生成は、反復実行・prefill 中断・decode 中断・復帰を含む全 7 ケースが通りました。従来版と生成 ID も一致しています。最後に 4,035 token の長文を使う継続生成を検証しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T05:36:07.274Z",
+      "line": 31279,
+      "byte_offset": 101069495,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "ede6871886c656ff69da43c710f4373674b6d7ff85fc001c932a4e4c4802f869",
+      "metric_lines": [
+        "- 4,007 token：**168.25 → 180.23 token/s（+7.12%）**",
+        "- 826 token：**94.88 → 95.90 token/s（+1.08%）**",
+        "目標の prefill 1,000／TG 70 token/s は未達です。最適化を継続します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T06:02:37.714Z",
+      "line": 31619,
+      "byte_offset": 101778806,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "edd7fa6f7969df6405393fb25a7058ab9ddf9c433e3c1770ca9ddece9d94305a",
+      "metric_lines": [
+        "最初の 4,007 token 比較では **178.43 → 184.62 token/s** に改善し、生成 ID も一致しました。初回測定のばらつきを避けるため、短い入力も含めて交互に再測定します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T06:04:02.194Z",
+      "line": 31639,
+      "byte_offset": 101812455,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "4aa60613cbbcfee325a277d0a2254a700a8bfa1986f003da85c1351f66034935",
+      "metric_lines": [
+        "826 token の初回は 95.84 → 93.19 token/s と遅くなりました。長い入力では改善していますが、この時点では採用しません。残りの交互測定で、短い入力の悪化が再現するか確認します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T06:05:36.581Z",
+      "line": 31659,
+      "byte_offset": 101845560,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "a3c9c602468342201639d03ad9f685f9d60a0cb7b746864830d1304ebd0bbbc7",
+      "metric_lines": [
+        "短い入力の 2 組目は 95.79 → 96.16 token/s で、初回の悪化は再現していません。ただし改善幅が小さいため、短い入力は 5 組まで測定し、遅かった初回も含めて評価します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T06:09:20.190Z",
+      "line": 31699,
+      "byte_offset": 101912419,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "3fde07de020cb8751972ee854acc79ded5be74aa7303a6f7e1c926c9ad75c530",
+      "metric_lines": [
+        "4,007 token は 3 組とも改善し、中央値で **179.22 → 184.59 token/s（同一バイナリの無効時比 +3.00%）** でした。短い入力の追加 2 組、直前の採用版との比較、継続生成の検証を順に進めています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T06:27:09.921Z",
+      "line": 31875,
+      "byte_offset": 102241907,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "8db673ef3a3d0f68e501fbaf10066c3f7d8e1cabd9d4464e840e67c186cfaee3",
+      "metric_lines": [
+        "条件付きの最終版でも、4,007 token は初回測定で **184.52 token/s** を確認しました。短い入力は従来経路を使う設定です。残りの長文比較と継続生成チェックを進めています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T06:31:01.792Z",
+      "line": 31907,
+      "byte_offset": 102307099,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "8f889283a5f6866865c45f173daf005637f77bd9b7451a8c05319e10fbba2f1c",
+      "metric_lines": [
+        "長文の再測定でも、有効時は約 184.5～184.6 token/s、無効時は約 180.2 token/s となっています。次の decode 改善候補として FP16→FP32 の変換も調べ、有限値と非正規化数のビット一致を確認しました。そちらの速度測定は、今回の変更を確定した後に進めます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T06:32:40.521Z",
+      "line": 31925,
+      "byte_offset": 102341035,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "91fba70f6c63677033866579d563c1a9283823d7cd6cc981382cd62380d76f85",
+      "metric_lines": [
+        "最終版の 3 組比較は、中央値で **180.22 → 184.61 token/s（+2.43%）** となりました。通常の継続生成 7 ケースも通過しています。残る長文の反復生成・中断復帰を確認してから、設定とコミットを確定します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T06:38:16.267Z",
+      "line": 31982,
+      "byte_offset": 102464740,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "871afce432307fadd7feaa393dec0eb563d9cd8d08613784cc5c2b03d4c8bc33",
+      "metric_lines": [
+        "4,007 token の prefill を **180.22 → 184.61 token/s（+2.43%）** に改善しました。2,048 token 以上のバッチで有効化済みです。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T06:38:23.063Z",
+      "line": 31990,
+      "byte_offset": 102478431,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "a1d8021604bdc59314349a69361108d8f1771ac918bc252e22327daec48f337e",
+      "metric_lines": [
+        "decode 側でも使う FP16→FP32 変換を調べます。前の検証では有限値がすべてビット一致したため、NaN の扱いを維持した高速化を試し、生成速度と出力の一致を測ります。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T06:59:08.738Z",
+      "line": 32341,
+      "byte_offset": 103333728,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "2f730bae87c628826abce4f9060e5e0b2269046430d1a0351d7591632f00fd3e",
+      "metric_lines": [
+        "826 トークンの prefill は、最初の一組では 8,611.9 ms から 8,594.7 ms で、差は約 0.2% でした。この大きさだけでは改善と判断できません。4,007 トークンの測定も進めています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T07:00:49.781Z",
+      "line": 32382,
+      "byte_offset": 103380126,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "ff962adfdf4914114cc0663d9a308bc02de3028249b2859ab5ec83f9ab64147a",
+      "metric_lines": [
+        "4,007 トークンの最初の比較は、179.60 → 184.66 token/s でした。長文では改善の可能性があるため、実行順を入れ替えて追加測定しています。生成速度の低下が再現するかも含めて判断します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T07:07:43.197Z",
+      "line": 32529,
+      "byte_offset": 103585783,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "1ce172831eb80b00e201361ccc1575f517558c43ceebe213d29d62ae04b718a2",
+      "metric_lines": [
+        "変更版の長文 prefill は二回とも約 21.7 秒で揃っています。既存版の追加分を測定中です。TG は環境のばらつきが大きいため、今回の採用判断は、まず長文 prefill で再現する差があるかを重視します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T07:19:45.414Z",
+      "line": 32732,
+      "byte_offset": 103897598,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "98fa7191a90c72f3ba07b8df6e7e346df55f022831598d1acc101ebaf723c114",
+      "metric_lines": [
+        "- 長文 prefill の中央値差は約 0.44%。最後の比較では差なし。",
+        "目標の prefill 1000／TG 70 token/s は未達です。最適化を継続します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T07:36:30.456Z",
+      "line": 32996,
+      "byte_offset": 104501703,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "2eeea037c6406b01c3b6876ed1e35222125a9038d3b889ad2a8277546b420c68",
+      "metric_lines": [
+        "現在の採用済み版は、**長文 prefill が約 184 token/s、TG は条件により約 11〜20 token/s** です。環境は **Arc B570 10 GB／Ryzen 5 5600X／RAM 125 GiB、IQ3_S モデル**です。",
+        "| Prefill：826 トークン | 95.9 token/s（8.61 秒、1 回） |",
+        "| Prefill：4,007 トークン | 183.7 token/s（21.81 秒、3 回の中央値） |",
+        "| 文章 TG：初回 | 中央値 10.9 token/s、範囲 9.2〜13.5 |",
+        "| 文章 TG：繰り返し | 中央値 12.9 token/s、範囲 12.5〜15.9 |",
+        "| コード TG：初回 | 中央値 15.0 token/s、範囲 12.4〜17.8 |",
+        "| コード TG：繰り返し | 中央値 17.3 token/s、範囲 12.9〜20.0 |",
+        "TG は各 128 トークン生成を三回測定しています。直近はホスト負荷による変動が大きく、繰り返し実行では expert cache とプロンプト再利用も効くため、初回と分けています。長文 prefill は context 8,192・chunk 4,096、TG は通常の context 512 設定です。",
+        "目標に対して、prefill は約 **5.4 倍**、TG は現在の中央値から約 **4〜6 倍**の高速化が必要です。いま試している量子化の配置変更は、量子化単体で約 4〜7% 改善しましたが、モデル全体への効果はまだ未確認・未採用です。引き続き検証します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T07:46:39.416Z",
+      "line": 33126,
+      "byte_offset": 105422294,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "27146a4d1749958b30afde3b22aa59bc57ddb2e4fadda9f880dc161575fcbc84",
+      "metric_lines": [
+        "根本的な相違を一つ確認しました。fork 元の prefill 量子化は、型ごとに異なるスケール形式と、転置した 128 要素単位の MMQ 用配置を使っています。現在の SYCL 版は、共通の 32 要素 Q8_1 配置に置き換えており、除算の方法と加算順序も異なります。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T09:04:03.162Z",
+      "line": 34158,
+      "byte_offset": 109874602,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "a61023ed4db9eae0af7db6d8946e56bd343218b5b026c3d73c0b8242bb630470",
+      "metric_lines": [
+        "元の `prefill::mmq` API に接続し、9形式以外の行列サイズ計算も pinned GGML 本体の型情報を使うようにしました。通常実行でのデバイス問い合わせは初回にまとめています。いま、別キューからの連続投入、キューのコピー、未完了処理を残したコンテキスト破棄を実機で検証しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T09:23:47.680Z",
+      "line": 34451,
+      "byte_offset": 110769214,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "b3b5f68fbef6a40862af346b8c4496516844851a40ae0a8ade03cb345a05c93a",
+      "metric_lines": [
+        "待ちの原因を絞れました。B570 では、停止中の host task に続くイベントを別キューの `ext_oneapi_submit_barrier` に渡すと、提出側のホストが待っていました。依存を `handler::depends_on` に渡す小さな GPU コマンドへ置き換えたところ、非同期提出と独立 stream の進行が確認できました。イベント再記録と、prefill と同じ2スロットの転送リング40回も通っています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T09:27:51.377Z",
+      "line": 34492,
+      "byte_offset": 110873601,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "e3ac459f24e3fb1f7a6b9ee94ef2c18e4b9f4040500dd04b1c6f57bf356ab375",
+      "metric_lines": [
+        "依存バリアがホストを待たせる挙動も再現・回避でき、prefill の転送リング40回を確認しました。`66dcab8` まで push 済みです。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T12:04:55.597Z",
+      "line": 36962,
+      "byte_offset": 120086934,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "73a87d831a947fda5cdd16152361d3d98474099d2273d41a86da19dc142ab270",
+      "metric_lines": [
+        "まだ新しい実装で推論速度を再測定できていないため、目標のprefill 1000 token/s・TG 70 token/sへの到達は未確認です。現時点の成果は、速度改善の前提となる処理の再現と検証です。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T12:33:59.631Z",
+      "line": 37376,
+      "byte_offset": 121870086,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "7246c550ce8428ce684a9e56cefe84118fa8c30fa8288388f827b8f2b153703c",
+      "metric_lines": [
+        "推論速度の再測定はまだで、PP 1000／TG 70 token/sの達成は未確認です。次はprefillに残るGPU間コピーAPIを接続します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T13:09:52.429Z",
+      "line": 37611,
+      "byte_offset": 122945659,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "d0c2edb584ac27873440c97bb16e1619a82a74062c9e7f1c4e7b4eb8aad98fdb",
+      "metric_lines": [
+        "元のexpert blobと同じ1,382,400バイトのスロット幅でも、約188 MBのデータが一致しました。ホスト構文チェックは20ファイル中17ファイルが通過し、prefill.cppのAPI不足は解消しています。残る3ファイルの不足は、グラフのupload・ノード種別取得と起動時のデバイス情報です。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T13:20:31.929Z",
+      "line": 37807,
+      "byte_offset": 124047597,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "41fddce9dd77f0948a67254a442946067927eef856a18cbd67da9decd430c7d9",
+      "metric_lines": [
+        "推論全体の速度は未再測定で、PP 1000／TG 70 token/sは未達確認です。残るAPI・カーネル接続を進めます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T14:25:28.659Z",
+      "line": 38530,
+      "byte_offset": 127182975,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "733e2b9a5843e534cf2c4aacb1f3b063aa7d13f85898cf067f7541103b4d7bdc",
+      "metric_lines": [
+        "推論全体の速度は未測定です。prefill 1000 token/s・TG 70 token/sの目標は継続し、残るデバイス情報・GEMM・カーネル接続を進めます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T17:32:23.451Z",
+      "line": 40652,
+      "byte_offset": 137887436,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "3b0a0e3b907dffdd74253671222b818cc0c60015bd8f3d2d5999b3386bcff2e1",
+      "metric_lines": [
+        "JIT と B570 専用 AOT の両方で、関連する 21 テストが全て通過しました。新しい検証は 944 ケース、649 回のグラフ再実行を含み、GDN の永続状態と PLE の履歴も確認しています。測定環境・失敗原因・検証範囲を記録し、変更を commit／push します。PP 1000・TG 70 の目標は引き続き未達です。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T18:31:13.367Z",
+      "line": 41374,
+      "byte_offset": 141625573,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "0db21ecc217ef4d62fcb4b001d84c8e9498c63ad0b333afd84d424c1a7b06a13",
+      "metric_lines": [
+        "更新後も、この B570／Ryzen 5 5600X 向けの最適化を続けます。公式実装の動作・数値検証と PP/TG の実測を基準にし、目標の prefill 1000 token/s・TG 70 token/s に向けてチューニングします。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T20:16:36.103Z",
+      "line": 42817,
+      "byte_offset": 148128601,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "8c2bc99fc5629d4f1073ca28c42997792c138f5ee6d62234a7d3b40fd6ff6a2f",
+      "metric_lines": [
+        "新しい実装での初回測定は、通常設定の 128 トークン生成が **17.58 tok/s**、826 トークンの prefill が **65.86 tok/s** でした。目標にはまだ届いていません。次は長いプロンプトでの処理時間と投機ウィンドウの設定を測り、GPU 処理と専門家転送のどちらを優先して改善するか判断します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T20:21:43.800Z",
+      "line": 42883,
+      "byte_offset": 148456892,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "807433de3bb328fbd9041233a99e59e1e4fbd19b041545c12aca4a8b04595439",
+      "metric_lines": [
+        "4,007トークンの長い入力も完走し、prefillは181.36 tok/sでした。生成した8トークンは既存の期待値と一致しています。次は転送の待ち時間と投機実行の設定を測り、B570で改善できる箇所を絞ります。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T22:34:16.342Z",
+      "line": 44569,
+      "byte_offset": 156827017,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "56a103f17310118cbf733dde721a3bb4554885559c8169e89f36ec9cbec8efb6",
+      "metric_lines": [
+        "通常prefillでも、二組とも8k入力は460〜461 tok/sから467〜468 tok/sへ改善しています。計測フックなしで約1.5%の差が出ており、全248,320ロジットも一致しています。三組目でばらつきを確認してから結果を確定します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T22:37:44.412Z",
+      "line": 44638,
+      "byte_offset": 157038409,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "686326e7402875968eb6b53462202047bce29d521279f418fafab86e2d1d095f",
+      "metric_lines": [
+        "三組目も同じ傾向でした。8kの通常prefillは中央値で460.53→467.93 tok/s、時間は17.560→17.283秒です。目標の1,000 tok/sにはまだ届いていません。結果を保存し、次のカーネル候補と常駐計測の検証用ビルドに進みます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T23:13:27.395Z",
+      "line": 45218,
+      "byte_offset": 159069176,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "11094bb90ce880ea4227cc52a0243456a5f1f1e959739b638904d80987dc00f1",
+      "metric_lines": [
+        "通常のMTP付きサーバーも、4件の生成・再利用・復元テストに合格しました。変更と検証記録は作業ブランチに保存済みです。通常CLIの8k測定も進んでおり、最初の構成は468 tok/sで元の全logitと一致しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T23:15:21.001Z",
+      "line": 45280,
+      "byte_offset": 159224350,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "2c970ac4ea8f43069fb123a9eaf764510b0c5ae4653dd049a25bd26651e27722",
+      "metric_lines": [
+        "通常CLIでは、top-kありの最初の2回が471.4・471.6 tok/sで、どちらも全logitが一致しています。比較順序を入れ替えた残りの測定を続けます。並行して、MoEの多数の小さなFP16行列積をまとめて投入できるか、既存のoneMKL APIを調べています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-04T23:18:09.972Z",
+      "line": 45335,
+      "byte_offset": 159363724,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "2c58f8bfd865ae0fa324abcd9ecbbfe29126cd3636f8a6dc859f9731e24816fe",
+      "metric_lines": [
+        "通常CLIの3組の比較が完了しました。8kの中央値は468.07→471.64 tok/s、時間短縮は0.76%で、6回すべて全logitが一致しました。次はB570向けAOTビルドを更新し、入力長に対する処理時間の増え方を改善する調査を続けます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-05T00:22:15.651Z",
+      "line": 46280,
+      "byte_offset": 162681057,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "6c65d10e8700e0487d6924f41a74297d9d815935847db4fc01fc5d0204c01562",
+      "metric_lines": [
+        "通常 CLI の 3 組の比較が完了しました。中央値は 8k で 471.79 → 474.69 token/s、所要時間は 0.61% 短縮し、全 12 回の logits が一致しました。長い入力の生成テストは、未完のユーザー発話として入力を渡していたため終了トークンで止まりました。会話テンプレートを閉じ、assistant の開始を追加して再実行しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-05T01:36:36.380Z",
+      "line": 47153,
+      "byte_offset": 165520070,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "dca359b95dd276d12c029a8d5492bed36da2035355d309890205a0f3d5e369af",
+      "metric_lines": [
+        "3 組の比較が完了し、8K の中央値は 17.035→16.924 秒、全体の prefill は 474.74→477.84 token/s になりました。短縮率は約 0.65% で、12 回すべて全 logits が一致しています。4K→8K の追加処理速度も 1,128.6→1,146.4 token/s に改善しましたが、全体の目標 1,000 token/s にはまだ届いていません。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-05T02:56:54.969Z",
+      "line": 47957,
+      "byte_offset": 168152810,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "852f0a6b236dc17bed103bc9a3eca70e277d9d4f611e91bc106ea4aab06bff2f",
+      "metric_lines": [
+        "8Kでの作業バッファ確保量は約970MiB減りました。通常実行の最初の比較は元の実装475.22 tok/s、省メモリ版474.14 tok/sで、まだ速度改善とは言えません。長入力の測定を進めながら、計算の前後で使い終わるバッファをさらに再利用できるか確認しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-05T03:07:02.682Z",
+      "line": 48079,
+      "byte_offset": 168544999,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "7c8fdfbe11fb9a2cb9b852d8e915c37a57014500fb7b4057e7dcbc76d08e7af4",
+      "metric_lines": [
+        "長入力の基準値が取れました。同じ4Kチャンクで、32Kは294.45 tok/s、64Kは283.67 tok/sでした。64Kでは16チャンクを使い、expert転送量は約740GBに達しています。大きなチャンクを収めて転送回数を減らす方向を、出力一致の検証と併せて進めます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-05T04:37:30.145Z",
+      "line": 49039,
+      "byte_offset": 172043991,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "e8eca837057a16a358d4a863c2d07c7d84b03bb6c50822071c98d13ff49ddd82",
+      "metric_lines": [
+        "64kでもlogitsは完全一致し、prefillは235.7秒から198.8秒へ短縮しました（278→330 token/s）。重みと中間値を合わせたRAM↔VRAM転送は739.6 GBから302.6 GBへ減っています。次は中間値の一部をVRAMに残して、39.99秒かかっている中間値のDMAを減らします。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-05T05:02:54.030Z",
+      "line": 49599,
+      "byte_offset": 173862893,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "3a351fa6584b7645938af41e5115c668ea5f56e8c261312075586a94dbff4398",
+      "metric_lines": [
+        "32K入力では、全残差をVRAMに置くことで、測定時の処理時間が112.6秒から86.3秒、約380 tok/sになりました。残差のホスト転送はゼロになり、VRAM内コピーは約0.76秒でした。全出力も元の実装と一致しています。次は64Kで半分の残差をVRAMに置く場合を測っています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-05T05:24:01.026Z",
+      "line": 49874,
+      "byte_offset": 174994198,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "ebb2438f5a84903153ff819ed61969fd55aba88380ae1b8b681f69aa74ec75a8",
+      "metric_lines": [
+        "32K入力の元実装は8Kチャンクで約412 token/sでした。新実装も32K分の中間値をGPUに保持した状態で動作しており、ここまでのVRAM観測値は約9.77 GiBです。速度の比較と全logitの一致確認を続けます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-05T05:26:29.025Z",
+      "line": 49921,
+      "byte_offset": 175481133,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "4115866a18063df40e352f33fa24a727f4f16523c43b6cdfd409a9aaabec1a01",
+      "metric_lines": [
+        "32K入力では、新実装が約440 token/sとなり、元実装の約412 token/sから改善しました。248,320個すべてのlogitと出力IDはビット単位で一致しています。専門家重みの転送量は約190 GBから50 GBに減りましたが、PLEのSSD読み込み待ちは残っています。64K入力を確認した後、計測用タイマーを外して再測定します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-05T05:30:35.668Z",
+      "line": 50014,
+      "byte_offset": 175712228,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "3371b6a96973403991e820253e5c968d3f1dbd6159251c0cedb3e3eb6cfc0027",
+      "metric_lines": [
+        "64K入力の元実装は約417 token/sでした。新実装では入力の前半32K分をGPUに、残りをRAMに保持して測定中です。実装はコミット・push済みで、測定結果と一致検証の記録を整理しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-05T05:33:58.230Z",
+      "line": 50042,
+      "byte_offset": 175783382,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "306a207779b994f4b8f5dc0e87dd3e1c860fbefc4b6e38f07b9f3d3710be7042",
+      "metric_lines": [
+        "64K入力は両実装とも約417 token/sで、8Kチャンクでは速度差がありませんでした。全logitと出力IDは一致しています。転送量の削減が、そのまま全体の速度向上にはつながっていません。32K入力の改善幅を通常計測で確認し、残っているSSD待ちとGPU計算を次の対象にします。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-05T07:59:32.805Z",
+      "line": 51178,
+      "byte_offset": 179309332,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "aa14cd601c6e90e1cdddc99a083ce04fd01a3743bb90179f7264807d89616f1f",
+      "metric_lines": [
+        "AOT版の32K入力・8Kチャンク測定は **646.9 token/s** で、元の全出力と一致しました。ただし、今回はPLE読み込み待ちが以前より大幅に短くなっています。ストレージのキャッシュ状態を確認し、元の処理との比較は同じ状態で3組測定します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-05T08:10:11.551Z",
+      "line": 51241,
+      "byte_offset": 179490839,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "25a5def186e27f5c484641b03fc2a6a9050358b0f82b7e7abe1182a5c5d968b6",
+      "metric_lines": [
+        "同じ条件での32K入力・8Kチャンク比較を3組測定しました。中央値は、元の処理が **453.3 token/s**、layer-majorが **645.8 token/s** で、prefill時間は **29.8%短縮**しました。6回すべてで全出力が一致しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-05T08:17:00.703Z",
+      "line": 51290,
+      "byte_offset": 179587292,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "a33ed831a6adfaf55d48068a97a1aaaec2b59261b396eca594ecc438fbcffc90",
+      "metric_lines": [
+        "長文測定がすべて完了し、埋め込みサービスも再開しました。RAM常駐PLEでは32K入力が **652.2 token/s** でしたが、今回はdirect方式のPLE読み取りも速く、差は約1%の単発観測です。RAM方式の追加効果は、今回の条件だけでは確定できません。",
+        "PP 1000／TG 70にはまだ届いていません。確実に確認できたlayer-majorの改善と検証結果をまとめ、次の最適化へ進めます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-05T08:32:29.114Z",
+      "line": 51417,
+      "byte_offset": 180227242,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "fdc8ba84ca1369fa4a5222f8609652fd4b0ed98e5845df2be95c426e587a1591",
+      "metric_lines": [
+        "同条件の32K入力比較では、転送を減らした変更で**453→646 token/s**に改善し、全出力が一致しました。検証結果を含む[PR #6](https://github.com/yqYo1/Strata/pull/6)をマージ済みです。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-05T08:32:35.270Z",
+      "line": 51425,
+      "byte_offset": 180241579,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "ba42416210a3f03a3444c0cec23cb48c999452b5285b750dc0a69a056c43496b",
+      "metric_lines": [
+        "前のターンでは比較測定とPRの統合まで完了しました。次は、CPU側のexpert読み出しに関わるメモリ配置と、GPUの逆量子化処理を調べます。PP 1000／TG 70の目標は維持し、出力が一致する改善だけを採用します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-05T08:40:07.223Z",
+      "line": 51555,
+      "byte_offset": 180994386,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "272afcf68c60b7a9900e84fb9a6ae8ec90f398951ffc3d683dafdfd17d95e7d1",
+      "metric_lines": [
+        "THPを有効にすると、expert用RAMの約46.77 GiBが実際に巨大ページで確保されました。最初の比較では全248,320個の出力logit、生成ID、logprobが一致しています。ただし生成速度は約7.3 token/sで差が小さいため、順序を入れ替えた反復測定を続けています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-05T08:48:28.308Z",
+      "line": 51666,
+      "byte_offset": 181300963,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "775bc2f8182eedefd12992d0c4b087d60f651a29ee673a46182e2578f33841cb",
+      "metric_lines": [
+        "PCIeへ回す割合を下げると、生成速度が大きく改善しました。同じ64-token生成では、55%設定の約7.3 token/sに対し、0%設定は約14.8〜15.4 token/sでした。各割合について、反復生成とTHPの有無でID・logprobが一致しています。次は0%設定を固定し、THPと既存のAVX2 gatherの効果を切り分けます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-05T08:54:59.051Z",
+      "line": 51730,
+      "byte_offset": 181473097,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "f5144e05339e9f5ef3b08d376af3e25aedf5159582db01d676dd601e2609a4c4",
+      "metric_lines": [
+        "CPUへ寄せた設定では、THPあり・なしとも約15〜16 token/sです。AVX2 gatherは今のところ改善を示していません。全出力が一致することは確認できているので、最後の組まで測定してから、効果のある設定と効果が確認できない設定を記録します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-05T08:56:58.590Z",
+      "line": 51746,
+      "byte_offset": 181511420,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "f2a1d45f6ae7ad7d2fa8e9c9c935565e659943802ff8eb1c3b2d7ae9ac2ff393",
+      "metric_lines": [
+        "32K入力・8Kチャンクの同条件3組比較では、中央値が **453→646 token/s**、処理時間が **29.8%短縮**しました。全logit・内部状態のバイト一致、AOT版とMTPの検証も通っています。ただし、先に測った64K入力では速度改善が出ておらず、PP 1000には未到達です。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-05T10:38:58.238Z",
+      "line": 52631,
+      "byte_offset": 184851322,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "ccf9a3a843b3cfdebdc54f90fe350b807f6323a0c40f2ceaf80741c9543838ab",
+      "metric_lines": [
+        "64K全残差をVRAMに置いた処理は完了し、全語彙の出力も対照と一致しました。単発測定では約540 token/sで、32K分だけVRAMに置く対照は約465 token/sでした。残差のRAM往復は126.2 GBから0になっています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-05T10:45:18.633Z",
+      "line": 52682,
+      "byte_offset": 184980326,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "2f6e29b0fc1e05a5bbff50789e7026e339721670caecca8ed16296957ffca897",
+      "metric_lines": [
+        "保持時の最大量も確認できました。今回の64K入力・4Kチャンクでは、キャッシュ保持で56K分、半分解放で60K分、全解放で64K分の残差をVRAMに置けました。単発速度は順に約520、533、540 token/sで、全語彙の出力は一致しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-05T11:13:44.056Z",
+      "line": 52864,
+      "byte_offset": 185447729,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "4dd5629367488653fab36a70f21519b90272a01bd28c2419583a27202768befa",
+      "metric_lines": [
+        "比較結果と修正をPRにまとめました。今回の構成では固定アドレスへのRAM直接復元を有力候補にします。prefill目標の1000 token/sはまだ未達なので、次は反復測定と残る中間バッファの削減を進めます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-05T11:21:36.069Z",
+      "line": 52929,
+      "byte_offset": 185554690,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "364bdf5ccb058079a2e4903e13aaf3241dfe216ff907780a81ecd8e5facee3ba",
+      "metric_lines": [
+        "64K入力・4Kチャンクでは、保持／半分解放／全解放で約520／533／540 token/s。出力・状態・復元した重みの一致も確認し、[GitHub PR #8](https://github.com/yqYo1/Strata/pull/8)に反映しました。速度差は反復測定で確認が必要です。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-05T12:49:59.932Z",
+      "line": 53618,
+      "byte_offset": 188758857,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "8afcf455c5b9778b100f651b3052dba8af3bdea0e17370bfc9aa7331fff4f618",
+      "metric_lines": [
+        "既定では無効のビルド設定として、[PR #9](https://github.com/yqYo1/Strata/pull/9) に保存しました。推論全体のTG向上と256Kを使い切る検証は、GPU復旧待ちで未確認です。PP 1000／TG 70の目標は引き続き未達です。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-05T14:32:17.834Z",
+      "line": 54356,
+      "byte_offset": 191691093,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "35c27ec09a359cc1b66a075ba3971bf9684580ca411e7789b39a4051f2e60939",
+      "metric_lines": [
+        "実際の256K検証はGPU復旧待ちです。PP 1000・TG 70の目標も未達です。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-06T03:22:49.598Z",
+      "line": 55653,
+      "byte_offset": 199146369,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "72e8431b70b68c5d56b385620136f0d919b49d562bf2e88c03beaedcfa292153",
+      "metric_lines": [
+        "`SYCL_CACHE_PERSISTENT=0` だけを変えると、同じ `llama-bench` がGPUで最後まで完走しました。Qwen3 0.6BではPP約13,118 token/s、TG約320 token/sで、xeの障害ログもありません。今回のクラッシュと同じキャッシュ処理の不具合は、Intel側でも報告・修正されています。[該当する報告](https://github.com/intel/llvm/issues/21972)"
+      ]
+    },
+    {
+      "timestamp": "2026-10-06T04:42:49.926Z",
+      "line": 56378,
+      "byte_offset": 202682712,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "c99c1ce3d29922f1ebd5fa5e86f90d415b7a6ed74e8d0cfaed77554b9311efb6",
+      "metric_lines": [
+        "測定プロセスは停止しておらず、待っている間に完走していました。262,142入力＋2出力で262,144のコンテキストを使い切り、終了コード0、新しいxe障害なしです。prefillは195.58 token/sでした。結果を保存し、続けて通常MTPで末尾のKVセルまで使う検証に進みます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-07T06:06:56.880Z",
+      "line": 70408,
+      "byte_offset": 276298728,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "9dc77168d6900dddb39b593ca2db354bec649851bab7ba711d57930f707f5e06",
+      "metric_lines": [
+        "計測自体で約30%遅くなるため、改善は非計測実行で判定します。[測定記録](https://github.com/yqYo1/Strata/blob/sync/upstream-2026-10-05/bench/results/2026-10-05-sycl-prefill-scaling/gpu-stall-diagnosis/profiling-20261007/README.md)はPR #9に保存しました。256Kでのdecode復元時のVRAM不足は引き続き修正対象です。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-07T15:51:12.723Z",
+      "line": 75604,
+      "byte_offset": 308885921,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "c0870d56be367bdff0e9d27045e7e6154413a1bbc53f4d1413cb920945898482",
+      "metric_lines": [
+        "最終版も4件すべてで更新前のlogitまで完全一致しました。未改変のfork元の最初の速度測定は、37トークン入力・64トークン出力でprefill約10.3 tok/s、decode約14.4 tok/sでした。起動後の初回なので、JITやグラフ準備を含む値です。同じ短い入力で更新候補も測り、もう1巡比較します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-07T15:56:51.230Z",
+      "line": 75639,
+      "byte_offset": 308978115,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "4a7fa9726b1fe73cb707513e07fd621e5e38ce51a9af8451eafcf00932060213",
+      "metric_lines": [
+        "2巡の測定では、未改変版の短い初回prefillは約10.3 tok/sでした。一方、こちらの従来のチューニング設定では約1.5 tok/sです。decodeもPCIe shareを0.55にした設定の方が遅い結果が出ています。設定差があるため、更新候補も追加のチューニング用環境変数を外して比較します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-07T17:10:50.749Z",
+      "line": 76184,
+      "byte_offset": 311553441,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "ca69693182649cee5de8cc0a28e20802077f4d087d84ef090ab3748beb8da125",
+      "metric_lines": [
+        "最初のログなし測定では、未改変のfork元は32Kのprefillが393.5 tok/s、64トークンのdecodeが17.1 tok/sでした。ログ付き確認と出力・logprobも一致しています。候補側の測定と、順序を反転した2回目を続けています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-07T17:19:47.489Z",
+      "line": 76248,
+      "byte_offset": 311959091,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "0ac327851de7524b87b061af2ed940beba3bb078617a6380f101f7742dafbeff",
+      "metric_lines": [
+        "2回ずつの測定が終わりました。fork元はprefillが393.5／393.8 tok/sで、ログ付き確認を含めて出力とlogprobが一致しました。候補は337.2／332.7 tok/sですが、候補の1回目だけ出力が異なるため参考値として保存します。全実行が正常終了し、新しいxe障害はありませんでした。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-07T17:23:14.433Z",
+      "line": 76284,
+      "byte_offset": 312137252,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "4f4a73a28bc895575d3bff614400730978a66609ce29e6e73d9baf094d5db463",
+      "metric_lines": [
+        "| 未改変のfork元 | 393.7 tok/s | 17.14 tok/s |",
+        "| 取り込み候補（参考値） | 334.9 tok/s | 16.96 tok/s |"
+      ]
+    },
+    {
+      "timestamp": "2026-10-07T19:07:19.860Z",
+      "line": 77204,
+      "byte_offset": 316615144,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "dd4a374c9d33a2ba2ebad4563aa98ce13880673aabde0a1a6983280c1d4ffdf7",
+      "metric_lines": [
+        "調査記録はPRに反映中です。現時点で有効な32Kの基準値は、パッチなしのfork元でprefill約394 tok/s、decode約17.1 tok/sです。こちらの枝は同じ設定でも内部状態が変わる実行があるため、その時間を改善の根拠には使っていません。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-07T19:54:06.458Z",
+      "line": 77635,
+      "byte_offset": 318209137,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "149b09acb168fbc34785cbadf2e54f965ed1bd57bfa7edbcdb9897fdf388a720",
+      "metric_lines": [
+        "速度比較は**32,768入力トークン以上**に統一しました。パッチなしのfork元では、32Kでprefill **393.65 tok/s**、decode **17.14 tok/s**でした。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-07T20:46:44.185Z",
+      "line": 78029,
+      "byte_offset": 320093290,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "bc1ca2705c6e3459cce934e06181fda7393c41615121bf9afa717b82ef63dfb6",
+      "metric_lines": [
+        "32Kの速度測定は、現行候補がprefill約408.5 tok/s、同期指定を外した候補が約408.6 tok/sでした。1回目同士では差がほぼありません。反復測定を続け、転送イベントの変換を無効化する設定も不要かどうか、同じ32K条件で別途確認します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-07T20:50:36.784Z",
+      "line": 78076,
+      "byte_offset": 320343193,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "93a34988e01d10a6f88f4a08c3156da85b61966187cab3ff8b96882c03616770",
+      "metric_lines": [
+        "32Kの比較が完了しました。prefillの平均は現行候補406.8 tok/s、同期指定を外した候補408.5 tok/sで、差は現行候補の反復間のばらつきより小さく、速度向上とは判断できません。4回とも出力が一致し、正常終了しました。現在はイベント変換を既定設定に戻した候補を検証しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-07T21:07:46.605Z",
+      "line": 78257,
+      "byte_offset": 321070691,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "40d97fe1b5b2b8c9fc8802fe80ff11298882878deacf6a6a09b8b147f97804f9",
+      "metric_lines": [
+        "今回の実験候補は32Kでprefill約407 tok/s、decode約17 tok/s。同期指定を外す効果は測定のばらつきの範囲でした。13回すべて正常終了し、新しいGPU障害の記録はありません。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-07T21:54:30.067Z",
+      "line": 78672,
+      "byte_offset": 323695428,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "d75f6996bba9bac50e44a99a5c8187ddd24bf7e06f8f719394f5b812da6dff87",
+      "metric_lines": [
+        "最初の比較では、通常設定と変更設定はどちらもprefill約408 token/sで、差はほぼありませんでした。残りの反復で変動幅を確認します。カーネル投入回数が多いというだけで、attentionのまとめ方が主な制約だとは言えない結果です。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-07T21:56:26.915Z",
+      "line": 78699,
+      "byte_offset": 323732965,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "86a62f391993b27b1641b5538d5a7f065667221e98b9cfb880478d8d5ba017c4",
+      "metric_lines": [
+        "変更設定の2回ともprefillは約408〜409 token/sで、大きな改善は出ていません。最後の通常設定を測り終えたら結果を保存し、当初の処理順変更と、decode用領域の解放・復元を使うチューニングに戻ります。256Kでの再利用・復元の検証も引き続き必要です。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-07T21:58:26.785Z",
+      "line": 78723,
+      "byte_offset": 323757427,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "0073c163a98c9bf070ccd0bb12cebb9ca0fb44a1e7e08d451a3108829b5cb494",
+      "metric_lines": [
+        "比較が終わりました。32K入力でのprefill平均は通常設定408.30、変更設定408.36 token/sで、差は約0.014%でした。速度向上を示す結果ではありません。全検証の中間状態・出力は一致し、正常終了しました。結果を記録して次のチューニングに進みます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-07T22:06:16.327Z",
+      "line": 78826,
+      "byte_offset": 324133535,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "a2d8d76fac9fe9fbd9f5140fb228a256142e113090b9512c7190edd73ccb0daa",
+      "metric_lines": [
+        "今回の32K比較は通常408.30 → 変更408.36 token/s（+0.014%）で、有効な改善は確認できませんでした。事前検証の中間状態・出力は完全一致し、全実行が正常終了しています。結果は[PR #9](https://github.com/yqYo1/Strata/pull/9)に保存しました。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-07T22:51:18.345Z",
+      "line": 79273,
+      "byte_offset": 326569383,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "83662d690adb574e5103344267259409066c4779247738ad2d54fa5c8b01ac3f",
+      "metric_lines": [
+        "32K比較が完了しました。prefillの平均は通常処理408.28、RAM保持338.11、GPU保持422.59 token/sでした。GPU保持は平均で3.5%上ですが、2回のばらつきが約11%あり、再現性のある改善とはまだ判断できません。状態・出力は一致し、15回すべて正常終了、新しいxe障害もありませんでした。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-07T23:52:09.234Z",
+      "line": 79792,
+      "byte_offset": 328318342,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "3800bb1fd875942848cef97e798c6d204c4424dfb46adff239a3d5a6bfaf5118",
+      "metric_lines": [
+        "保存データからの復元も含め、4条件・計12回の状態／出力検証が通りました。現在はログ・照合を外した速度測定の折り返しです。各条件の1回目はprefillが433〜444 token/sでしたが、順序を逆にした2回目まで終えてから比較します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-08T00:03:12.043Z",
+      "line": 79864,
+      "byte_offset": 328581005,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "73d588e6699337eb854ca8ed9c6fcfd20cd0a5eff029bc68cc15d31500e3f5f3",
+      "metric_lines": [
+        "速度比較も完了しました。prefill平均は保持443.28、半分解放＋RAM復元443.76、全解放＋RAM復元433.31、全解放＋保存データ復元442.24 token/sでした。チャンクサイズを固定した今回の条件では、解放による改善は確認できません。解放で増えたVRAMを大きなチャンクに使う条件は、次に別途検証します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-08T03:00:45.834Z",
+      "line": 81527,
+      "byte_offset": 335511332,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "e9335d4579791b967160a25809cabed54b86bbfbb9251f468f6fa90a557a4070",
+      "metric_lines": [
+        "前のターンでは、32Kの繰り返し検証を完了し、KVストリーミングの修正候補をコンパイルできました。今回はホスト側KVの寿命・復元・ステージング経路を確認し、32K入力で候補を実行します。目標のprefill 1000 / decode 70 token/sは維持します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-08T03:49:50.542Z",
+      "line": 82033,
+      "byte_offset": 337990681,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "7d5488102d263d5492e9d865c4cff73093b4ae126b8499f7a954374ea3d3269a",
+      "metric_lines": [
+        "ログなし測定のチャンク順では、32K入力のprefillが初回393 tok/s、2・3回目が約427 tok/sでした。初回コストの影響は、この入力長でも残ります。レイヤー順側も測定中で、両条件の反復が揃ってから評価します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-08T03:54:42.058Z",
+      "line": 82057,
+      "byte_offset": 338055324,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "5b88cc16e63cbd86ba60dd6cb46e84793c4dda60e4944888b275b1f1b3a83b16",
+      "metric_lines": [
+        "レイヤー順は1つ目のプロセスで初回316 tok/s、2回目429 tok/sとなり、初回と繰り返しで評価が大きく変わっています。後半の反復も測定し、初回の数値だけで採否を決めずに比較します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-08T04:00:52.667Z",
+      "line": 82099,
+      "byte_offset": 338144660,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "f5cc99373bbf554dac8f4e5f1a25fe5d7f03585f417d8b6fcaa5b2fd65922d24",
+      "metric_lines": [
+        "レイヤー順の反復測定は2プロセス分が揃い、prefillは約429 tok/sです。チャンク順の後半を測定して、差が再現するかを確認しています。256Kは上限として設定していますが、256K満杯の検証はまだなので、候補は未採用のままです。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-08T04:06:32.594Z",
+      "line": 82136,
+      "byte_offset": 338211396,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "78e0c40be76b58be82afcf1dd5166a17775e38bd0c3669a036c83ca0b05b94c3",
+      "metric_lines": [
+        "全18回の32K実行が完了し、出力一致・正常終了・新しいxe障害なしを確認しました。ログなしの反復測定では、両方のprefillが約428～429 tok/sで、今回の条件ではレイヤー順による大きな改善は見られません。結果を保存し、256K満杯検証が未完了であることも明記します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-08T04:16:41.951Z",
+      "line": 82227,
+      "byte_offset": 338648075,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "9ae3f6ec79008130ac8d39fe14b5c13ad59ac5dc1a691163464d539100652208",
+      "metric_lines": [
+        "| チャンク順 | 427.5 tok/s | 18.5 tok/s |",
+        "| レイヤー順＋RAM中間表現 | 429.5 tok/s | 17.9 tok/s |",
+        "[測定記録](/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/bench/results/2026-10-05-sycl-prefill-scaling/upstream-v0.1.40.2-20261008/code32k/repro32k/kv-streaming-32k-and-layer-order-v3/README.md)"
+      ]
+    },
+    {
+      "timestamp": "2026-10-08T04:17:17.607Z",
+      "line": 82237,
+      "byte_offset": 338667281,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "e98d78f43aaca141561b8bb8a768cd7dc7dd25541228371921b6bbaffe2d00ae",
+      "metric_lines": [
+        "前のターンでは、32Kの反復検証と比較測定が進みました。今回は未完了の256K満杯検証を優先します。復元経路と残っているポインター操作を確認し、必要な修正を検証したうえで最終セルまで実行します。prefill 1000／decode 70 tok/sの目標は維持します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-08T10:35:59.673Z",
+      "line": 85396,
+      "byte_offset": 354712246,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "8250e0a0c74056ace0a32282f34492be32956cf8c7943c9d1f10ca6f1e09d2a2",
+      "metric_lines": [
+        "16回すべての32K比較が完了しました。2回目以降のprefillは比較元427.51、候補427.22 token/sで、改善はありませんでした。出力の一致と正常終了は確認できたため、この待ち方の変更は性能向上策として採用せず、測定結果を保存します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-08T10:41:02.004Z",
+      "line": 85449,
+      "byte_offset": 354877954,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "293f9b738c3d4dff94700fece0978912fe0b9d8c7352e4320c58b01349f777e3",
+      "metric_lines": [
+        "初回は比較元393.71、候補390.22 token/sで、こちらも改善しませんでした。初回と以降を分けた結果、入力、ログ、実行設定を保存し、PRの測定記録にも反映しています。256Kの全容量検証はまだ完了していないため、今回の32K通過を採用条件の完了とは扱いません。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-08T10:47:26.862Z",
+      "line": 85525,
+      "byte_offset": 355359140,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "b3ddcf06ff69e6c76109c164e602a75eae31fd55bbeb2a5836516f85584873d9",
+      "metric_lines": [
+        "今回の32K×16回では、2回目以降のprefillは基準427.51、待ち方を変更した候補427.22 token/sで、改善しませんでした。全回で出力一致・正常終了を確認しましたが、この変更は採用しません。",
+        "結果は[測定記録](/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/bench/results/2026-10-05-sycl-prefill-scaling/upstream-v0.1.40.2-20261008/code32k/repro32k/poll-matched-quiet32k-v1/README.md)に保存しました。256Kの全容量検証は引き続き必要です。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-08T13:46:03.912Z",
+      "line": 86821,
+      "byte_offset": 361177149,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "7cc2d8094f662c051e464f0bf0eed353ebcf295101714019c48cb9839f6bb9ac",
+      "metric_lines": [
+        "2回目以降の32K prefillは、基準の427.24 tok/sに対して候補は432.98 tok/sで、約1.35%速くなりました。一方、decodeはこの標本では約1.9%遅く、改善したとは言えません。結果を保存したうえで、候補自身についても256K全域・再読み込み・ディスク復元の検証を進めます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-08T14:14:01.803Z",
+      "line": 87117,
+      "byte_offset": 362466396,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "c16ea6ca86915da9d6df6ea6c0eb2aff9e1071933d7cdcb8c9464b1f013fb153",
+      "metric_lines": [
+        "16回の比較では、2回目以降のprefillが **427.24 → 432.98 tok/s（+1.35%）**でした。decodeの改善は確認できていません。候補はまだ採用せず、256K全域・反復処理・ディスク復元の検証を進めています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-08T15:28:32.120Z",
+      "line": 87706,
+      "byte_offset": 364786664,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "05c819afd53b2920db0d60864db111f66c5a6996e186c9c0471bbef9180d6f1d",
+      "metric_lines": [
+        "速度比較は、入力32Kの16回分を保存済みです。2回目以降のprefillは約427→433 token/sでした。decodeは今回の集計では低下しており、各条件2プロセスの測定だけでは傾向を判断しきれません。次は32K入力で処理段階ごとの時間を測り、次の最適化対象を絞ります。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-08T18:51:44.530Z",
+      "line": 89094,
+      "byte_offset": 370972820,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "6b8072a7493f52d2a2fe5e61bca0e31b115cb78523f585ce7f277f69d6801774",
+      "metric_lines": [
+        "候補は従来版比で **prefill +6.1%、decode −1.4%**。候補と従来版の出力・logprobは一致しました。上流そのままは実際のキャッシュ数が異なるため、その影響を含む結果です。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-08T21:23:44.679Z",
+      "line": 90267,
+      "byte_offset": 376574046,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "fca107fcb22a97e2f45c1fd955ae3c736b549c730e6d975a7e7771dfa87deaf5",
+      "metric_lines": [
+        "4プロセス中3つが正常終了し、最後の従来版を測定中です。完了した統合版2プロセスでは、後続の32K prefillが約450 token/sで安定しています。decodeには読み込みごとのばらつきがあるため、最後まで測って集計します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-08T21:28:18.142Z",
+      "line": 90307,
+      "byte_offset": 376824763,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "9157b28f320696c5c3f56f2c2fecfbef2e4e61562583a9c209d9ab35bceb5441",
+      "metric_lines": [
+        "速度比較も完了し、16回すべて正常終了しました。統合版は後続の32K prefillで約450 token/s、従来版は約427 token/sでした。出力・logprob・MTP採用数も一致しています。確定した集計値を保存し、tokenizerの未実施5件を確認してから更新を作業ブランチへまとめます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-08T21:30:29.756Z",
+      "line": 90327,
+      "byte_offset": 376871165,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "9a69109770a1d2460d1297eed888e83770a6bc2ee15c732e881186557505ab61",
+      "metric_lines": [
+        "確定値では、同じ8192チャンク条件でprefillが **427.45 → 449.70 token/s（+5.20%）**、decodeが **16.59 → 16.64 token/s** でした。decodeはほぼ同等なので、今回の測定を理由にCPU/SYCLの更新を外す必要はないと判断しました。追加のtokenizerテスト5件もすべて成功しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-08T21:52:16.123Z",
+      "line": 90483,
+      "byte_offset": 377332270,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "d3c3d7118cebd965f5ba601f801f5d49ccd05e9f87abf9c0dfa2ed620d566243",
+      "metric_lines": [
+        "公式版の実キャッシュ数は144、他は128です。条件を揃えた8192では **prefill +5.20%、decodeはほぼ同等**だったため、CPU/SYCL更新も採用しました。サーバー機能も全て取り込み済みです。",
+        "[PR #9](https://github.com/yqYo1/Strata/pull/9)と[測定記録](/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009/bench/results/2026-10-05-sycl-prefill-scaling/upstream-v0.1.41-20261009/README.md)を更新済みです。元のチューニングも再開し、転送量・待ち時間を数える計測用バイナリを準備しました。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-08T21:52:36.281Z",
+      "line": 90491,
+      "byte_offset": 377347991,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "f72bb5b32f085485592e5d7dea53d74fb88f4cbbdd4530d8abc5a4fcc6739630",
+      "metric_lines": [
+        "更新版の449.70 token/sを基準に、prefillの転送量とCPU側の待ち時間を調べます。計測用バイナリの現在の状態を確認し、まず32K入力で出力と中間状態が基準版に一致するか検証します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-08T22:56:14.943Z",
+      "line": 91014,
+      "byte_offset": 380113655,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "14989aa03417fb45067ed97d82c4a8c43dbaae9bcd015bdbeef46a0178f54e19",
+      "metric_lines": [
+        "カウンター有効の1回目も完了し、後続の32K prefillは約450 token/sでした。計測による大きな速度低下は見えていません。次の候補として、expert転送だけをコピー専用エンジンへ送る変更を、独立した作業ツリーで準備します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-08T23:20:11.504Z",
+      "line": 91262,
+      "byte_offset": 381101698,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "46488a4d80d6103504ace7fa0c0a6cc8a2d6296e459feee92565576ef3c68191",
+      "metric_lines": [
+        "集計結果は、後続の32K prefillが基準449.923、カウンター有効449.748 token/sで、差は約0.039%でした。CPU側のgroupingは約48 ms、転送コマンドの発行は約1.22秒です。これらを単独で改善しても効果は小さいため、次は転送とGPU計算の重なりを検証します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-09T00:03:11.887Z",
+      "line": 91693,
+      "byte_offset": 383038538,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "8d12dfd1d55f2559278c0eb1d1f6cbae6d59627492daf9731d3686ab4d52c887",
+      "metric_lines": [
+        "サーバー機能はすべて取り込み、CPU・SYCL更新も採用しています。256Kを使い切る検証と保存・復元も通りました。[測定詳細](/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009/bench/results/2026-10-05-sycl-prefill-scaling/upstream-v0.1.41-20261009/README.md)と[PR #9](https://github.com/yqYo1/Strata/pull/9)に保存済みです。PRは未マージです。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-09T00:12:39.058Z",
+      "line": 91796,
+      "byte_offset": 384152393,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "d1351ecdc7251e17a75feef5403d317ea70a63666f5caa975eb99bd271723a73",
+      "metric_lines": [
+        "コピー専用設定の後続入力では、暫定で約541 tokens/sが出ています。基準版の約450 tokens/sから改善する兆候ですが、まだ往復比較の途中です。同じバイナリで256K全体、保存・復元、末尾の容量制限を検証できるよう準備します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-09T00:23:16.595Z",
+      "line": 91875,
+      "byte_offset": 384648958,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "a4b9bec3d6955f931d2cfeeeee508f64c10195f8bccbf39683de759c411af1a5",
+      "metric_lines": [
+        "有効設定の2回目でも、後続入力は約541 tokens/sで再現しています。生成結果とMTPの採用数も一致しています。残る無効設定・基準版の測定が終わったら集計し、改善候補として256K検証へ進めます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-09T00:30:30.960Z",
+      "line": 91940,
+      "byte_offset": 385160560,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "0de607c5d5a74817dc35049ca9a3bceda24c7ec0115c7b734e4d8dadb954c997",
+      "metric_lines": [
+        "続けていた転送キューの比較も終了し、32Kの後続入力ではprefillが449.8から541.4 tokens/sへ約20.4%改善しました。24回すべてで出力・logprob・MTPの採用数が一致しています。この候補は256K検証を通してから採用します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-09T00:32:22.127Z",
+      "line": 91972,
+      "byte_offset": 385334367,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "d4ac340de5adb757f3b1902555ee015cd2540760830d67a92a494e9ded0918b6",
+      "metric_lines": [
+        "結果を保存しています。候補を無効にした版は449.7 tokens/sで、基準版の449.8とほぼ同じでした。有効時の改善は、再ビルドによる差ではなく転送キューの切り替えによるものと判断できます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-09T00:33:54.743Z",
+      "line": 92014,
+      "byte_offset": 385440105,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "dd5d314bf5b02cf3de812094bef3475703908b1a200331e3e5bb4cba2f90d562",
+      "metric_lines": [
+        "32K比較の全記録と、同条件での無効設定との対照結果を保存しました。decodeは16.6〜16.7 tokens/s程度で、今回のばらつきから小さな差は確定できません。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-09T00:47:10.254Z",
+      "line": 92176,
+      "byte_offset": 386288407,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "0d86b769da63ef8ae4cd032e2642f3e47bfbb52d3436d85eab992cb8740b46b9",
+      "metric_lines": [
+        "追加の転送キュー改善は**541.4 tokens/s（約20.4%改善）**を再現しました。こちらは採用前の256K検証を継続中です。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-09T01:17:24.406Z",
+      "line": 92433,
+      "byte_offset": 387342041,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "6d925cde265c6626ed423f308eff5c2eefc791787867c1e9c4b1b80ec961af98",
+      "metric_lines": [
+        "次の先読み高速化に向け、スロット再利用の同期の抜けを別ブランチで修正し、24通りのCPUモデル確認を完了しました。[変更と検証記録](/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-native-stream-order-v0141-20261009/bench/results/2026-10-05-sycl-prefill-scaling/native-stream-order-v0141-20261009/README.md)。GPU上の正しさ・速度は、現行検証の完了後に測定します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-09T02:27:09.220Z",
+      "line": 93025,
+      "byte_offset": 389819829,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "5eb2e84660881add79110a8425cdf929c47a3d5a18f207f545f4f5dcc696029e",
+      "metric_lines": [
+        "転送キュー候補の256K検証が全項目通りました。全保存テンソルの一致、復元後の継続、上限での拒否、その後の32K入力と正常終了を確認しています。[検証記録](/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009/bench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/full256k/README.md)",
+        "32Kの通常測定ではprefill **541.38 tokens/s**、同条件の更新版449.78から **20.36%向上**しました。次の同期修正版も、2種類の32K入力で中間状態・出力が一致し、現在は反復検証を続けています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-09T04:06:13.649Z",
+      "line": 93796,
+      "byte_offset": 392147344,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "902c8d9a5fe9879846f69d44815f0f890374d3841570735199d8d5731604efc9",
+      "metric_lines": [
+        "prefill直後のdecodeを分けて集計すると、はっきりした低下が出ました。従来版16.826に対しONは15.464 tokens/sで、差は約−7.99%、95%信頼区間は−12.81%〜−2.90%です。これは「ばらつきの範囲」と扱えません。候補全体の採用は保留し、prefillからdecodeへの切り替えで何が影響しているかを確認します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-09T04:28:50.868Z",
+      "line": 93942,
+      "byte_offset": 392698353,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "7c12be6b091fc644a8f839b0a777ffca15bb53df397fb46ba308bb07304a496d",
+      "metric_lines": [
+        "各条件で継続decodeを72回、32K prefill直後のdecodeを6回測定しました。直後のdecodeは従来版 **16.826 → 候補15.464 tokens/s** と約8%低下し、95%信頼区間も **−12.81%〜−2.90%** でした。全回で出力は一致し、正常終了しています。",
+        "候補全体の採用は保留し、decodeは従来版を維持します。prefill高速化を活かせるよう、処理の切り替えを分離して検証します。[測定記録](/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/fix-sycl-server-env-v0141-2026-10-09/bench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/decode-repeat/README.md)"
+      ]
+    },
+    {
+      "timestamp": "2026-10-09T04:48:56.088Z",
+      "line": 94110,
+      "byte_offset": 393711758,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "3d1b838d59f518069dad7a6417189a85faf9386c666631664cac2c85fbd43b09",
+      "metric_lines": [
+        "既存のprefill処理本体、decode、CPU推論、共通ヘッダーが変わっていないことを確認しました。追加した切り替え部分を除くと、元のprefillソースと完全一致します。これから全体を同じコンパイル設定で再ビルドし、ログ付き32K入力で状態と出力を照合します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-09T09:28:50.717Z",
+      "line": 96498,
+      "byte_offset": 404125838,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "774918243861688f3a898067029d95189b2760baf12a2403968279bbf30980d6",
+      "metric_lines": [
+        "18プロセスの比較が完了しました。CPU配置変更はprefillが411.6→412.9 tok/s、復元後decodeが21.69→21.64 tok/sで、改善を確認できる結果ではなかったため採用しません。全プロセスの数値一致と正常終了は通過しました。次はCPUタスク数の実測と、新しいprefill実装の検証を順番に進めます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-10T06:28:13.052Z",
+      "line": 114911,
+      "byte_offset": 499835351,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "78fbd40ecfe126d12ceeab9024ac7c58c407338e9bc3ea5732764552ab6186ff",
+      "metric_lines": [
+        "| prefill：プロセス起動後の初回 | 約412 token/s |",
+        "| prefill：同じプロセスで新しい入力を処理 | 約450 token/s |",
+        "| decode：prefill直後 | 約16.5 token/s |",
+        "| decode：保存状態からの続き | 約21.7 token/s |",
+        "別の転送処理の候補では prefill 約541 token/sを測定しましたが、256Kの検証が残っており未採用です。今回のヘルパー改善も実モデルへの効果は未測定です。目標の prefill 1,000 / decode 70 token/sには、まだ届いていません。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-10T06:33:07.200Z",
+      "line": 114928,
+      "byte_offset": 500179029,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "744dfbf546793bc37a5f933f7f25096030b8ee0a91a57a6b6b9c44f235703c65",
+      "metric_lines": [
+        "直近の実モデルでは、約32K入力で prefill は初回約412 token/s、同じプロセスでの再実行は約450 token/sです。decode は prefill 直後が約16.5 token/s、保存状態からの再開が約21.7 token/sでした。今回の部品単位の改善は、まだこの速度には反映していません。ビルド状況と測定条件を確認しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-10T06:33:30.471Z",
+      "line": 114939,
+      "byte_offset": 500256783,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "9b00bcb95b460f2626e44e52dca58dc23316d05076d6dddf093a90a48660b979",
+      "metric_lines": [
+        "部分的には把握しています。prefill は、エキスパートの転送・ステージング経路を変更すると約450→541 token/sになったため、その経路に大きな改善余地があることは実測できています。ただし「PCIeの転送待ちが支配的」とまでは確定していません。decode も、各処理が全体の何割を占めるかを十分に切り分けられていません。測定済みの内訳を確認し、確定した点と推測を分けて説明します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-10T06:36:08.398Z",
+      "line": 114997,
+      "byte_offset": 500901843,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "ce136548cfd2f3b9a0ce77fca8fed624e31da856d3692f96bd887f4c83c510b3",
+      "metric_lines": [
+        "内訳を確認すると、decode では CPUエキスパート処理の呼び出し区間が最優先です。32K prefill 直後の測定では、1ウィンドウ平均165.4 msのうち、その区間が123.8 msありました。ただし、内部の計算・RAMアクセス・同期待ちは未分離です。",
+        "prefill は約190 GBのエキスパート転送を記録していますが、GPU待ち時間には計算も含まれるため、PCIe待ちだけの時間はまだ出せていません。全体の支配要因を確定する前に局所的な最適化が先行していました。次はこの内訳の特定を優先します。呼び出し集計用のSYCLビルドは完了しました。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-10T06:43:03.184Z",
+      "line": 115090,
+      "byte_offset": 501693909,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "db1c20cd53c826f7fa069d4853c438ae409d26b71422b0cb64f8289bfcceb6b5",
+      "metric_lines": [
+        "約541 token/sの prefill 候補には、もう一つ重要な結果がありました。prefill直後のdecodeは、独立した6組の比較で約8%遅くなっています。一方、保存状態からのdecodeでは差の方向を確定できていません。このため候補は未採用で、転送経路の変更がdecodeへの移行に及ぼす影響も調査対象です。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-10T06:45:06.914Z",
+      "line": 115119,
+      "byte_offset": 501758585,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "cae22240534af20f1856ce3cf9f7a5b9f61634aff7024e57cfefe80241b9aee0",
+      "metric_lines": [
+        "- **decode：CPUエキスパート処理が第一候補です。** 32K prefill直後では、1ウィンドウ平均165.4 msに対し、CPU処理の呼び出し区間が123.8 msでした。ただし、計算・RAMアクセス・同期待ちの内訳は未分離です。[測定内訳](/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-copy-decode-repeat-v0141-first-decode-host-counter-summary-v1.json)",
+        "- **prefill：転送・ステージング経路に大きな改善余地があります。** 約32K入力で約190 GBのエキスパート転送を記録し、経路変更で約450→541 token/sになりました。ただし、PCIe待ちが支配的なのか、コピーと計算の重ね合わせが不足しているのかは未確定です。",
+        "541 token/sの候補は、prefill直後のdecodeで約8%の低下が確認されており未採用です。",
+        "現行の実モデル速度は prefill 約412〜450、decode 約16.5〜21.7 token/sです。局所最適化が先行していたので、今は上記の内訳確定を優先しています。呼び出し集計用のビルドは完了し、調査エージェントも次の2件を並行して進めています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-10T06:56:25.363Z",
+      "line": 115251,
+      "byte_offset": 502798447,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "29800730a57a373818cd3e20fc3f062b70ae2742e2938cb1702c16566d4f12d3",
+      "metric_lines": [
+        "各処理に必要なバイト数と演算量をその実測値で割り、所要時間の下限を見積もります。そこから、処理の重ね合わせで短縮できる待ち時間と、転送量・計算量・実行先を変えないと短縮できない部分を判別します。decodeの70 token/sに必要な帯域・計算性能も、この条件で見積もります。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-10T07:22:47.798Z",
+      "line": 115672,
+      "byte_offset": 505191526,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "724241d95c5348a090a75ac6833a901be9fb854c199d78eb8f1150c703b2462d",
+      "metric_lines": [
+        "以前の32K測定で記録した約190 GBのexpert転送量をそのまま使うなら、今回の6.45 GB/sでは転送だけで約29.5秒かかります。1000 tok/sの目標時間は32.8秒なので、転送量を維持する設計では、ほかの処理をかなり重ねる必要があります。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-10T08:23:08.688Z",
+      "line": 116406,
+      "byte_offset": 510365662,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "8ce195e82964c155a5c3ee164fc55c601111a762496a59cfba6962b714276909",
+      "metric_lines": [
+        "32K入力で転送するデータが従来の約190 GBのままなら、今回の帯域で約29.5秒かかる計算です。1000 token/sの時間枠は32.8秒なので、演算との重複実行や転送量の削減が重要になります。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-10T08:52:57.683Z",
+      "line": 116829,
+      "byte_offset": 513544933,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "093cbb1fc694c399bd2afaa3f124ba1fd224a05c0ae78c5ee8c9676ddf1aa902",
+      "metric_lines": [
+        "測定値から、32K入力で1000 token/sを狙う際の制約も見えてきました。以前の約190 GBという転送量を維持すると、今回のRAM→GPU実測約6.45 GB/sでは転送だけで約29.5秒です。目標の総処理時間は32.8秒なので、演算などに残る余裕は小さくなります。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-10T10:18:38.393Z",
+      "line": 117938,
+      "byte_offset": 519562176,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "b1aebbeb105ace3a1a8d8ebeb9e006158127ef32594d71513c6f1a61639f6142",
+      "metric_lines": [
+        "以前の32K測定に出ていた約190 GBのexpert転送量を、今回の6.447 GB/sで送ると約29.5秒です。1000 tok/sの全体予算は32.8秒なので、この転送量が現行経路でも必要なら、計算との重なりか転送量削減が大きな課題になります。現行経路の転送量と重なりを測って照合するまで、順序変更だけで足りるか、データの持ち方を変える必要があるかは断定できません。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-10T11:23:59.104Z",
+      "line": 118828,
+      "byte_offset": 524666881,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "d26665c8de85e950554f058215623b37243d555db5130b009b1532b7647f1324",
+      "metric_lines": [
+        "重要なのは転送を減らした後の収支です。32K入力で重みを各層1回だけ送る想定でも、中間表現をすべてRAMに置くと、転送だけで約33.5秒になります。1000 token/sの予算は32.8秒なので、この配置では処理順の変更だけでは足りない見積もりです。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-10T12:42:53.468Z",
+      "line": 119914,
+      "byte_offset": 531797464,
+      "channel": "commentary",
+      "before_first_Xe_request": true,
+      "message_sha256": "ee879d499836dd9477aaaf3c34d54a3ed7d1e8d4483b8319156bc0d224dda067",
+      "metric_lines": [
+        "32K入力の予算で見ると、以前の約190 GBのexpert転送だけで約29.5秒になります。expertの再読み込みを減らす構成でも、残差をすべてRAMに置くと、重ね合わせができない場合は重みと残差の転送で約33.5秒になり、1000 tok/sの予算32.8秒を使い切ります。ここは処理順に加え、残差の配置や転送量の削減を検討する必要があります。２名の調査エージェントにも、測定の解釈とこの予算を別々に監査させています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-10T13:05:44.195Z",
+      "line": 120294,
+      "byte_offset": 533167654,
+      "channel": "final_answer",
+      "before_first_Xe_request": true,
+      "message_sha256": "2a191e56e3ad7b5ef14f06b44f363e86427c2905bf347ad79ac120bbb3d8bad4",
+      "metric_lines": [
+        "- 以前のexpert転送約190 GBは、実測帯域なら約29.5秒。32Kを1000 tok/sで処理する予算32.8秒の大部分を使います。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-10T14:41:09.780Z",
+      "line": 121656,
+      "byte_offset": 541755508,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "e4d1fbb42ff77e3d3188a5603161f1045f4df500201777e78e879438d85fe693",
+      "metric_lines": [
+        "了解しました。prefill 1000 tok/sの目標判定は64K程度の入力でも行います。比較では各実装に同じ入力長を使い、最低32Kという条件は維持します。起動・読み込みなどの固定費とprefill/decodeの時間を分け、エンジンに有利な条件を使った場合も明記します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-10T14:50:59.669Z",
+      "line": 121757,
+      "byte_offset": 542630876,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "aea955755c3b0c6b7f8b898cfaa13c1ed4fd7e4f55ddb1b04c90c5c670e6f439",
+      "metric_lines": [
+        "了解しました。prefillの1000 tok/s目標は、64K程度の実入力でも評価する条件にします。比較する双方で入力長と測定範囲をそろえ、固定費を含む時間とprefill処理の時間を記録します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-10T15:26:37.755Z",
+      "line": 122230,
+      "byte_offset": 545560568,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "152b763499726c10b3cecf94f215877c247e0ca2b2dd71eea620f5979b197f62",
+      "metric_lines": [
+        "1000 tok/sの目標は、実入力64Kで評価します。モデルの読み込み時間は別に記録し、prefill自体の所要時間で比較します。XeStrataとの比較は同じ64Kの入力を使い、decodeは独立して複数回測定します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-10T15:58:05.748Z",
+      "line": 122789,
+      "byte_offset": 548467388,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "1cd946b78d35c4fcc5df87c0b9051a261f14902df23427b8acc3e270768cf1c4",
+      "metric_lines": [
+        "現実装の64K測定が完了し、prefillは約404 tok/sでした。モデル読み込みの44.6秒はこの値に含めていません。生成は3トークンで停止したため、この結果だけではdecode性能を比較できません。decode用の入力を見直し、同条件で繰り返し測定します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-10T15:59:39.748Z",
+      "line": 122844,
+      "byte_offset": 548861754,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "9a035ac92385550b931a9ffeb6b6f2a4b403b34909c0610781eb94cb287b1753",
+      "metric_lines": [
+        "64Kでは、最初の8K終了時の平均約307 tok/sから、全体で約404 tok/sまで上がりました。固定費は長い入力で薄まりますが、1000 tok/sにはまだ届いていません。XeStrataは8K設定でVRAMの空きが不足したため、ソースを変更せず4Kチャンクで実行できるか確認中です。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-10T16:04:00.370Z",
+      "line": 122955,
+      "byte_offset": 549979805,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "416b629624e0b0685d5ea406534a67175f7f0cd5e08b8965558c6a3416be7e26",
+      "metric_lines": [
+        "現実装の約404 tok/sは64Kの完了測定ですが、XeStrataは比較測定を完了できていません。今回はカーネルの障害ログに、試験プロセスのPIDとGPUのアクセス失敗アドレスが残っています。失敗を引き起こした処理を絞り込むため、このログと停止時のスタックを保存します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-10T16:14:45.081Z",
+      "line": 123125,
+      "byte_offset": 550775641,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "b7d193fb1e7335620ea007df24f65ade317a13597d55a2f6931c95f525e22888",
+      "metric_lines": [
+        "1000 tok/sの評価を実入力64Kで行う条件と、初回結果をGitに保存してpushしました。今後はprefillの目標評価、decodeの繰り返し比較、256Kを使い切る検証を分けて扱います。64K入力の末尾を復元する準備処理はCPU上の検証で止まったため、GPUに渡す前に修正しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-10T16:28:27.338Z",
+      "line": 123268,
+      "byte_offset": 551471930,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "8aa7563f1226cfce5b7cab8ca7a03e5960f846efaea4319759a3dc19385d4d25",
+      "metric_lines": [
+        "64K入力でのprefillを目標判定に使います。最初の65,536トークン測定は約404 tok/sでした。decodeは3トークンで終了したため比較から外しています。タスク末尾を付けた64K入力も準備できたので、GPU障害後の状態を確認してから再測定します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-10T18:49:17.620Z",
+      "line": 125021,
+      "byte_offset": 563105945,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "c41b8ab0cac749635c7d6cbda2101cdbed81e8af64a0adfdf49981c1b9ab2dbb",
+      "metric_lines": [
+        "基準実装は約57Kまで進み、現時点のprefillは約205 tok/sです。これは測定途中の値です。完了と障害チェックを確認してから、対策済みXeStrataも同じ条件で測定します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-10T18:49:59.520Z",
+      "line": 125047,
+      "byte_offset": 563184275,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "154ed3907029a8566b689e184d9f0aadc3a10ce8109265fef766ddea61d733f3",
+      "metric_lines": [
+        "基準実装の1回目は正常終了しました。64K・4Kチャンクでprefillは204.64 tok/s、64 tokenのdecodeは8.86 tok/sでした。前後のGPU確認も通過し、新しいドライバー障害はありません。続いて対策済みXeStrataを測定します。両者を3回ずつ測り、ばらつきも確認します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-10T18:54:27.756Z",
+      "line": 125121,
+      "byte_offset": 563418965,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "f93ecb0b1e11397e31358ffda0187292755456c0635320b9c5b4d1f13e9a7585",
+      "metric_lines": [
+        "XeStrataも32Kまで進み、途中のprefillは約205 tok/sです。基準実装の1回目と近い値ですが、まだ優劣は判断できません。64K全体とdecodeを完了させてから比較します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-10T18:56:41.991Z",
+      "line": 125152,
+      "byte_offset": 563479812,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "37195c3463d590e4f35fc368fbea80b56f51aad214c98788ecbd131effe2bf1c",
+      "metric_lines": [
+        "1回目は、基準実装がprefill 204.64／decode 8.86 tok/s、対策済みXeStrataが205.20／11.61 tok/sでした。両者とも64 tokenまで正常終了しました。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-10T19:03:33.222Z",
+      "line": 125261,
+      "byte_offset": 563743139,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "66f3f332df6cf0a449b7d101eca949f14ec9eab5b67d212e4c7d8fd9ed5ba813",
+      "metric_lines": [
+        "XeStrataの2回目も正常終了し、prefillは208.70 tok/s、decodeは10.31 tok/sでした。1回目と生成token・logprobはすべて一致しましたが、decodeの速度には差が出ています。基準実装の2回目も続け、個々の値と範囲を比較します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-10T19:07:05.289Z",
+      "line": 125332,
+      "byte_offset": 564081980,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "5bf8566b20dcf03aa6c7694f5b6fd6a4418160a3debf34c8b56abebe5bb297a1",
+      "metric_lines": [
+        "基準実装の2回目は約41Kまで進み、途中のprefillは約199 tok/sです。prefillにも数％の変動があるため、XeStrataとの差は最終値を3組そろえて判断します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-10T19:09:15.139Z",
+      "line": 125358,
+      "byte_offset": 564152559,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "e4ba76f6c16ed320ec6847472a2b9e9c98b089a625f3529e2b8be94bea869235",
+      "metric_lines": [
+        "基準実装の2回目は64Kのprefillを完了し、約198.2 tok/sでした。今はdecodeと終了後の確認中です。同じ入力で、各実装内の出力が反復ごとに変わらないかも確認しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-10T19:56:29.008Z",
+      "line": 126120,
+      "byte_offset": 568700049,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "a9e39579c9a2bfb97538e8ca994a427f4f34e5eb845229621aaa0d5d7275f059",
+      "metric_lines": [
+        "旧XeStrata版の64K比較は各3回完了しています。中央値は現行側が prefill 201.3 / decode 8.86 tok/s、修正版Xe側が 205.2 / 10.73 tok/s でした。生成結果やMTPの採用率が異なるため、decodeの差をそのまま採用根拠にはできません。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-11T02:17:08.927Z",
+      "line": 128679,
+      "byte_offset": 584815513,
+      "channel": "final_answer",
+      "before_first_Xe_request": false,
+      "message_sha256": "127c709481ab6ecde39c06f1cd5c16212ea0b31a67386d5067124862e0413172",
+      "metric_lines": [
+        "箱出し設定だけではありませんでしたが、**本家単体で設定を探索し、最適値を選んだ証拠は不足しています**。prefill・decode別の設定調整、要求値と実効値の確認、32K以上での再測定（decodeは3回以上）を未完了項目として残し、commit・push済みです。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-11T02:46:44.405Z",
+      "line": 129278,
+      "byte_offset": 587233849,
+      "channel": "final_answer",
+      "before_first_Xe_request": false,
+      "message_sha256": "024444b07d660cdf082a2454009625ab20199299aa64f3b27c0afc887c2bedd0",
+      "metric_lines": [
+        "過去の本家測定は箱出し設定だけではありません。ただし、本家単体で設定を探索して最適値を選んだ証拠は不足しています。prefill・decodeを個別に調整し、32K以上で独立した再検証を行う項目を残しました。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-11T05:37:25.799Z",
+      "line": 132102,
+      "byte_offset": 601408640,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "beaef224a6783533463d7beb63300ba76a2e82cc4001cf8eebedccefcceddc61",
+      "metric_lines": [
+        "phase計測を外した32K測定も進めています。ここまでの処理速度は約210 tok/sで、計測を有効にした実行よりかなり速くなっています。時間集計の負荷を分離して記録するため、実装エージェントにも診断用のカウンター追加を依頼しました。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-11T05:49:03.629Z",
+      "line": 132287,
+      "byte_offset": 602740707,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "412f5edde507b77f4da5b0dac91b63e8ec50df143324a404f255aace774ad001",
+      "metric_lines": [
+        "判定を修正した1回目の32K測定は合格しました。prefillは217.1 tok/s、初回のグラフ作成を含むcold decodeは8.5 tok/sで、新しいGPU障害はありません。残り2回を同じ設定で測定して、ばらつきを確認します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-11T05:49:16.470Z",
+      "line": 132298,
+      "byte_offset": 602820639,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "01d0633965a4a6664dc77d9d3d64cc9db5e334cd38e57f1fd17f7598468b0ce9",
+      "metric_lines": [
+        "先ほどのcold decode値は、失敗扱いの旧実行の値を引用していました。合格した1回目の値は **8.21 tok/s** です。集計には合格した実行だけを使います。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-11T05:52:34.942Z",
+      "line": 132385,
+      "byte_offset": 603232012,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "54d87aebdd06e623253f628adcc1c1222e9a72f1c3cfe1c286c81ed34e36e502",
+      "metric_lines": [
+        "2回目も正常終了し、prefillは216.7 tok/sでした。3回目を実行中です。計測ありの実行で付いた「host grouping」「dequant」という区間名には、待ちや計測処理も含まれるため、計算や転送のボトルネックとはまだ断定していません。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-11T05:56:40.921Z",
+      "line": 132458,
+      "byte_offset": 603622931,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "7155f99a4f63405780b916da16885d866b7eb87037276c1659b58f1c244e0ca4",
+      "metric_lines": [
+        "3回とも合格し、新しいGPU障害はありませんでした。32Kのprefill平均は216.2 tok/s、cold decode平均は8.83 tok/sです。個別値とばらつきをGitに残し、閉じた実行の重複ログを整理します。計測負荷と転送量を確認する診断コードは受領・レビュー済みで、まだビルドと実行の検証前です。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-11T05:56:57.574Z",
+      "line": 132467,
+      "byte_offset": 603638055,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "f4cd459e0a407a4d69ae90014ffc7b543bf3fd3a7fa72adc529a94b1f53d1e3b",
+      "metric_lines": [
+        "cold decodeの平均を訂正します。確定した集計は **8.60 tok/s（標本標準偏差0.43）** です。prefillは **216.16 tok/s（標本標準偏差1.37）** でした。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-11T06:53:39.687Z",
+      "line": 133295,
+      "byte_offset": 607764861,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "2141b22c0a582b0da05d6cb9fa5371ee472046c7abde39e32019997e1b6afebe",
+      "metric_lines": [
+        "転送リングを広げた32K測定は約216 tok/sで、速度はほぼ変わりませんでした。整列したデータのgatherは既に1カーネルで、グループ化も既定で有効でした。次はチャンク6144のメモリ上限を確認し、同じ重みの再転送を減らせるか測定します。本家の設定最適化の確認は、コミット済みTODOとして引き続き管理します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-11T06:57:57.288Z",
+      "line": 133420,
+      "byte_offset": 608724238,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "09ad5e5771cf32c47d55f2004ceda8977ebe573d0bea0ed9e5e67c87a437a52a",
+      "metric_lines": [
+        "6144幅は起動後も744 MiBの空きVRAMを確保でき、最初の6144トークンを約246 tok/sで処理しました。最後までの速度、転送量、出力一致は測定完了後に判定します。転送量と実際の処理経路を照合する検証コードは、実装用サブエージェントに依頼し、テストはメイン側で順番に実行します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-11T06:59:10.288Z",
+      "line": 133457,
+      "byte_offset": 608975997,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "69dc28143c61cbb5168374339d6dc55aefd91c72ec2089655f06055b14fa7f10",
+      "metric_lines": [
+        "6144幅は30,720トークンまで進み、累積約288 tok/sです。転送を減らす方向には効果がありそうですが、最後の2047トークンは既存の別経路を使うため、その完了と出力確認まで含めて判定します。decodeは16トークンの初回処理なので、prefillと分けて扱います。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-11T06:59:34.011Z",
+      "line": 133467,
+      "byte_offset": 609012445,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "5b79e27f62f141cce7dd26a410478df75aeeae1bd789229e90d3563e265fa13b",
+      "metric_lines": [
+        "推論は正常に終了し、32Kのprefillは約267 tok/sでした。ただ、検証コードに4096幅の「8チャンク」という固定条件が残っており、6144幅の6チャンクを拒否しました。測定全体は失敗として保存し、実行済みの出力と転送行を正しいチャンク条件で再検証します。GPU障害は検出されていません。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-11T07:04:12.519Z",
+      "line": 133567,
+      "byte_offset": 609390954,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "1156ab43adc9654cc146a395c123388b218a98cb7c387821935073f075a83f6a",
+      "metric_lines": [
+        "再測定は、推論・転送行の検証・実行後のGPU health確認まで通りました。32Kのprefillは266.4 tok/s、expertのH2D要求量は約400 GBから296 GBに減りました。16トークンとLP/top5も基準と完全一致しています。まだ診断付きの試行なので、採用判断用の性能反復測定は別に行います。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-11T07:08:23.594Z",
+      "line": 133626,
+      "byte_offset": 609739914,
+      "channel": "final_answer",
+      "before_first_Xe_request": false,
+      "message_sha256": "80803c79686e334b3801ad1895f2301bb2872ed73389af4bd5faa9d0415d7969",
+      "metric_lines": [
+        "並行した調整では、32Kの診断付きprefillが266.4 tok/s、expert転送要求量が約400→296 GBになりました。出力一致とGPU正常性は確認済みです。採用判断には別途反復測定を行います。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-11T07:34:15.844Z",
+      "line": 134116,
+      "byte_offset": 612565896,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "e7c62ffdf9de7a69b1daa8da5a9aae37e2762ed6e9145ca55ee31b418fb072ca",
+      "metric_lines": [
+        "実測は正常に完了しました。全288行でMMQは使われず、FP16展開経路が選ばれていました。GU／Downの投入は各136,846回、グループgatherは0回です。prefillは診断付きで269.16 tok/s、16tokenとlogprobは基準に完全一致し、GPU障害もありませんでした。次はFP16展開をまとめる候補の正しさと処理時間を確認します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-11T07:47:16.008Z",
+      "line": 134276,
+      "byte_offset": 613124595,
+      "channel": "final_answer",
+      "before_first_Xe_request": false,
+      "message_sha256": "218400ebed7fd3225f2e015b80965a5a5af65002c2671f836656b90f08cd5949",
+      "metric_lines": [
+        "並行した32K診断では269.16 tok/sでした。MMQは使われず、FP16展開がGU／Down各136,846回と確認できました。基準出力は完全一致、GPU障害なし。結果はcommit・push済みです。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-11T10:52:08.078Z",
+      "line": 137236,
+      "byte_offset": 628535764,
+      "channel": "final_answer",
+      "before_first_Xe_request": false,
+      "message_sha256": "254d26148aa315b23c6f3c4060d238f2503accdfff615a5393d7c1e232a9042c",
+      "metric_lines": [
+        "prefill・decodeを個別に調整し、32K以上の入力、decode最低3回で検証する項目を未完了として残しています。記録はcommit・push済みです。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-11T12:48:36.767Z",
+      "line": 139133,
+      "byte_offset": 638272285,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "f6899ce4f5ee1aab51abf2977ee1d614ae80dc7f1714b8d05c51bb8cabe20bf3",
+      "metric_lines": [
+        "最初のOFF側は、24,576トークンまで処理が進んでいます。現時点の進捗表示は約288 tok/sです。完了時のprefill時間、decode時間、出力一致、事後ヘルス確認がそろってから、1回目の結果として記録します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-11T12:54:34.120Z",
+      "line": 139202,
+      "byte_offset": 638423227,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "3aec618883626ede7a5130b4bc692805b05b8a9777f0167e53270b8fb6135407",
+      "metric_lines": [
+        "1組目は両側とも完了し、出力一致と事後ヘルス確認を通過しました。prefillはOFF 263.85、ON 260.11 tok/s、cold decodeはOFF 6.89、ON 7.11 tok/sでした。まだ採用判断はせず、2組目は順序を逆にしてON側から測っています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-11T13:22:01.024Z",
+      "line": 139553,
+      "byte_offset": 640303042,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "7dde4d3bd67b6473c8cfdc974e1632b2edbe5fc864596c0d77685184f04b3bf5",
+      "metric_lines": [
+        "4組すべての測定と検証が完了しました。平均prefillはOFF 260.03、ON 263.56 tok/sですが、ON側のばらつきが大きく、組ごとの優劣も逆転しています。decodeも改善を確認できないため、既定OFFを維持し、全個別値と判断根拠をGitに残します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-11T15:32:11.769Z",
+      "line": 141330,
+      "byte_offset": 652013845,
+      "channel": "final_answer",
+      "before_first_Xe_request": false,
+      "message_sha256": "e29a143cad580084d2dc5fb2d68f0a2ad0e8d0a9064a4b4299811597c0fcbd98",
+      "metric_lines": [
+        "ただし、**本家単独で最適な設定を探索した記録は確認できませんでした**。prefill／decodeを別々に調整し、32K以上で比較・反復測定する項目を[TODO](/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-11-upstream-parameter-audit/TODO.md)に記録し、commit・push済みです。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-11T17:06:20.206Z",
+      "line": 142772,
+      "byte_offset": 660289080,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "7963a9dbe990b39d0a2887c0cd237c4aa774ec69b30076af1b333d4706f0c90c",
+      "metric_lines": [
+        "64Kの6回比較が完了しました。prefillは6144チャンクが平均285.5 t/s、8192が353.6 t/sで、3組すべてで8192が速くなりました。decodeは最後の組で逆転したため、今回の16トークン測定だけでは採用判断をしません。結果を保存し、処理内訳の測定へ進みます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-11T19:44:24.100Z",
+      "line": 145356,
+      "byte_offset": 677942142,
+      "channel": "final_answer",
+      "before_first_Xe_request": false,
+      "message_sha256": "14f0ca4a480f6a94d549e4eef3d3e44ebfb234648bd93c3648874d2aed363715",
+      "metric_lines": [
+        "設定探索と独立検証は未完了として残しました。prefill／decodeを別々に選び、32K以上の入力・decode最低3回で検証する条件も明記しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T00:48:22.478Z",
+      "line": 150964,
+      "byte_offset": 714178668,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "922b5290eed4deb88da37d67a7831cd3560cea6f85688b39fdc88eaea67dce8b",
+      "metric_lines": [
+        "上流版は初期キャッシュの検証を通りましたが、サーバー起動に必須の `--prefill` 指定が抜けていて終了しました。また、XeStrataの比較設定から、安定測定で使っていた `STRATA_ARENA_HOST_USM=1` を落としていました。両方の設定を修正し、ソースは未改変のまま再確認します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T01:06:04.333Z",
+      "line": 151277,
+      "byte_offset": 716007552,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "07642383f338aa442960e60d4f289caf86266605477948b8e2cb733f4577435c",
+      "metric_lines": [
+        "未改変XeStrataの32K入力＋16トークン生成が完了しました。検証付きの単発結果はprefill約218 tok/s、decode約10.4 tok/sで、正常終了しGPU障害もありません。上流 v0.1.43も起動と144スロットの初期キャッシュ検証を通過しました。続けて32K入力を処理させます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T02:13:17.342Z",
+      "line": 152107,
+      "byte_offset": 719997132,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "4fecb4d73ed7707a4c3395b39fff5de16aa314703055c32db5e18f1338ddcfaf",
+      "metric_lines": [
+        "上流v0.1.43も32K入力を最後まで処理し、16トークン生成と正常終了を確認しました。今回の診断設定ではprefillは約19.1 tok/sでした。XeStrataとは処理経路が異なり、上流の設定調整も残っているため、まだ速度差の結論にはしません。次にキャッシュ容量の比較と取り込み後の検証を進めます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T02:32:31.506Z",
+      "line": 152376,
+      "byte_offset": 721587774,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "889443adddd55d360dad047439db5c2156a977f796f7e3e3a65975bfd93ba52c",
+      "metric_lines": [
+        "取り込み後の実装は、小さなGPU検証と実モデルの起動確認を通過しています。次は32Kで出力・logprobの一致を確認し、ログを抑えた別プロセスで prefill と decode をそれぞれ3回測ります。読み取り専用の調査エージェント2名も、上流のキャッシュ調整とボトルネックの調査を並行して進めています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T02:36:42.778Z",
+      "line": 152468,
+      "byte_offset": 722284949,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "abaee07de0dbe7dd3ab24f7b0873f7d1924d4f838909bdcfe6f74f8656dae816",
+      "metric_lines": [
+        "取り込み後の32K検証は prefill を完了し、診断ログ上では約327 tokens/sでした。続けて decode と正常終了を確認しています。上流の設定比較では、要求したキャッシュ容量と実際に埋まった容量を分けて記録する必要があることも確認しました。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T02:59:27.601Z",
+      "line": 152814,
+      "byte_offset": 723599371,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "3a69933fc9bd1e66cf159a330cb2ff7b53a30be4850e2c6b695b9ab3fe54ba38",
+      "metric_lines": [
+        "ログを抑えた最初の32K測定も正常終了し、prefill は約376 tokens/sでした。残りの反復測定を続けています。256K検証については、既存コードに全範囲を処理する専用経路がありましたが、完了を確実に記録する部分に補強が必要です。起動時のコンテキスト長だけで検証済みとは扱いません。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T03:07:04.014Z",
+      "line": 152874,
+      "byte_offset": 724201840,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "4881c07fe20310f66bb0f8fda88582757b99bc253445aa86336f364c4453af19",
+      "metric_lines": [
+        "取り込み後の実装は、ここまでの32K反復測定でprefillが約362～386 tokens/sでした。GPU障害は記録されていません。decodeのばらつきと出力の一致は、残りの測定も含めて判断します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T03:11:12.717Z",
+      "line": 152994,
+      "byte_offset": 725088685,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "5de0157fc3000511ccec98f44828d092eb46e656511c6d8caa87083bc62ee13c",
+      "metric_lines": [
+        "32Kの3回平均は、NaN検出ありでprefill 371.8 tokens/s、decode 7.86 tokens/s、なしで372.8 tokens/s、8.32 tokens/sでした。各組の16出力トークンと報告された上位5件のlogprobは一致しています。decodeの速度差は組ごとに方向が揃っていないため、検出を外す判断は保留します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T03:53:43.694Z",
+      "line": 153522,
+      "byte_offset": 727290091,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "cffe3477662151c927e766e9fc6e43f947c3f2c5ec7b2ae92e25aee02e203dc1",
+      "metric_lines": [
+        "更新後の統合版は、32K入力の通常測定3回で平均prefill約372 t/s、decode約7.86 t/sでした。非有限値の検出は維持しています。検出を外した場合のdecode改善は再現しなかったため、無効化は採用していません。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T04:00:17.032Z",
+      "line": 153644,
+      "byte_offset": 728203840,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "dcab316add3fa0d80031d8737962310a71780c26a160e1e21e2b28c213547f3b",
+      "metric_lines": [
+        "上流のキャッシュを増やした32K測定も正常終了しました。624スロットを使用しましたが、今回の入力処理は約17.8 t/sで、144スロット時の約19.1 t/sより速くはなりませんでした。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T04:05:00.487Z",
+      "line": 153686,
+      "byte_offset": 728610561,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "869cb564e92388976ce8d14f18c72e16a53af370a6d90006607612b891272c55",
+      "metric_lines": [
+        "キャッシュを増やした測定のdecodeは約8.48 t/sでした。144スロット時の約6.29 t/sより高い値ですが、生成トークンと報告されたlog probabilityにも差が出ています。CPUとGPUの担当が変わるため、この測定だけで品質が同等とは判断できません。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T04:29:54.153Z",
+      "line": 154008,
+      "byte_offset": 732136973,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "ab09a79f09fe631824c0c7c36e385caba4435250c68d32ab7afdce546dbe53b3",
+      "metric_lines": [
+        "取り込み後は、32K入力の3回測定で平均prefill 371.8 t/s、decode 7.86 t/sでした。上流のキャッシュを128から512へ増やした試験では、decodeが速くなる一方、prefillは遅くなり、出力にも差が出ました。まだ各設定1回の結果なので、既定値は変更していません。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T05:58:29.536Z",
+      "line": 154811,
+      "byte_offset": 736871130,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "91a5c009964287840a0867bd88497e724b208562f99189f45202a8c10dc2d316",
+      "metric_lines": [
+        "記録では、上流v0.1.43とXeStrata xe0.1.42を無改変で32K入力で測定し、必要な上流変更は取り込み済みです。取り込み後の実測はprefill平均371.8 t/s、decode平均7.86 t/sでした。さらに更新がないか確認し、CPU側の新しい実験はモデル全体での改善が未確認のため既定では無効にして保存します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T06:05:36.391Z",
+      "line": 154927,
+      "byte_offset": 737158604,
+      "channel": "final_answer",
+      "before_first_Xe_request": false,
+      "message_sha256": "8a955f0f7b776abed86c21e35356fbfb86b250b6fa1bf09fac2a64e075171fb1",
+      "metric_lines": [
+        "必要な上流変更は `0691bcdf` に取り込み、push済みです。サーバー機能・CPU試験・サニタイザー検査を通過し、取り込み後の3回平均は **prefill 371.8 t/s、decode 7.86 t/s** でした。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T06:13:48.492Z",
+      "line": 155060,
+      "byte_offset": 738316827,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "3451444463e839a82f4d991a89d9518760f5c1fbd3668da1a24de905ff9f056b",
+      "metric_lines": [
+        "32Kの計測は正常終了しました。decodeは約124 ms/tokenで、そのうちGPUが各レイヤーの受け渡し地点へ到達する待ちが約50 ms、CPUエキスパートの処理区間も約51 msでした。片方だけを改善しても70 t/sには届かないため、両方を詰める必要があります。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T06:49:28.671Z",
+      "line": 155384,
+      "byte_offset": 739596125,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "f404d35ad7a1ce8ed2a39bc76a028f76c7b19cb0ac241711080bec5b4f3db52d",
+      "metric_lines": [
+        "3対の測定が終わりました。prefillは全3対でONが速く、平均時間を約4.7%短縮しました。平均速度はOFFの359.0 t/sに対し、ONは376.4 t/sです。出力・LP5の一致とGPU障害確認も通ったため、この32K設定での次のチューニングにはONを採用します。エンジン全体の既定値は維持します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T06:59:44.980Z",
+      "line": 155448,
+      "byte_offset": 739834639,
+      "channel": "final_answer",
+      "before_first_Xe_request": false,
+      "message_sha256": "86c6df69d1d9fcdd62d1c1fd099fa4d4f49a850245fb4ddb5602a5ca658e8661",
+      "metric_lines": [
+        "32K入力で3対測定し、逆量子化バッチによりprefillの平均時間を約4.7%短縮しました。速度は **359.0→376.4 t/s**。全測定で出力・LP5が一致し、新規GPU障害もありません。この設定を次のチューニングに採用しました。",
+        "decodeはCPU処理区間とGPU到達待ちが各約50 ms/tokenあり、両方の改善が必要です。1000/70 t/sは未達です。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T10:43:52.780Z",
+      "line": 157462,
+      "byte_offset": 750308185,
+      "channel": "final_answer",
+      "before_first_Xe_request": false,
+      "message_sha256": "12854daaad0b1a03b07e713c26add0c841ce4fc71a240a925690cceb5b929f6d",
+      "metric_lines": [
+        "追加の32K診断では、転送コマンドの合計が **69.65秒**、MoE GEMM＋dequantが **9.51秒**でした。転送・投入回数の削減を優先する根拠が得られました。計測設定での値なので、通常速度とは区別します。出力は基準と一致し、GPU障害はありません。[測定記録](/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-prefill-leaf-service-events-20261012/bench/results/2026-10-12-prefill-production-leaf-events/REPORT.md)"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T10:57:50.369Z",
+      "line": 157665,
+      "byte_offset": 752126684,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "93afbedd442bdf50e74eff1ee12b839687847f9ca86ece854f7dbac7253eac06",
+      "metric_lines": [
+        "保存済みの32K測定では、XeStrata最新版そのままのprefillは217.61 t/sでした。上流そのままの測定はシリアル処理経路を通っており、設定を十分に最適化した速度比較とはまだ言えません。上流のメモリ管理・セッション保存・API修正は取り込み済みで、今回は別枝にあったサーバー修正を現在のチューニング枝へ統合し、回帰テストを行います。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T13:10:40.479Z",
+      "line": 158971,
+      "byte_offset": 758976212,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "4263687093c852b1125016d1e9eb033a40ff9b32071471741cecc78985cdc563",
+      "metric_lines": [
+        "6回すべて正常に終了し、出力の一致と新しいGPU障害がないことを確認しました。平均decodeは3・5ワーカーが約7.34 t/s、4ワーカーが約7.81 t/sですが、4ワーカーのばらつきが大きいため設定は変更しません。個別結果を保存し、重複ログ約1 MiBを整理しました。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T16:41:34.278Z",
+      "line": 161080,
+      "byte_offset": 770360364,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "13990e7f03e7cd9850a45d7bfcfc99cad7a5f6ff9b7c69b739b8be40c3a63e4a",
+      "metric_lines": [
+        "XeStrataの新しい版は、32K入力でprefill 335.9 t/s、decode 7.22 t/sでした。正常終了し、GPU障害は検出されていません。ただし、前の版とは出力が9トークン目から変わり、logprobも一致しません。この1回の診断値だけでは優劣を判断せず、推論コードの採用には設定を揃えた反復測定と数値差の確認を残します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T17:02:12.201Z",
+      "line": 161238,
+      "byte_offset": 770908423,
+      "channel": "final_answer",
+      "before_first_Xe_request": false,
+      "message_sha256": "baa5b1e9e6eba13de27571e99197b2e2c5ee634053f2f5be81a7b9f2324161ac",
+      "metric_lines": [
+        "XeStrata最新 **b9f00e9（xe0.1.43）** は、ソースを変更せず32K入力で測定しました。prefill **335.9 t/s**、decode **7.22 t/s**。GPU障害は検出されませんでした。ただし前版と出力が変わったため、推論コードの採用は、反復測定と数値差の確認まで保留しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T17:17:32.174Z",
+      "line": 161519,
+      "byte_offset": 773037437,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "b3c471c3f2a24fb364f4b88188e35b9be20c41e2067115b3ba1987676672dc7b",
+      "metric_lines": [
+        "- **現行の採用設定**：32K測定でprefill約376 t/s、decode約8.27 t/s。最新版Xeの335.9／7.22 t/sは検証ログ付きの単発測定なので、速度の優劣はまだ判定していません。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T17:55:34.776Z",
+      "line": 162031,
+      "byte_offset": 774968594,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "ed179b00bb7b9f0233d8210def8268e61f77efc60c3b9b1a562d7c4dacc414ed",
+      "metric_lines": [
+        "修正後の測定はGPU上で進行しており、32K入力のうち約24Kまで処理できています。いま見えているprefillは約390 t/sです。これは1回目の途中経過なので、採用判断には残りの反復測定を使います。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T18:05:15.325Z",
+      "line": 162125,
+      "byte_offset": 775217338,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "c84338ec14a1cc92e8eea05ca41c0275fe5a9562c4b4d7528dd719b274da136e",
+      "metric_lines": [
+        "5ワーカーの128トークン生成は正常に完走し、prefillは391.5 t/s、decodeは4.00 t/sでした。以前の16トークン測定よりdecodeが遅いため、8.27 t/sを長い生成の性能としては扱えません。まず3・4ワーカーでも測り、この差を切り分けます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T18:11:20.489Z",
+      "line": 162195,
+      "byte_offset": 775522911,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "d8d00a776096061b4c7409de2bdce4f37fafeb6d4eabdee70c418215df72c412",
+      "metric_lines": [
+        "3ワーカーではdecodeが7.75 t/sになり、5ワーカーの4.00 t/sとの差が大きく出ました。128トークン分の出力と報告された確率値は一致しています。ただし各1回なので、まだ設定は変更せず、4ワーカーと反復測定を続けます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T18:31:54.574Z",
+      "line": 162415,
+      "byte_offset": 777244976,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "bb008716087de68b2244c303a4797807e38b7943b182e4f7d145758e1d92d61c",
+      "metric_lines": [
+        "完全一致を品質条件から外した状態で、反復測定を続けます。現時点ではdecodeが5ワーカーで4.00、3ワーカーで7.75、4ワーカーで8.47 t/sですが、各1回なので設定の採用は保留です。また、コード調査では今回のMTPなしのserve経路は毎回1トークンを検証しており、生成上限16→128だけで検証窓が大きくなる、という説明は当てはまりませんでした。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T18:50:40.574Z",
+      "line": 162696,
+      "byte_offset": 778560751,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "fbf2dcc737200c9df7a20a2960d86f8c94a895db4e48707a10e8ff7e7a5d66a2",
+      "metric_lines": [
+        "3ワーカーの3回分が揃いました。いずれも正常終了しており、prefillは約389 t/sでした。残る5ワーカーと4ワーカーの各1回を測った後、prefillとdecodeを別々に集計し、ばらつきも含めて設定を判断します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T19:03:13.528Z",
+      "line": 162816,
+      "byte_offset": 779031592,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "17fdc0fd4691f828dabec90affaf558186ff1d654bf00420c9c948b5d98a33b2",
+      "metric_lines": [
+        "測定結果を保存・pushしました。中央値は、5ワーカーでprefill約390／decode約9.24 t/s、4ワーカーで約375／約9.41 t/sです。decodeの差は小さく、遅かった初回も記録に残しています。コピー専用キューの修正版は別worktreeに適用し、free・contrib-llvmのビルドとCPU側の所有権・異常終了テストを始めました。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T22:38:20.306Z",
+      "line": 165116,
+      "byte_offset": 790150947,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "34c7c8ef3d27ea5d15b571afbaa67929e8abb5b02e2a22db18a0da08cd67253c",
+      "metric_lines": [
+        "COPY専用キューでも長文3試行と正常終了が通りました。診断条件ではprefillの中央値が400.5から477.3 token/sへ約19%上がっています。次はログ負荷を外して比較します。decodeは個別結果を残し、別に判定します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T23:17:55.098Z",
+      "line": 165716,
+      "byte_offset": 794190617,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "0604967e1f38f3b0b9b3b62280f0e64d3acffcd0716f9426f0a8643613f3ecce",
+      "metric_lines": [
+        "COPY無効側の長文3試行と、GPU処理の正常終了を確認しました。prefillは中央値407.5 token/s（403.0〜408.0）、decodeは8.6 token/s（7.9〜9.7）でした。decodeのばらつきが大きいため、有効側との比較でも個別値を残して判断します。現在は終了後の入力・バイナリ同一性確認中です。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T23:34:48.789Z",
+      "line": 165892,
+      "byte_offset": 794790467,
+      "channel": "final_answer",
+      "before_first_Xe_request": false,
+      "message_sha256": "af2d66ffded386c556c3900ff560a76b46af8d128b539fdc242dd8712cc0f014",
+      "metric_lines": [
+        "COPY無効側の通常測定が完了しました。32,049入力・24出力を3回測定し、中央値はprefill **407.5 token/s**、decode **8.6 token/s**（7.9〜9.7）です。GPU障害なく正常終了しました。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T23:52:41.239Z",
+      "line": 166140,
+      "byte_offset": 796478388,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "aa61468e596ebf50f2bab7407a593c5f34dda0b0e662f77c3ef8c740ccbd7a0b",
+      "metric_lines": [
+        "COPY有効側は約32K入力の測定に入り、最初の2回のprefillは478.0、470.8 tok/sでした。COPY無効側の中央値は407.5 tok/sです。まだ3回目と終了後の確認が残っているため、比較結果は確定していません。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-12T23:54:32.937Z",
+      "line": 166191,
+      "byte_offset": 796647785,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "a7bbe5e83824a3a4ac10847395f93a2a69d812e8e8a193312cd55feec8c3d5ee",
+      "metric_lines": [
+        "約32K入力の3回は完了し、prefillの中央値はCOPY無効407.5、有効474.8 tok/sでした。この測定では約16.5%の改善です。decodeは8.6と8.7 tok/sで測定範囲が重なるため、改善とは判定しません。エンジンは正常終了し、現在は測定後のハッシュとGPU状態を確認しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-13T00:00:48.880Z",
+      "line": 166326,
+      "byte_offset": 797069627,
+      "channel": "final_answer",
+      "before_first_Xe_request": false,
+      "message_sha256": "b0f2257b722a228cd4f7766c883759db3523badd9dac5f9bad1fd9d886bf9734",
+      "metric_lines": [
+        "| COPY無効 | 407.5 tok/s | 8.6 tok/s |",
+        "| COPY有効 | 474.8 tok/s | 8.7 tok/s |"
+      ]
+    },
+    {
+      "timestamp": "2026-10-13T02:24:33.902Z",
+      "line": 167868,
+      "byte_offset": 804686655,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "239f81cf9146c01f8180e5f35a2ffca4116dedb481b01f7d80d0dd79af49cb16",
+      "metric_lines": [
+        "実モデルで、追加キャッシュの再読み込み、次の入力での解放、正常終了まで確認できました。速度測定はログ出力を抑えた別の実行で行います。また、以前の約 1.18 GB という値は prefill 作業領域の一部で、全体容量ではありませんでした。16K チャンクの収容可否は、容量を数え直して判断します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-13T03:01:22.545Z",
+      "line": 168241,
+      "byte_offset": 806394498,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "2b952360bd126e89b9995619b3b1472f1bcaa59efbe539ec7a935e96f3859232",
+      "metric_lines": [
+        "三回とも完了しました。OFF 条件の prefill は 384.8、383.1、386.9 tok/s で、中央値は 384.8 tok/s です。正常終了と測定後の GPU 確認は通り、最後のファイル照合を行っています。ON 条件の効果は、まだ判断しません。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-13T03:05:59.687Z",
+      "line": 168284,
+      "byte_offset": 806498242,
+      "channel": "final_answer",
+      "before_first_Xe_request": false,
+      "message_sha256": "cd16d78afdafa64e09f1e9cd093f09ec2e6760cdf28673f88eefb35193ba8259",
+      "metric_lines": [
+        "今回の OFF 基準は実入力 32,049・出力24トークンを三回測定し、中央値は prefill **384.8 tok/s**、decode **7.8 tok/s** でした。全測定は正常終了しました。[測定結果](/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/bench/results/2026-10-13-upstream-benchsh-phase-off-control/REPORT.ja.md)"
+      ]
+    },
+    {
+      "timestamp": "2026-10-13T03:21:14.531Z",
+      "line": 168408,
+      "byte_offset": 806982810,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "912b9f83d887612117db79d66af5c5927632a38b21c113bdd58ebd55fdeeeb71",
+      "metric_lines": [
+        "ON 条件も正常に進んでいます。短い会話と 16K の補助測定では、decode の速度と prefill の速度に違う傾向が出ています。判断は 32K の三回測定がそろってからにします。12K 用のソース実装は、測定対象とは別の worktree で進めています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-13T03:45:09.919Z",
+      "line": 168570,
+      "byte_offset": 807546119,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "47b153fee3388c37bab2c6f92eeb5cf48b514f1655289890fc78e11abc8e67ca",
+      "metric_lines": [
+        "ON 条件も正常終了し、測定後の GPU 確認とファイル照合が通りました。結果を OFF と並べ、prefill の変化と decode の変化を別々に記録します。12K の実装は、まだ未実行の候補として区別して保存します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-13T03:56:27.275Z",
+      "line": 168623,
+      "byte_offset": 807856195,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "9092a1f3fd9431370242b02a6bbd170b4577de7168301d175afa1cb0c78e578a",
+      "metric_lines": [
+        "32K の中央値は、OFF／ON で prefill が **384.8／375.4 tok/s**、decode が **7.8／8.2 tok/s** でした。decode の範囲は重なり、ON の値も試行順に上がっているため、改善とはまだ断定しません。既定 OFF を維持し、対応する条件で反復を増やします。結果と未実行の 12K ソース候補はコミット済みです。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-13T04:04:42.660Z",
+      "line": 168663,
+      "byte_offset": 808010690,
+      "channel": "final_answer",
+      "before_first_Xe_request": false,
+      "message_sha256": "5c1494fad891ff6e1236b845778982132546a363543c6122224b55ca1b1655f1",
+      "metric_lines": [
+        "- prefill 中央値：**384.8 → 375.4 tok/s**",
+        "- decode 中央値：**7.8 → 8.2 tok/s**。範囲が重なるため改善は未確定。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-13T05:11:16.598Z",
+      "line": 169396,
+      "byte_offset": 811588773,
+      "channel": "final_answer",
+      "before_first_Xe_request": false,
+      "message_sha256": "a929b1c6a3c23b37f5caf5a2f91d0ce0a5b1530ddf0a3097fbc2155918a5d341",
+      "metric_lines": [
+        "[測定手順](/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-prefill-12k-20261013/docs/MEASUREMENT_WORKFLOW.ja.md)に反映済みで、この方式で OFF／ON 各3回の比較測定も完了しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-13T07:39:16.578Z",
+      "line": 169973,
+      "byte_offset": 814852115,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "165b723a6a8bc6dcac23c9ea82753c5e034f0dc92e82892419c9980fe904c3fa",
+      "metric_lines": [
+        "`bench.sh` 方式への切り替えは完了し、上流のクライアントを変更せず長文を各 3 回測定済みです。直近の比較では、prefill の中央値は **約375〜385 t/s**、decode は **約7.8〜8.2 t/s** で、目標の 1000 / 70 t/s にはまだ届いていません。decode の差はばらつきと重なるため、改善とは判定していません。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-13T07:42:59.517Z",
+      "line": 170016,
+      "byte_offset": 815005451,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "ad99d066afa1de497fa35e535693743652ae550b8d68d4b3bcf4c70d81408c85",
+      "metric_lines": [
+        "過去の速かった測定と、現在の設定・コードを突き合わせて確認します。先ほど挙げた約375〜385 t/s は直近の phase-cache 比較の値なので、以前の最良値との関係を説明できていませんでした。設定や測定方式の違いと、上流から取り込んだ推論コードによる退行の可能性を分けて調べます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-13T07:48:19.077Z",
+      "line": 170097,
+      "byte_offset": 815964482,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "741bf8d1cc335bcca0f6331ee3fcadc5d5a1b0b5f5aad34111ebb2e13736faf5",
+      "metric_lines": [
+        "ログに、以前の **32K prefill が453→646 t/s**、**64Kが約520〜540 t/s** という報告が見つかりました。直近にも COPY 有効で **474.8 t/s** の測定があります。先ほどの375〜385だけを現在の性能として示したのは不十分でした。",
+        "decodeにも以前のIQ3_Sで18.30 t/sの記録がありますが、こちらは短いコンテキスト・MTP有効です。まず32K/64Kの速かった実装まで履歴を遡り、そのコードや設定が現在の経路に残っているか確認します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-13T07:57:52.381Z",
+      "line": 170155,
+      "byte_offset": 816219704,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "f5acc42303137f52a37ccefade684731617536293fb8c01c6cb509f96c13aec3",
+      "metric_lines": [
+        "速度履歴の調査では、32Kで約646 t/sを出した「レイヤーごとに全チャンクを処理し、重みの再転送を減らす経路」が、現在の実装にないことを確認しました。これが失われた箇所を追っています。また、12K候補は32Kを2回処理できましたが、その後の64K要求は容量不足で拒否されました。安定して採用できる段階にはありません。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-13T08:28:37.084Z",
+      "line": 170284,
+      "byte_offset": 816782975,
+      "channel": "final_answer",
+      "before_first_Xe_request": false,
+      "message_sha256": "ce211841477b527bd076e21059a4cad37c9d205b93675a2d9183890edf6bf1bd",
+      "metric_lines": [
+        "性能調査では、以前32Kで約646 t/sを出したlayer-major経路が、現在のソース系統に引き継がれていないことを確認しました。復元・再評価を優先して続けます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-13T13:59:32.541Z",
+      "line": 173437,
+      "byte_offset": 831639895,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "e0b9664231f577dbdd2b2b1829a07c103e8486d7a3537fca9ea09d1b8ecced39",
+      "metric_lines": [
+        "4Kチャンク・レイヤー順処理の公式 `bench.sh` 測定が完了しました。約32K入力の3回の中央値は prefill 667.6 token/s、decode 10.4 token/s です。次は、各レイヤーのexpert転送を512回から1回にまとめる実装を検証します。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-13T17:31:19.041Z",
+      "line": 174371,
+      "byte_offset": 835995366,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "9da21368bbf88d2d629591947bb1925b2c9faec02e999e5c309fdd474e9f381f",
+      "metric_lines": [
+        "一括転送版の公式測定は、prefill中央値が693.5 token/s、decodeが8.1 token/sでした。従来版の667.6／10.4に対し、prefillは改善していますがdecodeは低下しています。採用は保留し、同条件の従来版を再測定して、実装差と測定のばらつきを切り分けます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-13T17:59:53.771Z",
+      "line": 174810,
+      "byte_offset": 838380045,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "2185344383f7481295d876430cef7c27ed222471619459f75f17956f557d3d25",
+      "metric_lines": [
+        "非bulk版の再測定ではprefillは約667 token/sで再現し、decodeは7.4／9.5／8.5 token/sでした。bulk版だけが遅くなったとは、今の結果では断定できません。終了後の確認が済んだら全サンプルを記録し、CPU時間の内訳を測る段階に進みます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-13T18:41:07.251Z",
+      "line": 175249,
+      "byte_offset": 840141065,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "eb7fc17cecb03dc19639c6b7cadb7dfbd3300ab4e7c6b8ee306e4ea78cb7f473",
+      "metric_lines": [
+        "また、XeStrata系への変更はエンジン全体に及ぶもので、部品単位の取り込みではありませんでした。最近の約667～694 token/sもその実験系統の測定であり、主ブランチの性能として報告できません。既存SYCL実装との同条件比較と採否の確認が不足しています。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-13T20:25:51.475Z",
+      "line": 176487,
+      "byte_offset": 847430148,
+      "channel": "final_answer",
+      "before_first_Xe_request": false,
+      "message_sha256": "23eb80b7088b7e846f8aa36b192b38d634f8dbc2c981939a5f300ace1c6a6f1f",
+      "metric_lines": [
+        "再点検しました。重要な訂正は、**過去の約667–694 t/sはXeStrata系の実験結果で、現在の`feature/sycl`の性能ではない**ことです。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-13T21:13:04.138Z",
+      "line": 177133,
+      "byte_offset": 851949152,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "7e42d1ae32e9b0166fb3f0dc2516e8ae562eee29c7f52d1611d590dce39bee19",
+      "metric_lines": [
+        "推論部品の監査では、主作業のprefill、decode、CPU expert処理が保持されていることを確認しました。Q2の`exp`互換対応は明示的な実験オプションの経路だけで、今回の混合量子化モデルではそのオプション自体が拒否されます。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-13T23:21:29.254Z",
+      "line": 178801,
+      "byte_offset": 860264530,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "49e646bf4e6bd7af5076c0a97f9fbc7b7c4469c2244b80468a5dd2fd63844833",
+      "metric_lines": [
+        "再監査では、主実装はNiko由来のSYCL・CPU経路を保持しており、XeStrataの全エンジンへ置き換わってはいません。以前の約667–694 t/sはXe側の比較値なので、現在の主実装の速度から切り離しました。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-13T23:33:39.436Z",
+      "line": 179090,
+      "byte_offset": 861865708,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "6b4c304aedc6b864274cf2259b5317ecbabd27ab4404574f8ebe6b2b19934419",
+      "metric_lines": [
+        "転送量の見積もりも整理できました。現在の4Kチャンク単位の処理順では、64K入力でexpert重みを最大約805 GB転送する計算になり、1000 t/sにはexpert転送だけでも約12.2 GB/sが必要です。8Kチャンクなら必要量はほぼ半分になります。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-13T23:42:38.039Z",
+      "line": 179198,
+      "byte_offset": 862267030,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "20e14836818e91a7d32535dc56d1f19e29237847f47c50978faf1791ccf422a4",
+      "metric_lines": [
+        "61055入力の長文診断が完走し、実エンジン・サーバーとも正常終了しました。新しいGPU障害は0件で、範囲例外も再発していません。今回の63.1 t/sは検証・計時を有効にした補助診断の値で、正式な速度比較には使いません。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-14T01:55:45.480Z",
+      "line": 180662,
+      "byte_offset": 869060615,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "98736840b7905d12a566dfdb4b37bf532b3ae2b8a0eed3fea520c6d35a39c37a",
+      "metric_lines": [
+        "16K級の3回は実入力16,058 tokensで約119 t/sでした。短い質問の100-token生成は6.4～10.7 t/sです。まだ32K級が終わっていないため採用判断はしませんが、改善余地は大きいと分かります。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-14T02:17:39.649Z",
+      "line": 180838,
+      "byte_offset": 871042517,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "d74b903b9f7f23c523281f5e62211aba7c25f01e513ffe59a748321732792f1d",
+      "metric_lines": [
+        "32K級の1回目は、実入力32,049 tokens、prefill 118.5 t/sで完了しました。残り2回も同条件で測定します。並行調査では、上流機能の移植状況と、現在のSYCL経路のVRAM配分を別々に点検しています。過去のXeStrata側の速度を、この主ブランチの性能とは扱いません。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-14T02:25:25.249Z",
+      "line": 180947,
+      "byte_offset": 871931669,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "d5856246a61a7fd1e86727308056175777db1fb551751141a24a6e7d2b247ed3",
+      "metric_lines": [
+        "転送テストの実行前レビューで、非同期コピーの元バッファを書き換える可能性も見つかり、完了待ちを追加しました。この問題のある案はGPUでは実行していません。32K級の2回目も118.4 t/sで完了しており、現在は最後の1回を測定中です。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-14T02:27:38.159Z",
+      "line": 180977,
+      "byte_offset": 872073085,
+      "channel": "commentary",
+      "before_first_Xe_request": false,
+      "message_sha256": "6411e89ebc2240f1a95cab29f4d1853cd35471bda71f58a4dd8e0ffee923aa66",
+      "metric_lines": [
+        "32K級の3回が完了しました。実入力はいずれも32,049 tokensで、prefillは118.5 / 118.4 / 118.9 t/sでした。エンジンとサーバーは正常終了し、この実行中のGPU障害は検出されませんでした。個別結果と再点検の訂正をGitに保存し、次に転送帯域を独立したテストで測ります。"
+      ]
+    },
+    {
+      "timestamp": "2026-10-14T02:44:40.790Z",
+      "line": 181182,
+      "byte_offset": 872899030,
+      "channel": "final_answer",
+      "before_first_Xe_request": false,
+      "message_sha256": "468bc21539e760992792b22db6beec81e2566bbca0357c432dfdf6c1cf6ae67f",
+      "metric_lines": [
+        "現在の主実装は、実入力32,049 tokensの3回でprefill **118.5 / 118.4 / 118.9 t/s**、24-token decode **4.2 / 2.8 / 3.4 t/s**でした。全回正常終了し、新たなGPU障害は検出されませんでした。過去のXeStrata側の速度とは区別しています。"
+      ]
+    }
+  ],
+  "scope": "user-visible historical performance claims; must be tied to original measurements before treating numbers as verified performance"
+}

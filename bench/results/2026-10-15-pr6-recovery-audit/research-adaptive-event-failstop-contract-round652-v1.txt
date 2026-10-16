@@ -1,0 +1,25 @@
+# Adaptive refill EventRecord fail-stop contract — R652
+
+## Decision
+
+A failed adaptive refill event record must be treated as an uncertain asynchronous lifetime, not as an ordinary request error. The narrow safe response at the failed `cudaEventRecord` boundary is to log the operation and call `strata::sycl_backend::cleanup_fail_stop(...)` (or an equivalent non-unwinding process fail-stop). Do not return `false`, continue generation, retry the record, or destroy local owners. This is a proposed safety rule only; no source was changed and no SYCL/GPU run was made.
+
+This is compatible with the existing SYCL cleanup rule: `checked_cleanup.hpp` explicitly says a failed drain cannot authorize releasing an allocation and its fail-stop prints, flushes, and calls `std::_Exit(EXIT_FAILURE)` before owner unwinding. `generate.cpp` already has `expert_failstop` for a failed expert restore, and the generation path uses it on restore failure. The process-level contract is that the engine process terminates with failure and its external owner must treat it as dead and restart/reinitialize a fresh engine. Do not claim the currently inspected production server automatically restarts this specific `--serve` child: this audit found wrappers and benchmarks that observe child exit, but did not establish a production restart guarantee.
+
+## Why EventRecord failure is distinct
+
+In the SYCL compatibility layer, `cudaEventRecord` submits a barrier, then stores the resulting event in the event state. The `attempt` wrapper first checks the runtime and converts caught errors to a thread-local compatibility error. `Runtime::check` can rethrow the runtime's sticky asynchronous error. Thus a non-success return can represent a synchronous submission/argument failure or an already-observed asynchronous runtime failure; the caller cannot infer that prior H2D copies completed. If record fails before replacing the event state, a previous event may remain; an empty event query is treated as complete. Neither retrying nor synchronizing that state proves the queued copies are retired.
+
+Adaptive refill has already queued H2D writes on `adapt_stream` (and potentially per-stage streams) from source expert blobs into cache slots. It marks evicted experts nonresident and tracks incoming experts in `pending`; the cache slots, staging/source objects, stream, event and bookkeeping remain live owners. A failed/missing completion record leaves no reliable fence for those writes. Returning through the usual `false` path can unwind these owners while commands may still reference their memory.
+
+## Call-site consequences
+
+Serve's primary and per-stage event records at `src/program/generate.cpp` around lines 5127 and 5132 are currently unchecked. The enclosing adaptive lambda has an ordinary failure path that returns false; the generation loop joins the worker, prints `ERR an adaptive refill failed`, and returns status 1 around line 6114. That is insufficient for an uncertain DMA lifetime in a persistent serve process: request failure does not establish that the process and its cache owners are retired.
+
+Standalone generation has another unchecked record around line 6925. Its ordinary adaptive failure returns false to the caller, which can unwind the same cache/source/stream/event owners. It needs the same fail-stop rule.
+
+The minimally scoped change is to check each relevant record result immediately after the existing queued copies, with a diagnostic identifying primary versus stage stream and the error code, then invoke non-unwinding fail-stop. Do not add a drain-and-release attempt after a failed record: the runtime may already be poisoned and the failed record provides no usable completion event. The failure decision should cover each record whose stream has outstanding refill copies; a successful primary record does not cover another stage's stream.
+
+## Limits
+
+This establishes safe ownership retirement, not recovery of the current request. It also does not prove driver/process teardown always reclaims hardware instantly. It only prevents host-side destruction while outstanding runtime work may still reference the objects. Ordinary successful records and their existing wait paths remain unchanged. Validation must later inject/observe record failure on an owned child process and verify nonzero exit plus fresh-process recovery; that runtime work is outside this read-only audit.

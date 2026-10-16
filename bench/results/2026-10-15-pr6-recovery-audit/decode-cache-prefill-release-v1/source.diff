@@ -1,0 +1,915 @@
+--- a/src/core/expert_cache.cpp
++++ b/src/core/expert_cache.cpp
+@@ -283,10 +283,72 @@
+         layer_next_[(size_t) l] = (int32_t) lo;
+     }
+     return true;
+ }
+ 
++#ifdef STRATA_ENABLE_SYCL
++bool ExpertCache::close_checked(std::string& err) {
++    // The outer lease has checked reader retirement. Keep failed owners intact;
++    // do not let the ordinary unchecked destructor retry after a driver error.
++    if (blocking_staging_) {
++        const auto e = cudaFreeHost(blocking_staging_);
++        if (e != cudaSuccess) { err = "decode cache: free staging: " + std::string(cudaGetErrorString(e)); return false; }
++        blocking_staging_ = nullptr; blocking_staging_bytes_ = 0;
++    }
++    if (base_) {
++        const auto e = cudaFree(base_);
++        if (e != cudaSuccess) { err = "decode cache: free arena: " + std::string(cudaGetErrorString(e)); return false; }
++        base_ = nullptr;
++    }
++    close(); // pointers are null: metadata only, no unchecked device operation
++    return true;
++}
++
++bool ExpertCache::reopen_sized_uninitialized(const std::vector<int64_t>& sizes,
++                                             int64_t layers, int64_t experts, int64_t saved_blob,
++                                             std::string& err) {
++    if (valid() || slots_ || !off_.empty() || sizes.empty() || saved_blob <= 0 ||
++        uint64_t(saved_blob) > uint64_t(INT64_MAX) - 255) {
++        err = "decode cache: reopen requires a retired empty object and fixed slot sizes"; return false;
++    }
++    std::vector<uint64_t> offsets(sizes.size() + 1, 0);
++    const uint64_t largest_slot = (uint64_t(saved_blob) + 255) / 256 * 256;
++    for (size_t i = 0; i < sizes.size(); ++i) {
++        if (sizes[i] <= 0 || uint64_t(sizes[i]) > uint64_t(INT64_MAX) - 255) {
++            err = "decode cache: invalid fixed slot size"; return false;
++        }
++        const uint64_t bytes = (uint64_t(sizes[i]) + 255) / 256 * 256;
++        if (offsets[i] > uint64_t(INT64_MAX) - bytes) {
++            err = "decode cache: fixed slot size overflow"; return false;
++        }
++        offsets[i + 1] = offsets[i] + bytes;
++        if (bytes > largest_slot) { err = "decode cache: slot exceeds original blob layout"; return false; }
++    }
++    // Match open_sized's byte allocation and slot layout, without a memset.
++    if (!open_uninitialized(int64_t(offsets.back()), layers, experts, 1, err)) return false;
++    slots_ = int64_t(sizes.size()); blob_ = saved_blob; off_ = std::move(offsets);
++    // Preserve normal bounded blocking-fill support, with checked retirement
++    // of the one-byte bootstrap slab. On failure the outer lease exits before
++    // freeing either the original slab or the new raw allocation.
++    if (size_t(saved_blob) > blocking_staging_bytes_) {
++        void* next = nullptr;
++        if (cudaHostAlloc(&next, size_t(saved_blob), cudaHostAllocDefault) != cudaSuccess) {
++            err = "decode cache: restored blocking staging allocation failed"; return false;
++        }
++        if (blocking_staging_ && cudaFreeHost(blocking_staging_) != cudaSuccess) {
++            err = "decode cache: bootstrap staging retirement failed"; return false;
++        }
++        blocking_staging_ = static_cast<uint8_t*>(next); blocking_staging_bytes_ = size_t(saved_blob);
++    }
++    layer_next_.assign(size_t(layers), 0);
++    for (int64_t l = 0; l < layers; ++l) {
++        int64_t lo = 0, hi = 0; layer_slot_range(l, lo, hi); layer_next_[size_t(l)] = int32_t(lo);
++    }
++    return true;
++}
++#endif
++
+ void ExpertCache::close() {
+ #if defined(STRATA_USE_HIP) || defined(STRATA_ENABLE_SYCL)
+     if (blocking_staging_) (void) cudaFreeHost(blocking_staging_);
+     blocking_staging_ = nullptr;
+     blocking_staging_bytes_ = 0;
+--- a/src/core/verify.cpp
++++ b/src/core/verify.cpp
+@@ -233,10 +233,66 @@
+     void* hosts[] = {h_tok_, h_step_, h_pos_, h_commit_, h_ple_, h_out_, h_x_, h_ids_, h_w_, h_seq_, h_flag_, h_ymiss_,
+                      h_flagA_, h_plan_, h_flagB_};
+     for (void* h : hosts)
+         if (h) cudaFreeHost(h);
+ }
++
++#ifdef STRATA_ENABLE_SYCL
++bool Verifier::retire_cache_graphs(std::string& err) {
++    const OnDevice on_device(device_);
++    const auto phase = diag_window_.read().phase;
++    if (!cs_ || next_ || released_.load() || cache_hits_detached_ ||
++        (phase != VerifyPhase::inactive && phase != VerifyPhase::completed)) {
++        err = "decode cache: verifier is not at a healthy single-stage idle boundary"; return false;
++    }
++    if (!wait_commit(err) || cudaStreamSynchronize(cs_) != cudaSuccess ||
++        (copy_ && cudaStreamSynchronize(copy_) != cudaSuccess)) {
++        if (err.empty()) err = "decode cache: verifier queue retirement failed";
++        return false;
++    }
++    for (int t = 0; t < 9; ++t) {
++        retired_cache_windows_[t] = exec_[t] || !segments_[t].empty() || !work_[t].empty();
++        auto destroy = [&](cudaGraphExec_t& e) {
++            if (e && cudaGraphExecDestroy(e) != cudaSuccess) return false;
++            e = nullptr; return true;
++        };
++        if (!destroy(exec_[t])) { err = "decode cache: verifier executable retirement failed"; return false; }
++        for (auto& e : segments_[t])
++            if (!destroy(e)) { err = "decode cache: verifier segment retirement failed"; return false; }
++        for (auto& e : work_[t])
++            if (!destroy(e)) { err = "decode cache: verifier work retirement failed"; return false; }
++        segments_[t].clear(); work_[t].clear();
++    }
++    // SYCL's device_plan_ is disabled at init. Preserve the commit-only graph,
++    // arena and final_R borrowed by normal/coupled MTP graphs.
++    if (device_plan_ || slot_off_d_) { err = "decode cache: unsupported verifier device plan"; return false; }
++    // The completed host/device plan can still contain old slot addresses.
++    // No window reader remains; clear both copies before retiring the cache.
++    std::memset(h_plan_, 0, size_t(2 * plan_i32_) * sizeof(int32_t));
++    if (cudaMemsetAsync(plan_, 0, size_t(2 * (plan_i32_ + 16)) * sizeof(int32_t), cs_) != cudaSuccess ||
++        cudaStreamSynchronize(cs_) != cudaSuccess) {
++        err = "decode cache: old verifier plan pointer retirement failed"; return false;
++    }
++    hits_ = {}; work_launched_ = false; work_status_ = cudaSuccess;
++    last_t_ = 0; cache_hits_detached_ = true;
++    return true;
++}
++
++bool Verifier::restore_cache_hits_and_recapture(const VerifyHits& hits, std::string& err) {
++    const OnDevice on_device(device_);
++    if (!cache_hits_detached_ || !hits.d_res || !hits.cache_base || hits.n_slots <= 0 || hits.blob <= 0) {
++        err = "decode cache: verifier restore requires detached graphs and complete new hits"; return false;
++    }
++    hits_ = hits;
++    cache_graph_recapture_ = true;
++    for (int t = 1; t <= max_t_; ++t)
++        if (retired_cache_windows_[t] && !capture(t, err)) return false;
++    cache_graph_recapture_ = false; cache_hits_detached_ = false;
++    for (auto& t : retired_cache_windows_) t = false;
++    return true;
++}
++#endif
+ 
+ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState& ss, const VerifyHits& hits,
+                     const NativeHead* head, int max_t, std::string& err) {
+     cudaGetDevice(&device_);   // a layer split's stage on another GPU: its streams, graphs and buffers live there
+     strata::kernels::fused_gr_check();   // once per card: which bitwise-equal hyper-connection read runs there
+@@ -1048,10 +1104,14 @@
+     if (begin_verify_capture(cs_, T) != cudaSuccess) {
+         err = "verify: begin capture failed";
+         return false;
+     }
+     if (!record_window(T, cs_, err) || !end_segment(T, err)) {
++        if (cache_graph_recapture_) {
++            std::fprintf(stderr, "decode cache: verifier recapture failed; owners retained until exit\n");
++            std::fflush(stderr); std::_Exit(EXIT_FAILURE);
++        }
+         // A failed kernel may leave the current segment recording. Close it
+         // before releasing already finalized segments; a later call can retry.
+         cudaGraph_t unfinished = nullptr;
+         cudaStreamEndCapture(cs_, &unfinished);
+         if (unfinished) cudaGraphDestroy(unfinished);
+@@ -1203,10 +1263,13 @@
+ 
+ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool, void* user, int32_t* out,
+                    std::string& err) {
+     using namespace strata::kernels;
+     const OnDevice on_device(device_);
++#ifdef STRATA_ENABLE_SYCL
++    if (cache_hits_detached_) { err = "verify: decode cache prompt lease is detached"; return false; }
++#endif
+     if (T < 1 || T > max_t_) { err = "verify: window size out of range"; return false; }
+     if (released_.load()) { err = "verify: an earlier window never finished on the GPU (#267); restart the engine"; return false; }
+     const ModelGeometry& g = *g_;
+     SessionState& ss = *ss_;
+     if (pos0 + T > ss.qsa_states[ss.qsa_primary()].max_cells) { err = "verify: the window runs past the context"; return false; }
+--- a/src/core/expert_source.cpp
++++ b/src/core/expert_source.cpp
+@@ -1830,10 +1830,16 @@
+ 
+ void expert_pool_dispatch(void* user, const float* x_f, const int32_t* ids, const float* weights, int64_t n_embd,
+                           int64_t k, float* out) {
+     (void) weights;   // clause 2: `moe_combine` applies it on the device.  Not an oversight.
+     ExpertDispatch& d = *(ExpertDispatch*) user;
++#ifdef STRATA_ENABLE_SYCL
++    if (!d.decode_cache_ready) {
++        d.failed = true; d.fail = "decode cache: prompt lease has not restored decode readiness";
++        d.fail_layer = d.layers; return;
++    }
++#endif
+     if (d.failed) return;   // a previous layer already failed; do not make it worse
+ 
+     using namespace strata::kernels::cpu;
+     // Clause 3: the blob's internal offsets are compile-time constants, so a mismatched geometry does not
+     // produce a wrong answer - it produces a walk off the end of the blob into the next expert's bytes, which
+@@ -1969,10 +1975,16 @@
+ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32_t* ids, int64_t n_tok, int64_t k,
+                                 float* out, const uint8_t* hit_mask) {
+     using namespace strata::kernels::cpu;
+     auto* const decode_observer=d.decode_route_ledger;
+     if (decode_observer) decode_observer->attempt_dispatch(d.layers,n_tok,k);
++#ifdef STRATA_ENABLE_SYCL
++    if (!d.decode_cache_ready) {
++        d.failed = true; d.fail = "decode cache: prompt lease has not restored decode readiness";
++        d.fail_layer = d.layers; return;
++    }
++#endif
+     if (d.failed) return;
+     if (hit_mask != nullptr && (n_tok != 1 || d.plan != nullptr || d.host_res != nullptr || d.remote_count > 0)) {
+         d.failed = true;
+         d.fail = "per-layer hit decisions cannot be combined with a window GPU plan";
+         d.fail_layer = d.layers;
+@@ -2265,11 +2277,34 @@
+         for (auto exec : owned) cudaGraphExecDestroy(exec);
+         if (host_plan) cudaFreeHost(host_plan);
+     }
+ };
+ 
+-bool expert_hit_prepare_graphs(ExpertDispatch& d, void* stream, std::string& err) {
++bool expert_hit_retire_graphs(ExpertDispatch& d, void* stream, std::string& err) {
++    if (stream == nullptr || cudaStreamSynchronize((cudaStream_t) stream) != cudaSuccess) {
++        err = "decode cache: native hit queue retirement failed"; return false;
++    }
++    auto& p = d.native_hit_graphs;
++    if (!p) return true;
++    if (p.use_count() != 1) { err = "decode cache: native hit graph has another owner"; return false; }
++    for (auto& exec : p->owned) {
++        if (exec && cudaGraphExecDestroy(exec) != cudaSuccess) {
++            err = "decode cache: native hit executable retirement failed"; return false;
++        }
++        exec = nullptr;
++    }
++    p->owned.clear(); p->layers.clear();
++    if (p->host_plan && cudaFreeHost(p->host_plan) != cudaSuccess) {
++        err = "decode cache: native hit host plan retirement failed"; return false;
++    }
++    p->host_plan = nullptr; p->ptr = nullptr; p->meta = nullptr; p->dst = nullptr;
++    p.reset();
++    return true;
++}
++
++bool expert_hit_prepare_graphs(ExpertDispatch& d, void* stream, std::string& err,
++                               bool failstop_on_error) {
+     if (!d.hit_native || d.hit_cpu_order) return true;
+     if (d.native_hit_graphs || !d.hits_ready() || stream == nullptr ||
+         d.parts_elems <= 0 || d.parts_elems % strata::kernels::cpu::H != 0) {
+         err = "native hit graph capture requires new, complete session buffers and an owned stream";
+         return false;
+@@ -2286,10 +2321,19 @@
+         err = "native hit graph capture requires complete host staging lists";
+         return false;
+     }
+     d.is_hit.resize(size_t(cap));
+     auto graphs = std::make_shared<NativeHitGraphs>();
++    struct CaptureLease {
++        bool strict, complete = false;
++        ~CaptureLease() noexcept {
++            if (strict && !complete) {
++                std::fprintf(stderr, "decode cache: native hit recapture failed; owners retained until exit\n");
++                std::fflush(stderr); std::_Exit(EXIT_FAILURE);
++            }
++        }
++    } capture_lease{failstop_on_error};
+     const size_t ptr_bytes = size_t(cap) * sizeof(unsigned long long);
+     const size_t meta_bytes = size_t(2 * cap + 2) * sizeof(int32_t);
+     const size_t plan_bytes = ptr_bytes + meta_bytes + size_t(cap) * sizeof(int32_t);
+     if (cudaHostAlloc(&graphs->host_plan, plan_bytes,
+                       cudaHostAllocMapped | cudaHostAllocPortable) != cudaSuccess) {
+@@ -2356,16 +2400,23 @@
+         graphs->owned.push_back(exec);
+         graphs->layers.push_back(exec);
+         kinds.emplace(key, exec);
+     }
+     d.native_hit_graphs = std::move(graphs);
++    capture_lease.complete = true;
+     return true;
+ }
+ #endif
+ 
+ void expert_hit_run(void* user, void* stream, HitPhase phase, const int32_t* ids, int64_t k) {
+     ExpertDispatch& d = *(ExpertDispatch*) user;
++#ifdef STRATA_ENABLE_SYCL
++    if (!d.decode_cache_ready) {
++        d.failed = true; d.fail = "decode cache: prompt lease has not restored decode readiness";
++        d.fail_layer = d.layers; return;
++    }
++#endif
+     if (d.failed) return;
+     cudaStream_t cs = (cudaStream_t) stream;
+ 
+     if (phase == HitPhase::Launch) {
+         d.decided = false;
+--- a/src/program/generate.cpp
++++ b/src/program/generate.cpp
+@@ -56,10 +56,11 @@
+ #include "strata/prefill/prefill.hpp"
+ #include "strata/core/native_dense.hpp"
+ #include "strata/program/logits_selection.hpp"
+ #ifdef STRATA_ENABLE_SYCL
+ #include "strata/program/prefill_logits.hpp"
++#include "strata/program/decode_cache_prefill.hpp"
+ #include "strata/prefill/draft_uploads.hpp"
+ #endif
+ #include "strata/program/conv_cache.hpp"
+ #include "strata/program/prompt_checkpoint.hpp"
+ #include "strata/spec/draft_policy.hpp"
+@@ -114,21 +115,23 @@
+ 
+ // The two real batched prompt call sites share this boundary. Prefill::run owns
+ // layer-major residual/cache temporaries; its return (including cancel/error)
+ // destroys them before the expert reload begins. Short segments/windows never
+ // detach. No feature-specific allocation, scan, kernel or wait when default off.
++template<class RunPrompt>
+ bool run_prompt_with_mtp_experts(strata::prefill::Prefill& prompt, strata::core::MtpDrafter& mtp,
+                                  bool supported, const int64_t* tokens, int64_t n, int64_t pos0,
+-                                 std::string& err) {
++                                 std::string& err, RunPrompt&& run_prompt) {
++    (void) tokens; (void) pos0; // The closure owns the actual prompt invocation.
+     const char* release = std::getenv("STRATA_PREFILL_RELEASE_MTP_EXPERTS");
+     if (!release || std::strcmp(release, "1") != 0)
+-        return prompt.run(tokens, n, pos0, err);
++        return run_prompt();
+     const char* layer_major = std::getenv("STRATA_PREFILL_LAYER_MAJOR");
+     if (!layer_major || std::strcmp(layer_major, "1") != 0) {
+         err = "MTP expert release requires exact STRATA_PREFILL_LAYER_MAJOR=1"; return false;
+     }
+-    if (prompt.chunk() <= 0 || n <= prompt.chunk()) return prompt.run(tokens, n, pos0, err);
++    if (prompt.chunk() <= 0 || n <= prompt.chunk()) return run_prompt();
+ #if !defined(STRATA_ENABLE_SYCL)
+     (void) mtp; (void) supported;
+     err = "MTP expert release requires the SYCL engine"; return false;
+ #else
+     if (!supported) {
+@@ -160,11 +163,11 @@
+         }
+         memory_mark("after-restore");
+     };
+     bool ok = false;
+     try {
+-        ok = prompt.run(tokens, n, pos0, err);
++        ok = run_prompt();
+     } catch (...) {
+         restore(); // the callee's checked lifetime guards have already run
+         throw;
+     }
+     restore(); // keep the original prompt failure/cancellation error unchanged
+@@ -1480,10 +1483,30 @@
+             std::fprintf(stderr, "strata generate: %s\n", why.c_str());
+             return 2;
+         }
+     }
+ #endif
++#ifdef STRATA_ENABLE_SYCL
++    const char* release_decode_env = std::getenv("STRATA_PREFILL_RELEASE_DECODE_CACHE");
++    const bool release_decode_cache = release_decode_env && std::strcmp(release_decode_env, "1") == 0;
++    if (release_decode_cache) {
++        const char* lm = std::getenv("STRATA_PREFILL_LAYER_MAJOR");
++        const char* hit = std::getenv("STRATA_SYCL_NATIVE_HIT_GRAPH");
++        const bool remote = o.expert_cache_remote[0] || o.expert_cache_remote[1] || o.expert_cache_remote[2];
++        if (!lm || std::strcmp(lm, "1") || o.expert_cache <= 0 || o.expert_profile.empty() || o.spec < 2 ||
++            o.native_preset.empty() || !o.no_prefill_borrow || o.prefill_chunk <= 0 || o.prefill_auto ||
++            o.no_pool || o.no_capture || !o.no_token_graph || o.expert_cache_cpu_order ||
++            !o.layer_split.empty() || !o.split_device.empty() || o.peer_device >= 0 || remote || o.vision ||
++            (o.adapt_every > 0 && o.adapt_swaps > 0) || o.gpu_stages || o.graph_only || o.gpu_only_full ||
++            (hit && std::strcmp(hit, "0") == 0)) {
++            std::fprintf(stderr, "strata generate: decode-cache prefill release requires layer-major=1, "
++                                 "native single GPU, explicit fixed --expert-cache/profile/--prefill, "
++                                 "--no-prefill-borrow, --spec >=2, native hit graphs, no peers/remotes/split/adaptive/vision\n");
++            return 2;
++        }
++    }
++#endif
+     strata::core::set_coupled_draft(o.coupled_draft);
+     strata::core::set_peer_portable(o.peer_device >= 1);   // multi-GPU: the Portable flag on mapped host buffers only with a peer device (before any allocation)
+     if (o.serve && o.conversation_cache_mib > 0 && (o.prompt_cache == 0 || o.conversation_cache_slots == 0))
+         std::fprintf(stderr, "strata serve: warning: conversation caching is disabled by %s\n",
+                      o.prompt_cache == 0 ? "--prompt-cache 0" : "--conversation-cache-slots 0");
+@@ -4209,10 +4232,28 @@
+     // layers and the report reads as "head = 50 ms", which is not a thing that can happen to 1.4 ms of GPU
+     // work.  That is not hypothetical - it is what the first version of this printed.
+     double ms_ple = 0, ms_embed = 0, ms_layers = 0, ms_head = 0, ms_readback = 0, ms_sample = 0;
+     int64_t phase_tokens = 0;
+ 
++    auto run_prompt_prefill = [&](strata::prefill::Prefill& pf, strata::core::Verifier* verifier,
++                                  const int64_t* ids, int64_t count, int64_t pos, std::string& why) -> bool {
++#ifdef STRATA_ENABLE_SYCL
++        // Default OFF: no new profile scan, allocation, queue wait or driver query.
++        if (release_decode_cache && count > pf.chunk()) {
++            if (drive.d.lookahead || drive.d.remote_count || !drive.d.native_hit_graphs ||
++                host_res.empty() || !d_res || !srcp || auto_cache || !native_pack || multi_gpu || tgraph.captured) {
++                why = "decode cache: incomplete fixed-profile single-GPU hit setup (disable STRATA_LOOKAHEAD)";
++                return false;
++            }
++            return strata::program::decode_cache_prefill::run(
++                pf, verifier, xcache, drive.d, thits, host_res, d_res, *srcp, profile,
++                g.n_layers, g.n_expert, ids, count, pos, main_stream, why);
++        }
++#endif
++        return pf.run(ids, count, pos, why);
++    };
++
+     // ================================ plan v0.3 P8: THE PERSISTENT ENGINE (--serve) ================================
+     //
+     // The weights, the expert arena and the VRAM tier load once; then requests arrive on stdin, one per line,
+     //
+     //     GEN <max_new> <id,id,...>
+@@ -5925,11 +5966,12 @@
+                 const auto tsp = Clock::now();
+                 const bool sp_ok = win ? read_windows(at, to, err) : run_prompt_with_mtp_experts(
+                     sp, mtp, native_pack && o.spec == 4 && !o.mtp.empty() && !multi_gpu &&
+                     o.layer_split.empty() && o.peer_device < 0 && !peer.valid() &&
+                     std::all_of(o.expert_cache_remote.begin(), o.expert_cache_remote.end(), [](auto slots) { return slots <= 0; }),
+-                    ids.data() + at, to - at, at, err);
++                    ids.data() + at, to - at, at, err,
++                    [&] { return run_prompt_prefill(sp, &ver, ids.data() + at, to - at, at, err); });
+                 if (trace) {
+                     std::fprintf(stderr, "strata trace: read %lld tokens (%s) in %.1f ms\n", (long long) (to - at),
+                                  win ? "windows" : "batched",
+                                  std::chrono::duration<double, std::milli>(Clock::now() - tsp).count());
+                     std::fflush(stderr);
+@@ -6495,11 +6537,12 @@
+         const Clock::time_point tp0 = Clock::now();
+         if (!run_prompt_with_mtp_experts(prefill, mtp,
+                 native_pack && o.spec == 4 && !o.mtp.empty() && !multi_gpu &&
+                 o.layer_split.empty() && o.peer_device < 0 && !peer.valid() &&
+                 std::all_of(o.expert_cache_remote.begin(), o.expert_cache_remote.end(), [](auto slots) { return slots <= 0; }),
+-                o.tokens.data(), n_batched, 0, err)) {
++                o.tokens.data(), n_batched, 0, err,
++                [&] { return run_prompt_prefill(prefill, nullptr, o.tokens.data(), n_batched, 0, err); })) {
+             std::fprintf(stderr, "strata generate: %s\n", err.c_str());
+             return 1;
+         }
+ #ifdef STRATA_ENABLE_SYCL
+         if (collect_prefill_logits && !prefill_logits.finish(err)) {
+--- a/src/prefill/prefill.cpp
++++ b/src/prefill/prefill.cpp
+@@ -423,10 +423,13 @@
+     core::ExpertSource* src = nullptr;
+     const core::ExpertCache* cache = nullptr;
+     const int32_t* host_res = nullptr;
+     int64_t T = 0, T_max = 0;
+     bool borrowed = false;
++#ifdef STRATA_ENABLE_SYCL
++    bool decode_cache_detached = false;
++#endif
+     cudaStream_t cs = nullptr, copy = nullptr;
+     Gemm gemm;
+     std::vector<void*> owned;
+     // chunk buffers
+     float *emb = nullptr, *R = nullptr, *xn = nullptr, *lo = nullptr, *gated = nullptr, *inj = nullptr;
+--- a/src/prefill/layer_major.inc
++++ b/src/prefill/layer_major.inc
+@@ -1,9 +1,54 @@
+ // Included inside strata::prefill after the current chunk implementation's
+ // helpers. This is orchestration only; run_impl owns GDN/QSA/PLE/expert math.
++#ifdef STRATA_ENABLE_SYCL
++bool Prefill::detach_decode_cache(int64_t tokens, std::string& err) {
++    const char* layer_major = std::getenv("STRATA_PREFILL_LAYER_MAJOR");
++    if (!impl_ || !impl_->g || !impl_->ss || !layer_major || std::strcmp(layer_major, "1") || tokens <= impl_->T ||
++        impl_->borrowed || impl_->decode_cache_detached || impl_->layer_major_active ||
++        stage_lb_ != 0 || stage_le_ != impl_->g->n_layers || next_ || hand_in_ || embd_rows ||
++        impl_->pp || !impl_->compact_moe_fp16 || !impl_->src || !impl_->cache || !impl_->host_res ||
++        impl_->copy != impl_->cs || !impl_->stager ||
++        impl_->stager->active.load(std::memory_order_acquire)) {
++        err = "decode cache: prefill requires an idle long layer-major segment and owned buffers"; return false;
++    }
++    auto& m = *impl_;
++    const uint64_t head = m.stager->head.load(std::memory_order_acquire);
++    if ((head & 0xffff) < ((head >> 16) & 0xffff)) {
++        err = "decode cache: prefill still has claimable host staging jobs"; return false;
++    }
++    const core::OnDevice on_device(m.device);
++    if (cudaStreamSynchronize(m.cs) != cudaSuccess) {
++        err = "decode cache: prefill entry queue retirement failed"; return false;
++    }
++    // A closed cache object remains alive, but neither it nor its old map may
++    // reach ordinary run_impl before layer-major installs the temporary cache.
++    m.cache = nullptr; m.host_res = nullptr; m.decode_cache_detached = true;
++    return true;
++}
++
++bool Prefill::rebind_decode_cache(const core::ExpertCache* cache, const int32_t* res, std::string& err) {
++    if (!impl_ || !impl_->decode_cache_detached || impl_->layer_major_active ||
++        !cache || !cache->valid() || !res) {
++        err = "decode cache: prefill rebind requires a complete restored cache"; return false;
++    }
++    const core::OnDevice on_device(impl_->device);
++    if (cudaStreamSynchronize(impl_->cs) != cudaSuccess) {
++        err = "decode cache: prefill exit queue retirement failed"; return false;
++    }
++    impl_->cache = cache; impl_->host_res = res; impl_->decode_cache_detached = false;
++    return true;
++}
++#endif
+ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) {
+     const char* requested = std::getenv("STRATA_PREFILL_LAYER_MAJOR");
++#ifdef STRATA_ENABLE_SYCL
++    if (impl_ && impl_->decode_cache_detached &&
++        (!requested || std::strcmp(requested, "1") || n <= impl_->T)) {
++        err = "decode cache: detached prefill cannot fall through to the ordinary chunk path"; return false;
++    }
++#endif
+     // Reuse only pays across chunks. Keep short chat/agent turns on the
+     // original path even when long-prompt layer reuse is requested.
+     return requested && std::strcmp(requested, "1") == 0 && impl_ && n > impl_->T
+                ? run_layer_major(tokens, n, pos0, err) : run_impl(tokens, n, pos0, err);
+ }
+--- a/include/strata/prefill/prefill.hpp
++++ b/include/strata/prefill/prefill.hpp
+@@ -68,10 +68,16 @@
+ 
+     /// With borrowed buffers: lay them out again for chunks of `chunk` tokens (at most `init`'s) in `borrow` - a
+     /// request lends only the slots its prompt needs.  The stream must be idle (between prompts).
+     bool relayout(int64_t chunk, void* borrow, uint64_t borrow_bytes, std::string& err);
+     int64_t chunk() const;
++#ifdef STRATA_ENABLE_SYCL
++    /// Own-buffer, long layer-major prompt only. These never close the cache;
++    /// the caller owns checked graph retirement and a complete restore lease.
++    bool detach_decode_cache(int64_t tokens, std::string& err);
++    bool rebind_decode_cache(const core::ExpertCache* cache, const int32_t* host_res, std::string& err);
++#endif
+ 
+     /// The share of the streamed experts' bytes DMA-able straight from pinned RAM (1 = all).  Sizes the streamed
+     /// ring (a big one only pays when the copy engine, not the host copies, is the limit); set before bytes_needed.
+     static void set_pinned_share(double share);
+     static double pinned_share();
+--- a/include/strata/core/expert_cache.hpp
++++ b/include/strata/core/expert_cache.hpp
+@@ -93,10 +93,20 @@
+     /// profile-filled tier never moves an expert to another layer's slot, so each slot keeps its first size).
+     bool open_sized(const std::vector<int64_t>& slot_bytes, int64_t n_layers, int64_t n_expert, std::string& err);
+     /// Byte offset of each slot in the arena (null for uniform slots).
+     const uint64_t* slot_offsets() const { return off_.empty() ? nullptr : off_.data(); }
+     void close();
++#ifdef STRATA_ENABLE_SYCL
++    /// Serialized issuer only, after ALL external readers/graphs have retired.
++    /// On failure the caller must fail-stop before any owner is destroyed.
++    bool close_checked(std::string& err);
++    /// Reopen a retired, empty object without submitting initialization work.
++    bool reopen_sized_uninitialized(const std::vector<int64_t>& slot_bytes,
++                                    int64_t n_layers, int64_t n_expert, int64_t saved_blob_bytes,
++                                    std::string& err);
++    int64_t allocation_blob_bytes() const { return blob_; }
++#endif
+ 
+     bool valid() const { return base_ != nullptr; }
+     int64_t slots() const { return slots_; }
+     /// Slots actually claimed.  Not the same as `slots()` - the cache does not evict, so a run that routes
+     /// fewer distinct experts than there are slots leaves the rest empty.
+--- a/include/strata/core/expert_source.hpp
++++ b/include/strata/core/expert_source.hpp
+@@ -286,10 +286,11 @@
+     std::vector<unsigned long long> h_native_hit_ptr;
+     std::vector<int32_t> h_native_hit_meta;
+ #ifdef STRATA_ENABLE_SYCL
+     /// Captured at setup for the session's fixed buffers and expert layouts.
+     std::shared_ptr<NativeHitGraphs> native_hit_graphs;
++    bool decode_cache_ready = true; // false only inside the opt-in serialized prompt lease
+ #endif
+     /// **PER ROUTER INDEX, DECIDED IN `Launch` AND CONSUMED BY THE POOL.**  The two callbacks share it
+     /// so the decision is made exactly once, on this layer's ids, and neither side can re-decide it.
+     std::vector<uint8_t> is_hit;
+     bool decided = false;
+@@ -396,11 +397,14 @@
+ #ifdef STRATA_ENABLE_SYCL
+ /// Capture native Q8_1 hit work once per expert layout at session setup.
+ /// Buffer addresses and layouts must remain fixed until the graphs are released.
+ /// Launch callbacks reuse one host-USM plan and require the preceding layer to have completed.
+ /// CPU-order diagnostic hits keep their existing path. No token-path capture.
+-bool expert_hit_prepare_graphs(ExpertDispatch& d, void* stream, std::string& err);
++bool expert_hit_prepare_graphs(ExpertDispatch& d, void* stream, std::string& err,
++                               bool failstop_on_error = false);
++/// Checked drain and destruction, including the mapped plan. Serialized issuer only.
++bool expert_hit_retire_graphs(ExpertDispatch& d, void* stream, std::string& err);
+ #endif
+ /// The pool half of the same decision; see `ExpertDispatch::is_hit`.
+ 
+ /// **PHASE 2'S ONLY SOURCE: `experts.bin`, memory-mapped, no cache.**
+ ///
+--- a/include/strata/core/verify.hpp
++++ b/include/strata/core/verify.hpp
+@@ -129,10 +129,16 @@
+     /// path, the end of a run) calls wait_commit() first.  STRATA_COMMIT_SYNC=1 keeps the wait.
+     static void set_commit_async(bool on);
+     /// Waits for the last commit graph when commit() did not (an event recorded after it, not the whole device);
+     /// false with `err` when it failed.  Free when nothing is pending.
+     bool wait_commit(std::string& err);
++#ifdef STRATA_ENABLE_SYCL
++    /// Only the serialized request issuer may call these between completed windows.
++    /// Retains arena/final_R/streams/events and cache-independent commit graphs.
++    bool retire_cache_graphs(std::string& err);
++    bool restore_cache_hits_and_recapture(const VerifyHits& hits, std::string& err);
++#endif
+ 
+     /// Measurement hook (STRATA_LOGPOS): after run(), write one line per row t of the last window's head -
+     /// "pos target logprob top top_logprob hit extra_logprob target_logprob_without_extra" - where row t is the
+     /// distribution at pos0 + t, targets[t] is the token at pos0 + t + 1, extra_logprob is the log-probability of
+     /// `extra_id` in the same row, and the last column is the target's log-probability in that row renormalized
+@@ -229,10 +235,12 @@
+     // the CPU publishes its plan, before it computes the missed experts.
+     std::vector<cudaGraphExec_t> work_[9];
+     cudaEvent_t layer_done_ = nullptr;
+     cudaEvent_t work_done_ = nullptr;
+     bool overlap_gpu_ = true, work_launched_ = false;
++    bool cache_hits_detached_ = false, cache_graph_recapture_ = false;
++    bool retired_cache_windows_[9] = {};
+     cudaError_t work_status_ = cudaSuccess;
+     std::atomic<uint32_t> reached_{0};
+     bool end_segment(int T, std::string& err, bool work = false);
+     void launch_work();
+ #endif
+--- /dev/null
++++ b/tests/decode_cache_prompt_state.cpp
+@@ -0,0 +1,33 @@
++// CPU-only contract fixture; intentionally not executed by the implementation agent.
++// Main: c++ -std=c++20 -Iinclude tests/decode_cache_prompt_state.cpp -o <outside-git>/cache-state
++#include "strata/core/decode_cache_prompt_state.hpp"
++#include <cstdio>
++
++int main() {
++    using State = strata::core::DecodeCachePromptState;
++    State s;
++    int failures = 0;
++    auto require = [&](bool ok, const char* message) {
++        if (!ok) { std::fprintf(stderr, "%s\n", message); ++failures; }
++    };
++    require(s.ready(), "default state permits decode");
++    require(!s.begin(0, 4) && s.ready(), "empty cache cannot create a lease");
++    require(s.begin(2, 9) && !s.ready(), "retirement closes decode admission");
++    require(!s.publish() && !s.complete(), "draining cannot publish or allow decode");
++    require(s.detached(), "retired reader boundary");
++    require(!s.filled(4), "cannot count upload before restoration starts");
++    require(s.restore() && s.filled(4), "first completed slot");
++    require(!s.publish(), "partial cache must never publish");
++    require(!s.filled(6) && s.filled(5), "oversized completion is refused without corrupting counts");
++    require(!s.filled(1), "extra slot is refused");
++    require(s.publish() && !s.ready(), "full upload still cannot decode");
++    require(!s.complete(), "maps without recapture do not permit decode");
++    require(s.recapture() && s.complete() && s.ready(), "all pointer readers recaptured before decode");
++    require(s.begin(1, 7) && s.detached() && s.restore() && s.filled(7) && s.publish() &&
++            s.recapture() && s.complete(), "same owner supports the next serve prompt");
++    State mismatch;
++    require(mismatch.begin(2, 9) && mismatch.detached() && mismatch.restore() && mismatch.filled(9),
++            "byte total alone does not imply all slots are restored");
++    require(!mismatch.publish() && !mismatch.ready(), "unfilled second slot stays unpublished");
++    return failures ? 1 : 0;
++}
+--- /dev/null
++++ b/include/strata/core/decode_cache_prompt_state.hpp
+@@ -0,0 +1,38 @@
++// Host-only publication contract shared by the opt-in prompt lease and fixtures.
++#pragma once
++#include <cstdint>
++
++namespace strata::core {
++class DecodeCachePromptState {
++public:
++    enum class Phase { ready, draining, detached, restoring, publishing, recapturing };
++    Phase phase() const { return phase_; }
++    bool ready() const { return phase_ == Phase::ready; }
++    bool begin(uint64_t slots, uint64_t bytes) {
++        if (!ready() || !slots || !bytes) return false;
++        slots_ = slots; bytes_ = bytes; done_slots_ = done_bytes_ = 0;
++        phase_ = Phase::draining; return true;
++    }
++    bool detached() { return advance(Phase::draining, Phase::detached); }
++    bool restore() { return advance(Phase::detached, Phase::restoring); }
++    // Slot fills are checked and waited individually, in saved profile order.
++    bool filled(uint64_t bytes) {
++        if (phase_ != Phase::restoring || !bytes || done_slots_ >= slots_ ||
++            bytes > bytes_ - done_bytes_) return false;
++        ++done_slots_; done_bytes_ += bytes; return true;
++    }
++    bool publish() {
++        if (phase_ != Phase::restoring || done_slots_ != slots_ || done_bytes_ != bytes_) return false;
++        phase_ = Phase::publishing; return true;
++    }
++    bool recapture() { return advance(Phase::publishing, Phase::recapturing); }
++    bool complete() { return advance(Phase::recapturing, Phase::ready); }
++private:
++    bool advance(Phase from, Phase to) {
++        if (phase_ != from) return false;
++        phase_ = to; return true;
++    }
++    Phase phase_ = Phase::ready;
++    uint64_t slots_ = 0, bytes_ = 0, done_slots_ = 0, done_bytes_ = 0;
++};
++} // namespace strata::core
+--- /dev/null
++++ b/include/strata/program/decode_cache_prefill.hpp
+@@ -0,0 +1,227 @@
++// Opt-in serialized prompt transaction. Included only by the SYCL generator.
++#pragma once
++#include "strata/core/decode_cache_prompt_state.hpp"
++#include "strata/core/expert_cache.hpp"
++#include "strata/core/expert_source.hpp"
++#include "strata/core/session.hpp"
++#include "strata/core/verify.hpp"
++#include "strata/kernels/cpu/expert_layout.hpp"
++#include "strata/prefill/prefill.hpp"
++#include <cuda_runtime.h>
++#include <algorithm>
++#include <chrono>
++#include <cstdio>
++#include <cstdlib>
++#include <cstring>
++#include <string>
++#include <utility>
++#include <vector>
++
++namespace strata::program::decode_cache_prefill {
++using Clock = std::chrono::steady_clock;
++inline double elapsed(Clock::time_point start) {
++    return std::chrono::duration<double, std::milli>(Clock::now() - start).count();
++}
++[[noreturn]] inline void failstop(const std::string& why) noexcept {
++    std::fprintf(stderr, "decode cache: %s; retaining live owners until process exit\n", why.c_str());
++    std::fflush(stderr); std::fflush(stdout); std::_Exit(EXIT_FAILURE);
++}
++struct RestoreLease {
++    bool complete = false;
++    ~RestoreLease() noexcept {
++        if (!complete) failstop("prompt transaction did not prove complete restoration");
++    }
++};
++struct UploadSlab {
++    void* data = nullptr;
++    ~UploadSlab() noexcept {
++        if (data && cudaFreeHost(data) != cudaSuccess) failstop("upload slab retirement failed");
++    }
++};
++struct Entry { int32_t layer, expert, slot; uint64_t bytes; };
++
++// Caller is the one request issuer, between joined session_loop/run() calls.
++// ExpertPool's run methods return only after the batch completion/park barrier.
++// Lookahead, adaptive, peers, remotes, split and token graphs are rejected by
++// the caller; main queue completion retires its callbacks before map mutation.
++inline bool run(strata::prefill::Prefill& pf, strata::core::Verifier* verifier,
++                strata::core::ExpertCache& cache, strata::core::ExpertDispatch& dispatch,
++                strata::core::TokenHits& token_hits, std::vector<int32_t>& host_res, int32_t* d_res,
++                strata::core::ExpertSource& source,
++                const std::vector<std::pair<int32_t, int32_t>>& profile,
++                int64_t layers, int64_t experts, const int64_t* ids, int64_t count, int64_t pos,
++                cudaStream_t stream, std::string& err) {
++    const auto started = Clock::now();
++    const auto& layout = strata::kernels::cpu::expert_layout();
++    if (!dispatch.decode_cache_ready || dispatch.failed || !dispatch.hits_ready() || dispatch.cache != &cache ||
++        dispatch.cache_stream != (void*) stream || !cache.valid() || cache.slots() <= 0 ||
++        cache.resident() != cache.slots() || !d_res || !stream || !layout.native ||
++        layout.n_layers != layers || layout.n_expert != experts || dispatch.cache_blob <= 0 ||
++        cache.allocation_blob_bytes() <= 0 ||
++        host_res.size() != size_t(layers * experts) || dispatch.host_res != host_res.data() ||
++        token_hits.d_res != d_res || token_hits.cache_base != dispatch.cache_base) {
++        err = "decode cache: complete fixed-profile cache and stable residency map required"; return false;
++    }
++    // Resolve the exact existing allocation, not a new admission/free-memory plan.
++    const int64_t slots = cache.slots(), arena_bytes = cache.bytes(), blob = dispatch.cache_blob;
++    const int64_t allocation_blob = cache.allocation_blob_bytes();
++    const bool per_layer = cache.per_layer_admission(), sized = cache.slot_offsets() != nullptr;
++    std::vector<int64_t> slot_sizes;
++    slot_sizes.reserve(size_t(slots));
++    for (int64_t i = 0; i < slots; ++i)
++        slot_sizes.push_back(sized ? int64_t(cache.slot_offsets()[i + 1] - cache.slot_offsets()[i]) : allocation_blob);
++    const auto saved_res = host_res; // immutable until all restore copies complete
++    std::vector<uint8_t> seen(size_t(slots), 0);
++    std::vector<Entry> entries;
++    uint64_t restored_bytes = 0, largest_blob = 0;
++    for (const auto& [layer, expert] : profile) {
++        const int32_t slot = cache.slot_of(layer, expert);
++        if (slot < 0) continue;
++        if (layer < 0 || layer >= layers || expert < 0 || expert >= experts || slot >= slots ||
++            saved_res[size_t(layer * experts + expert)] != slot) {
++            err = "decode cache: profile/current residency disagree"; return false;
++        }
++        if (seen[size_t(slot)]) continue; // repeated profile pair has one original admission
++        const uint64_t bytes = layout.blob_bytes(layer);
++        if (!bytes || bytes > uint64_t(slot_sizes[size_t(slot)]) || bytes > uint64_t(allocation_blob) ||
++            bytes > layout.max_blob ||
++            restored_bytes > UINT64_MAX - bytes) {
++            err = "decode cache: profile blob exceeds its saved slot"; return false;
++        }
++        seen[size_t(slot)] = 1;
++        entries.push_back({layer, expert, slot, bytes});
++        restored_bytes += bytes; largest_blob = std::max(largest_blob, bytes);
++    }
++    if (entries.size() != size_t(slots)) {
++        err = "decode cache: every allocated slot must have an original profile source"; return false;
++    }
++    for (int64_t l = 0; l < layers; ++l)
++        for (int64_t e = 0; e < experts; ++e)
++            if (saved_res[size_t(l * experts + e)] != cache.slot_of(l, e)) {
++                err = "decode cache: static map no longer matches cache admissions"; return false;
++            }
++    strata::core::DecodeCachePromptState state;
++    if (!state.begin(uint64_t(slots), restored_bytes)) { err = "decode cache: invalid restore plan"; return false; }
++    UploadSlab upload, readback; // declared before lease: fail-stop precedes owner destruction
++    if (cudaHostAlloc(&upload.data, size_t(largest_blob), cudaHostAllocPortable) != cudaSuccess ||
++        cudaHostAlloc(&readback.data, size_t(largest_blob), cudaHostAllocPortable) != cudaSuccess) {
++        err = "decode cache: bounded restore upload/readback slab allocation failed"; return false;
++    }
++    RestoreLease lease; // all subsequent errors/cancel ambiguity fail-stop with owners live
++    auto check = [&](bool ok, const char* operation) {
++        if (!ok) failstop(err.empty() ? std::string(operation) : std::string(operation) + ": " + err);
++    };
++    size_t free_before = 0, free_detached = 0, free_restored = 0, total = 0;
++    check(cudaMemGetInfo(&free_before, &total) == cudaSuccess, "entry memory query");
++    check(pf.detach_decode_cache(count, err), "prefill detach");
++    if (verifier) check(verifier->retire_cache_graphs(err), "verifier retirement");
++    check(strata::core::expert_hit_retire_graphs(dispatch, (void*) stream, err), "native hit retirement");
++    // No asynchronous reader remains. Raw borrowers and host/device maps become
++    // misses before close_checked can release offsets or the device allocation.
++    dispatch.decode_cache_ready = false;
++    dispatch.cache = nullptr; dispatch.cache_base = nullptr; dispatch.cache_slot_off = nullptr;
++    dispatch.hit_pending = false; dispatch.decided = false;
++    token_hits.cache_base = nullptr;
++    std::fill(dispatch.h_native_hit_ptr.begin(), dispatch.h_native_hit_ptr.end(), 0);
++    std::fill(dispatch.h_native_hit_meta.begin(), dispatch.h_native_hit_meta.end(), 0);
++    std::fill(host_res.begin(), host_res.end(), strata::core::kNotResident);
++    check(cudaMemcpyAsync(d_res, host_res.data(), host_res.size() * sizeof(int32_t),
++                          cudaMemcpyHostToDevice, stream) == cudaSuccess, "all-miss map submission");
++    check(cudaMemsetAsync(dispatch.native_hit_ptr, 0,
++                          dispatch.h_native_hit_ptr.size() * sizeof(unsigned long long), stream) == cudaSuccess,
++          "old native hit pointers clear");
++    check(cudaStreamSynchronize(stream) == cudaSuccess, "all-miss publication retirement");
++    check(cache.close_checked(err), "cache retirement");
++    check(state.detached(), "detached state");
++    check(cudaMemGetInfo(&free_detached, &total) == cudaSuccess, "detached memory query");
++    const double detach_ms = elapsed(started);
++    std::fprintf(stderr, "decode cache: detached arena_bytes=%lld slots=%lld wall_ms=%.3f "
++                         "free_before=%zu free_after=%zu\n",
++                 (long long) arena_bytes, (long long) slots, detach_ms, free_before, free_detached);
++    std::fflush(stderr);
++
++    // Prefill's detached gate refuses ordinary chunk execution; its layer-major
++    // implementation installs its own temporary cache before consulting slots.
++    // A healthy cancellation still restores the entire cache before returning.
++    const bool prompt_ok = pf.run(ids, count, pos, err);
++    const std::string prompt_error = err;
++    err.clear();
++    const auto restore_started = Clock::now();
++    check(cudaStreamSynchronize(stream) == cudaSuccess, "prefill completion retirement");
++    check(state.restore(), "restore state");
++    cache.set_per_layer_admission(per_layer);
++    check(sized ? cache.reopen_sized_uninitialized(slot_sizes, layers, experts, allocation_blob, err)
++                : cache.open_uninitialized(slots, layers, experts, allocation_blob, err), "fixed cache reopen");
++    check(cache.slots() == slots && cache.bytes() == arena_bytes &&
++          cache.allocation_blob_bytes() == allocation_blob, "exact allocation/blob layout restore");
++    for (int64_t i = 0; i < slots && sized; ++i)
++        check(cache.slot_offsets()[i + 1] - cache.slot_offsets()[i] == uint64_t(slot_sizes[size_t(i)]),
++              "exact slot offsets restore");
++    // Reproduce startup's deterministic padding as well as every expert blob.
++    // Initialization is inside the outer lease so no failed enqueue can free
++    // the arena before its completion is known.
++    check(cudaMemsetAsync(cache.device_slot(0), 0, size_t(arena_bytes), stream) == cudaSuccess,
++          "restored cache initialization submission");
++    check(cudaStreamSynchronize(stream) == cudaSuccess, "restored cache initialization retirement");
++    // Every source may be mmap/file-backed or resident RAM. Only this one owned
++    // host-USM slab reaches DMA, and it is immutable until the checked wait.
++    for (const Entry& e : entries) {
++        check(cache.admit(e.layer, e.expert) == e.slot, "profile order/slot assignment restore");
++        const uint8_t* bytes = source.blob(e.layer, e.expert);
++        check(bytes != nullptr, "original expert source read");
++        std::memcpy(upload.data, bytes, size_t(e.bytes));
++        check(cache.fill_slot(e.slot, static_cast<const uint8_t*>(upload.data), (void*) stream,
++                              err, int64_t(e.bytes)), "expert upload submission");
++        check(cudaStreamSynchronize(stream) == cudaSuccess, "immutable upload slab retirement");
++        // Do not use verify_slot's local pageable vector on this strict path:
++        // a failed readback must reach failstop before its destination unwinds.
++        check(cudaMemcpyAsync(readback.data, cache.device_slot(e.slot), size_t(e.bytes),
++                              cudaMemcpyDeviceToHost, stream) == cudaSuccess, "slot verification submission");
++        check(cudaStreamSynchronize(stream) == cudaSuccess, "slot verification retirement");
++        check(std::memcmp(readback.data, upload.data, size_t(e.bytes)) == 0, "restored slot byte verification");
++        check(state.filled(e.bytes), "restored slot accounting");
++    }
++    check(cudaStreamSynchronize(stream) == cudaSuccess, "restore completion retirement");
++    for (int64_t l = 0; l < layers; ++l)
++        for (int64_t e = 0; e < experts; ++e)
++            check(cache.slot_of(l, e) == saved_res[size_t(l * experts + e)], "restored residency contract");
++    check(state.publish(), "full cache publication gate");
++    const double refill_ms = elapsed(restore_started);
++    // Publish only after ALL slots and their byte checks have completed. Use the
++    // same vector storage: Prefill/dispatch retain the original host map address.
++    std::copy(saved_res.begin(), saved_res.end(), host_res.begin());
++    check(cudaMemcpyAsync(d_res, host_res.data(), host_res.size() * sizeof(int32_t),
++                          cudaMemcpyHostToDevice, stream) == cudaSuccess, "restored map submission");
++    check(cudaStreamSynchronize(stream) == cudaSuccess, "restored map publication retirement");
++    dispatch.cache = &cache; dispatch.cache_base = cache.device_slot(0);
++    dispatch.cache_slot_off = cache.slot_offsets(); dispatch.cache_blob = blob;
++    token_hits.cache_base = dispatch.cache_base; token_hits.blob = blob;
++    strata::core::VerifyHits hits;
++    hits.d_res = d_res; hits.cache_base = dispatch.cache_base; hits.blob = blob;
++    hits.slot_off = cache.slot_offsets(); hits.n_slots = slots;
++    const auto capture_started = Clock::now();
++    check(state.recapture(), "recapture state");
++    if (verifier) check(verifier->restore_cache_hits_and_recapture(hits, err), "verifier hits/recapture");
++    check(strata::core::expert_hit_prepare_graphs(dispatch, (void*) stream, err, true), "native hit recapture");
++    check(cudaStreamSynchronize(stream) == cudaSuccess, "recapture retirement");
++    const double recapture_ms = elapsed(capture_started);
++    check(pf.rebind_decode_cache(&cache, host_res.data(), err), "prefill rebind");
++    check(cudaFreeHost(upload.data) == cudaSuccess, "bounded upload slab release"); upload.data = nullptr;
++    check(cudaFreeHost(readback.data) == cudaSuccess, "bounded readback slab release"); readback.data = nullptr;
++    check(cudaMemGetInfo(&free_restored, &total) == cudaSuccess, "restored memory query");
++    check(state.complete(), "decode-ready state");
++    dispatch.decode_cache_ready = state.ready();
++    check(dispatch.decode_cache_ready && dispatch.hits_ready() && bool(dispatch.native_hit_graphs),
++          "next-decode readiness proof");
++    lease.complete = true;
++    std::fprintf(stderr, "decode cache: restored arena_bytes=%lld upload_bytes=%llu verify_bytes=%llu "
++                         "slots=%lld refill_ms=%.3f recapture_ms=%.3f restore_ms=%.3f free_after=%zu "
++                         "prompt_ok=%d decode_ready=1\n",
++                 (long long) arena_bytes, (unsigned long long) restored_bytes,
++                 (unsigned long long) restored_bytes, (long long) slots, refill_ms,
++                 recapture_ms, elapsed(restore_started), free_restored, int(prompt_ok));
++    std::fflush(stderr);
++    err = prompt_error;
++    return prompt_ok;
++}
++} // namespace strata::program::decode_cache_prefill

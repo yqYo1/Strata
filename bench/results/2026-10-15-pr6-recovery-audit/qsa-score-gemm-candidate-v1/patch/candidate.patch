@@ -1,0 +1,549 @@
+--- a/src/prefill/prefill.cpp
++++ b/src/prefill/prefill.cpp
+@@ -23,6 +23,9 @@
+ #include "strata/kernels/qsa_prompt_attn.hpp"
+ #include "strata/kernels/qsa_select.hpp"
+ #include "strata/prefill/gemm.hpp"
++#if defined(STRATA_ENABLE_SYCL)
++#include "strata/prefill/sycl_qsa_score_gemm.hpp"
++#endif
+ #include "strata/prefill/moe_fused.hpp"
+ #include "strata/prefill/moe_fused_iq.hpp"
+ #include "strata/prefill/moe_mmq.hpp"
+@@ -448,6 +451,9 @@
+     std::vector<int32_t> steps_host;
+     int32_t* sel_ids = nullptr;
+     float* sel_scores = nullptr;          // [sel_batch, max_blocks]
++#if defined(STRATA_ENABLE_SYCL)
++    QsaScoreGemm qsa_score_gemm; // View only; QSA arena owns every byte.
++#endif
+     int64_t sel_batch = 256, max_blocks = 0;
+     float* attn_scratch = nullptr;
+     int64_t attn_batch = 32, cap = 0;
+@@ -601,6 +607,13 @@
+     a.take<int32_t>(T * (size_t) cap, ok);
+     a.take<float>((size_t) sel_batch * (size_t) max_blocks, ok);
+     a.take<float>((size_t) attn_batch * strata::kernels::qsa_decode_attn_scratch_floats(cap, s), ok);
++#if defined(STRATA_ENABLE_SYCL)
++    if (qsa_score_mode() != QsaScoreMode::off) {
++        if (s.idx_dim != 128 || s.idx_n_head != 4 || s.idx_block != 4)
++            throw std::invalid_argument("QSA score GEMM requires 4 heads, 128 dimensions and blocks of 4");
++        a.take<uint8_t>(qsa_score_scratch_bytes(max_blocks, sel_batch), ok);
++    }
++#endif
+     return a.used;
+ }
+ // Step 2b: which layers' experts go through MMQ (both weight types covered; the Strata Q2_0 pack always - its blob
+@@ -720,6 +733,16 @@
+                    core::ExpertSource* src, const core::ExpertCache* cache, const int32_t* host_res, int64_t chunk,
+                    void* stream, std::string& err, void* borrow, uint64_t borrow_bytes) {
+     (void) prefill_fallback_attn_layout();
++#if defined(STRATA_ENABLE_SYCL)
++    try {
++        if (qsa_score_mode() != QsaScoreMode::off &&
++            (!stream || ss.max_cells < 1 || ss.max_cells > 262144 ||
++             g.idx_q_heads != 4 || g.idx_key_dim != 128)) {
++            err = "QSA score GEMM: requires non-null in-order SYCL queue and logical context <=262144";
++            return false;
++        }
++    } catch (const std::exception& e) { err = e.what(); return false; }
++#endif
+     Impl& m = *impl_;
+     m.wt = &wt; m.g = &g; m.ss = &ss; m.src = src; m.cache = cache; m.host_res = host_res;
+     m.T = chunk; m.cs = (cudaStream_t) stream; m.stats = &stats_;
+@@ -882,6 +905,13 @@
+         m.sel_ids = b.take<int32_t>(T * (size_t) m.cap, ok);
+         m.sel_scores = b.take<float>((size_t) m.sel_batch * (size_t) m.max_blocks, ok);
+         m.attn_scratch = b.take<float>((size_t) m.attn_batch * strata::kernels::qsa_decode_attn_scratch_floats(m.cap, s), ok);
++#if defined(STRATA_ENABLE_SYCL)
++        if (qsa_score_mode() != QsaScoreMode::off) {
++            const size_t score_bytes = qsa_score_scratch_bytes(m.max_blocks, m.sel_batch);
++            void* score_arena = b.take<uint8_t>(score_bytes, ok);
++            if (ok) m.qsa_score_gemm.bind(score_arena, score_bytes, m.max_blocks, m.sel_batch);
++        }
++#endif
+         Alloc c;
+         c.base = base; c.cap = region; c.owned = &m.owned;
+         m.logits = c.take<float>(T * m.g->n_expert, ok); m.w = c.take<float>(T * K, ok); m.ids = c.take<int32_t>(T * K, ok);
+@@ -1243,6 +1273,11 @@
+ 
+ uint64_t Prefill::bytes_needed(const core::ModelGeometry& g, const core::SessionState& ss, int64_t chunk) {
+     // the same allocation sequence as `init`, counted
++#if defined(STRATA_ENABLE_SYCL)
++    if (qsa_score_mode() != QsaScoreMode::off &&
++        (ss.max_cells < 1 || ss.max_cells > 262144 || g.idx_q_heads != 4 || g.idx_key_dim != 128))
++        throw std::invalid_argument("QSA score GEMM: unsupported sizing geometry/logical context");
++#endif
+     const size_t T = (size_t) chunk;
+     bool ok = true;
+     Alloc o;
+@@ -2160,6 +2195,13 @@
+                         }
+                     } catch (const std::exception& e) { err = std::string("prefill indexer: ") + e.what(); return false; }
+                     pt.mark(kPfQsaSel, cs);
++#if defined(STRATA_ENABLE_SYCL)
++                    const bool score_gemm = qsa_score_mode() != QsaScoreMode::off;
++                    if (score_gemm) {
++                        const int64_t last_n = m.steps_host[(T - 1) * strata::kernels::kStepCount + strata::kernels::kStepNKv];
++                        m.qsa_score_gemm.prepare(st.idx_pooled, st.idx_dead, last_n, s, m.cs);
++                    }
++#endif
+                     for (int64_t t0 = 0; t0 < T; t0 += m.sel_batch) {
+                         const int64_t nb = std::min(m.sel_batch, T - t0);
+                         const int32_t* steps0 = m.steps_dev + t0 * strata::kernels::kStepCount;
+@@ -2168,6 +2210,11 @@
+                                                                                 strata::kernels::kStepNBid)] + 1;
+                         // the scores on tensor cores (3xTF32: FP32-level, not bitwise); STRATA_SELECT_OLD=1: the warp kernel
+                         static const bool old_sel = std::getenv("STRATA_SELECT_OLD") != nullptr;
++#if defined(STRATA_ENABLE_SYCL)
++                        if (score_gemm) {
++                            m.qsa_score_gemm.scores(m.q_idx + t0 * 512, steps0, nb, active, m.sel_scores, m.cs);
++                        } else
++#endif
+                         if (old_sel || !strata::kernels::qsa_block_scores_tc(st.idx_pooled, st.idx_dead, m.q_idx + t0 * 512,
+                                                                              steps0, nb, m.max_blocks, s, m.sel_scores,
+                                                                              m.cs, active))
+@@ -2176,6 +2223,9 @@
+                         strata::kernels::qsa_block_topk(m.sel_scores, steps0, nb, m.max_blocks, m.cap, s,
+                                                         m.sel_ids + t0 * m.cap, m.cs, active);
+                     }
++#if defined(STRATA_ENABLE_SYCL)
++                    if (score_gemm) m.qsa_score_gemm.invalidate();
++#endif
+                     // STRATA_SEL_OVERLAP (debug, D-1's question): how much do neighbouring queries' selections share?
+                     // Per tile of 16 queries: the union of their selected cells against the sum of their widths.
+                     if (static const bool ovl = std::getenv("STRATA_SEL_OVERLAP") != nullptr; ovl && qsa_index == 0) {
+--- a/cmake/sycl_backend.cmake
++++ b/cmake/sycl_backend.cmake
+@@ -100,10 +100,14 @@
+ set(MKL_LINK dynamic)
+ set(MKL_THREADING sequential)
+ find_package(MKL CONFIG REQUIRED)
+-add_library(strata_prefill STATIC src/prefill/prefill.cpp src/prefill/sycl/gemm.cpp src/prefill/sycl/postops.cpp src/prefill/sycl/blob.cpp src/prefill/sycl/moe_mmq.cpp src/prefill/sycl/moe_fused.cpp)
++add_library(strata_prefill STATIC src/prefill/prefill.cpp src/prefill/sycl/gemm.cpp src/prefill/sycl/postops.cpp src/prefill/sycl/blob.cpp src/prefill/sycl/moe_mmq.cpp src/prefill/sycl/moe_fused.cpp src/prefill/sycl/qsa_score_gemm.cpp)
+ target_link_libraries(strata_prefill PUBLIC strata_engine MKL::MKL_SYCL::BLAS)
+ target_compile_definitions(strata_prefill PRIVATE STRATA_PREFILL_MMQ=1 STRATA_PREFILL_FUSED=1)
+ target_compile_options(strata_prefill PRIVATE -fno-fast-math -ffp-contract=off)
++# Manual-only score precision component oracle/benchmark; never added to CTest.
++add_executable(sycl_qsa_score_gemm_component EXCLUDE_FROM_ALL tools/sycl/qsa_score_gemm_component.cpp)
++target_link_libraries(sycl_qsa_score_gemm_component PRIVATE strata_prefill)
++target_compile_options(sycl_qsa_score_gemm_component PRIVATE -fno-fast-math -ffp-contract=off)
+ # Standalone synthetic hot-operand row/column oneMKL descriptor diagnostic.
+ add_executable(sycl_gemm_orientation_bench EXCLUDE_FROM_ALL tools/sycl/gemm_orientation_bench.cpp)
+ target_link_libraries(sycl_gemm_orientation_bench PRIVATE strata_prefill)
+--- /dev/null
++++ b/include/strata/prefill/sycl_qsa_score_gemm.hpp
+@@ -0,0 +1,43 @@
++#pragma once
++#include "strata/kernels/qsa_select.hpp"
++#include <cstddef>
++#include <cstdint>
++#include <cstring>
++#include <stdexcept>
++
++namespace strata::prefill {
++enum class QsaScoreMode { off, fp16, bf16 };
++inline QsaScoreMode parse_qsa_score_mode(const char* text) {
++    if (!text) return QsaScoreMode::off;
++    if (!std::strcmp(text, "fp16")) return QsaScoreMode::fp16;
++    if (!std::strcmp(text, "bf16")) return QsaScoreMode::bf16;
++    throw std::invalid_argument("STRATA_SYCL_PREFILL_QSA_SCORE_GEMM: expected fp16 or bf16, or unset for OFF");
++}
++// Frozen on the first startup sizing/init call; changing getenv later has no effect.
++QsaScoreMode qsa_score_mode();
++inline size_t qsa_score_scratch_bytes(int64_t blocks, int64_t batch) {
++    if (blocks < 2 || blocks > 65538 || batch < 1 || batch > 256)
++        throw std::invalid_argument("QSA score GEMM scratch geometry");
++    return size_t(blocks + 1) * 128 * 2 + size_t(batch) * 512 * 2 +
++           size_t(batch) * size_t(blocks + 1) * 4;
++}
++// Non-owning, QSA-arena-only view. No constructor/destructor allocations or waits.
++// bind/invalidate and prepare are explicit because GDN/MoE overwrite this arena.
++class QsaScoreGemm {
++public:
++    void bind(void* storage, size_t bytes, int64_t blocks, int64_t batch);
++    void invalidate() { prepared_ = false; }
++    void prepare(const float* pooled, const float* dead, int64_t last_n,
++                 const kernels::QsaShapes& shape, void* stream);
++    void scores(const float* query, const int32_t* steps, int64_t nq,
++                int64_t active, float* output, void* stream);
++private:
++    QsaScoreMode mode_ = QsaScoreMode::off;
++    uint16_t *key_ = nullptr, *query_ = nullptr;
++    float* head_ = nullptr;
++    const float *pooled_ = nullptr, *dead_ = nullptr;
++    void* stream_ = nullptr;
++    int64_t blocks_ = 0, batch_ = 0, live_ = 0;
++    bool prepared_ = false;
++};
++} // namespace strata::prefill
+--- /dev/null
++++ b/src/prefill/sycl/qsa_score_gemm.cpp
+@@ -0,0 +1,141 @@
++// Experimental score precision algorithm. Default OFF; prefill callers only.
++#include "strata/prefill/sycl_qsa_score_gemm.hpp"
++#include "strata/sycl/launch.hpp"
++#include <oneapi/mkl/blas.hpp>
++#include <cstdlib>
++
++namespace strata::prefill {
++namespace {
++using namespace sycl_backend;
++static_assert(sizeof(sycl::half) == 2 && sizeof(oneapi::mkl::bfloat16) == 2 && sizeof(float) == 4);
++// A dedicated strided score product: A[nq,128], lda=512; B[N,128], ldb=128;
++// C[nq,N], ldc=blocks+1. Never pass the interleaved A through Gemm::f16/bf16.
++template<class Input>
++void score_product(sycl::queue& queue, const uint16_t* a, const uint16_t* b,
++                   float* c, int64_t rows, int64_t cols, int64_t ldc) {
++    oneapi::mkl::blas::row_major::gemm(queue,
++        oneapi::mkl::transpose::nontrans, oneapi::mkl::transpose::trans,
++        rows, cols, int64_t(128), 1.f, reinterpret_cast<const Input*>(a), int64_t(512),
++        reinterpret_cast<const Input*>(b), int64_t(128), 0.f, c, ldc);
++}
++template<class Input>
++void convert(const float* input, uint16_t* output, int64_t count, sycl::queue& queue) {
++    queue.parallel_for(sycl::range<1>(size_t(count)), [=](sycl::id<1> i) {
++        reinterpret_cast<Input*>(output)[i[0]] = Input(input[i[0]]);
++    });
++}
++} // namespace
++QsaScoreMode qsa_score_mode() {
++    static const QsaScoreMode frozen = [] {
++        const auto mode = parse_qsa_score_mode(std::getenv("STRATA_SYCL_PREFILL_QSA_SCORE_GEMM"));
++        if (mode != QsaScoreMode::off && std::getenv("STRATA_SELECT_OLD"))
++            throw std::invalid_argument("QSA score GEMM conflicts with STRATA_SELECT_OLD");
++        return mode;
++    }();
++    return frozen;
++}
++void QsaScoreGemm::bind(void* storage, size_t bytes, int64_t blocks, int64_t batch) {
++    mode_ = qsa_score_mode();
++    prepared_ = false;
++    if (mode_ == QsaScoreMode::off) {
++        key_ = query_ = nullptr; head_ = nullptr; return;
++    }
++    const size_t need = qsa_score_scratch_bytes(blocks, batch);
++    if (!storage || uintptr_t(storage) % 4 || bytes < need)
++        throw std::invalid_argument("QSA score GEMM arena capacity/alignment");
++    key_ = static_cast<uint16_t*>(storage);
++    query_ = key_ + (blocks + 1) * 128;
++    head_ = reinterpret_cast<float*>(query_ + batch * 512);
++    blocks_ = blocks; batch_ = batch;
++}
++void QsaScoreGemm::prepare(const float* pooled, const float* dead, int64_t last_n,
++                         const kernels::QsaShapes& shape, void* stream) {
++    prepared_ = false;
++    if (mode_ == QsaScoreMode::off || !key_ || !stream ||
++        shape.idx_dim != 128 || shape.idx_n_head != 4 || shape.idx_block != 4 ||
++        last_n < 1 || last_n > 262144 || last_n / 4 > blocks_ - 2)
++        throw std::invalid_argument("QSA score GEMM prepare geometry/queue");
++    auto& queue = queue_for(stream); // Existing non-null in-order compute queue.
++    live_ = last_n / 4;
++    // Only finalized rows are consumed. In particular never load pooled[live_]
++    // (the current tail/future slot can be uninitialized or changed by append).
++    validate_spans({{key_, size_t(live_ + 1) * 128 * 2}},
++                   {{pooled, size_t(blocks_) * 128 * 4}, {dead, 128 * 4}});
++    pooled_ = pooled; dead_ = dead; stream_ = stream;
++    if (mode_ == QsaScoreMode::fp16) {
++        if (live_) convert<sycl::half>(pooled, key_, live_ * 128, queue);
++        convert<sycl::half>(dead, key_ + live_ * 128, 128, queue);
++    } else {
++        if (live_) convert<oneapi::mkl::bfloat16>(pooled, key_, live_ * 128, queue);
++        convert<oneapi::mkl::bfloat16>(dead, key_ + live_ * 128, 128, queue);
++    }
++    prepared_ = true;
++}
++void QsaScoreGemm::scores(const float* query, const int32_t* steps, int64_t nq,
++                        int64_t active, float* output, void* stream) {
++    if (!prepared_ || !stream || stream != stream_ || nq < 1 || nq > batch_ ||
++        active < 1 || active > live_ + 1)
++        throw std::invalid_argument("QSA score GEMM score geometry/epoch/queue");
++    auto& queue = queue_for(stream);
++    const int64_t blocks = blocks_, live = live_, ldc = blocks_ + 1;
++    auto packed = query_; auto head = head_;
++    auto pooled = pooled_; auto dead = dead_;
++    validate_spans({{packed, size_t(nq) * 512 * 2},
++                    {head, size_t(nq) * size_t(ldc) * 4},
++                    {output, size_t(nq) * size_t(blocks) * 4}},
++                   {{query, size_t(nq) * 512 * 4},
++                    {steps, size_t(nq) * kernels::kStepCount * 4},
++                    {key_, size_t(live + 1) * 128 * 2},
++                    {pooled, size_t(blocks) * 128 * 4}, {dead, 128 * 4}});
++    if (mode_ == QsaScoreMode::fp16) convert<sycl::half>(query, packed, nq * 512, queue);
++    else convert<oneapi::mkl::bfloat16>(query, packed, nq * 512, queue);
++    for (int h = 0; h < 4; ++h) {
++        if (mode_ == QsaScoreMode::fp16)
++            score_product<sycl::half>(queue, packed + h * 128, key_, head, nq, live + 1, ldc);
++        else score_product<oneapi::mkl::bfloat16>(queue, packed + h * 128, key_, head, nq, live + 1, ldc);
++        queue.parallel_for(sycl::nd_range<1>(size_t(nq * active) * 32, 32),
++            [=](sycl::nd_item<1> it) [[sycl::reqd_sub_group_size(32)]] {
++                const int64_t qi = it.get_group_linear_id() / active;
++                const int64_t b = it.get_group_linear_id() % active;
++                const auto st = steps + qi * kernels::kStepCount;
++                const int64_t n = st[kernels::kStepNKv], nb = st[kernels::kStepNBid];
++                // Match FP32 scorer write validity: future scores remain untouched.
++                if (n < 0 || n > 262144 || nb != n / 4 || nb >= active || b > nb) return;
++                const int lane = it.get_local_linear_id();
++                auto sg = it.get_sub_group();
++                float dot = head[qi * ldc + (b == nb ? live : b)];
++                // Device-local numerical fallback: before ReLU, every lane sees
++                // the same C cell. No host readback, atomic, wait, extra queue, or
++                // second GEMM. Recompute this head using the original FP32 warp
++                // arithmetic if GEMM produced NaN/Inf (including half overflow).
++                const float* key = b == nb ? dead : pooled + b * 128;
++                const float* q = query + qi * 512;
++                if (!sycl::isfinite(dot)) {
++                    dot = key[lane * 4] * q[h * 128 + lane * 4];
++                    for (int d = 1; d < 4; ++d)
++                        dot += key[lane * 4 + d] * q[h * 128 + lane * 4 + d];
++                    for (int off = 16; off; off /= 2)
++                        dot += sycl::permute_group_by_xor(sg, dot, off);
++                }
++                dot = sycl::select_from_group(sg, dot, sycl::id<1>(0));
++                float total = (h ? output[qi * blocks + b] : 0.f) + (dot > 0 ? dot : 0.f);
++                // Finite head results can overflow when added. At the final head
++                // recompute the complete original score in that case, preserving
++                // original NaN->zero ReLU and +Inf semantics without clamping.
++                if (h == 3 && !sycl::isfinite(total)) {
++                    total = 0;
++                    for (int hh = 0; hh < 4; ++hh) {
++                        float exact = key[lane * 4] * q[hh * 128 + lane * 4];
++                        for (int d = 1; d < 4; ++d)
++                            exact += key[lane * 4 + d] * q[hh * 128 + lane * 4 + d];
++                        for (int off = 16; off; off /= 2)
++                            exact += sycl::permute_group_by_xor(sg, exact, off);
++                        total += exact > 0 ? exact : 0.f;
++                    }
++                }
++                if (h == 3 && b == nb && n % 4) total += 1e9f;
++                if (lane == 0) output[qi * blocks + b] = total;
++            });
++    }
++}
++} // namespace strata::prefill
+--- /dev/null
++++ b/tools/sycl/qsa_score_gemm_component.cpp
+@@ -0,0 +1,223 @@
++// Manual component diagnostic. Executes the exact proposed production helper.
++// No model, decode, service, profiler, extra queue, or CTest registration.
++#include "strata/prefill/sycl_qsa_score_gemm.hpp"
++#include "strata/sycl/runtime.hpp"
++#include <algorithm>
++#include <bit>
++#include <charconv>
++#include <chrono>
++#include <cmath>
++#include <cstring>
++#include <iostream>
++#include <limits>
++#include <stdexcept>
++#include <string>
++#include <vector>
++
++namespace {
++using namespace strata;
++using namespace sycl_backend;
++constexpr int64_t Blocks = 65538, Cap = 2051;
++constexpr float Sentinel = -12345.5f;
++void require(bool x, const char* message) { if (!x) throw std::runtime_error(message); }
++int64_t integer(const char* p) {
++    int64_t v; auto e=p+std::strlen(p); auto r=std::from_chars(p,e,v);
++    if (r.ec!=std::errc{} || r.ptr!=e) throw std::invalid_argument("invalid exact integer");
++    return v;
++}
++struct Buffer {
++    Allocation storage;
++    size_t bytes;
++    Buffer(std::shared_ptr<Runtime> rt, size_t n) : storage(rt,n+512,MemoryKind::Device),bytes(n) {
++        rt->compute().memset(storage.data(),0xa5,n+512);
++    }
++    template<class T> T* as() { return static_cast<T*>(storage.at(256,bytes)); }
++    void guards(sycl::queue& q) {
++        unsigned char a[256], b[256];
++        q.memcpy(a,storage.data(),256);
++        q.memcpy(b,storage.at(256+bytes,256),256).wait_and_throw();
++        for (int j=0;j<256;++j) require(a[j]==0xa5 && b[j]==0xa5,"buffer redzone changed");
++    }
++};
++float key_value(int64_t b, const std::string& kind) {
++    if (kind=="near-tie") return 1.f+float(b%31)/4096;
++    if (kind=="overflow") return 65536.f;
++    if (kind=="nonfinite") return b%3==0 ? std::numeric_limits<float>::quiet_NaN() :
++        b%3==1 ? std::numeric_limits<float>::infinity() : -std::numeric_limits<float>::infinity();
++    if (kind=="tie") return 0;
++    return float(b%17-8)/16;
++}
++float query_value(int64_t qi,int h,const std::string& kind) {
++    if (kind=="subnormal") return 0x1p-24f;
++    if (kind=="overflow" || kind=="nonfinite" || kind=="tie") return 1;
++    if (kind=="near-tie") return 1.f+float(qi%7)/4096;
++    return float(h-1)*float(qi%3+1)/16;
++}
++std::vector<int32_t> independent_ids(int64_t n, int64_t width,
++                                    const float* score) {
++    // Truth over individual cells, independent of the production block radix
++    // threshold algorithm. NaNs rank below all numbers, +/-zero tie by cell ID.
++    std::vector<int32_t> cells(size_t(n),0);
++    for (int64_t i=0;i<n;++i) cells[size_t(i)]=int32_t(i);
++    auto rank = [&](int32_t a,int32_t b) {
++        float x=score[a/4],y=score[b/4];
++        if (std::isnan(x) || std::isnan(y)) {
++            if (std::isnan(x) && std::isnan(y)) return a<b;
++            return !std::isnan(x);
++        }
++        return x==y ? a<b : x>y;
++    };
++    if (width<n) std::nth_element(cells.begin(),cells.begin()+width,cells.end(),rank);
++    cells.resize(size_t(width)); std::sort(cells.begin(),cells.end()); return cells;
++}
++}
++int main(int argc,char** argv) try {
++    if (argc!=6) throw std::invalid_argument(
++        "usage: sycl_qsa_score_gemm_component --validate|--benchmark nq last_n samples exact|near-tie|overflow|subnormal|nonfinite|tie");
++    const std::string action=argv[1],kind=argv[5];
++    const auto nq=integer(argv[2]),last=integer(argv[3]),samples=integer(argv[4]);
++    require(action=="--validate" || action=="--benchmark","unknown action");
++    require(nq>=1 && nq<=256 && last>=nq && last<=262144 && samples>=1 && samples<=9,"bounded shape/sample contract");
++    require(kind=="exact" || kind=="near-tie" || kind=="overflow" || kind=="subnormal" || kind=="nonfinite" || kind=="tie","unknown kind");
++    require(prefill::qsa_score_mode()!=prefill::QsaScoreMode::off,"set the precision arm before startup");
++    const size_t scratch=prefill::qsa_score_scratch_bytes(Blocks,256);
++    const size_t poolbytes=size_t(Blocks)*128*4, querybytes=size_t(nq)*512*4,
++        stepbytes=size_t(nq)*kernels::kStepCount*4, scorebytes=size_t(nq)*Blocks*4,
++        idbytes=size_t(nq)*Cap*4;
++    const size_t device=poolbytes+512+querybytes+stepbytes+2*scorebytes+2*idbytes+scratch+9*512;
++    const size_t host=poolbytes+querybytes+stepbytes+2*scorebytes+2*idbytes+512+size_t(last)*8+size_t(Cap)*8+65536;
++    require(device+host < size_t(512)*1024*1024,"512 MiB component live-byte admission");
++    // Includes host mirrors + expanded-cell oracle + guarded device allocations.
++    // oneMKL/driver's internal memory is separately observed by Main, not claimed
++    // bounded by this explicit allocation sum.
++    std::cout << "explicit_device_bytes="<<device<<" host_budget_bytes="<<host
++              <<" scratch_bytes="<<scratch<<" nq="<<nq<<" last_n="<<last<<" kind="<<kind<<'\n';
++    std::vector<float> pooled(size_t(Blocks)*128,std::numeric_limits<float>::quiet_NaN()),
++        query(size_t(nq)*512),dead(128,0),ref(size_t(nq)*Blocks),cand(ref.size());
++    std::vector<int32_t> steps(size_t(nq)*kernels::kStepCount),ri(size_t(nq)*Cap,-777),ci(ri.size(),-777);
++    const int64_t live=last/4, active=live+1;
++    for (int64_t b=0;b<live;++b)
++        std::fill_n(pooled.data()+b*128,128,key_value(b,kind));
++    for (int64_t qi=0;qi<nq;++qi) {
++        const auto n=last-nq+qi+1;
++        auto st=steps.data()+qi*kernels::kStepCount;
++        st[kernels::kStepPos]=int32_t(n-1); st[kernels::kStepNKv]=int32_t(n);
++        st[kernels::kStepNBid]=int32_t(n/4); st[kernels::kStepWidth]=int32_t(std::min(n,Cap));
++        for (int h=0;h<4;++h) std::fill_n(query.data()+qi*512+h*128,128,query_value(qi,h,kind));
++    }
++    auto rt=runtime_for(); auto& q=rt->compute();
++    Buffer p(rt,poolbytes),d(rt,512),x(rt,querybytes),st(rt,stepbytes),r(rt,scorebytes),
++        c(rt,scorebytes),rid(rt,idbytes),cid(rt,idbytes),work(rt,scratch);
++    q.memcpy(p.as<float>(),pooled.data(),poolbytes); q.memcpy(d.as<float>(),dead.data(),512);
++    q.memcpy(x.as<float>(),query.data(),querybytes); q.memcpy(st.as<int32_t>(),steps.data(),stepbytes);
++    prefill::QsaScoreGemm gemm; gemm.bind(work.as<void>(),scratch,Blocks,256);
++    const auto shape=kernels::qsa_real_shapes();
++    auto run=[&](bool candidate,bool timed,int sample) {
++        auto out=candidate?c.as<float>():r.as<float>(); auto ids=candidate?cid.as<int32_t>():rid.as<int32_t>();
++        q.fill(out,Sentinel,size_t(nq)*Blocks); q.fill(ids,int32_t(-777),size_t(nq)*Cap); rt->wait();
++        const auto start=std::chrono::steady_clock::now();
++        if (candidate) {
++            gemm.prepare(p.as<float>(),d.as<float>(),last,shape,&q);
++            gemm.scores(x.as<float>(),st.as<int32_t>(),nq,active,out,&q); gemm.invalidate();
++        } else kernels::qsa_block_scores(p.as<float>(),d.as<float>(),x.as<float>(),st.as<int32_t>(),nq,Blocks,shape,out,&q,active);
++        kernels::qsa_block_topk(out,st.as<int32_t>(),nq,Blocks,Cap,shape,ids,&q,active); rt->wait();
++        const auto ns=std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now()-start).count();
++        if (timed) std::cout<<"sample="<<sample<<" arm="<<(candidate?"candidate":"fp32")<<" selection_ns="<<ns<<'\n';
++    };
++    // First call is reported separately from warmed samples. Measurement covers
++    // conversion + 4 products + postprocessing + top-k, with same-queue waits
++    // solely at diagnostic timing boundaries. Production helper has no waits.
++    run(false,true,-1); run(true,true,-1);
++    for (int s=0;s<samples;++s) {
++        if (s%2) { run(true,true,s);run(false,true,s); }
++        else { run(false,true,s);run(true,true,s); }
++    }
++    q.memcpy(ref.data(),r.as<float>(),scorebytes); q.memcpy(cand.data(),c.as<float>(),scorebytes);
++    q.memcpy(ri.data(),rid.as<int32_t>(),idbytes); q.memcpy(ci.data(),cid.as<int32_t>(),idbytes); rt->wait();
++    size_t diffs=0,flips=0,valid=0,flip_queries=0,shared_cells=0,selected_cells=0; double maxabs=0,maxrel=0;
++    for (int64_t qi=0;qi<nq;++qi) {
++        const auto ss=steps.data()+qi*kernels::kStepCount;
++        const int64_t n=ss[kernels::kStepNKv],nb=n/4,width=ss[kernels::kStepWidth];
++        for (int64_t b=0;b<Blocks;++b) {
++            auto a=ref[size_t(qi*Blocks+b)],v=cand[size_t(qi*Blocks+b)];
++            if (b>nb) { require(a==Sentinel && v==Sentinel,"future score was written"); continue; }
++            ++valid;
++            if (std::bit_cast<uint32_t>(a)!=std::bit_cast<uint32_t>(v)) ++diffs;
++            if (std::isfinite(a) && std::isfinite(v)) {
++                maxabs=std::max(maxabs,std::abs(double(a)-v));
++                maxrel=std::max(maxrel,std::abs(double(a)-v)/std::max(1e-30,std::abs(double(a))));
++            }
++            if (b==nb) require(a==(n%4?1e9f:0.f) && v==a,"dead/tail score semantics");
++            if (kind=="exact" || kind=="tie" || kind=="overflow" || kind=="nonfinite") {
++                // Constant rows/heads: high-precision independent dot has no
++                // non-associativity here; all source values are exact powers
++                // of two multiples. Overflow arm exercises FP16 GPU fallback.
++                double truth=0;
++                for (int h=0;h<4;++h) truth+=std::max(0.0,128.0*double(b==nb?0:key_value(b,kind))*query_value(qi,h,kind));
++                if (b==nb && n%4) truth+=1e9;
++                require(a==float(truth) && v==float(truth),"independent exact score oracle");
++            }
++        }
++        auto expected_ref=independent_ids(n,width,ref.data()+qi*Blocks);
++        auto expected_cand=independent_ids(n,width,cand.data()+qi*Blocks);
++        size_t shared=0; int64_t ai=0,bi=0;
++        while (ai<width && bi<width) {
++            auto a=ri[size_t(qi*Cap+ai)],b=ci[size_t(qi*Cap+bi)];
++            if (a==b) {++shared;++ai;++bi;} else if (a<b) ++ai; else ++bi;
++        }
++        shared_cells+=shared; selected_cells+=size_t(width); flip_queries+=(shared!=size_t(width));
++        for (int64_t j=0;j<Cap;++j) {
++            const auto k=size_t(qi*Cap+j);
++            if (j>=width) { require(ri[k]==-777 && ci[k]==-777,"unused ID slot changed"); continue; }
++            require(ri[k]==expected_ref[size_t(j)] && ci[k]==expected_cand[size_t(j)],"cell-wise top-k oracle");
++            if (ri[k]!=ci[k]) ++flips;
++        }
++    }
++    std::cout<<"PASS shape/causal/tail/future/tie/guard/component-oracle; valid_scores="<<valid
++             <<" score_bit_diffs="<<diffs<<" max_abs="<<maxabs<<" max_rel="<<maxrel
++             <<" selected_slot_diffs="<<flips<<" changed_queries="<<flip_queries<<" shared_cells="<<shared_cells<<" selected_cells="<<selected_cells<<"; precision differences are evidence, not model-quality acceptance\n";
++    if (action=="--validate") {
++        // Exercise one prepare shared by multiple selection batches, followed
++        // by mutated live pooled/dead input and a new prepare. Constant exact
++        // data makes this independent of dtype GEMM rounding/shape dispatch.
++        auto check_epoch=[&](float key,float tail,bool split) {
++            for (int64_t b=0;b<live;++b) std::fill_n(pooled.data()+b*128,128,key);
++            std::fill(query.begin(),query.end(),1.f); std::fill(dead.begin(),dead.end(),tail);
++            if (live) q.memcpy(p.as<float>(),pooled.data(),size_t(live)*128*4);
++            q.memcpy(x.as<float>(),query.data(),querybytes); q.memcpy(d.as<float>(),dead.data(),512);
++            q.fill(c.as<float>(),Sentinel,size_t(nq)*Blocks); q.fill(cid.as<int32_t>(),int32_t(-777),size_t(nq)*Cap);
++            gemm.prepare(p.as<float>(),d.as<float>(),last,shape,&q);
++            const int64_t batch=split && nq>1 ? (nq+1)/2 : nq;
++            for (int64_t off=0;off<nq;off+=batch) {
++                const int64_t count=std::min(batch,nq-off);
++                const int64_t launched=steps[size_t((off+count-1)*kernels::kStepCount+kernels::kStepNBid)]+1;
++                gemm.scores(x.as<float>()+off*512,st.as<int32_t>()+off*kernels::kStepCount,count,launched,c.as<float>()+off*Blocks,&q);
++                kernels::qsa_block_topk(c.as<float>()+off*Blocks,st.as<int32_t>()+off*kernels::kStepCount,
++                                      count,Blocks,Cap,shape,cid.as<int32_t>()+off*Cap,&q,launched);
++            }
++            gemm.invalidate();
++            bool refused=false;
++            try {gemm.scores(x.as<float>(),st.as<int32_t>(),nq,active,c.as<float>(),&q);}
++            catch (const std::invalid_argument&) {refused=true;}
++            require(refused,"invalidated arena epoch was accepted");
++            q.memcpy(cand.data(),c.as<float>(),scorebytes);q.memcpy(ci.data(),cid.as<int32_t>(),idbytes);rt->wait();
++            for (int64_t qi=0;qi<nq;++qi) {
++                const int64_t n=steps[size_t(qi*kernels::kStepCount+kernels::kStepNKv)],nb=n/4,width=std::min(n,Cap);
++                for (int64_t b=0;b<Blocks;++b) {
++                    float truth=b>nb?Sentinel:(b==nb?512.f*tail:512.f*key);
++                    if (b==nb && n%4) truth+=1e9f;
++                    require(cand[size_t(qi*Blocks+b)]==truth,"prepared-key reuse or fresh pooled/dead epoch failed");
++                }
++                auto expected=independent_ids(n,width,cand.data()+qi*Blocks);
++                for (int64_t j=0;j<Cap;++j)
++                    require(ci[size_t(qi*Cap+j)]==(j<width?expected[size_t(j)]:-777),"epoch top-k/tail/unused IDs failed");
++            }
++        };
++        check_epoch(1.f,2.f,true);
++        check_epoch(3.f,4.f,false);
++        std::cout<<"PASS cached-key split batches, invalidate refusal, mutated pooled/dead fresh epoch\n";
++    }
++    p.guards(q);d.guards(q);x.guards(q);st.guards(q);r.guards(q);c.guards(q);rid.guards(q);cid.guards(q);work.guards(q);
++    std::cout<<"PASS all nine allocation redzones\n";
++    return 0;
++} catch(const std::exception& e) { std::cerr<<"FAIL "<<e.what()<<'\n';return 1; }

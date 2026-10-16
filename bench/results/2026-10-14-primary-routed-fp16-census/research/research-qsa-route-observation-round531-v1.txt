@@ -1,0 +1,75 @@
+# R531 — prerequisites for observing the natural QSA prompt route
+
+Date: 2026-10-14 JST. Read-only source and evidence review. The sole write is this report. No product edit, build, test, GPU/profiler work, Git mutation, process/service change, cleanup, or inspection of the excluded prefill-GEMM-only record occurred. Main retains the active GPU lane; this report makes no runtime route, correctness, or speed claim.
+
+## Evidence boundary and source identity
+
+Reviewed the current configured Arc/SYCL files at `feature/sycl` commit `24158fb7f82012af0e425d10b1de8c018d9ab869`:
+
+- `src/prefill/prefill.cpp`, SHA-256 `6b4b7a71175471d7d800e40f98ec62236bf57e1cfd57d9d41f4863d4653c2104`; route at lines 2163–2177.
+- `src/kernels/sycl/prompt_attention.cpp`, SHA-256 `97b1b9e4020b532bfabd5db2245224cfda52bbc793e5891f0e8bbbcb374763e4`; admission at lines 315–404.
+- `src/kernels/sycl/decode_attention.cpp`, SHA-256 `2ce2a61f6beb1acbf9c673da346e887b386fffedba10e7df2c157aedab8ac05d`; fallback validation and dispatch at lines 182–239.
+- `include/strata/sycl/launch.hpp`, queue/stream behavior at lines 47–63.
+
+R522 establishes that the 34,560-input diagnostic used eight 4,096-query chunks and a 1,792 tail, but its 49,455 ms QSA-attention phase is nonexclusive and the natural prompt matrix decision was not recorded. R522 also records int8 KV and absence of the forced-fallback environment variable; that does not imply matrix acceptance. R523 and the unapplied `qsa-transpose-proposal/report.md` concern a fallback-only transpose candidate. R524 records 12 QSA layers for this model geometry. Main's correction in the current registry also confirms the QSA gate/output projection is a separate phase. None of these artifacts supplies a runtime route count or matrix-versus-fallback timing.
+
+## What the current branch actually decides
+
+At `prefill.cpp:2170–2177`, the presence of `STRATA_PROMPT_ATTN_OLD` bypasses the matrix function entirely. Otherwise the caller invokes `qsa_prompt_attn_batch` once for the current chunk `T`. A `true` result means the prompt implementation selected and submitted its dispatch; a `false` result enters the decode fallback, sliced by `m.attn_batch` (32 in the current source). This call-site result is already the authoritative natural route outcome. Do not infer it from environment settings, the attention phase timer, or device capability alone.
+
+At `prompt_attention.cpp:348–404`, zero queries return true without a launch. Nonzero requests can return false for geometry, Q4 opt-out, or matrix capability. The capability helper at lines 315–342 currently collapses several causes into false: unsupported subgroup size, local memory, maximum work-group size, no compatible matrix combination, and a caught `sycl::exception` from the matrix-combination query. The earlier subgroup/local-memory/work-group queries sit outside that catch and can propagate exceptions. After capability acceptance, span validation and the enqueue/dispatch can also throw; those are failures, not admission declines.
+
+Record these terminal states separately:
+
+1. **Forced bypass:** environment presence caused the caller to skip the prompt function. This is not a natural attempt or a decline.
+2. **Natural accepted:** the function returned true for nonzero `T`; count as an accepted/submitted prompt dispatch, not completed work.
+3. **Natural declined:** the function returned false; record the reason that was evaluated.
+4. **Zero-query no-launch:** preserve as a separate state if ever called; it must not increment accepted launches.
+5. **Exception/aborted call:** record separately from false declines. Keep span/overflow errors and other exceptions visible as failures.
+6. **Asynchronous execution fault:** retain the existing stream synchronization/fault result. A prior host-side accepted count does not turn a later queue error into a successful run.
+
+The current prefill chunks are nonempty, so state 4 should remain zero in this workload. If the geometry or API changes, keep this invariant explicit instead of silently treating `nq == 0` as a launch.
+
+## Minimal observation that reuses evaluated decisions
+
+At the prefill call site, split the short-circuit expression into explicit branches while preserving its one call and control flow:
+
+- When the existing forced-fallback flag is set, increment one bypass record for this QSA layer/chunk and enter the same fallback loop.
+- Otherwise increment one attempt, call `qsa_prompt_attn_batch` exactly once, and use its returned bool both to update accepted/declined totals and choose the existing route.
+- On decline, run the exact same `t0 += m.attn_batch`, `nb = min(m.attn_batch, T-t0)` fallback loop.
+- Increment host counters only; emit a single bounded summary after the run or attach it to the existing phase result.
+
+For decline reasons, have the existing admission evaluation return a small enum/reason alongside its bool (or an optional out-result). Set it at the branch that already evaluates each guard. In particular, refactor `matrix_available` to return a reason while making each existing device-info/matrix-combination query only once. A compact reason set is enough: geometry; Q4 disabled; subgroup; local-memory limit; work-group limit; matrix combination absent; matrix-combination query exception; other capability-query exception. Preserve the existing `sycl::exception` behavior for the matrix-combination query (it currently becomes a false decline). Do not add a second device probe just to label an outcome. If a property query outside the existing catch throws, count an exception at the caller and rethrow unchanged.
+
+Span validation and enqueue failures occur after capability admission and currently throw. Keep them as exception/failure outcomes rather than converting them into fallback, which would change the safety and failure contract. A call that throws should not increment accepted or declined. If the caller records an attempt before the call, its invariant is `attempts = accepted + declined + exceptions + still-pending`; a completed run must have no pending calls. For the normal no-exception case, `attempts = accepted + declined`.
+
+Counters need only low-cost integer increments and a compact host-side histogram. Avoid per-layer log lines, per-call timers, SYCL events, device reads, copies, extra queue work, queue waits, or changes to math, chunking, capability policy, or fallback selection. Keep them on the host path that owns the decisions; no device-side atomics are needed. Do not add another phase marker or attribute kernel time from these counts.
+
+A returned true is an accepted dispatch, not proof of completion: `launch` submits one prompt command group and calls `finish(stream,event)`; with the normal non-null stream, `finish` does not wait. The opaque SYCL stream must be an in-order queue (`launch.hpp:47–63`). Existing queue ordering and lifetime rules remain in force: query, IDs, steps, page table, KV pools, and output must stay valid until the queued work completes; fallback scratch and output must remain live through their two ordered launches. Keep the existing final synchronization/error reporting. Do not retain or query new events for this observation. The [SYCL event reference](https://github.khronos.org/SYCL_Reference/iface/event.html) says an event represents the operation associated with a command group and describes its commands as implementation-defined; it cannot be assumed to identify a BLAS-like call's complete internal work. In this code, a host decision count is more direct than an added event.
+
+## Shape weighting and count invariants
+
+For each decision record enough host-known shape to interpret exposure: QSA layer index, current prefill chunk index, `T`, final-chunk flag, KV mode (0 FP16, 1 int8 K/V, 2 Q4, 3 hybrid), `cap`, page size, and whether staged pools are selected. Track two distributions:
+
+- **Decision-shape histogram:** counts of natural attempts, accepted calls, false declines and force-bypasses keyed by `(T, mode, cap)`; also sum `T` for each outcome. This weights the prompt choice by actual calls and queries.
+- **Fallback-launch histogram:** for each fallback slice, count calls keyed by `(nb, mode, cap)` and sum `nb`. This describes the actual split decoder work, including partial slices.
+
+Do not copy IDs or `steps` to the host to infer selected-cell lengths. They are device data; reading them would add traffic and synchronization, and is unnecessary to establish which route ran. `T`, `cap`, KV mode, and `nb` give the host-observable query geometry for this dispatch comparison. If later work needs per-query selected-cell occupancy, design that as a separate diagnostic with an explicit cost and consumer.
+
+Useful consistency checks:
+
+- Per completed QSA layer/chunk, exactly one of force-bypass or natural-attempt applies.
+- `natural_attempts = accepted + false_declines + exceptions` after a completed run, with zero-query no-launch subtracted from accepted-launch totals if applicable.
+- `fallback-route entries = force-bypasses + false declines` in the no-exception case.
+- For each fallback-route entry with `T > 0`, fallback query sum equals `T`; slice-call count equals `ceil(T / m.attn_batch)`; every nonfinal slice is `m.attn_batch`, and the last is in 1..`m.attn_batch`.
+- Prompt accepted query sum plus fallback query sum equals the sum of `T` over all completed QSA layer/chunk decisions (except a separately identified zero-query call).
+
+For the R522 batched input sequence, assuming the existing 12 QSA layers each process the same nine chunks: 108 total layer/chunk decisions (96 full-chunk decisions and 12 tail decisions). With all calls naturally declining or forced to fallback and batch width 32, that implies 12,960 fallback launches and 414,720 fallback query rows across the 12 layers. With all calls accepted, it implies 108 nonzero prompt dispatches and no fallback launches. These are source-derived check values, not observed results. The separate final native T=1 token path is outside this prefill call-site census and must not be folded into these counts.
+
+Weight results only over the actually observed shape histogram. Report both call counts and query counts; do not invent a mean over missing shapes. The `T=4096` and `T=1792` groups identify full and tail query shapes in the recorded run. Keep modes separate if mode differs by layer/run. A shape-weighted host route census establishes which implementation was selected and how often; it does not estimate kernel service time or speed.
+
+## Primary references and limits
+
+The source and committed R522–524 evidence are primary for this branch's behavior. SYCL's [event reference](https://github.khronos.org/SYCL_Reference/iface/event.html) documents event wait/profiling operations and their command-group scope. Intel's [oneAPI joint-matrix extension specification](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_matrix/sycl_ext_oneapi_matrix.asciidoc) documents the `matrix_combinations` device information and its supported type/shape combinations. These APIs explain why the existing single evaluated capability result can be reported; they do not establish this device's runtime result or actual dispatch.
+
+No actual route count, matrix capability result, output equivalence, runtime, speedup, or adoption is claimed. The 34K diagnostic's 49.455 s QSA-attention interval remains nonexclusive and `actualdispatchunobserved`. The next prerequisite is the bounded host outcome/reason census on a closed, matching run; any performance comparison comes after that and must keep QSA gate/projection, fallback, and device completion evidence separated.

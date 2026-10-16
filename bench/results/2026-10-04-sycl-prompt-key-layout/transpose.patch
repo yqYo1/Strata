@@ -1,0 +1,120 @@
+diff --git a/src/kernels/sycl/prompt_attention.cpp b/src/kernels/sycl/prompt_attention.cpp
+index b6c4238..410f079 100644
+--- a/src/kernels/sycl/prompt_attention.cpp
++++ b/src/kernels/sycl/prompt_attention.cpp
+@@ -51,15 +51,16 @@ float scale(QsaAttnPools p, int64_t row, int group) {
+     return f32_from_f16((Value ? p.v_scale : p.k_scale)[row * 4 + group]);
+   return 0;
+ }
+-template <int Mode, bool Direct>
++template <int Mode, bool Direct, bool CoalescedKey = false, int KeyPad = 0>
+ void launch(const float *query, QsaAttnPools pools, const int32_t *ids,
+             const int32_t *steps, int64_t cap, QsaShapes shapes, float *output,
+             int64_t queries, void *stream) {
++  constexpr int KLD = CH + KeyPad;
+   constexpr int KG = scale_groups<Mode, false>(),
+                 VG = scale_groups<Mode, true>();
+   auto event = queue_for(stream).submit([&](sycl::handler &h) {
+     sycl::local_accessor<sycl::half, 1> qhi(16 * HD, h), qlo(16 * HD, h),
+-        kv(CH * HD, h);
++        kv(CoalescedKey ? HD * KLD : CH * HD, h);
+     sycl::local_accessor<sycl::half, 1> phi(VG * 16 * CH, h),
+         plo(VG * 16 * CH, h);
+     sycl::local_accessor<float, 1> scores(16 * CH, h), ks(CH * KG, h),
+@@ -105,6 +106,9 @@ void launch(const float *query, QsaAttnPools pools, const int32_t *ids,
+                                      16, mx::layout::row_major>;
+           using B = mx::joint_matrix<sycl::sub_group, sycl::half, mx::use::b,
+                                      16, 16, mx::layout::row_major>;
++          using K = mx::joint_matrix<
++              sycl::sub_group, sycl::half, mx::use::b, 16, 16,
++              mx::layout::row_major>;
+           Acc acc[4];
+           for (int j = 0; j < 4; ++j)
+             mx::joint_matrix_fill(sg, acc[j], 0.f);
+@@ -129,8 +133,9 @@ void launch(const float *query, QsaAttnPools pools, const int32_t *ids,
+               scores[i] = 0;
+             it.barrier(sycl::access::fence_space::local_space);
+             for (int i = tid; i < HD * CH; i += WG) {
+-              const int dim = i / CH, c = i % CH;
+-              kv[i] = sycl::half(
++              const int dim = CoalescedKey ? i % HD : i / CH,
++                        c = CoalescedKey ? i / HD : i % CH;
++              kv[CoalescedKey ? dim * KLD + c : i] = sycl::half(
+                   rows[c] >= 0 ? code<Mode, false>(pools, rows[c], dim) : 0.f);
+             }
+             for (int i = tid; i < CH * KG; i += WG)
+@@ -143,14 +148,14 @@ void launch(const float *query, QsaAttnPools pools, const int32_t *ids,
+               for (int g = 0; g < KG; ++g) {
+                 Acc part;
+                 A a;
+-                B b;
++                K b;
+                 mx::joint_matrix_fill(sg, part, 0.f);
+                 for (int k = g * (HD / KG); k < (g + 1) * (HD / KG); k += 16) {
+                   mx::joint_matrix_load(
+                       sg, b,
+                       kv.template get_multi_ptr<sycl::access::decorated::no>() +
+-                          k * CH + cell,
+-                      CH);
++                          (CoalescedKey ? k * KLD + cell : k * CH + cell),
++                      CoalescedKey ? KLD : CH);
+                   mx::joint_matrix_load(sg, a,
+                                         qhi.template get_multi_ptr<
+                                             sycl::access::decorated::no>() +
+@@ -284,9 +289,19 @@ void dispatch(const float *q, QsaAttnPools p, const int32_t *ids,
+               const int32_t *steps, int64_t cap, QsaShapes s, float *out,
+               int64_t nq, void *stream) {
+   const char *direct = std::getenv("STRATA_SYCL_PROMPT_DIRECT");
+-  if (direct && direct[0] == '1')
+-    launch<Mode, true>(q, p, ids, steps, cap, s, out, nq, stream);
+-  else
++  const char *column = std::getenv("STRATA_SYCL_PROMPT_TRANSPOSE_KEY");
++  if (direct && direct[0] == '1') {
++    if (column && column[0] == '2')
++      launch<Mode, true, true, 2>(q, p, ids, steps, cap, s, out, nq, stream);
++    else if (column && column[0] == '3')
++      launch<Mode, true, true, 8>(q, p, ids, steps, cap, s, out, nq, stream);
++    else if (column && column[0] == '4')
++      launch<Mode, true, true, 16>(q, p, ids, steps, cap, s, out, nq, stream);
++    else if (column && column[0] == '1')
++      launch<Mode, true, true>(q, p, ids, steps, cap, s, out, nq, stream);
++    else
++      launch<Mode, true>(q, p, ids, steps, cap, s, out, nq, stream);
++  } else
+     launch<Mode, false>(q, p, ids, steps, cap, s, out, nq, stream);
+ }
+ bool matrix_available(const sycl::device &device, int mode) {
+diff --git a/tests/sycl/decode_attention.cpp b/tests/sycl/decode_attention.cpp
+index d36aa78..eebe4eb 100644
+--- a/tests/sycl/decode_attention.cpp
++++ b/tests/sycl/decode_attention.cpp
+@@ -158,6 +158,21 @@ void run(int format, int page_size, bool masked, bool scaled = false) {
+             out.data(), nq);
+   auto y = out.get();
+ #ifdef STRATA_TEST_PROMPT_MATRIX
++  setenv("STRATA_SYCL_PROMPT_TRANSPOSE_KEY", "0", 1);
++  attention(q.data(), p, di.data(), ds.data(), cap, s, scratch.data(),
++            out.data(), nq);
++  const auto row_key = out.get();
++  check(std::memcmp(y.data(), row_key.data(), y.size() * sizeof(float)) == 0,
++        "coalesced/strided prompt key bitwise");
++  for (const char *pad : {"2", "3", "4"}) {
++    setenv("STRATA_SYCL_PROMPT_TRANSPOSE_KEY", pad, 1);
++    attention(q.data(), p, di.data(), ds.data(), cap, s, scratch.data(),
++              out.data(), nq);
++    const auto padded = out.get();
++    check(std::memcmp(y.data(), padded.data(), y.size() * sizeof(float)) == 0,
++          "padded transpose prompt key bitwise");
++  }
++  setenv("STRATA_SYCL_PROMPT_TRANSPOSE_KEY", "1", 1);
+   setenv("STRATA_SYCL_PROMPT_DIRECT", "0", 1);
+   attention(q.data(), p, di.data(), ds.data(), cap, s, scratch.data(),
+             out.data(), nq);
+@@ -251,6 +266,7 @@ int main() {
+     runtime = sycl_backend::runtime_for();
+ #ifdef STRATA_TEST_PROMPT_MATRIX
+     setenv("STRATA_SYCL_PROMPT_DIRECT", "1", 1);
++    setenv("STRATA_SYCL_PROMPT_TRANSPOSE_KEY", "1", 1);
+ #endif
+     for (int fmt = 0; fmt < 4; ++fmt)
+       for (int page : {1, 4, 16})

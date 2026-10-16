@@ -1,0 +1,9 @@
+現行6354 engineを公式unitrace direct collectorで測定した。receipt `own-vllm-unitrace-direct-model-v6.json` SHA ecaf9ff079383302597ff7d5b93ac1ea572483db4bf958e5cb33fee445354f86 はPASS、native/server/runner exit0、所有回収、新規fault0/dumpなし。official bench.sh、実39262入力/39261 batched、chunk8192、context/resident65536、thinking ON/24output、BF16 vLLM/QSA0、residual GPU32768。これは403tok/sを得た全残差GPU設定とは別で、診断時の速度は採用しない。
+
+全processのdevice command合計96.4765秒、host API elapsed合計123.6264秒。短いwarmup・生成・startup/teardownも含み、相互排他やcritical pathではない。最大の単一compute kernelはselected-cell attentionの33.965989秒/72callsで、12層×5chunkの本測定に加えwarmup12callsを含む。M2D copy11.331686秒/26610calls、H2D copy2.938168秒/8943calls、iq_dequant_gu_f16 6.146980秒/24907calls、vLLM FP16→BF16 wide GEMM4.769320秒/29660calls、GDN recurrence4.085836秒/1224calls、qsa_block_scores3.407072秒/2028calls。copy種別はtoolの表記であり全て重み転送と決めない。上位15行・kernel propertiesはJSON、全個別行は元receiptに保持する。
+
+Attentionがcoarse queue intervalだけでなく実device serviceでも最大であることを確認した。一方で計算/帯域/依存・barrierの内部律速は未確定。unitraceの4096B SLMは作成時のzeKernelGetPropertiesであり、後で設定するlocal_accessor/SLM引数を集計していない。source accessor総量の代わりに4096Bを占有率計算へ使用しない。SIMD16/GRF128/private0/spill0も当該collector報告の範囲であり、実occupancyではない。一次資料: https://oneapi-src.github.io/level-zero-spec/level-zero/1.19.12/core/api/apis/kernel.html 、公式pti-gpu commit6c0d6b のtools/unitrace/src/levelzero/ze_collector.h OnExitKernelCreate(5873,5948–5953)。
+
+前のv5は全層/生成/bench0/server0を終えたがnative exit記録がなく診断FAILのまま保持する。v6は製品serverのshutdown policyを変えず、完了後に正しい所有nativeのstdin pipeへQUITを一度書き、native/wrapperのPIDfdとexit0記録を確認してからHTTPを閉じた。根本原因を未確認のままGPU障害と呼ばない。
+
+この証拠でR861を次の実験に進める。128thread中16threadが逐次softmaxを担う箇所を8 subgroupへ分散する変更で、default OFF。単なる減精度や近似expではなく既存FP32演算の加算順だけが変わる。完全patchとprovenanceをMainレビューし、旧source4ファイルのhash一致を検査して適用した。まだビルド・FP64 oracle・モデル数値・速度は未検証。原FP32/typedBF16経路、独立oracleと許容値、短入力decode配置を維持する。広い品質/256K/RESTORE/default採用は未了。基準buildは比較用に変更しない。

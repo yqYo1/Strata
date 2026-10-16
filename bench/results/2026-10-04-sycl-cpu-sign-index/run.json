@@ -1,0 +1,805 @@
+{
+  "status": "Rejected at component stage; no engine/cache integration.",
+  "hardware": {
+    "cpu": "Ryzen 5 5600X",
+    "gpu": "Intel Arc B570 10 GiB"
+  },
+  "source_parent_commit": "66d945a",
+  "change": "IQ3_S: combine 9-bit codebook index and 4 sign bits into a 13-bit index, lookup signed 4-byte weights in a 32 KiB table; transfer Q8 sign to weights before unsigned-by-signed dot.",
+  "formats": {
+    "raw_bytes_per_256": 110,
+    "preindexed_bytes_per_256": 134,
+    "prior_unsigned_index_bytes_per_256": 166
+  },
+  "variants": {
+    "1": "inner loop unroll 1",
+    "2": "inner loop unroll 2",
+    "3": "inner loop unroll 4"
+  },
+  "validation": "480 finite bitwise-equal component timing samples; accepted production baseline also compared against linked GGML. Q8_K inputs restricted to valid quantizer range [-127,127]. No claim for arbitrary -128 Q8 inputs. No production code modified.",
+  "conditions": "Real model gate/up weights, N=2560, FF=640; physical cores 0..5 for six threads. 10 alternating pairs x 5 repeats. No owned compilation/GPU tests during timing. Existing workstation services left active.",
+  "limits": "Component only. Signed-index timings exclude packing/allocation; raw variant consumes original-format bytes and needs neither. No full-engine performance gain established.",
+  "screens": {
+    "signindex": [
+      {
+        "experts": 64,
+        "threads": 1,
+        "variants": [
+          {
+            "variant": 1,
+            "baseline_us": [
+              24770.6,
+              19480.0,
+              19132.6,
+              19135.4,
+              19432.5,
+              21201.9,
+              19422.4,
+              19283.4,
+              19354.0,
+              21908.5
+            ],
+            "candidate_us": [
+              16738.2,
+              16391.4,
+              16468.1,
+              16224.9,
+              16080.0,
+              16261.7,
+              16956.8,
+              16703.2,
+              16984.4,
+              17285.9
+            ],
+            "baseline_median_us": 19427.45,
+            "candidate_median_us": 16585.65,
+            "speed_ratio": 1.1713408880568443
+          },
+          {
+            "variant": 2,
+            "baseline_us": [
+              19331.9,
+              19295.0,
+              19520.9,
+              19127.6,
+              19068.8,
+              19627.0,
+              19222.7,
+              33673.5,
+              19026.8,
+              19918.5
+            ],
+            "candidate_us": [
+              15686.0,
+              15629.6,
+              16177.3,
+              16102.8,
+              15636.7,
+              15770.7,
+              17207.5,
+              16450.4,
+              18836.3,
+              19197.9
+            ],
+            "baseline_median_us": 19313.45,
+            "candidate_median_us": 16140.05,
+            "speed_ratio": 1.1966164912748103
+          },
+          {
+            "variant": 3,
+            "baseline_us": [
+              19347.9,
+              19216.5,
+              20657.8,
+              19387.6,
+              19135.5,
+              19247.9,
+              20024.5,
+              19340.4,
+              19196.8,
+              22420.7
+            ],
+            "candidate_us": [
+              18981.0,
+              18891.9,
+              19084.1,
+              18900.6,
+              19306.4,
+              19094.3,
+              18827.2,
+              18864.7,
+              18773.7,
+              19000.7
+            ],
+            "baseline_median_us": 19344.15,
+            "candidate_median_us": 18940.8,
+            "speed_ratio": 1.0212952990369997
+          }
+        ],
+        "allocation_and_pack_log": "threads=1 cores=0,\npack type=21 experts=64 raw_bytes=90112000 packed_bytes=109772800 allocation_us=56494.7 first_pack_us=32324.5 repeats_us=32861.7,34969.9,33142.8,32060.8,32792.9,\n"
+      },
+      {
+        "experts": 64,
+        "threads": 6,
+        "variants": [
+          {
+            "variant": 1,
+            "baseline_us": [
+              3688.57,
+              3755.58,
+              3947.7,
+              4103.05,
+              4209.0,
+              3734.45,
+              3961.15,
+              4040.12,
+              3851.31,
+              4181.23
+            ],
+            "candidate_us": [
+              3338.21,
+              3253.69,
+              3388.37,
+              3476.37,
+              3516.16,
+              3318.43,
+              3333.7,
+              3254.91,
+              3587.84,
+              3743.86
+            ],
+            "baseline_median_us": 3954.425,
+            "candidate_median_us": 3363.29,
+            "speed_ratio": 1.175760936463998
+          },
+          {
+            "variant": 2,
+            "baseline_us": [
+              4332.71,
+              3855.79,
+              3978.37,
+              3836.92,
+              3906.14,
+              4192.84,
+              5325.48,
+              3810.96,
+              4042.54,
+              4282.29
+            ],
+            "candidate_us": [
+              3314.03,
+              3499.94,
+              3530.9,
+              3269.43,
+              4438.03,
+              3351.85,
+              4200.88,
+              3491.97,
+              3501.38,
+              3735.22
+            ],
+            "baseline_median_us": 4010.455,
+            "candidate_median_us": 3500.66,
+            "speed_ratio": 1.1456282529580137
+          },
+          {
+            "variant": 3,
+            "baseline_us": [
+              4284.42,
+              4135.13,
+              4166.82,
+              3871.2,
+              3816.06,
+              4295.45,
+              3910.04,
+              4185.04,
+              4199.36,
+              4424.82
+            ],
+            "candidate_us": [
+              4096.78,
+              3939.68,
+              3965.75,
+              3721.22,
+              3636.61,
+              3762.25,
+              3753.06,
+              3894.98,
+              3938.54,
+              3929.91
+            ],
+            "baseline_median_us": 4175.93,
+            "candidate_median_us": 3912.4449999999997,
+            "speed_ratio": 1.0673453556535621
+          }
+        ],
+        "allocation_and_pack_log": "threads=6 cores=0,1,2,3,4,5,\npack type=21 experts=64 raw_bytes=90112000 packed_bytes=109772800 allocation_us=52652.5 first_pack_us=31842.3 repeats_us=31811,31677.1,32323,31753.6,31783.6,\n"
+      },
+      {
+        "experts": 8,
+        "threads": 1,
+        "variants": [
+          {
+            "variant": 1,
+            "baseline_us": [
+              2406.36,
+              2436.81,
+              2663.44,
+              2873.89,
+              2530.45,
+              2474.99,
+              2436.87,
+              3003.25,
+              2503.2,
+              2376.88
+            ],
+            "candidate_us": [
+              2302.19,
+              2137.46,
+              2401.11,
+              1836.39,
+              1904.63,
+              2436.18,
+              1816.79,
+              1825.02,
+              1835.78,
+              1801.68
+            ],
+            "baseline_median_us": 2489.095,
+            "candidate_median_us": 1870.5100000000002,
+            "speed_ratio": 1.3307039256673312
+          },
+          {
+            "variant": 2,
+            "baseline_us": [
+              2358.4,
+              2596.84,
+              2577.76,
+              2549.18,
+              2584.35,
+              2396.12,
+              2494.74,
+              2351.69,
+              2360.15,
+              3107.13
+            ],
+            "candidate_us": [
+              1894.24,
+              1990.19,
+              1846.1,
+              1853.06,
+              1773.73,
+              1661.1,
+              1737.79,
+              1669.98,
+              1701.42,
+              1769.57
+            ],
+            "baseline_median_us": 2521.96,
+            "candidate_median_us": 1771.65,
+            "speed_ratio": 1.4235091581294272
+          },
+          {
+            "variant": 3,
+            "baseline_us": [
+              2530.59,
+              2424.41,
+              2433.36,
+              2398.56,
+              2415.33,
+              2354.15,
+              2345.59,
+              2394.6,
+              2403.79,
+              2393.19
+            ],
+            "candidate_us": [
+              2195.28,
+              2149.6,
+              2169.52,
+              2123.54,
+              2179.94,
+              2142.84,
+              2184.5,
+              2221.12,
+              2128.61,
+              2213.4
+            ],
+            "baseline_median_us": 2401.175,
+            "candidate_median_us": 2174.73,
+            "speed_ratio": 1.1041255696109402
+          }
+        ],
+        "allocation_and_pack_log": "threads=1 cores=0,\npack type=21 experts=8 raw_bytes=11264000 packed_bytes=13721600 allocation_us=6864.23 first_pack_us=4018.8 repeats_us=4015.32,4121.11,4176.24,3979.31,4265.12,\n"
+      },
+      {
+        "experts": 8,
+        "threads": 6,
+        "variants": [
+          {
+            "variant": 1,
+            "baseline_us": [
+              535.168,
+              482.095,
+              486.74,
+              539.6,
+              501.204,
+              637.565,
+              514.805,
+              531.775,
+              525.465,
+              540.432
+            ],
+            "candidate_us": [
+              362.875,
+              345.049,
+              389.922,
+              564.036,
+              393.615,
+              405.052,
+              398.973,
+              389.946,
+              433.243,
+              417.5
+            ],
+            "baseline_median_us": 528.62,
+            "candidate_median_us": 396.294,
+            "speed_ratio": 1.3339086637698274
+          },
+          {
+            "variant": 2,
+            "baseline_us": [
+              508.421,
+              609.496,
+              515.376,
+              538.039,
+              544.485,
+              522.075,
+              517.106,
+              584.589,
+              515.392,
+              547.459
+            ],
+            "candidate_us": [
+              396.803,
+              370.469,
+              387.946,
+              384.459,
+              394.29,
+              393.44,
+              362.201,
+              358.801,
+              412.865,
+              406.753
+            ],
+            "baseline_median_us": 530.057,
+            "candidate_median_us": 390.693,
+            "speed_ratio": 1.3567097439677702
+          },
+          {
+            "variant": 3,
+            "baseline_us": [
+              614.291,
+              583.673,
+              570.436,
+              537.049,
+              516.388,
+              624.837,
+              487.993,
+              478.09,
+              538.211,
+              472.83
+            ],
+            "candidate_us": [
+              470.195,
+              486.015,
+              484.061,
+              448.767,
+              445.424,
+              459.769,
+              429.951,
+              424.188,
+              447.723,
+              409.695
+            ],
+            "baseline_median_us": 537.63,
+            "candidate_median_us": 448.245,
+            "speed_ratio": 1.1994110363751966
+          }
+        ],
+        "allocation_and_pack_log": "threads=6 cores=0,1,2,3,4,5,\npack type=21 experts=8 raw_bytes=11264000 packed_bytes=13721600 allocation_us=6517.73 first_pack_us=3934 repeats_us=3925.51,4076.37,3945.11,3931.14,3933.43,\n"
+      }
+    ],
+    "signraw": [
+      {
+        "experts": 64,
+        "threads": 1,
+        "variants": [
+          {
+            "variant": 1,
+            "baseline_us": [
+              19699.5,
+              20529.0,
+              20399.2,
+              19123.5,
+              19367.7,
+              19642.9,
+              19079.5,
+              19182.6,
+              19105.0,
+              19395.3
+            ],
+            "candidate_us": [
+              31949.8,
+              31910.8,
+              29566.8,
+              29522.4,
+              29839.6,
+              30040.9,
+              28936.2,
+              29156.5,
+              29404.7,
+              28941.9
+            ],
+            "baseline_median_us": 19381.5,
+            "candidate_median_us": 29544.6,
+            "speed_ratio": 0.656008204544993
+          },
+          {
+            "variant": 2,
+            "baseline_us": [
+              19530.6,
+              19223.1,
+              19247.2,
+              19256.2,
+              19368.4,
+              19174.2,
+              19423.1,
+              21258.6,
+              19295.9,
+              19225.0
+            ],
+            "candidate_us": [
+              30623.2,
+              30484.3,
+              30741.1,
+              31309.0,
+              31114.7,
+              30222.7,
+              33280.4,
+              36179.2,
+              31117.0,
+              30398.8
+            ],
+            "baseline_median_us": 19276.050000000003,
+            "candidate_median_us": 30927.9,
+            "speed_ratio": 0.6232576411589537
+          },
+          {
+            "variant": 3,
+            "baseline_us": [
+              21214.7,
+              19239.9,
+              19143.2,
+              19361.8,
+              19254.1,
+              19385.6,
+              19699.8,
+              19172.3,
+              19213.0,
+              20021.9
+            ],
+            "candidate_us": [
+              31554.7,
+              33676.5,
+              31887.1,
+              31725.5,
+              33003.7,
+              33832.1,
+              35765.5,
+              31659.5,
+              33396.0,
+              32335.0
+            ],
+            "baseline_median_us": 19307.949999999997,
+            "candidate_median_us": 32669.35,
+            "speed_ratio": 0.5910111465333714
+          }
+        ],
+        "allocation_and_pack_log": "threads=1 cores=0,\npack type=21 experts=64 raw_bytes=90112000 packed_bytes=90112000 allocation_us=49424.7 first_pack_us=5192.72 repeats_us=4940.98,4848.87,4759.44,4842.13,4369.8,\n"
+      },
+      {
+        "experts": 64,
+        "threads": 6,
+        "variants": [
+          {
+            "variant": 1,
+            "baseline_us": [
+              4119.87,
+              4179.14,
+              4218.2,
+              4165.22,
+              3948.22,
+              3808.14,
+              3893.71,
+              3885.82,
+              3928.13,
+              3921.92
+            ],
+            "candidate_us": [
+              5927.11,
+              6100.33,
+              6235.49,
+              6177.56,
+              5728.0,
+              5733.4,
+              5713.87,
+              5767.98,
+              6584.29,
+              5750.18
+            ],
+            "baseline_median_us": 3938.175,
+            "candidate_median_us": 5847.545,
+            "speed_ratio": 0.6734749369179716
+          },
+          {
+            "variant": 2,
+            "baseline_us": [
+              3921.97,
+              3907.45,
+              4320.96,
+              4198.18,
+              4217.28,
+              4283.7,
+              3775.25,
+              3796.52,
+              4010.87,
+              4127.56
+            ],
+            "candidate_us": [
+              6384.84,
+              6326.84,
+              6808.16,
+              6875.9,
+              6920.66,
+              6327.6,
+              6187.87,
+              6447.49,
+              7496.39,
+              6281.6
+            ],
+            "baseline_median_us": 4069.215,
+            "candidate_median_us": 6416.165,
+            "speed_ratio": 0.6342129605457466
+          },
+          {
+            "variant": 3,
+            "baseline_us": [
+              4697.63,
+              4311.03,
+              4213.87,
+              3915.57,
+              3780.19,
+              3760.42,
+              3738.36,
+              4112.1,
+              4117.42,
+              3824.52
+            ],
+            "candidate_us": [
+              7181.57,
+              6461.11,
+              6771.73,
+              7620.74,
+              6269.24,
+              6266.14,
+              6615.56,
+              7392.49,
+              6447.39,
+              6487.53
+            ],
+            "baseline_median_us": 4013.835,
+            "candidate_median_us": 6551.545,
+            "speed_ratio": 0.6126547249541902
+          }
+        ],
+        "allocation_and_pack_log": "threads=6 cores=0,1,2,3,4,5,\npack type=21 experts=64 raw_bytes=90112000 packed_bytes=90112000 allocation_us=46139.2 first_pack_us=4954.53 repeats_us=4750.03,4978.27,4626.56,4515.83,4668.77,\n"
+      },
+      {
+        "experts": 8,
+        "threads": 1,
+        "variants": [
+          {
+            "variant": 1,
+            "baseline_us": [
+              2762.17,
+              2383.64,
+              2352.41,
+              2400.19,
+              2426.54,
+              2524.42,
+              2483.03,
+              2407.75,
+              2443.74,
+              2405.78
+            ],
+            "candidate_us": [
+              3895.27,
+              3698.6,
+              3737.69,
+              3780.04,
+              3678.64,
+              3676.18,
+              3710.59,
+              3563.81,
+              3613.61,
+              3549.68
+            ],
+            "baseline_median_us": 2417.145,
+            "candidate_median_us": 3688.62,
+            "speed_ratio": 0.6552979162938986
+          },
+          {
+            "variant": 2,
+            "baseline_us": [
+              2392.48,
+              2383.04,
+              2388.82,
+              2499.82,
+              2495.94,
+              2492.28,
+              2430.07,
+              2826.52,
+              2350.39,
+              2759.65
+            ],
+            "candidate_us": [
+              3799.26,
+              3755.7,
+              3780.39,
+              3879.57,
+              3768.89,
+              3769.61,
+              3785.84,
+              3931.85,
+              3923.65,
+              4029.83
+            ],
+            "baseline_median_us": 2461.175,
+            "candidate_median_us": 3792.55,
+            "speed_ratio": 0.6489499149648653
+          },
+          {
+            "variant": 3,
+            "baseline_us": [
+              2739.18,
+              2405.79,
+              3361.0,
+              2408.76,
+              2405.4,
+              2343.72,
+              2347.54,
+              2383.42,
+              2386.35,
+              2338.62
+            ],
+            "candidate_us": [
+              3855.49,
+              3850.23,
+              3899.67,
+              3806.26,
+              3845.11,
+              3867.29,
+              3875.47,
+              3869.76,
+              3867.71,
+              3870.26
+            ],
+            "baseline_median_us": 2395.875,
+            "candidate_median_us": 3867.5,
+            "speed_ratio": 0.6194893341952166
+          }
+        ],
+        "allocation_and_pack_log": "threads=1 cores=0,\npack type=21 experts=8 raw_bytes=11264000 packed_bytes=11264000 allocation_us=6965.03 first_pack_us=737.872 repeats_us=646.931,485.546,474.044,447.905,445.02,\n"
+      },
+      {
+        "experts": 8,
+        "threads": 6,
+        "variants": [
+          {
+            "variant": 1,
+            "baseline_us": [
+              670.078,
+              451.057,
+              456.521,
+              456.948,
+              457.471,
+              568.068,
+              531.022,
+              483.328,
+              477.234,
+              459.695
+            ],
+            "candidate_us": [
+              727.651,
+              909.924,
+              694.47,
+              787.219,
+              699.65,
+              746.534,
+              714.646,
+              692.214,
+              692.985,
+              714.734
+            ],
+            "baseline_median_us": 468.4645,
+            "candidate_median_us": 714.69,
+            "speed_ratio": 0.6554792987169261
+          },
+          {
+            "variant": 2,
+            "baseline_us": [
+              573.812,
+              469.173,
+              494.276,
+              459.551,
+              456.914,
+              456.367,
+              455.359,
+              459.278,
+              463.881,
+              463.613
+            ],
+            "candidate_us": [
+              727.118,
+              713.608,
+              710.955,
+              717.744,
+              816.514,
+              705.196,
+              755.479,
+              720.269,
+              716.746,
+              793.202
+            ],
+            "baseline_median_us": 461.582,
+            "candidate_median_us": 719.0065,
+            "speed_ratio": 0.6419719432299986
+          },
+          {
+            "variant": 3,
+            "baseline_us": [
+              519.408,
+              461.178,
+              460.563,
+              488.55,
+              489.367,
+              552.067,
+              545.281,
+              570.011,
+              522.542,
+              503.712
+            ],
+            "candidate_us": [
+              826.349,
+              863.992,
+              757.018,
+              829.787,
+              810.894,
+              960.51,
+              848.953,
+              904.212,
+              904.304,
+              881.018
+            ],
+            "baseline_median_us": 511.56,
+            "candidate_median_us": 856.4725,
+            "speed_ratio": 0.5972871283082645
+          }
+        ],
+        "allocation_and_pack_log": "threads=6 cores=0,1,2,3,4,5,\npack type=21 experts=8 raw_bytes=11264000 packed_bytes=11264000 allocation_us=5275.26 first_pack_us=579.734 repeats_us=548.244,505.053,449.137,451.551,447.184,\n"
+      }
+    ]
+  },
+  "decision": "Preindexed signed table is smaller, but slower than prior unsigned preindices in the six-core E64 case and roughly doubles conversion time. Applying the table directly to raw weights is slower in every measured combination. Both rejected."
+}

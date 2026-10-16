@@ -1,0 +1,53 @@
+# Round 493: pre-Xe build identity and replay feasibility
+
+## Finding
+
+The historical integrated binary is substantially better identified than the previous private control: the archived build receipt binds a clean Strata worktree at `1eb89482a4afd20277ae0405780ed4f8eb98eb20`, clean external ggml at `3cf03257f219afbe7334045ff7c6a06ac68c627d`, configure/build commands using Intel oneAPI 2026.1 `icpx`/`icx`, and binary SHA-256 `86972697…04d1c8`. The tuned-run summary independently binds that binary hash to the measured process. This is good source/build provenance, but not a complete byte-for-byte reconstruction record: no compile database, CMakeCache, full per-TU command lines, compiler version output, or actual linked-library inventory is retained in the reviewed record.
+
+The old source's SYCL defaults and the current CMake path are materially different. The old project globally added `-fsycl-default-sub-group-size=32` and `-fp-model=precise`, and used `-qmkl=sequential` to link the prefill path. Current `cmake/sycl_backend.cmake` does not set a global subgroup size or Intel `-fp-model`; it enforces `-fsycl-id-queries-range=size_t`, probes for the Intel high-accuracy math API, and applies `-fno-fast-math` / `-ffp-contract=off` by target. It links `MKL::MKL_SYCL::BLAS` with `MKL_LINK=dynamic` and sequential threading. These are not proven equivalent compile contracts. The matching `oneMKL 2026.1` package version does not establish compiler, device-library, SYCL runtime, or UR ABI compatibility between Intel oneAPI 2026.1 and LLVM 22 / libsycl 9.
+
+## What the retained old build evidence proves
+
+The committed artifact is `bench/results/2026-10-05-sycl-prefill-scaling/upstream-v0.1.41-20261009/default32k/checks/integrated-build.json` at report commit `16b1b04ffd77101c4b49543507c06fc71fbf2368`. Although the tuned-run report is a separate folder, its `summary.json` names the same integrated engine commit and binary hash. The build record says:
+
+- Strata commit `1eb89482a4afd20277ae0405780ed4f8eb98eb20`; `source_status_before` and `source_status_after` are empty.
+- External ggml directory `/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned`, commit `3cf03257f219afbe7334045ff7c6a06ac68c627d`; `ggml_status_before` and `ggml_status_after` are empty.
+- CMake source is the old `sycl/` subproject, Ninja generator, `CMAKE_BUILD_TYPE=Release`, compiler paths `/opt/intel/oneapi/compiler/2026.1/bin/icpx` and `icx`, and `STRATA_GGML_DIR` above. The build target was `strata`, parallelism 2.
+- Binary path and SHA match the tuned-run summary: `86972697ecb1903750d202f8be29a7a1da351eb3415678c3e3b6af790804d1c8`.
+- The report records oneAPI 2026.1.1, NEO 26.31.39395.14, IGC 2.41.5, Level Zero v2, and ggml commit `3cf032…` for the comparison.
+
+This identifies the committed Strata source tree and the separately pinned ggml source at build time, plus the executable later measured. It does not prove every compile input solely from the binary hash. In particular, the record does not contain `compile_commands.json`, `CMakeCache.txt`, generated build rules, compiler `--version` output, hashes of the compiler and headers, MKL/SYCL library hashes, or link map. Source-defined flags can be read from the committed CMake, but exact final flag ordering and implicit toolchain defaults cannot be recovered from this record alone.
+
+The old private DD5 control is a different provenance case. Its observed worktree commit `452044ab…` is explicitly not a source-identical rebuild of the qualified private corrections. The report says earlier qualification archives identify compiled inputs; those original inputs are retired or not part of the narrowly permitted reviewed set. Therefore the integrated binary's evidence must not be used to claim exact source identity for the DD5 control. The DD5 binary hash and its runtime receipts identify the executable, not a reproducible source tree.
+
+## Old source-level build contract
+
+At commit `1eb89482…`, `sycl/CMakeLists.txt` documents and configures a separate JIT SYCL project. Relevant settings are:
+
+- C++20, Release when no build type is supplied, and normal CMake Release options.
+- Every C++ translation unit receives `-fsycl`; global additions include `-fsycl-default-sub-group-size=32`, `-fp-model=precise`, and warning suppressions. A comment explains that the kernels assume 32-lane subgroups and that the option avoids the Xe2 default subgroup width of 16.
+- For non-AOT builds, the device link passes `-cl-fp32-correctly-rounded-divide-sqrt`; AOT instead sends this to `ocloc`. The CMake source says the option was needed for byte-exact quantization.
+- Prefill is the migrated `gemm.cu`, `kernels.cu`, and `prefill.cpp` path selected by `strata_resolve`, plus the port's fused-kernel stub; the target uses `-qmkl=sequential` at compile and link. This is a oneMKL-backed SYCL BLAS path, but the actual resolved MKL package/library files are not in the build receipt.
+- CMake source defaults `STRATA_SYCL_AOT` to empty (SPIR-V JIT), `STRATA_NATIVE_POOL_TASK_FACTOR` to `0`, and `STRATA_IQ2S_GCC` to OFF. The configure command does not override these. Since the CMakeCache is absent, these are source defaults, not independently captured effective cache values.
+
+This old build's root plus overlay was the configured engine. `strata_resolve` preferred migrated copies under `sycl/src` for CUDA-derived files and migrated host copies where present; otherwise it used the project root. This explains why the old verifier and QSA selection inputs differ from the current root-only engine selection reported in R491. It remains important not to describe the upstream root CUDA generator as the measured SYCL implementation.
+
+## Current toolchain comparison and compatibility
+
+The current stock-run identity supplied for this comparison is LLVM/Clang 22 with libsycl 9 and oneMKL 2026.1. Current CMake source probes `-fsycl`, `-fsycl-id-queries-range=size_t`, and compilation of `sycl::ext::intel::math::ha::exp`; that is a useful compile-time capability gate. It then links the SYCL BLAS imported target from the located MKL package dynamically with sequential threading. Current kernels also use explicit Intel math entry points where needed. These checks do not certify compatibility with the old Intel `icpx` executable or its exact math behavior; a successful current stock run only validates the current binary/runtime combination that was actually launched.
+
+The old compiler flags should be treated as toolchain-specific until a permitted compile check demonstrates otherwise. `-qmkl=sequential` is an Intel driver integration flag; current CMake uses CMake's imported MKL target instead. `-fp-model=precise` and subgroup-size controls may or may not be accepted or behave identically under the LLVM 22 driver/runtime. No compile or link check was run here, so whether the full `1eb` subproject configures against LLVM 22 remains unknown. Even if it configures, the current CMake's explicit math and subgroup contracts differ, and neither source compatibility nor equal generated code follows from sharing MKL 2026.1.
+
+For a current-toolchain source comparison, the replay should use the current supported top-level SYCL build and its current `cmake/sycl_backend.cmake`, porting only the old source changes needed for the candidate comparison. Record the exact compiler binary/version, CMake cache, compile database, ggml commit, MKL package config and linked libraries, and resulting executable SHA for both candidate builds. Keep the same compiler/runtime/driver stack for both binaries. First verify subgroup assumptions in the actual current kernels; do not simply transplant the old global `-fsycl-default-sub-group-size=32` flag, since current kernels and launch code may use different subgroup contracts.
+
+A separate historical reproduction would require the coherent old Intel environment: old `icpx`/`icx`, its libsycl, matching Level Zero adapter and oneMKL paths, and the exact old source/ggml pair. The old tuned record contains `UR_ADAPTERS_FORCE_LOAD` pointing into oneAPI 2026.1 and `UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD=1`, as well as old NEO/runtime controls. Do not copy those variables into an LLVM 22/libsycl 9 process or load the Intel adapter across runtime stacks; that mixes UR components and invalidates the comparison. Likewise, do not restore old driver fault/debug toggles simply to imitate an old timing environment. Any required runtime workaround must be independently shown to apply to the current stack and kept identical between its A/B builds.
+
+## Record/report discrepancies and limits
+
+1. The R491 comparison calls the current compiler/runtime `clang 22 / libsycl 9`, based on the current stock-run metadata, while the archived 2026-10-09 build receipt records Intel `icpx` 2026.1 and its environment. These are distinct toolchains; the historical measured engine commit does not imply those old sources were built with the current compiler.
+2. The tuned README describes integrated commit `1eb89482…`; the build record confirms that exact commit and clean source status. For the control, both README and summary warn that the observed old commit is not source-identical to the private DD5 binary. Keep that warning attached to any comparison.
+3. The archived top-level comparison README says the same project Release options and pinned ggml were used for raw and integrated builds. This is backed by their build records, not by an identical source implementation: the raw upstream is a different source tree and the integrated tree contains the port plus retained corrections.
+4. The tuned README's prompt cache setup and actual fresh-read facts are distinct: it configures prompt caching, but the measured reads report no reuse. That does not establish the old build's general cache behavior beyond these requests.
+5. The source CMake explains the old SG32 and precise math requirements; the build record does not store the effective cache or per-TU compile commands. State these as CMake-defined intended flags, not independently verified compiler invocations.
+
+No build, test, GPU run, profiler, Git mutation, network access, or cleanup was performed for this report. The prohibited `prefill-gemm-only-contract-root-v1/record.json` was not read. The practical next step is a controlled same-current-toolchain comparison with fully retained build metadata; the archived binary is an execution artifact, not a portable cross-runtime baseline.

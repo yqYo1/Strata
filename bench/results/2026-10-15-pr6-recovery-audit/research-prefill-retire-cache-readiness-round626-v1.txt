@@ -1,0 +1,45 @@
+# R626 — prefill退役とdecode cache拡張の準備監査
+
+2026-10-15 JST。現行root SYCL sourceと既存proposalの読み取り専用照合。変更は本報告だけ。build/test/GPU/service/process/Git/cleanupは実施していない。対象の実経路は`cmake/sycl_backend.cmake`が選ぶroot `src/core/{expert_cache,expert_source,verify}.cpp`、root `src/prefill/prefill.cpp`と`layer_major.inc`、root `src/program/generate.cpp`。
+
+## 判断
+
+**次に実行可能な評価は、退役proposalを有効化せず、既存の起動時cache容量設定だけを変える分離screen。** `--expert-cache` の数値だけでtotal slotsは128→192→256へ変更でき、現在の`--expert-cache-per-layer`は固定できる。ただし各容量でper-layer quota、resident expert集合/slot対応、arena byte数、profile admissionが再計算されるため、同一resident mapを保ったまま容量だけ増やす比較ではない。`--expert-cache-balanced`はさらに別armである。128/192/256の実slot/bytes/free headroomを起動時receiptで確認し、失敗するtierは拒否する。Prefill own-buffer fitとborrowed tail refillも各tierで再確認する。
+
+Prefill scratchをprompt後に退役するだけでは、すでに開いているdecode cacheを拡張できない。`checked-prefill-retire-v1`は同じcacheを保持し、次のbatched prompt前にscratchを再生成する案。`decode-cache-prefill-release-v1`はPrefill中だけcacheを閉じ、**保存した同じslots/offsets/arena bytes/profile mapへ復元**する案であり、これもcache増量を実装していない。よって「Prefill allocationを退役させて大きいdecode cacheへ振り替える」目的には両proposalとも未完成。まずcapacity-only armを別に評価する。prompt peakで拡張容量が入らず、高リスクlifecycleを追う価値が残る場合に限り、新しい明示的resize/reopen proposalを作り、Prefill退役と混ぜずレビューする。
+
+## 既存案とbase pin
+
+- `checked-prefill-retire-v1`はPrefill所有scratchだけを退役し、Borrowed cache tail、ExpertCache、Verifier/MTP graphを保持する案。R599の1,662,831,872 B (1,585.6 MiB = 約1.55 GiB)は`Prefill::Impl::owned` device allocationsの歴史的な合計accountingで、`cudaMemGetInfo` free差でも実退役後に確保できる量でもない。静的contractはtoken/identity等を含むallocation ownership範囲を数え、個々のfree成功や同量のdriver reclaimを証明しない。Prefill後の退役は次回promptにscratchを再生成する必要もある。
+- `balanced-layer-cache-v1`のproposal bytesは、`sourcepins.json`にあるnative_experts metadataを使ったarena算術であり、実allocation/freeでも性能測定でもない。現行の`ExpertCache::layer_slot_range`は各層のquotaを`q=S/L`、最後の層だけ余り全量としている。128 slotsなら47層が2、最終層が34。balanced案は先頭32層3、残り16層2へ分ける案で、現行動作とは異なる。
+- `decode-cache-prefill-release-v1/base-hashes.json`を現rootと直接照合した。`expert_cache.hpp/.cpp`、`verify.hpp/.cpp`、`prefill.hpp`、`generate.cpp`は一致。`expert_source.hpp` (pin `c95de4c3…`, current `38bbbad2…`)、`expert_source.cpp` (`ed0c1021…`→`2b252e49…`)、`prefill.cpp` (`cc2120db…`→`aca7a33b…`)、`layer_major.inc` (`5b0bf97a…`→`1a79f1d6…`)はdrift。`delivery-root-hashes.json`は2026-10-14時点のobservationであり、現在の同一性を証明しない。全体diffの適用不可。さらに候補は同一cache layoutへ復元するだけで容量拡張はしない。
+- balanced `sourcepins.json`のcache.hpp/cpp、generate、CMakeLists、host_engine、CPU test pinは一致するが、read-only contextの`cmake/sycl_backend.cmake` (`c013b31e…`→`5afbdb50…`)、expert_source.hpp (`c95de4c3…`→`38bbbad2…`)、expert_source.cpp (`606701c0…`→`2b252e49…`)とresearch-indexはdrift。新設`expert_slot_sizes.hpp`は未適用proposal内容のhashで、rootには存在しない。従ってcache sizing/admission/fill/verify/replacement全経路の再レビューとfixture更新が必要。
+
+## 安全な実装・評価の順序
+
+1. 現行128 cacheのcapacity・slotサイズ・per-layer設定・profile順位・static/adaptive状態を固定し、現行decodeとprefillの個別基準を確定する。これは既存設定で可能だが、auto cacheやfree-memory状態はrun間で同一とは限らないため、実slot数とarena bytesをreceiptへ記録する。
+2. Capacity-only screenは`--expert-cache`値だけ変え、per-layer flag、profile、adaptation、KV/residual設定、workloadを固定する。CLI上は一つの数値設定で足りるが、per-layer時のowner geometryも再計算される: legacy 128は47層×2 + last層34、192は各48層×4、256は47層×5 + last層21。Native blob長は層ごとに異なるのでexact arena bytesは単純slot比例ではない。balanced quotaを有効にするなら別armにする。実際のslot IDs/admission orderとbytesを必ずrecordし、128 residentsが保たれるという期待を置かない。
+3. 変更cacheを通常startupでadmitし、slot blob sizes/offsets、residency map、profile fill、Verifier/native hit graph captureを検証してから品質・速度を測る。native Q8_1はGPU pathのactivation representationであり、GPU cache増量自体がIQ3_S weightをQ8へ再量子化するわけではない。CPU IQ dotとGPU native pathではactivation quantization、accumulation/orderの差が出得るため、bitwise/token一致を先取りせず、元モデルに対するteacher-forced logits/logprob/KL等の事前定義品質gate、MTP acceptance、decode latencyを併記する。true Q8 weight conversionは別方式で品質評価なしに混ぜない。
+4. 各capacityでPrefill peak fitを再評価する。Borrowed-tail範囲、refill byte数、host_res/d_resの一致を確認する。1.55 GiB historical accountingをcapacity予算に足さない。Prefill scratchのpost-prompt retirementは、次回prompt再生成とlifecycle correctnessの別armであり、すでに確保済みのExpertCacheをresizeしない。
+5. Decode cacheをprompt中に一旦退役する案を追うなら、v1を現sourceへ再ベースし、全reader停止→checked drain→all-miss publication→checked close→Prefill→restore/byte verification→map publication→Verifier/native hit graph recapture→decode readyの順を保つ。drain/free/capture/restoreがunknown/failedならdecode fail-stop。VerifierはT別window graphをlazy captureするので既capture Tを退役してrestore後に再captureし、未使用Tは従来どおり後でlazy captureする。`final_R`とMTP graph ownersは維持する。重要な欠落: v1はcacheを元の同一slot layout/profile順に戻すため、**より大きいcacheへのresizeはしていない**。resize案には新容量のexact admission、追加resident expertsのranking/source fill/strict verify、host_res/d_resとVerifier hits、全cache-pointer graph recaptureを加えた別レビューが必要。これらのchecked APIは現sourceにない。
+6. Retirementまたはresize/reopen案へ進む前に、repeated prompt、live RESTORE/checkpoint、複数segment、read_windows-only、cancel/error、normal/coupled MTP、262144 physical contextを個別に正しさ/lifetime検証する。小さいcontextの合格からfull contextを推定しない。Prefill退役とcache閉鎖を同一初回armにしない。現時点で`decode-cache-prefill-release-v2`という候補artifactは見つからず、対象はv1のみ。別の`mtp-expert-prefill-release-v2`とは異なるproposalである。
+
+## Capacity・allocationの読み方
+
+balanced-layer-cache-v1のmetadata算術では、legacy 128 arena 281,651,200 B、balanced 128は260,044,800 B。これはslot count同じでも層ごとの実blob byte分布で21,606,400 B差が出る例で、balanced案で節約できたGPU free実測ではない。旧128の同arena byte budgetでbalanced最大138 slotsという算術も、実割当や同じhit率の主張ではない。192/256の具体値はproposalのmetadata layout計算を示すに留まり、actual free, workspace, graph, staging/headroomを含むadmission成功を保証しない。
+
+現在の`ExpertCache::open_sized`は各slotを256-byte境界へ配置して単一arenaを確保し、slotごとのrawサイズとoffsetを保持する。`fill_slot*`の実サイズ、profile fill、Verifier `slot_off`、native dispatch offset、Prefill lending/refillがこの配置と対応する。Balanced変更はquota変更のほか、slot sizing、fit/retry、fill/verify、swap ownershipの全経路を一貫させる必要がある。単なるcache count変更と同義ではない。
+
+Full physical contextのresidual backingも解決しない。262,144 rowsはFP16だけで5,368,709,120 B (5,120 MiB)、FP32で10,240 MiBの算術量。1.55 GiB scratch accountingや約260 MiB級のcache解放を足して全長GPU residualが収まるとは言えず、既存host-KV/tail pathと境界挙動を維持・実証する必要がある。
+
+## 先に進めない条件
+
+- 1,662,831,872 Bを予測free deltaとすること、またはその値をcache拡張予算として扱うこと。
+- `close()`をchecked drain/freeと同一視すること。現行`ExpertCache::close()`はstaging host allocationとdevice baseを解放し、`cudaFree`結果を捨てる。checked close/drain APIは現行にない。
+- Cacheを閉じたまま通常Prefillを実行すること。current Prefillは`cache`/`host_res`を持ち、borrowed tail経路はcache slot addressを使用する。
+- decode graphを単にresetすれば安全だとすること。native hit graphとVerifier T別graphはcache raw pointers/offsetsを捕捉し、全参照・queue/callback完了確認と再captureが要る。
+- proposal v1のdiffを現行sourceへそのまま適用すること。複数主要fileのbase hash driftが確認済み。
+- balanced配分またはQ8 GPU owner変更後に旧出力が完全一致すると仮定すること。品質と速度は未測定。
+- capacity 128→192→256を「同じ resident layoutでcacheだけ増えた」とみなすこと。CLIは`--expert-cache`一つの数値を変えればよいが、slot countに伴いbyte geometry、per-layer quotaとslot→expert mapping、fit、profile coverage/admission、live VRAM safetyが変わるため、全て記録する。
+
+この監査はsource-level readinessだけを判断した。cache拡張、scratch retirement、decode-cache releaseのどれも適用・測定・採用していない。

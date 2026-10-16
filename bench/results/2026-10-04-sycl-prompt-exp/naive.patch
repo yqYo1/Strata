@@ -1,0 +1,122 @@
+diff --git a/src/kernels/sycl/prompt_attention.cpp b/src/kernels/sycl/prompt_attention.cpp
+index b6c4238..7fdb754 100644
+--- a/src/kernels/sycl/prompt_attention.cpp
++++ b/src/kernels/sycl/prompt_attention.cpp
+@@ -51,7 +51,7 @@ float scale(QsaAttnPools p, int64_t row, int group) {
+     return f32_from_f16((Value ? p.v_scale : p.k_scale)[row * 4 + group]);
+   return 0;
+ }
+-template <int Mode, bool Direct>
++template <int Mode, bool Direct, bool ParallelExp = false>
+ void launch(const float *query, QsaAttnPools pools, const int32_t *ids,
+             const int32_t *steps, int64_t cap, QsaShapes shapes, float *output,
+             int64_t queries, void *stream) {
+@@ -172,23 +172,49 @@ void launch(const float *query, QsaAttnPools pools, const int32_t *ids,
+               }
+             }
+             it.barrier(sycl::access::fence_space::local_space);
+-            if (tid < 16) {
+-              float m = maxima[tid];
+-              for (int c = 0; c < CH; ++c)
+-                if (rows[c] >= 0)
+-                  m = sycl::fmax(m, scores[tid * CH + c]);
+-              const float a =
+-                  maxima[tid] == -INFINITY ? 0.f : sycl::exp(maxima[tid] - m);
+-              float l = 0;
+-              for (int c = 0; c < CH; ++c) {
+-                const float p =
+-                    rows[c] >= 0 ? sycl::exp(scores[tid * CH + c] - m) : 0.f;
+-                scores[tid * CH + c] = p;
+-                l += p;
++            if constexpr (ParallelExp) {
++              if (tid < 16) {
++                float m = maxima[tid];
++                for (int c = 0; c < CH; ++c)
++                  if (rows[c] >= 0)
++                    m = sycl::fmax(m, scores[tid * CH + c]);
++                alpha[tid] = maxima[tid] == -INFINITY
++                                 ? 0.f : sycl::exp(maxima[tid] - m);
++                maxima[tid] = m;
++              }
++              it.barrier(sycl::access::fence_space::local_space);
++              for (int i = tid; i < 16 * CH; i += WG) {
++                const int head = i / CH, c = i % CH;
++                scores[i] = rows[c] >= 0
++                                ? sycl::exp(scores[i] - maxima[head])
++                                : 0.f;
++              }
++              it.barrier(sycl::access::fence_space::local_space);
++              if (tid < 16) {
++                float l = 0;
++                for (int c = 0; c < CH; ++c)
++                  l += scores[tid * CH + c];
++                sums[tid] = sycl::fma(sums[tid], alpha[tid], l);
++              }
++            } else {
++              if (tid < 16) {
++                float m = maxima[tid];
++                for (int c = 0; c < CH; ++c)
++                  if (rows[c] >= 0)
++                    m = sycl::fmax(m, scores[tid * CH + c]);
++                const float a =
++                    maxima[tid] == -INFINITY ? 0.f : sycl::exp(maxima[tid] - m);
++                float l = 0;
++                for (int c = 0; c < CH; ++c) {
++                  const float p =
++                      rows[c] >= 0 ? sycl::exp(scores[tid * CH + c] - m) : 0.f;
++                  scores[tid * CH + c] = p;
++                  l += p;
++                }
++                maxima[tid] = m;
++                sums[tid] = sycl::fma(sums[tid], a, l);
++                alpha[tid] = a;
+               }
+-              maxima[tid] = m;
+-              sums[tid] = sycl::fma(sums[tid], a, l);
+-              alpha[tid] = a;
+             }
+             for (int i = tid; i < CH * VG; i += WG)
+               vs[i] = rows[i / VG] >= 0
+@@ -284,9 +310,13 @@ void dispatch(const float *q, QsaAttnPools p, const int32_t *ids,
+               const int32_t *steps, int64_t cap, QsaShapes s, float *out,
+               int64_t nq, void *stream) {
+   const char *direct = std::getenv("STRATA_SYCL_PROMPT_DIRECT");
+-  if (direct && direct[0] == '1')
+-    launch<Mode, true>(q, p, ids, steps, cap, s, out, nq, stream);
+-  else
++  const char *parallel = std::getenv("STRATA_SYCL_PROMPT_PARALLEL_EXP");
++  if (direct && direct[0] == '1') {
++    if (parallel && parallel[0] == '1')
++      launch<Mode, true, true>(q, p, ids, steps, cap, s, out, nq, stream);
++    else
++      launch<Mode, true>(q, p, ids, steps, cap, s, out, nq, stream);
++  } else
+     launch<Mode, false>(q, p, ids, steps, cap, s, out, nq, stream);
+ }
+ bool matrix_available(const sycl::device &device, int mode) {
+diff --git a/tests/sycl/decode_attention.cpp b/tests/sycl/decode_attention.cpp
+index d36aa78..6ef4154 100644
+--- a/tests/sycl/decode_attention.cpp
++++ b/tests/sycl/decode_attention.cpp
+@@ -158,6 +158,13 @@ void run(int format, int page_size, bool masked, bool scaled = false) {
+             out.data(), nq);
+   auto y = out.get();
+ #ifdef STRATA_TEST_PROMPT_MATRIX
++  setenv("STRATA_SYCL_PROMPT_PARALLEL_EXP", "0", 1);
++  attention(q.data(), p, di.data(), ds.data(), cap, s, scratch.data(),
++            out.data(), nq);
++  const auto serial = out.get();
++  check(std::memcmp(y.data(), serial.data(), y.size() * sizeof(float)) == 0,
++        "parallel/serial prompt exp bitwise");
++  setenv("STRATA_SYCL_PROMPT_PARALLEL_EXP", "1", 1);
+   setenv("STRATA_SYCL_PROMPT_DIRECT", "0", 1);
+   attention(q.data(), p, di.data(), ds.data(), cap, s, scratch.data(),
+             out.data(), nq);
+@@ -251,6 +258,7 @@ int main() {
+     runtime = sycl_backend::runtime_for();
+ #ifdef STRATA_TEST_PROMPT_MATRIX
+     setenv("STRATA_SYCL_PROMPT_DIRECT", "1", 1);
++    setenv("STRATA_SYCL_PROMPT_PARALLEL_EXP", "1", 1);
+ #endif
+     for (int fmt = 0; fmt < 4; ++fmt)
+       for (int page : {1, 4, 16})

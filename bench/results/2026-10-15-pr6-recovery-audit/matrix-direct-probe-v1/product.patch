@@ -1,0 +1,13 @@
+--- a/cmake/sycl_backend.cmake
++++ b/cmake/sycl_backend.cmake
+@@ -108,6 +108,10 @@
+ add_executable(sycl_gemm_orientation_bench EXCLUDE_FROM_ALL tools/sycl/gemm_orientation_bench.cpp)
+ target_link_libraries(sycl_gemm_orientation_bench PRIVATE strata_prefill)
+ target_compile_options(sycl_gemm_orientation_bench PRIVATE -fno-fast-math -ffp-contract=off)
++# Standalone existing matrix-Direct comparison; no production kernel/default change.
++add_executable(sycl_matrix_direct_probe EXCLUDE_FROM_ALL tools/sycl/matrix_direct_probe.cpp)
++target_link_libraries(sycl_matrix_direct_probe PRIVATE strata_kernels)
++target_compile_options(sycl_matrix_direct_probe PRIVATE -fno-fast-math -ffp-contract=off)
+ add_executable(strata src/program/generate.cpp)
+ target_link_libraries(strata PRIVATE strata_prefill strata_spec)
+ 

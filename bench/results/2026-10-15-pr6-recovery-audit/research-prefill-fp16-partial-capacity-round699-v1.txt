@@ -1,0 +1,44 @@
+# R699 — FP16 partial-hidden capacity source audit
+
+2026-10-15 JST。読み取り専用source/evidence調査。許可された唯一の書込みとして本ファイルを新規作成。source変更、build/test/GPU/process、環境変更、cleanup、Git操作なし。対象は指定された `feature/sycl` worktree。`research-index.json` と関連する既存reportを確認し、round 692のstage ownership、round 697のadmission、round 677 v2のresident/streamed KV区別、round 685 v2の容量前提と重複を避けて、FP16部分配置に限定して再確認した。
+
+## 結論
+
+`LayerMajorResidualPlan::make` と `run_layer_major` の実装は、GPU上にFP16で保存するprefix、RAM上にFP16で保存するtail、tail変換用のGPU FP16一chunkを区別している。RAM tailがあるときだけstageを1個確保し、同じstageをchunkごとに再利用する。全入力行がGPU prefixになる場合は `host_bytes=0`, `staging_bytes=0` となり、stage allocationも発生しない。従って、GPU hiddenの部分配置に対する容量計算にはstage一個を含めるが、全hidden GPUの列には加えない。
+
+既存capacity-currentの右端行数は、alias ONのcapacity JSONにある「262144行の全QSA/KVを保持した後のhidden byte上限」をそのままplannerの配置行数と読んだ値ではない。FP16 host-tail stage一chunkを差し引き、GPU prefixをchunk境界に丸めた再計算値として整合する。独立再計算は以下の通り（容量・形式はいずれも未qualifyの仮定）。
+
+| chunk | 262144行の全KV | hidden byte上限 | tail stage | stage後のGPU行数 |
+|---:|---|---:|---:|---:|
+| 4096 | K8V8 | 172499 | 83886080 B | 167936 |
+| 4096 | K8V4 | 209363 | 83886080 B | 204800 |
+| 8192 | K8V8 | 119522 | 167772160 B | 106496 |
+| 8192 | K8V4 | 156386 | 167772160 B | 147456 |
+
+式は `budget = available_for_KV_hidden_bytes - full_262144_QSA_bytes`; `hidden byte upper bound=floor(budget/20480)`; 部分配置はそのbudgetから `chunk*20480` を確保し、残行数をchunk単位で切り下げる。JSONの `available_for_KV_hidden_bytes` はscratch alias ONのone-layer-bank条件。例えばC4096/K8V8は `7,327,628,032 - 3,794,839,744 = 3,532,788,288 B`。80 MiB stage控除と4096行丸めで167936行になる。C8192/K8V8も `6,242,663,936 - 3,794,839,744 = 2,447,824,192 B` から160 MiBを控除し106496行となる。K8V4値も同じ式で一致した。
+
+## 実allocation・変換lifetime
+
+`LayerMajorResidualPlan::make(n,c,width,budget,requested,fp16)` は保存rowを `width*2` bytesで数える。auto時は、全 `n` 行がbudget内に入れば `gpu_rows=n` とする。この分岐では `host_bytes=0`, `staging_bytes=0`。全体が入らない場合は最初に `min(c,n)` 行分のstageをreserveしてからGPU prefixを完全chunk単位に丸める。prefix計算後、実stageサイズは `min(c,n-gpu_rows)*row_bytes`。partial tailの最終chunkが短ければその分だけstageも短い。explicit requested時もGPU bytes + stage bytesの合計をbudgetと比較し、超過は例外になる。FP16 staging allocation不足も明示的なfalse/errorで終わる。
+
+`run_layer_major` はplanner後にRAM tail (`rows`) を一つ、GPU prefix (`device_rows`) を必要時だけ一つ、FP16 stage (`fp16_stage`) を `plan.staging_bytes>0` の時だけ `cudaMalloc` する。FP16 producer境界ではGPU行は直接GPU prefixへ `to_f16` し、host行は `to_f16` でstageへpackしてからD2HでRAM tailへcopyする。host store後にqueue drainする。次層ではhost rowをstageへH2Dし、その同じqueue上で `from_f16` により既存FP32 `m.R` へ復元する。GPU rowは保存場所から直接 `from_f16` する。従って一つのstageが別々のproducer/consumer chunkで同時に二重所有されるsource経路はない。stage ownerは外側checked leaseより先に作られ、queue retireを確認してから破棄される。producer/consumerで二回のFP16変換が発生するが、中間に別のFP32 residual storeを挟まない。
+
+全hiddenがGPUに収まる場合にstage不要という結論はFP16 partial-tail stagingについてである。chunk scratch、expert cache、resident KV、GDN/PLEその他のownersは引き続き必要。現在sourceは一層重みbankを実現せず、decode/MTP重みをprefill中に退役する根拠もこのコードからは得られない。これらは容量仮説であって実装済み挙動ではない。
+
+## n、262144、容量列の意味
+
+plannerの `n` は今回 `run_layer_major` に渡る入力row数で、byte数とchunk丸めの対象。`pos0` は絶対token位置で、callbackのpositionから `row=position-pos0` を復元する。従って `n` と物理context容量262144は同じ値を自動的に意味しない。262144は容量シナリオに置いたKV/state上限と最大hidden row数。一回のprefill入力がn行なら保存hiddenのtotalは `n*20480 B` であり、prompt開始位置や過去contextのKV状態とは別の軸である。最後のrequest chunkは `min(c,n-row)` で短くなりうる。
+
+capacity-currentの「KVと全hiddenを同じ長さで持つ計算上限」は、KV式とFP16 hidden byte数を同じCで増やす、連動したCの上限である。「256K KV後のhidden・byte上限」は、262144 context分の全QSA stateを先に保持し、残VRAMをhiddenに使う別シナリオ。右端「FP16変換領域と現在のchunk丸めを含むGPU hidden」は後者にさらにhost-tail stageとprefix丸めを適用した部分GPU row数である。これらは同じ「最大context」や同じtoken row上限として置換できない。表の計算だけからn=262144の実requestがadmitされるとも言えない。
+
+## allocation guardとslack
+
+実行時sourceは `cudaMemGetInfo` のfree値を取り、そこから一層cache bytesと固定512 MiB headroomを引いた値をplannerのGPU budgetへ渡す。plannerはGPU residual + FP16 stageをそのbudget内に要求する。allocationはcache、GPU residual、stageの順で行い、個々の確保失敗をerrorで返す。RAM admissionはhost tail、cache upload, stride, 2 mapsを加算し8 GiB headroomを維持する。capacity-currentの512 MiB runtime reserveと16 MiB small-owner allowanceは設計上の仮定で、最大runtime量の測定値ではない。
+
+容量JSONの8 MiB borrowed-reservation slackは別途carveされるlive bufferではない。bytes_neededが上位のloan予約で保守的に含めたslackとして記録されるが、device側のfresh-free planner budgetに足し戻せず、またGPU residual/stage allocationと同じ実allocationとみなして重ねて控除もしない。容量比較では当該JSONの `available_for_KV_hidden_bytes` とfull KV値を使い、別途8 MiBを加減しない。実runtimeのallocation成立はfresh free query、各malloc成功および同じprocessの配置ログで確認する必要があり、本source-only監査はそれを行っていない。
+
+## 未qualified事項とsource pins
+
+FP16 saved-hidden品質、K8V4のconfigured SYCL運用、262144物理context実行、one-layer combined weight bank、decode/MTP release、runtime worst-case headroom、性能はいずれも未qualified。既存 capacity JSON 自身もGPU実行・physical admission・quality・performanceをqualifiedしていない。K8V4値は特に仮定値。capacity tableを実測成功や600 tok/s超の根拠へ昇格しない。
+
+確認箇所: `include/strata/prefill/layer_major_plan.hpp` (`LayerMajorResidualPlan::make`, `span`); `src/prefill/layer_major.inc` (free/headroom admission、host/RAM owners、checked lease、residual/stage allocationとproducer store); `src/prefill/prefill.cpp` (consumer H2D/unpack、request chunk `n`/`pos0`); `prefill-capacity-current.ja.md`; `prefill-capacity-alias-delta-v1.json`; R692/R697 reports。コードは読み取りのみで、fixtureまたはcapacity scriptを実行していない。容量の四行は上記記録値からの算術再計算であって新規測定ではない。

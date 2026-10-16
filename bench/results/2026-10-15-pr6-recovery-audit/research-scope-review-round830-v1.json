@@ -1,0 +1,196 @@
+{
+  "review_round": 830,
+  "reviewed_on": "2026-10-16",
+  "reviewer": {
+    "provider": "native Codex",
+    "model": "gpt-6-luna",
+    "reasoning_effort": "max"
+  },
+  "mode": "read-only scope, depth, source, overlap, and retrieval review",
+  "decision": "retain_both_as_knowledge_collections; record source-pin corrections; no immediate Main retrieval",
+  "main_status_supplied_by_parent": "Main is building the integrated vLLM Xe2 native16 plus BF16 QSA path.",
+  "inputs": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "7f750320bef4146a2872086922d84fc9fa7a8351ae655b7876c912856e3747fe"
+    },
+    {
+      "path": "docs/ARTIFACT_RETENTION.md",
+      "sha256": "fdf86d7ea576d6f0400ec7e643b5ddca5c3c577dd053d66c2fd05220e64b1cc1"
+    },
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+      "sha256": "ed794f4c99d53a286dd030ce3e1c7e48c8f4fe8efb03473a524c801843ed7083",
+      "use": "rounds 595, 661, 782, 783, 825, 826, 828/829-related status, and current native16 pipeline metadata only"
+    },
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round824-v1.json",
+      "sha256": "a0f6776e50ae514a52c9e8f0f68a0cda6129ca2c8824478e20ba1ac6fb4f5dc3",
+      "use": "prior R822 scope, overlap, and retrieval metadata"
+    },
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round827-v1.json",
+      "sha256": "c28321f99d1477ac53762576964f533d6c0dd0b7f6db23a5eff5bac43db308ec",
+      "use": "prior R825/R826 scope, overlap, and retrieval metadata"
+    }
+  ],
+  "reports": [
+    {
+      "round": 828,
+      "purpose_class": "knowledge collection",
+      "report": {
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round828-v1.txt",
+        "sha256": "954003bd6aeb0c60a1105c6ece713e7e5a280fae5092489cb2ea4921f992da14",
+        "whitespace_word_count": 1649,
+        "unique_url_count": 6
+      },
+      "spec": {
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round828-spec-v1.txt",
+        "sha256": "28bca6d17add39113f26c0037f1492469115c0a25bc5ab4612aa67f0623bed0e"
+      },
+      "scope_depth": {
+        "rating": "strong",
+        "budget_fit": "Within the assigned 1,200–1,800 words and eight-URL maximum.",
+        "incremental_value": "Compares actual block-scaled and dynamic rowwise FP8 activation representations, including metadata, decode materialization, full-path byte costs, quality gates, and the BMG API boundary. Earlier FP16/BF16 storage and native16 reports do not cover sub-16-bit encoded activation streams.",
+        "limitations": [
+          "This is format and source analysis, not a Strata implementation, BMG qualification, activation-quality result, or measured speedup.",
+          "The arithmetic byte savings and transfer thresholds are correctly presented as idealized calculations that omit padding, scans, scratch, and synchronization unless explicitly counted."
+        ]
+      },
+      "overlap": {
+        "prior_reports": "R569/R573 and R782/R783 address 16-bit state/producer-consumer contracts and GEMM types; R825 covers direct-16 numerical screens. R828 contributes a different lossy FP8 encoding layer, scale layouts, decode boundaries, and potential transfer/storage use.",
+        "versus_round829": "R828 is lossy fixed or rowwise scaling with task-quality consequences; R829 is adaptive lossless coding with exact-bit and entropy/cost questions. They share a transport/capacity setting but answer different questions.",
+        "judgment": "incremental; low duplication"
+      },
+      "source_review": {
+        "verified_primary_claims": [
+          "The pinned Transformer Engine source has an SM100-or-newer kernel guard for the inspected path.",
+          "TorchAO v0.18.0 defines Float8Tensor with qdata and scale, defaults to PerRow granularity, and exposes an explicit dequantize conversion path.",
+          "The current Intel SYCL joint_matrix page lists BMG G21/G31 XMX combinations using FP16, BF16, and integer types; its matrix_type enum does not include FP8. This is an API support table, not a silicon audit."
+        ],
+        "corrections": [
+          {
+            "severity": "minor_traceability_correction",
+            "finding": "The Intel source URL targets the mutable sycl branch. The report records its retrieval date but not an immutable Intel LLVM revision.",
+            "action_before_reuse": "Record the exact source commit before relying on the BMG support table for a later decision."
+          }
+        ],
+        "performance_claims": "No unsupported performance claim found. Storage ratios and break-even figures are transparent arithmetic models; no BMG or Strata throughput is asserted.",
+        "provenance": "Transformer Engine and TorchAO source versions are pinned and licenses are identified. No implementation is proposed for reuse."
+      },
+      "retrieval": {
+        "main_original_needed_now": false,
+        "sections_to_retrieve_now": [],
+        "reason": "The active path stores/consumes BF16 native16 values and is resolving QSA integration and model correctness; the report studies lossy FP8 encoding and does not validate that path.",
+        "future_trigger": "A measured Strata producer-consumer seam is shown to be limited by activation-transfer time or live-memory capacity, and its exact tensor format, shape, and layout are recorded.",
+        "future_sections": [
+          "Logical bytes and decode break-even",
+          "Applicability, quality, and Intel boundary"
+        ]
+      }
+    },
+    {
+      "round": 829,
+      "purpose_class": "knowledge collection",
+      "report": {
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round829-v1.txt",
+        "sha256": "c09cd41be9857e2a2ae252705bfc48bb17d692cf1fc4b4b1275aa19f1930f8a0",
+        "whitespace_word_count": 1509,
+        "unique_url_count": 8
+      },
+      "spec": {
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round829-spec-v1.txt",
+        "sha256": "c28472f1921b6427fe9efaadd33312dff02dd012948b5f9cfd26f559e454e163"
+      },
+      "scope_depth": {
+        "rating": "substantive_with_source_pin_correction",
+        "budget_fit": "Within the assigned 1,200–1,800 words and eight-URL maximum.",
+        "incremental_value": "Compares a floating-point predictor/bit-plane codec and a multi-byte LZSS GPU pipeline, including exactness limits, output metadata, scan passes, scratch/lifetime, chunk access, data sensitivity, and a serial-versus-overlapped 6 GB/s transfer model. This is distinct from lossy R828 and CPU predecode R595.",
+        "limitations": [
+          "Neither paper measures neural activation/state streams, FP16/BF16 model tensors, Intel BMG, or the assumed 6 GB/s link.",
+          "Falcon's special-value bit-preservation boundary remains unresolved; the report correctly treats its published floating-point results as workload-specific."
+        ]
+      },
+      "overlap": {
+        "prior_reports": "R595 concerns CPU predecode and R661 covers external lossy residual-storage quality; neither compares GPU lossless floating-stream codec passes and scratch. R828 covers scale-based lossy storage and quantization quality, not bit-preserving compression.",
+        "versus_round828": "Nonduplicate: lossless coding preserves all input bits when supported, while R828 reduces precision and needs numerical/task-quality validation.",
+        "judgment": "incremental; low duplication"
+      },
+      "source_review": {
+        "verified_primary_claims": [
+          "Falcon v2 reports mean compressed/raw ratio 0.299 and mean compression/decompression throughput 10.82/12.32 GB/s on the paper's 12 datasets; its setup names RTX 5080, CUDA 12.9, and driver 575.51.03.",
+          "GPULZ v2 reports 29.00 GB/s compression for the cited A100 Hurricane configuration and mean decompression throughput of 29.1 GB/s on A100 and 16.4 GB/s on A4000; these are scientific/database workloads, not activations.",
+          "The cited nvCOMP C API documents Bitcomp's 1<<24-byte maximum uncompressed chunk, recommends smaller chunks such as 64 KiB for decompression performance, and lists lossless FP16/FP32/FP64 support."
+        ],
+        "corrections": [
+          {
+            "severity": "material_traceability_correction_before_source_reuse",
+            "finding": "The report's GPULZ allocation/pass audit cites the mutable GitHub main branch without a commit or source snapshot hash. The approximately 4N peak-allocation conclusion is derived from that code, not established by the paper alone.",
+            "action_before_reuse": "Pin the exact GPULZ revision or archive and hash the inspected source before using the code-specific allocation/lifetime details in a later decision."
+          },
+          {
+            "severity": "bounded_source_limit_already_disclosed",
+            "finding": "The Falcon artifact repository also lacks an immutable revision and identified software license; the report explicitly withholds implementation reuse."
+          }
+        ],
+        "performance_claims": "Published rates are attributed to their papers and hardware. The report distinguishes GPU-only codec rates from PCIe-inclusive path time and labels the 6 GB/s break-even arithmetic illustrative; no activation compressibility or BMG speed is inferred.",
+        "provenance": "Paper versions are pinned; the no-reuse boundary is appropriate. GPULZ code-derived claims require the correction above before reuse."
+      },
+      "retrieval": {
+        "main_original_needed_now": false,
+        "sections_to_retrieve_now": [],
+        "reason": "The active BF16 native16/QSA build has no supplied transfer or capacity bottleneck that could justify a lossless codec, and lossless compression would not establish model correctness for that build.",
+        "future_trigger": "A closed, owned profile names a tensor stream whose PCIe transfer or live allocation is material and records exact shape, byte count, producer/consumer dependency, and whether raw storage can be released.",
+        "future_sections": [
+          "Break-even for a 6 GB/s link",
+          "SYCL and BMG boundary",
+          "Evidence limits"
+        ]
+      }
+    }
+  ],
+  "cross_report_and_current_work": {
+    "comparison": "R828 is lossy block-scaled activation storage; R829 is lossless data-dependent compression. They are complementary and must not be collapsed into a generic 'under-16-bit transport' recommendation.",
+    "immediate_model_or_build_correctness_relevance": "None of the reviewed sections establishes correctness, performance, or compatibility for the active BF16 native16 QSA build. Do not retrieve either collection body for that work absent a concrete FP8/storage or compression question.",
+    "reviewer_read_collection_bodies": true,
+    "main_read_collection_bodies": false,
+    "primary_source_verification": "Official/paper primary sources were checked for the claims listed above. This review did not independently fetch/hash the mutable GPULZ source or re-run any experiment."
+  },
+  "next_scopes": [
+    {
+      "title": "One profile-selected BMG activation-stream storage decision",
+      "purpose_class": "decision support",
+      "schedulable_now": false,
+      "question": "After a closed Strata profile identifies one activation producer-consumer seam limited by PCIe time or live-memory capacity, compare the applicable FP16/BF16 baseline with one lossy R828-style representation and one lossless R829-style codec. Account for exact bytes, metadata, scratch peak, all encode/decode passes, transfer overlap, dependency latency, and quality/bitwise requirements; identify evidence that would reject each option.",
+      "prerequisites": [
+        "A closed, owned profile names the component and proves transfer time or live-memory capacity is material.",
+        "The tensor shape/layout, exact producer and consumer, bytes, staging path, and permissible numerical/bitwise behavior are recorded."
+      ],
+      "evidence_present": "The parent supplied active native16 QSA integration context but no measured compression, PCIe, or capacity bottleneck; prerequisites are absent.",
+      "budget": {
+        "report_words": "1500-1900",
+        "primary_urls_max": 8,
+        "scope_limit": "One measured tensor seam; no generic second codec survey and no implementation adoption."
+      },
+      "dispatch_recommendation": "Keep conditional. Do not start a report that can only restate the hypothetical break-even models in R828/R829."
+    },
+    {
+      "title": "Profile-selected QSA attention subpath scheduling and data movement",
+      "purpose_class": "decision support",
+      "schedulable_now": false,
+      "question": "Once the integrated BF16 QSA path has a closed, correct model run and a component profile, select one dominant attention subpath and compare two or three applicable SYCL/Xe2 scheduling or data-placement alternatives. Cover subgroup/work-group mapping, global versus local-memory traffic, launch and synchronization cost, register/occupancy pressure, ragged tails, numerical boundaries, and counterevidence from relevant GPU/ASIC studies.",
+      "prerequisites": [
+        "The current model correctness/continuation gate is closed.",
+        "A component profile names one exact QSA subpath, source callsite, shapes/layouts, and dominant cost."
+      ],
+      "evidence_present": "Current work is described as under construction; no closed QSA component profile or selected hotspot was supplied.",
+      "budget": {
+        "report_words": "1500-1900",
+        "primary_urls_max": 8,
+        "scope_limit": "One profiled QSA subpath and immediate producer/consumer only; avoid repeating general RMSNorm, gather/TLB, or GEMM surveys."
+      },
+      "dispatch_recommendation": "Keep conditional until both prerequisites are recorded; this is the next implementation-facing scope, while general knowledge collection can continue independently."
+    }
+  ],
+  "actions": "Only research-scope-review-round830-v1.json and research-scope-review-round830-v1.ja.md were written. No source, index, Git metadata, build/test artifacts, GPU work, process inspection, or cleanup was performed."
+}

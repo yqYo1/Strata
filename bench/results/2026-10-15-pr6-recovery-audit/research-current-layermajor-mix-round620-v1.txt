@@ -1,0 +1,48 @@
+# Current layer-major routed mix instrumentation audit — Round 620
+
+Date: 2026-10-15 JST. Read-only source/evidence audit. Only this report was written. No builds, tests, process/service/GPU inspection, Git operations or experiment execution were performed. The active layer-major GPU timing run was left untouched. The forbidden private record and private-home scans were not read/performed.
+
+## Finding
+
+The configured current layer-major compact-FP16 route does **not** currently have an observer that can emit the requested current per-layer-major 32K/64K `format pair × routed ne × GU/Down call` histograms. The existing `STRATA_PREFILL_ROUTED_FP16_OBSERVE=1` observer is close for a chunk-major full-model run, but `run_layer_major` explicitly rejects that environment variable (`src/prefill/layer_major.inc:63-72`) because its existing report assumes one full-model invocation. It cannot be enabled for the active layer-major pass. The older historical census is chunk-major and global; it is not a current mix receipt.
+
+The existing per-layer source metadata is sufficient for the format and static shape side of the join: `expert_layout().fmt[l]` contains GU/Down type, row-byte strides, offsets and blob size. The current observer's `native_format_layer_chunks` already serializes these static fields along with a global `hist_ne_count`, but those two arrays are not joined by layer. Existing layer-major source and callbacks establish complete layer ownership and residency, but do not serialize routed counts by `ne`.
+
+## Current execution and dispatch
+
+`STRATA_PREFILL_LAYER_MAJOR=1` selects `Prefill::run_layer_major` for long prompts (`src/prefill/layer_major.inc:5-13`). Its admission gate requires single-GPU native compact FP16, explicit `STRATA_PREFILL_MMQ=0`, complete native source, and no peer/stage/hand-off route (`src/prefill/layer_major.inc:35-52`). It iterates all 48 layers, uploads all 512 expert blobs into a temporary 512-slot cache, drains the upload, then publishes the layer's 512-entry residency map with expert ID equal to slot (`src/prefill/layer_major.inc:180-286`). Thus layer-major's *configured* residency differs from the historical chunk-major census: every expert for the active layer is populated in the temporary device cache before that layer's compute pass. The existing code can report route slot/residency classification at the compute issuer; physical DRAM cache hits/misses are not observable from these host fields.
+
+For each actual routed expert in the eligible fallback, `src/prefill/prefill.cpp:2808-2891` reaches `iq_dequant_gu_f16` and `iq_dequant_f16`, optionally gathers compact activation rows, then makes GU `Gemm::f16(..., ne, 1280, 2560)` and Down `Gemm::f16(..., ne, 2560, 640)` calls. The exact source call sites are `:2864-2866` and `:2884-2888`. `ro.counts(l,T,cnt)` is called after the authoritative routed IDs are grouped (`:2445`). Existing observer `ro.gu(ne,slot)` / `ro.down(ne)` is incremented immediately before the actual GEMM calls (`:2884-2888`), but only in the normal-path observer context; layer-major rejects its enabling flag.
+
+GEMM logical dimensions are available exactly from these calls. Native physical row payload/padding is available from `NativeFmt`: `gu_row`, `d_row`, `up_off`, `down_off`, `bytes`, and current format types. The existing report emits GU tensor bytes as `2*n_ff*gu_row` and Down tensor bytes as `n_embd*d_row` (`src/prefill/prefill.cpp:1425-1433`). These are stored row/blob extents, not oneMKL's internal matrix tile padding. `src/prefill/sycl/gemm.cpp:18-39,105-116` passes the logical T/N/K and row leading dimension directly to oneMKL; it does not expose the library's physical padded tile sizes. Do not label unknown oneMKL internal padding as measured.
+
+## Reusable current instrumentation and its limits
+
+- On a non-layer-major full-model run only, `STRATA_PREFILL_ROUTED_FP16_OBSERVE=1` emits a bounded JSON summary on successful return (`src/prefill/prefill.cpp:1568-1610,1379-1450,3160-3162`). It records global exact-`ne` histogram, GU/Down call and row totals, per-layer format/stride metadata and some route-source copy payload. This is not a per-format joint histogram, and it does not describe the current layer-major execution.
+- `STRATA_PREFILL_PHASE_AUDIT=1` is accepted by the layer-major path and records selected tensor snapshots/grouping for up to six positions at layer 26 (`src/prefill/layer_major.inc:19-23,154-173`; `include/strata/prefill/layer26_phase_audit.hpp:30-51,98-139`). It adds checked queue drains and captures selected rows only. It cannot provide a request-wide call histogram and has materially different progress/timing cost.
+- `--dump-routing PATH` writes per-position routing IDs/weights, and `tools/make_profile.py` consumes it (`src/program/generate.cpp:586,1244`; `tools/make_profile.py:17-18,41`). That is a raw route trace rather than the desired small aggregate; it has no format/GU/Down dispatch join and is not a bounded replacement for a long request.
+- `STRATA_PREFILL_TIMING` records phase event intervals, not issuer-side shape counts, and is among the settings rejected by the layer-major wrapper. Do not treat decode-ledger/reuse counts as prefill calls.
+
+Existing committed metadata can answer the static half of call weighting: for each layer, its format pair and stored GU/Down byte extents are known, and every active expert in this fallback incurs one GU plus one Down dequant and GEMM call. It cannot supply the current routed-ne distribution, exact call counts by layer/format, or an empirical join of layer-specific formats to routed ne. The global historical histogram cannot be joined to format rows to invent those values.
+
+## Minimal missing observer
+
+Add a bounded, default-off **layer-major issuer observer** owned by the outer `run_layer_major` request and reset for each layer pass. Keep it separate from the existing full-model observer contract. At `ro.counts`' authoritative-count point, accumulate a per-layer `uint64_t[actual_T+1]` histogram (or fixed capacity `8193`) for all 512 expert counts, including zero. At the actual expert compute issuer immediately before each dequant/GEMM sequence, increment distinct GU and Down call/row counters and counters by the observed `ne`; retain/validate the active layer's `NativeFmt` key and the exact slot from the live temporary residency map. Since one outer pass processes one layer at a time, output one compact layer record with format key, exact count histogram, GU/Down counters, observed logical GEMM shapes, native row bytes/offsets, blob bytes, cache slot count/resident count, and route slot classification. This yields the required format × ne × GU/Down histogram without storing per-call traces.
+
+Use fixed bounded storage: 8193 64-bit histogram entries is 65,544 bytes, plus small counters/format fields; the output has at most 48 compact records and a hard 1 MiB ceiling. No atomics are needed: these host issuer/counting points are serialized. The overhead is one extra integer increment per expert-count table entry and one increment per actual issuer call; no per-call formatting, device events, allocations in the chunk loop, queue wait, synchronization or kernel changes. Emit only after successful request completion, mark incomplete/failure otherwise, validate histogram mass equals `512 * actual layer_chunks`, and check its nonzero sum against both GU and Down call counts. A future implementation should reuse existing admission/overflow discipline and should have an exact opt-in startup flag; the current flags cannot collect this while retaining layer-major mode.
+
+The observer should derive physical cache residency from the live temporary layer cache and residency table, not from historical census assumptions. For the current implementation all 512 slots are uploaded and published before compute; a selected route's cache slot is its expert ID. Report this as configured cache residency/ownership, not physical DRAM hit rate. If the desired “physical cache” refers to hardware cache residency/traffic, current source has no such counter; a profiler/device-memory experiment would be a separate measurement and cannot be inferred from cache slot presence.
+
+## Evidence references
+
+- Prior report: `bench/results/2026-10-15-pr6-recovery-audit/research-prefill-gu-hotpath-round610-v1.txt`.
+- Old census explicitly marks `current_layer_major_coverage_qualified=false`, no per-format-ne joint histogram, and historical chunk-major limitation: `bench/results/2026-10-15-pr6-recovery-audit/dequant-shape-coverage-v1.json`.
+- Existing correctness/materialization report is not a route histogram: `bench/results/2026-10-15-pr6-recovery-audit/iq-dequant-correctness.ja.md`.
+- Authoritative format metadata: `src/kernels/cpu/expert_layout.cpp` / `include/strata/kernels/iq_kernels.hpp` (`NativeExpertLayout`); format rows and output in `src/prefill/prefill.cpp:1425-1433`.
+- Layer-major admission, observer rejection, current layer cache population and per-layer `run_impl` pass: `src/prefill/layer_major.inc:35-72,180-286,300-375`.
+- Current routed grouping and actual dequant/GEMM issuer: `src/prefill/prefill.cpp:2445,2808-2891`.
+- Existing observer contract: `src/prefill/prefill.cpp:1329-1450,1568-1610,3160-3162`.
+- Logical GEMM dimensions and lack of internal-padding reporting: `src/prefill/sycl/gemm.cpp:18-39,105-116`.
+- Raw routing trace alternative: `src/program/generate.cpp:586,1244`; `tools/make_profile.py:17-18,41`.
+
+No current mix histogram, current format-ne call weighting, oneMKL internal padded dimensions, or hardware DRAM cache residency was collected or claimed. No live run was touched.

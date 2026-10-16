@@ -1,0 +1,24 @@
+{
+  "schema": "mtp4-route-service-v1",
+  "status": "unapplied-unbuilt-unrun-unadopted",
+  "gate": ["STRATA_DECODE_ROUTE_LEDGER exactly 1", "STRATA_DECODE_SERVICE_CPU exactly 1"],
+  "identity": "request ordinal plus prompt_fnv64, within the externally owned native instance; not a cryptographic source/binary/request identity",
+  "scope": "Linux/SYCL ordinary GEN, loaded native MTP, spec capacity 4, actual T 1..4, split off, suffix 0, no lookup/batch/peer/remote; layers 1..64, workers 1..128",
+  "owner": {"0": "cpu_native", "1": "gpu_vram", "2": "gpu_pcie_staged", "3": "gpu_pcie_alias_direct_or_copy_kernel"},
+  "service_role": {"0": "native_gu_entry", "1": "native_quant_h_entry", "2": "native_down_entry", "3": "q2_gu_swiglu_entry", "4": "act_quant_h_entry", "5": "q2_down_any_entry"},
+  "service_thread": "-1 is issuer/host participant; 0..workers-1 are persistent pool worker indices, not OS TIDs",
+  "task_phase": {"0": "gate_up", "1": "down"},
+  "existing_ms": {
+    "0": "verifier ms_wait (GPU reach)", "1": "verifier ms_pool", "2": "verifier ms_host", "3": "verifier ms_commit",
+    "4": "dispatch ms_plan", "5": "dispatch ms_actq", "6": "dispatch ms_jobs", "7": "dispatch ms_run",
+    "8": "pool ms_multi_gu", "9": "pool ms_multi_q", "10": "pool ms_multi_down",
+    "11": "existing request dt_run", "12": "existing request dt_commit (commit/emit)", "13": "existing request dt_draft",
+    "14": "pool phase_ms wait_park", "15": "pool phase_ms drain", "16": "pool phase_ms repark"
+  },
+  "existing_count": {"0": "verifier windows", "1": "multi_misses", "2": "multi_entries", "3": "cache_hits", "4": "pcie_experts", "5": "pool multi_bytes"},
+  "equations": ["D=R-W", "C=W+A", "rejected=D-A", "E<=C", "layer completed calls=W", "layer token-row sum=R", "CPU groups=CPU jobs", "CPU group entry sum=job nt sum", "route entries per completed layer=sum(actual T*k)"],
+  "completion": "Only joined close complete=1 is authoritative. coverage_complete or service_complete alone is insufficient. Final wait_commit success, observed terminal EOS/cap, normal DONE close, exact route/window/pool/source counter cross-checks and bounded output are all required; length must reach actual max_new.",
+  "failure_prefix": "W/R/D/A/C are successful ver.run plus commit-return prefixes. Failed/absent final commit wait never qualifies physical commit completion or a complete close. Attempted/verified run prefixes are retained independently.",
+  "limitations": ["clock wall spans overlap", "wall minus thread CPU is not pure wait", "logical bytes are not measured DRAM/H2D traffic", "per-thread service role totals are not joined per-format exclusive service times", "existing pool wait_park/repark timing getters cover run(), not distinct native run_phase wait timing; zero deltas do not prove absent waits", "aliases are a retained reference owner bin; current SYCL verifier forces pcie mode 0", "missing receipt after kill/abort is absent evidence, never complete"],
+  "budget": {"request_state_cap": 262144, "close_text_cap": 262144, "fixed_combined_object_envelope_cap": 524288, "footer_reserve": 1024}
+}

@@ -1,0 +1,53 @@
+{
+  "id": "3394c05b-781f-4c30-8a35-3ba74cd6e6df",
+  "ok": true,
+  "result": {
+    "runId": "run_c8f478972ec8",
+    "deliveryId": "delivery_23db23e71441",
+    "messages": [
+      {
+        "id": "msg_dbe8599f6197",
+        "run_id": "run_c8f478972ec8",
+        "delivery_contract": "current_delivery",
+        "from_handle": "term_6e36b2c8-36e7-498c-bb9f-ef7834d2fb96",
+        "to_handle": "run:run_c8f478972ec8",
+        "subject": "R822 report complete",
+        "body": "Created a 1,335-word report comparing pinned Intel SYCL/vLLM and AMD ROCm AITER low-precision RMSNorm and activation kernels, with measurement guidance. It finds vectorization depends on alignment and generated code, while FP32 reductions, rounding boundaries, fusion and register pressure trade off against traffic and occupancy. Report: bench/results/2026-10-15-pr6-recovery-audit/research-round822-v1.txt; SHA-256: 6a25861e44921e0c9aaab100eb6600fdc3235fa2ab98e1ecf6adb3dfc311c8db; metadata digest (131 chars): Intel SYCL and AMD Triton kernel patterns; 16-bit alignment, FP32 reductions, fusion/register tradeoffs, and measurement checklist.",
+        "type": "worker_done",
+        "priority": "normal",
+        "thread_id": null,
+        "payload": "{\"taskId\":\"task_d0bf98163ec4\",\"dispatchId\":\"ctx_ace4c819a764\",\"outcome\":\"succeeded\",\"filesModified\":[\"bench/results/2026-10-15-pr6-recovery-audit/research-round822-v1.txt\"],\"reportPath\":\"bench/results/2026-10-15-pr6-recovery-audit/research-round822-v1.txt\"}",
+        "created_at": "2026-10-16T00:14:07Z",
+        "delivered_at": null
+      },
+      {
+        "id": "msg_2b14f0a54111",
+        "run_id": "run_c8f478972ec8",
+        "delivery_contract": "current_delivery",
+        "from_handle": "term_e76a96aa-6922-43eb-90e6-848cced9442b",
+        "to_handle": "run:run_c8f478972ec8",
+        "subject": "R821 source-only engine hook ready",
+        "body": "Created the 174593-byte R821 source-only hook package against hash-matched production 9c1a2020, with report README.md SHA256 ccfd538d7ae629176bed3d0aa119a8bc8862ad81285c7bd2073c68e4ad30f49f and patch SHA256 34824fb9f917c0cce626dd42cb75c58586e27d2d5d41c153fa384e0551eb3418. The default-OFF hook selects exact R810 all-four native16 adapter paths using original Runtime and queue ownership, with strict rejection, external TLA pins, one route diagnostic, and documented column-slice and whole-engine GRF256 limits. Main must review the full patch and licenses then perform all build, flag, numerical, GPU, ISA, model and performance qualification, since no production source was changed and every execution gate remains UNRUN.",
+        "type": "worker_done",
+        "priority": "normal",
+        "thread_id": null,
+        "payload": "{\"taskId\":\"task_6c1f8e213af4\",\"dispatchId\":\"ctx_8d7ccdad9ae7\",\"outcome\":\"succeeded\",\"filesModified\":[\"bench/results/2026-10-15-pr6-recovery-audit/own-vllm-xe2-engine-hook-v1/README.md\",\"bench/results/2026-10-15-pr6-recovery-audit/own-vllm-xe2-engine-hook-v1/provenance.md\",\"bench/results/2026-10-15-pr6-recovery-audit/own-vllm-xe2-engine-hook-v1/manifest.json\",\"bench/results/2026-10-15-pr6-recovery-audit/own-vllm-xe2-engine-hook-v1/SHA256SUMS\",\"bench/results/2026-10-15-pr6-recovery-audit/own-vllm-xe2-engine-hook-v1/engine-hook.patch\",\"bench/results/2026-10-15-pr6-recovery-audit/own-vllm-xe2-engine-hook-v1/files/cmake/sycl_vllm_xe2_native16.cmake\",\"bench/results/2026-10-15-pr6-recovery-audit/own-vllm-xe2-engine-hook-v1/files/cmake/vllm_xe2_tla_headers.json\",\"bench/results/2026-10-15-pr6-recovery-audit/own-vllm-xe2-engine-hook-v1/files/docs/SYCL_VLLM_XE2_NATIVE16.md\",\"bench/results/2026-10-15-pr6-recovery-audit/own-vllm-xe2-engine-hook-v1/files/src/prefill/sycl/native16_backend.hpp\",\"bench/results/2026-10-15-pr6-recovery-audit/own-vllm-xe2-engine-hook-v1/files/src/prefill/sycl/vllm_xe2/native16.hpp\",\"bench/results/2026-10-15-pr6-recovery-audit/own-vllm-xe2-engine-hook-v1/files/src/prefill/sycl/vllm_xe2/native16.cpp\",\"bench/results/2026-10-15-pr6-recovery-audit/own-vllm-xe2-engine-hook-v1/files/src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp\"],\"reportPath\":\"bench/results/2026-10-15-pr6-recovery-audit/own-vllm-xe2-engine-hook-v1/README.md\"}",
+        "created_at": "2026-10-16T00:14:26Z",
+        "delivered_at": null
+      }
+    ],
+    "count": 2,
+    "replayed": false,
+    "acknowledged": null,
+    "timedOut": false,
+    "cancelled": false,
+    "connectionLost": false,
+    "mutation": {
+      "requestId": "a56a64ed-2436-44a6-8043-4f086275fff5",
+      "replayed": false
+    }
+  },
+  "_meta": {
+    "runtimeId": "e9030fc3-f028-4352-a34d-eb9385c8d79e"
+  }
+}

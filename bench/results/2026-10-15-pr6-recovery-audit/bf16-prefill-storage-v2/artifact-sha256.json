@@ -1,0 +1,105 @@
+{
+  "schema": 1,
+  "proposal_version": 2,
+  "status": "source_only_unexecuted",
+  "artifacts": {
+    "source.diff": {
+      "bytes": 59166,
+      "sha256": "f4d9e7145f7cde09fda1bebfca457657c692676bb508df99c138a2902306b647"
+    },
+    "source-manifest.json": {
+      "bytes": 3546,
+      "sha256": "bb510bf0e922a7c7757940d9a28d5e67f0a2302372b1b843a2b354ce26022a5d"
+    },
+    "prefill_boundary_audit.cpp": {
+      "bytes": 14350,
+      "sha256": "a8013f739d58fbda5208346b418cb3c41120708323889a9837cc3b5045999e6a"
+    },
+    "prefill_bf16_storage.cpp": {
+      "bytes": 13269,
+      "sha256": "4308e25389138773d5b5fad641216c3e0767762755ad95bd232e9d514a8363e5"
+    },
+    "consume_closed_fixture.py": {
+      "bytes": 8227,
+      "sha256": "98e99ee97d279b92f7c3f19b6d22a1a019d11e39edf1166f5c696722eb435d44"
+    },
+    "README.md": {
+      "bytes": 8421,
+      "sha256": "1965eb8f1f6bda0e76e669ed0cac997bfc2dededb9bf1eb8c6ee4b2ab9943d0c"
+    }
+  },
+  "read_only_inputs": {
+    "bench/results/2026-10-15-pr6-recovery-audit/bf16-prefill-storage-v1/source.diff": {
+      "bytes": 46038,
+      "sha256": "5a1329044f5cbc19b60ba872d0cf07d1c1d6dc9c69fb0b21b21d0020627ee8e0"
+    },
+    "bench/results/2026-10-15-pr6-recovery-audit/bf16-prefill-storage-v1/source-manifest.json": {
+      "bytes": 2761,
+      "sha256": "add0f9ee3db61076fc450d4a279cad434b69928b7582b0d0aedbb9f5df062970"
+    },
+    "bench/results/2026-10-15-pr6-recovery-audit/bf16-prefill-storage-v1/README.md": {
+      "bytes": 9846,
+      "sha256": "23b0f885c08a226750b66dc316e6a79b8104e19f6830238285b218554a58f0ab"
+    },
+    "bench/results/2026-10-15-pr6-recovery-audit/bf16-prefill-storage-v1/prefill_bf16_storage.cpp": {
+      "bytes": 13269,
+      "sha256": "4308e25389138773d5b5fad641216c3e0767762755ad95bd232e9d514a8363e5"
+    },
+    "bench/results/2026-10-15-pr6-recovery-audit/bf16-prefill-storage-v1/consume_closed_fixture.py": {
+      "bytes": 8227,
+      "sha256": "98e99ee97d279b92f7c3f19b6d22a1a019d11e39edf1166f5c696722eb435d44"
+    },
+    "bench/results/2026-10-15-pr6-recovery-audit/bf16-prefill-storage-v1/artifact-sha256.json": {
+      "bytes": 4149,
+      "sha256": "e7b21f8e57c515e60e205f3ef44b50f1dc0205669203b49d93c2cf7fac1eec28"
+    },
+    "tests/cpu/prefill_boundary_audit.cpp": {
+      "bytes": 6011,
+      "sha256": "9b59341d96449105b089f457f79060ef74945e114a8f9e0665c6fb596d4f9338"
+    },
+    "CMakeLists.txt": {
+      "bytes": 73704,
+      "sha256": "01dde67c9af61c88f5aa22b0ea0e639f9f37cb2a31f9c7785fddd7233c34216d"
+    },
+    "cmake/sycl_backend.cmake": {
+      "bytes": 24883,
+      "sha256": "5afbdb50088564ec30d72bcc7246e705b64100b997e83d17c267816942c00a8b"
+    },
+    "bench/results/2026-10-15-pr6-recovery-audit/apply_build_boundary_service_v1.py": {
+      "bytes": 6534,
+      "sha256": "24dd0acec035fb5fcccd443667b4423dab4f223276d1a9983f628dbd0ed13df7"
+    },
+    "bench/results/2026-10-15-pr6-recovery-audit/apply_build_phase_audit_v1.py": {
+      "bytes": 7185,
+      "sha256": "f0c1251c79b133ceb9976f6b5d21c18e1ad77838807c54a964d093874cdbabf8"
+    },
+    "bench/results/2026-10-15-pr6-recovery-audit/check_boundary_audit_v1.py": {
+      "bytes": 16083,
+      "sha256": "8a97f9cae2042c0852d7b8bc2f5863610274866d5e4f06c4077ff5100347bb58"
+    },
+    "bench/results/2026-10-15-pr6-recovery-audit/check_boundary_audit_phase_off_v2.py": {
+      "bytes": 16127,
+      "sha256": "5166185f5a92a8533032418e42f9f0fa60623dda446ebacade72d49bbf8d9681"
+    },
+    "bench/results/2026-10-15-pr6-recovery-audit/check_phase_audit_v1.py": {
+      "bytes": 17917,
+      "sha256": "7cf5cb1d46e7bcfc8bd2e6dec3d53c2fbfe338e1076a47f88cca655de4e5b3ec"
+    }
+  },
+  "v1_bytes_preserved": true,
+  "root_sources_edited": false,
+  "source_pins_mutated": false,
+  "tests_build_compiler_gpu_executed": false,
+  "process_environment_private_state_inspected": false,
+  "git_mutations_or_cleanup": false,
+  "executed_validation": [],
+  "remaining_gates": [
+    "Main serial integration/build and actual CPU boundary fixture with assertions/sanitizers",
+    "host planner and exhaustive BF16 bits",
+    "SYCL conversion and three placement fixtures with fault closure",
+    "actual-model boundary and placement mechanics",
+    "matched natural-history and paired task/retrieval quality",
+    "clean end-to-end prefill/decode performance",
+    "physically admitted 262144-context correctness and RESTORE"
+  ]
+}

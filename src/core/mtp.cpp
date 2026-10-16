@@ -1,5 +1,9 @@
 // src/core/mtp.cpp - see include/strata/core/mtp.hpp.
 #include "strata/core/mtp.hpp"
+#include "strata/core/prefill_head_scope.hpp"
+#include <stdexcept>
+#include "strata/core/mtp_expert_source.hpp"
+#include "strata/core/conversation_memory.hpp"
 #include "strata/core/coupled_draft.hpp"
 #include "strata/core/on_device.hpp"
 
@@ -7,6 +11,7 @@
 #include "strata/core/peer_experts.hpp"
 #include "strata/kernels/bf16_gemv.hpp"
 #include "strata/kernels/cpu/expert.hpp"
+#include "strata/kernels/cpu/expert_layout.hpp"
 #include "strata/kernels/elementwise.hpp"
 #include "strata/kernels/fused_gr.hpp"
 #include "strata/kernels/gr.hpp"
@@ -26,7 +31,7 @@
 #include "strata/kernels/sampler.hpp"
 #include "strata/kernels/shared_expert.hpp"
 #include "strata/kernels/verify_kernels.hpp"
-#include "strata/kernels/ngram.hpp"
+#include "strata/prefill/draft_uploads.hpp"
 
 #include <algorithm>
 #include <atomic>
@@ -36,16 +41,25 @@
 #include <cstring>
 #include <exception>
 #include <fstream>
+#include <limits>
+#include <memory>
 #include <sstream>
 #include <vector>
-#if defined(_WIN32)
-#include <intrin.h>
-#elif defined(__x86_64__)
-#include <immintrin.h>
-#endif
 
 namespace strata::core {
 namespace {
+
+bool expert_release_requested() {
+    const char* v = std::getenv("STRATA_PREFILL_RELEASE_MTP_EXPERTS");
+    return v && std::strcmp(v, "1") == 0;
+}
+
+[[noreturn]] void expert_failstop(const char* what, cudaError_t status) noexcept {
+    std::fprintf(stderr, "strata mtp: %s (%s); stopping with all owners live\n",
+                 what, cudaGetErrorString(status));
+    std::fflush(stderr);
+    std::_Exit(EXIT_FAILURE);
+}
 
 constexpr float EPS = 1e-6f;
 constexpr int GGML_Q8_0 = 8;
@@ -108,9 +122,15 @@ bool read_file(const std::string& path, std::vector<uint8_t>& out) {
 }  // namespace
 
 MtpDrafter::~MtpDrafter() {
-    if (cs_) cudaStreamSynchronize(cs_);
-    for (auto& e : prefill_exec_) if (e) cudaGraphExecDestroy(e);
-    for (auto& e : prefill_dev_exec_) if (e) cudaGraphExecDestroy(e);
+    if(head_prepared_ || head_detached_)expert_failstop("MTP teardown during prompt head release",cudaErrorUnknown);
+    if(head_release_used_)retire_full_head_graphs();
+    if (cs_) {
+        const auto status = cudaStreamSynchronize(cs_);
+        if ((expert_source_valid_ || head_release_used_) && status != cudaSuccess)
+            expert_failstop("expert owner teardown did not drain", status);
+    }
+    for (auto& e : prefill_exec_) if (e) {const auto status=cudaGraphExecDestroy(e);if(head_release_used_ && status!=cudaSuccess)expert_failstop("head scope KV graph retirement",status);}
+    for (auto& e : prefill_dev_exec_) if (e) {const auto status=cudaGraphExecDestroy(e);if(head_release_used_ && status!=cudaSuccess)expert_failstop("head scope KV graph retirement",status);}
     if (pf_dev_) cudaFree(pf_dev_);
     for (auto& e : round_exec_) if (e) cudaGraphExecDestroy(e);
     for (auto& e : step_exec_) if (e) cudaGraphExecDestroy(e);
@@ -122,14 +142,14 @@ MtpDrafter::~MtpDrafter() {
     if (cscratch_) cudaFree(cscratch_);
     if (h_cparams_) cudaFreeHost(h_cparams_);
     if (h_chist_) cudaFreeHost(h_chist_);
-    if (cs_) cudaStreamDestroy(cs_);
+    if (cs_) {const auto status=cudaStreamDestroy(cs_);if(head_release_used_ && status!=cudaSuccess)expert_failstop("restored head stream destroy",status);}
     if (dense_) cudaFree(dense_);
     if (experts_) cudaFree(experts_);
     if (state_arena_) cudaFree(state_arena_);
     if (arena_) cudaFree(arena_);
-    if (head_logits_) cudaFree(head_logits_);
-    if (dhead_) cudaFree(dhead_);
-    if (dvocab_) cudaFree(dvocab_);
+    if (head_logits_) {const auto status=cudaFree(head_logits_);if(head_release_used_ && status!=cudaSuccess)expert_failstop("restored head allocation teardown",status);}
+    if (dhead_) {const auto status=cudaFree(dhead_);if(head_release_used_ && status!=cudaSuccess)expert_failstop("restored head allocation teardown",status);}
+    if (dvocab_) {const auto status=cudaFree(dvocab_);if(head_release_used_ && status!=cudaSuccess)expert_failstop("restored head allocation teardown",status);}
     void* hosts[] = {h_tok_, h_step_, h_pos_, h_row_, h_out_, h_prob_};
     for (void* h : hosts) if (h) cudaFreeHost(h);
 }
@@ -152,7 +172,6 @@ bool MtpDrafter::load(const std::string& rt_dir, const ModelGeometry& g, Session
     cudaGetDevice(&device_);   // a layer split's last stage on another GPU: the drafter lives there
     g_ = &g;
     ss_ = &ss;
-    if (ple_ss_ == nullptr) ple_ss_ = &ss;
     max_t_ = max_t;
     rt_dir_ = rt_dir;
     if (max_t < 1 || max_t > strata::kernels::kVerifyMaxT) { err = "mtp: max_t out of range"; return false; }
@@ -187,7 +206,15 @@ bool MtpDrafter::load(const std::string& rt_dir, const ModelGeometry& g, Session
         vram_ += blob.size();
     }
     // ---- the 512 routed experts, one blob each
-    {
+    if (expert_release_requested()) {
+#if !defined(STRATA_ENABLE_SYCL)
+        err = "mtp: expert retirement is only available in the SYCL engine"; return false;
+#else
+        // Hash the bytes actually loaded, once. Default-off uses the original
+        // loader with no extra source scan, allocation, kernel or wait.
+        if (!upload_experts_checked(true, err)) return false;
+#endif
+    } else {
         const uint64_t bytes = (uint64_t) g.n_expert * strata::kernels::cpu::BLOB;
         // Loader fix (0.1.15+loaderfix.2): each 64 MiB read below reached the disk as ~16k 4095-byte reads under
         // MSVC's `basic_filebuf::xsgetn`, which is what made 675 MiB of drafter experts take minutes.
@@ -310,7 +337,292 @@ bool MtpDrafter::load(const std::string& rt_dir, const ModelGeometry& g, Session
     return true;
 }
 
+// The opt-in loader retains immutable original bytes in RAM. Restoration never
+// reads model files or saves a VRAM copy; each bounded H2D view stays owned.
+bool MtpDrafter::upload_experts_checked(bool original, std::string& err) try {
+    if (!g_ || g_->n_expert <= 0 ||
+        uint64_t(g_->n_expert) > std::numeric_limits<uint64_t>::max() / strata::kernels::cpu::BLOB) {
+        err = "mtp: expert source byte count overflow"; return false;
+    }
+    const uint64_t bytes = uint64_t(g_->n_expert) * strata::kernels::cpu::BLOB;
+    if (!bytes || bytes > std::numeric_limits<size_t>::max() ||
+        bytes > std::numeric_limits<uint64_t>::max()/8 ||
+        vram_ > std::numeric_limits<uint64_t>::max() - bytes || experts_ ||
+        (original && (expert_source_valid_ || !expert_host_source_.empty())) ||
+        (!original && (!expert_source_valid_ || bytes != expert_bytes_ || expert_host_source_.size() != bytes))) {
+        err = "mtp: invalid expert upload state or byte count"; return false;
+    }
+    constexpr uint64_t chunk_limit = 64ull << 20, host_floor = 8ull << 30;
+    std::vector<uint8_t> original_source;
+    std::array<uint8_t,32> digest = expert_source_sha256_;
+    if (original) {
+        if (!conversation_memory_admit(conversation_available_memory(), bytes + (1ull << 20), host_floor)) {
+            err = "mtp: original expert RAM source exceeds available memory minus 8 GiB"; return false;
+        }
+        const std::string path = rt_dir_ + "/experts.bin";
+        FILE* raw = std::fopen(path.c_str(), "rb");
+        if (!raw) { err = "mtp: cannot open expert source " + path; return false; }
+        auto close_file = [](FILE* f) { if (f) std::fclose(f); };
+        std::unique_ptr<FILE, decltype(close_file)> file(raw, close_file);
+        if (STRATA_FILE_SEEK64(raw, 0, SEEK_END) != 0) {
+            err = "mtp: cannot seek expert source"; return false;
+        }
+        const auto length = STRATA_FILE_TELL64(raw);
+        if (length < 0 || uint64_t(length) != bytes || STRATA_FILE_SEEK64(raw, 0, SEEK_SET) != 0) {
+            err = "mtp: expert source must have exactly " + std::to_string(bytes) + " bytes"; return false;
+        }
+        original_source.resize(size_t(bytes));
+        detail::MtpExpertSha256 hash;
+        for (uint64_t off = 0; off < bytes;) {
+            const size_t count = size_t(std::min(chunk_limit, bytes - off));
+            if (std::fread(original_source.data() + off, 1, count, raw) != count) {
+                err = "mtp: expert source short read or read error"; return false;
+            }
+            hash.update(original_source.data() + off, count);
+            off += count;
+        }
+        if (std::fgetc(raw) != EOF || std::ferror(raw)) {
+            err = "mtp: expert source changed length or failed while reading"; return false;
+        }
+        digest = hash.finish();
+    }
+    const auto& source = original ? original_source : expert_host_source_;
+    auto free_checked = [](uint8_t* p) noexcept {
+        if (p) {
+            const auto status = cudaFree(p);
+            if (status != cudaSuccess) expert_failstop("unpublished expert free failed", status);
+        }
+    };
+    uint8_t* allocation = nullptr;
+    const auto alloc_status = cudaMalloc(reinterpret_cast<void**>(&allocation), size_t(bytes));
+    if (alloc_status != cudaSuccess) {
+        if (allocation) expert_failstop("failed expert allocation returned ownership", alloc_status);
+        err = "mtp: expert restore allocation failed: " + std::string(cudaGetErrorString(alloc_status));
+        return false;
+    }
+    // Declared after the local source: pending always retires/frees before the
+    // initial host snapshot can unwind. Compat calls return errors, not throws.
+    std::unique_ptr<uint8_t, decltype(free_checked)> pending(allocation, free_checked);
+    for (uint64_t off = 0; off < bytes;) {
+        const size_t count = size_t(std::min(chunk_limit, bytes - off));
+        const auto copied = cs_ ? cudaMemcpyAsync(allocation + off, source.data() + off, count, cudaMemcpyHostToDevice, cs_)
+                                : cudaMemcpy(allocation + off, source.data() + off, count, cudaMemcpyHostToDevice);
+        const auto completed = cs_ ? cudaStreamSynchronize(cs_) : cudaDeviceSynchronize();
+        if (completed != cudaSuccess) expert_failstop("expert upload retirement is ambiguous", completed);
+        if (copied != cudaSuccess) {
+            err = "mtp: expert source upload failed: " + std::string(cudaGetErrorString(copied)); return false;
+        }
+        off += count;
+    }
+    // The private RAM source is never modified or exposed to writers after this
+    // move. Restore needs no full-file read, host copy, SHA scan or new host slab.
+    if (original) expert_host_source_ = std::move(original_source);
+    experts_ = pending.release();
+    vram_ += bytes;
+    expert_bytes_ = bytes;
+    if (original) { expert_source_sha256_ = digest; expert_source_valid_ = true; }
+    if (original) {
+        char digest_text[65];
+        static constexpr char hex[] = "0123456789abcdef";
+        for (size_t i = 0; i < digest.size(); ++i) {
+            digest_text[2*i] = hex[digest[i] >> 4]; digest_text[2*i+1] = hex[digest[i] & 15];
+        }
+        digest_text[64] = '\0';
+        std::fprintf(stderr, "strata mtp: expert source original=1 bytes=%llu source=owned-RAM sha256=%s\n",
+                     (unsigned long long)bytes, digest_text);
+    } else {
+        std::fprintf(stderr, "strata mtp: expert source original=0 bytes=%llu source=owned-RAM\n",
+                     (unsigned long long)bytes);
+    }
+    return true;
+} catch (const std::exception& e) {
+    err = std::string("mtp: expert source upload: ") + e.what(); return false;
+}
+
+bool MtpDrafter::prepare_prefill_head(const NativeHead& head,std::string& err) {
+#ifndef STRATA_ENABLE_SYCL
+    (void)head;err="head release requires SYCL";return false;
+#else
+    const OnDevice on_device(device_);
+    int current=-1;
+    if(cudaGetDevice(&current)!=cudaSuccess || current!=device_ || !g_ || max_t_!=4 || !cs_ ||
+       head_prepared_ || head_detached_ || head_owner_retired_ || head_!=&head || !head.loaded() || head.head_detached() ||
+       !strata::kernels::cpu::expert_layout().native || g_->n_expert!=512 ||
+       n_vocab_<=0 || n_vocab_>INT32_MAX || head.type()<0 || head.row_bytes()==0 || peer_portable() ||
+       coupled_draft_env() || coupled_ok_ || coupled_active_) {
+        err="mtp: head release requires ready noncoupled single-device native MTP4";return false;
+    }
+    if(uint64_t(n_vocab_)>UINT64_MAX/head.row_bytes() || head.weight_bytes()!=uint64_t(n_vocab_)*head.row_bytes()) {err="mtp: native head full span mismatch";return false;}
+    const bool subset=dhead_!=nullptr;
+    if((subset && (!dvocab_ || n_dvocab_<=0 || n_dvocab_>n_vocab_)) ||
+       (!subset && (dvocab_ || n_dvocab_!=0))) {
+        err="mtp: inconsistent or oversized head map before release";return false;
+    }
+    const uint64_t rows=subset?uint64_t(n_dvocab_):0;
+    if(rows>(1ull<<20)){err="mtp: retained head map exceeds 4 MiB per-vector budget";return false;}
+    if(rows && head.row_bytes()>UINT64_MAX/rows){err="mtp: draft head size overflow";return false;}
+    const uint64_t bytes=rows*head.row_bytes();
+    if(bytes>uint64_t(SIZE_MAX) || vram_<bytes){err="mtp: draft head release size/accounting";return false;}
+    if(cudaStreamSynchronize(cs_)!=cudaSuccess)expert_failstop("head map prepare did not drain",cudaErrorUnknown);
+    try {
+        head_map_check_.resize(size_t(rows));
+        if(rows && cudaMemcpy(head_map_check_.data(),dvocab_,size_t(rows)*sizeof(int32_t),cudaMemcpyDeviceToHost)!=cudaSuccess)
+            expert_failstop("head map readback completion unknown",cudaErrorUnknown);
+        if(!detail::valid_prefill_head_ids(head_map_check_.data(),head_map_check_.size(),n_vocab_))expert_failstop("MTP device head map contains invalid IDs",cudaErrorUnknown);
+        if(head_release_used_ && (head_had_subset_!=subset || head_ids_!=head_map_check_)) {
+            expert_failstop("MTP immutable device head map changed since release",cudaErrorUnknown);
+        }
+        if(!head_release_used_)head_ids_=head_map_check_;
+    }catch(const std::exception& e){err=std::string("mtp: bounded head map RAM: ")+e.what();return false;}
+    head_had_subset_=subset;head_release_bytes_=bytes;
+    head_full_bytes_=head.weight_bytes();head_row_bytes_=head.row_bytes();head_type_=head.type();
+    head_prepared_=true;return true;
+#endif
+}
+void MtpDrafter::cancel_prefill_head() noexcept {
+    if(!head_prepared_ || head_detached_)expert_failstop("invalid MTP head prepare cancellation",cudaErrorUnknown);
+    head_prepared_=false;
+}
+void MtpDrafter::retire_full_head_graphs() noexcept {
+    if(cs_ && cudaStreamSynchronize(cs_)!=cudaSuccess)expert_failstop("head reader stream drain",cudaErrorUnknown);
+    auto retire=[](auto& graphs){for(auto& e:graphs)if(e){
+        const auto status=cudaGraphExecDestroy(e);
+        if(status!=cudaSuccess)expert_failstop("head reader graph destroy",status);
+        e=nullptr;
+    }};
+    retire(round_exec_);retire(step_exec_);retire(round_exec_c_);retire(step_exec_c_);
+}
+void MtpDrafter::retire_prefill_head_readers() noexcept {
+    if(!head_prepared_ || head_detached_)expert_failstop("MTP head retire state",cudaErrorUnknown);
+    head_detached_=true;head_release_used_=true;
+    retire_full_head_graphs();
+}
+void MtpDrafter::detach_prefill_head() noexcept {
+    if(!head_prepared_ || !head_detached_ || head_restored_ || head_storage_released_ || (head_had_subset_ && !dhead_))
+        expert_failstop("MTP head detach state",cudaErrorUnknown);
+    if(dhead_){
+        const auto status=cudaFree(dhead_);
+        if(status!=cudaSuccess)expert_failstop("MTP duplicate head free",status);
+        dhead_=nullptr;vram_-=head_release_bytes_;
+    }
+    head_storage_released_=true;
+    // dvocab/order/count, logits, coupled buffers, prompt graphs and KV stay live.
+    std::fprintf(stderr,"strata prefill heads: draft detached bytes=%llu retained-map-bytes=%zu\n",
+        (unsigned long long)head_release_bytes_,head_ids_.size()*sizeof(int32_t));
+}
+void MtpDrafter::restore_prefill_head() noexcept {
+    if(!head_prepared_ || !head_detached_ || !head_storage_released_ || head_restored_ || dhead_ || !head_ || !head_->loaded() ||
+       head_->weight_bytes()!=head_full_bytes_ || head_->row_bytes()!=head_row_bytes_ || head_->type()!=head_type_)
+        expert_failstop("MTP head restore owner/format/state",cudaErrorUnknown);
+    if(cudaStreamSynchronize(cs_)!=cudaSuccess)expert_failstop("MTP prompt completion before head restore",cudaErrorUnknown);
+    if(head_had_subset_){
+        if(head_map_check_.size()!=head_ids_.size() || head_ids_.size()!=size_t(n_dvocab_))
+            expert_failstop("MTP retained head map size changed",cudaErrorUnknown);
+        if(cudaMemcpy(head_map_check_.data(),dvocab_,head_ids_.size()*sizeof(int32_t),cudaMemcpyDeviceToHost)!=cudaSuccess)
+            expert_failstop("MTP retained map restore readback",cudaErrorUnknown);
+        if(head_map_check_!=head_ids_)expert_failstop("MTP retained map changed during prompt",cudaErrorUnknown);
+        const auto allocated=cudaMalloc(reinterpret_cast<void**>(&dhead_),size_t(head_release_bytes_));
+        if(allocated!=cudaSuccess)expert_failstop("MTP duplicate head restore allocation",allocated);
+        try {
+            strata::kernels::gather_rows(static_cast<const uint8_t*>(head_->weights()),int64_t(head_row_bytes_),
+                dvocab_,n_dvocab_,dhead_,cs_);
+        }catch(...){expert_failstop("MTP duplicate head restore gather threw",cudaErrorUnknown);}
+        const auto launch=cudaPeekAtLastError();
+        if(launch!=cudaSuccess)expert_failstop("MTP duplicate head restore gather launch",launch);
+        const auto completed=cudaStreamSynchronize(cs_);
+        if(completed!=cudaSuccess)expert_failstop("MTP duplicate head restore gather completion",completed);
+        vram_+=head_release_bytes_;
+    }
+    head_restored_=true;
+}
+void MtpDrafter::resume_prefill_head() noexcept {
+    if(!head_prepared_ || !head_detached_ || !head_restored_ || !head_ || head_->head_detached())
+        expert_failstop("MTP head resume state",cudaErrorUnknown);
+    head_prepared_=false;head_detached_=false;head_restored_=false;head_storage_released_=false;
+}
+void MtpDrafter::retire_head_owner_readers(cudaStream_t owner_stream) noexcept {
+    if(!head_release_used_)return; // exact default-off teardown has no extra API
+    if(!owner_stream || cudaStreamSynchronize(owner_stream)!=cudaSuccess)expert_failstop("borrowed target head stream teardown",cudaErrorUnknown);
+    if(head_prepared_ || head_detached_)expert_failstop("borrowed head teardown during scope",cudaErrorUnknown);
+    retire_full_head_graphs();head_owner_retired_=true;
+}
+
+bool MtpDrafter::detach_prefill_experts(std::string& err) {
+    const OnDevice on_device(device_);
+    int current = -1;
+    if (cudaGetDevice(&current) != cudaSuccess || current != device_) {
+        err = "mtp: cannot select expert owner device"; return false;
+    }
+    if (!g_ || max_t_ != 4 || g_->n_expert != 512 || !strata::kernels::cpu::expert_layout().native ||
+        peer_portable() || !expert_source_valid_ || experts_detached_ || !experts_ || !cs_ ||
+        !expert_bytes_ || vram_ < expert_bytes_) {
+        err = "mtp: detach requires single-device native MTP4 and a ready validated opt-in load"; return false;
+    }
+    const auto started = Clock::now();
+    const auto drained = cudaStreamSynchronize(cs_);
+    if (drained != cudaSuccess) expert_failstop("cannot retire expert graph readers", drained);
+    auto retire = [](auto& graphs) {
+        for (auto& e : graphs) if (e) {
+            const auto destroyed = cudaGraphExecDestroy(e);
+            if (destroyed != cudaSuccess) expert_failstop("expert graph destroy failed", destroyed);
+            e = nullptr;
+        }
+    };
+    retire(round_exec_); retire(step_exec_);
+    retire(round_exec_c_); retire(step_exec_c_);
+    // window_R_ is borrowed from Verifier. Do not clear or retarget it: retiring
+    // expert consumers must not silently change that independent owner contract.
+    const auto freed = cudaFree(experts_);
+    if (freed != cudaSuccess) expert_failstop("expert detach free failed", freed);
+    experts_ = nullptr;
+    vram_ -= expert_bytes_;
+    experts_detached_ = true;
+    expert_recapture_timing_ = true;
+    ms_expert_detach += ms_since(started);
+    return true;
+}
+
+bool MtpDrafter::restore_prefill_experts(std::string& err) {
+    const OnDevice on_device(device_);
+    int current = -1;
+    if (cudaGetDevice(&current) != cudaSuccess || current != device_) {
+        err = "mtp: cannot select expert owner device"; return false;
+    }
+    if (!experts_detached_ || experts_ || !cs_ || !expert_source_valid_) {
+        err = "mtp: restore requires detached experts"; return false;
+    }
+    const auto started = Clock::now();
+    // KV-only prompt consumers may still use dense/arena/KV storage. Keep all of
+    // those owners alive if their final completion cannot be established.
+    const auto drained = cudaStreamSynchronize(cs_);
+    if (drained != cudaSuccess) expert_failstop("cannot retire prompt before expert restore", drained);
+    if (!upload_experts_checked(false, err)) return false;
+    experts_detached_ = false;
+    ms_expert_restore += ms_since(started);
+    std::fprintf(stderr, "strata mtp: experts restored bytes=%llu, cumulative detach=%.3f ms reload=%.3f ms "
+                         "decode graph recapture=%.3f ms (lazy, later captures accumulate)\n",
+                 (unsigned long long)expert_bytes_, ms_expert_detach, ms_expert_restore, ms_expert_recapture);
+    return true;
+}
+
+MtpPrefillExpertScope::~MtpPrefillExpertScope() noexcept {
+    if (owner_) expert_failstop("expert scope left without checked close", cudaErrorUnknown);
+}
+bool MtpPrefillExpertScope::open(MtpDrafter& mtp, std::string& err) {
+    if (owner_) { err = "mtp: expert scope is already open"; return false; }
+    if (!mtp.detach_prefill_experts(err)) return false;
+    owner_ = &mtp;
+    return true;
+}
+bool MtpPrefillExpertScope::close(std::string& err) {
+    if (!owner_) return true; // idempotent close; direct restore still rejects duplicates
+    if (!owner_->restore_prefill_experts(err)) return false;
+    owner_ = nullptr;
+    return true;
+}
+
 uint64_t MtpDrafter::bind_bytes(uint64_t head_row_bytes, int64_t n_vocab) const {
+    if(head_detached_ || head_owner_retired_)throw std::logic_error("MTP head bytes requested while detached/retired");
     uint64_t bytes = head_logits_ ? 0 : (uint64_t) max_t_ * (uint64_t) n_vocab * sizeof(float);
     if (dhead_ == nullptr) {
         if (FILE* f = std::fopen((rt_dir_ + "/draft_vocab.bin").c_str(), "rb")) {
@@ -328,6 +640,7 @@ uint64_t MtpDrafter::bind_bytes(uint64_t head_row_bytes, int64_t n_vocab) const 
 }
 
 bool MtpDrafter::setup_coupled(std::string& err) {
+    if(head_detached_ || head_owner_retired_){err="mtp: coupled setup while head detached/retired";return false;}
     const int64_t nv = dhead_ != nullptr ? n_dvocab_ : n_vocab_;
     const size_t scratch = strata::kernels::coupled_draft_scratch_bytes((int) nv);
     if (scratch == 0) {
@@ -421,7 +734,22 @@ void draft_head_hint(int64_t n_tokens, int64_t row_bytes) {
 }  // namespace
 
 bool MtpDrafter::bind(const WeightTable& wt, const NativeHead* head, const float* window_R, std::string& err) {
+    if(head_prepared_ || head_detached_ || head_owner_retired_){err="mtp: bind during head release/retirement";return false;}
     const OnDevice on_device(device_);
+    if(head_release_used_) {
+        if(&wt!=wt_ || head!=head_ || !head || !head->loaded() || head->head_detached() ||
+           head->weight_bytes()!=head_full_bytes_ || head->row_bytes()!=head_row_bytes_ || head->type()!=head_type_) {
+            err="mtp: restored head rebind changed immutable owner/format";return false;
+        }
+        bool readers=false;
+        for(auto e:round_exec_)readers=readers || e;
+        for(auto e:step_exec_)readers=readers || e;
+        for(auto e:round_exec_c_)readers=readers || e;
+        for(auto e:step_exec_c_)readers=readers || e;
+        if(readers && window_R!=window_R_){err="mtp: restored head rebind would retarget captured window";return false;}
+        window_R_=window_R;
+        return true; // map and no-subset decision are immutable after first release
+    }
     wt_ = &wt;
     head_ = head;
     window_R_ = window_R;
@@ -465,6 +793,12 @@ bool MtpDrafter::record_forward(int T, int step_row0, cudaStream_t cs, std::stri
     SessionState& ss = *ss_;
     // step_row0 >= 0: the full layer on step rows [step_row0, +T); step_row0 < 0: K/V only on rows [-1 - step_row0, +T)
     const bool full = step_row0 >= 0;
+    if(full && (head_detached_ || head_owner_retired_ || !head_ || head_->head_detached() || !head_->loaded())) {
+        err="mtp: full forward requires restored head";return false;
+    }
+    if (full && (!experts_ || experts_detached_)) {
+        err = "mtp: full forward requires restored routed experts"; return false;
+    }
     const int row0 = full ? step_row0 : -1 - step_row0;
     if (full && T != 1) { err = "mtp: the full layer runs one row at a time (its attention scratch is sized for one)"; return false; }
     const int64_t N = g.n_embd, HC = g.hc, K = ss.k, NH = g.n_head, HD = g.head_dim, NKV = g.n_head_kv;
@@ -587,13 +921,8 @@ bool MtpDrafter::record_forward(int T, int step_row0, cudaStream_t cs, std::stri
         nsw.down_type = GGML_Q8_0; nsw.down_data = q8("mlp.shared_expert.down_proj.weight");
         nsw.q8_1 = xq_;
         const SForm none{};
-        const bool need_bf16_x = !shared_expert_native_bf16_enabled();
-        static const bool fuse_head_gr = [] {
-            const char* v = std::getenv("STRATA_FUSE_HEAD_GR");
-            return v != nullptr && std::atoi(v) != 0;
-        }();
         for (int t = 0; t < T; ++t) {
-            if (need_bf16_x) f32_to_bf16_bulk(mixed_ + t * N, x_bf16_, N, cs);
+            f32_to_bf16_bulk(mixed_ + t * N, x_bf16_, N, cs);
             shared_expert(nullptr, nullptr, x_bf16_, none, nullptr, nullptr, nullptr, none, nullptr, nullptr, nullptr, none,
                           nullptr, nullptr, nullptr, bf16("mlp.shared_expert_gate.weight"), sh_scratch_, shared_ + t * N,
                           N, g.n_ff, 32, cs, mixed_ + t * N, &nsw);
@@ -601,30 +930,14 @@ bool MtpDrafter::record_forward(int T, int step_row0, cudaStream_t cs, std::stri
                 native_moe_combine(parts_ + (size_t) t * K * N, w_ + t * K, shared_ + t * N, y_ + t * N, N, K, cs);
             else
                 moe_combine(parts_ + (size_t) t * K * N, w_ + t * K, shared_ + t * N, y_ + t * N, N, K, cs);
-            if (!fuse_head_gr)
-                gr_write(R_ + (size_t) t * HC * N, y_ + t * N, inj2_ + t * HC, gs, R_ + (size_t) t * HC * N, cs);
+            gr_write(R_ + (size_t) t * HC * N, y_ + t * N, inj2_ + t * HC, gs, R_ + (size_t) t * HC * N, cs);
         }
         // ---- the final mixer and the main model's head
-        if (fuse_head_gr) {
-            FusedGrArgs fa[kFusedGrMaxT];
-            for (int t = 0; t < T; ++t) {
-                fa[t].R = R_ + (size_t) t * HC * N; fa[t].R_out = R_ + (size_t) t * HC * N; fa[t].apply = true;
-                fa[t].bo_prev = y_ + t * N; fa[t].inj_prev = inj2_ + t * HC;
-                fa[t].w_norm = f32("hyper_connection_mixer.hc_norm.weight");
-                fa[t].w_down = bf16("hyper_connection_mixer.input_mix_weight_down.weight");
-                fa[t].w_up = bf16("hyper_connection_mixer.input_mix_weight_up.weight");
-                fa[t].w_inject = nullptr;
-                fa[t].eps = EPS; fa[t].lo = lo_ + t * g.hc_lr; fa[t].rs = rs_ + t * HC;
-                fa[t].inject_out = dummy_inj_; fa[t].mixed = sample_ + t * N;
-            }
-            fused_gr_read_multi(fa, T, xn_, cs);
-        } else {
-            for (int t = 0; t < T; ++t)
-                gr_read(R_ + (size_t) t * HC * N, f32("hyper_connection_mixer.hc_norm.weight"),
-                        bf16("hyper_connection_mixer.input_mix_weight_down.weight"),
-                        bf16("hyper_connection_mixer.input_mix_weight_up.weight"), nullptr, EPS, gs, ss.block.gr,
-                        sample_ + t * N, dummy_inj_, cs);
-        }
+        for (int t = 0; t < T; ++t)
+            gr_read(R_ + (size_t) t * HC * N, f32("hyper_connection_mixer.hc_norm.weight"),
+                    bf16("hyper_connection_mixer.input_mix_weight_down.weight"),
+                    bf16("hyper_connection_mixer.input_mix_weight_up.weight"), nullptr, EPS, gs, ss.block.gr,
+                    sample_ + t * N, dummy_inj_, cs);
         native_quantize_q8_1(sample_, xq_, (int) N, T, cs);
         const bool sub = dhead_ != nullptr;
         const int64_t nv = sub ? n_dvocab_ : n_vocab_;
@@ -650,6 +963,47 @@ bool MtpDrafter::record_forward(int T, int step_row0, cudaStream_t cs, std::stri
 }
 
 namespace {
+// After expert restore, a failed instantiate/upload must never leave an exec
+// that a later `if (exec)` would reuse. Keep graph/allocation owners on any
+// ambiguous queue or destroy result, and fail closed.
+bool finish_expert_capture(cudaStream_t cs, bool ok, cudaGraphExec_t& exec,
+                           const char* what, std::string& err) {
+    cudaGraph_t graph = nullptr;
+    const auto ended = cudaStreamEndCapture(cs, &graph);
+    if (ended != cudaSuccess) expert_failstop("expert recapture did not end", ended);
+    auto destroy_graph = [&]() {
+        if (graph) {
+            const auto status = cudaGraphDestroy(graph);
+            if (status != cudaSuccess) expert_failstop("expert source graph destroy failed", status);
+            graph = nullptr;
+        }
+    };
+    if (!ok) { destroy_graph(); return false; }
+    const auto instantiated = cudaGraphInstantiate(&exec, graph, 0);
+    destroy_graph();
+    if (instantiated != cudaSuccess) {
+        // A failed API is not allowed to publish an ambiguous exec handle.
+        if (exec) {
+            const auto status = cudaGraphExecDestroy(exec);
+            if (status != cudaSuccess) expert_failstop("failed expert exec destroy", status);
+            exec = nullptr;
+        }
+        err = std::string("mtp: ") + what + " instantiate: " + cudaGetErrorString(instantiated);
+        return false;
+    }
+    const auto uploaded = cudaGraphUpload(exec, cs);
+    const auto completed = cudaStreamSynchronize(cs);
+    if (completed != cudaSuccess) expert_failstop("expert recapture upload did not retire", completed);
+    if (uploaded != cudaSuccess) {
+        const auto status = cudaGraphExecDestroy(exec);
+        if (status != cudaSuccess) expert_failstop("failed expert upload exec destroy", status);
+        exec = nullptr;
+        err = std::string("mtp: ") + what + " upload: " + cudaGetErrorString(uploaded);
+        return false;
+    }
+    return true;
+}
+
 bool finish_capture(cudaStream_t cs, bool ok, cudaGraphExec_t& exec, const char* what, std::string& err) {
     cudaGraph_t graph = nullptr;
     const cudaError_t ce = cudaStreamEndCapture(cs, &graph);
@@ -670,6 +1024,15 @@ bool finish_capture(cudaStream_t cs, bool ok, cudaGraphExec_t& exec, const char*
 }
 }  // namespace
 
+void MtpDrafter::drain_prefill_dense_callback() {
+    if (!cs_) return; // no loaded drafter and therefore no callback queue
+    const OnDevice on_device(device_);
+    if (cudaStreamSynchronize(cs_) != cudaSuccess) {
+        std::fprintf(stderr,"mtp: uncertain dense-bank callback completion; owners retained\n");
+        std::fflush(stderr); std::abort();
+    }
+}
+
 bool MtpDrafter::capture_prefill(int T, std::string& err) {
     if (prefill_exec_[T]) return true;
     using namespace strata::kernels;
@@ -688,9 +1051,12 @@ bool MtpDrafter::capture_prefill_dev(int T, std::string& err) {
     return finish_capture(cs_, ok, prefill_dev_exec_[T], "prefill (device inputs)", err);
 }
 
-bool MtpDrafter::capture_round(int T, bool coupled, std::string& err) {
+bool MtpDrafter::capture_round(int T, bool coupled, std::string& err) try {
+    if(head_detached_ || head_owner_retired_){err="mtp: capture requires restored head";return false;}
+    if (!experts_ || experts_detached_) { err = "mtp: round requires restored experts"; return false; }
     cudaGraphExec_t& exec = coupled ? round_exec_c_[T] : round_exec_[T];
     if (exec) return true;
+    const auto recapture_start = expert_recapture_timing_ ? Clock::now() : Clock::time_point{};
     using namespace strata::kernels;
     const int64_t HCN = g_->hc * g_->n_embd;
     if (cudaStreamBeginCapture(cs_, cudaStreamCaptureModeThreadLocal) != cudaSuccess) { err = "mtp: begin capture"; return false; }
@@ -717,14 +1083,30 @@ bool MtpDrafter::capture_round(int T, bool coupled, std::string& err) {
         coupled_rec_ = false;
     }
     if (ok) mtp_select(R_, HCN, out_ids_, row_ + 1, Rin_, tok_, m_out_, 0, cs_, probs_, m_prob_);
-    return finish_capture(cs_, ok, exec, coupled ? "round (coupled)" : "round", err);
+    const bool captured = (expert_recapture_timing_ || head_release_used_)
+        ? finish_expert_capture(cs_, ok, exec, coupled ? "round (coupled)" : "round", err)
+        : finish_capture(cs_, ok, exec, coupled ? "round (coupled)" : "round", err);
+    if (expert_recapture_timing_) {
+        const double elapsed = ms_since(recapture_start);
+        ms_expert_recapture += elapsed;
+        std::fprintf(stderr, "strata mtp: expert decode recapture kind=round coupled=%d ok=%d "
+                             "ms=%.3f cumulative_ms=%.3f\n", int(coupled), int(captured), elapsed, ms_expert_recapture);
+    }
+    return captured;
+} catch (...) {
+    if (expert_recapture_timing_ || head_release_used_)
+        expert_failstop("expert recapture threw before checked ownership close", cudaErrorUnknown);
+    throw;
 }
 
 // Chain step j (1..max_t-2): one row at the cell staged in step row `max_t + j - 1`, from the previous step's
 // residual and token (left in Rin_[0] / tok_[0] by mtp_select); draft j and its probability to the mapped outputs.
-bool MtpDrafter::capture_step(int j, bool coupled, std::string& err) {
+bool MtpDrafter::capture_step(int j, bool coupled, std::string& err) try {
+    if(head_detached_ || head_owner_retired_){err="mtp: capture requires restored head";return false;}
+    if (!experts_ || experts_detached_) { err = "mtp: step requires restored experts"; return false; }
     cudaGraphExec_t& exec = coupled ? step_exec_c_[j] : step_exec_[j];
     if (exec) return true;
+    const auto recapture_start = expert_recapture_timing_ ? Clock::now() : Clock::time_point{};
     using namespace strata::kernels;
     const int64_t HCN = g_->hc * g_->n_embd;
     const int row = max_t_ + j - 1;
@@ -736,7 +1118,20 @@ bool MtpDrafter::capture_step(int j, bool coupled, std::string& err) {
     bool ok = record_forward(1, row, cs_, err);
     coupled_rec_ = false;
     if (ok) mtp_select(R_, HCN, out_ids_, row_ + 1, Rin_, tok_, m_out_, j, cs_, probs_, m_prob_);
-    return finish_capture(cs_, ok, exec, coupled ? "step (coupled)" : "step", err);
+    const bool captured = (expert_recapture_timing_ || head_release_used_)
+        ? finish_expert_capture(cs_, ok, exec, coupled ? "step (coupled)" : "step", err)
+        : finish_capture(cs_, ok, exec, coupled ? "step (coupled)" : "step", err);
+    if (expert_recapture_timing_) {
+        const double elapsed = ms_since(recapture_start);
+        ms_expert_recapture += elapsed;
+        std::fprintf(stderr, "strata mtp: expert decode recapture kind=step coupled=%d ok=%d "
+                             "ms=%.3f cumulative_ms=%.3f\n", int(coupled), int(captured), elapsed, ms_expert_recapture);
+    }
+    return captured;
+} catch (...) {
+    if (expert_recapture_timing_ || head_release_used_)
+        expert_failstop("expert recapture threw before checked ownership close", cudaErrorUnknown);
+    throw;
 }
 
 void MtpDrafter::kv_restore(int64_t upto) {
@@ -773,19 +1168,34 @@ bool MtpDrafter::prefill(const float* R_rows, const int32_t* next_tokens, int64_
         return false;
 #endif
     }();
-    const int64_t NHp = g_->n_head, per_row = 1 + 4 + NHp;
+    const int64_t NHp = g_->n_head;
     if (!per_group_sync && n > 0) {
-        if (pf_cap_ < n * per_row) {
+#ifdef STRATA_ENABLE_SYCL
+        if (NHp <= 0 || NHp > std::numeric_limits<int64_t>::max() - 5) {
+            err = "mtp prefill: the input records do not fit";
+            return false;
+        }
+#endif
+        const int64_t per_row = 1 + 4 + NHp;
+#ifdef STRATA_ENABLE_SYCL
+        if (n > std::numeric_limits<int64_t>::max() / per_row ||
+            uint64_t(n) > std::numeric_limits<size_t>::max() / sizeof(int32_t) / uint64_t(per_row)) {
+            err = "mtp prefill: the input records do not fit";
+            return false;
+        }
+#endif
+        const int64_t records = n * per_row;
+        if (pf_cap_ < records) {
             if (pf_dev_) cudaFree(pf_dev_);
             pf_dev_ = nullptr;
             pf_cap_ = 0;
-            if (cudaMalloc((void**) &pf_dev_, (size_t) (n * per_row) * sizeof(int32_t)) != cudaSuccess) {
+            if (cudaMalloc((void**) &pf_dev_, (size_t) records * sizeof(int32_t)) != cudaSuccess) {
                 err = "mtp prefill: the input records do not fit";
                 return false;
             }
-            pf_cap_ = n * per_row;
+            pf_cap_ = records;
         }
-        std::vector<int32_t> rec((size_t) (n * per_row));
+        std::vector<int32_t> rec((size_t) records);
         int32_t* tk = rec.data();
         int32_t* stp = tk + n;
         int32_t* ps = stp + 4 * n;
@@ -798,6 +1208,22 @@ bool MtpDrafter::prefill(const float* R_rows, const int32_t* next_tokens, int64_
             stp[i * 4 + 3] = (int32_t) (cell + 1);
             for (int64_t h = 0; h < NHp; ++h) ps[i * NHp + h] = (int32_t) cell;
         }
+#ifdef STRATA_ENABLE_SYCL
+        // Declared after rec: every failure must drain before its upload source is destroyed.
+        cudaError_t record_drain_status = cudaErrorUnknown;
+        strata::prefill::detail::DraftUploadGuard record_lease(
+            [&] {
+                record_drain_status = cudaStreamSynchronize(cs_);
+                return record_drain_status == cudaSuccess;
+            },
+            [&]() noexcept {
+                std::fprintf(stderr, "strata mtp prefill: input record uploads did not drain: %s; "
+                                     "aborting with upload storage live\n", cudaGetErrorString(record_drain_status));
+                std::fflush(stderr);
+                std::abort();
+            });
+        record_lease.arm();   // An enqueue may submit work before reporting an error.
+#endif
         if (cudaMemcpyAsync(pf_dev_, rec.data(), rec.size() * sizeof(int32_t), cudaMemcpyHostToDevice, cs_) != cudaSuccess) {
             err = "mtp prefill: the input records upload failed";
             return false;
@@ -823,6 +1249,9 @@ bool MtpDrafter::prefill(const float* R_rows, const int32_t* next_tokens, int64_
             err = std::string("mtp prefill: ") + cudaGetErrorString(cudaGetLastError());
             return false;
         }
+#ifdef STRATA_ENABLE_SYCL
+        record_lease.retire();   // The existing successful final sync retired the upload.
+#endif
         ms_prefill += ms_since(t0);
         return true;
     }
@@ -854,12 +1283,11 @@ bool MtpDrafter::prefill(const float* R_rows, const int32_t* next_tokens, int64_
 bool MtpDrafter::draft(int T, const int32_t* tokens, int64_t p, int a, int32_t* drafts, std::string& err,
                        float* probs, float min_p, int* n_drafts) {
     const OnDevice on_device(device_);
+    if(head_detached_ || head_owner_retired_){err="mtp: draft requires restored head";return false;}
+    if (!experts_ || experts_detached_) { err = "mtp: draft requires restored experts"; return false; }
     if (T < 1 || T > max_t_ || a < 0 || a >= T) { err = "mtp: draft arguments out of range"; return false; }
     const bool cp = coupled_active_;   // coupled draft sampling for this request: its own graphs
     if (!capture_round(T, cp, err)) return false;
-    const int max_steps = std::min(max_t_ - 1, max_drafts_);
-    for (int j = 1; j < max_steps; ++j)
-        if (!capture_step(j, cp, err)) return false;
     const Clock::time_point t0 = Clock::now();
     const int64_t NH = g_->n_head;
     auto put = [&](int row, int64_t cell) {
@@ -874,99 +1302,32 @@ bool MtpDrafter::draft(int T, const int32_t* tokens, int64_t p, int a, int32_t* 
         put(t, p + t);
     }
     put(2 * max_t_ - 1, coupled_draft_cell(p, a, 0));   // p + a: draft 0's cell
-    for (int j = 1; j < max_steps; ++j)
-        put(max_t_ + j - 1, coupled_draft_cell(p, a, j));
-    for (int j = 0; j < max_steps; ++j) ((volatile int32_t*) h_out_)[j] = -1;
     h_row_[0] = a;
     h_row_[1] = 0;
     std::atomic_thread_fence(std::memory_order_seq_cst);
-
-    SessionState* const pss = ple_ss_ ? ple_ss_ : ss_;
-    const bool do_ple = pss != nullptr && pss->ple.ready() && pss->ple.table != nullptr;
-    int32_t ple_prev[2] = {do_ple ? pss->ple_prev[0] : 0, do_ple ? pss->ple_prev[1] : 0};
-    auto prefetch_ple = [&](int32_t tok) {
-        if (!do_ple || tok < 0) return;
-        uint32_t rows16[strata::kernels::PLE_N_HEADS];
-        strata::kernels::ngram_rows(&tok, ple_prev, 1, pss->ple.consts, rows16);
-        ple_prev[0] = ple_prev[1];
-        ple_prev[1] = tok;
-        pss->ple.table->prefetch_rows(rows16);
-    };
-
-    int n = 0;
-    if (min_p <= 0.0f && max_steps > 0) {
-        if (cudaGraphLaunch(cp ? round_exec_c_[T] : round_exec_[T], cs_) != cudaSuccess) {
-            err = std::string("mtp draft: ") + cudaGetErrorString(cudaGetLastError());
+    if (cudaGraphLaunch(cp ? round_exec_c_[T] : round_exec_[T], cs_) != cudaSuccess ||
+        cudaStreamSynchronize(cs_) != cudaSuccess) {
+        err = std::string("mtp draft: ") + cudaGetErrorString(cudaGetLastError());
+        return false;
+    }
+    drafts[0] = ((volatile int32_t*) h_out_)[0];
+    float pj = ((volatile float*) h_prob_)[0];
+    if (probs) probs[0] = pj;
+    int n = 1;
+    // the chain continues while the last draft is likely enough to be verified
+    for (int j = 1; j < std::min(max_t_ - 1, max_drafts_) && pj >= min_p; ++j) {
+        if (!capture_step(j, cp, err)) return false;
+        put(max_t_ + j - 1, coupled_draft_cell(p, a, j));   // p + a + j; coupled: drawn at counter cell + 1
+        std::atomic_thread_fence(std::memory_order_seq_cst);
+        if (cudaGraphLaunch(cp ? step_exec_c_[j] : step_exec_[j], cs_) != cudaSuccess ||
+            cudaStreamSynchronize(cs_) != cudaSuccess) {
+            err = std::string("mtp draft step: ") + cudaGetErrorString(cudaGetLastError());
             return false;
         }
-        for (int j = 1; j < max_steps; ++j) {
-            if (cudaGraphLaunch(cp ? step_exec_c_[j] : step_exec_[j], cs_) != cudaSuccess) {
-                err = std::string("mtp draft step: ") + cudaGetErrorString(cudaGetLastError());
-                return false;
-            }
-        }
-        (void) cudaStreamQuery(cs_);
-        prefetch_ple(tokens[a]);
-        for (int j = 0; j + 1 < max_steps; ++j) {
-            uint32_t spins = 0;
-            while (((volatile int32_t*) h_out_)[j] < 0) {
-#if defined(_WIN32) || defined(__x86_64__)
-                _mm_pause();
-#endif
-                if ((++spins & 1023u) == 0 && cudaStreamQuery(cs_) != cudaErrorNotReady) break;
-            }
-            drafts[j] = ((volatile int32_t*) h_out_)[j];
-            if (probs) probs[j] = ((volatile float*) h_prob_)[j];
-            prefetch_ple(drafts[j]);
-        }
-        if (cudaStreamSynchronize(cs_) != cudaSuccess) {
-            err = std::string("mtp draft: ") + cudaGetErrorString(cudaGetLastError());
-            return false;
-        }
-        const int last = max_steps - 1;
-        drafts[last] = ((volatile int32_t*) h_out_)[last];
-        if (probs) probs[last] = ((volatile float*) h_prob_)[last];
-        prefetch_ple(drafts[last]);
-        n = max_steps;
-    } else if (max_steps > 0) {
-        if (cudaGraphLaunch(cp ? round_exec_c_[T] : round_exec_[T], cs_) != cudaSuccess) {
-            err = std::string("mtp draft: ") + cudaGetErrorString(cudaGetLastError());
-            return false;
-        }
-        (void) cudaStreamQuery(cs_);
-        prefetch_ple(tokens[a]);
-        auto wait_step = [&](int j) {
-            uint32_t spins = 0;
-            while (((volatile int32_t*) h_out_)[j] < 0) {
-#if defined(_WIN32) || defined(__x86_64__)
-                _mm_pause();
-#endif
-                if ((++spins & 1023u) == 0 && cudaStreamQuery(cs_) != cudaErrorNotReady) break;
-            }
-        };
-        wait_step(0);
-        drafts[0] = ((volatile int32_t*) h_out_)[0];
-        float pj = ((volatile float*) h_prob_)[0];
-        if (probs) probs[0] = pj;
-        n = 1;
-        for (int j = 1; j < max_steps && pj >= min_p; ++j) {
-            if (cudaGraphLaunch(cp ? step_exec_c_[j] : step_exec_[j], cs_) != cudaSuccess) {
-                err = std::string("mtp draft step: ") + cudaGetErrorString(cudaGetLastError());
-                return false;
-            }
-            (void) cudaStreamQuery(cs_);
-            prefetch_ple(drafts[j - 1]);
-            wait_step(j);
-            drafts[j] = ((volatile int32_t*) h_out_)[j];
-            pj = ((volatile float*) h_prob_)[j];
-            if (probs) probs[j] = pj;
-            ++n;
-        }
-        prefetch_ple(drafts[n - 1]);
-        if (cudaStreamSynchronize(cs_) != cudaSuccess) {
-            err = std::string("mtp draft: ") + cudaGetErrorString(cudaGetLastError());
-            return false;
-        }
+        drafts[j] = ((volatile int32_t*) h_out_)[j];
+        pj = ((volatile float*) h_prob_)[j];
+        if (probs) probs[j] = pj;
+        ++n;
     }
     for (int j = n; j < max_t_ - 1; ++j) { drafts[j] = 0; if (probs) probs[j] = 0.0f; }
     if (n_drafts) *n_drafts = n;
@@ -978,6 +1339,8 @@ bool MtpDrafter::draft(int T, const int32_t* tokens, int64_t p, int a, int32_t* 
 bool MtpDrafter::draft_first(int T, const float* R_row, int32_t token, int64_t cell, int32_t* drafts, std::string& err,
                              float* probs, float min_p, int* n_drafts) {
     const OnDevice on_device(device_);
+    if(head_detached_ || head_owner_retired_){err="mtp: draft requires restored head";return false;}
+    if (!experts_ || experts_detached_) { err = "mtp: first draft requires restored experts"; return false; }
     // row 0 is the real pair; rows 1.. repeat it and only write cells the next round overwrites
     const int64_t HCN = g_->hc * g_->n_embd;
     for (int t = 0; t < T; ++t)

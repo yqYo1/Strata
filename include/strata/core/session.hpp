@@ -16,7 +16,6 @@
 
 #include "strata/core/hit_hook.hpp"
 #include "strata/core/layer.hpp"
-#include "strata/kernels/cpu/pool.hpp"
 
 #include <cuda_runtime.h>
 
@@ -148,6 +147,17 @@ struct SessionGraphs {
     /// `parts`.  **A per-layer CPU pool cannot be hidden behind a strictly serial residual chain**, which is
     /// why the CPU term is answered by Phase 3's VRAM cache and not by this pipeline.
     cudaGraphExec_t* posts = nullptr;
+#ifdef STRATA_ENABLE_SYCL
+    // The event between these graphs publishes routed inputs before the shared
+    // expert finishes. Original execs retain the full pre path for GPU replays.
+    cudaGraphExec_t* routes = nullptr;
+    cudaGraphExec_t* shared = nullptr;
+    int64_t shared_capacity = 0;
+    int64_t shared_pending_at_pool = 0;
+    const float* post_miss_host = nullptr;
+    uint32_t* post_add_hits_host = nullptr;
+    bool post_routes_next = false;
+#endif
     bool captured = false;
     /// THE DEVICE ADDRESS THE GRAPHS WERE CAPTURED WITH.  The host loop copies each layer's expert outputs
     /// here before launching the next layer, and a graph bakes the POINTER, so it has to be this one.
@@ -225,14 +235,25 @@ struct SessionGraphs {
     double ms_host = 0;
 };
 
-/// Captures all 48 layer graphs.  Idempotent: a second call is a no-op.
-///
-/// `pos`/`pos_base` are baked in ONLY through the fixed-address pinned staging in each `QsaState`, which the
-/// replay re-reads every token - so the position is data, not an argument.  That is the whole reason rounds
-/// 211-214 moved the per-token counts into device buffers.
+/// Optional SYCL post input addresses. Host-USM misses and the flag are stable
+/// until each post completes; hits are device memory on the same stream.
+/// The matching scratch borrows HitFn's pending flag. Its Combine callback
+/// updates bookkeeping while the captured post performs the addition.
+struct SessionPostInputs {
+    const float* misses = nullptr;
+    const float* hits = nullptr;
+    uint32_t* add_hits = nullptr;
+    int64_t elements = 0;
+    bool route_next = false;
+};
+
+/// Captures all 48 layer graphs. Idempotent: a second call is a no-op.
+/// Positions are replay data in fixed pinned QSA staging. With post_inputs,
+/// each post first copies misses and conditionally adds hits. route_next also
+/// captures the next layer's route; session_loop completes it before host reads.
 bool session_capture(const WeightTable& tables, const ModelGeometry& g, SessionState& s, const float* parts,
                      SessionGraphs& gr, std::string& err, bool split = false, int64_t layer_lo = 0,
-                     int64_t layer_hi = -1);
+                     int64_t layer_hi = -1, const SessionPostInputs* post_inputs = nullptr);
 
 /// One token by REPLAYING the captured graphs.  Identical arithmetic to `session_token`; the only difference is
 /// that ~2,000 kernel launches become 48 graph launches.
@@ -305,6 +326,10 @@ bool session_replay_stages_per_layer(const ModelGeometry& g, int64_t pos, int32_
 
 /// Releases the graph execs.  The `SessionGraphs` struct holds no device memory of its own.
 void session_graphs_free(SessionGraphs& gr);
+// Exclusive single-device request owner only. Owning replay stream must be
+// supplied; all other producers/callbacks must already be excluded and drained.
+// Any runtime uncertainty fail-stops before dense owners can be freed.
+void session_graphs_retire_dense(SessionGraphs& gr, void* replay_stream);
 
 // ================================ THE HOST LOOP ================================
 
@@ -370,7 +395,12 @@ struct SessionLoopScratch {
     float* y_miss = nullptr;        ///< pinned host staging for the pool's answer, `parts_bytes` long
     size_t parts_bytes = 0;
     cudaEvent_t probe = nullptr;
-    strata::kernels::cpu::ThreadAffinity pinned_core{};  ///< affinity to restore, or invalid if the host was not pinned
+#ifdef STRATA_ENABLE_SYCL
+    cudaEvent_t shared_done = nullptr;
+    uint32_t* add_hits = nullptr;   ///< fixed host-USM flag, read by a captured post kernel
+    const bool* hit_pending = nullptr; ///< borrowed from the session's expert dispatch
+#endif
+    long long pinned_core = -1;     ///< the affinity to restore, or -1 if the host was never pinned
     bool pinned = false;
 
     /// Allocates the buffers and pins the host thread.  Call ONCE, at session setup.

@@ -1,0 +1,35 @@
+--- a/src/prefill/prefill.cpp
++++ b/src/prefill/prefill.cpp
+@@ -1661,7 +1661,9 @@
+         }
+         host_setup_ms += ms_since(tsetup);
+         bool normed = false;   // F-2: the previous half's write already normed R for this half (grs, xn16)
+-        for (int64_t l = LB; l < LE; ++l) {
++        // Keep this body shared with a future admitted layer-major schedule. Its caller owns
++        // chunk scratch, ordinal state and issuer lifetimes; extraction alone changes no schedule.
++        auto run_layer = [&](int64_t l, bool allow_next_layer_fuse) -> bool {
+             core::progress_beat();   // the serve watchdog: a prompt chunk of 8192 tokens is still moving
+             core::progress_at("reading the prompt (batched): layer", l, p0);   // #251: a stall names layer and chunk
+             const core::LayerView v(*m.wt, l);
+@@ -2605,7 +2607,8 @@
+                 // touches R in between (not the stage's last half, not before the PLE block of layer 1, not under a
+                 // control vector)
+                 const int64_t nl = half == 0 ? l : l + 1;
+-                const bool fuse = !gr_unfused() && nl < LE && !(half == 1 && nl == 1 && ple_on) &&
++                const bool fuse = !gr_unfused() && (half == 0 || allow_next_layer_fuse) &&
++                                  nl < LE && !(half == 1 && nl == 1 && ple_on) &&
+                                   !(half == 1 && strata::kernels::cvec().covers(l));
+                 const core::WeightRef* wnn = nullptr;
+                 if (fuse) {
+@@ -2623,7 +2626,10 @@
+                 if (half == 1 && strata::kernels::cvec().covers(l))   // --control-vector-scaled
+                     strata::kernels::cvec_apply(m.R, l, T, D, nullptr, 0, nullptr, 0, false, m.cs);
+             }
+-        }
++            return true;
++        };
++        for (int64_t l = LB; l < LE; ++l)
++            if (!run_layer(l, true)) return false;
+         if (!ple_land()) return false;   // a stage that ends before layer 1: the rows land anyway, the next gather starts
+         if (issuer.joinable()) {
+             issuer.join();

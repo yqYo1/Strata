@@ -1,0 +1,49 @@
+{
+  "started_utc": "2026-10-14T15:17:00.574079+00:00",
+  "scope": "Main serial CPU-only benchmark response/terminal/truncation regressions following R544; no GPU run",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "tools/test_strata_bench.py"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ".....\n----------------------------------------------------------------------\nRan 5 tests in 0.057s\n\nOK\n"
+    },
+    {
+      "argv": [
+        "python3",
+        "tools/test_benchmark_evidence.py"
+      ],
+      "exit_code": 0,
+      "stdout": "Using the Strata server already running at http://unused.\nRunning the suite (about 3-10 minutes) ...\nUsing the Strata server already running at http://unused.\nRunning the suite (about 3-10 minutes) ...\n",
+      "stderr": "..............\n----------------------------------------------------------------------\nRan 14 tests in 0.158s\n\nOK\n"
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "--",
+        "src",
+        "include",
+        "cmake",
+        "tests",
+        "tools"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "passed": true,
+  "GPU_executed": false,
+  "source_pins": {
+    "tools/strata_bench.py": "3cfb1ed6e9851d41515d8e2c1dabbd18e9805b5aa6ed9acb9f8f7d9783d12f69",
+    "tools/test_strata_bench.py": "0efb80f801e614d9a7a7ca014c023c151604d72eadd1ef1046411f208962a366",
+    "tools/test_benchmark_evidence.py": "b1e6565222c395bfeae1882042a8fb982f019f7974ec9868b86d492f060f8480",
+    "tools/long_generation_bench.py": "2563031efb923a6e8a937232f0b8f83ef09223a3f4e7aba99fc5b8780913d13a"
+  },
+  "finished_utc": "2026-10-14T15:17:01.095352+00:00"
+}

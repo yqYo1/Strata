@@ -1,0 +1,53 @@
+GEMM orientation probe v1 — implementation handoff
+Date: 2026-10-15 JST
+Status: IMPLEMENTED, UNBUILT, UNTESTED, UNADOPTED.
+Base feature/sycl HEAD: 84374f68448bf83d4e80ac13eea229539f6f19ed
+
+Scope and execution ownership
+Only tools/sycl/gemm_orientation_bench.cpp, the standalone target addition in cmake/sycl_backend.cmake and this report were edited. No product GEMM, QSA/header/prefill behavior or defaults changed. No build/test/GPU/profiler/fetch/cleanup/commit/push/branch/process/service action was performed. No environment/private-home/model data was inspected; excluded secretB/prefill-gemm-only-contract-root-v1/record.json was not read. Main owns compilation, serial execution, fault/process/lifetime checks and any integration/publication. No measured result is claimed by this implementation.
+
+Source review and provenance
+Read R563 research-own-prefill-gemm-down-gap-round563-v1.txt and R524 research-shape-weighted-gemm-targets-round524-v1.txt at their authorized report paths. Verified current src/prefill/sycl/gemm.cpp multiply and Gemm::f16, and donor 1eb89482a4afd20277ae0405780ed4f8eb98eb20:sycl/src/prefill/gemm.dp.cpp around lines750-784. Current wrapper calls oneMKL row_major nontrans/trans (T,N,K), X first, W second, K/K/ld, alpha1 and float beta/output. Donor DPCT call uses trans/nontrans (N,T,K), W first, X second, K/K/ldy, real_half inputs/real_float output/compute_f32. The new column_major descriptor reproduces this algebra in current oneMKL; it does not import DPCT, claim the donor's runtime algorithm, or modify the product wrapper.
+Donor GEMM SHA256: 11a2c943ccc323c328b58d99119d77b3b4ed95c92a0f680480bf5ede96bcb705
+Current source identities:
+tools/sycl/gemm_orientation_bench.cpp: SHA256 39cd95cf5de458e216d54b26de74112d7abb28e5c5dfabe7200352bc4a39b8e5
+cmake/sycl_backend.cmake: SHA256 c013b31e0009ee51ccdbcf269247872d6af7bfc5f29dc1b9017335b608400899
+src/prefill/sycl/gemm.cpp: SHA256 0fe1904787462a4156185bc08b2076e047f9cf51d9517ede4c8f482fa76c5410
+include/strata/prefill/gemm.hpp: SHA256 921a5aeea69a4b5a94c3fdf983eca10fca79c2e1cd2e3d6c83c05de95aad335d
+src/sycl/runtime.cpp: SHA256 d571ad74ebfafc2523e129fe29858d61058bf0c26ae686834ea294105acb5e2f
+Combined tracked CMake diff + /dev/null new-source diff SHA256: bad5d8d470a771b3bfd363190ae53219c095c952e10b7ab59fc9d12e4366dcbf
+Authoritative review: git diff 84374f68448bf83d4e80ac13eea229539f6f19ed -- cmake/sycl_backend.cmake and inspect tools/sycl/gemm_orientation_bench.cpp (new standalone source). No redundant patch/raw captures were retained.
+
+Target and CLI
+sycl_gemm_orientation_bench is EXCLUDE_FROM_ALL, linked against strata_prefill (and its current oneMKL/runtime dependencies), compiled with -fno-fast-math -ffp-contract=off. It is available independently of STRATA_SYCL_TESTS, with no automatic CTest/GPU execution registration.
+No argument defaults to --validate. Mutually exclusive modes are --host-only, --validate, --benchmark; --help prints usage. Invalid/extra arguments refuse before runtime. There is no model path, user-selected shape, capture graph, production option or persistent state.
+--host-only runs CLI/descriptor/leading-dimension/beta/byte-budget/overflow refusal checks, exhaustive small row/column address identities and all planned shape budgets, then exits before runtime_for or any queue/device/allocation construction. Host contracts also run before the other modes create the runtime. Infinity/NaN beta, illegal orientation, zero/negative/overflowing dimensions, ld<N and impossible owned byte counts refuse. Planned shapes are fixed and finite: ne1/12/428/1490/1792/3245/3855/4096; GU N1280 K2560; Down N2560 K640; ld=N+17. Product checks use signed-int64-safe element counts and size_t-safe guarded byte counts, with a conservative512MiB bound for owned live host/device operands and result copies. This bound excludes oneMKL/runtime internal workspace.
+
+Input, descriptor and storage contract
+Synthetic deterministic IEEE FP16 X/W use integer splitmix64-derived values and explicit _Float16 conversion, with separate fixed X/W seeds. These are synthetic hot operands, not real weights, seven native source-format rotation, dequantization, streamed slot lifetimes or a weighted model workload. No histogram weighting or aggregate speed/adoption decision is emitted. Each cell logs input FNV1a64 hashes (including sentinel guard bytes), geometry and role; Main should also record binary/source hashes, exact runtime/toolchain/driver and effective environment.
+Arms share one binary, one oneMKL library, the same runtime compute in-order queue/device/properties and exact X/W/Y addresses. One guarded FP32 output buffer is reused sequentially; diagnostic initial C is re-uploaded identically before each call. Arm0 is row_major(nontrans,trans,T,N,K,X,K,W,K,Y,ld); arm1 is column_major(trans,nontrans,N,T,K,W,K,X,K,Y,ld). Inputs are FP16, alpha1, beta/output FP32. A nonnull current Gemm::f16 wrapper is validated against the direct row-major call on the same queue/pointers/ld. No GEMM workspace or extra matrix transpose is introduced.
+Outputs have16-float guards at both ends and17 padding columns per row, all sentinel12345.25. Inputs have16-half guards at both ends; entire X/W bytes are read back after validation and required unchanged. Explicit runtime wait drains checked compute and transfer queues while storage is still alive; Allocation also follows existing runtime lifetime behavior. The benchmark uses no returned-BLAS-event timing or per-call waits.
+
+Validation (written, not executed)
+Every16 shape/role cell runs beta0 and0.25, arms0/1 and current wrapper arm2, with reset identical C. All three full outputs are checked finite through pair comparisons; all guards/padding are checked independently. Every logical output is compared row/column and row/wrapper with declared pair bound
+  abs(a-b) <= 2e-4 + 5e-5*max(abs(a),abs(b)).
+An independent CPU double dot/value reference decodes exact FP16 inputs and includes beta*C. For ne<=12, every output is checked. For larger ne, Cartesian rows/columns include0,1,middle,last-1,last (deduplicated); last column borders padding and every padding element is sentinel-checked. The reference tolerance is declared before any run:
+  limit = 2e-5 + gamma_K*sum(abs(x_k*w_k)) + 4*u*(abs(ref)+abs(beta*C)),
+  u=2^-24, gamma_K=(K*u)/(1-K*u).
+This is a conservative FP32 accumulation bound on the actual FP16 operands, not a tolerance for a different input precision or a guarantee of oneMKL's internal algorithm. Pair tolerance is tighter and independently declared. Failure aborts with row/column, actual error and limit; no tolerance adaptation exists. Per-arm CPU point count/max_abs/error_over_limit and full-output pair error metrics are flushed. Progress is flushed before every shape and diagnostic call. No GPU parity, padding safety or wrapper acceptance has been established until Main executes it.
+
+Benchmark (written, not executed)
+Separate --benchmark process; fixed synthetic inputs, beta0, same addresses and in-order queue. Per shape/role, first_call_in_cell is recorded separately for each arm, including host_submit_ns, drain_ns and batch_wall_ns. Only the first actual BLAS call in a fresh process might represent process initialization/JIT; later first_call_in_cell values must not be described as cold process/JIT results. Both arms then receive8 alternating ABBA warmup calls total (4/arm), followed by checked completion.
+Each cell produces20 samples (10/arm) in repeated0/1/1/0 order. Repeats per sample are16 for ne1/12 and4 for all larger anchors. No call-level wait, readback, CPU oracle, event query, profiling marker or trace is added inside the timed block. Timestamp start, submit completion, then Runtime::wait completion yield host_submit_ns, drain_ns and batch_wall_ns. wall_ns_per_call is batch_wall/repeats. Runtime::wait includes compute and idle transfer queue drains and sticky async error checks. Drain is not exclusive device time: launch/scheduling/submission overlap and internal BLAS commands are included. No claim of full GEMM service from a returned oneMKL event is made. Output sample lines are flushed after completion, outside their timing windows.
+Setup/upload/hash computation happen outside timing; post-cell output readback checks finite values and padding/end guards outside all sample windows, with no CPU oracle. All320 individual warm samples and32 first_call_in_cell results/order are printed; no lossy averages replace them. This is one synthetic hot-operand matrix/lifecycle, not five independent runs, real7-format rotation, model cold-source or weighted route performance. Main controls clean process environment (no verbose/tracing/validation flags during timing) and retains full individual samples and source/binary/driver/fault receipts.
+
+Suggested Main commands — NOT EXECUTED
+Use the existing configured SYCL build and current exact oneMKL/toolchain/AOT recipe:
+  cmake --build <configured-sycl-build> --target sycl_gemm_orientation_bench
+  <configured-sycl-build>/sycl_gemm_orientation_bench --host-only
+  <configured-sycl-build>/sycl_gemm_orientation_bench --validate
+  <configured-sycl-build>/sycl_gemm_orientation_bench --benchmark
+Run host-only first, then bounded isolated diagnostics for validation. Main may verify descriptors with oneMKL verbose mode1 in a separate diagnostic process, never verbose synchronous timing mode2 in clean samples. Main supplies the exclusive serial execution lane, finite supervisor deadline,64MiB default diagnostic log budget, boot/PID/start-time receipt, fresh fault boundaries, final status and cleanup. The probe itself has no device-hang cancellation/deadline; Main's controller owns those requirements. Do not infer a pass from a lost/incomplete/faulting run or weaken tolerance on failure.
+
+Decision and next review
+The descriptor candidate is an unbuilt/untested standalone diagnostic only. Main next reviews and compiles, executes host contracts and all validation cells with fault/lifetime gates, then obtains clean synthetic sample evidence. A shortlisted orientation still needs real seven-format operand rotation, exact workload histogram evidence, full prefill model quality/cold-stream behavior and separate decode regression gates before product adoption. Keep GU/Down and host-submit/completed-wall observations separate. No cleanup/deletion occurred and no raw trace/tensor artifact was generated by this task; retention follows docs/ARTIFACT_RETENTION.md.

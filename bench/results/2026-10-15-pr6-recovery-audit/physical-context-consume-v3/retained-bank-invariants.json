@@ -1,0 +1,84 @@
+{
+  "scope": "source comparisons only; no compile/test/runtime gate",
+  "immutable_base_manifest_sha256": "69dac0ce4c04ada3d1d68226d0ce106a8181370dd7cd5885911d03f7aef8d3d3",
+  "checks": [
+    {
+      "invariant": "request phase owner",
+      "comparison": "byte-identical immutable bank source block",
+      "sha256": "18575de5159440c9a1425d97cdc47af9390db54ea07e684942a994ae4a50f7b2",
+      "bytes": 428
+    },
+    {
+      "invariant": "bank outer transaction, guards, drains, restore and recapture",
+      "comparison": "byte-identical immutable bank source block",
+      "sha256": "c346b37d8db2d406688e082cc9475ce6322df43df60055d071ff5185a5a4fdd7",
+      "bytes": 4481
+    },
+    {
+      "invariant": "head-release helper and exclusion",
+      "comparison": "byte-identical immutable bank source block",
+      "sha256": "4ab72437932279248c42c76612dce7ad508836f23e7e870eb1829c56674bb267",
+      "bytes": 4315
+    },
+    {
+      "invariant": "bank request context and recapture recipe",
+      "comparison": "byte-identical immutable bank source block",
+      "sha256": "db2790b4ffb4ab84cd061e8c31ae729f1de69396ad59069b2df544a0d1bc8c2b",
+      "bytes": 673
+    },
+    {
+      "invariant": "serve bank callsite",
+      "comparison": "byte-identical immutable bank source block",
+      "sha256": "953fbcca8a2cd91a5e9cb237db764cd3ab4fa6aa9b97015fd58e9c0e6a4e24cf",
+      "bytes": 511
+    },
+    {
+      "invariant": "standalone bank callsite",
+      "comparison": "byte-identical immutable bank source block",
+      "sha256": "cee8cfbf2f50c15ed6400b28db838e11e6f522e37365e3f62f47ad9c1d14349b",
+      "bytes": 450
+    },
+    {
+      "invariant": "startup default-off switch",
+      "comparison": "exact original expression retained once",
+      "expression": "const char* dense_bank_switch=std::getenv(\"STRATA_PREFILL_NATIVE_DENSE_BANK\");"
+    },
+    {
+      "invariant": "startup opt-in mapping",
+      "comparison": "exact original expression retained once",
+      "expression": "const bool native_dense_bank_enabled=dense_bank_switch && !std::strcmp(dense_bank_switch,\"1\");"
+    },
+    {
+      "invariant": "startup packed snapshot opt-in",
+      "comparison": "exact original expression retained once",
+      "expression": "native_dense.load(o.native_dense_gguf, wt, err, o.native_ple_key, native_dense_bank_enabled)"
+    },
+    {
+      "invariant": "window guard",
+      "comparison": "exact original expression retained once",
+      "expression": "if(native_dense_bank_enabled && win && to-at>sp.chunk())"
+    },
+    {
+      "invariant": "MTP checked callback drain ABI",
+      "comparison": "exact declaration retained once",
+      "expression": "    void drain_prefill_dense_callback();"
+    }
+  ],
+  "unchanged_inherited_bank_files": {
+    "include/strata/core/layout.hpp": "b7e818dc936ecb5a41226e0ffc9f7312cde3dd87614d3a3a2c8c1c04cc7cebeb",
+    "include/strata/core/native_dense.hpp": "e6aa60818e39d20297df126fbc773993d5afca1b521b2168db53bc42cdb1cbd0",
+    "include/strata/core/native_dense_bank_policy.hpp": "c3e37260e0cc60bcacb65ec31e3aea08c285debd23fe9239b36fc8af542cb40f",
+    "include/strata/core/session.hpp": "b7f6e053fd3c4c454980f071ada8bbc4ad0fc92902d9009d9c8761aaaefcfbb9",
+    "include/strata/core/verify.hpp": "0130ff2d721638bf419f641b6e8909c86fce528dc62a1c6bc0be7b3697d84d58",
+    "include/strata/prefill/prefill.hpp": "dc23be25e15138ff4ce58a2696be7e0f67ded25b79107366da0103681668828d",
+    "src/core/mtp.cpp": "04cb9d86e2861877263dd2177fce893bd0dd7b17c045594292ee6d6625d09c1f",
+    "src/core/native_dense.cpp": "f3627fb9ac392ea5c11b4d932b9b493abc86c8bafbd5dde8069e40c6a16e6ddf",
+    "src/core/session.cpp": "4c1aa246e568f96b40b9f9e16000e1f1dc6d75c99168cb26baef56a43b4e4bce",
+    "src/core/verify.cpp": "325c27d75423582dcb700d884e5f4b7031dc7fffe611c817266748bd92968515",
+    "src/prefill/layer_major.inc": "bd13649913bd0d4c99d4722f1e43d1a4e6bf81ec5a3fc7ad2c867d90031fb6d7",
+    "src/prefill/prefill.cpp": "679a72637352ef174051b1d06ab51a7f1926f4dd3355b6e83eebf5e8bdc6fb5b"
+  },
+  "assembly": "start with exact immutable bank proposed tree; overlay only this V3 proposed tree",
+  "final_candidate_generate_sha256": "f1dbd6b56f994eb56113daa68d1b0a82a75c10884394c30296af44bc76e90b64",
+  "final_candidate_mtp_header_sha256": "4aec86edbc1d951467e0dec734fb62f8612fd90fa66acd0ca5727ecb25ab3ab7"
+}

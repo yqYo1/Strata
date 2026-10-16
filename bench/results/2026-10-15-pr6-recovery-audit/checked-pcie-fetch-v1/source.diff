@@ -1,0 +1,242 @@
+--- a/include/strata/core/verify.hpp
++++ b/include/strata/core/verify.hpp
+@@ -32,6 +32,9 @@
+ #include "strata/kernels/sampler.hpp"
+ 
+ #include <cuda_runtime.h>
++#ifdef STRATA_ENABLE_SYCL
++#include "strata/core/checked_pcie_fetch.hpp"
++#endif
+ 
+ #include <atomic>
+ #include <cstdint>
+@@ -232,6 +235,8 @@
+     cudaEvent_t work_done_ = nullptr;
+     bool overlap_gpu_ = true, work_launched_ = false;
+     cudaError_t work_status_ = cudaSuccess;
++    detail::CheckedPcieFetch fetch_status_; // issuer-only, separate from shared/hit work
++    bool finish_fetch(std::string& err);
+     std::atomic<uint32_t> reached_{0};
+     bool end_segment(int T, std::string& err, bool work = false);
+     void launch_work();
+--- a/src/core/verify.cpp
++++ b/src/core/verify.cpp
+@@ -1207,6 +1207,9 @@
+     const OnDevice on_device(device_);
+     if (T < 1 || T > max_t_) { err = "verify: window size out of range"; return false; }
+     if (released_.load()) { err = "verify: an earlier window never finished on the GPU (#267); restart the engine"; return false; }
++#ifdef STRATA_ENABLE_SYCL
++    if (!fetch_status_.reset()) { err = "verify: earlier PCIe copy completion is unknown; checked retirement required"; return false; }
++#endif
+     const ModelGeometry& g = *g_;
+     SessionState& ss = *ss_;
+     if (pos0 + T > ss.qsa_states[ss.qsa_primary()].max_cells) { err = "verify: the window runs past the context"; return false; }
+@@ -1329,6 +1332,7 @@
+ #ifdef STRATA_ENABLE_SYCL
+         work_launched_ = false;
+         work_status_ = cudaSuccess;
++        if (!fetch_status_.reset()) { err = "verify: earlier layer PCIe copy completion is unknown"; return false; }
+ #endif
+         const int tb = gtb[grp], n = gte[grp] - gtb[grp];
+         progress_at("verify window: the CPU experts of layer", l);
+@@ -1336,6 +1340,14 @@
+             pool(user, h_x_ + (size_t) tb * g.n_embd, h_ids_ + (size_t) tb * ss.k, n, ss.k,
+                  h_ymiss_ + (size_t) tb * ss.k * g.n_embd, l);
+ #ifdef STRATA_ENABLE_SYCL
++        // Synchronous enqueue failures are not recovered by a later successful
++        // queue wait. Drain the submitted prefix before any further publication.
++        if (fetch_status_.failed()) {
++            finish_fetch(err); // preserves first enqueue error even when drain fails
++            if (work_status_ != cudaSuccess)
++                err += "; independent shared/hit status=" + std::to_string(int(work_status_));
++            return false;
++        }
+         if (overlap_gpu_ && work_launched_ && work_status_ == cudaSuccess) {
+             const auto status = cudaEventQuery(work_done_);
+             if (status == cudaSuccess) ++work_ready_at_pool_return;
+@@ -1362,6 +1374,12 @@
+         // empty GPU plan. Its graph starts here, after the CPU callback.
+         if (overlap_gpu_ && !work_launched_ && work_status_ == cudaSuccess) launch_work();
+         if (work_status_ != cudaSuccess) {
++            // Shared/hit errors stay separate. Any concurrently submitted DMA
++            // prefix still needs the same checked drain before this early exit.
++            if (!finish_fetch(err)) {
++                err += "; independent shared/hit status=" + std::to_string(int(work_status_));
++                return false;
++            }
+             err = std::string("verify: shared/hit launch: ") + cudaGetErrorString(work_status_) +
+                   released_note(release_gpu_waits(5000));
+             return false;
+@@ -1373,11 +1391,7 @@
+ #ifdef STRATA_ENABLE_SYCL
+         // DMA callbacks and staging sources must finish before the next graph
+         // consumes them or the next CPU layer can reuse its transient storage.
+-        const cudaError_t copies = cudaStreamSynchronize(copy_);
+-        if (copies != cudaSuccess) {
+-            err = std::string("verify: expert copies: ") + cudaGetErrorString(copies);
+-            return false;
+-        }
++        if (!finish_fetch(err)) return false;
+         if (released_.load() || (test_stall && k + 1 == steps)) {
+             err = "verify: host results withheld" + released_note(release_gpu_waits(5000));
+             return false;
+@@ -1399,8 +1413,12 @@
+     const cudaError_t se = cudaStreamSynchronize(cs_);
+     if (se != cudaSuccess) { err = std::string("verify: ") + cudaGetErrorString(se); return false; }
+     progress_at("verify window: waiting for the expert copies", (int64_t) T);
+-    const cudaError_t copy_status = cudaStreamSynchronize(copy_); // Host callbacks cannot reach the next window.
++#ifdef STRATA_ENABLE_SYCL
++    if (!finish_fetch(err)) return false; // Host callbacks cannot reach the next window.
++#else
++    const cudaError_t copy_status = cudaStreamSynchronize(copy_);
+     if (copy_status != cudaSuccess) { err = std::string("verify: copies: ") + cudaGetErrorString(copy_status); return false; }
++#endif
+     window_scope.drained(); // Both stage streams completed; sampling below has no mapped spin waits.
+     if (prof_on_ && G == 1) {       // the window's GPU stage stamps
+         cudaMemcpy(prof_h_.data(), prof_, prof_h_.size() * 8, cudaMemcpyDeviceToHost);
+@@ -1530,6 +1548,27 @@
+ void Verifier::fetch_dma(void* ctx, const uint8_t* const* src, int n, size_t bytes) {
+     Verifier* v = (Verifier*) ctx;
+     const uint32_t want = v->cur_layer_ + 1;
++#ifdef STRATA_ENABLE_SYCL
++    static_assert(cudaSuccess == 0);
++    static_assert(size_t(kStagingBlobs) == detail::CheckedPcieFetch::staging_slots);
++    const size_t max_blob = strata::kernels::cpu::expert_layout().max_blob;
++    size_t allocation_bytes = 0;
++    if (max_blob <= SIZE_MAX / size_t(kStagingBlobs)) allocation_bytes = size_t(kStagingBlobs) * max_blob;
++    v->fetch_status_.submit(v->staging_, allocation_bytes, reinterpret_cast<void*>(v->sink_.staging),
++        v->sink_.staging_cap, max_blob, src, n, bytes, int(cudaErrorInvalidValue),
++        [v](uint8_t* dst, const uint8_t* from, size_t count) {
++            return int(cudaMemcpyAsync(dst, from, count, cudaMemcpyHostToDevice, v->copy_));
++        },
++        [v,want] {
++            FlagSet& fs = v->flag_sets_[v->cur_layer_ % (sizeof v->flag_sets_ / sizeof v->flag_sets_[0])];
++            fs.flag = v->h_flagB_; fs.value = want;
++            return int(cudaLaunchHostFunc(v->copy_, [](void* p) {
++                FlagSet* value = static_cast<FlagSet*>(p); raise_flag(value->flag, value->value);
++            }, &fs));
++        },
++        [v,want] { raise_flag(v->h_flagB_, want); },
++        [](int code) { return cudaGetErrorString(static_cast<cudaError_t>(code)); });
++#else
+     if (n <= 0) { raise_flag(v->h_flagB_, want); return; }
+     uint8_t* stage = (uint8_t*) v->sink_.staging;                  // this group's half in a split window
+     for (int i = 0; i < n; ++i) cudaMemcpyAsync(stage + (size_t) i * bytes, src[i], bytes, cudaMemcpyHostToDevice, v->copy_);
+@@ -1537,6 +1576,7 @@
+     fs.flag = v->h_flagB_;
+     fs.value = want;
+     cudaLaunchHostFunc(v->copy_, [](void* p) { FlagSet* s = (FlagSet*) p; raise_flag(s->flag, s->value); }, &fs);
++#endif
+ }
+ 
+ void Verifier::publish_plan(void* ctx) {
+@@ -1549,6 +1589,23 @@
+ }
+ 
+ #ifdef STRATA_ENABLE_SYCL
++bool Verifier::finish_fetch(std::string& err) {
++    const bool ok = fetch_status_.finish(
++        [this] { return int(cudaStreamSynchronize(copy_)); },
++        [](int code) { return cudaGetErrorString(static_cast<cudaError_t>(code)); });
++    if (ok) return true;
++    const auto& first = fetch_status_.first;
++    err = "verify: PCIe fetch " + std::string(first.operation) + " index=" + std::to_string(first.index) +
++          " status=" + std::to_string(first.code) + ": " + first.message.data();
++    if (first.detail_truncated) err += " [error detail truncated to 255 bytes]";
++    if (fetch_status_.drain_error.code) {
++        const auto& drain = fetch_status_.drain_error;
++        err += "; copy-stream drain status=" + std::to_string(drain.code) + ": " + drain.message.data() +
++               "; completion unknown; existing checked retirement required";
++        if (drain.detail_truncated) err += " [drain detail truncated to 255 bytes]";
++    }
++    return false;
++}
+ void Verifier::launch_work() {
+     const size_t index = cur_layer_.load();
+     if (released_.load() || work_launched_ || last_t_ < 1 || last_t_ > max_t_ ||
+--- /dev/null
++++ b/include/strata/core/checked_pcie_fetch.hpp
+@@ -0,0 +1,83 @@
++#pragma once
++#include <array>
++#include <cstddef>
++#include <cstdint>
++#include <cstdio>
++#include <limits>
++
++namespace strata::core::detail {
++// Synchronous issuer-owned state. Device/host completion callbacks never access
++// this object. No CUDA/SYCL dependency, global TLS, allocation or ownership release.
++struct CheckedPcieFetch {
++    static constexpr size_t staging_slots=16;
++    struct Error {
++        int code=0, index=-1;
++        const char* operation="none";
++        bool detail_truncated=false;
++        std::array<char,256> message{};
++    } first, drain_error;
++    bool drained=true, called=false;
++    size_t submitted=0;
++    bool failed() const noexcept {return first.code!=0;}
++    void remember(int code,const char* op,int index,const char* text) noexcept {
++        if(!code || failed())return;
++        first.code=code;first.operation=op;first.index=index;
++        const int length=std::snprintf(first.message.data(),first.message.size(),"%s",text?text:"unknown error");
++        first.detail_truncated=length<0 || size_t(length)>=first.message.size();
++    }
++    bool reset() noexcept {
++        if(!drained)return false; // Never discard unknown-completion state.
++        first=Error{};drain_error=Error{};submitted=0;called=false;return true;
++    }
++    template<class Copy,class Notify,class Empty,class Describe>
++    void submit(const void* allocation,size_t allocation_bytes,void* stage,
++                int64_t slots,size_t max_blob,const uint8_t* const* src,int n,
++                size_t bytes,int invalid,Copy copy,Notify notify,Empty empty,Describe describe) {
++        if(failed())return;
++        if(called) {remember(invalid,"duplicate_fetch",-1,"more than one fetch batch in a layer step");return;}
++        called=true;
++        if(n<=0) {empty();return;} // Original zero/negative-count empty contract.
++        const uintptr_t base=reinterpret_cast<uintptr_t>(allocation);
++        const uintptr_t dest=reinterpret_cast<uintptr_t>(stage);
++        const size_t maximum=std::numeric_limits<size_t>::max();
++        if(!allocation || !stage || !src || slots<=0 || size_t(slots)>staging_slots || n>slots ||
++           !bytes || !max_blob || bytes>max_blob || size_t(n)>maximum/bytes ||
++           base>UINTPTR_MAX-allocation_bytes || dest<base || dest>base+allocation_bytes ||
++           size_t(n)*bytes>base+allocation_bytes-dest || max_blob>maximum/staging_slots ||
++           allocation_bytes!=staging_slots*max_blob || (dest-base)%max_blob ||
++           size_t(slots)>maximum/max_blob || size_t(slots)*max_blob>base+allocation_bytes-dest) {
++            remember(invalid,"geometry",-1,"invalid PCIe staging/source/count/blob span");return;
++        }
++        // Validate the entire pointer batch before its first enqueue. Source
++        // allocation identity/accessible byte extent remains the API's check.
++        for(int i=0;i<n;++i)if(!src[i] || reinterpret_cast<uintptr_t>(src[i])>UINTPTR_MAX-bytes) {
++            remember(invalid,"source_geometry",i,"invalid PCIe source pointer/span");return;
++        }
++        for(int i=0;i<n;++i) {
++            drained=false; // Even a failed enqueue may have unknown side effects.
++            const int code=copy(static_cast<uint8_t*>(stage)+size_t(i)*bytes,src[i],bytes);
++            if(code) {remember(code,"copy_api",i,describe(code));return;}
++            ++submitted;
++        }
++        drained=false;
++        const int code=notify();
++        if(code)remember(code,"callback_api",n,describe(code));
++    }
++    template<class Drain,class Describe> bool finish(Drain drain,Describe describe) {
++        // Caller uses this in place of its existing checked copy-stream sync;
++        // submission failure never bypasses draining the successfully queued prefix.
++        const int code=drain();
++        if(code) {
++            drained=false;
++            if(!drain_error.code) {
++                drain_error.code=code;drain_error.operation="copy_stream_drain";
++                const int length=std::snprintf(drain_error.message.data(),drain_error.message.size(),"%s",describe(code));
++                drain_error.detail_truncated=length<0 || size_t(length)>=drain_error.message.size();
++            }
++            remember(code,"copy_stream_drain",-1,drain_error.message.data());
++        } else drained=true;
++        return drained && !failed();
++    }
++    bool can_consume() const noexcept {return drained && !failed();}
++};
++} // namespace strata::core::detail

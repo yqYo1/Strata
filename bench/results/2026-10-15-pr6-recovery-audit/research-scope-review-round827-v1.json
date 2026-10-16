@@ -1,0 +1,82 @@
+{
+  "review": "R827",
+  "reviewer": "native Codex gpt-6-luna max",
+  "mode": "read-only scope, source, depth, and retrieval review",
+  "index_status": "The current research-index.json has no R825 or R826 entry. No index edit was made; add the reviewed records at the next authorized metadata update.",
+  "reports": [
+    {
+      "round": 825,
+      "purpose_class": "decision support",
+      "report_path": "bench/results/2026-10-15-pr6-recovery-audit/research-round825-v1.txt",
+      "report_sha256": "0d5ea6670589646a5644d90ea07f9cd6eff52ffbb5b95ee1eabfd3db61417772",
+      "spec_path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round825-spec-v1.txt",
+      "spec_sha256": "8f0c93c3e8a88a3f3fca9038dda2b170ca5e969eddbfce145c3c39503a4548df",
+      "depth": {
+        "word_count": 1689,
+        "source_url_count": 5,
+        "budget_fit": "Within the 1,200–1,800-word and seven-source limits.",
+        "scope_fit": "Strong. Delivers two independent adversarial accuracy screens, exact/high-precision oracle guidance, and explicit separation from existing regression tests and task-quality decisions.",
+        "substantive_increment": "Adds long-K order/cancellation and output-range/narrowing probes beyond R783's type-boundary survey and R805/R817's lowering/artifact evidence. The two constructions and their stated exact results were independently checked for arithmetic consistency.",
+        "redundancy": "Low. It reuses prior guardrails but does not repeat their main investigation."
+      },
+      "unsupported_claims": [
+        "No material unsupported claim found. The report correctly marks BMG shape acceptance, DPAS accumulation order, intermediate rounding, subnormal/special-value handling, and model quality as unestablished.",
+        "It is a proposed screen only; no numerical, hardware, or model-quality result follows from the recipes."
+      ],
+      "source_limit": "The IGC and SYCL URLs use mutable upstream branches. Pin source revisions before relying on them for a future conformance claim; this does not invalidate the report's explicitly bounded mathematical proposal.",
+      "main_original_needed_now": false,
+      "retrieval_gate": "Hold until Main makes a concrete component/whole-model precision decision and opens a direct-16 accuracy question. Then retrieve only the relevant recipe section(s); retain the 68-test and qualified-special contract unchanged."
+    },
+    {
+      "round": 826,
+      "purpose_class": "decision support",
+      "report_path": "bench/results/2026-10-15-pr6-recovery-audit/research-round826-v1.txt",
+      "report_sha256": "45a38ed8404ae77668703f78c6b2219d644b9b933379725356b5292e1f65a437",
+      "spec_path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round826-spec-v1.txt",
+      "spec_sha256": "29bae9b14698ac6b2fcf813fd978ed93f27cff0de2c1085f5437a2033ac3d324",
+      "depth": {
+        "word_count": 1439,
+        "source_url_count": 5,
+        "budget_fit": "Within the 1,200–1,800-word and seven-source limits.",
+        "scope_fit": "Strong and directly decision-relevant. It isolates the static-library INTERFACE link-option risk and contrasts a candidate-only prelink with the engine's generic path.",
+        "substantive_increment": "Extends R817's AOT/extraction and artifact-selection guidance to the unresolved image-link boundary. It correctly explains that per_kernel partitions modules but does not filter to a named kernel.",
+        "redundancy": "Moderate reuse of R817 on target-specific options and code splitting; the candidate/engine mixed-link question is new and sufficiently material."
+      },
+      "answer_to_exact_recipe_question": {
+        "supported_general_controls": "Yes. `-fsycl-link`, `-fsycl-device-code-split=per_kernel`, `spir64_gen`, and target-specific backend-option semantics are documented by Intel LLVM. R817 pins the installed official LLVM source revision as 504366f4b82ff00bbac7b0c956635eed8bc599d8; the corresponding pinned Users Manual and Compiler/Runtime Design documents confirm these general semantics.",
+        "actually_supported_complete_v711_recipe": "No. R826 offers one illustrative qualification command and a placeholder final-link command, both explicitly untested. The cited `sycl` URLs are mutable and are not pinned to the installed v711 revision. The official source documents the building blocks and prelinked fat-object model, not this exact BMG-only device link combined with the engine's `spir64` SYCL final link.",
+        "unverified_or_not_source_proven": [
+          "Acceptance and output behavior of the exact proposed command under the installed clang 22 build.",
+          "Retention/registration of the prelinked `spir64_gen` object when the final engine SYCL driver link requests only `spir64`, including whether any target-list change is required.",
+          "That the exact mixed link leaves generic engine device inputs on their old JIT path and scopes the BMG/256-GRF option exclusively to the candidate image.",
+          "The final-link example contains placeholders, so it is not a complete reproducible command."
+        ],
+        "flag_and_semantics_status": {
+          "documented_controls": "`-fsycl-link`, per-kernel splitting, `-fsycl-targets=spir64_gen`, and `-Xsycl-target-backend=<T>` are documented at the pinned LLVM source revision above. The existing R810 build establishes prior use of the BMG and 256-GRF backend option in that candidate build, not isolation in the proposed mixed link.",
+          "not_a_kernel_filter": "The report is correct: per_kernel yields modules for each kernel plus dependencies; it does not select only one named kernel. The isolated native16 source can still contribute all its instantiated entry variants.",
+          "unsupported_shortcut": "Do not treat the official fat-object description as proof of the exact final `-fsycl` driver command or runtime image selection."
+        }
+      },
+      "retrieval_sections_now": [
+        "What the Intel LLVM controls do",
+        "One recommended qualification recipe"
+      ],
+      "main_original_needed_now": true,
+      "retrieval_brief": "Read those two sections for the immediate isolation decision. Treat the recipe as an unverified qualification hypothesis, not a supported drop-in build rule; preserve the explicit stop condition if the final link requires recompiling generic engine IR for `spir64_gen`.",
+      "source_check": {
+        "pinned_compiler_revision_from_R817": "504366f4b82ff00bbac7b0c956635eed8bc599d8",
+        "official_users_manual": "https://github.com/intel/llvm/blob/504366f4b82ff00bbac7b0c956635eed8bc599d8/sycl/doc/UsersManual.md",
+        "official_compiler_runtime_design": "https://github.com/intel/llvm/blob/504366f4b82ff00bbac7b0c956635eed8bc599d8/sycl/doc/design/CompilerAndRuntimeDesign.md",
+        "evidence_boundary": "These sources support generic control/link semantics, not the exact BMG/GRF256 mixed-image final link or runtime selection."
+      }
+    }
+  ],
+  "prior_report_pins_used_for_overlap_review": {
+    "R783": "5dd2cad9263bd435c7cb788db02e614a4535c96cdf36cd443886b628e2d9794e",
+    "R805": "7fde417888e593e440387375dd07bcf9bbad7b9ab5a2e886eb77f6605794e45e",
+    "R817": "c11814ca952989f823fe75b6c0ece8a78e7db7f712e7b2bbaa361910089093fd",
+    "R819_review_json": "0178c8974d616e06660938d22fae3587351ad4e85114ca56d8e281a12a458a48",
+    "R819_review_ja": "7ad41ed87cd59d2289daacc4721e8dc37eca3e61a96b530b1ec7a2f75f7db750"
+  },
+  "actions": "Only the two assigned review files were created. No source, index, Git metadata, build/test artifacts, or other project files were changed. No build, test, compiler/linker/tool help, GPU work, library load, profiler, process inspection, or cleanup was performed."
+}

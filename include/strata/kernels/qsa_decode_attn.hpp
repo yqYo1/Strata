@@ -43,4 +43,13 @@ void qsa_decode_attn_step(const float* q, const QsaAttnPools& pools, const int32
 void qsa_decode_attn_batch(const float* q, const QsaAttnPools& pools, const int32_t* ids, const int32_t* steps,
                            int64_t cap, const QsaShapes& s, float* scratch, float* attn, int64_t n_q, void* stream);
 
+#if defined(STRATA_ENABLE_SYCL)
+/// SYCL fallback candidate: layout 0 preserves natural Q storage; layout 1
+/// transposes only work-group local Q. Invalid layouts throw before submission.
+/// Same buffers, scratch sizing, ordering and stream lifetime as the batch API.
+void qsa_decode_attn_batch_layout(const float* q, const QsaAttnPools& pools, const int32_t* ids,
+                                  const int32_t* steps, int64_t cap, const QsaShapes& s, float* scratch,
+                                  float* attn, int64_t n_q, int layout, void* stream);
+#endif
+
 }  // namespace strata::kernels

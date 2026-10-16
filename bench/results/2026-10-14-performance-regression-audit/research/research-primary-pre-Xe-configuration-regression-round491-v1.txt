@@ -1,0 +1,44 @@
+# Round 491: old tuned 32K run versus current stock 32K run
+
+## Finding
+
+The available numbers do not establish a decode regression. The historical tuned run measured six later fresh 32,768-token prompts with 64 generated tokens per request; median decode was 16.182 tok/s (range 15.581–19.060). Current stock evidence is three reads with a 32,049-token prompt and 24 generated tokens; decode readings were 4.2, 2.8, and 3.4 tok/s (median 3.4). Different output lengths, prompt lengths, split scheduling, prefill chunk, binary/source revision, compiler/runtime, and cache geometry all prevent causal comparison. The 32K matched historical run is the relevant anchor; small-prompt results are not a substitute.
+
+## Configuration and evidence
+
+| Setting | Historical tuned 32K | Current stock 32K |
+|---|---|---|
+| Hardware | Arc B570 10 GiB; Ryzen 5 5600X; 128 GiB RAM | Same machine per current run record |
+| Workload | Exact 32,768-token fixtures; 64 outputs; six later fresh reads per build, with first reads separately reported | Actual 32,049-token prompt; 24 outputs; three samples |
+| Effective context/KV | Context 262,144; int8 KV; 32,768 resident cells | Same reported values |
+| Prefill | Actual chunk 8,192 | Chunk 4,096 |
+| Expert cache / workers | 128 slots, 325 MiB; per-layer; pool workers 5; PCIe fraction 0; no prefill borrowing | 128 per-layer slots, 268.6 MiB; workers 5; PCIe fraction 0; reserve 700 |
+| Speculation | MTP/spec 4; greedy; explicit `--spec-min-p 0`; `--spec-split` | Spec 4; greedy; no explicit min-p; `--no-spec-split` |
+| Additional old environment | `STRATA_PREFILL_COMPACT=2`, attention layout 1, KV stage own 1, KV prefetch 0, ring 8; prompt cache configured but measured reads reported fresh/REUSED 0 | Current stock recipe uses current defaults unless specified; no prompt reuse is reported |
+| Compiler/runtime and build | Integrated source `1eb89482a4afd20277ae0405780ed4f8eb98eb20`; binary SHA starts `86972697`; oneAPI/icpx 2026.1 build receipt | Current stock binary SHA starts `d3861dd`; source identity `5bf074291`; clang 22 / libsycl 9 per current run record |
+
+Historical details are in `bench/results/2026-10-14-performance-regression-audit/historical-v0141/tuned32k/{README.md,summary.json}` and the committed counterpart under `bench/results/2026-10-05-sycl-prefill-scaling/upstream-v0.1.41-20261009/tuned32k/`. The report records a prior full physical-context 262,144 qualification before the quiet sequence. Its later-read decode median was 16.182 tok/s; the old qualified control was 16.262 tok/s. This is a stable historical reference, not a same-build comparison to current stock.
+
+`--spec-min-p 0` and omission are equivalent under the current source's default `spec_min_p=0.0` (assuming no API override). Thus the observed split flag, chunk, source, compiler, and workload changes matter; min-p is not itself a difference. Historical prompt-cache settings did not create prefix reuse in these reads: each prompt was fresh, with REUSED 0.
+
+## Actual source path and decode work shape
+
+The historical configured SYCL resolver selected the migrated `sycl/src/core/verify.cpp` and `sycl/src/core/expert_source.cpp`, plus migrated QSA selection at `sycl/src/kernels/cuda/qsa_select.dp.cpp`; CPU native expert files resolved from the root CPU kernel paths. Current configured source selects root `src/core/verify.cpp` and `src/core/expert_source.cpp`, `src/kernels/sycl/qsa_select.cpp`, and root `src/kernels/cpu/*`. This is the configured engine path, not evidence about an unselected CUDA generator. There is no direct code-based XeStrata implementation evidence for this comparison.
+
+The two verifier paths use distinct completion/scheduling boundaries. Historical split mode forms two groups for four speculative rows (2+2); group events are waited at the host boundary, allowing the documented overlap of one group's CPU expert work with the other group's GPU mixer/layer work. Current no-split mode submits four rows as one group and synchronizes the layer event before continuing. Both paths explicitly wait for work to complete; the relevant difference is grouping and overlap opportunity, not a claim that one avoids synchronization.
+
+That changes the QSA/verification shape too: the old QSA selection/resolve and decode-attention work was issued per group of two rows, while current no-split issues a four-row group. Total speculative rows remain four. Current QSA scoring uses the valid prefix through the current block. These source shapes identify plausible scheduling/launch-cost mechanisms, but no per-kernel timings establish either as the bottleneck.
+
+The CPU expert callback ABI is materially the same: `PoolMultiFn(void*, const float*, const int32_t*, int64_t n_tok, int64_t k, float*, int64_t layer)`, with per-token activation and output buffers in `ExpertJobMulti`. Both paths deduplicate CPU misses by expert within the layer/window and run the native gate/up, intermediate quantization, and down-projection work. A concrete CPU-side source difference is the Q8_K activation quantizer: historical `native_expert.cpp` has an AVX2 `q8k_quant_avx2` fast path (unless disabled), with source comment estimating the scalar quantizer at about 3 microseconds/token/layer; current source calls the ggml trait `from_float` path directly. The Ryzen 5600X supports AVX2 and the recorded old environment does not disable this path. This is a plausible decode cost candidate, not a measured attribution. Other row-kernel arguments such as `mt_min` default to 2 in both inspected source versions. Current stock's effective `STRATA_IQ_SINGLE_EXACT` setting is not pinned in its summary, so do not infer it.
+
+The cache byte difference (325 versus 268.6 MiB at 128 slots) is material even though slot count matches; allocation/placement may have changed and should be recorded in any replay. Prompt caching itself is unlikely to explain the historical later-read throughput because those requests were fresh. The different compilers can also change code generation independently of source changes.
+
+## Controlled comparison to settle it
+
+First replay on the current stock binary with the historical 32,768-token fixtures, full 262,144 context and the same 64-output generation, fresh-cache state, int8/32,768 resident KV, 128 per-layer expert slots, five workers, PCIe fraction 0, no borrowing, spec 4, min-p zero, and greedy decoding. Keep correctness and physical-context qualification gates; separate first-use from later reads and retain per-read samples. Restore the historical 8,192 chunk and split-on setting for this replay, and match the historical environment knobs where the current binary supports them. This answers whether the current binary can reproduce the old workload/config result.
+
+Then change one dimension at a time on that same binary and fixture: (1) split on/off, (2) chunk 8,192/4,096, and (3) historical/current prefill and cache environment. Record actual chunk, slot bytes, output IDs/logprobs and MTP counts alongside timing. Do not treat min-p omission as a factor unless runtime/API evidence shows an override. If the matched current-binary result remains slower, source and toolchain remain confounded: compare old and current source under a common compiler/runtime, or run a 2×2 source/toolchain comparison where reproducible. The AVX2 quantizer and verifier/QSA grouping are the strongest specific source candidates identified here; only a controlled run can assign causality.
+
+## Limits
+
+This comparison is source/configuration research, not a new build or benchmark. It does not diagnose a particular kernel, establish answer-quality equivalence beyond the historical receipts, or prove that any candidate source difference caused the stock result. The immediate conclusion is that the current 3.4 tok/s figure is not comparable to the old 16.182 tok/s figure until prompt and output length and execution configuration are matched.

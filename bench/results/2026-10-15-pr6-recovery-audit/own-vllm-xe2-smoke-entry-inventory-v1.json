@@ -1,0 +1,22 @@
+{
+  "scope": "Actual smoke runtime program/entry inventory only; binary SHA and ISA correlation still pending",
+  "source": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-vllm-smoke-v2/owned/r810-smoke.stderr",
+  "sha256": "096098377c9d81358dead3e42ede447210745692f2acdb572a3ddda27906c809",
+  "entries": [
+    "   <--- urProgramCreateWithBinary(.hContext = 0x2bae350, .numDevices = 1, .phDevices = 0x2c1cac0 {0x2bac220}, .pLengths = 0x2c1c790 {164264}, .ppBinaries = 0x2c1c610 {0x41b300 (true)}, .pProperties = 0x7ffc95d44d20 ((struct ur_program_properties_t){.stype = UR_STRUCTURE_TYPE_PROGRAM_PROPERTIES, .pNext = nullptr, .count = 0, .pMetadatas = nullptr}), .phProgram = 0x7ffc95d45050 (0x2bdd210)) -> UR_RESULT_SUCCESS;",
+    "   <--- urKernelCreate(.hProgram = 0x2bdd210, .pKernelName = 0x417f64 (_ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tES5_LNS1_4TileE0EEE), .phKernel = 0x7ffc95d45730 (0x2bad360)) -> UR_RESULT_SUCCESS;",
+    "   <--- urKernelCreate(.hProgram = 0x2bdd210, .pKernelName = 0x4180ac (_ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tENS4_10bfloat16_tELNS1_4TileE0EEE), .phKernel = 0x7ffc95d45730 (0x2c47fa0)) -> UR_RESULT_SUCCESS;",
+    "   <--- urKernelCreate(.hProgram = 0x2bdd210, .pKernelName = 0x4181a2 (_ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tENS4_6half_tELNS1_4TileE0EEE), .phKernel = 0x7ffc95d45730 (0x2c4adc0)) -> UR_RESULT_SUCCESS;",
+    "   <--- urKernelCreate(.hProgram = 0x2bdd210, .pKernelName = 0x418298 (_ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE0EEE), .phKernel = 0x7ffc95d45730 (0x2c4b7a0)) -> UR_RESULT_SUCCESS;",
+    "   <--- urKernelCreate(.hProgram = 0x2bdd210, .pKernelName = 0x41803f (_ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tES5_LNS1_4TileE1EEE), .phKernel = 0x7ffc95d45730 (0x2c4a140)) -> UR_RESULT_SUCCESS;",
+    "   <--- urKernelCreate(.hProgram = 0x2bdd210, .pKernelName = 0x418127 (_ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tENS4_10bfloat16_tELNS1_4TileE1EEE), .phKernel = 0x7ffc95d45730 (0x2bd00c0)) -> UR_RESULT_SUCCESS;",
+    "   <--- urKernelCreate(.hProgram = 0x2bdd210, .pKernelName = 0x41821d (_ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tENS4_6half_tELNS1_4TileE1EEE), .phKernel = 0x7ffc95d45730 (0x2bd0be0)) -> UR_RESULT_SUCCESS;",
+    "   <--- urKernelCreate(.hProgram = 0x2bdd210, .pKernelName = 0x41830a (_ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE1EEE), .phKernel = 0x7ffc95d45730 (0x2bd2780)) -> UR_RESULT_SUCCESS;"
+  ],
+  "program_create_with_binary": 1,
+  "program_create_with_IL": 0,
+  "native_entry_count": 8,
+  "ISA": "UNRUN",
+  "full_trace_consumer": "Main exact binary/entry mapping; retire after correlated ISA proof",
+  "read_scope": "program creation and R810 DenseKernel creation lines only"
+}

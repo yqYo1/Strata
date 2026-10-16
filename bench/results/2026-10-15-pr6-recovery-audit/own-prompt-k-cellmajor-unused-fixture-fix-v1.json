@@ -1,0 +1,12 @@
+{
+  "applied": true,
+  "compiled": false,
+  "tested": false,
+  "GPU_executed": false,
+  "original_build_receipt_sha256": "fd3985e1bf279bdd22c6754ab1ab3a920d1412a5dc565a4e4da9b391edbb2df1",
+  "path": "tests/sycl/prompt_k_cellmajor.cpp",
+  "before_sha256": "4022f35d99f67b66e7cbc2d941afa8fe395fae4b15568bb046e1414bd4051db2",
+  "proposed_sha256": "05147854dab32c93c8630d35584c7671f3ebc572298d33e227c5690e17899102",
+  "diff": "--- a/tests/sycl/prompt_k_cellmajor.cpp\n+++ b/tests/sycl/prompt_k_cellmajor.cpp\n@@ -45,6 +45,7 @@\n                const int32_t *steps, int64_t cap, const QsaShapes &s,\n                float *scratch, float *out, int64_t nq) {\n #ifdef STRATA_TEST_PROMPT_MATRIX\n+  (void)scratch;\n   check(qsa_prompt_attn_batch(q, p, ids, steps, cap, s, out, nq,\n                               &runtime->compute()),\n         \"matrix attention unavailable\");\n",
+  "cause": "Strict -Wall -Wextra -Werror reports scratch unused under STRATA_TEST_PROMPT_MATRIX. Mark parameter intentionally unused in matrix fixture; no kernel or test expectation change."
+}

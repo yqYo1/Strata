@@ -1,0 +1,49 @@
+{
+  "implementation_origin": "New code authored for R861 from the frozen current Strata prompt_attention.cpp online-softmax equations and existing SYCL API use, with local official Intel oneAPI headers consulted for API semantics only",
+  "fixture_origin": "Existing frozen Strata prompt_native16.cpp and prompt_k_cellmajor.cpp FP64 oracles; new sparse selected-ID inputs authored here without copying another fixture or an external test",
+  "external_implementation_copied_or_adapted": false,
+  "xestrata_source_or_helpers_consulted": false,
+  "new_source_license": "MIT, the repository LICENSE; no external copyright or license header introduced",
+  "semantic_header_license": "Installed LLVM headers state Apache-2.0 WITH LLVM-exception; declarations and semantics consulted, no implementation text copied into project",
+  "primary_semantics": [
+    {
+      "path": "/opt/intel/oneapi/compiler/2026.1/include/sycl/group_algorithm.hpp",
+      "sha256": "728525a097704c6d61d75b7e588be9e735c2dac724da3bab16dec4b15d7ff416",
+      "used_for": "206-240: scalar reduce_over_group signature and group reduction dispatch; reference only"
+    },
+    {
+      "path": "/opt/intel/oneapi/compiler/2026.1/include/sycl/functional.hpp",
+      "sha256": "32f1127d7689703c80f66d630e5593fa489c22119291e01e18f87f39bb6bbb16",
+      "used_for": "18,44-62: plus and maximum operations; reference only"
+    },
+    {
+      "path": "/opt/intel/oneapi/compiler/2026.1/include/sycl/sub_group.hpp",
+      "sha256": "1b7e98b4ff4ad134be5d4b43b67cfa058b17494ccb26a11be93af1c6450fbf87",
+      "used_for": "147-211: subgroup local/group ID queries; reference only"
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/LICENSE",
+      "sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
+      "used_for": "Repository MIT license governing newly authored source"
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/cmake/sycl_backend.cmake",
+      "sha256": "9a112ac469580302e8d124bc9bdf66c04f49f6020309e7d20e7771ab12757bef",
+      "used_for": "SYCL source resolver, strict options and manual fixture targets"
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/CMakeLists.txt",
+      "sha256": "03993aa5162ed3bf3f638c2755b5d44358c74945ea84b0862d0e76ab52eab4f1",
+      "used_for": "SYCL backend include and feature options"
+    }
+  ],
+  "public_reference_locator": "https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html (group algorithms/sub-groups; locator only, no network fetch in this source-only task)",
+  "collective_contract": "Converged subgroup calls; reduce_over_group result combines every lane, FP32 sum reassociation may change rounding; local data publication relies on existing work-group barriers rather than an assumed memory fence in reduction",
+  "excluded_proposals": [
+    "R856 observer UNAPPLIED; not incorporated",
+    "R844 scale proposal UNAPPLIED; not incorporated"
+  ],
+  "scope_exclusions": [
+    "No selection, geometry, projection, DPAS, quantization, matrix accumulation, P scaling, Q hi/lo split, output layout, bounds validation, recurrent state or shared CLI/API implementation changes"
+  ]
+}

@@ -1,0 +1,69 @@
+# R634 — CPU IQ arithmetic: external implementation audit for decode
+
+2026-10-15 JST. Read-only review of retained CPU decode evidence, current native expert path, and primary upstream implementations relevant to AVX2 IQ arithmetic. The only workspace write is this report. No source edits, build, test, CPU benchmark, GPU/runtime/process operation, Git command, raw active-run access, or cleanup was performed. All quantitative claims below are prior retained measurements or source-derived facts; this round produced no measurement.
+
+## Decision
+
+No directly portable, unadopted external IQ arithmetic kernel was found that should be proposed for this Ryzen 5 5600X decode path. Current Strata already has the key broadly applicable AVX2 idea: decode each packed IQ block once per output row and reuse decoded integer weights for all tokens grouped in the expert job (`nt>=2`). It already uses vector sign reconstruction, `maddubs`/`madd`, optional row-ahead T0 prefetch, IQ4_XS and IQ4_NL code paths, custom Q2_0 Down arithmetic, and an opt-in exact single-token helper.
+
+The remaining clear changes in external projects either change the weight format/quantization (ik_llama IQK), target a distinct GEMM/GPU/layout or ISA path (current llama.cpp tiled kernels), or repeat techniques already in this fork (mainline packed IQ dots and IQ2_XS sign-vector work). They do not substantiate a new model-level speedup on this hardware. R624's evidence still puts CPU-route movement ahead of small arithmetic changes: the retained MTP4 request used 36.734 CPU thread-seconds for 128 outputs and routed 97.00% of expert token rows to CPU, while thread service is not itself critical-path wall time. The cache predecode route also remains rejected: the request-cold 8 GiB lossless expansion simulation had a modeled -36.37 CPU thread-second net and overwrite -3.36 seconds. Do not revive 20/48 GiB cache or claim CPU arithmetic can meet the 70 tok/s goal from these figures.
+
+If a small CPU-only screen is later justified by Main's matched decode measurements, the least invasive unmeasured knob is an immutable-process sweep of the existing `STRATA_IQ_PREFETCH` distance on the exposed formats and `nt=1..5`, with the current default as control. This is a sensitivity test of an already-present mechanism, not a new optimization supported by external data. The prior local prefetch result is on a Ryzen 7 5700X3D and reported -1.3% end-to-end round time; it is not a 5600X result, and any gain is likely a small component-level ceiling. Do not add another kernel before a row-level profile or matched clean end-to-end result identifies it as useful.
+
+## Current code and the arithmetic contract
+
+`native_fmt()` obtains both weight formats' activation quantizer, row geometry, and byte counts from GGML traits; it quantizes GU and Down inputs through those exact trait functions. For the target IQ GU formats, the activation side is the existing Q8_K format. Do not replace its activation quantization as part of a weight-side optimization. The 5600X has AVX2/FMA/F16C and no AVX-512. With default `STRATA_IQ_MT_MIN=2`, the AVX2 multi-token IQ path handles the supported formats (including IQ3_XXS18, IQ2_S22, IQ3_S21, IQ4_XS23) when `nt>=2`; `nt=1` uses GGML's dot unless `STRATA_IQ_SINGLE_EXACT` is enabled. `STRATA_NO_IQ256` disables the AVX2 multi path. MTP verifier width T=1..5 is not equal to an expert job's `nt`; route deduplication determines the latter.
+
+`row_dot<TY,NT>` iterates one output row's 256-weight blocks. `Fmt32<TY>::decode` extracts grid values, signs and scales once per half; then each token loads its Q8_K activation and performs sign/magnitude integer dot. It accumulates int32 lanes, applies block scales through FP32 FMA, and horizontally reduces. The multi-token kernel therefore already avoids repeating each row's packed decode for each token. Its output reduction order differs from GGML in relevant paths. Any rewrite must preserve the source-format codebook and original block scales, Q8_K activation bytes/scales, signed `-128` activation behavior, `maddubs` saturation semantics, per-block scale placement, and the established reduction/FMA order required by the selected exactness gate. A faster dot with a different accumulation order can alter logits, tokens, and MTP acceptances.
+
+Down is a separate mix: IQ4_NL20 uses an AVX2 multi-token kernel for `nt>=2` by default, and the target custom Q2_0 Down path is separately implemented in `expert.cpp`/`q2_avx2.cpp`. A GU-only proposal cannot claim to improve Down service; IQ4_NL must preserve its Q8_0 activation contract, and Q2_0's custom AVX2/AVX-512 unpack, tail, and format semantics need a distinct audit. In particular, the relevant upstream current-model issue notes Q2_0 was a recent quantization type with no SIMD implementation in ik_llama at the time of that report; that is evidence against importing its engine wholesale, not proof about current local performance.
+
+Current source SHA-256 (review pins):
+
+- `src/kernels/cpu/native_expert.cpp`: `fcb4a7c74ba45a13da162eed832860f9644f4544d3f269b9c8588f01b40fb106`
+- `src/kernels/cpu/iq_avx2.cpp`: `80efab0bed11ddf3980c0d146101218efa061cf5304e39fc88d93e5e94a99136`
+- `src/kernels/cpu/expert.cpp`: `9bcf5d889818ef3cb9619df6536e8844d151714803ac8930eada115a61b62e48`
+- `src/kernels/cpu/q2_avx2.cpp`: `9d43e6314a75a1095953f935ed95583141afff67ba5e4da96b6e2520c5a95eee`
+
+## External primary implementation findings
+
+**ggml-org/llama.cpp.** The upstream CPU type-traits source confirms that IQ2_XXS, IQ3_XXS, IQ3_S, IQ2_S, IQ4_XS use their format-specific `vec_dot_*_q8_K` functions with Q8_K activations, and IQ4_NL uses its Q8_0 dot. Its x86 quant source is the useful packed-format arithmetic reference. It remains a one-dot-per-row baseline, not a demonstrated grouped multi-token replacement for Strata's AVX2 route. The sibling IQ2_XS discussion describes keeping sign reconstruction in vector registers; Strata's current IQ2_XS helper already has `EvenSigns` and vector sign assembly, and target IQ2_S uses vector `sgn_vec`, so the idea does not reveal a missing optimization here.
+
+**ik_llama.** Its IQK discussion reports AVX2 speedups on a Ryzen 7950X and other systems for IQK formats compared with conventional i-quants. Those are new quantization encodings with new codebooks/layouts and quality tradeoffs, not lossless arithmetic substitutions over the model's existing IQ2_S/IQ3_S/IQ3_XXS/IQ4_XS weights. Its published model throughput is not transferable to this Strata request, CPU, engine, routing, or MTP work. A format migration would be a separate model-quality and serving project, not a CPU kernel adoption.
+
+**Current llama.cpp tiled CPU kernel.** The official `ggml-cpu/tiled/tiled-kernel.cpp` contains row/group tiling, AVX2 packed dot operations, and an IQ4_XS sign trick. This is a real technique reference, but the file's data layout, tile scheduler, activation packing/alignment, and quantized matrix paths differ from Strata's native one-row-per-output expert API. Its presence alone does not establish applicability to the current 2560×640 MoE GU/Down shapes, grouped `nt=1..5`, or faster end-to-end service. Reusing tiled scheduling would need a dedicated row-pair/multi-row local kernel experiment, and R590 already documented a similar IQ2_S dual-row hypothesis with unknown nt exposure and register-spill risk. Do not reopen that IQ2_S candidate without new evidence that the relevant `nt>=2` cohort is material and compiled assembly has no spills.
+
+**IPEX-LLM.** The official project overview covers Intel-oriented CPU/GPU inference paths but the reviewed material did not identify a comparable Ryzen AVX2 packed IQ target kernel. It gives no support for importing an Intel backend into this CPU-only optimization question.
+
+## What could plausibly be screened, and what is excluded
+
+1. **Existing row-ahead prefetch distance (only small no-code screen).** `iq_avx2.cpp` already has `STRATA_IQ_PREFETCH` (default 2048 bytes, T0). The code comment records earlier 5700X3D evidence: about -4% GU phase, +1.0 GB/s reported row throughput, and -1.3% round time on IQ3_S; non-temporal prefetch was worse. This makes a 5600X distance screen executable without changing weight arithmetic, but does not predict a gain. Run immutable separate processes if chosen, fixed input/work and compiler, target only actual AVX2 path, randomize baseline/current alternatives, and record per-format `nt` plus clean full decode wall. Keep source's bounds/tail handling and don't change environment after runtime init. Stop if the gain is within run noise or the isolated kernel helps without decode wall improvement.
+2. **True Q8 weight requantization.** Not lossless: each IQ weight is decoded, requantized to a new signed-byte grid and scale, changing weight values and potentially quality. No external speed comparison in the reviewed materials measures this conversion on the target model or proves quality. It needs an explicit quality gate (weight reconstruction, raw GU/Down outputs, logits/top-k, held-out prompts and generation) before performance work; do not describe it as arithmetic-only optimization.
+3. **Lossless byte expansion / predecode cache.** Already audited and net-negative for the observed request-cold capacity; expanded entries raise logical bytes per call substantially and filling costs CPU. A new cache size or persistent lifetime needs ordered replay and live RAM evidence first. No external source rescues the local amortization result.
+4. **Port IQK, tiled full-engine path, or change activation quantization.** These alter quant format/weight layout, row scheduling and/or numerical contract. Their published comparisons have different models/CPUs and do not isolate this local component. Exclude from this decode round.
+5. **IQ2_S paired rows.** R590 already supplied a bounded dual-row pipeline hypothesis and required actual `nt` exposure and no-spill assembly. It has not been promoted by new evidence here; do not present it as an external implementation or repeat it as a fresh candidate.
+
+A host CPU microkernel result alone is insufficient. Any later candidate must show exact fixture/parity under the intended numeric contract, guards and row/block tails, compiler/ISA identity, fault-free worker pool operation, and matched clean request wall-time improvement with output/work recorded. Keep kernel CPU service, system wall and emitted tokens/s as separate quantities. MTP T and CPU job `nt` must be reported independently.
+
+## Retained evidence reviewed
+
+- `research-decode-cpu-roofline-round579-v1.txt`: prior hardware controls and warning that CPU thread-seconds/logical payload are not decode wall or measured DRAM traffic.
+- `research-iq2s-cpu-kernel-round590-v1.txt`: IQ2_S dot structure, `nt` boundary, exact helper, and dual-row risk; rejected IQ3_S nt1 pair candidate must stay rejected.
+- `research-cpu-cache-amortization-round603-v1.txt` and `research-cpu-q8-representation-round625-v1.txt`: lossless expansion cache economics and true Q8 quality distinction.
+- `research-iq3xxs-subgroup-decoder-round619-v1.txt`: unrelated SYCL IQ3_XXS candidate; not CPU evidence.
+- `research-decode-next-critical-path-round624-v1.txt`: current joined CPU route/service summary, GPU cache route priority, and wall-time limits.
+- Current source: `native_expert.cpp`, `iq_avx2.cpp`, `expert.cpp`, `q2_avx2.cpp` as pinned above.
+
+## External references (primary source)
+
+- ggml-org/llama.cpp x86 CPU quant implementations: https://github.com/ggml-org/llama.cpp/blob/master/ggml/src/ggml-cpu/arch/x86/quants.c (viewed 2026-10-15).
+- ggml-org/llama.cpp CPU type traits and activation-dot mapping: https://github.com/ggml-org/llama.cpp/blob/master/ggml/src/ggml-cpu/ggml-cpu.c (viewed 2026-10-15).
+- ggml-org/llama.cpp tiled CPU implementation: https://github.com/ggml-org/llama.cpp/blob/master/ggml/src/ggml-cpu/tiled/tiled-kernel.cpp (viewed 2026-10-15).
+- llama.cpp maintainers' IQ2_XS AVX2 sign-vector implementation discussion: https://github.com/ggml-org/llama.cpp/discussions/5152 (viewed 2026-10-15); sibling format only, not target IQ2_S evidence.
+- ikawrakow/ik_llama IQK explanation and AVX2 comparison: https://github.com/ikawrakow/ik_llama.cpp/discussions/8 (viewed 2026-10-15); different quant encodings and machines.
+- ik_llama current Qwen3.8-Flash-Next GSQ/RCO support issue and Q2_0 discussion: https://github.com/ikawrakow/ik_llama.cpp/issues/2620 (viewed 2026-10-15); context is a user report and maintainer response, not a benchmark.
+- Intel IPEX-LLM project source/overview: https://github.com/intel/ipex-llm (viewed 2026-10-15); no matching Ryzen AVX2 IQ kernel was identified in reviewed material.
+
+## Final status
+
+Research complete. No implementation, test, build, measurement, runtime operation, Git state change, cleanup, or inference adoption decision was made. The external scan yielded no new validated CPU arithmetic candidate. If Main chooses another CPU screen, prefer the existing immutable prefetch-distance control only after matched decode data says CPU route service is on the critical path; otherwise continue with the separately authorized GPU-resident route/cache investigation.

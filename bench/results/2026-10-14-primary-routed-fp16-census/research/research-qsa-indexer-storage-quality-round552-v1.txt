@@ -1,0 +1,61 @@
+# R552 — QSA indexer storage precision and quality evidence
+
+Date: 2026-10-15 JST. Read-only source and primary-reference review of pooled QSA indexer key and transient indexer-query storage. This is separate from recurrent GDN state, ordinary attention K/V, R550's score/address budget, and R551's launch mapping. No source, test, benchmark, or runtime setting was changed. No build/test, GPU, profiler, process/service, reset, cleanup, Git/live/private/model record or excluded `B/prefill-gemm-only-contract-root-v1/record.json` was inspected. Main owns any implementation and serial validation.
+
+## Finding
+
+FP16 or BF16 storage for the *transformed pooled indexer keys* is a plausible memory-capacity experiment: at the configured 262,144-cell endpoint, the source allocates 384 MiB of FP32 pooled-key capacity across 12 QSA layers. Two-byte storage would save about 192 MiB at that maximum, if all associated writers, readers, snapshots, and graph paths are correctly converted. At the 32,768-cell endpoint the corresponding saving is about 24 MiB. This is a configured capacity reduction, not a measured reduction in peak process/device memory or a speedup.
+
+The precision change is not validated. It may change selector scores and selected cells; exact top-k only guarantees the selected IDs are exact for the scores it receives. Existing evidence supports a carefully controlled trial, but does not establish no quality loss at 262k context or on Strata's SYCL hardware. Trial FP16 and BF16 independently, retaining FP32 score accumulation and exact top-k, and judge them on paired downstream task quality as well as selector/output diagnostics. Do not reject a candidate merely because some selected IDs flip, and do not accept it from needle retrieval alone.
+
+## What the current source stores and computes
+
+The loaded Qwen geometry is `idx_dim=128`, `idx_block=4`, `idx_n_head=4`, `idx_top_k=2048`, with 12 QSA and 36 GDN layers. `QsaState::idx_pooled` is `float*`; capacity is `max_cells/idx_block + 2` rows, each with 128 FP32 values. `qsa_state_bytes` includes that pooled-key buffer in every QSA layer. The extra two rows are included in the estimates below; the total does not include allocator alignment or unrelated session state.
+
+| Configured max cells | Pooled rows per QSA layer | FP32 pooled-key capacity, 12 QSA layers | Two-byte pooled-key capacity | Nominal saving |
+|---:|---:|---:|---:|---:|
+| 32,768 | 8,194 | 48 MiB + 12 KiB | 24 MiB + 6 KiB | 24 MiB + 6 KiB |
+| 65,536 | 16,386 | 96 MiB + 12 KiB | 48 MiB + 6 KiB | 48 MiB + 6 KiB |
+| 262,144 | 65,538 | 384 MiB + 12 KiB | 192 MiB + 6 KiB | 192 MiB + 6 KiB |
+
+The equation is `12 * (max_cells/4 + 2) * 128 * bytes_per_element`. “Two-byte” applies equally to FP16 and BF16 capacity; it says nothing about score error. The separate raw indexer tail is small: three 128-float vectors per layer plus a 128-float dead vector, and incoming tail values are already rounded to FP16 before storing. Do not count tail savings as part of the pooled-capacity headline.
+
+Verifier query storage is transient scratch, shared across layers, not a 12-layer cache. `qidx_` is `T * IQ * ID` FP32 values, with `IQ=4`, `ID=128`, or 2,048 bytes/query. At maximum verifier window `T=4`, that is 8 KiB total; a two-byte query buffer would save at most 4 KiB. Converting query storage may add cast/conversion work and can change rankings independently of key storage. Test key-only, query-only, and combined variants separately so their effects remain attributable.
+
+The existing write/read path matters. Prefill's `native_qsa_indexer_append_batch` rounds raw incoming index-key tail values to F16, pools each four-token group, normalizes and applies RoPE, then writes the transformed pooled key into FP32 `idx_pooled`. The native decode/verifier append path documents the same F16 raw-tail cache/F32 arithmetic arrangement and writes transformed pooled keys as FP32. The verifier query projection uses BF16 weights with FP32 GEMV output; RMSNorm and RoPE produce FP32 `qidx_`. The QSA selector consumes these pooled keys and queries with FP32 products/accumulation; ReLU and head reduction feed FP32 score storage. The root top-k chooses the exact highest weighted candidates for those computed scores and emits sorted IDs. Therefore post-transform key/query storage casting followed by FP32 score accumulation is a distinct candidate from lowering the arithmetic precision or changing the selection algorithm.
+
+An existing `STRATA_IDX_FP16_CHECK` debug hook in prefill copies pooled keys and the dead vector rounded to FP16, reruns prefill selection with the FP32 score routine, and prints cumulative identical-selection count and cell overlap. This is useful as a narrow diagnostic precedent only: it is opt-in and was not run here; it covers FP16 keys, not BF16 or query casting, only the instrumented prefill path, and only selector IDs/overlap. It allocates large temporary FP32 buffers, synchronizes/copies IDs, and has no end-to-end quality outcome. It cannot qualify a production storage change or stand in for a verifier/decode-path experiment.
+
+## External evidence
+
+| Evidence | What it supports | Limit |
+|---|---|---|
+| Qwen3.8 architecture paper, [arXiv HTML](https://arxiv.org/html/2608.30320) | QSA uses a compressed indexer to score/select context microblocks; indexer precision is part of the sparse-attention route. | Architecture description, not a post-training indexer-storage precision ablation. It does not establish FP16/BF16 no-harm. |
+| DeepSeek-V3.2 report, [arXiv HTML](https://arxiv.org/html/2512.02556), plus [official inference implementation](https://github.com/deepseek-ai/DeepSeek-V3.2-Exp/blob/main/inference/model.py) | Closely related DSA implementation supports a quantized indexer path: normalized queries and compressed keys are quantized to FP8 for indexer dot products, and the indexer key cache includes scales. The report describes a model trained with indexer warmup and sparse-attention stages. | This is another model and a jointly trained path; its training and post-training recipe prevents the result from proving that post-hoc FP16/BF16 storage on Qwen3.8 is harmless. Its score arithmetic and hardware path also differ. |
+| Merged vLLM PR [#54890](https://github.com/vllm-project/vllm/pull/54890) for Qwen3.8 Flash-Next | Direct exact-model evidence that an optional FP8 E4M3 QSA indexer cache has been implemented. It stores normalized Q and compressed K in FP8 and computes indexer scores from those operands. Reported E2E BF16-versus-FP8 results include GSM8K 0.9682/0.9689 versus 0.9678/0.9685 (n=2,638), LongBench v2 0.4871 versus 0.5050 (n=503), matching reasoning traces, and mean prompt-logprob delta at most 0.008. The PR reports needle QA at 4.9k/19.5k/39k and GB300 speed measurements. This justifies an experiment on exact-model indexer precision. | These are PR-reported NVIDIA/GB300 measurements, not Strata or SYCL results. The task set and context lengths do not establish 262k no-harm. Benchmark scores vary and are not a formal equivalence test. The FP8 path also lowers score operand precision; it is not a pure low-bit storage / FP32 arithmetic test. |
+The DeepSeek DSA examples make a lower-precision indexer technically credible, and the vLLM PR is unusually relevant because it measures Qwen3.8 itself. Neither demonstrates that Strata's proposed post-transform FP16 or BF16 cache with FP32 scoring is harmless. The Qwen3.8 evidence also concerns the indexer specifically; ordinary attention KV precision does not substitute for it. A citation to a successful FP8 system is evidence to test, not a transferable quality guarantee.
+
+## Quality measurement and decision gate
+
+Run FP16-key and BF16-key arms separately; if query storage is considered, add independent FP16-query and BF16-query arms, then combined arms only after attributing the individual effects. Keep baseline selection/scoring code, top-k ordering, downstream attention, weights and prompt set fixed. The candidate should cast only when writing the transformed pooled key (and, in the query arm, after query projection, normalization and RoPE); reads must convert to FP32 before the existing score arithmetic if the question is storage precision rather than lower-precision score math. Verify all prefill, one-token decode and multi-token verifier writers/readers, snapshot/restore, host/device copies, and capture/replay lifetimes before any broad run.
+
+At each tested context, record selected-ID exact-match fraction, per-query Jaccard/recall against baseline, selected-set overlap, score differences, cutoff margin, and whether flips concentrate on low-margin candidates. These diagnose the mechanism; exact ID equality is not the product-quality oracle. Compare selected-attention outputs and full generated outputs/log-probabilities, then evaluate paired representative downstream tasks with matched prompt, seed/decoding and baseline repetitions. Include short and long contexts and the longest supported context; use task coverage that exercises actual reasoning, coding, instruction following, and long-context use. Needle retrieval can remain a narrow diagnostic, but cannot alone establish quality.
+
+Predeclare a task-level non-inferiority margin and its one-sided confidence procedure. A small 24-task screen with 1 percentage-point margin is only a screen: even zero observed regressions leaves an approximate one-sided 95% upper bound of 11.73% on a binary harm rate. Roughly 299 independent no-harm pairs would be needed for that same zero-event bound to fall below 1%; multiple prompts from the same task or source are correlated and do not count as independent pairs. Report task-level paired effects and uncertainty, not only aggregate accuracy or selected-ID agreement. A real quality loss on a representative task is a rejection even if capacity savings are useful; failure to detect a loss on an underpowered sample is inconclusive, not acceptance.
+
+Storage savings are materially larger for pooled keys than for the transient query. If memory capacity is the intended win, prioritize key-only arms and verify the saved allocation against the actual session plan. Keep kernel/runtime performance a separate outcome: FP16/BF16 conversion, cache traffic and selector speed may interact; this source review makes no speed claim. Main should decide adoption only after correctness, quality and target-hardware measurements pass their separately defined gates.
+
+## Source snapshot
+
+| File | SHA-256 |
+|---|---|
+| `include/strata/core/layer.hpp` | `80c2e1a8cac8a1600418dbf26d035b342136fb4164636196f51122205656cfb1` |
+| `src/core/layer.cpp` | `4273fc8c08bb0c58ad471d963f232a457dbc96ea6bd20fa1b45d27fee3428cfb` |
+| `src/core/session.cpp` | `f2ef0b5c115ba23bca711241fb720dd806bd505225c75c37fd8c11bbf531b5b2` |
+| `src/kernels/sycl/qsa_index.cpp` | `5424b1489fb2dcabad0abf49ffa4c4501c8b89e8519f61649d8d53cb20dbdf8f` |
+| `src/kernels/sycl/qsa_select.cpp` | `45084756ca5e8e36085dae46581049c81366a45cdfde23e8c6f38defbba0c809` |
+| `src/kernels/sycl/native_qsa_indexer.cpp` | `d87abcf8aece04bc1566f4310e0dee546b7c80e0b711d75d118551b606d38685` |
+| `src/core/verify.cpp` | `640e0270be833ddff0218331a7db18043605af3ced2682787f6b06abdcf6316c` |
+| `src/prefill/prefill.cpp` | `c10aa2c3bdd58ae268d1fe81166912c097fb6a5b91f2c9b77de037cbe2d39feb` |
+
+Related recorded work: R540 (`research/research-prefill-intermediate-storage-round540-v1.txt`), R549 (`research/research-recurrent-storage-precision-evidence-round549-v1.txt`), R550 (`research/research-long-context-qsa-indexer-budget-round550-v1.txt`), and Main's corrections (`research-round549-550-review.ja.md`). This report does not reuse R549's recurrent-state candidate or R550's score-reference budgets.

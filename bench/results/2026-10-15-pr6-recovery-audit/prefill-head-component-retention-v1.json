@@ -1,0 +1,27 @@
+{
+  "passed": true,
+  "GPU_executed": false,
+  "component_status_unchanged": true,
+  "component_receipt_sha256": "62dac3bdd8caf4d91ddc5f8cdc37a39f5f52bc136e487ac6c5fa432abd09050d",
+  "retained": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-head-component-root-v1/owned/actual-head-component.stderr",
+      "bytes": 47983,
+      "sha256": "e9012c15894174a05224aeea2bc980a53a1c234a212dfa0efe309d530da3ed3d",
+      "owner": "Main isolated NativeHead roundtrip",
+      "byte_budget": 65536,
+      "consumer": "First combined warm MTP/verifier head lifecycle and allocation comparison",
+      "question": "Second cycle free counter retains exactly64MiB after the temporary filler is freed; compare actual full-owner admission and allocator state before interpreting persistent capacity.",
+      "next_review": "After the first combined lifecycle/VRAM comparison; retain compact API/error/allocation result and retire this complete successful log."
+    }
+  ],
+  "observed": {
+    "target_payload_bytes": 521472000,
+    "free_deltas": [
+      521539584,
+      521535488
+    ],
+    "cycle1_restored_counter_shortfall": 67108864
+  },
+  "interpretation": "Exact application state and packed/logit comparisons pass. Instant free-memory counters are not an allocator leak proof or a guarantee of warm full-engine headroom."
+}

@@ -299,6 +299,18 @@ void check_all() {
             }, &r);
             reference(name.c_str(), r, s, ent, x, scaled ? &xs : nullptr);
         }
+#ifdef STRATA_ENABLE_SYCL
+        // Independently check the diagnostic AVX2 reduction grouping.
+        ck(cudaMemset(d_out, 0xA5, (size_t) K * H * 4), "cpu order sentinel");
+        ck(cudaMemset(s.p, 0x5A, s.bytes), "cpu order scratch");
+        k::moe_hit_grouped_s2_cpu_order(fx.d, d_slot, d_dst, n_hits, BLOB,
+                                      d_x, s.p, d_out, nullptr, d_xs, nullptr);
+        ck(cudaDeviceSynchronize(), "cpu order");
+        Run cpu_order;
+        cpu_order.out = down(d_out, (size_t) K * H);
+        cpu_order.scratch = down((const uint8_t*) s.p, (size_t) s.bytes);
+        reference("moe_hit_grouped_s2_cpu_order", cpu_order, s, ent, x, &xs);
+#endif
     }
 
     // ---- 2. moe_hit_grouped_s2_dev: capacity 10, device count 7
@@ -529,9 +541,15 @@ void bench() {
     cudaDeviceProp prop{};
     ck(cudaGetDevice(&dev), "dev");
     ck(cudaGetDeviceProperties(&prop, dev), "props");
+#ifdef STRATA_ENABLE_SYCL
+    // A fixed working set; SYCL does not report a named L2 cache size.
+    const int nb = 48;
+    std::printf("bench: %s, %d blobs (%.0f MB) cycled\n", prop.name, nb, nb * (double) BLOB / 1e6);
+#else
     const int nb = std::max(48, (int) (3ull * (size_t) prop.l2CacheSize / BLOB) + 8);
     std::printf("bench: %s, L2 %d MB, %d blobs (%.0f MB) cycled\n", prop.name, prop.l2CacheSize >> 20, nb,
                 nb * (double) BLOB / 1e6);
+#endif
     std::mt19937 rng(7);
     Fixture fx;
     fx.nb = nb;

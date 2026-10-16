@@ -1,0 +1,162 @@
+[
+  {
+    "site": "helper include",
+    "before": "#include \"strata/prefill/prefill.hpp\"",
+    "after": "#include \"strata/prefill/prefill.hpp\"\n#include \"strata/prefill/stage_ownership.hpp\""
+  },
+  {
+    "site": "Stager device identity",
+    "before": "        cudaGetDevice(&device);",
+    "after": "        STRATA_PREFILL_STAGE_CHECK(cudaGetDevice(&device), \"Stager::init device\");"
+  },
+  {
+    "site": "Stager worker device",
+    "before": "        cudaSetDevice(device);",
+    "after": "        STRATA_PREFILL_STAGE_CHECK(cudaSetDevice(device), \"Stager::work device\");"
+  },
+  {
+    "site": "Stager wait before overwrite/ready",
+    "before": "                cudaEventSynchronize(dma_done[b]);",
+    "after": "                STRATA_PREFILL_STAGE_CHECK(cudaEventSynchronize(dma_done[b]), \"Stager::work host-slot reuse\");"
+  },
+  {
+    "site": "Stager record before issued",
+    "before": "        cudaEventRecord(dma_done[j % kRing], copy);",
+    "after": "        STRATA_PREFILL_STAGE_CHECK(cudaEventRecord(dma_done[j % kRing], copy), \"Stager::issued_one host-slot DMA\");"
+  },
+  {
+    "site": "inline issuer stage copy",
+    "before": "cudaStreamWaitEvent(m.copy, m.used[m.used_of[sl]], 0)",
+    "after": "STRATA_PREFILL_STAGE_CHECK(cudaStreamWaitEvent(m.copy, m.used[m.used_of[sl]], 0), \"inline issuer stage copy\")"
+  },
+  {
+    "site": "inline issuer stage copy",
+    "before": "cudaMemcpyAsync(m.stage_dev[sl], en.blob, bytes, cudaMemcpyHostToDevice, m.copy)",
+    "after": "STRATA_PREFILL_STAGE_CHECK(cudaMemcpyAsync(m.stage_dev[sl], en.blob, bytes, cudaMemcpyHostToDevice, m.copy), \"inline issuer stage copy\")"
+  },
+  {
+    "site": "inline issuer stage copy",
+    "before": "cudaMemcpyAsync(m.stage_dev[sl], hb, bytes, cudaMemcpyHostToDevice, m.copy)",
+    "after": "STRATA_PREFILL_STAGE_CHECK(cudaMemcpyAsync(m.stage_dev[sl], hb, bytes, cudaMemcpyHostToDevice, m.copy), \"inline issuer stage copy\")"
+  },
+  {
+    "site": "inline issuer stage copy",
+    "before": "cudaEventRecord(m.copied[sl], m.copy)",
+    "after": "STRATA_PREFILL_STAGE_CHECK(cudaEventRecord(m.copied[sl], m.copy), \"inline issuer stage copy\")"
+  },
+  {
+    "site": "threaded issuer stage copy",
+    "before": "cudaStreamWaitEvent(m.copy, m.used[m.used_of[sl]], 0)",
+    "after": "STRATA_PREFILL_STAGE_CHECK(cudaStreamWaitEvent(m.copy, m.used[m.used_of[sl]], 0), \"threaded issuer stage copy\")"
+  },
+  {
+    "site": "threaded issuer stage copy",
+    "before": "cudaMemcpyAsync(m.stage_dev[sl], en.blob, bytes, cudaMemcpyHostToDevice, m.copy)",
+    "after": "STRATA_PREFILL_STAGE_CHECK(cudaMemcpyAsync(m.stage_dev[sl], en.blob, bytes, cudaMemcpyHostToDevice, m.copy), \"threaded issuer stage copy\")"
+  },
+  {
+    "site": "threaded issuer stage copy",
+    "before": "cudaMemcpyAsync(m.stage_dev[sl], hb, bytes, cudaMemcpyHostToDevice, m.copy)",
+    "after": "STRATA_PREFILL_STAGE_CHECK(cudaMemcpyAsync(m.stage_dev[sl], hb, bytes, cudaMemcpyHostToDevice, m.copy), \"threaded issuer stage copy\")"
+  },
+  {
+    "site": "threaded issuer stage copy",
+    "before": "cudaEventRecord(m.copied[sl], m.copy)",
+    "after": "STRATA_PREFILL_STAGE_CHECK(cudaEventRecord(m.copied[sl], m.copy), \"threaded issuer stage copy\")"
+  },
+  {
+    "site": "threaded issuer checked device selection",
+    "before": "                const core::OnDevice od(m.device);",
+    "after": "#if defined(STRATA_ENABLE_SYCL)\n                STRATA_PREFILL_STAGE_CHECK(cudaSetDevice(m.device), \"threaded issuer device\");\n#else\n                const core::OnDevice od(m.device);\n#endif"
+  },
+  {
+    "site": "stage_one pinned copy",
+    "before": "cudaStreamWaitEvent(m.copy, m.used[m.used_of[sl]], 0)",
+    "after": "STRATA_PREFILL_STAGE_CHECK(cudaStreamWaitEvent(m.copy, m.used[m.used_of[sl]], 0), \"stage_one pinned copy\")"
+  },
+  {
+    "site": "stage_one pinned copy",
+    "before": "cudaMemcpyAsync(m.stage_dev[sl], b, (size_t) lay.blob_bytes(l), cudaMemcpyHostToDevice, m.copy)",
+    "after": "STRATA_PREFILL_STAGE_CHECK(cudaMemcpyAsync(m.stage_dev[sl], b, (size_t) lay.blob_bytes(l), cudaMemcpyHostToDevice, m.copy), \"stage_one pinned copy\")"
+  },
+  {
+    "site": "stage_one stager/copy publication",
+    "before": "cudaStreamWaitEvent(m.copy, m.used[m.used_of[sl]], 0)",
+    "after": "STRATA_PREFILL_STAGE_CHECK(cudaStreamWaitEvent(m.copy, m.used[m.used_of[sl]], 0), \"stage_one stager/copy publication\")"
+  },
+  {
+    "site": "stage_one stager/copy publication",
+    "before": "cudaMemcpyAsync(m.stage_dev[sl], hb, (size_t) lay.blob_bytes(l), cudaMemcpyHostToDevice, m.copy)",
+    "after": "STRATA_PREFILL_STAGE_CHECK(cudaMemcpyAsync(m.stage_dev[sl], hb, (size_t) lay.blob_bytes(l), cudaMemcpyHostToDevice, m.copy), \"stage_one stager/copy publication\")"
+  },
+  {
+    "site": "stage_one stager/copy publication",
+    "before": "cudaEventRecord(m.copied[sl], m.copy)",
+    "after": "STRATA_PREFILL_STAGE_CHECK(cudaEventRecord(m.copied[sl], m.copy), \"stage_one stager/copy publication\")"
+  },
+  {
+    "site": "fused streamed consumer lease",
+    "before": "cudaStreamWaitEvent(m.cs, m.copied[(k - 1) % (size_t) m.ring], 0)",
+    "after": "STRATA_PREFILL_STAGE_CHECK(cudaStreamWaitEvent(m.cs, m.copied[(k - 1) % (size_t) m.ring], 0), \"fused streamed consumer lease\")"
+  },
+  {
+    "site": "fused streamed consumer lease",
+    "before": "cudaEventRecord(m.used[kk % (size_t) m.ring], m.cs)",
+    "after": "STRATA_PREFILL_STAGE_CHECK(cudaEventRecord(m.used[kk % (size_t) m.ring], m.cs), \"fused streamed consumer lease\")"
+  },
+  {
+    "site": "group gather consumer lease",
+    "before": "cudaStreamWaitEvent(m.cs, m.copied[gg_slots[gg_nslots - 1]], 0)",
+    "after": "STRATA_PREFILL_STAGE_CHECK(cudaStreamWaitEvent(m.cs, m.copied[gg_slots[gg_nslots - 1]], 0), \"group gather consumer lease\")"
+  },
+  {
+    "site": "group gather consumer lease",
+    "before": "cudaEventRecord(m.used[rel], m.cs)",
+    "after": "STRATA_PREFILL_STAGE_CHECK(cudaEventRecord(m.used[rel], m.cs), \"group gather consumer lease\")"
+  },
+  {
+    "site": "MMQ individual slot release",
+    "before": "cudaEventRecord(m.used[slot], m.cs)",
+    "after": "STRATA_PREFILL_STAGE_CHECK(cudaEventRecord(m.used[slot], m.cs), \"MMQ individual slot release\")"
+  },
+  {
+    "site": "FP16 dequant slot release",
+    "before": "cudaEventRecord(m.used[slot], m.cs)",
+    "after": "STRATA_PREFILL_STAGE_CHECK(cudaEventRecord(m.used[slot], m.cs), \"FP16 dequant slot release\")"
+  },
+  {
+    "site": "nonstreamed consumer copy wait",
+    "before": "cudaStreamWaitEvent(m.cs, m.copied[stage_of[j]], 0)",
+    "after": "STRATA_PREFILL_STAGE_CHECK(cudaStreamWaitEvent(m.cs, m.copied[stage_of[j]], 0), \"nonstreamed consumer copy wait\")"
+  },
+  {
+    "site": "streamed skipped slot release",
+    "before": "cudaEventRecord(m.used[sl], m.cs)",
+    "after": "STRATA_PREFILL_STAGE_CHECK(cudaEventRecord(m.used[sl], m.cs), \"streamed skipped slot release\")"
+  },
+  {
+    "site": "streamed consumer copy wait",
+    "before": "cudaStreamWaitEvent(m.cs, m.copied[sl], 0)",
+    "after": "STRATA_PREFILL_STAGE_CHECK(cudaStreamWaitEvent(m.cs, m.copied[sl], 0), \"streamed consumer copy wait\")"
+  },
+  {
+    "site": "release compute completion before free",
+    "before": "    if (impl_->cs) cudaStreamSynchronize(impl_->cs);",
+    "after": "    if (impl_->cs) STRATA_PREFILL_STAGE_CHECK(cudaStreamSynchronize(impl_->cs), \"Prefill::release compute drain\");"
+  },
+  {
+    "site": "release copy completion before free",
+    "before": "    if (impl_->copy) cudaStreamSynchronize(impl_->copy);",
+    "after": "    if (impl_->copy) STRATA_PREFILL_STAGE_CHECK(cudaStreamSynchronize(impl_->copy), \"Prefill::release copy drain\");"
+  },
+  {
+    "site": "Prefill::run final copy drain",
+    "before": "cudaStreamSynchronize(m.copy)",
+    "after": "STRATA_PREFILL_STAGE_CHECK(cudaStreamSynchronize(m.copy), \"Prefill::run final copy drain\")"
+  },
+  {
+    "site": "final compute completion before successful run",
+    "before": "    if (cudaStreamSynchronize(m.cs) != cudaSuccess) {\n        err = std::string(\"prefill: \") + cudaGetErrorString(cudaGetLastError());\n        return false;\n    }\n    // (PR #121)",
+    "after": "    if (STRATA_PREFILL_STAGE_CHECK(cudaStreamSynchronize(m.cs), \"Prefill::run final compute drain\") != cudaSuccess) {\n        err = std::string(\"prefill: \") + cudaGetErrorString(cudaGetLastError());\n        return false;\n    }\n    // (PR #121)"
+  }
+]

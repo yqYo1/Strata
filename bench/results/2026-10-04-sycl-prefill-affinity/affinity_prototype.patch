@@ -1,0 +1,38 @@
+diff --git a/src/prefill/prefill.cpp b/src/prefill/prefill.cpp
+index 8df10d2..9d0912b 100644
+--- a/src/prefill/prefill.cpp
++++ b/src/prefill/prefill.cpp
+@@ -6,6 +6,7 @@
+ 
+ #include "strata/core/layout.hpp"
+ #include "strata/kernels/cpu/expert.hpp"
++#include "strata/kernels/cpu/pool.hpp"
+ #include "strata/kernels/native_qsa_indexer.hpp"
+ #include "strata/kernels/ngram.hpp"
+ #include "strata/kernels/ple.hpp"
+@@ -250,7 +251,13 @@ struct Stager {
+             if (cudaEventCreateWithFlags(&dma_done[i], cudaEventDisableTiming) != cudaSuccess) return false;
+         }
+         cudaGetDevice(&device);
+-        for (int t = 0; t < nthreads; ++t) threads.emplace_back([this] { work(); });
++        for (int t = 0; t < nthreads; ++t) threads.emplace_back([this, t] {
++#ifdef STRATA_ENABLE_SYCL
++            if (const char* v = std::getenv("STRATA_SYCL_PREFILL_STAGER_CPU"))
++                strata::kernels::cpu::pin_current_thread(std::atoi(v) + t);
++#endif
++            work();
++        });
+         return true;
+     }
+     ~Stager() {
+@@ -1614,6 +1621,10 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+         const bool threaded_issue = stream_all && issuer_on;
+         if (threaded_issue) {
+             issuer = std::thread([&] {
++#ifdef STRATA_ENABLE_SYCL
++                if (const char* v = std::getenv("STRATA_SYCL_PREFILL_ISSUER_CPU"))
++                    strata::kernels::cpu::pin_current_thread(std::atoi(v));
++#endif
+                 const core::OnDevice od(m.device);
+                 for (size_t idx = 0; idx < seq.size(); ++idx) {
+                     while (idx >= a_consumed.load(std::memory_order_acquire) + (size_t) m.ring) {

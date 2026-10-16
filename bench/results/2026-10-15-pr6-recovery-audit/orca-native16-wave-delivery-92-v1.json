@@ -1,0 +1,53 @@
+{
+  "id": "6d73fbdc-67dc-4e9b-ad09-316f68d70d79",
+  "ok": true,
+  "result": {
+    "runId": "run_c8f478972ec8",
+    "deliveryId": "delivery_b5c1a1967b87",
+    "messages": [
+      {
+        "id": "msg_a696aad9c31b",
+        "run_id": "run_c8f478972ec8",
+        "delivery_contract": "current_delivery",
+        "from_handle": "dispatch:ctx_b7d45ab0e119",
+        "to_handle": "run:run_c8f478972ec8",
+        "subject": "Question",
+        "body": "R860 source audit: official6c required unitrace --result-dir calls CreateConfigLog/StringifyDevice/zeInit before later SetEnv of UNITRACE_LD_PRELOAD_OLD, ZE_ENABLE_TRACING_LAYER, ZES_ENABLE_SYSMAN and LD_PRELOAD, then execvp replaces the image. Native image starts with a fully fixed environment, and I preset CUDA_MODULE_LOADING=EAGER to avoid generate.cpp main-entry setenv after collector initialization, but the CLI launcher itself mutates env after its Level Zero metadata probe. Does your explicit pinned-CLI instruction authorize this pre-exec launcher behavior, or must I deliver a hard source blocker under the process-environment immutability rule? Controller, gates and report are prepared; no execution or product edits occurred.",
+        "type": "question",
+        "priority": "normal",
+        "thread_id": "msg_a696aad9c31b",
+        "payload": "{\"taskId\":\"task_12353c376e09\",\"dispatchId\":\"ctx_b7d45ab0e119\",\"question\":\"R860 source audit: official6c required unitrace --result-dir calls CreateConfigLog/StringifyDevice/zeInit before later SetEnv of UNITRACE_LD_PRELOAD_OLD, ZE_ENABLE_TRACING_LAYER, ZES_ENABLE_SYSMAN and LD_PRELOAD, then execvp replaces the image. Native image starts with a fully fixed environment, and I preset CUDA_MODULE_LOADING=EAGER to avoid generate.cpp main-entry setenv after collector initialization, but the CLI launcher itself mutates env after its Level Zero metadata probe. Does your explicit pinned-CLI instruction authorize this pre-exec launcher behavior, or must I deliver a hard source blocker under the process-environment immutability rule? Controller, gates and report are prepared; no execution or product edits occurred.\",\"options\":[\"authorized-pinned-preexec-cli\",\"deliver-source-blocker\"]}",
+        "created_at": "2026-10-16T04:15:34Z",
+        "delivered_at": null
+      },
+      {
+        "id": "msg_1df8b5df643f",
+        "run_id": "run_c8f478972ec8",
+        "delivery_contract": "current_delivery",
+        "from_handle": "term_93846dfe-66ec-4c89-8a19-8c526705b365",
+        "to_handle": "run:run_c8f478972ec8",
+        "subject": "R861 source-only softmax proposal ready",
+        "body": "Created the source-only R861 package with the complete patch, frozen base and candidate SHA256s, provenance, sparse oracle extensions and a finite Main qualification plan. The opt-in covers FP32 and BF16 while preserving the default softmax and oracle bodies, with the distinct scale, infinity and NaN contracts retained in source and FP32 reduction-order differences disclosed. Builds, tests, GPU work, profilers, model quality and physical-context validation remain UNRUN, and Main must review and decide application after its active jobs close.",
+        "type": "worker_done",
+        "priority": "normal",
+        "thread_id": null,
+        "payload": "{\"taskId\":\"task_30b00b6ef6b0\",\"dispatchId\":\"ctx_9a859485ca40\",\"outcome\":\"succeeded\",\"filesModified\":[\"bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-subgroups-v1/SHA256SUMS\",\"bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-subgroups-v1/base-manifest.json\",\"bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-subgroups-v1/base/include/strata/kernels/qsa_prompt_attn.hpp\",\"bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-subgroups-v1/base/src/kernels/sycl/prompt_attention.cpp\",\"bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-subgroups-v1/base/tests/sycl/prompt_k_cellmajor.cpp\",\"bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-subgroups-v1/base/tests/sycl/prompt_native16.cpp\",\"bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-subgroups-v1/files/include/strata/kernels/qsa_prompt_attn.hpp\",\"bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-subgroups-v1/files/src/kernels/sycl/prompt_attention.cpp\",\"bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-subgroups-v1/files/tests/sycl/prompt_k_cellmajor.cpp\",\"bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-subgroups-v1/files/tests/sycl/prompt_native16.cpp\",\"bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-subgroups-v1/main-review.ja.md\",\"bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-subgroups-v1/manifest.json\",\"bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-subgroups-v1/proposal.patch\",\"bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-subgroups-v1/provenance.json\",\"bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-subgroups-v1/qualification-plan.md\"],\"reportPath\":\"/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-subgroups-v1/main-review.ja.md\"}",
+        "created_at": "2026-10-16T04:15:54Z",
+        "delivered_at": null
+      }
+    ],
+    "count": 2,
+    "replayed": false,
+    "acknowledged": null,
+    "timedOut": false,
+    "cancelled": false,
+    "connectionLost": false,
+    "mutation": {
+      "requestId": "a09e772e-9b00-4d6b-9605-d7a2632b2e9d",
+      "replayed": false
+    }
+  },
+  "_meta": {
+    "runtimeId": "e9030fc3-f028-4352-a34d-eb9385c8d79e"
+  }
+}

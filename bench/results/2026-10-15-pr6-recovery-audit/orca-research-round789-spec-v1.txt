@@ -1,0 +1,36 @@
+Purpose: decision support. Existing project /home/yayoi/orca/workspaces/Strata/sycl, primary feature/sycl.
+Read AGENTS.md, docs/ARTIFACT_RETENTION.md and /home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-index.json first.
+Read the relevant previous reports and Main corrections to avoid duplication;
+Main does not read collection report bodies on arrival. A native Codex Luna-max
+reviewer will assess depth/novelty/redundancy, pin hashes and index retrieval metadata.
+This is a fresh bounded read-only session. Do not spawn children. Write only your
+named report. No product edits, Git commands, builds, tests, GPU/profiler jobs,
+process inspection, cleanup, services or environment changes. Main continues
+independent work; do not request steering. No XeStrata source, helpers or archives.
+Use primary documentation, papers and original technical blogs; at most six
+substantive sources. Search current sources, distinguish measured facts from
+inference, and identify device/version/license limits and counterevidence.
+Do not repeat generic background. Compare alternatives deeply enough to be useful;
+the budget is a working limit, not a demand for filler or a tiny fact lookup.
+Return a file report with precise URLs, applicability limits, new findings and
+one concrete future experiment. In the final response supply only the report
+path, its hash and a <=150-character operational completion notice, without
+technical findings. Report completion with your live exact Task/Dispatch via
+Orca worker_done, list filesModified, then end. Do not message Main findings.
+
+
+Fresh decision-support scope from review785, Main continues fresh enginebuild. Current Main HC residual/BF16 producerconsumer source commit662e3a1e is pinned; sourceonly review no processinspection/build/tests/GPU. New kernels src/prefill/sycl/native16.cpp/header; wrapper layer_major.inc and HCread/write in prefill.cpp. Keep FP32 local reductions, inject coefficients/router and GDNstate; largegated/outputtensor BF16; QSA/GDNinternal stillFP32. Residual R16/gated16 currently disjointhalvesoldgatedUSMrange; oldarenareserved, typednewrouteonlyLM, PLE/finalcallbacks explicitfloatbridges. No new measurement prerequisite.
+{
+  "title": "HC4 BF16 residual-combine kernel mapping and producer/consumer fusion choices on Intel Xe2",
+  "purpose_class": "decision support",
+  "schedulable_now": true,
+  "finite_question": "For the known HC4 stream with N=2560 per stream and 8192-row chunks, compare standalone 1D/2D tiled residual-combine kernels, vectorized typed-16 stores with FP32 local combination, and safe fusion into an adjacent producer or consumer. Explain memory coalescing, conversion count, register pressure, layout/stride, and cases where fusion increases live ranges or changes rounding. Use original non-LLM GPU/SYCL sources for mapping alternatives; give no Strata speed claim and do not propose copied code.",
+  "report_budget": "1,400–1,800 words; at most 6 primary documentation, paper, or original technical-blog sources.",
+  "prerequisite_evidence": [
+    "R782 records HC4 with D=10240/N=2560 and the typed residual contract, plus the 8192-row chunk geometry.",
+    "The user-supplied AGENTS.md sets native 16-bit hidden-state producer/consumer work as current precision scope and requires whole-path GPU reasoning.",
+    "This is a source-comparison question; no local measurement, exact kernel file, or profiler evidence is required to answer it without performance claims."
+  ],
+  "novelty_guard": "R782 maps data types and R783 compares GEMM API choices; neither compares residual-combine thread mapping and fusion alternatives. Keep this scope at that missing kernel-mapping decision."
+}
+Output only: /home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round789-v1.txt

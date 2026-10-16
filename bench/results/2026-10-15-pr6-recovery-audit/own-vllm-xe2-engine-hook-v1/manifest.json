@@ -1,0 +1,257 @@
+{
+  "schema": "strata-source-proposal-r821-v1",
+  "task": "R821 actual optional production native16 backend hook",
+  "created_utc": "2026-10-16T00:09:27.147657+00:00",
+  "status": "SOURCE ONLY; NOT APPLIED; all compile/configure/link/syntax/GPU/ISA/numerical/fault/performance/model/physical gates UNRUN",
+  "base": {
+    "revision": "9c1a2020897a9451ec616a6bb036a661de9d86b0",
+    "receipt": "../own-native16-prefill-build-v2.json",
+    "receipt_sha256": "743c6591123ac695325d20c984170e7801b9ef783fc44844c68995c091c96408",
+    "HEAD_query": "not performed; current production bytes all match qualified 9c1a2020 receipt; later HEAD reported by coordinator is not assumed to be the code base"
+  },
+  "changed_existing": [
+    {
+      "path": "CMakeLists.txt",
+      "base_sha256": "47c283f6a6621b98cc7c1fd1dfce8c6daee73ffbeb9c0bbce97707edb460d200",
+      "proposed_sha256": "2c2fb77d3cd1e2f587e0cfe5011c91ec85b89a96b33eb0c57150cd8f2b02d0a1",
+      "base_bytes": 73984,
+      "proposed_bytes": 74239
+    },
+    {
+      "path": "cmake/sycl_backend.cmake",
+      "base_sha256": "70ebb97dac6e5d8347022305178fabcfb3d8c09d56fc149990324bbb06f8af0b",
+      "proposed_sha256": "fc17177aae7bcad6c3b805f196db192700304ca5e3c0a5a765abaed60b431e49",
+      "base_bytes": 30358,
+      "proposed_bytes": 31040
+    },
+    {
+      "path": "include/strata/prefill/gemm.hpp",
+      "base_sha256": "e5ef22688c4d46bbd3fa11b3881a8352323fc7492c377b66ec4ee6385513573c",
+      "proposed_sha256": "091984410aacd56f33748c4ef9c730405f2862f9a32d6de6c59fa74063a5fc43",
+      "base_bytes": 4014,
+      "proposed_bytes": 4600
+    },
+    {
+      "path": "include/strata/sycl/runtime.hpp",
+      "base_sha256": "95b0db4f2f2b137db7b2457dcecde0a9fa1ca8857d157a2ececf05eee8aa5922",
+      "proposed_sha256": "a0e0687886e09c50922d01f7023ba3b51e8ac2dbe43f461a798ba82438b2a074",
+      "base_bytes": 2899,
+      "proposed_bytes": 3295
+    },
+    {
+      "path": "src/sycl/runtime.cpp",
+      "base_sha256": "e58fe2cca4e15a96a7083fd28d2468ba9b653d875de2a1f5a9306ae0d1e76587",
+      "proposed_sha256": "e6c20e148bc7ceec250ad9a58ddfc851c1476aaab3d68982d2aee2897e572b83",
+      "base_bytes": 8995,
+      "proposed_bytes": 9241
+    },
+    {
+      "path": "src/prefill/sycl/gemm.cpp",
+      "base_sha256": "1158939d8a00195094013f1f14194c42c2b58595d7c2336f1dbf2709e3ce1f59",
+      "proposed_sha256": "023bc6c5633b7ae58636dc1ba732d7db77514cca98925100e031c0e0d3c7bcd9",
+      "base_bytes": 5046,
+      "proposed_bytes": 5119
+    },
+    {
+      "path": "src/prefill/sycl/gemm16.cpp",
+      "base_sha256": "82be59973a27cdc0f1d965459fd8d2c651d01da7aa0ea6b4ba3a622ae7f563dd",
+      "proposed_sha256": "2c03419f236d1399d401ac0ee1c1611ef84c35d62fa72f62c8ed0cab203965fd",
+      "base_bytes": 9019,
+      "proposed_bytes": 14703
+    }
+  ],
+  "R810_exact_imports": [
+    {
+      "source": "../own-vllm-xe2-native16-v1/native16.hpp",
+      "target": "src/prefill/sycl/vllm_xe2/native16.hpp",
+      "sha256": "eec1581b369759e4fd6c8ea7f2012cf9518bd4341c01e19362cc10b3553b066b",
+      "bytes": 1977,
+      "unchanged": true,
+      "license": "Strata MIT"
+    },
+    {
+      "source": "../own-vllm-xe2-native16-v1/native16.cpp",
+      "target": "src/prefill/sycl/vllm_xe2/native16.cpp",
+      "sha256": "d8b361cabea29344b48aff5a9db41303f3ea715de47f27bc57f29f85c5f3aa2d",
+      "bytes": 9287,
+      "unchanged": true,
+      "license": "Strata MIT"
+    },
+    {
+      "source": "../own-vllm-xe2-native16-v1/xe_gemm_bsd.hpp",
+      "target": "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp",
+      "sha256": "114210ceb61f769d1ba7717690b43027a74f07cf7bdb0cb82d7ea3cd28dbd1c0",
+      "bytes": 5758,
+      "unchanged": true,
+      "license": "BSD-3-Clause Intel 2025"
+    }
+  ],
+  "read_context": {
+    "research_index": "../research-index.json",
+    "research_index_sha256": "ec0afc635fbb8d26a417121e858389c34e3bb33185eb4e57d2b03c0058db8303",
+    "sections": [
+      "top-level keys",
+      "current_tuning_priority",
+      "native16_activation_pipeline"
+    ],
+    "collection_report_bodies_read": false,
+    "production_prefill_read_only": {
+      "path": "src/prefill/prefill.cpp",
+      "sha256": "eb513f3a8579254f34f81f137a0c790be94b763ac3ac79e4fdb2114f220dd297"
+    }
+  },
+  "external_TLA": {
+    "repository": "https://github.com/intel/sycl-tla",
+    "revision": "87f6850680a580654b9ea2c80dbc01aeb36ad231",
+    "required_existing_path": "/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+    "enforcement": "exact SHA256 of 207 R810 transitive include-closure headers; no Git/network/dependency CMake",
+    "header_inventory_origin_sha256": "1cbd9083df5ce2db52c193232e01ec160fbed9415cc4ba9f53cb3cc3d1726ebf",
+    "vendored_files": 0,
+    "license_counts": {
+      "BSD-3-Clause": 192,
+      "Apache-2.0 WITH LLVM-exception": 15
+    }
+  },
+  "build": {
+    "option": "STRATA_SYCL_VLLM_XE2_NATIVE16",
+    "default": false,
+    "AOT_device": "bmg-g21-a0",
+    "target": "spir64_gen",
+    "flag_acceptance": "UNRUN",
+    "whole_engine_GRF_option_effect": "opt-in final link adds exact R810 -internal_options -cl-intel-256-GRF-per-thread; other SYCL images may be affected; default OFF recipe unchanged"
+  },
+  "route": {
+    "setting": "STRATA_SYCL_PREFILL_NATIVE16_BACKEND=own|vllm",
+    "default": "own",
+    "tile_setting": "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE=auto|compact|wide",
+    "tile_default": "auto",
+    "initial_static_T_threshold": 128,
+    "selection": "T<128 compact, otherwise wide; no tuned/performance claim",
+    "diagnostics": "one successful process-level config initialization; no per-GEMM trace",
+    "all_four_storage_combinations": true,
+    "global_FP32_output_or_cast_tensor": false,
+    "beta": "vllm accepts +/-0 only; own semantics unchanged",
+    "fail_closed": true,
+    "device_gate": "Gemm init rejects non-Intel/non-LevelZero/non-G21 before prefill work; unchanged adapter checks full capability before first GEMM enqueue",
+    "remaining_GRF_scope_risk": "opt-in exact R810 global GRF backend option can affect decode images; no unchanged-binary claim"
+  },
+  "runtime_lifetime": {
+    "source": "original Allocation registry returns retained original Runtime; no provider/device selection/new Runtime definition",
+    "state": "per production Gemm shared state retains Runtime, borrows original queue at stable address; adapter borrows both",
+    "buffers": "original callers retain allocations until original in-order completion; registry and exact extent checks preserved",
+    "duplicate_runtime_sources_linked": false
+  },
+  "scope_exclusions": [
+    "R818 live files",
+    "R810/R816 writes",
+    "grouped MoE scheduler",
+    "Torch",
+    "CUDA/HIP implementation",
+    "XeStrata source/helpers/tests",
+    "all execution and Git operations"
+  ],
+  "executed": [
+    "read-only source/docs/JSON and hash inspection",
+    "own directory source/patch/docs/manifest writes",
+    "required Orca check/heartbeat/completion only"
+  ],
+  "source_byte_budget": 307200,
+  "retention": "Only this named source-only package; Main full review+qualification consumer; <=300KiB; no raw measurement artifacts or cleanup",
+  "new_files": [
+    {
+      "path": "cmake/sycl_vllm_xe2_native16.cmake",
+      "sha256": "4043cf3ce081b9f1c3a44b119963933a2a85b5df8278f80e456f42750c65545c",
+      "bytes": 2777
+    },
+    {
+      "path": "cmake/vllm_xe2_tla_headers.json",
+      "sha256": "4cc45b942c61468b7d80842e0cdb9d6790c6d76ca0aa90be523171f17b56517a",
+      "bytes": 35240
+    },
+    {
+      "path": "docs/SYCL_VLLM_XE2_NATIVE16.md",
+      "sha256": "32b6f898e8fe75205ba1e3dc25a70f3364a84e4872ff8784bac6c1044179699e",
+      "bytes": 12235
+    },
+    {
+      "path": "src/prefill/sycl/native16_backend.hpp",
+      "sha256": "66570f66c95477a8e32a3daf4b0ff1bf670fd46a32876e9c15925220098c8d8f",
+      "bytes": 342
+    },
+    {
+      "path": "src/prefill/sycl/vllm_xe2/native16.cpp",
+      "sha256": "d8b361cabea29344b48aff5a9db41303f3ea715de47f27bc57f29f85c5f3aa2d",
+      "bytes": 9287
+    },
+    {
+      "path": "src/prefill/sycl/vllm_xe2/native16.hpp",
+      "sha256": "eec1581b369759e4fd6c8ea7f2012cf9518bd4341c01e19362cc10b3553b066b",
+      "bytes": 1977
+    },
+    {
+      "path": "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp",
+      "sha256": "114210ceb61f769d1ba7717690b43027a74f07cf7bdb0cb82d7ea3cd28dbd1c0",
+      "bytes": 5758
+    }
+  ],
+  "package_files": [
+    {
+      "path": "README.md",
+      "bytes": 5810,
+      "sha256": "ccfd538d7ae629176bed3d0aa119a8bc8862ad81285c7bd2073c68e4ad30f49f"
+    },
+    {
+      "path": "engine-hook.patch",
+      "bytes": 84528,
+      "sha256": "34824fb9f917c0cce626dd42cb75c58586e27d2d5d41c153fa384e0551eb3418"
+    },
+    {
+      "path": "files/cmake/sycl_vllm_xe2_native16.cmake",
+      "bytes": 2777,
+      "sha256": "4043cf3ce081b9f1c3a44b119963933a2a85b5df8278f80e456f42750c65545c"
+    },
+    {
+      "path": "files/cmake/vllm_xe2_tla_headers.json",
+      "bytes": 35240,
+      "sha256": "4cc45b942c61468b7d80842e0cdb9d6790c6d76ca0aa90be523171f17b56517a"
+    },
+    {
+      "path": "files/docs/SYCL_VLLM_XE2_NATIVE16.md",
+      "bytes": 12235,
+      "sha256": "32b6f898e8fe75205ba1e3dc25a70f3364a84e4872ff8784bac6c1044179699e"
+    },
+    {
+      "path": "files/src/prefill/sycl/native16_backend.hpp",
+      "bytes": 342,
+      "sha256": "66570f66c95477a8e32a3daf4b0ff1bf670fd46a32876e9c15925220098c8d8f"
+    },
+    {
+      "path": "files/src/prefill/sycl/vllm_xe2/native16.cpp",
+      "bytes": 9287,
+      "sha256": "d8b361cabea29344b48aff5a9db41303f3ea715de47f27bc57f29f85c5f3aa2d"
+    },
+    {
+      "path": "files/src/prefill/sycl/vllm_xe2/native16.hpp",
+      "bytes": 1977,
+      "sha256": "eec1581b369759e4fd6c8ea7f2012cf9518bd4341c01e19362cc10b3553b066b"
+    },
+    {
+      "path": "files/src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp",
+      "bytes": 5758,
+      "sha256": "114210ceb61f769d1ba7717690b43027a74f07cf7bdb0cb82d7ea3cd28dbd1c0"
+    },
+    {
+      "path": "provenance.md",
+      "bytes": 4844,
+      "sha256": "faa67eb54a4ef389b95edaf4a9ee8b1f08bb9c042ea519378c1ffba6a98ab1cc"
+    }
+  ],
+  "sealing": "SHA256SUMS pins all package files except itself, including manifest.json; package_files excludes recursive manifest/seal hashes",
+  "remaining_review_risks": [
+    "Whole-engine exact R810 GRF256 backend option affects other SYCL images; no isolated flag/performance claim",
+    "Registry shared owners and copied validation return add unmeasured host refcount work",
+    "Native column-sliced Y+r may fail unchanged R810 full strided rectangle or alignment/tail guards",
+    "Actual source-origin queue async-handler identity remains caller obligation; domain alone cannot prove it",
+    "All compile/flag/image/numerical/device/model/performance/physical gates UNRUN"
+  ]
+}

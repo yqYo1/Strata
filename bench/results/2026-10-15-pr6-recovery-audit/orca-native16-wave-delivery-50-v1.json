@@ -1,0 +1,68 @@
+{
+  "id": "7afdf531-3d8d-4f5c-9238-a5f0bc538d50",
+  "ok": true,
+  "result": {
+    "runId": "run_c8f478972ec8",
+    "deliveryId": "delivery_c70bb2777ed7",
+    "messages": [
+      {
+        "id": "msg_bfc5c2857d67",
+        "run_id": "run_c8f478972ec8",
+        "delivery_contract": "current_delivery",
+        "from_handle": "term_8d44b781-9ba0-4a9c-97b8-8ef0c1e1d8a4",
+        "to_handle": "run:run_c8f478972ec8",
+        "subject": "alive",
+        "body": "",
+        "type": "heartbeat",
+        "priority": "normal",
+        "thread_id": null,
+        "payload": "{\"taskId\":\"task_994c0144966e\",\"dispatchId\":\"ctx_7e1894b71c59\",\"phase\":\"investigating\"}",
+        "created_at": "2026-10-15T23:20:15Z",
+        "delivered_at": null
+      },
+      {
+        "id": "msg_cfb58689f0d0",
+        "run_id": "run_c8f478972ec8",
+        "delivery_contract": "current_delivery",
+        "from_handle": "term_ccf58efe-c0fc-42d4-aa6d-70a463dc6271",
+        "to_handle": "run:run_c8f478972ec8",
+        "subject": "R809 source controller ready; static dependency gate blocked",
+        "body": "I prepared the three-file R809 Main build/smoke/check package with exact private fixture lifetime transforms and immutable qualification gates (142671 bytes total; main_controller.py SHA256 f18a748797f072fedcf02672c108398804df9ba2f50793b98ac622741955c1b2; manifest.json SHA256 b54d4555b1e496c1b866a71171f4409dcc7eee5745230fa29da3256381efa67e; README.md SHA256 0efc5074a1a4918f9896ee0510c89748e635a48b689fb80978ac669acfb927fc). Static ELF inspection found libtbb.so.12, libsvml.so, libimf.so and libintlc.so.5 unresolved under the authorized environment, while libsycl.so.9 sonames agree; all compilation, loading, syntax checks, tests and GPU execution remain UNRUN. Main must review the package, wait for active quality-cohort normal closure and supply its latest receipt/hash, then decide the unresolved dependency boundary without workarounds before execution; research-index metadata is shared in the manifest and model quality, performance and physical 262144 qualification remain unestablished.",
+        "type": "worker_done",
+        "priority": "normal",
+        "thread_id": null,
+        "payload": "{\"taskId\":\"task_628b973fbc93\",\"dispatchId\":\"ctx_561e1af4d2f5\",\"outcome\":\"succeeded\",\"filesModified\":[\"/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-native16-onednn-qualification-v1/main_controller.py\",\"/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-native16-onednn-qualification-v1/manifest.json\",\"/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-native16-onednn-qualification-v1/README.md\"],\"reportPath\":\"/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-native16-onednn-qualification-v1/README.md\"}",
+        "created_at": "2026-10-15T23:20:41Z",
+        "delivered_at": null
+      },
+      {
+        "id": "msg_233589c6b146",
+        "run_id": "run_c8f478972ec8",
+        "delivery_contract": "current_delivery",
+        "from_handle": "term_8d44b781-9ba0-4a9c-97b8-8ef0c1e1d8a4",
+        "to_handle": "run:run_c8f478972ec8",
+        "subject": "alive",
+        "body": "",
+        "type": "heartbeat",
+        "priority": "normal",
+        "thread_id": null,
+        "payload": "{\"taskId\":\"task_994c0144966e\",\"dispatchId\":\"ctx_7e1894b71c59\",\"phase\":\"investigating\"}",
+        "created_at": "2026-10-15T23:20:51Z",
+        "delivered_at": null
+      }
+    ],
+    "count": 3,
+    "replayed": false,
+    "acknowledged": null,
+    "timedOut": false,
+    "cancelled": false,
+    "connectionLost": false,
+    "mutation": {
+      "requestId": "3251f11a-27ae-456d-b2c7-ef499b52f4d3",
+      "replayed": false
+    }
+  },
+  "_meta": {
+    "runtimeId": "e9030fc3-f028-4352-a34d-eb9385c8d79e"
+  }
+}

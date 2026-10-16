@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cstdint>
+#include <map>
+#include "strata/core/weights.hpp"
 #include <set>
 #include <string>
 #include <vector>
@@ -19,17 +21,13 @@ public:
     ~NativeDense();
     NativeDense(const NativeDense&) = delete;
     NativeDense& operator=(const NativeDense&) = delete;
-    /// With layer_hi >= 0, only the `blk.<l>.` matrices with layer_lo <= l < layer_hi are uploaded (a layer
-    /// split's stage holds its own layers' projections, not the whole model's); the others keep data == nullptr.
     bool load(const std::vector<std::string>& shards, WeightTable& table, std::string& err,
-              bool include_ple_key = false, int64_t layer_lo = 0, int64_t layer_hi = -1);
+              bool include_ple_key = false, bool capture_layer_bank = false,
+              uint64_t layer_bank_ram_limit = (3ULL << 30));
     /// Plan v0.3 P1: the canonical tensor names `load` would serve natively from these shards (eligible name,
     /// supported type, 2-D), read from the GGUF headers only - so the canonical arena can skip them.
     static bool served_names(const std::vector<std::string>& shards, bool include_ple_key,
                              std::set<std::string>& out, std::string& err);
-    /// Layer split: load only blocks [lb, le) (every other `blk.N.` projection belongs to another GPU's stage; the
-    /// PLE tensors are loaded everywhere).  Process-wide, read by the next `load`; (-1, -1) = all layers.
-    static void set_layer_range(int lb, int le);
     /// #326: a native pack whose `blk.1.ple_key.weight` row is unquantized (iq_pack --compat-bf16 of a GGUF key
     /// the native kernel also reads, e.g. OrcaRouter's IQ3_XXS) serves the PLE from that row, so it is taken out
     /// of `skip` and `load` does not upload the GGUF key over it.  A quantized row leaves `skip` unchanged.
@@ -37,7 +35,46 @@ public:
     uint64_t weight_bytes() const { return bytes_; }
     size_t tensor_count() const { return weights_.size(); }
 
+    // Explicit startup opt-in only: capture_layer_bank copies ORIGINAL GGUF bytes
+    // during load. No late D2H snapshot or source-file reread is performed.
+    enum class Residency { Full, Bank };
+    struct ReaderRetirement {
+        // Caller asserts ALL target-NativeDense-reading decode/token/MTP/verifier graphs are destroyed,
+        // all streams/callbacks drained and no normal-table reader may resume
+        // until restore_full succeeds and graphs have been recaptured.
+        bool all_readers_retired = false;
+    };
+    struct PackedSource {
+        std::string name, shard;
+        uint64_t gguf_offset = 0, data_start = 0, file_bytes = 0;
+        int layer = -1;
+        WeightRef original;
+        std::vector<uint8_t> packed; // owned immutable original bytes
+    };
+    bool prepare_layer_bank(std::string& err); // Full-only allocation; no publications/free
+    void cancel_prepared_bank(); // Full-only checked release, no submitted use
+    bool enter_layer_bank(ReaderRetirement retirement, std::string& err);
+    // Synchronous publication: a view remains valid until the NEXT activate or
+    // restore. Caller must retire every prior view reader first, on this same
+    // ordered stream. No other stream, retained callback or graph may use it.
+    bool activate_layer(int layer, void* stream, ReaderRetirement retirement, std::string& err);
+    bool restore_full(void* stream, ReaderRetirement retirement, std::string& err);
+    const std::map<std::string, WeightRef>& layer_view() const { return layer_view_; }
+    const std::vector<PackedSource>& packed_sources() const { return sources_; }
+    Residency residency() const { return residency_; }
+    uint64_t bank_bytes() const { return bank_bytes_; }
+    uint64_t snapshot_bytes() const { return sources_.empty() ? 0 : bytes_; }
+    // Requires exclusive owner access. Not thread-safe. Destructor in Bank
+    // state fail-stops: cancellation must explicitly drain and restore first.
+
 private:
+    std::vector<PackedSource> sources_;
+    WeightTable* table_ = nullptr; // must outlive NativeDense
+    Residency residency_ = Residency::Full;
+    uint64_t bank_bytes_ = 0;
+    void* bank_ = nullptr;
+    std::map<std::string, WeightRef> layer_view_;
+    bool validate_table(bool withdrawn, std::string& err) const;
     std::vector<void*> weights_;
     void* scratch_ = nullptr;
     uint64_t bytes_ = 0;

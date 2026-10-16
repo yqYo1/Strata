@@ -1,0 +1,73 @@
+{
+  "schema": "strata-unitrace-unsealed-library-forensics-v1",
+  "original_receipt": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-unitrace-direct-tiny-v2.json",
+    "sha256": "3835310ca3feb258fed64556e960689c04f5754ade7cf97698aa4ba83d798c5b",
+    "status": "FAIL",
+    "complete": false,
+    "ownership_closed": false
+  },
+  "GPU_executed": false,
+  "scope": "Independent read-only post-stop PID/fault observations; not collector compatibility or GPU-compute qualification.",
+  "primary_stop_reason": "RuntimeError('unsealed actual loaded dependency: /usr/lib/x86_64-linux-gnu/libnl-3.so.200.26.0')",
+  "owned_signal": [
+    {
+      "pid": 702443,
+      "start_ticks": 47465513,
+      "signal": "SIGTERM",
+      "result": "sent"
+    }
+  ],
+  "native_exit": 1,
+  "native_elapsed_seconds": 0.24212608201196417,
+  "original_observation_complete": false,
+  "direct_child_reaped": true,
+  "session_empty": true,
+  "survivors": [],
+  "current_absence": [
+    {
+      "original": {
+        "pid": 702443,
+        "start_ticks": 47465513,
+        "sid": 702443,
+        "pgid": 702443
+      },
+      "current": null,
+      "original_absent": true
+    },
+    {
+      "original": {
+        "pid": 702443,
+        "state": "R",
+        "ppid": 702122,
+        "pgid": 702443,
+        "sid": 702443,
+        "start_ticks": 47465513,
+        "rss_bytes": 299008
+      },
+      "current": null,
+      "original_absent": true
+    }
+  ],
+  "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "checked_utc": "2026-10-16T04:50:54.353300+00:00",
+  "journal_argv": [
+    "journalctl",
+    "-k",
+    "-b",
+    "--after-cursor",
+    "s=9944479cfd1a45c28a589619cb8f2881;i=c273ec8;b=cfda0b6a7c134fe2bdf58f9202770840;m=6e8117e548;t=65dedd091bcf6;x=abf4b1a9b92291b4",
+    "--no-pager",
+    "-o",
+    "json"
+  ],
+  "journal_exit_code": 0,
+  "journal_rows": 16,
+  "journal_SHA256": "fd147e3164d55cef38e16b2a9e2ad058b52ee100f8d76d58d927e72b8e4d47b5",
+  "fresh_faults": [],
+  "driver_dump_exists": false,
+  "native_stderr": "The program was built for 1 devices\nBuild program log for 'Intel(R) Arc(TM) B570 Graphics':\nIGC: Internal Compiler Error: Termination request sent to the program\n\n[INFO] Log is stored in /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-unitrace-direct-tiny-v2/collector/timing.702443.log\n",
+  "partial_summary_SHA256": "147af04393d009e0367d7d837df97d89567ce4f48116e6ff496df4686d9bc581",
+  "partial_summary_scope": "Only memory-copy device timings and empty compute-kernel properties; no successful attention collection. IGC termination request followed owned SIGTERM, not a new demonstrated driver/compiler root cause.",
+  "next": "Pin observed libnl family before fresh run, retain strict unknown-map rejection and original FAIL."
+}

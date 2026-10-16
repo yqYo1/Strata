@@ -1,0 +1,7 @@
+# R871 リサーチ範囲計画
+
+R871は、現在の16f9ソースを対象に、FP32容量のMoE出力scratchへFP16出力を2×8192行ぶん保持して16384行の専門家順windowを作れるか、実際の割当量・live range・QSA/GDN/state/publication順序から評価するdecision supportです。R701/R702の元報告とMainレビューを共有し、既存のcompact FP16経路との差を明示します。v6 profileは6354のwhole-model計測であり、非排他的なdevice時間をこの設計の速度根拠に使いません。
+
+R872は、query-fusion調査が除外したGPU equijoinのhash build/probe、radix partition、sort-mergeをkey skew・relation比・device容量で比べます。R873は、非LLM MLPを対象にASICのweight/output/row stationary dataflowと、バッファ、配列利用率、partial-sum移動のトレードオフを集めます。どちらも指定済みのレビューmetadataだけで重複を避け、保留中の知識collection本文を開きません。
+
+3件とも1300–1700語、primary URLは最大7件、前提資料を記録済みでschedulable_now=trueです。これは計画だけで、Orca workerのdispatchはしていません。研究者は指定レポートだけを書き、build/test/GPU/process/Git作業とXeStrata sourceの利用を行いません。

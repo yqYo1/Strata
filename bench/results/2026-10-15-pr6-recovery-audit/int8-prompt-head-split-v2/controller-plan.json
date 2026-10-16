@@ -1,0 +1,93 @@
+{
+  "schema": "head-split-fixed-exec-controller-proposal-v2",
+  "status": "UNAPPLIED_UNBUILT_UNTESTED_UNEXECUTED_GPU_UNQUALIFIED",
+  "owner": "Main",
+  "kernel_changes_from_v1": false,
+  "v1_original_preserved": true,
+  "freeze_release": {
+    "schema": "head-split-freeze-release-v2",
+    "benchmark_binary_label": "92acf71e",
+    "must_close_same_binary_arms": ["Direct0", "Direct1"],
+    "full_clean_thinking_runs_minimum": 3,
+    "agent_session_complete_each_arm": true,
+    "all_server_client_controller_owners_retired": true,
+    "preserve_product_source_build_binary_until_both_arms_close": true,
+    "actual_receipts_and_full_sha256_required": true,
+    "example_is_release_receipt": false
+  },
+  "environment_policy": {
+    "native_probe_writes_process_environment": false,
+    "runtime_preinit_validation": "Read-only exact route/native option validation",
+    "one_native_process_one_route": true,
+    "parent_os_environ_mutated": false,
+    "child_environment": "Explicit Popen exec environment dictionary fixed for lifetime",
+    "native_kv_option_exec": "0",
+    "q4_option": "Inherited once from Main launch snapshot; never relaxed inside probe",
+    "existing_env_switching_test_invoked": false
+  },
+  "serial_jobs": [
+    "Main checks actual freeze release under existing measurement lock",
+    "Main alone reviews/applies source.diff and fixture/manual CMake target",
+    "Main alone configures/builds sycl_int8_prompt_head_split_probe_v2",
+    "Controller acquires same existing measurement lock and rechecks release",
+    "Separate --help and --host-only processes",
+    "Main fault begin / fixed-env legacy 28cases / Main fault end",
+    "Main fault begin / fixed-env split32 28cases / Main fault end",
+    "Separate offline all28 CH32 bitwise comparator",
+    "Main fault begin / fixed-env split64 28cases / Main fault end",
+    "Separate offline all28 CH32 bitwise plus CH64 tolerance comparator",
+    "Optional 23 isolation pairs, 46 separate native processes with individual fault boundaries and pair comparators",
+    "Main independent observed kernel-name/resource diagnostic",
+    "Main independent 32K+thinking official model/agent/quality/performance gates",
+    "Main independent physical256K/consumption/state/RESTORE gates"
+  ],
+  "requires_main_fault_adapter": {
+    "required_before_any_runtime_arm": true,
+    "provided_by_this_proposal": false,
+    "scope": "Main-reviewed read-only actual kernel journal/driver scan",
+    "argv": ["HELPER", "begin|end", "--job-dir", "ABS_PRIVATE_JOB_DIR"],
+    "receipts": ["fault-before.json", "fault-after.json"],
+    "pass_requires": ["same boot ID", "actual before/after journal cursors", "successful error scan", "recorded exact filter", "new_faults=0", "status=PASS"],
+    "reset_service_cleanup_authorized": false
+  },
+  "bounds": {
+    "native_wall_seconds": 900,
+    "help_host_wall_seconds": [30, 60],
+    "comparator_wall_seconds": 120,
+    "fault_helper_wall_seconds": 60,
+    "whole_controller_wall_seconds": 21600,
+    "abnormal_retirement_tail_seconds_maximum": 40,
+    "capture_default_bytes_per_native": 8388608,
+    "capture_hard_maximum_bytes": 16777216,
+    "text_bytes_per_process": 4194304,
+    "whole_controller_bytes": 67108864,
+    "full_one_arm_raw_arrays_arithmetic_bytes": 4722176,
+    "three_full_arms_plus23_isolation_pairs_raw_arrays_arithmetic_bytes": 17563904,
+    "actual_capture_bytes_measured": false
+  },
+  "capture_and_comparison": {
+    "new_private_directory_only": true,
+    "overwrite": false,
+    "no_symlink_components": true,
+    "all_output_f32_with_guards": true,
+    "all_reference_f64": true,
+    "input_array_sha256": true,
+    "same_source_binary_fixture_device_driver_required": true,
+    "case_count_full": 28,
+    "oracle_abs_rel": 0.00001,
+    "ch32_all_output_bitwise": true,
+    "ch64_baseline_abs_rel": 0.00001,
+    "isolation_all_output_bitwise": true,
+    "decline_incomplete_abnormal_missing_budget_timeout": "FAIL_CLOSED_NO_LATER_JOB",
+    "normal_capture_alone_proves_process_exit": false,
+    "equal_outputs_prove_selected_kernel": false
+  },
+  "retention": {
+    "large_captures_location": "Main-selected private absolute directory outside Git",
+    "current_full_array_consumer": "Offline exact pair comparison and Main first numerical-failure investigation",
+    "next_review": "After comparisons and required diagnostic decisions are recorded",
+    "retire_after_comparison": "Main-only serialized retention review and path/hash/reason deletion manifest; retain last required unresolved fixture",
+    "controller_deletes_files": false,
+    "capture_or_deletion_performed_by_author": false
+  }
+}

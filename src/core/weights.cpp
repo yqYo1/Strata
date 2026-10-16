@@ -1,5 +1,7 @@
 // src/core/weights.cpp - the dense-weight loader.  See the header for the engine-vs-pack distinction.
 #include "strata/core/weights.hpp"
+#include "strata/core/native_dense_bank_policy.hpp"
+#include "strata/core/canonical_bank_policy.hpp"
 
 #include "strata/kernels/f16_bits.hpp"
 
@@ -7,9 +9,11 @@
 
 #include <chrono>
 #include <algorithm>
+#include <cinttypes>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <exception>
 
 #if defined(_WIN32)
 #include <io.h>
@@ -142,7 +146,7 @@ bool WeightTable::index_code_bits(const std::string& pack_dir, const std::string
 }
 
 bool WeightTable::load(const std::string& pack_dir, void* arena_base, uint64_t arena_bytes, std::string& err,
-                       const std::set<std::string>* skip) {
+                       const std::set<std::string>* skip, EngineSnapshot* capture, uint64_t capture_ram_limit) {
     const std::string path = pack_dir + "/index.txt";
     std::FILE* idx = std::fopen(path.c_str(), "rb");
     if (!idx) { err = "cannot open " + path + " (run tools/pack_index.py)"; return false; }
@@ -164,7 +168,9 @@ bool WeightTable::load(const std::string& pack_dir, void* arena_base, uint64_t a
         // The format is written by tools/pack_index.py and is space-separated with no quoting; a name with a
         // space in it would break the parse, which is why the parser REFUSES rather than taking what it got.
         const int n = std::sscanf(line,
-                                  "%255s %d %d %llu %llu %llu %llu %lld %lld %d %d %d %d %d %llu %llu %llu %d %d",
+                                  "%255s %d %d %" SCNu64 " %" SCNu64 " %" SCNu64 " %" SCNu64
+                                  " %" SCNd64 " %" SCNd64 " %d %d %d %d %d %" SCNu64
+                                  " %" SCNu64 " %" SCNu64 " %d %d",
                                   name, &r.file, &kind, &r.src_off, &r.src_bytes, &r.dst_off, &r.dst_bytes,
                                   &r.ne0, &r.ne1, &r.code_bits, &r.code_bias, &r.group_elems, &r.codebook,
                                   &r.has_offset, &r.codes_bytes, &r.scales_bytes, &r.offset_bytes,
@@ -207,6 +213,19 @@ bool WeightTable::load(const std::string& pack_dir, void* arena_base, uint64_t a
         return false;
     }
 
+    if(capture) {
+        const uint64_t capture_alignment=align>0 ? uint64_t(align) : 256;
+        if(arena_bytes!=pool) {err="canonical capture: exact owner size mismatch";return false;}
+        if(pool>capture_ram_limit || pool>SIZE_MAX) {err="canonical capture: bounded RAM limit exceeded";return false;}
+        if(!detail::canonical_capture_alignment(capture_alignment)) {
+            err="canonical capture: unsupported pack alignment (expected64 or256)";return false;
+        }
+        try {
+            *capture=EngineSnapshot{};
+            capture->bytes.resize(size_t(pool),0);capture->pack_dir=pack_dir;
+            capture->loaded_arena=arena_base;capture->loaded_table=this;capture->arena_alignment=capture_alignment;
+        } catch(const std::exception& e) {err=e.what();return false;}
+    }
     // Two pinned staging buffers, both reused.  Pinned because a 5 GB pageable upload spends its time in the
     // driver copying through a bounce buffer, and bounded by CHUNK rather than by the largest tensor.
     //
@@ -222,11 +241,28 @@ bool WeightTable::load(const std::string& pack_dir, void* arena_base, uint64_t a
     // one of the 90 widened tensors - a heap corruption that would have been blamed on whatever ran next.
     void* stage_in = nullptr;
     void* stage_out = nullptr;
-    if (cudaHostAlloc(&stage_in, CHUNK, cudaHostAllocDefault) != cudaSuccess ||
+    auto free_stage=[capture](void* p) {
+        if(p && cudaFreeHost(p)!=cudaSuccess && capture) {
+            std::fprintf(stderr,"canonical capture: uncertain staging free; owners retained\n");std::abort();
+        }
+    };
+    if(capture) {
+        auto allocate_stage=[&](void*& out,uint64_t bytes) {
+            out=nullptr;const auto status=cudaHostAlloc(&out,bytes,cudaHostAllocDefault);
+            const auto result=detail::classify_bank_allocation(status,cudaSuccess,cudaErrorMemoryAllocation,out);
+            if(result==detail::BankAllocation::uncertain) {
+                std::fprintf(stderr,"canonical capture: uncertain staging allocation; owners retained\n");std::abort();
+            }
+            return result==detail::BankAllocation::success;
+        };
+        if(!allocate_stage(stage_in,CHUNK) || !allocate_stage(stage_out,CHUNK*2)) {
+            free_stage(stage_in);free_stage(stage_out);err="canonical confirmed staging OOM";return false;
+        }
+    } else if (cudaHostAlloc(&stage_in, CHUNK, cudaHostAllocDefault) != cudaSuccess ||
         cudaHostAlloc(&stage_out, CHUNK * 2, cudaHostAllocDefault) != cudaSuccess) {
         err = "cudaHostAlloc for the staging buffers failed";
-        if (stage_in) cudaFreeHost(stage_in);
-        if (stage_out) cudaFreeHost(stage_out);
+        if (stage_in) free_stage(stage_in);
+        if (stage_out) free_stage(stage_out);
         return false;
     }
 
@@ -269,7 +305,7 @@ bool WeightTable::load(const std::string& pack_dir, void* arena_base, uint64_t a
         if (r.code_bits != 0 && r.dst_bytes == 0) {
             // plan v0.3 P6: a native pack's row that carries a shape only - the GGUF form must serve it
             err = r.name + ": this pack holds the tensor only in its GGUF form (run with --native SHARD1)";
-            cudaFreeHost(stage_in); cudaFreeHost(stage_out);
+            free_stage(stage_in); free_stage(stage_out);
             return false;
         }
         if (r.file != cur_file) {
@@ -277,7 +313,7 @@ bool WeightTable::load(const std::string& pack_dir, void* arena_base, uint64_t a
             const char* fn = file_name(r.file);
             const std::string p = pack_dir + "/" + (fn ? fn : "?");
             cur = std::fopen(p.c_str(), "rb");
-            if (!cur) { err = "cannot open " + p; cudaFreeHost(stage_in); cudaFreeHost(stage_out); return false; }
+            if (!cur) { err = "cannot open " + p; free_stage(stage_in); free_stage(stage_out); return false; }
             cur_file = r.file;
         }
 
@@ -340,14 +376,14 @@ bool WeightTable::load(const std::string& pack_dir, void* arena_base, uint64_t a
             err = buf;
             bad = true;
         }
-        if (bad) { cudaFreeHost(stage_in); cudaFreeHost(stage_out); return false; }
+        if (bad) { free_stage(stage_in); free_stage(stage_out); return false; }
 
         for (int si = 0; si < n_segs; ++si) {
             const Seg& s = segs[si];
             const bool widening = (s.conv == Conv::WidenF16);
             if (widening && (s.src_bytes & 1ull)) {
                 err = r.name + ": an fp16 plane with an odd source byte count";
-                cudaFreeHost(stage_in); cudaFreeHost(stage_out);
+                free_stage(stage_in); free_stage(stage_out);
                 return false;
             }
             uint64_t done = 0;
@@ -356,11 +392,11 @@ bool WeightTable::load(const std::string& pack_dir, void* arena_base, uint64_t a
                 // WIDENING NEVER SPLITS AN ELEMENT.  CHUNK is even, so a full chunk cannot, but the tail of a
                 // plane whose length is odd would - and half an fp16 is a plausible-looking scale.
                 if (widening && (n & 1ull)) {
-                    if (n == 1) { err = r.name + ": an fp16 plane ending on a half element"; cudaFreeHost(stage_in); cudaFreeHost(stage_out); return false; }
+                    if (n == 1) { err = r.name + ": an fp16 plane ending on a half element"; free_stage(stage_in); free_stage(stage_out); return false; }
                     n -= 1;
                 }
                 if (!read_at(cur, r.src_off + s.src_off + done, stage_in, (size_t) n, err, r.name.c_str())) {
-                    cudaFreeHost(stage_in); cudaFreeHost(stage_out);
+                    free_stage(stage_in); free_stage(stage_out);
                     return false;
                 }
                 const uint8_t* src = (const uint8_t*) stage_in;
@@ -420,11 +456,21 @@ bool WeightTable::load(const std::string& pack_dir, void* arena_base, uint64_t a
                     }
                 }
 
+                if(capture) {
+                    if(r.dst_off>pool || out_at>pool-r.dst_off || out_bytes>pool-r.dst_off-out_at) {
+                        err="canonical capture: converted upload extent";
+                        free_stage(stage_in);free_stage(stage_out);return false;
+                    }
+                    // host_src is stage_out for converted segments and stage_in
+                    // for verbatim segments: exactly the following H2D bytes.
+                    std::memcpy(capture->bytes.data()+r.dst_off+out_at,host_src,size_t(out_bytes));
+                }
                 const double u0 = now_ms();
                 if (cudaMemcpy(dst_base + r.dst_off + out_at, host_src, out_bytes, cudaMemcpyHostToDevice) !=
                     cudaSuccess) {
+                    if(capture) {std::fprintf(stderr,"canonical capture: upload completion uncertain; owners retained\n");std::abort();}
                     err = "cudaMemcpy failed for " + r.name;
-                    cudaFreeHost(stage_in); cudaFreeHost(stage_out);
+                    free_stage(stage_in); free_stage(stage_out);
                     return false;
                 }
                 upload_ms += now_ms() - u0;
@@ -461,13 +507,30 @@ bool WeightTable::load(const std::string& pack_dir, void* arena_base, uint64_t a
         }
     }
     if (cur) std::fclose(cur);
-    cudaFreeHost(stage_in);
-    cudaFreeHost(stage_out);
+    free_stage(stage_in);
+    free_stage(stage_out);
 
     report_.arena_bytes = pool;
     report_.read_ms = now_ms() - t_read0 - upload_ms;
     report_.upload_ms = upload_ms;
-    if (cudaDeviceSynchronize() != cudaSuccess) { err = "cudaDeviceSynchronize after the load failed"; return false; }
+    if (cudaDeviceSynchronize() != cudaSuccess) {
+        if(capture) {std::fprintf(stderr,"canonical capture: final completion uncertain; owners retained\n");std::abort();}
+        err = "cudaDeviceSynchronize after the load failed"; return false;
+    }
+    if(capture) {
+        try {
+            if(table_.size()>16384) {err="canonical capture: metadata row limit";return false;}
+            for(const auto& [name,ref]:table_) if(ref.resident) {
+                const auto base=reinterpret_cast<uintptr_t>(arena_base), at=reinterpret_cast<uintptr_t>(ref.data);
+                if(at<base || at-base>pool || ref.bytes>pool-(at-base)) {
+                    err="canonical capture: row outside exact owner";return false;
+                }
+                capture->rows.emplace(name,EngineSnapshot::Row{ref,uint64_t(at-base),
+                    detail::canonical_fingerprint(capture->bytes.data()+uint64_t(at-base),size_t(ref.bytes))});
+            }
+            capture->complete=true;
+        } catch(const std::exception& e) {err=e.what();return false;}
+    }
     return true;
 }
 

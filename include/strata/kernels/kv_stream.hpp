@@ -27,6 +27,8 @@
 
 namespace strata::kernels {
 
+// SYCL: these pointers may refer to host USM, with CPU access only after the
+// producing queue/event completes. Concurrent CPU/GPU mutation is unsupported.
 /// The host copy of one layer's K/V: device-mapped pointers (UVA) into pinned memory, identity layout
 /// `[block][kv_head][page_size][head_dim]`. All null when the layer is fully resident.
 struct KvHostPools {
@@ -72,6 +74,15 @@ void kv_stream_resolve(const KvStreamMap& m, const QsaAttnPools& slots, const Kv
                        const int32_t* ids, const int32_t* steps, int64_t n_q, int64_t cap, const QsaShapes& s,
                        void* stream);
 
+/// Explicit copy geometry for component fixtures/benchmarks. Shares the full
+/// validation, residency policy and copy implementation with kv_stream_resolve.
+/// 0 preserves the legacy launch; supported opt-ins are 128/256/512/1024.
+/// Does not read or modify the process environment. Geometry is fixed at capture.
+void kv_stream_resolve_with_copy_groups(
+    const KvStreamMap& m, const QsaAttnPools& slots, const KvHostPools& host, int fmt,
+    const int32_t* ids, const int32_t* steps, int64_t n_q, int64_t cap, const QsaShapes& s,
+    void* stream, uint32_t copy_group_cap);
+
 /// The static ring table `block -> block % n_slots`.
 void kv_ring_table(int32_t* page_table, int64_t n_blocks, int64_t n_slots, void* stream);
 
@@ -85,17 +96,13 @@ void kv_ring_restore(const QsaAttnPools& slots, const KvHostPools& host, int fmt
 void kv_stage_from_host(const QsaAttnPools& stage, const KvHostPools& host, int fmt, int64_t n_blocks,
                         const QsaShapes& s, void* stream);
 
-/// #579 #613 (HIP A/B, STRATA_KV_HOST_DMA=1): the reverse of kv_stage_from_host for blocks [b0, b1) - the staging
-/// pool's blocks into the host copy, by DMA, so the prompt path's append need not write host memory from a kernel.
-/// Not capturable.
-void kv_unstage_to_host(const QsaAttnPools& stage, const KvHostPools& host, int fmt, int64_t b0, int64_t b1,
-                        const QsaShapes& s, void* stream);
-
 struct KvStreamCounters {
     uint64_t misses = 0, lookups = 0, calls = 0;
     bool overflow = false;
 };
 /// Synchronous read of the counters (debug and the end-of-request summary).
+/// SYCL: drains runtime device 0 queues; callers using an external queue must
+/// complete that queue first, and the map must belong to runtime device 0 context.
 KvStreamCounters kv_stream_counters(const KvStreamMap& m);
 
 /// Bytes of one block (page) of K and V together.

@@ -1,0 +1,51 @@
+Purpose: knowledge collection. Existing project /home/yayoi/orca/workspaces/Strata/sycl, primary feature/sycl.
+Read AGENTS.md, docs/ARTIFACT_RETENTION.md and /home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-index.json first.
+Read the relevant previous reports and Main corrections to avoid duplication;
+Main does not read collection report bodies on arrival. A native Codex Luna-max
+reviewer will assess depth/novelty/redundancy, pin hashes and index retrieval metadata.
+This is a fresh bounded read-only session. Do not spawn children. Write only your
+named report. No product edits, Git commands, builds, tests, GPU/profiler jobs,
+process inspection, cleanup, services or environment changes. Main continues
+independent work; do not request steering. No XeStrata source, helpers or archives.
+Use primary documentation, papers and original technical blogs; at most six
+substantive sources. Search current sources, distinguish measured facts from
+inference, and identify device/version/license limits and counterevidence.
+Do not repeat generic background. Compare alternatives deeply enough to be useful;
+the budget is a working limit, not a demand for filler or a tiny fact lookup.
+Return a file report with precise URLs, applicability limits, new findings and
+one concrete future experiment. In the final response supply only the report
+path, its hash and a <=150-character operational completion notice, without
+technical findings. Report completion with your live exact Task/Dispatch via
+Orca worker_done, list filesModified, then end. Do not message Main findings.
+Current evidence: clean PP349.3 median versus control339.2, not >600/1000 yet.
+Actual 78452-row CPU diagnostic: main218.681 CPU s/wall225.874; explicit waits
+165.704 CPU s; residual host copy call CPU25.793s, versus hostgroup.19649s.
+Route-ID exchange inclusive131.610wall includes previous GPU work and is not
+removable pure copy latency. Recent idle 320MiB transfer component: ordinary
+H2D6.015GB/s versus HostUSM5.095GB/s; USM faster submission but slower completion.
+Blanket pinning rejected; no model end-to-end claim. FP16 residual remains
+unqualified for quality/admission. Default-OFF full-vocab NLL observer now built,
+host tested and synthetic129-input paired-GPU tested, fault0; this is not model
+quality evidence. Preserve the existing FP32 path and physical262144 requirement.
+
+Scope eligibility and redundancy reviewed by native Codex Luna-max R772. All scopes below are knowledge collection. Main has started a fixed78444-token FP32 NLL diagnostic; no long loss results, FP16 quality/admission or speed adoption yet. Do not read live state directories or inspect processes. Never read /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-gemm-only-contract-root-v1/record.json (credential). Use sources/library only and do not infer new measurements.
+
+Scope metadata from reviewer772:
+{
+  "priority": 3,
+  "purpose_label": "knowledge collection",
+  "title": "Transfer granularity and packing for repeated host-to-GPU data movement",
+  "finite_question": "For repeated GPU workloads that move segmented, strided or otherwise noncontiguous input data, compare issuing many small copies, packing data into a contiguous host staging region, batching transfers by compatible ranges, and gathering into GPU-local storage. Under what payload sizes, reuse patterns and compute budgets does each choice reduce total host work and dependency-path time?",
+  "breadth_and_counterevidence": "Use official SYCL/Intel documentation plus original non-LLM GPU, database or scientific-computing studies and engineering reports. Compare at least three strategies with attention to host packing cost, copy-call/runtime overhead, link utilization, extra GPU gather work, registration behavior, buffer lifetime and ordering. Include counterexamples where packing costs more CPU than the transfer savings, direct copy is already efficient, or a GPU gather adds a launch and memory traffic. Distinguish logical bytes from measured link traffic. R762 compares mapped-host access with explicit copy; R765 examines a possible UR host-copy path; keep this investigation on granularity and packing crossovers, not those same mechanisms. Do not recommend blanket pinning or claim a Strata speedup.",
+  "report_budget": "1300–1800 words; at most 7 substantive primary sources, exact links, a workload crossover table and evidence limits.",
+  "schedulable_now": true,
+  "prerequisites": "None beyond public-source access; current Main-supplied results are enough to motivate a knowledge collection and no follow-up experiment is required for the report.",
+  "prerequisite_evidence": "Main supplied a 25.793-second residual copy-call CPU cost that includes hidden runtime work, plus an idle 320 MiB Host USM transfer at 5.095 GB/s versus 6.015 GB/s for ordinary transfer. These figures motivate comparison but do not establish copy granularity as the bottleneck or explain the bandwidth difference.",
+  "prior_report_paths_to_avoid_repeating": [
+    "bench/results/2026-10-15-pr6-recovery-audit/research-mapped-host-vs-dma-round762-v1.txt",
+    "bench/results/2026-10-15-pr6-recovery-audit/research-ur-v2-hostcopy-source-round765-v1.txt",
+    "bench/results/2026-10-15-pr6-recovery-audit/research-usm-copy-policy-round757-v1.txt",
+    "bench/results/2026-10-15-pr6-recovery-audit/research-nonllm-pipeline-residency-round763-v1.txt"
+  ]
+}
+Output only: /home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-knowledge-round775-v1.txt

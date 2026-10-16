@@ -1,0 +1,28 @@
+# R731/R732のMain照合
+
+2026-10-16 JST。両reportはsource-onlyで全読した。XeStrata sourceは使っていない。
+最新coarse結果のQSA103980msはwhole-stageかつhost gapを含み、selection/attentionの
+実bottleneckはまだ不明。独立したfine observerのproposalをレビュー中である。
+
+R731の具体的なquery-key reuse、exact radix、aligned append候補はfine結果次第で検討する。
+ただし「capacity32771」はcurrent real-shape capではない。qsa_real_shapesのidx_top_k2048、
+idx_block4とqsa_selection_widthからm.capは2051であり、kTopkMaxCells32768とは区別する。
+R731に記載されたanalysis SHAも実fileの94819ab9da3649adb675f011d629dd4f9c44f7453575e570f1e33a5b01239b90
+とは一致しない。model receiptのSHAは一致する。元reportは変更しない。
+
+R732の論理payloadは物理転送と区別する点で有用。ただし行数はactual prompt78453ではなく
+layer-major実行の78452を使う。選択visitは1layerあたり158802777、12層のlogical requested
+K/V+scale payloadは2012348790144B。last1tokenの別decodeをこのmatrix workloadへ加算しない。
+
+R732の46.8TFLOPはhi/loの二積を数える説明と計算が合わず、およそ半分になっている。
+QKとPVの両方が二つのjoint_matrix_madを行う。実12query-head/KV-head、2KV-head、
+256dimensionではselected cellあたり24*256*2(QK/PV)*2(hi/lo)*2(FMA)=49152FP operations。
+useful量は93665689141248 operations（93.665689TFLOP）。実matrixは16headへのpaddingと
+CH32のpartialtileを含み、sourceのmad数からはさらに126655062343680 operations
+（126.655062TFLOP）。いずれもalgorithmic countで、実命令数/throughput/帯域の測定ではない。
+softmax、scale、gather、barrier等はこのmatrix積の算術量に含めていない。
+
+R732のmode1K-only cell-major gatherは引き続き仮説。fine観測とcomponent parity、compiled
+resource、matched whole-prefill反復を使う。hardware counterが取得できない場合にも、
+存在しないsector/SLM測定を主張せず、実componentとwhole-path測定で候補を採否判断できる。
+厳密な選択IDやtensor mechanicsの比較と、生成token全一致の要件は区別する。

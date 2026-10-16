@@ -1,0 +1,12 @@
+strata serve: no progress for 480 s during a request (reading the prompt (batched): layer 27 of the prompt chunk from token 0) - stopping the engine so the server starts it again (issue #29)
+strata serve: stall report (engine 0.1.38): stage "reading the prompt (batched): layer 27 of the prompt chunk from token 0" for 480 s; 0 layers served since the last finished step (0 = stopped, more = slow)
+  expert pool: epoch 124128, batch epoch 124128: 18 of 18 jobs claimed, 18 done; 5 of 5 workers parked, 5 sleeping; mode 0
+  expert pool threads: w0=sleeping w1=sleeping w2=sleeping w3=sleeping w4=sleeping; host idle for 565899 ms
+  verify window 1293 (completed (historical)): 4 tokens at position 32109; host layer step 48; GPU sequence host mirror 48 (0 if unavailable); host flags served 48, plan (A) 48, copies (B) 48
+  memory: 51483 MiB resident, 0 MiB in swap, 27918 MiB RAM available; 2 major page faults so far
+  2 s later:
+  expert pool: epoch 124128, batch epoch 124128: 18 of 18 jobs claimed, 18 done; 5 of 5 workers parked, 5 sleeping; mode 0
+  expert pool threads: w0=sleeping w1=sleeping w2=sleeping w3=sleeping w4=sleeping; host idle for 567899 ms
+  verify window 1293 (completed (historical)): 4 tokens at position 32109; host layer step 48; GPU sequence host mirror 48 (0 if unavailable); host flags served 48, plan (A) 48, copies (B) 48
+  memory: 51483 MiB resident, 0 MiB in swap, 27695 MiB RAM available; 2 major page faults so far
+strata: no active verify spin waits to release; prefill/device drain not assessed

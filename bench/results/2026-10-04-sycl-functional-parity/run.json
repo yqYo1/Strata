@@ -1,0 +1,835 @@
+{
+  "date": "2026-10-04",
+  "time_zone": "Asia/Tokyo",
+  "scope": "Single-GPU functional ports against upstream 99f3dbd. Multi-GPU and setup automation excluded. Integration fixtures are not broad quality or performance benchmarks.",
+  "hardware": {
+    "gpu": "Intel Arc B570",
+    "vram_gib": 10,
+    "cpu": "AMD Ryzen 5 5600X",
+    "ram_gib": 125
+  },
+  "software": {
+    "compiler": "oneAPI DPC++ 2026.1.1",
+    "level_zero_driver": "1.17.39395+14",
+    "engine_version": "0.1.38",
+    "driver_settings": "defaults"
+  },
+  "model_provenance": "../2026-10-03-sycl-iq3s/run.json",
+  "upstream": {
+    "repository": "Niko1221/Strata",
+    "commit": "99f3dbd0b21d1401b3769e0c0d963913607f380b",
+    "fork_previous_main": "d9ab8435f654c368c586340d490915f6addf56a3",
+    "fork_main_merge_commit": "d988955e141190bc079b58ab3d3038da637ad070",
+    "pull_request": "https://github.com/yqYo1/Strata/pull/1",
+    "merged": true,
+    "imported_commits": 83,
+    "rebased_sycl_commits": 77,
+    "main_tree_matches_upstream": true
+  },
+  "source": {
+    "ggml_commit": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+    "port_commits": {
+      "formats": "f11ac956e4b56a8e5b67740eab6458828536a149",
+      "mmq": "b5b7841d3d16f5bd7773cab71c3045c2dba75f0c",
+      "matrix_attention": "2730d9a8af8e4504d8ecd6b475458e8146b60fd9",
+      "fused_moe": "6ea36ecc8ed0f7950476fb45b544d3b738965eb7",
+      "vision": "6a2929d2a18208269f56590c8ada667f532a70f7",
+      "hybrid_folded_buffers": "56179bb132f521edf0269dcb499049105db2a603"
+    },
+    "initial_engine_commit": "6a2929d2a18208269f56590c8ada667f532a70f7",
+    "initial_binary_sha256": "793ef0e7c9089e96f3c9d66109e015e74980b463927e15d6b18f0e7850d56b8d",
+    "final_engine_commit": "56179bb132f521edf0269dcb499049105db2a603",
+    "final_binary_sha256": "13c74bd67427642cb181971ab07b5e492c462319326418f04197cdaffee333ec",
+    "commit_scope": "Initial engine/binary identifies the vision HTTP and first final suite build; final engine/binary identifies the hybrid-buffer fix, K8V4 model requests, current-default decode and final CTest. Earlier prefill comparisons identify their own engine commits."
+  },
+  "checks": {
+    "ctest": {
+      "passed": 38,
+      "failed": 0,
+      "seconds": 31.18,
+      "previous_seconds": 87.51,
+      "engine_commit": "56179bb132f521edf0269dcb499049105db2a603",
+      "includes_folded_kv_regression": true
+    },
+    "server_unittests": {
+      "passed": 139,
+      "failed": 0,
+      "seconds": 59.343
+    }
+  },
+  "format_coverage": {
+    "native_mmvq_and_mmq": [
+      2,
+      6,
+      7,
+      8,
+      11,
+      12,
+      13,
+      14,
+      16,
+      17,
+      18,
+      20,
+      21,
+      22,
+      23,
+      29,
+      42
+    ],
+    "added": [
+      "Q5_1",
+      "IQ2_XXS",
+      "IQ2_XS",
+      "IQ1_M"
+    ],
+    "fused_gate_up": [
+      16,
+      17,
+      18,
+      21,
+      22,
+      23
+    ],
+    "fused_down": [
+      20,
+      42
+    ],
+    "fused_tests": {
+      "canonical_q2": true,
+      "native_format_pairs": 12,
+      "routed_rows": 74,
+      "largest_expert_rows": 65,
+      "experts": 4,
+      "batches": 2,
+      "activation_abi": "Independent CPU round-to-nearest-even codes and FP32 scales; exact bytes",
+      "hidden_oracle": "Pinned GGML scalar dequantization, double projections and independent SwiGLU/int8 quantization",
+      "hidden_tolerance": "2e-5*(1+abs(reference))",
+      "down_tolerance": "2e-6*(1+sum(abs(products)))",
+      "guards": true
+    },
+    "matrix_attention": [
+      "fp16",
+      "int8",
+      "q4_0",
+      "k8v4"
+    ],
+    "matrix_test_tolerance": "1e-5*(1+abs(independent double reference)); paging, masks, empty selection, magnitude extremes and guards"
+  },
+  "prefill_logits": {
+    "scope": "One 25-token arithmetic prompt. First target row after prefill versus last row of pinned ordinary CPU reference, 248320 finite float32 logits. Fixed 1649 slots, adaptation off, context 128, prefill 16, MTP 4 at p=0.9.",
+    "runs": [
+      {
+        "variant": "fp16-split",
+        "flags": [
+          "--pack",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "--native",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "--max-new",
+          "8",
+          "--max-context",
+          "128",
+          "--spec",
+          "4",
+          "--spec-min-p",
+          "0.9",
+          "--mtp",
+          "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+          "--suffix-draft",
+          "0",
+          "--prefill",
+          "16",
+          "--short-read",
+          "0",
+          "--expert-cache",
+          "1649",
+          "--expert-profile",
+          "data/expert-profile.bin",
+          "--expert-cache-per-layer",
+          "--pool-workers",
+          "4",
+          "--adapt-swaps",
+          "0",
+          "--pcie-frac",
+          "0",
+          "--tokens-file",
+          "/tmp/strata-sycl-arithmetic-tokens.txt",
+          "--check-logits"
+        ],
+        "argmax": 19,
+        "cpu_argmax": 19,
+        "cosine": 0.9919992051164537,
+        "rmse": 0.26158378275996447,
+        "max_abs": 1.4774260520935059,
+        "sha256": "9650ce8a4cbd5269215862f02fbd7e5b2adfc7276ce702ae13c4d5569fe46cb4",
+        "engine_commit": "b5b7841d3d16f5bd7773cab71c3045c2dba75f0c"
+      },
+      {
+        "variant": "mmq-split",
+        "flags": [
+          "--pack",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "--native",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "--max-new",
+          "8",
+          "--max-context",
+          "128",
+          "--spec",
+          "4",
+          "--spec-min-p",
+          "0.9",
+          "--mtp",
+          "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+          "--suffix-draft",
+          "0",
+          "--prefill",
+          "16",
+          "--short-read",
+          "0",
+          "--expert-cache",
+          "1649",
+          "--expert-profile",
+          "data/expert-profile.bin",
+          "--expert-cache-per-layer",
+          "--pool-workers",
+          "4",
+          "--adapt-swaps",
+          "0",
+          "--pcie-frac",
+          "0",
+          "--tokens-file",
+          "/tmp/strata-sycl-arithmetic-tokens.txt",
+          "--check-logits"
+        ],
+        "argmax": 19,
+        "cpu_argmax": 19,
+        "cosine": 0.994525418886114,
+        "rmse": 0.2122311981328292,
+        "max_abs": 1.2786362171173096,
+        "sha256": "1e6fde362741b53824e58b149f5bd66483e6b4fc6406cdce6e4b207e21de2ead",
+        "engine_commit": "b5b7841d3d16f5bd7773cab71c3045c2dba75f0c"
+      },
+      {
+        "variant": "mmq-matrix",
+        "flags": [
+          "--pack",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "--native",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "--max-new",
+          "8",
+          "--max-context",
+          "128",
+          "--spec",
+          "4",
+          "--spec-min-p",
+          "0.9",
+          "--mtp",
+          "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+          "--suffix-draft",
+          "0",
+          "--prefill",
+          "16",
+          "--short-read",
+          "0",
+          "--expert-cache",
+          "1649",
+          "--expert-profile",
+          "data/expert-profile.bin",
+          "--expert-cache-per-layer",
+          "--pool-workers",
+          "4",
+          "--adapt-swaps",
+          "0",
+          "--pcie-frac",
+          "0",
+          "--tokens-file",
+          "/tmp/strata-sycl-arithmetic-tokens.txt",
+          "--check-logits"
+        ],
+        "argmax": 19,
+        "cpu_argmax": 19,
+        "cosine": 0.9950780117256429,
+        "rmse": 0.21616780732573446,
+        "max_abs": 1.1764297485351562,
+        "sha256": "13e5b71e6ca5c544faee566a1f5cf65a27dd72e5fe2c081778b3a30becbe77c3",
+        "engine_commit": "2730d9a8af8e4504d8ecd6b475458e8146b60fd9"
+      },
+      {
+        "variant": "fused-native-matrix",
+        "flags": [
+          "--pack",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "--native",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "--max-new",
+          "8",
+          "--max-context",
+          "128",
+          "--spec",
+          "4",
+          "--spec-min-p",
+          "0.9",
+          "--mtp",
+          "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+          "--suffix-draft",
+          "0",
+          "--prefill",
+          "16",
+          "--short-read",
+          "0",
+          "--expert-cache",
+          "1649",
+          "--expert-profile",
+          "data/expert-profile.bin",
+          "--expert-cache-per-layer",
+          "--pool-workers",
+          "4",
+          "--adapt-swaps",
+          "0",
+          "--pcie-frac",
+          "0",
+          "--tokens-file",
+          "/tmp/strata-sycl-arithmetic-tokens.txt",
+          "--check-logits"
+        ],
+        "argmax": 19,
+        "cpu_argmax": 19,
+        "cosine": 0.9900627320772228,
+        "rmse": 0.3041421878340928,
+        "max_abs": 1.6586734354496002,
+        "sha256": "894b98c6f96db1f4c1ecd24c8d9041ee3eb366314ac9b7742cc6e2d528821886",
+        "engine_commit": "6ea36ecc8ed0f7950476fb45b544d3b738965eb7"
+      }
+    ],
+    "fused_environment": {
+      "STRATA_PF_FUSED": "1",
+      "STRATA_PREFILL_STREAM_MIN": "16",
+      "STRATA_PREFILL_RING": "128"
+    }
+  },
+  "vision": {
+    "model_projection": {
+      "bytes": 907543008,
+      "sha256": "b1a82259702816a5330d7bd7607cd9676b11780e79ff7348c21103ff3ce49bd0",
+      "revision": "ed59f92082b1e93c0e96d60a8b11aab089b52f09"
+    },
+    "fixture": {
+      "width": 224,
+      "height": 224,
+      "solid_color": "red",
+      "png_sha256": "9f0bec9d1ffa063a0eae133fb0da9cd1198ac7a0f94435d1fe0ac486465ca8c4",
+      "image_tokens": 49,
+      "grid": [
+        7,
+        7
+      ],
+      "embedding_width": 2560
+    },
+    "encoder_cpu": {
+      "binary_sha256": "08684c0ca73889a2584a4426639887295a1d11f6952d4fb343a8d357c4fec27e",
+      "embeddings_sha256": "479fef51272fb016b0e3391fd400053abb937515e4114ed2f8366113830b274f",
+      "repeat_bitwise_equal": true,
+      "finite": true
+    },
+    "encoder_sycl": {
+      "binary_sha256": "1e7ddd541fdf644bca94c82deba3887efebe4a606c885c40eb09cf429fbc490c",
+      "embeddings_sha256": "b937b8f40bcfb92db9b09e78f25262b117dcebab52142008163995d84cac0ddf",
+      "repeat_bitwise_equal": true,
+      "finite": true,
+      "cpu_comparison": {
+        "cosine": 0.9978021897345923,
+        "rmse": 0.0020098923683986272,
+        "max_abs": 0.04712183028459549
+      }
+    },
+    "http": {
+      "backend": "SYCL encoder and IQ3_S engine on one B570",
+      "host": "127.0.0.1",
+      "port": 18086,
+      "context": 1024,
+      "prefill": 16,
+      "expert_cache": "auto, effective 1603 slots",
+      "adapt_swaps": 0,
+      "mtp_width": 4,
+      "minimum_draft_probability": 0.9,
+      "checks": [
+        {
+          "kind": "openai_image_1",
+          "answer": " red",
+          "usage": {
+            "prompt_tokens": 77,
+            "completion_tokens": 2,
+            "total_tokens": 79,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            }
+          }
+        },
+        {
+          "kind": "openai_image_2",
+          "answer": " red",
+          "usage": {
+            "prompt_tokens": 77,
+            "completion_tokens": 2,
+            "total_tokens": 79,
+            "prompt_tokens_details": {
+              "cached_tokens": 70
+            }
+          }
+        },
+        {
+          "kind": "anthropic_image",
+          "answer": " red",
+          "usage": {
+            "input_tokens": 7,
+            "output_tokens": 2,
+            "cache_read_input_tokens": 70
+          }
+        },
+        {
+          "kind": "openai_image_stream",
+          "answer": " red",
+          "usage": null,
+          "done": true
+        },
+        {
+          "kind": "text_after_image",
+          "answer": "4",
+          "usage": {
+            "prompt_tokens": 25,
+            "completion_tokens": 2,
+            "total_tokens": 27,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            }
+          }
+        },
+        {
+          "kind": "two_images_order",
+          "answer": "Red, Blue",
+          "usage": {
+            "prompt_tokens": 132,
+            "completion_tokens": 4,
+            "total_tokens": 136,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            }
+          }
+        },
+        {
+          "kind": "single_after_two_images",
+          "answer": " red",
+          "usage": {
+            "prompt_tokens": 77,
+            "completion_tokens": 2,
+            "total_tokens": 79,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            }
+          }
+        }
+      ],
+      "passed": true,
+      "server_exit_code": 0,
+      "port_closed": true
+    }
+  },
+  "raw_archive": "~/.local/state/strata-sycl/measurement-archive/2026-10-04-functional-parity/",
+  "methodology": "Functional fixtures on the workstation with existing background loads; no isolation and no claim of new throughput medians. Raw archive includes unsuccessful development/harness attempts; checks here refer to completed passing runs.",
+  "context": {
+    "prompt_tokens": 827,
+    "prompt_sha256": "d0e9cb39985804cab816fa91c65a382b9bbd4cb631826d6d8a8a8832d123c769",
+    "scope": "One color retrieval prompt above 512 tokens; greedy MTP, fixed 1649 slots, no adaptation; reuse/cancellation/recovery. Not a general long-context quality claim.",
+    "modes": [
+      {
+        "format": "fp16",
+        "engine_commit": "6a2929d2a18208269f56590c8ada667f532a70f7",
+        "passed": true,
+        "exit_code": 0,
+        "requests": [
+          {
+            "kind": "color_initial",
+            "generated_ids": [
+              11855,
+              248046
+            ],
+            "answer": "blue",
+            "reused_prompt_tokens": 0,
+            "cancelled": false
+          },
+          {
+            "kind": "color_repeat",
+            "generated_ids": [
+              11855,
+              248046
+            ],
+            "answer": "blue",
+            "reused_prompt_tokens": 820,
+            "cancelled": false
+          },
+          {
+            "kind": "arithmetic_after_color",
+            "generated_ids": [
+              19,
+              248046
+            ],
+            "answer": "4",
+            "reused_prompt_tokens": 0,
+            "cancelled": false
+          },
+          {
+            "kind": "color_after_arithmetic",
+            "generated_ids": [
+              11855,
+              248046
+            ],
+            "answer": "blue",
+            "reused_prompt_tokens": 0,
+            "cancelled": false
+          },
+          {
+            "kind": "cancel_after_first_token",
+            "generated_ids": [
+              11855
+            ],
+            "answer": "blue",
+            "reused_prompt_tokens": 820,
+            "cancelled": true
+          },
+          {
+            "kind": "color_recovery",
+            "generated_ids": [
+              11855,
+              248046
+            ],
+            "answer": "blue",
+            "reused_prompt_tokens": 820,
+            "cancelled": false
+          }
+        ]
+      },
+      {
+        "format": "int8",
+        "engine_commit": "6a2929d2a18208269f56590c8ada667f532a70f7",
+        "passed": true,
+        "exit_code": 0,
+        "requests": [
+          {
+            "kind": "color_initial",
+            "generated_ids": [
+              11855,
+              248046
+            ],
+            "answer": "blue",
+            "reused_prompt_tokens": 0,
+            "cancelled": false
+          },
+          {
+            "kind": "color_repeat",
+            "generated_ids": [
+              11855,
+              248046
+            ],
+            "answer": "blue",
+            "reused_prompt_tokens": 820,
+            "cancelled": false
+          },
+          {
+            "kind": "arithmetic_after_color",
+            "generated_ids": [
+              19,
+              248046
+            ],
+            "answer": "4",
+            "reused_prompt_tokens": 0,
+            "cancelled": false
+          },
+          {
+            "kind": "color_after_arithmetic",
+            "generated_ids": [
+              11855,
+              248046
+            ],
+            "answer": "blue",
+            "reused_prompt_tokens": 0,
+            "cancelled": false
+          },
+          {
+            "kind": "cancel_after_first_token",
+            "generated_ids": [
+              11855
+            ],
+            "answer": "blue",
+            "reused_prompt_tokens": 820,
+            "cancelled": true
+          },
+          {
+            "kind": "color_recovery",
+            "generated_ids": [
+              11855,
+              248046
+            ],
+            "answer": "blue",
+            "reused_prompt_tokens": 820,
+            "cancelled": false
+          }
+        ]
+      },
+      {
+        "format": "q4_0",
+        "engine_commit": "6a2929d2a18208269f56590c8ada667f532a70f7",
+        "passed": true,
+        "exit_code": 0,
+        "requests": [
+          {
+            "kind": "color_initial",
+            "generated_ids": [
+              11855,
+              248046
+            ],
+            "answer": "blue",
+            "reused_prompt_tokens": 0,
+            "cancelled": false
+          },
+          {
+            "kind": "color_repeat",
+            "generated_ids": [
+              11855,
+              248046
+            ],
+            "answer": "blue",
+            "reused_prompt_tokens": 820,
+            "cancelled": false
+          },
+          {
+            "kind": "arithmetic_after_color",
+            "generated_ids": [
+              19,
+              248046
+            ],
+            "answer": "4",
+            "reused_prompt_tokens": 0,
+            "cancelled": false
+          },
+          {
+            "kind": "color_after_arithmetic",
+            "generated_ids": [
+              11855,
+              248046
+            ],
+            "answer": "blue",
+            "reused_prompt_tokens": 0,
+            "cancelled": false
+          },
+          {
+            "kind": "cancel_after_first_token",
+            "generated_ids": [
+              11855
+            ],
+            "answer": "blue",
+            "reused_prompt_tokens": 820,
+            "cancelled": true
+          },
+          {
+            "kind": "color_recovery",
+            "generated_ids": [
+              11855,
+              248046
+            ],
+            "answer": "blue",
+            "reused_prompt_tokens": 820,
+            "cancelled": false
+          }
+        ]
+      },
+      {
+        "format": "k8v4",
+        "engine_commit": "56179bb132f521edf0269dcb499049105db2a603",
+        "passed": true,
+        "exit_code": 0,
+        "requests": [
+          {
+            "kind": "color_initial",
+            "generated_ids": [
+              11855,
+              248046
+            ],
+            "answer": "blue",
+            "reused_prompt_tokens": 0,
+            "cancelled": false
+          },
+          {
+            "kind": "color_repeat",
+            "generated_ids": [
+              11855,
+              248046
+            ],
+            "answer": "blue",
+            "reused_prompt_tokens": 820,
+            "cancelled": false
+          },
+          {
+            "kind": "arithmetic_after_color",
+            "generated_ids": [
+              19,
+              248046
+            ],
+            "answer": "4",
+            "reused_prompt_tokens": 0,
+            "cancelled": false
+          },
+          {
+            "kind": "color_after_arithmetic",
+            "generated_ids": [
+              11855,
+              248046
+            ],
+            "answer": "blue",
+            "reused_prompt_tokens": 0,
+            "cancelled": false
+          },
+          {
+            "kind": "cancel_after_first_token",
+            "generated_ids": [
+              11855
+            ],
+            "answer": "blue",
+            "reused_prompt_tokens": 820,
+            "cancelled": true
+          },
+          {
+            "kind": "color_recovery",
+            "generated_ids": [
+              11855,
+              248046
+            ],
+            "answer": "blue",
+            "reused_prompt_tokens": 820,
+            "cancelled": false
+          }
+        ]
+      }
+    ],
+    "passed": true,
+    "resident_streaming": "Disabled in these model requests. Independent sycl_kv tests separately cover FP16/INT8/Q4 CLOCK eviction, ring restore, overflow and staging. K8V4 resident streaming is also unsupported by upstream.",
+    "settings": {
+      "max_context": 2048,
+      "prefill": 64,
+      "expert_cache_slots": 1649,
+      "adapt_swaps": 0,
+      "mtp_width": 4,
+      "minimum_draft_probability": 0.9,
+      "check_logits": true,
+      "resident_streaming": false
+    }
+  },
+  "default_persistent": {
+    "engine_commit": "56179bb132f521edf0269dcb499049105db2a603",
+    "scope": "One current-default persistent process: two story and two Python requests of 128 tokens, cancellation after first token, and 8-token recovery. No new throughput median or broad quality claim.",
+    "flags": [
+      "--serve",
+      "--pack",
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+      "--native",
+      "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "--tokens",
+      "1",
+      "--max-new",
+      "8",
+      "--max-context",
+      "512",
+      "--spec",
+      "4",
+      "--spec-min-p",
+      "0.9",
+      "--mtp",
+      "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+      "--suffix-draft",
+      "0",
+      "--prefill",
+      "16",
+      "--short-read",
+      "0",
+      "--expert-cache",
+      "auto",
+      "--expert-profile",
+      "data/expert-profile.bin",
+      "--expert-cache-per-layer",
+      "--pool-workers",
+      "4",
+      "--adapt-swaps",
+      "64",
+      "--pcie-frac",
+      "0",
+      "--stats"
+    ],
+    "ready": "READY 512 stop",
+    "environment": {
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "unset: default short-window recording",
+      "STRATA_SYCL_ADAPT_SYNC": "unset: default completed refill boundary"
+    },
+    "effective_expert_cache_slots": 2137,
+    "request_count": 6,
+    "passed": true,
+    "cancel_recovery_first_eight_ids": true,
+    "exit_code": 0,
+    "requests": [
+      {
+        "prompt": "writing",
+        "requested_tokens": 128,
+        "generated_tokens": 128,
+        "output_ids_sha256": "7cd420d336bfdcb6343cc23ff57abb58cd222dc79feee33725f3da6af0e522eb",
+        "reused_prompt_tokens": 0,
+        "cancelled": false
+      },
+      {
+        "prompt": "writing",
+        "requested_tokens": 128,
+        "generated_tokens": 128,
+        "output_ids_sha256": "531f51f9548a65e20737913febee838c79bd93f8f357620b635615b8c93dbae1",
+        "reused_prompt_tokens": 30,
+        "cancelled": false
+      },
+      {
+        "prompt": "coding",
+        "requested_tokens": 128,
+        "generated_tokens": 128,
+        "output_ids_sha256": "735a93850b225026ee60e5cd05284cc388ced22c2e3e9e6c8e5699d35143b30d",
+        "reused_prompt_tokens": 0,
+        "cancelled": false
+      },
+      {
+        "prompt": "coding",
+        "requested_tokens": 128,
+        "generated_tokens": 128,
+        "output_ids_sha256": "735a93850b225026ee60e5cd05284cc388ced22c2e3e9e6c8e5699d35143b30d",
+        "reused_prompt_tokens": 38,
+        "cancelled": false
+      },
+      {
+        "prompt": "writing",
+        "requested_tokens": 128,
+        "generated_tokens": 1,
+        "output_ids_sha256": "afccd937e6ac2d1b6d6e9f318bc5e8a179c977c7413b33b3e4d902ff8cec501e",
+        "reused_prompt_tokens": 0,
+        "cancelled": true
+      },
+      {
+        "prompt": "writing",
+        "requested_tokens": 8,
+        "generated_tokens": 8,
+        "output_ids_sha256": "78779715bb3d1191008f5e4020770fb7c94f38f845c60dc3a845ad7755451d44",
+        "reused_prompt_tokens": 30,
+        "cancelled": false
+      }
+    ]
+  },
+  "raw_manifest": {
+    "file": "manifest.json",
+    "files": 115,
+    "sha256": "34fe3d0c4058fc598005f1d676fa9c2dd6e607a59b24c224ef18374f3b8caf2e"
+  }
+}

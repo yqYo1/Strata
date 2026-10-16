@@ -1,0 +1,129 @@
+--- a/src/prefill/prefill.cpp
++++ b/src/prefill/prefill.cpp
+@@ -458,6 +458,10 @@
+     uint8_t *grp_gu = nullptr, *grp_d = nullptr;
+     std::vector<int32_t> bounds_host;
+     std::unique_ptr<mmq::Context> mmq_ctx;
++    // SYCL native groups can be packed on the host and uploaded in two copies.
++    uint8_t *packed_gu = nullptr, *packed_d = nullptr;
++    cudaEvent_t packed_copied = nullptr;
++    bool packed_source = false;
+     std::vector<int32_t> ids_host, slot_host, src_host, cnt, off;
+     // The grouping tables in mapped pinned memory, [ids | slot | src] of T_max * K each, then the MMQ bounds: kernels
+     // read and write them in place.  A cudaMemcpyAsync of them queues behind the expert blobs the copy stream already
+@@ -559,6 +563,9 @@
+     }
+     if (impl_->copy && impl_->copy != impl_->cs) cudaStreamDestroy(impl_->copy);
+     if (impl_->grp_host) cudaFreeHost(impl_->grp_host);
++    if (impl_->packed_gu) cudaFreeHost(impl_->packed_gu);
++    if (impl_->packed_d) cudaFreeHost(impl_->packed_d);
++    if (impl_->packed_copied) cudaEventDestroy(impl_->packed_copied);
+     for (void* p : impl_->owned) cudaFree(p);
+ }
+ 
+@@ -717,6 +724,7 @@
+         bool files = false;
+         for (int64_t l = 0; src != nullptr && !files && l < g.n_layers; ++l)
+             for (int64_t e = 0; !files && e < g.n_expert; ++e) files = src->transient(l, e);
++        m.packed_source = src && !files && strata::kernels::cpu::expert_layout().native;
+         const int threads = stv ? std::clamp(std::atoi(stv), 1, 32) : files ? 32 : std::max(2, std::min(4, hw / 4));
+         if (files && std::getenv("STRATA_STAGER_RING") == nullptr) m.stager->kRing = 4 * threads;
+         if (!m.stager->init((size_t) MAXBLOB(), threads)) ok = false;
+@@ -764,6 +772,17 @@
+         else
+             m.owned.push_back(m.ident_table);
+     }
++#if defined(STRATA_ENABLE_SYCL)
++    const char* packed = std::getenv("STRATA_SYCL_PREFILL_PACKED");
++    if (m.packed_source && mmq_plan().any && packed && std::atoi(packed) != 0 && !m.packed_gu) {
++        const auto& mp = mmq_plan();
++        if (cudaHostAlloc((void**) &m.packed_gu, MMQ_GROUP * mp.gu_max, cudaHostAllocDefault) != cudaSuccess ||
++            cudaHostAlloc((void**) &m.packed_d, MMQ_GROUP * mp.d_max, cudaHostAllocDefault) != cudaSuccess ||
++            cudaEventCreateWithFlags(&m.packed_copied, cudaEventDisableTiming) != cudaSuccess) {
++            err = "prefill: SYCL packed native host buffers"; return false;
++        }
++    }
++#endif
+     if (!ok) { err = "prefill: host buffers or events for a chunk of " + std::to_string(chunk) + " tokens"; return false; }
+     Alloc o;
+     o.base = (uint8_t*) borrow;
+@@ -2337,7 +2356,18 @@
+                         std::vector<int> stage_of(order.size(), -1);
+                         // the unpinned ones are copied to pinned buffers by the stager's threads, in this order
+                         std::vector<int> job_of(order.size(), -1);
+-                        if (!stream_all) {
++                        bool packed_groups = T >= 128 && !stream_all && use_mmq && lay.native && !m.pp && m.packed_gu;
++                        if (packed_groups) {
++                            // Keep GPU gathers when many selected weights are already resident.
++                            // Resident-complement sources may also omit those blobs from RAM.
++                            size_t resident = 0;
++                            for (const int32_t e : order) {
++                                if (m.host_res && m.cache && m.host_res[(size_t) l * m.g->n_expert + e] >= 0) ++resident;
++                                if (!m.src->blob(l, e)) { packed_groups = false; break; }
++                            }
++                            if (order.size() < MMQ_GROUP || resident * 8 > order.size()) packed_groups = false;
++                        }
++                        if (!stream_all && !packed_groups) {
+                             std::vector<Stager::Job> js;
+                             for (size_t j = 0; j < order.size(); ++j) {
+                                 const int32_t e = order[j];
+@@ -2439,11 +2469,11 @@
+                                     if (q + 1 < MMQ_GROUP && j + 1 < order.size()) return true;
+                                     flush();
+                                     gg = mmq::GatherGroup{};
+-                                } else if (lay.native) {
++                                } else if (lay.native && !packed_groups) {
+                                     const auto& f = lay.fmt[(size_t) l];
+                                     mmq::gather_native(blob_dev, blob_dev + f.up_off, mmq_gub / 2, blob_dev + f.down_off,
+                                                        mmq_db, m.grp_gu + q * mmq_gub, m.grp_d + q * mmq_db, m.cs);
+-                                } else {
++                                } else if (!packed_groups) {
+                                     mmq::gather_strata_q2(blob_dev, m.grp_gu + q * mmq_gub, m.grp_d + q * mmq_db, m.cs);
+                                 }
+                                 if (slot >= 0 && !group_gather) { cudaEventRecord(m.used[slot], m.cs); m.used_of[slot] = slot; }
+@@ -2493,7 +2523,44 @@
+                             m.gemm.f16(m.Hh + o0 * 640, m.dq_d[q], m.Dm + o0 * N, ne, N, 640);
+                             return true;
+                         };
+-                        if (!stream_all) {
++                        if (packed_groups) {
++                            const auto& f = lay.fmt[(size_t) l];
++                            for (size_t j0 = 0; j0 < order.size(); j0 += MMQ_GROUP) {
++                                if (should_stop && should_stop()) {
++                                    // The caller may refill borrowed cache slots immediately on return.
++                                    if (cudaStreamSynchronize(m.cs) != cudaSuccess) {
++                                        err = "prefill: packed native cancellation boundary"; return false;
++                                    }
++                                    err = "cancelled"; return false;
++                                }
++                                const size_t end = std::min(order.size(), j0 + MMQ_GROUP);
++                                const auto th = Clock::now();
++                                // This event follows the previous upload, before its products.
++                                // Repacking the host buffers can overlap those GPU products.
++                                if (cudaEventSynchronize(m.packed_copied) != cudaSuccess) {
++                                    err = "prefill: packed native upload completion"; return false;
++                                }
++                                for (size_t j = j0; j < end; ++j) {
++                                    const uint8_t* b = m.src->blob(l, order[j]);
++                                    uint8_t* gu = m.packed_gu + (j - j0) * mmq_gub;
++                                    std::memcpy(gu, b, mmq_gub / 2);
++                                    std::memcpy(gu + mmq_gub / 2, b + f.up_off, mmq_gub / 2);
++                                    std::memcpy(m.packed_d + (j - j0) * mmq_db, b + f.down_off, mmq_db);
++                                }
++                                pt.mark(kPfDequant, cs);
++                                if (cudaMemcpyAsync(m.grp_gu, m.packed_gu, (end - j0) * mmq_gub,
++                                                    cudaMemcpyHostToDevice, m.cs) != cudaSuccess ||
++                                    cudaMemcpyAsync(m.grp_d, m.packed_d, (end - j0) * mmq_db,
++                                                    cudaMemcpyHostToDevice, m.cs) != cudaSuccess ||
++                                    cudaEventRecord(m.packed_copied, m.cs) != cudaSuccess) {
++                                    err = "prefill: packed native upload"; return false;
++                                }
++                                stats_.ms_experts_host += ms_since(th);
++                                stats_.experts_streamed += end - j0;
++                                // The group buffers already have their final GGUF layout.
++                                if (!compute(end - 1, nullptr, -1)) return false;
++                            }
++                        } else if (!stream_all) {
+                             size_t staged = 0;
+                             const size_t lookahead = STAGE - 1;
+                             for (size_t j = 0; j < order.size(); ++j) {

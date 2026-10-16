@@ -1,20 +1,12 @@
 // src/core/expert_cache.cpp - R4's slot storage and residency table.  Read the header first.
 #include "strata/core/expert_cache.hpp"
 
-// #533's segmented cache uses CUDA's virtual memory management (cuMem*): not on HIP, neither the RDNA backend nor
-// the gfx906 compat build (PR #638), which compiles this file as HIP without STRATA_USE_HIP
-#if defined(STRATA_USE_HIP) || defined(STRATA_HIP_GFX906)
-#define STRATA_EC_NO_VMM 1
-#endif
-
 #include <cuda_runtime.h>
-#if !defined(STRATA_EC_NO_VMM)
-#include <cuda.h>   // #533: the virtual memory management types (the functions come through the runtime's entry points)
-#endif
 
 #include <algorithm>
 #include <cstdio>
 #include <filesystem>
+#include <limits>
 #include <utility>
 #include <cstring>
 
@@ -151,246 +143,13 @@ bool write_expert_profile(const std::string& path, int64_t n_layers, int64_t n_e
 
 ExpertCache::~ExpertCache() { close(); }
 
-// ---- #533: the segmented arena (--vram-elastic).  The driver API's virtual memory functions, looked up through the
-// runtime (no link against the driver library): one address range for the whole arena, backed by physical segments,
-// and the tail's segments unmapped / mapped again later.  Nothing here runs unless a segment size was set.
-#if !defined(STRATA_EC_NO_VMM)
-namespace {
-struct Vmm {
-    CUresult (CUDAAPI* device_get)(CUdevice*, int) = nullptr;
-    CUresult (CUDAAPI* attribute)(int*, CUdevice_attribute, CUdevice) = nullptr;
-    CUresult (CUDAAPI* granularity)(size_t*, const CUmemAllocationProp*, CUmemAllocationGranularity_flags) = nullptr;
-    CUresult (CUDAAPI* reserve)(CUdeviceptr*, size_t, size_t, CUdeviceptr, unsigned long long) = nullptr;
-    CUresult (CUDAAPI* address_free)(CUdeviceptr, size_t) = nullptr;
-    CUresult (CUDAAPI* create)(CUmemGenericAllocationHandle*, size_t, const CUmemAllocationProp*,
-                               unsigned long long) = nullptr;
-    CUresult (CUDAAPI* release)(CUmemGenericAllocationHandle) = nullptr;
-    CUresult (CUDAAPI* map)(CUdeviceptr, size_t, size_t, CUmemGenericAllocationHandle, unsigned long long) = nullptr;
-    CUresult (CUDAAPI* unmap)(CUdeviceptr, size_t) = nullptr;
-    CUresult (CUDAAPI* set_access)(CUdeviceptr, size_t, const CUmemAccessDesc*, size_t) = nullptr;
-    bool ok = false;
-};
-
-template <class F> bool entry(const char* name, F& f) {
-    void* p = nullptr;
-    cudaDriverEntryPointQueryResult q{};
-#if CUDART_VERSION >= 12050
-    const cudaError_t e = cudaGetDriverEntryPointByVersion(name, &p, 12000, cudaEnableDefault, &q);
-#else
-    const cudaError_t e = cudaGetDriverEntryPoint(name, &p, cudaEnableDefault, &q);
-#endif
-    if (e != cudaSuccess || q != cudaDriverEntryPointSuccess || p == nullptr) {
-        (void) cudaGetLastError();
-        return false;
-    }
-    f = reinterpret_cast<F>(p);
-    return true;
-}
-
-const Vmm& vmm() {
-    static const Vmm v = [] {
-        Vmm x;
-        x.ok = entry("cuDeviceGet", x.device_get) && entry("cuDeviceGetAttribute", x.attribute) &&
-               entry("cuMemGetAllocationGranularity", x.granularity) && entry("cuMemAddressReserve", x.reserve) &&
-               entry("cuMemAddressFree", x.address_free) && entry("cuMemCreate", x.create) &&
-               entry("cuMemRelease", x.release) && entry("cuMemMap", x.map) && entry("cuMemUnmap", x.unmap) &&
-               entry("cuMemSetAccess", x.set_access);
-        return x;
-    }();
-    return v;
-}
-
-CUmemAllocationProp device_prop(int dev) {
-    CUmemAllocationProp prop{};
-    prop.type = CU_MEM_ALLOCATION_TYPE_PINNED;
-    prop.location.type = CU_MEM_LOCATION_TYPE_DEVICE;
-    prop.location.id = dev;
-    return prop;
-}
-
-// one segment: a physical allocation mapped at `va`, readable and writable by this device
-bool map_segment(const Vmm& v, int dev, CUdeviceptr va, size_t bytes, unsigned long long& handle) {
-    const CUmemAllocationProp prop = device_prop(dev);
-    CUmemGenericAllocationHandle h = 0;
-    if (v.create(&h, bytes, &prop, 0) != CUDA_SUCCESS) return false;
-    if (v.map(va, bytes, 0, h, 0) != CUDA_SUCCESS) {
-        v.release(h);
-        return false;
-    }
-    CUmemAccessDesc access{};
-    access.location.type = CU_MEM_LOCATION_TYPE_DEVICE;
-    access.location.id = dev;
-    access.flags = CU_MEM_ACCESS_FLAGS_PROT_READWRITE;
-    if (v.set_access(va, bytes, &access, 1) != CUDA_SUCCESS) {
-        v.unmap(va, bytes);
-        v.release(h);
-        return false;
-    }
-    handle = (unsigned long long) h;
-    return true;
-}
-}  // namespace
-#endif
-
-bool ExpertCache::open_segmented(uint64_t want, std::string& err) {
-#if defined(STRATA_EC_NO_VMM)
-    (void) want;
-    err = "ExpertCache: --vram-elastic (a segmented expert cache) is CUDA-only for now";
-    return false;
-#else
-    const Vmm& v = vmm();
-    int dev = 0, supported = 0;
-    CUdevice cu = 0;
-    if (!v.ok || cudaGetDevice(&dev) != cudaSuccess || v.device_get(&cu, dev) != CUDA_SUCCESS ||
-        v.attribute(&supported, CU_DEVICE_ATTRIBUTE_VIRTUAL_MEMORY_MANAGEMENT_SUPPORTED, cu) != CUDA_SUCCESS ||
-        !supported) {
-        err = "ExpertCache: --vram-elastic needs the driver's virtual memory management, which this GPU or driver "
-              "does not offer";
-        return false;
-    }
-    const CUmemAllocationProp prop = device_prop(dev);
-    size_t gran = 0;
-    if (v.granularity(&gran, &prop, CU_MEM_ALLOC_GRANULARITY_RECOMMENDED) != CUDA_SUCCESS || gran == 0) {
-        err = "ExpertCache: cannot read the driver's allocation granularity";
-        return false;
-    }
-    const uint64_t g = (uint64_t) gran;
-    const uint64_t total = (want + g - 1) / g * g;
-    seg_ = (int64_t) (((uint64_t) seg_req_ + g - 1) / g * g);
-    CUdeviceptr va = 0;
-    if (v.reserve(&va, (size_t) total, 0, 0, 0) != CUDA_SUCCESS) {
-        err = "ExpertCache: cannot reserve the address range of the segmented expert cache";
-        return false;
-    }
-    base_ = reinterpret_cast<uint8_t*>(va);
-    reserved_ = total;
-    for (uint64_t at = 0; at < total; at += (uint64_t) seg_) {
-        segs_.push_back(0);
-        seg_size_.push_back((int64_t) std::min<uint64_t>((uint64_t) seg_, total - at));
-    }
-    for (size_t i = 0; i < segs_.size(); ++i) {
-        if (!map_segment(v, dev, va + (CUdeviceptr) ((uint64_t) i * (uint64_t) seg_), (size_t) seg_size_[i],
-                         segs_[i])) {
-            char buf[200];
-            std::snprintf(buf, sizeof buf, "ExpertCache: cudaMalloc failed: segment %zu of %zu (%.2f GiB) of the "
-                          "segmented cache could not be allocated", i + 1, segs_.size(),
-                          (double) seg_size_[i] / 1073741824.0);
-            err = buf;   // "cudaMalloc failed": the auto cache's smaller-retry path reads it as an allocation failure
-            release_segmented();
-            return false;
-        }
-        mapped_segs_ = (int64_t) i + 1;
-    }
-    return true;
-#endif
-}
-
-void ExpertCache::release_segmented() {
-#if !defined(STRATA_EC_NO_VMM)
-    const Vmm& v = vmm();
-    if (base_ != nullptr) cudaDeviceSynchronize();
-    const CUdeviceptr va = reinterpret_cast<CUdeviceptr>(base_);
-    for (size_t i = 0; i < segs_.size(); ++i)
-        if (segs_[i] != 0) {
-            v.unmap(va + (CUdeviceptr) ((uint64_t) i * (uint64_t) seg_), (size_t) seg_size_[i]);
-            v.release((CUmemGenericAllocationHandle) segs_[i]);
-        }
-    if (base_ != nullptr && reserved_ > 0) v.address_free(va, (size_t) reserved_);
-#endif
-    segs_.clear();
-    seg_size_.clear();
-    mapped_segs_ = 0;
-    reserved_ = 0;
-    base_ = nullptr;
-}
-
-int64_t ExpertCache::mapped_bytes() const {
-    if (segs_.empty()) return base_ != nullptr ? full_bytes() : 0;
-    int64_t b = 0;
-    for (int64_t i = 0; i < mapped_segs_; ++i) b += seg_size_[(size_t) i];
-    return b;
-}
-
-int64_t ExpertCache::slots_within(int64_t bytes) const {
-    if (bytes >= full_bytes()) return slots_;
-    if (bytes <= 0) return 0;
-    if (off_.empty()) return blob_ > 0 ? bytes / blob_ : 0;
-    // off_[i + 1] is slot i's end: count the slots whose end is at most `bytes`
-    return (int64_t) (std::upper_bound(off_.begin() + 1, off_.end(), (uint64_t) bytes) - (off_.begin() + 1));
-}
-
-bool ExpertCache::shrink(int64_t keep_bytes, std::string& err) {
-    if (segs_.empty()) {
-        err = "the expert cache is not segmented (the engine needs --vram-elastic)";
-        return false;
-    }
-#if defined(STRATA_EC_NO_VMM)
-    (void) keep_bytes;
-    return false;
-#else
-    const Vmm& v = vmm();
-    int64_t keep = 0, at = 0;   // the segments [0, keep) hold the first keep_bytes
-    while (keep < (int64_t) segs_.size() && at < keep_bytes) at += seg_size_[(size_t) keep++];
-    if (keep >= mapped_segs_) return true;
-    if (cudaDeviceSynchronize() != cudaSuccess) {
-        err = std::string("the device failed before the cache shrank: ") + cudaGetErrorString(cudaGetLastError());
-        return false;
-    }
-    const CUdeviceptr va = reinterpret_cast<CUdeviceptr>(base_);
-    for (int64_t i = mapped_segs_ - 1; i >= keep; --i) {
-        const CUdeviceptr p = va + (CUdeviceptr) ((uint64_t) i * (uint64_t) seg_);
-        if (v.unmap(p, (size_t) seg_size_[(size_t) i]) != CUDA_SUCCESS ||
-            v.release((CUmemGenericAllocationHandle) segs_[(size_t) i]) != CUDA_SUCCESS) {
-            err = "the driver refused to release an expert-cache segment";
-            live_slots_ = slots_within(mapped_bytes());
-            return false;
-        }
-        segs_[(size_t) i] = 0;
-        mapped_segs_ = i;
-    }
-    live_slots_ = slots_within(mapped_bytes());
-    return true;
-#endif
-}
-
-bool ExpertCache::grow(int64_t want_bytes, std::string& err) {
-    if (segs_.empty()) {
-        err = "the expert cache is not segmented (the engine needs --vram-elastic)";
-        return false;
-    }
-#if defined(STRATA_EC_NO_VMM)
-    (void) want_bytes;
-    return false;
-#else
-    const Vmm& v = vmm();
-    int dev = 0;
-    cudaGetDevice(&dev);
-    const CUdeviceptr va = reinterpret_cast<CUdeviceptr>(base_);
-    int64_t at = mapped_bytes();
-    while (mapped_segs_ < (int64_t) segs_.size() && at + seg_size_[(size_t) mapped_segs_] <= want_bytes) {
-        const size_t i = (size_t) mapped_segs_;
-        if (!map_segment(v, dev, va + (CUdeviceptr) ((uint64_t) i * (uint64_t) seg_), (size_t) seg_size_[i],
-                         segs_[i])) {
-            (void) cudaGetLastError();
-            err = "the driver has no VRAM for another expert-cache segment";
-            live_slots_ = slots_within(mapped_bytes());
-            return false;
-        }
-        at += seg_size_[i];
-        ++mapped_segs_;
-    }
-    live_slots_ = slots_within(mapped_bytes());
-    return true;
-#endif
-}
-
-#if defined(STRATA_USE_HIP)
+#if defined(STRATA_USE_HIP) || defined(STRATA_ENABLE_SYCL)
 bool ExpertCache::ensure_blocking_staging(std::size_t bytes, std::string& err) {
     if (bytes <= blocking_staging_bytes_) return true;
     void* next = nullptr;
     const cudaError_t status = cudaHostAlloc(&next, bytes, cudaHostAllocDefault);
     if (status != cudaSuccess) {
-        err = std::string("ExpertCache: HIP blocking staging allocation: ") + cudaGetErrorString(status);
+        err = std::string("ExpertCache: blocking staging allocation: ") + cudaGetErrorString(status);
         return false;
     }
     if (blocking_staging_) (void) cudaFreeHost(blocking_staging_);
@@ -402,6 +161,24 @@ bool ExpertCache::ensure_blocking_staging(std::size_t bytes, std::string& err) {
 
 bool ExpertCache::open(int64_t n_slots, int64_t n_layers, int64_t n_expert, int64_t blob_bytes,
                        std::string& err) {
+    return open_impl(n_slots, n_layers, n_expert, blob_bytes, err, true);
+}
+
+bool ExpertCache::open_uninitialized(int64_t n_slots, int64_t n_layers, int64_t n_expert, int64_t blob_bytes,
+                                     std::string& err) {
+    const uint64_t limit = std::min<uint64_t>(std::numeric_limits<std::ptrdiff_t>::max(),
+                                             std::numeric_limits<int64_t>::max());
+    if (n_slots <= 0 || n_layers <= 0 || n_expert <= 0 || blob_bytes <= 0 ||
+        uint64_t(n_slots) > limit / uint64_t(blob_bytes) ||
+        uint64_t(n_layers) > limit / sizeof(int32_t) / uint64_t(n_expert)) {
+        err = "ExpertCache: uninitialized cache geometry overflows addressable storage";
+        return false;
+    }
+    return open_impl(n_slots, n_layers, n_expert, blob_bytes, err, false);
+}
+
+bool ExpertCache::open_impl(int64_t n_slots, int64_t n_layers, int64_t n_expert, int64_t blob_bytes,
+                            std::string& err, bool initialize) {
     close();
     if (n_slots <= 0) {
         err = "ExpertCache: n_slots must be positive";
@@ -435,9 +212,7 @@ bool ExpertCache::open(int64_t n_slots, int64_t n_layers, int64_t n_expert, int6
         }
     }
 
-    if (seg_req_ > 0) {   // #533: --vram-elastic: physical segments behind one address range (zeroed below)
-        if (!open_segmented(want, err)) return false;
-    } else if (cudaMalloc((void**) &base_, (size_t) want) != cudaSuccess) {
+    if (cudaMalloc((void**) &base_, (size_t) want) != cudaSuccess) {
         base_ = nullptr;
         char buf[256];
         std::snprintf(buf, sizeof buf, "ExpertCache: cudaMalloc(%.2f GiB) failed: %s",
@@ -447,7 +222,7 @@ bool ExpertCache::open(int64_t n_slots, int64_t n_layers, int64_t n_expert, int6
     }
     // Zeroed so a slot read before it is filled is a DETERMINISTIC wrong answer rather than whatever the
     // allocator handed back.  A stale block of a previous process's memory would still sum to finite floats.
-    if (cudaMemset(base_, 0, (size_t) want) != cudaSuccess) {
+    if (initialize && cudaMemset(base_, 0, (size_t) want) != cudaSuccess) {
         err = "ExpertCache: cudaMemset of the slot arena failed";
         close();
         return false;
@@ -455,11 +230,10 @@ bool ExpertCache::open(int64_t n_slots, int64_t n_layers, int64_t n_expert, int6
 
     residency_.assign((size_t) (n_layers * n_expert), kNotResident);
     slots_ = n_slots;
-    live_slots_ = n_slots;
     n_layers_ = n_layers;
     n_expert_ = n_expert;
     blob_ = blob_bytes;
-#if defined(STRATA_USE_HIP)
+#if defined(STRATA_USE_HIP) || defined(STRATA_ENABLE_SYCL)
     if (!ensure_blocking_staging((std::size_t) blob_, err)) {
         close();
         return false;
@@ -492,10 +266,9 @@ bool ExpertCache::open_sized(const std::vector<int64_t>& slot_bytes, int64_t n_l
     // one allocation of the summed size, through the uniform path's checks: n "slots" of 1 byte
     if (!open((int64_t) off.back(), n_layers, n_expert, 1, err)) return false;
     slots_ = (int64_t) slot_bytes.size();
-    live_slots_ = slots_;
     blob_ = mx;
     off_ = std::move(off);
-#if defined(STRATA_USE_HIP)
+#if defined(STRATA_USE_HIP) || defined(STRATA_ENABLE_SYCL)
     if (!ensure_blocking_staging((std::size_t) blob_, err)) {
         close();
         return false;
@@ -513,21 +286,18 @@ bool ExpertCache::open_sized(const std::vector<int64_t>& slot_bytes, int64_t n_l
 }
 
 void ExpertCache::close() {
-#if defined(STRATA_USE_HIP)
+#if defined(STRATA_USE_HIP) || defined(STRATA_ENABLE_SYCL)
     if (blocking_staging_) (void) cudaFreeHost(blocking_staging_);
     blocking_staging_ = nullptr;
     blocking_staging_bytes_ = 0;
 #endif
     off_.clear();
-    if (!segs_.empty()) {
-        release_segmented();
-    } else if (base_ != nullptr) {
+    if (base_ != nullptr) {
         cudaFree(base_);
         base_ = nullptr;
     }
     residency_.clear();
     slots_ = 0;
-    live_slots_ = 0;
     n_layers_ = 0;
     n_expert_ = 0;
     blob_ = 0;
@@ -618,11 +388,11 @@ bool ExpertCache::fill_slot_blocking(int32_t slot, const uint8_t* host_blob, std
         err = "ExpertCache::fill_slot_blocking: the host blob is null";
         return false;
     }
-#if defined(STRATA_USE_HIP)
-    // Bound HIP's pageable-source staging to one expert instead of repeatedly
+#if defined(STRATA_USE_HIP) || defined(STRATA_ENABLE_SYCL)
+    // Bound pageable-source staging to one expert instead of repeatedly
     // registering regions of the mmap. The blocking copy completes before reuse.
     if (!blocking_staging_ || n > blocking_staging_bytes_) {
-        err = "ExpertCache::fill_slot_blocking: HIP staging buffer is too small";
+        err = "ExpertCache::fill_slot_blocking: staging buffer is too small";
         return false;
     }
     std::memcpy(blocking_staging_, host_blob, n);

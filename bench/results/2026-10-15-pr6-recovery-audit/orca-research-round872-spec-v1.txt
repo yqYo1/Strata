@@ -1,0 +1,68 @@
+knowledge collection. Main owns all implementation and measurement.
+Target/change: GPU equijoin build/probe crossovers under key skew and memory limits
+Ownership: write ONLY /home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round872-v1.txt. Read-only sources; no other code/index/report edits, Git, builds, tests, GPU, profiler, process/device inspection, services, branches or workers. No XeStrata code/proposals/tests/helpers.
+Acceptance: substantive bounded report answering the finite question and alternatives, exact sources, counterevidence/applicability/limits; no implementation/adoption claim.
+{
+  "proposed_assignment_round": "R872",
+  "purpose_label": "knowledge collection",
+  "title": "GPU equijoin build/probe crossovers under key skew and memory limits",
+  "report_output": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round872-v1.txt",
+  "spec_output_if_dispatched": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/orca-research-round872-spec-v1.txt",
+  "schedulable_now": true,
+  "shared_index": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+    "sha256": "0ea68239747e653fc0a4bbaf266ad15dc05624763ffab135348d1c4f19ecfae5"
+  },
+  "relevant_prior_report_metadata": [
+    {
+      "path": "research-scope-plan-round866-v1.json",
+      "sha256": "c1f2eb2964a07074633844bdb6d5c8ba8995d7145eedd8212c18a2eb64c7ff26",
+      "use": "R867 query-fusion scope explicitly excluded hash-join algorithm design; use its scope boundary, not its held report body."
+    },
+    {
+      "path": "research-round867-v1.txt",
+      "sha256": "a900ab303fa6dcf3d500da2dc7b3a3531c39c6551633b0aae56aec9740fbe403",
+      "classification": "knowledge collection; Main body held",
+      "use": "Metadata-only overlap check. Do not open its body; query pipeline fusion is outside this assignment."
+    },
+    {
+      "path": "research-scope-review-round870-v1.json",
+      "sha256": "d66fb4ba5a05e7188127f3cbb2acf6eeedfc9f8d9c4591e770ab8aaaafca6a7d",
+      "use": "Latest reviewed scope/retrieval metadata for R867-R869; all three original collection bodies remain held by Main."
+    }
+  ],
+  "finite_question": "For single-GPU equijoins, compare direct GPU hash build/probe, radix-partitioned hash join, and sort-merge as a counterpoint. How do build/probe size ratio, duplicate fanout, key-frequency and partition skew, key/payload width, table load factor, available device memory, and output materialization change the time/space crossover or create failure modes?",
+  "breadth_and_counterevidence": "Use original GPU join papers and primary accelerator/database sources. Compare algorithms by build, partition, probe/merge, overflow/spill, and output phases in one table; record GPU generation, relation sizes, key/payload types, skew distribution, memory residency, and timing boundary. Include at least one case where partitioning or sort-merge wins and one where its extra passes or materialization lose; explain why direct hash-table results do not automatically predict end-to-end join time. Preserve many-to-many duplicate semantics and distinguish skew in key frequency from skew in partition occupancy. Keep source-specific measurements separate and do not compare cross-paper speedups as a controlled ranking.",
+  "novelty_guard": "R867 covered operator fusion/materialization boundaries and expressly left hash-join algorithm design outside its survey. This scope is only the single-GPU equijoin algorithm and its build/probe/capacity crossover. Exclude query fusion, query planning, group-by, theta joins, general-purpose hash-table surveys beyond supporting a join mechanism, CPU/GPU co-processing, multi-GPU execution, product changes, and Strata/Arc performance claims. Do not read held R867-R869 knowledge bodies.",
+  "report_budget": "1,300-1,700 substantive words; no more than 7 primary URLs; one algorithm/crossover table, phase and memory models, at least one win and two counterexamples, source environments, applicability, and evidence limits.",
+  "prerequisites": [
+    "Public access to primary GPU equijoin/hash-table papers listed below.",
+    "No Strata profile, local GPU, code, driver, build, test, or process result is required."
+  ],
+  "prerequisite_evidence": "The assigned sources are directly available primary papers: the original SIGMOD GPU join paper, Rui and Tu's GPU equijoin paper, the 2023 join/group-by implementation study (join portions only), and the original Better GPU Hash Tables paper (table operations only, not end-to-end join evidence). These papers supply concrete alternatives, workloads, and named hardware without any missing local prerequisite.",
+  "primary_sources": [
+    {
+      "title": "Relational Joins on Graphics Processors",
+      "url": "https://cse.hkust.edu.hk/~psander/docs/join.pdf",
+      "use_and_limit": "Original SIGMOD 2008 GPU join algorithms; keep G80-era methods and results historical and architecture-specific."
+    },
+    {
+      "title": "Fast Equi-Join Algorithms on GPUs: Design and Implementation",
+      "url": "https://cse.usf.edu/~tuy/pub/SSDBM17.pdf",
+      "use_and_limit": "Original SSDBM 2017 hash and sort-merge implementations; pin their evaluated GPUs, data distributions, and phase timing."
+    },
+    {
+      "title": "Efficiently Processing Joins and Grouped Aggregations on GPUs",
+      "url": "https://arxiv.org/abs/2312.00720v1",
+      "use_and_limit": "Use only its join design and join measurements; do not turn the assignment into a group-by survey."
+    },
+    {
+      "title": "Better GPU Hash Tables",
+      "url": "https://arxiv.org/abs/2108.07232v3",
+      "use_and_limit": "Use only as supporting evidence about GPU table probing/load-factor behavior. It is not a join end-to-end comparison."
+    }
+  ],
+  "collection_handling": "Keep the report body unread by Main until a native Codex reviewer records scope, depth, novelty, source checks, and retrieval metadata.",
+  "Main_relative_path_resolution": "Report/review basenames resolve under /home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit; product source paths resolve under /home/yayoi/orca/workspaces/Strata/sycl."
+}
+Use injected Orca worker_done lifecycle. Final <=5 operational lines with report path/hash, no full body. Do not contact other workers.

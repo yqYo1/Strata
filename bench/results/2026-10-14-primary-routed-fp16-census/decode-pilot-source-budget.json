@@ -1,0 +1,66 @@
+{
+  "source_revision": "605b80f86aa65bace2a058e51db4635b3deaf327",
+  "binary_sha256": "68da026294cb9f2e6f4faee0e7c90b276a5f7f1306499f3210fe6744c89294b6",
+  "record_sha256": "c5e21ee9158382d8e53cf92b9e269504363f165d4f4f9caae9e2a4f1295e7f9d",
+  "engine_summary_sha256": "f94d91b426d79b4129fc250de7b75dbb52b333acb1c2d36e59fba8e060c07a2f",
+  "native_expert_metadata_sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d",
+  "geometry": {
+    "layers": 48,
+    "k": 10,
+    "experts": 512,
+    "packed_one_expert_all_layers_bytes": 98227200,
+    "min_layer_blob_bytes": 1510400,
+    "max_layer_blob_bytes": 2662400
+  },
+  "samples": [
+    {
+      "workload": "regular-code",
+      "source_counter_row_line": 47,
+      "E": 3346,
+      "A": 2382,
+      "D": 2895,
+      "source_derived_fixed4_W": 966,
+      "source_derived_verified_R": 3861,
+      "source_derived_commit_C": 3348,
+      "terminal_C_minus_E": 2,
+      "observed_cache_hits": 38236,
+      "observed_cache_lookups": 1853280,
+      "observed_cache_hit_fraction": 0.020631528964862297,
+      "cache_lookup_cross_check": "observed lookups == source-derived R*48*10 under pcie0/single-device/no-remote",
+      "verified_rows_per_emit": 1.1539151225343693,
+      "mean_emitted_per_window": 3.463768115942029,
+      "logical_cpu_unique_blob_bytes_lower_bound": 922688166400.0,
+      "logical_cpu_unique_blob_bytes_upper_bound": 3734800537600,
+      "conditional_logical_source_GBs_at_TG70": [
+        19.30309971548117,
+        78.13390246025104
+      ],
+      "scope": "Window counts source-derived from fixed S4 after firstT1, spec_min_p0/suffix0, not directly observed W. Byte range assumes current valid route owner/nt and weights shared at most4row/job; logical source extent, not physical RAM bytes, latency bound, actual per-group service or speed prediction."
+    },
+    {
+      "workload": "varied-prose",
+      "source_counter_row_line": 50,
+      "E": 8631,
+      "A": 4551,
+      "D": 12243,
+      "source_derived_fixed4_W": 4082,
+      "source_derived_verified_R": 16325,
+      "source_derived_commit_C": 8633,
+      "terminal_C_minus_E": 2,
+      "observed_cache_hits": 67892,
+      "observed_cache_lookups": 7836000,
+      "observed_cache_hit_fraction": 0.008664114344053089,
+      "cache_lookup_cross_check": "observed lookups == source-derived R*48*10 under pcie0/single-device/no-remote",
+      "verified_rows_per_emit": 1.89143784034295,
+      "mean_emitted_per_window": 2.114404703576678,
+      "logical_cpu_unique_blob_bytes_lower_bound": 3963708684800.0,
+      "logical_cpu_unique_blob_bytes_upper_bound": 15933046323200,
+      "conditional_logical_source_GBs_at_TG70": [
+        32.14686686780211,
+        129.22178688726683
+      ],
+      "scope": "Window counts source-derived from fixed S4 after firstT1, spec_min_p0/suffix0, not directly observed W. Byte range assumes current valid route owner/nt and weights shared at most4row/job; logical source extent, not physical RAM bytes, latency bound, actual per-group service or speed prediction."
+    }
+  ],
+  "decision": "Low observed VRAM hits and differing verified/emit ratios justify actual MTP job-nt/group/service census before kernel or cache changes. No exclusive CPU/GPU bottleneck, DRAM roofline, numerical-quality or speedup claim."
+}

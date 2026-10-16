@@ -1,4 +1,4 @@
-// include/strata/kernels/elementwise.hpp - the small ops a LAYER needs between its GEMVs, P2.S5.
+﻿// include/strata/kernels/elementwise.hpp - the small ops a LAYER needs between its GEMVs, P2.S5.
 //
 // These are not interesting kernels and that is why they are in one file with one parity test: they are the
 // glue in the per-layer graph, and glue that is written inline at each call site is glue with several
@@ -50,6 +50,14 @@ void scale_inplace(float* x, int64_t n, float s, void* stream);
 /// the copy of the misses into `parts` cannot happen until the pool has produced them, and the kernel is
 /// then ordered behind that copy.  Measured: the drain fell 18.2 -> 10.2 ms and the token did not move.
 void add_inplace(float* dst, const float* src, int64_t n, void* stream);
+
+#ifdef STRATA_ENABLE_SYCL
+/// Copy completed host-USM misses, adding device hits only when the host-USM
+/// flag is nonzero. The flag and misses must remain stable until completion.
+/// A zero flag copies the float bits directly, including negative zero.
+void copy_hit_miss(float* dst, const float* misses, const float* hits,
+                   const uint32_t* add_hits, int64_t n, void* stream);
+#endif
 
 /// `y[i] = f16(x[i])`, round-to-nearest-even, using the shared conversion in `f16_bits.hpp`.
 void f32_to_f16_bulk(const float* x, uint16_t* y, int64_t n, void* stream);
@@ -114,12 +122,6 @@ void copy_rows_from_mapped(float* dst, const float* src, int64_t rows, int64_t w
 /// device-to-host memcpy nodes (copy-engine operations in the middle of the layer chain) and the ring kernel.
 void doorbell_publish(const float* x, const int32_t* ids, const float* weights, int64_t n, int64_t k, float* x_out,
                       int32_t* ids_out, float* weights_out, uint32_t* d_seq, void* stream);
-/// #649 (HIP, STRATA_DOORBELL_STORE=1): the ring stored as `value` instead of incremented over PCIe.
-void doorbell_publish_value(const float* x, const int32_t* ids, const float* weights, int64_t n, int64_t k,
-                            float* x_out, int32_t* ids_out, float* weights_out, uint32_t* d_seq, uint32_t value,
-                            void* stream);
-void doorbell_publish_res(const float* x, const int32_t* ids, const int32_t* d_res, int n_expert, int64_t n, int64_t k,
-                          float* x_out, int32_t* ids_out, uint32_t* d_seq, void* stream);
 
 /// Plan v0.3 P3: copy `n` int32 from mapped pinned host memory into device memory with a kernel (the QSA
 /// per-token step and positions), instead of a host-to-device memcpy node in the middle of a layer.

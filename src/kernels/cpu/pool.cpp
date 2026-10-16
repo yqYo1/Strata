@@ -14,11 +14,9 @@
 #if defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#include "pool_affinity_win.hpp"
 #else
 #include <pthread.h>
 #include <sched.h>
-#include "pool_affinity_linux.hpp"
 #endif
 
 namespace strata::kernels::cpu {
@@ -38,13 +36,7 @@ CpuTopology detect_cpu_topology(bool skip_first, PoolAffinity affinity) {
     DWORD len = 0;
     GetLogicalProcessorInformationEx(RelationProcessorCore, nullptr, &len);
     if (len == 0) {
-        // Preserve group identity even when detailed core topology is unavailable.
-        const WORD groups = GetActiveProcessorGroupCount();
-        for (WORD group = 0; group < groups; ++group) {
-            const DWORD count = GetActiveProcessorCount(group);
-            if (count == 0 || count == (DWORD) -1 || count > 64) continue;
-            for (DWORD i = 0; i < count; ++i) topo.worker_cores.push_back((int) group * 64 + (int) i);
-        }
+        for (unsigned i = 0; i < std::thread::hardware_concurrency(); ++i) topo.worker_cores.push_back((int) i);
         if (skip_first && !topo.worker_cores.empty()) {
             topo.host_core = topo.worker_cores.front();
             topo.worker_cores.erase(topo.worker_cores.begin());
@@ -68,12 +60,10 @@ CpuTopology detect_cpu_topology(bool skip_first, PoolAffinity affinity) {
                 CoreDesc cd;
                 cd.efficiency = e->Processor.EfficiencyClass;
                 cd.has_smt = (e->Processor.Flags & LTP_PC_SMT) != 0;
-                for (WORD group = 0; group < e->Processor.GroupCount; ++group) {
-                    const GROUP_AFFINITY& g = e->Processor.GroupMask[group];
-                    for (int bit = 0; bit < 64; ++bit) {
-                        if (g.Mask & (KAFFINITY(1) << bit)) {
-                            cd.lps.push_back((int) (g.Group * 64 + bit));
-                        }
+                const GROUP_AFFINITY& g = e->Processor.GroupMask[0];
+                for (int bit = 0; bit < 64; ++bit) {
+                    if (g.Mask & (1ull << bit)) {
+                        cd.lps.push_back((int) (g.Group * 64 + bit));
                     }
                 }
                 if (!cd.lps.empty()) {
@@ -105,12 +95,6 @@ CpuTopology detect_cpu_topology(bool skip_first, PoolAffinity affinity) {
         }
 
         if (affinity == PoolAffinity::All || !topo.is_hybrid) {
-            // #642 (from Hardin22's fork): on a hybrid CPU the P-cores first (the host takes the first of them), so a
-            // pool smaller than the core count (setup's --pool-workers for a hybrid CPU) runs on the P-cores and the
-            // first E-cores rather than on whatever the OS numbered first.  All cores alike: the order is unchanged.
-            if (topo.is_hybrid)
-                std::stable_sort(descs.begin(), descs.end(),
-                                 [](const CoreDesc& x, const CoreDesc& y) { return x.efficiency > y.efficiency; });
             for (const auto& c : descs) topo.worker_cores.push_back(c.lps[0]);
             if (skip_first && !topo.worker_cores.empty()) {
                 topo.host_core = topo.worker_cores.front();
@@ -178,8 +162,12 @@ CpuTopology detect_cpu_topology(bool skip_first, PoolAffinity affinity) {
     };
 
     std::vector<int> allowed;
-    std::vector<unsigned long> allowed_mask;
-    if (detail::get_thread_affinity(allowed_mask, &allowed) != 0) {
+    cpu_set_t set;
+    CPU_ZERO(&set);
+    if (sched_getaffinity(0, sizeof set, &set) == 0) {
+        for (int i = 0; i < CPU_SETSIZE; ++i)
+            if (CPU_ISSET(i, &set)) allowed.push_back(i);
+    } else {
         for (unsigned i = 0; i < std::thread::hardware_concurrency(); ++i) allowed.push_back((int) i);
     }
 
@@ -231,9 +219,6 @@ CpuTopology detect_cpu_topology(bool skip_first, PoolAffinity affinity) {
     }
 
     if (affinity == PoolAffinity::All || !topo.is_hybrid) {
-        if (topo.is_hybrid)   // #642: the P-cores first (see the Windows branch)
-            std::stable_sort(all_cpus.begin(), all_cpus.end(),
-                             [](const CoreLinux& x, const CoreLinux& y) { return x.cap > y.cap; });
         for (const auto& cl : all_cpus) {
             if (!cl.is_sibling) topo.worker_cores.push_back(cl.cpu);
         }
@@ -279,60 +264,49 @@ std::vector<int> physical_cores(bool skip_first, PoolAffinity affinity) {
 
 namespace {
 
-bool pin_this_thread(int core, [[maybe_unused]] int worker = -1) {
-    if (core < 0) return false;
+void pin_this_thread(int core) {
+    if (core < 0) return;
 #if defined(_WIN32)
-    return detail::set_thread_group_affinity(core, worker);
+    SetThreadAffinityMask(GetCurrentThread(), (DWORD_PTR) 1 << (core & 63));
 #else
-    const int error = detail::pin_thread_to_cpu(core);
-    if (error != 0)
-        std::fprintf(stderr, "strata cpu pool: affinity for worker %d (CPU %d) failed: %d; previous affinity kept\n",
-                     worker, core, error);
-    return error == 0;
+    cpu_set_t set;
+    CPU_ZERO(&set);
+    CPU_SET(core, &set);
+    pthread_setaffinity_np(pthread_self(), sizeof set, &set);
 #endif
 }
 
 }  // namespace
 
-ThreadAffinity pin_current_thread(int core) {
-    if (core < 0) return {};
+long long pin_current_thread(int core) {
+    if (core < 0) return -1;
 #if defined(_WIN32)
-    ThreadAffinity previous;
-    ULONG target = 0;
-    if (!detail::get_thread_cpu_sets(previous.cpu_sets) || !detail::cpu_set_for_core(core, target) ||
-        !SetThreadSelectedCpuSets(GetCurrentThread(), &target, 1)) {
-        std::fprintf(stderr, "strata cpu pool: host CPU Set selection for processor %d failed: %lu; previous placement kept\n",
-                     core, (unsigned long) GetLastError());
-        return {};
-    }
-    previous.valid = true;
-    return previous;
+    // `SetThreadAffinityMask` RETURNS the previous mask, or 0 on failure - so 0 doubles as the error, which is
+    // why the caller must not treat it as a restorable value.
+    const DWORD_PTR prev = SetThreadAffinityMask(GetCurrentThread(), (DWORD_PTR) 1 << (core & 63));
+    return prev == 0 ? -1 : (long long) prev;
 #else
-    ThreadAffinity previous;
-    int error = detail::get_thread_affinity(previous.mask);
-    if (error == 0) error = detail::pin_thread_to_cpu(core);
-    if (error != 0) {
-        std::fprintf(stderr, "strata cpu pool: host affinity for CPU %d failed: %d; previous affinity kept\n", core, error);
-        return {};
-    }
-    previous.valid = true;
-    return previous;
+    cpu_set_t prev;
+    CPU_ZERO(&prev);
+    if (pthread_getaffinity_np(pthread_self(), sizeof prev, &prev) != 0) return -1;
+    unsigned long mask = 0;
+    for (int i = 0; i < CPU_SETSIZE && i < 64; ++i)
+        if (CPU_ISSET(i, &prev)) mask |= 1ul << i;
+    pin_this_thread(core);
+    return (long long) mask;
 #endif
 }
 
-void restore_thread_affinity(const ThreadAffinity& previous) {
-    if (!previous.valid) return;
+void restore_thread_affinity(long long previous) {
+    if (previous <= 0) return;
 #if defined(_WIN32)
-    // Clearing an originally empty selection restores process-default/all-group eligibility without
-    // turning the caller's implicit Windows 11 affinity into an explicit single-group hard mask.
-    if (!SetThreadSelectedCpuSets(GetCurrentThread(), previous.cpu_sets.empty() ? nullptr : previous.cpu_sets.data(),
-                                 (ULONG) previous.cpu_sets.size()))
-        std::fprintf(stderr, "strata cpu pool: host CPU Set restoration failed: %lu\n",
-                     (unsigned long) GetLastError());
+    SetThreadAffinityMask(GetCurrentThread(), (DWORD_PTR) previous);
 #else
-    const int error = detail::set_thread_affinity(previous.mask);
-    if (error != 0)
-        std::fprintf(stderr, "strata cpu pool: host affinity restoration failed: %d\n", error);
+    cpu_set_t set;
+    CPU_ZERO(&set);
+    for (int i = 0; i < 64; ++i)
+        if ((previous >> i) & 1) CPU_SET(i, &set);
+    pthread_setaffinity_np(pthread_self(), sizeof set, &set);
 #endif
 }
 
@@ -392,7 +366,7 @@ ExpertPool::ExpertPool(int n_workers, bool pin, bool host_works, PoolAffinity af
     for (int i = 0; i < n_; ++i) {
         const int core = pin ? (i < (int) topo_.worker_cores.size() ? topo_.worker_cores[(size_t) i] : -1) : -1;
         threads_.emplace_back([this, i, core] {
-            pin_this_thread(core, i);
+            pin_this_thread(core);
             worker(i);
         });
     }
@@ -566,7 +540,7 @@ void ExpertPool::drain(int id, ExpertScratch& scratch, uint32_t epoch) {
                 const int e = (int) (r / per), r0 = (int) (r % per);
                 const int r1 = (int) std::min<int64_t>(per, r0 + (g1 - r));
                 SplitBufMulti& sb = split_multi_[(size_t) e];
-                if (mode_ == 5 && q2_native_kernels(nfmt_->gu_type)) {
+                if (mode_ == 5 && nfmt_->gu_type == 42) {
                     // a native Q2_0 pack: gate and up rows on the Q2_0 kernels, then SwiGLU
                     thread_local float gbuf[MAXT][FF], ubuf[MAXT][FF];
                     float* gp[MAXT];
@@ -582,8 +556,8 @@ void ExpertPool::drain(int id, ExpertScratch& scratch, uint32_t epoch) {
                     float* ff[MAXT];
                     for (int t = 0; t < mjobs_[e].nt; ++t) ff[t] = sb.ff[t];
                     native_gu_rows(*nfmt_, mjobs_[e].blob, mjobs_[e].nact, mjobs_[e].nt, ff, r0, r1);
-                } else if (q2_native_kernels(nfmt_->d_type)) {
-                    // Q2_0 down (most IQ layers): the AVX-512 kernel, ggml-cpu has only a scalar one on x86
+                } else if (nfmt_->d_type == 42) {
+                    // Q2_0 down: q2_rows_any selects AVX-512 or AVX2 on the current CPU.
                     const ActQ* a2[MAXT];
                     for (int t = 0; t < mjobs_[e].nt; ++t) a2[t] = &sb.a2[t];
                     q2_rows_any(mjobs_[e].blob + nfmt_->down_off, nfmt_->d_row, (int) (nfmt_->n_ff / 64), a2,
@@ -702,8 +676,11 @@ void ExpertPool::run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs
         const auto b = std::chrono::steady_clock::now();
         for (int e = 0; e < nb; ++e)
             for (int t = 0; t < mjobs_[e].nt; ++t)
-                if (q2_native_kernels(f.d_type)) act_quant_any(split_multi_[(size_t) e].ff[t], FF, split_multi_[(size_t) e].a2[t]);
-                else native_quant_h(f, split_multi_[(size_t) e].ff[t], split_multi_[(size_t) e].hq[t]);
+                if (f.d_type == 42) {
+                    act_quant_any(split_multi_[(size_t) e].ff[t], FF, split_multi_[(size_t) e].a2[t]);
+                } else {
+                    native_quant_h(f, split_multi_[(size_t) e].ff[t], split_multi_[(size_t) e].hq[t]);
+                }
         const auto c = std::chrono::steady_clock::now();
         mrows_ = (int64_t) nb * H;
         run_phase(6, mtasks_);

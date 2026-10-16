@@ -1,0 +1,1 @@
+Main v4: v3も未登録driver依存libdrmで監視側が停止したため、元FAILを保持した。libdrmとNEO binaryに含まれるdlopen soname候補のうち実在するもの、そのDT_NEEDED閉包をread-onlyで解決して事前pinする。driver/core/toolの既存hash変更や未知map拒否の緩和はしない。次の未登録があれば1つずつでなく同snapshotの全pathを先に報告して停止し、その後の既存dev/inode/hash検査は同じ。パーサーはv3 host確認版とbyte-identical。実在候補のprepinは実ロード証拠ではなく、native actual mapsは引き続き別に要求する。新run-id v4のみ使用し原failureを上書きしない。

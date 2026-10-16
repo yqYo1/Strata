@@ -1,0 +1,78 @@
+# R598 — CPU GU predecode tradeoff and alternatives
+
+2026-10-15 JST. Read-only source/proposal/reference review for the CPU predecode probe. Wrote only this report. No build, test, timing, model/service/GPU operation, Git command, cleanup, or product edit was run. No speed claim is made here; Main's component probe remains the only authorized next measurement.
+
+## Decision
+
+The prototype's signed-byte transform preserves the current byte-integer arithmetic for all valid IQ codebook magnitudes, including activation -128, at source level. It keeps each packed format's distinct FP scale/FMA/reduction order in separate exact and custom arms. This makes the proposed fixture a credible arithmetic falsification test, not evidence that the transform is faster. It still reads 2.38–3.24× weight payload per GU pass once the actual stored scale bytes are counted (README dimensions), and its hot fixture can fit in LLC while a larger expert working set cannot. Main should complete that isolated 1/16/64 expert screen before deciding whether to pursue it.
+
+Alternatives with better byte economics are (1) a packed-weight, T-MAC-like fused table/bit-sliced dot kernel, (2) reuse of decoded packed blocks across multiple token activations in the existing multi-token CPU route, and (3) a selective cache for only measured, frequently revisited experts, sized to fit the useful cache tier. These are directions, not established wins. T-MAC does not implement Strata's IQ2_S/IQ3_XXS/IQ3_S formats or their exact dot contract. The current `row_dot<TY,NT>` already shares each decoded packed half across NT activations in one call; a “fused repeated GU reuse” proposal must identify an additional reuse boundary rather than relabeling that behavior.
+
+## Source pins and review boundary
+
+The research index SHA256 is `0140b70dfd13621aec6a6ec5bed33fee112450c765bcb38a3fde41e91a0842fc`. R595 SHA256 is `bb270000348835467977d82eaf7cc9dd9209d47fb79c9ce8796ffeab4fee0109`.
+
+Probe proposal pins (from `cpu-predecode-probe-v1/pins.json`):
+
+- `src/kernels/cpu/iq_avx2.cpp` `80efab0bed11ddf3980c0d146101218efa061cf5304e39fc88d93e5e94a99136`; `src/kernels/cpu/iq_single_avx2.cpp` `8579db5f02086cc660d376d77e00a9285e038f6757a53e8b2a8ef6d79eb2074f`.
+- GGML dependency revision `3cf03257f219afbe7334045ff7c6a06ac68c627d`; `ggml-common.h` SHA256 `0061131b615c5721fc88a78feeb22c1f8c450f1c2646a317d80796a653bf595c`.
+- README SHA256 `b892939768c19568a652de0d449df5dea88de33368ac55fa1e3350d7e932ab81`; `probe.cpp` SHA256 `5e0ff8e5981210bdff7f9363d193fa9fe7523635cc5d586befc4270059b10662`.
+
+This is a point-in-time source review of the proposal. The proposal itself declares `proposal_only_uncompiled_unrun_unapplied`; no binary behavior has been observed.
+
+## Arithmetic review: signed byte and -128
+
+In `iq_avx2.cpp`, each format decoder supplies nonnegative grid magnitudes `g` and a per-weight sign vector `sgn`. `row_dot` computes `ys = _mm256_sign_epi8(yv, sgn)`, then unsigned-magnitude × signed-activation pairs through `_mm256_maddubs_epi16`, multiplies subscales with `_mm256_madd_epi16`, and accumulates int32. The prototype stores `w = signed(g, sign)`, then computes `abs(w)` and `_mm256_sign_epi8(a, w)`. For valid codebooks the magnitude is 1..127, so `abs_epi8(w)` is safe (the `-128` abs corner cannot occur on weight lanes). For activation -128, PSIGN's byte negation wraps: negating -128 yields -128. Both existing and proposed forms apply the same sign to that activation byte before the same `maddubs`; they therefore preserve the existing wrap behavior. Applying activation sign to the weight instead would not be equivalent at -128 and is correctly avoided.
+
+The `maddubs` pairwise signed-16 saturation is also structurally preserved: both paths give it identical unsigned magnitude bytes and identical signed activation bytes. The later per-lane scale multiply/add uses the same decoded `sc`, int32 accumulator shape, and FMA block sequence in each corresponding arm. This is a source-level equivalence argument; the probe's intended raw-dot, GU-output and inverse-byte checks are still needed to establish executable equivalence over its stated cases.
+
+The two math contracts must not be collapsed:
+
+- Exact/GGML arm separates odd/even `h` accumulators and adds them after the half loop, uses `d * activation.d` before block FMA, and applies format K after the final prescribed horizontal reduction.
+- Custom arm uses one accumulator in half order, uses `(d * K) * activation.d` in the block scale, and uses the existing custom `hsum8` order.
+
+For IQ3_XXS K=0.25 and IQ2_S K=0.125, moving K across a floating-point multiply/FMA or reduction can change bits; the source keeps it in its route-specific location. IQ3_S K=1.0. Passing output-only checks would not substitute for the raw gate/up comparisons already specified in README.
+
+## Memory hierarchy and the prototype's actual ratios
+
+AMD's product specification lists the Ryzen 5 5600X at 32 MB L3 and up to DDR4-3200: https://www.amd.com/en/products/processors/desktops/ryzen/5000-series/amd-ryzen-5-5600x.html (specification table, `L3 Cache` and `System Memory Specification`). DDR4-3200 across two 64-bit channels has a nominal transfer ceiling of 51.2 GB/s, calculated as 3.2 GT/s × 8 bytes × 2 channels; that is interface arithmetic, not a measured Strata or host bandwidth result. R579's 36.87 GB/s host read control is a separate measured control and explicitly not an attained model bandwidth. Do not equate logical GU payload with DRAM traffic: cache hits, activation reuse, read-for-ownership, mmap/page-cache behavior and parallelism all affect the physical traffic.
+
+The README's block records are `[2-byte D][256 signed code bytes][raw subscale bytes]`, thus 266 B for IQ3_XXS/IQ2_S and 262 B for IQ3_S, against packed 98/82/110 B. Its exact ratios are 2.7143×, 3.2439× and 2.3818× respectively. The R595 estimates of 2.33–3.12× omitted the probe's retained subscale bytes and therefore understate the implemented representation's payload expansion. This resolves the discrepancy; the README's sizes are the relevant values for this exact candidate. One expanded GU expert is about 3.35–3.40 MB; 8 such entries are about 27 MB before allocator/page effects, while the proposal's 16/64 entries are about 54 MB/215–218 MB. AMD's 32 MB LLC is shared and not wholly available to this cache. So a one-entry hot result says little about the 64-entry streaming arm, and even an 8-entry cache competes with all other live data. These figures are byte arithmetic, not measured cache capacity or fit guarantees.
+
+R595's model/service byte and CPU-service discussion is not repeated here. It already states why decoder share and model reuse distribution are missing, and why worker CPU time cannot predict end-to-end decode throughput. This round adds no new measurements to those facts.
+
+## Alternatives to an int8 materialized GU cache
+
+### Packed-weight fused table / bit-sliced dot (T-MAC as an idea, not a drop-in)
+
+T-MAC's EuroSys paper abstract says it directly performs low-bit/high-precision multiplication without dequantization and transforms multiplication into bit-wise table lookup; official Microsoft README describes grouping low-bit weights, precomputing partial sums, and using `tbl`/`pshuf` lookups plus shifts/adds. Sources: https://arxiv.org/abs/2407.00088 (abstract, lines 16–20 in the HTML view) and https://github.com/microsoft/T-MAC (Introduction/Techniques, README lines 258–268 and 508–520). Its reported throughput is on its supported model/format/device set, so no numerical speedup transfers to this host or IQ family.
+
+A Strata-specific probe could keep IQ bytes packed and fuse code unpack, sign handling and activation dot, precomputing small activation subset sums in registers or a compact table. This attacks scalar grid lookups and decode instructions without tripling the persistent GU traffic. The hard part is matching IQ's per-32/16-value scale application, sign encodings, block D, Q8_K -128 semantics, and both GGML/custom reduction orders. A LUT can increase temporary table/register pressure and adds shuffle traffic; a table larger than L1 or repeated per activation could lose. First inspect whether actual generated machine code has scalar lookup stalls; then build one type-specific raw-dot microfixture only if that bottleneck is measured. T-MAC itself is not evidence that this exact design is viable.
+
+### Reuse already available in packed nt>1; identify any missing boundary
+
+`row_dot<TY,NT>` in current source decodes each packed block/half once outside the `for t` activation loop, then applies the same decoded `g`, `sgn`, `sc` to each token. Therefore the existing custom nt>=2 path already amortizes grid/sign decode across multiple tokens in a single call while keeping the packed weights. The proposal's expanded nt2..4 arm likewise shares a loaded expanded half, but cannot be credited as an unexplored benefit until compared against this packed arm. `nt=1` is a separate route and must compare to the currently enabled existing exact helper and normal GGML route, as the README states.
+
+A genuinely additional reuse opportunity would require repeated tokens/expert-row work split across separate calls, duplicated GU row reads between same-batch jobs, or an activation schedule that lets the same packed block serve more outputs before eviction. Source/service traces need to show that exact pattern and identify whether one owner can fuse it without changing token routing/outputs or increasing working-set traffic. Do not add a second decoded cache simply because there are multiple tokens: the existing loop is already the packed baseline. If no cross-call or split-job repeat exists, stop this branch.
+
+### Selective hot cache, only after observing real expert recurrence
+
+R595 proposed an 8 GiB upper admission ceiling but correctly said it is not free memory and found no reuse histogram. A more restrictive alternative is a small, per-model set of expanded GU experts selected from actual CPU-routed recurrent experts, with cache budget measured against live available RAM and live cache footprint. Unlike global LRU, selection could avoid spending bytes on experts with one access or whose recency is irrelevant; but a static hot set can be phase-skewed, and an LRU can retain cold history. Neither policy is superior without an observed access trace.
+
+Use the smallest cache whose hit/eviction trace demonstrates useful CPU service saved on the actual route. Compare packed bytes vs expanded bytes for the same access sequence, including cold expansion, warm re-hit, held-working-set beyond LLC and phase changes. First gather only per-(layer,expert,type) CPU GU touches and reuse distances at a bounded diagnostic window, without changing product dispatch. If no repeated accesses within the proposed retention lifetime, no cache candidate remains. If useful reuse exists but expanded data cannot remain resident within an explicit RAM/LLC budget, test a narrower representation (for example, cached sign/codebook decode records, or hot-format-only entries) rather than assuming all three formats deserve the same representation.
+
+## Evidence gate and next component
+
+The next action is the already authored CPU-only probe, under Main's serialized owner and retention rules. Gate sequence: verify source/archive/compiler pins; clean and sanitized correctness; then paired 1/16/64 expert timing with individual samples. Require a repeated win in the 64-entry streaming case in both thread CPU and wall, against the proper current arm (nt=1 existing exact as well as GGML; nt>1 existing packed custom), large enough to exceed paired spread, before considering any integration. Prepare time must be amortized explicitly; do not infer a model hit rate from synthetic cohort timing.
+
+After the screen, only if it shows an advantage and profiling evidence says codebook/sign decode is a material CPU-service share, the next component should be an off-by-default read-only actual model access-frequency/reuse-distance observer for CPU GU `(layer, expert, type)` touches, plus comparison against the existing per-call nt reuse. It should report bytes/service ownership without allocating expanded entries or changing upload/dispatch. If the fixture loses or ties under streaming, close predecode and do not build the cache. If the fixture wins but actual recurrent CPU work is absent, close it. Only a positive reuse trace would justify a bounded selective cache prototype and then full-model numerical/wall/RAM gates.
+
+A T-MAC-like packed kernel is a separate future component, and should be proposed only after measured profiling proves decode lookup work significant and the present screen rules out simple predecode. It needs one format, raw-dot oracle, assembly inspection, and the same route-specific exact/custom arithmetic contract. The current evidence does not justify starting that component now.
+
+## External sources and limits
+
+- Microsoft, T-MAC arXiv v2 abstract: https://arxiv.org/abs/2407.00088; abstract lines 16–20 on dequantization overhead, packed LUT computation, and paper's reported max results.
+- Microsoft official T-MAC repository README: https://github.com/microsoft/T-MAC; Introduction and Techniques, lines 258–268, 508–520. Scope includes GPTQ/GGUF W4, BitDistiller/EfficientQAT W2, BitNet W1(.58); no claim here that it implements Strata IQ2_S/IQ3 formats.
+- AMD Ryzen 5 5600X product specification: https://www.amd.com/en/products/processors/desktops/ryzen/5000-series/amd-ryzen-5-5600x.html; official L3 and memory-speed fields.
+
+Web pages are mutable. Source locations above are the fetched HTML line anchors where available, not immutable source revisions. External papers and product pages inform design constraints only; they do not replace the local pins, execute this probe, or qualify Strata performance.

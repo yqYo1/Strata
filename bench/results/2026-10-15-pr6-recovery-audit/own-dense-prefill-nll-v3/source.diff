@@ -1,0 +1,791 @@
+diff --git a/cmake/sycl_backend.cmake b/cmake/sycl_backend.cmake
+--- a/cmake/sycl_backend.cmake
++++ b/cmake/sycl_backend.cmake
+@@ -116,12 +116,22 @@
+ add_executable(sycl_gemm_orientation_bench EXCLUDE_FROM_ALL tools/sycl/gemm_orientation_bench.cpp)
+ target_link_libraries(sycl_gemm_orientation_bench PRIVATE strata_prefill)
+ target_compile_options(sycl_gemm_orientation_bench PRIVATE -fno-fast-math -ffp-contract=off)
+-add_executable(strata src/program/generate.cpp)
++add_executable(strata src/program/generate.cpp src/program/dense_prefill_nll.cpp)
++# CPU reduction only; keep normal generator and GPU arithmetic flags unchanged.
++set_source_files_properties(src/program/dense_prefill_nll.cpp PROPERTIES COMPILE_OPTIONS "-fno-fast-math;-ffp-contract=off")
+ target_link_libraries(strata PRIVATE strata_prefill strata_spec)
+ 
+ option(STRATA_SYCL_TESTS "Build GPU parity and runtime tests for SYCL" ON)
+ if(STRATA_SYCL_TESTS)
+   enable_testing()
++  # Host-only stable reduction/writer fixtures; Main runs these serially.
++  add_executable(dense_prefill_nll_host_test tests/cpu/dense_prefill_nll.cpp src/program/dense_prefill_nll.cpp)
++  target_include_directories(dense_prefill_nll_host_test PRIVATE include)
++  target_compile_features(dense_prefill_nll_host_test PRIVATE cxx_std_17)
++  target_compile_options(dense_prefill_nll_host_test PRIVATE -fno-fast-math -ffp-contract=off)
++  target_link_libraries(dense_prefill_nll_host_test PRIVATE strata_warnings)
++  add_test(NAME dense_prefill_nll_host COMMAND dense_prefill_nll_host_test)
++  set_tests_properties(dense_prefill_nll_host PROPERTIES TIMEOUT 30)
+   find_package(Threads REQUIRED)
+   add_executable(draft_uploads_host_test tests/cpu/draft_uploads.cpp)
+   target_include_directories(draft_uploads_host_test PRIVATE include)
+diff --git a/include/strata/program/dense_prefill_nll.hpp b/include/strata/program/dense_prefill_nll.hpp
+new file mode 100644
+--- /dev/null
++++ b/include/strata/program/dense_prefill_nll.hpp
+@@ -0,0 +1,167 @@
++// SPDX-FileCopyrightText: 2026 yayoi
++// SPDX-License-Identifier: MIT
++#pragma once
++
++#include <algorithm>
++#include <cmath>
++#include <cstdint>
++#include <cstdio>
++#include <cstring>
++#include <filesystem>
++#include <limits>
++#include <string>
++#include <string_view>
++#include <vector>
++
++namespace strata::program::dense_prefill_nll {
++
++static_assert(sizeof(float) == 4 && std::numeric_limits<float>::is_iec559, "head result must be IEEE754 FP32");
++
++inline bool recipe_digest(std::string_view s) {
++    if (s.size() != 64) return false;
++    for (char c : s) if (!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f'))) return false;
++    return true;
++}
++
++// Reduces the actual FP32 head result in CPU FP64. Subtract the target before
++// adding log(sum): a common large offset cannot cancel the small loss. No
++// fast-math: NaN/Inf input must fail, rather than disappear in the reduction.
++bool target_loss(const float* values, size_t vocab, size_t target, double& out);
++
++// IO is substitutable only for host fault fixtures; production uses Stdio.
++struct Stdio {
++    static std::FILE* open(const char* path) { return std::fopen(path, "wbx"); }
++    static size_t write(const void* p, size_t n, std::FILE* f) { return std::fwrite(p, 1, n, f); }
++    static int flush(std::FILE* f) { return std::fflush(f); }
++    static int close(std::FILE* f) { return std::fclose(f); }
++    static int seek(std::FILE* f, long pos) { return std::fseek(f, pos, SEEK_SET); }
++};
++
++// Raw v2: 64-byte LE header, then (uint32 target, IEEE754 binary64 NLL)
++// records in implicit position order. First token + every target reconstruct
++// all input IDs exactly. Completion is accepted ONLY with the published .meta.
++// At 262144 input IDs: 3145780 raw bytes + <4096 metadata <4 MiB total.
++// Caller owns the immutable token vector and must drain every GPU use of row()
++// before append(), exception unwinding, or destruction of this host owner.
++template<class IO = Stdio>
++class BasicWriter {
++public:
++    static constexpr uint64_t raw_limit = 4ull << 20;
++    static constexpr uint32_t max_input = 262144;
++    static constexpr uint32_t max_vocab = 262144; // fixed <=1 MiB host row
++    BasicWriter() = default;
++    BasicWriter(const BasicWriter&) = delete;
++    BasicWriter& operator=(const BasicWriter&) = delete;
++    ~BasicWriter() { if (raw_) IO::close(raw_); if (meta_) IO::close(meta_); }
++
++    bool begin(const std::string& path, const int64_t* input, size_t count, int64_t vocab,
++               bool native, int head_type, std::string_view recipe_sha256, std::string& err) {
++        if (begun_ || failed_ || path.empty() || !input || count < 2 || count > max_input ||
++            vocab <= 0 || vocab > max_vocab || !recipe_digest(recipe_sha256))
++            return fail(err, "invalid input dimensions/path/recipe digest");
++        for (size_t i = 0; i < count; ++i)
++            if (input[i] < 0 || input[i] >= vocab) return fail(err, "input ID outside vocabulary");
++        final_meta_ = path + ".meta";
++        partial_meta_ = final_meta_ + ".partial";
++        std::error_code ec;
++        if (std::filesystem::exists(final_meta_, ec) || ec)
++            return fail(err, "completed metadata exists or cannot be checked");
++        row_.resize(size_t(vocab));
++        raw_ = IO::open(path.c_str());
++        if (!raw_) return fail(err, "cannot exclusively create raw destination");
++        meta_ = IO::open(partial_meta_.c_str());
++        if (!meta_) return fail(err, "cannot exclusively create partial metadata");
++        input_ = input; count_ = uint32_t(count); vocab_ = uint32_t(vocab);
++        unsigned char header[64]{};
++        std::memcpy(header, "STNLLV2\n", 8);
++        put32(header + 8, 2); put32(header + 12, 64);
++        put32(header + 16, count_); put32(header + 20, vocab_);
++        put32(header + 24, 0); // written only after whole Prefill::run succeeds
++        put32(header + 28, uint32_t(input[0]));
++        put32(header + 32, uint32_t(head_type)); put32(header + 36, uint32_t(native));
++        const std::string meta = "strata-dense-prefill-nll-v2\nrecipe_sha256=" + std::string(recipe_sha256) +
++            "\ncoverage=initial-prefill-all-n_input-minus-one\nformat=little-endian-header64-target-u32-loss-f64\n"
++            "projection=existing-single-row-lm-head\nperformance_cohort=excluded\n";
++        if (!write(raw_, header, sizeof(header)) || !write(meta_, meta.data(), meta.size()))
++            return fail(err, "header write failed");
++        begun_ = true;
++        return true;
++    }
++
++    bool chunk(int64_t position, int64_t count, std::string& err) {
++        if (!begun_ || failed_ || finished_ || position != seen_ || written_ != seen_ || count <= 0 ||
++            uint64_t(count) > uint64_t(count_ - 1 - seen_))
++            return fail(err, "gap/repeat/overlap or unconsumed callback rows");
++        seen_ += uint32_t(count);
++        return true;
++    }
++    float* row() { return row_.data(); }
++    size_t row_bytes() const { return row_.size() * sizeof(float); }
++    uint32_t written() const { return written_; }
++    bool append(int64_t position, int64_t target, std::string& err) {
++        if (!begun_ || failed_ || finished_ || position != written_ || written_ >= seen_ ||
++            target != input_[size_t(written_) + 1])
++            return fail(err, "missing/repeated row or wrong next-token identity");
++        double nll = 0.0;
++        if (!target_loss(row_.data(), row_.size(), size_t(target), nll))
++            return fail(err, "non-finite logit/loss or invalid target");
++        unsigned char record[12];
++        put32(record, uint32_t(target));
++        uint64_t bits = 0;
++        static_assert(sizeof(double) == 8 && std::numeric_limits<double>::is_iec559,
++                      "NLL requires IEEE754 binary64");
++        std::memcpy(&bits, &nll, sizeof(bits));
++        for (unsigned b = 0; b < 8; ++b) record[4 + b] = static_cast<unsigned char>(bits >> (8 * b));
++        if (!write(raw_, record, sizeof(record))) return fail(err, "record write failed");
++        ++written_;
++        return true;
++    }
++
++    // Called after the outer native-bank/head/MTP boundaries return successfully.
++    // Failure, cancellation, incomplete final-chunk coverage, or a later callback failure
++    // never publishes completion. This does not certify a later decode/RESTORE.
++    bool finish(double callback_ms, std::string& err) {
++        if (!begun_ || failed_ || finished_ || written_ != count_ - 1 || seen_ != written_ ||
++            !std::isfinite(callback_ms) || callback_ms < 0)
++            return fail(err, "incomplete coverage or invalid diagnostic cost");
++        unsigned char count[4]; put32(count, written_);
++        if (IO::seek(raw_, 24) || !write(raw_, count, sizeof(count)))
++            return fail(err, "completion count write failed");
++        if (!close_checked(raw_)) return fail(err, "raw flush/close failed");
++        char footer[384];
++        const int n = std::snprintf(footer, sizeof(footer),
++            "n_input=%u\nvocab=%u\nrows=%u\nraw_bytes=%llu\ncallback_ms=%.17g\ncomplete=1\n",
++            count_, vocab_, written_, static_cast<unsigned long long>(64ull + 12ull * written_), callback_ms);
++        if (n <= 0 || size_t(n) >= sizeof(footer) || !write(meta_, footer, size_t(n)))
++            return fail(err, "footer write failed");
++        if (!close_checked(meta_)) return fail(err, "metadata flush/close failed");
++        std::error_code ec;
++        std::filesystem::create_hard_link(partial_meta_, final_meta_, ec);
++        if (ec) return fail(err, "metadata no-clobber publication failed");
++        finished_ = true;
++        return true;
++    }
++
++private:
++    static void put32(unsigned char* p, uint32_t v) {
++        for (unsigned b = 0; b < 4; ++b) p[b] = static_cast<unsigned char>(v >> (8 * b));
++    }
++    static bool write(std::FILE* f, const void* p, size_t n) { return IO::write(p, n, f) == n; }
++    static bool close_checked(std::FILE*& f) {
++        const int flush = IO::flush(f);
++        const int close = IO::close(f); f = nullptr;
++        return !flush && !close;
++    }
++    bool fail(std::string& err, const char* message) {
++        failed_ = true; err = std::string("dense prefill NLL: ") + message; return false;
++    }
++    std::FILE* raw_ = nullptr;
++    std::FILE* meta_ = nullptr;
++    std::string final_meta_, partial_meta_;
++    const int64_t* input_ = nullptr;
++    std::vector<float> row_;
++    uint32_t count_ = 0, vocab_ = 0, seen_ = 0, written_ = 0;
++    bool begun_ = false, failed_ = false, finished_ = false;
++};
++using Writer = BasicWriter<>;
++} // namespace strata::program::dense_prefill_nll
+diff --git a/src/program/dense_prefill_nll.cpp b/src/program/dense_prefill_nll.cpp
+new file mode 100644
+--- /dev/null
++++ b/src/program/dense_prefill_nll.cpp
+@@ -0,0 +1,23 @@
++// SPDX-FileCopyrightText: 2026 yayoi
++// SPDX-License-Identifier: MIT
++#include "strata/program/dense_prefill_nll.hpp"
++
++namespace strata::program::dense_prefill_nll {
++bool target_loss(const float* values, size_t vocab, size_t target, double& out) {
++    if (!values || vocab == 0 || target >= vocab) return false;
++    double maximum = -std::numeric_limits<double>::infinity();
++    for (size_t j = 0; j < vocab; ++j) {
++        if (!std::isfinite(values[j])) return false;
++        maximum = std::max(maximum, double(values[j]));
++    }
++    double sum = 0.0, correction = 0.0;
++    for (size_t j = 0; j < vocab; ++j) {
++        const double term = std::exp(double(values[j]) - maximum) - correction;
++        const double next = sum + term;
++        correction = (next - sum) - term;
++        sum = next;
++    }
++    out = (maximum - double(values[target])) + std::log(sum);
++    return std::isfinite(out) && out >= 0.0;
++}
++} // namespace strata::program::dense_prefill_nll
+diff --git a/src/program/generate.cpp b/src/program/generate.cpp
+--- a/src/program/generate.cpp
++++ b/src/program/generate.cpp
+@@ -62,6 +62,7 @@
+ #include "strata/program/logits_selection.hpp"
+ #ifdef STRATA_ENABLE_SYCL
+ #include "strata/program/prefill_logits.hpp"
++#include "strata/program/dense_prefill_nll.hpp"
+ #include "strata/prefill/draft_uploads.hpp"
+ #endif
+ #include "strata/program/conv_cache.hpp"
+@@ -1725,6 +1726,39 @@
+         }
+         }
+     }
++    // Output path opt-in; the recipe is prepared and hashed by the external
++    // supervisor before this native process starts. Reject unsupported routes
++    // before GPU preflight, owner/graph detachment, or pending submissions.
++    const char* prefill_nll_path = std::getenv("STRATA_PREFILL_NLL");
++    const char* prefill_nll_recipe = std::getenv("STRATA_PREFILL_NLL_RECIPE_SHA256");
++    const bool collect_prefill_nll = prefill_nll_path != nullptr;
++    if (collect_prefill_nll || prefill_nll_recipe) {
++#ifndef STRATA_ENABLE_SYCL
++        std::fprintf(stderr, "strata generate: dense prefill NLL requires the SYCL engine\n");
++        return 2;
++#else
++        const bool remote_nll = std::any_of(o.expert_cache_remote.begin(), o.expert_cache_remote.end(),
++                                           [](auto slots) { return slots > 0; });
++        const char* release_heads = std::getenv("STRATA_PREFILL_RELEASE_HEADS");
++        const char* phase_audit = std::getenv("STRATA_PREFILL_PHASE_AUDIT");
++        if (!prefill_nll_path || !*prefill_nll_path || !prefill_nll_recipe ||
++            !strata::program::dense_prefill_nll::recipe_digest(prefill_nll_recipe) ||
++            !have_tokens || o.tokens.size() < 2 ||
++            o.tokens.size() > strata::program::dense_prefill_nll::Writer::max_input ||
++            o.prefill_chunk <= 0 || o.prefill_until != 0 || o.serve || o.vision ||
++            !o.layer_split.empty() || o.peer_device >= 0 || remote_nll || o.gpu_stages ||
++            o.graph_only || o.gpu_only_full || o.native_preset.empty() || !o.stream_token ||
++            o.coupled_draft || std::getenv("STRATA_LOGPOS") ||
++            (release_heads && std::strcmp(release_heads, "0")) ||
++            (phase_audit && std::strcmp(phase_audit, "0"))) {
++            std::fprintf(stderr, "strata generate: dense prefill NLL needs a nonempty exclusive output path, "
++                                 "STRATA_PREFILL_NLL_RECIPE_SHA256 (64 lowercase hex), --native, --stream-token, "
++                                 "--prefill and 2..262144 explicit tokens; standalone text single GPU, full "
++                                 "initial prefill, no coupled/LOGPOS/head release/phase audit\n");
++            return 2;
++        }
++#endif
++    }
+ #ifdef STRATA_ENABLE_SYCL
+     // Normally off. Validate the small position list BEFORE any GPU preflight.
+     const char* prefill_logits_path = std::getenv("STRATA_PREFILL_LOGITS");
+@@ -2215,8 +2249,8 @@
+     }
+     const bool native_pack = strata::kernels::cpu::expert_layout().native;
+ #ifdef STRATA_ENABLE_SYCL
+-    if (collect_prefill_logits && !native_pack) {
+-        std::fprintf(stderr, "strata generate: prefill logits requires a native expert pack\n");
++    if ((collect_prefill_logits || collect_prefill_nll) && !native_pack) {
++        std::fprintf(stderr, "strata generate: prefill logits/NLL requires a native expert pack\n");
+         return 2;
+     }
+ #endif
+@@ -6657,6 +6691,20 @@
+     std::vector<std::pair<int32_t, int32_t>> lent;     // (residency index, slot) lent to the prompt path
+     const int64_t n_batched = (o.prefill_until > 0 && o.prefill_until < n_prompt - 1) ? o.prefill_until : n_prompt - 1;
+ #ifdef STRATA_ENABLE_SYCL
++    strata::program::dense_prefill_nll::Writer prefill_nll;
++    double prefill_nll_callback_ms = 0.0;
++    if (collect_prefill_nll) {
++        try {
++            if (!prefill_nll.begin(prefill_nll_path, o.tokens.data(), o.tokens.size(), n_vocab,
++                                   native_head.loaded(), native_head.type(), prefill_nll_recipe, err)) {
++                std::fprintf(stderr, "strata generate: %s\n", err.c_str());
++                return 1;
++            }
++        } catch (const std::exception& exc) {
++            std::fprintf(stderr, "strata generate: dense prefill NLL open: %s\n", exc.what());
++            return 1;
++        }
++    }
+     strata::program::prefill_logits::Writer prefill_logits;
+     if (collect_prefill_logits) {
+         try {
+@@ -6779,6 +6827,57 @@
+                 }
+             };
+         }
++        if (collect_prefill_nll) {
++            // Final-model chunks only: the existing layer-major callback forwards
++            // FP32 rows once, after its checked compute-stream drain. Compose
++            // with selected-logit/MTP callbacks and leave their semantics intact.
++            auto prior_nll = std::move(prefill.on_chunk);
++            prefill.on_chunk = [&, prior_nll = std::move(prior_nll)]
++                (const float* rows, int64_t count, int64_t start, std::string& error) -> bool {
++                const auto begin = Clock::now();
++                try {
++                    if (!rows || !prefill_nll.chunk(start, count, error)) {
++                        if (error.empty()) error = "dense prefill NLL: null final residual";
++                        return false;
++                    }
++                    for (int64_t t = 0; t < count; ++t) {
++                        // One borrowed residual and the existing single-token
++                        // GR/head device scratch. No T*vocabulary allocation.
++                        strata::core::BlockBuffers head_buffers = ss.block;
++                        head_buffers.R = const_cast<float*>(rows + size_t(t) * size_t(g.hc * g.n_embd));
++                        auto stop_live = []() noexcept {
++                            strata::sycl_backend::cleanup_fail_stop("dense prefill NLL: head/readback drain uncertain");
++                        };
++                        strata::prefill::detail::DraftUploadGuard pending(
++                            [&]() noexcept { return cudaStreamSynchronize(main_stream) == cudaSuccess; }, stop_live);
++                        pending.arm(); // also covers partial head submission/throw
++                        bool projected = false;
++                        if (native_head.loaded()) {
++                            projected = strata::core::lm_head_mix(wt, g, head_buffers, main_cs, error);
++                            if (projected) projected = native_head.run(head_buffers.mixed, d_logits, main_cs, error);
++                        } else {
++                            projected = strata::core::lm_head(wt, g, head_buffers, d_logits, main_cs, error);
++                        }
++                        if (!projected) return false;
++                        if (cudaMemcpyAsync(prefill_nll.row(), d_logits, prefill_nll.row_bytes(),
++                                            cudaMemcpyDeviceToHost, main_stream) != cudaSuccess) {
++                            error = "dense prefill NLL: vocabulary readback submission failed";
++                            return false;
++                        }
++                        if (cudaStreamSynchronize(main_stream) != cudaSuccess) stop_live();
++                        pending.retire(); // file/math operations have no GPU lease
++                        const int64_t position = start + t;
++                        if (!prefill_nll.append(position, o.tokens[size_t(position + 1)], error)) return false;
++                    }
++                    prefill_nll_callback_ms += std::chrono::duration<double, std::milli>(Clock::now() - begin).count();
++                    return !prior_nll || prior_nll(rows, count, start, error);
++                } catch (const std::exception& exc) {
++                    // The per-row guard has already drained any partial launch.
++                    error = std::string("dense prefill NLL callback: ") + exc.what();
++                    return false;
++                }
++            };
++        }
+ #endif
+         const Clock::time_point tp0 = Clock::now();
+         if (!run_prompt_with_native_dense_phase(dense_phase, prefill, mtp,
+@@ -6790,6 +6889,15 @@
+             return 1;
+         }
+ #ifdef STRATA_ENABLE_SYCL
++        if (collect_prefill_nll) {
++            if (!prefill_nll.finish(prefill_nll_callback_ms, err)) {
++                std::fprintf(stderr, "strata generate: %s\n", err.c_str());
++                return 1;
++            }
++            std::fprintf(stderr, "strata dense prefill NLL: rows=%u callback_ms=%.3f "
++                                 "single_row_head=1 performance_cohort=excluded\n",
++                         prefill_nll.written(), prefill_nll_callback_ms);
++        }
+         if (collect_prefill_logits && !prefill_logits.finish(err)) {
+             std::fprintf(stderr, "strata generate: %s\n", err.c_str());
+             return 1;
+diff --git a/tests/cpu/dense_prefill_nll.cpp b/tests/cpu/dense_prefill_nll.cpp
+new file mode 100644
+--- /dev/null
++++ b/tests/cpu/dense_prefill_nll.cpp
+@@ -0,0 +1,169 @@
++// SPDX-FileCopyrightText: 2026 yayoi
++// SPDX-License-Identifier: MIT
++#include "strata/program/dense_prefill_nll.hpp"
++#include <chrono>
++#include <fstream>
++#include <iostream>
++#include <iterator>
++#include <stdexcept>
++
++namespace nll = strata::program::dense_prefill_nll;
++namespace fs = std::filesystem;
++static void need(bool value, const char* why) { if (!value) throw std::runtime_error(why); }
++static const std::string recipe(64, 'a');
++struct PrivateDirectory {
++    fs::path path;
++    PrivateDirectory() {
++        const auto nonce = std::chrono::steady_clock::now().time_since_epoch().count();
++        for (int i = 0; i < 100; ++i) {
++            path = fs::temp_directory_path() / ("strata-nll-host-" + std::to_string(nonce) + "-" + std::to_string(i));
++            if (fs::create_directory(path)) return;
++        }
++        throw std::runtime_error("cannot create private fixture directory");
++    }
++    ~PrivateDirectory() { std::error_code ec; fs::remove_all(path, ec); }
++};
++static std::string bytes(const fs::path& p) {
++    std::ifstream in(p, std::ios::binary);
++    need(bool(in), "read fixture");
++    return {std::istreambuf_iterator<char>(in), {}};
++}
++static uint32_t u32(const std::string& s, size_t p) {
++    uint32_t value = 0;
++    for (unsigned i = 0; i < 4; ++i) value |= uint32_t(static_cast<unsigned char>(s.at(p+i))) << (8*i);
++    return value;
++}
++static double f64(const std::string& s, size_t p) {
++    uint64_t value = 0;
++    for (unsigned i = 0; i < 8; ++i) value |= uint64_t(static_cast<unsigned char>(s.at(p+i))) << (8*i);
++    double result; std::memcpy(&result, &value, sizeof(result)); return result;
++}
++// Independent CPU FP64 reference: an online log-add-exp recurrence relative
++// to the target, rather than the production max/sum/Kahan reduction.
++static double oracle(const std::vector<float>& x, size_t target) {
++    double total = -std::numeric_limits<double>::infinity();
++    for (float v : x) {
++        const double next = double(v) - double(x[target]);
++        if (!std::isfinite(total)) total = next;
++        else total = std::max(total, next) + std::log1p(std::exp(-std::abs(total-next)));
++    }
++    return total;
++}
++struct FaultIO : nll::Stdio {
++    static inline int writes = 0, fail_write = 0;
++    static inline bool fail_seek = false, fail_flush = false, fail_close = false;
++    static void reset() { writes = fail_write = 0; fail_seek = fail_flush = fail_close = false; }
++    static size_t write(const void* p, size_t n, std::FILE* f) {
++        if (++writes == fail_write) return n ? n-1 : 0;
++        return nll::Stdio::write(p, n, f);
++    }
++    static int seek(std::FILE* f, long p) { return fail_seek ? -1 : nll::Stdio::seek(f, p); }
++    static int flush(std::FILE* f) { return fail_flush ? -1 : nll::Stdio::flush(f); }
++    static int close(std::FILE* f) { const int r = nll::Stdio::close(f); return fail_close ? -1 : r; }
++};
++static void reductions() {
++    std::vector<std::vector<float>> cases = {{0,0}, {10000,10000}, {-10000,-10000},
++        {-2,0,1,9}, {-1000,1000}, {std::numeric_limits<float>::max(),std::numeric_limits<float>::max()},
++        {-std::numeric_limits<float>::max(),std::numeric_limits<float>::max()}};
++    std::vector<float> wide(248320);
++    for (size_t j = 0; j < wide.size(); ++j) wide[j] = float(int(j % 149)-74) / 16;
++    cases.push_back(std::move(wide));
++    for (const auto& x : cases) for (size_t t : {size_t(0), x.size()-1}) {
++        double actual = -1;
++        need(nll::target_loss(x.data(), x.size(), t, actual), "finite reduction");
++        const double expected = oracle(x, t);
++        need(std::abs(actual-expected) <= 2e-11 * std::max(1.0,std::abs(expected)), "FP64 independent oracle");
++    }
++    double value;
++    const float equal[] = {10000,10000};
++    need(nll::target_loss(equal, 2, 0, value) && std::abs(value-std::log(2.0)) < 1e-15, "offset cancellation");
++    for (float bad : {std::numeric_limits<float>::infinity(), -std::numeric_limits<float>::infinity(),
++                      std::numeric_limits<float>::quiet_NaN()}) {
++        const float row[] = {0,bad}; need(!nll::target_loss(row,2,0,value), "reject nonfinite row");
++    }
++    need(!nll::target_loss(nullptr,2,0,value) && !nll::target_loss(equal,2,2,value), "reject invalid reduction");
++}
++static void complete_and_budget(const fs::path& root, bool full) {
++    const size_t count = full ? nll::Writer::max_input : 8;
++    std::vector<int64_t> input(count);
++    for (size_t i = 0; i < count; ++i) input[i] = int64_t(i%2);
++    std::string error; const auto path = root / (full ? "physical.bin" : "chunks.bin");
++    {
++        nll::Writer writer;
++        need(writer.begin(path.string(),input.data(),input.size(),2,true,13,recipe,error), "begin valid");
++        for (size_t start = 0; start < count-1;) {
++            const size_t rows = std::min(size_t(full ? 8192 : 3),count-1-start);
++            need(writer.chunk(int64_t(start),int64_t(rows),error), "contiguous callback");
++            for (size_t p = start; p < start+rows; ++p) {
++                writer.row()[0] = writer.row()[1] = 10000.0f;
++                need(writer.append(int64_t(p), input[p+1], error), "write exact gold row");
++            }
++            start += rows;
++        }
++        need(writer.finish(0.25,error), "complete full coverage");
++        need(!writer.finish(0.25,error), "reject double finish");
++    }
++    const auto raw = bytes(path); const auto meta = bytes(path.string()+".meta");
++    need(raw.size() == 64+12*(count-1) && raw.size()+meta.size() < nll::Writer::raw_limit, "bounded exact file sizes");
++    need(raw.substr(0,8) == "STNLLV2\n" && u32(raw,8)==2 && u32(raw,12)==64 &&
++         u32(raw,16)==count && u32(raw,20)==2 && u32(raw,24)==count-1 && u32(raw,28)==uint32_t(input[0]), "LE header and coverage");
++    for (size_t p = 0; p < count-1; ++p) {
++        need(u32(raw,64+12*p)==uint32_t(input[p+1]), "all token identities");
++        need(std::abs(f64(raw,68+12*p)-std::log(2.0)) < 1e-15, "binary64 loss roundtrip");
++    }
++    need(meta.find("recipe_sha256="+recipe+"\n") != std::string::npos &&
++         meta.find("complete=1\n") != std::string::npos, "receipt identity and publication");
++    std::string error2; nll::Writer collision;
++    need(!collision.begin(path.string(),input.data(),count,2,true,13,recipe,error2), "no clobber completed capture");
++    need(bytes(path)==raw && bytes(path.string()+".meta")==meta, "existing files unchanged");
++}
++static void invalid_and_failures(const fs::path& root) {
++    const int64_t input[] = {0,1,0}; std::string error;
++    int serial = 0;
++    auto next = [&]() { return (root/("bad-"+std::to_string(++serial))).string(); };
++    for (int bad = 0; bad < 8; ++bad) {
++        const auto path = next();
++        { nll::Writer w;
++          need(w.begin(path,input,3,2,false,-1,recipe,error), "begin invalid scenario");
++          w.row()[0]=w.row()[1]=0;
++          if (bad==0) need(!w.chunk(1,1,error), "reject gap");
++          if (bad==1) need(!w.chunk(0,3,error), "reject beyond final row");
++          if (bad==2) { need(w.chunk(0,2,error), "chunk"); need(!w.append(1,0,error), "reject skipped row"); }
++          if (bad==3) { need(w.chunk(0,2,error), "chunk"); need(!w.append(0,0,error), "reject wrong target"); }
++          if (bad==4) { need(w.chunk(0,2,error), "chunk"); need(!w.finish(0,error), "reject incomplete coverage"); }
++          if (bad==5) { need(w.chunk(0,1,error), "chunk"); need(w.append(0,1,error), "append"); need(!w.chunk(0,1,error), "reject overlap"); }
++          if (bad==6) { need(w.chunk(0,1,error), "chunk"); need(!w.chunk(1,1,error), "reject unconsumed chunk"); }
++          if (bad==7) { need(w.chunk(0,1,error), "chunk"); w.row()[0]=std::numeric_limits<float>::quiet_NaN(); need(!w.append(0,1,error), "reject NaN"); }
++        }
++        need(!fs::exists(path+".meta"), "failed diagnostic never published");
++    }
++    for (int failure = 1; failure <= 8; ++failure) {
++        const auto path=next(); FaultIO::reset();
++        { nll::BasicWriter<FaultIO> w;
++          if (failure<=5) FaultIO::fail_write=failure;
++          if (failure==6) FaultIO::fail_seek=true;
++          if (failure==7) FaultIO::fail_flush=true;
++          if (failure==8) FaultIO::fail_close=true;
++          bool ok = w.begin(path,input,2,2,true,13,recipe,error);
++          if (ok) { w.row()[0]=w.row()[1]=0; ok=w.chunk(0,1,error) && w.append(0,1,error); }
++          if (ok) ok=w.finish(0,error);
++          need(!ok, "injected write/seek/flush/close failure rejects completion");
++        }
++        need(!fs::exists(path+".meta"), "I/O error never publishes");
++    }
++    FaultIO::reset();
++    { nll::Writer w; need(!w.begin(next(),input,262145,2,true,13,recipe,error), "max input checked before input read"); }
++    { nll::Writer w; need(!w.begin(next(),input,3,2,true,13,"bad",error), "recipe digest required"); }
++    { const int64_t bad[]={0,2}; nll::Writer w; need(!w.begin(next(),bad,2,2,true,13,recipe,error), "invalid gold ID"); }
++    const auto path=next();
++    { nll::Writer w; need(w.begin(path,input,2,2,true,13,recipe,error), "begin publish collision");
++      need(w.chunk(0,1,error), "chunk"); w.row()[0]=w.row()[1]=0; need(w.append(0,1,error), "append");
++      {std::ofstream existing(path+".meta"); existing<<"existing";}
++      need(!w.finish(0,error), "no-clobber publish race"); }
++    need(bytes(path+".meta")=="existing", "publication preserves preexisting receipt");
++}
++int main() {
++    try { PrivateDirectory d; reductions(); complete_and_budget(d.path,false); complete_and_budget(d.path,true);
++          invalid_and_failures(d.path); std::cout<<"dense_prefill_nll_host PASS\n"; return 0; }
++    catch (const std::exception& e) { std::cerr<<"dense_prefill_nll_host FAIL: "<<e.what()<<'\n'; return 1; }
++}
+diff --git a/tools/compare_dense_prefill_nll.py b/tools/compare_dense_prefill_nll.py
+new file mode 100644
+--- /dev/null
++++ b/tools/compare_dense_prefill_nll.py
+@@ -0,0 +1,228 @@
++#!/usr/bin/env python3
++# SPDX-FileCopyrightText: 2026 yayoi
++# SPDX-License-Identifier: MIT
++"""Compare dense initial-prefill loss receipts. Never awards quality acceptance.
++
++Each --control/--candidate directory must contain recipe.json (written before
++launch), closed.json (external supervisor), nll.bin and nll.bin.meta. The native
++child gets SHA256(recipe.json) via STRATA_PREFILL_NLL_RECIPE_SHA256. Do not put
++that derived variable into recipe.json itself. See the proposal README schema.
++"""
++import argparse
++import hashlib
++import itertools
++import json
++import math
++from pathlib import Path
++import re
++import statistics
++import struct
++
++
++def require(ok, message):
++    if not ok:
++        raise ValueError(message)
++
++
++def digest(data):
++    return hashlib.sha256(data).hexdigest()
++
++
++def sha(value):
++    require(isinstance(value, str) and re.fullmatch(r"[0-9a-f]{64}", value), "expected SHA256")
++    return value
++
++
++def nonempty(value, label):
++    require(isinstance(value, str) and value.strip(), "missing " + label)
++    return value
++
++
++def object_pairs(pairs):
++    result = {}
++    for key, value in pairs:
++        require(key not in result, "duplicate JSON key: " + key)
++        result[key] = value
++    return result
++
++
++def read_json(path):
++    require(path.stat().st_size <= 1 << 20, "external receipt exceeds 1 MiB")
++    raw = path.read_bytes()
++    return json.loads(raw, object_pairs_hook=object_pairs), digest(raw)
++
++
++def token_input(path):
++    require(path.stat().st_size <= 8 << 20, "token-file byte budget")
++    raw = path.read_bytes()
++    text = raw.decode("ascii").strip()
++    fields = text.replace(",", " ").split()
++    require(fields and all(re.fullmatch(r"[0-9]+", x) for x in fields), "expected explicit token IDs")
++    ids = [int(x) for x in fields]
++    require(2 <= len(ids) <= 262144 and all(0 <= x < 2**31 for x in ids), "invalid token input")
++    return ids, digest(raw), digest(b"".join(struct.pack("<I", x) for x in ids))
++
++
++def load_run(root, tokens, token_file_sha, token_ids_sha):
++    root = root.resolve()
++    recipe, recipe_sha = read_json(root / "recipe.json")
++    closed, _ = read_json(root / "closed.json")
++    require(recipe["schema"] == "strata-dense-prefill-nll-recipe-v2", "recipe schema")
++    require(closed["schema"] == "strata-dense-prefill-nll-closed-v2", "closure schema")
++    require(closed["recipe_sha256"] == recipe_sha, "closure recipe mismatch")
++    for key in ("snapshot_sha256", "binary_sha256"):
++        sha(recipe["source"][key])
++    require(bool(re.fullmatch(r"[0-9a-f]{40}", recipe["source"]["commit"])), "source commit")
++    sha(recipe["model"]["manifest_sha256"])
++    inp = recipe["input"]
++    require(inp["count"] == len(tokens) and inp["file_sha256"] == token_file_sha and
++            inp["ids_le_u32_sha256"] == token_ids_sha, "input file/count/identity mismatch")
++    sha(inp["template_sha256"])
++    for key in ("hardware", "compiler", "runtime", "driver"):
++        nonempty(recipe["runtime"][key], "runtime " + key)
++    command = recipe["command"]
++    require(isinstance(command, list) and command and all(isinstance(x, str) for x in command), "command vector")
++    for flag in ("--native", "--stream-token", "--tokens-file", "--prefill", "--max-context"):
++        require(flag in command, "missing native command flag " + flag)
++    require("--serve" not in command and "--prefill-until" not in command, "incompatible command route")
++    environment = recipe["environment"]
++    require(isinstance(environment, dict) and all(isinstance(k,str) and isinstance(v,str) for k,v in environment.items()), "effective child environment")
++    require("STRATA_PREFILL_NLL_RECIPE_SHA256" not in environment, "self-referential recipe digest")
++    require(environment["STRATA_PREFILL_NLL"] == str(root / "nll.bin"), "receipt output path mismatch")
++    require(environment["STRATA_PREFILL_LAYER_MAJOR"] == "1", "quality gate requires layer-major path")
++    for variable in ("STRATA_PREFILL_RELEASE_HEADS", "STRATA_PREFILL_PHASE_AUDIT"):
++        require(environment.get(variable, "0") == "0", "incompatible diagnostic flag")
++    require("STRATA_LOGPOS" not in environment, "incompatible verifier-window diagnostic")
++    settings = recipe["settings"]
++    require(settings["dtype"] in ("fp32", "fp16"), "residual dtype")
++    require(environment["STRATA_PREFILL_LAYER_MAJOR_R_DTYPE"] == settings["dtype"], "dtype environment mismatch")
++    require(environment["STRATA_PREFILL_LAYER_MAJOR_R_GPU"] == str(settings["residual_gpu_rows"]), "placement environment mismatch")
++    require(isinstance(settings["residual_gpu_rows"], int) and 0 <= settings["residual_gpu_rows"] <= len(tokens)-1, "placement request")
++    require(isinstance(settings["chunk"], int) and settings["chunk"] > 0 and
++            settings["context"] >= len(tokens)+1, "chunk/context settings")
++    for flag, expected in (("--prefill",settings["chunk"]),("--max-context",settings["context"])):
++        require(int(command[command.index(flag)+1]) == expected, "command/settings mismatch")
++    nonempty(settings["kv"], "KV setting")
++    sha(settings["mtp_manifest_sha256"])
++    owner = closed["process"]
++    nonempty(owner["boot_id"], "boot identity")
++    nonempty(owner["deadline_utc"], "finite process deadline")
++    require(isinstance(owner["pid"],int) and owner["pid"] > 0 and isinstance(owner["start_ticks"],int) and
++            owner["start_ticks"] > 0 and owner["exit_code"] == 0 and owner["owned_absent"] is True, "process did not close healthy")
++    faults = closed["faults"]
++    require(faults["fresh_boundaries"] is True and faults["count"] == 0, "fresh fault audit missing or faulted")
++    sha(faults["receipt_sha256"])
++    observed = closed["observed"]
++    for key in ("dtype", "chunk", "context", "residual_gpu_rows"):
++        require(observed[key] == settings[key], "actual plan differs from request: " + key)
++    require(observed["n_input"] == len(tokens) and observed["rows"] == len(tokens)-1, "observed shape")
++    require(observed["head_release"] == 0, "head must remain resident")
++    for key in ("residual_host_bytes", "residual_staging_bytes"):
++        require(isinstance(observed[key],int) and observed[key] >= 0, "actual placement bytes missing")
++    raw_path, meta_path = root / "nll.bin", root / "nll.bin.meta"
++    require(raw_path.stat().st_size + meta_path.stat().st_size < 4 << 20 and
++            meta_path.stat().st_size < 4096, "raw budget before reading")
++    raw = raw_path.read_bytes()
++    meta_raw = meta_path.read_bytes()
++    require(len(raw)+len(meta_raw) < 4 << 20 and len(meta_raw) < 4096, "raw budget")
++    require(digest(raw) == closed["raw_sha256"] and digest(meta_raw) == closed["metadata_sha256"], "output hashes")
++    lines = meta_raw.decode("ascii").splitlines()
++    require(lines[0] == "strata-dense-prefill-nll-v2", "metadata schema")
++    meta = object_pairs([line.split("=", 1) for line in lines[1:]])
++    require(meta["recipe_sha256"] == recipe_sha and meta["complete"] == "1", "unpublished/incomplete metadata")
++    require(meta["coverage"] == "initial-prefill-all-n_input-minus-one" and
++            meta["performance_cohort"] == "excluded", "diagnostic scope")
++    require(math.isfinite(float(meta["callback_ms"])) and float(meta["callback_ms"]) >= 0, "diagnostic cost")
++    require(len(raw) >= 64 and raw[:8] == b"STNLLV2\n", "raw header")
++    version, header, count, vocab, rows, first, head_type, native = struct.unpack_from("<8I", raw, 8)
++    require(version == 2 and header == 64 and raw[40:64] == bytes(24), "raw schema/reserved bytes")
++    require(count == len(tokens) and rows == count-1 and first == tokens[0] and
++            len(raw) == 64+12*rows and all(x < vocab for x in tokens), "raw shape/token0/vocabulary")
++    require(int(meta["n_input"]) == count and int(meta["rows"]) == rows and
++            int(meta["vocab"]) == vocab and int(meta["raw_bytes"]) == len(raw), "metadata/raw disagreement")
++    losses = []
++    for position, (target, loss) in enumerate(struct.iter_unpack("<Id", raw[64:])):
++        require(target == tokens[position+1], "gold token mismatch at position " + str(position))
++        require(math.isfinite(loss) and loss >= 0, "invalid loss at position " + str(position))
++        losses.append(loss)
++    return dict(root=str(root), recipe=recipe, recipe_sha256=recipe_sha, closed=closed,
++                losses=losses, head=[vocab,head_type,native], callback_ms=float(meta["callback_ms"]))
++
++
++def invariant(run):
++    recipe = run["recipe"]
++    settings = {k:v for k,v in recipe["settings"].items() if k not in ("dtype","residual_gpu_rows")}
++    ignored = {"STRATA_PREFILL_NLL", "STRATA_PREFILL_LAYER_MAJOR_R_DTYPE", "STRATA_PREFILL_LAYER_MAJOR_R_GPU"}
++    environment = {k:v for k,v in recipe["environment"].items() if k not in ignored}
++    return {"source":recipe["source"], "model":recipe["model"], "input":recipe["input"],
++            "runtime":recipe["runtime"], "command":recipe["command"], "settings":settings,
++            "environment":environment, "head":run["head"]}
++
++
++def summarize(values):
++    require(bool(values), "empty summary")
++    ordered = sorted(values)
++    return {"rows":len(values), "mean":statistics.fmean(values), "min":ordered[0], "max":ordered[-1],
++            "mean_abs":statistics.fmean(abs(x) for x in values),
++            "p50":ordered[(len(ordered)-1)//2], "p99":ordered[int((len(ordered)-1)*.99)]}
++
++
++def pair(a, b, chunk, boundary):
++    delta = [y-x for x,y in zip(a["losses"],b["losses"])]
++    n = len(delta)
++    bins = {"all": summarize(delta)}
++    for i, name in enumerate(("early","middle","late")):
++        lo, hi = n*i//3, n*(i+1)//3
++        if hi>lo:
++            bins[name] = summarize(delta[lo:hi])
++    edges = sorted({p for edge in range(chunk,n,chunk) for p in range(max(0,edge-1),min(n,edge+1))})
++    if edges:
++        bins["chunk_edges"] = summarize([delta[p] for p in edges])
++    if 0 < boundary < n:
++        bins["placement_edge"] = {"positions":[boundary-1,boundary],
++                                  "delta":[delta[boundary-1],delta[boundary]]}
++    return {"reference":a["root"], "other":b["root"], "delta_other_minus_reference":bins}
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--tokens-file",type=Path,required=True)
++    parser.add_argument("--control",type=Path,action="append",required=True)
++    parser.add_argument("--candidate",type=Path,required=True)
++    parser.add_argument("--placement",choices=("matched","all-gpu"),required=True)
++    parser.add_argument("--output",type=Path,required=True)
++    args = parser.parse_args()
++    require(len(args.control) >= 2, "need at least two independent FP32 controls")
++    ids, file_sha, ids_sha = token_input(args.tokens_file)
++    controls = [load_run(p,ids,file_sha,ids_sha) for p in args.control]
++    candidate = load_run(args.candidate,ids,file_sha,ids_sha)
++    runs = controls+[candidate]
++    require(len({r["root"] for r in runs}) == len(runs), "duplicate run directory")
++    require(len({(r["closed"]["process"]["boot_id"],r["closed"]["process"]["pid"],r["closed"]["process"]["start_ticks"]) for r in runs}) == len(runs), "process repeats must be independent")
++    require(all(invariant(r)==invariant(controls[0]) for r in runs), "source/model/input/command/runtime/settings/environment differ outside declared axes")
++    require(all(r["recipe"]["settings"]["dtype"] == "fp32" for r in controls) and
++            candidate["recipe"]["settings"]["dtype"] == "fp16", "arm dtype")
++    prefix = controls[0]["recipe"]["settings"]["residual_gpu_rows"]
++    require(all(r["recipe"]["settings"]["residual_gpu_rows"] == prefix for r in controls), "control placement changed")
++    if args.placement == "matched":
++        require(candidate["recipe"]["settings"]["residual_gpu_rows"] == prefix, "matched-placement request differs")
++    else:
++        observed = candidate["closed"]["observed"]
++        require(observed["residual_gpu_rows"] == len(ids)-1 and observed["residual_host_bytes"] == 0 and
++                observed["residual_staging_bytes"] == 0, "all-GPU placement was not admitted")
++    chunk = controls[0]["recipe"]["settings"]["chunk"]
++    result = {"schema":"strata-dense-prefill-nll-comparison-v2", "status":"COMPARED; QUALITY_ACCEPTANCE_UNSET",
++              "physical_context_correctness":"UNQUALIFIED", "task_quality":"UNQUALIFIED",
++              "performance_cohort":"excluded", "placement_axis":args.placement,
++              "n_input":len(ids), "rows":len(ids)-1, "input_ids_sha256":ids_sha,
++              "arms":[{"directory":r["root"], "recipe_sha256":r["recipe_sha256"],
++                       "loss":summarize(r["losses"]), "callback_ms":r["callback_ms"]} for r in runs],
++              "fp32_repeat_spread":[pair(a,b,chunk,prefix) for a,b in itertools.combinations(controls,2)],
++              "fp16_against_each_control":[pair(c,candidate,chunk,prefix) for c in controls],
++              "acceptance":"Set a numeric quality margin from FP32 repeatability before viewing candidate outcomes; identical generated tokens are not required."}
++    with args.output.open("x") as stream:
++        json.dump(result,stream,indent=2,allow_nan=False)
++        stream.write("\n")
++
++if __name__ == "__main__":
++    main()

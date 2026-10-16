@@ -1,0 +1,254 @@
+--- a/src/program/generate.cpp
++++ b/src/program/generate.cpp
+@@ -168,6 +168,7 @@
+     std::string pack = "pack/full";
+     std::vector<int64_t> tokens;      // the prompt, PRE-TOKENIZED
+     int64_t max_new = 16;
++    bool input_only = false;          // consume real prompt positions and emit no output IDs
+     int64_t max_context = 4096;
+     bool greedy = true;
+     uint64_t seed = 0;
+@@ -497,6 +498,7 @@
+                  "  --native-dense-gguf PATH native GDN/QSA/shared projections; repeat for each source model shard\n"
+                  "  --expert-cache-cpu-order  experimental GPU expert reduction matching CPU order\n"
+                  "  --max-new N          tokens to generate (default 16)\n"
++                 "  --input-only         standalone diagnostic; requires --max-new 0, emits no output IDs\n"
+                  "  --max-context N      KV/state capacity (default 4096)\n"
+                  "  --rope-scaling T     extend the context past the trained one: none, linear\n"
+                  "                       (position interpolation) or yarn - llama.cpp's types and names.\n"
+@@ -1147,6 +1149,7 @@
+             }
+             have_tokens = true;
+         }
++        else if (a == "--input-only") o.input_only = true;
+         else if (a == "--max-new") o.max_new = std::atoll(next("--max-new"));
+         else if (a == "--max-context") o.max_context = std::atoll(next("--max-context"));
+         else if (a == "--rope-scaling") o.rope_scaling = next("--rope-scaling");
+@@ -1578,6 +1581,17 @@
+         o.prefill_auto = false;       // nothing to lend from: the buffers are reserved for the session, so keep them small
+         o.prefill_chunk = 2048;
+     }
++    if (o.input_only && (o.max_new != 0 || o.serve || o.vision || !o.layer_split.empty() ||
++        o.graph_only || o.gpu_only_full || o.gpu_stages || o.no_pool || o.no_ple ||
++        o.prefill_until != 0 || !o.spec_oracle.empty() || o.spec_corrupt != 0 ||
++        !o.dump_logits.empty() || !o.dump_final_r.empty() || !o.dump_layers.empty() ||
++        !o.dump_halves.empty() || !o.dump_routing.empty() || !o.dump_expert_inputs.empty() ||
++        !o.dump_residual.empty() || !o.dump_mixed.empty())) {
++        std::fprintf(stderr, "strata generate: --input-only requires --max-new 0 and complete standalone text inference; "
++                             "serve/vision/split, partial-engine probes/ablations, prefill-until, oracle/corruption "
++                             "and CLI tensor/trace dumps are unsupported\n");
++        return 2;
++    }
+     if (!have_tokens && o.serve) {   // plan v0.3 P8: requests bring their own tokens
+         o.tokens = {248045};
+         o.max_new = 1;
+@@ -1698,7 +1712,8 @@
+         std::fprintf(stderr, "strata generate: --max-context must be below 2^31\n");
+         return 2;
+     }
+-    if (o.max_new <= 0 || o.max_context <= 0 || o.max_new > o.max_context ||
++    if ((!o.input_only && o.max_new <= 0) || (o.input_only && (o.max_new != 0 || o.tokens.empty())) ||
++        o.max_context <= 0 || o.max_new > o.max_context ||
+         o.tokens.size() > (size_t) (o.max_context - o.max_new)) {
+         std::fprintf(stderr, "strata generate: positive --max-new and --max-context must fit the prompt and generation\n");
+         return 2;
+@@ -1849,6 +1864,12 @@
+         }
+     }
+     const bool native_pack = strata::kernels::cpu::expert_layout().native;
++    if (o.input_only && o.spec != 0 && (!native_pack || o.spec < 2 || o.native_flash_attn_short ||
++        (o.tokens.size() > 1 && o.prefill_chunk <= 0))) {
++        std::fprintf(stderr, "strata generate: --input-only supports spec 0 or native spec >=2; "
++                             "native speculative input rejects native-flash-attn-short and multi-token input requires batched prefill\n");
++        return 2;
++    }
+     // STRATA_EARLY_REMOTE_CONTEXTS=1: create EVERY secondary context here, like CUDA1's.  Under WSL2 the driver's
+     // pinned/mapped host budget (dxg gpadl, ~1 GiB) is spent by CUDA0's weights and MTP before the later loop runs,
+     // and a new context then fails with cudaErrorMemoryAllocation (CUDA2: "cudaSetDevice(2) failed: out of memory").
+@@ -6236,6 +6257,27 @@
+ 
+     // ---- plan v0.3 P5: the prompt's conditioning positions [0, n_prompt - 1) in batched chunks.  The token loop
+     // then starts at the last prompt position, whose prediction is the first generated token.
++    int64_t input_consumed = 0, input_batched = 0, input_chunks = 0;
++    bool input_mtp_prefill_bound = false, input_mtp_verifier_bound = false;
++    auto input_receipt = [&](const char* route, bool sampled_prediction) -> int {
++        if (input_consumed != n_prompt || !produced.empty()) {
++            std::fprintf(stderr, "strata generate: input-only completion invariant failed\n");
++            return 1;
++        }
++        std::printf("INPUT_ONLY_RECEIPT {\"schema\":2,\"input_ids\":%lld,\"consumed_input_ids\":%lld,"
++                    "\"context_cells\":%lld,\"last_input_position\":%lld,\"last_input_id\":%lld,"
++                    "\"batched_input_ids\":%lld,\"prefill_chunks\":%lld,\"effective_prefill_chunk\":%lld,"
++                    "\"spec\":%d,\"mtp_bound\":%s,\"mtp_prefill_bound\":%s,\"mtp_verifier_bound\":%s,\"route\":\"%s\",\"head_complete\":true,"
++                    "\"target_logits_finite\":true,\"target_state_complete\":true,\"final_mtp_draft_cell_processed\":false,\"emitted_ids\":0,"
++                    "\"internal_prediction_sampled\":%s,\"status\":\"completed\"}\n",
++                    (long long) n_prompt, (long long) input_consumed, (long long) o.max_context,
++                    (long long) (n_prompt - 1), (long long) o.tokens.back(), (long long) input_batched,
++                    (long long) input_chunks, (long long) o.prefill_chunk, o.spec,
++                    (input_mtp_prefill_bound || input_mtp_verifier_bound) ? "true" : "false",
++                    input_mtp_prefill_bound ? "true" : "false", input_mtp_verifier_bound ? "true" : "false",
++                    route, sampled_prediction ? "true" : "false");
++        return std::fflush(stdout) == 0 ? 0 : 1;
++    };
+     int64_t pos_start = 0;
+     int64_t spec_pos = -1;   // The native verifier may start at position zero (a one-token prompt).
+     strata::prefill::Prefill prefill;
+@@ -6271,7 +6313,11 @@
+                         lent.emplace_back((int32_t) i, host_res[i]);
+                         host_res[i] = strata::core::kNotResident;
+                     }
+-                cudaMemcpy(d_res, host_res.data(), host_res.size() * sizeof(int32_t), cudaMemcpyHostToDevice);
++                const cudaError_t lend_table_status = cudaMemcpy(d_res, host_res.data(), host_res.size() * sizeof(int32_t), cudaMemcpyHostToDevice);
++                if (o.input_only && lend_table_status != cudaSuccess) {
++                    std::fprintf(stderr, "strata generate: input-only lent residency table submission failed\n");
++                    return 1;
++                }
+                 borrow = xcache.device_slot(first);
+                 borrow_bytes = xcache.slot_offsets() ? (uint64_t) (xcache.bytes() - (int64_t) xcache.slot_offsets()[first])
+                                                      : (uint64_t) k * (uint64_t) blob;
+@@ -6293,6 +6339,7 @@
+                 std::fprintf(stderr, "strata generate: %s\n", err.c_str());
+                 return 1;
+             }
++            if (o.input_only) input_mtp_prefill_bound = true; // previous mtp.bind succeeded
+             prefill.on_chunk = [&](const float* R_rows, int64_t T, int64_t p0, std::string& e) -> bool {
+                 // cell i pairs R_i with the token at i + 1 (every such token is in the prompt)
+                 std::vector<int32_t> nxt((size_t) T);
+@@ -6324,7 +6371,11 @@
+                 std::fprintf(stderr, "strata generate: refilling the lent slots failed: %s\n", err.c_str());
+                 return 1;
+             }
+-            cudaMemcpy(d_res, host_res.data(), host_res.size() * sizeof(int32_t), cudaMemcpyHostToDevice);
++            const cudaError_t refill_table_status = cudaMemcpy(d_res, host_res.data(), host_res.size() * sizeof(int32_t), cudaMemcpyHostToDevice);
++            if (o.input_only && refill_table_status != cudaSuccess) {
++                std::fprintf(stderr, "strata generate: input-only lent residency table refill failed\n");
++                return 1;
++            }
+             std::fprintf(stderr, "strata generate: %zu lent slots refilled in %.1f ms\n", lent.size(),
+                          std::chrono::duration<double, std::milli>(Clock::now() - tr).count());
+         }
+@@ -6336,6 +6387,14 @@
+         ss.ple_prev[0] = pos_start >= 2 ? (int32_t) o.tokens[(size_t) (pos_start - 2)] : -1;
+         ss.ple_prev[1] = pos_start >= 1 ? (int32_t) o.tokens[(size_t) (pos_start - 1)] : -1;
+         const strata::prefill::PrefillStats& ps = prefill.stats();
++        if (o.input_only) {
++            if (ps.tokens != n_batched) {
++                std::fprintf(stderr, "strata generate: input-only batched token accounting mismatch\n");
++                return 1;
++            }
++            input_consumed = input_batched = ps.tokens;
++            input_chunks = ps.chunks;
++        }
+         std::fprintf(stderr, "strata generate: prefill %lld tokens in %lld chunks, %.1f ms (%.1f tok/s); experts "
+                              "streamed %lld (%lld by DMA, host %.1f ms), resident %lld; PLE %.1f ms\n",
+                      (long long) ps.tokens, (long long) ps.chunks, ps.ms_total,
+@@ -6472,7 +6531,7 @@
+         }
+         const bool emit_logits = dump != nullptr &&
+             strata::program::logits_selection::selected(pos, dump_positions, o.logits_stride);
+-        const bool read_logits = !o.stream_token || o.check_logits || emit_logits;
++        const bool read_logits = o.input_only || !o.stream_token || o.check_logits || emit_logits;
+         if (read_logits && (cudaMemcpyAsync(logits.data(), d_logits, (size_t) n_vocab * 4,
+                                            cudaMemcpyDeviceToHost, (cudaStream_t) token_stream) != cudaSuccess ||
+                             cudaStreamSynchronize((cudaStream_t) token_stream) != cudaSuccess)) {
+@@ -6511,6 +6570,28 @@
+             tp = n;
+         }
+ 
++        if (o.input_only) {
++            if (pos != input_consumed || tok != o.tokens[(size_t) pos]) {
++                std::fprintf(stderr, "strata generate: input-only token/position accounting mismatch\n");
++                return 1;
++            }
++            // Full logits readback above synchronized the token stream, including QSA status copies.
++            if (o.native_flash_attn_short) for (int64_t j = 0; j < ss.qsa_alloc; ++j) {
++                const int64_t i = ss.qsa_ord0 + j;
++                const int32_t status = ss.qsa_states[i].host_step[strata::kernels::kStepCount];
++                if (status != 0) {
++                    std::fprintf(stderr, "strata generate: input-only QSA status %d at layer %lld position %lld\n",
++                                 status, (long long) i, (long long) pos);
++                    return 1;
++                }
++            }
++            ++input_consumed;
++            ss.ple_prev[0] = ss.ple_prev[1];
++            ss.ple_prev[1] = (int32_t) tok;
++            if (input_consumed == n_prompt) return input_receipt("token", false);
++            tok = o.tokens[(size_t) input_consumed];
++            continue;                       // no sampler or output at any prompt position
++        }
+         int next = 0;
+         // The draw is Philox(seed, position), as in a verify window (row t at pos0 draws pos0 + t): a seed gives
+         // the same text whether a token comes from this path or from the speculative loop below.
+@@ -6579,7 +6660,7 @@
+     // round emits (accepted drafts + 1) tokens.  `commit` keeps the state of the tokens that were emitted.
+     const bool ended = o.stop_eos && !produced.empty() &&
+                        std::find(o.eos_ids.begin(), o.eos_ids.end(), (int64_t) produced.back()) != o.eos_ids.end();
+-    if (spec_pos >= 0 && (int64_t) produced.size() < o.max_new && !ended) {
++    if (spec_pos >= 0 && (o.input_only || (int64_t) produced.size() < o.max_new) && !ended) {
+         std::vector<int64_t> oracle;
+         if (!o.spec_oracle.empty()) {
+             std::ifstream in(o.spec_oracle);
+@@ -6612,6 +6693,7 @@
+             std::fprintf(stderr, "strata generate: %s\n", err.c_str());
+             return 1;
+         }
++        if (o.input_only && use_mtp) input_mtp_verifier_bound = true; // guarded bind succeeded
+         mem_mark("the verifier and the drafter's binding");
+         ver.set_sampling(sp);   // the CLI's own sampling (until 0.1.19 this loop was always greedy); no penalties here
+         if (use_mtp) mtp.set_draft_sampling(sp);   // STRATA_SPEC_COUPLED=1: sampled drafts (a no-op otherwise)
+@@ -6625,6 +6707,54 @@
+         drive.d.pcie_num = (int) (o.pcie_frac * 256.0 + 0.5);
+         if (drive.d.pcie_num < 0) drive.d.pcie_num = 0;
+         if (drive.d.pcie_num > 256) drive.d.pcie_num = 256;
++        if (o.input_only) {
++            // Same native first window, actual final prompt ID, no draft and no cell beyond the context.
++            if (!native_pack || spec_pos != n_prompt - 1 || input_consumed != spec_pos ||
++                tok != o.tokens.back() || spec_pos >= o.max_context) {
++                std::fprintf(stderr, "strata generate: input-only verifier input accounting mismatch\n");
++                return 1;
++            }
++            const int32_t last = (int32_t) tok;
++            int32_t discarded_prediction = -1;
++            drive.d.layers = 0;
++            drive.d.experts = 0;
++            drive.d.failed = false;
++            if (!ver.run(1, &last, spec_pos, &drive_pool_multi, &drive, &discarded_prediction, err) || drive.d.failed) {
++                std::fprintf(stderr, "strata generate: input-only verifier failed: %s; pool failed=%d layer=%lld expert=%lld %s\n",
++                             err.c_str(), (int) drive.d.failed, (long long) drive.d.fail_layer,
++                             (long long) drive.d.fail_expert, drive.d.fail ? drive.d.fail : "");
++                return 1;
++            }
++            if (!ver.commit(1, err) || !ver.wait_commit(err)) {
++                std::fprintf(stderr, "strata generate: input-only verifier commit failed: %s\n", err.c_str());
++                return 1;
++            }
++            std::vector<float> row((size_t) ver.vocab());
++            if (row.size() != (size_t) n_vocab || !ver.copy_logits(0, row.data())) {
++                std::fprintf(stderr, "strata generate: input-only verifier logits readback failed\n");
++                return 1;
++            }
++            for (float v : row) if (!std::isfinite(v)) {
++                std::fprintf(stderr, "strata generate: input-only verifier logits are not finite\n");
++                return 1;
++            }
++            if (const char* fl = std::getenv("STRATA_DUMP_FIRST_LOGITS")) {
++                std::FILE* f = std::fopen(fl, "wb");
++                if (f == nullptr) {
++                    std::fprintf(stderr, "strata generate: input-only cannot open first logits dump\n");
++                    return 1;
++                }
++                const bool write_ok = std::fwrite(row.data(), sizeof(float), row.size(), f) == row.size();
++                const bool close_ok = std::fclose(f) == 0;
++                if (!write_ok || !close_ok) {
++                    std::fprintf(stderr, "strata generate: input-only cannot finish first logits dump\n");
++                    return 1;
++                }
++            }
++            ++input_consumed;                // only after actual final-window commit and checked head readback
++            drive.d.plan = nullptr;
++            return input_receipt("native-verifier", true);
++        }
+         const int64_t pcie0 = drive.d.pcie_experts;
+         // CS-T: the file tier since the decode began (the prompt path's copies are before this)
+         const int64_t files0 = src.file_reads(), ram0 = src.ram_reads();

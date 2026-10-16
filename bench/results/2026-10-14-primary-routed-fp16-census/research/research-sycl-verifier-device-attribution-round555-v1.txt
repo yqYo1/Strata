@@ -1,0 +1,54 @@
+# SYCL verifier device-time attribution (R555)
+
+Date: 2026-10-15
+Scope: source and committed-report audit only. No profiler, server, model, or GPU was run; no source was changed. The only new artifact is this report.
+
+## Finding
+
+`STRATA_VERIFY_PROFILE` is not a SYCL device profiler. `Verifier` reads it, then unconditionally clears `prof_on_` under `STRATA_ENABLE_SYCL` because its timestamp kernels use CUDA's global timer and have no SYCL counterpart (`src/core/verify.cpp`, lines 383–387). The SYCL window fields such as `ms_wait`, `ms_pool`, and `ms_host` are host-side elapsed times. They describe waiting, host work, and staging intervals, not GPU execution time. They include or exclude work according to the observer's boundaries and must not be added together and labeled device time.
+
+The configured `STRATA_SYCL_VERIFY_NATIVE_CAPTURE=0` takes the ordinary SYCL queue-recording path. `begin_verify_capture` calls `cudaStreamBeginCapture`; compat constructs `command_graph` with an empty property list, calls `begin_recording`, and on end recording enumerates runtime graph nodes. Native recording is selected only by `1`, or by unset `small` for window sizes 1–3. In native mode compat passes `enable_native_recording` and has no runtime-node visibility. Thus the established `0` configuration is ordinary SYCL graph recording, not native backend capture and not “no graph.”
+
+Graph node enumeration is structural, not timing. `cudaEventRecord` inside recording submits a barrier and tags the event as captured. Compat retains these states for graph launch and rebinds them to the submission completion event; `cudaEventElapsedTime` rejects captured events. The public graph completion event therefore can at most report a graph envelope. This code currently does not enable the graph profiling property needed to query even that envelope.
+
+## Source and runtime evidence
+
+- `src/core/verify.cpp` SHA-256 `640e0270be833ddff0218331a7db18043605af3ced2682787f6b06abdcf6316c`.
+- `src/sycl/compat.cpp` SHA-256 `225e2021b5ce67b3bb58f116a4a15cd5d592a33dbdf2c9837940a3e89155dca7`.
+- `src/sycl/runtime.cpp` SHA-256 `d571ad74ebfafc2523e129fe29858d61058bf0c26ae686834ea294105acb5e2f`.
+- `src/prefill/sycl/gemm.cpp` SHA-256 `0fe1904787462a4156185bc08b2076e047f9cf51d9517ede4c8f482fa76c5410`.
+
+The verifier's `cs_` and `copy_` explicit streams are created by `cudaStreamCreateWithFlags`, which calls `Runtime::make_queue(true)`: in-order and queue profiling enabled. The default compute queue also enables profiling; the transfer queue is in-order without profiling. That queue property alone does not instrument or expose individual graph node durations. The Intel graph extension says queue profiling has no effect on recording. To query a graph submission event, both the submission queue and executable graph need profiling enabled. The graph `enable_profiling` property disables some optimizations and makes profiled execution slower; the resulting event timestamps are a potentially pessimistic envelope from first node start to last node completion, not per-node times. No current compat constructor sets this graph property.
+
+The verifier still has important synchronization policy: it waits for the layer completion event before CPU consumption, synchronizes `copy_` before transient staging reuse, then drains `cs_` and `copy_` at window end before sampling and marking the window drained. `commit` may be asynchronous on the same stream; its existing `wait_commit`/next-window ordering must remain. Do not insert new barriers, event waits, host reads of device-written mapped flags, or teardown/reset behavior for measurement. A profiler's additional synchronization or device-wide drain can alter the behavior being measured.
+
+Committed provenance only: R545 records DPC++ 2026.1/2026.1.1 and Level Zero driver 1.17.39395+14 as repository/build clues, not proof of the exact binaries loaded by the serving process. Its stated verifier configuration is `STRATA_SYCL_VERIFY_NATIVE_CAPTURE=0`. No live process/runtime inspection was used. Current Intel graph documentation is experimental and moving; validate API support against the pinned installed runtime before any later instrumented run.
+
+## What existing facilities can and cannot attribute
+
+Ordinary SYCL event profiling can return command submit/start/end timestamps when the queue has `enable_profiling`; querying an unfinished event may block. This is useful for standalone queue commands but does not turn captured graph-internal events into independent timed nodes in compat. The Intel graph extension does expose profiling on the graph submission event when both graph and submission queue opt in. It is an aggregate graph envelope and changes the graph's optimization behavior, so it is a diagnostic-only comparison, not a baseline performance measurement.
+
+Unified Runtime tracing (`UR_LAYER_TRACING` / `UR_LOG_TRACING`) reports function begin/end notifications and arguments. It can establish host-side API activity and ordering, but is not by itself device execution duration or a per-kernel timer.
+
+Intel PTI's `unitrace` documents `--device-timing`, `--kernel-submission`, and `--device-timeline` for device command/kernel durations and queued/submitted/start/end activity; it supports Level Zero GPU applications. This is the best documented route for a bounded device/kernel breakdown without adding waits to the verifier. Use one diagnostic invocation and collect only one verifier window, with collection gated to that window (PTI documents `--start-paused` plus `PTI_ENABLE_COLLECTION` control). Preserve the normal verifier's existing waits and drains. The report should retain one compact timeline and summarize per-kernel samples; remove successful raw traces under the artifact-retention policy after recording their hashes and useful evidence. First confirm the installed PTI adapter can observe this exact SYCL/Level Zero runtime; documentation is not proof of local support.
+
+PTI device events can identify kernel instances and durations, but they do not automatically label them with verifier graph-node or source-operation names. Match only where the trace and source establish a reliable mapping; otherwise report kernel-name/time groups and the whole graph/window envelope separately. Do not claim summed kernel time equals graph wall time: kernels may overlap or omit runtime gaps, copies, queueing, and host work.
+
+oneMKL is especially important for interpretation. The existing SYCL prefill GEMM wrapper calls `oneapi::mkl::blas::row_major::gemm` and passes the returned event to `finish` (`src/prefill/sycl/gemm.cpp`, `include/strata/sycl/launch.hpp`). `finish` waits only when the stream is null; for an explicit stream the event is not returned to the caller and the in-order queue carries on asynchronously. A library call/event is not proof of exactly one device command; implementation may issue multiple kernels or supporting commands, and one event does not expose per-kernel duration. PTI can show device kernels, but assigning them to a particular high-level GEMM requires a trustworthy host/API interval and correlation. If those boundaries are not visible in the captured graph trace, report the raw kernels, not an invented GEMM duration. This wrapper is prefill GEMM; do not infer that it is used by verifier graphs without call-path evidence.
+
+## Bounded method for a separately authorized diagnostic
+
+1. Use the same verifier source/configuration and `native_capture=0`; select one short verifier window (T=1 is the smallest path) and a single graph replay after normal setup/capture. Keep the ordinary correctness and fault checks enabled.
+2. Run a single process under PTI UnitRace with device timing and timeline/kernel-submission collection. Gate PTI collection to that one window using its documented start-paused collection control; do not collect the full model/server lifetime. Record command line, compiler/runtime/driver/PTI versions actually used, device, graph mode, window size, warm-up/capture/replay phase, and original result status.
+3. Keep all existing layer event waits, copy-stream synchronization, window drains, and commit ordering unchanged. Do not enable SYCL graph profiling in the timing arm: it changes graph optimization and yields only an envelope. If that envelope is separately useful, compare it in a distinct diagnostic arm and label it perturbed aggregate timing.
+4. Report separately: host/window observer intervals; PTI per-kernel/device intervals; and, only if independently collected with graph profiling, the graph submission envelope. Preserve raw samples long enough to verify attribution, then retain compact evidence and a path/hash/reason deletion manifest as required by `docs/ARTIFACT_RETENTION.md`.
+
+This method is a proposal only; no profiler or validation run was performed in this audit.
+
+## Primary references
+
+- Intel oneAPI Graph extension, including native recording, graph profiling property, queue profiling interaction, and graph event timestamps: https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_oneapi_graph.asciidoc
+- Khronos SYCL event profiling contract (profiling queue requirement, timestamp meanings, and blocking queries): https://github.khronos.org/SYCL_Reference/iface/event.html
+- Intel PTI GPU UnitRace options and Level Zero device/kernel timeline and timing: https://github.com/intel/pti-gpu/blob/master/tools/unitrace/README.md
+- Unified Runtime tracing notifications and `UR_LAYER_TRACING`: https://oneapi-src.github.io/unified-runtime/core/INTRO.html
+- Committed verifier configuration/runtime provenance, R545: `research-verifier-submission-budget-round545-v1.txt` (SHA-256 `66c58b3f840f526ae251bcf2cb12f9424192148ccd594dcde800fd9c581fa3a4`).

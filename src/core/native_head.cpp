@@ -8,15 +8,31 @@
 #include <cstdio>
 #include <cstring>
 #include <exception>
+#include <cstdlib>
+#include <limits>
+#ifdef STRATA_ENABLE_SYCL
+#include "strata/sycl/checked_cleanup.hpp"
+#endif
 
 namespace strata::core {
 
 NativeHead::~NativeHead() {
+#ifdef STRATA_ENABLE_SYCL
+    if(head_prepared_ || head_detached_)
+        strata::sycl_backend::cleanup_fail_stop("native head teardown while prompt head scope active");
+    if(head_release_used_) {
+        // The caller's reader lease has already drained main/verifier/MTP queues.
+        if(scratch_ && cudaFree(scratch_)!=cudaSuccess)strata::sycl_backend::cleanup_fail_stop("native scratch free");
+        if(weights_ && cudaFree(weights_)!=cudaSuccess)strata::sycl_backend::cleanup_fail_stop("native restored head free");
+        return;
+    }
+#endif
     if (scratch_) cudaFree(scratch_);
     if (weights_) cudaFree(weights_);
 }
 
 bool NativeHead::load(const std::vector<std::string>& shards, int64_t n_in, int64_t n_out, std::string& err) {
+    if (head_prepared_ || head_detached_) {err="native head load forbidden during head release";return false;}
     if (loaded()) { err = "native head is already loaded"; return false; }
     if (n_in <= 0 || n_out <= 0 || n_in > INT_MAX || n_out > INT_MAX || n_in % 256) {
         err = "native head requires positive int32 dimensions and whole 256-value rows";
@@ -69,6 +85,7 @@ bool NativeHead::load(const std::vector<std::string>& shards, int64_t n_in, int6
 }
 
 bool NativeHead::run(const float* mixed, float* logits, void* stream, std::string& err) const {
+    if (head_detached_) {err="native head is detached for prompt";return false;}
     if (!loaded() || !mixed || !logits || !stream) {
         err = "native head requires loaded weights, device buffers and an explicit stream";
         return false;
@@ -90,6 +107,59 @@ bool NativeHead::run(const float* mixed, float* logits, void* stream, std::strin
         return false;
     }
     return true;
+}
+
+bool NativeHead::prepare_prefill_weights(std::string& err) try {
+#ifndef STRATA_ENABLE_SYCL
+    err="head release requires SYCL";return false;
+#else
+    if(head_prepared_ || head_detached_ || !loaded() || !bytes_ || bytes_>(1ull<<30) ||
+       bytes_>uint64_t(std::numeric_limits<size_t>::max()) ||
+       bytes_!=strata::kernels::native_mmvq_weight_bytes(type_,n_in_,n_out_)) {
+        err="native head release requires ready exact packed weights within 1 GiB snapshot budget";return false;
+    }
+    try {head_snapshot_.resize(size_t(bytes_));}
+    catch(const std::exception& e){err=std::string("native head RAM snapshot: ")+e.what();return false;}
+    head_prepared_=true;return true;
+#endif
+} catch(const std::exception& e) {err=std::string("native head prepare: ")+e.what();return false;}
+void NativeHead::cancel_prefill_weights() noexcept {
+#ifdef STRATA_ENABLE_SYCL
+    if(!head_prepared_ || head_detached_)strata::sycl_backend::cleanup_fail_stop("invalid native head prepare cancellation");
+    head_prepared_=false;std::vector<uint8_t>().swap(head_snapshot_);
+#endif
+}
+void NativeHead::detach_prefill_weights() noexcept {
+#ifdef STRATA_ENABLE_SYCL
+    using strata::sycl_backend::cleanup_fail_stop;
+    if(!head_prepared_ || head_detached_ || !weights_ || head_snapshot_.size()!=bytes_)cleanup_fail_stop("native head detach state");
+    // Every head reader was retired by the common request boundary before here.
+    if(cudaMemcpy(head_snapshot_.data(),weights_,size_t(bytes_),cudaMemcpyDeviceToHost)!=cudaSuccess)
+        cleanup_fail_stop("native head D2H snapshot completion unknown");
+    head_detached_=true;head_release_used_=true;
+    if(cudaFree(weights_)!=cudaSuccess)cleanup_fail_stop("native head detach free");
+    weights_=nullptr;
+    std::fprintf(stderr,"strata prefill heads: target detached bytes=%llu source=owned-RAM D2H=%llu H2D-on-restore=%llu\n",
+        (unsigned long long)bytes_,(unsigned long long)bytes_,(unsigned long long)bytes_);
+#endif
+}
+void NativeHead::restore_prefill_weights() noexcept {
+#ifdef STRATA_ENABLE_SYCL
+    using strata::sycl_backend::cleanup_fail_stop;
+    if(!head_prepared_ || !head_detached_ || weights_ || head_snapshot_.size()!=bytes_)cleanup_fail_stop("native head restore state");
+    if(cudaMalloc(&weights_,size_t(bytes_))!=cudaSuccess)cleanup_fail_stop("native head restore allocation");
+    if(cudaMemcpy(weights_,head_snapshot_.data(),size_t(bytes_),cudaMemcpyHostToDevice)!=cudaSuccess)
+        cleanup_fail_stop("native head restore H2D completion unknown");
+    // Full-forward remains blocked until both target and draft owners are ready.
+#endif
+}
+void NativeHead::resume_prefill_weights() noexcept {
+#ifdef STRATA_ENABLE_SYCL
+    if(!head_prepared_ || !head_detached_ || !weights_)
+        strata::sycl_backend::cleanup_fail_stop("native head resume state");
+    head_detached_=false;head_prepared_=false;
+    std::vector<uint8_t>().swap(head_snapshot_);
+#endif
 }
 
 // ================================ plan v0.3 P6: THE NATIVE EMBEDDING ================================

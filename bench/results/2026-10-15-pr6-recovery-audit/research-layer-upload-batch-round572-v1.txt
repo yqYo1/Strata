@@ -1,0 +1,43 @@
+# R572 — layer-major の全expert slab upload経路
+
+2026-10-15 JST。読み取り専用source調査。許可された唯一の書き込みはこのレポート。製品編集、build/test、CPU/GPU実行、Git操作、artifact cleanupは行っていない。調査対象は `src/prefill/layer_major.inc` の各層512 expert host slabから `ExpertCache::fill_slot` する経路。R565/567/569/571の既存結論と重なる残差schedule・容量全般・保存精度は再提案しない。
+
+## 先行記録との境界
+
+`research-index.json` とR565/567/569/571を確認した。R571記録の34,603実入力（34,602 batched rows）、48層、512 slot/層、24,576 streamed experts、`ms_experts_host=21,439.4` ms、cache `1,363,148,800` Bを入力値として扱う。R571が指摘した残差callbackごとのdrain候補は今回の対象外。21,439.4 msはvalidation/logging経路の統計で、host `copy_blob`、enqueue、層ごとの同期を含む集計であり、GPU uploadの単独所要時間ではない。
+
+## 現行source経路
+
+`layer_major.inc:121-145` は `stride = round_up(layout.max_blob, 256)`、cache/slab各512 slot分の `cache_bytes=512*stride` を計算する。与えられたcache値からstrideは2,662,400 B（256の倍数）と復元でき、各層のdevice cacheおよびhost slabのslot間隔である。残差host容量、slab、1 stride分、2個分のmapをRAM admission計算へ加え、追加VRAM cacheと512 MiB reserveをVRAM gateに加える。34,602 rows・4,096-row GPU prefixのR571構成では既知のFP32 residual host tailが1,249,525,760 B。上記のsource計算を当てはめるとこのupload専用のhost_need部分は、slab 1,363,148,800 + staging 2,662,400 + map予算196,608 Bで、residualを含む合計2,615,533,568 B（約2.44 GiB）。これはadmission上の必要量であり実際の常駐量の測定ではない。
+
+各層で `copy_blob(layer,e,upload+e*stride)` をe=0..511の順に呼び、その後 `fill_slot(e, same_host_ptr, m.copy, ..., bytes)` を512回呼ぶ（`:239-253`）。`copy_blob`のAPI契約はその層の実blob byte数だけを書き込む。base `ExpertSource::copy_blob` は `blob()` が返す一時pointerからそのbyte数を `std::memcpy` し、`FileExpertSource::copy_blob` はRAM override/complementから同じくblob byte数をcopyするか、`copy_from_files`へ進む。後者はGGUF role sliceなら3個を宛先へ連結してCPU `memcpy`、単一blob/mmapならblob byte数をcopyする。Windows direct-file経路なら読み出しと展開もある。よってhost側の512回source resolveとblob copyは明示的に存在し、全体集計の`ms_experts_host`に入る。
+
+`ExpertCache::fill_slot`（`src/core/expert_cache.cpp:358-377`）はslot pointerとhost pointerを検査し、指定bytes（`0 < bytes <= blob_`のとき。ここではlayer blob bytes）を `cudaMemcpyAsync(..., cudaMemcpyHostToDevice, stream)` で送る。slot間隔はcacheの`blob_ = stride`。関数にwait/host memcpyはない。全512 enqueue後にlayer_majorが一度 `drain()` し、公開用residency mapを全expertについて埋める（`:253-257`）。ループ前後の層境界drainも存在し、現条件 `m.copy == m.cs` のもとcompute/copy stream syncは同じSYCL queueへ合流する。512個それぞれのwaitや別upload queueへの切替は見当たらない。24,576 enqueueは24,576個のdevice copy commandを発行したというsource上の数で、同数のGPU転送完了や速度上の損失を単独で証明しない。
+
+SYCL shimの `cudaMemcpyAsync`（`src/sycl/compat.cpp:253-260`）は、bytesが非0なら `queue(st).memcpy(dst, src, bytes)` をsubmitし、ここでCPU `memcpy`・staging buffer・waitを呼ばない。現行runtime queueはin-order（`src/sycl/runtime.cpp:44-73`）。従ってsource上のqueue switchや明示的staging copyはない。ただし `upload` は通常の `new[]` host allocationでhost USMではなく、SYCL仕様はhost pointerを`handler::memcpy`の端点として許可するものの、back-end内のページ固定・内部stagingやコピーoverlapを保証しない。そこを「実行時に隠れたstagingなし」と断定するには実測/profilerが必要。
+
+### 追加のblocking staging allocation
+
+`ExpertCache::open_uninitialized(512,1,512,stride)` は初期memsetを省くが、`open_impl`末尾のSYCL共通コードは `ensure_blocking_staging(blob_)` を呼ぶ（`expert_cache.cpp:180-238`）。ここで `cudaHostAlloc(stride)` が別途確保され、SYCL shimはこれを `sycl::malloc_host` のhost-USM allocationとして扱う（`compat.cpp:226-230`）。このlayer-major経路は `fill_slot` の非blocking版だけを使い、blocking版・blocking staging pointerを参照しない。従って約2.66 MBの余計なpinned/host-USM staging allocationが毎requestに存在し、`host_need`の `+stride` はこれを数えている。これは512回コピー中のhost memcpyでも1転送ごとの待ちでもない。`open_uninitialized`固有の最適化候補だが、他のSYCL callersがblocking fillを使うため、共通動作を無条件変更せずallocationの遅延化/不要指定を局所設計・照合する必要がある。
+
+## contiguous uploadを安全に成立させる条件
+
+一回のH2D `memcpy`へ置き換えるには、送信元と送信先の配置が同じ連続byte列でなければならない。現在両方とも各slotの先頭を `e*stride` とするので、最も小さい条件は**その層の全blob byte数がstrideに等しい**こと。必要なら全48層でも成立することを実layout tableで確認する。R571のcache総byte数だけでは、層ごとの `layout.blob_bytes(layer)` が全て2,662,400 Bかどうかは確定しない。`copy_blob`はslot末尾の `stride-bytes` を書かず、slabは初期化されないため、blob bytes < strideのまま `512*stride` をまとめて送る案はpaddingに未初期化byteを含める。未初期化paddingを読まない仕様であることだけでは、未初期化host memoryをdeviceへ読むことを正当化しない。
+
+代替は各expertのpaddingを定義済み値で埋めてstride全体を送ることだが、余分なhost storeとpadding転送を足す。実byte数の連結だけを一回で送ると、各device slotのstride gapを飛び越えるため誤配置となる。slot strideをblob bytesに詰めて変える案は、cacheのdevice pointer stride、kernelsのexpert layout/alignment、cache mapの解釈も変え、単純なAPIまとめではない。従って先に全層の実byte数とalignmentを照合し、bytes==strideなら全体1 copyをsource-level候補としてよい。bytes<strideが一部でもあるなら、padding方針とデバイス側配置を明示してから別設計として扱う。
+
+`upload`は全層で同じhost slabを再利用する。現在は512回のcopyを1 queueへsubmit後、drain成功を見てからmapを公開する。batch copyでもその1回のchecked drainまでslabとdevice cacheを生かし、map公開をwait後に限るなら、source pointer lifetime・publish順序を保てる。source読み込み/copyが失敗した場合はGPU upload前にreturn。512 fillの途中でenqueueが失敗した場合、既投入copyがあり得るため外側`DraftUploadGuard`のdrainが退役を試みる。queue completionが確認不能ならdestructorでabortし、upload/cache/mapを解放しない（`:184-206`, lease retireは成功終端`:317-319`）。batch化してもこのlifetime契約は維持する。取消確認はCPU copy中に最大32 expertごとで、fillループ中ではなく、upload drain後に次のcancel checkとなる。
+
+## 数字から言える範囲と次の判定
+
+34Kケースの24,576回は512 uploads/layer × 48 layersに一致し、cache/slabの単一サイズは1,363,148,800 B。転送payloadは実際には各層のblob bytes×512の合計で、cache sizeと同じと断定できるのは各層bytes==strideのとき。source receiptに層別bytesまたは独立transfer timingが示されていないため、host time 21,439 msからcopy API数が時間を支配すると推定してはいけない。現在は大きいpayloadをまずCPU slabへ同期準備する工程も同じ計時区間にある。
+
+次の測定を行うなら、まず48層の実blob bytes・stride・padding有無を記録する。全層bytes==strideなら、変更候補はupload callを層あたり512回から1回へまとめ、同じqueueと同じchecked layer drain、同じpublish順を保つものに限定する。候補と現行を同じ入力・設定で比較し、全cache byte verificationまたは全expert checksum、層別enqueue/host prep/drain時間、clean prefill samplesと同一numerical/fault outcomeを記録する。API回数減だけでは採用理由にならず、差がsample variationを越え、正しさ/lifetimeも一致したときだけ実効果とする。層別byteが不一致なら現時点でcontiguous single-copyは適用外。複数copyを少数にまとめる案も、転送先gapを扱う設計と同じ基準を先に示す。
+
+## 仕様資料
+
+- Khronos, SYCL 2020 Specification rev.12, `queue::memcpy`はcommand eventを返すasync commandとして定義され、USM以外もhost pointerとしてmemcpy endpointになり得る。in-order queueは同一queue内command順を定めるが、性能/overlap保証ではない: https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html
+
+## 結論
+
+現在のsourceには512回の非同期H2D enqueue/層と層ごとの一回のupload後drainがある。1expertごとのwait、明示host memcpy shim、upload queue切替はない。使われないblocking用host-USM stagingの確保は確認できた。1回の連続uploadは、全slotの実blob bytesがstrideに等しく配置が一致する場合に限って、padding内容を増やさず安全に候補化できる。34Kの時間値はupload単独の性能を示さず、API削減だけで高速化したとは言えない。

@@ -1,0 +1,14 @@
+{
+  "status": "FAILED",
+  "complete": false,
+  "GPU_executed": false,
+  "owned_model_process_started": false,
+  "failed_stage": "saved engine argument assembly",
+  "original_command": "python3 bench/results/2026-10-14-primary-routed-fp16-census/check_long.py phase",
+  "exit_code": 1,
+  "error": "ValueError: list.remove(x): x not in list",
+  "original_controller_commit": "44461732",
+  "original_output_directory": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-long-routed-phase-root-v2",
+  "diagnosis": "The saved stock engine_args excludes --serve; run_server_job adds that flag. No input preparation or inference was launched.",
+  "remedy": "Read the actual saved arguments, remove --serve only if present, and use a fresh v3 output. Retain original failure status."
+}

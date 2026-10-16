@@ -1,0 +1,97 @@
+{
+  "qualification": {
+    "build": "UNRUN",
+    "correctness": "UNRUN",
+    "performance": "UNRUN",
+    "model": "UNRUN",
+    "physical_context": "UNRUN",
+    "restore": "UNRUN",
+    "fault_teardown": "UNRUN"
+  },
+  "base_kind": "actual-byte source snapshot; never inferred from HEAD",
+  "base_files": [
+    "src/kernels/sycl/qsa_select.cpp",
+    "cmake/sycl_backend.cmake"
+  ],
+  "new_files": [
+    "tests/sycl/qsa_select_radix.cpp"
+  ],
+  "files": {
+    "base/cmake/sycl_backend.cmake": {
+      "sha256": "2544f5a426f3565ade25f3860c0f6317d1770fdc9e225cb0439ff5218ede14d2",
+      "bytes": 27913
+    },
+    "base/src/kernels/sycl/qsa_select.cpp": {
+      "sha256": "45084756ca5e8e36085dae46581049c81366a45cdfde23e8c6f38defbba0c809",
+      "bytes": 6531
+    },
+    "files/cmake/sycl_backend.cmake": {
+      "sha256": "f5f8d6c15725b80fe648371f71d9d56ded245234036f08d634511997fc11ed0b",
+      "bytes": 28260
+    },
+    "files/src/kernels/sycl/qsa_select.cpp": {
+      "sha256": "a55f7b96eed3a79496c0e2b5b512020638c0ea4e4462880badf1fb72fe2c37cd",
+      "bytes": 8538
+    },
+    "files/tests/sycl/qsa_select_radix.cpp": {
+      "sha256": "cdf5d9e90b34b58b4b7504946faf970038ce508182fbf3b5d53613a50049317c",
+      "bytes": 14345
+    },
+    "proposal.patch": {
+      "sha256": "2ef1034936bf5f51d50a6245cb71c014fe5323c94f6c3d24cbc67ace6778f15a",
+      "bytes": 23780
+    },
+    "README.md": {
+      "sha256": "0fc2f7742cf48f431ee1dc46d4558ca5677bba0ba09d976d7a59960b863d70c4",
+      "bytes": 8053
+    },
+    "prepare.py": {
+      "sha256": "94eecddce7f78c8179e3926f1f645fb0f2bd7d40fa2b5209d063e90cb60ef582",
+      "bytes": 7532
+    }
+  },
+  "snapshot_sha256": "dece498a15f06d4f57ad2b6eb360cfe2f8d5904d0dd5aed64315b8b88a28e1e7",
+  "origin": "Independent implementation from own current selector and weighted MSD algorithm reasoning; no XeStrata source inspected or used.",
+  "scope": "source-only proposal; active files untouched; no build/test/GPU/runtime/environment/service/cleanup/Git mutation",
+  "owner": "Main reviews patch before apply and owns serialized qualification",
+  "next_review": "Main source review then build and exact fixture in separate immutable-environment processes",
+  "load_count": "8*B histogram key visits + 2*B final key visits; no prefix-distribution reduction without compaction",
+  "count_bound": "0 <= weighted subset <= n <= INT_MAX; no new arbitrary context validation",
+  "references": {
+    "include/strata/kernels/qsa_select.hpp": {
+      "sha256": "c7c6f484c89541f1e64efbdfc942fcd3eeb719637d3cd1a99ee2f4491b3116cc",
+      "bytes": 4507,
+      "role": "read-only reference; not a patch base"
+    },
+    "include/strata/kernels/qsa.hpp": {
+      "sha256": "87c02222284f842fcecb46a422b119af769c72c3914edc8da5b2ee782456dc74",
+      "bytes": 25547,
+      "role": "read-only reference; not a patch base"
+    },
+    "include/strata/sycl/launch.hpp": {
+      "sha256": "9c5aaf14e4b92232d4dcd4e2e68071201d436d287a9615088a9428d88f53b1ce",
+      "bytes": 2760,
+      "role": "read-only reference; not a patch base"
+    },
+    "include/strata/sycl/runtime.hpp": {
+      "sha256": "bcfbb035fa5a95f0409db013158f756ba4136b0aa06f636c6ff747ec0bcfd0fd",
+      "bytes": 2555,
+      "role": "read-only reference; not a patch base"
+    },
+    "tests/sycl/prompt_k_cellmajor.cpp": {
+      "sha256": "8779469bb00ced55c5dad5aa27f6b8485f1e5a7e07eddb502b29bd602c79bb5d",
+      "bytes": 15851,
+      "role": "read-only reference; not a patch base"
+    },
+    "bench/results/2026-10-15-pr6-recovery-audit/research-index.json": {
+      "sha256": "64f9e0c30d5ad198d8ae5d0fc52929a6e47073ce87bc9b16d856b571412b31cc",
+      "bytes": 132721,
+      "role": "read-only reference; not a patch base"
+    },
+    "bench/results/2026-10-15-pr6-recovery-audit/research-exact-selection-radix-round738-v1.txt": {
+      "sha256": "a2d88c2f095f1f860b53bfd6c06ccb9cd91b4897657acc566974af95c78cb9f1",
+      "bytes": 13384,
+      "role": "read-only reference; not a patch base"
+    }
+  }
+}

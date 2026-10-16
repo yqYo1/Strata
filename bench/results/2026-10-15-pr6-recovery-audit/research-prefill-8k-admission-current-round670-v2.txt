@@ -1,0 +1,46 @@
+# Current-root 8K prefill workspace and residual admission — round 670 v2
+
+Date: 2026-10-15 JST. Corrected decision for the actual current `--no-prefill-borrow` route. This v2 preserves v1 at `research-prefill-8k-admission-current-round670-v1.txt`; it does not change that report or its hash. Source/public-report review only: no build, test, compiler, GPU, process, private B/live log/environment, cleanup, Git mutation, root-source edit or in-progress proposal read.
+
+## Corrected decision
+
+The 2,423,623,680 B post-MTP-release free-memory query cited by Main was captured **after the C=4,096 no-borrow prefill workspace already existed**. Raising the chunk to 8,192 in this same no-borrow setup adds 1,210,776,832 B of actual carved workspace. Subtracting that increment first leaves only 1,212,846,848 B. The current layer-major pass then requires 1,363,148,800 B for its additional 512-expert cache plus 536,870,912 B fixed reserve, totaling 1,900,019,712 B. Thus the projected 8K process is short **687,172,864 B before allocating even one residual row**. Neither `R_GPU=0` nor matching residual placement makes C=8,192 admitted by the published C=4,096 free bound.
+
+A matched C=4,096/8,192 chunk-only experiment is still conceptually valid only when both configurations can be initialized and have enough free memory for the 8K workspace plus the layer-major cache/headroom. It must use the same effective residual prefix in both arms. `R_GPU=4,096` rounds to zero at C=8,192; setting `R_GPU=8,192` in both arms would align them only if the later free query could cover its 320 MiB bank. Under the published no-borrow baseline, the 8K arm does not reach that planner stage safely. **Do not attempt the 8K GPU arm from these bounds.** A separately evidenced capacity recovery and fresh same-process admission receipt are prerequisites.
+
+The historical PR6 all-GPU residual layout is further out of reach. Relative to the same public C=4,096 free query, C=8,192 workspace increment + layer cache + reserve + a 32,768-row FP32 bank requires 4,452,973,824 B, a **2,029,350,144 B shortfall**. For 33,213 batched rows, the minimum is 4,471,201,024 B, short by **2,047,577,344 B**. A 262,144-row FP32 bank adds 10 GiB by itself, before other requirements. Current public evidence therefore supports neither a C=8,192 run nor an 8K/all-VRAM recovery claim under the actual no-borrow configuration.
+
+## Exact chunk-workspace delta
+
+The allocator rounds each individual `take` to 256-byte alignment and includes 256 guard bytes (`src/prefill/prefill.cpp:189-213`). With compact FP16 MoE active, `STRATA_PREFILL_MMQ=0`, `gr_unfused()` false, and no BF16x2 extensions, actual `carve` allocates one shared region of `max(GDN,QSA,MoE)`; it does not allocate the three families additively (`:585-630,672-692,844-936`). R637/Main's source-count table gives:
+
+| Chunk | GDN set B | QSA set B | Compact MoE set B | Shared allocated region B |
+| ---: | ---: | ---: | ---: | ---: |
+| 4,096 | 590,350,336 | 607,128,320 | 543,837,696 | 607,128,320 |
+| 8,192 | 1,180,698,624 | 1,120,979,712 | 1,087,671,808 | 1,180,698,624 |
+| Delta | 590,348,288 | 513,851,392 | 543,834,112 | **573,570,304** |
+
+The other chunk-scaled allocations in actual `carve` add 637,206,528 B, making the **actual live workspace increase 1,210,776,832 B (~1.13 GiB)**. Fixed DQ scratch, eight routed-only stage slots for the cited setting, GEMM buffers and streamed-KV stage backing do not grow with C. This accounts for source allocator liveness without summing aliased scratch. Current `STRATA_PREFILL_RING=8` stage buffers total only 21,299,200 B for the public aligned blob stride; they are not a hundreds-of-megabytes source of headroom.
+
+For the present fused-GR case, `m.xn` is null in `carve`, but `bytes_needed` unconditionally counts a T×D FP32 `xn` in its sizing sequence (`:852-856,1247-1281`). The count-only loan size delta is therefore 1,378,548,992 B, 167,772,160 B above the actual carve delta. That overcount influences borrowing/slot selection, but does not consume live device storage in this no-borrow arm. If `gr_unfused()` is enabled, the extra buffer is real and the actual increase changes accordingly.
+
+## Admission arithmetic and configuration boundary
+
+FP32 residuals are 40,960 B per row. The layer-major code obtains fresh `cudaMemGetInfo`, subtracts the extra one-layer expert cache and 512 MiB reserve, and then calls `LayerMajorResidualPlan::make` (`src/prefill/layer_major.inc:127-162,240-285`; `include/strata/prefill/layer_major_plan.hpp:78-117`). For C=8,192, explicit residual requests below a whole chunk round down to zero; 8,192 requires 335,544,320 B, and 16,384 requires 671,088,640 B.
+
+The public Main review `main-review-round655-656.ja.md` gives free memory 2,423,623,680 B after the already-integrated MTP expert release (a measured +707,788,800 B delta). It also reports a C=4,096, FP32, R_GPU=4,096 long run. Applying the actual 8K workspace delta gives 1,212,846,848 B as the *projected* free memory before the extra layer cache. This leaves no nonnegative residual budget after the cache/headroom: 1,212,846,848 - 1,900,019,712 = -687,172,864 B. It is only a source/public-report projection; real driver allocation, fragmentation and other owners must be captured in a future isolated process. The key point is that the cited C=4,096 free query cannot be reused unchanged as the C=8,192 admission input.
+
+The exact batched input length matters for an all-resident residual request. `LayerMajorResidualPlan` permits `requested == n` to include a partial last chunk, but otherwise rounds a nonterminal request down by C. Thus `R_GPU=32768` is not all-GPU for a 33,213-row callback input; a per-process exact `R_GPU=n` or `auto` that actually selects all rows would be needed. Even before adding the 8K workspace, the cited post-detach budget after cache/headroom is only 523,603,968 B, under half the 32K residual requirement. With the added 8K workspace, the deficit is larger as stated above.
+
+No currently established minimal configuration reaches 8K under this actual no-borrow capacity. Keep maximum context 262,144, INT8 KV/resident policy, FP32 residual storage, compact fallback/MMQ=0, layer-major route, MTP4 and safe runtime settings fixed. The next step is a capacity recovery already supported by evidence, then a fresh owned C=8,192 process that records successful initialization, post-release free query, layer cache bytes, residual plan and no fault; only after admission can a matched-prefix performance pair run. Until then retain C=4,096. A 32K/64K prompt at context capacity 262,144 still does not prove a physical 262,144-token input/RESTORE result.
+
+## Sources
+
+- Current allocation and sizing: `src/prefill/prefill.cpp:189-213,585-630,672-692,728-836,844-936,938-961,1247-1281`.
+- Current layer-major cache/headroom/residual order: `src/prefill/layer_major.inc:127-162,240-285`; planner in `include/strata/prefill/layer_major_plan.hpp:78-117`.
+- Public free bounds and measured MTP release delta: `bench/results/2026-10-15-pr6-recovery-audit/main-review-round655-656.ja.md`.
+- Source liveness counts: `bench/results/2026-10-15-pr6-recovery-audit/main-review-round637-638.ja.md`.
+- Current 8-slot route/liveness correction: `research-prefill-live-allocation-headroom-round658-v2.txt`.
+- Reported historical C=4,096 layer-major route and its current order: `research-current-long-prefill-execution-order-round667-v1.txt`, `long-prefill-execution-order.ja.md`; PR6 comparison `research-pr6-current-prefill-order-delta-round668-v1.txt`.
+
+This correction does not claim 8K admission, full-context correctness, quality, speed or recovery to 600/1,000 tok/s.

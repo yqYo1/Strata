@@ -1,0 +1,42 @@
+# R700 — full-context terminal position and MTP4 producer seam
+
+2026-10-15. Read-only source follow-up to R698, scoped to how the last prompt token is consumed on the native MTP4 route and what a zero-output terminal producer can validly claim. Only this new report was written; no source/build/test/GPU/process/environment/branch/cleanup actions were taken. The restricted tuning record was not opened and no home/Codex logs were searched.
+
+## Finding
+
+R698's target-token path proposal remains a valid independent diagnostic, but it is not the route taken by the current native --spec 4 --mtp flow. With native_pack && o.spec >= 2, the ordinary token loop exits at its first iteration before put_input() or any target layer call (generate.cpp:6632–34). The speculative first window then runs the last prompt token at position n_prompt - 1 through Verifier::run(T=1) and commits it with Verifier::commit(1) (generate.cpp:7013–20, 7061–83, 7090–7120). This is where the target model's QSA/GDN state for that final prompt token is updated on the existing MTP4 route. The verifier also computes the prediction at that position, but the caller can discard it without returning text.
+
+Therefore a full physical-context consume check on the MTP4 route needs to reach and drain this first verify window, commit exactly its one input row, and finish normally before advancing into another window or drafting beyond the physical position. The current loop instead pushes outv[0] into produced (generate.cpp:7122–27), calls mtp.draft(...) (7133–34), and advances p (7141–43). A diagnostic consume branch can stop after the first-window commit and a successful ver.wait_commit(); do not push outv, call mtp.draft, advance p, or emit it. Verifier::commit uses n_keep=1, so it commits the only input row, and wait_commit is needed when asynchronous commit is enabled (verify.cpp:1718–63). This preserves the physical 262144 limit: input position 262143 is legal, while the next target position 262144 is not.
+
+## State ownership and what the MTP callback means
+
+The batched target prefill covers positions [0, n_prompt-1) because n_batched=n_prompt-1 (generate.cpp:6449). On the MTP4 route, the installed prefill.on_chunk callback pairs each target residual row R_i with prompt token i+1, first trying Prefill::draft_kv, then MtpDrafter::prefill (6514–20). Thus the MTP draft-side KV has its own prompt-prefill work, including the final prompt token as the next-token member of the last pair. It does not update the target session's QSA/GDN states.
+
+The MTP drafter's prefill writes its own recorded token, cell/position records, and runs its own graph (mtp.cpp:1138–1200, 1260–71). MtpDrafter::draft is another operation on this distinct state and requires restored drafter head and experts (mtp.cpp:1274–1302). These are separate receipts: target verifier commit proves the target terminal input row was committed; MTP prefill coverage proves draft-side prompt preparation. Neither alone proves the other, and a draft result is not proof that the target consumed position 262143.
+
+For the non-MTP target token path, session_token walks every model layer; it selects a per-layer GDN recurrence slice for each GDN layer and the indexed QSA state for each QSA layer before calling block_layer (session.cpp:987–1028). The target terminal branch for the MTP4 native route is verifier-based instead: Verifier::run stages the token and position for all target layers and executes its window; its commit graph retains the selected row in target state (verify.cpp:1290–1345, 1718–54). PLE's verifier staging derives the terminal row from ple_prev, and commit advances the PLE token history (verify.cpp:1332–40, 1747–53). Do not count verifier's logits/output candidate as an emitted generation token if the consume branch discards it.
+
+## Minimal producer seam and two scopes
+
+1. **Target full-context consume (recommended first gate).** Add a CLI-only explicit diagnostic mode with strict preconditions: native pack, exactly one prompt of 262144 token IDs, configured physical max context 262144, --spec 4, and required cache/verifier resources. Preserve ordinary context admission and the existing positive --max-new validation for ordinary requests; the diagnostic mode may bypass only the prompt-plus-output reservation that prevents a terminal input-only request. On the native MTP path, let the first verifier window consume the last prompt token, require ver.run success, commit(1) success, wait_commit success, and then return success before produced.push_back/MTP drafting. Report emitted_tokens=0, terminal_position=262143, target_terminal_commit_rows=1. This is the smallest change to prove current MTP4 target state at the exact boundary. The prediction is computed internally as part of ver.run, but is neither emitted nor used to step farther.
+
+2. **MTP prompt-state preparation.** The existing callback already feeds the MTP side as chunks finish. Add a separate receipt for exact MTP prompt token/cell coverage, successful callback completion, and MTP ownership/head/expert restoration state if that is part of the chosen diagnostic. Do not claim “MTP resumed generation at full context”: a real next target decode would require target position 262144, outside the physical capacity. Probing mtp.draft beyond the boundary or enlarging --max-context would not establish a legal resume. A later resume gate needs a separately legal continuation fixture (for example a shorter full-state checkpoint, not a 262144-prompt continuation) and must compare restored state/results under that legal context.
+
+A direct session_token producer remains a distinct target-only alternative: it would feed final prompt ID through put_input and session_token at pos 262143, then return before run_head, logits, or sampling. Its narrow seam is after successful session_token/session_loop and before run_head (generate.cpp:6663, 6691–710, 6734). That route is useful to isolate target token-path correctness, but it does not qualify the current MTP4 verifier path. Keep it as a separate diagnostic result; do not label it MTP4 full-route evidence.
+
+## Receipt and rejection conditions
+
+For the MTP4 target consume gate, record input token count and token-ID SHA256, physical context limit, verifier window (T=1, pos0=262143, token=prompt[262143]), window success, commit count 1 and completion, target state ownership/geometry, terminal PLE history, MTP prompt callback coverage as a separate field, emitted token count 0, normal process exit, and no subsequent position/window/draft. QSA and GDN require distinct state-family receipts; do not report their positions as if a single aggregate counter established both. Existing prefill summary counts alone cannot establish the final position.
+
+Reject the run if any layer/state update fails, if the verifier position/window differs, if commit or commit drain fails, if output is pushed/returned, if MTP draft advances after the terminal window, if an additional target position is attempted, or if context is admitted above 262144. Do not use a 65537 pooled-row component harness as a physical model substitute.
+
+## References and hashes
+
+- R698 baseline: research-physical-model-context-harness-round698-v1.txt, SHA256 165afabc8ee004a32d42d1271fe07aeccff5f9714b4a09282887e3819eafce6d.
+- src/program/generate.cpp, SHA256 00cd8e359ad92d7a1e09bb397d51423cc390e6fb265328c5cb48edb33a57b0c6: lines 6449, 6514–20, 6632–34, 7013–20, 7061–83, 7090–7127, 7133–43.
+- src/core/verify.cpp, SHA256 914f50328dec83b745e318a3e97514385a06c438e1b521f3634bf1478c175523: lines 1290–1345, 1718–63.
+- src/core/mtp.cpp, SHA256 c67beb3ce1c3e73f3fdb9e66e3a186ce3a6de74e6cdd9ddf560cae221e774ccf: lines 1128–71, 1138–1200, 1260–71, 1274–1302.
+- src/core/session.cpp, SHA256 f2ef0b5c115ba23bca711241fb720dd806bd505225c75c37fd8c11bbf531b5b2: lines 987–1028.
+- src/prefill/prefill.cpp, SHA256 093af5fbe3605da6f94c55f6da38a0b4afbb5cc95df5d12ce7eec98475c9c41e: prior R698 documents chunk callback completion and PLE predecessor commit at 3164–79.
+
+No claim is made here that the current binary or physical model has passed a 262144-context run. This report is source analysis and a concrete implementation specification only.

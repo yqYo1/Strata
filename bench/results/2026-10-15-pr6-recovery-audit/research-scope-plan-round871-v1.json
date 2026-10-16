@@ -1,0 +1,301 @@
+{
+  "round": "R871",
+  "planned_on": "2026-10-16",
+  "planner": {
+    "provider": "native Codex",
+    "model": "gpt-6-luna",
+    "reasoning_effort": "max"
+  },
+  "purpose": "Select up to three bounded, nonduplicate Orca gpt-6-luna research assignments for Main. Prioritize one current-native16 decision-support question, then add independent transferable GPU/ASIC knowledge collections. Prepare scopes only; do not dispatch workers.",
+  "main_context_supplied_by_parent": {
+    "source_revision": "16f9eefa216f9f6d2f1fd5c18980612e7d6b656a",
+    "source_candidate_status": "R861 default-OFF subgroup softmax is in this source revision; a fresh build is active, but R861 is not yet validated. R871 must not report R861 as tested or attribute performance to it.",
+    "requested_decision_question": "Assess whether the current native16 prefill can reuse existing FP32-capacity MoE output scratch for FP16 outputs covering two consecutive 8192-row chunks in one expert-major 16384-row window, with exact live-byte accounting and causal QSA/GDN/state/publication order preserved.",
+    "current_device_profile": {
+      "summary_json": "bench/results/2026-10-15-pr6-recovery-audit/own-current-device-profile-summary-v1.json",
+      "summary_json_sha256": "40da5cbb8de6529973b8f06c623bbafd3cbf7d88a4c907df29bed14954eae860",
+      "summary_ja_md": "bench/results/2026-10-15-pr6-recovery-audit/own-current-device-profile-summary-v1.ja.md",
+      "summary_ja_md_sha256": "acba94e03cb2752a506cd60bd8b3b4dc3234f5ce28b0faefd77edbcd67bc93e7",
+      "receipt": "bench/results/2026-10-15-pr6-recovery-audit/own-vllm-unitrace-direct-model-v6.json",
+      "receipt_sha256": "ecaf9ff079383302597ff7d5b93ac1ea572483db4bf958e5cb33fee445354f86",
+      "receipt_source_commit": "6354f0b4ff3731466795410e11ca9ef785c9d326",
+      "status": "Whole-model unitrace PASS, cleanly closed, fresh faults zero. This profile is from the 6354f0b4 binary; it is context only for the newer 16f9 source question. Attention 33.966 s/72 calls, iq_dequant_gu_f16 6.147 s/24907 calls, and vLLM wide GEMM 4.769 s/29660 calls are nonexclusive whole-process device sums including warmup and generation, not prefill critical-path shares or MoE scratch evidence."
+    },
+    "priority": "Long-input prefill remains the main tuning focus. No conclusion about speed, numerical quality, dispatch, or default adoption follows from a static capacity/order report."
+  },
+  "inputs": {
+    "research_index": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+      "sha256": "0ea68239747e653fc0a4bbaf266ad15dc05624763ffab135348d1c4f19ecfae5",
+      "indexed_report_count": 273,
+      "highest_indexed_report_round": 869,
+      "latest_review_round": "R870",
+      "snapshot_rule": "Pass this exact index snapshot in every assignment. Do not edit it as part of the research tasks."
+    },
+    "prior_review_metadata": [
+      {
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round870-v1.json",
+        "sha256": "d66fb4ba5a05e7188127f3cbb2acf6eeedfc9f8d9c4591e770ab8aaaafca6a7d",
+        "use": "Latest metadata for R867-R869. Their bodies remain held by Main. R870 recommends no profile-independent follow-up for a Main decision; the parent now supplies a separate current-source question for R871."
+      },
+      {
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-scope-plan-round866-v1.json",
+        "sha256": "c1f2eb2964a07074633844bdb6d5c8ba8995d7145eedd8212c18a2eb64c7ff26",
+        "use": "Prior scope boundaries for GPU query fusion, tile-based rendering, and BFS; notably, R867 treated hash-join internals as an example boundary and explicitly excluded algorithm design."
+      },
+      {
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round865-v1.json",
+        "sha256": "9b78ea8a3d7777957b1fb6323ff88e7a92b67c1329ccc08d1a8806738c7ef69f",
+        "use": "R854/R855/R863 scope, overlap, source-correction, and retrieval metadata; do not open held collection bodies for this planning task."
+      },
+      {
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round857-v1.json",
+        "sha256": "34202fd6530fbcf5639316f6b78e7c7703ed1c18cdeafb1a96703e59328c65ea",
+        "use": "Earlier review metadata that distinguishes GPU convolution mapping and GEMM tile/operand-layout studies from other topics; collection bodies remain held."
+      },
+      {
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/A/research-scope-review-round841-v1.json",
+        "sha256": "50e03ef297c9b6a1b2c76a28d0223ab9507fee1b08cbef505afa0dea5c0d3843",
+        "use": "R839 bank-mapping review metadata; its collection body remains held."
+      },
+      {
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round838-v1.json",
+        "sha256": "64885285e1f563774767893888ce4899639bc14c2fb1ec36e2c07530403c0b3e",
+        "use": "R835 stencil-temporal-blocking and R836 source-specific native16 GDN metadata; collection body remains held."
+      }
+    ],
+    "R701_R702_main_review": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/main-review-round701-702.ja.md",
+      "sha256": "1414c6beed194be5bf195fa7d3297cb8820351f92eced411c9e9d1945eb8631a",
+      "use": "Main source review for grouped GEMM and expert-major superchunk proposals. It records prior Dm live-byte arithmetic and the required QSA/GDN/PLE ordering, shared-state, and publication constraints."
+    }
+  },
+  "selection_rationale": "R871 is a new, bounded, current-source decision question supplied by Main, and the exact current source revision, source inputs, earlier Main review, and closed profile summary are available. The profile cannot answer its capacity or causal-order question, so the report must use source liveness rather than whole-process timing. R872 and R873 are independent public-source knowledge collections outside the three completed R867-R869 topics and outside the earlier reviewed SpTRSV, convolution, FFT, stencil, bank-layout, and graph fan-in scopes. All three have recorded prerequisites and are schedulable now.",
+  "scopes": [
+    {
+      "proposed_assignment_round": "R871",
+      "purpose_label": "decision support",
+      "title": "FP16 MoE scratch capacity across two causal prefill chunks",
+      "report_output": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round871-v1.txt",
+      "spec_output_if_dispatched": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/orca-research-round871-spec-v1.txt",
+      "schedulable_now": true,
+      "source_base": {
+        "revision": "16f9eefa216f9f6d2f1fd5c18980612e7d6b656a",
+        "read_only_source_paths_and_sha256": [
+          {"path": "CMakeLists.txt", "sha256": "03993aa5162ed3bf3f638c2755b5d44358c74945ea84b0862d0e76ab52eab4f1"},
+          {"path": "cmake/sycl_backend.cmake", "sha256": "9a112ac469580302e8d124bc9bdf66c04f49f6020309e7d20e7771ab12757bef"},
+          {"path": "src/prefill/prefill.cpp", "sha256": "d01662ae6c46bfdd2556da1345c5f9edb79f91694391eee2b2b0aebfeab831ce"},
+          {"path": "src/prefill/sycl/gemm16.cpp", "sha256": "d5a0e8f8cdbc14f82edd7a883efc09d68ee92195b8fd51301e538b40cc6ed53c"},
+          {"path": "src/prefill/sycl/native16.cpp", "sha256": "d953ae8dcb69be601c57ddf62bbd85ad054c3e7c0a90806461b49f96d18da891"},
+          {"path": "src/prefill/sycl/postops.cpp", "sha256": "f048a75d8c18dad5981a93206dcff107085714741326adc6d4cfd77c6927a78f"},
+          {"path": "src/prefill/sycl/moe_mmq.cpp", "sha256": "403dccf14f3a632f3cb5a6b7ecbaaf7dcfae5f0c3fbf875dae2789b6f85978f8"},
+          {"path": "src/prefill/sycl/moe_fused.cpp", "sha256": "6321199ee8213ee1ff2b370929e7bc723e078d13e30a3b4ecb56fe8a3c03b438"},
+          {"path": "src/prefill/sycl/qsa_native16.cpp", "sha256": "e4c2c32fec4c04f285e56f301cc405039b2283f17c2e28d420df5c6801a06f44"},
+          {"path": "src/kernels/sycl/gdn.cpp", "sha256": "3de5ac1aa35184534834e8fd0957068509a0ecf5080a666354a98cd134d56117"},
+          {"path": "src/kernels/sycl/fused_gdn.cpp", "sha256": "70abf4fd1359477a2e170b54f2172ba148a2ae21306e8145e070ebd0db7d995f"},
+          {"path": "include/strata/prefill/native16.hpp", "sha256": "6c58224919bb999d73d2720d4be6f0779418d39e2181a4cc1c627239710dc46a"},
+          {"path": "include/strata/prefill/moe_fused.hpp", "sha256": "41b58910e68ca3bf88e6b8c19bcb3dcb787fcf1882a66926970b4e3ea6fdecc9"}
+        ],
+        "source_boundary": "Trace CMakeLists.txt and cmake/sycl_backend.cmake to keep the investigation on the configured SYCL source path. Read only the pinned source files above and the named Main review/profile artifacts. Do not use CUDA/HIP implementation or validation as evidence."
+      },
+      "shared_index": {
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+        "sha256": "0ea68239747e653fc0a4bbaf266ad15dc05624763ffab135348d1c4f19ecfae5"
+      },
+      "relevant_prior_report_pins": [
+        {
+          "round": "R701",
+          "path": "research-prefill-grouped-gemm-round701-v1.txt",
+          "sha256": "433856926a798356d1b6d231dfb3e2d99e82e0d38f8bbc11fd8c86c6eafe5012",
+          "use": "Read with the R701-R702 Main review; do not repeat its generic grouped-GEMM API survey."
+        },
+        {
+          "round": "R702",
+          "path": "research-prefill-expert-major-superchunk-round702-v1.txt",
+          "sha256": "a1030a224102651d76cf209e74891e864a1b77ff2a976bd3307f61f31dd4c5e1",
+          "use": "Read with the R701-R702 Main review; update its proposed liveness and order analysis against the current pinned source."
+        },
+        {
+          "round": "R870",
+          "path": "research-scope-review-round870-v1.json",
+          "sha256": "d66fb4ba5a05e7188127f3cbb2acf6eeedfc9f8d9c4591e770ab8aaaafca6a7d",
+          "use": "Use review metadata only; collection bodies R867-R869 remain held."
+        }
+      ],
+      "finite_question": "At the current 16f9eefa source, can the actual SYCL prefill MoE output/scratch reservations safely hold FP16 expert outputs for two consecutive 8192-row causal chunks represented as one expert-major 16384-row window? Reconstruct exact producers, consumers, routes, dimensions, alignments, allocations, and live intervals; compare the proposed window with the current per-chunk path and existing opt-in compact FP16 behavior. Determine which scratch bytes are genuinely reusable at every phase, and whether batching/reordering expert output work can occur while QSA, GDN/recurrent state, shared expert work, callbacks, checkpoints, and layer publication retain their current required order."
+      ,
+      "breadth_and_counterevidence": "Build one source-backed live-range table for GU, Hh, Dm, route/index arrays, shared-expert inputs/outputs, native16 temporaries, and relevant state/publication buffers. Show exact current element and byte capacities, alignment/padding, whether each plane aliases a larger FP32 reservation, and simultaneous peak bytes. Compare (a) present 8192 chunk storage, (b) two sequential FP16 chunks, and (c) the proposed contiguous expert-major 16384 window; distinguish serialized reuse from concurrently live storage and include route multiplicity/top-k and per-expert offsets. Check the existing STRATA_PREFILL_MOE_COMPACT_FP16 guard/fallback so an existing code path is not described as new. Map the outer operator order and publication points needed to preserve QSA/GDN state and physical-context behavior. Counterevidence must include any path/mode where the slot is not available, shape/alignment/streaming or peer constraints that block aliasing, any required conversion or extra transfer, and any ordering dependency that prevents a two-chunk window. A byte-capacity match alone is not an implementation recommendation. Keep FP16 numerical error, quality acceptance, performance, and default adoption as separate unanswered gates; keep FP32 accumulation, router decisions and recurrent state wherever current source requires them. Do not infer MoE service or speed from the nonexclusive unitrace totals.",
+      "novelty_guard": "This is an updated source-specific capacity/lifetime/order decision after R701-R702, not another grouped-GEMM API or superchunk literature survey. Limit analysis to the one FP16-output MoE scratch/window question and immediate current producer/consumer/state/publication obligations. Exclude broad native16 framework surveys, unrelated attention tuning, new kernel proposals, numerical-quality qualification, profiler interpretation, dispatch-threshold changes, and CUDA/HIP source. Do not read, copy, adapt, or use XeStrata source, tests, helpers, or archived proposals.",
+      "report_budget": "1,300-1,700 substantive words; at most 7 primary-source URLs (source code and the named Main review are not counted as URLs). Include a compact capacity/liveness table, exact source line references, explicit assumptions, counterevidence, and a short decision boundary. No patch, test, build, measurement, GPU run, or adoption claim.",
+      "prerequisites": [
+        "Parent-supplied immutable source revision 16f9eefa216f9f6d2f1fd5c18980612e7d6b656a and the listed read-only source path/hash pins.",
+        "The R701/R702 original reports and their Main review, current compact profile summary/receipt, and the pinned research-index snapshot are present."
+      ],
+      "prerequisite_evidence": "The parent supplied the current source revision and a specific finite question. All listed source files and source hashes are present in the shared worktree and match the v6 receipt's source-pin manifest for these unchanged paths. The R701/R702 reports and Main review are present with the hashes above. The v6 receipt is PASS and closed; its profile is explicitly limited to a 6354f0b4 build and nonexclusive whole-process sums, which makes it useful only as measurement context. No additional GPU or causal profile prerequisite is needed for a static source/capacity/order analysis.",
+      "schedulable_evidence": "Current source snapshot, existing compact FP16 mode, prior Main review, and closed profile summary are all supplied now. R870's empty follow-up list does not block this assignment because Main has supplied a new, narrower source decision question.",
+      "primary_sources": [],
+      "main_read_policy": "Main may read this decision-support report after the delegated native review and only for the stated decision."
+    },
+    {
+      "proposed_assignment_round": "R872",
+      "purpose_label": "knowledge collection",
+      "title": "GPU equijoin build/probe crossovers under key skew and memory limits",
+      "report_output": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round872-v1.txt",
+      "spec_output_if_dispatched": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/orca-research-round872-spec-v1.txt",
+      "schedulable_now": true,
+      "shared_index": {
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+        "sha256": "0ea68239747e653fc0a4bbaf266ad15dc05624763ffab135348d1c4f19ecfae5"
+      },
+      "relevant_prior_report_metadata": [
+        {
+          "path": "research-scope-plan-round866-v1.json",
+          "sha256": "c1f2eb2964a07074633844bdb6d5c8ba8995d7145eedd8212c18a2eb64c7ff26",
+          "use": "R867 query-fusion scope explicitly excluded hash-join algorithm design; use its scope boundary, not its held report body."
+        },
+        {
+          "path": "research-round867-v1.txt",
+          "sha256": "a900ab303fa6dcf3d500da2dc7b3a3531c39c6551633b0aae56aec9740fbe403",
+          "classification": "knowledge collection; Main body held",
+          "use": "Metadata-only overlap check. Do not open its body; query pipeline fusion is outside this assignment."
+        },
+        {
+          "path": "research-scope-review-round870-v1.json",
+          "sha256": "d66fb4ba5a05e7188127f3cbb2acf6eeedfc9f8d9c4591e770ab8aaaafca6a7d",
+          "use": "Latest reviewed scope/retrieval metadata for R867-R869; all three original collection bodies remain held by Main."
+        }
+      ],
+      "finite_question": "For single-GPU equijoins, compare direct GPU hash build/probe, radix-partitioned hash join, and sort-merge as a counterpoint. How do build/probe size ratio, duplicate fanout, key-frequency and partition skew, key/payload width, table load factor, available device memory, and output materialization change the time/space crossover or create failure modes?",
+      "breadth_and_counterevidence": "Use original GPU join papers and primary accelerator/database sources. Compare algorithms by build, partition, probe/merge, overflow/spill, and output phases in one table; record GPU generation, relation sizes, key/payload types, skew distribution, memory residency, and timing boundary. Include at least one case where partitioning or sort-merge wins and one where its extra passes or materialization lose; explain why direct hash-table results do not automatically predict end-to-end join time. Preserve many-to-many duplicate semantics and distinguish skew in key frequency from skew in partition occupancy. Keep source-specific measurements separate and do not compare cross-paper speedups as a controlled ranking.",
+      "novelty_guard": "R867 covered operator fusion/materialization boundaries and expressly left hash-join algorithm design outside its survey. This scope is only the single-GPU equijoin algorithm and its build/probe/capacity crossover. Exclude query fusion, query planning, group-by, theta joins, general-purpose hash-table surveys beyond supporting a join mechanism, CPU/GPU co-processing, multi-GPU execution, product changes, and Strata/Arc performance claims. Do not read held R867-R869 knowledge bodies.",
+      "report_budget": "1,300-1,700 substantive words; no more than 7 primary URLs; one algorithm/crossover table, phase and memory models, at least one win and two counterexamples, source environments, applicability, and evidence limits.",
+      "prerequisites": [
+        "Public access to primary GPU equijoin/hash-table papers listed below.",
+        "No Strata profile, local GPU, code, driver, build, test, or process result is required."
+      ],
+      "prerequisite_evidence": "The assigned sources are directly available primary papers: the original SIGMOD GPU join paper, Rui and Tu's GPU equijoin paper, the 2023 join/group-by implementation study (join portions only), and the original Better GPU Hash Tables paper (table operations only, not end-to-end join evidence). These papers supply concrete alternatives, workloads, and named hardware without any missing local prerequisite.",
+      "primary_sources": [
+        {
+          "title": "Relational Joins on Graphics Processors",
+          "url": "https://cse.hkust.edu.hk/~psander/docs/join.pdf",
+          "use_and_limit": "Original SIGMOD 2008 GPU join algorithms; keep G80-era methods and results historical and architecture-specific."
+        },
+        {
+          "title": "Fast Equi-Join Algorithms on GPUs: Design and Implementation",
+          "url": "https://cse.usf.edu/~tuy/pub/SSDBM17.pdf",
+          "use_and_limit": "Original SSDBM 2017 hash and sort-merge implementations; pin their evaluated GPUs, data distributions, and phase timing."
+        },
+        {
+          "title": "Efficiently Processing Joins and Grouped Aggregations on GPUs",
+          "url": "https://arxiv.org/abs/2312.00720v1",
+          "use_and_limit": "Use only its join design and join measurements; do not turn the assignment into a group-by survey."
+        },
+        {
+          "title": "Better GPU Hash Tables",
+          "url": "https://arxiv.org/abs/2108.07232v3",
+          "use_and_limit": "Use only as supporting evidence about GPU table probing/load-factor behavior. It is not a join end-to-end comparison."
+        }
+      ],
+      "collection_handling": "Keep the report body unread by Main until a native Codex reviewer records scope, depth, novelty, source checks, and retrieval metadata."
+    },
+    {
+      "proposed_assignment_round": "R873",
+      "purpose_label": "knowledge collection",
+      "title": "Stationary dataflows and array utilization in non-LLM inference ASICs",
+      "report_output": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round873-v1.txt",
+      "spec_output_if_dispatched": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/orca-research-round873-spec-v1.txt",
+      "schedulable_now": true,
+      "shared_index": {
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+        "sha256": "0ea68239747e653fc0a4bbaf266ad15dc05624763ffab135348d1c4f19ecfae5"
+      },
+      "relevant_prior_report_metadata": [
+        {
+          "path": "research-round855-v1.txt",
+          "sha256": "e226747e0572d52dbb5f7f151da6d9f111ef1a7ce2c86e1bb84cb5f6efd022a9",
+          "classification": "knowledge collection; Main body held",
+          "use": "Metadata-only boundary check: R855 centered GPU convolution mapping/reuse/workspace. Do not reopen its collection body."
+        },
+        {
+          "path": "research-round839-v1.txt",
+          "sha256": "7cdaeca1f0c3d12892c3ee1d77947b2e8e0cef3f0e3390531220cdd89a17331f",
+          "classification": "knowledge collection; Main body held",
+          "use": "Metadata-only boundary check: R839 covered bank-index mapping and local tile transforms. Do not reopen its collection body."
+        },
+        {
+          "path": "research-scope-review-round857-v1.json",
+          "sha256": "34202fd6530fbcf5639316f6b78e7c7703ed1c18cdeafb1a96703e59328c65ea",
+          "use": "R855 scope and overlap metadata, including prior GEMM tile/operand-layout boundaries."
+        },
+        {
+          "path": "A/research-scope-review-round841-v1.json",
+          "sha256": "50e03ef297c9b6a1b2c76a28d0223ab9507fee1b08cbef505afa0dea5c0d3843",
+          "use": "R839 source and novelty metadata; no bank-mapping body is needed for this question."
+        },
+        {
+          "path": "research-scope-review-round870-v1.json",
+          "sha256": "d66fb4ba5a05e7188127f3cbb2acf6eeedfc9f8d9c4591e770ab8aaaafca6a7d",
+          "use": "Most recent collection topic metadata: query fusion, tile-based rendering, and BFS; their held bodies remain unread."
+        }
+      ],
+      "finite_question": "For dense fully connected/MLP layers in non-LLM inference ASICs, compare weight-stationary, output-stationary, row-stationary, and flexible spatial dataflows. How do batch size and M/K/N shape, local buffer capacity, PE-array dimensions, partial-sum movement, and interconnect flexibility alter operand reuse, off-chip traffic, utilization, energy, and latency? Identify workload regimes where a fixed dataflow wins and where a flexible mapping or a different stationary choice recovers otherwise idle compute or excess movement.",
+      "breadth_and_counterevidence": "Use a small number of original ASIC architecture papers and primary model/documentation sources. Compare dataflows under clearly stated equal-area or equal-resource assumptions where sources provide them, and keep measured silicon results distinct from analytical models and simulated mapping exploration. Include one result favoring stationary reuse and at least two counterexamples involving narrow or small-batch layers, array tails/low utilization, partial-sum traffic, SRAM capacity, or interconnect cost. State matrix shapes, batch, bit widths, array dimensions, buffer assumptions, and timing/energy boundary for each quantitative claim. The output should be a mechanism comparison, not a recommendation for a specific product or a claim about desktop GPU performance.",
+      "novelty_guard": "Keep the scope at architecture-level spatial-array dataflow for non-LLM fully connected/MLP inference. R855 is GPU convolution mapping; R839 is local-memory bank mapping; prior GEMM tile/operand-layout studies concern GPU kernel geometry. Exclude convolution algorithm lowering and workspace, GPU microkernel tiling/layout, bank-conflict equations, LLM/transformer workloads, sparsity/quantization, compiler code, simulations run by the researcher, and Strata/Xe2 adoption or speed claims. Do not reopen held R855/R839 collection bodies.",
+      "report_budget": "1,300-1,700 substantive words; at most 7 primary URLs; one dataflow/resource table, a compact reuse/traffic model, at least one favorable result and two counterexamples, exact source environments, applicability, and evidence limits.",
+      "prerequisites": [
+        "Public access to the original Eyeriss, TPU, MAESTRO, and Timeloop sources listed below.",
+        "No local accelerator, profile, code, driver, build, test, simulation, or process result is required."
+      ],
+      "prerequisite_evidence": "The original Eyeriss and TPU papers, the primary MAESTRO dataflow paper, and the author-hosted Timeloop paper are publicly reachable. Together they supply a fabricated row-stationary design, a deployed TPU measurement context, and two independent modeling approaches. Source metadata from R857/R841 bounds the adjacent convolution, GEMM geometry, and bank-layout scopes without opening their held report bodies.",
+      "primary_sources": [
+        {
+          "title": "Eyeriss: A Spatial Architecture for Energy-Efficient Dataflow for Convolutional Neural Networks",
+          "url": "https://people.csail.mit.edu/emer/media/papers/2016.06.isca.eyeriss_architecture.pdf",
+          "use_and_limit": "Original ISCA paper; use its fully connected results and same-area dataflow model where specified. Keep modeled comparison separate from the fabricated chip's measured operation."
+        },
+        {
+          "title": "In-Datacenter Performance Analysis of a Tensor Processing Unit",
+          "url": "https://arxiv.org/abs/1704.04760v1",
+          "use_and_limit": "Original ISCA TPU v1 paper and production workload measurements. Do not compare its historical GPU/CPU speedups directly with Eyeriss."
+        },
+        {
+          "title": "Understanding Reuse, Performance, and Hardware Cost of DNN Dataflows: A Data-Centric Approach Using MAESTRO",
+          "url": "https://arxiv.org/abs/1805.02566v1",
+          "use_and_limit": "Original analytical dataflow model; label estimates and model assumptions rather than treating them as measured silicon."
+        },
+        {
+          "title": "Timeloop: A Systematic Approach to DNN Accelerator Evaluation",
+          "url": "https://accelergy.mit.edu/timeloop.pdf",
+          "use_and_limit": "Author-hosted primary model paper; distinguish architecture projections from measured devices and state mapspace constraints."
+        },
+        {
+          "title": "An in-depth look at Google's first Tensor Processing Unit",
+          "url": "https://cloud.google.com/blog/products/ai-machine-learning/an-in-depth-look-at-googles-first-tensor-processing-unit-tpu",
+          "use_and_limit": "Original Google technical blog for hardware/dataflow context only; cite the peer-reviewed paper for measured performance."
+        }
+      ],
+      "collection_handling": "Keep the report body unread by Main until a native Codex reviewer records scope, depth, novelty, source checks, and retrieval metadata."
+    }
+  ],
+  "global_handling": {
+    "research_worker_model": "Orca gpt-6-luna",
+    "label_every_assignment": true,
+    "research_is_read_only": true,
+    "worker_may_write_only_its_named_report": true,
+    "prohibited_worker_actions": [
+      "Git commands",
+      "builds",
+      "tests",
+      "GPU jobs",
+      "profilers",
+      "process inspection",
+      "product edits",
+      "reading or using XeStrata source, code, tests, helpers, or archived proposals"
+    ],
+    "collection_body_policy": "Main must leave knowledge-collection bodies unread on arrival. Delegate scope/depth/redundancy/index review to a native Codex gpt-6-luna max reviewer; retain report hashes, retrieval metadata, and a short operational digest.",
+    "index_policy": "Do not edit research-index.json as part of the assignments. Pin each report and source URL in the later review before indexing.",
+    "source_policy": "Reports must name source origin and version, applicability, exact measurement/model boundaries, counterevidence, and evidence limits. Research does not establish product adoption or local performance."
+  },
+  "dispatch_status": "Planning only. No Orca workers were dispatched.",
+  "operational_digest_ja_400_chars": "R871は現行16f9ソースに限定し、既存のcompact FP16経路と比較しながら、MoE出力scratchを2×8192行から専門家順16384行へ再利用できるか、実live bytesとQSA/GDN/state/publication順序を調べるdecision support。R701/R702 Mainレビューとv6 profileを共有し、後者の非排他的whole-process合計を因果性能根拠にしない。R872はquery-fusion調査の境界を守ったGPU equijoin build/probe/partitionのkey skew・容量比較。R873は非LLM MLP ASICのweight/output/row stationary mappingと利用率・データ移動を比較する。3件とも1300–1700語、最大7 primary URL、前提証拠ありでschedulable_now=true。知識collection本体はMain未読のままnative Codex reviewへ回す。dispatchなし。"
+}

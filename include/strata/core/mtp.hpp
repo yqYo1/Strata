@@ -25,6 +25,7 @@
 
 #include <cuda_runtime.h>
 
+#include <array>
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -49,6 +50,9 @@ public:
     /// At most this many drafts per round (below max_t - 1): a window longer than the MTP's comes from elsewhere.
     void set_max_drafts(int k) { max_drafts_ = k; }
     uint64_t vram_bytes() const { return vram_; }
+    // Synchronous callback completion proof for target dense bank transitions.
+    // No MTP weight/graph/state is retired: it owns distinct projections.
+    void drain_prefill_dense_callback();
     /// The draft layer's K/V state (read-only: --serve's STRATA_STATE_HASH check hashes it)
     const QsaState& kv_state() const { return st_; }
     /// KV streaming: refill the ring of the drafter's window from its host copy for a sequence that continues at
@@ -82,8 +86,27 @@ public:
     /// Coupled mode with penalties: the history the next draft() chain starts from - what the session holds after the
     /// window's commit (`tail`) and the window's pick at its last accepted row (`next`, the next window's row 0).
     void set_draft_history(const int32_t* tail, int64_t n_tail, int32_t next);
-    void set_ple_session(SessionState* s) { ple_ss_ = s; }
     bool coupled() const { return coupled_active_; }
+
+    // Head-only request boundary: caller serializes all public calls and keeps
+    // NativeHead alive. IDs and their device allocation never change; KV-only
+    // prompt graphs, arenas, logits and sampling state remain live.
+    bool prepare_prefill_head(const NativeHead& head,std::string& err);
+    void cancel_prefill_head() noexcept;
+    void retire_prefill_head_readers() noexcept;
+    void detach_prefill_head() noexcept;
+    void restore_prefill_head() noexcept;
+    void resume_prefill_head() noexcept;
+    // Invoke before borrowed NativeHead destruction after this opt-in was used.
+    void retire_head_owner_readers(cudaStream_t owner_stream) noexcept;
+
+    /// Prompt-only expert retirement. Caller must own the entire prompt/decode
+    /// boundary; no concurrent public calls are allowed. Both methods reject a
+    /// duplicate transition. KV-only prompt graphs, draft KV, dense weights and
+    /// the borrowed window_R_ remain untouched. Failed queue retirement is fatal.
+    bool detach_prefill_experts(std::string& err);
+    bool restore_prefill_experts(std::string& err);
+    double ms_expert_detach = 0, ms_expert_restore = 0, ms_expert_recapture = 0;
 
     double ms_draft = 0, ms_prefill = 0;
     int64_t rounds = 0;
@@ -102,6 +125,19 @@ public:
     }
 
 private:
+    bool head_prepared_=false,head_detached_=false,head_restored_=false;
+    bool head_release_used_=false,head_owner_retired_=false,head_had_subset_=false,head_storage_released_=false;
+    uint64_t head_release_bytes_=0,head_full_bytes_=0;
+    size_t head_row_bytes_=0;
+    int head_type_=-1;
+    std::vector<int32_t> head_ids_,head_map_check_; // immutable map + bounded readback scratch
+    void retire_full_head_graphs() noexcept;
+    bool upload_experts_checked(bool original, std::string& err);
+    bool experts_detached_ = false, expert_source_valid_ = false;
+    bool expert_recapture_timing_ = false;
+    uint64_t expert_bytes_ = 0;
+    std::array<uint8_t, 32> expert_source_sha256_{};
+    std::vector<uint8_t> expert_host_source_; // immutable opt-in RAM restore owner
     bool record_forward(int T, int step_row0, cudaStream_t cs, std::string& err);
     bool capture_prefill(int T, std::string& err);
     bool capture_prefill_dev(int T, std::string& err);   ///< E-4: without the mapped staging (inputs copied on device)
@@ -125,7 +161,6 @@ private:
 
     const ModelGeometry* g_ = nullptr;
     SessionState* ss_ = nullptr;
-    SessionState* ple_ss_ = nullptr;
     const WeightTable* wt_ = nullptr;
     const NativeHead* head_ = nullptr;
     const float* window_R_ = nullptr;
@@ -183,6 +218,20 @@ private:
     float* head_logits_ = nullptr;
     float* dummy_inj_ = nullptr;
     int64_t cap_ = 0, attn_scratch_floats_ = 0;
+};
+
+// Explicit close reports reload failure. An unclosed scope fails closed rather
+// than unwinding over a possibly live reader or returning to decode without
+// weights. The caller closes only AFTER Prefill::run has destroyed its locals.
+class MtpPrefillExpertScope {
+    MtpDrafter* owner_ = nullptr;
+public:
+    MtpPrefillExpertScope() = default;
+    MtpPrefillExpertScope(const MtpPrefillExpertScope&) = delete;
+    MtpPrefillExpertScope& operator=(const MtpPrefillExpertScope&) = delete;
+    ~MtpPrefillExpertScope() noexcept;
+    bool open(MtpDrafter& mtp, std::string& err);
+    bool close(std::string& err);
 };
 
 }  // namespace strata::core

@@ -1,0 +1,9 @@
+R856 の `proposal.patch` 全688行、worker review、qualification planをMainが確認した。提案のSHA256は `67020b56aaf7187968ecf7b870a19b9ad76825af0cc52347e8dd929f162dc7e4`。既存4ファイルは現在のworktreeと実ビルド元6354f0b4のGit blobの両方に対して完全一致し、`git apply --check` は成功した。実製品への適用・build/test/GPU実行は **UNRUN**。
+
+返却された実attention eventを既存のchecked drainまで保持し、host API span、submit span、device duration、同一backendのinterval unionを区別する設計を確認した。両kernelのCGF本体はMainも元ソースとの文字列一致を検査した。新しいkernel、queue、barrier、per-event waitは導入していない。ProfileとBorrowがRestore/checked leaseより先に宣言され、部分submit例外でもleaseのdrainより先にevent ownerが破棄されない構成である。上限12288件を超えるcontext/chunkは事前拒否する。これは静的確認であり、実装の正常動作や時間計測の妥当性を証明するものではない。
+
+現時点では **保留・未適用**。現行バイナリを保ったまま利用できる、既に小規模実行実績のある公式unitraceを先に評価する。R860がその実行controllerをsource-onlyで準備中である。unitraceで現在のAttention kernelと投入時間の内訳が取れれば、計測だけのために製品変更と再ビルドを追加する必要性は低い。Attentionの33.961秒は従来の非排他queue windowのままであり、新しいdevice時間として扱わない。
+
+再開時は新しいprivate build root、独立oracleとevent寿命の小規模gate、全48層のmechanics、official39K diagnosticの順が必要になる。worker計画中のdense NLLは既知の長大入力問題があるため、そのまま長大入力に使わず、Mainのselected-only consumerを用いる。262144実入力、RESTORE、一般品質、性能改善はいずれも未証明。
+
+前goal turnの区分は **progress**：実行handle77034を確認し、32Kの独立FP32二試行が全48層を正常終了したことを新たに観測した。現時点の数値screen全体は進行中であり、成功へ書き換えない。

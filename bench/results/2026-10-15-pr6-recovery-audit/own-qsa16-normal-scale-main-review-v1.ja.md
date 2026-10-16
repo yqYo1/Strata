@@ -1,0 +1,11 @@
+# Main: R844 exact-normal exponent proposal
+
+Mainがproposal.patch全体、新helper、追加fixture、REVIEW/manifestを読んだ。payload全件SHA/sizeと、元FP32実装prefix19531Bのbyte一致を独立照合。現productは未変更・未ビルド・未実行。
+
+入力指数E=1..254かつ1<=E+n<=254なら、2^n乗算は符号/仮数を変えず表現可能な正常数へ厳密に移る。helperはnの上下限を先に比較し、任意intでもE+n overflowを避ける。NaN/Inf/zero/subnormalや正常域外resultは元ldexpへ同じ引数を渡す。score側の積の括弧と順序は元のまま。templateOFFは元のscore式を保持。局所FP32accum、ページ/slot bounds、同一queue、barrier/SLM等は変更しない。
+
+追加fixtureは代数的証明とは別に両符号・全入出力指数・8仮数の1,032,256normal例、36,880fallback例、4,180production積の例を検証するsource。GPU値を旧device関数と厳密bits比較し、正常域ではFP64独立oracleとも照合する。旧attentionrun/許容値を変更しない。全attention112cases(通常full mode)の両flagmode比較は今後Mainが別processで実行する。
+
+性能は未証明。compilerが元ldexpを十分最適化していれば整数判定・分岐が逆効果となる。別のsource上の候補として、scales_badのgroup reductionは各32-cell tileで呼ばれる一方、結果は最終出力だけに使うように見える。各laneでbadを累積し最後に一度reduceする等は依存/全thread到達/NaN契約を確認して別に評価する案であり、本R844には混ぜない。現在の非排他的profileだけではどちらの原因とも断定しない。先に現6354自然32Kscreen/Publicfixture/必要なJIT資源・kernel時間を閉じ、その後source境界で適用を判断する。
+
+newhelperとfixtureは今回の独立記述、repositoryMIT。既存proposal/base/filesはMain適用の現在consumerがあるため保持。Gitにはpatch/manifest/provenance/review/planを残し、同一source全体の多重mirrorをさらにcommitしない。実装workerのUNRUNをPASSに読み替えない。

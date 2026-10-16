@@ -1,0 +1,44 @@
+{
+  "status": "rejected before production: scalar output bits changed",
+  "hardware": "Ryzen 5 5600X",
+  "compiler": "oneAPI icpx 2026.1, -O3 -std=c++20 -march=znver3 -fno-builtin-expf -lsvml",
+  "reference": "std::exp(float) through volatile function pointer; executable defines static Intel IMF expf dispatch and __libm_expf variants, as production does. This is not a comparison to glibc expf.",
+  "inputs": "2^21 deterministic LCG inputs:half approximately uniform(-80,80),half finite raw float bit patterns with abs<80. Seed12345.",
+  "results": {
+    "__svml_expf4": {
+      "tested": 2097152,
+      "unequal": 561494
+    },
+    "__svml_expf4_ha": {
+      "tested": 2097152,
+      "unequal": 45718
+    },
+    "__svml_expf8": {
+      "tested": 2097152,
+      "unequal": 561494
+    },
+    "__svml_expf8_ha": {
+      "tested": 2097152,
+      "unequal": 45718
+    }
+  },
+  "interpretation": "Both ordinary and high-accuracy4/8-lane SVML exports disagree with the existing scalar implementation. No vector SwiGLU path introduced and no throughput claim made.",
+  "examples": [
+    "example v0 x=0x1.a1d8d4p+1 scalar=0x1.a2a496p+4 vector=0x1.a2a494p+4",
+    "example v0 x=0x1.52e66p+1 scalar=0x1.c3de5cp+3 vector=0x1.c3de5ap+3",
+    "example v0 x=-0x1.24615cp+6 scalar=0x1.75cae8p-106 vector=0x1.75caeap-106",
+    "variant=0 total=2097152 unequal=561494",
+    "example v1 x=-0x1.ccec66p+2 scalar=0x1.86abfap-11 vector=0x1.86abfcp-11",
+    "example v1 x=-0x1.caac2cp+4 scalar=0x1.8f8b5ep-42 vector=0x1.8f8b5cp-42",
+    "example v1 x=-0x1.b59632p+5 scalar=0x1.0fe8aep-79 vector=0x1.0fe8bp-79",
+    "variant=1 total=2097152 unequal=45718",
+    "example v2 x=0x1.a1d8d4p+1 scalar=0x1.a2a496p+4 vector=0x1.a2a494p+4",
+    "example v2 x=0x1.52e66p+1 scalar=0x1.c3de5cp+3 vector=0x1.c3de5ap+3",
+    "example v2 x=-0x1.24615cp+6 scalar=0x1.75cae8p-106 vector=0x1.75caeap-106",
+    "variant=2 total=2097152 unequal=561494",
+    "example v3 x=-0x1.ccec66p+2 scalar=0x1.86abfap-11 vector=0x1.86abfcp-11",
+    "example v3 x=-0x1.caac2cp+4 scalar=0x1.8f8b5ep-42 vector=0x1.8f8b5cp-42",
+    "example v3 x=-0x1.b59632p+5 scalar=0x1.0fe8aep-79 vector=0x1.0fe8bp-79",
+    "variant=3 total=2097152 unequal=45718"
+  ]
+}

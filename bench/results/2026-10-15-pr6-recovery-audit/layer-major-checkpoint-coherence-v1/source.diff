@@ -1,0 +1,145 @@
+--- a/src/program/generate.cpp
++++ b/src/program/generate.cpp
+@@ -4902,6 +4902,12 @@
+             }
+             return true;
+         };
++        // Layer-major final-layer chunks can arrive after earlier layers have
++        // read the whole segment. Save periodic state only after a full run,
++        // its MTP callbacks/expert restore, and the prompt-slot refill complete.
++        const char* lm_checkpoint_mode = std::getenv("STRATA_PREFILL_LAYER_MAJOR");
++        const bool coherent_periodic = !multi_gpu && o.prompt_cache > 0 && o.prompt_cache_every > 0 &&
++            lm_checkpoint_mode && std::strcmp(lm_checkpoint_mode, "1") == 0;
+         int64_t pp_total = 0, pp_from = 0, pp_next_check = 0;
+         // #471: the position the prompt pass has read up to (a chunk's or a window's end): what a request cancelled
+         // mid-read reports as read, instead of the whole prompt
+@@ -4976,7 +4982,7 @@
+             strata::core::progress_at("reading the prompt (batched), done up to token", done);
+             strata::core::progress_beat();
+             std::fflush(stdout);
+-            if (o.prompt_cache_every > 0 && done >= pp_next_check) {
++            if (!coherent_periodic && o.prompt_cache_every > 0 && done >= pp_next_check) {
+                 bool saved = false;
+                 if (multi_gpu) {   // the stages' parts, saved when each of them read this chunk
+                     std::vector<ConvCheckpoint> parts;
+@@ -4993,7 +4999,7 @@
+                     saved = checkpoint_at(done);
+                 }
+                 if (!saved) { e = "saving a conversation checkpoint failed"; return false; }
+-                pp_next_check = done + o.prompt_cache_every;
++                pp_next_check = strata::program::checkpoint_next(done, o.prompt_cache_every);
+             }
+             return true;
+         };
+@@ -5005,7 +5011,7 @@
+                 strata::core::SessionState& stage_ss = i == 0 ? ss : stages[i - 1]->ss;
+                 stage_sp.on_stage_chunk = [&, i](int64_t done, std::string& e) -> bool {
+                     if (o.prompt_cache <= 0 || o.prompt_cache_every <= 0 || done < part_next[i]) return true;
+-                    part_next[i] = done + o.prompt_cache_every;
++                    part_next[i] = strata::program::checkpoint_next(done, o.prompt_cache_every);
+                     ConvCheckpoint part;   // this stage's state at `done` (its stream is synchronized)
+                     part.ids.assign(cur.begin(), cur.begin() + done);
+                     if (!checkpoint_save(part, stage_ss, g)) { e = "saving a checkpoint part failed"; return false; }
+@@ -5675,7 +5681,7 @@
+             pp_from = read_from;
+             pp_reached = read_from;
+             pp_t0 = r0;
+-            pp_next_check = reread_to > 0 ? INT64_MAX : resume + o.prompt_cache_every;
++            pp_next_check = reread_to > 0 ? INT64_MAX : strata::program::checkpoint_next(resume, o.prompt_cache_every);
+             {
+                 std::lock_guard<std::mutex> lk(part_mu);
+                 part_at.clear();
+@@ -5923,11 +5929,45 @@
+                     return 1;
+                 }
+                 const auto tsp = Clock::now();
+-                const bool sp_ok = win ? read_windows(at, to, err) : run_prompt_with_mtp_experts(
+-                    sp, mtp, native_pack && o.spec == 4 && !o.mtp.empty() && !multi_gpu &&
+-                    o.layer_split.empty() && o.peer_device < 0 && !peer.valid() &&
+-                    std::all_of(o.expert_cache_remote.begin(), o.expert_cache_remote.end(), [](auto slots) { return slots <= 0; }),
+-                    ids.data() + at, to - at, at, err);
++                bool boundary_failed = false;
++                auto run_batched = [&](int64_t a, int64_t b) {
++                    return run_prompt_with_mtp_experts(
++                        sp, mtp, native_pack && o.spec == 4 && !o.mtp.empty() && !multi_gpu &&
++                        o.layer_split.empty() && o.peer_device < 0 && !peer.valid() &&
++                        std::all_of(o.expert_cache_remote.begin(), o.expert_cache_remote.end(), [](auto slots) { return slots <= 0; }),
++                        ids.data() + a, b - a, a, err);
++                };
++                auto read_batched = [&]() {
++                    // Keep the cold, interval-zero and reread diagnostic paths
++                    // as one run per existing root/turn/reread boundary.
++                    if (!coherent_periodic || reread_to > 0) return run_batched(at, to);
++                    for (int64_t q = at; q < to;) {
++                        if (stop_req.load()) { err = "cancelled"; return false; }
++                        // The outer loop already lent the first segment. Decide
++                        // windows on the original outer length, never a newly
++                        // shortened periodic segment; all these reads batched.
++                        if (q != at && !lend(to - q, err)) {
++                            err = "lending the prompt path its slots failed: " + err;
++                            boundary_failed = true; return false;
++                        }
++                        const int64_t end = strata::program::checkpoint_segment_end(q, to, pp_next_check, sp.chunk());
++                        if (!run_batched(q, end)) return false;
++                        if (!refill(err)) {
++                            err = "refilling a lent slot failed: " + err;
++                            boundary_failed = true; return false;
++                        }
++                        if (end >= pp_next_check) {
++                            if (!checkpoint_at(end)) {
++                                err = "saving a conversation checkpoint failed";
++                                boundary_failed = true; return false;
++                            }
++                            pp_next_check = strata::program::checkpoint_next(end, o.prompt_cache_every);
++                        }
++                        q = end;
++                    }
++                    return true;
++                };
++                const bool sp_ok = win ? read_windows(at, to, err) : read_batched();
+                 if (trace) {
+                     std::fprintf(stderr, "strata trace: read %lld tokens (%s) in %.1f ms\n", (long long) (to - at),
+                                  win ? "windows" : "batched",
+@@ -5935,7 +5975,7 @@
+                     std::fflush(stderr);
+                 }
+                 if (!sp_ok) {
+-                    if (!stop_req.load()) {
++                    if (boundary_failed || !stop_req.load()) {
+                         std::fprintf(stderr, "strata serve: %s\n", err.c_str());
+                         std::printf("ERR %s\n", err.c_str());
+                         // #224: a CUDA fault (an illegal address) poisons the context for the whole process, and
+--- a/include/strata/program/prompt_checkpoint.hpp
++++ b/include/strata/program/prompt_checkpoint.hpp
+@@ -7,6 +7,31 @@
+ #include <stdexcept>
+ 
+ namespace strata::program {
++
++// The next interval is measured from the checkpoint actually taken, rather
++// than from a global grid. Saturation preserves the monotone position contract.
++inline int64_t checkpoint_next(int64_t position, int64_t interval) {
++    if (position < 0 || interval < 0)
++        throw std::invalid_argument("invalid prompt checkpoint interval position");
++    const auto limit = std::numeric_limits<int64_t>::max();
++    return interval == 0 || interval > limit - position ? limit : position + interval;
++}
++
++// First chunk end reaching `next`, capped at the existing outer boundary.
++// Use the actual chunk after lend/relayout. Avoid rounding with addition or
++// multiplication, which can overflow for large CLI intervals/positions.
++inline int64_t checkpoint_segment_end(int64_t begin, int64_t end,
++                                      int64_t next, int64_t chunk) {
++    if (begin < 0 || end <= begin || next < 0 || chunk <= 0)
++        throw std::invalid_argument("invalid prompt checkpoint segment boundary");
++    const int64_t remaining = end - begin;
++    const int64_t distance = next > begin ? next - begin : 1;
++    if (distance >= remaining) return end;
++    const int64_t remainder = distance % chunk;
++    const int64_t padding = remainder == 0 ? 0 : chunk - remainder;
++    if (padding >= remaining - distance) return end;
++    return begin + distance + padding; // each partial sum is bounded by end
++}
+ 
+ // Niko's opt-in trailing-effort turn stays outside the reusable checkpoint.
+ // This selects a state boundary; it never removes tokens from the request.

@@ -1,5 +1,6 @@
 // src/core/expert_source.cpp - the adapter.  See the header for the three clauses of the contract.
 #include "strata/core/expert_source.hpp"
+#include "strata/core/progress.hpp"
 #include "strata/core/remote_experts.hpp"
 #include "strata/core/peer_experts.hpp"
 #include "strata/kernels/cpu/expert_layout.hpp"
@@ -10,7 +11,11 @@
 #include "strata/kernels/elementwise.hpp"
 #include "strata/kernels/quantize_act.hpp"
 #include "strata/kernels/s2_expert_grouped.hpp"
-#include "strata/kernels/cpu/kq_avx1.hpp"
+#include "strata/kernels/iq_kernels.hpp"
+#ifdef STRATA_ENABLE_SYCL
+#include "strata/sycl/native_q2.hpp"
+#include "strata/sycl/launch.hpp"
+#endif
 #include "strata/kernels/cpu/kq_avx2.hpp"
 
 #include <cuda_runtime.h>
@@ -27,8 +32,10 @@
 #include <limits>
 #include <map>
 #include <memory>
+#include <new>
 #include <mutex>
 #include <thread>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -55,7 +62,6 @@
 #endif
 
 namespace strata::core {
-
 namespace detail {
 
 bool cgroup_available_bytes(uint64_t limit, const CgroupMemoryStat& stat, uint64_t& bytes) {
@@ -218,25 +224,18 @@ bool read_cgroup_memory_stat(const std::filesystem::path& path, uint64_t current
 }
 #endif
 
-}  // namespace
-
-namespace detail {
-
-bool host_available_memory(HostMemory& m, const std::string& meminfo, const std::string& self_cgroup,
-                           const std::string& cgroup_root) {
-    m = HostMemory{};
+bool available_memory_bytes(uint64_t& bytes) {
 #if defined(_WIN32)
-    (void) meminfo; (void) self_cgroup; (void) cgroup_root;
     MEMORYSTATUSEX status{};
     status.dwLength = sizeof(status);
     if (!GlobalMemoryStatusEx(&status)) return false;
-    m.available = (uint64_t) status.ullAvailPhys;
-    return m.available > 0;
+    bytes = (uint64_t) status.ullAvailPhys;
+    return bytes > 0;
 #elif defined(__linux__)
     // MemAvailable includes reclaimable page cache, unlike _SC_AVPHYS_PAGES.
-    std::ifstream info(meminfo);
+    std::ifstream info("/proc/meminfo");
     std::string line;
-    uint64_t bytes = 0;
+    bytes = 0;
     while (std::getline(info, line)) {
         std::istringstream fields(line);
         std::string key, unit;
@@ -245,26 +244,17 @@ bool host_available_memory(HostMemory& m, const std::string& meminfo, const std:
             value <= std::numeric_limits<uint64_t>::max() / 1024) bytes = value * 1024;
     }
     if (bytes == 0) return false;
-    // Account for the tightest cgroup ancestor limit when its normal mount is visible.
+    // Account for the tightest cgroup-v2 ancestor limit when its normal mount is visible.
     // This is a point-in-time guard, not a reservation against concurrent allocations.
-    std::ifstream groups(self_cgroup);
+    std::ifstream groups("/proc/self/cgroup");
     if (!groups) return false;
-    const std::filesystem::path root(cgroup_root);
-    bool v2 = false;
-    std::string v1_path;   // the memory controller's group (cgroup v1), when there is no v2 line
+    bool resolved_v2 = false;
     while (std::getline(groups, line)) {
-        if (line.rfind("0::/", 0) != 0) {
-            // v1: "N:controller[,controller]:/path"
-            const size_t c1 = line.find(':'), c2 = c1 == std::string::npos ? c1 : line.find(':', c1 + 1);
-            if (c2 == std::string::npos) continue;
-            std::istringstream ctl(line.substr(c1 + 1, c2 - c1 - 1));
-            for (std::string c; std::getline(ctl, c, ',');)
-                if (c == "memory") v1_path = line.substr(c2 + 1);
-            continue;
-        }
+        if (line.rfind("0::/", 0) != 0) continue;
+        const std::filesystem::path root("/sys/fs/cgroup");
         auto path = (root / line.substr(4)).lexically_normal();
         if (path.string().rfind(root.string(), 0) != 0 || !std::filesystem::is_directory(path)) return false;
-        v2 = true;
+        resolved_v2 = true;
         while (path.string().rfind(root.string(), 0) == 0) {
             std::ifstream limit_file(path / "memory.max"), current_file(path / "memory.current");
             std::string limit;
@@ -278,57 +268,26 @@ bool host_available_memory(HostMemory& m, const std::string& meminfo, const std:
                     size_t consumed = 0;
                     const uint64_t cap = std::stoull(limit, &consumed);
                     if (consumed != limit.size()) return false;
-                    CgroupMemoryStat stat;
+                    detail::CgroupMemoryStat stat;
                     if (!read_cgroup_memory_stat(path, current, stat)) return false;
                     uint64_t cgroup_available = 0;
-                    if (!cgroup_available_bytes(cap, stat, cgroup_available)) return false;
+                    if (!detail::cgroup_available_bytes(cap, stat, cgroup_available)) return false;
                     bytes = std::min(bytes, cgroup_available);
-                    m.cgroup_limit = std::min(m.cgroup_limit, cap);
                 } catch (...) { return false; }
             }
             if (path == root) break;
             path = path.parent_path();
         }
     }
-    if (!v2 && !v1_path.empty()) {
-        // #633: cgroup v1 (older Docker hosts, RHEL 7/8): the memory controller's group and its ancestors.  An
-        // unlimited group says a number near 2^63 (rounded to its page size); a group whose files are not
-        // visible (no mount in this namespace) is skipped - MemAvailable alone, as with no cgroup at all.
-        const std::filesystem::path mroot = root / "memory";
-        auto path = (mroot / v1_path.substr(v1_path.rfind('/', 0) == 0 ? 1 : 0)).lexically_normal();
-        while (path.string().rfind(mroot.string(), 0) == 0) {
-            std::ifstream limit_file(path / "memory.limit_in_bytes"), usage_file(path / "memory.usage_in_bytes");
-            uint64_t cap = 0, usage = 0;
-            if (limit_file >> cap && usage_file >> usage && cap < (1ull << 62)) {
-                bytes = std::min(bytes, usage < cap ? cap - usage : 0);
-                m.cgroup_limit = std::min(m.cgroup_limit, cap);
-            }
-            if (path == mroot) break;
-            path = path.parent_path();
-        }
-    }
-    m.available = bytes;
-    return true;
+    return resolved_v2;
 #else
-    (void) meminfo; (void) self_cgroup; (void) cgroup_root;
     const long pages = sysconf(_SC_AVPHYS_PAGES);
     const long page_bytes = sysconf(_SC_PAGESIZE);
     if (pages <= 0 || page_bytes <= 0 ||
         (uint64_t) pages > std::numeric_limits<uint64_t>::max() / (uint64_t) page_bytes) return false;
-    m.available = (uint64_t) pages * (uint64_t) page_bytes;
-    return m.available > 0;
-#endif
-}
-
-}  // namespace detail
-
-namespace {
-
-bool available_memory_bytes(uint64_t& bytes) {
-    detail::HostMemory m;
-    if (!detail::host_available_memory(m)) return false;
-    bytes = m.available;
+    bytes = (uint64_t) pages * (uint64_t) page_bytes;
     return bytes > 0;
+#endif
 }
 
 }  // namespace
@@ -920,14 +879,13 @@ void FileExpertSource::fill_many(const std::vector<Fill>& todo) {
     for (auto& t : th) t.join();
 }
 
-uint64_t FileExpertSource::expert_bytes() const {
-    uint64_t total = 0;
-    for (uint64_t b : layer_blob_bytes_) total += b * (uint64_t) n_expert_;
-    return total;
-}
-
-bool FileExpertSource::open_direct(std::string& why) {
+bool FileExpertSource::set_unbuffered(uint64_t ram_bytes, std::string& why) {
 #if defined(_WIN32)
+    if (base_ == nullptr || paths_.empty() || !direct_.empty()) {
+        why = !direct_.empty() ? "already unbuffered" : "no expert files open";
+        return !direct_.empty();
+    }
+    if (!experts_unbuffered(paths_, ram_bytes, why, /*cache_counts=*/false)) return false;
     for (const std::string& path : paths_) {
         const int wide = MultiByteToWideChar(CP_UTF8, 0, path.c_str(), -1, nullptr, 0);
         std::vector<wchar_t> w((size_t) (wide > 0 ? wide : 1), L'\0');
@@ -949,58 +907,7 @@ bool FileExpertSource::open_direct(std::string& why) {
     }
     return true;
 #else
-    (void) why;
-    return false;
-#endif
-}
-
-bool FileExpertSource::set_unbuffered(uint64_t ram_bytes, std::string& why) {
-#if defined(_WIN32)
-    if (base_ == nullptr || paths_.empty() || !direct_.empty()) {
-        why = !direct_.empty() ? "already unbuffered" : "no expert files open";
-        return !direct_.empty();
-    }
-    // #577: the file tier reads the experts outside the RAM copy, not every byte of the shards (dense weights, the
-    // PLE table), and the copy holds at most every expert - the budget asked for can be more than that
-    const uint64_t experts = expert_bytes();
-    const uint64_t arena = std::min(ram_bytes, experts);
-    if (!experts_unbuffered(paths_, arena, why, /*cache_counts=*/false, experts - arena)) return false;
-    return open_direct(why);
-#else
     (void) ram_bytes;
-    why = "through the file cache (not Windows)";
-    return false;
-#endif
-}
-
-bool FileExpertSource::recheck_unbuffered(std::string& why) {
-#if defined(_WIN32)
-    if (const char* env = std::getenv("STRATA_UNBUFFERED_LOAD"); env != nullptr && env[0] != '\0') {
-        why = std::string("STRATA_UNBUFFERED_LOAD=") + env;
-        return !direct_.empty();
-    }
-    if (base_ == nullptr || paths_.empty()) {
-        why = "no expert files open";
-        return false;
-    }
-    // #577: the RAM copy is built (and already out of the available RAM), so what the file cache would have to keep
-    // is exactly the experts outside it - the GPU cache's (refilled after a prompt borrowed their slots) and the
-    // ones neither holds
-    const uint64_t experts = expert_bytes();
-    const uint64_t read = experts > complement_bytes_ ? experts - complement_bytes_ : 0;
-    std::string w;
-    const bool ub = experts_unbuffered(paths_, 0, w, /*cache_counts=*/false, read);
-    char head[96];
-    std::snprintf(head, sizeof head, "re-checked with the RAM copy built (%.2f GiB): ",
-                  (double) complement_bytes_ / 1073741824.0);
-    why = head + w;
-    if (ub == !direct_.empty()) return ub;
-    if (ub) return open_direct(why);
-    // through the file cache after all: the mapped reads take over (staged() stays true for the GGUF in place)
-    for (void* d : direct_) CloseHandle((HANDLE) d);
-    direct_.clear();
-    return false;
-#else
     why = "through the file cache (not Windows)";
     return false;
 #endif
@@ -1220,35 +1127,8 @@ void RouterLookahead::run() {
         }
         const auto t0 = std::chrono::steady_clock::now();
         want.clear();
-        // The router dot is AVX2 (kq_avx2.cpp); a CPU without AVX2 (the experimental older-CPU builds) takes the AVX1
-        // one (kq_avx1.cpp) or, without AVX, the same sums in plain C++.  From the Strata_Dirigo fork (rwkeyes): an
-        // AVX-only Xeon E5-2687W died here (vpmovzxwd) on its first request.  An estimate only (which experts to
-        // prefetch); the order of the additions differs between the three, the output does not depend on it.
-        if (strata::kernels::cpu::cpu_avx2_ok()) {
-            strata::kernels::cpu::bf16_rows_dot_multi(routers_[(size_t) layer].data(), (int) n_expert_, (int) n_embd_,
-                                                      x_.data(), (int) nt, logits.data());
-        } else if (strata::kernels::cpu::cpu_avx1_ok()) {
-            strata::kernels::cpu::bf16_rows_dot_multi_avx1(routers_[(size_t) layer].data(), (int) n_expert_,
-                                                           (int) n_embd_, x_.data(), (int) nt, logits.data());
-        } else {
-            // a mul and an add, not std::fma: without an FMA instruction that is a libm call per element (74x
-            // slower on a Xeon E5-2665, measured by the fork)
-            const uint16_t* rw = routers_[(size_t) layer].data();
-            for (int64_t r = 0; r < n_expert_; ++r) {
-                const uint16_t* wr = rw + (size_t) r * (size_t) n_embd_;
-                for (int64_t t = 0; t < nt; ++t) {
-                    const float* xr = x_.data() + (size_t) t * (size_t) n_embd_;
-                    float acc = 0.0f;
-                    for (int64_t c = 0; c < n_embd_; ++c) {
-                        const uint32_t bits = (uint32_t) wr[c] << 16;
-                        float wf;
-                        std::memcpy(&wf, &bits, sizeof wf);
-                        acc += wf * xr[c];
-                    }
-                    logits[(size_t) t * (size_t) n_expert_ + (size_t) r] = acc;
-                }
-            }
-        }
+        strata::kernels::cpu::bf16_rows_dot_multi(routers_[(size_t) layer].data(), (int) n_expert_, (int) n_embd_,
+                                                  x_.data(), (int) nt, logits.data());
         for (int64_t t = 0; t < nt; ++t) {
             const float* lt = logits.data() + (size_t) (t * n_expert_);
             for (int64_t e = 0; e < n_expert_; ++e) order[(size_t) e] = (int32_t) e;
@@ -1866,10 +1746,18 @@ void expert_pool_dispatch(void* user, const float* x_f, const int32_t* ids, cons
         return;
     }
     if (expert_layout().native) {
-        // plan v0.3 P6: a native pack runs its experts in verify windows only (the driver guarantees it)
-        d.failed = true;
-        d.fail = "the single-token expert path does not take a native (IQ) pack";
-        d.fail_layer = d.layers;
+        // Reuse the native row-split pool with a one-token batch. Its blob
+        // layout and quantization differ from the canonical S2 single path.
+        const bool use_hits = d.cache != nullptr;
+        if (d.host_res != nullptr || d.plan != nullptr || d.remote_count > 0 ||
+            (use_hits && (!d.hit_native || !d.hits_ready() || !d.decided ||
+                          d.is_hit.size() < (size_t) k))) {
+            d.failed = true;
+            d.fail = "native per-layer experts need matching native GPU hit decisions";
+            d.fail_layer = d.layers;
+            return;
+        }
+        expert_pool_dispatch_multi(d, x_f, ids, 1, k, out, use_hits ? d.is_hit.data() : nullptr);
         return;
     }
     if (k > (int64_t) d.jobs.size()) d.jobs.resize((size_t) k);
@@ -1980,9 +1868,15 @@ static_assert(strata::kernels::cpu::MAXT * 10 <= kMaxWindowEntries, "a verify wi
 }  // namespace
 
 void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32_t* ids, int64_t n_tok, int64_t k,
-                                float* out) {
+                                float* out, const uint8_t* hit_mask) {
     using namespace strata::kernels::cpu;
     if (d.failed) return;
+    if (hit_mask != nullptr && (n_tok != 1 || d.plan != nullptr || d.host_res != nullptr || d.remote_count > 0)) {
+        d.failed = true;
+        d.fail = "per-layer hit decisions cannot be combined with a window GPU plan";
+        d.fail_layer = d.layers;
+        return;
+    }
     if (n_tok < 1 || n_tok > MAXT) {
         d.failed = true;
         d.fail = "a verify window has more tokens than the multi-token expert kernel takes";
@@ -2103,7 +1997,8 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
     } else {
         for (int64_t i = 0; i < n; ++i) {
             const int32_t e = ids[i];
-            kind[i] = (e >= 0 && e < d.n_expert && d.host_res != nullptr &&
+            kind[i] = hit_mask != nullptr ? (hit_mask[i] ? 0 : -1) :
+                    (e >= 0 && e < d.n_expert && d.host_res != nullptr &&
                        d.host_res[(size_t) d.layers * (size_t) d.n_expert + (size_t) e] >= 0) ? 0
                     : (e >= 0 && e < d.n_expert && d.peer != nullptr && d.peer->has(d.layers, e)) ? 2 : -1;
         }
@@ -2127,30 +2022,16 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
             for (int64_t i = 0; i < n; ++i) if (d.remote[r]->owns(i)) kind[i] = 2;
         }
     }
-    static const bool dec_batch = [] { const char* v = std::getenv("STRATA_DEC_BATCH"); return v == nullptr || std::atoi(v) != 0; }();
-    // the GPU's copy_rows_from_mapped zeroes the rows it computed itself (dec_batch); STRATA_VERIFY_DEVICE_PLAN's
-    // copy_or_zero_from_mapped copies every row, so there the host still zeroes them
-    static const bool device_plan = [] { const char* v = std::getenv("STRATA_VERIFY_DEVICE_PLAN"); return v != nullptr && std::atoi(v) != 0; }();
-    const bool gpu_zeroes_hits = (d.plan != nullptr && n <= kMaxWindowEntries && n <= d.plan->cap && dec_batch && !device_plan);
-    bool any_cpu = false;
-    for (int64_t i = 0; i < n; ++i)
-        if (kind[i] < 0) { any_cpu = true; break; }
     const auto c1 = std::chrono::steady_clock::now();
-    if (any_cpu) {
-        // #578 --remote-expert-opt: a token whose experts all run on a GPU (CUDA0 or a helper) needs no CPU activation
-        const bool ep = d.remote_count > 0 && d.remote[0]->optimized_decode();
-        for (int64_t t = 0; t < n_tok; ++t) {
-            if (ep && std::all_of(kind + t * k, kind + (t + 1) * k, [](int32_t v) { return v >= 0; })) continue;
-            if (native && strata::kernels::cpu::q2_native_kernels(lay.fmt[(size_t) d.layers].gu_type))   // a native Q2_0 pack: the Q2_0 kernels' activations
-                act_quant_any(x_f + (size_t) t * H, H, d.act_multi[(size_t) t]);
-            else if (native)
-                native_quant_act(lay.fmt[(size_t) d.layers], x_f + (size_t) t * H, d.nact_multi.data() + (size_t) t * kNativeActBytes);
-            else
-                act_quant_q8_1(x_f + (size_t) t * H, H, d.act_multi[(size_t) t]);
-        }
-    }
+    if (native && lay.fmt[(size_t) d.layers].gu_type == 42)   // a native Q2_0 pack: the Q2_0 kernels' activations
+        for (int64_t t = 0; t < n_tok; ++t) act_quant_any(x_f + (size_t) t * H, H, d.act_multi[(size_t) t]);
+    else if (native)
+        for (int64_t t = 0; t < n_tok; ++t)
+            native_quant_act(lay.fmt[(size_t) d.layers], x_f + (size_t) t * H, d.nact_multi.data() + (size_t) t * kNativeActBytes);
+    else
+        for (int64_t t = 0; t < n_tok; ++t) act_quant_q8_1(x_f + (size_t) t * H, H, d.act_multi[(size_t) t]);
     const auto c2 = std::chrono::steady_clock::now();
-    if (any_cpu) {   // CS-T: the experts the CPU computes, fetched together (the GGUF in place reads them on several threads)
+    {   // CS-T: the experts the CPU computes, fetched together (the GGUF in place reads them on several threads)
         static thread_local std::vector<int64_t> miss;
         miss.clear();
         for (int64_t i = 0; i < n_tok * k; ++i)
@@ -2173,17 +2054,14 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
                 return;
             }
             if (kind[i] >= 0) {             // CUDA0, PCIe, or a remote/peer result staged into this row below
-                if (kind[i] == 0) ++d.cache_hits;
-                else ++d.offload_entries;                       // #588: PCIe or another GPU
-                if (kind[i] == 2 && d.peer != nullptr) ++d.peer_entries;
-                // multi-GPU: a direct peer launch is writing this row right now - zeroing it would race it;
-                // dec_batch: copy_rows_from_mapped_kernel already zeroes kind 0/1 rows on the GPU
-                if (!((kind[i] == 2 && d.peer != nullptr && d.peer->launched_direct()) ||
-                      (gpu_zeroes_hits && (kind[i] == 0 || kind[i] == 1))))
+                if (kind[i] == 0 && hit_mask == nullptr) ++d.cache_hits;
+                else if (kind[i] == 2 && d.peer != nullptr) ++d.peer_entries;
+                // multi-GPU: a direct peer launch is writing this row right now - zeroing it would race it
+                if (!(kind[i] == 2 && d.peer != nullptr && d.peer->launched_direct()))
                     std::memset(row, 0, (size_t) H * sizeof(float));
                 continue;
             }
-            ++d.cache_refused;
+            if (hit_mask == nullptr) ++d.cache_refused;
             int16_t& jo = d.job_of[(size_t) e];
             if (jo < 0) {
                 const uint8_t* b = d.src->blob(d.layers, e);
@@ -2209,10 +2087,18 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
         }
     const auto c3 = std::chrono::steady_clock::now();
     pt("run", njobs);
-    if (njobs > 0) {
-        if (native) d.pool->run_split_multi_native(lay.fmt[(size_t) d.layers], d.jobs_multi.data(), njobs);
-        else d.pool->run_split_multi(d.jobs_multi.data(), njobs);
-    }
+    if (native) {
+        // Native jobs borrow dispatch-owned buffers. Do not unwind them if completion throws.
+        try {
+            d.pool->run_split_multi_native(lay.fmt[(size_t) d.layers], d.jobs_multi.data(), njobs);
+        } catch (...) {
+            std::fprintf(stderr, "strata: native expert pool failed before completion; retaining owners and aborting\n");
+            strata::core::release_gpu_waits(stderr);
+            std::fflush(stderr);
+            std::abort();
+        }
+        // The existing pool call returns only after workers have parked.
+    } else d.pool->run_split_multi(d.jobs_multi.data(), njobs);
     if (d.remote_count > 0) {
         static thread_local std::string remote_error;
         for (int r = 0; r < d.remote_count; ++r)
@@ -2246,6 +2132,115 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
     d.experts += n_tok * k;
 }
 
+#ifdef STRATA_ENABLE_SYCL
+struct NativeHitGraphs {
+    std::vector<cudaGraphExec_t> layers;
+    std::vector<cudaGraphExec_t> owned;
+    void* host_plan = nullptr;
+    unsigned long long* ptr = nullptr;
+    int32_t* meta = nullptr;
+    int32_t* dst = nullptr;
+    ~NativeHitGraphs() {
+        for (auto exec : owned) cudaGraphExecDestroy(exec);
+        if (host_plan) cudaFreeHost(host_plan);
+    }
+};
+
+bool expert_hit_prepare_graphs(ExpertDispatch& d, void* stream, std::string& err) {
+    if (!d.hit_native || d.hit_cpu_order) return true;
+    if (d.native_hit_graphs || !d.hits_ready() || stream == nullptr ||
+        d.parts_elems <= 0 || d.parts_elems % strata::kernels::cpu::H != 0) {
+        err = "native hit graph capture requires new, complete session buffers and an owned stream";
+        return false;
+    }
+    const auto& layout = strata::kernels::cpu::expert_layout();
+    if (!layout.native || layout.fmt.empty()) {
+        err = "native hit graph capture requires a native expert layout";
+        return false;
+    }
+    const int64_t cap = d.parts_elems / strata::kernels::cpu::H;
+    if (cap > INT32_MAX || d.h_native_hit_ptr.size() != size_t(cap) ||
+        d.h_native_hit_meta.size() != size_t(2 * cap + 2) ||
+        d.h_slot.size() < size_t(cap) || d.h_dst.size() < size_t(cap)) {
+        err = "native hit graph capture requires complete host staging lists";
+        return false;
+    }
+    d.is_hit.resize(size_t(cap));
+    auto graphs = std::make_shared<NativeHitGraphs>();
+    const size_t ptr_bytes = size_t(cap) * sizeof(unsigned long long);
+    const size_t meta_bytes = size_t(2 * cap + 2) * sizeof(int32_t);
+    const size_t plan_bytes = ptr_bytes + meta_bytes + size_t(cap) * sizeof(int32_t);
+    if (cudaHostAlloc(&graphs->host_plan, plan_bytes,
+                      cudaHostAllocMapped | cudaHostAllocPortable) != cudaSuccess) {
+        err = "native hit graph host plan allocation failed";
+        return false;
+    }
+    std::memset(graphs->host_plan, 0, plan_bytes);
+    graphs->ptr = static_cast<unsigned long long*>(graphs->host_plan);
+    graphs->meta = reinterpret_cast<int32_t*>(static_cast<uint8_t*>(graphs->host_plan) + ptr_bytes);
+    graphs->dst = reinterpret_cast<int32_t*>(static_cast<uint8_t*>(graphs->host_plan) + ptr_bytes + meta_bytes);
+    std::map<std::tuple<int, int, int64_t, int64_t>, cudaGraphExec_t> kinds;
+    const auto cs = (cudaStream_t) stream;
+    for (const auto& f : layout.fmt) {
+        const auto key = std::make_tuple(f.gu_type, f.d_type, f.n_embd, f.n_ff);
+        if (auto found = kinds.find(key); found != kinds.end()) {
+            graphs->layers.push_back(found->second);
+            continue;
+        }
+        if (cudaStreamBeginCapture(cs, cudaStreamCaptureModeThreadLocal) != cudaSuccess) {
+            err = "native hit graph begin capture failed";
+            return false;
+        }
+        bool ok = true;
+        try {
+            if (ok) {
+                // Copy the small host-USM plan once into device USM while clearing every output row.
+                // Expert kernels then read their metadata from device memory as before.
+                auto* out = d.hit_out;
+                auto* device_ptr = d.native_hit_ptr;
+                auto* device_meta = d.native_hit_meta;
+                auto* device_dst = d.d_dst;
+                const auto* host_ptr = graphs->ptr;
+                const auto* host_meta = graphs->meta;
+                const auto* host_dst = graphs->dst;
+                strata::sycl_backend::for_each(d.parts_elems, cs, [=](size_t i) {
+                    out[i] = 0.0f;
+                    if (i < size_t(cap)) {
+                        device_ptr[i] = host_ptr[i];
+                        device_dst[i] = host_dst[i];
+                    }
+                    if (i < size_t(2 * cap + 2)) device_meta[i] = host_meta[i];
+                });
+                const auto L = strata::kernels::native_expert_layout(
+                    f.gu_type, f.d_type, f.n_embd, f.n_ff);
+                strata::kernels::quantize_q8_1_rows(d.mixed, 1, f.n_embd, d.x_q8_0_hit, cs);
+                strata::kernels::native_expert_grouped(L, d.native_hit_ptr, d.native_hit_meta,
+                    d.native_hit_meta + 2 * cap + 1, d.d_dst, d.native_hit_meta + cap + 1,
+                    cap, cap, d.x_q8_0_hit, d.hit_scratch, d.hit_out, cs);
+            }
+        } catch (const std::exception& ex) {
+            err = std::string("native hit graph kernels: ") + ex.what();
+            ok = false;
+        }
+        cudaGraph_t graph = nullptr;
+        const auto ended = cudaStreamEndCapture(cs, &graph);
+        cudaGraphExec_t exec = nullptr;
+        if (!ok || ended != cudaSuccess ||
+            cudaGraphInstantiate(&exec, graph, 0ull) != cudaSuccess) {
+            if (graph) cudaGraphDestroy(graph);
+            if (err.empty()) err = "native hit graph capture/instantiate failed";
+            return false;
+        }
+        cudaGraphDestroy(graph);
+        graphs->owned.push_back(exec);
+        graphs->layers.push_back(exec);
+        kinds.emplace(key, exec);
+    }
+    d.native_hit_graphs = std::move(graphs);
+    return true;
+}
+#endif
+
 void expert_hit_run(void* user, void* stream, HitPhase phase, const int32_t* ids, int64_t k) {
     ExpertDispatch& d = *(ExpertDispatch*) user;
     if (d.failed) return;
@@ -2255,6 +2250,13 @@ void expert_hit_run(void* user, void* stream, HitPhase phase, const int32_t* ids
         d.decided = false;
         d.hit_pending = false;
         if (!d.hits_ready() || ids == nullptr || k <= 0) return;
+        if (d.hit_native != strata::kernels::cpu::expert_layout().native ||
+            d.h_slot.size() < (size_t) k || d.h_dst.size() < (size_t) k) {
+            d.failed = true;
+            d.fail = "GPU hit buffers do not match the expert layout or routing capacity";
+            d.fail_layer = d.layers;
+            return;
+        }
         if ((int64_t) d.is_hit.size() < k) d.is_hit.resize((size_t) k);
 
         // ================================ THE DECISION, ONCE, ON THIS LAYER'S IDS ================================
@@ -2298,16 +2300,107 @@ void expert_hit_run(void* user, void* stream, HitPhase phase, const int32_t* ids
         d.decided = true;
         if (d.n_hits <= 0) return;   // nothing resident yet: no GPU work, and nothing for `Combine` to add
 
+        bool captured_native = false;
+#ifdef STRATA_ENABLE_SYCL
+        captured_native = d.hit_native && !d.hit_cpu_order && d.native_hit_graphs != nullptr;
+#endif
+
         const size_t list_bytes = (size_t) d.n_hits * sizeof(int32_t);
         // `hit_out` is ZEROED rather than overwritten: the kernel writes only the rows this layer's hits own,
         // so a row that was a hit last layer and a miss this one would still hold last layer's expert and
         // `add_inplace` would sum it in.  Finite, plausible, wrong.
-        if (cudaMemsetAsync(d.hit_out, 0, (size_t) d.parts_elems * sizeof(float), cs) != cudaSuccess ||
-            cudaMemcpyAsync(d.d_slot, d.h_slot.data(), list_bytes, cudaMemcpyHostToDevice, cs) != cudaSuccess ||
-            cudaMemcpyAsync(d.d_dst, d.h_dst.data(), list_bytes, cudaMemcpyHostToDevice, cs) != cudaSuccess) {
+        if ((!captured_native &&
+             cudaMemsetAsync(d.hit_out, 0, (size_t) d.parts_elems * sizeof(float), cs) != cudaSuccess) ||
+            (!d.hit_native &&
+             cudaMemcpyAsync(d.d_slot, d.h_slot.data(), list_bytes, cudaMemcpyHostToDevice, cs) != cudaSuccess) ||
+            (!captured_native &&
+             cudaMemcpyAsync(d.d_dst, d.h_dst.data(), list_bytes, cudaMemcpyHostToDevice, cs) != cudaSuccess)) {
             d.hit_fail = "the hit list could not be staged";
             d.failed = true;
             d.fail = d.hit_fail;
+            return;
+        }
+        if (d.hit_native) {
+            const auto& layout = strata::kernels::cpu::expert_layout();
+            const size_t cap = size_t(d.parts_elems / strata::kernels::cpu::H);
+            if (!layout.native || d.layers < 0 || size_t(d.layers) >= layout.fmt.size() ||
+                k != (int64_t) cap || d.h_native_hit_ptr.size() != cap ||
+                d.h_native_hit_meta.size() != 2 * cap + 2) {
+                d.failed = true;
+                d.fail = "invalid native per-layer hit metadata or CPU-order request";
+                d.fail_layer = d.layers;
+                return;
+            }
+            for (int64_t h = 0; h < d.n_hits; ++h)
+                d.h_native_hit_ptr[(size_t) h] =
+                    (unsigned long long) d.cache->device_slot(d.h_slot[(size_t) h]);
+            for (size_t h = 0; h <= cap; ++h) d.h_native_hit_meta[h] = (int32_t) h;
+            std::fill(d.h_native_hit_meta.begin() + cap + 1, d.h_native_hit_meta.end(), 0);
+            d.h_native_hit_meta[2 * cap + 1] = (int32_t) d.n_hits;
+            if (!captured_native &&
+                (cudaMemcpyAsync(d.native_hit_ptr, d.h_native_hit_ptr.data(), cap * sizeof(unsigned long long),
+                                cudaMemcpyHostToDevice, cs) != cudaSuccess ||
+                cudaMemcpyAsync(d.native_hit_meta, d.h_native_hit_meta.data(), (2 * cap + 2) * sizeof(int32_t),
+                                cudaMemcpyHostToDevice, cs) != cudaSuccess)) {
+                d.failed = true;
+                d.fail = "native per-layer hit metadata could not be staged";
+                return;
+            }
+            const auto& f = layout.fmt[(size_t) d.layers];
+            const auto L = strata::kernels::native_expert_layout(f.gu_type, f.d_type, f.n_embd, f.n_ff);
+#ifdef STRATA_ENABLE_SYCL
+            if (captured_native) {
+                // The previous layer's completion precedes this callback. Its graph has finished
+                // reading the plan; publish the new plan before submitting this layer's graph.
+                auto& graphs = *d.native_hit_graphs;
+                std::memcpy(graphs.ptr, d.h_native_hit_ptr.data(), cap * sizeof(unsigned long long));
+                std::memcpy(graphs.meta, d.h_native_hit_meta.data(), (2 * cap + 2) * sizeof(int32_t));
+                std::memcpy(graphs.dst, d.h_dst.data(), list_bytes);
+                std::atomic_thread_fence(std::memory_order_release);
+                if (size_t(d.layers) >= d.native_hit_graphs->layers.size()) {
+                    d.failed = true;
+                    d.fail = "native hit graph layer out of range";
+                    return;
+                }
+                auto exec = d.native_hit_graphs->layers[size_t(d.layers)];
+                const auto launched = d.hit_done
+                    ? strata::sycl_backend::compat::graph_launch_with_completion(
+                          exec, cs, (cudaEvent_t) d.hit_done)
+                    : cudaGraphLaunch(exec, cs);
+                if (launched != cudaSuccess) {
+                    d.failed = true;
+                    d.fail = "native hit graph launch failed";
+                    return;
+                }
+            } else
+#endif
+            if (d.hit_cpu_order) {
+#ifdef STRATA_ENABLE_SYCL
+                if (f.gu_type != 42 || f.d_type != 42 || f.n_embd != 2560 || f.n_ff != 640 ||
+                    strata::kernels::cpu::cpu_avx512_ok()) {
+                    d.failed = true;
+                    d.fail = "native CPU-order GPU hits require Q2_0/Q2_0 and the AVX2 CPU path";
+                    return;
+                }
+                strata::kernels::native_q2_quantize_cpu_order(d.mixed, d.x_q8_0_hit, d.x_q8_0_hit_scale, f.n_embd, cs);
+                strata::kernels::native_q2_expert_cpu_order(d.native_hit_ptr, d.d_dst,
+                    d.native_hit_meta + 2 * cap + 1, (int) cap, d.x_q8_0_hit, d.x_q8_0_hit_scale,
+                    d.hit_scratch, d.hit_out, cs);
+#else
+                d.failed = true;
+                d.fail = "native per-layer CPU-order GPU hits are only implemented for SYCL";
+                return;
+#endif
+            } else {
+                strata::kernels::quantize_q8_1_rows(d.mixed, 1, f.n_embd, d.x_q8_0_hit, cs);
+                strata::kernels::native_expert_grouped(L, d.native_hit_ptr, d.native_hit_meta,
+                    d.native_hit_meta + 2 * cap + 1, d.d_dst, d.native_hit_meta + cap + 1,
+                    cap, cap, d.x_q8_0_hit, d.hit_scratch, d.hit_out, cs);
+            }
+            d.hit_pending = true;
+            if (!captured_native && d.hit_done != nullptr)
+                cudaEventRecord((cudaEvent_t) d.hit_done, cs);
+            if (d.hit_poke && d.hit_done != nullptr) (void) cudaEventQuery((cudaEvent_t) d.hit_done);
             return;
         }
         // The activation is quantized HERE rather than reused from `s.moe.x_q8_0`, which `post[l-1]` wrote from
@@ -2350,6 +2443,9 @@ void expert_hit_run(void* user, void* stream, HitPhase phase, const int32_t* ids
         if (cudaEventQuery((cudaEvent_t) d.hit_done) == cudaSuccess) ++d.hit_ready;
         else ++d.hit_late;
     }
+#ifdef STRATA_ENABLE_SYCL
+    if (d.hit_combine_captured) return;
+#endif
     strata::kernels::add_inplace(d.parts_out, d.hit_out, d.parts_elems, cs);
 }
 
@@ -2715,7 +2811,7 @@ bool ArenaExpertSource::open(const std::string& pack_dir, int64_t n_layers, int6
         std::ifstream f(path, std::ios::binary | std::ios::ate);
         if (!f) { err = "ArenaExpertSource: cannot open " + path; return false; }
         const uint64_t got = (uint64_t) f.tellg();
-        if (got != want && got != want + (uint64_t) blob) {   // + one blob: STRATA_ARENA_MMAP's padded file
+        if (got != want) {
             char buf[400];
             std::snprintf(buf, sizeof buf,
                           "ArenaExpertSource: %s is %llu B but %lld layers x %lld experts (blobs up to %lld B) "
@@ -2724,76 +2820,6 @@ bool ArenaExpertSource::open(const std::string& pack_dir, int64_t n_layers, int6
                           (long long) blob, (unsigned long long) want);
             err = buf;
             return false;
-        }
-    }
-
-    // STRATA_ARENA_MMAP=1 (a small-RAM machine whose GPUs hold most experts): the arena is the pack's experts.bin
-    // mapped READ-ONLY - not locked, not pinned.  The page cache keeps what the CPU pool and the prompt path
-    // actually read (the experts no VRAM cache holds) and gives back the rest under memory pressure; a page
-    // dropped is re-read from the file, so a result never depends on what is resident.  The GPUs then get no
-    // mapped alias: run with --pcie-frac 0.  The first start writes experts.bin (arena layout, padded by one blob
-    // so a whole-slot copy may start at any expert), later ones map it.
-#if defined(_WIN32)
-    static const bool arena_mmap = false;   // POSIX mmap/madvise: Linux only for now
-#else
-    static const bool arena_mmap = [] { const char* v = std::getenv("STRATA_ARENA_MMAP"); return v && v[0] == '1'; }();
-    if (arena_mmap) {
-        const uint64_t file_bytes = want + (uint64_t) blob;
-        uint64_t have = 0;
-        {
-            std::ifstream f(path, std::ios::binary | std::ios::ate);
-            if (f) have = (uint64_t) f.tellg();
-        }
-        if (have == file_bytes) {
-            const int fd = ::open(path.c_str(), O_RDONLY);
-            void* v = fd >= 0 ? mmap(nullptr, (size_t) file_bytes, PROT_READ, MAP_SHARED, fd, 0) : MAP_FAILED;
-            if (fd >= 0) ::close(fd);
-            if (v == MAP_FAILED) { err = "ArenaExpertSource: mmap of " + path + " failed"; return false; }
-            map_ = v;
-            map_bytes_ = file_bytes;
-            base_ = (const uint8_t*) v;
-            pinned_bytes_ = 0;
-            dev_slice_.clear();
-            slice_bytes_ = 0;
-            blobs_ = n_layers * n_expert;
-            n_expert_ = n_expert;
-            reads_ = 0;
-            note_ = "mapped read-only from " + path + " (STRATA_ARENA_MMAP: not locked, not pinned)";
-            gib_per_s_ = 0.0;
-            load_seconds_ = load_read_s_ = load_copy_s_ = 0.0;
-            return true;
-        }
-    }
-#endif
-
-    // #633: THE RAM BEFORE THE ALLOCATION.  On Linux the arena is an anonymous mapping that succeeds whatever the host
-    // has; its pages are committed as the load writes them, so a container whose memory limit is below the arena was
-    // killed by the OOM killer part-way through the load, without a message.  A hard cgroup limit below it is
-    // certain to end that way: refused, with the numbers.  Less RAM available than the arena (another program, an
-    // engine still exiting) is only a warning - the OS may make room - per the recommend-not-force rule.
-    ram_warning_.clear();
-    // (a shared arena, --shared-expert-arena, may already be in RAM for another engine: not checked)
-    if (detail::HostMemory hm; shared_arena_file.empty() && detail::host_available_memory(hm)) {
-        const uint64_t need = want + (uint64_t) blob;
-        const double gib = 1073741824.0;
-        char buf[512];
-        if (hm.cgroup_limit < need) {
-            std::snprintf(buf, sizeof buf,
-                          "ArenaExpertSource: the expert arena needs %.2f GiB of RAM but this process's memory limit "
-                          "(cgroup memory.max / memory.limit_in_bytes) is %.2f GiB: it would be killed while loading. "
-                          "Raise the container's limit, or run with less RAM: --mmap-experts with "
-                          "--resident-budget-gib N keeps only the hottest experts in RAM",
-                          (double) need / gib, (double) hm.cgroup_limit / gib);
-            err = buf;
-            return false;
-        }
-        if (hm.available < need) {
-            std::snprintf(buf, sizeof buf,
-                          "the expert arena needs %.2f GiB of RAM but %.2f GiB is available (%.2f GiB short): the load "
-                          "may swap or be stopped by the OS. Close other programs (or wait for an engine that is "
-                          "still exiting), or run with less RAM: --mmap-experts with --resident-budget-gib N",
-                          (double) need / gib, (double) hm.available / gib, (double) (need - hm.available) / gib);
-            ram_warning_ = buf;
         }
     }
 
@@ -2855,30 +2881,6 @@ bool ArenaExpertSource::open(const std::string& pack_dir, int64_t n_layers, int6
         err = "ArenaExpertSource: the load read " + std::to_string(st.bytes) + " B of " + std::to_string(want);
         return false;
     }
-    // the first start: write experts.bin for the mapped starts after this one - only when the drive has room for it
-    // and 2 GiB more (a full drive fails other writes too); otherwise this start says so and runs pinned as before
-    std::error_code space_ec;
-    const uint64_t free_disk = arena_mmap && from_gguf ? (uint64_t) std::filesystem::space(
-        std::filesystem::path(path).parent_path(), space_ec).available : 0;
-    const bool room = !space_ec && free_disk >= want + (uint64_t) blob + (2ull << 30);
-    if (arena_mmap && from_gguf && !room)
-        std::fprintf(stderr, "strata generate: STRATA_ARENA_MMAP: NOT writing %s - %.1f GiB free on that drive, it needs "
-                             "%.1f GiB plus 2 GiB to spare; this start keeps the arena in RAM\n", path.c_str(),
-                     (double) free_disk / 1073741824.0, (double) (want + (uint64_t) blob) / 1073741824.0);
-    if (arena_mmap && from_gguf && room) {
-        const std::string tmp = path + ".tmp";
-        std::FILE* f = std::fopen(tmp.c_str(), "wb");
-        bool ok = f != nullptr && std::fwrite(a->data(), 1, (size_t) want, f) == (size_t) want;
-        if (ok) {
-            std::vector<uint8_t> pad((size_t) blob, 0);
-            ok = std::fwrite(pad.data(), 1, pad.size(), f) == pad.size();
-        }
-        if (f) ok = std::fclose(f) == 0 && ok;
-        if (ok) ok = std::rename(tmp.c_str(), path.c_str()) == 0;
-        if (!ok) std::remove(tmp.c_str());
-        std::fprintf(stderr, "strata generate: STRATA_ARENA_MMAP: %s %s (the next start maps it)\n",
-                     ok ? "wrote" : "could NOT write", path.c_str());
-    }
     arena_ = a;
     base_ = a->data();
     pinned_bytes_ = a->registered_bytes;
@@ -2909,11 +2911,6 @@ bool ArenaExpertSource::open(const std::string& pack_dir, int64_t n_layers, int6
 }
 
 void ArenaExpertSource::close() {
-#if !defined(_WIN32)
-    if (map_ != nullptr) munmap(map_, (size_t) map_bytes_);
-#endif
-    map_ = nullptr;
-    map_bytes_ = 0;
     if (arena_ != nullptr) {
         delete (PinnedArena*) arena_;
         arena_ = nullptr;
@@ -2921,39 +2918,6 @@ void ArenaExpertSource::close() {
     base_ = nullptr;
     blobs_ = 0;
     n_expert_ = 0;
-}
-
-void ArenaExpertSource::prefetch(int64_t layer, int64_t expert) {
-#if defined(_WIN32)
-    (void) layer; (void) expert;
-#else
-    if (map_ == nullptr || layer < 0 || expert < 0 || expert >= n_expert_) return;
-    const auto& lay = strata::kernels::cpu::expert_layout();
-    const uint64_t off = lay.blob_offset(layer, expert) & ~(uint64_t) 4095;
-    const uint64_t end = lay.blob_offset(layer, expert) + lay.blob_bytes(layer);
-    madvise((uint8_t*) map_ + off, (size_t) (end - off), MADV_WILLNEED);
-#endif
-}
-
-// Only the pages wholly inside the blob: a page shared with a neighbour the CPU may still read stays.  MADV_DONTNEED
-// unmaps them from this process; they stay in the page cache as clean, unmapped pages - the first the kernel takes
-// back under pressure, and a minor fault away when the CPU needs the expert again (an adaptive swap evicts it).
-// Dropping them from the cache too (POSIX_FADV_DONTNEED) made every eviction a re-read from the disk: ~200 major
-// faults a second in decode, +8 ms a window.  The memory the arena used to hold was never the cache itself but
-// ROCclr's pin-in-place locks on it (see main) - locked pages are the ones the kernel cannot take back.
-uint64_t ArenaExpertSource::release(int64_t layer, int64_t expert) {
-#if defined(_WIN32)
-    (void) layer; (void) expert;
-    return 0;
-#else
-    if (map_ == nullptr || layer < 0 || expert < 0 || expert >= n_expert_) return 0;
-    const auto& lay = strata::kernels::cpu::expert_layout();
-    const uint64_t off = (lay.blob_offset(layer, expert) + 4095) & ~(uint64_t) 4095;
-    const uint64_t end = (lay.blob_offset(layer, expert) + lay.blob_bytes(layer)) & ~(uint64_t) 4095;
-    if (end <= off) return 0;
-    if (madvise((uint8_t*) map_ + off, (size_t) (end - off), MADV_DONTNEED) != 0) return 0;
-    return end - off;
-#endif
 }
 
 bool ArenaExpertSource::pinned(int64_t layer, int64_t expert) const {

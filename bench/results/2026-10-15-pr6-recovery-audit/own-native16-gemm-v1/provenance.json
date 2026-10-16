@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "status": "SOURCE_PROPOSAL_UNBUILT_UNTESTED",
+  "strata_base": "375a6d6ee905859ef176997262e3baef6e739ad2",
+  "authorship": "New kernel, bounds registry, fixture/oracle, CMake/header additions and package prose were independently authored in this dispatch; repository MIT LICENSE applies. No third-party implementation or test code is included or adapted.",
+  "components": [
+    {
+      "paths": [
+        "src/prefill/sycl/gemm16.cpp",
+        "include/strata/prefill/gemm.hpp"
+      ],
+      "origin": "Own implementation; use existing Strata queue/finish/profile and local accessor/joint_matrix API conventions. Dtype separation follows the requested vLLM architectural idea, not its code or templates."
+    },
+    {
+      "paths": [
+        "src/sycl/runtime.cpp",
+        "include/strata/sycl/runtime.hpp"
+      ],
+      "origin": "Own ordered allocation-range registry and validation; preserve existing Allocation/checked_cleanup lifecycle."
+    },
+    {
+      "paths": [
+        "tests/sycl/gemm16.cpp"
+      ],
+      "origin": "Own fixture, IEEE-field FP64 decoder and integer ties-to-even encoder; no existing foreign oracle/helpers or tests reused."
+    },
+    {
+      "paths": [
+        "cmake/sycl_backend.cmake"
+      ],
+      "origin": "Small additions to exact Strata base target definitions."
+    }
+  ],
+  "strata_references": [
+    {
+      "path": "LICENSE",
+      "commit": "375a6d6ee905859ef176997262e3baef6e739ad2",
+      "sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0"
+    },
+    {
+      "path": "CMakeLists.txt",
+      "commit": "375a6d6ee905859ef176997262e3baef6e739ad2",
+      "sha256": "47c283f6a6621b98cc7c1fd1dfce8c6daee73ffbeb9c0bbce97707edb460d200"
+    },
+    {
+      "path": "include/strata/prefill/gemm.hpp",
+      "commit": "375a6d6ee905859ef176997262e3baef6e739ad2",
+      "sha256": "921a5aeea69a4b5a94c3fdf983eca10fca79c2e1cd2e3d6c83c05de95aad335d"
+    },
+    {
+      "path": "include/strata/sycl/runtime.hpp",
+      "commit": "375a6d6ee905859ef176997262e3baef6e739ad2",
+      "sha256": "bcfbb035fa5a95f0409db013158f756ba4136b0aa06f636c6ff747ec0bcfd0fd"
+    },
+    {
+      "path": "include/strata/sycl/launch.hpp",
+      "commit": "375a6d6ee905859ef176997262e3baef6e739ad2",
+      "sha256": "9c5aaf14e4b92232d4dcd4e2e68071201d436d287a9615088a9428d88f53b1ce"
+    },
+    {
+      "path": "include/strata/sycl/cpu_wait_profile.hpp",
+      "commit": "375a6d6ee905859ef176997262e3baef6e739ad2",
+      "sha256": "f29b86702df27fa6510cfc31d13d0442f9386cdae491952fefbcfa7b0816567d"
+    },
+    {
+      "path": "src/sycl/runtime.cpp",
+      "commit": "375a6d6ee905859ef176997262e3baef6e739ad2",
+      "sha256": "6f5cde7af62443d1f5d85ab2380fdb0d2cf4a644d11d336e1a13c152e6982459"
+    },
+    {
+      "path": "src/sycl/compat.cpp",
+      "commit": "375a6d6ee905859ef176997262e3baef6e739ad2",
+      "sha256": "64cb6ea563a5d2f4f2abe4726d8d2130c5611b1938423dfe5131691cb936e9c0"
+    },
+    {
+      "path": "include/strata/sycl/compat/cuda_runtime.h",
+      "commit": "375a6d6ee905859ef176997262e3baef6e739ad2",
+      "sha256": "39b71df35e317851bd16b383027f088be159be2e0d602c592e8ddab30fe7e26a"
+    },
+    {
+      "path": "src/kernels/sycl/prompt_attention.cpp",
+      "commit": "375a6d6ee905859ef176997262e3baef6e739ad2",
+      "sha256": "c88bd802d17ec5f9e1df05eee5581c9f50be86e87b1a454783b5c75aca55be3d"
+    },
+    {
+      "path": "src/prefill/sycl/gemm.cpp",
+      "commit": "375a6d6ee905859ef176997262e3baef6e739ad2",
+      "sha256": "1158939d8a00195094013f1f14194c42c2b58595d7c2336f1dbf2709e3ce1f59"
+    },
+    {
+      "path": "cmake/sycl_backend.cmake",
+      "commit": "375a6d6ee905859ef176997262e3baef6e739ad2",
+      "sha256": "0eb0b6cc840bf95e5a5dc27fc8c3d0973f869b0547d90ab29902b1e56b2e7a59"
+    },
+    {
+      "path": "tests/sycl/gemm.cpp",
+      "commit": "375a6d6ee905859ef176997262e3baef6e739ad2",
+      "sha256": "5219aea200a7614e826e7b12b7f2074eb30540dda8dcabeb23f085043fbcd362"
+    }
+  ],
+  "vllm_design_reference": {
+    "repository": "/home/yayoi/ghq/github.com/vllm-project/vllm-xpu-kernels",
+    "commit": "6b30c9b92cc525c32729df988b5f918e7c5661a5",
+    "purpose": "Only storage type vs accumulator/epilogue type architecture. No SGLang implementation consulted; no Torch/CUTLASS/driver dependencies added.",
+    "license_review": {
+      "root": "Apache-2.0 LICENSE inspected at exact commit.",
+      "target_policy": "moe_dtype_policy.hpp has no local license header; treated as covered by root Apache-2.0, not relabeled MIT or copied.",
+      "sibling": "moe_array_mma.hpp begins Codeplay 2024-2025 BSD-3-Clause notice; only the notice was inspected to confirm mixed-license source, not used as implementation reference."
+    },
+    "sources": [
+      {
+        "path": "LICENSE",
+        "commit": "6b30c9b92cc525c32729df988b5f918e7c5661a5",
+        "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+        "url": "https://github.com/vllm-project/vllm-xpu-kernels/blob/6b30c9b92cc525c32729df988b5f918e7c5661a5/LICENSE"
+      },
+      {
+        "path": "csrc/xpu/grouped_gemm/collective/gemm/moe_dtype_policy.hpp",
+        "commit": "6b30c9b92cc525c32729df988b5f918e7c5661a5",
+        "sha256": "cbb12a4bec130855d8f3eef77a78908a8cb1f39b641cf25c70f2df8f1897fa71",
+        "url": "https://github.com/vllm-project/vllm-xpu-kernels/blob/6b30c9b92cc525c32729df988b5f918e7c5661a5/csrc/xpu/grouped_gemm/collective/gemm/moe_dtype_policy.hpp"
+      },
+      {
+        "path": "csrc/xpu/grouped_gemm/collective/gemm/moe_array_mma.hpp",
+        "commit": "6b30c9b92cc525c32729df988b5f918e7c5661a5",
+        "sha256": "81b57db378bbdfe82a1789706eb195f0a1bab788582b6877c8a3148f12c70627",
+        "url": "https://github.com/vllm-project/vllm-xpu-kernels/blob/6b30c9b92cc525c32729df988b5f918e7c5661a5/csrc/xpu/grouped_gemm/collective/gemm/moe_array_mma.hpp"
+      }
+    ]
+  },
+  "official_toolchain_reference": {
+    "root": "/opt/intel/oneapi/compiler/2026.1",
+    "version_label": "2026.1 directory; no compiler invoked",
+    "purpose": "API signatures/types and local pointer overloads only; no implementation copied.",
+    "license_review": "matrix.hpp/matrix-unified/query headers carry Apache-2.0 WITH LLVM-exception SPDX. matrix-intel.hpp and bfloat16.hpp also carry Intel modification/license notices. Installed c/LICENSE identifies Intel Developer Tools EULA August 2024. These are existing toolchain APIs, not copied project code; no foreign license header was introduced.",
+    "files": [
+      {
+        "path": "/opt/intel/oneapi/compiler/2026.1/include/sycl/ext/oneapi/matrix/matrix.hpp",
+        "sha256": "c298993bfc66b10f3204723c20afe960e07313b51add9ab28f549653dbde4da7"
+      },
+      {
+        "path": "/opt/intel/oneapi/compiler/2026.1/include/sycl/ext/oneapi/matrix/matrix-unified.hpp",
+        "sha256": "fce8a8847f92568004c150e49d0125ff649288806a5e72f1bc32e9d5fed38dbc"
+      },
+      {
+        "path": "/opt/intel/oneapi/compiler/2026.1/include/sycl/ext/oneapi/matrix/matrix-intel.hpp",
+        "sha256": "a8836d2b8b2ba1c023aeec96fbadb82bee054af5a5b427887b90969509cd06de"
+      },
+      {
+        "path": "/opt/intel/oneapi/compiler/2026.1/include/sycl/ext/oneapi/matrix/query-types.hpp",
+        "sha256": "aeb1a24055343c7fd8df62470f945f8318306496e33fcc429c092a295931e219"
+      },
+      {
+        "path": "/opt/intel/oneapi/compiler/2026.1/include/sycl/ext/oneapi/bfloat16.hpp",
+        "sha256": "58f1114c0406b00ab7661fd4051165e97bb418158571656383799e675f3e1051"
+      },
+      {
+        "path": "/opt/intel/oneapi/compiler/2026.1/share/doc/compiler/licensing/c/LICENSE",
+        "sha256": "febfb69a5b058f55892dc7f341108a9ca29d50e9fe85723a57eebbb826436958"
+      }
+    ],
+    "api_documentation": "https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_matrix/sycl_ext_oneapi_matrix.asciidoc",
+    "documentation_status": "Official API documentation consulted; mutable branch is context only, installed header hashes pin the actual API reference."
+  },
+  "excluded": {
+    "XeStrata": "No source, helper, tests, archived proposals or implementation references consulted or used.",
+    "other_engine_code": "No other engine implementation code copied or adapted."
+  },
+  "adoption": "Not integrated; Main must review entire patch and provenance before applying."
+}

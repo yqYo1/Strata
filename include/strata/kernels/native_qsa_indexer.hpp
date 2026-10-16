@@ -38,6 +38,19 @@ void native_qsa_indexer_append_batch(const float* raw, int64_t n, int64_t p0, in
                                      float epsilon, const QsaIndexerBuffers& b, const QsaShapes& s, int64_t max_cells,
                                      const RopeScaling& scaling, void* stream);
 
+#if defined(STRATA_ENABLE_SYCL)
+// Explicit candidate for owned comparison fixtures, with no environment change.
+// Existing append_batch dispatches here only when the immutable default-off
+// STRATA_SYCL_QSA_INDEXER_DEVICE_BATCH=1 option is selected. Same fixed geometry,
+// disjoint spans, queue/table and finite-input contract as append above.
+// Checked nonnegative n; n=0 is a no-op after range/base validation. n=1 uses
+// the original single-cell kernel. No allocation, host readback or wait.
+void native_qsa_indexer_append_device_batch(const float* raw, int64_t n, int64_t p0, int32_t pos_base,
+                                           const float* gamma, float epsilon,
+                                           const QsaIndexerBuffers& buffers, const QsaShapes& shapes,
+                                           int64_t max_cells, const RopeScaling& scaling, void* stream);
+#endif
+
 void native_qsa_indexer_append(const float* raw, const int32_t* relative_pos_device,
                                int32_t pos_base, const float* gamma, float epsilon,
                                const QsaIndexerBuffers& buffers, const QsaShapes& shapes,

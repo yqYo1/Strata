@@ -1,0 +1,131 @@
+{
+  "schema": "checkpoint-traffic-scenarios-v1",
+  "status": "OFFLINE_ARITHMETIC_ONLY_NOT_RUNTIME_MEASUREMENT",
+  "source_receipt": "bench/results/2026-10-14-primary-transfer-ceiling/results.json",
+  "source_sha256": "76efc4b128d841f814b7b11fbd3cdf0d3075d5691588e0f07bef2aaadc22273d",
+  "recipe_sha256": "eb26659d5bad960d2b5a8cd33c52b2a5f1103c8cab899eebb440cee6b3bce2be",
+  "full_lm_logical_expert_payload_bytes": 50292326400,
+  "checkpoint_gdn_payload_bytes": 117669888,
+  "checkpoint_gdn_mib": 112.21875,
+  "rates_GBps": {
+    "ordinary_host_bulk_median_of_medians": 2.24867844971,
+    "fastest_observed_ordinary_expert_host_group": 5.79019920325
+  },
+  "fastest_observed_group": {
+    "blob_bytes": 2662400,
+    "copies": 32,
+    "allocation": "ordinary-host",
+    "direction": "H2D"
+  },
+  "cases": [
+    {
+      "input_tokens": 32768,
+      "batched_tokens": 32767,
+      "chunk": 8192,
+      "interval": 16384,
+      "root_turn_boundaries": false,
+      "segment_tokens": [
+        16384,
+        16383
+      ],
+      "extra_full_expert_payload_bytes": 50292326400,
+      "extra_transfer_seconds_scenarios": {
+        "ordinary_host_bulk_median_of_medians": 22.36528144185574,
+        "fastest_observed_ordinary_expert_host_group": 8.685767904456767
+      },
+      "target_1000tps_wall_seconds": 32.768,
+      "actual_periodic_checkpoint_positions": [
+        16384
+      ],
+      "checkpoint_gdn_all_boundaries_payload_bytes": 117669888,
+      "checkpoint_gdn_six_retained_payload_bytes": 117669888
+    },
+    {
+      "input_tokens": 65536,
+      "batched_tokens": 65535,
+      "chunk": 8192,
+      "interval": 16384,
+      "root_turn_boundaries": false,
+      "segment_tokens": [
+        16384,
+        16384,
+        16384,
+        16383
+      ],
+      "extra_full_expert_payload_bytes": 150876979200,
+      "extra_transfer_seconds_scenarios": {
+        "ordinary_host_bulk_median_of_medians": 67.09584432556721,
+        "fastest_observed_ordinary_expert_host_group": 26.057303713370302
+      },
+      "target_1000tps_wall_seconds": 65.536,
+      "actual_periodic_checkpoint_positions": [
+        16384,
+        32768,
+        49152
+      ],
+      "checkpoint_gdn_all_boundaries_payload_bytes": 353009664,
+      "checkpoint_gdn_six_retained_payload_bytes": 353009664
+    },
+    {
+      "input_tokens": 262144,
+      "batched_tokens": 262143,
+      "chunk": 8192,
+      "interval": 16384,
+      "root_turn_boundaries": false,
+      "segment_tokens": [
+        16384,
+        16384,
+        16384,
+        16384,
+        16384,
+        16384,
+        16384,
+        16384,
+        16384,
+        16384,
+        16384,
+        16384,
+        16384,
+        16384,
+        16384,
+        16383
+      ],
+      "extra_full_expert_payload_bytes": 754384896000,
+      "extra_transfer_seconds_scenarios": {
+        "ordinary_host_bulk_median_of_medians": 335.4792216278361,
+        "fastest_observed_ordinary_expert_host_group": 130.28651856685153
+      },
+      "target_1000tps_wall_seconds": 262.144,
+      "actual_periodic_checkpoint_positions": [
+        16384,
+        32768,
+        49152,
+        65536,
+        81920,
+        98304,
+        114688,
+        131072,
+        147456,
+        163840,
+        180224,
+        196608,
+        212992,
+        229376,
+        245760
+      ],
+      "checkpoint_gdn_all_boundaries_payload_bytes": 1765048320,
+      "checkpoint_gdn_six_retained_payload_bytes": 706019328
+    }
+  ],
+  "hardware_peak_established": false,
+  "actual_model_transfer_measured": false,
+  "performance_qualified": false,
+  "limitations": [
+    "Measured synthetic rates are scenario inputs, not maximum bandwidth or time lower bounds.",
+    "Different batch, allocation, direction, overlap, cache and queue conditions can change rates.",
+    "Logical expert bytes are not measured physical PCIe or DRAM traffic.",
+    "GDN-only volumes exclude PLE/QSA/IDs, copies of prior checkpoints and admission overhead.",
+    "Final n-1, root/turn, resume and chunk changes require separate actual schedules.",
+    "This arithmetic does not prove a throughput target impossible or a candidate faster."
+  ]
+}

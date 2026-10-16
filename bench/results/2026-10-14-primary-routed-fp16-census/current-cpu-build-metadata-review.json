@@ -1,0 +1,118 @@
+{
+  "scope": "Observed existing build metadata and existing GGML object instructions; no new compilation/test or optional branch execution proof",
+  "binary_sha256": "68da026294cb9f2e6f4faee0e7c90b276a5f7f1306499f3210fe6744c89294b6",
+  "build_directory": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-native-build-root-v1/build",
+  "compile_commands_sha256": "209214ce3a0859eaf0c15dfa5372da2cff4889bbeb7c78657d8699efa7484b35",
+  "cache_sha256": "05fd8ffb1eea9fddfff0d42a51b680bada0c221274f9243164705db4b17722ea",
+  "selected_compile_commands": [
+    {
+      "directory": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-native-build-root-v1/build",
+      "command": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++ -DSTRATA_NATIVE_EXPERTS=1 -DSTRATA_VERSION=\\\"0.1.38\\\" -I/home/yayoi/orca/workspaces/Strata/sycl/include -I/home/yayoi/orca/workspaces/Strata/sycl/third_party/ggml -I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include -O3 -DNDEBUG -std=c++20 -march=znver3 -mtune=znver3 -mavx2 -mfma -mf16c -o CMakeFiles/strata_kernels_cpu.dir/src/kernels/cpu/q2_avx2.cpp.o -c /home/yayoi/orca/workspaces/Strata/sycl/src/kernels/cpu/q2_avx2.cpp",
+      "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/cpu/q2_avx2.cpp",
+      "output": "CMakeFiles/strata_kernels_cpu.dir/src/kernels/cpu/q2_avx2.cpp.o"
+    },
+    {
+      "directory": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-native-build-root-v1/build",
+      "command": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++ -DSTRATA_NATIVE_EXPERTS=1 -DSTRATA_VERSION=\\\"0.1.38\\\" -I/home/yayoi/orca/workspaces/Strata/sycl/include -I/home/yayoi/orca/workspaces/Strata/sycl/third_party/ggml -I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include -O3 -DNDEBUG -std=c++20 -march=znver3 -mtune=znver3 -o CMakeFiles/strata_kernels_cpu.dir/src/kernels/cpu/native_expert.cpp.o -c /home/yayoi/orca/workspaces/Strata/sycl/src/kernels/cpu/native_expert.cpp",
+      "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/cpu/native_expert.cpp",
+      "output": "CMakeFiles/strata_kernels_cpu.dir/src/kernels/cpu/native_expert.cpp.o"
+    },
+    {
+      "directory": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-native-build-root-v1/build",
+      "command": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++ -DSTRATA_NATIVE_EXPERTS=1 -DSTRATA_VERSION=\\\"0.1.38\\\" -I/home/yayoi/orca/workspaces/Strata/sycl/include -I/home/yayoi/orca/workspaces/Strata/sycl/third_party/ggml -I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include -O3 -DNDEBUG -std=c++20 -march=znver3 -mtune=znver3 -mavx2 -mfma -mf16c -o CMakeFiles/strata_kernels_cpu.dir/src/kernels/cpu/iq_single_avx2.cpp.o -c /home/yayoi/orca/workspaces/Strata/sycl/src/kernels/cpu/iq_single_avx2.cpp",
+      "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/cpu/iq_single_avx2.cpp",
+      "output": "CMakeFiles/strata_kernels_cpu.dir/src/kernels/cpu/iq_single_avx2.cpp.o"
+    }
+  ],
+  "source_sha256": {
+    "src/kernels/cpu/q2_avx2.cpp": "9d43e6314a75a1095953f935ed95583141afff67ba5e4da96b6e2520c5a95eee",
+    "src/kernels/cpu/native_expert.cpp": "fcb4a7c74ba45a13da162eed832860f9644f4544d3f269b9c8588f01b40fb106",
+    "src/kernels/cpu/iq_single_avx2.cpp": "8579db5f02086cc660d376a77e00a9285e038f6757a53e8b2a8ef6d79eb2074f"
+  },
+  "quality_sample_arithmetic": {
+    "n24_zero_harm_one_sided95_upper": 0.11734615615494881,
+    "n_for_zero_harm_one_sided95_upper_below01": 299
+  },
+  "ggml_native_config": [
+    "GGML_AVX:BOOL=OFF",
+    "GGML_AVX2:BOOL=OFF",
+    "GGML_AVX512:BOOL=OFF",
+    "GGML_BACKEND_DL:BOOL=OFF",
+    "GGML_CPU_ALL_VARIANTS:BOOL=OFF",
+    "GGML_NATIVE:BOOL=ON"
+  ],
+  "ggml_selected_compile_commands": [
+    {
+      "directory": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-native-build-root-v1/build",
+      "command": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang -DGGML_SCHED_MAX_COPIES=4 -DGGML_USE_CPU_REPACK -DSTRATA_VERSION=\\\"0.1.38\\\" -D_GNU_SOURCE -D_XOPEN_SOURCE=600 -I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/.. -I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/. -I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu -I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include -O3 -DNDEBUG -std=gnu11 -Wshadow -Wstrict-prototypes -Wpointer-arith -Wmissing-prototypes -Werror=implicit-int -Werror=implicit-function-declaration -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wunreachable-code-break -Wunreachable-code-return -Wdouble-promotion -march=native -o ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/arch/x86/quants.c.o -c /home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/arch/x86/quants.c",
+      "file": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/arch/x86/quants.c",
+      "output": "ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/arch/x86/quants.c.o"
+    }
+  ],
+  "existing_ggml_object_inspection": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-native-build-root-v1/build/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/arch/x86/quants.c.o",
+    "bytes": 79536,
+    "sha256": "8bd5cbeea7d58240088d1dc7ea7ada4d9ddb6382a3cb2a50902c7804debbaa35",
+    "commands": [
+      [
+        "objdump",
+        "-d",
+        "--disassemble=ggml_vec_dot_iq3_s_q8_K",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-native-build-root-v1/build/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/arch/x86/quants.c.o"
+      ],
+      [
+        "objdump",
+        "-d",
+        "--disassemble=ggml_vec_dot_iq2_s_q8_K",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-native-build-root-v1/build/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/arch/x86/quants.c.o"
+      ],
+      [
+        "objdump",
+        "-d",
+        "--disassemble=ggml_vec_dot_iq3_xxs_q8_K",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-native-build-root-v1/build/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/arch/x86/quants.c.o"
+      ]
+    ],
+    "cases": [
+      {
+        "symbol": "ggml_vec_dot_iq3_s_q8_K",
+        "disassembly_sha256": "ecec130548d2670bf61db227c1f3493fa68c4089e5b2f01cf5a4ac4d32921bc1",
+        "matching_ymm_instruction_lines": 9,
+        "representative_instructions": [
+          "    43b2:\tc4 62 15 00 eb       \tvpshufb %ymm3,%ymm13,%ymm13",
+          "    43d8:\tc4 41 15 ef 30       \tvpxor  (%r8),%ymm13,%ymm14",
+          "    43f4:\tc4 42 2d 04 d5       \tvpmaddubsw %ymm13,%ymm10,%ymm10",
+          "    440f:\tc4 62 0d 00 f3       \tvpshufb %ymm3,%ymm14,%ymm14",
+          "    4427:\tc4 41 1d ef 70 20    \tvpxor  0x20(%r8),%ymm12,%ymm14",
+          "    4445:\tc4 42 25 04 dc       \tvpmaddubsw %ymm12,%ymm11,%ymm11"
+        ]
+      },
+      {
+        "symbol": "ggml_vec_dot_iq2_s_q8_K",
+        "disassembly_sha256": "a8d9bff6fbe5170379ef9c16918da01abbf84d8f839c8480dff42912d5e97c20",
+        "matching_ymm_instruction_lines": 11,
+        "representative_instructions": [
+          "    3d97:\tc4 62 0d 00 f6       \tvpshufb %ymm6,%ymm14,%ymm14",
+          "    3da4:\tc4 21 0d ef 3c 18    \tvpxor  (%rax,%r11,1),%ymm14,%ymm15",
+          "    3daf:\tc4 c2 75 04 ce       \tvpmaddubsw %ymm14,%ymm1,%ymm1",
+          "    3dbf:\tc4 62 0d 00 f6       \tvpshufb %ymm6,%ymm14,%ymm14",
+          "    3dcc:\tc4 21 0d ef 7c 18 20 \tvpxor  0x20(%rax,%r11,1),%ymm14,%ymm15",
+          "    3dd8:\tc4 42 25 00 bb 00 00 \tvpshufb 0x0(%r11),%ymm11,%ymm15"
+        ]
+      },
+      {
+        "symbol": "ggml_vec_dot_iq3_xxs_q8_K",
+        "disassembly_sha256": "8ba00020139616a4232948fafd1e3cb25f66fb7e5d30d7bff560f1f728bad398",
+        "matching_ymm_instruction_lines": 5,
+        "representative_instructions": [
+          "    40e8:\tc4 e2 45 04 f6       \tvpmaddubsw %ymm6,%ymm7,%ymm6",
+          "    411d:\tc4 e2 3d 04 ed       \tvpmaddubsw %ymm5,%ymm8,%ymm5",
+          "    4122:\tc5 cd f5 f7          \tvpmaddwd %ymm7,%ymm6,%ymm6",
+          "    4134:\tc5 d5 f5 ee          \tvpmaddwd %ymm6,%ymm5,%ymm5",
+          "    4168:\tc4 e2 6d a8 c8       \tvfmadd213ps %ymm0,%ymm2,%ymm1"
+        ]
+      }
+    ],
+    "scope": "Read-only existing object disassembly, no new compile/test/runtime probe. Native build metadata uses-march=native; AVX2 cache checkboxOFF does not mean scalar-only. These functions contain YMM AVX2 instructions; executing an optional particular branch was not observed."
+  }
+}

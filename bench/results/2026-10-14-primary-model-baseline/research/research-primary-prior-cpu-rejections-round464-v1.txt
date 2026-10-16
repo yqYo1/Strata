@@ -1,0 +1,43 @@
+# Prior CPU gate/up screens versus the paired IQ3_S proposal
+
+Date: 2026-10-14 (JST)
+Status: read-only Git/report reconciliation. No source, build, test, CPU/GPU run, cleanup, fetch, or Git mutation was performed. Current P worktree HEAD supplied for this audit: `94bc3148`; primary baseline under discussion: `4fa478f50f8da396e651e3ae862f8b1849d49b54`. This report uses the preserved Git report copies and trees.
+
+## Decision
+
+Do not schedule another A/B for the existing paired gate/up idea. The primary fork already ran and rejected the same core operation on the same Ryzen 5 5600X: interleave gate/up work, reuse each Q8_K activation-vector load, and preserve independent weight decodes, accumulators, FMA chains, and exact output bits. The Z report's candidate is a narrower IQ3_S/NT1 implementation and its synthetic fixture differs, but those differences do not remove the direct counter-evidence: the primary experiment covered IQ3_S at NT1 and NT8 using actual GGUF weights, and every tested median was slower. A fresh experiment needs a concrete changed condition in the operation or production route (for example materially changed compiler/code generation, dispatch exposure, or an assembly-level improvement); the current model diagnostic and GPU validation do not change this CPU operation.
+
+## Primary history and evidence
+
+The primary baseline's first-parent history contains these source/report boundaries:
+
+- `dc2ca4eee42c5870e11a1339c0fccc9fd9e856f6`, “bench(cpu): reject paired gate-up load sharing”: component screen retained in `bench/results/2026-10-04-sycl-cpu-single-pair/` and summarized in `docs/SYCL_IMPLEMENTATION.md`.
+- `33b1e8cc55b97f72d1e71dbc0515f523eb79dbd5`, rejected mixed dispatch and vector exponential screens. Its dispatch variants did not establish an endpoint gain; its vector exponential alternatives failed the bitwise requirement. These are adjacent constraints, not the paired-load experiment.
+- `bd38dacbc989f405671cc427af25aa566d421103`, exact single-token IQ dot tuning for Zen3. It retains per-format optimizations that passed their own evidence gates; it does not adopt paired gate/up sharing.
+
+The `dc2` run record identifies Ryzen 5 5600X, `-O3 -DNDEBUG -std=c++20 -march=znver3 -mtune=znver3 -mavx2 -mfma -mf16c`, real GGUF gate/up matrices with N=2560 and FF=640, E=8 or 64 distinct experts, and one deterministic valid Q8_K activation. Five alternating samples each performed three timed repeats. All 180 candidate samples were finite and bitwise equal to both the accepted production object and the GGML reference. No owned compilation or GPU benchmark overlapped; existing workstation services remained active. Status is explicitly “rejected at component screen; not integrated.”
+
+For IQ3_S (type 21), the baseline/candidate median times in microseconds and baseline/candidate rate ratios were: E=8, unroll 1: 2421.22/2683.09, 0.902; unroll 2: 2387.39/2712.94, 0.880; unroll 4: 2335.96/2435.42, 0.959. E=64, unroll 1: 19066.7/21674.6, 0.880; unroll 2: 19123.8/21754.8, 0.879; unroll 4: 19350.4/19842.5, 0.975. Ratios below 1 mean candidate throughput was lower. The docs summarize the best E=64 candidate/base throughput ratios across types as 0.991 (IQ3_XXS), 0.975 (IQ3_S), and 0.940 (IQ2_S). Thus the directly relevant IQ3_S experiment was broader than one exact production shape, and none of its tested medians improved.
+
+The adjacent `bd38` CPU tuning is different: it optimized exact single-token dots by type (IQ3_XXS unroll 2 and IQ2_S unroll 4); IQ3_S was not one of those adopted dot variants. The same docs record 1.13–2.20% median decode-rate improvements for an earlier IQ3_XXS/IQ2_S build pair, followed by narrower results when IQ3_S single-token tuning was added. These results neither validate nor reverse the paired-load rejection. `33b1` is also not a counterexample: it rejects the tested mixed dispatch and inexact vector-exp choices, which are distinct changes from activation-load sharing.
+
+## Z proposal and exact differences
+
+Z's preserved report is embedded at `28a7b9ae:bench/results/2026-10-14-layer-bulk-stock-repeat/research/research-iq3s-paired-gu-exact-applicability-round436-v1.txt.json`, with report SHA-256 `4fa84785e24fb063f97d8a0ff6d662bcb7cd11ef812a48492feed5ba4fcd8a3c`. It records source commit `85cb6b1968bd5c2156eed3b10dbb332f92ee95ac`. Its proposed `STRATA_IQ256_PAIRED_GU=1` helper is limited to IQ3_S type 21, NT=1, input width 2560, row width 1100, up offset 704000, valid rows in [0,640], AVX2, and scalar/gather variants. It shares each loaded Q8_K activation vector between gate/up, but independently decodes both IQ3_S weights and keeps separate integer and FP32 FMA accumulations; SwiGLU ordering is retained. The flag defaults off.
+
+R436 reports exact float-bit parity on a synthetic packed IQ3_S/IQ4_NL fixture, built in two LLVM modes; four activation patterns are quantized through the production Q8_K quantizer and all 640 output rows are checked. The timings are isolated synthetic component results: NT1 mean 0.31542 ms off versus 0.30355 ms on (-3.76%); NT8 0.87118 versus 0.89130 ms (+2.31%). It has no model denominator or enabled-model run, so the report keeps the flag off. This is not a measured model speedup.
+
+| Dimension | Primary rejection (`dc2`) | Z proposal (`R436`) |
+| --- | --- | --- |
+| CPU | Ryzen 5 5600X | Ryzen 5 5600X (same class and machine model) |
+| Formats/shape | IQ3_XXS, IQ3_S, IQ2_S; real GGUF N=2560, FF=640 | IQ3_S only; fixed N=2560, FF=640 row geometry |
+| Work | E=8 and 64 distinct experts; one Q8_K activation | synthetic packed fixture; NT=1 and NT=8 |
+| Pairing | gate/up work interleaved per 64-value group; shared Q8_K loads | same core interleaving and activation-load reuse |
+| Arithmetic | independent decodes/accumulators and FP32 FMA chains | independent decodes/accumulators and FP32 FMA chains |
+| Result | 180 finite, exact samples; all IQ3_S medians slower | synthetic exact parity; NT1 component mean faster, NT8 slower; no model result |
+
+The proposal is narrower in dispatch scope and uses synthetic rather than GGUF weights; the primary test varied unroll factors and expert counts and used actual model tensors. Both used the same 5600X and the same paired-load mechanism. R436's NT1 mean is a plausible fixture-specific signal, but it does not outweigh the primary real-weight NT1 cases, which tested E=8 and E=64 and were slower across all three loop unroll settings. No changed compiler, machine, dispatch exposure, or code-generation evidence in the supplied current diagnostic establishes a new condition. The safer decision is to retain the flag-off state and not repeat the rejected A/B on present evidence.
+
+## Provenance and limits
+
+Primary reports inspected from the preserved `4fa478f` tree: `bench/results/2026-10-04-sycl-cpu-single-pair/run.json` and its `bench.cpp`; `docs/SYCL_IMPLEMENTATION.md` changes at `dc2`, `33b1`, and `bd38`. Z report inspected from the preserved `28a7b9ae` tree as above; its source candidate is in `src/kernels/cpu/iq_avx2_rows.inl` (`gu_rows_paired_one`) and corresponding guard/dispatch. The primary screen is a component benchmark rather than a whole-model A/B, and its background workstation services were active. R436 is synthetic and also lacks a model A/B. Neither result supports a whole-model speed claim. The current Main runtime/MMQ/GEMM/native-graph validation and 61,055-input diagnostic are not evidence about this CPU microkernel's performance.

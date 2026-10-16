@@ -1,0 +1,152 @@
+[
+  {
+    "path": "include/strata/kernels/cpu/pool.hpp",
+    "before": "#pragma once",
+    "after": "#pragma once\n#include \"strata/kernels/cpu/service_budget.hpp\""
+  },
+  {
+    "path": "include/strata/kernels/cpu/pool.hpp",
+    "before": "    int workers() const { return n_; }",
+    "after": "    // Serialized issuer only. Bind before publishing native jobs; clear after\n    // run_split_multi_native's existing final parked boundary, never from a worker.\n    void service_budget(NativeServiceBudget* value) { service_budget_=value; }\n    int workers() const { return n_; }"
+  },
+  {
+    "path": "include/strata/kernels/cpu/pool.hpp",
+    "before": "    int n_ = 0;",
+    "after": "    NativeServiceBudget* service_budget_=nullptr;\n    int n_ = 0;"
+  },
+  {
+    "path": "include/strata/core/expert_source.hpp",
+    "before": "struct ExpertDispatch {\n",
+    "after": "class DecodeRouteLedger;\nstruct ExpertDispatch {\n    DecodeRouteLedger* decode_route_ledger=nullptr; // joined request owner, ordinary synchronous MTP only\n"
+  },
+  {
+    "path": "src/core/expert_source.cpp",
+    "before": "#include \"strata/core/expert_source.hpp\"",
+    "after": "#include \"strata/core/expert_source.hpp\"\n#include \"strata/core/decode_service_budget.hpp\""
+  },
+  {
+    "path": "src/core/expert_source.cpp",
+    "before": "#include <memory>",
+    "after": "#include <memory>\n#include <new>"
+  },
+  {
+    "path": "src/core/expert_source.cpp",
+    "before": "namespace strata::core {\n",
+    "after": "namespace strata::core {\n// Combined close ownership adapts the archived DecodeServiceBudgetScope lifecycle.\nnamespace {\nbool joined_decode_requested() {\n    static const bool on=decode_joined_requested(std::getenv(\"STRATA_DECODE_ROUTE_LEDGER\"),\n                                                std::getenv(\"STRATA_DECODE_SERVICE_CPU\"));\n    return on;\n}\nuint64_t joined_request_sequence=0; // serialized ordinary serve issuer; on-path only\nuint64_t joined_prompt_hash(const int64_t* prompt,int64_t n,int64_t max_new,int64_t context) {\n    uint64_t h=14695981039346656037ull;\n    auto word=[&](uint64_t value) { for (int b=0;b<8;++b) { h^=(value>>(8*b))&255; h*=1099511628211ull; } };\n    word((uint64_t)n); word((uint64_t)max_new); word((uint64_t)context);\n    for (int64_t i=0;i<n;++i) word((uint64_t)prompt[i]);\n    return h; // fingerprint only; external request SHA256 remains authoritative\n}\n}\nDecodeLedgerSnapshot DecodeServiceBudgetScope::snapshot() {\n    DecodeLedgerSnapshot value;\n    if (!state_ || !dispatch_.pool) return value;\n    for (int i=0;i<14;++i) {\n        if (!sources_.real[i] || !std::isfinite(*sources_.real[i]) || *sources_.real[i]<0) return value;\n        value.real[i]=*sources_.real[i];\n    }\n    dispatch_.pool->phase_ms(value.real[14],value.real[15],value.real[16]);\n    for (int i=14;i<17;++i) if (!std::isfinite(value.real[i]) || value.real[i]<0) return value;\n    for (int i=0;i<6;++i) {\n        if (!sources_.count[i] || *sources_.count[i]<0) return value;\n        value.count[i]=*sources_.count[i];\n    }\n    value.valid=true; return value;\n}\nDecodeServiceBudgetScope::DecodeServiceBudgetScope(ExpertDispatch& d,int64_t layers,int64_t k,bool eligible,\n    const int64_t* prompt,int64_t prompt_n,int64_t max_new,int64_t context,const DecodeLedgerSources& sources)\n    :dispatch_(d),sources_(sources),requested_(joined_decode_requested()) {\n    if (!requested_) return; // no clocks, allocation, prompt scan or output on the off path\n#if !defined(STRATA_ENABLE_SYCL) || !defined(__linux__)\n    refusal_=\"linux_sycl_only\"; return;\n#endif\n    if (joined_request_sequence==UINT64_MAX) { refusal_=\"request_identity_overflow\"; return; }\n    sequence_=++joined_request_sequence;\n    if (!prompt || prompt_n<1 || context<1 || prompt_n>context || max_new<1) { refusal_=\"identity_envelope\"; return; }\n    prompt_hash_=joined_prompt_hash(prompt,prompt_n,max_new,context);\n    if (!eligible || !d.pool || d.remote_count || d.peer || d.decode_route_ledger ||\n        layers<1 || layers>64 || k<1 || k>32 || d.n_expert<1 || d.n_expert>32767 ||\n        d.pool->workers()<1 || d.pool->workers()>128) return;\n    const auto& layout=strata::kernels::cpu::expert_layout();\n    if (!layout.native || layout.n_layers!=layers || layout.n_expert!=d.n_expert || layout.fmt.size()!=(size_t)layers) {\n        refusal_=\"native_format_table\"; return;\n    }\n    for (int64_t l=0;l<layers;++l) if (!DecodeRouteLedger::valid_format(layout.fmt[(size_t)l])) {\n        refusal_=\"format_envelope\"; return;\n    }\n    state_.reset(new(std::nothrow) DecodeRouteLedger);\n    if (!state_) { refusal_=\"state_allocation\"; return; }\n    state_->layers=layers; state_->k=k; state_->experts=d.n_expert;\n    state_->workers=d.pool->workers(); state_->host_works=d.pool->host_works();\n    state_->service.worker_limit=state_->workers;\n    state_->sequence=sequence_; state_->prompt_hash=prompt_hash_; state_->prompt_tokens=prompt_n;\n    state_->max_new=max_new; state_->context=context;\n    for (int64_t l=0;l<layers;++l) state_->fmt[l]=layout.fmt[(size_t)l];\n    state_->before=snapshot(); if (!state_->before.valid) state_->invalid=true;\n    d.decode_route_ledger=state_.get(); // after prompt; one synchronous ordinary issuer\n}\nDecodeServiceBudgetScope::~DecodeServiceBudgetScope() { finish(\"error_or_early_exit\",-1,-1,-1,0); }\nvoid DecodeServiceBudgetScope::finish(const char* status,int64_t emitted,int64_t offered,int64_t accepted,double decode_ms) {\n    if (finished_) return;\n    finished_=true;\n    if (!requested_) return;\n    if (!state_) {\n        std::fprintf(stderr,\"strata decode joined close schema=mtp4-route-service-v1 request=%llu prompt_fnv64=%016llx status=%.32s eligible=0 complete=0 reason=%s\\n\",\n            (unsigned long long)sequence_,(unsigned long long)prompt_hash_,status?status:\"unknown\",refusal_);\n        return;\n    }\n    if (state_->pool_bound) {\n        // An exceptional native CPU call did not return through the existing\n        // park boundary. Never read worker slots, clear their pointer, or free\n        // their observer. Retain this single state until owned native exit;\n        // the still-bound dispatch pointer rejects any second allocation.\n        std::fprintf(stderr,\"strata decode joined close request=%llu prompt_fnv64=%016llx status=%.32s complete=0 reason=pool_completion_unobserved W=%llu R=%llu E=%llu\\n\",\n            (unsigned long long)sequence_,(unsigned long long)prompt_hash_,status?status:\"unknown\",\n            (unsigned long long)state_->W,(unsigned long long)state_->R,(unsigned long long)state_->E);\n        state_->active=false;\n        (void)state_.release(); return;\n    }\n    // Each pool binding below ends only after run_split_multi_native returned through\n    // its existing final wait_parked. No new worker wait or asynchronous close is introduced.\n    state_->after=snapshot();\n    if (!state_->after.valid) state_->invalid=true;\n    if (state_->before.valid && state_->after.valid) {\n        for (int i=0;i<17;++i) if (state_->after.real[i]<state_->before.real[i]) state_->invalid=true;\n        for (int i=0;i<6;++i) if (state_->after.count[i]<state_->before.count[i]) state_->invalid=true;\n    }\n    if (dispatch_.decode_route_ledger==state_.get()) dispatch_.decode_route_ledger=nullptr;\n    else state_->invalid=true;\n    std::unique_ptr<char[]> bytes(new(std::nothrow) char[DecodeLedgerOutput::kCap]);\n    if (!bytes) {\n        std::fprintf(stderr,\"strata decode joined close request=%llu prompt_fnv64=%016llx status=%.32s complete=0 reason=output_allocation W=%llu R=%llu D=%llu A=%llu C=%llu E=%llu\\n\",\n            (unsigned long long)sequence_,(unsigned long long)prompt_hash_,status?status:\"unknown\",\n            (unsigned long long)state_->W,(unsigned long long)state_->R,(unsigned long long)state_->D,\n            (unsigned long long)state_->A,(unsigned long long)state_->C,(unsigned long long)state_->E);\n        return;\n    }\n    DecodeLedgerOutput output{bytes.get(),DecodeLedgerOutput::kCap};\n    state_->receipt(output,status,emitted,offered,accepted,decode_ms);\n    state_->active=false;\n    std::fwrite(bytes.get(),1,output.used,stderr); // one bounded block, only on close\n}\n\n"
+  },
+  {
+    "path": "src/core/expert_source.cpp",
+    "before": "                                float* out, const uint8_t* hit_mask) {\n    using namespace strata::kernels::cpu;\n    if (d.failed) return;",
+    "after": "                                float* out, const uint8_t* hit_mask) {\n    using namespace strata::kernels::cpu;\n    auto* const decode_observer=d.decode_route_ledger;\n    if (decode_observer) decode_observer->attempt_dispatch(d.layers,n_tok,k);\n    if (d.failed) return;"
+  },
+  {
+    "path": "src/core/expert_source.cpp",
+    "before": "    if (native) d.pool->run_split_multi_native(lay.fmt[(size_t) d.layers], d.jobs_multi.data(), njobs);\n    else d.pool->run_split_multi(d.jobs_multi.data(), njobs);",
+    "after": "    if (native) {\n        if (decode_observer && decode_observer->active) {\n            decode_observer->service.actual_t=(int)n_tok;\n            decode_observer->pool_bound=true;\n            d.pool->service_budget(&decode_observer->service);\n        }\n        d.pool->run_split_multi_native(lay.fmt[(size_t) d.layers], d.jobs_multi.data(), njobs);\n        // Native batches have completed and workers parked before this returns.\n        if (decode_observer && decode_observer->active) {\n            d.pool->service_budget(nullptr);\n            decode_observer->pool_bound=false;\n        }\n    } else d.pool->run_split_multi(d.jobs_multi.data(), njobs);"
+  },
+  {
+    "path": "src/core/expert_source.cpp",
+    "before": "    pt(\"ran\");\n    auto ms =",
+    "after": "    pt(\"ran\");\n    if (decode_observer) {\n        if (decode_route_ledger_dispatch_eligible(native,n_tok,d.remote_count,d.peer!=nullptr) &&\n            d.layers>=0 && (size_t)d.layers<lay.fmt.size())\n            decode_observer->record(d.layers,n_tok,ids,kind,n,d.jobs_multi.data(),njobs,d.jobs_multi.size(),\n                                    lay.fmt[(size_t)d.layers],d.plan ? d.plan->pcie_mode : 0);\n        else decode_observer->invalid=true;\n    }\n    auto ms ="
+  },
+  {
+    "path": "src/kernels/cpu/pool.cpp",
+    "before": "            // plan v0.3 P6: native layers, 5 = gate/up rows, 6 = down rows\n            const int per = mode_ == 5 ? FF : H;\n            const int64_t g0 = mrows_ * (int64_t) i / mtasks_, g1 = mrows_ * (int64_t) (i + 1) / mtasks_;",
+    "after": "            // plan v0.3 P6: native layers, 5 = gate/up rows, 6 = down rows\n            const int per = mode_ == 5 ? FF : H;\n            const int64_t g0 = mrows_ * (int64_t) i / mtasks_, g1 = mrows_ * (int64_t) (i + 1) / mtasks_;\n            if (service_budget_) service_budget_->task(id,mode_-5,g1-g0);"
+  },
+  {
+    "path": "src/kernels/cpu/pool.cpp",
+    "before": "                if (mode_ == 5 && nfmt_->gu_type == 42) {\n                    // a native Q2_0 pack",
+    "after": "                if (mode_ == 5 && nfmt_->gu_type == 42) {\n                    ServiceClockScope service(service_budget_ ? service_budget_->counter(id,3,mjobs_[e].nt) : nullptr);\n                    // a native Q2_0 pack"
+  },
+  {
+    "path": "src/kernels/cpu/pool.cpp",
+    "before": "                    native_gu_rows(*nfmt_, mjobs_[e].blob, mjobs_[e].nact, mjobs_[e].nt, ff, r0, r1);",
+    "after": "                    ServiceClockScope service(service_budget_ ? service_budget_->counter(id,0,mjobs_[e].nt) : nullptr);\n                    native_gu_rows(*nfmt_, mjobs_[e].blob, mjobs_[e].nact, mjobs_[e].nt, ff, r0, r1);"
+  },
+  {
+    "path": "src/kernels/cpu/pool.cpp",
+    "before": "                } else if (nfmt_->d_type == 42) {\n                    // Q2_0 down",
+    "after": "                } else if (nfmt_->d_type == 42) {\n                    ServiceClockScope service(service_budget_ ? service_budget_->counter(id,5,mjobs_[e].nt) : nullptr);\n                    // Q2_0 down"
+  },
+  {
+    "path": "src/kernels/cpu/pool.cpp",
+    "before": "                    native_down_rows(*nfmt_, mjobs_[e].blob, hq, mjobs_[e].nt, mjobs_[e].out, r0, r1);",
+    "after": "                    ServiceClockScope service(service_budget_ ? service_budget_->counter(id,2,mjobs_[e].nt) : nullptr);\n                    native_down_rows(*nfmt_, mjobs_[e].blob, hq, mjobs_[e].nt, mjobs_[e].out, r0, r1);"
+  },
+  {
+    "path": "src/kernels/cpu/pool.cpp",
+    "before": "// Q2_0 down (most IQ layers): the AVX-512 kernel, ggml-cpu has only a scalar one on x86",
+    "after": "// Q2_0 down: q2_rows_any selects AVX-512 or AVX2 on the current CPU."
+  },
+  {
+    "path": "src/kernels/cpu/pool.cpp",
+    "before": "        done_.fetch_add(1, std::memory_order_release);\n    }\n}\n\nvoid ExpertPool::run_phase",
+    "after": "        if (service_budget_ && mode_>=5) service_budget_->task_done(id,mode_-5);\n        done_.fetch_add(1, std::memory_order_release);\n    }\n}\n\nvoid ExpertPool::run_phase"
+  },
+  {
+    "path": "src/kernels/cpu/pool.cpp",
+    "before": "void ExpertPool::run_phase(int mode, int n_tasks) {\n    wait_parked(\"before a phase\");",
+    "after": "void ExpertPool::run_phase(int mode, int n_tasks) {\n    if (service_budget_ && (mode==5 || mode==6)) service_budget_->phase_begin(mode-5,n_tasks,mrows_);\n    wait_parked(\"before a phase\");"
+  },
+  {
+    "path": "src/kernels/cpu/pool.cpp",
+    "before": "    wait_done(n_tasks);\n    wait_parked(\"after a phase\");",
+    "after": "    wait_done(n_tasks);\n    wait_parked(\"after a phase\");\n    if (service_budget_ && (mode==5 || mode==6)) service_budget_->phase_end(mode-5);"
+  },
+  {
+    "path": "src/kernels/cpu/pool.cpp",
+    "before": "                if (f.d_type == 42) act_quant_any(split_multi_[(size_t) e].ff[t], FF, split_multi_[(size_t) e].a2[t]);\n                else native_quant_h(f, split_multi_[(size_t) e].ff[t], split_multi_[(size_t) e].hq[t]);",
+    "after": "                if (f.d_type == 42) {\n                    ServiceClockScope service(service_budget_ ? service_budget_->counter(-1,4,mjobs_[e].nt) : nullptr);\n                    act_quant_any(split_multi_[(size_t) e].ff[t], FF, split_multi_[(size_t) e].a2[t]);\n                } else {\n                    ServiceClockScope service(service_budget_ ? service_budget_->counter(-1,1,mjobs_[e].nt) : nullptr);\n                    native_quant_h(f, split_multi_[(size_t) e].ff[t], split_multi_[(size_t) e].hq[t]);\n                }"
+  },
+  {
+    "path": "src/program/generate.cpp",
+    "before": "#include \"strata/core/expert_source.hpp\"",
+    "after": "#include \"strata/core/expert_source.hpp\"\n#include \"strata/core/decode_service_budget.hpp\""
+  },
+  {
+    "path": "src/program/generate.cpp",
+    "before": "            int64_t dec_windows = 0, dec_T = 0;\n            const int64_t decode_hits0",
+    "after": "            int64_t dec_windows = 0, dec_T = 0;\n            const strata::core::DecodeLedgerSources decode_sources{\n                {&ver.ms_wait,&ver.ms_pool,&ver.ms_host,&ver.ms_commit,&drive.d.ms_plan,&drive.d.ms_actq,\n                 &drive.d.ms_jobs,&drive.d.ms_run,&pool.ms_multi_gu,&pool.ms_multi_q,&pool.ms_multi_down,\n                 &dt_run,&dt_commit,&dt_draft},\n                {&ver.windows,&drive.d.multi_misses,&drive.d.multi_entries,&drive.d.cache_hits,&drive.d.pcie_experts,&pool.multi_bytes}};\n            // This root ordinary serve loop has neither batch admission nor a lookup-chain mode.\n            strata::core::DecodeServiceBudgetScope decode_service(drive.d,g.n_layers,K,\n                strata::core::decode_route_ledger_eligible(!geni && native_pack && !multi_gpu && !o.no_pool &&\n                    o.spec_oracle.empty() && o.spec_corrupt==0,0,n_stages,!o.mtp.empty(),o.suffix_draft,0,S,o.spec_split),\n                ids.data(),n,max_new,o.max_context,decode_sources);\n            const int64_t decode_hits0"
+  },
+  {
+    "path": "src/program/generate.cpp",
+    "before": "                if (p + T > o.max_context) break;",
+    "after": "                if (p + T > o.max_context) { decode_service.context_limit(); break; }"
+  },
+  {
+    "path": "src/program/generate.cpp",
+    "before": "                const Clock::time_point tw0 = Clock::now();\n                if (!ver.run(T, window.data(), p, win_pool_fn",
+    "after": "                const Clock::time_point tw0 = Clock::now();\n                decode_service.begin_window(T);\n                if (!ver.run(T, window.data(), p, win_pool_fn"
+  },
+  {
+    "path": "src/program/generate.cpp",
+    "before": "                int a = 0;\n                while (a < T - 1 && window[(size_t) a + 1] == outv[(size_t) a]) ++a;\n                if (from_sfx)",
+    "after": "                decode_service.verified(T);\n                int a = 0;\n                while (a < T - 1 && window[(size_t) a + 1] == outv[(size_t) a]) ++a;\n                if (from_sfx)"
+  },
+  {
+    "path": "src/program/generate.cpp",
+    "before": "                // the window's first a + 1 tokens are in the session now (the last output is not: it is next x)",
+    "after": "                decode_service.committed(a,a+1);\n                // the window's first a + 1 tokens are in the session now (the last output is not: it is next x)"
+  },
+  {
+    "path": "src/program/generate.cpp",
+    "before": "                bool eos = false;\n                for (int i = 0; i <= a && produced_n < max_new",
+    "after": "                bool eos = false;\n                const int64_t decode_emit_start=produced_n;\n                for (int i = 0; i <= a && produced_n < max_new"
+  },
+  {
+    "path": "src/program/generate.cpp",
+    "before": "                std::fflush(stdout);\n                ++rounds;\n                const Clock::time_point tw2",
+    "after": "                std::fflush(stdout);\n                decode_service.emitted(produced_n-decode_emit_start,eos || produced_n>=max_new);\n                ++rounds;\n                const Clock::time_point tw2"
+  },
+  {
+    "path": "src/program/generate.cpp",
+    "before": "            if (dec_timing && dec_windows > 0) {",
+    "after": "            decode_service.wait_commit_succeeded();\n            if (dec_timing && dec_windows > 0) {"
+  },
+  {
+    "path": "src/program/generate.cpp",
+    "before": "            if (drive.routing != nullptr) std::fflush(drive.routing);   // the routing trace survives a crash and is watchable mid-session",
+    "after": "            decode_service.finish(finish,produced_n,draft_offered,draft_accepted,decode_ms);\n            if (drive.routing != nullptr) std::fflush(drive.routing);   // the routing trace survives a crash and is watchable mid-session"
+  }
+]

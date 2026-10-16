@@ -1,0 +1,97 @@
+{
+  "schema": "decode-host-phase-observer-proposal-v2",
+  "date": "2026-10-15",
+  "status": "proposal_only_unapplied_uncompiled_unrun",
+  "write_scope": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/decode-host-phase-observer-v2",
+  "v1_modified": false,
+  "product_files_edited": false,
+  "cmake_edited": false,
+  "existing_fixtures_edited": false,
+  "build_executed": false,
+  "test_executed": false,
+  "GPU_executed": false,
+  "server_executed": false,
+  "profiler_executed": false,
+  "git_executed": false,
+  "process_or_service_management_executed": false,
+  "cleanup_executed": false,
+  "requires_both_same_binary_Direct0_and_Direct1_formal_full_suite_closure": true,
+  "base_binary_sha256": "92acf71e6b4fd914f68c8cefcae7e03f170adf62b5e3b94cf31af747344183f7",
+  "v1_read_pins": [
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/decode-host-phase-observer-v1/artifact-hashes.json",
+      "sha256": "f1c74d38b107145e9f99435055c3e2a1f19a903a33ba4748a8294d89b168fde6"
+    },
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/decode-host-phase-observer-v1/source.diff",
+      "sha256": "e69de5004cfa21b53f7e844650a0cd28cca609d6cf9fd1da59ffb7702102dbce"
+    },
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/decode-host-phase-observer-v1/source-hashes.json",
+      "sha256": "f1f881c163b91f713b5fd71985726e1e1b04046c43e9ec460857460f690f25f5"
+    },
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/decode-host-phase-observer-v1/files/include/strata/core/decode_host_phases.hpp",
+      "sha256": "86f758b0d6320b55560207472fd652ff01076f9df38c014fdb83506204aa4943"
+    },
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/decode-host-phase-observer-v1/cpu_contract_fixture.cpp",
+      "sha256": "7450ea6e1899d6d453b39f7e7fefbd1bf5bf2b9dc5171abf1ada975e81a95348"
+    }
+  ],
+  "requested_fixes": {
+    "borrow_collision": "never dereference unproven slot; clear/refuse; mark known fresh owner invalid; prior live borrow diagnoses known prior owner on detach",
+    "window_bands": "checked count/sum/hist conservation against global RunTotal; per-band histogram-count and ordinal expected-count checks",
+    "layers": "checked per-phase sum/count conservation across layers against corresponding global phase; retain each layer count=W"
+  },
+  "fixture_proposals": {
+    "cpu_contract_fixture.cpp": [
+      "existing OFF/timeline/RAII/clock/overflow/output checks",
+      "independent band count corruption",
+      "independent band sum corruption",
+      "independent band histogram corruption preserving local count",
+      "band ordinal swap preserving combined moments/hist",
+      "band sum/hist overflow",
+      "layer sum/count corruption for each of four phases",
+      "global/T count conservation with mismatching layer phase count",
+      "layer sum overflow for each phase"
+    ],
+    "cpu_asan_borrow_fixture.cpp": [
+      "freed heap pointer slot refusal without dereference",
+      "live collision defers prior-owner diagnosis to prior borrow detach",
+      "original exception type/message/marker propagation",
+      "original return value preservation",
+      "fresh complete request after each failure category"
+    ]
+  },
+  "preserved": {
+    "exec_fixed_getenv_only": true,
+    "new_env": "STRATA_DECODE_HOST_PHASES=1",
+    "default_OFF_no_allocation_clock_output": true,
+    "issuer_only": true,
+    "request_RAII_detach_order": true,
+    "new_queue_wait_buffer_operations": 0,
+    "original_pool_fail_stop": true,
+    "async_error_observation": true,
+    "output_cap_bytes": 262144,
+    "state_compile_time_ceiling_bytes": 65536,
+    "quantiles": "base4 histogram intervals, no exact median/p95"
+  },
+  "qualified": {
+    "compiled": false,
+    "CPU_contract": false,
+    "ASan": false,
+    "model": false,
+    "performance": false,
+    "quality": false,
+    "physical_64K": false,
+    "physical_256K": false,
+    "RESTORE": false
+  },
+  "retention": {
+    "owner": "Main recovery audit",
+    "consumer": "v2 source review, serial CPU/ASan/build/model checks after both Direct formal suites close",
+    "next_review": "Main validation and adoption boundary",
+    "raw_capture_bytes": 0
+  }
+}

@@ -1,0 +1,101 @@
+diff --git a/src/kernels/sycl/prompt_attention.cpp b/src/kernels/sycl/prompt_attention.cpp
+index b6c4238..c65b764 100644
+--- a/src/kernels/sycl/prompt_attention.cpp
++++ b/src/kernels/sycl/prompt_attention.cpp
+@@ -38,6 +38,18 @@ float code(QsaAttnPools p, int64_t row, int dim) {
+     return float((Value ? p.v_q : p.k_q)[row * HD + dim]);
+   return 0;
+ }
++template <int Mode, bool Value, bool Native>
++sycl::half half_code(QsaAttnPools p, int64_t row, int dim) {
++  if constexpr (Native && Mode == 0) {
++    const uint16_t bits = (Value ? p.v_pool : p.k_pool)[row * HD + dim];
++    // Retain the existing NaN conversion; finite values and infinities can
++    // enter the half tile without a half -> float -> half round trip.
++    if ((bits & 0x7fff) <= 0x7c00)
++      return sycl::bit_cast<sycl::half>(bits);
++    return sycl::half(f32_from_f16(bits));
++  }
++  return sycl::half(code<Mode, Value>(p, row, dim));
++}
+ template <int Mode, bool Value>
+ float scale(QsaAttnPools p, int64_t row, int group) {
+   if constexpr (Mode == 0)
+@@ -51,7 +63,7 @@ float scale(QsaAttnPools p, int64_t row, int group) {
+     return f32_from_f16((Value ? p.v_scale : p.k_scale)[row * 4 + group]);
+   return 0;
+ }
+-template <int Mode, bool Direct>
++template <int Mode, bool Direct, bool Native = false>
+ void launch(const float *query, QsaAttnPools pools, const int32_t *ids,
+             const int32_t *steps, int64_t cap, QsaShapes shapes, float *output,
+             int64_t queries, void *stream) {
+@@ -130,8 +142,9 @@ void launch(const float *query, QsaAttnPools pools, const int32_t *ids,
+             it.barrier(sycl::access::fence_space::local_space);
+             for (int i = tid; i < HD * CH; i += WG) {
+               const int dim = i / CH, c = i % CH;
+-              kv[i] = sycl::half(
+-                  rows[c] >= 0 ? code<Mode, false>(pools, rows[c], dim) : 0.f);
++              kv[i] = rows[c] >= 0
++                          ? half_code<Mode, false, Native>(pools, rows[c], dim)
++                          : sycl::half(0.f);
+             }
+             for (int i = tid; i < CH * KG; i += WG)
+               ks[i] = rows[i / KG] >= 0
+@@ -196,8 +209,9 @@ void launch(const float *query, QsaAttnPools pools, const int32_t *ids,
+                           : 0.f;
+             for (int i = tid; i < CH * HD; i += WG) {
+               const int c = i / HD, dim = i % HD;
+-              kv[i] = sycl::half(
+-                  rows[c] >= 0 ? code<Mode, true>(pools, rows[c], dim) : 0.f);
++              kv[i] = rows[c] >= 0
++                          ? half_code<Mode, true, Native>(pools, rows[c], dim)
++                          : sycl::half(0.f);
+             }
+             it.barrier(sycl::access::fence_space::local_space);
+             if (tid < VG) {
+@@ -284,9 +298,16 @@ void dispatch(const float *q, QsaAttnPools p, const int32_t *ids,
+               const int32_t *steps, int64_t cap, QsaShapes s, float *out,
+               int64_t nq, void *stream) {
+   const char *direct = std::getenv("STRATA_SYCL_PROMPT_DIRECT");
+-  if (direct && direct[0] == '1')
++  if (direct && direct[0] == '1') {
++    if constexpr (Mode == 0) {
++      const char *native = std::getenv("STRATA_SYCL_PROMPT_NATIVE_KV");
++      if (native && native[0] == '1') {
++        launch<Mode, true, true>(q, p, ids, steps, cap, s, out, nq, stream);
++        return;
++      }
++    }
+     launch<Mode, true>(q, p, ids, steps, cap, s, out, nq, stream);
+-  else
++  } else
+     launch<Mode, false>(q, p, ids, steps, cap, s, out, nq, stream);
+ }
+ bool matrix_available(const sycl::device &device, int mode) {
+diff --git a/tests/sycl/decode_attention.cpp b/tests/sycl/decode_attention.cpp
+index d36aa78..3a1cd87 100644
+--- a/tests/sycl/decode_attention.cpp
++++ b/tests/sycl/decode_attention.cpp
+@@ -158,6 +158,13 @@ void run(int format, int page_size, bool masked, bool scaled = false) {
+             out.data(), nq);
+   auto y = out.get();
+ #ifdef STRATA_TEST_PROMPT_MATRIX
++  setenv("STRATA_SYCL_PROMPT_NATIVE_KV", "0", 1);
++  attention(q.data(), p, di.data(), ds.data(), cap, s, scratch.data(),
++            out.data(), nq);
++  const auto converted = out.get();
++  check(std::memcmp(y.data(), converted.data(), y.size() * sizeof(float)) == 0,
++        "native/converted prompt half bitwise");
++  setenv("STRATA_SYCL_PROMPT_NATIVE_KV", "1", 1);
+   setenv("STRATA_SYCL_PROMPT_DIRECT", "0", 1);
+   attention(q.data(), p, di.data(), ds.data(), cap, s, scratch.data(),
+             out.data(), nq);
+@@ -251,6 +258,7 @@ int main() {
+     runtime = sycl_backend::runtime_for();
+ #ifdef STRATA_TEST_PROMPT_MATRIX
+     setenv("STRATA_SYCL_PROMPT_DIRECT", "1", 1);
++    setenv("STRATA_SYCL_PROMPT_NATIVE_KV", "1", 1);
+ #endif
+     for (int fmt = 0; fmt < 4; ++fmt)
+       for (int page : {1, 4, 16})

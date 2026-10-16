@@ -1,0 +1,147 @@
+{
+  "round": 823,
+  "reviewed_on": "2026-10-16",
+  "reviewer": "native Codex gpt-6-luna max",
+  "review_purpose": "Review the completed R820 knowledge-collection report for assignment fit, depth, novelty, source precision, unsupported inference, and retrieval metadata. Read-only review; no product source edit, Git action, build, test, GPU work, profiler, process inspection, or cleanup was performed.",
+  "inputs": {
+    "agents_md": {
+      "path": "AGENTS.md",
+      "sha256": "7f750320bef4146a2872086922d84fc9fa7a8351ae655b7876c912856e3747fe"
+    },
+    "artifact_retention": {
+      "path": "docs/ARTIFACT_RETENTION.md",
+      "sha256": "fdf86d7ea576d6f0400ec7e643b5ddca5c3c577dd053d66c2fd05220e64b1cc1"
+    },
+    "research_index": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+      "sha256": "ec0afc635fbb8d26a417121e858389c34e3bb33185eb4e57d2b03c0058db8303",
+      "note": "Hash of the metadata snapshot consulted in this review. The index itself was not edited."
+    },
+    "orca_spec": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round820-spec-v1.txt",
+      "sha256": "3a24f50689695bc7553cbb9bb92e89f06079471153416088dc0068a73d38a487"
+    },
+    "report": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round820-v1.txt",
+      "sha256": "9e48cf37ea8fb8db6343c5355a70d93e0e4f869066ec470a13b5bf30a068a295"
+    },
+    "prior_report_sections_consulted": [
+      {
+        "round": 759,
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-nonllm-gpu-round759-v1.txt",
+        "sha256": "4c81d833c2a690e9b3f5fb54d579288acc949790e30ab15457f24d65cc0aad5f",
+        "sections": ["Transferable evidence: prefix/partition primitives"]
+      },
+      {
+        "round": 773,
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-knowledge-round773-v1.txt",
+        "sha256": "21622c897b4c74b3ad75466cca27b62254c521131b2afcee1296bb5429e8bff2",
+        "sections": ["Finding", "Applicability by strategy", "Short-tail handling and shared state", "One bounded future experiment"]
+      },
+      {
+        "round": 782,
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round782-v1.txt",
+        "sha256": "3a6ef792921ff1c881df3438396a3c267571437e4e1cfaec58d15cc7b6885e2d",
+        "sections": ["Contract evidence: recurrent state rows", "Recurrent examples and mapping to Strata"]
+      },
+      {
+        "round": 786,
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round786-v1.txt",
+        "sha256": "375aeb85b619b686102cf4d5085d2adb71e54dcdc0ef725224fcabc532f0ec8c",
+        "sections": ["Opening scope statement and section headings only"]
+      }
+    ],
+    "prior_review_context": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round788-v1.json",
+      "sha256": "2c709a1be87034151326e0916db23dd2be9ed61e0840e941eabd373eb817c31d",
+      "japanese_digest_path": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round788-v1.ja.md",
+      "japanese_digest_sha256": "a7cad9447d4efaf8da3e4bad3bac92c0bb2c2b1acfc33f07e082c31d1ab5c1ec",
+      "reason": "Used its already-listed follow-up scope metadata to avoid recommending a duplicate precision-drift diagnostic task."
+    }
+  },
+  "main_status_supplied_by_main": {
+    "source": "Review assignment; not independently revalidated.",
+    "status": "Main is qualifying the vLLM Xe2 native16 GEMM; R821 is a source-only production hook; R822 is an active collection; QSA R818 was source-reviewed and remains unapplied."
+  },
+  "dispatch": {
+    "model": "gpt-6-luna",
+    "purpose_label": "knowledge collection",
+    "completion": "Supplied by review assignment; no Orca lifecycle artifacts were inspected in this review."
+  },
+  "report_review": {
+    "round": 820,
+    "word_count_whitespace_delimited": 1731,
+    "purpose_class": "knowledge collection",
+    "main_original_needed_now": false,
+    "scope_depth_review": "Within the assigned 1,200–1,800-word budget and eight-URL ceiling. It traces two concrete contracts: Mamba's typed non-final chunk-state writes with an FP32 carry/final state, and FLA's backward rematerialization of chunk intermediates. The comparison identifies when storage traffic or retained training activations may matter, includes counterexamples and a bounded future evaluation, and explicitly withholds B570 speed, model-quality, and adoption claims.",
+    "novelty_and_redundancy": "The source-level state-passing/materialization graph is incremental to R759's global scan/work-map scheduling and R782's general framework dtype/state contracts. R786's graph fan-in scope is unrelated. R773 already covers chunk-size, workspace, shared-state, and tail tradeoffs; R820's technical question remains distinct, but its proposed sequence/chunk-size/tail sweep overlaps R773's proposed 4K/8K/16K comparison. Any future experiment should reuse an already selected chunk/tail control and isolate state dtype/recomputation, rather than repeat a separate chunk-size study.",
+    "source_attribution": {
+      "linked_url_count": 8,
+      "assessment": "The report pins Mamba and FLA source paths to immutable commits, links each repository license, and identifies the Intel SYCL matrix-extension file. Direct read-only checks of the pinned sources confirmed the described Mamba FP32 carry and typed materialization, FLA backward rematerialization and typed h allocation, and the Intel API's experimental subgroup scope and device-specific type/shape queries. These are source contracts, not performance measurements.",
+      "limitations": "The Intel documentation URL follows the mutable sycl branch; the report gives its retrieval date but no immutable revision. None of the sources establishes an Arc B570 runtime tuple, a winning storage format, task-level numerical acceptance, or a Strata performance result. No third-party source text was copied."
+    },
+    "unsupported_or_unverified_inferences": [
+      {
+        "claim": "The report says BMG-family combinations in the cited Intel specification provide a route to investigate matrix support.",
+        "finding": "The linked specification does not identify BMG; it documents an experimental subgroup API and requires querying each device's supported type/shape combinations. Remove the BMG-specific attribution or state it only as a hypothesis to check against the exact B570 runtime."
+      },
+      {
+        "claim": "Scalar affine state passing is likely a better first port than using matrix hardware; Strata's GDN geometry and chunk schedule differ from the cited implementations.",
+        "finding": "These are reasonable design hypotheses, not source-measured conclusions. Mark the first explicitly as inference and attach a local source path/revision to the Strata geometry statement if it is reused."
+      }
+    ],
+    "provenance_limit": "Pinned upstream source was checked read-only for the stated contracts and licenses. No Strata implementation source, B570 runtime, performance result, numerical result, or model acceptance was independently checked. Research remains decision context only.",
+    "retrieval_metadata": {
+      "purpose_class": "knowledge_archive",
+      "main_original_needed_now": false,
+      "retrieval_brief": "Retrieve when Main has a concrete long-prefill recurrence decision involving typed chunk-state materialization or recomputation of intermediates across separated consumers. Reuse the source contracts as hypotheses; separately check local shape, device capability, numerical behavior, and whole-path cost.",
+      "main_correction_to_retain": "The linked Intel specification does not name BMG. Its guarantee is an experimental API with device-specific support queries. R820's chunk-size/tail sweep also overlaps R773; future local work should isolate state storage/recomputation using the chosen chunk control.",
+      "outcome": "Successful knowledge collection; preserve for retrieval. Main does not need the original body for its current GEMM qualification or R821/R822 work."
+    }
+  },
+  "index_update_proposal": {
+    "applied": false,
+    "reason": "This review was authorized to write only its JSON and Japanese digest; the research index was left unchanged.",
+    "report_entry": {
+      "round": 820,
+      "path": "research-round820-v1.txt",
+      "sha256": "9e48cf37ea8fb8db6343c5355a70d93e0e4f869066ec470a13b5bf30a068a295",
+      "model": "Orca gpt-6-luna",
+      "purpose_class": "knowledge collection",
+      "review": "research-scope-review-round823-v1.json",
+      "main_body_read": false,
+      "reviewer_retrieval_metadata": {
+        "purpose_class": "knowledge_archive",
+        "main_original_needed_now": false,
+        "retrieval_brief": "Retrieve for a concrete long-prefill recurrence decision involving typed chunk-state materialization or recomputation across separated consumers. Treat source contracts as hypotheses requiring local numerical, capability, and whole-path cost checks.",
+        "scope_depth_review": "1,731 words within the 1,200–1,800 budget; two implemented source contracts, counterexamples, transfer limits, and a bounded experiment are covered.",
+        "provenance_limit": "Eight linked URLs across Mamba, FLA, and Intel SYCL documentation. Mamba/FLA commits and licenses are pinned. The Intel sycl-branch URL is mutable and does not name BMG. No B570 performance or Strata numerical evidence.",
+        "main_correction_to_retain": "Do not attribute BMG support to the cited spec; query exact runtime capabilities. Avoid repeating R773's chunk-size/tail comparison when testing dtype or recomputation."
+      },
+      "outcome": "succeeded"
+    }
+  },
+  "next_research_scopes": [
+    {
+      "priority": 1,
+      "purpose_label": "knowledge collection",
+      "title": "Error growth and correction policies for low-precision recurrent checkpoints",
+      "finite_question": "If a Main-owned natural-input recurrence comparison localizes unacceptable error to a 16-bit chunk-state write, what do numerical-analysis and implemented GPU/ASIC sources establish about error growth under contractive versus near-unit affine transitions, and which two concrete correction policies (for example, block rescaling versus compensated state storage) reduce it? Record exact arithmetic/storage cadence, tested dynamic range and sequence length, reported accuracy and cost, and counterexamples. Do not repeat R820's fixed-precision materialization-versus-recomputation graph or R773's chunk-size/tail sweep.",
+      "breadth_and_counterevidence": "Use primary papers and implementation/documentation sources for two concrete correction policies; distinguish analytic bounds from measured results and hardware-specific timing. Do not claim B570 applicability, propose source reuse, or recommend a Strata precision change.",
+      "report_budget": "1,300–1,700 words; at most six substantive primary sources with exact URLs, one policy/contract comparison table, and explicit evidence limits.",
+      "schedulable_now": false,
+      "prerequisites": "A Main-owned, same-input FP32-versus-16-bit recurrent component result must localize a material state-boundary error and identify the affected transition/shape. Current supplied work is GEMM qualification and source/knowledge research; it does not provide that recurrence error evidence.",
+      "prerequisite_evidence": [
+        "The supplied Main status names vLLM Xe2 GEMM qualification, an R821 source-only hook, active R822 collection, and unapplied QSA R818; none reports a measured GDN/recurrent chunk-boundary error.",
+        "AGENTS.md requires preserving FP32 recurrent state and keeping recurrent numerical/performance gates separate from tensor storage decisions."
+      ],
+      "novelty_guard": "Keep the question on numerical error correction after a measured boundary error. R820 covers storage versus rematerialization contracts; R773 covers chunk-size/tail scheduling; the R788 review already recommends a general precision-drift diagnostic scope.",
+      "prior_material_to_avoid_repeating": [
+        "bench/results/2026-10-15-pr6-recovery-audit/research-round820-v1.txt",
+        "bench/results/2026-10-15-pr6-recovery-audit/research-knowledge-round773-v1.txt",
+        "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round788-v1.json"
+      ]
+    }
+  ],
+  "operational_digest_ja_400_chars": "R820は1,731語で範囲内。Mamba/FLAの型契約を確認し、現時点でMainの読込は不要。Intel仕様にBMG記載はなく修正対象。R773とchunk/tail実験が一部重なる。後続は実測でstate境界誤差が確認されるまでschedulable_now=false。"
+}

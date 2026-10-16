@@ -1,0 +1,110 @@
+{
+  "round": 795,
+  "reviewed_on": "2026-10-16",
+  "reviewer": "native Codex gpt-6-luna max",
+  "review_purpose": "Review settled R794 knowledge-collection report for assignment compliance, scope, depth, novelty, source attribution and retrieval metadata. No report/index edit, Git action, build, test, GPU/profiler job, process inspection or cleanup was performed.",
+  "inputs": {
+    "agents_md": {"path": "AGENTS.md", "sha256": "7f750320bef4146a2872086922d84fc9fa7a8351ae655b7876c912856e3747fe"},
+    "artifact_retention": {"path": "docs/ARTIFACT_RETENTION.md", "sha256": "fdf86d7ea576d6f0400ec7e643b5ddca5c3c577dd053d66c2fd05220e64b1cc1"},
+    "research_index": {"path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json", "sha256": "d91e4ba12883c590c860ea35fae0585415364588f365aed20dd9768dc9104d99", "note": "Read without editing. R794 is not yet indexed; native16_activation_pipeline records quality_acceptance=UNSET, performance_qualified=false and physical_context_qualified=false."},
+    "prior_scope_review_792": {"path": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round792-v1.json", "sha256": "efe9b607a020d73965e3199dc2576b391c83d5c4ea8b21d512f0107698c301bf", "reason": "Used its R791 review metadata and the index for assignment-lineage and overlap checks. Older knowledge-collection report bodies were not opened."},
+    "orca_spec": {"path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round794-spec-v1.txt", "sha256": "92b9953c6c50e8d366ed367dbaf88cb86920f510137eebf67c52789463daf540"},
+    "orca_launch": {"path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round794-launch-v1.json", "sha256": "63506955b4e4a6144a53b55306aec86d5b52101cba750905d6f30efedf3a7a88"},
+    "orca_settlement": {"path": "bench/results/2026-10-15-pr6-recovery-audit/orca-round794-settlement-v1.json", "sha256": "d6361752d9c9da0095be5b93351e67a5e3432e2ae69514b2101647bd5e755383"},
+    "orca_release": {"path": "bench/results/2026-10-15-pr6-recovery-audit/orca-round794-release-v1.json", "sha256": "d43db80b5863736dc53950c1e8d5da55c7e61ca8cb4ae6aed77932f034f210d1"},
+    "report": {"path": "bench/results/2026-10-15-pr6-recovery-audit/research-round794-v1.txt", "sha256": "d6ccc78a5b496ddd67f9327fa5a14e478015a4e7733f7e136d57c868badbe5da"}
+  },
+  "dispatch": {
+    "run_id": "run_c8f478972ec8",
+    "task_id": "task_f95adde94151",
+    "dispatch_id": "ctx_77878871deab",
+    "model": "gpt-6-luna",
+    "purpose_label": "knowledge collection",
+    "settlement": "worker succeeded; dispatch completed",
+    "release": "released; agent terminal closed; transcript captured",
+    "identity_check": "Task, dispatch and run IDs agree across launch and settlement. Report SHA-256 matches the settled terminal preview."
+  },
+  "main_status_supplied_by_main": {
+    "source": "Review assignment; not independently revalidated.",
+    "source_state": "HEAD 9c1a2020; native BF16 HC4/MoE true16 interop path is opt-in. Fresh v2 complete build and GEMM68 PASS; regression running.",
+    "failure_history": "The first v1 model run aborted from a new runtime registry static-teardown lifetime bug. Main reports the process-lifetime registry fix and an independent 64B GDB reproduction; no GPU fault was found.",
+    "quality_performance_context": "No native16 model-quality, performance or physical-262144-context qualification exists yet.",
+    "source_proposal_787": "Typed attention proposal is unreviewed, unadopted and untested."
+  },
+  "report_review": {
+    "word_count_whitespace_delimited": 1478,
+    "purpose_class": "knowledge collection",
+    "assignment_compliance": "Within the 1,300-1,700-word budget; six sources at the cap; includes one comparison table and one bounded prospective protocol. No Strata claim, threshold, precision recommendation, performance claim or implementation proposal.",
+    "scope_depth_review": "Follows the R792 recommendation. Sampling units, pairing, task/context strata, multiple outcomes, seed variation, rare events and interim looks form a coherent evidence-design investigation; alternatives, assumptions and transfer limits are covered. Its 256-prompt/three-seed example has no power rationale and is explicitly not a qualification protocol.",
+    "novelty_and_redundancy": "Distinct from R791's metric/localization discussion: R794 asks how to quantify sampling uncertainty and coverage after outcomes exist. Compared only the index and R792 review metadata; no older collection bodies were reopened.",
+    "source_attribution": {
+      "source_count": 6,
+      "source_urls_exact": true,
+      "primary_source_checks": [
+        {"source": "Dror et al. (2018), ACL", "url": "https://aclanthology.org/P18-1128/", "checked": "Official ACL record/PDF support general NLP test selection and note dependence among dataset points; not autoregressive-inference evidence."},
+        {"source": "Koehn (2004), EMNLP", "url": "https://aclanthology.org/W04-3250/", "checked": "Official ACL record/PDF confirm paired bootstrap on aligned sentence samples for BLEU; the report correctly limits transfer from machine translation."},
+        {"source": "Liang et al. (HELM)", "url": "https://arxiv.org/abs/2211.09110", "checked": "Full paper confirms three seeds for in-context-example selection, a 1,000-instance sample and the warning that claims may be statistically insignificant; it also reports paired bootstrap for human evaluations. These are not decoding seeds."},
+        {"source": "Holm (1979)", "url": "https://doi.org/10.2307/4615733", "checked": "Original article scan confirms Type I error protection for combinations of true hypotheses. DOI landing page unavailable; text checked at https://www.ime.usp.br/~abe/lista/pdf4R8xPVzCnX.pdf."},
+        {"source": "Howard et al. (2020)", "url": "https://doi.org/10.1214/18-PS321", "checked": "Project Euclid journal record confirms time-uniform bounds from nonnegative supermartingales and that assumptions are part of the result."},
+        {"source": "Hanley and Lippman-Hand (1983)", "url": "https://doi.org/10.1001/jama.1983.03330370053031", "checked": "Original article text hosted by McGill confirms the approximate 0/n upper 95% bound of 3/n. DOI landing page unavailable; text checked at https://jhanley.biostat.mcgill.ca/c607/ch08/zero_numerator.pdf."}
+      ],
+      "assessment": "Bibliographic attributions and methodological roles were checked against primary papers or original article text. These sources do not establish Strata, Intel GPU/SYCL, model-specific BF16 quality, speed or maximum-context correctness. Copyright/license statements were not audited as legal conclusions; no text or code reuse is proposed.",
+      "correction": "If retrieved to select a test, state that randomization-test validity requires a justified null exchangeability/randomization scheme; paired t inference requires independent prompt-level differences and suitable distributional or large-sample conditions. The report's example counts are not validated sample sizes."
+    },
+    "provenance_limit": "The methods are external evidence; the protocol is a synthesis, not a published or locally validated gate. No source reuse is proposed and no external result qualifies native16.",
+    "main_original_needed_now": false,
+    "index_retrieval_metadata": {
+      "purpose_class": "knowledge_archive",
+      "main_original_needed_now": false,
+      "retrieval_brief": "Retrieve only for a concrete fixed-set paired quality-study design question. Consult only the sections on uncertainty units, strata/metrics/stopping and the bounded protocol as needed.",
+      "main_correction_to_retain": "Prompt-family clustering and decoding randomness are distinct sources; shared seeds do not prove useful coupling. HELM seeds concern in-context selection. The 256-prompt/three-seed example is unpowered. External methods do not establish Strata behavior.",
+      "outcome": "Successful knowledge collection; retain for retrieval. No present quality decision depends on it while native16 regression and qualification remain incomplete."
+    }
+  },
+  "index_update_proposal": {
+    "applied": false,
+    "reason": "This review may write only this JSON and its Japanese digest; research-index.json is unchanged.",
+    "proposed_report_entry": {
+      "round": 794,
+      "path": "research-round794-v1.txt",
+      "sha256": "d6ccc78a5b496ddd67f9327fa5a14e478015a4e7733f7e136d57c868badbe5da",
+      "model": "Orca gpt-6-luna",
+      "purpose_class": "knowledge collection",
+      "review": "research-scope-review-round795-v1.json",
+      "main_body_read": false,
+      "reviewer_retrieval_metadata": {
+        "purpose_class": "knowledge_archive",
+        "main_original_needed_now": false,
+        "scope_depth_review": "1,478 words within budget; coherent coverage of sampling, pairing, seeds, strata, metrics, rare events and stopping; six sources, one table and an unpowered protocol.",
+        "provenance_limit": "Primary statistical sources checked; no Strata/Intel SYCL evidence. Protocol counts have no power rationale.",
+        "main_correction_to_retain": "Prompt clusters and decode seeds are distinct variance sources; shared seeds do not guarantee coupling. HELM seeds are in-context selections. Randomization tests require justified null exchangeability; the example protocol is not a qualification gate.",
+        "retrieval_brief": "Retrieve after Main defines a concrete fixed-set paired quality-study question; read only uncertainty units, strata/metric/stopping design and the bounded protocol sections."
+      },
+      "outcome": "succeeded"
+    }
+  },
+  "next_research_scopes": [
+    {
+      "priority": 1,
+      "purpose_label": "decision support",
+      "title": "Pilot-based sample sizing for paired stochastic native16 quality studies",
+      "finite_question": "After a fixed quality pilot supplies prompt-family IDs, per-prompt paired outcomes by precision arm, repeated-seed variation, task/context strata and the study owner's predeclared meaningful-change margin, compare defensible sample-size or interval-width planning methods for clustered prompts and nested seeds. Explain pilot-reuse limits and multiplicity costs. Do not set an acceptance threshold or infer a quality result.",
+      "breadth_and_counterevidence": "Focus on quantitative design from measured pilot variance, including prompt-family dependence, within-prompt seeds and stratified allocation. Compare a few methods, assumptions, failure cases and costs. Do not repeat R794's generic paired-test, Holm, rare-event or time-uniform discussion; do not discuss kernels or precision mitigations.",
+      "report_budget": "1,300-1,700 words; at most six primary statistical sources; one comparison table and one bounded planning example using only the supplied pilot summary.",
+      "schedulable_now": false,
+      "prerequisites": "Wait until regression completes and Main supplies a qualified paired quality pilot with a frozen prompt frame, family IDs, per-prompt outcomes for both arms, repeat-seed summaries where stochastic decoding is in scope, and an owner-selected meaningful-change margin. Public sources alone are insufficient because planning requires measured variance.",
+      "prerequisite_evidence": [
+        "Current index native16_activation_pipeline marks quality_acceptance=UNSET, performance_qualified=false and physical_context_qualified=false.",
+        "Main status supplied for this review says no native16 model-quality result exists and regression is still running.",
+        "R794 has no sample-size rationale and explicitly disclaims power qualification for its 256-prompt/three-seed illustration."
+      ],
+      "novelty_guard": "Quantitative allocation and uncertainty planning from actual pilot variance only. Do not recommend a precision change, choose release tolerances or treat an illustrative cap as a qualification criterion.",
+      "prior_metadata_to_use": [
+        "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+        "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round792-v1.json",
+        "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round795-v1.json"
+      ]
+    }
+  ],
+  "operational_digest_ja_400_chars": "R794は割当どおりの知識収集で、1,478語・6出典。範囲はR791の指標説明から標本不確実性設計へ進み、Mainの現時点の判断には原文不要。出典の方法論上の主張を原典照合し、Strataへの適用不可と再読条件を索引案に記録。次調査は品質pilot後に限り、今は開始不可。索引は未変更。"
+}

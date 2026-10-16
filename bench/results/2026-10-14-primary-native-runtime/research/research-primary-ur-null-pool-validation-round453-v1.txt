@@ -1,0 +1,51 @@
+# R453 — UR optional pool lifetime-validation diagnostics and Level Zero symbols
+
+Date: 2026-10-14 (Asia/Tokyo)
+Mode: read-only investigation. Main-reported primary native runtime/compat GPU results were not rerun. No build, test, GPU, process, environment, source, Git, or fetch changes/actions were performed. Read only the named windows from `runtime-debug.stderr` and `compat-debug.stderr`, R451/R450 and the named build/check scripts, relevant LLVM/UR v7.1.1 source, Level Zero / UR API material, and the Intel compute-runtime teardown source. No private `record.json` or unrelated logs were opened.
+
+## Finding
+
+The `<VALIDATION>[ERROR]: There are no valid references to handle 0` entries are a false positive in the v7.1.1 UR **lifetime validation layer** for a valid null optional pool handle. They do not show a bad application handle, failed allocation, or device error. The source unconditionally checks every `pool` against the reference table despite its own API annotations marking the argument `[in][optional]`; null is absent from that table and is logged as invalid. The wrapper then forwards the call to the adapter. Main's traces show both that warning and `UR_RESULT_SUCCESS` from the allocation.
+
+Therefore the three tests passed their API result, data and state assertions as Main reported, but the full validation log did **not** pass cleanly. Record the distinction as “runtime/compat test passed; UR lifetime validator emitted known false-positive diagnostics for null optional pools,” not as a clean full-validation run and not as an `UR_RESULT_ERROR` or kernel fault. The source-level diagnosis is established for these diagnostics; the shared runtime is not modified here.
+
+## Exact UR evidence
+
+The toolchain worktree identified by the permitted CMake source locator is `/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011`; its source revision is `504366f4b82ff00bbac7b0c956635eed8bc599d8` (`v7.1.1-dirty`). The three files below have no differences from the `v7.1.1` tag in that worktree.
+
+- In `unified-runtime/include/unified-runtime/ur_api.h:4758-4768,4812-4824`, both `urUSMHostAlloc` and `urUSMDeviceAlloc` annotate `pool` as `[in][optional]`. Their documented `UR_RESULT_ERROR_INVALID_NULL_HANDLE` cases name `hContext` (and `hDevice` for device allocation), not `pool`. This agrees with the UR Core API 0.12 (`v7.1.1` embeds UR 0.12.0).
+- In `unified-runtime/source/loader/layers/validation/ur_valddi.cpp:1783-1828`, host allocation checks `enableLifetimeValidation && !isReferenceValid(pool)` and logs invalid reference without a null exemption, then calls `pfnHostAlloc(...)`. Device allocation repeats this at `:1835-1891` before calling `pfnDeviceAlloc(...)`.
+- `unified-runtime/source/loader/layers/validation/ur_leak_check.hpp:141-149,167-178` returns false when a handle is absent from the count map; `nullptr` is absent, so `logInvalidReference` emits exactly the observed “There are no valid references to handle 0” message.
+- `ur_valddi.cpp:13471-13495` confirms `UR_LAYER_FULL_VALIDATION` turns on lifetime validation. The provided `check_runtime.py` selects `UR_LAYER_TRACING,UR_LAYER_FULL_VALIDATION`; thus the warning is the validator's known behavior, not an unrelated application warning.
+- The Level Zero V2 adapter source `unified-runtime/source/adapters/level_zero/v2/usm.cpp:603-621,628-646,653-669` explicitly replaces a null pool with `hContext->getDefaultUSMPool()` before allocating. The trace's `pool = nullptr` is therefore the expected default-pool route for that adapter. A bad/non-null pool would be a different case.
+- The validation wrapper logs but does not return an error for this lifetime miss. The bounded windows show each warning immediately before the Level Zero allocation call; the corresponding UR allocation returns `UR_RESULT_SUCCESS`. This matches the code path exactly.
+
+The report uses the pinned tag sources at `https://github.com/intel/llvm/tree/v7.1.1/unified-runtime/` and the [Unified Runtime Core API](https://oneapi-src.github.io/unified-runtime/core/api.html). The source files checked were `include/unified-runtime/ur_api.h`, `source/loader/layers/validation/ur_valddi.cpp`, `source/loader/layers/validation/ur_leak_check.hpp`, and `source/adapters/level_zero/v2/usm.cpp`.
+
+## What the new test receipt does and does not say
+
+`bench/results/2026-10-14-primary-native-runtime/check_runtime.py` asserts process closure/exit 0, output markers, UR tracing and provider loads, and absence of `UR_RESULT_ERROR_*`; it separately journals the GPU fault filter. Main reports all three tests normal, all numeric/state assertions passing, no UR result errors and no new kernel fault. The logs add an independent qualification result: the full lifetime-validation layer emitted the optional-null-pool diagnostic, so the validator is not clean even though API execution passed. The UR diagnostic does not invalidate the data/API assertions but must remain attached to the result and not be silently filtered from an all-validation claim.
+
+The compatibility logs also call `zeCommandListIsGraphCaptureEnabledExt`, whose returned integer is `2013265955 = 0x78000023`, `ZE_RESULT_QUERY_FALSE`; Main checked this against `/usr/include/level_zero/ze_api.h`. UR then returns success with its graph-capture result false. This is the expected not-capturing query result, not a failed command-list operation or GPU fault.
+
+## Loader symbol messages
+
+`zelSetDriverTeardown` is confirmed optional by Intel compute-runtime source at `level_zero/core/source/global_teardown.cpp:56-64` (local source revision `724697d73af22685918fcad4575c6bc267589ca5`): it obtains the function using `loaderLibrary->getProcAddress("zelSetDriverTeardown")` and calls it only when the returned pointer is non-null. An unavailable teardown hook is therefore a supported path. This matches the `LD_DEBUG` message at process teardown; it is not evidence of a missed runtime operation.
+
+`zelLoaderTranslateHandle` needs a narrower classification. The UR v7.1.1 Level Zero adapter does use the loader API in its normal path (`source/adapters/level_zero/common/platform.cpp:321-322`, and image/command-buffer paths); `ZE2UR_CALL` in `source/adapters/level_zero/common.hpp:209-215` converts a failed call to an UR result. The Level Zero loader header documents the function as a loader operation and permits a null input handle. Thus it is not globally optional for the UR adapter paths that call it. Yet the `LD_DEBUG=libs` line in each `libze_intel_gpu.so` init window does not identify such a failed UR call: subsequent platform selection, USM allocation, queue/barrier and graph work all succeeded, and no UR error appears. The Level Zero call at `platform.cpp` is not the same thing as the loader's unresolved-symbol diagnostic emitted while `libze_intel_gpu.so` is being loaded. I did not find source evidence in the checked compute-runtime tree that proves the driver-side lookup of `zelLoaderTranslateHandle` is an optional `dlsym`, so I leave that particular lookup's origin unresolved rather than relabel it harmless. The observed GPU test path nevertheless resolved and exercised the UR loader operation successfully.
+
+Relevant source references:
+
+- UR v7.1.1 validation and Level Zero V2 code: `https://github.com/intel/llvm/tree/v7.1.1/unified-runtime/source/loader/layers/validation/` and `https://github.com/intel/llvm/tree/v7.1.1/unified-runtime/source/adapters/level_zero/v2/`.
+- UR v7.1.1 API declaration: `https://github.com/intel/llvm/blob/v7.1.1/unified-runtime/include/unified-runtime/ur_api.h`.
+- Level Zero loader API header: `https://github.com/oneapi-src/level-zero/blob/master/include/ze_loader.h`.
+- Intel driver optional teardown lookup: `https://github.com/intel/compute-runtime/blob/724697d73af22685918fcad4575c6bc267589ca5/level_zero/core/source/global_teardown.cpp`.
+
+## Result disposition
+
+1. Preserve the current three-process GPU result as successful for the exact exercised APIs, numeric/state assertions and no-fault scope reported by Main.
+2. Add a separate outcome: UR lifetime-validation emitted false positives because optional `pool=nullptr` is passed unconditionally to `isReferenceValid`. Do not claim the full validation transcript is clean. A focused upstream UR validation-layer correction would guard the lifetime check with `pool != nullptr`; it was not implemented or tested here.
+3. Keep `zelSetDriverTeardown` classified as optional by source. Keep the driver-side origin of the `zelLoaderTranslateHandle` LD_DEBUG diagnostic unresolved, while noting the UR v7.1.1 loader API path itself ran successfully.
+4. Do not treat `ZE_RESULT_QUERY_FALSE` as a ZE/UR/GPU error.
+
+The null-pool diagnosis answers the warning source without implying a primary allocation defect or changing the Main-reported original result status. No source changes were made.

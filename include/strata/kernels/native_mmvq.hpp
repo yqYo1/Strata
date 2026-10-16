@@ -4,12 +4,15 @@
 
 namespace strata::kernels {
 
-// Native GGUF Q2_0, Q4_0, Q5_0, Q8_0, Q3_K, Q4_K, Q5_K, Q6_K, IQ4_NL
-// and IQ4_XS / CUDA Q8_1 adapters, pinned to llama.cpp
+// Native GGUF Q2_0, Q4_0, Q5_0, Q5_1, Q8_0, Q3_K, Q4_K, Q5_K, Q6_K,
+// IQ2_XXS, IQ2_XS, IQ2_S, IQ3_XXS, IQ3_S, IQ4_NL, IQ4_XS and IQ1_M
+// with CUDA Q8_1 activation adapters, pinned to llama.cpp
 // 3cf03257f219afbe7334045ff7c6a06ac68c627d, sm_120 generic MMVQ.
 // All pointers are device pointers, at least 4-byte aligned, with no overlap.
-// All calls enqueue on the explicit non-null CUDA stream; no allocation or wait.
-// The translation unit must use --use_fast_math, as the pinned CUDA oracle does.
+// All calls enqueue on an explicit non-null stream; no allocation or wait.
+// In SYCL builds this is an in-order sycl::queue pointer. The CUDA translation
+// unit uses --use_fast_math; SYCL uses explicitly rounded Q8_1 division and
+// separate FP32 products/adds. Cross-vendor bit identity is not required.
 //
 // Shapes use GGUF order: n_in is the contiguous reduction dimension, n_out is
 // the weight row count, and ncols is the activation column/token count, 1..8
@@ -37,9 +40,6 @@ bool native_mmvq_multi_exact();
 // not reconstruct that sum from the quantized integers.
 void native_quantize_q8_1(const float* x, void* x_q8_1, int n_in, int ncols,
                           void* stream);
-
-void native_swiglu_quantize_q8_1(const float* gate, const float* up, void* x_q8_1,
-                                 int n_in, int ncols, void* stream);
 
 void native_q5_k_mmvq(const void* weights, const void* x_q8_1, float* y,
                       int n_in, int n_out, int ncols, void* stream);
@@ -103,8 +103,9 @@ void native_iq4_nl_f32(const void* weights, const float* x, void* scratch_q8_1,
                       float* y, int n_in, int n_out, int ncols, void* stream);
 
 // Storage/dispatch helpers take stable GGML type IDs, avoiding a ggml runtime
-// dependency in the engine: Q4_0=2, Q5_0=6, Q8_0=8, Q3_K=11, Q4_K=12, Q5_K=13,
-// Q6_K=14, IQ4_NL=20, IQ4_XS=23, Q2_0=42. Unsupported IDs throw in the byte-count
+// dependency in the engine: Q4_0=2, Q5_0=6, Q5_1=7, Q8_0=8, Q3_K=11, Q4_K=12,
+// Q5_K=13, Q6_K=14, IQ2_XXS=16, IQ2_XS=17, IQ3_XXS=18, IQ4_NL=20, IQ3_S=21,
+// IQ2_S=22, IQ4_XS=23, IQ1_M=29, Q2_0=42. Unsupported IDs throw in the byte-count
 // and launch helpers; only the
 // capability query returns false.
 bool native_mmvq_supported(int ggml_type) noexcept;

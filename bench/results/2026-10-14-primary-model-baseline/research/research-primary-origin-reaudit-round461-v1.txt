@@ -1,0 +1,55 @@
+# R461: primary origin and archive-merge audit
+
+Date: 2026-10-14 (Asia/Tokyo)
+Scope: read-only Git ancestry/tree and current ref inventory. No fetch, build, test, GPU run, cleanup, or source/branch mutation. This report is an addendum to the R455/R458 lineage and active-SYCL reports; it is not a performance or functional validation.
+
+## Finding
+
+The intended model remains clear: Niko1221/Strata is the sole upstream; `yqYo1/Strata` is the personal fork; `feature/sycl` is primary; XeStrata is an optional source of individual ideas. No upstream contribution is planned, and CUDA/HIP migration is not an obligation. The audit found no currently retained Xe branch/worktree, and no evidence that its engine tree was integrated into the primary source. The important nuance is that old Xe tips are still ancestors of primary through explicit history-preservation merges. Ancestry alone therefore cannot establish source adoption.
+
+### Ancestry versus source tree
+
+The primary baseline `4fa478f50f8da396e651e3ae862f8b1849d49b54` and the retired skill tip `97f8b40ca99ec298c24d7ecc7b270e530d43194d` have merge-base `99f3dbd0b21d1401b3769e0c0d963913607f380b`, not the primary baseline. The skill tip's root `CMakeLists.txt` identifies `project(XeStrata ...)`; its selected core files have distinct blobs from the primary baseline. It is a wrong-base Xe-lineage skill snapshot, not a primary implementation branch.
+
+The Z experiment tip `28a7b9ae7ca5eba28eecd65f6453a7479c04fce8` does contain the primary baseline in its ancestry (`merge-base --is-ancestor` succeeds), but this is due to archive merge `8927eb6991f01f8dcca34aa2f0b31fb2549923e9`. That commit has 45 parents; its first parent is Xe source tip `85cb6b1968bd5c2156eed3b10dbb332f92ee95ac`, while `4fa478f...` and `97f8b40...` occur as side parents. Its tree is `502a11cad3273d65cc48bcf8b903856abdb8d5f3`. A path-limited diff from its first parent across `src include cmake tests tools setup.py serve` is empty (exit 0): this archive merge preserves history, not product-source changes.
+
+Likewise, primary's archive merge `4526800257fe49c0db02a414f21b38dac2586e54` has first parent `f4c2b8ddf5c6e9c35db42a0c85718bc0d8c08a0f`, Z tip `28a7b9...` as a side parent, and other archive parents. The commit message is `chore(sycl): preserve reference experiments without inference adoption`; its tree is `1b8087f8ca92e0c0e74245f58e51692f7a05e770`. The same product-path diff against first parent is empty. Thus `97f8b40...` and `28a7b9...` are now reachable from primary, while the source tree does not thereby adopt their engine implementations.
+
+The product tree at Z is also observably the Xe tree family: its root CMake is `project(XeStrata ...)`, it has `src/kernels/xe/native_mmvq.cpp` (blob `9a268b7930618a57e880b3f314f27a1e9c8103e6`) and no `src/kernels/sycl/native_q2.cpp`. In primary the reverse holds: `src/kernels/sycl/native_q2.cpp` exists and `src/kernels/xe/native_mmvq.cpp` is absent. Z and old skill share the Xe `native_mmvq.cpp` blob; primary baseline and current primary share the SYCL kernel lineage.
+
+### Representative source blobs
+
+These exact blob IDs distinguish history preservation from implementation integration:
+
+| Path | Primary base `4fa478f` | Skill `97f8b40` | Xe experiment `28a7b9a` | Current P HEAD `5fdf9a1` | Fork main `beddab2` |
+|---|---|---|---|---|---|
+| `CMakeLists.txt` | `e42e76e0...` | `9dee5ea3...` | `baaadaae...` | `475dd546...` | `0121bb00...` |
+| `src/core/expert_cache.cpp` | `5d7a40dc...` | `b47cddd0...` | `70bfcef9...` | `5d7a40dc...` | `b8df2faf...` |
+| `src/core/expert_source.cpp` | `56f58bce...` | `3faa3560...` | `f704e619...` | `56f58bce...` | `98e1952d...` |
+| `src/core/session.cpp` | `4703ca82...` | `dbe3e85a...` | `a19bf8fe...` | `4703ca82...` | `40a44bd1...` |
+| `src/prefill/prefill.cpp` | `72cbcf3d...` | `99d9544c...` | `aafa0218...` | `72cbcf3d...` | `e76fb6dd...` |
+| `src/program/generate.cpp` | `5178a210...` | `a519887a...` | `db921619...` | `4adae5f3...` | `d1882ea7...` |
+
+The compact OIDs above are prefixes; full IDs were obtained with `git rev-parse <commit>:<path>` after checking each path with `git cat-file -e`. At P HEAD, representative core expert/cache/source/session/prefill files still match `4fa478f`; `generate.cpp`, top CMake, and the native Q2 kernel have primary-side changes. Fork `main` has distinct core and generate blobs, so it is a separate service/engine source state that still needs explicit reconciliation; its differences should be classified by feature and responsibility, not used to infer a duty to transplant its CUDA/HIP engine.
+
+### Current refs and changing worktree
+
+At the read instant, local branches are only `feature/sycl` at `5fdf9a1517526085c9a2fef2eccfb24f87b4f241` and `main` at `beddab2fd6b61631d73b39b7484bc9a585ebe1de`. `origin/feature/sycl` and `origin/main` point to those respective commits, and `origin/HEAD` points to `origin/main`. There are two registered worktrees: ghq root on `main`, and P on `feature/sycl`. No `upstream/*`, Z, or old-skill branch refs/worktrees were listed. All three historical tips remain recoverable through primary history.
+
+The P worktree was dirty during this inspection: `cmake/sycl_backend.cmake` modified, and `tests/sycl/range_contract.cpp` plus `bench/results/2026-10-14-primary-model-baseline/` untracked. These appeared during the audit; they were not opened or altered. Consequently the source/blob comparisons above apply to committed HEAD `5fdf9a1`, not to the current uncommitted files. Do not describe this worktree as clean or treat those changes as part of the audited commit.
+
+## What remains a real adoption/reconciliation item
+
+Prior R458's active-SYCL report establishes that fork main's default CMake path selects `sycl/` and returns before the CUDA/HIP root engine; the main-side SYCL overlay has behavior not present in P's committed tree. It specifically identifies dynamic VRAM resizing through SYCL virtual memory as a real source-level candidate/gap, while root CUDA BGEN/VRAM paths do not by themselves establish a required CUDA/HIP port. R461 did not re-run or revalidate those CMake/protocol conclusions. The R458 `research-index.json` is the supporting report of record; do not substitute a blanket engine import for per-feature evaluation.
+
+The non-inference reconciliation obligation remains separate: requested Niko non-inference features need an inventory and disposition against P, with shared CLI/API/service behavior distinguished from GPU-backend-only capabilities. Current `main` being the fork default is still explicitly pending in the existing runtime and service-port records. A small next step is a source-only, component-level delta ledger for Niko main vs P that identifies each non-inference function, active SYCL source selected by CMake, and a disposition (`present`, `missing and applicable`, `backend-specific/not in scope`, or `deferred`); include dynamic VRAM as a candidate and verify its owner/API before deciding. Then reconcile only applicable items on primary and update default at an approved completed boundary. No evidence here warrants importing the entire CUDA/HIP engine or keeping a Xe checkout alive.
+
+## Prior-report delta and limits
+
+R455 already concluded that the old branches were archival and that the Z checkout had no active consumer. R461's new evidence is the 45-parent `8927...` merge and first-parent tree comparison, which explains why Z is ancestry-related to the primary baseline despite carrying Xe source. R461 also confirms that only two current worktrees/branches remain, and records the dirty P state that appeared during the current audit. The current `reference-retirement.json` says no current port or measurement consumes the reference checkout; source can be recovered from its commit if selected later.
+
+This is a committed-tree and ref audit only. Git metadata does not prove runtime behavior, build selection in the currently dirty tree, correctness, performance, or whether every non-inference feature is desirable on Arc B570. GitHub identity/default/upstream statements are inherited from committed receipts and were not refreshed from the network. No active baseline artifacts or private environment files were read.
+
+## Commands and objects checked
+
+Read-only commands included `git status --short --branch`, `git for-each-ref`, `git worktree list --porcelain`, `git show -s --format=%H%n%P%n%T%n%s`, `git merge-base`, `git merge-base --is-ancestor`, `git cat-file -e`, `git rev-parse <rev>:<path>`, `git diff --quiet <merge>^1 <merge> -- src include cmake tests tools setup.py serve`, and targeted `git show <rev>:CMakeLists.txt`/tree listings. Principal objects: P `5fdf9a1517526085c9a2fef2eccfb24f87b4f241`; fork main `beddab2fd6b61631d73b39b7484bc9a585ebe1de`; base `4fa478f50f8da396e651e3ae862f8b1849d49b54`; old skill `97f8b40ca99ec298c24d7ecc7b270e530d43194d`; Z `28a7b9ae7ca5eba28eecd65f6453a7479c04fce8`; history merges `8927eb6991f01f8dcca34aa2f0b31fb2549923e9` and `4526800257fe49c0db02a414f21b38dac2586e54`.

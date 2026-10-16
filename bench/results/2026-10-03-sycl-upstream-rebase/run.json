@@ -1,0 +1,284 @@
+{
+  "date": "2026-10-03",
+  "hardware": {
+    "gpu": "Intel Arc B570",
+    "vram_gib": 10,
+    "cpu": "AMD Ryzen 5 5600X",
+    "ram_gib": 125
+  },
+  "software": {
+    "compiler": "oneAPI DPC++ 2026.1.1",
+    "level_zero_driver": "1.17.39395+14",
+    "engine_version": "0.1.38",
+    "driver_settings": "defaults"
+  },
+  "model_provenance": "../2026-10-03-sycl-iq3s/run.json",
+  "upstream": {
+    "repository": "Niko1221/Strata",
+    "commit": "99f3dbd0b21d1401b3769e0c0d963913607f380b",
+    "fork_previous_main": "d9ab8435f654c368c586340d490915f6addf56a3",
+    "fork_main_merge_commit": "d988955e141190bc079b58ab3d3038da637ad070",
+    "pull_request": "https://github.com/yqYo1/Strata/pull/1",
+    "merged": true,
+    "imported_commits": 83,
+    "rebased_sycl_commits": 77,
+    "main_tree_matches_upstream": true
+  },
+  "source": {
+    "before_rebase_tip": "17d88b627d0c0c7a6db3d99603717d6d240b31ee",
+    "measured_engine_commit": "3205987",
+    "setup_fixture_commit": "9a22475",
+    "binary_sha256": "3421f4acc543fae46e6765190f0353d0bf3512a8dcf8d611c9ee448d3f5397b2",
+    "ggml_commit": "3cf03257f219afbe7334045ff7c6a06ac68c627d"
+  },
+  "checks": {
+    "ctest": {
+      "passed": 35,
+      "failed": 0,
+      "seconds": 66.45,
+      "includes": "34 SYCL tests and expert_profile_save_test"
+    },
+    "server_unittests": {
+      "passed": 139,
+      "failed": 0,
+      "seconds": 59.485
+    },
+    "setup_scripts": {
+      "results": {
+        "test_setup_amd.py": 0,
+        "test_setup_choices.py": 0,
+        "test_setup_draft_vocab.py": 0,
+        "test_setup_golden.py": 0,
+        "test_setup_lowram.py": 0,
+        "test_setup_pins.py": 0,
+        "test_setup_prompts.py": 0,
+        "test_setup_risk.py": 0,
+        "test_setup_rope.py": 0,
+        "test_setup_unsloth.py": 0,
+        "test_setup_update.py": 0
+      },
+      "unmodified_upstream_passed": 9,
+      "unmodified_upstream_failed": [
+        "test_setup_amd.py",
+        "test_setup_golden.py"
+      ],
+      "fixture_fixes": [
+        "Explicit Windows executable for a Windows HIP archive test on Linux.",
+        "Normalize executable filenames without replacing Linux log-name prefixes."
+      ]
+    },
+    "peer_device_rejected_before_model_loading": true
+  },
+  "ordinary_reference": {
+    "context": 128,
+    "kv": "fp16",
+    "threads": 4,
+    "teacher_forced_tokens": 25,
+    "vocabulary": 248320,
+    "cpu_reference_sha256": "f9e47ef120700b53103676d6c2d5fce038446cf07e61b6535e6452835dd6dc28",
+    "conditions": [
+      {
+        "label": "sycl_cache_auto",
+        "effective_cache_slots": 2530,
+        "rows": 25,
+        "top1_matches": 25,
+        "top1_mismatch_positions": [],
+        "cosine_min": 0.9763010811428089,
+        "cosine_mean": 0.9976144167013526,
+        "rmse_max": 0.3583025170855921,
+        "absolute_error_max": 2.1325807571411133
+      },
+      {
+        "label": "sycl_cache_1649",
+        "effective_cache_slots": 1649,
+        "rows": 25,
+        "top1_matches": 25,
+        "top1_mismatch_positions": [],
+        "cosine_min": 0.9834447488062558,
+        "cosine_mean": 0.997200555203348,
+        "rmse_max": 0.3070138978596163,
+        "absolute_error_max": 1.7029528617858887
+      },
+      {
+        "label": "sycl_cache_off",
+        "effective_cache_slots": 0,
+        "rows": 25,
+        "top1_matches": 25,
+        "top1_mismatch_positions": [],
+        "cosine_min": 0.9763845341194967,
+        "cosine_mean": 0.9973710208672751,
+        "rmse_max": 0.3579041200177364,
+        "absolute_error_max": 2.126426339149475
+      }
+    ],
+    "before_rebase_full_vocabulary_bitwise_equal": {
+      "sycl_cache_auto": true,
+      "sycl_cache_1649": true
+    },
+    "condition_correction": "The pre-rebase label sycl_cache_off actually used a profile and 2530 automatic slots. The historical numbers were relabelled; the post-rebase disabled case omits the profile.",
+    "scope": "One 25-token rendered arithmetic chat, teacher-forced one token at a time, FP16 KV; pinned llama.cpp CPU-only reference. Not a broad quality gate or bitwise-equivalence assertion."
+  },
+  "persistent_generation": {
+    "configuration": {
+      "context": 512,
+      "kv": "fp16",
+      "prefill_chunk": 16,
+      "mtp_width": 4,
+      "suffix_draft": 0,
+      "expert_cache": "auto",
+      "expert_profile": "data/expert-profile.bin",
+      "expert_cache_per_layer": true,
+      "pcie_fraction": 0,
+      "adaptive_period_verification_rounds": 4,
+      "ple_io": "existing direct-I/O path",
+      "greedy": true,
+      "native_verify_capture": "default short windows",
+      "adaptive_sync": "default completed refill boundary"
+    },
+    "probability_floor": 0.9,
+    "cpu_workers": 4,
+    "adaptive_swaps": 64,
+    "expert_slots": 2137,
+    "expert_cache_gib": 4.09,
+    "startup_seconds": 16.977158163004788,
+    "requests": [
+      {
+        "prompt": "writing",
+        "requested_tokens": 128,
+        "generated_tokens": 128,
+        "cancelled": false,
+        "prompt_ms": 6932.6,
+        "decode_ms": 10050.1,
+        "decode_tok_s": 12.73619167968478,
+        "reused_prompt_tokens": 0,
+        "cache_hits": 23375,
+        "cache_lookups": 65760,
+        "drafts_accepted": 51,
+        "drafts_proposed": 60,
+        "output_ids_sha256": "946e007d164ab993e8ab3f34ae09667ea3ceeb445cd4cfad9bfd0cade973d1f8"
+      },
+      {
+        "prompt": "writing",
+        "requested_tokens": 128,
+        "generated_tokens": 128,
+        "cancelled": false,
+        "prompt_ms": 1443.8,
+        "decode_ms": 8685.2,
+        "decode_tok_s": 14.737714733109197,
+        "reused_prompt_tokens": 30,
+        "cache_hits": 40696,
+        "cache_lookups": 65280,
+        "drafts_accepted": 48,
+        "drafts_proposed": 56,
+        "output_ids_sha256": "c2100b0f3ebacccfb4ffcb456199da1c2ebca84f3d968bdc719750589b4a061c"
+      },
+      {
+        "prompt": "coding",
+        "requested_tokens": 128,
+        "generated_tokens": 128,
+        "cancelled": false,
+        "prompt_ms": 8742.3,
+        "decode_ms": 7599.8,
+        "decode_tok_s": 16.84254848811811,
+        "reused_prompt_tokens": 0,
+        "cache_hits": 17005,
+        "cache_lookups": 62400,
+        "drafts_accepted": 85,
+        "drafts_proposed": 87,
+        "output_ids_sha256": "28c149d38d6e7e297f93d975fd896e94b1be2148194ebf0db2d15f8ab942010f"
+      },
+      {
+        "prompt": "coding",
+        "requested_tokens": 128,
+        "generated_tokens": 128,
+        "cancelled": false,
+        "prompt_ms": 1424.8,
+        "decode_ms": 6772.6,
+        "decode_tok_s": 18.899684020907774,
+        "reused_prompt_tokens": 38,
+        "cache_hits": 29806,
+        "cache_lookups": 61920,
+        "drafts_accepted": 85,
+        "drafts_proposed": 86,
+        "output_ids_sha256": "3bfd1942a2e870ad46164cd88d461d5590c494eed923b99f08f3383c3529d3b7"
+      },
+      {
+        "prompt": "writing",
+        "requested_tokens": 128,
+        "generated_tokens": 1,
+        "cancelled": true,
+        "prompt_ms": 6731.1,
+        "decode_ms": 100.3,
+        "decode_tok_s": 9.970089730807578,
+        "reused_prompt_tokens": 0,
+        "cache_hits": 130,
+        "cache_lookups": 480,
+        "drafts_accepted": 0,
+        "drafts_proposed": 0,
+        "output_ids_sha256": "e5bcde96cf2cce2eb93b9605fdb4fc36009909a539c662b054633672d66b13ca"
+      },
+      {
+        "prompt": "writing",
+        "requested_tokens": 8,
+        "generated_tokens": 8,
+        "cancelled": false,
+        "prompt_ms": 1467.4,
+        "decode_ms": 579.5,
+        "decode_tok_s": 13.805004314063849,
+        "reused_prompt_tokens": 30,
+        "cache_hits": 1156,
+        "cache_lookups": 4320,
+        "drafts_accepted": 5,
+        "drafts_proposed": 5,
+        "output_ids_sha256": "0a45565f9328eba6d933aa6eccc605e84c5672686e607e12ecb99a0be36ef9d7"
+      }
+    ],
+    "output_hash_encoding": "Little-endian int32 token ids, SHA-256.",
+    "cancel_recovery_first_eight_ids_equal": true,
+    "exit_code": 0,
+    "scope": "One fresh persistent process after rebase. Decode excludes startup and prompt processing. This is an integration check, not a new paired performance estimate.",
+    "learned_profile": {
+      "saved": true,
+      "bytes": 196632,
+      "layers": 48,
+      "experts_per_layer": 512,
+      "pairs": 24576,
+      "ranking_and_reverse_table_valid": true
+    }
+  },
+  "http": {
+    "host": "127.0.0.1",
+    "port": 18085,
+    "web_ui_status": 200,
+    "models_listed": [
+      "qwen3.8-flash-next-iq3_s-sycl",
+      "qwen3.8-flash-next-sycl"
+    ],
+    "checks": [
+      "openai_nonstream",
+      "openai_nonstream",
+      "cancel_stream_after_content",
+      "openai_after_cancel",
+      "anthropic_nonstream",
+      "openai_complete_stream",
+      "existing_model_alias"
+    ],
+    "repeat_equal": true,
+    "cancel_recovery_equal": true,
+    "complete_stream_equal": true,
+    "existing_alias_equal": true,
+    "server_stopped_cleanly": true
+  },
+  "q2_regression": {
+    "generated_tokens": 16,
+    "output_ids_equal": true,
+    "exit_code": 0,
+    "scope": "Existing Q2_0 config after upstream synchronization and rebase; first 16 ids retain the prior fixture."
+  },
+  "limitations": [
+    "The selected real-model context is 512 with FP16 KV.",
+    "CPU-reference checks use one short 25-token fixture; no broad model quality claim.",
+    "CUDA-only optimization paths, multiple GPUs, full vision and Windows SYCL are not validated by these checks."
+  ],
+  "raw_capture_archive": "~/.local/state/strata-sycl/measurement-archive/2026-10-03-upstream-rebase/"
+}

@@ -1,0 +1,52 @@
+# R735 — joint-matrix stride contract and padded K-transpose pitches
+
+2026-10-16 JST. Read-only source/API research; only this report was written. No source edit, build, test, GPU/runtime/process/service/environment operation, Git operation, or cleanup was performed. Main's live work was not interrupted. XeStrata source was not read or used. The protected `prefill-gemm-only-contract-root-v1/record.json` was not opened.
+
+## Evidence boundary and current candidate
+
+Reviewed the current `bench/results/2026-10-15-pr6-recovery-audit/research-index.json`, the closed `qsa-subprofile-analysis-v2.json`, own-source R725/R732, `main-review-round731-732.ja.md`, R734, and the pinned own candidate `own-prompt-k-cellmajor-v2` (`source.diff` SHA-256 `578353f48ca7d39591b70a495b0fbe3d8d06661f6e7647a3fc9ce932322637f2`). The candidate's kernel source hash is `a22ae0834ead98e0b129b3f31a15cb06db99fe855e96b03c10f216df713f07eb`; its base is `3d873f9ca050db105122b8b18c8a8e1275aecdde` and original kernel hash `97b1b9e4020b532bfabd5db2245224cfda52bbc793e5891f0e8bbbcb374763e4`.
+
+The profile is a closed instrumented fine observation: attention 69,909.3 ms; aggregate QSA 104,926 ms; wrapper 251,647 ms; 120 matrix chunks, zero fallback, cap 2,051, and 941,424 QSA queries. These are observer intervals, not exclusive kernel timing or evidence that this candidate helps. The candidate remains source-only/unrun. The report makes no performance, bank-count, or bank-conflict measurement claim.
+
+## Official SYCL joint-matrix contract
+
+The primary source is Intel's [oneAPI joint_matrix extension specification](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_matrix/sycl_ext_oneapi_matrix.asciidoc), specifically its device restrictions for `architecture::intel_gpu_bmg_g21` and neighboring Intel GPU architectures. It states:
+
+- `joint_matrix_load` stride is measured in elements between rows for row-major layout. For the listed Intel GPU architectures including BMG-G21, `stride * sizeof(T)` must be a multiple of 8 and no greater than `2^24` bytes.
+- The load base pointer must be 4-byte aligned.
+- The offset overload additionally restricts `row_index` to a multiple of `4 / sizeof(T)` (for 16-bit values, a multiple of 2). This kernel calls the pointer-plus-offset overload with a pre-offset pointer and the one-stride overload; it does not pass a `row_index` argument.
+- Matrix parameter support is device-dependent. The extension specifies queries such as `matrix_params` / `matrix_combinations`; source-level template shape alone does not establish support on every device.
+
+The current QK operand is `joint_matrix<sub_group, half, use::b, 16, 16, row_major>`. It receives `kv + k*CH + cell` with stride `CH=32`. For half, the stride is 32 elements = 64 bytes, so it satisfies the documented byte-stride rule and limit. Its required base-pointer alignment must also hold. Current pointer offsets are even half-element offsets (`k` increments by 16 and `cell` is 0 or 16), so they preserve 4-byte alignment if the local-accessor base is 4-byte aligned. The API requirement itself is clear; the compiler/device allocation's base alignment must be verified or guaranteed when making a changed local layout. The current successful model path shows this existing compiled shape ran in that environment, but does not establish arbitrary device support or alignment for a new allocation layout.
+
+This specification is experimental and the online `sycl` branch can evolve. Before treating its exact wording as the installed compiler's contract, Main should pin the actual compiler revision and check its bundled extension implementation/spec copy. The hard API constraint should not be replaced by a claim that a device will silently optimize a nonconforming pitch.
+
+## Candidate-only pitch arithmetic and layout obligations
+
+Current candidate K gather writes the logical matrix tile as `kv[dim * CH + c]` after reading consecutive INT8 dimensions. QK loads treat that storage as 256 rows by 32 columns: the 16x16 B matrix at each load starts at `k*CH + cell`, where `k` traverses 0,16,...,240 and `cell` is 0 or 16. The same `kv` local accessor is reused later for V in `[cell, dimension]` order; PV loads then use `kv + k*HD + dim`, with stride `HD=256`. K and V consumers therefore have distinct strides/layouts even though they share the allocation.
+
+For a padded K pitch `P`, a correct candidate-only layout would allocate at least `HD*P` half elements; write the QK tile at `kv[dim*P+c]`; and change every QK B pointer to `kv + k*P + cell` with joint-matrix stride `P`. It must leave V stores and PV pointer/stride at their existing contiguous `[cell,dimension]` layout. The padded row gaps must never be consumed as K cells. This is a whole-set update: changing only the gather or only the load stride corrupts the logical operand.
+
+| K pitch | Byte stride for half | Documented BMG-G21 stride rule | K workspace vs current 256x32 | Assessment |
+|---:|---:|---|---:|---|
+| 32 | 64 B | Pass | 16 KiB | Existing layout/control |
+| 33 | 66 B | Fail: not divisible by 8 | 16.5 KiB | Reject for this joint-matrix path |
+| 40 | 80 B | Pass | 20 KiB (+4 KiB) | Legal stride candidate, subject to allocation base alignment and runtime checks |
+| 48 | 96 B | Pass | 24 KiB (+8 KiB) | Legal stride candidate, subject to allocation base alignment and runtime checks |
+
+For 40 and 48, all existing QK starting offsets `k*P + cell` remain multiples of two half elements: `k` is a multiple of 16, and `cell` is 0 or 16. Their byte offsets are therefore divisible by 4 relative to the base. This proves offset preservation conditional on the base itself being 4-byte aligned. Pitch 33's starting offsets also happen to remain 4-byte aligned for this particular `k`/`cell` set, but that does not cure its documented invalid 66-byte row stride.
+
+The allocation grows only by the stated K padding delta because the existing accessor is already reused for V. Padded slots are not initialized by the K fill unless explicitly written; correctness requires consumers never read them. On the V reuse, PV accesses stay inside the first `CH*HD` elements with stride 256. No source/API evidence predicts the resulting SLM bank pattern, occupancy, transactions, or speed. The increase in local allocation can affect group residency depending on hardware/compiler allocation; no physical-bank count or occupancy is inferred here.
+
+## Bounded future gates
+
+1. Keep the current source-only cell-major candidate unqualified until Main's own component build/parity gates close. The pitch experiment should be a separate, pinned candidate derived from that exact source/base, changing only K workspace pitch and the complete QK gather/load address set; preserve V, arithmetic, barriers, and dispatch.
+2. Before GPU execution, assert/inspect the installed compiler's BMG-G21 joint-matrix restrictions and verify `B<half,16,16,row_major>` support via the target's query/compile path. Prove or explicitly provide 4-byte alignment for the local K buffer and all QK pointers. A legal stride is necessary, not sufficient for target support.
+3. Extend component checks to compare the logical 256x32 K operand bit-for-bit for every slot/dimension and all existing counts, partial tiles, invalid rows, and page indirection; compare complete output exactly against the same candidate at pitch 32 and preserve the established reference tolerance. Verify the K padding is not read, and the subsequent V/PV reuse and tails remain unchanged.
+4. Record compiled local-memory allocation and device resource/lowering evidence for pitches 32/40/48 using the same pinned compiler, flags, target, and source dependency set. R734 explains offline AOT as a resource-inspection option, but AOT resources are not automatically the live JIT allocation. Do not claim physical bank conflicts from an assumed bank count; require a supported device measurement/counter or actual generated access evidence, with its limitation stated.
+5. Only after component parity/resources, Main may schedule matched same-process-boundary (separate immutable environment processes where needed) component timing and then the fixed actual 78,453-token own-prefill comparison. Keep instrumented profile results distinct from clean performance qualification, and retain existing task-quality, RESTORE, and physical 262,144-context gates. No result from this research qualifies the 600 tok/s or 1,000 tok/s milestone.
+
+## Documentation consulted
+
+- Intel, [oneAPI joint_matrix extension specification](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_matrix/sycl_ext_oneapi_matrix.asciidoc): API overloads, row-major stride meaning, BMG-G21 restrictions, and device-dependent parameter support.
+- Intel, [oneAPI GPU Optimization Guide: Shared Local Memory](https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2024-0/shared-local-memory.html): SLM bank behavior is device-dependent; its examples are not a bank-count claim about this Arc device.

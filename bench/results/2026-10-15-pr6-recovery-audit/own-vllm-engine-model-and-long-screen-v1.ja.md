@@ -1,0 +1,17 @@
+# Integrated vLLM native16 engine: model boundary
+
+Compiled source6354f0b4、B57010GiB/Ryzen5600X、既存officialLLVM v711/UR L0v2。Main所有のbuild/各GPUjobを直列実行し、全て正常回収、fresh fault0/devcoredumpなし。v1 compileFAILと最初のcontroller preflightFAILは原状態を維持し、v2の別receiptで修正後を検証した。
+
+全体build/host、mixed-image direct adapter smoke/full120/strict edges/chain/guards、元own16の68numerical、nativeops、typedQSA norm/RoPE/append、fulltypedattention、Runtime/compat、FP32samequeue、early/late teardownがPASS。従来のseparatequeue GEMM timeoutは未解決FAILでありfullregressionPASSとは報告しない。
+
+同一binary・129入力ID(128処理)、C64/R_GPU64、resident/context4096、ROPE_TABLE=1、MTP4でFP32 /vLLM BF16 /vLLM BF16+typedQSAの3独立processが全48層/2chunksを完了。全128 NLL有限、3fullvocabularyrowの全logit有限、独立FP64 logsumexpでNLL一致。meanNLLは8.0364274668 /7.9132071699 /7.9861973630、基準との差の平均絶対値は0.5748045742 /0.6486122396。これは合成入力のmechanics検査で、精度劣化が無視できる・品質採用という判定ではない。source/command/env/全NLL/差/selected fingerprintはown-vllm-model-smoke-v1.json(SHA03b2bd388a897873bb2dc8c310ec7c0386e6b484828d1e633fb872cd059a14d3)。
+
+実engineの公開GemmがvLLM backendを選ぶことと、native16long pathで全層を通ることを確認した。QSA1はsource上no-fallbackで要求されたtypedbranchを通る。別のpublic-only数値fixture R833はMain source review済み、まだ未実行。direct component smokeの実URtraceは8native entries/oneAOTbinary/IL0。新prelinkのnativepayload162616bytesは以前のstandalone164264bytesと異なるため、旧ISA証明や旧microbenchmark速度を新engineの同一binary証明に使わない。新ISA/詳細speedは別gate。
+
+長文初回はofficial bench.sh --prefill-only --prefill-tokens32768、actualAPI39262readtokens(39261batched)、thinkingON/24output、C8192/R_GPU32768、context=resident65536。vLLM BF16+typedQSAをTRACE+parameter-validationで正常完了、GPUfaultなし、385.0tok/s。診断値でclean speed採用には使わない。HC BF16 residualは計804065280B、GPU671088640B+host132976640B、layercache1363148800B。
+
+clean FP32初回373.2tok/s、n=1。診断値との優劣は判定しない。次にfp32/bf16/qsaの各3独立processを宣言順に測定中(own-vllm-clean-cohort-v1.jsonはactive/未完了、Main scriptが全nativejobを直列管理)。完了後にnonexclusive coarse/QSA intervalsで速度差を部品別に調べ、全体speedを根拠にdecodeまで置換しない。
+
+品質はR837で同じ自然32K入力のFP32反復controlと2candidateを比較するcontrollerをsource-only作成中。capture正当性と品質採用を分離する。fullphysical262144消費/RESTOREは未検証、default/adoptionは引き続きOFF。BF16globalIOでもQSA/GDN等の旧FP32 arena reservationが残るため、予約VRAM全体が半減したとは主張しない。GDN persistentstate/indexer/localaccumulationはFP32を保持。native16bannerのQSA内部FP32表記は古いままで、次source境界に実modeを表示するよう修正する。
+
+保持: 成功rawmodel/logsは今回の比較/新ISA/Public fixture境界まで。cohort中にcleanupしない。閉じた後、compact記録と原status/sourcehashを照合してfullprotocol/duplicate tracesを退役させる。32K旧canonicalと129selectedは新quality比較完了時に必要性を再審査する。知識収集R835/R836はnative838review後もMain本文UNREAD、GDNのfinal_stateは指定dtypeでなくFP32という訂正をregistryへ残す。

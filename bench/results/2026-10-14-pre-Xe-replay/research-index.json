@@ -1,0 +1,64 @@
+{
+  "reports": [
+    {
+      "round": 494,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-pre-Xe-minimum-runtime-gates-round494-v1.txt",
+      "path": "research/research-pre-Xe-minimum-runtime-gates-round494-v1.txt",
+      "sha256": "b8ce797e6464e86683c03d85ec1cbe5bcc187ceb1ba3946866443dc84daf00e6"
+    },
+    {
+      "round": 495,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-pre-Xe-restore-component-priority-round495-v1.txt",
+      "path": "research/research-pre-Xe-restore-component-priority-round495-v1.txt",
+      "sha256": "ed7e9e876f31e7843953bbde55ba4c664cbea3a4ca07ad537d901d823ea25242"
+    },
+    {
+      "round": 496,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-fp16-grouped-gemm-runtime-quality-round496-v1.txt",
+      "path": "research/research-fp16-grouped-gemm-runtime-quality-round496-v1.txt",
+      "sha256": "efb64a482184fde006b9a6298eddda51499fc0239d76f6767aaaad2536d787ee"
+    },
+    {
+      "round": 497,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-decode-larger-speculative-window-round497-v1.txt",
+      "path": "research/research-decode-larger-speculative-window-round497-v1.txt",
+      "sha256": "044607b867c369bd8327baf4de16ecd3cd519652824294c3495e00c6f1fe90b1"
+    },
+    {
+      "round": 498,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-compact-fp16-proposal-review-round498-v1.txt",
+      "path": "research/research-compact-fp16-proposal-review-round498-v1.txt",
+      "sha256": "242f4f06796bdf8eda9903b3a8101db3a6571004feaa60c78677c925a650af6e"
+    },
+    {
+      "round": 499,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-fp16-gemm-effective-contract-round499-v1.txt",
+      "path": "research/research-fp16-gemm-effective-contract-round499-v1.txt",
+      "sha256": "ff1c6e815290f113e64aa0246f3cdc6adfa971dff7f2a8400b565ad5e2d742e0"
+    }
+  ],
+  "previous_registry": "../2026-10-14-performance-regression-audit/research-index.json",
+  "no_intervention_until_final": true,
+  "main_controls_builds_and_GPU": true,
+  "main_corrections": [
+    "R490 previously attributed old1eb MoE to MMQ/fused. Actual old build compiles gemm.dp.cpp and fused stub; no MMQ/fused TU. R495 and reconstructed compile database correct this.",
+    "R495 cannot assume fused in the canonical current stock arm: STRATA_PF_FUSED is absent; native_supported requires explicit requested(), hence canonical fused mode is off.",
+    "R495 cache headroom sign is wrong: 268.60MiB versus325MiB nominal leaves more, not less, headroom. Old occupied expert weights were also268.60MiB; do not infer fewer cached weights from the allocation numbers.",
+    "R497 lookup-derived41/61/45 rows are all target-evaluated rows including base/correction, not offered MTP proposals. Use stock drafts_offered/accepted for proposal work.",
+    "R494 old physical context proof is cell262143 via262140 input+4 output; it does not qualify262144 input+0 output. New primary source retains its own size_t guards.",
+    "R496 grouped GEMM tiny numerical differences are not an automatic quality rejection; realistic numerical/task and latency evaluation remains required.",
+    "R499 treats absent MKL_BLAS_COMPUTE_MODE as unknown. For the reconstructed old build and current stock process, Owner uses Popen(env=explicit_whitelist), server config adds no env, and wrappers copy that environment: absence is known. Historical original unrecorded process settings remain separate."
+  ]
+}

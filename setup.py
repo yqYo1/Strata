@@ -3092,7 +3092,7 @@ def start(cfg_path: Path, port: int | None, gpu: int | list | None = None, open_
         refresh_draft_vocab(Path(cfg["args"][cfg["args"].index("--mtp") + 1]), cfg.get("draft_vocab", "cjk"))
     cmd = [sys.executable, str(ROOT / "serve" / "server.py"), "--engine", "strata", "--config", str(cfg_path),
            "--port", str(port or cfg.get("port", 8080))]
-    if cfg.get("backend") == "hip":                    # AMD, numbered as HIP numbers them (setup's KFD order)
+    if cfg.get("backend") in ("hip", "sycl"):                    # AMD, numbered as HIP numbers them (setup's KFD order)
         if WIN:
             hip_runtime_beside_exe(Path(cfg["exe"]).parent)   # #468 #461: also fixes a 0.1.34 install
         amd = amd_gpus()
@@ -3127,7 +3127,7 @@ def start(cfg_path: Path, port: int | None, gpu: int | list | None = None, open_
         OLD_GPUS = OLD_GPUS or old_gpus_opt_in(found, gpu if isinstance(gpu, list) else [gpu] if gpu is not None else
                                                cfg.get("gpu") if isinstance(cfg.get("gpu"), list) else [cfg.get("gpu")],
                                                12 if config_toolkit(cfg) == 12 else None)
-    if cfg.get("backend") == "hip":
+    if cfg.get("backend") in ("hip", "sycl"):
         pass
     elif isinstance(gpu, list):                        # --gpus: saved, this model runs on these cards from now on
         check_gpus(gpu, found, yes=yes, named=True)
@@ -3146,7 +3146,7 @@ def start(cfg_path: Path, port: int | None, gpu: int | list | None = None, open_
     # #364 #384: a resident low-RAM config on several GPUs; #498: a UD-Q4_K_XL config with its RAM budget (by hand)
     if isinstance(use, list) and (split_mmap(cfg) | split_budget(cfg)):
         write_config(cfg_path, cfg)
-    if cfg.get("backend") == "hip":
+    if cfg.get("backend") in ("hip", "sycl"):
         pass
     elif isinstance(use, list):
         check_gpus(use, found, "(chosen for this model) ", yes=True, named=True)
@@ -3505,29 +3505,11 @@ def resolve_rope(ctx: int, scaling, scale, trained: int = 262144):
 
 # ------------------------------------------------------------------------------------------------ main
 def sycl_setup(argv) -> int:
-    """--backend sycl: the Intel Arc engine (the SYCL port in sycl/, PR #423), experimental. There is no ready-made
-    Intel engine: it is compiled from source on the PC (docs/INTEL_ARC.md), then sycl/setup_intel.py runs this setup
-    with the Intel steps swapped in. Nothing of the CUDA / HIP paths is used or changed."""
-    say()
-    warn("Intel Arc (--backend sycl) is EXPERIMENTAL: a community port of the engine, not tested by the Strata "
-         "maintainers (no Intel card here). Expect rough edges; issues with your card and driver versions help.")
-    if WIN:
-        fail("the Intel Arc engine has no Windows setup yet (no ready-made Intel engine either)",
-             "run it on Linux (Ubuntu 24.04 with Intel's GPU driver and oneAPI): docs/INTEL_ARC.md")
-    say("  There is no ready-made Intel engine: it is built from source with Intel oneAPI (icpx + oneMKL),")
-    say("  docs/INTEL_ARC.md. Setup continues with sycl/setup_intel.py.")
-    rest, skip = [], False
-    for x in argv:                                     # setup_intel.py drives this setup through its AMD path
-        if skip:
-            skip = False
-        elif x == "--backend":
-            skip = True
-        elif not x.startswith("--backend="):
-            rest.append(x)
-    script = ROOT / "sycl" / "setup_intel.py"
-    if not script.exists():
-        fail(f"{script} is missing", "use a full Strata checkout (git clone) - docs/INTEL_ARC.md")
-    return subprocess.call([sys.executable, str(script), *rest])
+    """Use this fork's host-native Intel adapter, sharing the upstream installer."""
+    script = ROOT / "tools" / "setup_intel.py"
+    if not script.is_file():
+        fail(f"{script} is missing", "use a full checkout of this fork")
+    return subprocess.call([sys.executable, str(script), *argv])
 
 
 def main() -> int:
@@ -3619,10 +3601,10 @@ def main() -> int:
     ap.add_argument("--backend", choices=["cuda", "hip", "sycl"],
                     help="cuda = NVIDIA (default), hip = AMD RX 7900 / 7800 / 7700 XT, RX 9060 XT / 9070 / AI PRO R9700 on "
                          "Linux or Windows (chosen by itself when the PC has no NVIDIA card Strata can use), "
-                         "sycl = Intel Arc, EXPERIMENTAL: Linux, built from source (docs/INTEL_ARC.md)")
+                         "sycl = Intel GPU, Linux, this fork's native SYCL build")
     ap.add_argument("--skip-build", action="store_true", help=argparse.SUPPRESS)
     a = ap.parse_args()
-    if a.backend == "sycl":                            # Intel Arc: the SYCL port's own setup (sycl/setup_intel.py)
+    if a.backend == "sycl":                            # this fork's native Intel adapter
         return sycl_setup(sys.argv[1:])
     if a.resident_budget_gib is not None and not a.resident_budget_gib > 0:
         ap.error("--resident-budget-gib takes a number of GiB above 0, e.g. --resident-budget-gib 32")
@@ -3645,6 +3627,11 @@ def main() -> int:
 
     # ---- 0. already installed: just start it
     have = installed_configs()
+    if a.backend is None and have and all(
+            json.loads(p.read_text(encoding="utf-8-sig")).get("backend") == "sycl" for p in have):
+        # A normal ./setup.sh start/update of a native install must use the
+        # native adapter before the CUDA updater or configuration upgrader.
+        return sycl_setup(sys.argv[1:])
     if a.update:                                       # #475: UPDATE.bat / update.sh - never starts the model
         return update_install(have, a)
     explicit = a.setup or a.model or a.family or a.check or a.no_start
@@ -3652,6 +3639,8 @@ def main() -> int:
     if not have and not explicit:                      # a new copy of Strata (an update unzipped elsewhere): set it
         prev = previous_config(elsewhere, load_settings())   # up like the last one, from the files already here
         if prev is not None:
+            if a.backend is None and json.loads(prev.read_text(encoding="utf-8-sig")).get("backend") == "sycl":
+                return sycl_setup(sys.argv[1:])
             ch = choices_from_config(prev)
             if ch["model"]:
                 say(f"  Found your earlier install in {prev.parent} ({prev.stem[len('strata-'):]}): setting up this "

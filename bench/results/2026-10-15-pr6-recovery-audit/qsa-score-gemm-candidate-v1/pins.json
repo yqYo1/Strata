@@ -1,0 +1,198 @@
+{
+  "status": "proposal-unbuilt-unexecuted",
+  "generated_from_live_source": true,
+  "patch_sha256": "17906db7912a8fa2c0cc561e30c481e471a9d261310dee70fcf2476f877e6200",
+  "files": {
+    "src/prefill/prefill.cpp": {
+      "sha256": "a01c39cc269f84ab85129d8c106d8adb5227e33234fa5a6d7ae6537ab2f68371",
+      "bytes": 199126,
+      "anchors": [
+        {
+          "old_sha256": "892ee08976133f1fbf6a43bee9e3cd92be3590542d92c10bc98d5f02231dbab7",
+          "new_sha256": "3036adfb385ef458d8715020b816e643b0aa60b2692f29944bc34c57e5192d38",
+          "old": "#include \"strata/prefill/gemm.hpp\""
+        },
+        {
+          "old_sha256": "5d3acfbe6210e200a82339ade7414c82f67e1415997808cc884948176be89a88",
+          "new_sha256": "68f11e64503703eb2685540bcf5efd7d72ab1659588f3066ddecee78bad838ba",
+          "old": "    float* sel_scores = nullptr;          // [sel_batch, max_blocks]"
+        },
+        {
+          "old_sha256": "40507793ace2ba2bc08690a52b5dcaec1210c36974a2c8baaf05a2186e1d4b20",
+          "new_sha256": "0d5ae3e374f9e97a2054f290e536fcace8a63268e10983d6ce5606f46976ad89",
+          "old": "    a.take<float>((size_t) attn_batch * strata::kernels::qsa_decode_attn_scratch_floats(cap, s), ok);\n    return a.used;"
+        },
+        {
+          "old_sha256": "a3951ee70d098dfc808989b674f53d83335403a959cd43314566fe8139529b7f",
+          "new_sha256": "9a200c11da9f74f1a6bc7076292290df987efc4201039a7b1c8207691ce4002f",
+          "old": "    (void) prefill_fallback_attn_layout();\n    Impl& m = *impl_;"
+        },
+        {
+          "old_sha256": "84ce5c77767ea9e6d150a95b7b370db8bc2a9fff432cae28220473423fcaa6f4",
+          "new_sha256": "3c7d2a7d6c60e81ef38a20731aaee817ce989595288e9443ec698dc79d369c3d",
+          "old": "        m.attn_scratch = b.take<float>((size_t) m.attn_batch * strata::kernels::qsa_decode_attn_scratch_floats(m.cap, s), ok);"
+        },
+        {
+          "old_sha256": "07df0e36b8d0a94e591e552b8134f22da8d78a4b47792cc7d35574d1ea0698d2",
+          "new_sha256": "bee1e2a53ae972e4b58e4410db0e7958d2f2512220e6e973e21277ae842ce1de",
+          "old": "    // the same allocation sequence as `init`, counted\n    const size_t T = (size_t) chunk;"
+        },
+        {
+          "old_sha256": "1e64fab454cf9cf506f4d25f3298a24f7cb0019521257ee6958f3812ee241540",
+          "new_sha256": "fb96d9286582122f1788ae7bb089618dee408d7559f5d06067b543391ccb12e2",
+          "old": "                    pt.mark(kPfQsaSel, cs);\n                    for (int64_t t0 = 0; t0 < T; t0 += m.sel_batch) {"
+        },
+        {
+          "old_sha256": "b283953a3c12de41361ed094d49106a1ecf92674f98761793d108718367084f9",
+          "new_sha256": "bfebc0066827978b2c7b6ba1381fb4924b21d04ec37f64e9d62583a7acd7d9d1",
+          "old": "                        if (old_sel || !strata::kernels::qsa_block_scores_tc(st.idx_pooled, st.idx_dead, m.q_idx + t0 * 512,"
+        },
+        {
+          "old_sha256": "8a69d6a95eb6494320cd95cd36d053ad236281e7f7b95bd25d7b33b70d53a542",
+          "new_sha256": "35499c975ba969764ea9002f5ee56c045cd667fe25694254996cee129703b045",
+          "old": "                    // STRATA_SEL_OVERLAP (debug, D-1's question): how much do neighbouring queries' selections share?"
+        }
+      ]
+    },
+    "cmake/sycl_backend.cmake": {
+      "sha256": "c013b31e0009ee51ccdbcf269247872d6af7bfc5f29dc1b9017335b608400899",
+      "bytes": 24297,
+      "anchors": [
+        {
+          "old_sha256": "ec6b00f16b3be379065c812132a31b60d7332fc38ff134ebede6aad415283120",
+          "new_sha256": "617344b7fd5ae923cceea5c9f985493caf317cb0c423814a0a88c952f0a6a5d8",
+          "old": "src/prefill/sycl/moe_mmq.cpp src/prefill/sycl/moe_fused.cpp)"
+        },
+        {
+          "old_sha256": "fe4709490331b2cb525371e8fc632c0fc963d4c8e8cda5ce01580e74606e7f29",
+          "new_sha256": "f9b5ccee1dbeb61e24a05448dd1f95b244d5fd6e14675da4221ca8e362ad766d",
+          "old": "# Standalone synthetic hot-operand row/column oneMKL descriptor diagnostic."
+        }
+      ]
+    },
+    "src/prefill/layer_major.inc": {
+      "sha256": "5ec3ba7dbc57f53bc832d5d8e6bd04e3d22bec0b6b7fbf5ad5959a54dacc64aa",
+      "bytes": 24237,
+      "modified_by_candidate": false
+    },
+    "src/prefill/sycl/gemm.cpp": {
+      "sha256": "0fe1904787462a4156185bc08b2076e047f9cf51d9517ede4c8f482fa76c5410",
+      "bytes": 4860,
+      "modified_by_candidate": false
+    },
+    "include/strata/prefill/gemm.hpp": {
+      "sha256": "921a5aeea69a4b5a94c3fdf983eca10fca79c2e1cd2e3d6c83c05de95aad335d",
+      "bytes": 2601,
+      "modified_by_candidate": false
+    },
+    "src/kernels/sycl/qsa_select.cpp": {
+      "sha256": "45084756ca5e8e36085dae46581049c81366a45cdfde23e8c6f38defbba0c809",
+      "bytes": 6531,
+      "modified_by_candidate": false
+    },
+    "include/strata/kernels/qsa_select.hpp": {
+      "sha256": "c7c6f484c89541f1e64efbdfc942fcd3eeb719637d3cd1a99ee2f4491b3116cc",
+      "bytes": 4507,
+      "modified_by_candidate": false
+    },
+    "include/strata/sycl/launch.hpp": {
+      "sha256": "9c5aaf14e4b92232d4dcd4e2e68071201d436d287a9615088a9428d88f53b1ce",
+      "bytes": 2760,
+      "modified_by_candidate": false
+    },
+    "include/strata/sycl/runtime.hpp": {
+      "sha256": "bcfbb035fa5a95f0409db013158f756ba4136b0aa06f636c6ff747ec0bcfd0fd",
+      "bytes": 2555,
+      "modified_by_candidate": false
+    },
+    "src/sycl/runtime.cpp": {
+      "sha256": "d571ad74ebfafc2523e129fe29858d61058bf0c26ae686834ea294105acb5e2f",
+      "bytes": 6205,
+      "modified_by_candidate": false
+    },
+    "CMakeLists.txt": {
+      "sha256": "01dde67c9af61c88f5aa22b0ea0e639f9f37cb2a31f9c7785fddd7233c34216d",
+      "bytes": 73704,
+      "modified_by_candidate": false
+    },
+    "docs/ARTIFACT_RETENTION.md": {
+      "sha256": "577bed900716a76d3e443a481f46caad9cccd34b10fb86e0676a7122eaa083db",
+      "bytes": 7710,
+      "modified_by_candidate": false
+    },
+    "AGENTS.md": {
+      "sha256": "2a0eed78b3f2d9cdb01cfad0ac791fff4c22568fd903f9a8a005327c0aac128b",
+      "bytes": 5007,
+      "modified_by_candidate": false
+    },
+    "bench/results/2026-10-15-pr6-recovery-audit/research-index.json": {
+      "sha256": "fdc1db189fe25995b14c4d2ad7f557e760e2e8d694eebc2000ae7510f1c3dec5",
+      "bytes": 25810,
+      "modified_by_candidate": false
+    },
+    "bench/results/2026-10-15-pr6-recovery-audit/research-prefill-qsa-xmx-scores-round589-v1.txt": {
+      "sha256": "c5c8e03069b54e5010649f57033ab8dae699546b393e51c33f51ca8ea31548d9",
+      "bytes": 13260,
+      "modified_by_candidate": false
+    },
+    "bench/results/2026-10-15-pr6-recovery-audit/research-own-prefill-gemm-down-gap-round563-v1.txt": {
+      "sha256": "7d81c93666c78be65d864bebdef811b689e15f56d007f3f0b0726498b85f58da",
+      "bytes": 8601,
+      "modified_by_candidate": false
+    },
+    "bench/results/2026-10-15-pr6-recovery-audit/research-current-qsa-matrix-work-round564-v1.txt": {
+      "sha256": "28f2e1360f5292b3217589fb9fd66d85815fd2ad1f9a291e5dfdc8b3daf88591",
+      "bytes": 9714,
+      "modified_by_candidate": false
+    },
+    "bench/results/2026-10-15-pr6-recovery-audit/research-qsa-headtile-slm-round568-v1.txt": {
+      "sha256": "5201cc7899477d1f57793678f4033bc23180aedd94d5f0f2badab9ce3cb02358",
+      "bytes": 17232,
+      "modified_by_candidate": false
+    },
+    "bench/results/2026-10-15-pr6-recovery-audit/research-qsa-order-divergence-round581-v1.txt": {
+      "sha256": "67c68c3a5bc979b9fd4c932c5d548628b8b2cad7562961cef9410c8b8a9091d0",
+      "bytes": 9793,
+      "modified_by_candidate": false
+    },
+    "bench/results/2026-10-15-pr6-recovery-audit/research-gemm-memory-divergence-round583-v1.txt": {
+      "sha256": "6028504c973bb9138b835bcddeebcf4b6c3242a3748071ba5d22d0d9b03959e2",
+      "bytes": 14284,
+      "modified_by_candidate": false
+    }
+  },
+  "artifact_files": {
+    "README.md": {
+      "sha256": "598dd62581e7a7a0b6bf38c651cc7fb43c69e39273179a5cc06ce3b961268155",
+      "bytes": 16563
+    },
+    "fixtures/config_shape_fixture.cpp": {
+      "sha256": "1de39e62adfa98a37aea77277db15abba307932f2c689f8aeb694b77f0e90554",
+      "bytes": 1773
+    },
+    "fixtures/tail_causal_cases.json": {
+      "sha256": "ebc3bc3b8f83e9be8e2a0258b21cc82bee927c25658032cccaf2611ff2257f05",
+      "bytes": 2240
+    },
+    "fixtures/tail_causal_fixture.py": {
+      "sha256": "3b8f4a56ce559db83dd9de82f995b17d67ed9b62fe16009de9e6b53de8117b80",
+      "bytes": 3434
+    },
+    "patch/new/include/strata/prefill/sycl_qsa_score_gemm.hpp": {
+      "sha256": "1b996123dc409497fc75dce69a7515fe590e3668dcc07cb84d484e221882cf58",
+      "bytes": 1903
+    },
+    "patch/new/src/prefill/sycl/qsa_score_gemm.cpp": {
+      "sha256": "ae1272e00caf63588947ac0f135801348cf70b0741c79d4b3aef4bf3dd34acd3",
+      "bytes": 7807
+    },
+    "patch/new/tools/sycl/qsa_score_gemm_component.cpp": {
+      "sha256": "191043b5c78675f7d0b265283d7fa96c7af7492ec30ef4f1bf1ecfa26223e952",
+      "bytes": 13675
+    },
+    "patch/regenerate_patch.py": {
+      "sha256": "e46a7098722f7c63ed29920fe055f7fa5aefd9cb3fc0ab5fd617a0eba9928863",
+      "bytes": 8592
+    }
+  }
+}

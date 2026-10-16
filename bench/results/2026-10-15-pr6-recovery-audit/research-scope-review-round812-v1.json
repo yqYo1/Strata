@@ -1,0 +1,139 @@
+{
+  "round": 812,
+  "reviewed_on": "2026-10-16",
+  "reviewer": "native Codex gpt-6-luna",
+  "reasoning_effort": "max",
+  "review_purpose": "Review the settled R811 knowledge-collection report for scope, depth, novelty, pinned source-contract accuracy, evidence limits, and conditional retrieval. Read-only review; only the two named review artifacts were written. No build, test, GPU/profiler work, process inspection, cleanup, Git, worker action, or product edit was performed.",
+  "inputs": {
+    "report": {
+      "round": 811,
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round811-v1.txt",
+      "sha256": "11b00b86aef965f857f2d863fe74256275a00aa696602786f074510c6072e845",
+      "bytes": 12914,
+      "whitespace_word_count": 1799,
+      "url_count": 6,
+      "purpose_class": "knowledge collection"
+    },
+    "spec": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round811-spec-v1.txt",
+      "sha256": "ba3cd7fa5c6e40398b0487832fea73d4d2cef908f30f90acd66ba53395c34fa1"
+    },
+    "launch": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round811-launch-v1.json",
+      "sha256": "bc69e236314ebe3bc40615d8dc2b10c481b17c3048643e221428a114e52359da",
+      "effective_agent": "codex",
+      "effective_model": "gpt-6-luna",
+      "state": "ready / input_accepted"
+    },
+    "research_index_snapshot": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+      "sha256": "699badff54188b69410e6276a9ecea76581ad90abc5312ce1a0fb8fe0c1fb647",
+      "sections_used": [
+        "report metadata for rounds 782, 783, and 798",
+        "native16_activation_pipeline current-state metadata, including R805, R807, R809, R810, and R811 statuses"
+      ],
+      "modified": false
+    },
+    "prior_review_metadata_only": [
+      {
+        "round": 801,
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round801-v1.json",
+        "sha256": "122952c2efda6dd6c97d0dd53b4fb6d19880d33411aec7a74dcb223441e06092",
+        "use": "R798 scope, novelty, and retrieval metadata; its research body was not read."
+      },
+      {
+        "round": 806,
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round806-v1.json",
+        "sha256": "19cc906ca67eb6de4e8eb06c82c80b3d02e45aba60563c7f8460cdaf38091133",
+        "use": "R805 B-operand layout and code-generation evidence-chain metadata; its research body was not read."
+      },
+      {
+        "round": 808,
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round808-v1.json",
+        "sha256": "982178525167ead2b1e6eba2eb60efcd997cbeee563acfeb2016c6b2a94bad8e",
+        "use": "R807 source-specific vLLM Xe2 candidate and unresolved build/runtime gates; its research body was not read."
+      }
+    ]
+  },
+  "classification": "knowledge collection",
+  "reviewer_report_read": true,
+  "main_body_read": "unread/hold unless a specific source decision requires named sections",
+  "scope_depth_review": "At 1,799 whitespace-delimited words, the report is within the 1,200–1,800-word budget and uses six URLs. It covers descriptor units, source-versus-helper alignment limits, API message restrictions, logical width versus row pitch, ragged [T,K]/[N,K]/[T,ldY] mappings, and K-prefetch warmup/bounds. Three concrete mapping rows and a bounded list of unexecuted edge cases keep it coherent. The count is at the budget ceiling, but the content is substantive rather than padded.",
+  "novelty_and_redundancy": "R782 concerns framework producer/consumer and recurrent-state contracts; R783 compares GEMM seams and API/kernel alternatives. R798 covers output-tile geometry, padding and grouped scheduling. R805 covers B-operand layout and the evidence chain from API to code generation; its review specifically noted that its 64-byte base/16-byte stride figures lacked an exact citation. R811 adds the pinned TLA documentation/helper discrepancy and ESIMD descriptor units, plus concrete load/store/prefetch edge boundaries. R807 identifies a pinned vLLM Xe2 source seam, so R811 may serve a later descriptor audit if that exact path is present. These are adjacent, useful records rather than a repeat of the broad GEMM surveys. No earlier collection report body was reopened.",
+  "source_contract_validation": {
+    "status": "Core claims were independently checked against the report's exact pinned public references.",
+    "confirmed": [
+      "SYCL-TLA 87f6850680a580654b9ea2c80dbc01aeb36ad231 documents a 64-byte base, 16-byte stride with a PVC-specific 4/8-byte note, four-byte width alignment, the stated dimension limits, and zero-filled out-of-bounds loaded elements.",
+      "At that same TLA commit, Xe2DTraitsBase derives width from the X-mode shape in bytes, height from the Y-mode row count, pitch from the Y-mode stride in bytes, and writes minus-one extents into the block-2D payload. Its optional assertions check base alignment, width and pitch modulo four, and limits; the outer-mode base-offset check is also modulo 64. The report correctly identifies that this helper does not enforce the documented 16-byte stride.",
+      "Intel LLVM b29c1834fc5795c9748173a1b3ab48e3d75abd28 documents SurfaceWidth and SurfacePitch as bytes minus one, SurfaceHeight as rows minus one, X as element coordinates, and the device descriptor gate. The reported plain/transformed/transpose load, prefetch, and store shape and message-size limits match the cited API sections.",
+      "The API signatures expose no mask for store_2d or prefetch_2d, and the cited text does not specify their out-of-bounds edge result. The report correctly avoids claiming store clipping or using prefetch as a guard; its OOB-load zero-fill statement is attributed specifically to TLA documentation."
+    ],
+    "unresolved_by_sources": [
+      "The references do not establish the minimum pitch for each actual BMG format or runtime path, whether store OOB coordinates are suppressed, or prefetch OOB behavior.",
+      "API legality and TLA's PVC-origin documentation do not prove BMG support for every legal tuple, the exact configured compiler/runtime behavior, or efficiency."
+    ]
+  },
+  "source_pin_limitations": {
+    "pins": [
+      "intel/sycl-tla commit 87f6850680a580654b9ea2c80dbc01aeb36ad231; report identifies exact documentation/header paths and BSD-3-Clause provenance.",
+      "intel/llvm commit b29c1834fc5795c9748173a1b3ab48e3d75abd28; report identifies the ESIMD API reference path and Apache-2.0 WITH LLVM exceptions repository license."
+    ],
+    "limits": "The immutable commits make the cited source retrievable, but do not bind a later Strata build to these exact dependency contents. Before using R811 against R810, Main must confirm the active patch's actual TLA/LLVM source revisions and the exact call shape. R811 performs no BMG runtime or loaded-binary check and reuses no source code."
+  },
+  "evidence_limits": [
+    "The report is documentation/source analysis only; build, test, device query, execution, profiling, numerical qualification, and performance work are UNRUN.",
+    "Its suggested edge matrix is a future owner-run safety plan, not a result. Descriptor values still cannot prove allocation extent, pointer lifetime, or writable padding."
+  ],
+  "current_main_context": {
+    "basis": "Supplied review-task context; not independently inspected.",
+    "quality": "The three-arm 32K run closed with PASS mechanics, but BF16 is not quality-accepted (sampled mean NLL 5.057 to 4.886, top-1 59/64, identical controls).",
+    "active_workers": "R809 oneDNN controller and R810 vLLM Xe2/CuTe native16 adaptation are running. No worker was contacted or steered.",
+    "retrieval_decision": "No current report-body read is necessary. R811 may become useful during R810 review only if its actual source presents a matching 2D descriptor, ragged-tail, or K-prefetch question; this review does not infer a defect or performance advantage."
+  },
+  "main_retrieval": {
+    "main_original_needed_now": false,
+    "retrieve_when": "After Main's source review confirms that the concrete candidate path uses the relevant pinned TLA/ESIMD 2D operation and a descriptor, tail, or prefetch decision needs checking.",
+    "read_only_these_exact_sections": [
+      {
+        "section": "## Separate message geometry from allocation geometry",
+        "trigger": "Check surface units, row pitch, pointer offsets, and the caller-owned allocation bounds for a specific descriptor."
+      },
+      {
+        "section": "## Message shape and clipping contracts",
+        "trigger": "Check the exact load/store/prefetch operation's documented shape limits and OOB evidence boundary."
+      },
+      {
+        "section": "## Three Strata mappings to check",
+        "trigger": "Read only the row matching the candidate's activation, weight, or output surface."
+      },
+      {
+        "section": "## K prefetch distance and boundary cases",
+        "trigger": "Read only if the reviewed source actually has a K-prefetch warmup or future-tile issue."
+      },
+      {
+        "section": "## Unresolved facts and novelty",
+        "trigger": "Use to keep BMG runtime and performance claims separate from the pinned documentation contract."
+      }
+    ],
+    "main_correction_to_retain": "The 16-byte stride is documented guidance, while the pinned helper asserts only modulo four; neither establishes BMG's actual minimum. Only TLA's documented OOB load fill is explicit here. Store and prefetch OOB behavior and performance remain unresolved."
+  },
+  "next_scope_recommendation": {
+    "status": "No new research task recommended now.",
+    "reason": "R811 answers the bounded documentation question and records its remaining unknowns. Another broad 2D-message or GEMM survey would add little. First let Main review the active R810 patch; any remaining device-specific boundary question calls for an owner-controlled, source-pinned correctness check rather than another source survey.",
+    "conditional_finite_question": "If the reviewed candidate contains a concrete block-2D call whose BMG minimum pitch or store/prefetch edge behavior affects correctness, qualify only that dtype, descriptor, and boundary shape on the exact configured device/runtime with canaries and a scalar reference. This is not schedulable as research and is not an assumption about the current candidate."
+  },
+  "index_retrieval_metadata": {
+    "round": 811,
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round811-v1.txt",
+    "sha256": "11b00b86aef965f857f2d863fe74256275a00aa696602786f074510c6072e845",
+    "purpose_class": "knowledge collection",
+    "main_body_read": "unread/hold unless a specific source decision requires named sections",
+    "main_original_needed_now": false,
+    "retrieval_brief": "Use only after a source review identifies a concrete Intel 2D surface or K-prefetch decision. Read the matching geometry/API and one Strata-mapping section; read the K-boundary section only if that loop exists. This archive resolves pinned documentation contracts, not BMG runtime edge behavior or performance.",
+    "scope_depth_review": "1,799 words within budget; six URLs; a concrete three-row mapping table and bounded prospective boundary cases. Core claims checked against exact pinned TLA and LLVM sources.",
+    "provenance_limit": "TLA 87f685... documentation is PVC-origin and not a BMG runtime qualification; LLVM b29c... is a pinned API reference, not the loaded Strata toolchain. No source code was reused.",
+    "main_correction_to_retain": "Keep the documented 16-byte stride separate from the helper's modulo-four assertion. Do not infer store or prefetch OOB semantics, BMG tuple support, or a performance result from this report.",
+    "outcome": "Successful knowledge collection review; retain for conditional retrieval. No current Main decision requires the original body."
+  },
+  "operational_digest_ja_400_chars": "R811は1,799語・6 URLで範囲内。固定版TLA/LLVM資料で2D面の単位・形状制限と、stride記述16B対assertion4Bの差を確認。loadのzero-fill以外、store/prefetch端処理やBMG実機挙動・性能は未確定。本文は保留し、R810の実コードで該当経路が確認された時だけ指定節を参照。今は追加調査不要。"
+}

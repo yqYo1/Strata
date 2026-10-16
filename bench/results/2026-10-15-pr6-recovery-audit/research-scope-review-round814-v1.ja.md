@@ -1,0 +1,1 @@
+R813（1,787語）は固定commit URLと各ファイルSHAを示し、出典未解決のvLLM policyとIntel参照を再利用保留にした。R807のdense seamから、実route行数に応じたgrouped scheduling、chunk越しの限定weight常駐、gate/up epilogueへ広げている。ただしR601、R627–633、R701–702と重なり、新規性は設計の結合に限る。容量値は算術で、実メモリ適合・速度・品質を示さない。BF16は59/64 top1で未承認。Main本文はunread/hold。実routeとlive byte map、R810結果まで新規調査は保留。

@@ -1,0 +1,221 @@
+{
+  "original_result_status_unchanged": true,
+  "cases": {
+    "own-dense-prefill-nll-build-v3.json": {
+      "receipt_sha256": "204e6125a5f4666b54c320e005cafe474dc3b902030f51a0d416b133ea02dbb5",
+      "passed": true,
+      "complete": true,
+      "normal_command_exits": [
+        {
+          "label": "base-membership-0",
+          "exit_code": 0
+        },
+        {
+          "label": "base-membership-1",
+          "exit_code": 0
+        },
+        {
+          "label": "patch-check",
+          "exit_code": 0
+        },
+        {
+          "label": "patch-apply",
+          "exit_code": 0
+        },
+        {
+          "label": "build-nll",
+          "exit_code": 0
+        },
+        {
+          "label": "host-nll",
+          "exit_code": 0
+        }
+      ],
+      "build_stdout": "[0/1] Re-running CMake...\n-- Experimental Q2 CPU-order route: standard SYCL exp; Intel high-accuracy API unavailable\n-- MKL_VERSION: 2026.1.0\n-- MKL_ROOT: /opt/intel/oneapi/mkl/2026.1\n-- MKL_ARCH: intel64\n-- MKL_SYCL_LINK: dynamic\n-- MKL_LINK: dynamic\n-- MKL_SYCL_INTERFACE_FULL: intel_ilp64\n-- MKL_INTERFACE_FULL: intel_ilp64\n-- MKL_SYCL_THREADING: sequential\n-- MKL_THREADING: sequential\n-- MKL_SYCL_MPI: intelmpi\n-- MKL_MPI: intelmpi\n-- Found /opt/intel/oneapi/mkl/2026.1/lib/libmkl_scalapack_ilp64.so\n-- Found /opt/intel/oneapi/mkl/2026.1/lib/libmkl_cdft_core.so\n-- Found /opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so\n-- Found /opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so\n-- Found /opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so\n-- Found /opt/intel/oneapi/mkl/2026.1/lib/libmkl_blacs_intelmpi_ilp64.so\n-- Could NOT find mkl_sycl_distributed_dft for target MKL::MKL_SYCL_DISTRIBUTED_DFT\n-- Found /opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so\n-- Found /opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_lapack.so\n-- Found /opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_dft.so\n-- Found /opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_sparse.so\n-- Found /opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_data_fitting.so\n-- Found /opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_rng.so\n-- Found /opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_stats.so\n-- Found /opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_vm.so\n-- Warning: ccache not found - consider installing it for faster compilation or disable this warning with GGML_CCACHE=OFF\n-- CMAKE_SYSTEM_PROCESSOR: x86_64\n-- GGML_SYSTEM_ARCH: x86\n-- Including CPU backend\n-- x86 detected\n-- Adding CPU backend variant ggml-cpu: -march=native \n-- ggml version: 0.24.0\n-- ggml commit:  3cf03257f\n-- Configuring done (0.1s)\n-- Generating done (0.6s)\n-- Build files have been written to: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-canonical-bank-profile-build-root-v1/build\n[1/6] Building CXX object CMakeFiles/strata.dir/src/program/dense_prefill_nll.cpp.o\n[2/6] Building CXX object CMakeFiles/dense_prefill_nll_host_test.dir/tests/cpu/dense_prefill_nll.cpp.o\n[3/6] Building CXX object CMakeFiles/dense_prefill_nll_host_test.dir/src/program/dense_prefill_nll.cpp.o\n[4/6] Linking CXX executable dense_prefill_nll_host_test\n[5/6] Building CXX object CMakeFiles/strata.dir/src/program/generate.cpp.o\n[6/6] Linking CXX executable strata\n",
+      "build_stderr": "",
+      "host_stdout": "dense_prefill_nll_host PASS\n"
+    },
+    "own-dense-prefill-nll-smoke-v3.json": {
+      "receipt_sha256": "8e455732f2632b7e78ef3afe94e573bb4d1066edb9391a5290114b605f2a70fb",
+      "passed": false,
+      "complete": false,
+      "normal_command_exits": [
+        {
+          "label": "journal-before",
+          "exit_code": 0
+        },
+        {
+          "label": "native-off",
+          "exit_code": 1
+        },
+        {
+          "label": "journal-final",
+          "exit_code": 0
+        }
+      ],
+      "failure_excerpt": "strata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)\nstrata generate: native pack: /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s experts (largest blob 2.66 MB), token embedding IQ4_XS in mapped host memory (322 MiB)\nstrata generate: 1466 MiB of weights loaded from /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s (302 canonical tensors skipped: served natively)\nstrata generate: 300 native projection matrices, 2018.88 MiB of weights\nstrata generate: the SSD is kept awake while rows are read: one page of the table after 100 ms without a read, until 60 s after the last request (STRATA_SSD_KEEPALIVE=0 turns it off)\nstrata generate: profile /home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin: 24576 ranked pairs, built for 24576 slots\nstrata generate: PLE on, table 320001536 rows of /home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf\nstrata generate: GPU 0: Intel(R) Arc(TM) B570 Graphics (SYCL)\nstrata generate: expert arena read through the file cache (buffered (not Windows))\nstrata generate: expert arena: mlock failed (raise ulimit -l); SYCL ordinary host arena; MAP_HUGETLB unavailable (needed 23983 2 MiB pages, vm.nr_hugepages=0); using 4 KB pages\nstrata generate: loaded 46.84 GiB at 1.69 GiB/s\nstrata trace: 6345 MiB free after the weights, the session and the drafter\nstrata generate: experimental native Q5_K head, 521472000 bytes\nstrata generate: expert cache 128 slots, 0.26 GiB of VRAM; policy is\nstrata trace: 5579 MiB free after opening the expert cache\nstrata generate: SYCL cached experts use native Q8_1 arithmetic; logits can differ from CPU experts.\n                 R4.2g PER-LAYER: each layer owns 2 slots (0..1).\nstrata trace: 5579 MiB free after the profile fill\nstrata generate: pre-filled 128 of 128 slots from the profile; slot 0 verified\nstrata generate: native GPU hit kernels captured at session setup\nstrata trace: 5565 MiB free after the R4 hit path\nstrata generate: R4 hit path ON - resident experts are computed on the GPU\nstrata generate: 5 expert-pool workers + the host thread\nstrata trace: 5323 MiB free after the expert cache and the graphs\nstrata generate: session is up (engine 0.1.38)\nstrata generate: sampling greedy\nstrata generate: prompt path allocates its own buffers (no cache slots to borrow)\nstrata prefill: FP16 MoE compact requested=1 effective=1, chunk=64, scratch rows=64, accounted=151352320, shared region=35245568 bytes\nstrata trace: 5174 MiB free after the standalone prompt buffers\nstrata prefill dense: phase=retired residency=Full activations=0 full_bytes=2116951040 bank_bytes=50918400 snapshot_bytes=2116951040 overlay_rows=0 session_recapture=1 verifier=0 free_bytes=5259993088 total_bytes=10666115072\nstrata prefill dense: phase=bank residency=Bank activations=0 full_bytes=2116951040 bank_bytes=50918400 snapshot_bytes=2116951040 overlay_rows=0 session_recapture=1 verifier=0 free_bytes=8071929856 total_bytes=10666115072\nstrata prefill dense: phase=restored residency=Full activations=0 full_bytes=2116951040 bank_bytes=50918400 snapshot_bytes=2116951040 overlay_rows=0 session_recapture=1 verifier=0 free_bytes=5259718656 total_bytes=10666115072\nstrata generate: MTP expert release requires single-GPU native MTP4 without split/peer/remote experts\n",
+      "failure_reason": "spec0 plus inherited MTP-expert-release flag; observer was never reached; v4 restored actual MTP4 recipe."
+    },
+    "own-dense-prefill-nll-smoke-v4.json": {
+      "receipt_sha256": "0bc118a9a83b2ab367f42f8bef2e4150dfa79f29f9fe2b864a08d1511ddc7d44",
+      "passed": true,
+      "complete": true,
+      "normal_command_exits": [
+        {
+          "label": "journal-before",
+          "exit_code": 0
+        },
+        {
+          "label": "native-off",
+          "exit_code": 0
+        },
+        {
+          "label": "native-on",
+          "exit_code": 0
+        },
+        {
+          "label": "journal-final",
+          "exit_code": 0
+        }
+      ],
+      "native": {
+        "off": {
+          "progress_and_lifecycle": [
+            "strata prefill dense: phase=retired residency=Full activations=0 full_bytes=2116951040 bank_bytes=50918400 snapshot_bytes=2116951040 overlay_rows=0 session_recapture=0 verifier=0 free_bytes=4451745792 total_bytes=10666115072",
+            "strata prefill dense: phase=bank residency=Bank activations=0 full_bytes=2116951040 bank_bytes=50918400 snapshot_bytes=2116951040 overlay_rows=0 session_recapture=0 verifier=0 free_bytes=7230128128 total_bytes=10666115072",
+            "strata prefill: layer-major candidate, tokens=128 chunk=64 residual_dtype=fp32 residual_element_bytes=4 residual_total=5242880 residual_gpu_rows=64 residual_gpu=2621440 residual_host=2621440 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
+            "strata trace: layer-major layer 0 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 1 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 2 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 3 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 4 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 5 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 6 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 7 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 8 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 9 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 10 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 11 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 12 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 13 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 14 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 15 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 16 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 17 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 18 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 19 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 20 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 21 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 22 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 23 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 24 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 25 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 26 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 27 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 28 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 29 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 30 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 31 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 32 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 33 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 34 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 35 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 36 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 37 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 38 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 39 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 40 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 41 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 42 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 43 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 44 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 45 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 46 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 47 of 48: completed 2 chunks",
+            "strata prefill dense: phase=restored residency=Full activations=48 full_bytes=2116951040 bank_bytes=50918400 snapshot_bytes=2116951040 overlay_rows=0 session_recapture=0 verifier=0 free_bytes=4306386944 total_bytes=10666115072"
+          ],
+          "stdout": "speculation              1 rounds of 4, drafts accepted 0 of 0 (0.000), 1.00 tokens per round\naccepted per round       0:1 1:0 2:0 3:0\nverify window            wait for rings 49.089  pool 41.758  host 1.597  commit 0.037 ms/round; CPU experts 10.00 distinct / 10.00 routed per layer\npool multi               gate/up 27.062  quantize 0.098  down 10.993 ms/round; 25.8 GB/s over the rows phases; CPU pool call 41.465 ms/round\ndispatch                 plan 2.225  activation quantize 0.349  jobs 0.026  run 38.161 ms/round\nverify GPU overlap       48 of 48 shared/hit graphs complete when the CPU pool returned\nmtp                      -nan ms/round drafting (0 rounds), MTP prompt 247.9 ms, 1008 MiB of VRAM\nprompt  : 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126 127 128\noutput  : 222\ndecode                   1 tokens in 3600.2 ms  ->  0.28 tok/s\nprefill                  128 tokens in 33055.4 ms  ->  3.87 tok/s  (time to first token 36877.6 ms)\n"
+        },
+        "on": {
+          "progress_and_lifecycle": [
+            "strata prefill dense: phase=retired residency=Full activations=0 full_bytes=2116951040 bank_bytes=50918400 snapshot_bytes=2116951040 overlay_rows=0 session_recapture=0 verifier=0 free_bytes=4451758080 total_bytes=10666115072",
+            "strata prefill dense: phase=bank residency=Bank activations=0 full_bytes=2116951040 bank_bytes=50918400 snapshot_bytes=2116951040 overlay_rows=0 session_recapture=0 verifier=0 free_bytes=7230140416 total_bytes=10666115072",
+            "strata prefill: layer-major candidate, tokens=128 chunk=64 residual_dtype=fp32 residual_element_bytes=4 residual_total=5242880 residual_gpu_rows=64 residual_gpu=2621440 residual_host=2621440 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
+            "strata trace: layer-major layer 0 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 1 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 2 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 3 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 4 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 5 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 6 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 7 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 8 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 9 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 10 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 11 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 12 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 13 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 14 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 15 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 16 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 17 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 18 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 19 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 20 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 21 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 22 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 23 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 24 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 25 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 26 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 27 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 28 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 29 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 30 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 31 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 32 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 33 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 34 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 35 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 36 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 37 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 38 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 39 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 40 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 41 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 42 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 43 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 44 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 45 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 46 of 48: completed 2 chunks",
+            "strata trace: layer-major layer 47 of 48: completed 2 chunks",
+            "strata prefill dense: phase=restored residency=Full activations=48 full_bytes=2116951040 bank_bytes=50918400 snapshot_bytes=2116951040 overlay_rows=0 session_recapture=0 verifier=0 free_bytes=4306395136 total_bytes=10666115072",
+            "strata dense prefill NLL: rows=128 callback_ms=1450.145 single_row_head=1 performance_cohort=excluded"
+          ],
+          "stdout": "speculation              1 rounds of 4, drafts accepted 0 of 0 (0.000), 1.00 tokens per round\naccepted per round       0:1 1:0 2:0 3:0\nverify window            wait for rings 48.880  pool 38.075  host 1.711  commit 0.032 ms/round; CPU experts 10.00 distinct / 10.00 routed per layer\npool multi               gate/up 24.648  quantize 0.098  down 10.764 ms/round; 27.7 GB/s over the rows phases; CPU pool call 37.888 ms/round\ndispatch                 plan 2.212  activation quantize 0.121  jobs 0.023  run 35.517 ms/round\nverify GPU overlap       48 of 48 shared/hit graphs complete when the CPU pool returned\nmtp                      -nan ms/round drafting (0 rounds), MTP prompt 244.2 ms, 1008 MiB of VRAM\nprompt  : 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126 127 128\noutput  : 222\ndecode                   1 tokens in 3643.7 ms  ->  0.27 tok/s\nprefill                  128 tokens in 34046.7 ms  ->  3.76 tok/s  (time to first token 37916.2 ms)\n"
+        }
+      },
+      "retired_tensor_consumer": "Paired observer-transparency gate and independent selectedrow oracle completed. No future raw consumer."
+    }
+  },
+  "compile_proof": [
+    {
+      "directory": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-canonical-bank-profile-build-root-v1/build",
+      "command": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++ -DSTRATA_ENABLE_SYCL=1 -DSTRATA_NATIVE_EXPERTS=1 -DSTRATA_VERSION=\\\"0.1.38\\\" -I/home/yayoi/orca/workspaces/Strata/sycl/include -I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat -I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include -isystem /opt/intel/oneapi/mkl/2026.1/include -O3 -DNDEBUG -std=c++20 -fsycl -fsycl-id-queries-range=size_t -Wall -Wextra -Werror -DMKL_ILP64 -fno-fast-math -ffp-contract=off -o CMakeFiles/strata.dir/src/program/dense_prefill_nll.cpp.o -c /home/yayoi/orca/workspaces/Strata/sycl/src/program/dense_prefill_nll.cpp",
+      "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/program/dense_prefill_nll.cpp",
+      "output": "CMakeFiles/strata.dir/src/program/dense_prefill_nll.cpp.o"
+    },
+    {
+      "directory": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-canonical-bank-profile-build-root-v1/build",
+      "command": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++ -DSTRATA_VERSION=\\\"0.1.38\\\" -I/home/yayoi/orca/workspaces/Strata/sycl/include -O3 -DNDEBUG -std=c++20 -fno-fast-math -ffp-contract=off -Wall -Wextra -Werror -o CMakeFiles/dense_prefill_nll_host_test.dir/tests/cpu/dense_prefill_nll.cpp.o -c /home/yayoi/orca/workspaces/Strata/sycl/tests/cpu/dense_prefill_nll.cpp",
+      "file": "/home/yayoi/orca/workspaces/Strata/sycl/tests/cpu/dense_prefill_nll.cpp",
+      "output": "CMakeFiles/dense_prefill_nll_host_test.dir/tests/cpu/dense_prefill_nll.cpp.o"
+    },
+    {
+      "directory": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-canonical-bank-profile-build-root-v1/build",
+      "command": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++ -DSTRATA_VERSION=\\\"0.1.38\\\" -I/home/yayoi/orca/workspaces/Strata/sycl/include -O3 -DNDEBUG -std=c++20 -fno-fast-math -ffp-contract=off -Wall -Wextra -Werror -fno-fast-math -ffp-contract=off -o CMakeFiles/dense_prefill_nll_host_test.dir/src/program/dense_prefill_nll.cpp.o -c /home/yayoi/orca/workspaces/Strata/sycl/src/program/dense_prefill_nll.cpp",
+      "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/program/dense_prefill_nll.cpp",
+      "output": "CMakeFiles/dense_prefill_nll_host_test.dir/src/program/dense_prefill_nll.cpp.o"
+    }
+  ]
+}

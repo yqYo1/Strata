@@ -1,0 +1,7 @@
+# Public vLLM Gemm fixture Main review
+
+R833の新fixture564行とreport/manifest/patchをMainで読んだ。artifact3件と、公開API・実装・既存test用CMake preimageのSHAを照合した。元R810の独立IEEE/FP64 oracle8領域は行番号と文字列SHAを独立比較しbyte同一。許容誤差は拡大されていない。新K=96 cancellationの+/-0.25、4dtype、Ttail/Ntail/pitch、fullY矩形とown/vLLM契約の区別、40拒否/形式、宣言順によるchecked drain/owner unwindとGemm destructor後のcompletion markerを確認した。
+
+現在のcompiled source/実行gateを凍結しているため、まだproduction/tests/CMakeへ適用していない。次のsource/build境界で適用するか、Main専用private buildで現在のqualified libraries/nativeimage+hostsliceへリンクして実public APIを検査する。既存fixture全件やmodel試験を置き換えない。返答時点のbuild/GPU/numerical/performanceはUNRUN。
+
+source proposalはsmall4filesがGitの保持物で別checkpointは不要。実装workerによるbuild/test/GPUなし、Mainが排他的に管理する。過去のseparatequeue timeoutは本fixtureと無関係に未解決のFAILを保持する。

@@ -1,0 +1,235 @@
+#include <cmath>
+#include <string>
+#include <cuda_runtime.h>
+#include <iostream>
+#include <stdexcept>
+#include <vector>
+#define CHECK(x)                                                               \
+  do {                                                                         \
+    auto e = (x);                                                              \
+    if (e != cudaSuccess)                                                      \
+      throw std::runtime_error(std::string(#x) + ": " +                        \
+                               cudaGetErrorString(e));                         \
+  } while (0)
+void require(bool v, const char *s) {
+  if (!v)
+    throw std::runtime_error(s);
+}
+int main(int argc, char** argv) {
+  const bool native = argc == 2 && std::string(argv[1]) == "--native";
+  auto begin_capture = [native](cudaStream_t stream) {
+    return native ? strata::sycl_backend::compat::stream_begin_capture_native(stream)
+                  : cudaStreamBeginCapture(stream, cudaStreamCaptureModeThreadLocal);
+  };
+  try {
+    std::cout << std::unitbuf;
+    std::cerr << "compat: create streams and USM owners\n";
+    constexpr size_t n = 257, bytes = n * sizeof(int);
+    cudaStream_t a{}, b{};
+    CHECK(cudaStreamCreate(&a));
+    CHECK(cudaStreamCreate(&b));
+    int *in{}, *out{}, *device{};
+    CHECK(cudaMallocHost((void **)&in, bytes));
+    CHECK(cudaMallocHost((void **)&out, bytes));
+    CHECK(cudaMalloc((void **)&device, bytes));
+    void *alias{};
+    CHECK(cudaHostGetDevicePointer(&alias, in, 0));
+    require(alias == in, "host alias");
+    int ordinary = 0;
+    require(cudaHostRegister(&ordinary, sizeof ordinary, 0) ==
+                cudaErrorNotSupported,
+            "host registration must fail");
+    require(cudaPeekAtLastError() == cudaErrorNotSupported,
+            "sticky last error");
+    require(cudaGetLastError() == cudaErrorNotSupported &&
+                cudaGetLastError() == cudaSuccess,
+            "clear last error");
+    cudaEvent_t begin{}, done{}, captured{};
+    CHECK(cudaEventCreate(&begin));
+    CHECK(cudaEventCreate(&done));
+    CHECK(cudaEventCreateWithFlags(&captured, cudaEventDisableTiming));
+    CHECK(cudaEventQuery(done));
+    for (size_t i = 0; i < n; ++i)
+      in[i] = int(i);
+    CHECK(cudaEventRecord(begin, a));
+    CHECK(cudaMemcpyAsync(device, in, bytes, cudaMemcpyHostToDevice, a));
+    a->parallel_for(sycl::range<1>(n), [=](sycl::id<1> i) { device[i] *= 3; });
+    CHECK(cudaEventRecord(done, a));
+    CHECK(cudaStreamWaitEvent(b, done));
+    CHECK(cudaMemcpyAsync(out, device, bytes, cudaMemcpyDeviceToHost, b));
+    CHECK(cudaStreamSynchronize(b));
+    for (size_t i = 0; i < n; ++i)
+      require(out[i] == int(i) * 3, "cross stream event");
+    int *same_device{};
+    CHECK(cudaMalloc((void **)&same_device, bytes));
+    CHECK(cudaMemsetAsync(same_device, 0, bytes, b));
+    require(cudaMemcpyPeerAsync(same_device, 1, device, 0, bytes, b) ==
+                cudaErrorNotSupported,
+            "peer GPU copy must fail before submission");
+    (void)cudaGetLastError();
+    CHECK(cudaMemcpyAsync(out, same_device, bytes, cudaMemcpyDeviceToHost, b));
+    CHECK(cudaStreamSynchronize(b));
+    for (size_t i = 0; i < n; ++i)
+      require(out[i] == 0, "rejected peer copy changed its destination");
+    CHECK(cudaMemcpyPeerAsync(same_device, 0, device, 0, bytes, b));
+    CHECK(cudaMemcpyAsync(out, same_device, bytes, cudaMemcpyDeviceToHost, b));
+    CHECK(cudaStreamSynchronize(b));
+    for (size_t i = 0; i < n; ++i)
+      require(out[i] == int(i) * 3, "same-device peer API copy");
+    CHECK(cudaFree(same_device));
+    float ms = -1;
+    CHECK(cudaEventElapsedTime(&ms, begin, done));
+    require(std::isfinite(ms) && ms >= 0, "profiling");
+    // Startup PCIe calibration uses the default stream, not an explicit one.
+    // Its events must carry device timestamps as well as ordering semantics.
+    CHECK(cudaEventRecord(begin));
+    for (int repeat = 0; repeat < 32; ++repeat)
+      CHECK(cudaMemcpyAsync(device, in, bytes, cudaMemcpyHostToDevice));
+    CHECK(cudaEventRecord(done));
+    CHECK(cudaEventSynchronize(done));
+    CHECK(cudaEventElapsedTime(&ms, begin, done));
+    require(std::isfinite(ms) && ms > 0, "default-stream profiling");
+    std::cerr << "compat: default stream copy/events complete; record graph\n";
+    cudaStream_t recording{};
+    CHECK(cudaStreamCreate(&recording));
+    CHECK(begin_capture(recording));
+    CHECK(cudaMemcpyAsync(device, in, bytes, cudaMemcpyHostToDevice, recording));
+    recording->parallel_for(sycl::range<1>(n),
+                            [=](sycl::id<1> i) { device[i] = device[i] * 7 + 2; });
+    CHECK(cudaEventRecord(captured, recording));
+    CHECK(cudaMemcpyAsync(out, device, bytes, cudaMemcpyDeviceToHost, recording));
+    cudaGraph_t graph{};
+    cudaGraphExec_t exec{};
+    CHECK(cudaStreamEndCapture(recording, &graph));
+    size_t count = 0;
+    if (native) {
+      require(cudaGraphGetNodes(graph, nullptr, &count) == cudaErrorNotSupported,
+              "native recording rejects node introspection");
+      require(count == 0, "failed node query leaves count untouched");
+      (void)cudaGetLastError();
+    } else {
+      CHECK(cudaGraphGetNodes(graph, nullptr, &count));
+      require(count >= 3, "graph nodes");
+      std::vector<cudaGraphNode_t> nodes(count);
+      CHECK(cudaGraphGetNodes(graph, nodes.data(), &count));
+      int kernels = 0;
+      for (auto node : nodes) {
+        cudaGraphNodeType type;
+        CHECK(cudaGraphNodeGetType(node, &type));
+        kernels += type == cudaGraphNodeTypeKernel;
+      }
+      require(kernels == 1, "kernel graph node");
+    }
+    CHECK(cudaGraphInstantiate(&exec, graph, 0ull));
+    CHECK(cudaGraphDestroy(graph));
+    CHECK(cudaGraphUpload(exec, b));
+    std::cerr << "compat: graph uploaded; check changing host payloads\n";
+    for (int iteration = 0; iteration < 12; ++iteration) {
+      for (size_t i = 0; i < n; ++i)
+        in[i] = int(i) + iteration * 1000;
+      CHECK(cudaGraphLaunch(exec, iteration % 2 ? a : b));
+      CHECK(cudaEventSynchronize(
+          captured)); // Must include D2H after the captured event.
+      CHECK(cudaEventQuery(captured));
+      for (size_t i = 0; i < n; ++i)
+        require(out[i] == (int(i) + iteration * 1000) * 7 + 2,
+                "graph replay host handoff");
+    }
+    // A verifier segment publishes routed inputs, then the CPU writes a plan
+    // and results before another segment may consume them. Exercise the same
+    // external-event boundary with changing payloads and alternating queues.
+    std::cerr << "compat: first replay complete; record consumer graph\n";
+    CHECK(begin_capture(recording));
+    CHECK(cudaMemcpyAsync(device, out, bytes, cudaMemcpyHostToDevice, recording));
+    recording->parallel_for(sycl::range<1>(n),
+                            [=](sycl::id<1> i) { device[i] = device[i] * 5 - 3; });
+    CHECK(cudaMemcpyAsync(out, device, bytes, cudaMemcpyDeviceToHost, recording));
+    cudaGraph_t consume_graph{};
+    cudaGraphExec_t consume{};
+    CHECK(cudaStreamEndCapture(recording, &consume_graph));
+    CHECK(cudaGraphInstantiate(&consume, consume_graph, 0ull));
+    CHECK(cudaGraphDestroy(consume_graph));
+    // Executables retain resources from the shared recording queue. They must
+    // remain replayable after that queue is destroyed.
+    CHECK(cudaStreamDestroy(recording));
+    cudaEvent_t graph_done{};
+    CHECK(cudaEventCreateWithFlags(&graph_done, cudaEventDisableTiming));
+    using strata::sycl_backend::compat::graph_launch_with_completion;
+    require(graph_launch_with_completion(exec, a, nullptr) == cudaErrorInvalidValue,
+            "graph completion requires an event");
+    require(graph_launch_with_completion(exec, a, done) == cudaErrorInvalidValue,
+            "graph completion cannot report profiling timestamps");
+    (void)cudaGetLastError();
+    for (int iteration = 0; iteration < 12; ++iteration) {
+      for (size_t i = 0; i < n; ++i)
+        in[i] = int(i) - iteration * 77;
+      auto producer = iteration % 2 ? a : b;
+      auto consumer = iteration % 2 ? b : a;
+      CHECK(graph_launch_with_completion(exec, producer, graph_done));
+      CHECK(cudaEventSynchronize(graph_done));
+      CHECK(cudaEventQuery(graph_done));
+      for (size_t i = 0; i < n; ++i) {
+        require(out[i] == in[i] * 7 + 2, "segment publication");
+        out[i] += iteration + int(i % 3);
+      }
+      CHECK(graph_launch_with_completion(consume, consumer, graph_done));
+      CHECK(cudaEventSynchronize(graph_done));
+      for (size_t i = 0; i < n; ++i)
+        require(out[i] == (in[i] * 7 + 2 + iteration + int(i % 3)) * 5 - 3,
+                "completed segment consumes current host results");
+    }
+    // A graph's completion can also order another queue without a host wait.
+    // Rebinding the event must not change the already submitted dependency.
+    for (int iteration = 0; iteration < 12; ++iteration) {
+      for (size_t i = 0; i < n; ++i)
+        in[i] = int(i) + iteration * 13;
+      CHECK(graph_launch_with_completion(exec, a, graph_done));
+      CHECK(cudaStreamWaitEvent(b, graph_done));
+      CHECK(graph_launch_with_completion(consume, b, graph_done));
+      CHECK(cudaEventSynchronize(graph_done));
+      for (size_t i = 0; i < n; ++i)
+        require(out[i] == (in[i] * 7 + 2) * 5 - 3,
+                "graph completion cross-queue dependency");
+    }
+    require(cudaEventElapsedTime(&ms, begin, graph_done) == cudaErrorInvalidValue,
+            "disabled graph completion rejects elapsed time");
+    (void)cudaGetLastError();
+    CHECK(cudaEventDestroy(graph_done));
+    std::cerr << "compat: cross-stream graph handoffs complete; retire graphs\n";
+    CHECK(cudaGraphExecDestroy(consume));
+    CHECK(cudaEventDestroy(
+        captured)); // Executable retains only weak event references.
+    CHECK(cudaGraphLaunch(exec, a));
+    CHECK(cudaGraphExecDestroy(exec));
+    std::vector<unsigned char> src(35, 0x31), dst(49, 0x7f);
+    CHECK(cudaMemcpy2DAsync(dst.data(), 7, src.data(), 5, 3, 7,
+                            cudaMemcpyHostToHost, b));
+    CHECK(cudaStreamSynchronize(b));
+    for (size_t row = 0; row < 7; ++row)
+      for (size_t col = 0; col < 7; ++col)
+        require(dst[row * 7 + col] == (col < 3 ? 0x31 : 0x7f),
+                "pitched copy padding");
+    int callback = 0;
+    CHECK(cudaLaunchHostFunc(
+        b, [](void *p) { *static_cast<int *>(p) = 42; }, &callback));
+    CHECK(cudaStreamSynchronize(b));
+    require(callback == 42, "host callback");
+    CHECK(cudaMemsetAsync(device, 0, bytes, b));
+    CHECK(cudaMemcpyAsync(out, device, bytes, cudaMemcpyDeviceToHost, b));
+    std::cerr << "compat: final copy submitted; free drains registered streams\n";
+    CHECK(cudaFree(device)); // Free must drain all registered streams.
+    for (size_t i = 0; i < n; ++i)
+      require(out[i] == 0, "free synchronization");
+    CHECK(cudaFreeHost(in));
+    CHECK(cudaFreeHost(out));
+    CHECK(cudaEventDestroy(begin));
+    CHECK(cudaEventDestroy(done));
+    CHECK(cudaStreamDestroy(a));
+    CHECK(cudaStreamDestroy(b));
+    std::cout << "SYCL host adapter: events, profiling, graph replay, copies "
+                 "and lifecycle passed\n";
+  } catch (const std::exception &e) {
+    std::cerr << e.what() << '\n';
+    return 1;
+  }
+}

@@ -1,0 +1,48 @@
+# R451 — 主SYCL新ビルドの小規模GPU runtime/compat試験条件
+
+日付: 2026-10-14 (Asia/Tokyo)
+対象: `/home/yayoi/orca/workspaces/Strata/sycl`, `feature/sycl` HEAD `91c1a18b6563e97ca5d4e3e3fa9a4fcdf7d28133`。Arc B570 / Ryzen 5 5600X / 128 GB RAM向けの個人fork。唯一の上流はNiko1221/Strata。CUDA/HIP推論は対象外。
+調査はread-only。ソース、Git、環境を変更せず、build/test/GPU/process/fetchも行っていない。指定されたR448/R450原文、リポジトリの実装・履歴と既存文書だけを確認した。禁止されたprivate recordは開いていない。
+
+## 結論
+
+Mainが小さな新ビルド試験へ進む条件は満たせる。`Allocation`の失敗時cleanupとcompat graph-exec teardownは、R450の指摘に沿ったfail-stop/owner-retention制御へ変更され、Main報告のhost normal・ASan/UBSan・syntax確認も通過済み。ただしこの制御修正は既知GPU停止の原因を確定・修正した証拠ではなく、SYCL/UR/Level Zero上での実動作もまだ未確認である。最初は割当て・コピー・kernel・event完了・owner teardownの短いB570試験を実施し、続けて既存の小規模compat graph/複数queue試験を同一の新binaryで行うのが妥当。全モデルや大規模prefillに進む根拠にはしない。
+
+## 以前の障害と根拠の境界
+
+- R448は旧GPU障害版のprimaryを再実行していない。R450も、そこで監査したHEAD `36cc848a0eb68b96a1ed2ec007c5d86cfb3b13a7`を「既知のhangの原因」とはしておらず、障害版の正確なrevision、停止を起こした最新kernel、実際の失敗stack/driver dumpは報告中に特定されていない。今回のHEAD `91c1a18…`を既知障害版そのものと呼ぶ根拠もない。
+- R450が証明したのは当時のソース制御フローである。`Allocation::release`はwait例外後にもfreeする構造、`cudaGraphExecDestroy`はsticky-errorでwait bodyを飛ばしてもdeleteする構造だった。waitが失敗した特定実行で未完了GPU commandが残っていた事実までは証明していない。Graph executable内部がsubmission後に独立所有されるかも不明で、実際のuse-after-destroyは条件付きだった。
+- 現HEADでの変更はcommit `51ad49e895c7dce75c0fb74b254255d504f22704`（HEADからruntime/compat変更の履歴上の最新関連commitとして確認）にある。`include/strata/sycl/checked_cleanup.hpp:11-32`はdrain失敗時に`_Exit`してowner unwindを止め、成功drain後だけreleaseする。`src/sycl/runtime.cpp:166-188`のdestructor/move assignment経由のallocation retirementもこれを使う。これは失敗時に安全側へfail-stopする修正で、failed drain後の回復機能ではない。`src/sycl/compat.cpp:530-541`ではgraph-exec deleteがchecked waitの後の`attempt` body内に移った。sticky errorやwait例外ならhandleをdeleteせずerrorを返すためownerは残るが、呼出側が失敗handleを捨てても安全に回収される保証はない。プロセスを閉じるまでのretentionとして扱う。
+- 独立した実測上の停止パターンがdocs/SYCL_IMPLEMENTATION.md:679-695に残る。oneAPI 2026.1 / B570で大きなexpert GEMMを使うtwo-queue host/device ringが、main threadが未完了transfer eventに紐づくhost slotを待つところで停止した。記録された再現条件は200 products、32 staging threads、128 host slots、8 device slots、FP16、T=3/N=1280/K=2560。single in-order queueの同じ規模は完了し、小規模two-queue (N=32/K=640) も完了。event markerをempty kernelへ置換しても直らなかった。記録は実行patternを絞るが、compiler、UR、Level Zero driverいずれの原因とも確定していない。現行prefillがtransfersにcaller compute queueを使うという回避も同じ段落に記録されている。
+- 「kernel launch/barrier/pointer lifetimeが障害だった」というGPU実証は今回の資料からは得られない。現ソースには検査すべき境界があるが、それは障害時の実際の経路で使われた証拠とは別である。`include/strata/sycl/launch.hpp:44-63,72-82`はnull streamでは完了待ちを行い、明示streamではin-order queueへ非同期submitする。`src/sycl/compat.cpp:364-406`は`ext_oneapi_submit_barrier`でevent record/waitを実装し、`:478-509`はgraph submissionとlast-event依存を追跡する。R450のallocation/graph owner欠陥はソース上確定、実行時のdangling pointerは未確認。通常freeのqueue snapshotと並行submit競合はR450で条件付き懸念として残り、host caller serializationの契約は今回も実証されていない。
+
+## 現compiler/runtimeの基準
+
+`docs/SYCL_RESEARCH.md:20-40`と`docs/SYCL_IMPLEMENTATION.md:307-318`にある現在の記録済み基準はDPC++ 2026.1.1 (`2026.1.1.20260724`)、Unified Runtime経由のLevel Zero V2、driver string `1.17.39395+14`、Arc B570。これはrepositoryに記録されたstackであり、このread-only調査では稼働中process/library mapや環境変数を照会していない。Mainの新試験receiptで実際のcompiler/runtime/driver/binary identityを再記録する。
+
+compiler/backendとの別の既知差分として、`docs/SYCL_IMPLEMENTATION.md:2102-2114`は新driver AOTのXMX runtime testが`Sub-group size 1 is not supported on the device`で失敗し、old-driver AOTでは通った報告を記録している。報告自身も新driverの全versionを原因と断定していない。このAOT/ESIMDの個別症状は通常JITの小規模runtime/compat試験とは別問題であり、今回の主停止原因に転用しない。Level Zero V2用でないlegacy `SYCL_PI_LEVEL_ZERO_*` tuning変数を無根拠に試さない。`docs/SYCL_IMPLEMENTATION.md:2083`はUR L0 V2用の診断候補を挙げるが、default採用はしていない。
+
+## 小さな試験ゲート案
+
+1. **build同一性とdevice admission。** 新しい主binary、ソースHEAD、compiler build、UR/Level Zero adapter/driver、`ONEAPI_DEVICE_SELECTOR`等の選択値、終了statusを同じreceiptに結び付ける。B570だけを明示選択し、GPU側host/device USM対応と起動を確認する。GPU状態/healthが試験前に正常であることを記録し、異常時は試験を開始しない。
+2. **まずruntimeの既存small test。** `tests/sycl/runtime.cpp:10-113`相当の`sycl_runtime_test`はhost/device allocation、4097 intsの64回のchanging-payload transfer→compute→transfer、explicit event dependency、範囲検査、allocation move、bounded event wait、async errorの通知/保持を通す。上限付きprocess supervisorを使い、通常完了後にallocation/runtime teardownが完了し、終了値と全要素が合うことを条件とする。`--large`の4 GiB超試験は初回ゲートに含めない。
+3. **続いてcompat small graph teardown。** `tests/sycl/compat.cpp:24-33,45-60,90-132,147-197,211-223`の257要素・複数stream/event/graph replay/freeを候補にし、少なくともgraph launch後の`cudaGraphExecDestroy`とregistered allocation freeが正常完了することを確認する。全copy結果、各API status、終了status、最大時間を記録する。問題時にどのwait/APIで止まったかを示す少数のphase markerだけを出す。async failure injectionを同じprocessの最後に加えるとsticky errorが後続cleanupを飛ばすので、異常系は別processで隔離する。
+4. **初回判定。** runtime testとcompat testが同じbinary/stackで完了し、値とAPI statusが正しく、timeoutやdevice faultがなく、通常teardownを確認した時だけ、次の限定kernel/device testへ進める。これらは実行したqueue/event/lifetime境界のqualificationであり、大きなGEMM、モデルprefill、複数chunk、全graph pattern、障害原因解明や性能の合格ではない。小規模two-queue passは過去のlarge two-queue ring stallを否定しない。
+
+既存のCPU-only `tests/sycl/checked_cleanup_host.cpp`はdrain/release順、drain/release失敗でunwindしないfail-stop制御を検査するが、実GPU完了やURの意味は検証しない。Mainから示されたnormal/ASan/UBSan/syntax passはこの責務分割に合致する。GPUでfailed drainを意図的に作る試験はOSプロセス終了を伴うfail-stop経路を再現するため、初回small passの正常経路に混ぜない。
+
+## 残る危険と試験後の意味
+
+- sticky error後のcompat `cudaFree`/stream destroy/synchronizeは`attempt`の先行`runtime_for()->check()`によりdrain本体に入らず、ownerを保持してerrorを返す場合がある。これはfree早期実行より安全なleak/fail-closed経路だが、後続cleanupが成功したことにはならない。graph handleも同様にcallerで保持してprocessをfail-stop/closeする扱いが必要。
+- `wait_all()`は既存stream queueをsnapshotしてそれらをdrainする (`src/sycl/compat.cpp:88-110`)。drain中に新規submit/queue追加を許すホスト並行性があるならsnapshot外commandが残る可能性があるが、アプリ側threading契約が今回確定していないため条件付きである。初回試験はserialなhost API callerに限定する。
+- async error報告は、全queueのcompletionが不明である証拠でも、全queueが完了した証拠でもない。正常試験で成功経路を確認した後、retention/fail-stop制御を別subprocessで確認できるが、異常wait後にGPU memory/graphをfreeして戻る試験は安全なcompletion oracleがない限り実施しない。
+- kernel launch/barrier/pointer lifetimeの分類を進めるには、phase markerと、最後に完了を確認したevent、未完了だったqueue、fault driver dump/source revisionが同一runに必要。今回の報告にはその結び付いたartifactがないため、主障害の起点を確定しない。
+
+## 参照したprimary anchors
+
+- R448: `bench/results/2026-10-14-primary-strata-source-audit/research/research-primary-inference-adoption-audit-round448-v1.txt.json` (embedded exact text; original SHA `3117dec0…e4f98`)
+- R450: `bench/results/2026-10-14-niko-main-service-port/research/research-primary-runtime-safe-execution-round450-v1.txt.json` (embedded exact text; original SHA `baf0f6d0…eb01f`)
+- `src/sycl/runtime.cpp:59-88,92-129,145-188`; `include/strata/sycl/checked_cleanup.hpp:11-32`; `src/sycl/compat.cpp:65-110,130-145,364-406,478-509,526-541`; `include/strata/sycl/launch.hpp:44-82`.
+- `tests/sycl/runtime.cpp:10-114`; `tests/sycl/compat.cpp:24-223`; `tests/sycl/checked_cleanup_host.cpp:21-79`.
+- `docs/SYCL_IMPLEMENTATION.md:307-318,679-695,2083,2102-2114`; `docs/SYCL_RESEARCH.md:20-40`.
+

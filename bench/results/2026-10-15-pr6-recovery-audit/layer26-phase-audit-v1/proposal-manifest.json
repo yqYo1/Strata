@@ -1,0 +1,62 @@
+{
+  "status": "nonapplied proposal",
+  "files": {
+    "README.ja.md": {
+      "bytes": 13069,
+      "sha256": "889ba1bc7c7a43550d9419ef6f01f18de036e43e8db3e26e3b28197f19ff3ff4"
+    },
+    "compare.py": {
+      "bytes": 5943,
+      "sha256": "3950ab368287bc7fd44a26158ea0a092abcc5d114b4da4c9b77ce47348a97e32"
+    },
+    "cpu-fixture-plan.ja.md": {
+      "bytes": 4680,
+      "sha256": "d9095e625d994db5956abc6182bc1845cd328608b2b00ba78e4cb59d7095fdeb"
+    },
+    "cpu_fixture.cpp": {
+      "bytes": 6057,
+      "sha256": "5e622c29f73983ef45127703f42ec0b91427bf4aa2828ad5451f3908249d0e51"
+    },
+    "layer26_phase_audit.hpp.in": {
+      "bytes": 11216,
+      "sha256": "1eb0a7e3a439a0b29f1864977a82ec1db46f8583e4ef9cb02cd9bbdfac388dcf"
+    },
+    "pins.json": {
+      "bytes": 1416,
+      "sha256": "58e99a9ec7f915b53705809113e1c80e28e4b4b9db2fa5713caa893aec12f72b"
+    },
+    "regen-receipt.json": {
+      "bytes": 789,
+      "sha256": "d3c218f4479c71979d28e6d90c32fe3c63710b70a1d3b345dff12ba07ca2ce8e"
+    },
+    "regen.py": {
+      "bytes": 9898,
+      "sha256": "cc3cf811c21bae592afef9b7b9da149fc5946143d48d7dd225927c5087f2ecb1"
+    },
+    "source.diff": {
+      "bytes": 23668,
+      "sha256": "c85f9c7689d4081dfbcbd63b849c7a83050b001054912c7e7e9ae34f7e3c63fa"
+    }
+  },
+  "performed": [
+    "read specified evidence and local source",
+    "write new proposal directory only",
+    "regenerate minimal unified diff in memory from pinned source"
+  ],
+  "not_performed": [
+    "product source mutation",
+    "compile",
+    "tests including CPU fixture and comparator",
+    "GPU",
+    "git",
+    "service",
+    "cleanup"
+  ],
+  "owner": "Main layer26 coarse paired investigation",
+  "next_review": "Main review/build/CPU first, then first matched new-binary fixed4096-auto24576 coarse comparison",
+  "raw_consumer": "compare.py and Main compact layer26 phase receipt",
+  "default_off": "no added copy/wait/host-or-device allocation/file; env/null checks only",
+  "host_admission": "additional1MiB plus optional existing boundary4MiB cumulatively above model host_need; retain8GiB floor",
+  "coverage_limit": "at most6 selected layer26 rows; complete run coverage is separate from raw equality and adoption; all unsampled GDN inputs/carried state remain unproven",
+  "intrusion": "each selected device tensor copy checks same compute queue drain; added serialization can mask races"
+}

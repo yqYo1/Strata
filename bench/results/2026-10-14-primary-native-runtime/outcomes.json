@@ -1,0 +1,220 @@
+{
+  "roots": {
+    "main-primary-native-build-root-v1": {
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "GPU_executed": false,
+      "model_executed": null,
+      "performance_qualified": null,
+      "physical_256K_qualified": null,
+      "HA_exp_parity_qualified": null,
+      "error": null
+    },
+    "main-primary-native-runtime-root-v1": {
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "GPU_executed": true,
+      "model_executed": false,
+      "performance_qualified": false,
+      "physical_256K_qualified": false,
+      "HA_exp_parity_qualified": null,
+      "error": null
+    },
+    "main-primary-native-engine-build-root-v1": {
+      "passed": false,
+      "complete": false,
+      "active": false,
+      "GPU_executed": false,
+      "model_executed": null,
+      "performance_qualified": null,
+      "physical_256K_qualified": null,
+      "HA_exp_parity_qualified": null,
+      "error": "AssertionError((None, '', '[1/120] Building CXX object CMakeFiles/strata_core.dir/src/core/pinned.cu.o\\nFAILED: CMakeFiles/strata_core.dir/src/core/pinned.cu.o \\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++ -DSTRATA_ENABLE_SYCL=1 -DSTRATA_VERSION=\\\\\"0.1.38\\\\\" -I/home/yayoi/orca/workspaces/Strata/sycl/include -I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat -x c++ -O3 -DNDEBUG -std=c++20 -fsycl -Wall -Wextra -Werror -x c++ -MD -MT CMakeFiles/strata_core.dir/src/core/pinned.cu.o -MF CMakeFiles/strata_core.dir/src/core/pinned.cu.o.d -o CMakeFiles/strata_core.dir/src/core/pinned.cu.o -c /home/yayoi/orca/workspaces/Strata/sycl/src/core/pinned.cu\\n/home/yayoi/orca/workspaces/Strata/sycl/src/core/pinned.cu:313:71: error: unused parameter \\'bounds\\' [-Werror,-Wunused-parameter]\\n  313 | PinnedArena::PinnedArena(uint64_t bytes, const std::vector<uint64_t>& bounds,\\n      |                                                                       ^\\n/home/yayoi/orca/workspaces/Strata/sycl/src/core/pinned.cu:314:35: error: unused parameter \\'max_pinned_bytes\\' [-Werror,-Wunused-parameter]\\n  314 |                          uint64_t max_pinned_bytes, const std::string& shared_file,\\n      |                                   ^\\n2 errors generated.\\n[2/120] Building CXX object CMakeFiles/strata_core.dir/src/sycl/device.cpp.o\\nninja: build stopped: subcommand failed.\\n'))"
+    },
+    "main-primary-native-engine-build-root-v2": {
+      "passed": false,
+      "complete": false,
+      "active": false,
+      "GPU_executed": false,
+      "model_executed": null,
+      "performance_qualified": null,
+      "physical_256K_qualified": null,
+      "HA_exp_parity_qualified": null,
+      "error": "AssertionError((None, '', '[1/119] Building CXX object CMakeFiles/strata_core.dir/src/platform/memory.cpp.o\\n[2/119] Building CXX object CMakeFiles/strata_core.dir/src/core/pinned.cu.o\\nFAILED: CMakeFiles/strata_core.dir/src/core/pinned.cu.o \\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++ -DSTRATA_ENABLE_SYCL=1 -DSTRATA_VERSION=\\\\\"0.1.38\\\\\" -I/home/yayoi/orca/workspaces/Strata/sycl/include -I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat -x c++ -O3 -DNDEBUG -std=c++20 -fsycl -Wall -Wextra -Werror -x c++ -MD -MT CMakeFiles/strata_core.dir/src/core/pinned.cu.o -MF CMakeFiles/strata_core.dir/src/core/pinned.cu.o.d -o CMakeFiles/strata_core.dir/src/core/pinned.cu.o -c /home/yayoi/orca/workspaces/Strata/sycl/src/core/pinned.cu\\n/home/yayoi/orca/workspaces/Strata/sycl/src/core/pinned.cu:255:6: error: unused function \\'clear_error\\' [-Werror,-Wunused-function]\\n  255 | bool clear_error() { (void) cudaGetLastError(); return true; }\\n      |      ^~~~~~~~~~~\\n1 error generated.\\n[3/119] Building CXX object CMakeFiles/strata_core.dir/src/core/graph.cpp.o\\nninja: build stopped: subcommand failed.\\n'))"
+    },
+    "main-primary-native-engine-build-root-v3": {
+      "passed": false,
+      "complete": false,
+      "active": false,
+      "GPU_executed": false,
+      "model_executed": null,
+      "performance_qualified": null,
+      "physical_256K_qualified": null,
+      "HA_exp_parity_qualified": null,
+      "error": "AssertionError((None, '', 'off, &r.dst_bytes,\\n  169 |                                   &r.ne0, &r.ne1, &r.code_bits, &r.code_bias, &r.group_elems, &r.codebook,\\n      |                                   ^~~~~~\\n/home/yayoi/orca/workspaces/Strata/sycl/src/core/weights.cpp:169:43: error: format specifies type \\'long long *\\' but the argument has type \\'int64_t *\\' (aka \\'long *\\') [-Werror,-Wformat]\\n  167 |                                   \"%255s %d %d %llu %llu %llu %llu %lld %lld %d %d %d %d %d %llu %llu %llu %d %d\",\\n      |                                                                         ~~~~\\n      |                                                                         %ld\\n  168 |                                   name, &r.file, &kind, &r.src_off, &r.src_bytes, &r.dst_off, &r.dst_bytes,\\n  169 |                                   &r.ne0, &r.ne1, &r.code_bits, &r.code_bias, &r.group_elems, &r.codebook,\\n      |                                           ^~~~~~\\n/home/yayoi/orca/workspaces/Strata/sycl/src/core/weights.cpp:170:50: error: format specifies type \\'unsigned long long *\\' but the argument has type \\'uint64_t *\\' (aka \\'unsigned long *\\') [-Werror,-Wformat]\\n  167 |                                   \"%255s %d %d %llu %llu %llu %llu %lld %lld %d %d %d %d %d %llu %llu %llu %d %d\",\\n      |                                                                                             ~~~~\\n      |                                                                                             %lu\\n  168 |                                   name, &r.file, &kind, &r.src_off, &r.src_bytes, &r.dst_off, &r.dst_bytes,\\n  169 |                                   &r.ne0, &r.ne1, &r.code_bits, &r.code_bias, &r.group_elems, &r.codebook,\\n  170 |                                   &r.has_offset, &r.codes_bytes, &r.scales_bytes, &r.offset_bytes,\\n      |                                                  ^~~~~~~~~~~~~~\\n/home/yayoi/orca/workspaces/Strata/sycl/src/core/weights.cpp:170:66: error: format specifies type \\'unsigned long long *\\' but the argument has type \\'uint64_t *\\' (aka \\'unsigned long *\\') [-Werror,-Wformat]\\n  167 |                                   \"%255s %d %d %llu %llu %llu %llu %lld %lld %d %d %d %d %d %llu %llu %llu %d %d\",\\n      |                                                                                                  ~~~~\\n      |                                                                                                  %lu\\n  168 |                                   name, &r.file, &kind, &r.src_off, &r.src_bytes, &r.dst_off, &r.dst_bytes,\\n  169 |                                   &r.ne0, &r.ne1, &r.code_bits, &r.code_bias, &r.group_elems, &r.codebook,\\n  170 |                                   &r.has_offset, &r.codes_bytes, &r.scales_bytes, &r.offset_bytes,\\n      |                                                                  ^~~~~~~~~~~~~~~\\n/home/yayoi/orca/workspaces/Strata/sycl/src/core/weights.cpp:170:83: error: format specifies type \\'unsigned long long *\\' but the argument has type \\'uint64_t *\\' (aka \\'unsigned long *\\') [-Werror,-Wformat]\\n  167 |                                   \"%255s %d %d %llu %llu %llu %llu %lld %lld %d %d %d %d %d %llu %llu %llu %d %d\",\\n      |                                                                                                       ~~~~\\n      |                                                                                                       %lu\\n  168 |                                   name, &r.file, &kind, &r.src_off, &r.src_bytes, &r.dst_off, &r.dst_bytes,\\n  169 |                                   &r.ne0, &r.ne1, &r.code_bits, &r.code_bias, &r.group_elems, &r.codebook,\\n  170 |                                   &r.has_offset, &r.codes_bytes, &r.scales_bytes, &r.offset_bytes,\\n      |                                                                                   ^~~~~~~~~~~~~~~\\n9 errors generated.\\n[2/117] Building CXX object CMakeFiles/strata_core.dir/src/core/pinned.cu.o\\nninja: build stopped: subcommand failed.\\n'))"
+    },
+    "main-primary-native-engine-build-root-v4": {
+      "passed": false,
+      "complete": false,
+      "active": false,
+      "GPU_executed": false,
+      "model_executed": null,
+      "performance_qualified": null,
+      "physical_256K_qualified": null,
+      "HA_exp_parity_qualified": null,
+      "error": "AssertionError((None, '', '[1/116] Building CXX object CMakeFiles/strata_core.dir/src/core/layout.cpp.o\\n[2/116] Building CXX object CMakeFiles/strata_core.dir/src/core/weights.cpp.o\\n[3/116] Linking CXX static library libstrata_core.a\\n[4/116] Building CXX object CMakeFiles/strata_kernels.dir/src/kernels/sycl/elementwise.cpp.o\\n[5/116] Building CXX object CMakeFiles/strata_kernels.dir/src/kernels/sycl/cvec.cpp.o\\n[6/116] Building CXX object CMakeFiles/strata_kernels.dir/src/kernels/sycl/router.cpp.o\\n[7/116] Building CXX object CMakeFiles/strata_kernels.dir/src/kernels/sycl/native_router.cpp.o\\n[8/116] Building CXX object CMakeFiles/strata_kernels.dir/src/kernels/sycl/gdn.cpp.o\\n[9/116] Building CXX object CMakeFiles/strata_kernels.dir/src/kernels/sycl/fused_gdn.cpp.o\\n[10/116] Building CXX object CMakeFiles/strata_kernels.dir/src/kernels/sycl/sampler.cpp.o\\n[11/116] Building CXX object CMakeFiles/strata_kernels.dir/src/kernels/sycl/sequence.cpp.o\\n[12/116] Building CXX object CMakeFiles/strata_kernels.dir/src/kernels/sycl/expert_routing.cpp.o\\n[13/116] Building CXX object CMakeFiles/strata_kernels.dir/src/kernels/sycl/quantize_act.cpp.o\\n[14/116] Building CXX object CMakeFiles/strata_kernels.dir/src/kernels/sycl/bf16_gemv.cpp.o\\n[15/116] Building CXX object CMakeFiles/strata_kernels.dir/src/kernels/sycl/native_q5_head.cpp.o\\n[16/116] Building CXX object CMakeFiles/strata_kernels.dir/src/kernels/sycl/native_mmvq.cpp.o\\n[17/116] Building CXX object CMakeFiles/strata_kernels.dir/src/kernels/sycl/native_q3_esimd.cpp.o\\n[18/116] Building CXX object CMakeFiles/strata_kernels.dir/src/kernels/sycl/native_q4_esimd.cpp.o\\n[19/116] Building CXX object CMakeFiles/strata_kernels.dir/src/kernels/sycl/native_q2_esimd.cpp.o\\n[20/116] Building CXX object CMakeFiles/strata_kernels.dir/src/kernels/sycl/native_iq4xs_esimd.cpp.o\\n[21/116] Building CXX object CMakeFiles/strata_kernels.dir/src/kernels/sycl/native_q2.cpp.o\\nFAILED: CMakeFiles/strata_kernels.dir/src/kernels/sycl/native_q2.cpp.o \\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++ -DSTRATA_ENABLE_SYCL=1 -DSTRATA_VERSION=\\\\\"0.1.38\\\\\" -I/home/yayoi/orca/workspaces/Strata/sycl/include -I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat -O3 -DNDEBUG -std=c++20 -ffp-contract=off -fsycl -Wall -Wextra -Werror -fno-fast-math -MD -MT CMakeFiles/strata_kernels.dir/src/kernels/sycl/native_q2.cpp.o -MF CMakeFiles/strata_kernels.dir/src/kernels/sycl/native_q2.cpp.o.d -o CMakeFiles/strata_kernels.dir/src/kernels/sycl/native_q2.cpp.o -c /home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_q2.cpp\\n/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_q2.cpp:137:50: error: no member named \\'ha\\' in namespace \\'sycl::ext::intel::math\\'\\n  137 |                 g, 1.f + sycl::ext::intel::math::ha::exp(-g)) *\\n      |                          ~~~~~~~~~~~~~~~~~~~~~~~~^\\n1 error generated.\\n[22/116] Building CXX object CMakeFiles/strata_kernels.dir/src/kernels/sycl/gr.cpp.o\\nninja: build stopped: subcommand failed.\\n'))"
+    },
+    "main-primary-native-engine-build-root-v5": {
+      "passed": false,
+      "complete": false,
+      "active": false,
+      "GPU_executed": false,
+      "model_executed": null,
+      "performance_qualified": null,
+      "physical_256K_qualified": null,
+      "HA_exp_parity_qualified": null,
+      "error": "AssertionError((None, '', '[1/95] Building CXX object CMakeFiles/strata_kernels.dir/src/kernels/sycl/native_q2.cpp.o\\n[2/95] Building CXX object CMakeFiles/strata_kernels.dir/src/kernels/sycl/fused_gr.cpp.o\\n[3/95] Building CXX object CMakeFiles/strata_kernels.dir/src/kernels/sycl/kv.cpp.o\\nFAILED: CMakeFiles/strata_kernels.dir/src/kernels/sycl/kv.cpp.o \\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++ -DSTRATA_ENABLE_SYCL=1 -DSTRATA_VERSION=\\\\\"0.1.38\\\\\" -I/home/yayoi/orca/workspaces/Strata/sycl/include -I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat -O3 -DNDEBUG -std=c++20 -ffp-contract=off -fsycl -Wall -Wextra -Werror -MD -MT CMakeFiles/strata_kernels.dir/src/kernels/sycl/kv.cpp.o -MF CMakeFiles/strata_kernels.dir/src/kernels/sycl/kv.cpp.o.d -o CMakeFiles/strata_kernels.dir/src/kernels/sycl/kv.cpp.o -c /home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/kv.cpp\\n/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/kv.cpp:214:5: error: add explicit braces to avoid dangling else [-Werror,-Wdangling-else]\\n  214 |     else validate_spans({{k, n * 2}, {v, n * 2}}, {{step, kStepCount * 4}});\\n      |     ^\\n1 error generated.\\n[4/95] Building CXX object CMakeFiles/strata_kernels.dir/src/kernels/sycl/rope.cpp.o\\nninja: build stopped: subcommand failed.\\n'))"
+    },
+    "main-primary-native-engine-build-root-v6": {
+      "passed": false,
+      "complete": false,
+      "active": false,
+      "GPU_executed": false,
+      "model_executed": null,
+      "performance_qualified": null,
+      "physical_256K_qualified": null,
+      "HA_exp_parity_qualified": null,
+      "error": "AssertionError((None, '', 'n explicitly marked deprecated here\\n 3220 |       event> parallel_for(nd_range<Dims> Range, PropertiesT Properties,\\n      |              ^\\n/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_mmq_xmx.cpp:309:21: error: \\'parallel_for<sycl::detail::auto_name, 2, sycl::ext::oneapi::experimental::properties<sycl::ext::oneapi::experimental::detail::properties_type_list<sycl::ext::oneapi::experimental::property_value<sycl::ext::intel::experimental::grf_size_key, std::integral_constant<unsigned int, 128>>>>, (lambda at /home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_mmq_xmx.cpp:313:7)>\\' is deprecated: To specify properties, use a launch configuration object of type launch_config or a kernel functor with a get(sycl::ext::oneapi::experimental::properties_tag) member function instead. [-Werror,-Wdeprecated-declarations]\\n  309 |   queue_for(stream).parallel_for(\\n      |                     ^\\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/queue.hpp:3213:3: note: \\'parallel_for<sycl::detail::auto_name, 2, sycl::ext::oneapi::experimental::properties<sycl::ext::oneapi::experimental::detail::properties_type_list<sycl::ext::oneapi::experimental::property_value<sycl::ext::intel::experimental::grf_size_key, std::integral_constant<unsigned int, 128>>>>, (lambda at /home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_mmq_xmx.cpp:313:7)>\\' has been explicitly marked deprecated here\\n 3213 |   __SYCL_DEPRECATED(\"To specify properties, use a launch configuration object \"\\n      |   ^\\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/detail/defines_elementary.hpp:66:38: note: expanded from macro \\'__SYCL_DEPRECATED\\'\\n   66 | #define __SYCL_DEPRECATED(message) [[deprecated(message)]]\\n      |                                      ^\\n/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_mmq_xmx.cpp:309:21: error: \\'parallel_for\\' is deprecated: To specify properties, use a launch configuration object of type launch_config or a kernel functor with a get(sycl::ext::oneapi::experimental::properties_tag) member function instead. [-Werror,-Wdeprecated-declarations]\\n  309 |   queue_for(stream).parallel_for(\\n      |                     ^\\n/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_mmq_xmx.cpp:398:5: note: in instantiation of function template specialization \\'strata::kernels::(anonymous namespace)::launch_grid<23, 8, true, true, false>\\' requested here\\n  398 |     launch_grid<Type, Tile, Exact, Packed, false>(p, stream, prefix);\\n      |     ^\\n/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_mmq_xmx.cpp:412:5: note: in instantiation of function template specialization \\'strata::kernels::(anonymous namespace)::launch<23, 8, true, true>\\' requested here\\n  412 |     TYPE(23);\\n      |     ^\\n/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_mmq_xmx.cpp:406:5: note: expanded from macro \\'TYPE\\'\\n  406 |     launch<T, Tile, Exact, Packed>(p, stream);                                 \\\\\\n      |     ^\\n/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_mmq_xmx.cpp:487:5: note: in instantiation of function template specialization \\'strata::kernels::(anonymous namespace)::dispatch<8, true, true>\\' requested here\\n  487 |     dispatch<8, true, true>(p, stream);\\n      |     ^\\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/queue.hpp:3220:14: note: \\'parallel_for\\' has been explicitly marked deprecated here\\n 3220 |       event> parallel_for(nd_range<Dims> Range, PropertiesT Properties,\\n      |              ^\\nfatal error: too many errors emitted, stopping now [-ferror-limit=]\\n20 errors generated.\\n[20/92] Building CXX object CMakeFiles/strata_kernels.dir/src/kernels/sycl/native_iq_esimd.cpp.o\\nninja: build stopped: subcommand failed.\\n'))"
+    },
+    "main-primary-native-engine-build-root-v7": {
+      "passed": false,
+      "complete": false,
+      "active": false,
+      "GPU_executed": false,
+      "model_executed": null,
+      "performance_qualified": null,
+      "physical_256K_qualified": null,
+      "HA_exp_parity_qualified": null,
+      "error": "AssertionError((None, '', 'ror,-Wunused-variable]\\n  854 | bool qsa_layer(const WeightTable& tables, const ModelGeometry& g, int64_t layer, int64_t pos, int32_t pos_base,               const QsaState& st, const QsaBuffers& b, const float* x, float* out, void* stream,               std::string& err, float* dump) {    using namespace strata::kernels;    const QsaShapes s = qsa_shapes(g);    const LayerView v(tables, layer);    const int64_t n_kv = pos + 1;    /* P7 audit: RoPE reads cos/sin row pos_base + pos, and the table holds max_cells rows. */    if ((int64_t) pos_base + pos >= st.max_cells || pos_base < 0) {        err = \"qsa_layer: position \" + std::to_string((long long) pos_base + pos) + \" is outside the RoPE table (\" + std::to_string((long long) st.max_cells) + \" rows)\";        return false;    }    const int64_t n_bid = n_kv / s.idx_block;    const int64_t width = qsa_selection_width(n_kv, s);    const int64_t cap = qsa_selection_width(kTopkMaxCells, s);\\n      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ^~~~~\\n/home/yayoi/orca/workspaces/Strata/sycl/src/core/layer.cpp:854:819: error: unused variable \\'width\\' [-Werror,-Wunused-variable]\\n  854 | bool qsa_layer(const WeightTable& tables, const ModelGeometry& g, int64_t layer, int64_t pos, int32_t pos_base,               const QsaState& st, const QsaBuffers& b, const float* x, float* out, void* stream,               std::string& err, float* dump) {    using namespace strata::kernels;    const QsaShapes s = qsa_shapes(g);    const LayerView v(tables, layer);    const int64_t n_kv = pos + 1;    /* P7 audit: RoPE reads cos/sin row pos_base + pos, and the table holds max_cells rows. */    if ((int64_t) pos_base + pos >= st.max_cells || pos_base < 0) {        err = \"qsa_layer: position \" + std::to_string((long long) pos_base + pos) + \" is outside the RoPE table (\" + std::to_string((long long) st.max_cells) + \" rows)\";        return false;    }    const int64_t n_bid = n_kv / s.idx_block;    const int64_t width = qsa_selection_width(n_kv, s);    const int64_t cap = qsa_selection_width(kTopkMaxCells, s);\\n      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ^~~~~\\n/home/yayoi/orca/workspaces/Strata/sycl/src/core/layer.cpp:1176:23: error: unused variable \\'hcd\\' [-Werror,-Wunused-variable]\\n 1176 |         const int64_t hcd = strata::kernels::NG_HC_DIM;\\n      |                       ^~~\\n3 errors generated.\\n[2/73] Building CXX object CMakeFiles/strata_kernels.dir/src/kernels/sycl/native_mmq_xmx.cpp.o\\nninja: build stopped: subcommand failed.\\n'))"
+    },
+    "main-primary-native-engine-build-root-v8": {
+      "passed": false,
+      "complete": false,
+      "active": false,
+      "GPU_executed": false,
+      "model_executed": null,
+      "performance_qualified": null,
+      "physical_256K_qualified": null,
+      "HA_exp_parity_qualified": null,
+      "error": "AssertionError((None, '', '_engine.dir/src/core/conversation_snapshot.cpp.o\\n[12/72] Building CXX object CMakeFiles/strata_engine.dir/src/core/conversation_memory.cpp.o\\n[13/72] Building CXX object CMakeFiles/strata_engine.dir/src/core/conversation_state.cpp.o\\n[14/72] Building CXX object CMakeFiles/strata_engine.dir/src/core/peer_experts.cpp.o\\nFAILED: CMakeFiles/strata_engine.dir/src/core/peer_experts.cpp.o \\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++ -DSTRATA_ENABLE_SYCL=1 -DSTRATA_NATIVE_EXPERTS=1 -DSTRATA_VERSION=\\\\\"0.1.38\\\\\" -I/home/yayoi/orca/workspaces/Strata/sycl/include -I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat -I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include -O3 -DNDEBUG -std=c++20 -fsycl -Wall -Wextra -Werror -MD -MT CMakeFiles/strata_engine.dir/src/core/peer_experts.cpp.o -MF CMakeFiles/strata_engine.dir/src/core/peer_experts.cpp.o.d -o CMakeFiles/strata_engine.dir/src/core/peer_experts.cpp.o -c /home/yayoi/orca/workspaces/Strata/sycl/src/core/peer_experts.cpp\\n/home/yayoi/orca/workspaces/Strata/sycl/src/core/peer_experts.cpp:81:28: error: unused parameter \\'device\\' [-Werror,-Wunused-parameter]\\n   81 | bool PeerExperts::open(int device, const std::vector<std::pair<int32_t, int32_t>>& ranked, const ExpertCache& primary,\\n      |                            ^\\n/home/yayoi/orca/workspaces/Strata/sycl/src/core/peer_experts.cpp:81:84: error: unused parameter \\'ranked\\' [-Werror,-Wunused-parameter]\\n   81 | bool PeerExperts::open(int device, const std::vector<std::pair<int32_t, int32_t>>& ranked, const ExpertCache& primary,\\n      |                                                                                    ^\\n/home/yayoi/orca/workspaces/Strata/sycl/src/core/peer_experts.cpp:81:111: error: unused parameter \\'primary\\' [-Werror,-Wunused-parameter]\\n   81 | bool PeerExperts::open(int device, const std::vector<std::pair<int32_t, int32_t>>& ranked, const ExpertCache& primary,\\n      |                                                                                                               ^\\n/home/yayoi/orca/workspaces/Strata/sycl/src/core/peer_experts.cpp:82:38: error: unused parameter \\'src\\' [-Werror,-Wunused-parameter]\\n   82 |                        ExpertSource& src, int64_t n_layers, int64_t n_expert, int reserve_mib, int64_t max_slots,\\n      |                                      ^\\n/home/yayoi/orca/workspaces/Strata/sycl/src/core/peer_experts.cpp:82:51: error: unused parameter \\'n_layers\\' [-Werror,-Wunused-parameter]\\n   82 |                        ExpertSource& src, int64_t n_layers, int64_t n_expert, int reserve_mib, int64_t max_slots,\\n      |                                                   ^\\n/home/yayoi/orca/workspaces/Strata/sycl/src/core/peer_experts.cpp:82:69: error: unused parameter \\'n_expert\\' [-Werror,-Wunused-parameter]\\n   82 |                        ExpertSource& src, int64_t n_layers, int64_t n_expert, int reserve_mib, int64_t max_slots,\\n      |                                                                     ^\\n/home/yayoi/orca/workspaces/Strata/sycl/src/core/peer_experts.cpp:82:83: error: unused parameter \\'reserve_mib\\' [-Werror,-Wunused-parameter]\\n   82 |                        ExpertSource& src, int64_t n_layers, int64_t n_expert, int reserve_mib, int64_t max_slots,\\n      |                                                                                   ^\\n/home/yayoi/orca/workspaces/Strata/sycl/src/core/peer_experts.cpp:82:104: error: unused parameter \\'max_slots\\' [-Werror,-Wunused-parameter]\\n   82 |                        ExpertSource& src, int64_t n_layers, int64_t n_expert, int reserve_mib, int64_t max_slots,\\n      |                                                                                                        ^\\n8 errors generated.\\n[15/72] Building CXX object CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o\\nninja: build stopped: subcommand failed.\\n'))"
+    },
+    "main-primary-native-engine-build-root-v9": {
+      "passed": false,
+      "complete": false,
+      "active": false,
+      "GPU_executed": false,
+      "model_executed": null,
+      "performance_qualified": null,
+      "physical_256K_qualified": null,
+      "HA_exp_parity_qualified": null,
+      "error": "AssertionError((None, '', '[1/58] Building CXX object CMakeFiles/strata_prefill.dir/src/prefill/sycl/gemm.cpp.o\\nFAILED: CMakeFiles/strata_prefill.dir/src/prefill/sycl/gemm.cpp.o \\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++ -DSTRATA_ENABLE_SYCL=1 -DSTRATA_NATIVE_EXPERTS=1 -DSTRATA_PREFILL_FUSED=1 -DSTRATA_PREFILL_MMQ=1 -DSTRATA_VERSION=\\\\\"0.1.38\\\\\" -I/home/yayoi/orca/workspaces/Strata/sycl/include -I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat -I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include -isystem /opt/intel/oneapi/mkl/2026.1/include -O3 -DNDEBUG -std=c++20 -fno-fast-math -ffp-contract=off -fsycl -Wall -Wextra -Werror -DMKL_ILP64 -MD -MT CMakeFiles/strata_prefill.dir/src/prefill/sycl/gemm.cpp.o -MF CMakeFiles/strata_prefill.dir/src/prefill/sycl/gemm.cpp.o.d -o CMakeFiles/strata_prefill.dir/src/prefill/sycl/gemm.cpp.o -c /home/yayoi/orca/workspaces/Strata/sycl/src/prefill/sycl/gemm.cpp\\nIn file included from /home/yayoi/orca/workspaces/Strata/sycl/src/prefill/sycl/gemm.cpp:1:\\n/home/yayoi/orca/workspaces/Strata/sycl/include/strata/prefill/gemm.hpp:54:11: error: private field \\'hipblaslt_state_\\' is not used [-Werror,-Wunused-private-field]\\n   54 |     void* hipblaslt_state_ = nullptr;\\n      |           ^\\n1 error generated.\\n[2/58] Building CXX object CMakeFiles/strata_engine.dir/src/core/peer_experts.cpp.o\\nninja: build stopped: subcommand failed.\\n'))"
+    },
+    "main-primary-native-engine-build-root-v10": {
+      "passed": false,
+      "complete": false,
+      "active": false,
+      "GPU_executed": false,
+      "model_executed": null,
+      "performance_qualified": null,
+      "physical_256K_qualified": null,
+      "HA_exp_parity_qualified": null,
+      "error": "AssertionError((None, '', '[1/58] Building CXX object CMakeFiles/strata_prefill.dir/src/prefill/sycl/gemm.cpp.o\\n[2/58] Building CXX object CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o\\n[3/58] Building CXX object CMakeFiles/strata_prefill.dir/src/prefill/sycl/postops.cpp.o\\n[4/58] Building CXX object CMakeFiles/strata_prefill.dir/src/prefill/sycl/blob.cpp.o\\n[5/58] Building CXX object CMakeFiles/strata_prefill.dir/src/prefill/sycl/moe_mmq.cpp.o\\nFAILED: CMakeFiles/strata_prefill.dir/src/prefill/sycl/moe_mmq.cpp.o \\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++ -DSTRATA_ENABLE_SYCL=1 -DSTRATA_NATIVE_EXPERTS=1 -DSTRATA_PREFILL_FUSED=1 -DSTRATA_PREFILL_MMQ=1 -DSTRATA_VERSION=\\\\\"0.1.38\\\\\" -I/home/yayoi/orca/workspaces/Strata/sycl/include -I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat -I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include -isystem /opt/intel/oneapi/mkl/2026.1/include -O3 -DNDEBUG -std=c++20 -fno-fast-math -ffp-contract=off -fsycl -Wall -Wextra -Werror -DMKL_ILP64 -MD -MT CMakeFiles/strata_prefill.dir/src/prefill/sycl/moe_mmq.cpp.o -MF CMakeFiles/strata_prefill.dir/src/prefill/sycl/moe_mmq.cpp.o.d -o CMakeFiles/strata_prefill.dir/src/prefill/sycl/moe_mmq.cpp.o -c /home/yayoi/orca/workspaces/Strata/sycl/src/prefill/sycl/moe_mmq.cpp\\nIn file included from /home/yayoi/orca/workspaces/Strata/sycl/src/prefill/sycl/moe_mmq.cpp:1:\\n/home/yayoi/orca/workspaces/Strata/sycl/include/strata/prefill/moe_mmq.hpp:70:11: error: private field \\'ctx_\\' is not used [-Werror,-Wunused-private-field]\\n   70 |     void* ctx_ = nullptr;\\n      |           ^\\n1 error generated.\\n[6/58] Building CXX object CMakeFiles/strata_prefill.dir/src/prefill/sycl/moe_fused.cpp.o\\nninja: build stopped: subcommand failed.\\n'))"
+    },
+    "main-primary-native-engine-build-root-v11": {
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "GPU_executed": false,
+      "model_executed": null,
+      "performance_qualified": null,
+      "physical_256K_qualified": null,
+      "HA_exp_parity_qualified": null,
+      "error": null
+    },
+    "main-primary-native-engine-build-root-v12": {
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "GPU_executed": false,
+      "model_executed": null,
+      "performance_qualified": null,
+      "physical_256K_qualified": null,
+      "HA_exp_parity_qualified": null,
+      "error": null
+    },
+    "main-primary-native-engine-build-root-v13": {
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "GPU_executed": false,
+      "model_executed": null,
+      "performance_qualified": null,
+      "physical_256K_qualified": null,
+      "HA_exp_parity_qualified": null,
+      "error": null
+    },
+    "main-primary-weight-index-host-root-v1": {
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "GPU_executed": false,
+      "model_executed": null,
+      "performance_qualified": null,
+      "physical_256K_qualified": null,
+      "HA_exp_parity_qualified": null,
+      "error": null
+    },
+    "main-primary-native-kernels-root-v1": {
+      "passed": false,
+      "complete": false,
+      "active": false,
+      "GPU_executed": true,
+      "model_executed": false,
+      "performance_qualified": false,
+      "physical_256K_qualified": false,
+      "HA_exp_parity_qualified": false,
+      "error": "AssertionError(('native-single-dispatch', None, 1, 'rProgramRelease\\n[2026-10-14 06:24:04.704] [thread-id: 123551085512960] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)\\n[2026-10-14 06:24:04.704] [thread-id: 123551085512960] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x1dde8f28)\\n[2026-10-14 06:24:04.704] [thread-id: 123551085512960] [trace] zeModuleDestroy(hModule)\\n[2026-10-14 06:24:04.705] [thread-id: 123551085512960] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x19b89d58)\\n   <--- urProgramRelease(.hProgram = 0x1830a070) -> UR_RESULT_SUCCESS;\\n   ---> urProgramRelease\\n[2026-10-14 06:24:04.705] [thread-id: 123551085512960] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)\\n[2026-10-14 06:24:04.705] [thread-id: 123551085512960] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x18023928)\\n[2026-10-14 06:24:04.705] [thread-id: 123551085512960] [trace] zeModuleDestroy(hModule)\\n[2026-10-14 06:24:04.705] [thread-id: 123551085512960] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x241f7d88)\\n   <--- urProgramRelease(.hProgram = 0x170571f0) -> UR_RESULT_SUCCESS;\\n   ---> urProgramRelease\\n[2026-10-14 06:24:04.705] [thread-id: 123551085512960] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)\\n[2026-10-14 06:24:04.705] [thread-id: 123551085512960] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x18215048)\\n[2026-10-14 06:24:04.705] [thread-id: 123551085512960] [trace] zeModuleDestroy(hModule)\\n[2026-10-14 06:24:04.705] [thread-id: 123551085512960] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x189cca98)\\n   <--- urProgramRelease(.hProgram = 0x22ed5550) -> UR_RESULT_SUCCESS;\\n   ---> urProgramRelease\\n[2026-10-14 06:24:04.705] [thread-id: 123551085512960] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)\\n[2026-10-14 06:24:04.705] [thread-id: 123551085512960] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x163dba28)\\n[2026-10-14 06:24:04.705] [thread-id: 123551085512960] [trace] zeModuleDestroy(hModule)\\n[2026-10-14 06:24:04.705] [thread-id: 123551085512960] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x18a534a8)\\n   <--- urProgramRelease(.hProgram = 0x1efede30) -> UR_RESULT_SUCCESS;\\n   ---> urProgramRelease\\n[2026-10-14 06:24:04.705] [thread-id: 123551085512960] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)\\n[2026-10-14 06:24:04.705] [thread-id: 123551085512960] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x164dfc88)\\n[2026-10-14 06:24:04.705] [thread-id: 123551085512960] [trace] zeModuleDestroy(hModule)\\n[2026-10-14 06:24:04.707] [thread-id: 123551085512960] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleDestroy(hModule=0x1639d658)\\n   <--- urProgramRelease(.hProgram = 0x16330190) -> UR_RESULT_SUCCESS;\\n   ---> urDeviceRelease\\n   <--- urDeviceRelease(.hDevice = 0x162f8e70) -> UR_RESULT_SUCCESS;\\n   ---> urAdapterRelease\\n   <--- urAdapterRelease(.hAdapter = 0x160b89d0) -> UR_RESULT_SUCCESS;\\n'))"
+    },
+    "main-primary-native-kernels-root-v2": {
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "GPU_executed": true,
+      "model_executed": false,
+      "performance_qualified": false,
+      "physical_256K_qualified": false,
+      "HA_exp_parity_qualified": false,
+      "error": null
+    },
+    "main-primary-native-kernels-root-v3": {
+      "passed": true,
+      "complete": true,
+      "active": false,
+      "GPU_executed": true,
+      "model_executed": false,
+      "performance_qualified": false,
+      "physical_256K_qualified": false,
+      "HA_exp_parity_qualified": false,
+      "error": null
+    }
+  },
+  "owner_sessions_all_closed": true,
+  "source_fingerprints_all_resolved": true,
+  "original_failed_status_preserved": true,
+  "current_primary_model_performance": "unmeasured",
+  "default_promotion_complete": false,
+  "new_Niko_revision_checked": false,
+  "no_GPU_reset_unbind_or_service_change": true
+}

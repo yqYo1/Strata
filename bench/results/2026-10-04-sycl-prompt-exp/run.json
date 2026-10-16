@@ -1,0 +1,74 @@
+{
+  "base_commit": "cd4d4d9",
+  "hardware": "Intel Arc B570 / Ryzen 5 5600X",
+  "status": "Not adopted. Barrier-reuse variant improves the synthetic attention benchmark; full-model performance has not been measured. Retained for possible combination with a key-load optimization.",
+  "method": "Same binary serial/parallel arms 0,1,1,0,0,1 with direct output enabled. One warmup plus three timed calls per arm; FP16, 512 queries with selected widths 8..4096. Nine samples per arm, all six outputs compared bitwise and guarded. No concurrent owned builds or other GPU work.",
+  "variants": {
+    "naive": {
+      "samples_ms": {
+        "0": [
+          48.430158,
+          48.47927,
+          48.469262,
+          48.523324,
+          48.465925,
+          48.429447,
+          48.516481,
+          48.49488,
+          48.449093
+        ],
+        "1": [
+          49.47306,
+          49.404772,
+          49.388811,
+          49.437564,
+          49.37758,
+          49.37201,
+          49.447222,
+          49.374575,
+          49.381528
+        ]
+      },
+      "medians_ms": {
+        "0": 48.469262,
+        "1": 49.388811
+      },
+      "ctest_aot": "Internal ctest changing into directory: /home/yayoi/orca/workspaces/Strata/sycl/build-sycl-aot\nTest project /home/yayoi/orca/workspaces/Strata/sycl/build-sycl-aot\n    Start 40: sycl_prompt_attention\n1/1 Test #40: sycl_prompt_attention ............   Passed    0.32 sec\n\n100% tests passed, 0 tests failed out of 1\n\nTotal Test time (real) =   0.33 sec\n",
+      "bitwise_and_guard_checks_pass": true,
+      "extra_barriers_per_chunk": 2
+    },
+    "reuse": {
+      "samples_ms": {
+        "0": [
+          48.39038,
+          48.458498,
+          48.444191,
+          48.516267,
+          48.455913,
+          48.501449,
+          48.499716,
+          48.499685,
+          48.429324
+        ],
+        "1": [
+          47.430313,
+          47.5987,
+          47.600092,
+          47.671326,
+          47.615281,
+          47.599722,
+          47.693569,
+          47.621202,
+          47.609581
+        ]
+      },
+      "medians_ms": {
+        "0": 48.458498,
+        "1": 47.609581
+      },
+      "ctest_aot": "Internal ctest changing into directory: /home/yayoi/orca/workspaces/Strata/sycl/build-sycl-aot\nTest project /home/yayoi/orca/workspaces/Strata/sycl/build-sycl-aot\n    Start 40: sycl_prompt_attention\n1/1 Test #40: sycl_prompt_attention ............   Passed    0.32 sec\n\n100% tests passed, 0 tests failed out of 1\n\nTotal Test time (real) =   0.32 sec\n",
+      "bitwise_and_guard_checks_pass": true,
+      "extra_barriers_per_chunk": 0
+    }
+  }
+}

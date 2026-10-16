@@ -8,9 +8,15 @@
 
 #include <cstddef>
 #include <cstdint>
+#if defined(STRATA_ENABLE_SYCL)
+#include <memory>
+#endif
 #include <string>
 
 namespace strata::prefill {
+#if defined(STRATA_ENABLE_SYCL)
+struct Native16BackendState;
+#endif
 
 class Gemm {
 public:
@@ -26,14 +32,33 @@ public:
                        std::string& err);
 
     /// Y[T, N] (fp32, row stride ldy) = X[T, K] (bf16, row-major) . W[N, K]^T (bf16, row-major).  `beta` = 1 adds.
-    /// Below sm_80 (no BF16 tensor cores): Volta converts both to FP16 and runs the FP16 tensor-core GEMM (Turing with
-    /// STRATA_BF16_TC=1), Pascal widens both to fp32 (cublasSgemm); see gemm.cu.
     void bf16(const uint16_t* X, const uint16_t* W, float* Y, int64_t T, int64_t N, int64_t K, int64_t ldy = 0,
               float beta = 0.0f);
 
     /// Y = X . W^T with both in FP16 (bits).
     void f16(const uint16_t* X, const uint16_t* W, float* Y, int64_t T, int64_t N, int64_t K, int64_t ldy = 0,
              float beta = 0.0f);
+
+#if defined(STRATA_ENABLE_SYCL)
+    /// SYCL native matrix units: X[T,K] . W[N,K]^T -> 16-bit Y[T,N].
+    /// Inputs/weights share the named format; output_bf16 chooses Y's format.
+    /// Accumulator and beta epilogue are FP32; one final RNE output rounding.
+    /// T > 0; N,K > 0 and multiples of 16; ldy=0 means N, otherwise ldy>=N.
+    /// All spans must be 2-byte aligned registered Strata device allocations in
+    /// this stream's context/device. Y must not overlap X or W. beta is finite.
+    /// No implicit scratch, fallback, clamp, or allocation. Unsupported devices
+    /// and geometry throw before submission. Caller retains buffers until the
+    /// in-order stream completes; null stream follows synchronous finish().
+    /// Optional backend=vllm retains these tensor/storage meanings, but requires
+    /// beta=0, N%64=K%32=0, 64-byte bases, ldy%8=0 and a live full Y[T,ldy]
+    /// rectangle. See docs/SYCL_VLLM_XE2_NATIVE16.md for all limits. No fallback.
+    void f16_out16(const uint16_t* X, const uint16_t* W, uint16_t* Y,
+                   int64_t T, int64_t N, int64_t K, bool output_bf16 = false,
+                   int64_t ldy = 0, float beta = 0.0f);
+    void bf16_out16(const uint16_t* X, const uint16_t* W, uint16_t* Y,
+                    int64_t T, int64_t N, int64_t K, bool output_bf16 = false,
+                    int64_t ldy = 0, float beta = 0.0f);
+#endif
 
     /// W given as native GGUF blocks of `ggml_type`, dequantized to FP16 in the scratch, X in FP16.
     void native(const uint16_t* X, int ggml_type, const void* W_blocks, float* Y, int64_t T, int64_t N, int64_t K,
@@ -47,18 +72,22 @@ public:
     void* stream() const { return stream_; }
 
 private:
+#if defined(STRATA_ENABLE_SYCL)
+    // Bit 0: queried; bits 1/2: native half/BF16 with FP32 C and D;
+    // bit 3: FP16 scalar output. Calls on a single Gemm require serialized
+    // host ownership, as do init/rebind.
+    uint8_t out16_support_ = 0;
+    // Populated only for vllm. Retains the original Runtime; borrows stream_.
+    // shared_ptr supports the incomplete state type at this public ABI boundary.
+    std::shared_ptr<Native16BackendState> out16_backend_;
+#endif
     void* handle_ = nullptr;
     void* stream_ = nullptr;
     uint16_t* scratch_ = nullptr;
     int64_t scratch_elems_ = 0;
     void* workspace_ = nullptr;
     bool external_ = false;
-    void* hipblaslt_state_ = nullptr;
-    // below sm_80: FP16 (Pascal: fp32) copies of a BF16 product's weight and activation slice (Gemm::bf16)
-    uint16_t* tc_w_ = nullptr;
-    int64_t tc_w_elems_ = 0;
-    uint16_t* tc_x_ = nullptr;
-    int64_t tc_x_elems_ = 0;
+    [[maybe_unused]] void* hipblaslt_state_ = nullptr;
 };
 
 

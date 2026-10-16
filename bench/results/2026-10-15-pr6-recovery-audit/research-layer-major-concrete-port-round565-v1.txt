@@ -1,0 +1,81 @@
+# Layer-major prefill: concrete minimum port to current root SYCL — round 565
+
+Date: 2026-10-15 JST. Read-only source investigation on `feature/sycl`, HEAD `61b3b148871f9cccc09b6e15763982ee13b1fc0c`. This report is the only file written. No code, build, test, branch, commit, process, GPU, service, or environment change was made. Existing worktree modifications were present in `check_vtune_visibility.py`, `check_unitrace_gemm.py`, `unitrace-gemm-collection-v1.json`, and `vtune-visibility-v2.json`; none was touched. The excluded HF-token record was not read.
+
+## Conclusion and smallest plausible diff
+
+The least invasive candidate is an opt-in orchestration wrapper around the existing `Prefill::run`, not a second copy of its attention, expert, PLE, or GDN body. `run` already accepts a layer interval (`stage_lb_`/`stage_le_`), an external per-chunk residual input (`hand_in_`), and a per-chunk output callback (`on_chunk`). A wrapper can call it once per model layer, set the prior pass's full-prompt residual store as `hand_in_`, and use an internal callback to copy each completed chunk back into that same store. Existing code therefore supplies the per-layer chunk computation and its current streamed-KV staging path. This is a source-derived design, not an implemented or validated feature.
+
+The minimum code boundary should be a new private `run_layer_major(...)` plus a narrowly scoped dispatch in `run(...)` that defaults off. Keep the current body and default branch intact. Before dispatch, reject unsupported peers, chained/split stages, hand-off input, unsupported KV modes/formats, and geometry/capacity combinations until separately supported. The wrapper needs a single checked host residual buffer for `n * D` floats and a per-call owner/restore guard for `stage_lb_`, `stage_le_`, `hand_in_`, `on_chunk`, `on_stage_chunk`, and the initial/final `ple_prev`. `D` is 10,240 (`N=2560`, `HC=4`, `prefill.cpp:91`). At `n=262,144`, the one in-place residual store is exactly 10,737,418,240 bytes (10 GiB), before allocator overhead. Check multiplication and admission before any GPU work. A host buffer of this size is a requirement of this wrapper design, not evidence that allocation is practical on every machine. Do not add it to `bytes_needed()` or normal default allocation unless the opt-in is selected.
+
+Concrete pass protocol:
+
+1. Snapshot the caller callbacks and `ss.ple_prev`; reject if an existing stage chain or `hand_in_` makes the per-layer override ambiguous. Allocate the `n*D` residual owner before any pass. Keep the original settings and owner alive until every submitted operation is proven complete.
+2. For `l=0..n_layers-1`, set `[stage_lb_,stage_le_)=[l,l+1]`. For `l==0`, leave `hand_in_` null so the current embedding/vision path initializes `R`; for later layers point `hand_in_` at the residual store. Install an internal `on_chunk` that copies the synchronized device rows `R` to `[c0,c0+T)` in the store. Since `run` exposes `T` and absolute `pos0`, derive the store offset from `pos0 - request_pos0`, validate it against `n`, and use checked byte arithmetic. `run` waits on its compute stream before calling `on_chunk` when a callback is present (`prefill.cpp:2974-2983`); preserve this boundary and do not overwrite the source rows before their H2D read completes.
+3. Restore the initial `ple_prev` before every layer pass. Current `run` advances its local `prev` across all prompt tokens even on passes that do not include layer 1 (`prefill.cpp:1550,1733,2988-2989`). Only the layer-1 pass should leave the final token window in `SessionState`; it also alone runs PLE because `ple_on` is restricted to a range including layer 1 (`:1605`, body `:1932-1984`). PLE convolution history itself remains session-owned and must advance once, in token order, in that pass.
+4. Suppress user `on_chunk` and `on_stage_chunk` on intermediate layers. Forward the existing MTP/draft callback exactly once per chunk, and forward checkpoint readiness only during the final-layer pass. Intermediate residuals are layer inputs, not completed-model checkpoints. Keep the existing callback order and chunk order.
+5. On success, restore wrapper fields and leave `ple_prev` at the final prompt tokens. On cancellation, callback failure, allocation failure, queue exception, or drain failure, report failure and do not expose checkpoint-ready. Retain the residual owner, host K/V, stage storage, expert-source leases, and callback captures until compute/copy queues and stager readers have completed successfully; if completion cannot be established, fail the request without freeing/reusing those owners. `Prefill::release` and the per-chunk `StagerDone` currently use unchecked synchronization/finish (`prefill.cpp:549-565,1822-1825`), so a wrapper destructor alone is not a safe retirement proof. The old local `Restore` pattern is explicitly insufficient on sticky wait errors (R559/main review); port its state-restoration intent, not its unchecked retirement semantics.
+
+## Layer order and persistent state
+
+The model geometry sets QSA on `l % qsa_interval == qsa_interval - 1`, with interval 4 (`include/strata/core/layout.hpp:30,61-65`). Thus the 48 passes are:
+
+| Layers | Type | State that must persist across this pass's ascending chunks |
+|---|---|---|
+| 0–2 | GDN | each layer's distinct recurrence and convolution slice |
+| 3 | QSA | that layer's host K/V, page table/residency map, indexer tail/dead/pooled/spare and block position |
+| 4–6 | GDN | distinct per-layer recurrence and convolution slices |
+| 7 | QSA | same QSA state categories, owned by layer 7 |
+| 8–10 | GDN | distinct per-layer recurrence and convolution slices |
+| 11 | QSA | layer 11 QSA state |
+| 12–14 | GDN | distinct per-layer recurrence and convolution slices |
+| 15 | QSA | layer 15 QSA state |
+| 16–18 | GDN | distinct per-layer recurrence and convolution slices |
+| 19 | QSA | layer 19 QSA state |
+| 20–22 | GDN | distinct per-layer recurrence and convolution slices |
+| 23 | QSA | layer 23 QSA state |
+| 24–26 | GDN | distinct per-layer recurrence and convolution slices |
+| 27 | QSA | layer 27 QSA state |
+| 28–30 | GDN | distinct per-layer recurrence and convolution slices |
+| 31 | QSA | layer 31 QSA state |
+| 32–34 | GDN | distinct per-layer recurrence and convolution slices |
+| 35 | QSA | layer 35 QSA state |
+| 36–38 | GDN | distinct per-layer recurrence and convolution slices |
+| 39 | QSA | layer 39 QSA state |
+| 40–42 | GDN | distinct per-layer recurrence and convolution slices |
+| 43 | QSA | layer 43 QSA state |
+| 44–46 | GDN | distinct per-layer recurrence and convolution slices |
+| 47 | QSA | layer 47 QSA state |
+
+`session_zero` is a sequence-boundary operation: it clears all GDN slices, QSA states/maps, PLE history and token history (`src/core/session.cpp:139-163`). Do not call it at a layer boundary or between chunks. `session_init` owns one QSA state per layer and separately allocated per-layer host K/V for streamed states (`:101-118`; QSA allocation and page count in `src/core/layer.cpp:555-663`). Current `run` initializes local QSA/GDN ordinals by counting layers below `LB` (`prefill.cpp:1739-1740`), and selects each layer's own state in its body (`:2009+`). This makes a single-layer interval compatible at the source level; state ordinal/layer-split combinations still need an actual build/correctness gate.
+
+The dependency order is layer-major, then increasing chunk within that layer. Current chunk-major, then increasing layer within each chunk, is also a valid dependency order (Main R562 correction). Both schedules retain each layer's own causal history. Layer-major requires the inter-layer residual for every prompt row; chunk-major needs only the current chunk's residual.
+
+## Current streamed-KV capacity and order
+
+For the stated maximum logical context 262,144, page size 4 yields 65,536 logical pages. With 32,768 configured resident cells, mode 1 has 8,192 device slots; these are a residency cache, not the prompt-history capacity (`src/core/layer.cpp:501-518`). Each QSA layer's pinned host K/V allocation and identity page table cover all 65,536 pages (`:633-663`). Current `take_stage` sizes a distinct prefill staging pool by `q0.n_pages` and the full KV row width, not by `n_slots` (`src/prefill/prefill.cpp:503-538`). It is therefore a 65,536-page capacity for one current QSA layer. For F16 KV this stage is 512 MiB per format copy pair (512 MiB total K+V); host KV is separately per QSA layer. Other formats have different bytes; no physical allocation or memory headroom is claimed here.
+
+For each QSA layer/chunk, `run` stages pages `[0, ceil(p0/page_size))` from that layer's authoritative host K/V, then appends current K/V into host authority and the prompt stage pool (and mapped resident slots), then builds/selects/indexes/attends (`prefill.cpp:2050-2079,2080+`). The actual SYCL resolver is `src/kernels/sycl/kv_stream.cpp:264-277`; it validates format/ranges and queues the per-array copies. The API states that `kv_stage_from_host` is the fully resident identity-layout prompt stage (`include/strata/kernels/kv_stream.hpp:80-88`). Keep this existing path in every one-layer call. Do not replace `m.stage` with a 32,768-cell ring, reset a layer's residency map between chunks, or skip ascending chunks. R562 already established these facts; the capacity figures here make their implementation consequence explicit.
+
+## Ownership and callback edges to preserve
+
+- `m.R` is only a chunk buffer, carved at `T*D` floats; it cannot hold all layer outputs (`prefill.cpp:828-840`). `bytes_needed` counts chunk scratch/stage only (`:1230-1264`), so the new `n*D` host store needs separate opt-in admission/ownership and must not silently change the existing scratch budget.
+- `hand_in_` already means a full prompt-relative host residual source: the chunk path reads `hand_in_ + c0*D` into `m.R` (`:1642-1650`). For layer-major, each pass's `on_chunk` can write the output back to the same row range only after the current chunk's input read and compute have retired. The current callback path synchronizes before calling it (`:2974-2983`). Keep this synchronous per-chunk handoff until a separately proven async lease is designed.
+- Expert staging is prepared for the selected layer range, and `StagerDone` is per chunk (`:1741-1825`). Restricting the range to one layer changes this to one layer's expert stream per pass; the stage slot/source owner must remain leased until its copy and compute readers complete. It does not justify importing the old engine's expert cache policy.
+- MTP's persistent drafter/session/graph storage is outside this residual owner. Only pass the final-layer result to `on_chunk`; the intermediate pass's synchronized result is only copied into the residual store. Preserve final callback exactly-once semantics if it fails.
+- On any error after a pass has mutated GDN/QSA/PLE state, this request cannot continue as if the sequence were whole. Do not mark progress ready. The outer conversation/session restore or discard policy must own recovery; this wrapper cannot roll back session tensors by restoring only C++ pointers.
+
+## First bounded validation that would justify continuing
+
+No validation was run in this round. A minimal first gate after implementation should be one opt-in, model-backed parity case with layer-major versus the unchanged chunk-major baseline on the same SYCL device: at least 4 layers (GDN 0–2 plus QSA 3), two chunks whose boundary splits a four-cell page, PLE enabled, mode-1 KV staging, and a recorder on `on_chunk`/`on_stage_chunk`. Compare final residual/token outputs and per-layer GDN/QSA/PLE state fingerprints; assert one ordered MTP callback per chunk and no intermediate checkpoint-ready. This first case does not qualify >resident-capacity restoration or 256K. Follow it with a streamed prompt longer than the 20,480-cell minimum residency (or configured resident size), fault/cancellation retirement checks, then a full logical-boundary case that appends position 262,143 and rejects 262,144. Keep those as separate gates; do not infer speed from correctness. CPU-only helpers for checked `n*D`/offset arithmetic and layer-type schedule can precede device work but cannot prove kernel or owner behavior.
+
+## Evidence and limits
+
+Read `research-index.json`, R562 and Main R561–562/R563–564 reviews, plus R559's original safety report. R559 already identified the old route's `ple_prev` snapshot/restore, callback deferral and unchecked `Restore` drains; this report translates those into a current-root wrapper boundary. R562/Main correction establishes that both chunk-major and layer-major can be valid dependency orders. Current-root source proves the necessary interval/input/callback hooks and SYCL staged-KV calls, but does not prove compilation, allocation admission, asynchronous failure retirement, numerical equivalence, supported setting combinations, or performance. No measurement value was generated or inferred.
+
+Source hashes at this boundary:
+- `src/prefill/prefill.cpp`: `628b1503c0564771a043b6d24ebf4264f2a27aece0652c03d9a252a1f4c427d8`
+- `src/kernels/sycl/kv_stream.cpp`: `d935fcc1ba07f5e3982cd255e3ad53e0f375ec16425a92b049696f142575e76c`
+- `.tools/pre-xe-1eb-source-v1/sycl/src/prefill/prefill.cpp`: `f3c9bb38b46cdc111e9e663cc606d655f60f07c05873aff5499d51895e886c77`
+
+Disposition: **small orchestration diff is source-plausible; residual ownership and checked failure retirement are the gating design work.** The most useful next change is the opt-in wrapper that reuses `Prefill::run` per single-layer range, with a checked in-place host residual owner and callback/state restoration guard, while preserving default-route behavior.

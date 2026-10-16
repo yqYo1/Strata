@@ -1,0 +1,791 @@
+diff --git a/cmake/sycl_backend.cmake b/cmake/sycl_backend.cmake
+--- a/cmake/sycl_backend.cmake
++++ b/cmake/sycl_backend.cmake
+@@ -94,6 +94,10 @@
+ target_compile_options(strata_kernels PRIVATE -ffp-contract=off)
+ 
+ # Manual component targets: no automatic GPU execution in CTest.
++add_executable(sycl_prompt_native16_test EXCLUDE_FROM_ALL tests/sycl/prompt_native16.cpp)
++target_link_libraries(sycl_prompt_native16_test PRIVATE strata_kernels)
++target_compile_features(sycl_prompt_native16_test PRIVATE cxx_std_20)
++target_compile_options(sycl_prompt_native16_test PRIVATE -fno-fast-math -ffp-contract=off)
+ add_executable(kv_copy_groups_host_fixture EXCLUDE_FROM_ALL tools/sycl/kv_copy_groups_host.cpp)
+ target_compile_features(kv_copy_groups_host_fixture PRIVATE cxx_std_17)
+ target_include_directories(kv_copy_groups_host_fixture PRIVATE ${PROJECT_SOURCE_DIR}/include)
+diff --git a/include/strata/kernels/qsa_prompt_attn.hpp b/include/strata/kernels/qsa_prompt_attn.hpp
+--- a/include/strata/kernels/qsa_prompt_attn.hpp
++++ b/include/strata/kernels/qsa_prompt_attn.hpp
+@@ -32,4 +32,34 @@
+ bool qsa_prompt_attn_batch(const float* q, const QsaAttnPools& pools, const int32_t* ids, const int32_t* steps,
+                            int64_t cap, const QsaShapes& s, float* attn, int64_t n_q, void* stream);
+ 
++#if defined(STRATA_ENABLE_SYCL)
++/// Bounds of the allocations behind pools; both counts are positive, and the
++/// caller must provide the actual accessible extents (not the selected width).
++/// Paged pools hold [physical_pages, 2, page_size, 256] INT8 codes and
++/// [physical_pages, 2, page_size, 4] FP16 scales. Table has logical_pages entries.
++struct QsaPromptBf16Bounds {
++    int64_t logical_pages = 0;
++    int64_t physical_pages = 0;
++};
++
++/// Explicit native-16 candidate, independent of all prompt environment flags.
++/// q/attn are BF16 bit patterns [n_q,24,256]; INT8 K/V and FP16 scales only.
++/// BF16 -> one scaled FP16 Q part, one FP16 probability part, FP32 scores,
++/// normalizers and matrix accumulators, then BF16 round-to-nearest-even output.
++/// Same selected IDs/width semantics as the FP32 prompt entry: masking is the
++/// selector's responsibility. Negative/out-of-bounds pages/IDs are missing.
++/// Invalid widths produce zero; cap <= 0 and unsupported geometry/mode/device
++/// return false without submission. n_q==0 is a successful no-op.
++/// Invalid/null/unregistered/overlapping spans throw before submission. Caller
++/// owns truthful extents and allocation lifetimes through stream completion.
++/// Nonfinite Q or live KV scales produce BF16 quiet NaN when rows contribute;
++/// no selected/resident rows produce zero, including for nonfinite Q.
++/// No global FP32 query/output or scratch; no default route is changed.
++bool qsa_prompt_attn_bf16_batch(const uint16_t* q, const QsaAttnPools& pools,
++                                const int32_t* ids, const int32_t* steps,
++                                int64_t cap, const QsaShapes& s, uint16_t* attn,
++                                int64_t n_q, const QsaPromptBf16Bounds& bounds,
++                                void* stream);
++#endif
++
+ }  // namespace strata::kernels
+diff --git a/src/kernels/sycl/prompt_attention.cpp b/src/kernels/sycl/prompt_attention.cpp
+--- a/src/kernels/sycl/prompt_attention.cpp
++++ b/src/kernels/sycl/prompt_attention.cpp
+@@ -449,3 +449,312 @@
+   return true;
+ }
+ } // namespace strata::kernels
++
++// Native BF16 I/O candidate. Own MIT implementation built on this file's
++// existing head12+4 / WG128 Mapping0 algorithm; FP32 entry above is unchanged.
++namespace strata::kernels {
++namespace {
++float prompt_bf16_float(uint16_t bits) {
++  return sycl::bit_cast<float>(uint32_t(bits) << 16);
++}
++uint16_t prompt_bf16_bits(float value) {
++  const uint32_t bits = sycl::bit_cast<uint32_t>(value);
++  if ((bits & 0x7fffffffU) > 0x7f800000U)
++    return uint16_t((bits >> 16) | 0x0040U); // Quiet NaN; retain sign/payload.
++  return uint16_t((bits + 0x7fffU + ((bits >> 16) & 1U)) >> 16);
++}
++// Exact declared local storage: Q 8192, KV 16384, P 4096, scores 2048,
++// K/V scales 1024, max/sum/alpha 192, factors 16, rows 256, shifts/bad 128.
++constexpr size_t BF16_SLM = 32336;
++static_assert(BF16_SLM == (16 * HD + CH * HD + 4 * 16 * CH) * sizeof(sycl::half)
++    + (16 * CH + 2 * CH * 4 + 3 * 16 + 4) * sizeof(float)
++    + CH * sizeof(int64_t) + 2 * 16 * sizeof(int));
++bool prompt_bf16_matrix_available(const sycl::device &device) {
++  if (!device.is_gpu() || !device.has(sycl::aspect::fp16) ||
++      !device.has(sycl::aspect::ext_intel_matrix) ||
++      device.get_info<sycl::info::device::local_mem_size>() < BF16_SLM + 4096 ||
++      device.get_info<sycl::info::device::max_work_group_size>() < WG ||
++      device.get_info<sycl::info::device::max_work_item_sizes<1>>()[0] < WG)
++    return false;
++  const auto sizes = device.get_info<sycl::info::device::sub_group_sizes>();
++  if (std::find(sizes.begin(), sizes.end(), 16) == sizes.end())
++    return false;
++  try {
++    for (const auto &c : device.get_info<sycl::ext::oneapi::experimental::info::
++                                             device::matrix_combinations>())
++      if (c.atype == mx::matrix_type::fp16 &&
++          c.btype == mx::matrix_type::fp16 &&
++          c.ctype == mx::matrix_type::fp32 &&
++          c.dtype == mx::matrix_type::fp32 &&
++          (c.msize == 8 || (c.msize == 0 && c.max_msize >= 8)) &&
++          (c.nsize == 16 || (c.nsize == 0 && c.max_nsize >= 16)) &&
++          (c.ksize == 16 || (c.ksize == 0 && c.max_ksize >= 16)))
++        return true;
++  } catch (const sycl::exception &) {
++    return false;
++  }
++  return false;
++}
++void prompt_bf16_registered(sycl::queue &queue, Span span) {
++  // SYCL supplies membership/device queries, not an allocation-size query.
++  // Counts come from the caller's declared spans; both endpoints must be USM
++  // in this context. This does not independently certify a caller's extents.
++  const auto context = queue.get_context();
++  const auto begin = reinterpret_cast<uintptr_t>(span.pointer);
++  if (!span.bytes || span.bytes > UINTPTR_MAX - begin)
++    throw std::invalid_argument("native16 prompt invalid registered span");
++  const void *last = reinterpret_cast<const void *>(begin + span.bytes - 1);
++  for (const void *ptr : {span.pointer, last}) {
++    const auto kind = sycl::get_pointer_type(ptr, context);
++    if (kind == sycl::usm::alloc::unknown ||
++        (kind != sycl::usm::alloc::host &&
++         sycl::get_pointer_device(ptr, context) != queue.get_device()))
++      throw std::invalid_argument("native16 prompt requires queue-accessible USM spans");
++    if (kind == sycl::usm::alloc::host &&
++        !queue.get_device().has(sycl::aspect::usm_host_allocations))
++      throw std::invalid_argument("native16 prompt host USM unsupported");
++  }
++}
++void launch_prompt_bf16(const uint16_t *query, QsaAttnPools pools,
++                       const int32_t *ids, const int32_t *steps, int64_t cap,
++                       QsaShapes shapes, uint16_t *output, int64_t queries,
++                       QsaPromptBf16Bounds bounds, void *stream) {
++  constexpr int KG = 4, VG = 4;
++  auto event = queue_for(stream).submit([&](sycl::handler &h) {
++    sycl::local_accessor<sycl::half, 1> qtile(16 * HD, h), kv(CH * HD, h),
++        probability(VG * 16 * CH, h);
++    sycl::local_accessor<float, 1> scores(16 * CH, h), ks(CH * KG, h),
++        vs(CH * VG, h), maxima(16, h), sums(16, h), alpha(16, h), factors(VG, h);
++    sycl::local_accessor<int64_t, 1> rows(CH, h);
++    sycl::local_accessor<int, 1> shifts(16, h), query_bad(16, h);
++    h.parallel_for(
++        sycl::nd_range<1>(size_t(queries) * shapes.n_head_kv * WG, WG),
++        [=](sycl::nd_item<1> it) [[sycl::reqd_sub_group_size(16)]] {
++          const size_t index = it.get_group_linear_id(),
++                       batch = index / shapes.n_head_kv,
++                       kvhead = index % shapes.n_head_kv;
++          const int tid = it.get_local_linear_id();
++          auto sg = it.get_sub_group();
++          const int subgroup = sg.get_group_linear_id(), lane = sg.get_local_linear_id();
++          const int hb = subgroup / 4, db = subgroup % 4;
++          auto kvp = kv.template get_multi_ptr<sycl::access::decorated::no>();
++          const uint16_t *q = query + (batch * shapes.n_head + kvhead * HEADS) * HD;
++          // Per-head power-of-two scaling respects BF16's wide exponent range.
++          // Only scalar register values widen; no global FP32 tensor exists.
++          for (int head = subgroup; head < 16; head += 8) {
++            float maximum = 0.f;
++            int bad = 0;
++            if (head < HEADS)
++              for (int d = lane; d < HD; d += 16) {
++                const float value = prompt_bf16_float(q[head * HD + d]);
++                if (sycl::isfinite(value))
++                  maximum = sycl::fmax(maximum, sycl::fabs(value));
++                else
++                  bad = 1;
++              }
++            maximum = sycl::reduce_over_group(sg, maximum, sycl::maximum<float>());
++            bad = sycl::reduce_over_group(sg, bad, sycl::maximum<int>());
++            if (lane == 0) {
++              int exponent = 0;
++              if (maximum > 0) (void)sycl::frexp(maximum, &exponent);
++              shifts[head] = maximum > 0 ? sycl::clamp(14 - exponent, -126, 126) : 0;
++              query_bad[head] = bad;
++              maxima[head] = -INFINITY;
++              sums[head] = 0.f;
++            }
++          }
++          it.barrier(sycl::access::fence_space::local_space);
++          for (int i = tid; i < 16 * HD; i += WG) {
++            float value = i < HEADS * HD ? prompt_bf16_float(q[i]) : 0.f;
++            if (!sycl::isfinite(value)) value = 0.f;
++            qtile[i] = sycl::half(sycl::ldexp(value, shifts[i / HD]));
++          }
++          using Acc = mx::joint_matrix<sycl::sub_group, float,
++                                       mx::use::accumulator, 8, 16>;
++          using A = mx::joint_matrix<sycl::sub_group, sycl::half,
++                                     mx::use::a, 8, 16, mx::layout::row_major>;
++          using B = mx::joint_matrix<sycl::sub_group, sycl::half,
++                                     mx::use::b, 16, 16, mx::layout::row_major>;
++          Acc acc[4];
++          for (int j = 0; j < 4; ++j) mx::joint_matrix_fill(sg, acc[j], 0.f);
++          const int count0 = steps[batch * kStepCount + kStepWidth];
++          const int count = count0 >= 0 && count0 <= cap ? count0 : 0;
++          int scales_bad = 0; // Uniform work-group value after each reduction.
++          it.barrier(sycl::access::fence_space::local_space);
++          for (int64_t c0 = 0; c0 < count; c0 += CH) {
++            if (tid < CH) {
++              int64_t row = -1;
++              if (c0 + tid < count) {
++                const int cell = ids[batch * cap + c0 + tid];
++                const int64_t logical = cell < 0 ? -1 : cell / shapes.page_size;
++                const int page = logical >= 0 && logical < bounds.logical_pages
++                                     ? pools.page_table[logical] : -1;
++                if (page >= 0 && page < bounds.physical_pages)
++                  row = (int64_t(page) * shapes.n_head_kv + kvhead) *
++                            shapes.page_size + cell % shapes.page_size;
++              }
++              rows[tid] = row;
++            }
++            for (int i = tid; i < 16 * CH; i += WG) scores[i] = 0.f;
++            it.barrier(sycl::access::fence_space::local_space);
++            for (int i = tid; i < HD * CH; i += WG) {
++              const int d = i / CH, c = i % CH;
++              kvp[i] = rows[c] >= 0 ? sycl::half(pools.k_q[rows[c] * HD + d])
++                                    : sycl::half(0.f);
++            }
++            int bad = 0;
++            for (int i = tid; i < CH * KG; i += WG) {
++              const int64_t row = rows[i / KG];
++              float k = row >= 0 ? scale<1, false>(pools, row, i % KG) : 0.f;
++              float v = row >= 0 ? scale<1, true>(pools, row, i % VG) : 0.f;
++              if (!sycl::isfinite(k)) { bad = 1; k = 0.f; }
++              if (!sycl::isfinite(v)) { bad = 1; v = 0.f; }
++              ks[i] = k; vs[i] = v;
++            }
++            scales_bad |= sycl::reduce_over_group(it.get_group(), bad, sycl::maximum<int>());
++            it.barrier(sycl::access::fence_space::local_space);
++            if (subgroup < 4) {
++              const int head = (subgroup / 2) * 8, cell = (subgroup % 2) * 16;
++              for (int g = 0; g < KG; ++g) {
++                Acc part; A a; B b;
++                mx::joint_matrix_fill(sg, part, 0.f);
++                for (int k = g * 64; k < (g + 1) * 64; k += 16) {
++                  mx::joint_matrix_load(sg, b, kvp + k * CH + cell, CH);
++                  mx::joint_matrix_load(sg, a,
++                      qtile.template get_multi_ptr<sycl::access::decorated::no>() +
++                          head * HD + k, HD);
++                  mx::joint_matrix_mad(sg, part, a, b, part);
++                }
++                mi::joint_matrix_apply(sg, part, [=](float &value, size_t r, size_t c) {
++                  // Apply ldexp last: qdown need not itself be representable.
++                  scores[(head + r) * CH + cell + c] += sycl::ldexp(
++                      value * (ks[(cell + c) * KG + g] * .0625f), -shifts[head + r]);
++                });
++              }
++            }
++            it.barrier(sycl::access::fence_space::local_space);
++            if (tid < 16) {
++              const float old_max = maxima[tid];
++              float m = old_max;
++              for (int c = 0; c < CH; ++c)
++                if (rows[c] >= 0) {
++                  const float score = scores[tid * CH + c];
++                  if (sycl::isnan(score)) query_bad[tid] = 1;
++                  m = sycl::fmax(m, score);
++                }
++              // Equal infinite maxima share mass; missing chunks add no mass.
++              // No exp(inf-inf) or exp(-inf-(-inf)) is evaluated.
++              const float a = sums[tid] > 0.f
++                  ? (old_max == m ? 1.f : (m == INFINITY ? 0.f : sycl::exp(old_max - m)))
++                  : 0.f;
++              float total = 0.f;
++              for (int c = 0; c < CH; ++c) {
++                const float score = scores[tid * CH + c];
++                const float p = rows[c] < 0 ? 0.f
++                    : (sycl::isinf(m) ? (score == m ? 1.f : 0.f) : sycl::exp(score - m));
++                scores[tid * CH + c] = p;
++                total += p;
++              }
++              maxima[tid] = m;
++              sums[tid] = sycl::fma(sums[tid], a, total);
++              alpha[tid] = a;
++            }
++            // The same bounded tile now holds V codes in cell-major order.
++            for (int i = tid; i < CH * HD; i += WG) {
++              const int c = i / HD, d = i % HD;
++              kvp[i] = rows[c] >= 0 ? sycl::half(pools.v_q[rows[c] * HD + d])
++                                    : sycl::half(0.f);
++            }
++            it.barrier(sycl::access::fence_space::local_space);
++            if (tid < VG) {
++              float m = 0.f;
++              for (int c = 0; c < CH; ++c) m = sycl::fmax(m, sycl::fabs(vs[c * VG + tid]));
++              factors[tid] = m;
++            }
++            it.barrier(sycl::access::fence_space::local_space);
++            for (int i = tid; i < VG * 16 * CH; i += WG) {
++              const int g = i / (16 * CH), r = (i / CH) % 16, c = i % CH;
++              const float m = factors[g];
++              // Divide FIRST: |vs/m|<=1 for finite scales, including 2^-24.
++              // P is one FP16 part, bounded by 16384, never a hi+lo emulation.
++              const float p = m > 0.f
++                  ? (scores[r * CH + c] * (vs[c * VG + g] / m)) * 16384.f : 0.f;
++              probability[i] = sycl::half(p);
++            }
++            it.barrier(sycl::access::fence_space::local_space);
++            for (int j = 0; j < 4; ++j) {
++              const int dim = (db * 4 + j) * 16, vg = dim / 64;
++              Acc part; A a; B b;
++              mx::joint_matrix_fill(sg, part, 0.f);
++              for (int k = 0; k < CH; k += 16) {
++                mx::joint_matrix_load(sg, b, kvp + k * HD + dim, HD);
++                mx::joint_matrix_load(sg, a,
++                    probability.template get_multi_ptr<sycl::access::decorated::no>() +
++                        (vg * 16 + hb * 8) * CH + k, CH);
++                mx::joint_matrix_mad(sg, part, a, b, part);
++              }
++              mi::joint_matrix_apply(sg, acc[j],
++                  [=](float &value, size_t r, size_t) { value *= alpha[hb * 8 + r]; });
++              const float down = factors[vg] * (1.f / 16384.f);
++              mx::joint_matrix_apply(sg, acc[j], part,
++                  [=](float &value, float &partial) { value += partial * down; });
++            }
++            it.barrier(sycl::access::fence_space::local_space);
++          }
++          for (int j = 0; j < 4; ++j)
++            mi::joint_matrix_apply(sg, acc[j], [=](float &value, size_t r, size_t c) {
++              const int head = hb * 8 + r;
++              if (head < HEADS) {
++                const float sum = sums[head];
++                output[(batch * shapes.n_head + kvhead * HEADS + head) * HD +
++                       (db * 4 + j) * 16 + c] = sum == 0.f ? uint16_t(0)
++                    : (query_bad[head] || scales_bad ? uint16_t(0x7fc0)
++                                                    : prompt_bf16_bits(value / sum));
++              }
++            });
++        });
++  });
++  finish(stream, event);
++}
++} // namespace
++
++bool qsa_prompt_attn_bf16_batch(const uint16_t *q, const QsaAttnPools &p,
++                                const int32_t *ids, const int32_t *steps,
++                                int64_t cap, const QsaShapes &s, uint16_t *out,
++                                int64_t nq, const QsaPromptBf16Bounds &bounds,
++                                void *stream) {
++  if (nq == 0) return true;
++  // Explicit Mode1 only. Do not inspect old prompt environment switches.
++  if (nq < 0 || nq > 65535 || cap <= 0 || cap > INT_MAX ||
++      s.head_dim != HD || s.n_head_kv != 2 || s.n_head != HEADS * 2 ||
++      s.page_size <= 0 || s.page_size > INT_MAX ||
++      bounds.logical_pages <= 0 || bounds.logical_pages > INT_MAX ||
++      bounds.physical_pages <= 0 || bounds.physical_pages > INT_MAX ||
++      !p.k_q || !p.v_q || !p.k_scale || !p.v_scale || p.k_q4 || p.v_q4)
++    return false;
++  auto &queue = queue_for(stream);
++  if (!prompt_bf16_matrix_available(queue.get_device())) return false;
++  const size_t n = checked_count(checked_count(nq, s.n_head), HD);
++  const size_t rows = checked_count(checked_count(bounds.physical_pages, 2), s.page_size);
++  const Span output{out, checked_count(n, 2)};
++  const Span inputs[] = {
++      {q, checked_count(n, 2)},
++      {ids, checked_count(checked_count(nq, cap), 4)},
++      {steps, checked_count(checked_count(nq, kStepCount), 4)},
++      {p.page_table, checked_count(bounds.logical_pages, 4)},
++      {p.k_q, checked_count(rows, HD)}, {p.v_q, checked_count(rows, HD)},
++      {p.k_scale, checked_count(checked_count(rows, 4), 2)},
++      {p.v_scale, checked_count(checked_count(rows, 4), 2)}};
++  // Byte-aligned INT8 pools are legal; scalar I/O/scales are 2-byte aligned,
++  // indices/table 4-byte aligned. Every full input is disjoint from output.
++  for (const auto &input : inputs) validate_spans({output}, {input}, 1);
++  validate_spans({output}, {{q, inputs[0].bytes},
++                           {p.k_scale, inputs[6].bytes}, {p.v_scale, inputs[7].bytes}}, 2);
++  validate_spans({}, {{ids, inputs[1].bytes}, {steps, inputs[2].bytes},
++                      {p.page_table, inputs[3].bytes}}, 4);
++  prompt_bf16_registered(queue, output);
++  for (const auto &input : inputs) prompt_bf16_registered(queue, input);
++  launch_prompt_bf16(q, p, ids, steps, cap, s, out, nq, bounds, stream);
++  return true;
++}
++} // namespace strata::kernels
+diff --git a/tests/sycl/prompt_native16.cpp b/tests/sycl/prompt_native16.cpp
+new file mode 100644
+--- /dev/null
++++ b/tests/sycl/prompt_native16.cpp
+@@ -0,0 +1,418 @@
++// SPDX-License-Identifier: MIT
++// Own BF16 fixture adapted from the explicitly pinned independent FP64 oracle
++// in own-prompt-heads8-v2/files/tests/sycl/prompt_heads8.cpp. No head8 kernel used.
++// Source-only proposal: Main owns compilation, tracing, GPU runs and retention.
++#include "strata/kernels/qsa_prompt_attn.hpp"
++#include "strata/sycl/runtime.hpp"
++#include <algorithm>
++#include <bit>
++#include <chrono>
++#include <cmath>
++#include <cstdlib>
++#include <fstream>
++#include <iomanip>
++#include <iostream>
++#include <limits>
++#include <sstream>
++#include <stdexcept>
++#include <string>
++#include <vector>
++using namespace strata;
++using namespace strata::kernels;
++namespace {
++std::shared_ptr<sycl_backend::Runtime> runtime;
++std::ofstream dump;
++uint64_t dump_offset = 0;
++int repetitions = 0, benchmark_nq = 0;
++constexpr int cells = 2113, cap = 2051, heads = 24, kvheads = 2, dim = 256;
++void check(bool value, const char *what) {
++  if (!value) throw std::runtime_error(what);
++}
++template <class T> struct Buffer {
++  sycl_backend::Allocation allocation;
++  explicit Buffer(size_t count)
++      : allocation(runtime, count * sizeof(T), sycl_backend::MemoryKind::Device) {}
++  T *data() { return allocation.as<T>(); }
++  void put(const std::vector<T> &values) {
++    check(values.size() * sizeof(T) == allocation.size(), "full fixture upload size");
++    runtime->wait(runtime->compute().memcpy(data(), values.data(), allocation.size()));
++  }
++  std::vector<T> get() {
++    std::vector<T> values(allocation.size() / sizeof(T));
++    runtime->wait(runtime->compute().memcpy(values.data(), data(), allocation.size()));
++    return values;
++  }
++};
++// Host oracle conversions are independent of production conversion helpers.
++uint16_t bf16(float value) {
++  uint32_t bits = std::bit_cast<uint32_t>(value);
++  if (std::isnan(value)) return uint16_t((bits >> 16) | 0x40u);
++  uint32_t upper = bits >> 16, lower = bits & 0xffffu;
++  if (lower > 0x8000u || (lower == 0x8000u && (upper & 1u))) ++upper;
++  return uint16_t(upper);
++}
++float expand(uint16_t bits) { return std::bit_cast<float>(uint32_t(bits) << 16); }
++uint16_t fp16(float value) { return std::bit_cast<uint16_t>(_Float16(value)); }
++float expand_half(uint16_t bits) { return float(std::bit_cast<_Float16>(bits)); }
++double bf16_spacing(float value) {
++  const uint16_t bits = bf16(std::fabs(value));
++  if (bits >= 0x7f7f) return std::numeric_limits<double>::infinity();
++  return double(expand(uint16_t(bits + 1))) - double(expand(bits));
++}
++template <class T> uint64_t hash(const std::vector<T> &values) {
++  uint64_t h = 14695981039346656037ULL;
++  const auto *bytes = reinterpret_cast<const unsigned char *>(values.data());
++  for (size_t i = 0; i < values.size() * sizeof(T); ++i) h = (h ^ bytes[i]) * 1099511628211ULL;
++  return h;
++}
++std::string hex(uint64_t h) {
++  std::ostringstream text; text << std::hex << std::setfill('0') << std::setw(16) << h;
++  return text.str();
++}
++void attention(const uint16_t *query, const QsaAttnPools &p,
++               const int32_t *ids, const int32_t *steps, const QsaShapes &shape,
++               uint16_t *out, int nq, const QsaPromptBf16Bounds &bounds) {
++  check(qsa_prompt_attn_bf16_batch(query,p,ids,steps,cap,shape,out,nq,bounds,
++                                  &runtime->compute()), "BF16 Mode1 matrix attention unavailable");
++}
++// Profiles cover distinct rounding/range mechanisms; none changes process env.
++void run(int page_size, bool masked, int nq, int width, const std::string &profile,
++         bool extended = false) {
++  auto shape = qsa_real_shapes(); shape.page_size = page_size;
++  const int pages = (cells + page_size - 1) / page_size;
++  const int rows = pages * page_size * kvheads;
++  const QsaPromptBf16Bounds bounds{pages,pages};
++  std::vector<int32_t> table(pages);
++  for (int i = 0; i < pages; ++i) table[i] = pages - 1 - i;
++  if (masked) for (int i = 0; i < pages; i += 3) table[i] = -1;
++  std::vector<uint16_t> ks(rows*4), vs(ks.size());
++  std::vector<int8_t> k8(rows*dim), v8(k8.size());
++  for (size_t i = 0; i < k8.size(); ++i) {
++    k8[i] = int8_t(int(i*7%255)-127);
++    v8[i] = int8_t(int(i*11%255)-127);
++  }
++  for (size_t i = 0; i < ks.size(); ++i) {
++    ks[i] = fp16(.007f+float(i%7)*.0001f);
++    vs[i] = fp16(.008f+float(i%11)*.0002f);
++  }
++  std::vector<uint16_t> query(size_t(nq)*heads*dim);
++  for (size_t i = 0; i < query.size(); ++i) {
++    float amplitude = (i/dim)%12 < 8 ? 4.f : 0x1p-80f;
++    if (profile == "range") amplitude = (i/dim)%2 ? 0x1p-110f : 0x1p110f;
++    query[i] = bf16(float(std::sin(i*.019))*amplitude);
++  }
++  if (profile == "zero") {
++    std::fill(query.begin(),query.end(),bf16(0.f));
++    std::fill(vs.begin(),vs.end(),fp16(0.f));
++  } else if (profile == "smallp") {
++    // Exp arguments span ~[-64,0]. V groups include minimum subnormal, zero,
++    // maximum finite and negative finite scales; no reciprocal overflow allowed.
++    std::fill(query.begin(),query.end(),bf16(0.f));
++    for (int h = 0; h < nq*heads; ++h) query[h*dim] = bf16(4.f);
++    std::fill(ks.begin(),ks.end(),fp16(1.f));
++    for (size_t i = 0; i < vs.size(); ++i) {
++      const float values[] = {0x1p-24f,0.f,65504.f,-0x1p-24f};
++      vs[i] = fp16(values[i%4]);
++    }
++  } else if (profile == "positive_infinity_score" || profile == "negative_infinity_score") {
++    // Finite operands overflow FP32 scores uniformly, so the FP64 reference
++    // remains a uniform distribution. Explicitly exercise inf-inf avoidance.
++    const uint16_t q = profile[0] == 'p' ? uint16_t(0x7f7f) : uint16_t(0xff7f);
++    std::fill(query.begin(),query.end(),q);
++    std::fill(k8.begin(),k8.end(),int8_t(127));
++    std::fill(ks.begin(),ks.end(),fp16(65504.f));
++  }
++  std::vector<int32_t> ids(size_t(nq)*cap), steps(size_t(nq)*kStepCount);
++  for (int b = 0; b < nq; ++b) {
++    const int position = cells - 1 - (b%3)*37;
++    steps[b*kStepCount+kStepPos] = position;
++    steps[b*kStepCount+kStepNKv] = position+1;
++    steps[b*kStepCount+kStepNBid] = (position+1)/4;
++    steps[b*kStepCount+kStepWidth] = width;
++    for (int i = 0; i < cap; ++i) {
++      const int cell = (i*17+b*3)%cells;
++      // Causal masking belongs to selected IDs. The kernel must not infer it
++      // from a different step field, union rows, or expose a future cache cell.
++      ids[b*cap+i] = cell <= position ? cell : -1;
++    }
++    ids[b*cap+5] = -1;
++  }
++  Buffer<uint16_t> dks(ks.size()), dvs(vs.size()), q(query.size()),
++      out(query.size()+32), single(query.size()+32);
++  Buffer<int8_t> dk8(k8.size()), dv8(v8.size());
++  Buffer<int32_t> dt(table.size()), di(ids.size()), ds(steps.size());
++  dks.put(ks); dvs.put(vs); dk8.put(k8); dv8.put(v8);
++  q.put(query); dt.put(table); di.put(ids); ds.put(steps);
++  QsaAttnPools p;
++  p.page_table = dt.data(); p.k_q = dk8.data(); p.v_q = dv8.data();
++  p.k_scale = dks.data(); p.v_scale = dvs.data();
++  const uint16_t guard = bf16(1234.f);
++  const std::vector<uint16_t> sentinel(query.size()+32,guard);
++  out.put(sentinel); single.put(sentinel);
++  struct Drain {
++    ~Drain() { try { runtime->wait(); } catch (...) { std::abort(); } }
++  } drain; // Before allocation owners, including exception paths.
++  auto unchanged = [&] {
++    check(q.get()==query && di.get()==ids && ds.get()==steps && dt.get()==table &&
++          dk8.get()==k8 && dv8.get()==v8 && dks.get()==ks && dvs.get()==vs,
++          "input immutability, including current table/step/scales");
++  };
++  auto checked = [&](Buffer<uint16_t> &buffer, bool zero = false, bool finite = true) {
++    auto all = buffer.get();
++    for (int i = 0; i < 16; ++i) {
++      check(all[i]==guard,"BF16 output prefix guard");
++      check(all[all.size()-16+i]==guard,"BF16 output suffix guard");
++    }
++    for (size_t i = 16; i < all.size()-16; ++i) {
++      if (zero) check(expand(all[i])==0.f,"expected zero output");
++      if (finite) check(std::isfinite(expand(all[i])),"full BF16 output finite");
++    }
++    return all;
++  };
++  auto invoke = [&] { attention(q.data(),p,di.data(),ds.data(),shape,out.data()+16,nq,bounds); };
++  std::cout << "case_start nq=" << nq << " page=" << page_size << " masked=" << masked
++            << " width=" << width << " profile=" << profile << "\n";
++  invoke();
++  auto y = checked(out);
++  if (dump.is_open()) {
++    const size_t bytes = query.size()*sizeof(uint16_t);
++    dump.write(reinterpret_cast<const char*>(y.data()+16),bytes);
++    check(bool(dump),"BF16 output dump write");
++    std::cout << "dump offset=" << dump_offset << " bytes=" << bytes
++              << " dtype=bf16 shape=" << nq << ",24,256 output_guarded_fnv1a64=" << hex(hash(y)) << "\n";
++    dump_offset += bytes;
++  }
++  if (repetitions) {
++    // Each sample measures the full submission-to-completion dependency, with
++    // clean immutable env. Separate Main-owned processes establish repeats.
++    runtime->wait();
++    for (int sample = 0; sample < repetitions; ++sample) {
++      const auto begin = std::chrono::steady_clock::now(); invoke(); runtime->wait();
++      const double ms = std::chrono::duration<double,std::milli>(
++          std::chrono::steady_clock::now()-begin).count();
++      std::cout << "sample index=" << sample << " nq=" << nq << " cap=" << cap
++                << " width=" << width << " wall_ms=" << std::setprecision(10) << ms << "\n";
++    }
++    check(checked(out)==y,"repeat BF16 bit identity");
++  } else {
++    for (int b = 0; b < nq; ++b)
++      attention(q.data()+b*heads*dim,p,di.data()+b*cap,ds.data()+b*kStepCount,
++                shape,single.data()+16+b*heads*dim,1,bounds);
++    check(checked(single)==y,"batch/single BF16 bit identity");
++  }
++  // Independent scalar FP64 reference: exact BF16 queries and stored INT8/FP16
++  // cache, no production helpers and no reproduction of XMX/online recurrence.
++  auto load = [&](bool value,int row,int d) {
++    return double((value?v8:k8)[row*dim+d]) *
++           double(expand_half((value?vs:ks)[row*4+d/64]));
++  };
++  double worst_raw = 0, worst_rounded = 0, worst_budget_ratio = 0;
++  for (int b = 0; b < nq; ++b) {
++    if (benchmark_nq && b!=0 && b!=1 && b!=2 && b!=nq-1) continue;
++    const int count = width >= 0 && width <= cap ? width : 0;
++    for (int h = 0; h < heads; ++h) {
++      std::vector<double> weights(count,0.);
++      std::vector<int> selected_rows(count,-1);
++      double maximum = -INFINITY, sum = 0;
++      for (int j = 0; j < count; ++j) {
++        const int cell = ids[b*cap+j];
++        const int page = cell < 0 ? -1 : table[cell/page_size];
++        if (page < 0) { weights[j] = -INFINITY; continue; }
++        const int row = (page*kvheads+h/12)*page_size+cell%page_size;
++        selected_rows[j] = row;
++        double dot = 0;
++        for (int d = 0; d < dim; ++d)
++          dot += double(expand(query[(b*heads+h)*dim+d])) * load(false,row,d);
++        weights[j] = dot/16.; maximum = std::max(maximum,weights[j]);
++      }
++      for (auto &w : weights) { w = std::isfinite(w) ? std::exp(w-maximum) : 0.; sum += w; }
++      for (int d = 0; d < dim; ++d) {
++        double reference = 0, magnitude = 0;
++        for (int j = 0; j < count; ++j) if (selected_rows[j]>=0) {
++          const double term = weights[j]*load(true,selected_rows[j],d);
++          reference += term; magnitude += std::abs(term);
++        }
++        if (sum) { reference /= sum; magnitude /= sum; }
++        const float actual = expand(y[16+(b*heads+h)*dim+d]);
++        const float rounded = expand(bf16(float(reference)));
++        const double raw = std::abs(double(actual)-reference);
++        const double error = std::abs(double(actual)-double(rounded));
++        // Predetermined component screen: one-part probability rounding plus
++        // two BF16 output steps, with a tiny absolute floor for zero/subnormal.
++        // It is not an end-to-end model quality or full-context acceptance gate.
++        const double budget = .001*magnitude + 2.*bf16_spacing(float(reference)) + 1e-12;
++        worst_raw = std::max(worst_raw,raw); worst_rounded = std::max(worst_rounded,error);
++        worst_budget_ratio = std::max(worst_budget_ratio,error/budget);
++        if (!(std::isfinite(actual) && error <= budget)) {
++          std::cerr << "oracle_error b=" << b << " head=" << h << " d=" << d
++                    << " actual=" << actual << " fp64=" << reference << " bf16_ref=" << rounded
++                    << " abs_raw=" << raw << " abs_rounded=" << error << " budget=" << budget << "\n";
++          throw std::runtime_error("native16 attention FP64/BF16 rounding screen");
++        }
++      }
++    }
++  }
++  unchanged();
++  if (!benchmark_nq) {
++    // All missing, then recover the real valid/mixed page table and prove the
++    // original result returns before exercising invalid-width paths.
++    const auto original_table = table;
++    table.assign(pages,-1); dt.put(table); out.put(sentinel); invoke();
++    (void)checked(out,true); unchanged();
++    table = original_table; dt.put(table); out.put(sentinel); invoke();
++    check(checked(out)==y,"recover valid table and original BF16 output"); unchanged();
++    const auto original_steps = steps;
++    for (int invalid_width : {0,-1,cap+1}) {
++      for (int b = 0; b < nq; ++b) steps[b*kStepCount+kStepWidth] = invalid_width;
++      ds.put(steps); out.put(sentinel); invoke(); (void)checked(out,true); unchanged();
++    }
++    steps = original_steps; ds.put(steps);
++  }
++  if (extended) {
++    out.put(sentinel);
++    auto reject = [&](QsaAttnPools pools,QsaShapes geometry,int64_t capacity,
++                      int64_t queries,QsaPromptBf16Bounds extent) {
++      check(!qsa_prompt_attn_bf16_batch(q.data(),pools,di.data(),ds.data(),capacity,
++             geometry,out.data()+16,queries,extent,&runtime->compute()),"unsupported must return false");
++      check(out.get()==sentinel,"unsupported must leave output untouched");
++    };
++    reject(p,shape,0,nq,bounds); reject(p,shape,-1,nq,bounds);
++    reject(p,shape,int64_t(std::numeric_limits<int32_t>::max())+1,nq,bounds);
++    reject(p,shape,cap,-1,bounds); reject(p,shape,cap,65536,bounds);
++    auto badshape = shape; badshape.n_head = 8; reject(p,badshape,cap,nq,bounds);
++    badshape = shape; badshape.head_dim = 128; reject(p,badshape,cap,nq,bounds);
++    badshape = shape; badshape.n_head_kv = 1; reject(p,badshape,cap,nq,bounds);
++    badshape = shape; badshape.page_size = 0; reject(p,badshape,cap,nq,bounds);
++    reject(p,shape,cap,nq,{0,pages}); reject(p,shape,cap,nq,{pages,0});
++    auto badp = p; badp.k_q = nullptr; reject(badp,shape,cap,nq,bounds);
++    badp = p; badp.v_q = nullptr; reject(badp,shape,cap,nq,bounds);
++    badp = p; badp.k_scale = nullptr; reject(badp,shape,cap,nq,bounds);
++    badp = p; badp.v_scale = nullptr; reject(badp,shape,cap,nq,bounds);
++    badp = p; badp.k_q4 = reinterpret_cast<const uint8_t*>(q.data()); reject(badp,shape,cap,nq,bounds);
++    badp = p; badp.v_q4 = reinterpret_cast<const uint8_t*>(q.data()); reject(badp,shape,cap,nq,bounds);
++    check(qsa_prompt_attn_bf16_batch(nullptr,{},nullptr,nullptr,0,{},nullptr,0,{},
++                                   &runtime->compute()),"nq0 null successful no-op");
++    auto invalid_span = [&](const uint16_t *query_ptr,QsaAttnPools pools,
++                            const int32_t *ids_ptr,uint16_t *output_ptr) {
++      bool threw = false;
++      try { (void)qsa_prompt_attn_bf16_batch(query_ptr,pools,ids_ptr,ds.data(),cap,
++              shape,output_ptr,nq,bounds,&runtime->compute()); }
++      catch (const std::invalid_argument &) { threw = true; }
++      check(threw,"invalid span must throw before submission");
++      check(out.get()==sentinel,"invalid span original output untouched");
++    };
++    invalid_span(q.data(),p,di.data(),q.data());
++    invalid_span(q.data(),p,reinterpret_cast<const int32_t*>(out.data()+16),out.data()+16);
++    badp = p; badp.page_table = reinterpret_cast<const int32_t*>(out.data()+16);
++    invalid_span(q.data(),badp,di.data(),out.data()+16);
++    invalid_span(q.data(),p,di.data(),reinterpret_cast<uint16_t*>(dk8.data()+8));
++    invalid_span(query.data(),p,di.data(),out.data()+16); // ordinary host pointer
++    invalid_span(nullptr,p,di.data(),out.data()+16);
++    badp = p; badp.page_table = nullptr; invalid_span(q.data(),badp,di.data(),out.data()+16);
++    invalid_span(reinterpret_cast<const uint16_t*>(reinterpret_cast<const unsigned char*>(q.data())+1),
++                 p,di.data(),out.data()+16);
++    unchanged();
++    const auto original_table = table;
++    table.assign(pages,pages); dt.put(table); invoke(); (void)checked(out,true); unchanged();
++    table = original_table; dt.put(table);
++    const auto original_ids = ids;
++    std::fill(ids.begin(),ids.end(),pages*page_size); di.put(ids); invoke();
++    (void)checked(out,true); unchanged(); ids = original_ids; di.put(ids);
++    // Nonfinite live scale is a declared diagnostic NaN, never an overflowing
++    // probability cast. Missing rows do not read their invalid scales.
++    const auto original_vs = vs;
++    std::fill(vs.begin(),vs.end(),uint16_t(0x7c00)); dvs.put(vs);
++    out.put(sentinel); invoke();
++    auto nonfinite = checked(out,false,false);
++    for (size_t i = 16; i < nonfinite.size()-16; ++i)
++      check(std::isnan(expand(nonfinite[i])),"infinite V scale must diagnose NaN");
++    unchanged();
++    table.assign(pages,-1); dt.put(table); invoke(); (void)checked(out,true); unchanged();
++    table = original_table; dt.put(table); vs = original_vs; dvs.put(vs);
++    const auto original_query = query;
++    query[0] = 0x7f80; q.put(query); out.put(sentinel); invoke();
++    nonfinite = checked(out,false,false);
++    for (int b = 0; b < nq; ++b) for (int h = 0; h < heads; ++h)
++      for (int d = 0; d < dim; ++d)
++        check(b==0 && h==0 ? std::isnan(expand(nonfinite[16+(b*heads+h)*dim+d]))
++                           : std::isfinite(expand(nonfinite[16+(b*heads+h)*dim+d])),
++              "nonfinite Q isolated to affected head");
++    unchanged();
++    table.assign(pages,-1); dt.put(table); invoke(); (void)checked(out,true); unchanged();
++    table = original_table; dt.put(table);
++    query[0] = 0x7fc1; q.put(query); invoke(); nonfinite = checked(out,false,false);
++    for (int d = 0; d < dim; ++d)
++      check(std::isnan(expand(nonfinite[16+d])),"NaN Q diagnostic");
++    unchanged(); query = original_query; q.put(query);
++    const auto original_ks = ks;
++    std::fill(ks.begin(),ks.end(),uint16_t(0x7c00)); dks.put(ks); invoke();
++    nonfinite = checked(out,false,false);
++    for (size_t i = 16; i < nonfinite.size()-16; ++i)
++      check(std::isnan(expand(nonfinite[i])),"infinite K scale must diagnose NaN");
++    unchanged(); ks = original_ks; dks.put(ks); out.put(sentinel); invoke();
++    check(checked(out)==y,"nonfinite-case recovery to original BF16 output"); unchanged();
++  }
++  std::cout << "case dtype=bf16 nq=" << nq << " shape=" << nq << ",24,256 page=" << page_size
++            << " masked=" << masked << " width=" << width << " profile=" << profile
++            << " oracle=" << (benchmark_nq?"FP64_queries_0_1_2_last":"FP64_full")
++            << " max_abs_raw=" << worst_raw << " max_abs_bf16_ref=" << worst_rounded
++            << " max_budget_ratio=" << worst_budget_ratio
++            << " input_q_fnv1a64=" << hex(hash(query)) << " ids_fnv1a64=" << hex(hash(ids))
++            << " steps_fnv1a64=" << hex(hash(steps)) << " table_fnv1a64=" << hex(hash(table))
++            << " k_fnv1a64=" << hex(hash(k8)) << " v_fnv1a64=" << hex(hash(v8))
++            << " ks_fnv1a64=" << hex(hash(ks)) << " vs_fnv1a64=" << hex(hash(vs))
++            << " output_guarded_fnv1a64=" << hex(hash(y))
++            << " finite=PASS guards=PASS inputs=PASS qualification=COMPONENT_ONLY_UNQUALIFIED\n";
++}
++} // namespace
++int main(int argc,char **argv) {
++  try {
++    std::cout.setf(std::ios::unitbuf);
++    // No setenv/unsetenv, before or after provider initialization. Main selects
++    // traced smoke and clean benchmarks as separate owned child processes.
++    const bool smoke = argc>=2 && std::string(argv[1])=="--smoke";
++    const bool bench = argc==6 && std::string(argv[1])=="--bench";
++    check((smoke && (argc==2 || argc==4)) || bench || (!smoke && (argc==1 || argc==3)),
++          "usage: fixture [--dump PATH] | --smoke [--dump PATH] | --bench 128|256 repeats1..20 --dump PATH");
++    const char *dump_path = nullptr;
++    auto integer = [](const char *text) {
++      char *end = nullptr; const long n = std::strtol(text,&end,10);
++      check(end!=text && *end=='\0',"invalid integer"); return n;
++    };
++    if (bench) {
++      const long n = integer(argv[2]), r = integer(argv[3]);
++      check(n==128 || n==256,"benchmark nq128/256 required");
++      check(r>=1 && r<=20,"benchmark repetitions1..20 required");
++      benchmark_nq = int(n); repetitions = int(r);
++      check(std::string(argv[4])=="--dump","benchmark requires full output dump"); dump_path = argv[5];
++    } else if (argc==(smoke?4:3)) {
++      check(std::string(argv[smoke?2:1])=="--dump","expected --dump"); dump_path = argv[smoke?3:2];
++    }
++    if (dump_path) { dump.open(dump_path,std::ios::binary|std::ios::trunc); check(bool(dump),"cannot open dump"); }
++    // Algebraic write coverage for the preserved 12 active + 4 pad rows.
++    std::vector<int> coverage(heads*dim);
++    for (int kvh = 0; kvh < 2; ++kvh) for (int sg = 0; sg < 8; ++sg)
++      for (int j = 0; j < 4; ++j) for (int r = 0; r < 8; ++r) for (int c = 0; c < 16; ++c) {
++        const int h = (sg/4)*8+r, d = ((sg%4)*4+j)*16+c;
++        if (h<12) ++coverage[(kvh*12+h)*dim+d];
++      }
++    for (int writes : coverage) check(writes==1,"head12+4 unique full write coverage");
++    runtime = sycl_backend::runtime_for();
++    if (bench) run(4,false,benchmark_nq,2051,"regular");
++    else if (smoke) { run(4,false,1,33,"regular",true); run(4,true,3,33,"regular"); }
++    else {
++      for (int n : {1,3}) for (int width : {0,1,31,32,33,2051,-1,2052})
++        for (int page : {1,4,16}) for (bool masked : {false,true})
++          run(page,masked,n,width,"regular");
++      run(4,false,3,33,"regular",true);
++      for (const char *profile : {"range","zero","smallp","positive_infinity_score","negative_infinity_score"})
++        for (int page : {1,4,16}) run(page,false,3,2051,profile);
++    }
++    runtime->wait();
++    if (dump.is_open()) { dump.flush(); check(bool(dump),"dump flush"); dump.close(); check(!dump.fail(),"dump close"); }
++    std::cout << "fixture=PASS model_quality=UNRUN whole_prefill=UNRUN physical262144=UNRUN faults=EXTERNAL_REQUIRED\n";
++  } catch (const std::exception &error) {
++    if (runtime) { try { runtime->wait(); } catch (...) { std::abort(); } }
++    std::cerr << error.what() << "\n"; return 1;
++  }
++}

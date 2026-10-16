@@ -1,0 +1,347 @@
+{
+  "schema": "strata-closed-profile-retention-v1",
+  "status": "COMPLETE",
+  "lock": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock",
+  "cleanup_serialized_with_GPU_build_tests": true,
+  "original_status_and_all_individual_samples_preserved": true,
+  "binaries_sources_fixtures_models_services_unchanged": true,
+  "api_evidence": {
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-public-hook-v3/owned/compact-smoke.stderr": {
+      "original": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-public-hook-v3/owned/compact-smoke.stderr",
+        "bytes": 443692,
+        "sha256": "88ed81e164eb31c266b7075c86aa592f8a023970ac9a43ab1653531d0a5c5766"
+      },
+      "api_names": [
+        "urAdapterGet",
+        "urAdapterGetInfo",
+        "urAdapterRelease",
+        "urAdapterSetLoggerCallback",
+        "urContextCreate",
+        "urContextRelease",
+        "urDeviceGet",
+        "urDeviceGetGlobalTimestamps",
+        "urDeviceGetInfo",
+        "urDeviceRelease",
+        "urDeviceRetain",
+        "urDeviceSelectBinary",
+        "urEnqueueKernelLaunchWithArgsExp",
+        "urEnqueueUSMMemcpy",
+        "urEventRelease",
+        "urKernelCreate",
+        "urKernelRelease",
+        "urKernelRetain",
+        "urKernelSetExecInfo",
+        "urPlatformGet",
+        "urPlatformGetBackendOption",
+        "urPlatformGetInfo",
+        "urProgramBuildExp",
+        "urProgramCreateWithBinary",
+        "urProgramRelease",
+        "urProgramRetain",
+        "urQueueCreate",
+        "urQueueFinish",
+        "urQueueRelease",
+        "urUSMDeviceAlloc",
+        "urUSMFree",
+        "urUSMHostAlloc"
+      ],
+      "successful_launch_rows": 52,
+      "first_launch": "   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0x3eb6cb0, .hKernel = 0x3eb07a0, .workDim = 3, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7ffeffb40cc0 (64), .pLocalWorkSize = 0x7ffeffb40cd8 (64), .numArgs = 4, .pArgs = 0x3f450b0 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 0, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff600040}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 1, .size = 64, .value = (union ur_exp_kernel_arg_value_t){.value = 0x3ef6d30}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 2, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff610040}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 3, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff600240}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7ffeffb3fef0 (0x3ee9fe0)) -> UR_RESULT_SUCCESS;",
+      "last_launch": "   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0x3eb6cb0, .hKernel = 0x3f4fb30, .workDim = 3, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7ffeffb40f60 (64), .pLocalWorkSize = 0x7ffeffb40f78 (64), .numArgs = 4, .pArgs = 0x3f450b0 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 0, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff630040}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 1, .size = 64, .value = (union ur_exp_kernel_arg_value_t){.value = 0x3f48ec0}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 2, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff690040}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 3, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff630340}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7ffeffb40190 (0x3ee9fe0)) -> UR_RESULT_SUCCESS;",
+      "receipt": {
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-public-hook-v3.json",
+        "bytes": 376426,
+        "sha256": "1f2293b46be99f4922e7bd145e1922b530732da55f26d6ef75759c26f5c5d407"
+      },
+      "consumer": "Full successful API history no longer needed; native stdout/oracle, ownership/fault and library/image proofs stay in receipt; full R861 local argument lists in own-prompt-softmax-local-arguments-v1.json."
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-components-smoke-v1/owned/bf16-smoke-0.stderr": {
+      "original": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-components-smoke-v1/owned/bf16-smoke-0.stderr",
+        "bytes": 400870,
+        "sha256": "a6d848b6a6fbecac693773d03e1119429e70c66970e859687a08b611fdb8a2d4"
+      },
+      "api_names": [
+        "urAdapterGet",
+        "urAdapterGetInfo",
+        "urAdapterRelease",
+        "urAdapterSetLoggerCallback",
+        "urContextCreate",
+        "urContextRelease",
+        "urDeviceGet",
+        "urDeviceGetGlobalTimestamps",
+        "urDeviceGetInfo",
+        "urDeviceRelease",
+        "urDeviceRetain",
+        "urDeviceSelectBinary",
+        "urEnqueueKernelLaunchWithArgsExp",
+        "urEnqueueUSMMemcpy",
+        "urEventRelease",
+        "urEventWait",
+        "urKernelCreate",
+        "urKernelRelease",
+        "urKernelRetain",
+        "urKernelSetExecInfo",
+        "urPlatformGet",
+        "urPlatformGetBackendOption",
+        "urPlatformGetInfo",
+        "urProgramBuildExp",
+        "urProgramCreateWithIL",
+        "urProgramRelease",
+        "urProgramRetain",
+        "urQueueCreate",
+        "urQueueFinish",
+        "urQueueRelease",
+        "urUSMDeviceAlloc",
+        "urUSMFree"
+      ],
+      "successful_launch_rows": 25,
+      "first_launch": "   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0x12d48720, .hKernel = 0x1cbc81d0, .workDim = 1, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7ffc33e9ea40 (256), .pLocalWorkSize = 0x7ffc33e9ea58 (128), .numArgs = 21, .pArgs = 0x1304b5f0 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 0, .size = 72, .value = (union ur_exp_kernel_arg_value_t){.value = 0x12dc6108}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 1, .size = 16384, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 2, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff620000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 3, .size = 64, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 4, .size = 64, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 5, .size = 64, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 6, .size = 64, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 7, .size = 8192, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 8, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff650000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 9, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.value = 0x12dc6220}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 10, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff623000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 11, .size = 16, .value = (union ur_exp_kernel_arg_value_t){.value = 0x12dc6230}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 12, .size = 72, .value = (union ur_exp_kernel_arg_value_t){.value = 0x12dc6240}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 13, .size = 256, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 14, .size = 2048, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 15, .size = 512, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 16, .size = 512, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 17, .size = 64, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 18, .size = 16, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 19, .size = 4096, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 20, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff630020}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7ffc33e9dc70 (0x12d933f0)) -> UR_RESULT_SUCCESS;",
+      "last_launch": "   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0x12d48720, .hKernel = 0x1cbc81d0, .workDim = 1, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7ffc33e9ea40 (768), .pLocalWorkSize = 0x7ffc33e9ea58 (128), .numArgs = 21, .pArgs = 0x1304b5f0 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 0, .size = 72, .value = (union ur_exp_kernel_arg_value_t){.value = 0x13056138}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 1, .size = 16384, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 2, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff660000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 3, .size = 64, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 4, .size = 64, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 5, .size = 64, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 6, .size = 64, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 7, .size = 8192, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 8, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff650000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 9, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.value = 0x13056250}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 10, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff690000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 11, .size = 16, .value = (union ur_exp_kernel_arg_value_t){.value = 0x13056260}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 12, .size = 72, .value = (union ur_exp_kernel_arg_value_t){.value = 0x13056270}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 13, .size = 256, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 14, .size = 2048, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 15, .size = 512, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 16, .size = 512, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 17, .size = 64, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 18, .size = 16, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 19, .size = 4096, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 20, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff670020}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7ffc33e9dc70 (0x12d933f0)) -> UR_RESULT_SUCCESS;",
+      "receipt": {
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-components-smoke-v1.json",
+        "bytes": 89107,
+        "sha256": "f59bc11c027046d36defe2fba2ab496b1165671cca9f2eb79ad84cdab5093e4e"
+      },
+      "consumer": "Full successful API history no longer needed; native stdout/oracle, ownership/fault and library/image proofs stay in receipt; full R861 local argument lists in own-prompt-softmax-local-arguments-v1.json."
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-components-smoke-v1/owned/bf16-smoke-1.stderr": {
+      "original": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-components-smoke-v1/owned/bf16-smoke-1.stderr",
+        "bytes": 400870,
+        "sha256": "9fd58f567ff802e32192725482feba14e5decc5d0c821a1860f206a63b21fe4f"
+      },
+      "api_names": [
+        "urAdapterGet",
+        "urAdapterGetInfo",
+        "urAdapterRelease",
+        "urAdapterSetLoggerCallback",
+        "urContextCreate",
+        "urContextRelease",
+        "urDeviceGet",
+        "urDeviceGetGlobalTimestamps",
+        "urDeviceGetInfo",
+        "urDeviceRelease",
+        "urDeviceRetain",
+        "urDeviceSelectBinary",
+        "urEnqueueKernelLaunchWithArgsExp",
+        "urEnqueueUSMMemcpy",
+        "urEventRelease",
+        "urEventWait",
+        "urKernelCreate",
+        "urKernelRelease",
+        "urKernelRetain",
+        "urKernelSetExecInfo",
+        "urPlatformGet",
+        "urPlatformGetBackendOption",
+        "urPlatformGetInfo",
+        "urProgramBuildExp",
+        "urProgramCreateWithIL",
+        "urProgramRelease",
+        "urProgramRetain",
+        "urQueueCreate",
+        "urQueueFinish",
+        "urQueueRelease",
+        "urUSMDeviceAlloc",
+        "urUSMFree"
+      ],
+      "successful_launch_rows": 25,
+      "first_launch": "   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0x152ba720, .hKernel = 0x1c2a4490, .workDim = 1, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7ffc0fbb3080 (256), .pLocalWorkSize = 0x7ffc0fbb3098 (128), .numArgs = 21, .pArgs = 0x16083aa0 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 0, .size = 72, .value = (union ur_exp_kernel_arg_value_t){.value = 0x15338108}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 1, .size = 16384, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 2, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff620000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 3, .size = 64, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 4, .size = 64, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 5, .size = 64, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 6, .size = 64, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 7, .size = 8192, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 8, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff650000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 9, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.value = 0x15338220}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 10, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff623000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 11, .size = 16, .value = (union ur_exp_kernel_arg_value_t){.value = 0x15338230}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 12, .size = 72, .value = (union ur_exp_kernel_arg_value_t){.value = 0x15338240}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 13, .size = 256, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 14, .size = 2048, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 15, .size = 512, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 16, .size = 512, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 17, .size = 64, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 18, .size = 16, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 19, .size = 4096, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 20, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff630020}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7ffc0fbb22b0 (0x153053f0)) -> UR_RESULT_SUCCESS;",
+      "last_launch": "   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0x152ba720, .hKernel = 0x1c2a4490, .workDim = 1, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7ffc0fbb3080 (768), .pLocalWorkSize = 0x7ffc0fbb3098 (128), .numArgs = 21, .pArgs = 0x16083aa0 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 0, .size = 72, .value = (union ur_exp_kernel_arg_value_t){.value = 0x16869c48}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 1, .size = 16384, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 2, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff660000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 3, .size = 64, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 4, .size = 64, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 5, .size = 64, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 6, .size = 64, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 7, .size = 8192, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 8, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff650000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 9, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.value = 0x16869d60}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 10, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff690000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 11, .size = 16, .value = (union ur_exp_kernel_arg_value_t){.value = 0x16869d70}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 12, .size = 72, .value = (union ur_exp_kernel_arg_value_t){.value = 0x16869d80}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 13, .size = 256, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 14, .size = 2048, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 15, .size = 512, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 16, .size = 512, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 17, .size = 64, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 18, .size = 16, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 19, .size = 4096, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 20, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff670020}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7ffc0fbb22b0 (0x153053f0)) -> UR_RESULT_SUCCESS;",
+      "receipt": {
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-components-smoke-v1.json",
+        "bytes": 89107,
+        "sha256": "f59bc11c027046d36defe2fba2ab496b1165671cca9f2eb79ad84cdab5093e4e"
+      },
+      "consumer": "Full successful API history no longer needed; native stdout/oracle, ownership/fault and library/image proofs stay in receipt; full R861 local argument lists in own-prompt-softmax-local-arguments-v1.json."
+    }
+  },
+  "numeric_comparison_evidence": {
+    "bf16": {
+      "default_original_prefix_byte_identical": true,
+      "baseline_bytes": 2949120,
+      "candidate_bytes": 3096576,
+      "candidate_elements": 1548288,
+      "changed_elements": 3,
+      "max_abs": 0.0001220703125,
+      "mean_abs": 2.36526368156312e-10,
+      "acceptance": "Each original independent FP64 oracle and tolerance is unchanged. Cross-route exact equality is not required.",
+      "files": {
+        "bf16-baseline.bin": {
+          "sha256": "ef60c93a3a090987176df4bedeb2df3ea28361a98692f2b30508445f3bb9e7b5",
+          "bytes": 2949120,
+          "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-components-check-v1/bf16-baseline.bin"
+        },
+        "bf16-0.bin": {
+          "sha256": "4f83e38289b132f3a8706ca0ea142cf655e5c96be86d794cf7c8aceaf7eb2480",
+          "bytes": 3096576,
+          "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-components-check-v1/bf16-0.bin"
+        },
+        "bf16-1.bin": {
+          "sha256": "8f486edf69c158a6f94ea066e0c308d04c8610865210469365a47942c3e4dc0a",
+          "bytes": 3096576,
+          "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-components-check-v1/bf16-1.bin"
+        }
+      }
+    },
+    "fp32": {
+      "default_original_prefix_byte_identical": true,
+      "baseline_bytes": 1180672,
+      "candidate_bytes": 1475840,
+      "candidate_elements": 368960,
+      "changed_elements": 96015,
+      "max_abs": 2.384185791015625e-07,
+      "mean_abs": 3.826350295471457e-09,
+      "acceptance": "Each original independent FP64 oracle and tolerance is unchanged. Cross-route exact equality is not required.",
+      "files": {
+        "fp32-baseline.bin": {
+          "sha256": "6a462b896f25c70621469d5673a8a5deac236bcc08498d7bbd8c106e77c64235",
+          "bytes": 1180672,
+          "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-components-check-v1/fp32-baseline.bin"
+        },
+        "fp32-0.bin": {
+          "sha256": "67c715bb69a98771a2577799739f9bd6aaa93e079139b10cbb169a5d387833ba",
+          "bytes": 1475840,
+          "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-components-check-v1/fp32-0.bin"
+        },
+        "fp32-1.bin": {
+          "sha256": "8a06b60ca752606caf78852bbbc267067c5c5503fe5bb139973eb86bc13fa66d",
+          "bytes": 1475840,
+          "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-components-check-v1/fp32-1.bin"
+        }
+      }
+    }
+  },
+  "deletions": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-unitrace-direct-tiny-v4/collector/timing.727098.log",
+      "bytes": 9370,
+      "sha256": "a0b3beaf11f9195b0132961210faa51c58d4300806172689fe278a29d5105e88",
+      "allocated_bytes": 13312,
+      "retained_evidence": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-unitrace-direct-tiny-v4.json",
+      "reason": "Duplicate complete raw collector summary and all parsed rows/properties are embedded in committed receipt.",
+      "deleted": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-unitrace-direct-tiny-v5/collector/timing.745155.log",
+      "bytes": 9370,
+      "sha256": "1e46d960aa9f611843071da3bde8a67ebeb5fdc281d4b19ad6fdaff09dd35249",
+      "allocated_bytes": 13312,
+      "retained_evidence": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-unitrace-direct-tiny-v5.json",
+      "reason": "Duplicate complete raw collector summary and all parsed rows/properties are embedded in committed receipt.",
+      "deleted": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-unitrace-direct-tiny-v6/collector/timing.772696.log",
+      "bytes": 9370,
+      "sha256": "ba3cf69d084bacb1577820bc0f497bcb34430751883f916c06dfa641fff0d9a7",
+      "allocated_bytes": 13312,
+      "retained_evidence": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-unitrace-direct-tiny-v6.json",
+      "reason": "Duplicate complete raw collector summary and all parsed rows/properties are embedded in committed receipt.",
+      "deleted": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-unitrace-direct-model-v6/collector/timing.774742.log",
+      "bytes": 195836,
+      "sha256": "6440b73bf75d3e563697560110690b19a13f64bc2ece700a8195a92e446d20c3",
+      "allocated_bytes": 271360,
+      "retained_evidence": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-unitrace-direct-model-v6.json",
+      "reason": "Duplicate complete raw collector summary and all parsed rows/properties are embedded in committed receipt.",
+      "deleted": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-unitrace-direct-model-v5/collector/timing.747233.log",
+      "bytes": 195836,
+      "sha256": "efa026bc37af8a1f5d61174b12f24ad171edd7fd01673c24201107224ce816f3",
+      "allocated_bytes": 271360,
+      "retained_evidence": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-unitrace-model-v5-postmortem-v1.json",
+      "reason": "Original diagnostic FAIL remains unchanged; complete aggregate/raw text is committed in postmortem, not native-exit proof.",
+      "deleted": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-public-hook-v3/owned/compact-smoke.stderr",
+      "bytes": 443692,
+      "sha256": "88ed81e164eb31c266b7075c86aa592f8a023970ac9a43ab1653531d0a5c5766",
+      "allocated_bytes": 533504,
+      "retained_evidence": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-current-profile-retention-v1.json",
+      "reason": "Successful full API history after compact launch/oracle/resource verification; no unresolved question consumes complete history.",
+      "deleted": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-components-smoke-v1/owned/bf16-smoke-0.stderr",
+      "bytes": 400870,
+      "sha256": "a6d848b6a6fbecac693773d03e1119429e70c66970e859687a08b611fdb8a2d4",
+      "allocated_bytes": 533504,
+      "retained_evidence": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-current-profile-retention-v1.json",
+      "reason": "Successful full API history after compact launch/oracle/resource verification; no unresolved question consumes complete history.",
+      "deleted": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-components-smoke-v1/owned/bf16-smoke-1.stderr",
+      "bytes": 400870,
+      "sha256": "9fd58f567ff802e32192725482feba14e5decc5d0c821a1860f206a63b21fe4f",
+      "allocated_bytes": 533504,
+      "retained_evidence": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-current-profile-retention-v1.json",
+      "reason": "Successful full API history after compact launch/oracle/resource verification; no unresolved question consumes complete history.",
+      "deleted": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-components-check-v1/bf16-baseline.bin",
+      "bytes": 2949120,
+      "sha256": "ef60c93a3a090987176df4bedeb2df3ea28361a98692f2b30508445f3bb9e7b5",
+      "allocated_bytes": 3023872,
+      "retained_evidence": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-components-check-v1.json",
+      "reason": "Generated component output: sole full baseline-prefix and cross-route comparisons completed/committed with counts, errors and hashes. No unresolved numerical failure, current comparison or RESTORE consumer; deterministic fixtures/binaries remain.",
+      "deleted": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-components-check-v1/bf16-0.bin",
+      "bytes": 3096576,
+      "sha256": "4f83e38289b132f3a8706ca0ea142cf655e5c96be86d794cf7c8aceaf7eb2480",
+      "allocated_bytes": 3154944,
+      "retained_evidence": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-components-check-v1.json",
+      "reason": "Generated component output: sole full baseline-prefix and cross-route comparisons completed/committed with counts, errors and hashes. No unresolved numerical failure, current comparison or RESTORE consumer; deterministic fixtures/binaries remain.",
+      "deleted": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-components-check-v1/bf16-1.bin",
+      "bytes": 3096576,
+      "sha256": "8f486edf69c158a6f94ea066e0c308d04c8610865210469365a47942c3e4dc0a",
+      "allocated_bytes": 3154944,
+      "retained_evidence": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-components-check-v1.json",
+      "reason": "Generated component output: sole full baseline-prefix and cross-route comparisons completed/committed with counts, errors and hashes. No unresolved numerical failure, current comparison or RESTORE consumer; deterministic fixtures/binaries remain.",
+      "deleted": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-components-check-v1/fp32-baseline.bin",
+      "bytes": 1180672,
+      "sha256": "6a462b896f25c70621469d5673a8a5deac236bcc08498d7bbd8c106e77c64235",
+      "allocated_bytes": 1319936,
+      "retained_evidence": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-components-check-v1.json",
+      "reason": "Generated component output: sole full baseline-prefix and cross-route comparisons completed/committed with counts, errors and hashes. No unresolved numerical failure, current comparison or RESTORE consumer; deterministic fixtures/binaries remain.",
+      "deleted": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-components-check-v1/fp32-0.bin",
+      "bytes": 1475840,
+      "sha256": "67c715bb69a98771a2577799739f9bd6aaa93e079139b10cbb169a5d387833ba",
+      "allocated_bytes": 1582080,
+      "retained_evidence": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-components-check-v1.json",
+      "reason": "Generated component output: sole full baseline-prefix and cross-route comparisons completed/committed with counts, errors and hashes. No unresolved numerical failure, current comparison or RESTORE consumer; deterministic fixtures/binaries remain.",
+      "deleted": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-components-check-v1/fp32-1.bin",
+      "bytes": 1475840,
+      "sha256": "8a06b60ca752606caf78852bbbc267067c5c5503fe5bb139973eb86bc13fa66d",
+      "allocated_bytes": 1582080,
+      "retained_evidence": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-components-check-v1.json",
+      "reason": "Generated component output: sole full baseline-prefix and cross-route comparisons completed/committed with counts, errors and hashes. No unresolved numerical failure, current comparison or RESTORE consumer; deterministic fixtures/binaries remain.",
+      "deleted": true
+    }
+  ],
+  "logical_bytes_retired": 14939838,
+  "physical_reclaimed_bytes": "Not measured; shared filesystem extents and background allocations prevent inference from logical totals.",
+  "allocated_bytes_of_removed_names": 16001024
+}

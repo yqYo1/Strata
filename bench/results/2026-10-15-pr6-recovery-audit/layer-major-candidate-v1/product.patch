@@ -1,0 +1,241 @@
+--- a/src/prefill/prefill.cpp
++++ b/src/prefill/prefill.cpp
+@@ -29,6 +29,8 @@
+ #include "strata/core/peer_experts.hpp"
+ #include "strata/prefill/kernels.hpp"
+ #include "strata/prefill/draft_uploads.hpp"
++#include "strata/prefill/layer_major_plan.hpp"
++#include "strata/core/conversation_memory.hpp"
+ 
+ #include <cuda_runtime.h>
+ 
+@@ -40,6 +42,7 @@
+ #include <condition_variable>
+ #include <cstring>
+ #include <future>
++#include <limits>
+ #include <memory>
+ #include <mutex>
+ #include <thread>
+@@ -448,6 +451,10 @@
+     int64_t attn_batch = 32, cap = 0;
+     // MoE
+     bool compact_moe_fp16 = false;
++    // Opt-in layer-major lease; normal chunk-major execution leaves these empty.
++    bool layer_major_active = false;
++    const float* layer_major_gpu_input = nullptr;
++    detail::LayerMajorResidualPlan layer_major_residual;
+     float *logits = nullptr, *w = nullptr, *GU = nullptr, *Dm = nullptr, *sgate = nullptr, *sup = nullptr,
+           *shared = nullptr, *sg = nullptr;
+     int32_t *ids = nullptr, *slot_dev = nullptr, *src_dev = nullptr;
+@@ -1511,7 +1518,9 @@
+ };
+ }  // namespace
+ 
+-bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) {
++#include "layer_major.inc"
++
++bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) {
+     err.clear();
+     Impl& m = *impl_;
+     const core::OnDevice on_device(m.device);
+@@ -1635,22 +1644,30 @@
+         if (std::getenv("STRATA_TRACE")) { std::fprintf(stderr, "strata trace: prompt chunk %lld of %lld\n", (long long) c0, (long long) n); std::fflush(stderr); }
+         const int64_t T = std::min(m.T, n - c0), p0 = pos0 + c0;
+         core::progress_at("reading the prompt (batched): preparing the chunk from token", p0);   // #251
+-        ++stats_.chunks;
++        if (!m.layer_major_active || LE == g.n_layers) ++stats_.chunks;
+         ro.chunk(T);
+         pt.mark(kPfStart, cs);
+         const auto tsetup = Clock::now();
+         // ---- embeddings, broadcast to the four streams - or, in a later stage of a layer split, the rows the
+         // previous stage handed on
+-        if (hand_in_ != nullptr) {
+-            if (cudaMemcpyAsync(m.R, hand_in_ + (size_t) c0 * D, (size_t) T * D * 4, cudaMemcpyHostToDevice, m.cs) !=
+-                cudaSuccess) {
++        const bool residual_input = hand_in_ != nullptr || m.layer_major_gpu_input != nullptr;
++        if (residual_input) {
++            if (m.layer_major_active) {
++                const auto span = m.layer_major_residual.span(c0, T);
++                const auto* base = reinterpret_cast<const uint8_t*>(span.device ? m.layer_major_gpu_input : hand_in_);
++                if (!base || cudaMemcpyAsync(m.R, base + size_t(span.offset_bytes), size_t(span.bytes),
++                    span.device ? cudaMemcpyDeviceToDevice : cudaMemcpyHostToDevice, m.cs) != cudaSuccess) {
++                    err = "prefill layer-major: residual input copy failed"; return false;
++                }
++            } else if (cudaMemcpyAsync(m.R, hand_in_ + (size_t) c0 * D, (size_t) T * D * 4,
++                                      cudaMemcpyHostToDevice, m.cs) != cudaSuccess) {
+                 err = "prefill: the layer split's hand-off upload failed";
+                 return false;
+             }
+         }
+         // C-4: the whole chunk's rows in one gather (the same per-element arithmetic as the per-token path, so the
+         // same bits); a chunk with picture rows, or a token outside the table, takes the per-token path
+-        bool batched = hand_in_ == nullptr && m.tok_dev != nullptr;
++        bool batched = !residual_input && m.tok_dev != nullptr;
+         const core::NativeEmbed* nemb = core::native_embed();
+         const core::WeightRef* wemb = nemb ? nullptr : m.wt->find("token_embd.weight");
+         if (batched && nemb == nullptr &&
+@@ -1681,7 +1698,7 @@
+                                                       (uint64_t) (wemb->ne0 / wemb->group_elems), m.emb, m.cs);
+             }
+         }
+-        for (int64_t t = 0; hand_in_ == nullptr && !batched && t < T; ++t) {
++        for (int64_t t = 0; !residual_input && !batched && t < T; ++t) {
+             const float* row = embd_rows ? embd_rows[p0 + t] : nullptr;
+             if (row) {
+                 if (cudaMemcpyAsync(m.emb + t * N, row, (size_t) N * 4, cudaMemcpyHostToDevice, m.cs) != cudaSuccess) {
+@@ -1692,7 +1709,7 @@
+                 return false;
+             }
+         }
+-        if (hand_in_ == nullptr) gr_broadcast(m.emb, m.R, T, m.cs);
++        if (!residual_input) gr_broadcast(m.emb, m.R, T, m.cs);
+         // ---- the PLE rows of the whole chunk, one batched SSD request on a thread (see ple_gather).  A later chunk's
+         // were read ahead during the previous chunk; the first chunk's are read beside layer 0 - they are needed from
+         // layer 1 on, and gathering them here first left the GPU idle for the whole read (~0.4 s of a 32K prompt)
+@@ -1742,7 +1759,7 @@
+         // k lands in ring slot k % ring); a copy is issued once the entry `ring` before it is consumed (its slot's
+         // `used` event recorded), so the copy stream never waits on an event that is not queued yet
+         const strata::kernels::cpu::ExpertLayout& lay0 = strata::kernels::cpu::expert_layout();
+-        const bool stream_all = m.ring > STAGE && T >= stream_all_min() && m.src != nullptr;
++        const bool stream_all = !m.layer_major_active && m.ring > STAGE && T >= stream_all_min() && m.src != nullptr;
+         const bool ps_on = stream_all && m.pp && m.pp->ps_frac > 0.0;
+         if (m.pp && !ps_on) m.pp->ps_flag.clear();
+         // multi-GPU: the peer's ring - issue its copies up to `limit` / give entries back (the peer device is current)
+@@ -2631,7 +2648,7 @@
+                         std::vector<int> stage_of(order.size(), -1);
+                         // the unpinned ones are copied to pinned buffers by the stager's threads, in this order
+                         std::vector<int> job_of(order.size(), -1);
+-                        if (!stream_all) {
++                        if (!stream_all && !m.layer_major_active) {
+                             std::vector<Stager::Job> js;
+                             for (size_t j = 0; j < order.size(); ++j) {
+                                 const int32_t e = order[j];
+@@ -2648,11 +2665,14 @@
+                             }
+                             m.stager->start(std::move(js));
+                         }
+-                        StagerDone stager_done{stream_all ? nullptr : m.stager.get()};
++                        StagerDone stager_done{stream_all || m.layer_major_active ? nullptr : m.stager.get()};
+                         auto stage_one = [&](size_t j) -> bool {
+                             const int32_t e = order[j];
+                             const bool resident = m.host_res && m.cache && m.host_res[(size_t) l * m.g->n_expert + e] >= 0;
+                             if (resident) return true;
++                            if (m.layer_major_active) {
++                                err = "prefill layer-major: temporary residency map is incomplete"; return false;
++                            }
+                             const int sl = stage_next;
+                             stage_next = (stage_next + 1) % STAGE;
+                             const auto th = Clock::now();
+@@ -2937,7 +2957,7 @@
+                          skipped_stream_entries, skipped_after_group);
+             std::fflush(stderr);
+         }
+-        stats_.tokens += T;
++        if (!m.layer_major_active || LE == g.n_layers) stats_.tokens += T;
+         core::progress_at("reading the prompt (batched): finishing the chunk from token", p0);
+         pt.mark(kPfStart, cs);
+         if (next_ != nullptr) {
+@@ -3014,7 +3034,7 @@
+         err = std::string("prefill: expert copy stream: ") + cudaGetErrorString(cst);
+         return false;
+     }
+-    stats_.ms_total += ms_since(t_start);
++    if (!m.layer_major_active) stats_.ms_total += ms_since(t_start);
+     if (pt.on) {
+         pt.fold();
+         double total = 0.0;
+--- a/include/strata/prefill/prefill.hpp
++++ b/include/strata/prefill/prefill.hpp
+@@ -121,6 +121,8 @@
+     }
+ 
+ private:
++    bool run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err);
++    bool run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err);
+     int64_t stage_lb_ = 0, stage_le_ = -1;
+     Prefill* next_ = nullptr;
+     const float* hand_in_ = nullptr;    ///< the previous stage's rows of the chunk being read (host, pinned)
+--- a/include/strata/core/expert_cache.hpp
++++ b/include/strata/core/expert_cache.hpp
+@@ -85,6 +85,10 @@
+     /// A cache that silently allocates less than it was asked for would report a hit rate for slots it does
+     /// not have, which is the shape of error this project keeps paying for.
+     bool open(int64_t n_slots, int64_t n_layers, int64_t n_expert, int64_t blob_bytes, std::string& err);
++    /// Allocation-only temporary cache: no memset or upload is submitted. The caller must
++    /// fill every consumed slot and prove completion before publishing its residency map.
++    bool open_uninitialized(int64_t n_slots, int64_t n_layers, int64_t n_expert, int64_t blob_bytes,
++                            std::string& err);
+     /// Plan v0.3 P6: slots of the given sizes, back to back (a native pack's blobs differ per layer, and a
+     /// profile-filled tier never moves an expert to another layer's slot, so each slot keeps its first size).
+     bool open_sized(const std::vector<int64_t>& slot_bytes, int64_t n_layers, int64_t n_expert, std::string& err);
+@@ -159,6 +163,8 @@
+     int64_t fills() const { return fills_; }
+ 
+ private:
++    bool open_impl(int64_t n_slots, int64_t n_layers, int64_t n_expert, int64_t blob_bytes,
++                   std::string& err, bool initialize);
+ #if defined(STRATA_USE_HIP) || defined(STRATA_ENABLE_SYCL)
+     bool ensure_blocking_staging(std::size_t bytes, std::string& err);
+     uint8_t* blocking_staging_ = nullptr;
+--- a/src/core/expert_cache.cpp
++++ b/src/core/expert_cache.cpp
+@@ -6,6 +6,7 @@
+ #include <algorithm>
+ #include <cstdio>
+ #include <filesystem>
++#include <limits>
+ #include <utility>
+ #include <cstring>
+ 
+@@ -160,6 +161,24 @@
+ 
+ bool ExpertCache::open(int64_t n_slots, int64_t n_layers, int64_t n_expert, int64_t blob_bytes,
+                        std::string& err) {
++    return open_impl(n_slots, n_layers, n_expert, blob_bytes, err, true);
++}
++
++bool ExpertCache::open_uninitialized(int64_t n_slots, int64_t n_layers, int64_t n_expert, int64_t blob_bytes,
++                                     std::string& err) {
++    const uint64_t limit = std::min<uint64_t>(std::numeric_limits<std::ptrdiff_t>::max(),
++                                             std::numeric_limits<int64_t>::max());
++    if (n_slots <= 0 || n_layers <= 0 || n_expert <= 0 || blob_bytes <= 0 ||
++        uint64_t(n_slots) > limit / uint64_t(blob_bytes) ||
++        uint64_t(n_layers) > limit / sizeof(int32_t) / uint64_t(n_expert)) {
++        err = "ExpertCache: uninitialized cache geometry overflows addressable storage";
++        return false;
++    }
++    return open_impl(n_slots, n_layers, n_expert, blob_bytes, err, false);
++}
++
++bool ExpertCache::open_impl(int64_t n_slots, int64_t n_layers, int64_t n_expert, int64_t blob_bytes,
++                            std::string& err, bool initialize) {
+     close();
+     if (n_slots <= 0) {
+         err = "ExpertCache: n_slots must be positive";
+@@ -203,7 +222,7 @@
+     }
+     // Zeroed so a slot read before it is filled is a DETERMINISTIC wrong answer rather than whatever the
+     // allocator handed back.  A stale block of a previous process's memory would still sum to finite floats.
+-    if (cudaMemset(base_, 0, (size_t) want) != cudaSuccess) {
++    if (initialize && cudaMemset(base_, 0, (size_t) want) != cudaSuccess) {
+         err = "ExpertCache: cudaMemset of the slot arena failed";
+         close();
+         return false;
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -61,6 +61,14 @@
+ option(STRATA_BUILD_TESTS "Build the test suite" ${_strata_tests_default})
+ option(STRATA_BUILD_CONVERSATION_TESTS "Build standalone conversation cache tests" OFF)
+ option(STRATA_WERROR "Treat compiler warnings as errors" OFF)
++
++option(STRATA_BUILD_PREFILL_HOST_TESTS "Build CPU-only prefill orchestration contract tests" OFF)
++if(STRATA_BUILD_PREFILL_HOST_TESTS)
++  enable_testing()
++  add_executable(prefill_layer_major_plan_test src/prefill/layer_major_plan_test.cpp)
++  target_include_directories(prefill_layer_major_plan_test PRIVATE include)
++  add_test(NAME prefill_layer_major_plan_test COMMAND prefill_layer_major_plan_test)
++endif()
+ 
+ if(STRATA_BUILD_CONVERSATION_TESTS)
+   enable_testing()

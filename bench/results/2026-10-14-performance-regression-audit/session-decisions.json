@@ -1,0 +1,116 @@
+{
+  "original_snapshot": "10414815914e58d4508ffee7a9010232273110c25cb841ff29ffcdecb1c32003",
+  "first_Xe_request": {
+    "timestamp": "2026-10-10T14:33:07.004Z",
+    "line": 121508,
+    "byte_offset": 540865064,
+    "text": "アップストリームより早いと主張するforkを見つけたのでこの環境で評価し、優れていれば実装を取り入れて下さい\nhttps://github.com/MistVVK/XeStrata\ngit workflowに従いghqを使用して取得して下さい"
+  },
+  "messages": [
+    {
+      "timestamp": "2026-10-05T08:32:29.114Z",
+      "byte_offset": 180227242,
+      "role": "assistant",
+      "phase": "final_answer",
+      "message_sha256": "fdc8ba84ca1369fa4a5222f8609652fd4b0ed98e5845df2be95c426e587a1591",
+      "text": "埋め込みサービスを停止し、`inactive / MainPID=0`を確認しました。今後の測定後も停止したままにします。\n\nRAM→VRAMは実測で**約6.1〜6.5 GB/s**でした。エンジン内の転送も約6.2 GB/sなので、帯域上限に近い状態です。ただし計算との重なりがあり、転送待ちが支配的かは帯域だけでは断定できません。\n\n同条件の32K入力比較では、転送を減らした変更で**453→646 token/s**に改善し、全出力が一致しました。検証結果を含む[PR #6](https://github.com/yqYo1/Strata/pull/6)をマージ済みです。"
+    },
+    {
+      "timestamp": "2026-10-05T11:21:36.069Z",
+      "byte_offset": 185554690,
+      "role": "assistant",
+      "phase": "final_answer",
+      "message_sha256": "364bdf5ccb058079a2e4903e13aaf3241dfe216ff907780a81ecd8e5facee3ba",
+      "text": "比較しました。**RAMから復元＋グラフ再作成は、VRAMからRAMへ退避して戻す方式より速い結果でした。**\n\nB570・約325 MiBのキャッシュで、解放・再確保・復元を含む単発測定です。\n\n| 方式 | 所要時間 |\n|---|---:|\n| 全解放・VRAMから退避して復元 | 278 ms |\n| 全解放・RAMから復元＋グラフ再作成 | 153 ms |\n| 全解放・RAMから固定アドレスへ復元 | 54 ms |\n| 半分解放・VRAMから退避して復元 | 113 ms |\n| 半分解放・RAMから固定アドレスへ復元 | 25 ms |\n\nグラフ再作成自体は約103 msでした。この構成では、全解放するなら固定アドレスを維持して既存RAMから復元する方式が有力です。\n\n64K入力・4Kチャンクでは、保持／半分解放／全解放で約520／533／540 token/s。出力・状態・復元した重みの一致も確認し、[GitHub PR #8](https://github.com/yqYo1/Strata/pull/8)に反映しました。速度差は反復測定で確認が必要です。"
+    },
+    {
+      "timestamp": "2026-10-07T19:54:06.458Z",
+      "byte_offset": 318209137,
+      "role": "assistant",
+      "phase": "final_answer",
+      "message_sha256": "149b09acb168fbc34785cbadf2e54f965ed1bd57bfa7edbcdb9897fdf388a720",
+      "text": "速度比較は**32,768入力トークン以上**に統一しました。パッチなしのfork元では、32Kでprefill **393.65 tok/s**、decode **17.14 tok/s**でした。\n\nコピーキューの修正候補も32Kで3回、全内部状態・出力の一致を確認しました。これは速度評価から除外し、通常設定での反復と256K検証を続けます。記録は[PR #9](https://github.com/yqYo1/Strata/pull/9)に反映済みです。"
+    },
+    {
+      "timestamp": "2026-10-08T04:16:41.951Z",
+      "byte_offset": 338648075,
+      "role": "assistant",
+      "phase": "final_answer",
+      "message_sha256": "9ae3f6ec79008130ac8d39fe14b5c13ad59ac5dc1a691163464d539100652208",
+      "text": "比較は**32K以上**に統一し、初回と反復を分けて測定しました。今回の32K反復結果は以下です。\n\n| 処理順 | prefill | decode |\n|---|---:|---:|\n| チャンク順 | 427.5 tok/s | 18.5 tok/s |\n| レイヤー順＋RAM中間表現 | 429.5 tok/s | 17.9 tok/s |\n\n全18回で出力一致、新しいGPU障害なしを確認しました。改善は小さく、候補は未採用です。**256K満杯・復元・上限拒否の検証は未完了**です。\n\n[測定記録](/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-2026-10-05/bench/results/2026-10-05-sycl-prefill-scaling/upstream-v0.1.40.2-20261008/code32k/repro32k/kv-streaming-32k-and-layer-order-v3/README.md)"
+    },
+    {
+      "timestamp": "2026-10-09T00:03:11.887Z",
+      "byte_offset": 383038538,
+      "role": "assistant",
+      "phase": "final_answer",
+      "message_sha256": "8d12dfd1d55f2559278c0eb1d1f6cbae6d59627492daf9731d3686ab4d52c887",
+      "text": "fork元の[`fb58e0d`（0.1.41）](https://github.com/Niko1221/Strata/commit/fb58e0dbc8399662c0e47c76578c6e878b14f6cf)を測定し、更新を取り込みました。Arc B570・IQ3_S、32K入力の後続測定です。\n\n| 版・設定 | prefill tok/s | decode tok/s |\n|---|---:|---:|\n| fork元そのまま | 348.9 | 17.14 |\n| 更新取り込み版・同じ指定設定 | 361.7 | 16.46 |\n| 更新前・調整済み設定 | 427.5 | 16.59 |\n| 更新後・調整済み設定 | 449.7 | 16.64 |\n\nfork元は実際のキャッシュ枠数が異なるため、上2行は厳密な同条件比較ではありません。条件を揃えた下2行では **prefillが5.2%改善**し、decodeのデグレは確認できませんでした。\n\nサーバー機能はすべて取り込み、CPU・SYCL更新も採用しています。256Kを使い切る検証と保存・復元も通りました。[測定詳細](/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-upstream-v0.1.41-20261009/bench/results/2026-10-05-sycl-prefill-scaling/upstream-v0.1.41-20261009/README.md)と[PR #9](https://github.com/yqYo1/Strata/pull/9)に保存済みです。PRは未マージです。\n\n続く転送経路の改善候補は、別ブランチで速度比較中です。"
+    },
+    {
+      "timestamp": "2026-10-09T04:28:50.868Z",
+      "byte_offset": 392698353,
+      "role": "assistant",
+      "phase": "final_answer",
+      "message_sha256": "7c12be6b091fc644a8f839b0a777ffca15bb53df397fb46ba308bb07304a496d",
+      "text": "指摘どおりです。prefillとdecodeの採用は別々に判断します。「ばらつきの範囲」とした判断は早計でした。\n\n各条件で継続decodeを72回、32K prefill直後のdecodeを6回測定しました。直後のdecodeは従来版 **16.826 → 候補15.464 tokens/s** と約8%低下し、95%信頼区間も **−12.81%〜−2.90%** でした。全回で出力は一致し、正常終了しています。\n\n候補全体の採用は保留し、decodeは従来版を維持します。prefill高速化を活かせるよう、処理の切り替えを分離して検証します。[測定記録](/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/fix-sycl-server-env-v0141-2026-10-09/bench/results/2026-10-05-sycl-prefill-scaling/native-expert-copy-v0141-20261009/decode-repeat/README.md)"
+    },
+    {
+      "timestamp": "2026-10-09T09:28:50.717Z",
+      "byte_offset": 404125838,
+      "role": "assistant",
+      "phase": "commentary",
+      "message_sha256": "774918243861688f3a898067029d95189b2760baf12a2403968279bbf30980d6",
+      "text": "18プロセスの比較が完了しました。CPU配置変更はprefillが411.6→412.9 tok/s、復元後decodeが21.69→21.64 tok/sで、改善を確認できる結果ではなかったため採用しません。全プロセスの数値一致と正常終了は通過しました。次はCPUタスク数の実測と、新しいprefill実装の検証を順番に進めます。"
+    },
+    {
+      "timestamp": "2026-10-10T06:45:06.914Z",
+      "byte_offset": 501758585,
+      "role": "assistant",
+      "phase": "final_answer",
+      "message_sha256": "cae22240534af20f1856ce3cf9f7a5b9f61634aff7024e57cfefe80241b9aee0",
+      "text": "**大きな遅延区間は絞れていますが、内部の原因まで確定できていません。**\n\n- **decode：CPUエキスパート処理が第一候補です。** 32K prefill直後では、1ウィンドウ平均165.4 msに対し、CPU処理の呼び出し区間が123.8 msでした。ただし、計算・RAMアクセス・同期待ちの内訳は未分離です。[測定内訳](/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-copy-decode-repeat-v0141-first-decode-host-counter-summary-v1.json)\n- **prefill：転送・ステージング経路に大きな改善余地があります。** 約32K入力で約190 GBのエキスパート転送を記録し、経路変更で約450→541 token/sになりました。ただし、PCIe待ちが支配的なのか、コピーと計算の重ね合わせが不足しているのかは未確定です。\n\n541 token/sの候補は、prefill直後のdecodeで約8%の低下が確認されており未採用です。\n\n現行の実モデル速度は prefill 約412〜450、decode 約16.5〜21.7 token/sです。局所最適化が先行していたので、今は上記の内訳確定を優先しています。呼び出し集計用のビルドは完了し、調査エージェントも次の2件を並行して進めています。"
+    },
+    {
+      "timestamp": "2026-10-10T14:33:07.004Z",
+      "byte_offset": 540865064,
+      "role": "user",
+      "phase": null,
+      "message_sha256": "c0afbc80b4d2ec2a64c6a9f2540e9c71640dc436ed91fd44b8f672a7f1b57f5b",
+      "text": "アップストリームより早いと主張するforkを見つけたのでこの環境で評価し、優れていれば実装を取り入れて下さい\nhttps://github.com/MistVVK/XeStrata\ngit workflowに従いghqを使用して取得して下さい"
+    },
+    {
+      "timestamp": "2026-10-13T18:41:07.251Z",
+      "byte_offset": 840141065,
+      "role": "assistant",
+      "phase": "commentary",
+      "message_sha256": "eb7fc17cecb03dc19639c6b7cadb7dfbd3300ab4e7c6b8ee306e4ea78cb7f473",
+      "text": "点検で、主ブランチの表示バージョンはStrata 0.1.38、forkの `main` は0.1.39でした。0.1.43由来のサーバー機能はXeStrata系の実験ブランチにあり、`feature/sycl` には反映されていません。\n\nまた、XeStrata系への変更はエンジン全体に及ぶもので、部品単位の取り込みではありませんでした。最近の約667～694 token/sもその実験系統の測定であり、主ブランチの性能として報告できません。既存SYCL実装との同条件比較と採否の確認が不足しています。"
+    },
+    {
+      "timestamp": "2026-10-13T19:25:23.151Z",
+      "byte_offset": 842825888,
+      "role": "assistant",
+      "phase": "final_answer",
+      "message_sha256": "6b7401ae71c824655c2602a40681413c2e27549c84f406b9775cace999d51b90",
+      "text": "指摘どおり、XeStrata由来の検証系統と主実装の扱いを混同していました。再点検して修正しました。\n\n- `AGENTS.md` と専用スキルを、**Nikoのみが上流、XeStrataは参考先**という方針へ修正。\n- 主実装は0.1.38系、`main`は0.1.39系でした。最近の性能値はXe系実験の値で、主実装の性能ではありません。\n- 終了したローカル8枝・remote3枝を削除。実装案73ファイルとレポートは復元可能に保存し、約750MBを整理しました。\n- 現在の枝は `feature/sycl`、`main`、比較用1枝です。\n\n[詳細な点検結果](/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-14-primary-strata-source-audit/README.ja.md)を `feature/sycl` にコミット・push済みです。**mainの機能適合とデフォルトへの反映、その後の本家更新は未完了**です。推論コードの一括置換は行っていません。"
+    },
+    {
+      "timestamp": "2026-10-13T21:47:59.582Z",
+      "byte_offset": 853436774,
+      "role": "assistant",
+      "phase": "final_answer",
+      "message_sha256": "261c5eb8dbbe97395d9073e5fd673f83b220793f0dd38411b20d447370f64eb5",
+      "text": "再点検しました。GitHub上のfork元も **Niko1221/Strata** であることを確認しました。\n\n- 旧スキル枝は指摘どおりXe由来でした。現在のスキルは主作業内へ移設済みです。\n- 主のCPU/SYCL・prefill/decode実装は保持され、Xeのエンジン全置換やlayer-major方式は未採用です。\n- 不要な参考枝を削除し、このforkのローカル・GitHub双方を **`feature/sycl`と`main`の2本**に整理しました。元コミットは復元できます。\n- 主実装のビルドと対象の小規模GPU検査が通りました。Q2実験経路のscale不一致と不正な整数変換へ進む問題も修正しました。新しいGPU障害は検出されていません。\n\n**`main`への反映は未完了です。** 実際のmain-SYCLにある動的VRAM機能との差が残っています。現在のモデル速度と256K実入力・RESTOREも未検証です。\n\n変更・検証・整理結果はcommit/push済みです。[詳細レポート](/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-14-primary-native-runtime/README.ja.md)に由来、採否、残作業を記録しました。"
+    },
+    {
+      "timestamp": "2026-10-14T02:44:40.790Z",
+      "byte_offset": 872899030,
+      "role": "assistant",
+      "phase": "final_answer",
+      "message_sha256": "468bc21539e760992792b22db6beec81e2566bbca0357c432dfdf6c1cf6ae67f",
+      "text": "再点検し、[実装・統合状況の対応表](/home/yayoi/orca/workspaces/Strata/sycl/docs/UPSTREAM_INTEGRATION.md)をコミット・pushしました。\n\n- 主実装は **Niko1221/Strataを基礎とするSYCL・CPU経路**です。XeStrataのエンジンへ置換されていません。\n- Xe由来の処理順・カーネル候補は、任意の比較・参考として別に管理しています。\n- 自分のforkのブランチは **`feature/sycl` と `main` の2本**です。\n- 単一GPUの並列要求、動的VRAM、最新のAPI・setup機能には移植残りがあります。**上流同期と `main` への反映は未完了**です。\n\n現在の主実装は、実入力32,049 tokensの3回でprefill **118.5 / 118.4 / 118.9 t/s**、24-token decode **4.2 / 2.8 / 3.4 t/s**でした。全回正常終了し、新たなGPU障害は検出されませんでした。過去のXeStrata側の速度とは区別しています。"
+    }
+  ],
+  "scope": "Selected public statements needed to reconcile measurements, adoption and active branch. No tool outputs, hidden reasoning or full session copy."
+}

@@ -1,0 +1,29 @@
+diff --git a/src/kernels/sycl/native_mmq_xmx.cpp b/src/kernels/sycl/native_mmq_xmx.cpp
+index 69c05c5..a213907 100644
+--- a/src/kernels/sycl/native_mmq_xmx.cpp
++++ b/src/kernels/sycl/native_mmq_xmx.cpp
+@@ -332,12 +332,19 @@ void launch(NativeMmq p, void *stream) {
+             sum += unit_product<Type, Tile, Packed>(w, x, weight_rows, valid,
+                                                     xs, first, end, unit, -1);
+         } else {
+-          // The fixed recursion spells out the original XOR-8/4/2/1 tree.
+-          // Finish each pair before visiting the next one: only four pending
+-          // vectors are needed, with no large indirectly indexed array.
++          // Form two partials with the original XOR-8/4/2 tree, then finish
++          // XOR-1. The loop shares eight leaf bodies.
++          constexpr int N = 16 * Tile;
++          using V = e::simd<float, N>;
++          e::simd<float, 2 * N> partials = 0.f;
+           const int units = p.cols / (Type == 20 ? 16 : 32);
+-          sum = fold_cells<Type, Tile, 1, Packed>(w, x, weight_rows, valid, xs,
+-                                                  first, end, units, 0);
++#pragma unroll 1
++          for (int cell = 0; cell < 2; ++cell)
++            partials.template select<N, 1>(cell * N) =
++                fold_cells<Type, Tile, 2, Packed>(w, x, weight_rows, valid, xs,
++                                                   first, end, units, cell);
++          sum = V(partials.template select<N, 1>(0)) +
++                V(partials.template select<N, 1>(N));
+         }
+ #pragma unroll
+         for (int t = 0; t < Tile; ++t) {

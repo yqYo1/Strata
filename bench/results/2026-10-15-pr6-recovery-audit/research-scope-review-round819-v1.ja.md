@@ -1,0 +1,1 @@
+R817は1,757語・7 URLで予算内。R805の一般的な証拠段階をR810用の抽出・disasm手順へ具体化し新規性があります。構文は[Intel Debugging](https://intel.github.io/llvm/developer/Debugging.html)と[ISPC Xe](https://ispc.github.io/ispc_for_xe.html)の公式例に合いますが、実ツール実行・payload適合・runtime選択は未確認。Mainは「Bounded extraction and disassembly recipes」「What an ISA finding can establish」の2節のみ参照。実LLVMはP/.tools外のR810記載パスでした。

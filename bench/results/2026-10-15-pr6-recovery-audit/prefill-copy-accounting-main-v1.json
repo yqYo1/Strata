@@ -1,0 +1,309 @@
+{
+  "passed": true,
+  "GPU_executed": false,
+  "recipe_sha256": "47216659c2e8bde625c75e155b0e4115c71cc8ddafd8865221d28f69fdd5c6b2",
+  "profile_summary_sha256": "92e5c531a11d9ce0d368b09bbb421762566e85c91c5b1e70c35e0bc4065bdfcc",
+  "capacity_metadata_sha256": "2360925d1d65abbb28eb118105b70d29f7d3e6cf04958aed7eaca57c3759ea94",
+  "actual_prompt_tokens": 34603,
+  "batched_rows": 34602,
+  "GPU_residual_rows": 4096,
+  "host_residual_rows": 30506,
+  "host_chunk_rows": [
+    4096,
+    4096,
+    4096,
+    4096,
+    4096,
+    4096,
+    4096,
+    1834
+  ],
+  "per_host_direction_bytes": 58727710720,
+  "copy_groups": [
+    {
+      "operation": "zeCommandListAppendMemoryCopy(M2D)",
+      "provider_requested_bytes": 109754670264,
+      "classified": {
+        "expert": {
+          "calls": 24576,
+          "bytes": 50292326400,
+          "histogram": [
+            {
+              "bytes": 1510400,
+              "calls": 2560
+            },
+            {
+              "bytes": 1715200,
+              "calls": 1536
+            },
+            {
+              "bytes": 1868800,
+              "calls": 512
+            },
+            {
+              "bytes": 1971200,
+              "calls": 7680
+            },
+            {
+              "bytes": 2176000,
+              "calls": 7168
+            },
+            {
+              "bytes": 2329600,
+              "calls": 4608
+            },
+            {
+              "bytes": 2662400,
+              "calls": 512
+            }
+          ]
+        },
+        "host_residual_reload": {
+          "calls": 376,
+          "bytes": 58727710720,
+          "histogram": [
+            {
+              "bytes": 75120640,
+              "calls": 47
+            },
+            {
+              "bytes": 167772160,
+              "calls": 329
+            }
+          ]
+        }
+      },
+      "unassigned_calls": 487,
+      "unassigned_bytes": 734633144,
+      "unassigned_histogram": [
+        {
+          "bytes": 4,
+          "calls": 1
+        },
+        {
+          "bytes": 16,
+          "calls": 17
+        },
+        {
+          "bytes": 84,
+          "calls": 1
+        },
+        {
+          "bytes": 7168,
+          "calls": 7
+        },
+        {
+          "bytes": 7336,
+          "calls": 2
+        },
+        {
+          "bytes": 9216,
+          "calls": 8
+        },
+        {
+          "bytes": 16384,
+          "calls": 8
+        },
+        {
+          "bytes": 29344,
+          "calls": 48
+        },
+        {
+          "bytes": 65536,
+          "calls": 384
+        },
+        {
+          "bytes": 36700160,
+          "calls": 1
+        },
+        {
+          "bytes": 67108864,
+          "calls": 10
+        }
+      ]
+    },
+    {
+      "operation": "zeCommandListAppendMemoryCopy(D2M)",
+      "provider_requested_bytes": 58727711492,
+      "classified": {
+        "host_residual_store": {
+          "calls": 376,
+          "bytes": 58727710720,
+          "histogram": [
+            {
+              "bytes": 75120640,
+              "calls": 47
+            },
+            {
+              "bytes": 167772160,
+              "calls": 329
+            }
+          ]
+        }
+      },
+      "unassigned_calls": 13,
+      "unassigned_bytes": 772,
+      "unassigned_histogram": [
+        {
+          "bytes": 4,
+          "calls": 1
+        },
+        {
+          "bytes": 64,
+          "calls": 12
+        }
+      ]
+    },
+    {
+      "operation": "zeCommandListAppendMemoryCopy(H2D)",
+      "provider_requested_bytes": 2222886912,
+      "classified": {
+        "KV_prefix_stage": {
+          "calls": 384,
+          "bytes": 1868562432,
+          "histogram": [
+            {
+              "bytes": 65536,
+              "calls": 24
+            },
+            {
+              "bytes": 131072,
+              "calls": 24
+            },
+            {
+              "bytes": 196608,
+              "calls": 24
+            },
+            {
+              "bytes": 262144,
+              "calls": 24
+            },
+            {
+              "bytes": 327680,
+              "calls": 24
+            },
+            {
+              "bytes": 393216,
+              "calls": 24
+            },
+            {
+              "bytes": 458752,
+              "calls": 24
+            },
+            {
+              "bytes": 524288,
+              "calls": 24
+            },
+            {
+              "bytes": 2097152,
+              "calls": 24
+            },
+            {
+              "bytes": 4194304,
+              "calls": 24
+            },
+            {
+              "bytes": 6291456,
+              "calls": 24
+            },
+            {
+              "bytes": 8388608,
+              "calls": 24
+            },
+            {
+              "bytes": 10485760,
+              "calls": 24
+            },
+            {
+              "bytes": 12582912,
+              "calls": 24
+            },
+            {
+              "bytes": 14680064,
+              "calls": 24
+            },
+            {
+              "bytes": 16777216,
+              "calls": 24
+            }
+          ]
+        },
+        "PLE_rows": {
+          "calls": 9,
+          "bytes": 354324480,
+          "histogram": [
+            {
+              "bytes": 18780160,
+              "calls": 1
+            },
+            {
+              "bytes": 41943040,
+              "calls": 8
+            }
+          ]
+        }
+      },
+      "unassigned_calls": 0,
+      "unassigned_bytes": 0,
+      "unassigned_histogram": []
+    },
+    {
+      "operation": "zeCommandListAppendMemoryCopy(D2D)",
+      "provider_requested_bytes": 17115676672,
+      "classified": {
+        "GPU_residual_store_reload": {
+          "calls": 94,
+          "bytes": 15770583040,
+          "histogram": [
+            {
+              "bytes": 167772160,
+              "calls": 94
+            }
+          ]
+        }
+      },
+      "unassigned_calls": 306,
+      "unassigned_bytes": 1345093632,
+      "unassigned_histogram": [
+        {
+          "bytes": 1024,
+          "calls": 288
+        },
+        {
+          "bytes": 40960,
+          "calls": 1
+        },
+        {
+          "bytes": 860160,
+          "calls": 1
+        },
+        {
+          "bytes": 73400320,
+          "calls": 7
+        },
+        {
+          "bytes": 75120640,
+          "calls": 1
+        },
+        {
+          "bytes": 94371840,
+          "calls": 8
+        }
+      ]
+    }
+  ],
+  "unassigned_requested_bytes": 2079727548,
+  "source_pins": {
+    "/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/prefill.cpp": "aca7a33b1019e4637ffc6738a957c0eac4d051ce8a9cf957a446524b45df51e4",
+    "/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/layer_major.inc": "1a79f1d66fdddb6ad3715fc784f2d15fecbf4288fd6cabc335005287d8d1c36c",
+    "/home/yayoi/orca/workspaces/Strata/sycl/src/core/expert_cache.cpp": "7d9a7fe0c54e8d55addcc9e9d7117d0b3addd3da294feb3b78b0fde735ce806e",
+    "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/kv_stream.cpp": "4473c66af0c24663534fe2ca01e56cdb41f96c3aaae7de61eabeda8d25294696"
+  },
+  "corrections_to_R681_v1": [
+    "Residual storage uses batched34602 rows, host30506 rows, final1834-row tail. R681 text says34603/30507/1835 but its byte figures correspond to these corrected counts.",
+    "The remaining354324480B H2D histogram is exactly the9 PLE uploads at prefill.cpp:1764; code pins, pinned source owner and all histogram lengths agree.",
+    "Append host-mirror writes are kernel stores and remain outside this copy-API ledger; whole-window token count is not a pure-prefill kernel write counter."
+  ],
+  "scope": "Source-derived owner paths and exact complete copy-size distributions; not intercepted addresses or measured PCIe wire bytes. Remaining copies stay unclassified.",
+  "performance_qualified": false
+}

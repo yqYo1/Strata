@@ -1,0 +1,40 @@
+Purpose: knowledge collection. Existing project /home/yayoi/orca/workspaces/Strata/sycl, primary feature/sycl.
+Read AGENTS.md, docs/ARTIFACT_RETENTION.md and /home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-index.json first.
+Read the relevant previous reports and Main corrections to avoid duplication;
+Main does not read collection report bodies on arrival. A native Codex Luna-max
+reviewer will assess depth/novelty/redundancy, pin hashes and index retrieval metadata.
+This is a fresh bounded read-only session. Do not spawn children. Write only your
+named report. No product edits, Git commands, builds, tests, GPU/profiler jobs,
+process inspection, cleanup, services or environment changes. Main continues
+independent work; do not request steering. No XeStrata source, helpers or archives.
+Use primary documentation, papers and original technical blogs; at most six
+substantive sources. Search current sources, distinguish measured facts from
+inference, and identify device/version/license limits and counterevidence.
+Do not repeat generic background. Compare alternatives deeply enough to be useful;
+the budget is a working limit, not a demand for filler or a tiny fact lookup.
+Return a file report with precise URLs, applicability limits, new findings and
+one concrete future experiment. In the final response supply only the report
+path, its hash and a <=150-character operational completion notice, without
+technical findings. Report completion with your live exact Task/Dispatch via
+Orca worker_done, list filesModified, then end. Do not message Main findings.
+Current evidence: clean PP349.3 median versus control339.2, not >600/1000 yet.
+Actual 78452-row CPU diagnostic: main218.681 CPU s/wall225.874; explicit waits
+165.704 CPU s; residual host copy call CPU25.793s, versus hostgroup.19649s.
+Route-ID exchange inclusive131.610wall includes previous GPU work and is not
+removable pure copy latency. Recent idle 320MiB transfer component: ordinary
+H2D6.015GB/s versus HostUSM5.095GB/s; USM faster submission but slower completion.
+Blanket pinning rejected; no model end-to-end claim. FP16 residual remains
+unqualified for quality/admission. Default-OFF full-vocab NLL observer now built,
+host tested and synthetic129-input paired-GPU tested, fault0; this is not model
+quality evidence. Preserve the existing FP32 path and physical262144 requirement.
+
+Scope metadata from reviewer767:
+{
+  "priority": 2,
+  "purpose_label": "long_prefill_tuning_knowledge",
+  "title": "Chunk residency and overlap under a bounded GPU memory budget",
+  "finite_question": "For repeated long-prefill chunks, compare sequential one-buffer execution, resident-prefix plus one scratch window, and bounded double-buffer overlap. Which dependencies allow useful transfer/compute overlap, and where do queue drain, staging lifetime, memory headroom or synchronization erase it?",
+  "breadth_and_counterevidence": "Use SYCL/Intel primary docs and original non-LLM GPU pipeline studies; compare at least two access/queue schedules and include a case where overlap or extra buffering regresses. Bound capacity arithmetic to the current 8192 chunk and 32768 GPU-resident rows; distinguish design estimates from measurements and include failure/lifetime constraints.",
+  "report_budget": "1200-1600 words; at most 6 substantive sources. Do not repeat UR pointer-registration internals from R765 or re-derive R764 storage quality."
+}
+Output only: /home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-knowledge-round769-v1.txt

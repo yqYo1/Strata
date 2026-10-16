@@ -1,0 +1,313 @@
+--- a/src/sycl/runtime.cpp
++++ b/src/sycl/runtime.cpp
+@@ -1,3 +1,4 @@
++#include "strata/sycl/cpu_wait_profile.hpp"
+ #include "strata/sycl/runtime.hpp"
+ #include "strata/sycl/checked_cleanup.hpp"
+ 
+@@ -94,12 +95,14 @@
+   // Drain both queues even when the first queue reports an error.
+   std::exception_ptr error;
+   try {
+-    compute_.wait_and_throw();
++    strata::sycl_backend::cpu_wait_profile::blocking(
++        strata::sycl_backend::cpu_wait_profile::compute_queue, [&] { compute_.wait_and_throw(); });
+   } catch (...) {
+     error = std::current_exception();
+   }
+   try {
+-    transfer_.wait_and_throw();
++    strata::sycl_backend::cpu_wait_profile::blocking(
++        strata::sycl_backend::cpu_wait_profile::transfer_queue, [&] { transfer_.wait_and_throw(); });
+   } catch (...) {
+     if (!error)
+       error = std::current_exception();
+@@ -110,7 +113,8 @@
+ }
+ 
+ void Runtime::wait(sycl::event event) {
+-  event.wait_and_throw();
++  strata::sycl_backend::cpu_wait_profile::blocking(
++        strata::sycl_backend::cpu_wait_profile::event, [&] { event.wait_and_throw(); });
+   check();
+ }
+ 
+--- a/src/sycl/compat.cpp
++++ b/src/sycl/compat.cpp
+@@ -1,3 +1,4 @@
++#include "strata/sycl/cpu_wait_profile.hpp"
+ #include "strata/sycl/compat/cuda_runtime.h"
+ #include "strata/sycl/launch.hpp"
+ #include "strata/sycl/runtime.hpp"
+@@ -95,7 +96,8 @@
+   std::exception_ptr error;
+   for (auto &q : pending)
+     try {
+-      q.wait_and_throw();
++      strata::sycl_backend::cpu_wait_profile::blocking(
++        strata::sycl_backend::cpu_wait_profile::compat_queue, [&] { q.wait_and_throw(); });
+     } catch (...) {
+       if (!error)
+         error = std::current_exception();
+@@ -317,7 +319,9 @@
+   if (!st)
+     return cudaSuccess;
+   return attempt([&] {
+-    queue(st).wait_and_throw();
++    { auto& wait_queue = queue(st);
++      strata::sycl_backend::cpu_wait_profile::blocking(
++          strata::sycl_backend::cpu_wait_profile::compat_queue, [&] { wait_queue.wait_and_throw(); }); }
+     std::lock_guard lock(registry_mutex);
+     auto it = streams.find(st);
+     require(it != streams.end() && !it->second.recording,
+@@ -327,7 +331,9 @@
+ }
+ cudaError_t cudaStreamSynchronize(cudaStream_t st) {
+   return attempt([&] {
+-    queue(st).wait_and_throw();
++    { auto& wait_queue = queue(st);
++      strata::sycl_backend::cpu_wait_profile::blocking(
++          strata::sycl_backend::cpu_wait_profile::compat_queue, [&] { wait_queue.wait_and_throw(); }); }
+     runtime_for()->check();
+   });
+ }
+--- a/src/prefill/sycl/postops.cpp
++++ b/src/prefill/sycl/postops.cpp
+@@ -1,3 +1,4 @@
++#include "strata/sycl/cpu_wait_profile.hpp"
+ #include "strata/kernels/f16_bits.hpp"
+ #include "strata/kernels/native_router.hpp"
+ #include "strata/kernels/router_top10.hpp"
+@@ -317,7 +318,8 @@
+     auto &q = queue_for(s);
+     strata::kernels::native_router_top10_multi(l, ids, w, int(T), &q);
+     if (!s)
+-      q.wait_and_throw();
++      strata::sycl_backend::cpu_wait_profile::blocking(
++        strata::sycl_backend::cpu_wait_profile::direct_queue, [&] { q.wait_and_throw(); });
+   } else {
+     strata::kernels::router_top10(l, int(T), int(E), 10, ids, w, s);
+   }
+--- a/src/kernels/sycl/native_mmvq.cpp
++++ b/src/kernels/sycl/native_mmvq.cpp
+@@ -1,3 +1,4 @@
++#include "strata/sycl/cpu_wait_profile.hpp"
+ // Adapted from llama.cpp 3cf03257f219afbe7334045ff7c6a06ac68c627d:
+ // ggml/src/ggml-cuda/{quantize.cu,vecdotq.cuh,mmvq.cu,common.cuh}
+ // and ggml/src/ggml-common.h. See docs/native-mmvq.md for exact scope.
+@@ -1180,7 +1181,8 @@
+   (void)checked_count(groups, 128);
+   auto &q = queue_for(stream);
+   if (!iq_old_kernels() && (native_mmq_xmx(p, &q) || native_iq_mmq_esimd(p, &q))) {
+-    if (!stream) q.wait_and_throw();
++    if (!stream) strata::sycl_backend::cpu_wait_profile::blocking(
++        strata::sycl_backend::cpu_wait_profile::direct_queue, [&] { q.wait_and_throw(); });
+     return;
+   }
+ #define PROMPT(TYPE, ...) case TYPE: prompt_product<__VA_ARGS__>(p, q); break
+@@ -1205,7 +1207,8 @@
+   }
+ #undef PROMPT
+   if (!stream)
+-    q.wait_and_throw();
++    strata::sycl_backend::cpu_wait_profile::blocking(
++        strata::sycl_backend::cpu_wait_profile::direct_queue, [&] { q.wait_and_throw(); });
+ }
+ 
+ void native_mmvq_set_multi_exact(bool exact) {
+@@ -1456,6 +1459,7 @@
+   grouped_dispatch<true>(L.d_type, L, ptr, start, count, dst, tok, int(groups),
+                          int(entries), hq, nullptr, nullptr, out, tile, q);
+   if (!stream)
+-    q.wait_and_throw();
++    strata::sycl_backend::cpu_wait_profile::blocking(
++        strata::sycl_backend::cpu_wait_profile::direct_queue, [&] { q.wait_and_throw(); });
+ }
+ } // namespace strata::kernels
+--- a/src/kernels/sycl/iq.cpp
++++ b/src/kernels/sycl/iq.cpp
+@@ -1,3 +1,4 @@
++#include "strata/sycl/cpu_wait_profile.hpp"
+ #include "strata/kernels/f16_bits.hpp"
+ #include "strata/kernels/iq_kernels.hpp"
+ #include "strata/kernels/native_mmvq.hpp"
+@@ -121,7 +122,8 @@
+   auto &q = queue_for(stream);
+   native_quantize_q8_1(x, out, int(count), 1, &q);
+   if (!stream)
+-    q.wait_and_throw();
++    strata::sycl_backend::cpu_wait_profile::blocking(
++        strata::sycl_backend::cpu_wait_profile::direct_queue, [&] { q.wait_and_throw(); });
+ }
+ void iq_mmvq(int type, const void *w, const void *x, float *y, int ni, int no,
+              int cols, void *stream) {
+@@ -138,7 +140,8 @@
+   } else
+     native_mmvq(type, w, x, y, ni, no, cols, &q);
+   if (!stream)
+-    q.wait_and_throw();
++    strata::sycl_backend::cpu_wait_profile::blocking(
++        strata::sycl_backend::cpu_wait_profile::direct_queue, [&] { q.wait_and_throw(); });
+ }
+ void iq_dequant_f16(int type, const void *src, int64_t n, uint16_t *out,
+                     void *stream) {
+--- a/src/prefill/prefill.cpp
++++ b/src/prefill/prefill.cpp
+@@ -37,6 +37,7 @@
+ #include <stdexcept>
+ #if defined(STRATA_ENABLE_SYCL)
+ #include "strata/sycl/launch.hpp"
++#include "strata/sycl/cpu_wait_profile.hpp"
+ #endif
+ #include "strata/core/conversation_memory.hpp"
+ 
+--- a/src/prefill/layer_major.inc
++++ b/src/prefill/layer_major.inc
+@@ -13,8 +13,20 @@
+     }
+     // Reuse only pays across chunks. Keep short chat/agent turns on the
+     // original path even when long-prompt layer reuse is requested.
+-    return requested && std::strcmp(requested, "1") == 0 && impl_ && n > impl_->T
+-               ? run_layer_major(tokens, n, pos0, err) : run_impl(tokens, n, pos0, err);
++    if (requested && std::strcmp(requested, "1") == 0 && impl_ && n > impl_->T) {
++#if defined(STRATA_ENABLE_SYCL)
++        // Read on the calling thread before publishing the thread-local scope.
++        const char* cpu_wait_switch = std::getenv("STRATA_PREFILL_CPU_WAIT_PROFILE");
++        sycl_backend::cpu_wait_profile::Scope cpu_wait_scope(
++            cpu_wait_switch && std::strcmp(cpu_wait_switch, "1") == 0);
++#endif
++        const bool ok = run_layer_major(tokens, n, pos0, err);
++#if defined(STRATA_ENABLE_SYCL)
++        cpu_wait_scope.complete(ok);
++#endif
++        return ok;
++    }
++    return run_impl(tokens, n, pos0, err);
+ }
+ 
+ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) try {
+--- /dev/null
++++ b/include/strata/sycl/cpu_wait_profile.hpp
+@@ -0,0 +1,122 @@
++#pragma once
++// Authored for Strata; repository LICENSE (MIT) applies.
++// Host-only diagnostic. No SYCL objects, allocations, or synchronization.
++#include <cerrno>
++#include <chrono>
++#include <cstdio>
++#include <exception>
++#if defined(__linux__)
++#include <time.h>
++#endif
++
++namespace strata::sycl_backend::cpu_wait_profile {
++enum Kind { compute_queue, transfer_queue, event, compat_queue, direct_queue, kinds };
++struct Stamp { double wall = 0, cpu = 0; bool valid = false; };
++inline Stamp stamp() noexcept {
++    const int saved_errno = errno;
++    Stamp s;
++    s.wall = std::chrono::duration<double>(std::chrono::steady_clock::now().time_since_epoch()).count();
++#if defined(__linux__)
++    timespec t{};
++    if (::clock_gettime(CLOCK_THREAD_CPUTIME_ID, &t) == 0) {
++        s.cpu = double(t.tv_sec) + double(t.tv_nsec) * 1e-9;
++        s.valid = true;
++    }
++#endif
++    errno = saved_errno;
++    return s;
++}
++struct State {
++    double cpu[kinds]{}, wall[kinds]{};
++    unsigned long long count[kinds]{}, throws[kinds]{};
++    unsigned depth = 0;
++    bool invalid = false;
++};
++inline thread_local State* active = nullptr;
++class Wait {
++    State* s_ = active;
++    Kind kind_;
++    Stamp begin_;
++    int exceptions_ = 0;
++    bool outer_ = false;
++public:
++    explicit Wait(Kind k) noexcept : kind_(k) {
++        if (!s_) return;
++        outer_ = s_->depth++ == 0;
++        if (!outer_) return;
++        ++s_->count[kind_];
++        exceptions_ = std::uncaught_exceptions();
++        begin_ = stamp();
++    }
++    ~Wait() noexcept {
++        if (!s_) return;
++        --s_->depth;
++        if (!outer_) return;
++        const auto end = stamp();
++        if (std::uncaught_exceptions() > exceptions_) ++s_->throws[kind_];
++        if (!begin_.valid || !end.valid || end.cpu < begin_.cpu || end.wall < begin_.wall) {
++            s_->invalid = true;
++            return;
++        }
++        s_->cpu[kind_] += end.cpu - begin_.cpu;
++        s_->wall[kind_] += end.wall - begin_.wall;
++    }
++    Wait(const Wait&) = delete;
++    Wait& operator=(const Wait&) = delete;
++};
++// Wrap exactly the blocking call, not argument lookup, submission or error check.
++template<class F> inline void blocking(Kind k, F&& f) {
++    Wait observation(k);
++    f();
++}
++class Scope {
++    State state_;
++    State* previous_ = nullptr;
++    Stamp begin_;
++    bool enabled_ = false, nested_ = false, complete_ = false;
++public:
++    explicit Scope(bool enabled) noexcept : enabled_(enabled) {
++        if (!enabled_) return;
++        previous_ = active;
++        nested_ = previous_ != nullptr;
++        if (nested_) { previous_->invalid = true; return; }
++        begin_ = stamp();
++        active = &state_;
++    }
++    void complete(bool value) noexcept { complete_ = value; }
++    ~Scope() noexcept {
++        if (!enabled_) return;
++        if (nested_) {
++            std::fputs("strata prefill cpu wait: version=1 available=0 complete=0 nested_scope=1\n", stderr);
++            return;
++        }
++        const auto end = stamp();
++        active = previous_; // retire TLS before formatting/output
++        double wc = 0, ww = 0;
++        unsigned long long count = 0, errors = 0;
++        for (int k = 0; k < kinds; ++k) {
++            wc += state_.cpu[k]; ww += state_.wall[k];
++            count += state_.count[k]; errors += state_.throws[k];
++        }
++        const double cpu = end.cpu - begin_.cpu, wall = end.wall - begin_.wall;
++        const bool available = begin_.valid && end.valid && !state_.invalid &&
++            !state_.depth && cpu >= wc && wall >= ww;
++        std::fprintf(stderr, "strata prefill cpu wait: version=1 available=%d complete=%d "
++            "clock_or_accounting_error=%d open_waits=%u wait_throws=%llu wall_s=%.9f main_cpu_s=%.9f "
++            "wait_cpu_s=%.9f wait_wall_s=%.9f outside_wait_cpu_s=%.9f wait_count=%llu "
++            "compute_count=%llu transfer_count=%llu event_count=%llu compat_count=%llu direct_count=%llu "
++            "compute_cpu_s=%.9f transfer_cpu_s=%.9f event_cpu_s=%.9f compat_cpu_s=%.9f direct_cpu_s=%.9f "
++            "compute_wall_s=%.9f transfer_wall_s=%.9f event_wall_s=%.9f compat_wall_s=%.9f direct_wall_s=%.9f\n",
++            int(available), int(complete_), int(!available), state_.depth, errors,
++            available ? wall : -1., available ? cpu : -1., available ? wc : -1., available ? ww : -1.,
++            available ? cpu - wc : -1., count,
++            state_.count[0], state_.count[1], state_.count[2], state_.count[3], state_.count[4],
++            available ? state_.cpu[0] : -1., available ? state_.cpu[1] : -1., available ? state_.cpu[2] : -1.,
++            available ? state_.cpu[3] : -1., available ? state_.cpu[4] : -1.,
++            available ? state_.wall[0] : -1., available ? state_.wall[1] : -1., available ? state_.wall[2] : -1.,
++            available ? state_.wall[3] : -1., available ? state_.wall[4] : -1.);
++    }
++    Scope(const Scope&) = delete;
++    Scope& operator=(const Scope&) = delete;
++};
++} // namespace strata::sycl_backend::cpu_wait_profile

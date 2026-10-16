@@ -1,0 +1,44 @@
+Purpose: knowledge collection. Existing project /home/yayoi/orca/workspaces/Strata/sycl, primary feature/sycl.
+Read AGENTS.md, docs/ARTIFACT_RETENTION.md and /home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-index.json first.
+Read the relevant previous reports and Main corrections to avoid duplication;
+Main does not read collection report bodies on arrival. A native Codex Luna-max
+reviewer will assess depth/novelty/redundancy, pin hashes and index retrieval metadata.
+This is a fresh bounded read-only session. Do not spawn children. Write only your
+named report. No product edits, Git commands, builds, tests, GPU/profiler jobs,
+process inspection, cleanup, services or environment changes. Main continues
+independent work; do not request steering. No XeStrata source, helpers or archives.
+Use primary documentation, papers and original technical blogs; at most six
+substantive sources. Search current sources, distinguish measured facts from
+inference, and identify device/version/license limits and counterevidence.
+Do not repeat generic background. Compare alternatives deeply enough to be useful;
+the budget is a working limit, not a demand for filler or a tiny fact lookup.
+Return a file report with precise URLs, applicability limits, new findings and
+one concrete future experiment. In the final response supply only the report
+path, its hash and a <=150-character operational completion notice, without
+technical findings. Report completion with your live exact Task/Dispatch via
+Orca worker_done, list filesModified, then end. Do not message Main findings.
+
+
+Fresh eligible knowledgecollection fromnative788 review, index plusreview785+788 suppliedtoavoidoverlap. Maindoesnotneedoriginalonarrival. Wholeenginebuildactive; noGPU/process/build/tests.
+{
+  "priority": 1,
+  "purpose_label": "knowledge collection",
+  "title": "Diagnosing precision drift in long-sequence mixed-precision inference",
+  "finite_question": "For deep residual and recurrent sequence-model inference, compare methods for detecting and localizing precision drift: per-layer activation error distributions and outliers, teacher-forced logit divergence and NLL, persistent-state trajectory drift, and end-task outcomes. When can a local tensor metric miss a downstream decision change, and when can a visible tensor error leave predictions unchanged? Separate storage-rounding effects from local FP32 accumulation, and identify the limits of teacher-forced versus generated-token comparisons. Do not survey mitigation methods or recommend a Strata precision change.",
+  "breadth_and_counterevidence": "Use primary papers and framework/evaluation documentation. Compare local tensor, sequence-output, and task-level evidence, including cases where these indicators disagree. Keep the scope on diagnosis and metric interpretation; do not repeat R782's producer/consumer type contracts, R783's GEMM/API alternatives, or R785's conditional mitigation choices after a measured regression. Do not claim Strata quality, set an acceptance threshold, or infer Arc performance.",
+  "report_budget": "1,300–1,700 words; at most six substantive primary sources with exact URLs, one metric-comparison table, and one bounded prospective evaluation protocol.",
+  "schedulable_now": true,
+  "prerequisites": "Public source access only; no local quality result, device measurement, or implementation decision is required for a metric-method comparison.",
+  "prerequisite_evidence": [
+    "AGENTS.md requires numerical/performance gates and preservation of the FP32 reference for current native-16 precision work.",
+    "The current research index records native16_activation_pipeline.quality_acceptance as UNSET and performance_qualified as false; Main confirms native16 quality and performance are not qualified.",
+    "R782 and R783 cover type/state boundaries and kernel/API choices; R785's precision-quality follow-up is conditional on a measured regression and concerns mitigation choices. The proposed measurement-localization question is distinct and does not depend on that regression."
+  ],
+  "novelty_guard": "Limit the report to how evidence localizes or fails to localize numerical drift. Exclude error-feedback, rounding-policy, precision-allocation, and kernel-layout recommendations, which belong to other scopes or a later decision.",
+  "prior_report_paths_to_avoid_repeating": [
+    "bench/results/2026-10-15-pr6-recovery-audit/research-round782-v1.txt",
+    "bench/results/2026-10-15-pr6-recovery-audit/research-round783-v1.txt",
+    "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round785-v1.json"
+  ]
+}
+Output only: /home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round791-v1.txt

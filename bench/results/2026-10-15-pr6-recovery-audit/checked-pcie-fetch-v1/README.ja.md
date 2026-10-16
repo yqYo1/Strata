@@ -1,0 +1,34 @@
+# PCIe fetch submission検査の限定bugfix proposal v1
+
+未適用 / 未build / 未test / 未GPU。変更したのはこの新directoryだけ。現在のproduct/client/binary、pcie_frac0のfull job16956とmeasurement lockには触れていない。Mainが後で直列にsource review、CPU fault fixture、実C++ build/object/source pin更新、GPU診断を管理する。authorはtests/build/GPU/py_compile/process操作/Git/cleanupを実行していない。
+
+## 確認した不具合と経路
+
+src/core/verify.cppのfetch_dmaは各cudaMemcpyAsyncとcudaLaunchHostFuncの戻り値を捨てる。compat.cppのattempt/failは同期validation/enqueue例外をTLSへ記録して戻すが、cudaStreamSynchronizeはそのTLSを読まない。後続waitが成功しても未投入copyは復活せず、未転送stagingを次segmentが消費し得る。TLS cudaGetLastErrorを遅れて読む修正にはしない。他のwork/copyエラーとTLS detailが混ざるためである。
+
+R641 v2の訂正と実sourceを優先した。SYCLの通常wait_flag_ge(B)はifdefで除外され、sequence.cppはmapped polling非対応をthrowする。実経路はhost poolがplanをpublish→shared/resident workをoverlap launch→fetch enqueue→pool終了→copy_ checked drain→次segment。その次segmentがPCIe groupedを実行する。callback失敗そのものがSYCL spin待ちを止めるとは説明しない。既存の失敗原因やPCIe速度の測定結果をこのsource bugから推測しない。
+
+## 実際の差分
+
+files/にcomplete changed verify.cpp/verify.hppと新production helper checked_pcie_fetch.hppを置いた。source.diffは現rootへの最小限定差分。CUDA/HIPの旧fetch本文と同期処理は#else側に保持する。compat全面変更、kernel/math/route変更、process environment変更、新observerや統計はない。
+
+helperはVerifierのSYCL専用memberで、pool/fetchを呼ぶ同期issuerだけが書く。実ExpertSourceはP.publish/P.fetchをpool呼出しthreadから順に呼び、その後CPU jobsを実行する。host completion callbackは従来通りFlagSetだけを参照し、helperへアクセスしない。既存Verifierと同様にrun非reentrant契約であり、worker threadにerror stateを共有しない。
+
+- run開始と各layer/groupのpool直前にreset。前のcopy完了不明ならresetを拒否し、そのstateを捨てない。既にfailureがあれば後続fetch(空fetchも含む)は追加copy/callback/empty flag処理をしない。同じlayer stepでの二重batchも拒否する。
+- n<=0は従来のempty flag raiseを維持し、copy/callbackを投入しない。positive nは全batchのgeometryを最初に検査する。staging16slotsはproduction定数とstatic_assertで照合、group cap以下、bytes<=max_blob、全allocation/group span、aligned slot offset、掛算/アドレスoverflow、全src非null/数値spanを確認する。個々のhost source allocationの実長・pin identityはhelperには分からず、既存source/API契約を保つ。
+- copyを順番通り投入し、最初の非successで残copyとcallbackを止める。全copy成功後だけFlagSetを準備してcallback enqueueを検査する。first errorのcode/operation/indexと、その場のcudaGetErrorStringを固定256-byte bufferへ保存する。code/contextは保持し、長いdetailは255bytesで明示truncated表示する。後のTLS更新やdrain errorでfirst errorを上書きしない。
+- copy/notify API呼出し前にcompletion未知とする。失敗したenqueueにも部分的副作用がないと仮定しない。poolから戻った直後にsubmission errorがあれば、既存copy同期と同じchecked drainを実行して必ずreturn false。追加plan/flag publication、work fallback、次のPCIe consumer segmentへ進まない。成功prefixとcallback storage/source lifetimeをそのdrainが保護する。
+- 通常のcopy同期箇所はfinish_fetchに置換し、成功時の同期回数、copy順、callback順、graph順を維持。正常時に新waitを足さない。shared/hit work errorで早期returnするfailure pathだけもcopy prefixをchecked drainしてから既存error処理へ戻す。copy stateとwork_status_は別で、両方失敗すればfirst fetch errorと独立work codeを残す。
+- queue drainの非successも別drain_errorとして保持し、first errorがなければそれをfirstにする。drain失敗はcompletion未知のままreset/consumerを拒否する。既存checked retirement、stream/buffer/FlagSet ownerの寿命や解放規則を変更しない。helperはqueue/free/cleanupを所有しない。falseの後の他workのretirementも従来caller責任であり、この修正はretry許可を新設しない。
+
+普通のpcie0/未fetch pathも元のcopy checked drainを通る。overlap-offでは次segment内のresident/PCIe処理へ入る前の同じhost境界で失敗を止める。overlap-onで先行publishされたshared/resident workはPCIe consumerではない。失敗後の新windowは、既存callerの退役契約を満たした時だけであり、copy完了未知stateの流用は明示拒否する。
+
+## CPU fixtureと残るMain gate
+
+cpu_fault_fixture.cppはこのactual production helperを直接includeする。コピーした別実装ではない。first/middle/last copy失敗、callback失敗、独立drain失敗、TLS文字列更新後のfirst-error保持、部分prefix drainとconsumer未起動、normal順序、n0/negative、fresh reset、未drain reset拒否、whole-batch geometry/src不正、二重batch、fetch無しをfault injectionする。実native/GPU closureを偽装するfixtureではなく、SYCLのqueue動作・device故障・source pinの実検査は代替しない。Mainはassertを無効化せずにcompile/sanitizer/実行し、integrationのpool境界からconsumer拒否まで別途確認する。
+
+Main review時はconfigured SYCL resolverと新helper include、実verify object/link map、source/binary hashesを更新する。current live binaryへ差し替えない。初回PCIe診断は既存所有/有限deadline/fault gateを用い、実際に非zero expertがPCIeへ選択されたことと正しさを確認する。現pcie0が通ることだけを修正経路の検証としない。測定や性能改善、現failure解消の主張はない。
+
+pins.jsonはbase source、実source監査とR641訂正版を固定。Mainは可変なresearch-indexをhard pinから外し、authoring時のhashとGit commitをresearch-context.jsonへ記録した。registryが進んだだけで同一codeの検証を永久拒否しない。artifact-sha256.jsonはproposalの全sourceを固定する。既存receipt/statusは変更しない。次review pointはMainのsource/host qualificationである。
+
+MainのR643レビュー後、fetch失敗branchでも既知のwork_status_非successを別codeとして併記するよう修正した。copy/callbackのoperation名をcopy_api/callback_apiへ変更した。compatはAPI入口で既存sticky async errorも返すため、単なるenqueue固有失敗と断定しない。first errorの保存とdrain/consumer契約は同じ。元proposalはGit commit87a5f1d5から復元できる。変更後も未build・未test・未GPU。

@@ -1,0 +1,83 @@
+{
+  "schema": 1,
+  "status": "source_only_unexecuted",
+  "root": "/home/yayoi/orca/workspaces/Strata/sycl",
+  "default": "fp32",
+  "runtime_environment_mutations": false,
+  "scope": "SYCL interlayer residual storage only",
+  "files": [
+    {
+      "path": "include/strata/prefill/layer_major_plan.hpp",
+      "base_sha256": "f067cd631a6900864723b2049a95cb207ea5ac03055e2691b7d67f2706ef3721",
+      "proposed_sha256": "2376a0e54be8031ec578fc7a94297fae209dd12edf35911feee6c8e4e9372555",
+      "proposed_bytes": 7209
+    },
+    {
+      "path": "include/strata/prefill/kernels.hpp",
+      "base_sha256": "fbe63ba2e37e9d4e89e82e3f82743a99ee24f822ebbd287c5d14c6efb07e1aeb",
+      "proposed_sha256": "380e2a725efd6e179d4c83bf567b4717c85f9b2f858e545f1223d48eda42de2c",
+      "proposed_bytes": 7884
+    },
+    {
+      "path": "src/prefill/sycl/postops.cpp",
+      "base_sha256": "c090363d1d0362f0f4ed462fdd57d95c55c96e947d36afa30da11998aa0b5445",
+      "proposed_sha256": "4555d457901cd9d5dfd5691f81b8ee9c18e8498a9c0f4b5aa049ed4b86fdbd41",
+      "proposed_bytes": 13133
+    },
+    {
+      "path": "src/prefill/layer_major.inc",
+      "base_sha256": "1a79f1d66fdddb6ad3715fc784f2d15fecbf4288fd6cabc335005287d8d1c36c",
+      "proposed_sha256": "af6089a0a1e37c2e25cabead4abbe046b51c62ad22a232a6fa5fb402919adb77",
+      "proposed_bytes": 27099
+    },
+    {
+      "path": "src/prefill/prefill.cpp",
+      "base_sha256": "aca7a33b1019e4637ffc6738a957c0eac4d051ce8a9cf957a446524b45df51e4",
+      "proposed_sha256": "1bd0f3d73d9875661d699ef67e4d557389a7c04505d06341a3244972e25c6965",
+      "proposed_bytes": 200513
+    },
+    {
+      "path": "include/strata/prefill/layer_major_boundary_audit.hpp",
+      "base_sha256": "dc4d8a277d85c0b0c857ca1a86069bff0019b5160e1f8078cb60dac479136d68",
+      "proposed_sha256": "c63a96b69b365578f250078aaeb99b29e3ce4d4f3002e6812e453106a5e519a6",
+      "proposed_bytes": 13329
+    },
+    {
+      "path": "src/prefill/layer_major_plan_test.cpp",
+      "base_sha256": "f8647dae2f9835ddd1983fef56b33e6973e82f18d2fd164b0bbe4c99d737af10",
+      "proposed_sha256": "7f04977d2392dee26a85eb0f88be20d8c995d34433bba267c051861778d2e073",
+      "proposed_bytes": 11798
+    },
+    {
+      "path": "cmake/sycl_backend.cmake",
+      "base_sha256": "5afbdb50088564ec30d72bcc7246e705b64100b997e83d17c267816942c00a8b",
+      "proposed_sha256": "435f2cb084fa3853ddb02ce51fc14580cb542ad20a1304837acc73472d759324",
+      "proposed_bytes": 25481
+    },
+    {
+      "path": "tests/sycl/prefill_bf16_storage.cpp",
+      "base_sha256": null,
+      "proposed_sha256": "4308e25389138773d5b5fad641216c3e0767762755ad95bd232e9d514a8363e5",
+      "proposed_bytes": 13269
+    },
+    {
+      "path": "tests/cpu/prefill_boundary_audit.cpp",
+      "base_sha256": "9b59341d96449105b089f457f79060ef74945e114a8f9e0665c6fb596d4f9338",
+      "proposed_sha256": "a8013f739d58fbda5208346b418cb3c41120708323889a9837cc3b5045999e6a",
+      "proposed_bytes": 14350
+    }
+  ],
+  "source_diff_sha256": "f4d9e7145f7cde09fda1bebfca457657c692676bb508df99c138a2902306b647",
+  "proposal_version": 2,
+  "replaces_against_root": "bf16-prefill-storage-v1/source.diff; do not apply both",
+  "preserved_v1_source_diff_sha256": "5a1329044f5cbc19b60ba872d0cf07d1c1d6dc9c69fb0b21b21d0020627ee8e0",
+  "constructor_callers": {
+    "active_root": [
+      "src/prefill/layer_major.inc",
+      "tests/cpu/prefill_boundary_audit.cpp"
+    ],
+    "new_fixture": "tests/sycl/prefill_bf16_storage.cpp",
+    "all_use_explicit_dtype_in_proposal": true,
+    "historical_proposals_preserved": true
+  }
+}

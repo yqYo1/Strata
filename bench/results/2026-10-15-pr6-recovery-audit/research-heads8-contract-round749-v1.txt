@@ -1,0 +1,106 @@
+# R749 — Source safety review of own prompt heads8 candidate
+
+2026-10-16 JST. Read-only, source-only review at HEAD
+`617647659f21487ff3bf61fa1fd4ba87ba2520bf`. The only file written is this
+report. No product source was changed; no build, test, runtime, GPU, profiler,
+compiler/toolchain invocation, process/environment/service operation, cleanup,
+or Git mutation was performed. Main's clean whole-model cohort was not
+disturbed. No XeStrata product source, helper, test, or archive was read or
+used. The protected `prefill-gemm-only-contract-root-v1/record.json` was not
+read.
+
+## Finding
+
+I found no concrete memory-safety, undefined-behavior, range, lifetime, or
+baseline HRows16 regression in the candidate's production template and caller
+after tracing the HRows8 launch. It remains unapplied and unbuilt. The
+source-level checks below describe only the candidate; they do not establish
+compiler acceptance, runtime support, correctness on device, or performance.
+
+## Source identity and scope
+
+The reviewed proposal is `own-prompt-heads8-v1/source.diff`, SHA-256
+`73cd53b897ab608f384265df3069d38b3e4878f6808495ad29239ddd75fb772e`; its
+manifest is `own-prompt-heads8-v1/manifest.json`, SHA-256
+`2aba53fdac0b3b227850e5bbab47390d58dfef5b4d732eb2580771c8592e124a`.
+The manifest pins base commit `617647659f21487ff3bf61fa1fd4ba87ba2520bf`
+and records candidate source SHA-256
+`b4e77a3130e41291a55a069c48bfde1daf851343a0958f5469e63f711c61c319`.
+The live baseline source hash is
+`c88bd802d17ec5f9e1df05eee5581c9f50be86e87b1a454783b5c75aca55be3d`.
+The proposal's recorded provenance is own current prompt-attention and
+cell-major code only; its test/CMake additions were not reviewed for this
+production-template task. Candidate and baseline source remain unchanged.
+
+## Contract trace
+
+- **Geometry and bounds:** HRows8 gives WG64 and two head tiles per
+  `(query, kvhead)`. Each group computes `headbase` as 0 or 8 and keeps the
+  logical row stride at `HEADS=12`. Query loads offset from the current KV
+  head by `headbase*HD`; `qi < HEADS*HD` zero-fills the second tile's rows 4–7.
+  Direct output uses `kvhead*12 + headbase + row` and suppresses heads 12–15.
+  Thus both KV heads cover logical query heads 0–11 without padding stores.
+- **QK and PV collectives:** In WG64 there are four 16-lane subgroups.
+  QK's `subgroup < HRows/4` condition selects subgroups 0–1, with each
+  subgroup executing both cell panels. The condition is subgroup-uniform;
+  selected subgroups encounter all matrix collectives in the same order.
+  PV has no subgroup-divergent collective branch and uses all four subgroups.
+  The changed HRows16 loop bound is selected at compile time, so baseline
+  HRows16 retains its original four QK subgroups, expressions and output
+  mapping. The candidate does not introduce a per-lane branch around a
+  `joint_matrix` group-function.
+- **Address space, alignment, and strides:** The HRows8 route requires
+  KMapping0, so it uses the existing contiguous local `half` KV accessor and
+  existing local-accessor matrix pointers. Query and PV row strides remain
+  256 and 32 half elements; KV uses the existing 256-element row stride.
+  Reducing row count changes allocation extents, not pointer element type,
+  leading dimensions, or matrix tile footprint. The HRows8 path does not use
+  the separate pitch40 wrapper or any global pointer as a matrix operand.
+  Header/source review supports preservation of the existing address-space
+  and alignment contract; compile-time/device validation remains outstanding.
+- **SLM/barrier lifetimes:** All seven barriers in the selected-cell loop
+  remain outside the QK subgroup condition and are reached in the same order
+  by every work-item. `rows`, `scores`, K/V staging, scales, probabilities,
+  and online-softmax state are written before their consumer phase and are not
+  reused before the corresponding barrier. HRows8 shortens only row-indexed
+  arrays; the 32-cell KV tile and shared row/scale arrays retain their
+  extents. This is a source lifetime review, not an allocation or occupancy
+  claim.
+- **Flag and mode dispatch:** Exact `STRATA_SYCL_PROMPT_HEADS8=1` is checked
+  only in `dispatch<1>`. It rejects Direct disabled and exact KMapping1/2
+  before launch, then launches `<1,true,false,0,8>`. Other mode instantiations
+  bypass this branch. Non-exact HEADS8 values keep existing dispatch. This
+  inspection found no mixed-mode route into HRows8; tests of rejection and
+  all dispatch combinations are unrun.
+- **Launch range:** `nq` is validated as 0–65535 before dispatch (zero returns
+  early); `n_head_kv` is 2 and `n_head` is 24. Multiplying by HTiles and WG
+  remains within size_t for the validated query bound. The newly doubled
+  grid factor does not exceed the existing per-dimension bound from `nq`.
+  `cap` and page-size checks are unchanged, and cell indices are divided only
+  after the existing `cell < 0` guard.
+
+The config range is intentionally narrow: the candidate's explicit reject
+checks cover Direct-off and KMapping1/2 as recorded in its README; there is no
+claim that this constitutes validation of malformed environment strings or
+runtime dispatch behavior. No additional concrete defect was found in scope.
+
+## Prior work and limits
+
+Read `docs/ARTIFACT_RETENTION.md`, R747
+`research-prompt-headtile-round747-v1.txt`, R748
+`research-profile-counters-round748-v1.txt`, and the proposal README and
+manifest to avoid repeating their conclusions. R747 already establishes the
+two-group source-arithmetic tradeoff and the 8+4 tail requirement. This review
+uses the corrected launch-local HRows8 byte total **31,088 B**, including the
+4-byte Direct placeholder; the earlier 30,960 B figure is incorrect. This
+report makes no occupancy claim and does not treat XeStrata performance
+numbers as implementation evidence.
+
+No new Intel reference was needed: the subgroup-collective and Intel
+matrix-load constraints were already documented in R747 from Intel's primary
+matrix extension specification. Installed Intel compiler headers were read
+only as official compiler headers; no toolchain command was run. Source review
+cannot settle compiler acceptance of the convergent branch, local accessor
+alignment realization, actual SLM allocation, or device output correctness.
+Those remain for Main's serialized review/qualification after the current
+cohort closes.

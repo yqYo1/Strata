@@ -55,7 +55,14 @@ def normalize(v, t: Path):
     if isinstance(v, list):
         return [normalize(x, t) for x in v]
     if isinstance(v, str):
-        return v.replace(str(t), "<T>").replace("\\", "/").replace(setup.EXE, "<EXE>")
+        v = v.replace(str(t), "<T>").replace("\\", "/")
+        # Normalize the executable itself, not a log named strata-<model>.log.
+        # On Linux EXE is "strata", which is also the log's prefix.
+        if v == setup.EXE:
+            return "<EXE>"
+        if v.endswith("/" + setup.EXE):
+            return v[:-len(setup.EXE)] + "<EXE>"
+        return v
     return v
 
 

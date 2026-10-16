@@ -71,15 +71,26 @@ inline bool is_qsa_layer(const ModelGeometry& g, int64_t layer) {
 /// Holds a reference to the table; the table must outlive it.
 class LayerView {
 public:
-    LayerView(const WeightTable& table, int64_t layer) : table_(&table), layer_(layer) {}
+    using Overlay = std::map<std::string, WeightRef>;
+    // Immutable borrowed overlay; published canonical table stays unchanged.
+    LayerView(const WeightTable& table, int64_t layer, const Overlay* overlay = nullptr)
+        : table_(&table), layer_(layer), overlay_(overlay) {}
 
     int64_t layer() const { return layer_; }
     std::string name(const char* suffix) const;
-    const WeightRef* get(const char* suffix) const { return table_->find(name(suffix)); }
+    const WeightRef* get(const char* suffix) const {
+        const auto key = name(suffix);
+        if (overlay_) {
+            const auto it = overlay_->find(key);
+            if (it != overlay_->end()) return &it->second;
+        }
+        return table_->find(key);
+    }
 
 private:
     const WeightTable* table_;
     int64_t layer_;
+    const Overlay* overlay_;
 };
 
 /// Every shape the kernels depend on, asserted for ONE layer.  Returns false and fills `err` with the first

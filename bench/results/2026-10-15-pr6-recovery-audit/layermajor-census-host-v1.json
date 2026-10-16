@@ -1,0 +1,570 @@
+{
+  "schema": "main-layermajor-census-host-v1",
+  "active": false,
+  "passed": true,
+  "complete": true,
+  "GPU_executed": false,
+  "product_applied": false,
+  "commands": [
+    {
+      "label": "contract-normal-build",
+      "argv": [
+        "/usr/bin/c++",
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-O2",
+        "-I/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/layermajor-shape-census-v1",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/layermajor-shape-census-v1/cpu_fixture.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-layermajor-census-host-root-v1/contract-normal"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-layermajor-census-host-root-v1",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "started_utc": "2026-10-15T03:36:15.369332+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3793077,
+          "start_ticks": 38413949,
+          "sid": 3793077,
+          "pgid": 3793077
+        },
+        {
+          "pid": 3793078,
+          "start_ticks": 38413949,
+          "sid": 3793077,
+          "pgid": 3793077
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 384139.490861807,
+      "pid": 3793077,
+      "spawn_return_monotonic": 384139.49280315,
+      "direct_identity": {
+        "pid": 3793077,
+        "state": "R",
+        "ppid": 3793026,
+        "pgid": 3793077,
+        "sid": 3793077,
+        "start_ticks": 38413949,
+        "rss_bytes": 471040
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 73531392,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T03:36:16.066848+00:00",
+      "elapsed_seconds": 0.6972711930284277,
+      "logs": {
+        "contract-normal-build.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "contract-normal-build.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "contract-normal-run",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-layermajor-census-host-root-v1/contract-normal"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-layermajor-census-host-root-v1",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "started_utc": "2026-10-15T03:36:16.067321+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3793101,
+          "start_ticks": 38414018,
+          "sid": 3793101,
+          "pgid": 3793101
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 384140.188838447,
+      "pid": 3793101,
+      "spawn_return_monotonic": 384140.190541011,
+      "direct_identity": {
+        "pid": 3793101,
+        "state": "R",
+        "ppid": 3793026,
+        "pgid": 3793101,
+        "sid": 3793101,
+        "start_ticks": 38414018,
+        "rss_bytes": 307200
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 6127616,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T03:36:16.196635+00:00",
+      "elapsed_seconds": 0.12913600797764957,
+      "logs": {
+        "contract-normal-run.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "contract-normal-run.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "binary_sha256": "2950234213f8341cce36dab104c144485411a2186d63b9b03f08c41497e7eb41",
+      "compact_stdout": ""
+    },
+    {
+      "label": "contract-asan-build",
+      "argv": [
+        "/usr/bin/c++",
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-O1",
+        "-g",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-I/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/layermajor-shape-census-v1",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/layermajor-shape-census-v1/cpu_fixture.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-layermajor-census-host-root-v1/contract-asan"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-layermajor-census-host-root-v1",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "started_utc": "2026-10-15T03:36:16.197250+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3793105,
+          "start_ticks": 38414031,
+          "sid": 3793105,
+          "pgid": 3793105
+        },
+        {
+          "pid": 3793106,
+          "start_ticks": 38414032,
+          "sid": 3793105,
+          "pgid": 3793105
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 384140.318733423,
+      "pid": 3793105,
+      "spawn_return_monotonic": 384140.320409276,
+      "direct_identity": {
+        "pid": 3793105,
+        "state": "R",
+        "ppid": 3793026,
+        "pgid": 3793105,
+        "sid": 3793105,
+        "start_ticks": 38414031,
+        "rss_bytes": 327680
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 118763520,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T03:36:17.543595+00:00",
+      "elapsed_seconds": 1.3461312470026314,
+      "logs": {
+        "contract-asan-build.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "contract-asan-build.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "contract-asan-run",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-layermajor-census-host-root-v1/contract-asan"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-layermajor-census-host-root-v1",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "started_utc": "2026-10-15T03:36:17.544097+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3793202,
+          "start_ticks": 38414166,
+          "sid": 3793202,
+          "pgid": 3793202
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 384141.665622085,
+      "pid": 3793202,
+      "spawn_return_monotonic": 384141.667093704,
+      "direct_identity": {
+        "pid": 3793202,
+        "state": "R",
+        "ppid": 3793026,
+        "pgid": 3793202,
+        "sid": 3793202,
+        "start_ticks": 38414166,
+        "rss_bytes": 421888
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 15241216,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T03:36:17.969884+00:00",
+      "elapsed_seconds": 0.42554616602137685,
+      "logs": {
+        "contract-asan-run.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "contract-asan-run.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "binary_sha256": "f6ce093a9d9daed0419cee877d0da00ea7d13a331c199b35495f532b3c496273",
+      "compact_stdout": ""
+    },
+    {
+      "label": "output-io-normal-build",
+      "argv": [
+        "/usr/bin/c++",
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-O2",
+        "-I/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/layermajor-shape-census-v1",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/layermajor-census-output-io-fixture-v1.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-layermajor-census-host-root-v1/output-io-normal"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-layermajor-census-host-root-v1",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "started_utc": "2026-10-15T03:36:17.971032+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3793215,
+          "start_ticks": 38414209,
+          "sid": 3793215,
+          "pgid": 3793215
+        },
+        {
+          "pid": 3793216,
+          "start_ticks": 38414209,
+          "sid": 3793215,
+          "pgid": 3793215
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 384142.092603462,
+      "pid": 3793215,
+      "spawn_return_monotonic": 384142.094275818,
+      "direct_identity": {
+        "pid": 3793215,
+        "state": "R",
+        "ppid": 3793026,
+        "pgid": 3793215,
+        "sid": 3793215,
+        "start_ticks": 38414209,
+        "rss_bytes": 327680
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 12115968,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T03:36:18.329633+00:00",
+      "elapsed_seconds": 0.35829855100018904,
+      "logs": {
+        "output-io-normal-build.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "output-io-normal-build.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "output-io-normal-run",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-layermajor-census-host-root-v1/output-io-normal"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-layermajor-census-host-root-v1",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "started_utc": "2026-10-15T03:36:18.330231+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3793234,
+          "start_ticks": 38414245,
+          "sid": 3793234,
+          "pgid": 3793234
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 384142.451878049,
+      "pid": 3793234,
+      "spawn_return_monotonic": 384142.453586975,
+      "direct_identity": {
+        "pid": 3793234,
+        "state": "R",
+        "ppid": 3793026,
+        "pgid": 3793234,
+        "sid": 3793234,
+        "start_ticks": 38414245,
+        "rss_bytes": 274432
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T03:36:18.435366+00:00",
+      "elapsed_seconds": 0.1048286909935996,
+      "logs": {
+        "output-io-normal-run.stdout": {
+          "bytes": 45,
+          "sha256": "4d97d75b1ddb19e00b7cc30e9ecd9e35aa2d814729f83e5cd0ad06e37db0d277"
+        },
+        "output-io-normal-run.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "binary_sha256": "35122e37ad993aab0415a92d7f90f2db368b103969c0432c88025d2f896e01e8",
+      "compact_stdout": "PASS: output I/O failure remains unqualified\n"
+    },
+    {
+      "label": "output-io-asan-build",
+      "argv": [
+        "/usr/bin/c++",
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-O1",
+        "-g",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-I/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/layermajor-shape-census-v1",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/layermajor-census-output-io-fixture-v1.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-layermajor-census-host-root-v1/output-io-asan"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-layermajor-census-host-root-v1",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "started_utc": "2026-10-15T03:36:18.436145+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3793237,
+          "start_ticks": 38414255,
+          "sid": 3793237,
+          "pgid": 3793237
+        },
+        {
+          "pid": 3793238,
+          "start_ticks": 38414256,
+          "sid": 3793237,
+          "pgid": 3793237
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 384142.557857294,
+      "pid": 3793237,
+      "spawn_return_monotonic": 384142.559552364,
+      "direct_identity": {
+        "pid": 3793237,
+        "state": "R",
+        "ppid": 3793026,
+        "pgid": 3793237,
+        "sid": 3793237,
+        "start_ticks": 38414255,
+        "rss_bytes": 466944
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 12890112,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T03:36:18.920420+00:00",
+      "elapsed_seconds": 0.48389102099463344,
+      "logs": {
+        "output-io-asan-build.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "output-io-asan-build.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "output-io-asan-run",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-layermajor-census-host-root-v1/output-io-asan"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-layermajor-census-host-root-v1",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "started_utc": "2026-10-15T03:36:18.921392+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3793275,
+          "start_ticks": 38414304,
+          "sid": 3793275,
+          "pgid": 3793275
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 384143.04332354,
+      "pid": 3793275,
+      "spawn_return_monotonic": 384143.045050389,
+      "direct_identity": {
+        "pid": 3793275,
+        "state": "R",
+        "ppid": 3793026,
+        "pgid": 3793275,
+        "sid": 3793275,
+        "start_ticks": 38414304,
+        "rss_bytes": 471040
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T03:36:19.042416+00:00",
+      "elapsed_seconds": 0.12039099296089262,
+      "logs": {
+        "output-io-asan-run.stdout": {
+          "bytes": 45,
+          "sha256": "4d97d75b1ddb19e00b7cc30e9ecd9e35aa2d814729f83e5cd0ad06e37db0d277"
+        },
+        "output-io-asan-run.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "binary_sha256": "bb7eda65943d8866fd137424c512c198eb55149185ae26da8499703ac6232b67",
+      "compact_stdout": "PASS: output I/O failure remains unqualified\n"
+    }
+  ],
+  "source_pins": {
+    "bench/results/2026-10-15-pr6-recovery-audit/layermajor-shape-census-v1/cpu_fixture.cpp": "dbedac838216564cdb5b798ed2371220b0ddcae901b8b27caa090318c4ec795c",
+    "bench/results/2026-10-15-pr6-recovery-audit/layermajor-shape-census-v1/layermajor_shape_census.hpp.in": "1cce413ca7a8a07e7f61c8579b255b4cedf7a9ad771b707c1b105a32c06e746e",
+    "bench/results/2026-10-15-pr6-recovery-audit/layermajor-census-output-io-fixture-v1.cpp": "859d7ef45689e0f40f54befd972ecf49ab5b1a3f910d92bacf1d133da0fe77be"
+  },
+  "recipe_sha256": "f425e87ac7b3ed4358a8f2d49e5760baa91cec2f6574db3d21434bee3bcb1e3a",
+  "prior_terminal_sha256": "8cb44a4973d0fe30d709316c04461ef29ba1ab09f789b4445c95ec2cdf0f5980",
+  "prior_GPU_fault": "Unresolved. This is CPU-only and does not establish GPU recovery.",
+  "scope": "Actual header assertions, normal and ASan/UBSan; synthetic 262144 geometry only, no physical model qualification.",
+  "finished_utc": "2026-10-15T03:36:19.044994+00:00"
+}

@@ -1,0 +1,180 @@
+{
+  "review_id": "R851",
+  "reviewed_on": "2026-10-16 JST",
+  "reviewer": {
+    "provider": "native Codex",
+    "model": "gpt-6-luna",
+    "reasoning_effort": "max"
+  },
+  "purpose": "Read-only review of R850 decision-support scope, depth, source claims, current-source applicability, retrieval needs, and next-scope eligibility. No product changes, builds, tests, GPU work, profiler work, process inspection, Git commands, cleanup, or worker contact.",
+  "inputs": {
+    "report": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round850-v1.txt",
+      "sha256": "2ce0af8a73afa1913d1018be1b520db94729b28c00a19918f3bab9d7dab16c70",
+      "bytes": 13571,
+      "whitespace_word_count": 1813,
+      "classification": "decision_support",
+      "unique_primary_url_count": 1
+    },
+    "spec": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/orca-research-round850-spec-v1.txt",
+      "sha256": "c601289ab4c9e22aca05ab970fc6557345512645f2ef43483aa29ad342a91b4b"
+    },
+    "source_pin": {
+      "commit": "6354f0b4ff3731466795410e11ca9ef785c9d326",
+      "record": "own-vllm-engine-build-v2.json",
+      "basis": "Parent supplied exact source freeze; source file hashes below pin inspected paths. No Git commands were run."
+    },
+    "failure_context": [
+      {
+        "path": "own-vllm-quality-failure-v1.ja.md",
+        "sha256": "c49f0e8ceb8df68549c21a9c1704c1f24f8ff23b80c0a8e27bc29d899d2ce5c3"
+      },
+      {
+        "path": "own-vllm-quality-failure-forensics-v1.json",
+        "sha256": "545e5daecde90dc1000d23b50bd2071fab391077ca043c2be2504902089b6886"
+      }
+    ],
+    "prior_review": {
+      "path": "research-scope-review-round848-v1.json",
+      "sha256": "86f8987c1b153bf7119fd13408f854270502400d591548eff6b76621723d6b57"
+    },
+    "research_index": {
+      "path": "research-index.json",
+      "sha256": "de4ee84be2bff3c27e9ebe9d8d854f00b026409ffa02ec9dd9b5db8afeb07be9",
+      "modified_by_review": false
+    },
+    "parallel_round849": {
+      "path": "research-round849-v1.txt",
+      "sha256": "7fc23a8458b840bf38a2aaf5647f91bd29fad030a85c7c0d8f7669c76fb02427",
+      "spec_classification": "decision_support",
+      "body_content_reviewed": false,
+      "retrieval_recommended": false,
+      "note": "Held as requested; hash and assignment metadata only, no findings summarized."
+    }
+  },
+  "scope_and_depth": {
+    "budget_check": "R850 specifies 1,500-2,000 substantive words and at most seven primary URLs; report is 1,813 whitespace-delimited words and cites one external primary URL.",
+    "judgment": "Strong, bounded source/lifetime audit. It traces the actual callback, one-row head, readback, host reduction, and outer ownership transaction; it preserves the failure as unexplained and does not transfer the earlier separate-queue regression onto this path. It separates observed receipt facts from ranked hypotheses and offers progressively safer discriminators.",
+    "strengths": [
+      "Correctly identifies that NLL wraps the prior callback and processes each chunk's dense rows before selected-logit/MTP callbacks; selected.bin remaining empty is expected for a stall in that loop.",
+      "Correctly follows the same explicit main queue through GR/native or canonical head work, D2H copy, and checked synchronization; the callback guard keeps borrowed rows and scratch alive through that drain.",
+      "Correctly separates GPU projection/readback from host FP64 reduction and file writing, and labels the 32,862-row all-position NLL path as a high-cost diagnostic rather than a performance sample.",
+      "Correctly treats the four-byte partial record, absent row timestamps, and nearby CCS reset as insufficient to locate or explain the stall."
+    ],
+    "limits": [
+      "A successful single selected-logit row at position 677 would test one head/readback instance. It would not reproduce the dense callback loop, cumulative resource or state effects, CPU reducer, or repeated stdio path, so it cannot falsify the broader failure mechanism.",
+      "The proposed observer's phase list includes after-readback-submit and after-sync but omits before-sync, despite the discriminator relying on a before-sync/after-sync pair. A later after-sync marker only shows the wait returned before observation ended; it does not rule out a prior long interval or a different stall.",
+      "The parent-visible status record needs a coherent snapshot protocol (for example, a sequence counter or atomic phase plus validated fields) to avoid torn or stale cross-process reads. Wall-clock timestamps alone also do not separate host computation/submission from CPU consumed inside waits; record thread CPU deltas for submit, poll/wait, reduction, and append phases.",
+      "The CPU mock can check guard control-flow branches, but cannot establish device pointer validity, real SYCL event/queue behavior, or driver resource lifetime.",
+      "R850's Yama1 recommendation is directionally safe only when the tracer is an allowed ancestor/parent relationship and classic dumpability/credential checks pass. The actual tracer PID must be verified in the launch design; a sibling debugger is not made safe by being owned by the same user. The report should cite the official Yama rule."
+    ]
+  },
+  "primary_source_verification": {
+    "status": "R850's SYCL contract claims were checked against Khronos SYCL 2020 revision 12. Yama1 guidance was checked against Linux kernel documentation because the report uses it but does not cite it.",
+    "sources": [
+      {
+        "title": "Khronos SYCL 2020 Specification, revision 12",
+        "url": "https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html",
+        "revision": "12",
+        "document_commit": "b3bcc5d5cc83217d14ebbb904e353c5a0d17f52b",
+        "verified_claims": [
+          "The queue in_order property orders commands submitted to that queue, without ordering commands from other queues.",
+          "queue::wait_and_throw waits for all previously submitted queue commands and delivers unconsumed asynchronous errors to the handler.",
+          "handler::memcpy explicitly permits each endpoint to be a host pointer or an accessible USM pointer. Thus std::vector-backed host storage is contractually permitted for this copy, subject to lifetime and extent; the spec does not establish Intel runtime staging, page-locking, lack of blocking, or performance behavior."
+        ]
+      },
+      {
+        "title": "Linux kernel Yama documentation",
+        "url": "https://docs.kernel.org/admin-guide/LSM/Yama.html",
+        "verified_claims": [
+          "ptrace_scope=1 restricts PTRACE_ATTACH to the allowed parent/descendant relationship by default, subject to classic dumpability and credential checks; an inferior may explicitly authorize a debugger with PR_SET_PTRACER.",
+          "No sysctl change is needed for a correctly parented, otherwise permitted debugger. The proposed design must verify the actual tracer/inferior relationship and eligibility before relying on stack capture."
+        ]
+      }
+    ],
+    "current_source_files": [
+      {"path": "src/program/generate.cpp", "sha256": "d05e9142917af145c1ba6d428180f8981f260c8a20b23ecf27bcc2033c9fe25a", "relevant_lines": "2576-2581, 6779-6878, 6882-6904"},
+      {"path": "include/strata/program/dense_prefill_nll.hpp", "sha256": "bb30107d937447dd2f8693bd7413ae349d1434fc2eeeffe3e13c0f2af7f4052f", "relevant_lines": "40-45, 57-117, 158-164"},
+      {"path": "src/program/dense_prefill_nll.cpp", "sha256": "3ae6177e93b6dde0328ce71f289a0ca7a70940b9a52d7dc2375488efbff23b42", "relevant_lines": "6-22"},
+      {"path": "src/prefill/prefill.cpp", "sha256": "d01662ae6c46bfdd2556da1345c5f9edb79f91694391eee2b2b0aebfeab831ce", "relevant_lines": "737-769, 790-815, 837-847, 929-952, 3480-3504"},
+      {"path": "src/prefill/layer_major.inc", "sha256": "e2def3bbd248c06c25ff2fce7ebc0ce49aecfcb0e418115196da8bb4b99960b1", "relevant_lines": "509-520, 604-621"},
+      {"path": "src/sycl/compat.cpp", "sha256": "64cb6ea563a5d2f4f2abe4726d8d2130c5611b1938423dfe5131691cb936e9c0", "relevant_lines": "83-87, 255-261, 332-338"},
+      {"path": "src/sycl/runtime.cpp", "sha256": "e6c20e148bc7ceec250ad9a58ddfc851c1476aaab3d68982d2aee2897e572b83", "relevant_lines": "80-108"},
+      {"path": "include/strata/prefill/draft_uploads.hpp", "sha256": "2d32126e28c67751d14bde6cd46f1db60b92aa3939b17a6f78fd66bc10955908", "relevant_lines": "57-79"},
+      {"path": "src/core/native_head.cpp", "sha256": "6a6942d485ad3ed5e43c0dd7977e92e4594d6adee0648d03edc0e60df6ff91d8", "relevant_lines": "87-109"},
+      {"path": "src/core/layer.cpp", "sha256": "4273fc8c08bb0c58ad471d963f232a457dbc96ea6bd20fa1b45d27fee3428cfb", "relevant_lines": "1066-1103"},
+      {"path": "src/core/session.cpp", "sha256": "4c1aa246e568f96b40b9f9e16000e1f1dc6d75c99168cb26baef56a43b4e4bce", "relevant_lines": "120-128"}
+    ],
+    "conclusion": "No concrete callback source-level use-after-free, wrong same-queue dependency, out-of-bounds row, or direct prefill/session scratch alias was found. Pageable D2H behavior and runtime/driver progress remain unmeasured hypotheses, not contract defects or established causes."
+  },
+  "claim_corrections": [
+    {
+      "severity": "moderate diagnostic-scope correction",
+      "issue": "The one-row selected-logit run is narrower than the failed dense NLL callback. A pass cannot clear repeated-loop, cumulative, reducer, or writer hypotheses.",
+      "action": "Label the outcome as a single-row head/readback discriminator. Keep it conditional on a new independent health gate and do not relabel or replace the incomplete exhaustive result."
+    },
+    {
+      "severity": "moderate observer-design correction",
+      "issue": "The described phase list has no before-sync marker, while the proposed interpretation depends on one. It records wall time but no per-thread CPU time.",
+      "action": "Add paired before-sync/after-sync timestamps; measure thread CPU around host submission, wait/poll, target_loss, and append. Publish a bounded, coherent cross-process snapshot. Interpret after-sync only as proof that that wait returned before the observer's deadline."
+    },
+    {
+      "severity": "minor provenance correction",
+      "issue": "R850 invokes Yama1 to justify the proposed parent-owned stack capture but its source list omits the Linux kernel policy documentation.",
+      "action": "Index this review's primary source check and state that the exact tracer relationship plus dumpability/credential eligibility must be verified before a future stack-capture proposal. Do not change ptrace policy."
+    },
+    {
+      "severity": "minor interpretation boundary",
+      "issue": "The SYCL standard permits ordinary host pointers for handler::memcpy, but this does not prove absence of backend staging, hidden synchronization, or pageable-memory stalls on the installed Intel stack.",
+      "action": "Keep the ordinary pageable D2H path as an unresolved implementation/runtime hypothesis unless a safe phase observation attributes time to it."
+    },
+    {
+      "severity": "minor discriminator boundary",
+      "issue": "The CPU mock proposed for DraftUploadGuard can exercise its injected drain/fatal branches but cannot qualify real device queue/resource behavior.",
+      "action": "Use it only to rule on guard control flow; retain runtime and device lifetime questions as open until supported by separately authorized, safely gated evidence."
+    }
+  ],
+  "retrieval_for_main": {
+    "main_original_needed_now": true,
+    "classification": "Decision-support report; retrieve only the following sections.",
+    "sections_now": [
+      {"report": "research-round850-v1.txt", "section": "Source and lifetime trace", "lines": "15-22", "use": "Exact same-queue flow, ordinary host-row lifetime, guard and owner boundaries, scratch/cache alias separation, and the CPU/GPU split."},
+      {"report": "research-round850-v1.txt", "section": "Work count and cost boundary", "lines": "23-25", "use": "Keep the 32,862 projections and 8,160,291,840 FP32 logit values in scope; understand why exhaustive NLL is diagnostic work and does not explain the divergent run by itself."},
+      {"report": "research-round850-v1.txt", "section": "Ranked hypotheses", "lines": "29-33", "use": "Source-only/CPU-only first discriminators and conditional GPU gate; retain all mechanisms as hypotheses."},
+      {"report": "research-round850-v1.txt", "section": "Safer screen and next diagnostic design", "lines": "37-41", "use": "Sparse full-vocabulary selected rows with offline NLL and the bounded observer proposal, read with the corrections above."}
+    ],
+    "held": [
+      "research-round849-v1.txt remains unopened for findings; retrieve only if Main has a concrete exact-kernel JIT-resource decision after the necessary attribution and gates."
+    ]
+  },
+  "next_scopes": [
+    {
+      "purpose_label": "decision_support",
+      "title": "Intel-stack pageable D2H completion behavior for the exact dense-NLL row path",
+      "schedulable_now": false,
+      "finite_question": "Only if a future Main-owned, safely gated observer attributes a long interval to the row readback/wait, compare version-pinned official oneAPI/SYCL, Unified Runtime, Level Zero, and applicable Intel implementation documentation for ordinary pageable host-pointer D2H copies on the exact installed stack. Distinguish the standard's host-pointer legality and lifetime contract from implementation-specific staging, blocking, event completion, and page-locking behavior. Include counterevidence and state that documentation cannot prove the failure cause.",
+      "report_budget": "1,200-1,600 substantive words, at most six primary URLs, exact installed versions/revisions, one API/behavior table, explicit evidence limits.",
+      "prerequisites": [
+        "Current natural-32K screen remains failed/incomplete and is not replaced; any new experiment has a separately reviewed independent health gate.",
+        "A bounded phase observer or equivalent receipt localizes the delay to memcpy submission/completion or the following checked wait, with exact binary/runtime/driver/device identities.",
+        "No sufficient existing official documentation/source review already resolves the installed-version behavior."
+      ],
+      "prerequisite_evidence": "R850 has no row timestamps or phase markers; the partial file cannot identify the last phase. Existing SYCL documentation establishes pointer legality, not Intel pageable-copy behavior. Therefore this question cannot currently distinguish mechanisms.",
+      "prior_overlap": "R850 lines 17-21 establish source-level same-queue and host lifetime contracts; R847 covers event timing semantics; research-index own_host_transfer_component_v1 compares ordinary-host and host-USM transfer throughput. Do not repeat those results or claim they predict this row path. R849 concerns JIT resource reporting, a separate question.",
+      "dispatch_note": "Do not dispatch until eligibility is rechecked from the prerequisite evidence. A source-only CPU/contract investigation by Main may make the research unnecessary."
+    }
+  ],
+  "handling": {
+    "r849_body_content_reviewed": false,
+    "research_index_modified": false,
+    "worker_contacted": false,
+    "build_test_gpu_profiler_or_process_inspection": false,
+    "git_or_cleanup": false,
+    "product_files_modified": false,
+    "allowed_review_outputs": [
+      "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round851-v1.json",
+      "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round851-v1.ja.md"
+    ]
+  }
+}

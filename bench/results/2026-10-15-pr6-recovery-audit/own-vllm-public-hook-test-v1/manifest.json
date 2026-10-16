@@ -1,0 +1,677 @@
+{
+  "schema": 1,
+  "round": "R833",
+  "purpose_class": "implementation source-only proposal",
+  "status": "PROPOSED_UNRUN_UNAPPLIED",
+  "task_id": "task_5af1c4d7919a",
+  "dispatch_id": "ctx_129c4e5b5791",
+  "supplied_base_commit_abbrev": "5020c05e",
+  "base_commit_verification": "Coordinator supplied; no Git command. Fully hashed read preimages pin this proposal.",
+  "base_snapshot_sha256": {
+    "AGENTS.md": "7f750320bef4146a2872086922d84fc9fa7a8351ae655b7876c912856e3747fe",
+    "docs/ARTIFACT_RETENTION.md": "fdf86d7ea576d6f0400ec7e643b5ddca5c3c577dd053d66c2fd05220e64b1cc1",
+    ".claude/skills/strata-upstream-sync/SKILL.md": "e19bfb051a39332616ecac67038bbb98741aff9e924f5ffa55a85a3d39e34330",
+    "LICENSE": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
+    "tests/sycl/vllm_native16.cpp": "45dc27a907978366b7dfef04bc6607db58d3e5d90da8793edb3f8fd17c3346d3",
+    "cmake/sycl_backend.cmake": "9a112ac469580302e8d124bc9bdf66c04f49f6020309e7d20e7771ab12757bef",
+    "cmake/sycl_vllm_xe2_native16.cmake": "067e616de5a9072a83215b3c957df4366064c5a7e2b36c308f8cbab28ae1d303",
+    "include/strata/prefill/gemm.hpp": "091984410aacd56f33748c4ef9c730405f2862f9a32d6de6c59fa74063a5fc43",
+    "include/strata/sycl/runtime.hpp": "a0e0687886e09c50922d01f7023ba3b51e8ac2dbe43f461a798ba82438b2a074",
+    "src/prefill/sycl/gemm.cpp": "023bc6c5633b7ae58636dc1ba732d7db77514cca98925100e031c0e0d3c7bcd9",
+    "src/prefill/sycl/gemm16.cpp": "d5a0e8f8cdbc14f82edd7a883efc09d68ee92195b8fd51301e538b40cc6ed53c",
+    "src/prefill/sycl/vllm_xe2/native16.cpp": "d8b361cabea29344b48aff5a9db41303f3ea715de47f27bc57f29f85c5f3aa2d",
+    "docs/SYCL_VLLM_XE2_NATIVE16.md": "78d14867786498f5dfd4c2fd762f485e84ba9df98d7748942f2a326ddf30849b",
+    "src/sycl/runtime.cpp": "e6c20e148bc7ceec250ad9a58ddfc851c1476aaab3d68982d2aee2897e572b83"
+  },
+  "patch_existing_preimage": {
+    "path": "cmake/sycl_backend.cmake",
+    "sha256": "9a112ac469580302e8d124bc9bdf66c04f49f6020309e7d20e7771ab12757bef"
+  },
+  "patch_existing_postimage": {
+    "path": "cmake/sycl_backend.cmake",
+    "sha256": "f2428f95413d67c03307df8a954be2ee02dd76fe3824efd0b29eb9fcf2b154c0"
+  },
+  "patch_adds": [
+    "tests/sycl/vllm_engine_native16.cpp"
+  ],
+  "patch_modifies": [
+    "cmake/sycl_backend.cmake"
+  ],
+  "provenance": {
+    "new_code": "Independently authored for this Strata proposal; repository MIT LICENSE applies.",
+    "oracle": "Only own-repository MIT tests/sycl/vllm_native16.cpp pinned above. Original FP64/dyadic/IEEE math and matches() policy preserved.",
+    "external_kernel_code_copied": false,
+    "xestrata_source_access_or_use": false,
+    "external_fixture_required": false,
+    "public_only": [
+      "Gemm::init_external",
+      "Gemm::f16_out16",
+      "Gemm::bf16_out16"
+    ],
+    "x_namespace": "Test-local Storage enum to keep original oracle text unchanged; not adapter.",
+    "license_text": "Repository LICENSE (MIT), SHA256 pinned in base_snapshot_sha256; existing project notice retained. No license is newly imported."
+  },
+  "oracle_reused_regions": [
+    {
+      "region": "require/product/name/decode/ties_even/encode/classification/matches",
+      "base_lines_inclusive": [
+        23,
+        95
+      ],
+      "proposal_lines_inclusive": [
+        28,
+        100
+      ],
+      "sha256": "80e442d17f1a19f5e0668caef8dd19849d2d259489541ed03332abe99eb7ef10",
+      "status": "byte-identical"
+    },
+    {
+      "region": "CheckedDrain comments and implementation",
+      "base_lines_inclusive": [
+        96,
+        121
+      ],
+      "proposal_lines_inclusive": [
+        101,
+        126
+      ],
+      "sha256": "86d1ec0717e9afdb344e0761db29682a2fdb9a4d8a1790c04fb5955ec278a975",
+      "status": "byte-identical"
+    },
+    {
+      "region": "dyadic row/basis functions",
+      "base_lines_inclusive": [
+        152,
+        155
+      ],
+      "proposal_lines_inclusive": [
+        204,
+        207
+      ],
+      "sha256": "4ef7ee9369667a6c1fc3ac83982c8043458f17ebe343d5a192817cba0b184659",
+      "status": "byte-identical"
+    },
+    {
+      "region": "edge data and independent expected construction",
+      "base_lines_inclusive": [
+        194,
+        225
+      ],
+      "proposal_lines_inclusive": [
+        248,
+        279
+      ],
+      "sha256": "2e3e84cf3d6ff3c933f7af500c8d08a115a65b0a00d61afbbc0fc20425cc2e55",
+      "status": "byte-identical"
+    },
+    {
+      "region": "edge exact comparisons and error gate",
+      "base_lines_inclusive": [
+        234,
+        245
+      ],
+      "proposal_lines_inclusive": [
+        288,
+        299
+      ],
+      "sha256": "27e060ca4b54a99ff2e5a9a3f22cfe40628d248422902b6f90ec55a402c524e5",
+      "status": "byte-identical"
+    },
+    {
+      "region": "chain data and independent expected construction",
+      "base_lines_inclusive": [
+        251,
+        259
+      ],
+      "proposal_lines_inclusive": [
+        306,
+        314
+      ],
+      "sha256": "1082c4fe74f575f1f2f1c3c3d5bf1f393a3c3b16c30f6924a350621052738a12",
+      "status": "byte-identical"
+    },
+    {
+      "region": "chain exact comparisons",
+      "base_lines_inclusive": [
+        270,
+        278
+      ],
+      "proposal_lines_inclusive": [
+        325,
+        333
+      ],
+      "sha256": "5493aa8742e97440f5587a146c083a72056adad51c45f7c6aeb0dedcd42f7db4",
+      "status": "byte-identical"
+    },
+    {
+      "region": "reject helper and alignment helpers",
+      "base_lines_inclusive": [
+        283,
+        298
+      ],
+      "proposal_lines_inclusive": [
+        339,
+        354
+      ],
+      "sha256": "edc5ec1ca402ef110662e642f2ad69c12ad931ed47ad20f9f3cddccb7e498272",
+      "status": "byte-identical"
+    }
+  ],
+  "complete_text_change_map_from_original_fixture": [
+    {
+      "operation": "replace",
+      "base_half_open_1based": [
+        3,
+        5
+      ],
+      "proposal_half_open_1based": [
+        3,
+        7
+      ]
+    },
+    {
+      "operation": "replace",
+      "base_half_open_1based": [
+        19,
+        20
+      ],
+      "proposal_half_open_1based": [
+        21,
+        25
+      ]
+    },
+    {
+      "operation": "insert",
+      "base_half_open_1based": [
+        122,
+        122
+      ],
+      "proposal_half_open_1based": [
+        127,
+        149
+      ]
+    },
+    {
+      "operation": "insert",
+      "base_half_open_1based": [
+        123,
+        123
+      ],
+      "proposal_half_open_1based": [
+        150,
+        151
+      ]
+    },
+    {
+      "operation": "replace",
+      "base_half_open_1based": [
+        127,
+        129
+      ],
+      "proposal_half_open_1based": [
+        155,
+        157
+      ]
+    },
+    {
+      "operation": "insert",
+      "base_half_open_1based": [
+        133,
+        133
+      ],
+      "proposal_half_open_1based": [
+        161,
+        163
+      ]
+    },
+    {
+      "operation": "insert",
+      "base_half_open_1based": [
+        152,
+        152
+      ],
+      "proposal_half_open_1based": [
+        182,
+        204
+      ]
+    },
+    {
+      "operation": "replace",
+      "base_half_open_1based": [
+        156,
+        157
+      ],
+      "proposal_half_open_1based": [
+        208,
+        209
+      ]
+    },
+    {
+      "operation": "replace",
+      "base_half_open_1based": [
+        158,
+        159
+      ],
+      "proposal_half_open_1based": [
+        210,
+        211
+      ]
+    },
+    {
+      "operation": "replace",
+      "base_half_open_1based": [
+        170,
+        171
+      ],
+      "proposal_half_open_1based": [
+        222,
+        223
+      ]
+    },
+    {
+      "operation": "replace",
+      "base_half_open_1based": [
+        173,
+        176
+      ],
+      "proposal_half_open_1based": [
+        225,
+        229
+      ]
+    },
+    {
+      "operation": "insert",
+      "base_half_open_1based": [
+        185,
+        185
+      ],
+      "proposal_half_open_1based": [
+        238,
+        239
+      ]
+    },
+    {
+      "operation": "replace",
+      "base_half_open_1based": [
+        186,
+        187
+      ],
+      "proposal_half_open_1based": [
+        240,
+        241
+      ]
+    },
+    {
+      "operation": "replace",
+      "base_half_open_1based": [
+        192,
+        194
+      ],
+      "proposal_half_open_1based": [
+        246,
+        248
+      ]
+    },
+    {
+      "operation": "replace",
+      "base_half_open_1based": [
+        226,
+        227
+      ],
+      "proposal_half_open_1based": [
+        280,
+        281
+      ]
+    },
+    {
+      "operation": "replace",
+      "base_half_open_1based": [
+        229,
+        231
+      ],
+      "proposal_half_open_1based": [
+        283,
+        285
+      ]
+    },
+    {
+      "operation": "insert",
+      "base_half_open_1based": [
+        246,
+        246
+      ],
+      "proposal_half_open_1based": [
+        300,
+        301
+      ]
+    },
+    {
+      "operation": "replace",
+      "base_half_open_1based": [
+        249,
+        251
+      ],
+      "proposal_half_open_1based": [
+        304,
+        306
+      ]
+    },
+    {
+      "operation": "replace",
+      "base_half_open_1based": [
+        260,
+        261
+      ],
+      "proposal_half_open_1based": [
+        315,
+        316
+      ]
+    },
+    {
+      "operation": "replace",
+      "base_half_open_1based": [
+        263,
+        265
+      ],
+      "proposal_half_open_1based": [
+        318,
+        320
+      ]
+    },
+    {
+      "operation": "replace",
+      "base_half_open_1based": [
+        266,
+        268
+      ],
+      "proposal_half_open_1based": [
+        321,
+        323
+      ]
+    },
+    {
+      "operation": "insert",
+      "base_half_open_1based": [
+        279,
+        279
+      ],
+      "proposal_half_open_1based": [
+        334,
+        335
+      ]
+    },
+    {
+      "operation": "insert",
+      "base_half_open_1based": [
+        300,
+        300
+      ],
+      "proposal_half_open_1based": [
+        356,
+        357
+      ]
+    },
+    {
+      "operation": "replace",
+      "base_half_open_1based": [
+        303,
+        304
+      ],
+      "proposal_half_open_1based": [
+        360,
+        361
+      ]
+    },
+    {
+      "operation": "replace",
+      "base_half_open_1based": [
+        309,
+        311
+      ],
+      "proposal_half_open_1based": [
+        366,
+        372
+      ]
+    },
+    {
+      "operation": "replace",
+      "base_half_open_1based": [
+        312,
+        322
+      ],
+      "proposal_half_open_1based": [
+        373,
+        384
+      ]
+    },
+    {
+      "operation": "replace",
+      "base_half_open_1based": [
+        324,
+        326
+      ],
+      "proposal_half_open_1based": [
+        386,
+        421
+      ]
+    },
+    {
+      "operation": "replace",
+      "base_half_open_1based": [
+        328,
+        330
+      ],
+      "proposal_half_open_1based": [
+        423,
+        427
+      ]
+    },
+    {
+      "operation": "replace",
+      "base_half_open_1based": [
+        331,
+        341
+      ],
+      "proposal_half_open_1based": [
+        428,
+        455
+      ]
+    },
+    {
+      "operation": "replace",
+      "base_half_open_1based": [
+        342,
+        343
+      ],
+      "proposal_half_open_1based": [
+        456,
+        457
+      ]
+    },
+    {
+      "operation": "replace",
+      "base_half_open_1based": [
+        344,
+        365
+      ],
+      "proposal_half_open_1based": [
+        458,
+        482
+      ]
+    },
+    {
+      "operation": "replace",
+      "base_half_open_1based": [
+        368,
+        369
+      ],
+      "proposal_half_open_1based": [
+        485,
+        500
+      ]
+    },
+    {
+      "operation": "replace",
+      "base_half_open_1based": [
+        374,
+        376
+      ],
+      "proposal_half_open_1based": [
+        505,
+        508
+      ]
+    },
+    {
+      "operation": "replace",
+      "base_half_open_1based": [
+        379,
+        403
+      ],
+      "proposal_half_open_1based": [
+        511,
+        532
+      ]
+    },
+    {
+      "operation": "replace",
+      "base_half_open_1based": [
+        404,
+        406
+      ],
+      "proposal_half_open_1based": [
+        533,
+        554
+      ]
+    },
+    {
+      "operation": "replace",
+      "base_half_open_1based": [
+        407,
+        408
+      ],
+      "proposal_half_open_1based": [
+        555,
+        559
+      ]
+    },
+    {
+      "operation": "insert",
+      "base_half_open_1based": [
+        410,
+        410
+      ],
+      "proposal_half_open_1based": [
+        561,
+        564
+      ]
+    }
+  ],
+  "oracle_tolerance": "Exact RNE bits for finite nonzero; NaN classification only; zero sign ignored, as original matches(). No epsilon/ULP broadening.",
+  "suites_per_process": {
+    "smoke": {
+      "positive_cases": 48,
+      "dyadic": 32,
+      "edge": 8,
+      "cancellation": 4,
+      "chain": 4,
+      "successful_public_calls": 52,
+      "rejected_public_calls": 160,
+      "expected_peak_test_device_bytes": 132352
+    },
+    "full": {
+      "positive_cases": 52,
+      "dyadic": 36,
+      "edge": 8,
+      "cancellation": 4,
+      "chain": 4,
+      "successful_public_calls": 56,
+      "rejected_public_calls": 160,
+      "expected_peak_test_device_bytes": 3293952
+    },
+    "both": {
+      "input_output_format_pairs": 4,
+      "rejections_per_format_pair": 40,
+      "T_shared": [
+        1,
+        3,
+        17,
+        160
+      ],
+      "full_extra_one_shape_T_N_K_ld": [
+        8192,
+        128,
+        64,
+        136
+      ],
+      "shared_dyadic_shapes_N_K_ldyarg": [
+        [
+          64,
+          32,
+          0
+        ],
+        [
+          192,
+          96,
+          200
+        ]
+      ],
+      "strict_edges_K": [
+        32,
+        64
+      ],
+      "cross_Ktile_terms": [
+        0,
+        32,
+        64
+      ],
+      "device_payload_limit_exclusive": 134217728,
+      "completion_after_checked_drain_and_Gemm_destruction": true
+    }
+  },
+  "child_environment": {
+    "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
+    "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "compact OR wide; separate processes",
+    "process_environment_mutation": "none; getenv checks before Runtime initialization"
+  },
+  "Main_only_configuration": "STRATA_ENABLE_SYCL=ON; STRATA_SYCL_VLLM_XE2_NATIVE16=ON; STRATA_SYCL_VLLM_PUBLIC_HOOK_TEST=ON; preserve exact qualified mixed-image build recipe",
+  "commands_for_Main_only": [
+    "cmake --build <qualified-build> --target sycl_vllm_engine_native16_test",
+    "env STRATA_SYCL_PREFILL_NATIVE16_BACKEND=vllm STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE=compact <binary> --device <ordinal> --smoke",
+    "env STRATA_SYCL_PREFILL_NATIVE16_BACKEND=vllm STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE=wide <binary> --device <ordinal> --smoke",
+    "env STRATA_SYCL_PREFILL_NATIVE16_BACKEND=vllm STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE=compact <binary> --device <ordinal> --full",
+    "env STRATA_SYCL_PREFILL_NATIVE16_BACKEND=vllm STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE=wide <binary> --device <ordinal> --full"
+  ],
+  "completion_marker": "PUBLIC_VLLM_NATIVE16_SUITE_PASS; correctness_component_only; loaded_image_ISA/model_quality/full262144/performance UNRUN",
+  "exclusions": [
+    "No new Runtime/context/queue for rejection tests",
+    "No adapter-private enum/tile assertions",
+    "No same-process backend/tile switching",
+    "No benchmark or performance adoption",
+    "No sourcechecking/build/test/syntaxcheck/GPU/profiler/library-load/process-inspection/cleanup/Git",
+    "No protected record, external fixture, XeStrata code, other agent or worker contact"
+  ],
+  "metadata_consulted": [
+    "research-index.json: native16_activation_pipeline",
+    "research-scope-review-round808/812/814/819/823/824/830-v1.json: scoped search excerpts",
+    "research-scope-review-round827-v1.json: precision/build retrieval metadata",
+    "own-vllm-engine-hook-main-review-v1.ja.md: public contract/lifetime/qualification limits"
+  ],
+  "durable_report": "main-review.ja.md",
+  "artifacts": {
+    "tests/sycl/vllm_engine_native16.cpp": {
+      "sha256": "7e1d5a45526eb367e1062d46135c2e99a8fa3a12f4e3db9684de9f526b204716",
+      "bytes": 27144
+    },
+    "proposal.patch": {
+      "sha256": "bb714c55c7a043aa468e006fa61490716412043dc6bd7b7c94d9156131ade3f6",
+      "bytes": 28905
+    },
+    "main-review.ja.md": {
+      "sha256": "3094825888e84cc83212156dadb70034d73ff14d41849d6021a3d50af5a76744",
+      "bytes": 12233
+    }
+  },
+  "metadata_only_digest": "R833: public-hook source-only package; smoke48/full52 cases +160 rejects per process; UNRUN/unapplied. manifest.json and main-review.ja.md.",
+  "production_tests_headers_or_CMake_modified_on_disk": false,
+  "no_execution_claim": "Authored and manually read only. No build/test/syntax/source checker was executed. No executable/result/adoption claim."
+}

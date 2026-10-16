@@ -1,0 +1,391 @@
+{
+  "schema": "main-candidate-cpu-contracts-v1",
+  "active": false,
+  "passed": false,
+  "GPU_executed": false,
+  "product_applied": false,
+  "commands": [
+    {
+      "label": "iq-normal-build",
+      "argv": [
+        "/usr/bin/c++",
+        "-std=c++20",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-O2",
+        "-I/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/parallel-iq-dequant-v1/proposed/include",
+        "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/parallel-iq-dequant-v1/cpu_fixture.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-iq-checkpoint-cpu-contracts-root-v1/iq-normal"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-iq-checkpoint-cpu-contracts-root-v1",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "started_utc": "2026-10-15T03:00:26.400223+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3648549,
+          "start_ticks": 38199052,
+          "sid": 3648549,
+          "pgid": 3648549
+        },
+        {
+          "pid": 3648550,
+          "start_ticks": 38199052,
+          "sid": 3648549,
+          "pgid": 3648549
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 381990.52172728,
+      "pid": 3648549,
+      "spawn_return_monotonic": 381990.52337713,
+      "direct_identity": {
+        "pid": 3648549,
+        "state": "R",
+        "ppid": 3648479,
+        "pgid": 3648549,
+        "sid": 3648549,
+        "start_ticks": 38199052,
+        "rss_bytes": 475136
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 162177024,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T03:00:27.915803+00:00",
+      "elapsed_seconds": 1.515344144019764,
+      "logs": {
+        "iq-normal-build.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "iq-normal-build.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "iq-normal-run",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-iq-checkpoint-cpu-contracts-root-v1/iq-normal"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-iq-checkpoint-cpu-contracts-root-v1",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "started_utc": "2026-10-15T03:00:27.916301+00:00",
+      "wall_seconds": 600,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3648681,
+          "start_ticks": 38199203,
+          "sid": 3648681,
+          "pgid": 3648681
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 381992.037816228,
+      "pid": 3648681,
+      "spawn_return_monotonic": 381992.039884186,
+      "direct_identity": {
+        "pid": 3648681,
+        "state": "R",
+        "ppid": 3648479,
+        "pgid": 3648681,
+        "sid": 3648681,
+        "start_ticks": 38199203,
+        "rss_bytes": 274432
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 2625536,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T03:00:29.264071+00:00",
+      "elapsed_seconds": 1.3475552170420997,
+      "logs": {
+        "iq-normal-run.stdout": {
+          "bytes": 168,
+          "sha256": "49b6971f6f1426f86ba6b2bb60454d353e77a3fda149eed4f8d3555a4cd8d8d7"
+        },
+        "iq-normal-run.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "compact_stdout": "type=18 complete\ntype=22 complete\ntype=21 complete\ntype=23 complete\ntype=20 complete\ntype=42 complete\nPASS blocks=503808 elements=94044160 nan_half_comparisons=6920016\n",
+      "binary_sha256": "568c493893ea5dfce83a45b3ce87cf02326022742ea8aa3dc9890af5c2efcab6"
+    },
+    {
+      "label": "iq-asan-build",
+      "argv": [
+        "/usr/bin/c++",
+        "-std=c++20",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-O1",
+        "-g",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-I/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/parallel-iq-dequant-v1/proposed/include",
+        "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/parallel-iq-dequant-v1/cpu_fixture.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-iq-checkpoint-cpu-contracts-root-v1/iq-asan"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-iq-checkpoint-cpu-contracts-root-v1",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "started_utc": "2026-10-15T03:00:29.265153+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3648833,
+          "start_ticks": 38199338,
+          "sid": 3648833,
+          "pgid": 3648833
+        },
+        {
+          "pid": 3648834,
+          "start_ticks": 38199338,
+          "sid": 3648833,
+          "pgid": 3648833
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 381993.386676735,
+      "pid": 3648833,
+      "spawn_return_monotonic": 381993.38847758,
+      "direct_identity": {
+        "pid": 3648833,
+        "state": "R",
+        "ppid": 3648479,
+        "pgid": 3648833,
+        "sid": 3648833,
+        "start_ticks": 38199338,
+        "rss_bytes": 462848
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 215474176,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T03:00:31.511827+00:00",
+      "elapsed_seconds": 2.2464293760131113,
+      "logs": {
+        "iq-asan-build.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "iq-asan-build.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "iq-asan-run",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-iq-checkpoint-cpu-contracts-root-v1/iq-asan"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-iq-checkpoint-cpu-contracts-root-v1",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "started_utc": "2026-10-15T03:00:31.512349+00:00",
+      "wall_seconds": 1200,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3648977,
+          "start_ticks": 38199563,
+          "sid": 3648977,
+          "pgid": 3648977
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 381995.633883626,
+      "pid": 3648977,
+      "spawn_return_monotonic": 381995.635521734,
+      "direct_identity": {
+        "pid": 3648977,
+        "state": "R",
+        "ppid": 3648479,
+        "pgid": 3648977,
+        "sid": 3648977,
+        "start_ticks": 38199563,
+        "rss_bytes": 331776
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 559874048,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T03:00:38.354538+00:00",
+      "elapsed_seconds": 6.841928631009068,
+      "logs": {
+        "iq-asan-run.stdout": {
+          "bytes": 168,
+          "sha256": "49b6971f6f1426f86ba6b2bb60454d353e77a3fda149eed4f8d3555a4cd8d8d7"
+        },
+        "iq-asan-run.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "compact_stdout": "type=18 complete\ntype=22 complete\ntype=21 complete\ntype=23 complete\ntype=20 complete\ntype=42 complete\nPASS blocks=503808 elements=94044160 nan_half_comparisons=6920016\n",
+      "binary_sha256": "3bf971865c541e813cd51d2871e6c43363a9aa4d34213010f5114073864b9af3"
+    },
+    {
+      "label": "checkpoint-normal-build",
+      "argv": [
+        "/usr/bin/c++",
+        "-std=c++20",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-O2",
+        "-I/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/layerwise-checkpoint-capture-v2/fixture_stubs",
+        "-I/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/layerwise-checkpoint-capture-v2/proposed/include",
+        "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/layerwise-checkpoint-capture-v2/cpu_contract_fixture.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-iq-checkpoint-cpu-contracts-root-v1/checkpoint-normal"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-iq-checkpoint-cpu-contracts-root-v1",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "started_utc": "2026-10-15T03:00:38.357651+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3649406,
+          "start_ticks": 38200247,
+          "sid": 3649406,
+          "pgid": 3649406
+        },
+        {
+          "pid": 3649407,
+          "start_ticks": 38200248,
+          "sid": 3649406,
+          "pgid": 3649406
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 382002.479353082,
+      "pid": 3649406,
+      "spawn_return_monotonic": 382002.480965923,
+      "direct_identity": {
+        "pid": 3649406,
+        "state": "R",
+        "ppid": 3648479,
+        "pgid": 3649406,
+        "sid": 3649406,
+        "start_ticks": 38200247,
+        "rss_bytes": 430080
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 177786880,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-15T03:00:40.356342+00:00",
+      "elapsed_seconds": 1.9982743669534102,
+      "logs": {
+        "checkpoint-normal-build.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "checkpoint-normal-build.stderr": {
+          "bytes": 409,
+          "sha256": "d4fed6e1b862019c190bb668a73a6f711b611f7cba38203882029809ab2c4f30"
+        }
+      }
+    }
+  ],
+  "source_pins": {
+    "bench/results/2026-10-15-pr6-recovery-audit/parallel-iq-dequant-v1/cpu_fixture.cpp": "0940c8904a63588f39033c904a03b298b54a209a54cb31584a4d17f0e65762b3",
+    "bench/results/2026-10-15-pr6-recovery-audit/parallel-iq-dequant-v1/gpu_fixture.cpp": "8c4533a2f7fb664d3dce8a53404aa528a4600d66e0b0818506f79919531953d1",
+    "bench/results/2026-10-15-pr6-recovery-audit/parallel-iq-dequant-v1/fixture_common.hpp": "9e33eab5a601631f8ea81846d87abe51495b30f7993a15eb3453045764713e7a",
+    "bench/results/2026-10-15-pr6-recovery-audit/parallel-iq-dequant-v1/compare_captures.py": "bef40c47ead7bde7bc5b11ab0c92f1f6364b844a2da299af206146179bafe2c1",
+    "bench/results/2026-10-15-pr6-recovery-audit/parallel-iq-dequant-v1/proposed/include/strata/sycl/iq_parallel_decode.hpp": "282f95240c9ce614df0d05f9944a52d8154be64a01ba5ff898f0248e860bc234",
+    "bench/results/2026-10-15-pr6-recovery-audit/layerwise-checkpoint-capture-v2/cpu_contract_fixture.cpp": "62b2fe9800662e4e398dbb700f17caa91814e81756bc5f57480c0bdceade4774",
+    "bench/results/2026-10-15-pr6-recovery-audit/layerwise-checkpoint-capture-v2/proposed/include/strata/program/layerwise_checkpoint.hpp": "68a093a5b4098912e67a2fb6d38bf515c8d5b5b18053ef75db0ed39a92242a38",
+    "bench/results/2026-10-15-pr6-recovery-audit/layerwise-checkpoint-capture-v2/fixture_stubs/strata/core/conversation_snapshot.hpp": "6d04495b793161716011148deff059520e8d3238db990ba7ad7aaf4bcba29a91",
+    "bench/results/2026-10-15-pr6-recovery-audit/layerwise-checkpoint-capture-v2/fixture_stubs/strata/core/layout.hpp": "b14e5d63f0793c3966b1a6d92e9897043c9cd58331e990c76e668404632c07a5",
+    "include/strata/artifact/dequant.hpp": "51fcc756845ddbadb62e4164ec3b88a5cea7d66ceb13d60f12897f41c5ddf255",
+    "include/strata/artifact/iq_codebooks.hpp": "302000e6a85fa7224bff9a10155601a82391b7a64d5ee76fba1f76b537bb6c71",
+    "include/strata/kernels/f16_bits.hpp": "0f74e6dd832da427b681c9971265a0af1a91198694fdef3654d860b98863fc8c",
+    "include/strata/sycl/gguf_decode.hpp": "be53c2b1d612433720599999ea0bc4902d2d550e16270a9eebe8e6868fb91c50",
+    "include/strata/program/conv_cache.hpp": "bac12824a15f99197e94305f90953914efd622b0380853675453f841a332eb5b",
+    "include/strata/core/conversation_memory.hpp": "b4c784080bfda39adb7a2fd4c64bac27a77bb7a6f4557b609e08c2afcb7f9954"
+  },
+  "recipe_sha256": "5f6a4f31a30308dee528f41e3ea3e91a2718f1f72fae52d5bc0639cbcadcebd0",
+  "closed_diagnostic_sha256": "574adcaa6f86c9f24f98d7c5903ad505d6eb481db88ecaea68965368c007af7c",
+  "qualification": "Host candidate arithmetic/state contracts only. No SYCL compile/device/model/RESTORE/physical256K/performance proof.",
+  "error": "RuntimeError(\"checkpoint-normal-build failed: /home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/layerwise-checkpoint-capture-v2/cpu_contract_fixture.cpp:45:12: error: 'Tag read_tag(const std::vector<unsigned char>&, size_t)' defined but not used [-Werror=unused-function]\\n   45 | static Tag read_tag(const std::vector<uint8_t>& v, size_t off=0) {\\n      |            ^~~~~~~~\\ncc1plus: all warnings being treated as errors\\n\")",
+  "finished_utc": "2026-10-15T03:00:40.357042+00:00"
+}

@@ -1,0 +1,38 @@
+diff --git a/src/core/expert_source.cpp b/src/core/expert_source.cpp
+index 56f58bc..340a7c4 100644
+--- a/src/core/expert_source.cpp
++++ b/src/core/expert_source.cpp
+@@ -2039,6 +2039,7 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
+                 miss.push_back(ids[i]);
+         d.src->prefetch(d.layers, miss.data(), (int64_t) miss.size());
+     }
++    std::vector<int64_t> trace_experts; // Temporary logical identity trace.
+     int njobs = 0;
+     for (int64_t t = 0; t < n_tok; ++t)
+         for (int64_t j = 0; j < k; ++j) {
+@@ -2076,6 +2077,7 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
+                 ExpertJobMulti& nj = d.jobs_multi[(size_t) jo];
+                 nj.blob = b;
+                 nj.nt = 0;
++                trace_experts.push_back(e);
+             }
+             ExpertJobMulti& jb = d.jobs_multi[(size_t) jo];
+             jb.act[jb.nt] = &d.act_multi[(size_t) t];
+@@ -2085,6 +2087,17 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
+             ++d.multi_entries;
+         }
+     const auto c3 = std::chrono::steady_clock::now();
++    // Temporary diagnostic: addresses can be reused by adaptive exchanges.
++    static std::FILE* index_trace = [] { const char* p = std::getenv("STRATA_CPU_INDEX_TRACE"); return p ? std::fopen(p, "w") : nullptr; }();
++    static unsigned long long index_batch = 0;
++    if (native && index_trace) {
++        const auto& f = lay.fmt[(size_t) d.layers];
++        for (int e = 0; e < njobs; ++e)
++            std::fprintf(index_trace, "%llu\t%d\t%lld\t%lld\t%zu\t%zu\t%p\t%d\t%lld\t%lld\n", index_batch, f.gu_type,
++                (long long) f.n_embd, (long long) f.n_ff, f.gu_row, f.up_off, (const void*) d.jobs_multi[e].blob,
++                d.jobs_multi[e].nt, (long long) d.layers, (long long) trace_experts[e]);
++        ++index_batch;
++    }
+     pt("run", njobs);
+     if (native) d.pool->run_split_multi_native(lay.fmt[(size_t) d.layers], d.jobs_multi.data(), njobs);
+     else d.pool->run_split_multi(d.jobs_multi.data(), njobs);

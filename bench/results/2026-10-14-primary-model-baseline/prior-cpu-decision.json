@@ -1,0 +1,42 @@
+{
+  "original_commit": "dc2ca4eee42c5870e11a1339c0fccc9fd9e856f6",
+  "original_path": "bench/results/2026-10-04-sycl-cpu-single-pair/run.json",
+  "original_sha256": "2419566e5ba913d7bb44168041360dab2ff70ea82f9f92644efc25b75cbf88ea",
+  "original_status": "rejected at component screen; not integrated",
+  "workload": "Real GGUF N2560 FF640 gate/up matrices of8 or64 distinct experts, one valid deterministic Q8_K activation. Five alternating samples with three repeats each.",
+  "hardware": "Ryzen 5 5600X",
+  "IQ3_S_original_summary": {
+    "21/8/unroll1": {
+      "baseline_median_us": 2421.22,
+      "candidate_median_us": 2683.09,
+      "rate_ratio": 0.902399844954884
+    },
+    "21/8/unroll2": {
+      "baseline_median_us": 2387.39,
+      "candidate_median_us": 2712.94,
+      "rate_ratio": 0.880001032090647
+    },
+    "21/8/unroll4": {
+      "baseline_median_us": 2335.96,
+      "candidate_median_us": 2435.42,
+      "rate_ratio": 0.9591610481970255
+    },
+    "21/64/unroll1": {
+      "baseline_median_us": 19079.6,
+      "candidate_median_us": 21674.6,
+      "rate_ratio": 0.8802746071438458
+    },
+    "21/64/unroll2": {
+      "baseline_median_us": 19123.7,
+      "candidate_median_us": 21726.0,
+      "rate_ratio": 0.8802218539998159
+    },
+    "21/64/unroll4": {
+      "baseline_median_us": 19350.4,
+      "candidate_median_us": 19842.5,
+      "rate_ratio": 0.9751996976187477
+    }
+  },
+  "current_decision": "keep existing unpaired route; no new A/B merely from narrower synthetic mean; revisit only with documented compiler/code/route exposure change",
+  "current_toolchain_equivalence_to_old_run_proven": false
+}

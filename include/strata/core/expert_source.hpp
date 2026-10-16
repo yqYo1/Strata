@@ -65,22 +65,6 @@ struct CgroupMemoryStat {
 /// Returns false when the required memory.stat counters were unavailable.
 bool cgroup_available_bytes(uint64_t limit, const CgroupMemoryStat& stat, uint64_t& bytes);
 
-/// #633: the RAM this process can get.  `available`: MemAvailable (Windows: the available physical memory), lowered
-/// to the room under the tightest cgroup limit; `cgroup_limit`: that tightest limit itself (v2 memory.max of the group
-/// and its ancestors, or v1 memory.limit_in_bytes), ~0 when there is none - what a container can never exceed.
-struct HostMemory {
-    uint64_t available = 0;
-    uint64_t cgroup_limit = ~uint64_t{0};
-};
-
-/// Linux reads `meminfo`, `self_cgroup` and the cgroup tree under `cgroup_root` (the parameters are for tests; the
-/// defaults are the real files).  cgroup v2 as before (an unreadable limit of a group that has one fails); cgroup v1's
-/// memory controller (`<root>/memory/<path>`: memory.limit_in_bytes - memory.usage_in_bytes); no cgroup line at all is
-/// MemAvailable alone.  False when the RAM cannot be determined.
-bool host_available_memory(HostMemory& m, const std::string& meminfo = "/proc/meminfo",
-                           const std::string& self_cgroup = "/proc/self/cgroup",
-                           const std::string& cgroup_root = "/sys/fs/cgroup");
-
 /// Build compact offsets for experts absent from both the primary GPU cache and an optional second GPU tier.
 /// Kept CPU-only so selection and byte accounting can be tested without initializing a GPU.
 bool make_cache_complement_plan(
@@ -138,11 +122,6 @@ public:
     virtual void begin_layer(int64_t layer, const int32_t* ids, int64_t k) { (void) layer; (void) ids; (void) k; }
     /// Plan v0.3 P6: the DEVICE address of a pinned, mapped blob (the GPU can read it over PCIe), or null.
     virtual const uint8_t* device_alias(int64_t layer, int64_t expert) const { (void) layer; (void) expert; return nullptr; }
-    /// A file-backed source: start reading this expert's pages now (it will be needed by the CPU); no-op elsewhere.
-    virtual void prefetch(int64_t layer, int64_t expert) { (void) layer; (void) expert; }
-    /// A file-backed source: this expert lives in VRAM, so its pages need not stay in RAM - hand them back to the
-    /// kernel (a later read re-reads the file; no result depends on it).  Returns the bytes released; 0 elsewhere.
-    virtual uint64_t release(int64_t layer, int64_t expert) { (void) layer; (void) expert; return 0; }
     /// Whether the verify window may give the GPU a PCIe share of this layer's misses at all (each expert is still
     /// checked with `pinned`).  The arena answers per layer through its expert 0; the resident RAM mode's compact
     /// copy has no expert 0 when the GPU cache holds it, so it answers for the whole copy.
@@ -232,6 +211,9 @@ struct GpuPlanSink {
 };
 
 /// The adapter's own state.  One per session, reused every layer so the token path allocates nothing (P2.T10).
+#ifdef STRATA_ENABLE_SYCL
+struct NativeHitGraphs;
+#endif
 struct ExpertDispatch {
     strata::kernels::cpu::ExpertPool* pool = nullptr;
     ExpertSource* src = nullptr;
@@ -284,7 +266,7 @@ struct ExpertDispatch {
     float* hit_out = nullptr;
     int64_t parts_elems = 0;               ///< `K * n_embd`, the length of both buffers
     const float* mixed = nullptr;          ///< the layer's normed activation, for the hit kernel's Q8_0
-    uint8_t* x_q8_0_hit = nullptr;         ///< `(n_embd/32) * 34` bytes, its own buffer
+    uint8_t* x_q8_0_hit = nullptr;         ///< `(n_embd/32) * 34` bytes; native hits use 36-byte Q8_1 blocks
     /// **R4.2h: THE CPU's fp32 ACTIVATION SCALES, `(n_embd/32)` FLOATS.**  Without them the GPU's hits are
     /// computed with the `block_q8_0`'s fp16 `d` while the CPU's misses use the fp32 `ActQ::scale`
     /// (`cpu/expert.cpp:92`) - **4.761e-04 relative on 80 of 80 chunks**, measured with both real
@@ -294,6 +276,17 @@ struct ExpertDispatch {
     int32_t* d_slot = nullptr;             ///< device, K entries
     int32_t* d_dst = nullptr;              ///< device, K entries
     std::vector<int32_t> h_slot, h_dst;    ///< host staging, sized at session setup
+    // Native per-layer hits: one group per routed hit. Metadata owns its
+    // storage for the session; no allocation is needed between layer graphs.
+    bool hit_native = false;
+    unsigned long long* native_hit_ptr = nullptr;
+    int32_t* native_hit_meta = nullptr;  ///< [start(cap+1), tok(cap), count]
+    std::vector<unsigned long long> h_native_hit_ptr;
+    std::vector<int32_t> h_native_hit_meta;
+#ifdef STRATA_ENABLE_SYCL
+    /// Captured at setup for the session's fixed buffers and expert layouts.
+    std::shared_ptr<NativeHitGraphs> native_hit_graphs;
+#endif
     /// **PER ROUTER INDEX, DECIDED IN `Launch` AND CONSUMED BY THE POOL.**  The two callbacks share it
     /// so the decision is made exactly once, on this layer's ids, and neither side can re-decide it.
     std::vector<uint8_t> is_hit;
@@ -328,6 +321,9 @@ struct ExpertDispatch {
     /// Set by `Launch` and consumed by `Combine`, so a `Combine` with no `Launch` in front of it cannot
     /// add a stale buffer into `parts`.
     bool hit_pending = false;
+#ifdef STRATA_ENABLE_SYCL
+    bool hit_combine_captured = false; ///< the post graph consumes hit_out
+#endif
     const char* hit_fail = nullptr;
 
     /// Whether the hit path is wired up.  All of it or none of it: a half-configured hit path would compute
@@ -335,7 +331,8 @@ struct ExpertDispatch {
     bool hits_ready() const {
         return cache != nullptr && cache_base != nullptr && parts_out != nullptr && hit_out != nullptr &&
                mixed != nullptr &&
-               hit_scratch != nullptr && x_q8_0_hit != nullptr && x_q8_0_hit_scale != nullptr && d_slot != nullptr && d_dst != nullptr;
+               hit_scratch != nullptr && x_q8_0_hit != nullptr && x_q8_0_hit_scale != nullptr && d_slot != nullptr && d_dst != nullptr &&
+               (!hit_native || (native_hit_ptr != nullptr && native_hit_meta != nullptr));
     }
 
     std::vector<strata::kernels::cpu::ExpertJob> jobs;
@@ -352,9 +349,6 @@ struct ExpertDispatch {
     GpuPlanSink* plan = nullptr;
     int pcie_num = 0;
     int64_t pcie_experts = 0;      ///< distinct experts the GPU read over PCIe in verify windows
-    /// #588: routed (token, expert) entries the GPU computed from outside its cache in verify windows: read over PCIe
-    /// (--pcie-frac, kind 1) or on another GPU (kind 2).  In neither cache_hits nor cache_refused.
-    int64_t offload_entries = 0;
     double ms_plan = 0, ms_actq = 0, ms_jobs = 0, ms_run = 0;   ///< verify-window dispatch sections
     /// Plan v0.3 P6: decayed routing counts per (layer, expert) during decode (sized by the caller; empty = off),
     /// which the driver uses to swap the most-routed missing experts into the VRAM tier between rounds.
@@ -379,14 +373,16 @@ struct ExpertDispatch {
 };
 
 /// `strata::core::PoolFn`, exactly.  Silent on failure BY SIGNATURE - see `ExpertDispatch::fail`.
+/// Native packs use a one-token native row-split batch and consume the native GPU hit hook's decisions.
 void expert_pool_dispatch(void* user, const float* x_f, const int32_t* ids, const float* weights, int64_t n_embd,
                           int64_t k, float* out);
 
 /// Plan v0.3 P6: the pool for a verify window of `n_tok` tokens.  `x_f` is (n_tok, n_embd), `ids` (n_tok, k) and
 /// `out` (n_tok * k, n_embd).  Each distinct missed expert is computed once for all the tokens routed to it;
-/// resident experts' rows are zeroed (the GPU adds them).  Requires `host_res` (the token-graph residency).
+/// resident experts' rows are zeroed (the GPU adds them). A null `host_res` means every expert runs on the CPU.
+/// Optional `hit_mask` supplies per-entry decisions already made by the per-layer GPU hit hook.
 void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32_t* ids, int64_t n_tok, int64_t k,
-                                float* out);
+                                float* out, const uint8_t* hit_mask = nullptr);
 
 /// **THE HITS, LAUNCHED AFTER THE MISSES ARE STAGED AND BEFORE `post[l]`.**  Same shape as `PoolFn` and for the
 /// same reason: `session_loop` owns the ORDER and this owns the work, so the loop needs to know nothing about
@@ -395,6 +391,13 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
 /// It must run AFTER the host has copied the misses into `parts_dev` (it writes into the same buffer, on rows
 /// the CPU zeroed) and BEFORE `post[l]` (which reads it).  Both are stream-ordered on the loop's own stream.
 void expert_hit_run(void* user, void* stream, HitPhase phase, const int32_t* ids, int64_t k);
+#ifdef STRATA_ENABLE_SYCL
+/// Capture native Q8_1 hit work once per expert layout at session setup.
+/// Buffer addresses and layouts must remain fixed until the graphs are released.
+/// Launch callbacks reuse one host-USM plan and require the preceding layer to have completed.
+/// CPU-order diagnostic hits keep their existing path. No token-path capture.
+bool expert_hit_prepare_graphs(ExpertDispatch& d, void* stream, std::string& err);
+#endif
 /// The pool half of the same decision; see `ExpertDispatch::is_hit`.
 
 /// **PHASE 2'S ONLY SOURCE: `experts.bin`, memory-mapped, no cache.**
@@ -504,14 +507,8 @@ public:
     /// beside `ram_bytes` (the RAM budget), cached now or not (their mapped pages would land in the working set); see
     /// experts_unbuffered.  The mapped reads' page faults are one small request each, and the pages they bring in
     /// take the RAM the budget was sized for.  `why` says what decided.
-    /// #577: `ram_bytes` counts up to every expert, and only the experts outside it are what the cache must keep.
     bool set_unbuffered(uint64_t ram_bytes, std::string& why);
-    /// #577: the same decision once the RAM copy is built (pin_cache_complement), from the RAM it really holds and the
-    /// expert bytes outside it; switches either way (startup only, nothing reading).  Returns whether unbuffered.
-    bool recheck_unbuffered(std::string& why);
     bool unbuffered() const { return !direct_.empty(); }
-    /// Every expert's bytes (n_layers x n_expert blobs).
-    uint64_t expert_bytes() const;
     /// #286, unbuffered: assembles the blobs of these pairs ahead of the `blob` calls that will ask for them (the
     /// GPU cache's fill from the profile) - one batch of reads instead of one blob at a time.  At most 64 pairs.
     void prefetch_pairs(const std::pair<int32_t, int32_t>* pairs, int64_t n);
@@ -554,7 +551,6 @@ private:
     /// #286: the blobs from the drive, unbuffered: every role's 4 KiB-aligned window is read at once (overlapped)
     /// into this thread's aligned buffer, then copied into place.  False when a read fails.
     bool read_direct(const Fill* fills, size_t n) const;
-    bool open_direct(std::string& why);
     std::vector<std::string> paths_;          ///< the mapped files, as maps_
     std::vector<void*> direct_;               ///< #286: per file, an unbuffered overlapped handle (Windows)
     std::vector<int> role_file_;              ///< 3 x n_layers: index into maps_ / direct_
@@ -669,17 +665,13 @@ public:
     bool mapped() const { return base_ != nullptr; }
     int64_t blobs() const { return blobs_; }
     const uint8_t* blob(int64_t layer, int64_t expert) override;
-    int64_t reads() const { return reads_; }
+    int64_t reads() const override { return reads_; }
     bool pinned(int64_t layer, int64_t expert) const override;
     const uint8_t* device_alias(int64_t layer, int64_t expert) const override;
-    void prefetch(int64_t layer, int64_t expert) override;
-    uint64_t release(int64_t layer, int64_t expert) override;
 
     /// What backing was obtained and why, for the startup print.  "The engine adapts to the machine it is on" is
     /// only true if the engine says what it got.
     const std::string& note() const { return note_; }
-    /// #633: set by `open` when the RAM available is less than the arena needs (a recommendation; it still loads)
-    const std::string& ram_warning() const { return ram_warning_; }
     double load_gib_per_second() const { return gib_per_s_; }
     // Loader fix: the load, split.  `load_seconds()` is the wall clock of the load loop; the other two are
     // sums over the reader threads (see LoadStats), so on their own they say how much of that wall was spent
@@ -690,8 +682,6 @@ public:
 
 private:
     void* arena_ = nullptr;          ///< the PinnedArena, owned
-    void* map_ = nullptr;            ///< STRATA_ARENA_MMAP: the arena file, mapped read-only (not the PinnedArena)
-    uint64_t map_bytes_ = 0;
     std::vector<const uint8_t*> dev_slice_;   ///< device alias of each registered slice (or of the whole range)
     uint64_t slice_bytes_ = 0;
     const uint8_t* base_ = nullptr;
@@ -699,7 +689,6 @@ private:
     int64_t n_expert_ = 0;
     int64_t reads_ = 0;
     std::string note_;
-    std::string ram_warning_;
     double gib_per_s_ = 0.0;
     double load_seconds_ = 0.0;
     double load_read_s_ = 0.0;

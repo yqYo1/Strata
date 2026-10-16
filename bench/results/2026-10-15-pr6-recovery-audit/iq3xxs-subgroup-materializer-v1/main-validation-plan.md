@@ -1,0 +1,28 @@
+# Main-owned serial qualification plan — all NOT_RUN
+
+1. Close and retire Main's active clean timing owners before any application, build, test, profiler or cleanup. Do not inspect or interfere with live timing from this proposal. Main reviews exact pins and the incremental base before applying into its owned isolated build. Current per-element type-18 ne=64 screening was reported slower; that is motivation, not a final decision or measurement authored here.
+2. Reuse the existing build_parallel_iq_component_v1.py / check_parallel_iq_component_v1.py recipes and direct_owner.py Owner adapter. Main must create a new versioned recipe and receipt for this source/fixture rather than reuse a stale binary or source hash. This proposal supplies no process controller. No source is applied or command executed here. Link this gpu_fixture.cpp to the candidate archives using the earlier toolchain, includes, -ffp-contract=off, no fast-math; retain CPU fixture/oracle from parallel-iq-dequant-v1, including normal and ASan/UBSan gates. CPU validation does not cover subgroup exchange.
+3. Re-pin the generated compile_commands entry for src/kernels/sycl/iq.cpp and the linked archive/binary after the serial build. Configured path is CMakeLists -> cmake/sycl_backend.cmake -> strata_kernels src/kernels/sycl/iq.cpp, not root CUDA generate. Reconfirm actual configured resolver and flags. Inspect device IR/assembly for the two required widths, convergent selects, uniform broadcast sources, multiply order, absence of spills/large temporaries if available. No assumption about table cache or physical bandwidth is a result.
+4. Use Owner, an exclusive measurement lock, prelaunch immutable environment dictionaries and separate native children for every arm. Keep the same established parameter-validation/quick tracing policy and fresh journal boundaries. Private fresh capture dirs only. No setenv/unsetenv after runtime initialization. Main's Owner controls boot/PID/start identity, deadlines, byte budgets, normal/abnormal completion and cleanup. No parallel GPU/build/test/cleanup.
+
+Native argv and environment matrix (use Owner.run, not an unowned shell launch):
+
+| argv arm | STRATA_SYCL_PARALLEL_IQ_DEQUANT | STRATA_SYCL_IQ3XXS_SUBGROUP |
+|---|---|---|
+| off | 0 | absent or empty |
+| on | 1 | absent or empty |
+| sg16 | 0 | sg16 |
+| sg32 | 0 | sg32 |
+| invalid | 0 | SG16 |
+| invalid | 0 | sg16 followed by space |
+| invalid | 0 | 16 |
+| invalid | 0 | 1 |
+| invalid | 0 | sg64 |
+
+All invoke gpu_fixture ARM quick NEW_CAPTURE_DIR first. Require completed 69-case receipts, 20 negative checks, six F32 cases, guards, unchanged input, CPU comparison and fresh faults=0 before full. Then gpu_fixture ARM full NEW_CAPTURE_DIR yields 75 cases. Each invalid selector is its own exec. On devices without the requested supported width/launch limits, record device admission and declined-probe receipt and require exact legacy arrays; this is fallback correctness, not a subgroup performance sample. Never force an unsupported attribute onto a dispatched device merely to test fallback. The existing full device list may support both widths; a missing unsupported-width device remains NOT_RUN rather than fabricating evidence.
+
+5. Run this proposal's compare_captures.py OFF_DIR CANDIDATE_DIR NEW_REPORT.json for on, sg16, sg32 and every invalid-selector arm. This comparator is derived from the earlier full-array comparator with 69/75 expected cases and explicit candidate probe files. It retains strict whole-array comparisons and length/guard checks, even for NaNs. Source/arm JSON and subgroup-admission/probe hashes belong in receipts. The small probe validates actual device collectives and records actual sizes; product IR + public-function full arrays gate the implementation. Verify one replacement product launch per valid call and same queue placement in separate diagnostics; fixture markers and the extra probe are not product launches.
+6. Only after exact arrays/fault gates, compare legacy, per-element, SG16 and SG32 in separate clean repeated matched processes. Reuse the existing full-buffer timing and resident-dequant-plus-oneMKL route fixtures, append small/padded and real GU 640x2560 cases, ne=1/8/64 plus existing model shapes. Report isolated device completion, wall, launch count, output bytes, selected width, order and every sample; distinguish isolated materializer from complete route. Do not infer bandwidth from logical bytes. Unsupported fallback is excluded from subgroup speed conclusions.
+7. Before adoption, run the inherited actual-model selected-logit/tensor, same-work prefill/decode, restore, cancel/recovery and context gates. Preserve faster legacy/per-element components unless repeated full-route evidence justifies shape-specific type-18 selection. This proposal remains OFF regardless of a single microbenchmark win. Main may reject the candidate after source/build/correctness or clean full-route timing; record the original failures and limitations.
+
+Retention: new raw-output root outside Git, Owner text budget 64 MiB, total job budget 512 MiB, per-arm capture budget 128 MiB (same initial component envelope; stop incomplete on breach). Compact individual timings, source/binary/environment/input hashes, all correctness and faults are durable. Raw arrays have one consumer: strict cross-arm comparator at this boundary. Retire only after hashes and compact comparison are verified, runs close and owners retire, under Main's lock and deletion manifest. Preserve only first useful distinct unresolved numerical/driver failure evidence. Revisit this proposal at first Main source review/build/fixture result or rejection. No captures/deletions were produced here.

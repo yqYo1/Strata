@@ -1,0 +1,52 @@
+# R591 — actual normal MTP4 decode profilerの安全なcontrolと容量制限
+
+2026-10-15 JST。読み取り専用のsource/API監査。作業対象はStrata configured SYCL rootと、既報のpinned PTI/unitrace providerだけ。書き込みはこの報告のみ。build/test/GPU/provider実行、Git変更、service/環境操作、cleanupは行っていない。秘密env、禁止receipt、home全域、Codex logは読んでいない。モデル測定のMain予算はRSS 88 GiB、start-to-reap wall 1800 s、trace aggregate/text各64 MiB、job 256 MiBを前提とし、古い8 GiB/300 s案を採らない。GPU時刻とhost `CLOCK_MONOTONIC_RAW`の絶対時刻はjoinしない。
+
+## 結論
+
+既存実providerをそのまま使い、アプリのwindow境界で競合安全にstart/pauseし、かつaggregate trace bytesをhard capできる、実在しているin-process APIは確認できない。以前のproposalでsource.diffを作らなかった判断は妥当。実際のcollectionに使える代替はLinuxのnamed temporal session (`--session` + `--start-paused` と別unitraceプロセスからの `--resume/--pause/--stop`)で、これはsetenv/ITT exportに依存せず、providerの公開CLI契約である。しかしsession制御は非同期の外部状態切替で、対象アプリwindow開始/停止のackを返さず、ファイルサイズの上限も実装しない。source markerとcontrollerの時刻を記録したとしても、control requestとproviderが反映したcallback/event境界が同じとは証明できない。したがってこれは「周辺windowも含む可能性のあるbounded diagnostic capture」には進められるが、正確に一Verifier windowだけを完全収集したとはqualifiedできない。
+
+window正確性、出力hard capの両方が必須なら、限定childのPTI provider変更が次の確実な方法。ITT対応providerのbuildだけではraw-environ問題を解消しない。必要なのは、envを読書きしないatomic collection API（開始時paused、各collector callbackがatomic gateを読む）と、集約出力量をcollector/logger側で予約・制限するhard cap/incomplete flagを持つ専用provider buildである。Strata側には既存成功境界でそのAPIを呼ぶ小さいdefault-off diagnostic hookが要る。whole engineは不要。provider改変/build/API hook/CPU contract検査をMainが許可・実施するまではrunしない。
+
+## providerの固定事実と競合根拠
+
+`owned-decode-profile-window-v1/pins.json`のrecorded provider receipt SHA256は `692da9f9d706fea659e78378a397c71d86b08cb9fba0c994e390de29b6a20647`。revision `6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033`、実binary hashはunitrace `66a828c49488052487815224ad6fdb36dfe0f53b0d64b5b906cde5d113e7c2c0` と `libunitrace_tool.so` `8a8fe37441606bf66ab42fc39cc447b5257f48d09f04fbcc60703e30826671eb`。記録済みCMakeCacheは`BUILD_WITH_ITT=0`, `BUILD_WITH_L0=1`, `BUILD_WITH_XPTI=1`。`provider-exports.txt`のdynamic symbol listはITT `__itt_*` exportを含まず、`__itt_pause`, `__itt_resume`, `__itt_api_init`は実行binaryから呼べない。そこには`SetSessionStoppedCallback`等の公開C APIも無い。`unicontrol.h`上の`UniController::SetSessionStoppedCallback`は内部C++ classのstatic methodで、実binary dynamic export receiptにもsetterがない。`__itt`用collectorと`--chrome-itt-logging`の設定はpinned `tracer.h`で`#if BUILD_WITH_ITT`に囲まれている。従ってITT task annotationおよびITT pause/resumeを使うならITT対応providerの再buildと再配布が必要で、今のbinaryへlibを足すだけでは有効にならない。
+
+pinned `unicontrol.h`ではconditional collection中の`IsCollectionEnabled()`が各判定で`IsCollectionEnabledByEnv()`を呼ぶ。これは標準`getenv()`を呼ぶのではなく、`environ`の`char**`を最初のNULLまで順方向走査してから後ろ向きに戻り、各`char*`の文字列を`strncmp`/index readする。そこにprovider側mutex、snapshot、atomic publication、reader grace periodはない。アプリthreadから`setenv`/`unsetenv`するなら、providerが配列/entry pointer/entry文字列を同時に読む具体的な経路がある。taskで指定された懸念は抽象的なglibc差ではなくこのunpinned-to-caller raw scan。POSIX/glibcの一般的な`getenv` thread-safety説明だけでは、この自前scanの同期契約は得られない。自前mutexもprovider走査を囲わない。ITT `IttPause/IttResume`も内部で同じ`utils::SetEnv("PTI_ENABLE_COLLECTION",...)`を呼ぶため、ITT exportがある別buildでも、それ単独でこの競合懸念は消えない。
+
+また同pinned sourceの`IsCollectionEnabled`はtemporal shared-memory session stateを先に読む。`--start-paused`/named sessionからのpaused stateは、appのenvironment mutationなしで状態を切り替えられる経路である。一方、`IsCollectionEnabled()`に到達するタイミングはL0 callback/collector call sitesで、window境界を直接subscribeするapplication APIではない。pause request後に既発行またはcallback queue内の行が残るか、window境界前後の具体的coverageは実際のone-window verifier traceで検証する必要があり、source contractだけから完全性を主張しない。
+
+## 候補1 — 現providerの外部session control（診断範囲は近似）
+
+Linuxで、実model childのunitrace invocationを`--session <unique-alnum> --start-paused`で起動し、専用owner wrapperが同じsessionに`unitrace --resume <id>`/`--pause <id>`を送る。公式READMEとpinned `unitrace.cc` CLIにある機能で、in-processの`setenv`やITTを使わない。対象Verifierが既知のdecode windowに入る/成功drainを完了したとき、限定child source hookから専用FIFO/eventfdへ低頻度のmarkerを出し、wrapperはmarker受信時にcontrol CLIを発行する。`--stop`はsessionを永久停止しflushさせる。別process制御とmarker時刻のhost RAW bracketをreceiptに記録する。
+
+この案の適用条件と限界:
+
+- **収集window:** marker→別process起動→shared-memory state更新→collectorが次のstate checkを行う間に遅れがある。CLIが返るのはstate write完了であり、対象appのcollectorがその状態を観測したackではない。開始・停止の境界不確実幅を測定しても、markerとGPU eventの絶対timestamp joinは禁止条件により使わないため、strict window-exclusive completenessは証明できない。SIGSTOPやblocking ackを加えるとhost flow/normal executionを変えるのでこの案では使わない。結果はbounded/incomplete-or-overinclusive diagnosticとして分類する。
+- **出力量:** unitrace `--chrome-event-buffer-size`はhost threadごとのevent数設定で、bytes/aggregate capではなく、complete traceの保証もREADMEにない。`--output-dir-path`も単なる配置先。owner wrapperでtrace directory全体を監視しsoft thresholdで`--stop`するのはできるが、監視poll/停止反映までの書込みovershootを含むためhard 64 MiB ceilingと呼べない。個別file上限だけでもmulti-file aggregateは制限しない。外部のjob専用filesystem/project quotaが事前に実証できるならdisk usageをhard capし、quota-hitは必ずincomplete扱いにできる。現在の指定証拠ではそのquota機能の存在/上限は確認していないので、存在を仮定しない。
+- `--stop`後の終了・出力flushまでfinite owner deadlineを持つ。停止またはquotaで終わったcaptureは欠落イベントの有無に関係なくincomplete。pre-existing serviceは使わず、同じnormal MTP4 32K+ model、single GPU、frozen environment、88 GiB RSS/1800 s wall/64 MiB aggregate + 64 MiB text/256 MiB job上限をMain receiptに固定。GPU duration・queue gap・host waitを別列で解析し、host RAW absolute値との直接joinはしない。
+
+この候補は現provider変更が不要な唯一のprovider-documented controlだが、Main目的の「一windowのexclusive event set + hard aggregate byte cap」を満たさない。soft capのdiagnosticが意思決定に足りる場合だけMainがscopeを明示し、別の実施proposalとして進める。
+
+## 候補2 — 限定child providerにatomic setterとhard output budgetを追加（推奨）
+
+固定revisionをchild-onlyでcheckout/再buildし、現在のPTI CLIとL0/XPTI collectorsは維持したまま、collector controlの小さいC ABI（例 `pti_unitrace_set_collection(bool)`）を一つexportする。初期値false。実装は既存`IsCollectionEnabled()`がraw `environ`を見る経路と独立し、各collection entry pointで`std::atomic<bool>`だけを読む。Strata diagnostic hookは既存successful MTP4 verifier windowの直前/両既存drain成功後にsetterを呼ぶ。ITT annotation機能は採用目的に含めず、no-ITT buildのままでよい。別のC callback setter自体は現binaryにexportされていないため、このAPI追加にはprovider buildが必要。callerによる`dlopen`/`dlsym`接続か明示link方法をproviderとchild source両方で明示し、見つからない/版違いなら収集をarmしないfail-closed設計にする。
+
+容量制限はwrapper監視だけにせず、同じchild providerにaggregate serialized-output byte budgetを予約して超過前に書込みを拒否するhard gateを実装し、overflow/incompleteをreceipt・stdoutのどちらか確実な低量channelへ一度だけ出す。trace directory、text outputs、per-file countを包括する所有範囲を先に定義する。owner wrapperはRSS 88 GiB、wall 1800 s、text64 MiB、trace aggregate64 MiB、job256 MiBも独立monitorし、いずれかのbudget hitはstop/fail/incompleteとする。provider内部上限のため、一つのlogger callbackの途中で64 MiBを越えてファイルを書かない契約と、flush/footerがbudgetを越えない予約も実装レビューで要確認。`--chrome-event-buffer-size`は追加のevent count guardに使えてもbytes capの代替にはしない。
+
+これは既存APIを使うだけの案ではなく、provider sourceとStrataの狭いdiagnostic hookの2箇所変更とchild provider buildを必要とする。採用前にCPU-only fixtureで、並行L0 callback中にatomic controlをflipしてenvironment accessがゼロ、on/off後のイベント所属、queue/window成功/drain時のgate、未検出symbol・writer failure・byte budget・flush footerでfail-closedとなることを検査する。その後Mainが直列に1実model windowを実施し、元モデルとnormal settingsを固定。trace欠落は未採用、output cap exceededはincompleteと記録。実モデル測定前に実施承認・provider pin更新・child build source receiptが必要だが、現タスクは読み取りのみなので作っていない。
+
+## 実行可能な次手と判定
+
+Mainはまず必要な判定精度を決める。近似/overscoped traceでよければ候補1を独立したlimited diagnostic proposalに切り出し、filesystem quotaが利用可能なowned jobdirに実装可能かを先にread-onlyで確認する。windowの排他性と64 MiB hard capが必須なら候補2に限定childを作る。固定providerで`setenv` gate/ITT gateを使う、全requestを記録して後で切り出す、kernel名filterでvolumeを落とす、出力量を`--chrome-event-buffer-size`から推定する方法は進めない。どちらの場合も測定完了まではGPU service、queue gap、host waitの内訳や性能qualificationを主張しない。
+
+## 一次資料と既報
+
+- 既報 `research-index.json`、R576 `research-bounded-actual-prefill-profiler-round576-v1.txt`、R588 `research-decode-gpu-boundary-round588-v1.txt`、`owned-decode-profile-window-v1/README.ja.md` / `source-mapping.ja.md` / `controller-recipe.ja.md` / `provider-exports.txt` / `pins.json`を参照。R576のGPU capture案はprefill向けで、R588はdecode one-windowを述べるが、共通control blockerは今回pinned source上で再評価した。
+- Intel PTI unitrace official README, pinned [6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033](https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/tools/unitrace/README.md): named temporal session, in-process `PTI_ENABLE_COLLECTION`, ITT controls, event-buffer semantics and output options.
+- Public pinned implementation: [unicontrol.h](https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/tools/unitrace/src/unicontrol.h) (`IsCollectionEnabled`, `IsCollectionEnabledByEnv`, ITT SetEnv, temporal shared-memory state and callback setter); [tracer.h](https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/tools/unitrace/src/tracer.h) (`BUILD_WITH_ITT` collector guard); [unitrace.cc](https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/tools/unitrace/src/unitrace.cc) (session CLI options).
+- PTI SDK [View API docs](https://intel.github.io/pti-gpu/view_api_ref.html) document tracing libraries as APIs for building instrumentation clients, but these are separate SDK-level APIs, not exported setters from this fixed unitrace tool binary. The current limited solution would require an explicit new bridge or provider code.
+- Khronos [SYCL 2020 queue ordering](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html) remains relevant to interpreting same-queue order; it does not control PTI capture boundaries.
+- Public operations guide: [ALCF unitrace guide](https://docs.alcf.anl.gov/aurora/performance-tools/unitrace/) complements the pinned README’s control examples. No personal-blog advice changed the source/API decision.
+
+No runtime, event-count, memory, correctness, overhead, or output-volume measurement was performed or inferred. This is source/API feasibility only.

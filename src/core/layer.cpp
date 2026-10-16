@@ -80,6 +80,12 @@ struct Planes {    const uint8_t* codes = nullptr;    const float* scales = null
 ///< null when the form has none
 };
 bool plane_ptrs(const WeightRef& r, const std::string& name, Planes& out, std::string& err) {
+    // Native projections consume the attached GGUF bytes, not canonical planes.
+    // Native-only packs intentionally carry zero bytes for skipped S-forms.
+    if (r.native_data) {
+        out = {};
+        return true;
+    }
 // S2, S4 AND S8 ALL SPLIT THE SAME WAY.  The plane LOCATION does not depend on the code width - the three
 // sizes come from the index and are checked against the tensor below - so the guard is here to catch a
 // tensor that is not quantized at all, not to pick a decoder.  WHICH KERNEL reads the planes is the
@@ -387,34 +393,6 @@ if (db != nullptr && g_publish_kernel) {
 // write idempotent across replays of the same graph - a captured literal would ring the same number
 // forever and the host would never see a change.
 strata::kernels::doorbell_ring(db->d_seq, stream);    }    return true;}
-// The verify window's routing: n tokens' logits in one BF16 projection and their top-k in one launch, each token
-// bitwise what `moe_route` gives it (the projection is the same kernel per column, the top-k kernel is per token).
-// Anything else (a native router, the canonical BF16 GEMVs, a doorbell) takes the per-token `moe_route`.
-bool moe_route_window(const WeightTable& tables, const ModelGeometry& g, int64_t layer, int64_t k, const MoEBuffers& b,
-                      const float* x, float* logits, int32_t* ids, float* weights, int n, void* stream, std::string& err) {
-    using namespace strata::kernels;
-    const bool batched = native_bf16_projections && !(native_router_enabled() && g.n_expert == 512 && k == 10) &&
-                         !std::getenv("STRATA_ROUTE_PER_TOKEN");
-    if (!batched || n == 1) {
-        for (int t = 0; t < n; ++t) {
-            MoEBuffers mb = b;
-            mb.logits = logits + t * g.n_expert; mb.ids = ids + t * k; mb.weights = weights + t * k;
-            if (!moe_route(tables, g, layer, k, mb, x + t * g.n_embd, stream, err, nullptr)) return false;
-        }
-        return true;
-    }
-    const LayerView v(tables, layer);
-    const WeightRef* w_router = v.get("ffn_gate_inp.weight");
-    if (w_router == nullptr) { err = v.name("ffn_gate_inp.weight") + " is missing"; return false; }
-    if (std::getenv("STRATA_ROUTE_PROJ_PER_TOKEN"))
-        for (int t = 0; t < n; ++t)
-            bf16_gemv_fp32_mmvf(x + t * g.n_embd, (const uint16_t*) w_router->data, logits + t * g.n_expert, g.n_embd,
-                                g.n_expert, stream);
-    else
-        bf16_gemv_fp32_mmvf_cols(x, (const uint16_t*) w_router->data, logits, g.n_embd, g.n_expert, n, stream);
-    router_top10(logits, n, (int) g.n_expert, (int) k, ids, weights, stream);
-    return true;
-}
 bool moe_shared(const WeightTable& tables, const ModelGeometry& g, int64_t layer, const MoEBuffers& b,                const float* x, void* stream, std::string& err) {    using namespace strata::kernels;    const LayerView v(tables, layer);    const WeightRef* w_ginp = v.get("ffn_gate_inp_shexp.weight");    const WeightRef* w_sgate = v.get("ffn_gate_shexp.weight");    const WeightRef* w_sup = v.get("ffn_up_shexp.weight");    const WeightRef* w_sdown = v.get("ffn_down_shexp.weight");    const char* missing = !w_ginp ? "ffn_gate_inp_shexp.weight" : !w_sgate ? "ffn_gate_shexp.weight"                          : !w_sup ? "ffn_up_shexp.weight" : !w_sdown ? "ffn_down_shexp.weight" : nullptr;    if (missing) { err = v.name(missing) + " is missing"; return false; }
 // ---- the shared expert.  Its three weights are quantized, so they need their planes.
 SForm f_gate, f_up, f_down;    if (!sform_of(*w_sgate, f_gate, v.name("ffn_gate_shexp.weight"), err)) return false;    if (!sform_of(*w_sup, f_up, v.name("ffn_up_shexp.weight"), err)) return false;    if (!sform_of(*w_sdown, f_down, v.name("ffn_down_shexp.weight"), err)) return false;    Planes p_gate, p_up, p_down;    if (!plane_ptrs(*w_sgate, v.name("ffn_gate_shexp.weight"), p_gate, err)) return false;    if (!plane_ptrs(*w_sup, v.name("ffn_up_shexp.weight"), p_up, err)) return false;    if (!plane_ptrs(*w_sdown, v.name("ffn_down_shexp.weight"), p_down, err)) return false;
@@ -873,7 +851,7 @@ void stage_timing_report(int64_t n_layers) {
 // needs nothing from the layer it is called for beyond its index.
 static void dump_slot(float* dump, const ModelGeometry& g, int64_t layer, const float* src, uint64_t off,
                       uint64_t n, void* stream);
-bool qsa_layer(const WeightTable& tables, const ModelGeometry& g, int64_t layer, int64_t pos, int32_t pos_base,               const QsaState& st, const QsaBuffers& b, const float* x, float* out, void* stream,               std::string& err, float* dump) {    using namespace strata::kernels;    const QsaShapes s = qsa_shapes(g);    const LayerView v(tables, layer);    const int64_t n_kv = pos + 1;    /* P7 audit: RoPE reads cos/sin row pos_base + pos, and the table holds max_cells rows. */    if ((int64_t) pos_base + pos >= st.max_cells || pos_base < 0) {        err = "qsa_layer: position " + std::to_string((long long) pos_base + pos) + " is outside the RoPE table (" + std::to_string((long long) st.max_cells) + " rows)";        return false;    }    const int64_t n_bid = n_kv / s.idx_block;    const int64_t width = qsa_selection_width(n_kv, s);    const int64_t cap = qsa_selection_width(kTopkMaxCells, s);
+bool qsa_layer(const WeightTable& tables, const ModelGeometry& g, int64_t layer, int64_t pos, int32_t pos_base,               const QsaState& st, const QsaBuffers& b, const float* x, float* out, void* stream,               std::string& err, float* dump) {    using namespace strata::kernels;    const QsaShapes s = qsa_shapes(g);    const LayerView v(tables, layer);    const int64_t n_kv = pos + 1;    /* P7 audit: RoPE reads cos/sin row pos_base + pos, and the table holds max_cells rows. */    if ((int64_t) pos_base + pos >= st.max_cells || pos_base < 0) {        err = "qsa_layer: position " + std::to_string((long long) pos_base + pos) + " is outside the RoPE table (" + std::to_string((long long) st.max_cells) + " rows)";        return false;    }    [[maybe_unused]] const int64_t n_bid = n_kv / s.idx_block;    [[maybe_unused]] const int64_t width = qsa_selection_width(n_kv, s);    const int64_t cap = qsa_selection_width(kTopkMaxCells, s);
 const auto normalize_rotate = [&](float* data, const WeightRef* norm, int rows, int cols) {
     try {
         if (native_qsa_enabled()) native_qsa_rms_norm_weighted(data, (const float*) norm->data, data, cols, rows, RMS_EPS, stream);
@@ -1167,7 +1145,7 @@ static void dump_half(const BlockBuffers& bb, const ModelGeometry& g, int64_t la
                       uint64_t off, uint64_t n, void* stream) {
     dump_slot(bb.dump, g, layer, src, off, n, stream);
 }
-bool block_layer_pre(const WeightTable& tables, const ModelGeometry& g, int64_t layer, int64_t pos,                     int32_t pos_base, const GdnBuffers& gb, const QsaState& qst, const QsaBuffers& qb,                     const MoEBuffers& mb, int64_t k, const BlockBuffers& bb, void* stream, std::string& err,                     const Doorbell* db, const PleRun* ple, int half, int stage_prefix) {
+bool block_layer_pre(const WeightTable& tables, const ModelGeometry& g, int64_t layer, int64_t pos,                     int32_t pos_base, const GdnBuffers& gb, const QsaState& qst, const QsaBuffers& qb,                     const MoEBuffers& mb, int64_t k, const BlockBuffers& bb, void* stream, std::string& err,                     const Doorbell* db, const PleRun* ple, int half, int stage_prefix, bool defer_shared) {
     // ================================ THE PLE, AT LAYER 1 ONLY ================================
     //
     // **THIS IS THE CALL WHOSE ABSENCE FAILED GATE C1.**  Layer 1 carries the six `blk.1.ple_*` tensors and no
@@ -1195,7 +1173,7 @@ bool block_layer_pre(const WeightTable& tables, const ModelGeometry& g, int64_t 
             gr_write(bb.R, bb.block_out, bb.inject2, gs0, bb.R, stream);
             pending_ffn = false;
         }
-        const int64_t hcd = strata::kernels::NG_HC_DIM;
+        [[maybe_unused]] const int64_t hcd = strata::kernels::NG_HC_DIM;
         strata::kernels::PleOut po;
         // Exports must not alias the block's internal workspace. The previous diagnostic views used a
         // different layout inside that workspace: exporting gated values overwrote normalized values
@@ -1250,6 +1228,10 @@ st_begin(layer, 0, stream);
         fa.w_norm = (const float*) w_norm[0]->data; fa.w_down = (const uint16_t*) w_down[0]->data;
         fa.w_up = (const uint16_t*) w_up[0]->data; fa.w_inject = (const uint16_t*) w_inject[0]->data;
         fa.eps = RMS_EPS; fa.lo = bb.gr.lo; fa.rs = bb.gr_rs; fa.inject_out = bb.inject; fa.mixed = bb.mixed;
+#ifdef STRATA_ENABLE_SYCL
+        fa.xn = bb.gr.xn;
+        fa.gates = bb.gr.gated;
+#endif
         strata::kernels::fused_gr_read(fa, stream);
     } else {
     gr_read(R, (const float*) w_norm[0]->data, (const uint16_t*) w_down[0]->data,            (const uint16_t*) w_up[0]->data, (const uint16_t*) w_inject[0]->data, RMS_EPS, gs, bb.gr, bb.mixed,            bb.inject, stream);
@@ -1273,6 +1255,10 @@ st_begin(layer, 3, stream);
         fa.w_norm = (const float*) w_norm[1]->data; fa.w_down = (const uint16_t*) w_down[1]->data;
         fa.w_up = (const uint16_t*) w_up[1]->data; fa.w_inject = (const uint16_t*) w_inject[1]->data;
         fa.eps = RMS_EPS; fa.lo = bb.gr.lo; fa.rs = bb.gr_rs; fa.inject_out = bb.inject2; fa.mixed = bb.mixed;
+#ifdef STRATA_ENABLE_SYCL
+        fa.xn = bb.gr.xn;
+        fa.gates = bb.gr.gated;
+#endif
         strata::kernels::fused_gr_read(fa, stream);
     } else {
     gr_read(R, (const float*) w_norm[1]->data, (const uint16_t*) w_down[1]->data,            (const uint16_t*) w_up[1]->data, (const uint16_t*) w_inject[1]->data, RMS_EPS, gs, bb.gr, bb.mixed,            bb.inject, stream);
@@ -1281,7 +1267,7 @@ st_begin(layer, 3, stream);
     if (run4) {
     st_begin(layer, 4, stream);    {        const bool ok = moe_route(tables, g, layer, k, mb, bb.mixed, stream, err, db);        st_end(layer, 4, stream);        if (!ok) return false;    }
     // Plan v0.3 P3: after the ring, so the GPU computes the shared expert while the host runs the pool.
-    if (g_shared_early && !moe_shared(tables, g, layer, mb, bb.mixed, stream, err)) return false;
+    if (g_shared_early && !defer_shared && !moe_shared(tables, g, layer, mb, bb.mixed, stream, err)) return false;
     }
     // Every stage this call was asked to run has run.  There is no other way out: the old `return ok;`
     // lived inside the stage-4 block and restructuring that left the function with no return at all.

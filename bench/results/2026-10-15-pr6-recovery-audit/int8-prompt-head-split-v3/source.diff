@@ -1,0 +1,100 @@
+--- int8-prompt-head-split-v2/files/tools/sycl/int8_prompt_head_split_probe.cpp
++++ int8-prompt-head-split-v3/files/tools/sycl/int8_prompt_head_split_probe.cpp
+@@ -1,4 +1,4 @@
+-// UNBUILT / UNTESTED v2 fixed-environment single-arm capture proposal.
++// UNBUILT / UNTESTED v3 fixed-environment single-arm capture proposal.
+ // Derived from matrix-direct-probe-v1; original proposal remains unchanged.
+ // Product entrypoint, independent FP64 oracle, guards, immutable owners.
+ // No model capture; no fallback. Admission alone does not prove dispatch.
+@@ -341,9 +341,9 @@
+   for (const std::string& key : {"--route","--case-set","--capture-dir","--expect-direct","--expect-split","--source-id","--binary-id","--fixture-id"})
+     require(std::find(seen.begin(),seen.end(),key)!=seen.end(),"missing required CLI option "+key);
+   require(o.route=="legacy" || o.route=="32" || o.route=="64","route must be legacy/32/64");
+-  require(o.cases=="full" || o.cases=="isolation","case-set must be full/isolation");
++  require(o.cases=="full" || o.cases=="isolation" || o.cases=="maxcount","case-set must be full/isolation/maxcount");
+   require(hex64(o.source)&&hex64(o.binary)&&hex64(o.fixture),"provenance IDs must be SHA256 hex");
+-  if (o.cases=="full") require(o.format==1 && o.direct=="1" &&
++  if (o.cases=="full" || o.cases=="maxcount") require(o.format==1 && o.direct=="1" &&
+       o.split==(o.route=="legacy" ? "@unset" : o.route),"full case route intent mismatch");
+   const std::string predicted=o.format==1 && o.direct=="1" && (o.split=="32"||o.split=="64") ? o.split : "legacy";
+   require(predicted==o.route,"route intent does not match legacy dispatch semantics");
+@@ -469,7 +469,36 @@
+   if (!admitted) { require(unchanged,"declined output changed"); throw Declined("matrix call declined; no completion receipt"); }
+   require(good,"all-output FP64 oracle gate failed"); cases.push_back(id);
+ }
++// Production-reachable active selection count, not physical256K residency.
++// All earlier selected positions are negative: only the final loop tile loads KV.
++Input maximum_count_input(int width) {
++  require(width==2050 || width==2051,"maximum-count width contract");
++  Input in(1,1,width);
++  std::fill(in.ids.begin(),in.ids.end(),-7);
++  std::fill(in.table.begin(),in.table.end(),-1);
++  in.ids[size_t(width)-1]=LogicalCells-1;
++  in.table[LogicalPages-1]=2;
++  require(in.g.cap==width && in.g.physical_pages==5 && in.g.pool_rows==40,
++          "maximum-count small-pool geometry");
++  require(in.ids.size()==size_t(width) && in.steps[kStepWidth]==width &&
++          in.ids.back()==262143 && in.table[65535]==2,"maximum-count terminal slot");
++  require(in.row(0,0,width-1)==19 && in.row(0,12,width-1)==23,
++          "maximum-count physical rows");
++  require(in.k8.size()==40*256 && in.v8.size()==40*256 &&
++          in.ks.size()==40*4 && in.vs.size()==40*4,
++          "maximum-count INT8/per64 scale extents");
++  require(std::all_of(in.ids.begin(),in.ids.end()-1,[](int id){return id<0;}),
++          "maximum-count preceding slots must be masked");
++  return in;
++}
+ void host_contracts() {
++  for(int width : {2050,2051}) {
++    const auto in=maximum_count_input(width);
++    require(in.query.size()==24*256 && in.steps.size()==4,"maximum-count Q/steps extents");
++    require(in.table.size()==65536 && in.width==width,"maximum-count logical table");
++    require((width+31)/32==65 && (width+63)/64==33 && width%32==width-2048 && width%64==width-2048,
++            "maximum-count final partial chunks");
++  }
+   for (size_t nq : {size_t(1),size_t(3),size_t(65535)}) for (size_t batch : {size_t(0),nq-1}) {
+     std::array<unsigned char,Heads*Dim> owners{};
+     for (size_t kv=0;kv<KvHeads;++kv) for (size_t tile=0;tile<2;++tile) {
+@@ -504,7 +533,7 @@
+     static_assert(sizeof(float)==4 && sizeof(double)==8 && std::endian::native==std::endian::little);
+     static_assert(std::numeric_limits<float>::is_iec559 && std::numeric_limits<double>::is_iec559);
+     if(argc==2 && std::string(argv[1])=="--help") {
+-      std::cout << "Single fixed-env arm: --route legacy|32|64 --case-set full|isolation --capture-dir ABS_NEW --expect-direct VALUE --expect-split VALUE --source-id SHA256 --binary-id SHA256 --fixture-id SHA256 [--format 0..3] [--capture-budget BYTES]\n"
++      std::cout << "Single fixed-env arm: --route legacy|32|64 --case-set full|isolation|maxcount --capture-dir ABS_NEW --expect-direct VALUE --expect-split VALUE --source-id SHA256 --binary-id SHA256 --fixture-id SHA256 [--format 0..3] [--capture-budget BYTES]\n"
+                    "Use @unset/@empty for env absence/empty. Also --host-only. No route mutation or benchmark.\n"; return 0;
+     }
+     std::cout << std::boolalpha << std::setprecision(17);
+@@ -526,7 +555,10 @@
+       << ",\"capture_budget\":" << o.budget << "}\n";
+     cap.text("start.json",start.str());
+     std::vector<std::string> cases;
+-    if(o.cases=="isolation") run_case(rt,cap,Input(o.format,1,65),"isolation_format"+std::to_string(o.format),cases);
++    if(o.cases=="maxcount") {
++      for(int width : {2050,2051})
++        run_case(rt,cap,maximum_count_input(width),"maxcount_"+std::to_string(width)+"_logical262143",cases);
++    } else if(o.cases=="isolation") run_case(rt,cap,Input(o.format,1,65),"isolation_format"+std::to_string(o.format),cases);
+     else {
+       for(int w : {0,1,31,32,33,63,64,65,2051}) {
+         run_case(rt,cap,Input(1,3,w),"sparse_tail_"+std::to_string(w),cases);
+@@ -544,16 +576,18 @@
+       for(size_t i=0;i<subs.vs.size();++i) subs.vs[i]=uint16_t(1+i%3);
+       run_case(rt,cap,subs,"fp16_subnormal_scales",cases);
+       Input zero(1,3,65,true);std::fill(zero.query.begin(),zero.query.end(),0.f);run_case(rt,cap,zero,"zero_query",cases);
++      for(int width : {2050,2051})
++        run_case(rt,cap,maximum_count_input(width),"maxcount_"+std::to_string(width)+"_logical262143",cases);
+       Input bad(1,3,65);
+       for(int w : {-1,66}) {for(int b=0;b<3;++b) bad.steps[size_t(b)*kStepCount+kStepWidth]=w;
+         run_case(rt,cap,bad,w<0?"negative_width":"width_gt_cap",cases);}
+     }
+     drain(rt);
+-    const size_t expected=o.cases=="full" ? 28 : 1;require(cases.size()==expected,"case count mismatch");
++    const size_t expected=o.cases=="full" ? 30 : o.cases=="maxcount" ? 2 : 1;require(cases.size()==expected,"case count mismatch");
+     std::ostringstream done;done << "{\"schema\":\"head-split-complete-v2\",\"status\":\"CLOSED_PASS\",\"cases\":[";
+     for(size_t i=0;i<cases.size();++i) {if(i)done<<',';done<<quoted(cases[i]);}
+     done << "],\"bytes_before_completion\":" << cap.written() << ",\"all_admitted\":true,\"fallback_calls\":0}\n";
+     cap.text("complete.json",done.str());std::cout << done.str() << std::flush;return 0;
+   } catch(const Declined& e) {std::cerr<<"UNMEASURED_DECLINED: "<<e.what()<<'\n';return 2;}
+-  catch(const std::exception& e) {std::cerr<<"FAIL fixed-env head-split v2: "<<e.what()<<'\n';return 1;}
+-}
++  catch(const std::exception& e) {std::cerr<<"FAIL fixed-env head-split v3: "<<e.what()<<'\n';return 1;}
++}

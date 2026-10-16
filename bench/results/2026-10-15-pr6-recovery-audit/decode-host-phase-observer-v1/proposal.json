@@ -1,0 +1,106 @@
+{
+  "schema": "decode-host-phase-observer-proposal-v1",
+  "date": "2026-10-15",
+  "status": "proposal_only_unapplied_uncompiled_unrun",
+  "write_scope": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/decode-host-phase-observer-v1",
+  "product_files_edited": false,
+  "cmake_edited": false,
+  "existing_fixtures_edited": false,
+  "build_executed": false,
+  "test_executed": false,
+  "GPU_executed": false,
+  "server_executed": false,
+  "profiler_executed": false,
+  "git_executed": false,
+  "cleanup_executed": false,
+  "requires_main_direct_0_and_1_closure_before_application": true,
+  "main_binary_fixed_sha256": "92acf71e6b4fd914f68c8cefcae7e03f170adf62b5e3b94cf31af747344183f7",
+  "new_env": {
+    "name": "STRATA_DECODE_HOST_PHASES",
+    "enabled_value": "1",
+    "default": "OFF",
+    "read_only_getenv": true,
+    "exec_fixed": true
+  },
+  "preconditions": [
+    "existing joined ledger eligible Linux SYCL request",
+    "G1 ordinary full-layer single verifier",
+    "MTP capacity4 without split",
+    "issuer only",
+    "RAII detach before owner close/destruction"
+  ],
+  "output_cap_bytes": 262144,
+  "output_footer_reserve_bytes": 2048,
+  "state_compile_time_ceiling_bytes": 65536,
+  "phase_ids": {
+    "other": 0,
+    "capture": 1,
+    "capture_commit": 2,
+    "host_staging": 3,
+    "initial_graphsubmit": 4,
+    "layer_eventwait": 5,
+    "poolcallback": 6,
+    "copy_stream_sync": 7,
+    "next_graphsubmit": 8,
+    "tail_compute_sync": 9,
+    "tail_copy_sync": 10,
+    "finalreadout": 11,
+    "run_total": 12
+  },
+  "parent_phase": "run_total",
+  "exclusive_leaves": true,
+  "poolcallback_includes_shared_hit_graphsubmit": true,
+  "histogram": {
+    "bins": 33,
+    "zero_singleton": true,
+    "base": 4,
+    "last_interval_inclusive": [
+      4611686018427387904,
+      18446744073709551615
+    ],
+    "quantiles": "p50/p95 intervals only; no exact median/p95"
+  },
+  "views": {
+    "global": "13 phase distributions",
+    "T": "T1..4,13 phase distributions each",
+    "layer": "max64; phase5..8 moments only",
+    "window_band": "ordinal1/2..8/9..64/65+;run_total only"
+  },
+  "failure_semantics": "diagnostic complete0; do not change original inference status; original native pool fail-stop retained",
+  "no_added_GPU_wait_queue_buffer_operation": true,
+  "host_submit_or_GPU_idle_cause_established": false,
+  "performance_qualified": false,
+  "quality_qualified": false,
+  "physical_65536_qualified": false,
+  "physical_262144_qualified": false,
+  "restore_qualified": false,
+  "unitrace_host_timing": "optional source-free first screen, not executed; process aggregate cannot partition decode windows or prove GPU idle",
+  "read_report_pins": [
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+      "sha256": "5ab44e62c0ede4e84f9460dc599f7fb7fb8a2c93839f2e45547c566d34de10f6"
+    },
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-decode-wall-accounting-round604-v1.txt",
+      "sha256": "6e5fa424d8514cab87e07b87b0a9495ba7cc84506c7a31f08e0afb9cad4c9cf6"
+    },
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-native-decode-host-gaps-round606-v1.txt",
+      "sha256": "600f4e1790bdb5777486a48f87ce31b911b2d7fab3a8b71fa828afa987e44bf3"
+    },
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-gu-reuse-long.ja.md",
+      "sha256": "e8fed9ea20f3333bba7b289b4825028e699e6fab68df2536b3388290b4c7ddde"
+    },
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-gu-reuse-long-v1.json",
+      "sha256": "17ddf01d0ec4d90c6e0567fc1d0e2eb3959fccb68da893f4e404de5d89b43cb1"
+    }
+  ],
+  "retention": {
+    "owner": "Main recovery audit",
+    "consumer": "apply/source review, independent CPU contract and actual ordinary G1 model diagnosis",
+    "next_review": "Main decision after Direct arms close and serial CPU/build/model checks",
+    "new_raw_capture_bytes": 0
+  }
+}

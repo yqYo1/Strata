@@ -1,0 +1,31 @@
+# Stager error-result ownership review
+
+2026-10-14 JST、Mainのsource確認。実障害やdata raceの再現ではない。
+R534の正常pathはconcurrent workerを想定したgeneration/ready/issued/per-slot eventである。
+CPU0の直列化を正しさの条件とする証拠はない。一方、error pathには具体的な確認点がある。
+
+src/sycl/compat.cppのattemptはbodyより先にRuntime::checkを呼ぶ。
+したがってcudaEventSynchronizeはsticky async errorが既にある場合、実event waitを呼ばずに
+cudaErrorUnknownを返す場合がある。Runtime::wait(event)自身はwait_and_throwの後にcheckするが、
+その前のadapter checkを迂回する証明にはならない。Stager::workはこのreturnを無視してhost slotへ
+copyしready=1をpublishする。issued_oneもeventRecord失敗を無視してissued watermarkを進める。
+この場合、成功したDMA完了/新eventの成立を前提にslotを再利用したと見なす根拠が欠ける。
+これは確認済みsource経路であり、過去GPU hangの起点だったとは未証明。
+
+affinity案はこの既存error handlingを変更しない。正常経路の追加並列度を試す前に、Mainは
+失敗したwait/copy/recordを成功したlease移行にせず、issuerが観測するfailureとcooperative stopへ
+つなぐ方法をレビューする。ready待ち/issued待ちとStagerDone::finishが永久待ちにならないこと、
+既にqueuedされたH2Dのhost buffer/sourceをcompletion不明のまま解放しないことを条件とする。
+finishはhost worker完了でありDMA drainではない。失敗を成功のzero/emptyとして扱わない。
+追加queue/event/blanket waitで解決したことにせず、CPU fake-adapterのerror注入で所有権/停止を
+先に確認する。実GPUへ意図的な障害を注入しない。すべてMainの直列test管理で行う。
+
+ユーザー指定の順序はbenchmark検証→PR#6/Codex元ログ・実source/設定・安全性点検を維持する。
+その点検でも同じStager/queue/source契約を確認し、古いcodeへ無条件で戻さない。
+current native68daのactive v4測定sourceは変更していない。新しいGPU障害の観測はないが、
+active jobの最終fault checkは終了後であり、今のsource解析でGPU健全性を認定しない。
+
+Solの元unified.patchは正規diffの空context行6行にprefix空白を持つ。Gitの新規artifact
+whitespace検査はこの6行だけを除外し、実added source行の末尾空白が0であることを確認した。
+元patch/hashを変えず保存し、残りのstaged filesは通常のdiff --checkを通した。
+これはsource適用/構文/build/testの合格ではない。

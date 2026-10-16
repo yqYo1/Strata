@@ -1,0 +1,50 @@
+{
+  "schema": "own-native16-reference-controls-v1",
+  "passed": true,
+  "rows": 78443,
+  "input_receipt_sha256": "9ebc8d551d22ce9036c2e36a30b2f9d1908e71d492f5095bf6efde930f050089",
+  "receipts": {
+    "fp32-a": "fc5e36ec9847eced9d371991daefae5bc97a31f0bf4ba4f5b890a11d6b801e29",
+    "fp32-b": "a3dc6d719025724d04a16082d4b9e763202606f9bfc1ecd0d42192d964a9fd09"
+  },
+  "means": [
+    4.823238516902749,
+    4.823259333754754
+  ],
+  "paired_mean_delta": 2.0816852005642926e-05,
+  "paired_mean_abs_delta": 2.0816852005642926e-05,
+  "paired_max_abs_delta": 0.8948270054323606,
+  "paired_p99_abs_delta": 0.0,
+  "unequal_rows": 2,
+  "GPU_faults": 0,
+  "source_frozen_complete": true,
+  "quality_acceptance": "UNSET; fixed word list only; these results quantify control variation, not general task quality",
+  "performance_qualified": false,
+  "retained_consumers": "Native16 kernel-path loss comparator; retain five canonical files per control until new comparator closes",
+  "superseded_arms": {
+    "fp16-matched": "UNRUN; storage-only experiment superseded by user request native16 producer-consumer",
+    "fp16-all-gpu": "UNRUN; defer until native16 path is validated"
+  },
+  "new_comparison_constraint": "New native16 source/binary intentionally differ: use explicit matched FP32 control built from same new revision, pinned old controls as historical reference; do not relax/rewrite old same-source recipe invariants",
+  "differing_rows": [
+    {
+      "row": 15055,
+      "chunk": 1,
+      "offset": 6863,
+      "target": 45366,
+      "a": 6.322249181086632,
+      "b": 7.06035849753292,
+      "delta": 0.7381093164462875
+    },
+    {
+      "row": 69856,
+      "chunk": 8,
+      "offset": 4320,
+      "target": 8028,
+      "a": 2.610493418656518,
+      "b": 3.5053204240888785,
+      "delta": 0.8948270054323606
+    }
+  ],
+  "variation_cause": "UNRESOLVED; only two local isolated losses differ. Do not adopt their maximum as a candidate tolerance. Canonical raw losses retained."
+}

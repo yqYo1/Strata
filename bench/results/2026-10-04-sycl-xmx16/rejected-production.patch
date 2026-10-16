@@ -1,0 +1,231 @@
+diff --git a/cmake/sycl_backend.cmake b/cmake/sycl_backend.cmake
+index 26bd970..8e3d0fa 100644
+--- a/cmake/sycl_backend.cmake
++++ b/cmake/sycl_backend.cmake
+@@ -199,6 +199,12 @@ if(STRATA_SYCL_TESTS)
+   add_test(NAME sycl_prefill_mmq_xmx_packed COMMAND sycl_prefill_mmq_test)
+   set_tests_properties(sycl_prefill_mmq_xmx_packed PROPERTIES TIMEOUT 180
+     ENVIRONMENT "STRATA_SYCL_MMQ_XMX=1;STRATA_SYCL_MMQ_XMX_TILE=8;STRATA_SYCL_MMQ_XMX_EXACT=1;STRATA_SYCL_MMQ_XMX_PACK=1")
++  add_test(NAME sycl_prefill_mmq_xmx16 COMMAND sycl_prefill_mmq_test)
++  set_tests_properties(sycl_prefill_mmq_xmx16 PROPERTIES TIMEOUT 180
++    ENVIRONMENT "STRATA_SYCL_MMQ_XMX=1;STRATA_SYCL_MMQ_XMX_TILE=16;STRATA_SYCL_MMQ_XMX_EXACT=1;STRATA_SYCL_MMQ_XMX_PACK=0")
++  add_test(NAME sycl_prefill_mmq_xmx16_packed COMMAND sycl_prefill_mmq_test)
++  set_tests_properties(sycl_prefill_mmq_xmx16_packed PROPERTIES TIMEOUT 180
++    ENVIRONMENT "STRATA_SYCL_MMQ_XMX=1;STRATA_SYCL_MMQ_XMX_TILE=16;STRATA_SYCL_MMQ_XMX_EXACT=1;STRATA_SYCL_MMQ_XMX_PACK=1")
+   if(STRATA_NATIVE_EXPERTS)
+     add_executable(sycl_prefill_fused_test tests/sycl/prefill_fused.cpp)
+     target_link_libraries(sycl_prefill_fused_test PRIVATE strata_prefill ggml-base)
+diff --git a/src/kernels/sycl/native_mmq_xmx.cpp b/src/kernels/sycl/native_mmq_xmx.cpp
+index 69c05c5..4b99878 100644
+--- a/src/kernels/sycl/native_mmq_xmx.cpp
++++ b/src/kernels/sycl/native_mmq_xmx.cpp
+@@ -21,7 +21,7 @@
+ // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ // SOFTWARE.
+ 
+-// Experimental routed prompt tiles share sixteen weight rows across 1/2/4/8
++// Experimental routed prompt tiles share sixteen weight rows across 1/2/4/8/16
+ // activations. Weights retain their GGUF layout unless disposable scratch
+ // weights opt into row interleaving. The default FP32 sum preserves
+ // the preceding virtual-lane tree; an optional linear sum compares its cost.
+@@ -180,77 +180,83 @@ unit_product(const uint8_t *w, const uint8_t *x, U weight_rows,
+           signed_word(grid, signs >> (4 * (k % 2)));
+     }
+   }
+-  e::simd<int32_t, 8 * Tile> act = 0;
+-  e::simd<int32_t, 16 * Tile> initial = 0;
+-  e::simd<float, Tile> dx = 0.f;
++  // DPAS accepts up to eight activation rows per instruction. Decode the
++  // weights once, then feed two eight-row groups for a sixteen-row tile.
++  constexpr int Chunk = Tile > 8 ? 8 : Tile;
+ #pragma unroll
+-  for (int t = 0; t < Tile; ++t) {
+-    if (first + t < end) {
+-      const auto *input = x + size_t(first + t) * xs + size_t(unit) * 36;
+-      const e::simd<int32_t, 8> a = e::gather<int32_t, 8>(
+-          reinterpret_cast<const int32_t *>(input), e::simd<uint32_t, 8>(4, 4));
+-      act.template select<8, 1>(t * 8) = a;
+-      if constexpr (Type == 42) {
+-        const auto v = e::dp4a<int32_t>(e::simd<int32_t, 8>(0),
+-                                        e::simd<int32_t, 8>(0x01010101), a);
+-        initial.template select<16, 1>(t * 16) =
+-            -e::reduce<int32_t>(v, std::plus<>());
++  for (int t0 = 0; t0 < Tile; t0 += Chunk) {
++    e::simd<int32_t, 8 * Chunk> act = 0;
++    e::simd<int32_t, 16 * Chunk> initial = 0;
++    e::simd<float, Chunk> dx = 0.f;
++  #pragma unroll
++    for (int t = 0; t < Chunk; ++t) {
++      if (first + t0 + t < end) {
++        const auto *input = x + size_t(first + t0 + t) * xs + size_t(unit) * 36;
++        const e::simd<int32_t, 8> a = e::gather<int32_t, 8>(
++            reinterpret_cast<const int32_t *>(input), e::simd<uint32_t, 8>(4, 4));
++        act.template select<8, 1>(t * 8) = a;
++        if constexpr (Type == 42) {
++          const auto v = e::dp4a<int32_t>(e::simd<int32_t, 8>(0),
++                                          e::simd<int32_t, 8>(0x01010101), a);
++          initial.template select<16, 1>(t * 16) =
++              -e::reduce<int32_t>(v, std::plus<>());
++        }
++        dx[t] = esimd_half_decode<1>(
++            e::gather<uint16_t, 1>(reinterpret_cast<const uint16_t *>(input),
++                                   e::simd<uint32_t, 1>(0)))[0];
+       }
+-      dx[t] = esimd_half_decode<1>(
+-          e::gather<uint16_t, 1>(reinterpret_cast<const uint16_t *>(input),
+-                                 e::simd<uint32_t, 1>(0)))[0];
+     }
+-  }
+-  if constexpr (Type == 20) {
+-    if (split >= 0) {
+-#pragma unroll
+-      for (int t = 0; t < Tile; ++t) {
+-        act.template select<2, 1>(t * 8 + (split == 0 ? 2 : 0)) = 0;
+-        act.template select<2, 1>(t * 8 + (split == 0 ? 6 : 4)) = 0;
++    if constexpr (Type == 20) {
++      if (split >= 0) {
++  #pragma unroll
++        for (int t = 0; t < Chunk; ++t) {
++          act.template select<2, 1>(t * 8 + (split == 0 ? 2 : 0)) = 0;
++          act.template select<2, 1>(t * 8 + (split == 0 ? 6 : 4)) = 0;
++        }
+       }
+     }
+-  }
+-  e::simd<int32_t, 16 * Tile> dot;
+-  if constexpr (Type == 22) {
+-    e::simd<int32_t, 8 * Tile> lo = 0, hi = 0;
+-#pragma unroll
+-    for (int t = 0; t < Tile; ++t) {
+-      lo.template select<4, 1>(t * 8) = act.template select<4, 1>(t * 8);
+-      hi.template select<4, 1>(t * 8 + 4) =
+-          act.template select<4, 1>(t * 8 + 4);
++    e::simd<int32_t, 16 * Chunk> dot;
++    if constexpr (Type == 22) {
++      e::simd<int32_t, 8 * Chunk> lo = 0, hi = 0;
++  #pragma unroll
++      for (int t = 0; t < Chunk; ++t) {
++        lo.template select<4, 1>(t * 8) = act.template select<4, 1>(t * 8);
++        hi.template select<4, 1>(t * 8 + 4) =
++            act.template select<4, 1>(t * 8 + 4);
++      }
++      auto low =
++          e::xmx::dpas<8, Chunk, int32_t, int32_t, uint32_t, int32_t,
++                       e::xmx::dpas_argument_type::s8,
++                       e::xmx::dpas_argument_type::s8>(initial, weights, lo);
++      auto high =
++          e::xmx::dpas<8, Chunk, int32_t, int32_t, uint32_t, int32_t,
++                       e::xmx::dpas_argument_type::s8,
++                       e::xmx::dpas_argument_type::s8>(initial, weights, hi);
++  #pragma unroll
++      for (int t = 0; t < Chunk; ++t)
++        dot.template select<16, 1>(t * 16) =
++            e::simd<int32_t, 16>(low.template select<16, 1>(t * 16)) * factor +
++            e::simd<int32_t, 16>(high.template select<16, 1>(t * 16)) * factor_hi;
++    } else {
++      dot = e::xmx::dpas<8, Chunk, int32_t, int32_t, uint32_t, int32_t,
++                         Type == 42 ? e::xmx::dpas_argument_type::u2
++                                    : e::xmx::dpas_argument_type::s8,
++                         e::xmx::dpas_argument_type::s8>(initial, weights, act);
++  #pragma unroll
++      for (int t = 0; t < Chunk; ++t)
++        dot.template select<16, 1>(t * 16) *= factor;
++    }
++  #pragma unroll
++    for (int t = 0; t < Chunk; ++t) {
++      const F part = ex::fma(ex::fma(scale, F(dx[t]), F(0.f)),
++                             e::convert<float>(e::simd<int32_t, 16>(
++                                 dot.template select<16, 1>(t * 16))) *
++                                 (Type == 18   ? .25f
++                                  : Type == 22 ? .125f
++                                               : 1.f),
++                             F(0.f));
++      result.template select<16, 1>((t0 + t) * 16) = part;
+     }
+-    auto low =
+-        e::xmx::dpas<8, Tile, int32_t, int32_t, uint32_t, int32_t,
+-                     e::xmx::dpas_argument_type::s8,
+-                     e::xmx::dpas_argument_type::s8>(initial, weights, lo);
+-    auto high =
+-        e::xmx::dpas<8, Tile, int32_t, int32_t, uint32_t, int32_t,
+-                     e::xmx::dpas_argument_type::s8,
+-                     e::xmx::dpas_argument_type::s8>(initial, weights, hi);
+-#pragma unroll
+-    for (int t = 0; t < Tile; ++t)
+-      dot.template select<16, 1>(t * 16) =
+-          e::simd<int32_t, 16>(low.template select<16, 1>(t * 16)) * factor +
+-          e::simd<int32_t, 16>(high.template select<16, 1>(t * 16)) * factor_hi;
+-  } else {
+-    dot = e::xmx::dpas<8, Tile, int32_t, int32_t, uint32_t, int32_t,
+-                       Type == 42 ? e::xmx::dpas_argument_type::u2
+-                                  : e::xmx::dpas_argument_type::s8,
+-                       e::xmx::dpas_argument_type::s8>(initial, weights, act);
+-#pragma unroll
+-    for (int t = 0; t < Tile; ++t)
+-      dot.template select<16, 1>(t * 16) *= factor;
+-  }
+-#pragma unroll
+-  for (int t = 0; t < Tile; ++t) {
+-    const F part = ex::fma(ex::fma(scale, F(dx[t]), F(0.f)),
+-                           e::convert<float>(e::simd<int32_t, 16>(
+-                               dot.template select<16, 1>(t * 16))) *
+-                               (Type == 18   ? .25f
+-                                : Type == 22 ? .125f
+-                                             : 1.f),
+-                           F(0.f));
+-    result.template select<16, 1>(t * 16) = part;
+   }
+   return result;
+ }
+@@ -305,7 +311,7 @@ void launch(NativeMmq p, void *stream) {
+   queue_for(stream).parallel_for(
+       sycl::nd_range<2>({size_t(p.experts) * tiles, padded}, {1, 16}),
+       sycl::ext::oneapi::experimental::properties{
+-          sycl::ext::intel::experimental::grf_size<128>},
++          sycl::ext::intel::experimental::grf_size<(Tile > 8 ? 256 : 128)>},
+       [=](sycl::nd_item<2> it) SYCL_ESIMD_KERNEL {
+         const size_t tile = it.get_global_id(0), row = it.get_global_id(1) * 16;
+         if (row >= size_t(p.rows))
+@@ -435,10 +441,13 @@ bool native_mmq_xmx(const NativeMmq &p, void *stream) {
+     const char *v = std::getenv("STRATA_SYCL_MMQ_XMX_PACK");
+     return v && std::atoi(v) != 0;
+   }();
+-  // Start with the measured tile-8 exact path. All other settings retain the
++  // Packing is available for exact tile-8 and tile-16 paths. Other settings retain the
+   // original layout, including read-only weights and unsupported row shapes.
+-  if (pack && exact && tile == 8 && repack_scratch(p, size_t(stride), stream)) {
+-    dispatch<8, true, true>(p, stream);
++  if (pack && exact && (tile == 8 || tile == 16) && repack_scratch(p, size_t(stride), stream)) {
++    if (tile == 16)
++      dispatch<16, true, true>(p, stream);
++    else
++      dispatch<8, true, true>(p, stream);
+     return true;
+   }
+   switch (tile) {
+@@ -454,6 +463,12 @@ bool native_mmq_xmx(const NativeMmq &p, void *stream) {
+     else
+       dispatch<2, false>(p, stream);
+     break;
++  case 16:
++    if (exact)
++      dispatch<16, true>(p, stream);
++    else
++      dispatch<16, false>(p, stream);
++    break;
+   case 8:
+     if (exact)
+       dispatch<8, true>(p, stream);
+diff --git a/tests/sycl/prefill_mmq.cpp b/tests/sycl/prefill_mmq.cpp
+index 05adafe..a9ff5d8 100644
+--- a/tests/sycl/prefill_mmq.cpp
++++ b/tests/sycl/prefill_mmq.cpp
+@@ -136,7 +136,7 @@ void product(int type, int cols, int R = 7, bool scratch = false, size_t padding
+                             device.get_info<sycl::info::device::local_mem_size>() &&
+                         device.get_info<sycl::info::device::max_work_group_size>() >= 256;
+   if (scratch && supported_pack && fits_pack && R % 16 == 0 && pack && std::atoi(pack) &&
+-      xmx && std::atoi(xmx) && (!exact || std::atoi(exact)) && tile && std::atoi(tile) == 8) {
++      xmx && std::atoi(xmx) && (!exact || std::atoi(exact)) && tile && (std::atoi(tile) == 8 || std::atoi(tile) == 16)) {
+     for (int expert = 0; expert < E; ++expert)
+       for (int row = 0; row < R; row += 16)
+         for (size_t word = 0; word < words; ++word)

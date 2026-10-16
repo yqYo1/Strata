@@ -1,0 +1,56 @@
+{
+  "reports": [
+    {
+      "round": 490,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "original": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-primary-v0141-to-current-component-regression-round490-v1.txt",
+      "retained": "research/research-primary-v0141-to-current-component-regression-round490-v1.txt",
+      "sha256": "647327f2c25e324f8e40071a5a1965a76aa232eb020daa092ac749ed933999f2"
+    },
+    {
+      "round": 491,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "original": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-primary-pre-Xe-configuration-regression-round491-v1.txt",
+      "retained": "research/research-primary-pre-Xe-configuration-regression-round491-v1.txt",
+      "sha256": "bfaae2168a1e317f4d87127a2f2163d0fadacc29f6563b3c3c1b14da3f3de53a"
+    },
+    {
+      "round": 492,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "original": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-primary-pre-Xe-replay-safety-round492-v1.txt",
+      "retained": "research/research-primary-pre-Xe-replay-safety-round492-v1.txt",
+      "sha256": "cd776704d9c3d25f8f88cb21a15420793e018419748a5e884ed8d13c2d5b8be5"
+    },
+    {
+      "round": 493,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "original": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-primary-pre-Xe-build-replay-round493-v1.txt",
+      "retained": "research/research-primary-pre-Xe-build-replay-round493-v1.txt",
+      "sha256": "6ea7833d6b897013449ffaf94788cfbf1ff44d1e6f4a28ea7fab9af34a95a6f1"
+    },
+    {
+      "round": 489,
+      "path": "research/research-primary-pre-Xe-source-regression-round489-v1.txt",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-primary-pre-Xe-source-regression-round489-v1.txt",
+      "sha256": "e9b317cc124f20d386e21952143ff8b52436e57d1078981e50f2b2ddab7ad4e7",
+      "model": "gpt-6-luna",
+      "read_only": true
+    }
+  ],
+  "no_intervention_until_final": true,
+  "main_work_in_parallel": "Exact-session and original Git measurement/source reconciliation; no new model or GPU runs.",
+  "main_corrections": [
+    "R490/R492 describe the current comparison as quiet GEN64. The actual current accepted speed baseline is unchanged Niko bench.sh/stock client, actual32049 input and24 outputs. No current quiet GEN64 speed baseline was run.",
+    "R491 says IQ_SINGLE_EXACT is not pinned in its summary. The canonical current stock environment explicitly pins STRATA_IQ_SINGLE_EXACT=1.",
+    "R491 methodological caution means causal attribution is unresolved; it does not erase the previous much faster Niko-derived own-fork measurements or their absent selected source paths.",
+    "R490/R491 focus on 1eb/449.7. Main also recovered earlier own-fork layer-major645.85, preceding Xe, with a different65538 context and no MTP in timed CLI. It is not a qualified262144/MTP speed result.",
+    "R492 Windows detached-thread finding alone is irrelevant to this Linux replay. Audit actual Linux observer construction/destruction order and retain a scoped join before observed object destruction; do not impose unrelated Windows implementation work.",
+    "R493 missing effective compile/link details limit byte-exact reproduction. Source-defined flags and a clean source/binary build receipt are retained; missing data remains unknown.",
+    "R489 prior scope was insufficient: it only compared the Oct4 root-native lineage and omitted the later pre-Xe migrated overlay and its measured controls. Its no-measured-loss implication is superseded.",
+    "R489 original report is retained byte-identically but its Oct4-only preservation finding is insufficient; R490–493 and Main source/session reconciliation supersede its baseline assessment."
+  ]
+}

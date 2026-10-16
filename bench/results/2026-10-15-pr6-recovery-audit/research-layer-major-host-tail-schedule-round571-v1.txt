@@ -1,0 +1,62 @@
+# R571 — layer-major prefill のRAM tail転送とschedule候補
+
+2026-10-15 JST。読み取り専用source/report research。許可された唯一の書込みは本ファイル。製品編集、Git操作、build/test、GPU/CPU実行、profiler、process/service操作、artifact cleanupはしていない。現行sourceの評価は `layer-major-long-v1.json` に記録された構成に対応し、同receiptの `src/prefill/layer_major.inc` SHA256は `6460e5bf98242e7dbe1ec56a5f05864f1e1e43bb969310edda074c2c16508f95`。以下の計算・改善仮説は測定結果ではない。
+
+## 先行結果との境界
+
+R565はlayer-major orchestrationの既存 `run_impl` 再利用案、ascending-chunkのQSA/GDN/PLe制約、callback/cache lifetime要件を示した。R567はdecode/MTP/Verifier/cacheの所有者と、256KでFP32 residualだけで10 GiB必要な容量制約を整理した。R569はresidual保存FP16/BF16の数値・quality評価計画を定義済みで、今回は同じ精度圧縮案を再提案しない。R570はdecode ledgerのcoverage案で、prefill residualの同期/搬送評価とは別である。指定済みのこれらの所見は前提としてのみ使用した。
+
+`layer-major-long-v1.json` の診断では実入力34,603、batched入力34,602、chunk4096、48 layers、GPU residual prefix 4,096 rows、RAM tail 30,506 rows、FP32 residual 1,417,297,920 B。weightsのstream countは91,356から24,576へ減少。prefillは196,135.9 ms (176.4 token/s)、`experts_streamed` host時間21,439.4 ms、PLE 3,902.3 ms。これはvalidation/logging付きの数値・lease診断であり、clean `bench.sh`の性能結果や残差コピー個別時間ではない。source上、24,576は512 slots × 48 layersに一致する全expert upload数である。回数差はbyte差そのものではない。
+
+## RAM tailの厳密なbyte計算
+
+`layer_major_plan.hpp:57-73,75-88` はrow bytesを `D × sizeof(float)`、GPU側を要求どおりchunk境界で丸めたprefix、残りをhost tailとしている。今回のD=10,240、row=40,960 B。記録された30,506 host rowsは `1,249,525,760 B`。層間移動は47回であり、`layer_major.inc:247-265` は中間層でchunk出力を保存し、`prefill.cpp:1653-1666` は次層で同じspanを `m.R` へ復元する。
+
+| logical traffic (34,602 rows, FP32) | 計算 | bytes |
+|---|---:|---:|
+| RAM tail store | 1,249,525,760 × 47 | 58,727,710,720 |
+| RAM tail restore | 1,249,525,760 × 47 | 58,727,710,720 |
+| RAM tail total | host bytes × 94 | 117,455,421,440 (約109.4 GiB) |
+| GPU prefix D2D store+restore | 167,772,160 × 94 | 15,770,583,040 |
+| all residual store+restore | 1,417,297,920 × 94 | 133,226,004,480 (約124.1 GiB) |
+
+これらはlogical payloadで、alignment/page/driver trafficを含まない。容量・転送量の計算であって、現行traceがこのbyte数を実測したことや、この搬送がcritical pathを占めたことを示さない。
+
+34,602/4,096は各layerにつき9 chunks。中間47層では `on_chunk` が最大423回呼ばれてresidual storeを行う。`prefill.cpp:3000-3010` はcallbackを呼ぶ前に `cudaStreamSynchronize(m.cs)` でcompute結果をhostへ可視化する。直後に `layer_major.inc:260-264` はcopyを同じ `m.cs` にenqueueしてから `drain()` する。wrapper側のcallback内drainは423回、これに加えてlayer境界/pass後にもdrainがある。callback pre-drainは現行host callback契約に必要な同期であり、この提案はそれを削除しない。
+
+## 最優先の測定仮説: callback内drainを層境界まで遅らせる
+
+`layer_major.inc:262` のcallbackごとの同期をやめ、既存 `run_impl` のcallback前同期と `run_layer_major` のpass境界同期（`:267-269`）を残す候補がある。設定検査は `m.copy == m.cs` を要求する (`:25-30`)、SYCL互換queueはin-orderである (`src/sycl/runtime.cpp:78-88`; CUDA互換 `cudaMemcpyAsync` はqueue memcpyをsubmitするだけでwaitしない、`src/sycl/compat.cpp:253-260`)。同じqueueにcallback store copyをenqueueした後、次chunkの処理がそのqueueへsubmitされるため、copyは次のm.R overwriteより前に実行される。host rows/device rowsはlayer pass全体で生存し、次layerはpass境界のchecked drain後まで開始しない。これらの条件が保たれるなら、各chunk完了時にCPUがcopy completionを待つ必要はなく、pass境界のchecked drainがhost tailを次層に渡す前のretirement点となる。
+
+反証可能なscreen: Mainが将来同一source/model/configで、callback store後にwaitを入れる版とwaitをpass境界へ集約する版を同じ34,603 inputで比較する。測定前に層内全copyが同じin-order queueにあり、最初のwaitまでにhost destinationが読まれないことを確認。423 callback storeの順序/個数、全残差position fingerprint、各層で次layerがpass drain後に始まること、async copy fault時のerror/owner保持を照合する。時間はclean repeated prefill samplesで比較し、`ms_experts_host` やvalidation run wallを代用しない。速度差がsample variation内、またはcopy queue ordering/retirementを確認できなければ採用しない。
+
+**source-level expected scope:** 最多423回の追加wrapper-side waitをなくす見込み。`run_impl` callback前の最大423回の同期、各layerのpass drain、48層のweights upload drainは残る。従って全423同期の削減、host転送byte削減、比例した高速化とは言わない。非finalのcallback内copyをenqueue後に失敗した場合、次の既存waitまで後続workがqueueにsubmitされ得る。失敗時の既存request stateが回復するとの主張はせず、errorを報告し全temporary ownersを保持して終了する現行guard契約を維持する。
+
+## tail byteを直接減らす案の境界
+
+現行の全長in-place residual planでは、GPU prefix外の全行を次layerまで保持する必要がある。R562で示されたQSAはlayerごとにascending position順でprior K/Vを構築・attentionし、R565が同じ依存を現rootのlayer-major案へ適用した。層やchunkの並べ替えでhost residual capacityを小さくする案は、前層からの残差だけでなく各層のcausal QSA/GDN state順を守る証明なしに提案できない。現在のlayer-major順はその制約に整合する。
+
+262,144 rowsのfull FP32 residualは `262,144 × 10,240 × 4 = 10,737,418,240 B` (10 GiB)。仮に当日条件でもprefixが4,096 rowsに留まる場合、host tailは10,569,646,080 B (9.84375 GiB)、47層間のstore+restore論理量は993,546,731,520 B (約925.3 GiB)。これは条件付き算術で、256KのGPU prefix実績ではない。RAM上限を超える入力はadmissionで拒否すべきで、8 GiB RAM reserveはコード上の下限にすぎず、system-wide available-memory gateと実際のallocation結果も満たす必要がある (`layer_major.inc:117,134-139`)。FP16保存はR569の別担当対象として重複提案しない。
+
+Host USMに10 GiBを置く案は単純な「copy削除」とみなせない。Intel資料は `malloc_host` がhostに留まりdeviceからPCI経由でアクセスされると説明し、SYCL仕様のin-order queueは同じqueue内commandの投入順を保証するが、性能や別queue間順序は保証しない。mapped host memoryへGPU kernelから直接アクセスする案はPCI trafficをなくすとは限らず、既存kernel address/lifetime contractと10 GiB pinning budgetの新設を伴うため、この調査では優先候補にしない。bounded pinned stagingで転送をoverlapする案も、host/device bufferの多重化、event依存、現行 `m.copy == m.cs` 制約を解く必要があり、先にcallback内waitの単純候補を分離計測する。
+
+## full 512 expert uploadとactive集合
+
+`layer_major.inc:117-136,214-228` は最大blobから全512 slotsのcache/upload slabを見積もり、各layerで `copy_blob` 512回と `fill_slot` 512回を行い、upload drainが通ってから全512 residency entriesを公開する。測定receiptではlayer cacheは1,363,148,800 B、chunk-major側のexpert-streamed count 91,356に対して全layer-major uploadは24,576回。このreuseは確認済み機構であり、現測定で512固定が余分と断定できる証拠はない。
+
+調査できる候補は、各layer/chunkのrouterが実際に使ったexpert ID集合を集計し、全入力unionと「最初のchunkだけ」のunique数を得てからcache対象の絞り込みを考えること。Uniform・独立top-10という単純モデルでは4096-row chunkで512 expertsのほぼ全てが現れる見込みだが、実routerは一様でないためこれは実測の代わりにならない。34K入力の全chunk unionも多くのlayerで512へ飽和する可能性が高い。future routeをlayer entryで先取りできるとも仮定できない。削減の棄却条件を例えばunionが各layerで512、または対象bytes/weight transfersの削減が5%未満と事前定義し、実ID coverageで判定する。もし明確に疎なら、cache slotの再割当、resident map、cache容量、miss時の既存expert source/stream fallback、decode cache ownerとの隔離をレビューする必要がある。現行full cacheはrequest decode cacheと分けて新たに確保され、512 MiB GPU reserveを引いたあとにadmitする。decode cacheを借用/破棄する変更はR567のgraph pointer leaseとrestore問題を再導入するため、この案と混ぜない。
+
+Full 256K workloadではexpert coverageだけを理由に完全layer allocationが大きく減るとは期待しにくいが、現在の数字から全512使用を断定していない。coverage counterが全層・chunk別で揃うまで、この候補は保留。もしunionが完全でも、per-layer full cacheが短いinputにも常時確保される問題は現状selectorの `n > m.T` と別のrequest長選別であり、今回の長文resource caseへの改善値に加算しない。
+
+## 次に比較する優先順位と一次資料
+
+1. **高:** callback後の追加drainだけをlayer/pass境界へ集約できるかsource-lifetimeレビューし、同じ条件でwall/time samplesとresidual equalityを比較する。byte数は変わらない。
+2. **中・計数先行:** layer/chunk単位の実route unique expert数を記録する。full unionが実際に512へ飽和するならdynamic cache案を棄却。疎でも新cache/source-map設計を性能案として別に測る。
+3. **低・別設計:** mapped-host/direct-accessまたはmulti-queue overlap。10 GiB pinned host allocation、PCI access pattern、copy/compute event ordering、additional GPU buffer/VRAMを考慮した別実験が必要。
+
+一次資料:
+- Khronos, SYCL 2020 revision 12, `queue::memcpy` command semantics and `property::queue::in_order`: https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html
+- Intel, oneAPI GPU Optimization Guide, Unified Shared Memory allocations (`malloc_host` remains in host memory; device access via PCI): https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2024-0/unified-shared-memory-allocations.html
+- Intel LLVM SYCL runtime source, Level Zero and USM-related controls (reference for implementation-specific copy/runtime controls, not a performance guarantee): https://github.com/intel/llvm/blob/sycl/sycl/doc/EnvironmentVariables.md
+
+Conclusion: current measured layer-major setup still logically shuttles about 117.46 GB of RAM-tail residual per 34,602-row prompt across 47 layer boundaries, but the existing record does not isolate its time. The best immediate falsifiable candidate is removal of the 423 redundant callback-local waits while preserving one checked drain before the next layer. Keep ascending chunk order, the full-tail admission check, and the split between the temporary full-layer cache and persistent decode-cache owners. Do not infer improvement or adopt until matched clean measurements and identical numerical/fault outcomes exist.

@@ -1,0 +1,94 @@
+diff --git a/src/core/mtp.cpp b/src/core/mtp.cpp
+index a53cc60..f593417 100644
+--- a/src/core/mtp.cpp
++++ b/src/core/mtp.cpp
+@@ -26,6 +26,7 @@
+ #include "strata/kernels/sampler.hpp"
+ #include "strata/kernels/shared_expert.hpp"
+ #include "strata/kernels/verify_kernels.hpp"
++#include "strata/prefill/draft_uploads.hpp"
+ 
+ #include <algorithm>
+ #include <atomic>
+@@ -35,6 +36,7 @@
+ #include <cstring>
+ #include <exception>
+ #include <fstream>
++#include <limits>
+ #include <sstream>
+ #include <vector>
+ 
+@@ -745,19 +747,34 @@
+         return false;
+ #endif
+     }();
+-    const int64_t NHp = g_->n_head, per_row = 1 + 4 + NHp;
++    const int64_t NHp = g_->n_head;
+     if (!per_group_sync && n > 0) {
+-        if (pf_cap_ < n * per_row) {
++#ifdef STRATA_ENABLE_SYCL
++        if (NHp <= 0 || NHp > std::numeric_limits<int64_t>::max() - 5) {
++            err = "mtp prefill: the input records do not fit";
++            return false;
++        }
++#endif
++        const int64_t per_row = 1 + 4 + NHp;
++#ifdef STRATA_ENABLE_SYCL
++        if (n > std::numeric_limits<int64_t>::max() / per_row ||
++            uint64_t(n) > std::numeric_limits<size_t>::max() / sizeof(int32_t) / uint64_t(per_row)) {
++            err = "mtp prefill: the input records do not fit";
++            return false;
++        }
++#endif
++        const int64_t records = n * per_row;
++        if (pf_cap_ < records) {
+             if (pf_dev_) cudaFree(pf_dev_);
+             pf_dev_ = nullptr;
+             pf_cap_ = 0;
+-            if (cudaMalloc((void**) &pf_dev_, (size_t) (n * per_row) * sizeof(int32_t)) != cudaSuccess) {
++            if (cudaMalloc((void**) &pf_dev_, (size_t) records * sizeof(int32_t)) != cudaSuccess) {
+                 err = "mtp prefill: the input records do not fit";
+                 return false;
+             }
+-            pf_cap_ = n * per_row;
+-        }
+-        std::vector<int32_t> rec((size_t) (n * per_row));
++            pf_cap_ = records;
++        }
++        std::vector<int32_t> rec((size_t) records);
+         int32_t* tk = rec.data();
+         int32_t* stp = tk + n;
+         int32_t* ps = stp + 4 * n;
+@@ -770,6 +787,22 @@
+             stp[i * 4 + 3] = (int32_t) (cell + 1);
+             for (int64_t h = 0; h < NHp; ++h) ps[i * NHp + h] = (int32_t) cell;
+         }
++#ifdef STRATA_ENABLE_SYCL
++        // Declared after rec: every failure must drain before its upload source is destroyed.
++        cudaError_t record_drain_status = cudaErrorUnknown;
++        strata::prefill::detail::DraftUploadGuard record_lease(
++            [&] {
++                record_drain_status = cudaStreamSynchronize(cs_);
++                return record_drain_status == cudaSuccess;
++            },
++            [&]() noexcept {
++                std::fprintf(stderr, "strata mtp prefill: input record uploads did not drain: %s; "
++                                     "aborting with upload storage live\n", cudaGetErrorString(record_drain_status));
++                std::fflush(stderr);
++                std::abort();
++            });
++        record_lease.arm();   // An enqueue may submit work before reporting an error.
++#endif
+         if (cudaMemcpyAsync(pf_dev_, rec.data(), rec.size() * sizeof(int32_t), cudaMemcpyHostToDevice, cs_) != cudaSuccess) {
+             err = "mtp prefill: the input records upload failed";
+             return false;
+@@ -795,6 +828,9 @@
+             err = std::string("mtp prefill: ") + cudaGetErrorString(cudaGetLastError());
+             return false;
+         }
++#ifdef STRATA_ENABLE_SYCL
++        record_lease.retire();   // The existing successful final sync retired the upload.
++#endif
+         ms_prefill += ms_since(t0);
+         return true;
+     }

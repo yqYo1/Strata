@@ -1,0 +1,343 @@
+--- /dev/null
++++ b/include/strata/prefill/layermajor_qsa_profile.hpp
+@@ -0,0 +1,170 @@
++#pragma once
++#include <cuda_runtime.h>
++#include <chrono>
++#include <cmath>
++#include <cstdint>
++#include <cstdio>
++
++namespace strata::prefill::detail {
++// Own-fork diagnostic. A pair per section is reused only AFTER the existing
++// checked chunk drain. No event waits or stream synchronization are added.
++struct LayerMajorQsaProfile {
++    using Clock = std::chrono::steady_clock;
++    enum Section { projections, kv_stage, kv_append_query, indexer_append,
++                   selection, attention, output_projection, section_count };
++    struct Row {
++        double queue[section_count]{}, host[section_count]{};
++        uint64_t samples[section_count]{};
++        uint64_t expected = 0, expected_queries = 0;
++        uint64_t matrix_chunks = 0, fallback_chunks = 0;
++        uint64_t matrix_queries = 0, fallback_queries = 0, staged_chunks = 0;
++        int64_t cap = 0;
++    } rows[48]{};
++    struct Pair {
++        cudaEvent_t a = nullptr, b = nullptr;
++        bool begun = false, ended = false;
++        int layer = -1;
++        Clock::time_point host_start{};
++    } pairs[section_count];
++    bool usable = true, complete = false, emitted = false;
++    unsigned errors = 0;
++    int first_status = 0;
++    int layer = -1;
++    double wrapper_ms = -1;
++    void fail() noexcept { usable = false; complete = false; ++errors; }
++    bool check(cudaError_t e) noexcept {
++        if (e == cudaSuccess) return true;
++        if (!first_status) first_status = int(e);
++        fail(); return false;
++    }
++    void open() noexcept {
++        for (auto& p : pairs) {
++            if (!check(cudaEventCreate(&p.a))) return;
++            if (!check(cudaEventCreate(&p.b))) return;
++        }
++    }
++    // Declaration/borrow order in run_layer_major keeps these owners alive
++    // through both checked lease retirement and Restore, including exceptions.
++    // The pinned SYCL compat EventDestroy is delete-only.
++    void close() noexcept {
++        for (auto& p : pairs) {
++            if (p.a) { check(cudaEventDestroy(p.a)); p.a = nullptr; }
++            if (p.b) { check(cudaEventDestroy(p.b)); p.b = nullptr; }
++        }
++    }
++    ~LayerMajorQsaProfile() noexcept { close(); if (!emitted) emit(); }
++    void begin(Section k, cudaStream_t stream) noexcept {
++        if (!usable) return;
++        auto& p = pairs[k];
++        if (layer < 0 || layer >= 48 || !rows[layer].expected || p.begun ||
++            rows[layer].samples[k] >= rows[layer].expected) { fail(); return; }
++        p.layer = layer;
++        p.host_start = Clock::now();
++        if (check(cudaEventRecord(p.a, stream))) p.begun = true;
++    }
++    void end(Section k, cudaStream_t stream) noexcept {
++        if (!usable) return;
++        auto& p = pairs[k];
++        if (!p.begun || p.ended || p.layer != layer) { fail(); return; }
++        if (!check(cudaEventRecord(p.b, stream))) return;
++        p.ended = true;
++        const double ms = std::chrono::duration<double, std::milli>(Clock::now() - p.host_start).count();
++        if (!std::isfinite(ms) || ms < 0 || !std::isfinite(rows[p.layer].host[k] + ms)) { fail(); return; }
++        rows[p.layer].host[k] += ms;
++    }
++    // MUST be called only after run_impl's existing checked callback drain.
++    // Compat ElapsedTime waits internally: both events have already completed
++    // here. Failure leaves the pair unreusable; owner retirement still runs.
++    void chunk_retired() noexcept {
++        if (!usable) return;
++        for (int k = 0; k < section_count; ++k) {
++            auto& p = pairs[k];
++            if (!p.begun) continue;
++            if (!p.ended || !check(cudaEventQuery(p.a)) || !check(cudaEventQuery(p.b))) { fail(); return; }
++            float ms = 0;
++            if (!check(cudaEventElapsedTime(&ms, p.a, p.b))) return;
++            if (!std::isfinite(ms) || ms < 0 || !std::isfinite(rows[p.layer].queue[k] + ms)) { fail(); return; }
++            rows[p.layer].queue[k] += ms;
++            ++rows[p.layer].samples[k];
++            p.begun = p.ended = false; p.layer = -1;
++        }
++    }
++    // Record the ACTUAL dispatch result, independently of the existing optional
++    // dispatch logger. Exactly once per attention layer/chunk; no new events.
++    void dispatch(bool matrix, bool staged, int64_t queries, int64_t cap) noexcept {
++        if (!usable) return;
++        if (layer < 0 || layer >= 48) { fail(); return; }
++        auto& row = rows[layer];
++        const uint64_t chunks = row.matrix_chunks + row.fallback_chunks;
++        const uint64_t prior_queries = row.matrix_queries + row.fallback_queries;
++        if (!row.expected || chunks >= row.expected || queries <= 0 || queries > 8192 ||
++            cap <= 0 || cap != row.cap || prior_queries > row.expected_queries ||
++            uint64_t(queries) > row.expected_queries - prior_queries) { fail(); return; }
++        if (matrix) { ++row.matrix_chunks; row.matrix_queries += uint64_t(queries); }
++        else { ++row.fallback_chunks; row.fallback_queries += uint64_t(queries); }
++        if (staged) ++row.staged_chunks;
++    }
++    void finish(double denominator) noexcept {
++        if (!std::isfinite(denominator) || denominator < 0) { fail(); return; }
++        wrapper_ms = denominator;
++        for (const auto& p : pairs) if (p.begun || p.ended) { fail(); return; }
++        int64_t shared_cap = 0;
++        for (const auto& row : rows) {
++            for (int k = 0; k < section_count; ++k)
++                if (row.samples[k] != row.expected) { fail(); return; }
++            if (row.matrix_chunks + row.fallback_chunks != row.expected ||
++                row.matrix_queries + row.fallback_queries != row.expected_queries ||
++                row.staged_chunks > row.expected) { fail(); return; }
++            if (row.expected) {
++                if (row.cap <= 0 || !row.expected_queries || (shared_cap && shared_cap != row.cap)) { fail(); return; }
++                shared_cap = row.cap;
++            } else if (row.cap || row.expected_queries || row.matrix_chunks || row.fallback_chunks ||
++                       row.matrix_queries || row.fallback_queries || row.staged_chunks) { fail(); return; }
++        }
++        if (!shared_cap) { fail(); return; }
++        complete = usable;
++    }
++    // Fixed 50 lines. Seven scientific-format values in each numeric vector,
++    // bounded uint64 counts, 48 rows + aggregate: comfortably below 64 KiB.
++    void emit() noexcept {
++        emitted = true;
++        std::fprintf(stderr, "strata lm qsa profile: v=1 complete=%d errors=%u first_status=%d wrapper_ms=%.6g denominator=started_through_checked_lease_retirement teardown_unmeasured=1 granularity=QSA_LAYER_CHUNK sections=projections,kv_stage,kv_append_query,indexer_append,selection,attention,output_projection queue_intervals=NONEXCLUSIVE_including_host_submission_gaps host_wall=NONEXCLUSIVE_submission_and_helper_waits_not_CPU_or_GPU_service markers_included=1 kv_stage_noop_sample=1 dispatch=ACTUAL_matrix_used_result queries=SUM_T_not_request_tokens\n", int(complete && usable), errors, first_status, wrapper_ms);
++        Row total;
++        auto line = [](int l, const Row& row) noexcept {
++            std::fprintf(stderr, "strata lm qsa profile: layer=%d expected_chunks=%llu queue_ms=", l, (unsigned long long)row.expected);
++            for (int k = 0; k < section_count; ++k) std::fprintf(stderr, "%s%.6g", k ? "," : "", row.queue[k]);
++            std::fputs(" host_wall_ms=", stderr);
++            for (int k = 0; k < section_count; ++k) std::fprintf(stderr, "%s%.6g", k ? "," : "", row.host[k]);
++            std::fputs(" samples=", stderr);
++            for (int k = 0; k < section_count; ++k) std::fprintf(stderr, "%s%llu", k ? "," : "", (unsigned long long)row.samples[k]);
++            std::fprintf(stderr, " cap=%lld expected_queries=%llu dispatch_chunks=%llu query_total=%llu matrix_chunks=%llu fallback_chunks=%llu matrix_queries=%llu fallback_queries=%llu staged_chunks=%llu\n",
++                (long long)row.cap, (unsigned long long)row.expected_queries,
++                (unsigned long long)(row.matrix_chunks + row.fallback_chunks),
++                (unsigned long long)(row.matrix_queries + row.fallback_queries),
++                (unsigned long long)row.matrix_chunks, (unsigned long long)row.fallback_chunks,
++                (unsigned long long)row.matrix_queries, (unsigned long long)row.fallback_queries,
++                (unsigned long long)row.staged_chunks);
++        };
++        for (int l = 0; l < 48; ++l) {
++            const auto& row = rows[l]; line(l, row);
++            total.expected += row.expected;
++            total.expected_queries += row.expected_queries;
++            total.matrix_chunks += row.matrix_chunks; total.fallback_chunks += row.fallback_chunks;
++            total.matrix_queries += row.matrix_queries; total.fallback_queries += row.fallback_queries;
++            total.staged_chunks += row.staged_chunks;
++            if (row.expected && !total.cap) total.cap = row.cap;
++            for (int k = 0; k < section_count; ++k) {
++                total.queue[k] += row.queue[k]; total.host[k] += row.host[k];
++                total.samples[k] += row.samples[k];
++            }
++        }
++        line(-1, total);
++    }
++};
++struct LayerMajorQsaBorrow {
++    LayerMajorQsaProfile*& slot;
++    LayerMajorQsaProfile* prior;
++    LayerMajorQsaBorrow(LayerMajorQsaProfile*& s, LayerMajorQsaProfile* p) noexcept : slot(s), prior(s) { slot = p; }
++    ~LayerMajorQsaBorrow() noexcept { slot = prior; }
++};
++} // namespace strata::prefill::detail
+--- a/src/prefill/layer_major.inc
++++ b/src/prefill/layer_major.inc
+@@ -216,6 +216,35 @@
+         profile.reset(new detail::LayerMajorCoarseProfile);
+     }
+     detail::LayerMajorCoarseBorrow profile_borrow(m.layer_major_profile, profile.get());
++    // Read only: callers configure the native process environment before exec.
++    // A short warmup never enters run_layer_major and allocates no observer.
++    const char* qsa_profile_switch = std::getenv("STRATA_PREFILL_LAYER_MAJOR_QSA_PROFILE");
++    const bool qsa_profile_requested = qsa_profile_switch && std::strcmp(qsa_profile_switch, "1") == 0;
++    std::unique_ptr<detail::LayerMajorQsaProfile> qsa_profile;
++    if (qsa_profile_requested) {
++        if (!profile_requested) {
++            err = "prefill QSA profile: requires STRATA_PREFILL_LAYER_MAJOR_PROFILE=1"; return false;
++        }
++        uint64_t need = detail::layer_major_add(host_need, audit ? 4ull << 20 : 0);
++        need = detail::layer_major_add(need, phase_audit ? detail::Layer26PhaseAudit::host_reservation : 0);
++        need = detail::layer_major_add(need, census ? sizeof(detail::LayerMajorShapeCensus) : 0);
++        need = detail::layer_major_add(need, 2ull << 20); // coarse + fine fixed owners, fourteen extra events
++        if (!core::conversation_memory_admit(core::conversation_available_memory(), need, host_headroom)) {
++            err = "prefill QSA profile: diagnostic storage exceeds RAM headroom"; return false;
++        }
++        qsa_profile.reset(new detail::LayerMajorQsaProfile);
++        for (int l = 0; l < 48; ++l) {
++            auto& row = qsa_profile->rows[l];
++            if (core::is_qsa_layer(g, l)) {
++                row.expected = uint64_t(1 + (n - 1) / m.T);
++                row.expected_queries = uint64_t(n);
++                row.cap = m.cap;
++            }
++        }
++    }
++    // Reverse destruction: lease, Restore, this borrow, fine owner, coarse borrow,
++    // coarse owner. Failed retirement aborts while all event owners remain live.
++    detail::LayerMajorQsaBorrow qsa_profile_borrow(m.layer_major_qsa_profile, qsa_profile.get());
+     using LmProfile = detail::LayerMajorCoarseProfile;
+     int64_t logical_chunks = 0, layer = 0;
+     const int64_t final_chunk_row = ((n - 1) / m.T) * m.T;
+@@ -266,6 +295,7 @@
+     lease.arm();
+     if (!drain()) { err = "prefill layer-major: entry queue drain failed"; return false; }
+     if (profile) profile->open();
++    if (qsa_profile) qsa_profile->open();
+     if (audit || phase_audit) {
+         m.layer26_phase_audit = phase_audit.get();
+         m.layer_major_audit = audit.get();
+@@ -315,6 +345,7 @@
+                              "operator/state precision unchanged\n");
+     for (; layer < g.n_layers; ++layer) {
+         if (profile) profile->layer = int(layer);
++        if (qsa_profile) qsa_profile->layer = int(layer);
+         if (should_stop && should_stop()) { err = "cancelled"; return false; }
+         if (!drain()) { err = "prefill layer-major: layer boundary drain failed"; return false; }
+         if (std::getenv("STRATA_TRACE")) {
+@@ -472,6 +503,11 @@
+         profile->close(); // checked lease has retired; status checked before emit
+         profile->emit();
+     }
++    if (qsa_profile) {
++        qsa_profile->finish(profile->wrapper_ms);
++        qsa_profile->close();
++        qsa_profile->emit();
++    }
+     if (census) census->complete();
+     return true;
+ #endif
+--- a/src/prefill/prefill.cpp
++++ b/src/prefill/prefill.cpp
+@@ -42,6 +42,7 @@
+ 
+ #include <cuda_runtime.h>
+ #include "strata/prefill/layermajor_coarse_profile.hpp"
++#include "strata/prefill/layermajor_qsa_profile.hpp"
+ 
+ #include <algorithm>
+ #include <chrono>
+@@ -466,6 +467,7 @@
+     bool layer_major_active = false;
+     detail::LayerMajorShapeCensus* layer_major_census = nullptr;
+     detail::LayerMajorCoarseProfile* layer_major_profile = nullptr;
++    detail::LayerMajorQsaProfile* layer_major_qsa_profile = nullptr;
+     detail::Layer26PhaseAudit* layer26_phase_audit = nullptr;
+     detail::LayerMajorBoundaryAudit* layer_major_audit = nullptr;
+     detail::LayerMajorBoundaryAudit::Copy layer_major_audit_copy;
+@@ -2218,6 +2220,12 @@
+                 } else if (half == 0) {
+                     // ======================= QSA =======================
+                     if (m.layer_major_profile) m.layer_major_profile->begin(detail::LayerMajorCoarseProfile::qsa, m.cs);
++                    // Seven bounded sections for this whole layer/chunk, never
++                    // marks per selected batch/query. Host spans may include
++                    // synchronous helper work; they are not CPU service time.
++                    using QsaProfile = detail::LayerMajorQsaProfile;
++                    auto* qp = m.layer_major_qsa_profile;
++                    if (qp) qp->begin(QsaProfile::projections, m.cs);
+                     const core::QsaState& st = ss.qsa_states[qsa_index];
+                     const core::WeightRef *wq = need(v, "attn_q.weight", err), *wk = need(v, "attn_k.weight", err),
+                                           *wv = need(v, "attn_v.weight", err), *wo = need(v, "attn_output.weight", err),
+@@ -2237,6 +2245,8 @@
+                     rope(m.Kc, T, 2, 256, 512, p0, strata::kernels::rope_scaling(), m.cs);
+                     // KV streaming: this layer's cells [0, p0) come in from the host copy to the staging pool, and the
+                     // chunk's cells go to the host copy, the staging pool, and the VRAM slots of resident blocks
++                    if (qp) qp->end(QsaProfile::projections, m.cs);
++                    if (qp) qp->begin(QsaProfile::kv_stage, m.cs);
+                     const bool staged = st.kv_mode == 1;
+                     if (staged) {
+                         pt.mark(kPfKvStage, cs);
+@@ -2245,6 +2255,8 @@
+                                                             (p0 + s.page_size - 1) / s.page_size, s, m.cs);
+                         pt.mark(kPfQsa, cs);
+                     }
++                    if (qp) qp->end(QsaProfile::kv_stage, m.cs);
++                    if (qp) qp->begin(QsaProfile::kv_append_query, m.cs);
+                     if (st.kv_hybrid) {   // K8V4: K INT8 unrotated, V rotated Q4_0 (only V and the output rotate)
+                         strata::kernels::fwht256_inplace_cuda(m.Vc, T * 2, m.cs);
+                         kv_append(m.Kc, m.Kc, T, p0, st.page_table, s.page_size, nullptr, nullptr,
+@@ -2274,6 +2286,8 @@
+                     // the indexer appends, token by token; then scores + selection for many queries at once:
+                     // a query reads completed blocks (final once completed) and `dead` for its own tail block
+                     const strata::kernels::QsaIndexerBuffers ib{st.idx_tail, st.idx_dead, st.idx_pooled, st.idx_block_pos};
++                    if (qp) qp->end(QsaProfile::kv_append_query, m.cs);
++                    if (qp) qp->begin(QsaProfile::indexer_append, m.cs);
+                     pt.mark(kPfQsaIdx, cs);
+                     // C-2: the chunk's appends in three launches instead of one per token (the same end state:
+                     // the queries below read it only after the whole chunk is appended). STRATA_INDEXER_PER_TOKEN=1: the old
+@@ -2291,6 +2305,8 @@
+                                                                        strata::kernels::rope_scaling(), m.cs);
+                         }
+                     } catch (const std::exception& e) { err = std::string("prefill indexer: ") + e.what(); return false; }
++                    if (qp) qp->end(QsaProfile::indexer_append, m.cs);
++                    if (qp) qp->begin(QsaProfile::selection, m.cs);
+                     pt.mark(kPfQsaSel, cs);
+                     for (int64_t t0 = 0; t0 < T; t0 += m.sel_batch) {
+                         const int64_t nb = std::min(m.sel_batch, T - t0);
+@@ -2395,6 +2411,8 @@
+                     }
+                     const strata::kernels::QsaAttnPools pools = staged ? pools_of(m.stage, m.ident_table)
+                                                                        : core::qsa_attn_pools(st);
++                    if (qp) qp->end(QsaProfile::selection, m.cs);
++                    if (qp) qp->begin(QsaProfile::attention, m.cs);
+                     pt.mark(kPfQsaAttn, cs);
+                     // perf-review D-1: the whole chunk on tensor cores, one block per (query, KV head), FP32-level
+                     // accuracy but not bitwise (qsa_prompt_attn.hpp). Q4_0 KV, or STRATA_PROMPT_ATTN_OLD=1: the
+@@ -2403,6 +2421,7 @@
+                     static const bool old_attn = std::getenv("STRATA_PROMPT_ATTN_OLD") != nullptr;
+                     const bool matrix_used = !old_attn && strata::kernels::qsa_prompt_attn_batch(
+                         m.q, pools, m.sel_ids, m.steps_dev, m.cap, s, m.attn, T, m.cs);
++                    if (qp) qp->dispatch(matrix_used, staged, T, m.cap);
+                     if (observe_attn_dispatch) {
+                         if (matrix_used) { ++matrix_chunks; matrix_queries += (uint64_t) T; }
+                         else { ++fallback_chunks; fallback_queries += (uint64_t) T; }
+@@ -2425,8 +2444,11 @@
+                         }
+                     if (st.kv_rot || st.kv_hybrid) strata::kernels::fwht256_inplace_cuda(m.attn, T * 24, m.cs);
+                     pt.mark(kPfQsa, cs);
++                    if (qp) qp->end(QsaProfile::attention, m.cs);
++                    if (qp) qp->begin(QsaProfile::output_projection, m.cs);
+                     gate_attn(m.attn, m.Qf, m.attn_h, T, m.cs);
+                     if (!native_proj(m.gemm, wo, m.attn_h, m.bo, T, v.name("attn_output.weight"), err)) return false;
++                    if (qp) qp->end(QsaProfile::output_projection, m.cs);
+                     ++qsa_index;
+                     if (m.layer_major_profile) m.layer_major_profile->end(detail::LayerMajorCoarseProfile::qsa, m.cs);
+                 } else {
+@@ -3218,6 +3240,7 @@
+                 m.layer_major_profile->add(detail::LayerMajorCoarseProfile::chunk_drain, toc);
+                 // Existing checked callback drain above covers all marks.
+                 m.layer_major_profile->chunk_retired();
++                if (m.layer_major_qsa_profile) m.layer_major_qsa_profile->chunk_retired();
+             }
+             if (on_stage_chunk && !on_stage_chunk(p0 + T, err)) return false;
+             if (on_chunk && !on_chunk(m.R, T, p0, err)) return false;

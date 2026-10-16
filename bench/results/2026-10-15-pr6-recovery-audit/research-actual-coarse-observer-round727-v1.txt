@@ -1,0 +1,41 @@
+# R727 — integrated coarse observer audit at actual HEAD
+
+2026-10-16 JST. Read-only audit of the integrated `LayerMajorCoarseProfile` call path. Actual `git rev-parse HEAD` is `a39e44a49e5ba38e58221714bd71acae52d3a2e1`; this is the Git commit ID (40 hex), not a source SHA-256. The workspace already had numerous untracked recovery artifacts; no pre-existing path was changed. Only this report was written. No build, test, process, GPU, cleanup, environment or live source changes were made. The credential record named in the task was not opened. No XeStrata source was consulted.
+
+Read `AGENTS.md`, the shared `research-index.json`, `canonical-bank-profile-qualification-v1.ja.md`, R722 and R726. R722/R726 already reject `STRATA_PREFILL_TIMING` for this route and explain generic profiling limitations; this report does not reopen those points. The canonical capture alignment correction is already implemented and tested as recorded in the current qualification report.
+
+## Integrated call and lifetime findings
+
+The checked route admits 48 layers, QSA interval 4, 12 QSA states, 36 GDN states, chunk size at most 8192, and full input up to 262144 (`src/prefill/layer_major.inc:49-60`). The observer is default-off and allocated only for `STRATA_PREFILL_LAYER_MAJOR_PROFILE=1`; its fixed rows and twelve event objects are RAM-admitted before construction (`:205-218`). It does not change route selection or loosen the route's unsupported-observer guard (`:67-76`).
+
+The observer’s extra queue operations are event record markers only. Its event intervals are retired after existing checked drains: upload after `drain()` (`layer_major.inc:337-354`), store after callback `drain()` (`:404-435`), and input/GDN/QSA/MoE after `run_impl`'s existing callback stream synchronization (`prefill.cpp:3210-3223`, particularly 3212-3220). `retired()` clears the begun/ended flags only after successful queries and elapsed-time retrieval (`layermajor_coarse_profile.hpp:65-83`), so reusing the same event pair on the next chunk follows retirement. Compatibility event record submits an in-order barrier; elapsed-time retrieval waits for the ending event, but here it is called only after the relevant checked drain (`src/sycl/compat.cpp:364-379,408-424`). I found no added pending-event wait, extra stream drain, or reuse-before-retirement path in the integrated caller.
+
+On ordinary failure returns and C++ exceptions, declaration order keeps the profile object alive beyond the checked lease and `Restore`: profile and borrow precede `Restore`, which precedes the armed `DraftUploadGuard` lease (`layer_major.inc:207-218,225-268`). Reverse destruction therefore retires/checks the lease first, restores borrowed fields/callbacks next, restores the profile slot, and only then destroys the profile/event objects. If the lease cannot prove retirement its failure callback aborts while owners remain live (`:261-265`). On success, explicit `lease.retire()` precedes event destruction and emission (`:465-474`). Event destroy is delete-only in this compat implementation (`compat.cpp:360-362`). The success header explicitly says teardown is unmeasured; no restoration-tail duration is represented (`layermajor_coarse_profile.hpp:87-90`). I found no source-visible lifetime escape or unsafe event destruction in these paths.
+
+## Expected counts for the specified model diagnostic
+
+For unchanged input length 78,453 and `T=8192`, the source cursor's chunk rule yields 10 chunks per layer (`layer_major.inc:220-223,446-450`). Given the admitted 48-layer geometry, `qsa_interval=4` and 12 QSA states (`:52-59`), and the actual `is_qsa_layer` branch in `prefill.cpp:2185-2218`, expected completed profile samples are:
+
+- 48 upload intervals and 48 source rows;
+- 480 MoE intervals (48 layers × 10 chunks);
+- 120 QSA intervals (12 QSA layers × 10 chunks) and 360 GDN intervals (36 GDN layers × 10 chunks);
+- 470 residual-input intervals and 470 residual-store intervals (47 inter-layer boundaries × 10 chunks; no incoming residual before the first layer and no store after the last layer).
+
+These are source-derived expectations, not measured model results. The profile prints per-layer and aggregate sample counts (`layermajor_coarse_profile.hpp:91-115`) but does not compare them to expected values before setting its `complete` header. Therefore the actual-model receipt should check these counts and every layer row; `complete=1` alone does not establish that all expected observer marks were sampled. This is an evidence-check requirement, not a demonstrated incorrect interval or model result.
+
+## Attribution limits and remaining runtime evidence
+
+The labels appropriately constrain interpretation: wrapper time is `started` through checked lease retirement, requested bytes are not wire traffic, queue intervals include host submission gaps and are nonexclusive, and teardown is unmeasured (`layermajor_coarse_profile.hpp:87-99`). Source-copy wall includes `copy_blob` work; upload queue time brackets the upload submissions; store queue times bracket callback copy/pack work and their explicit waits are separately reported. In FP32, the admitted current single-queue path submits device/host destination stores as requested D2D/D2H operations (`layer_major.inc:423-435`); this does not prove physical link traffic. No additional synchronization is needed to collect those markers.
+
+The shared index/qualification says host header gate 13 arms and actual owner/component gate 14 arms pass, while the actual model gate has not run. Still needed before making a runtime attribution claim: the unchanged 78,453-token FP32/R32768/Direct1 diagnostic must close normally; selected FP32 reference comparison must pass; emitted profile must be complete with the exact counts above and all 48 rows; actual graph/MTP/reader lifetime, fault and teardown evidence must remain clean. Then the recorded per-layer wall, queue, byte and sample fields can support bounded coarse attribution. They cannot by themselves isolate kernel service time, exclusive critical path, physical transfer bytes, clean performance, task quality, 262144-context behavior or RESTORE correctness. No new runtime evidence was produced by this audit.
+
+## Pins
+
+- `src/prefill/layer_major.inc` SHA-256 `74b6b118bd5fab458fbdc872d345661e8827ea760d6a2f217f8da5922af8e1e9`
+- `src/prefill/prefill.cpp` SHA-256 `c3d3ff8b2107ee3bd7583df2788033891edf0999bf801b2781fb4f4587a3cc86`
+- `include/strata/prefill/layermajor_coarse_profile.hpp` SHA-256 `36d7a9b9059a83f44cac57c6d06229455a2f86114710f73fa422ed4dc940c2a6`
+- `src/sycl/compat.cpp` SHA-256 `225e2021b5ce67b3bb58f116a4a15cd5d592a33dbdf2c9837940a3e89155dca7`
+- `include/strata/sycl/compat/cuda_runtime.h` SHA-256 `39b71df35e317851bd16b383027f088be159be2e0d602c592e8ddab30fe7e26a`
+- `src/sycl/runtime.cpp` SHA-256 `d571ad74ebfafc2523e129fe29858d61058bf0c26ae686834ea294105acb5e2f`
+- `include/strata/sycl/runtime.hpp` SHA-256 `bcfbb035fa5a95f0409db013158f756ba4136b0aa06f636c6ff747ec0bcfd0fd`
+- R722 report SHA-256 `42c8730085229e2cbe6281c371466573b9e7f053758e07569df9e28c761a412f`; R726 report SHA-256 `ed2344e03ade9127a53818c25c62f114fc3eb2f82640930f388b18c10cc1be0c`.

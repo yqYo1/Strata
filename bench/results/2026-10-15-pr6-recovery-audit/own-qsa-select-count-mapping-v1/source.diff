@@ -1,0 +1,92 @@
+--- a/src/kernels/sycl/qsa_select.cpp
++++ b/src/kernels/sycl/qsa_select.cpp
+@@ -23,7 +23,7 @@
+     b = 0;
+   return b & 0x80000000u ? ~b : b | 0x80000000u;
+ }
+-template <bool Radix4>
++template <int Mapping>
+ sycl::event submit_topk(sycl::queue &queue, const float *scores,
+                         const int32_t *steps, int64_t nq, int64_t blocks,
+                         int64_t cap, int32_t *ids, int64_t launched) {
+@@ -50,7 +50,7 @@
+                       hi = sycl::min(nb + 1, lo + chunk);
+         auto weight = [=](int64_t b) { return b < nb ? 4 : int(n % 4); };
+         uint32_t threshold = 0;
+-        if constexpr (Radix4) {
++        if constexpr (Mapping == 1) {
+           // Rank is in cells, including the partial final block. All counts
+           // are subsets of nonnegative int32 n, hence fit int without adding
+           // a physical-context restriction to the existing API.
+@@ -79,7 +79,9 @@
+           for (int bit = 31; bit >= 0; --bit) {
+             const uint32_t candidate = threshold | (1u << bit);
+             int count = 0;
+-            for (int64_t b = lo; b < hi; ++b)
++            // Count partition is independent of the final ordered emission.
++            for (int64_t b = Mapping == 2 ? int64_t(t) : lo;
++                 b < (Mapping == 2 ? nb + 1 : hi); b += Mapping == 2 ? 256 : 1)
+               if (order(sc[b]) >= candidate)
+                 count += weight(b);
+             if (sycl::reduce_over_group(it.get_group(), count,
+@@ -117,14 +119,19 @@
+       });
+ }
+ 
+-bool select_radix4() {
++int selection_mapping() {
+   // Experimental, default off. Set before exec; process environment must
+   // remain immutable once runtime/provider initialization starts.
+-  static const bool enabled = [] {
+-    const char *value = std::getenv("STRATA_SYCL_SELECT_RADIX4");
+-    return value && value[0] == '1' && value[1] == '\0';
++  static const int mapping = [] {
++    const char *r = std::getenv("STRATA_SYCL_SELECT_RADIX4");
++    const char *c = std::getenv("STRATA_SYCL_SELECT_CYCLIC");
++    const bool radix = r && r[0] == '1' && r[1] == '\0';
++    const bool cyclic = c && c[0] == '1' && c[1] == '\0';
++    if (radix && cyclic)
++      throw std::invalid_argument("select radix4 and cyclic are separate experiment arms");
++    return cyclic ? 2 : radix ? 1 : 0;
+   }();
+-  return enabled;
++  return mapping;
+ }
+ } // namespace
+ void qsa_block_scores(const float *pooled, const float *dead,
+@@ -183,9 +190,11 @@
+                  {{scores, checked_count(nq, blocks) * 4},
+                   {steps, checked_count(nq, kStepCount) * 4}});
+   auto &queue = queue_for(stream);
+-  const auto event = select_radix4()
+-      ? submit_topk<true>(queue, scores, steps, nq, blocks, cap, ids, launched)
+-      : submit_topk<false>(queue, scores, steps, nq, blocks, cap, ids, launched);
++  const int mapping = selection_mapping();
++  const auto event = mapping == 2
++      ? submit_topk<2>(queue, scores, steps, nq, blocks, cap, ids, launched)
++      : mapping == 1 ? submit_topk<1>(queue, scores, steps, nq, blocks, cap, ids, launched)
++                     : submit_topk<0>(queue, scores, steps, nq, blocks, cap, ids, launched);
+   finish(stream, event);
+ }
+ void qsa_block_topk_ref(const float *scores, const int32_t *steps, int64_t nq,
+--- a/tests/sycl/qsa_select_radix.cpp
++++ b/tests/sycl/qsa_select_radix.cpp
+@@ -291,6 +291,8 @@
+     // Read only; caller sets all SYCL/driver/experiment variables before exec.
+     const char *arm = std::getenv("STRATA_SYCL_SELECT_RADIX4");
+     std::cout << "STRATA_SYCL_SELECT_RADIX4=" << (arm ? arm : "<unset>") << '\n';
++    const char *cyclic = std::getenv("STRATA_SYCL_SELECT_CYCLIC");
++    std::cout << "STRATA_SYCL_SELECT_CYCLIC=" << (cyclic ? cyclic : "<unset>") << '\n';
+     runtime = sycl_backend::runtime_for();
+     if (bench) {
+       run(pattern ? "bench_equal" : "bench_varied",
+@@ -307,7 +309,8 @@
+           for (int width : {1, 3, 4, 5, 2049}) rows.push_back({n, width, pattern_id});
+         }
+         run("small_pattern_" + std::to_string(pattern_id), rows, 2051, 0, 0);
+-        rows = {{0, 0, pattern_id}, {5, 5, pattern_id}, {78453, 2051, pattern_id}};
++        rows = {{0, 0, pattern_id}, {5, 5, pattern_id},
++                {78452, 2051, pattern_id}, {78453, 2051, pattern_id}};
+         for (int n = 262141; n <= 262144; ++n) rows.push_back({n, 2051, pattern_id});
+         // No timing from full physical-context coverage.
+         run("long_mixed_pattern_" + std::to_string(pattern_id), rows);

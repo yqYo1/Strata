@@ -1,0 +1,62 @@
+QSA fallback layout recovery v1 — implementation handoff
+Date: 2026-10-15 JST
+Status: IMPLEMENTED, UNBUILT, UNTESTED, UNADOPTED. No performance or GPU acceptance claim.
+
+Authority and scope
+Main owns every build, test, GPU/profiler run, process/fault gate, integration and Git publication. This agent edited only the five authorized source/fixture/CMake files and this report. No build/test/GPU/profiler/fetch/cleanup/branch/service/process actions were performed. No commits/pushes. The excluded private record.json was not read. docs/ARTIFACT_RETENTION.md and the project strata-upstream-sync skill were read. No large artifacts, raw traces or tensor captures were generated or retired.
+
+Origin and verification
+Base feature/sycl commit: ad8518af74888d3b695ac3abafe3d3d6f90772a3
+Donor: 1eb89482a4afd20277ae0405780ed4f8eb98eb20:sycl/src/kernels/cuda/qsa_decode_attn.dp.cpp
+Read bench/results/2026-10-15-pr6-recovery-audit/research-qsa-layout-port-round561-v1.txt and donor equations. Base root decode_attention.cpp SHA256 independently confirmed as 2ce2a61f6beb1acbf9c673da346e887b386fffedba10e7df2c157aedab8ac05d.
+Donor staging sq[h][(dim % 8) * 32 + dim / 8] and scoring sq[h][lane + j * 32] were verified against source. Only these index equations are recovered; current root SYCL arithmetic, safeguards and merge remain. Donor's eight-term expression is not imported: current first multiply followed by seven explicit fmas and the same XOR subgroup reduction are retained. This is own-fork layout recovery, not adoption of an engine or prompt matrix implementation.
+
+Implementation and numerical contract
+launch<Format, TransposeQ> instantiates natural/transposed Q storage for modes 0 FP16, 1 int8, 2 q4_0 and 3 int8-K/q4-V. For source dim=lane*8+j, transposed storage index equals j*32+lane, so each score lane reads exactly its original Q dimensions and K values in their original order. Score scaling, max/sum softmax, value fmas and merge order are unchanged. Local sq remains 12*256*4=12288 bytes; sp 12*64*4=3072 bytes; rows 64*8=512 bytes, total 15872 bytes. Existing 256-work-item geometry, subgroup32, query/group/chunk mapping, step masking, negative IDs, nonresident pages and all barriers remain.
+qsa_decode_attn_batch_layout(..., n_q, int layout, stream) is SYCL-only and accepts only 0/1, rejecting invalid values before geometry, empty-batch return, pointer validation or queue access. The existing batch API explicitly calls layout0; step still calls the natural batch API. No decoder call sites change. Layout0 preserves existing validation and dispatch. All preexisting geometry/scratch-size/product/span/pool validation is retained in the candidate implementation.
+No explicit production device/host allocation, extra wait, copy or launch is introduced. Nonempty batch retains one chunk submit plus one merge submit, the same scratch partition/size, and finish(stream, event). This is a source count, not measured launch evidence. Stream remains an in-order SYCL queue; null stream completes through existing finish; caller must retain buffers and streamed physical KV pages through completion just as before. This change does not add validation for logical IDs beyond what the original source provided: positive IDs and page-table/physical-pool bounds remain the producer's responsibility.
+Prefill parses the environment once at initialization. Only exact STRATA_PREFILL_ATTN_LAYOUT=1 enables the SYCL candidate in the existing split fallback branch. Absent/nonexact values retain the original batch call. Presence logs request/effective and states only split fallback is affected, with prompt matrix dispatch unchanged. No STRATA_PROMPT_ATTN_OLD or joint_matrix dispatch changes. Non-SYCL builds keep the original call and report effective0; the new declaration/call is conditional, with no CUDA/HIP kernel implementation or validation.
+Current draft_uploads.hpp fixes are untouched.
+
+Fixture contract (written, not run)
+tests/sycl/qsa_fallback_layout.cpp follows existing tests/sycl/decode_attention.cpp allocation/runtime and double CPU-reference patterns. CMake target sycl_qsa_fallback_layout_test, CTest sycl_qsa_fallback_layout, timeout180, strict math flags.
+Each format0..3 uses bounded (nq,cap)=(1,63),(17,64),(32,65),(17,129),(1,129). The same Q, IDs, widths, pool buffers, table and scratch are reused across natural, layout0 and layout1. Compare all output floats and full partial scratch bytes bitwise, including guards; compare natural step API to natural batch; independently compute double score/softmax/value reference for every deterministic output (2e-6*(1+abs(ref)) tolerance), requiring finite outputs. Samples mix width0/cap/63/64/65/cap-1 and invalid -1/cap+1. Positive IDs are distinct and ascending among surviving mask entries; explicit negative active IDs and negative tail padding exercise masks. IDs include logical262143 at the active tail; page65535 maps to physical2. Logical table has65536 entries but KV allocation only5 physical pages, with nonidentity map0->3,1->1,17->4,65534->0,65535->2; unmapped entries are-1. Two KV heads and variable dimensions/scales/codes exercise row/head/dimension mapping.
+After parity/oracle, table buffers are updated to all nonresident and restored; widths are replaced with0/-1/cap+1 to prove device metadata reuse and finite zero outputs in both arms. Output/scratch guards are checked. Null Q/table, output/scratch overlap and missing required format inputs must reject before queue access, using deliberately bogus streams that must never be dereferenced. Host-only gates cover invalid selectors even nq0, empty valid layouts, batch refusal, cap/head/geometry refusal, maximum accepted cap and geometry scratch formulas separately, scratch overflow and batch product overflow without huge allocation. Full execution at maximum legal batch/head/cap is deliberately not attempted.
+Flushed progress names case and phase before the first candidate launch; distinct failures identify the contract. The fixture cannot by itself prove full model residual/logit/perplexity parity, production streamed-page lifetime, forced-fallback route acceptance, or device fault freedom.
+
+Optional benchmark (not run)
+--benchmark is a separate process mode on synthetic int8 nq32 cap2051 with mostly nonresident sparse logical selections and mixed positive widths. It performs10 alternating warmup calls, then40 alternating samples, each8 repeated batch invocations. Marker event end/start timestamps enclose chunk+merge commands plus host submission gaps; results are explicitly device_envelope, never exclusive kernel timings. Setup/readback/oracle diagnostics are outside sample windows. These sparse synthetic inputs are not a matched real-model speed comparison and cannot justify adoption. Main must run correctness/fault gates first, keep traces/validation out of clean timing processes, record source/binary/toolchain/driver/environment identities and retain all individual timing samples/order.
+
+Suggested Main commands (NOT EXECUTED)
+Use the existing configured SYCL build and its exact toolchain/AOT settings; do not reconfigure blindly.
+  cmake --build <configured-sycl-build> --target sycl_qsa_fallback_layout_test
+  ctest --test-dir <configured-sycl-build> -R '^sycl_qsa_fallback_layout$' --output-on-failure
+  <configured-sycl-build>/sycl_qsa_fallback_layout_test --benchmark
+Main supplies exclusive measurement lock, finite owned-process deadlines, bounded diagnostics, fresh device fault receipt and cleanup/lifetime checks before accepting a result. First correctness launch should follow project small-check tracing requirements and record flushed progress if it fails. Model comparison must pin layout0/1 fallback route and match IDs, step widths, pool/page state and stream completion; prefill/decode adoption remain separate. Existing decode remains natural regardless of this flag.
+
+Diff and source identities
+Tracked diff summary below plus new fixture. Full authoritative diff remains git diff ad8518af74888d3b695ac3abafe3d3d6f90772a3 -- <authorized files>; new fixture is inspectable at its path. Combined tracked-diff plus /dev/null fixture diff SHA256: d496ea3087c36a94e4618026e50759738ba0c922ed560926c38c1071f2cf5027
+ cmake/sycl_backend.cmake                   |  5 +++
+ include/strata/kernels/qsa_decode_attn.hpp |  9 ++++++
+ src/kernels/sycl/decode_attention.cpp      | 49 +++++++++++++++++++++++-------
+ src/prefill/prefill.cpp                    | 35 +++++++++++++++++++--
+ 4 files changed, 84 insertions(+), 14 deletions(-)
+
+src/kernels/sycl/decode_attention.cpp
+  base SHA256: 2ce2a61f6beb1acbf9c673da346e887b386fffedba10e7df2c157aedab8ac05d
+  candidate SHA256: ecbe949d2b93386ad47580d7211fae73b12539d35f6b5e6c4b39fa829201c59e
+include/strata/kernels/qsa_decode_attn.hpp
+  base SHA256: 6fa4b817f835c43783774d5946d14938f2867d7af16abb4db0f4b75d4622a915
+  candidate SHA256: 3745db42a1a1fa84a40a5040352a9d5f16f735ae431389b8617dd6cd11bfdd14
+src/prefill/prefill.cpp
+  base SHA256: c10aa2c3bdd58ae268d1fe81166912c097fb6a5b91f2c9b77de037cbe2d39feb
+  candidate SHA256: b788d26fb2ad6b2102f503a870cd12330015ad02b353f421e6d347b286baaf8c
+tests/sycl/qsa_fallback_layout.cpp
+  base SHA256: new fixture
+  candidate SHA256: b6e86baa33af1ed21d175451c69a923002372896b23a4a8a754636ebe30a8531
+cmake/sycl_backend.cmake
+  base SHA256: 9d18df97b0bf3cf20f0b45245ce214d018bc9c98e10f85898cdc6d6df7adf945
+  candidate SHA256: 5c6fc8401e5ae9fd81a2d2d0adb56ab5ff802c1ef0794ba01d5e181942280f49
+
+Decision and next review
+Candidate exists for explicit evaluation only. No speed, parity, build success, fault safety or adoption established. Main next reviews source, compiles target, runs bounded diagnostic correctness, handles any errors without weakening test requirements, then obtains matched clean timing and full-model gates. Keep compact source/results and all individual measurement/failure statuses per docs/ARTIFACT_RETENTION.md. No cleanup manifest is needed because no deletions occurred.

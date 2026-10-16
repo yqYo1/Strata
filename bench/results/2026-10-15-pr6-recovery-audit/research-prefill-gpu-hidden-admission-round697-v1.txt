@@ -1,0 +1,51 @@
+# R697 — 実装済みFP32 saved-hidden GPU admission / placement監査
+
+2026-10-15 JST。読み取り専用source/evidence調査。許可された新規成果物は本ファイルのみ。実装、test/build、GPU/process、環境変更、cleanup、Git操作なし。対象 `/home/yayoi/orca/workspaces/Strata/sycl` の `feature/sycl`。
+
+## Mainに必要な結論
+
+実装は「free VRAMからcacheと固定headroomを引いた残り」を使って、`STRATA_PREFILL_LAYER_MAJOR_R_GPU`の明示行数をchunk境界に丸めたGPU prefixとしてplanする。実行時にrequestごとに`cudaMemGetInfo`を読むため、前requestでfreeが減っていれば次requestの判断も変わる。R=8192固定は、n=78452/chunk=8192/FP32の現幾何では `8192*10240*4 = 335,544,320 B`。与えられた観測free `2,294,431,744 B`、追加cache `1,363,148,800 B`、headroom `536,870,912 B`では計画可能残り394,412,032 B、差58,867,712 Bで初回planはfitする。
+
+同一serve内freeが約50 MiB（52,428,800 B）落ちると、残り341,983,232 B、R8192に対する計画余裕はわずか6,438,912 B。従ってfree低下が **58,867,712 Bを超えた時**（またはfree観測値が2,235,564,032 B未満）明示R8192は`LayerMajorResidualPlan::make`でheadroom込み予算超過となり、layer-major runは失敗する。50 MiB減少だけなら算術上はまだfit。ただしallocator fragmentation、他ownerの同時確保、free観測後の競合があればplan fitでも実`cudaMalloc`が失敗しうる。コードにrequested rowsを減らして再planするbackoffはない。
+
+失敗は静かなzero store/無効な残差を作る仕様ではない。plan境界超過は例外を捕捉して`false`、GPU residualの`cudaMalloc`失敗は明示エラーで`false`を返す。しかし`STRATA_PREFILL_LAYER_MAJOR=1`でlayer-major routeへ入った後に、通常prefillへ自動fallbackする経路もない。呼出側はprefill失敗を処理する必要がある。R=8192を3独立processで比較するなら、各processで開始直前のfree/totalを個別記録し、上の静的閾値に加えてcache allocation成功・residual allocation成功・最終planログが`residual_gpu_rows=8192`であることを採用条件にする。request前後のmeminfoだけ、またはrequested env値だけではGPU配置の成立証拠にならない。
+
+## parser / planner / spanの実際の境界
+
+`layer_major_requested_rows` (`include/strata/prefill/layer_major_plan.hpp:34-45`) はunsetまたは完全一致`auto`をautoとして`-1`にする。数値は`from_chars`で文字列全体を読むので空、符号、空白、suffix、int64超過を拒否。数値は最大行数であり、nより大きければplan入力検査で拒否する。FP32の保存幅は4 B (`:48-63`)。
+
+`LayerMajorResidualPlan::make` (`:87-117`) では、明示値がnと等しい場合だけn行をそのまま許し、それ以外は `(requested/chunk)*chunk` に切り下げる。n=78452, c=8192, requested=8192はそのまま8192 GPU rows。明示値が8191なら0行へ切り下げる点に注意。明示値はfree不足時に暗黙で小さくされず、GPU bytes + (FP16時のみstaging) がbudgetを越えると`:115-116`で例外になる。FP32ではstaging=0。
+
+`span(row,count)` (`:120-133`) はrowが0以上、row<rows、row%chunk==0かつcountが正確に`min(chunk, rows-row)`であることを要求する。全chunkを一つのspanにまとめたり、最終partial以外の短いspanを渡すのは拒否される。spanのstore判定は`row < gpu_rows`。device側offsetはrow基準、host側offsetは`row-gpu_rows`基準で各々のstore上限を検査する。R=8192はchunk境界なのでdevice spanはrow 0,count8192のみ。次のrow8192からhost tailとなり、crossing chunkは発生しない。
+
+`prefill.cpp:1737-1741`はc0を8192ずつ進め、各countは`min(m.T,n-c0)`。78452では8個の8192 chunkの後、最後のchunkはrow73728,count4724。従って全requestのchunk countは10で、GPU prefixは最初の1 chunk、残り9 chunkはhost置きのFP32行。配置境界8192とpartial final chunkは離れており、tail丸めによりGPU prefixが意図せず縮む条件ではない。layer-major callback (`layer_major.inc:343-375`) は毎chunkのspanをplanから取得し、FP32 storeはdeviceならD2D、hostならD2H、その場でchecked drain。次layer input (`prefill.cpp:1748-1779`) は同じspan/offsetを使い、deviceならD2D、hostならH2D。store/input両方ともchunk単位の正確なbytesを使い、部分行や異なるrow基準で転送していない。
+
+## admission順と失敗安全性
+
+`layer_major.inc:127-143`で512 MiB GPU headroomを固定し、strideから一層512-expert cache bytesを算出。free query不成功、free>total、またはfreeがcache+headroom未満なら事前拒否。次にplan budgetを`free_gpu-cache_bytes-headroom`として生成する。RAM側にもhost residual + upload/cache/mapsを積算し8 GiB headroomを要求する (`:144-152`)。
+
+割当順序はhost owner生成後、`layer_cache.open_uninitialized`、次にGPU residual `cudaMalloc(plan.gpu_bytes)` (`:255-264`)。cacheが開けなければそこでfalse。residual allocationが失敗すれば`extra GPU residual allocation failed`としてfalse。外側のtry/catchはplanの`invalid_argument`等を`err`へ変換してfalse (`:411-416`)。C++ ownerとRestoreはこの経路でcache/residualや借用fieldを退役/復旧する構造。ただしこれは成功したplacement、GPU task品質、全session状態のrollback保証ではない。source上にrequested rows backoff、別budget再試行、layer-majorからrun_implへfallbackは見つからない。false時に残差をzero化して続行するコードもこの経路にはない。
+
+3回固定rows実験で安全に比較するための具体条件:
+
+- 各processのexec前envを`STRATA_PREFILL_LAYER_MAJOR=1`, `STRATA_PREFILL_LAYER_MAJOR_R_GPU=8192`, `STRATA_PREFILL_LAYER_MAJOR_R_DTYPE=fp32`, chunk8192に固定。runtime中にenv切替をしない。
+- 各request直前freeを記録し、`free >= 2,235,564,032 B`を最低plan条件とする。50 MiB低下済みなら余裕は約6.14 MiBしかなく、実allocation競合に弱い。比較品質を上げるなら測定下限を`cache + 512 MiB + 335,544,320 B + 明示allocator margin`として定義し、marginを実測採用値としてreceiptに残す。コードの512 MiBはheadroomだが、完全なfragmentation保証ではない。
+- run logで`tokens=78452`, `chunk=8192`, `residual_dtype=fp32`, `residual_gpu_rows=8192`, `residual_gpu=335544320`, `residual_host=2,877,849,600`を確認。正確なhost bytesは`(78452-8192)*10240*4 = 2,877,849,600 B`。cache bytesも想定の1,363,148,800 Bと照合。
+- `cudaMemGetInfo` query成功、cache allocation成功、GPU residual allocation成功、通常return true/complete、process正常終了を必須とする。ENOMEM/false/exceptionは該当標本をFAILとして保持し、別rowsやzeroへの置換を同じarm成功として扱わない。
+- 3回はそれぞれ別processで同じbinary/source/config/input/context/KV/alias条件を保持し、各々開始時freeとallocation logを独立記録。初回の成功で次回もfitすると推定しない。
+
+## 既存配置差分FAILとの関係
+
+R580の旧binary `44cafcc2...` ではFP32 GPU prefix 4096→24576比較がnumerical FAIL（logits差、生成IDは1件一致）。R585/R586の別binary `b6838d...` の境界診断では、19 selected rows中、layer0–25は一致し、最初のselected cross-arm差はlayer26/row24575。各run内のselected source→store→next-input memcmpは一致。どちらもsource hashが該当実行binaryに結び付かない。診断はselected rowsに限られ、診断同期がraceを隠す可能性があり、全rowの演算一致を示さない。
+
+今回の現root source reviewでは、RのGPU/host配置に由来する具体的なspan offset誤り、crossing chunk、copy不完了の利用、明白なlifetime違反を発見しなかった。保存先変更で値が変わらない証明にもならず、過去layer26差分の原因は未確定のまま。placement変更との関連を因果認定しない。
+
+## source/evidence pinsと未qualified範囲
+
+現source SHA256:
+
+- `include/strata/prefill/layer_major_plan.hpp`: `f067cd631a6900864723b2049a95cb207ea5ac03055e2691b7d67f2706ef3721`
+- `src/prefill/layer_major.inc`: `1a79f1d66fdddb6ad3715fc784f2d15fecbf4288fd6cabc335005287d8d1c36c`
+- `src/prefill/prefill.cpp`: `093af5fbe3605da6f94c55f6da38a0b4afbb5cc95df5d12ce7eec98475c9c41e`
+
+読んだ指定資料: `research-index.json`, `prefill-capacity-plan.ja.md`, `prefill-scratch-alias-main-review.ja.md`, `qsa-device-batch-main-review.ja.md`; 既存R580/R585/R586 placement/layer26 reports。容量数字はユーザー提供の実model observationと記録済みレビューからの算術で、本調査では実測を再実行していない。FP16/BF16 saved-hidden qualityは未合格で前提にしていない。仮想all-layer bankは前提にしていない。今回のcode reviewはsource geometry/admission契約で、3回runtime再現、fragmentation耐性、RESTORE、全262144物理context、task品質、速度をqualifiedしない。外部一次資料は不要と判断した。

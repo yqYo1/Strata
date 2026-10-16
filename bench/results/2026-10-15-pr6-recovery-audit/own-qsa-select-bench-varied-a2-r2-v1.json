@@ -1,0 +1,284 @@
+{
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "GPU_executed": true,
+  "commands": [
+    {
+      "label": "journal-before",
+      "argv": [
+        "journalctl",
+        "-k",
+        "-b",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-15T16:58:22.116884+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2902535,
+          "start_ticks": 43226623,
+          "sid": 2902535,
+          "pgid": 2902535
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 432266.23838876,
+      "pid": 2902535,
+      "spawn_return_monotonic": 432266.240107101,
+      "direct_identity": {
+        "pid": 2902535,
+        "state": "R",
+        "ppid": 2902528,
+        "pgid": 2902535,
+        "sid": 2902535,
+        "start_ticks": 43226623,
+        "rss_bytes": 491520
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T16:58:22.221951+00:00",
+      "elapsed_seconds": 0.10484079201705754,
+      "logs": {
+        "journal-before.stdout": {
+          "bytes": 156,
+          "sha256": "9146984e45e11c8f0c6450d3761e8806521a9e6100ab8516fe1dd6c8c2b514c6"
+        },
+        "journal-before.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "component",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-canonical-bank-profile-build-root-v1/build/sycl_qsa_select_radix_test",
+        "--bench",
+        "varied",
+        "5",
+        "--dump",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-qsa-select-bench-varied-a2-r2-root-v1/output.f32"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-qsa-select-bench-varied-a2-r2-root-v1/cache",
+        "STRATA_SYCL_SELECT_RADIX4": "0",
+        "STRATA_SYCL_SELECT_CYCLIC": "1"
+      },
+      "started_utc": "2026-10-15T16:58:22.222540+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2902538,
+          "start_ticks": 43226634,
+          "sid": 2902538,
+          "pgid": 2902538
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 432266.34403693,
+      "pid": 2902538,
+      "spawn_return_monotonic": 432266.345809954,
+      "direct_identity": {
+        "pid": 2902538,
+        "state": "R",
+        "ppid": 2902528,
+        "pgid": 2902538,
+        "sid": 2902538,
+        "start_ticks": 43226634,
+        "rss_bytes": 290816
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 128708608,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T16:58:23.643750+00:00",
+      "elapsed_seconds": 1.4209956650156528,
+      "logs": {
+        "component.stdout": {
+          "bytes": 210,
+          "sha256": "f9d10e49c1c807801a57d437f40e8028c7b628df6b133fda3e55b29b110283b5"
+        },
+        "component.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "journal-final",
+      "argv": [
+        "journalctl",
+        "-k",
+        "-b",
+        "--after-cursor",
+        "s=9944479cfd1a45c28a589619cb8f2881;i=c24f827;b=cfda0b6a7c134fe2bdf58f9202770840;m=64a37fca59;t=65de3f2f9a207;x=709dc89509611815",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-15T16:58:23.718607+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2902626,
+          "start_ticks": 43226784,
+          "sid": 2902626,
+          "pgid": 2902626
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 432267.840413061,
+      "pid": 2902626,
+      "spawn_return_monotonic": 432267.842112818,
+      "direct_identity": {
+        "pid": 2902626,
+        "state": "R",
+        "ppid": 2902528,
+        "pgid": 2902626,
+        "sid": 2902626,
+        "start_ticks": 43226784,
+        "rss_bytes": 487424
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T16:58:23.822160+00:00",
+      "elapsed_seconds": 0.10302321298513561,
+      "logs": {
+        "journal-final.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "journal-final.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "mode": "bench",
+  "pattern": "varied",
+  "arm": 2,
+  "index": 2,
+  "argv": [
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-canonical-bank-profile-build-root-v1/build/sycl_qsa_select_radix_test",
+    "--bench",
+    "varied",
+    "5",
+    "--dump",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-qsa-select-bench-varied-a2-r2-root-v1/output.f32"
+  ],
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+    "OMP_NUM_THREADS": "1",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+    "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-qsa-select-bench-varied-a2-r2-root-v1/cache",
+    "STRATA_SYCL_SELECT_RADIX4": "0",
+    "STRATA_SYCL_SELECT_CYCLIC": "1"
+  },
+  "references": {
+    "own-qsa-select-build-v1.json": "c88247cecea0702f8307a9f9fe4abec5505242266b6ea5b345189c255c545d4c",
+    "qsa-subprofile-model-v2.json": "4e1764503030726b7bf310aed7501f790a03da1db0af28e1523cf4317a9b49d3",
+    "own-qsa-select-main-review-v1.json": "2a9e04cee2530a51c819a630b51eed5bb996ebbceae1ede5aa87ba0ea309085e"
+  },
+  "recipe_sha256": "b547801a5085580a06358d627f02295151a4709e72d594ab393e3f04bbf2384a",
+  "binary_sha256": "55a140792bb7528161cb38d41a44499d86c6881b51e49870bed30dd9498e1404",
+  "compiled_source_receipt": {
+    "path": "own-qsa-select-build-v1.json",
+    "sha256": "c88247cecea0702f8307a9f9fe4abec5505242266b6ea5b345189c255c545d4c"
+  },
+  "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "limits": {
+    "wall_seconds": 180,
+    "RSS_bytes": 8589934592,
+    "text_bytes": 67108864,
+    "total_bytes": 134217728,
+    "file_bytes": 67108864
+  },
+  "performance_qualified": false,
+  "quality_qualified": false,
+  "physical_262144_qualified": false,
+  "restore_qualified": false,
+  "scope": "Actual own selector component mapping0/1/2: full674query17batch exact expanded oracle inclphysical boundaries, or clean nq256x5 synthetic78453 varied/equal withall256query full oracle/guards/unchanged inputs. Cross-process exact dump comparison separate. Not model PP/quality/physical-context qualification.",
+  "stdout": "STRATA_SYCL_SELECT_RADIX4=0\nSTRATA_SYCL_SELECT_CYCLIC=1\nselector_component label=bench_varied nq=256 n=78453 cap=2051 repeats=5 total_submit_drain_ms=11.452\nPASS label=bench_varied nq=256 cap=2051\nPASS cases=1\n",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_bytes": 0,
+  "exit_code": 0,
+  "dump": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-qsa-select-bench-varied-a2-r2-root-v1/output.f32",
+    "bytes": 2100360,
+    "sha256": "e2f31f13cfdc9dfa2abab0eb61ce0615fea459bef5a0c06ba92c9322326d1589",
+    "consumer": "Main baseline/radix4/cyclic exact component comparator",
+    "budget_bytes": 8388608,
+    "next_review": "after full and timing cross-arm comparison"
+  },
+  "component_total_ms": 11.452,
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_dump_exists": false,
+  "finished_utc": "2026-10-15T16:58:23.822749+00:00"
+}

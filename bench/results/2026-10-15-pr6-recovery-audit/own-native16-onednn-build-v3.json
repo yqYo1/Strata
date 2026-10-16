@@ -1,0 +1,783 @@
+{
+  "schema": "strata-r809-onednn-qualification-v1",
+  "mode": "build",
+  "run_id": "v3",
+  "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "GPU_executed": false,
+  "status": "PASS",
+  "commands": [
+    {
+      "label": "journal-fresh-n0",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-b",
+        "--no-pager",
+        "-o",
+        "json",
+        "--show-cursor",
+        "-n",
+        "0"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-15T23:37:31.029850+00:00",
+      "wall_seconds": 20,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 4053653,
+          "start_ticks": 45621515,
+          "sid": 4053653,
+          "pgid": 4053653
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 456215.151398586,
+      "pid": 4053653,
+      "spawn_return_monotonic": 456215.153193288,
+      "direct_identity": {
+        "pid": 4053653,
+        "state": "R",
+        "ppid": 4053298,
+        "pgid": 4053653,
+        "sid": 4053653,
+        "start_ticks": 45621515,
+        "rss_bytes": 475136
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T23:37:31.127304+00:00",
+      "elapsed_seconds": 0.09718939004233107,
+      "logs": {
+        "journal-fresh-n0.stdout": {
+          "bytes": 138,
+          "sha256": "9a46875281bbd8e57c6e751a8b4be9bb0205f75f672e8139b5bdb349a5fa8a38"
+        },
+        "journal-fresh-n0.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "compile-0",
+      "argv": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-I/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-native16-onednn-functional-v1/proposal/include",
+        "-isystem",
+        "/opt/intel/oneapi/dnnl/2026.0/include",
+        "-DSTRATA_ENABLE_SYCL=1",
+        "-DSTRATA_NATIVE_EXPERTS=1",
+        "-DSTRATA_VERSION=\"0.1.38\"",
+        "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+        "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
+        "-I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include",
+        "-isystem",
+        "/opt/intel/oneapi/mkl/2026.1/include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fsycl",
+        "-fsycl-id-queries-range=size_t",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-DMKL_ILP64",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/component.o",
+        "-c",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-native16-onednn-functional-v1/proposal/src/prefill/sycl/onednn_faithful_bf16.cpp"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/tbb/2023.1/lib:/opt/intel/oneapi/compiler/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "GIT_TERMINAL_PROMPT": "0",
+        "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+        "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+        "PYTHONPATH": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/niko-service-test-deps-v1:/home/yayoi/orca/workspaces/Strata/sycl/tools:/home/yayoi/orca/workspaces/Strata/sycl",
+        "PIP_CONFIG_FILE": "/dev/null",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/cache-build",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/tmp-build"
+      },
+      "started_utc": "2026-10-15T23:37:39.535416+00:00",
+      "wall_seconds": 300,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 4053924,
+          "start_ticks": 45622365,
+          "sid": 4053924,
+          "pgid": 4053924
+        },
+        {
+          "pid": 4053925,
+          "start_ticks": 45622366,
+          "sid": 4053924,
+          "pgid": 4053924
+        },
+        {
+          "pid": 4054024,
+          "start_ticks": 45622709,
+          "sid": 4053924,
+          "pgid": 4053924
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 456223.657046373,
+      "pid": 4053924,
+      "spawn_return_monotonic": 456223.658867294,
+      "direct_identity": {
+        "pid": 4053924,
+        "state": "R",
+        "ppid": 4053298,
+        "pgid": 4053924,
+        "sid": 4053924,
+        "start_ticks": 45622365,
+        "rss_bytes": 270336
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 349409280,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T23:37:47.027548+00:00",
+      "elapsed_seconds": 7.491799138020724,
+      "logs": {
+        "compile-0.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile-0.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "compile-1",
+      "argv": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-I/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-native16-onednn-functional-v1/proposal/include",
+        "-isystem",
+        "/opt/intel/oneapi/dnnl/2026.0/include",
+        "-DSTRATA_ENABLE_SYCL=1",
+        "-DSTRATA_NATIVE_EXPERTS=1",
+        "-DSTRATA_VERSION=\"0.1.38\"",
+        "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+        "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
+        "-I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include",
+        "-isystem",
+        "/opt/intel/oneapi/mkl/2026.1/include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fsycl",
+        "-fsycl-id-queries-range=size_t",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-DMKL_ILP64",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/fixture.o",
+        "-c",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/onednn_qualified.cpp"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/tbb/2023.1/lib:/opt/intel/oneapi/compiler/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "GIT_TERMINAL_PROMPT": "0",
+        "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+        "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+        "PYTHONPATH": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/niko-service-test-deps-v1:/home/yayoi/orca/workspaces/Strata/sycl/tools:/home/yayoi/orca/workspaces/Strata/sycl",
+        "PIP_CONFIG_FILE": "/dev/null",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/cache-build",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/tmp-build"
+      },
+      "started_utc": "2026-10-15T23:37:55.585396+00:00",
+      "wall_seconds": 300,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 4054409,
+          "start_ticks": 45623970,
+          "sid": 4054409,
+          "pgid": 4054409
+        },
+        {
+          "pid": 4054411,
+          "start_ticks": 45623971,
+          "sid": 4054409,
+          "pgid": 4054409
+        },
+        {
+          "pid": 4054500,
+          "start_ticks": 45624288,
+          "sid": 4054409,
+          "pgid": 4054409
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 456239.707050248,
+      "pid": 4054409,
+      "spawn_return_monotonic": 456239.708743059,
+      "direct_identity": {
+        "pid": 4054409,
+        "state": "R",
+        "ppid": 4053298,
+        "pgid": 4054409,
+        "sid": 4054409,
+        "start_ticks": 45623970,
+        "rss_bytes": 323584
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 323768320,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T23:38:02.324356+00:00",
+      "elapsed_seconds": 6.738581718993373,
+      "logs": {
+        "compile-1.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile-1.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "link-private",
+      "argv": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-O3",
+        "-DNDEBUG",
+        "-fsycl",
+        "-fsycl-id-queries-range=size_t",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/fixture.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/component.o",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/onednn_qualified",
+        "-Wl,-rpath,/opt/intel/oneapi/mkl/2026.1/lib",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/libstrata_prefill.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/libstrata_engine.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/libstrata_kernels.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/libstrata_core.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/libstrata_sycl_runtime.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/libstrata_kernels_cpu.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/ggml/src/libggml-cpu.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/ggml/src/libggml-base.a",
+        "-lm",
+        "-fsycl",
+        "-fsycl-allow-device-image-dependencies",
+        "-Wl,-rpath=/opt/intel/oneapi/mkl/2026.1/lib",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so",
+        "-lm",
+        "-ldl",
+        "-lpthread",
+        "/opt/intel/oneapi/dnnl/2026.0/lib/libdnnl.so",
+        "-Wl,-rpath-link,/opt/intel/oneapi/tbb/2023.1/lib",
+        "-Wl,-rpath-link,/opt/intel/oneapi/compiler/2026.1/lib"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/tbb/2023.1/lib:/opt/intel/oneapi/compiler/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "GIT_TERMINAL_PROMPT": "0",
+        "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+        "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+        "PYTHONPATH": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/niko-service-test-deps-v1:/home/yayoi/orca/workspaces/Strata/sycl/tools:/home/yayoi/orca/workspaces/Strata/sycl",
+        "PIP_CONFIG_FILE": "/dev/null",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/cache-build",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/tmp-build"
+      },
+      "started_utc": "2026-10-15T23:38:10.901478+00:00",
+      "wall_seconds": 300,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 4054879,
+          "start_ticks": 45625502,
+          "sid": 4054879,
+          "pgid": 4054879
+        },
+        {
+          "pid": 4054923,
+          "start_ticks": 45625521,
+          "sid": 4054879,
+          "pgid": 4054879
+        },
+        {
+          "pid": 4054963,
+          "start_ticks": 45625558,
+          "sid": 4054879,
+          "pgid": 4054879
+        },
+        {
+          "pid": 4055031,
+          "start_ticks": 45625580,
+          "sid": 4054879,
+          "pgid": 4054879
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 456255.023217751,
+      "pid": 4054879,
+      "spawn_return_monotonic": 456255.025035536,
+      "direct_identity": {
+        "pid": 4054879,
+        "state": "R",
+        "ppid": 4053298,
+        "pgid": 4054879,
+        "sid": 4054879,
+        "start_ticks": 45625502,
+        "rss_bytes": 335872
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 86106112,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T23:38:12.105712+00:00",
+      "elapsed_seconds": 1.203765774029307,
+      "logs": {
+        "link-private.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "link-private.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "journal-final",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-b",
+        "--no-pager",
+        "-o",
+        "json",
+        "--show-cursor",
+        "--after-cursor",
+        "s=9944479cfd1a45c28a589619cb8f2881;i=c264b7b;b=cfda0b6a7c134fe2bdf58f9202770840;m=6a36db6e33;t=65de9865545e2;x=1d7effe54bf243f"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-15T23:38:24.998613+00:00",
+      "wall_seconds": 20,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 4055631,
+          "start_ticks": 45626912,
+          "sid": 4055631,
+          "pgid": 4055631
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 456269.120392836,
+      "pid": 4055631,
+      "spawn_return_monotonic": 456269.122189722,
+      "direct_identity": {
+        "pid": 4055631,
+        "state": "R",
+        "ppid": 4053298,
+        "pgid": 4055631,
+        "sid": 4055631,
+        "start_ticks": 45626912,
+        "rss_bytes": 442368
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T23:38:25.091658+00:00",
+      "elapsed_seconds": 0.09253170498413965,
+      "logs": {
+        "journal-final.stdout": {
+          "bytes": 878,
+          "sha256": "a8c5b7a96d936a9c3d416946d5a4e136eaf6f18a4a972cdef80e692aec14b316"
+        },
+        "journal-final.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "manifest_sha256": "3fbee2f87223aefc3b785bbb4f715a02b2f436d971f410bb5f708aafb1137478",
+  "source_only_delivery": "UNRUN",
+  "private_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build",
+  "frozen_source_commit": "9c1a2020897a9451ec616a6bb036a661de9d86b0",
+  "fault_boundaries": [
+    {
+      "label": "journal-fresh-n0",
+      "after_cursor": null,
+      "end_cursor": "s=9944479cfd1a45c28a589619cb8f2881;i=c264b7b;b=cfda0b6a7c134fe2bdf58f9202770840;m=6a36db6e33;t=65de9865545e2;x=1d7effe54bf243f",
+      "entry_count": 0,
+      "fault_filter": "(?i)(\\bxe\\b.*(fault|hang|reset|error|wedg|timeout|stuck)|GPU.*(fault|hang|wedg|reset)|GuC.*(fault|hang|reset|error))",
+      "fault_entries": [],
+      "fault_count": 0,
+      "empty_window": true,
+      "cursor_reused": false,
+      "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "check_exit_code": 0,
+      "stdout_sha256": "9a46875281bbd8e57c6e751a8b4be9bb0205f75f672e8139b5bdb349a5fa8a38",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "journal-final",
+      "after_cursor": "s=9944479cfd1a45c28a589619cb8f2881;i=c264b7b;b=cfda0b6a7c134fe2bdf58f9202770840;m=6a36db6e33;t=65de9865545e2;x=1d7effe54bf243f",
+      "end_cursor": "s=9944479cfd1a45c28a589619cb8f2881;i=c264c41;b=cfda0b6a7c134fe2bdf58f9202770840;m=6a3a702a4b;t=65de989ea01f9;x=6c9de09a47f00383",
+      "entry_count": 1,
+      "fault_filter": "(?i)(\\bxe\\b.*(fault|hang|reset|error|wedg|timeout|stuck)|GPU.*(fault|hang|wedg|reset)|GuC.*(fault|hang|reset|error))",
+      "fault_entries": [],
+      "fault_count": 0,
+      "empty_window": false,
+      "cursor_reused": false,
+      "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "check_exit_code": 0,
+      "stdout_sha256": "a8c5b7a96d936a9c3d416946d5a4e136eaf6f18a4a972cdef80e692aec14b316",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "model_quality": "UNESTABLISHED",
+  "model_performance": "UNESTABLISHED",
+  "physical_262144": "UNESTABLISHED",
+  "unchanged_68_GEMM_test": true,
+  "benchmark_executed": false,
+  "cases": {},
+  "controller_invocation": [
+    "/usr/bin/python3",
+    "bench/results/2026-10-15-pr6-recovery-audit/own-native16-onednn-qualification-v1/main_controller.py",
+    "build",
+    "--run-id",
+    "v3",
+    "--manifest-sha256",
+    "3fbee2f87223aefc3b785bbb4f715a02b2f436d971f410bb5f708aafb1137478",
+    "--prior",
+    "bench/results/2026-10-15-pr6-recovery-audit/own-native16-onednn-build-v2.json",
+    "--prior-sha256",
+    "42dbd7449c8ab6b0b883f33fbd2a843a6096723278f0dc8de03bb83c2cd3d1d7",
+    "--confirm-latest-closed-prior"
+  ],
+  "source_pin_receipt": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-native16-prefill-build-v2.json",
+    "sha256": "743c6591123ac695325d20c984170e7801b9ef783fc44844c68995c091c96408"
+  },
+  "limits": {
+    "package_bytes": 163840,
+    "manifest_bytes": 102400,
+    "whole_build_wall_seconds": 600,
+    "whole_smoke_wall_seconds": 480,
+    "whole_check_wall_seconds": 1200,
+    "build_command_wall_seconds": 300,
+    "native_command_wall_seconds": 180,
+    "journal_wall_seconds": 20,
+    "build_rss_bytes": 34359738368,
+    "native_rss_bytes": 8589934592,
+    "text_bytes": 67108864,
+    "job_bytes": 536870912,
+    "durable_receipt_bytes": 524288,
+    "fixture_stdout_bytes": 262144
+  },
+  "unresolved_static_dependencies": [],
+  "pin_verification": {
+    "checks_completed": 13,
+    "first_verified_utc": "2026-10-15T23:37:26.796520+00:00",
+    "manifest_sha256": "3fbee2f87223aefc3b785bbb4f715a02b2f436d971f410bb5f708aafb1137478",
+    "source_pin_count": 419,
+    "external_pin_count": 74,
+    "library_pin_count": 38,
+    "last_verified_utc": "2026-10-15T23:38:33.568510+00:00"
+  },
+  "prior": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-native16-onednn-build-v2.json",
+    "sha256": "42dbd7449c8ab6b0b883f33fbd2a843a6096723278f0dc8de03bb83c2cd3d1d7",
+    "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "normally_closed": true
+  },
+  "dynamic_pins": {
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-native16-onednn-build-v2.json": {
+      "sha256": "42dbd7449c8ab6b0b883f33fbd2a843a6096723278f0dc8de03bb83c2cd3d1d7",
+      "bytes": 35698,
+      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-native16-onednn-build-v2.json"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/onednn_qualified.cpp": {
+      "sha256": "2de858d11579452f6cd09a419b750cfb0c19a99a154c49f3a77164ebb2ab843b",
+      "bytes": 23076,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/onednn_qualified.cpp"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/fixture-transform.diff": {
+      "sha256": "0b88752396be06de781704ec5b9f6667400585fa87b02d0aedb52c9496182660",
+      "bytes": 7431,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/fixture-transform.diff"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/component.o": {
+      "sha256": "0c8d1e2b30f629f3a614649653953acf2515e5fa2c6ad73e892768b91803616e",
+      "bytes": 184208,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/component.o"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/fixture.o": {
+      "sha256": "f00ec78e66314723858003762c7d68b62ac5057db238db399e75a5a1ec2818c6",
+      "bytes": 109296,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/fixture.o"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/onednn_qualified": {
+      "sha256": "fc0ffcb841cb4735c5a9d73b5763f37f49f09e66ee1d83604ecfb045b8a06c09",
+      "bytes": 223048,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/onednn_qualified"
+    }
+  },
+  "closed_failed_cpu_build": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-native16-onednn-build-v1.json",
+    "sha256": "32a16afd51c51650d5c3903988e54bdf2ecaa1c01d8466e0cfb152172967bb2c",
+    "meaning": "Original compile1 FAIL remains; const event wait_and_throw incompatible with qualified LLVM; no GPU executed; exact PID/start closure checked before continuation."
+  },
+  "closed_failed_qualification": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-native16-onednn-smoke-v2.json",
+    "sha256": "fee391efc71084dc3b7ab7b4327fb4e5fa83613305c7fe93c1ca07b615bd9ce8",
+    "meaning": "Original smoke qualification FAIL on an unlisted DSO, actual native exit0/oraclePASS/normal closure/fault0. New build fixes symbol identity and pins observed installed DSOs; original FAIL unchanged."
+  },
+  "qualification_gates": [
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-native16-prefill-build-v2.json",
+      "sha256": "743c6591123ac695325d20c984170e7801b9ef783fc44844c68995c091c96408",
+      "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "normally_closed": true
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-native16-gemm-correctness-v2.json",
+      "sha256": "db4222cb981ff7124b7ab45d081d782730d7d3537e6f6e3c61917e990dbf7630",
+      "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "normally_closed": true
+    }
+  ],
+  "owner_scan": {
+    "same_uid_model_owners": [],
+    "scope": "bounded cmdline scan; uncooperative foreign GPU use cannot be disproved"
+  },
+  "device_sysfs": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "devcoredump": false,
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic"
+  },
+  "generated_fixture": {
+    "source": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/onednn_qualified.cpp",
+    "sha256": "2de858d11579452f6cd09a419b750cfb0c19a99a154c49f3a77164ebb2ab843b",
+    "diff": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/fixture-transform.diff",
+    "diff_sha256": "0b88752396be06de781704ec5b9f6667400585fa87b02d0aedb52c9496182660",
+    "original": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-native16-onednn-functional-v1/proposal/tests/sycl/onednn_faithful_bf16.cpp",
+    "original_sha256": "bf896b2ca07b2615f3dc2dac6958abf50e418efb1a2737dbb602627778c885e7"
+  },
+  "actual_compile_argvs": [
+    [
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+      "-I/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-native16-onednn-functional-v1/proposal/include",
+      "-isystem",
+      "/opt/intel/oneapi/dnnl/2026.0/include",
+      "-DSTRATA_ENABLE_SYCL=1",
+      "-DSTRATA_NATIVE_EXPERTS=1",
+      "-DSTRATA_VERSION=\"0.1.38\"",
+      "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+      "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
+      "-I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include",
+      "-isystem",
+      "/opt/intel/oneapi/mkl/2026.1/include",
+      "-O3",
+      "-DNDEBUG",
+      "-std=c++20",
+      "-fno-fast-math",
+      "-ffp-contract=off",
+      "-fsycl",
+      "-fsycl-id-queries-range=size_t",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-DMKL_ILP64",
+      "-o",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/component.o",
+      "-c",
+      "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-native16-onednn-functional-v1/proposal/src/prefill/sycl/onednn_faithful_bf16.cpp"
+    ],
+    [
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+      "-I/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-native16-onednn-functional-v1/proposal/include",
+      "-isystem",
+      "/opt/intel/oneapi/dnnl/2026.0/include",
+      "-DSTRATA_ENABLE_SYCL=1",
+      "-DSTRATA_NATIVE_EXPERTS=1",
+      "-DSTRATA_VERSION=\"0.1.38\"",
+      "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+      "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
+      "-I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include",
+      "-isystem",
+      "/opt/intel/oneapi/mkl/2026.1/include",
+      "-O3",
+      "-DNDEBUG",
+      "-std=c++20",
+      "-fno-fast-math",
+      "-ffp-contract=off",
+      "-fsycl",
+      "-fsycl-id-queries-range=size_t",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-DMKL_ILP64",
+      "-o",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/fixture.o",
+      "-c",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/onednn_qualified.cpp"
+    ]
+  ],
+  "actual_link_argv": [
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+    "-O3",
+    "-DNDEBUG",
+    "-fsycl",
+    "-fsycl-id-queries-range=size_t",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/fixture.o",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/component.o",
+    "-o",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/onednn_qualified",
+    "-Wl,-rpath,/opt/intel/oneapi/mkl/2026.1/lib",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/libstrata_prefill.a",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/libstrata_engine.a",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/libstrata_kernels.a",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/libstrata_core.a",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/libstrata_sycl_runtime.a",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/libstrata_kernels_cpu.a",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/ggml/src/libggml-cpu.a",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/ggml/src/libggml-base.a",
+    "-lm",
+    "-fsycl",
+    "-fsycl-allow-device-image-dependencies",
+    "-Wl,-rpath=/opt/intel/oneapi/mkl/2026.1/lib",
+    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so",
+    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so",
+    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so",
+    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so",
+    "-lm",
+    "-ldl",
+    "-lpthread",
+    "/opt/intel/oneapi/dnnl/2026.0/lib/libdnnl.so",
+    "-Wl,-rpath-link,/opt/intel/oneapi/tbb/2023.1/lib",
+    "-Wl,-rpath-link,/opt/intel/oneapi/compiler/2026.1/lib"
+  ],
+  "binary": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/onednn_qualified",
+  "binary_sha256": "fc0ffcb841cb4735c5a9d73b5763f37f49f09e66ee1d83604ecfb045b8a06c09",
+  "executable_consumer": {
+    "executable": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/onednn_qualified",
+    "SHA256": "fc0ffcb841cb4735c5a9d73b5763f37f49f09e66ee1d83604ecfb045b8a06c09",
+    "purpose": "R809 smoke/check only; no model or benchmark",
+    "archives": [
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/libstrata_prefill.a",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/libstrata_engine.a",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/libstrata_kernels.a",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/libstrata_core.a",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/libstrata_sycl_runtime.a",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/libstrata_kernels_cpu.a",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/ggml/src/libggml-cpu.a",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/ggml/src/libggml-base.a",
+      "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so",
+      "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so",
+      "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so",
+      "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so",
+      "/opt/intel/oneapi/dnnl/2026.0/lib/libdnnl.so"
+    ],
+    "generated_fixture": {
+      "source": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/onednn_qualified.cpp",
+      "sha256": "2de858d11579452f6cd09a419b750cfb0c19a99a154c49f3a77164ebb2ab843b",
+      "diff": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/fixture-transform.diff",
+      "diff_sha256": "0b88752396be06de781704ec5b9f6667400585fa87b02d0aedb52c9496182660",
+      "original": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-native16-onednn-functional-v1/proposal/tests/sycl/onednn_faithful_bf16.cpp",
+      "original_sha256": "bf896b2ca07b2615f3dc2dac6958abf50e418efb1a2737dbb602627778c885e7"
+    },
+    "component_sha256": "adb7c4fc870db3d158d5aaaa135b713f811411191f2235326ada7dcfbcc64292"
+  },
+  "after_pins_verified": true,
+  "finished_utc": "2026-10-15T23:38:33.568799+00:00",
+  "boot_unchanged": true,
+  "fresh_faults": [],
+  "driver_dump_exists": false,
+  "ownership_closed": true,
+  "normally_closed": true,
+  "private_bytes": 583455,
+  "retention": {
+    "raw_text_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r809-onednn-v3-build/owned",
+    "raw_text_cap": 67108864,
+    "cleanup": "NONE; only Main may retire successful full traces after verifying extracted evidence and deletion manifest",
+    "current_consumer": "Main review of this exact qualification receipt; failure logs until mechanism review",
+    "review_point": "Main review before any next qualification, benchmark or adoption"
+  },
+  "durable_published": true
+}

@@ -15,14 +15,13 @@
 #pragma once
 
 #include <cstdint>
-#if defined(__HIPCC__) && defined(STRATA_HIP_GFX906)   // PR #638: the gfx906 compat build only
-#include <hip/hip_runtime.h>
-#endif
 
 #include "strata/kernels/rope_scaling.hpp"
 
 namespace strata::kernels {
 
+// SYCL currently registers tables on runtime device 0; a launch using registered
+// tables rejects queues from a different context.
 /// The table of the CURRENT device (a layer split sets one per device; null = the identity).
 void mrope_table_set(const int32_t* device_table);
 const int32_t* mrope_table();

@@ -1,0 +1,435 @@
+{
+  "schema": "native-dense-phase-proposed-host-gates-v1",
+  "passed": false,
+  "complete": false,
+  "active": false,
+  "GPU_executed": false,
+  "commands": [
+    {
+      "label": "compiler-version",
+      "argv": [
+        "/usr/bin/g++",
+        "--version"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-15T12:50:24.938969+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1750193,
+          "start_ticks": 41738906,
+          "sid": 1750193,
+          "pgid": 1750193
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 417389.060485204,
+      "pid": 1750193,
+      "spawn_return_monotonic": 417389.062281174,
+      "direct_identity": {
+        "pid": 1750193,
+        "state": "R",
+        "ppid": 1750158,
+        "pgid": 1750193,
+        "sid": 1750193,
+        "start_ticks": 41738906,
+        "rss_bytes": 430080
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T12:50:25.068844+00:00",
+      "elapsed_seconds": 0.12964185402961448,
+      "logs": {
+        "compiler-version.stdout": {
+          "bytes": 246,
+          "sha256": "59d1cbef41d4ae78d5063d525b7aa13d18dc0493ea00537efc19b2ee398cb5a8"
+        },
+        "compiler-version.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "compile-host_fault_policy_fixture",
+      "argv": [
+        "/usr/bin/g++",
+        "-std=c++20",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-I",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/prefill-native-dense-phase-v2/proposed/include",
+        "-I",
+        "/home/yayoi/orca/workspaces/Strata/sycl/include",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/prefill-native-dense-phase-v2/host_fault_policy_fixture.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-dense-phase-host-root-v1/host_fault_policy_fixture"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-15T12:50:25.069507+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1750201,
+          "start_ticks": 41738919,
+          "sid": 1750201,
+          "pgid": 1750201
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 417389.190970434,
+      "pid": 1750201,
+      "spawn_return_monotonic": 417389.192819524,
+      "direct_identity": {
+        "pid": 1750201,
+        "state": "R",
+        "ppid": 1750158,
+        "pgid": 1750201,
+        "sid": 1750201,
+        "start_ticks": 41738919,
+        "rss_bytes": 466944
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 1941504,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T12:50:25.274203+00:00",
+      "elapsed_seconds": 0.2045172390062362,
+      "logs": {
+        "compile-host_fault_policy_fixture.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile-host_fault_policy_fixture.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "host_fault_policy_fixture",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-dense-phase-host-root-v1/host_fault_policy_fixture"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-15T12:50:25.274735+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1750233,
+          "start_ticks": 41738939,
+          "sid": 1750233,
+          "pgid": 1750233
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 417389.39624552,
+      "pid": 1750233,
+      "spawn_return_monotonic": 417389.397931673,
+      "direct_identity": {
+        "pid": 1750233,
+        "state": "R",
+        "ppid": 1750158,
+        "pgid": 1750233,
+        "sid": 1750233,
+        "start_ticks": 41738939,
+        "rss_bytes": 327680
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T12:50:25.389716+00:00",
+      "elapsed_seconds": 0.11475075699854642,
+      "logs": {
+        "host_fault_policy_fixture.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "host_fault_policy_fixture.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "compile-host_composite_resolver_fixture",
+      "argv": [
+        "/usr/bin/g++",
+        "-std=c++20",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-I",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/prefill-native-dense-phase-v2/proposed/include",
+        "-I",
+        "/home/yayoi/orca/workspaces/Strata/sycl/include",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/prefill-native-dense-phase-v2/host_composite_resolver_fixture.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-dense-phase-host-root-v1/host_composite_resolver_fixture"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-15T12:50:25.390389+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1750236,
+          "start_ticks": 41738951,
+          "sid": 1750236,
+          "pgid": 1750236
+        },
+        {
+          "pid": 1750237,
+          "start_ticks": 41738951,
+          "sid": 1750236,
+          "pgid": 1750236
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 417389.511911068,
+      "pid": 1750236,
+      "spawn_return_monotonic": 417389.513734951,
+      "direct_identity": {
+        "pid": 1750236,
+        "state": "R",
+        "ppid": 1750158,
+        "pgid": 1750236,
+        "sid": 1750236,
+        "start_ticks": 41738951,
+        "rss_bytes": 282624
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 68284416,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T12:50:26.160748+00:00",
+      "elapsed_seconds": 0.7701121759600937,
+      "logs": {
+        "compile-host_composite_resolver_fixture.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile-host_composite_resolver_fixture.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "host_composite_resolver_fixture",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-dense-phase-host-root-v1/host_composite_resolver_fixture"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-15T12:50:26.161339+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1750288,
+          "start_ticks": 41739028,
+          "sid": 1750288,
+          "pgid": 1750288
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 417390.28295633,
+      "pid": 1750288,
+      "spawn_return_monotonic": 417390.284556521,
+      "direct_identity": {
+        "pid": 1750288,
+        "state": "R",
+        "ppid": 1750158,
+        "pgid": 1750288,
+        "sid": 1750288,
+        "start_ticks": 41739028,
+        "rss_bytes": 303104
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T12:50:26.284743+00:00",
+      "elapsed_seconds": 0.12311941699590534,
+      "logs": {
+        "host_composite_resolver_fixture.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "host_composite_resolver_fixture.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "compile-actual-graph-retire",
+      "argv": [
+        "/usr/bin/g++",
+        "-std=c++20",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-I",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/prefill-native-dense-phase-v2/proposed/include",
+        "-I",
+        "/home/yayoi/orca/workspaces/Strata/sycl/include",
+        "-DSTRATA_ENABLE_SYCL",
+        "-I",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-dense-phase-host-root-v1",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/native_dense_graph_retire_host_fixture_v1.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-dense-phase-host-root-v1/graph-retire"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-15T12:50:26.285624+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1750296,
+          "start_ticks": 41739040,
+          "sid": 1750296,
+          "pgid": 1750296
+        },
+        {
+          "pid": 1750297,
+          "start_ticks": 41739040,
+          "sid": 1750296,
+          "pgid": 1750296
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 417390.407232244,
+      "pid": 1750296,
+      "spawn_return_monotonic": 417390.408873603,
+      "direct_identity": {
+        "pid": 1750296,
+        "state": "R",
+        "ppid": 1750158,
+        "pgid": 1750296,
+        "sid": 1750296,
+        "start_ticks": 41739040,
+        "rss_bytes": 331776
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 13201408,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-15T12:50:26.637530+00:00",
+      "elapsed_seconds": 0.3515700930147432,
+      "logs": {
+        "compile-actual-graph-retire.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile-actual-graph-retire.stderr": {
+          "bytes": 1995,
+          "sha256": "891146c90ec81aa390bca6b7861960e5e1c2ef63653ed41a689d80f7ee6dd597"
+        }
+      }
+    }
+  ],
+  "samples": [
+    {
+      "case": "host_fault_policy_fixture",
+      "binary_sha256": "f34948641d138ca2c9051f445f611d2f763bbeff15a1da61e7bb593fa6e837b1",
+      "passed": true,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "case": "host_composite_resolver_fixture",
+      "binary_sha256": "b407fc8820bb2eec8bfccd72c2f3dd21381a3e9c9ff9b33c0367863acbaf2b86",
+      "passed": true,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "recipe_sha256": "38442bd6df85092efca2cdf75b1f7e104fb270de433c12585013823f5a92f0f9",
+  "proposal_manifest_sha256": "823e3433e7717f576286881a76fae63bd651b17835e40fedf74dabf9ab6b07ef",
+  "source_diff_sha256": "03a385d0ef0b771d4aa89df18090fe7c602bd81eaa14c9bfa74a8e092f0caffd",
+  "compiler": "/usr/bin/g++",
+  "compiler_sha256": "1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769",
+  "fixture_sha256": "6df696f6ca2b4437fd2dad9d8ab69b36babe8622243bcf980464d03444276e1d",
+  "extracted_function_sha256": "e995557ba3d9b8de0b420b40923302ec0139397b76780dc7f54f5793ecfe14b7",
+  "proposed_session_source_sha256": "4c1aa246e568f96b40b9f9e16000e1f1dc6d75c99168cb26baef56a43b4e4bce",
+  "physical_262144_qualified": false,
+  "quality_qualified": false,
+  "performance_qualified": false,
+  "actual_generator_transaction_qualified": false,
+  "scope": "Actual proposed inline fault policy and resolver, exact extracted proposed session graph-retirement function with fake CUDA result/handle providers. Host control-flow/all-array coverage only; not driver completion, full generator lease, component payload, model or memory-recovery proof.",
+  "compiler_version": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+  "error": "RuntimeError('compile-actual-graph-retire: In file included from /home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/native_dense_graph_retire_host_fixture_v1.cpp:36:\\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-dense-phase-host-root-v1/actual_session_graphs_retire_dense.inc: In function \u2018void strata::core::session_graphs_retire_dense(SessionGraphs&, void*)\u2019:\\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-dense-phase-host-root-v1/actual_session_graphs_retire_dense.inc:30:29: error: invalid operands of types \u2018cudaGraphExec_t\u2019 {aka \u2018long unsigned int\u2019} and \u2018std::nullptr_t\u2019 to binary \u2018operator!=\u2019\\n   30 |             if (gr.posts[i] != nullptr) destroy(gr.posts[i]);\\n      |                 ~~~~~~~~~~~~^~~~~~~~~~\\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-dense-phase-host-root-v1/actual_session_graphs_retire_dense.inc:35:28: error: invalid operands of types \u2018cudaGraphExec_t\u2019 {aka \u2018long unsigned int\u2019} and \u2018std::nullptr_t\u2019 to binary \u2018operator!=\u2019\\n   35 |             if (gr.preA[i] != nullptr) destroy(gr.preA[i]);\\n      |                 ~~~~~~~~~~~^~~~~~~~~~\\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-dense-phase-host-root-v1/actual_session_graphs_retire_dense.inc:40:28: error: invalid operands of types \u2018cudaGraphExec_t\u2019 {aka \u2018long unsigned int\u2019} and \u2018std::nullptr_t\u2019 to binary \u2018operator!=\u2019\\n   40 |             if (gr.preB[i] != nullptr) destroy(gr.preB[i]);\\n      |                 ~~~~~~~~~~~^~~~~~~~~~\\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-dense-phase-host-root-v1/actual_session_graphs_retire_dense.inc:46:31: error: invalid operands of types \u2018cudaGraphExec_t\u2019 {aka \u2018long unsigned int\u2019} and \u2018std::nullptr_t\u2019 to binary \u2018operator!=\u2019\\n   46 |             if (gr.preP[k][i] != nullptr) destroy(gr.preP[k][i]);\\n      |                 ~~~~~~~~~~~~~~^~~~~~~~~~\\n')",
+  "finished_utc": "2026-10-15T12:50:26.638348+00:00"
+}

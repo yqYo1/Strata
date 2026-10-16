@@ -1,0 +1,438 @@
+--- a/src/program/generate.cpp
++++ b/src/program/generate.cpp
+@@ -55,6 +55,10 @@
+ #include "strata/prefill/prefill.hpp"
+ #include "strata/core/native_dense.hpp"
+ #include "strata/program/logits_selection.hpp"
++#ifdef STRATA_ENABLE_SYCL
++#include "strata/program/prefill_logits.hpp"
++#include "strata/prefill/draft_uploads.hpp"
++#endif
+ #include "strata/program/conv_cache.hpp"
+ #include "strata/program/prompt_checkpoint.hpp"
+ #include "strata/spec/draft_policy.hpp"
+@@ -1388,6 +1392,34 @@
+         }
+         }
+     }
++#ifdef STRATA_ENABLE_SYCL
++    // Normally off. Validate the small position list BEFORE any GPU preflight.
++    const char* prefill_logits_path = std::getenv("STRATA_PREFILL_LOGITS");
++    const char* prefill_logits_positions = std::getenv("STRATA_PREFILL_LOGITS_POSITIONS");
++    const bool collect_prefill_logits = prefill_logits_path || prefill_logits_positions;
++    std::vector<int64_t> selected_prefill_positions;
++    if (collect_prefill_logits) {
++        const bool remote = o.expert_cache_remote[0] > 0 || o.expert_cache_remote[1] > 0 ||
++                            o.expert_cache_remote[2] > 0;
++        if (!prefill_logits_path || !*prefill_logits_path || !prefill_logits_positions ||
++            !have_tokens || o.tokens.size() < 2 || o.prefill_chunk <= 0 || o.serve ||
++            !o.layer_split.empty() || o.peer_device >= 1 || remote || o.gpu_stages ||
++            o.graph_only || o.gpu_only_full || o.native_preset.empty()) {
++            std::fprintf(stderr, "strata generate: prefill logits needs both STRATA_PREFILL_LOGITS and "
++                                 "STRATA_PREFILL_LOGITS_POSITIONS, --native, --prefill and >=2 tokens; "
++                                 "standalone single GPU only\n");
++            return 2;
++        }
++        const int64_t last = int64_t(o.tokens.size()) - 1;
++        const int64_t batched = o.prefill_until > 0 && o.prefill_until < last ? o.prefill_until : last;
++        std::string why;
++        if (!strata::program::prefill_logits::parse_positions(prefill_logits_positions, batched,
++                                                            selected_prefill_positions, why)) {
++            std::fprintf(stderr, "strata generate: %s\n", why.c_str());
++            return 2;
++        }
++    }
++#endif
+     strata::core::set_coupled_draft(o.coupled_draft);
+     strata::core::set_peer_portable(o.peer_device >= 1);   // multi-GPU: the Portable flag on mapped host buffers only with a peer device (before any allocation)
+     if (o.serve && o.conversation_cache_mib > 0 && (o.prompt_cache == 0 || o.conversation_cache_slots == 0))
+@@ -1849,6 +1881,12 @@
+         }
+     }
+     const bool native_pack = strata::kernels::cpu::expert_layout().native;
++#ifdef STRATA_ENABLE_SYCL
++    if (collect_prefill_logits && !native_pack) {
++        std::fprintf(stderr, "strata generate: prefill logits requires a native expert pack\n");
++        return 2;
++    }
++#endif
+     // STRATA_EARLY_REMOTE_CONTEXTS=1: create EVERY secondary context here, like CUDA1's.  Under WSL2 the driver's
+     // pinned/mapped host budget (dxg gpadl, ~1 GiB) is spent by CUDA0's weights and MTP before the later loop runs,
+     // and a new context then fails with cudaErrorMemoryAllocation (CUDA2: "cudaSetDevice(2) failed: out of memory").
+@@ -6244,6 +6282,21 @@
+     std::vector<float> final_r_host(final_r ? (size_t) (g.hc * g.n_embd) : 0);
+     std::vector<std::pair<int32_t, int32_t>> lent;     // (residency index, slot) lent to the prompt path
+     const int64_t n_batched = (o.prefill_until > 0 && o.prefill_until < n_prompt - 1) ? o.prefill_until : n_prompt - 1;
++#ifdef STRATA_ENABLE_SYCL
++    strata::program::prefill_logits::Writer prefill_logits;
++    if (collect_prefill_logits) {
++        try {
++            if (!prefill_logits.begin(prefill_logits_path, selected_prefill_positions, n_batched,
++                                      n_vocab, native_head.loaded(), native_head.type(), err)) {
++                std::fprintf(stderr, "strata generate: %s\n", err.c_str());
++                return 1;
++            }
++        } catch (const std::exception& exc) {
++            std::fprintf(stderr, "strata generate: prefill logits open: %s\n", exc.what());
++            return 1;
++        }
++    }
++#endif
+     if (o.prefill_chunk > 0 && n_prompt > 1) {
+         void* borrow = nullptr;
+         uint64_t borrow_bytes = 0;
+@@ -6301,11 +6354,69 @@
+                 return e.empty() && mtp.prefill(R_rows, nxt.data(), T, p0, e);
+             };
+         }
++#ifdef STRATA_ENABLE_SYCL
++        if (collect_prefill_logits) {
++            // Compose with the already installed MTP callback. Both get each
++            // final chunk once; sampled head work retires before MTP can reuse
++            // scratch or the next chunk can overwrite the residuals.
++            auto previous = std::move(prefill.on_chunk);
++            prefill.on_chunk = [&, previous = std::move(previous)]
++                (const float* R_rows, int64_t T, int64_t p0, std::string& e) -> bool {
++                try {
++                    if (!R_rows || !prefill_logits.chunk(p0, T, e)) {
++                        if (e.empty()) e = "prefill logits: null residual callback";
++                        return false;
++                    }
++                    while (prefill_logits.next_position() >= 0 && prefill_logits.next_position() < p0 + T) {
++                        const int64_t p = prefill_logits.next_position();
++                        if (p < p0) { e = "prefill logits: selected position was skipped"; return false; }
++                        // LOCAL COPY: persistent ss.block.R and all KV/recurrent
++                        // state stay unchanged. GR/head only write their scratch
++                        // and the existing single-row d_logits allocation.
++                        strata::core::BlockBuffers bb = ss.block;
++                        bb.R = const_cast<float*>(R_rows + size_t(p - p0) * size_t(g.hc * g.n_embd));
++                        auto fatal = []() noexcept {
++                            std::fprintf(stderr, "strata generate: prefill logits queue retirement failed; "
++                                                 "retaining owners until process exit\n");
++                            std::fflush(stderr);
++                            std::_Exit(EXIT_FAILURE);
++                        };
++                        strata::prefill::detail::DraftUploadGuard lease(
++                            [&]() noexcept { return cudaStreamSynchronize(main_stream) == cudaSuccess; }, fatal);
++                        lease.arm(); // even a partially submitted head can still reference bb scratch/R
++                        const bool head_ok = native_head.loaded()
++                            ? strata::core::lm_head_mix(wt, g, bb, main_cs, e) &&
++                              native_head.run(bb.mixed, d_logits, main_cs, e)
++                            : strata::core::lm_head(wt, g, bb, d_logits, main_cs, e);
++                        if (!head_ok) return false; // guard drains before callback owners unwind
++                        if (cudaMemcpyAsync(prefill_logits.row(), d_logits, prefill_logits.row_bytes(),
++                                            cudaMemcpyDeviceToHost, main_stream) != cudaSuccess) {
++                            e = "prefill logits: row readback enqueue failed";
++                            return false;
++                        }
++                        if (cudaStreamSynchronize(main_stream) != cudaSuccess) fatal();
++                        lease.retire(); // host inspection/write happens only after this checked wait
++                        if (!prefill_logits.append(p, o.tokens[size_t(p + 1)], e)) return false;
++                    }
++                    return !previous || previous(R_rows, T, p0, e);
++                } catch (const std::exception& exc) {
++                    e = std::string("prefill logits: callback: ") + exc.what();
++                    return false;
++                }
++            };
++        }
++#endif
+         const Clock::time_point tp0 = Clock::now();
+         if (!prefill.run(o.tokens.data(), n_batched, 0, err)) {
+             std::fprintf(stderr, "strata generate: %s\n", err.c_str());
+             return 1;
+         }
++#ifdef STRATA_ENABLE_SYCL
++        if (collect_prefill_logits && !prefill_logits.finish(err)) {
++            std::fprintf(stderr, "strata generate: %s\n", err.c_str());
++            return 1;
++        }
++#endif
+         mem_mark("the standalone prompt execution");
+         // refill the lent slots from the arena and give them back to the decode tier
+         if (!lent.empty()) {
+--- /dev/null
++++ b/include/strata/program/prefill_logits.hpp
+@@ -0,0 +1,164 @@
++#pragma once
++
++#include <charconv>
++#include <cmath>
++#include <cstdint>
++#include <cstdio>
++#include <filesystem>
++#include <limits>
++#include <string>
++#include <string_view>
++#include <vector>
++
++namespace strata::program::prefill_logits {
++
++static_assert(sizeof(float) == 4, "prefill logit fixtures require FP32 storage");
++
++// Diagnostic storage selection, never a change to the conditioning token IDs.
++// At most 64 strictly rising decimal positions; no signs, spaces or empty fields.
++inline bool parse_positions(std::string_view text, int64_t batched,
++                            std::vector<int64_t>& out, std::string& err) {
++    out.clear();
++    if (batched <= 0 || text.empty() || text.size() > 64 * 21) {
++        err = "prefill logits: need 1..64 positions and at least two input tokens";
++        return false;
++    }
++    size_t start = 0;
++    while (start < text.size()) {
++        const size_t comma = text.find(',', start);
++        const size_t end = comma == std::string_view::npos ? text.size() : comma;
++        int64_t p = -1;
++        const auto result = std::from_chars(text.data() + start, text.data() + end, p);
++        if (out.size() == 64 || start == end || text[start] < '0' || text[start] > '9' ||
++            result.ec != std::errc{} || result.ptr != text.data() + end || p < 0 || p >= batched ||
++            (!out.empty() && p <= out.back()) || (comma != std::string_view::npos && end + 1 == text.size())) {
++            out.clear();
++            err = "prefill logits: positions must be 1..64 strictly rising decimals in [0,n_batched)";
++            return false;
++        }
++        out.push_back(p);
++        start = end + 1;
++    }
++    return true;
++}
++
++// One host row only. Caller must retire every GPU use of row() before any
++// return, exception or file operation. The existing checked upload guard is
++// used at the call site; this class deliberately has no GPU/runtime dependency.
++class Writer {
++public:
++    Writer() = default;
++    Writer(const Writer&) = delete;
++    Writer& operator=(const Writer&) = delete;
++    ~Writer() {
++        if (data_) std::fclose(data_);
++        if (meta_) std::fclose(meta_);
++    }
++
++    bool begin(const std::string& path, const std::vector<int64_t>& positions,
++               int64_t batched, int64_t vocab, bool native, int head_type, std::string& err) {
++        constexpr uint64_t budget = 64ull << 20;
++        constexpr uint64_t metadata_budget = 8192;
++        if (started_ || failed_ || positions.empty() || positions.size() > 64 || vocab <= 0 ||
++            vocab > std::numeric_limits<int32_t>::max() ||
++            uint64_t(vocab) > (budget - metadata_budget - 8) / (4 * positions.size()))
++            return fail(err, "invalid dimensions or output exceeds 64 MiB");
++        int64_t previous = -1;
++        for (int64_t p : positions) {
++            if (p <= previous || p >= batched) return fail(err, "invalid positions at open");
++            previous = p;
++        }
++        positions_ = positions;
++        batched_ = batched;
++        row_.resize(size_t(vocab));
++        final_meta_ = path + ".meta";
++        pending_meta_ = final_meta_ + ".partial";
++        std::error_code ec;
++        const bool exists = std::filesystem::exists(final_meta_, ec);
++        if (ec || exists) return fail(err, "metadata destination already exists or cannot be checked");
++        // Exclusive creation: existing raw fixtures/partial metadata are never overwritten.
++        data_ = std::fopen(path.c_str(), "wbx");
++        if (!data_) return fail(err, "cannot exclusively create logits file");
++        meta_ = std::fopen(pending_meta_.c_str(), "wbx");
++        if (!meta_) return fail(err, "cannot exclusively create partial metadata");
++        const int32_t header[2] = {int32_t(vocab), 0}; // actual count is committed only after Prefill::run
++        if (std::fwrite(header, sizeof(header), 1, data_) != 1 ||
++            std::fprintf(meta_, "strata-prefill-logits-v1\nformat=native-endian-int32-vocab-count-float32-rows\n"
++                               "vocab=%lld\ncount=%zu\nbatched=%lld\nhead=%s\nhead_ggml_type=%d\n"
++                               "row\tposition\tnext_token_id\n",
++                         (long long)vocab, positions.size(), (long long)batched,
++                         native ? "native" : "pack-lm-head", native ? head_type : -1) < 0)
++            return fail(err, "header write failed");
++        started_ = true;
++        return true;
++    }
++
++    bool chunk(int64_t position, int64_t count, std::string& err) {
++        if (!started_ || failed_ || position != seen_ || count <= 0 || count > batched_ - seen_)
++            return fail(err, "invalid, repeated or out-of-order callback range");
++        seen_ += count;
++        return true;
++    }
++    int64_t next_position() const { return written_ < positions_.size() ? positions_[written_] : -1; }
++    float* row() { return row_.data(); }
++    size_t row_bytes() const { return row_.size() * sizeof(float); }
++
++    bool append(int64_t position, int64_t target, std::string& err) {
++        if (!started_ || failed_ || next_position() < 0 || position != next_position() || position >= seen_ ||
++            target < 0 || uint64_t(target) >= row_.size())
++            return fail(err, "invalid output row or target token");
++        for (float v : row_) if (!std::isfinite(v)) return fail(err, "non-finite logits");
++        if (std::fwrite(row_.data(), sizeof(float), row_.size(), data_) != row_.size() ||
++            std::fprintf(meta_, "%zu\t%lld\t%lld\n", written_, (long long)position, (long long)target) < 0)
++            return fail(err, "row write failed");
++        ++written_;
++        return true;
++    }
++
++    // Only call after the complete Prefill::run (including its MTP callback) succeeds.
++    // Consumers require PATH.meta plus exact binary dimensions/size. A partial
++    // metadata file, even one with a footer, is never a completed fixture.
++    bool finish(std::string& err) {
++        if (!started_ || failed_ || seen_ != batched_ || written_ != positions_.size())
++            return fail(err, "incomplete callback coverage or selected rows");
++        const int32_t count = int32_t(written_);
++        if (std::fseek(data_, sizeof(int32_t), SEEK_SET) != 0 ||
++            std::fwrite(&count, sizeof(count), 1, data_) != 1)
++            return fail(err, "final row count write failed");
++        const int flush_data = std::fflush(data_);
++        const int close_data = std::fclose(data_);
++        data_ = nullptr;
++        if (flush_data || close_data) return fail(err, "logits flush/close failed");
++        const uint64_t bytes = 8 + uint64_t(written_) * row_bytes();
++        if (std::fprintf(meta_, "complete\t%zu\t%llu\n", written_, (unsigned long long)bytes) < 0)
++            return fail(err, "completion footer write failed");
++        const int flush_meta = std::fflush(meta_);
++        const int close_meta = std::fclose(meta_);
++        meta_ = nullptr;
++        if (flush_meta || close_meta) return fail(err, "metadata flush/close failed");
++        // Atomic no-clobber publication after both files close successfully.
++        // The small .partial path remains a hard link, without duplicate blocks.
++        std::error_code ec;
++        std::filesystem::create_hard_link(pending_meta_, final_meta_, ec);
++        if (ec) return fail(err, "metadata publication failed (hard-link support required)");
++        started_ = false;
++        return true;
++    }
++
++private:
++    bool fail(std::string& err, const char* reason) {
++        failed_ = true;
++        err = std::string("prefill logits: ") + reason;
++        return false;
++    }
++    std::FILE* data_ = nullptr;
++    std::FILE* meta_ = nullptr;
++    std::string final_meta_, pending_meta_;
++    std::vector<int64_t> positions_;
++    std::vector<float> row_;
++    size_t written_ = 0;
++    int64_t seen_ = 0, batched_ = 0;
++    bool started_ = false, failed_ = false;
++};
++
++} // namespace strata::program::prefill_logits
+--- /dev/null
++++ b/tests/cpu/prefill_logits.cpp
+@@ -0,0 +1,115 @@
++#include "strata/program/prefill_logits.hpp"
++#include "strata/prefill/draft_uploads.hpp"
++
++#include <algorithm>
++#include <fstream>
++#include <iterator>
++#include <stdexcept>
++
++namespace pl = strata::program::prefill_logits;
++namespace fs = std::filesystem;
++
++static void require(bool ok) { if (!ok) throw std::runtime_error("contract check failed"); }
++static std::string read(const fs::path& p) {
++    std::ifstream f(p, std::ios::binary);
++    return {std::istreambuf_iterator<char>(f), std::istreambuf_iterator<char>()};
++}
++
++// Main supplies a new, empty, owned directory. No GPU/toolkit needed. This test
++// intentionally keeps its tiny output fixtures for Main's ordinary retention review.
++int main(int argc, char** argv) try {
++    require(argc == 2 && fs::is_directory(argv[1]) && fs::is_empty(argv[1]));
++    const fs::path dir(argv[1]);
++    std::string err;
++    std::vector<int64_t> p;
++    require(pl::parse_positions("0,3,8", 9, p, err) && p == std::vector<int64_t>({0,3,8}));
++    for (const char* bad : {"", "-1", "+1", " 1", "1 ", "1x", ",1", "1,", "1,,2",
++                            "0,0", "2,1", "9", "9223372036854775808"}) {
++        require(!pl::parse_positions(bad, 9, p, err) && p.empty());
++    }
++    require(!pl::parse_positions("0", 0, p, err));
++    std::string many;
++    for (int i = 0; i < 64; ++i) { if (i) many += ','; many += std::to_string(i); }
++    require(pl::parse_positions(many, 64, p, err) && p.size() == 64);
++    require(!pl::parse_positions(many + ",64", 65, p, err));
++    {
++        pl::Writer w;
++        require(!w.begin((dir/"oversized").string(), {0,1}, 2, INT32_MAX, false, -1, err));
++        require(!fs::exists(dir/"oversized"));
++    }
++    {
++        pl::Writer w;
++        require(w.begin((dir/"valid").string(), {0,3}, 4, 3, true, 13, err));
++        require(w.row_bytes() == 12 && w.next_position() == 0);
++        require(w.chunk(0, 2, err));
++        std::fill(w.row(), w.row() + 3, 1.f);
++        require(w.append(0, 2, err));
++        require(w.chunk(2, 2, err));
++        std::fill(w.row(), w.row() + 3, 2.f);
++        require(w.append(3, 1, err) && w.next_position() == -1);
++        require(!fs::exists(dir/"valid.meta"));
++        require(w.finish(err) && fs::file_size(dir/"valid") == 32);
++        const std::string meta = read(dir/"valid.meta");
++        require(meta.find("head=native\nhead_ggml_type=13\n") != std::string::npos);
++        require(meta.find("0\t0\t2\n1\t3\t1\ncomplete\t2\t32\n") != std::string::npos);
++        std::ifstream f(dir/"valid", std::ios::binary);
++        int32_t dims[2]{};
++        float rows[6]{};
++        f.read(reinterpret_cast<char*>(dims), sizeof(dims));
++        f.read(reinterpret_cast<char*>(rows), sizeof(rows));
++        require(f.good() && dims[0] == 3 && dims[1] == 2 && rows[0] == 1.f && rows[5] == 2.f);
++    }
++    {
++        pl::Writer w;
++        require(w.begin((dir/"missing").string(), {1}, 2, 3, false, -1, err));
++        require(w.chunk(0, 1, err));
++        require(!w.finish(err) && !fs::exists(dir/"missing.meta"));
++    }
++    {
++        pl::Writer w;
++        require(w.begin((dir/"out-of-order").string(), {1}, 2, 3, false, -1, err));
++        require(!w.chunk(1, 1, err) && !w.finish(err));
++        require(!fs::exists(dir/"out-of-order.meta"));
++    }
++    {
++        pl::Writer w;
++        require(w.begin((dir/"nan").string(), {0}, 1, 3, false, -1, err));
++        require(w.chunk(0, 1, err));
++        w.row()[0] = std::numeric_limits<float>::quiet_NaN();
++        require(!w.append(0, 1, err) && !w.finish(err));
++        require(!fs::exists(dir/"nan.meta"));
++    }
++    {
++        pl::Writer w;
++        require(!w.begin((dir/"valid").string(), {0}, 1, 3, false, -1, err));
++        require(fs::file_size(dir/"valid") == 32); // no overwrite of a completed fixture
++    }
++    {
++        std::ofstream(dir/"raw-existing") << "sentinel";
++        pl::Writer w;
++        require(!w.begin((dir/"raw-existing").string(), {0}, 1, 3, false, -1, err));
++        require(read(dir/"raw-existing") == "sentinel");
++    }
++    {
++        pl::Writer w;
++        require(w.begin((dir/"publish-race").string(), {0}, 1, 3, false, -1, err));
++        require(w.chunk(0, 1, err));
++        require(w.append(0, 1, err));
++        std::ofstream(dir/"publish-race.meta") << "sentinel";
++        require(!w.finish(err) && read(dir/"publish-race.meta") == "sentinel");
++    }
++    {
++        bool owner = true, waited = false;
++        {
++            strata::prefill::detail::DraftUploadGuard lease(
++                [&] { require(owner); waited = true; return true; }, [] { std::abort(); });
++            lease.arm(); // emulate an early return/exception after a partial enqueue
++        }
++        require(waited);
++        owner = false;
++    }
++    return 0;
++} catch (const std::exception& exc) {
++    std::fprintf(stderr, "prefill logits contract: %s\n", exc.what());
++    return 1;
++}

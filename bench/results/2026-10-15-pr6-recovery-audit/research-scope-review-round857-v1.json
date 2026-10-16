@@ -1,0 +1,358 @@
+{
+  "review_id": "R857",
+  "reviewed_on": "2026-10-16 JST",
+  "reviewer": {
+    "provider": "native Codex",
+    "model": "gpt-6-luna",
+    "reasoning_effort": "max"
+  },
+  "purpose": "Read-only source, depth, novelty, applicability, retrieval and Orca lifecycle review of R854/R855. No builds, tests, GPU/profiler work, process inspection, Git, cleanup, product edits, worker contact, steering or dispatch.",
+  "inputs": {
+    "R853_plan": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-scope-plan-round853-v1.json",
+      "sha256": "6f7685770b87338a4d949299df029954ac73e339e78698bbaa8aaab6a344d68c"
+    },
+    "research_index": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+      "current_sha256": "f3a6de4323bad1b9e61fdb91fe2a081b67087a9ccf863c7ac2e9ad1f7a51f772",
+      "R853_pinned_sha256": "6cefd5be1f2c34f2dce2d41d64a4e69ac68922a0451b7077c64db568c191d7c6",
+      "matches_plan_pin": false,
+      "current_last_round": 851,
+      "R854_R855_present": false,
+      "modified_by_review": false
+    },
+    "subject_reports": [
+      {
+        "round": 854,
+        "classification": "knowledge_collection",
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round854-v1.txt",
+        "sha256": "04ed3fd7d27faa43fe45a222e22725fb4a3941b71f9c4753c247a8eb0d1ae0a2",
+        "bytes": 12440,
+        "whitespace_words": 1741,
+        "unique_urls": 6,
+        "spec_path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/orca-research-round854-spec-v1.txt",
+        "spec_sha256": "c0bdd72f0264efde4172adceeffcd4f2510e8252049832e6faae63cc8eb926ed"
+      },
+      {
+        "round": 855,
+        "classification": "knowledge_collection",
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round855-v1.txt",
+        "sha256": "e226747e0572d52dbb5f7f151da6d9f111ef1a7ce2c86e1bb84cb5f6efd022a9",
+        "bytes": 13319,
+        "whitespace_words": 1798,
+        "unique_urls": 6,
+        "spec_path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/orca-research-round855-spec-v1.txt",
+        "spec_sha256": "ee3d5a4c18052181818786bc5c5f585c04f86b202b8e5a615eb74b4853491b9f"
+      }
+    ],
+    "prior_review_hashes": {
+      "R834": "1ab0a14e569ea7382af305da3fdea4d2ef3bf596b8040b4997021c95bdfec983",
+      "R838": "64885285e1f563774767893888ce4899639bc14c2fb1ec36e2c07530403c0b3e",
+      "R841": "50e03ef297c9b6a1b2c76a28d0223ab9507fee1b08cbef505afa0dea5c0d3843",
+      "R845": "c01dcd8ab808fcf180761de991c50e1da53e635c6eba9c9ea7b86c2409e3519d",
+      "R848": "86f8987c1b153bf7119fd13408f854270502400d591548eff6b76621723d6b57",
+      "R851": "c74a29d3b7324e610c81eaa0e4787303c91b171339cbd1ff87c61de2d7231aff"
+    },
+    "lifecycle": [
+      {
+        "round": 854,
+        "launch_path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round854-launch-v1.json",
+        "launch_sha256": "d5b2ce4a07216d9c41fbd7384d3f3dd691344d30e918665d9387d1c3651b5712",
+        "settlement_path": "bench/results/2026-10-15-pr6-recovery-audit/orca-round854-settlement-v1.json",
+        "settlement_sha256": "63925602c0a6d031689711032e9fbc70f293532d6b64fc211ca090faa2e970e9",
+        "worker": "succeeded / settled",
+        "release_path": "bench/results/2026-10-15-pr6-recovery-audit/orca-round854-release-v1.json",
+        "release_sha256": "3b44d4cf93aa6fc6bf623b1deccc8820fffcfa9698d36f593c737b2d5e06d00f",
+        "release_state": "released; transcript captured"
+      },
+      {
+        "round": 855,
+        "launch_path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round855-launch-v1.json",
+        "launch_sha256": "833df18940ecbd366c02cd301ede833bf7312ddb61944e92f56e31cec638c334",
+        "settlement_path": "bench/results/2026-10-15-pr6-recovery-audit/orca-round855-settlement-v1.json",
+        "settlement_sha256": "9055a7fc99ffce447fcf16e2b0390ddfd230e01273ffa0330f33f8660e9ae892",
+        "worker": "succeeded / settled",
+        "release_path": "bench/results/2026-10-15-pr6-recovery-audit/orca-round855-release-v1.json",
+        "release_sha256": "0ad5ce9b4262373724d6585c804c966a9db69c2e86d77ad7bd709509d22cf15c",
+        "release_state": "released; transcript captured"
+      }
+    ],
+    "lifecycle_note": "Both launch receipts warned that the background terminal was not discoverable; each worker then settled successfully and its release closed the terminal.",
+    "prior_reviews": [
+      {
+        "round": "R834",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round834-v1.json",
+        "sha256": "1ab0a14e569ea7382af305da3fdea4d2ef3bf596b8040b4997021c95bdfec983"
+      },
+      {
+        "round": "R838",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round838-v1.json",
+        "sha256": "64885285e1f563774767893888ce4899639bc14c2fb1ec36e2c07530403c0b3e"
+      },
+      {
+        "round": "R841",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/A/research-scope-review-round841-v1.json",
+        "sha256": "50e03ef297c9b6a1b2c76a28d0223ab9507fee1b08cbef505afa0dea5c0d3843"
+      },
+      {
+        "round": "R845",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/A/research-scope-review-round845-v1.json",
+        "sha256": "c01dcd8ab808fcf180761de991c50e1da53e635c6eba9c9ea7b86c2409e3519d"
+      },
+      {
+        "round": "R848",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round848-v1.json",
+        "sha256": "86f8987c1b153bf7119fd13408f854270502400d591548eff6b76621723d6b57"
+      },
+      {
+        "round": "R851",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round851-v1.json",
+        "sha256": "c74a29d3b7324e610c81eaa0e4787303c91b171339cbd1ff87c61de2d7231aff"
+      }
+    ]
+  },
+  "report_reviews": {
+    "R854": {
+      "classification": "knowledge_collection",
+      "scope_depth": "Strong and within the requested 1,200-1,800 substantive-word / seven-URL budget: 1,741 whitespace words, six URLs. Fixed-CSR framing, schedule table, cost model, counterevidence and future experiment directly address the assignment.",
+      "novelty": "Distinct from R759 general work partition, R763 residency/pipeline, R778 sparse formats, R779 gather/TLB, R786 graph aggregation, R813 grouped experts and R839 bank layout. Metadata basis: R853 plan, current index and prior review metadata; no old knowledge bodies reopened.",
+      "source_verification": [
+        {
+          "url": "https://docs.nvidia.com/cuda/archive/12.6.2/cusparse/index.html",
+          "verified": "SpSV exposes buffer-size/analysis/solve and an opaque descriptor; SpSM supports multiple RHS. Proportional-to-nnz workspace wording is specifically for SpSM."
+        },
+        {
+          "url": "https://rocm.docs.amd.com/projects/rocSPARSE/en/latest/reference/generic.html",
+          "verified": "The page labelled 5.0.0 documents buffer-size, preprocess and compute stages; SpSM supports multiple RHS and reusable preprocess."
+        },
+        {
+          "url": "https://www.ssslab.cn/assets/papers/2016-liu-sptrsv.pdf",
+          "verified": "85% level-barrier fraction is CPU FEM/ship 003 data; nlpkkt160 has two levels. Titan X GPU speedups over cuSPARSE 7.5 are 2.3x single and 2.14x double across 11 matrices. Liu uses CSC, counter polling and spin, not an explicit ready queue."
+        },
+        {
+          "url": "https://www.ssslab.cn/assets/papers/2021-zhang-sptrsv.pdf",
+          "verified": "Table 5 supports four-platform SyncFree and three-NVIDIA-platform cuSPARSE means; the CUDA publication sequence writes x, fences, then publishes the flag."
+        },
+        {
+          "url": "https://doi.org/10.1007/s11227-023-05238-8",
+          "verified": "The reported 2-19 / over-100 solve-count break-even and five per-platform cases with analysis cost exceeding simple solve time appear in the study on RTX 2080 Ti/3090 Ti."
+        }
+      ],
+      "corrections": [
+        {
+          "id": "R854-C1",
+          "severity": "clarification",
+          "location": "line 25",
+          "issue": "5.98x over SyncFree averages four platforms including Vega 11; 4.83x over cuSPARSE averages only Pascal, Volta and Turing because the APU/cuSPARSE cell is unavailable.",
+          "action": "Split the platform coverage in the prose.",
+          "source": "https://www.ssslab.cn/assets/papers/2021-zhang-sptrsv.pdf"
+        },
+        {
+          "id": "R854-C2",
+          "severity": "clarification",
+          "location": "line 9",
+          "issue": "SpSV returns a queried buffer size but the guide gives no nnz-proportional complexity guarantee for SpSV; the proportional-to-nnz sentence applies to SpSM.",
+          "action": "Attach the workspace scaling claim to SpSM only.",
+          "source": "https://docs.nvidia.com/cuda/archive/12.6.2/cusparse/index.html"
+        },
+        {
+          "id": "R854-C3",
+          "severity": "accounting",
+          "location": "line 37",
+          "issue": "Queue metadata expression ambiguously counts or omits pending/queue arrays. For 32-bit IDs/counters: successor CSR 4z+4(n+1), pending 4n, ready queue capacity Q is 4Q.",
+          "action": "State total 4z+8n+4+4Q, Q<=n, plus controls/partials; full n-entry queue is about 4z+12n, excluding the constant and separately counted accumulators.",
+          "source": "Direct arithmetic from the arrays defined in R854."
+        },
+        {
+          "id": "R854-C4",
+          "severity": "provenance",
+          "location": "references 2-3",
+          "issue": "rocSPARSE uses a mutable latest documentation path and develop license URL despite naming release 5.0.0.",
+          "action": "Pin to release-specific docs and a release tag or commit when exact release provenance is needed.",
+          "sources": [
+            "https://rocm.docs.amd.com/projects/rocSPARSE/en/latest/reference/generic.html",
+            "https://github.com/ROCm/rocSPARSE/blob/develop/LICENSE.md"
+          ]
+        }
+      ],
+      "evidence_limits": [
+        "Ready frontier is a proposed cost-model/experiment arm, not a measured queue result; cited dynamic implementations use counter polling and the cited hybrid uses thread/warp row granularity.",
+        "CPU barrier fractions, GPU timing, and the different papers' formats/hardware are not directly comparable.",
+        "No Arc/Strata performance inference."
+      ],
+      "main_retrieval": {
+        "needed_now": false,
+        "hold_body": true,
+        "sections": [
+          "13-25",
+          "27-39",
+          "41-47"
+        ],
+        "keys": [
+          "SpTRSV CSR dependency DAG",
+          "level-set vs dependency counter",
+          "ready queue vs polling",
+          "row granularity",
+          "publication visibility",
+          "preprocessing amortization",
+          "queue metadata"
+        ],
+        "preserve_caveats": [
+          "No measured ready-queue win.",
+          "Liu 85% is CPU data; GPU comparison is Titan X/cuSPARSE 7.5.",
+          "No Strata/Arc transfer."
+        ]
+      },
+      "suggested_index_metadata": {
+        "title": "GPU SpTRSV dependency readiness and row scheduling",
+        "classification": "knowledge_collection",
+        "status": "R857-reviewed; body held; not needed now; corrections recorded in R857.",
+        "tags": [
+          "SpTRSV",
+          "DAG scheduling",
+          "level-set",
+          "counters",
+          "ready frontier",
+          "CSR",
+          "row granularity",
+          "preprocessing amortization"
+        ],
+        "sections": [
+          "13-25",
+          "27-39",
+          "41-47"
+        ],
+        "correction_ids": [
+          "R854-C1",
+          "R854-C2",
+          "R854-C3",
+          "R854-C4"
+        ]
+      }
+    },
+    "R855": {
+      "classification": "knowledge_collection",
+      "scope_depth": "Strong, within the requested 1,200-1,800 word / seven-URL budget and near the upper boundary: 1,798 whitespace words and six URLs. Mapping comparison, two source environments, scratch model and future experiment fit the assignment.",
+      "novelty": "Distinct from R798 GEMM tile geometry, R805 operand layout, R811 descriptors, R813 grouped experts, R832 pipelines, R835 stencil halo and R839 bank layout. Metadata basis: R853 plan, current index and prior review metadata; no older collection bodies reopened.",
+      "source_verification": [
+        {
+          "url": "https://arxiv.org/html/2103.16234",
+          "verified": "cuConv tables match. Source setup: V100-SXM2, CUDA 9.2/cuDNN 7.1, FP32/NCHW, stride one/same padding, mean of nine kernel executions. Exact 7x7 and 13x13 3x3 crossovers, 1x1 timings and 1,024-block overhead explanation match."
+        },
+        {
+          "url": "https://arxiv.org/html/2110.03901",
+          "verified": "Explicit/implicit V100 experiment uses FP16, CUDA 10.2/cuDNN 7, batch 64; explicit im2col is 28% slower on average with nearly equal GEMM time, and VGG16 lower/original maps are 311.80/34.65 MB. R855 correctly treats this as an aggregate."
+        },
+        {
+          "url": "https://uxlfoundation.github.io/oneDNN/v3.0/dev_guide_convolution.html",
+          "verified": "The guide documents Winograd as FP32 for a restricted 2D 3x3 ungrouped, stride-one, undilated path, with scratch and possible accuracy costs."
+        },
+        {
+          "url": "https://github.com/NVIDIA/cutlass/blob/main/media/docs/cpp/implicit_gemm_convolution.md",
+          "verified": "NHWC/alignment/channel and filter divisibility points are described as implementation-specific constraints."
+        },
+        {
+          "url": "https://docs.nvidia.com/deeplearning/performance/dl-performance-convolutional/index.html",
+          "verified": "General vendor guidance; no report claim relies on it as measured three-way performance."
+        }
+      ],
+      "corrections": [
+        {
+          "id": "R855-C1",
+          "severity": "provenance",
+          "location": "references 2-3/source provenance",
+          "issue": "The report names oneDNN v3.0.1 but links v3.0 docs; CUTLASS links mutable main; the NVIDIA guide is unversioned.",
+          "action": "When retrieved for a concrete decision, pin oneDNN to v3.0.1 docs/source and CUTLASS to a tag or commit; keep a retrieval date for the live NVIDIA guide.",
+          "sources": [
+            "https://uxlfoundation.github.io/oneDNN/v3.0/dev_guide_convolution.html",
+            "https://github.com/NVIDIA/cutlass/blob/main/media/docs/cpp/implicit_gemm_convolution.md"
+          ]
+        },
+        {
+          "id": "R855-C2",
+          "severity": "applicability",
+          "location": "lines 20 and 41",
+          "issue": "The documented oneDNN Winograd limitations are for its AVX-512 plus DL Boost CPU path, not general GPU/accelerator performance.",
+          "action": "Keep this labeled as a CPU-library capability/numerical reference; current report already avoids performance transfer.",
+          "source": "https://uxlfoundation.github.io/oneDNN/v3.0/dev_guide_convolution.html"
+        }
+      ],
+      "evidence_limits": [
+        "cuConv is a particular two-stage partial-product direct implementation, not a proxy for every direct spatial kernel.",
+        "Zhou et al. is a five-network batch-64 aggregate, not a per-layer shape; do not combine with cuConv timings.",
+        "TPUv2 results include a validated simulator/design study, not a measured three-way mapping comparison.",
+        "No Strata/Arc prediction."
+      ],
+      "main_retrieval": {
+        "needed_now": false,
+        "hold_body": true,
+        "sections": [
+          "5-20",
+          "22-41",
+          "43-49"
+        ],
+        "keys": [
+          "explicit im2col workspace",
+          "implicit GEMM address work",
+          "direct spatial reuse",
+          "V100 cuConv crossover",
+          "TPUv2 implicit im2col simulator",
+          "Winograd transform and accuracy"
+        ],
+        "preserve_caveats": [
+          "Do not merge FP32/NCHW CUDA 9.2 cuConv cases with FP16/batch-64 network aggregates.",
+          "cuConv materializes partial output and reduces in a second kernel.",
+          "No Strata/Arc transfer."
+        ]
+      },
+      "suggested_index_metadata": {
+        "title": "Convolution mapping, reuse, and workspace crossover",
+        "classification": "knowledge_collection",
+        "status": "R857-reviewed; body held; not needed now; doc pinning notes recorded in R857.",
+        "tags": [
+          "2D CNN convolution",
+          "explicit im2col",
+          "implicit GEMM",
+          "direct spatial",
+          "workspace",
+          "input reuse",
+          "Winograd",
+          "TPUv2"
+        ],
+        "sections": [
+          "5-20",
+          "22-41",
+          "43-49"
+        ],
+        "correction_ids": [
+          "R855-C1",
+          "R855-C2"
+        ]
+      }
+    }
+  },
+  "cross_report_assessment": {
+    "scope_plan_compliance": "Both R853 assignments were answered within budget, distinct from adjacent scopes, and independent of local GPU/profile evidence.",
+    "main_original_needed_now": false,
+    "handling": "Keep both original report bodies held until a concrete future decision requires the keyed sections."
+  },
+  "index_recommendation": {
+    "status": "not_modified",
+    "action_for_index_owner": "After accepting this review, append R854/R855 entries from the suggested metadata and include report/spec hashes plus this review pointer. Preserve held-body status.",
+    "plan_pin_warning": "R853 pin was 6cefd5be1f2c34f2dce2d41d64a4e69ac68922a0451b7077c64db568c191d7c6; current index is f3a6de4323bad1b9e61fdb91fe2a081b67087a9ccf863c7ac2e9ad1f7a51f772. Check intended snapshot before appending."
+  },
+  "next_scope_recommendation": {
+    "ready_to_launch": false,
+    "proposals": [],
+    "reason": "No new collection adds immediate decision value while both bodies remain held and Main has no current implementation question requiring them. Wait for a concrete design question; the active dense-NLL/JIT/attention timing gates are excluded."
+  },
+  "handling": {
+    "report_bodies_reviewed_by_reviewer": true,
+    "main_original_bodies_retrieved_now": false,
+    "subject_reports_modified": false,
+    "research_index_modified": false,
+    "product_files_modified": false,
+    "worker_contact_or_dispatch": false
+  },
+  "operational_digest_ja_400_chars": "R854・R855はいずれも知識収集として範囲と分量を満たし、起動・settle・releaseは完了。R854には評価値の適用範囲、SpSM/SpSVの作業領域説明、キュー補助配列の容量計算を明確化する補正を記録。R855の測定値は出典と一致し、可変ドキュメントURLの版固定を追記。本文はMainの具体的な質問が生じるまで保留。新しい調査は今は推奨しない。"
+}

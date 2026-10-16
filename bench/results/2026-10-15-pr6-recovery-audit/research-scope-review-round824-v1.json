@@ -1,0 +1,197 @@
+{
+  "review_round": 824,
+  "subject_round": 822,
+  "reviewer": {
+    "provider": "native Codex",
+    "model": "gpt-6-luna",
+    "reasoning_effort": "max"
+  },
+  "decision": "retain_as_knowledge_collection_with_citation_corrections",
+  "subject": {
+    "purpose": "knowledge collection",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round822-v1.txt",
+    "sha256": "6a25861e44921e0c9aaab100eb6600fdc3235fa2ab98e1ecf6adb3dfc311c8db",
+    "reported_word_count": 1335,
+    "scope_spec_path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round822-spec-v1.txt",
+    "scope_spec_sha256": "b8273cb1198ed1ac1f88edd102cb925dda992487d22e115447210d91841e17c3"
+  },
+  "input_sha256": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "7f750320bef4146a2872086922d84fc9fa7a8351ae655b7876c912856e3747fe"
+    },
+    {
+      "path": "docs/ARTIFACT_RETENTION.md",
+      "sha256": "fdf86d7ea576d6f0400ec7e643b5ddca5c3c577dd053d66c2fd05220e64b1cc1"
+    },
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+      "sha256": "ec0afc635fbb8d26a417121e858389c34e3bb33185eb4e57d2b03c0058db8303"
+    },
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round822-v1.txt",
+      "sha256": "6a25861e44921e0c9aaab100eb6600fdc3235fa2ab98e1ecf6adb3dfc311c8db"
+    },
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round822-spec-v1.txt",
+      "sha256": "b8273cb1198ed1ac1f88edd102cb925dda992487d22e115447210d91841e17c3"
+    },
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round822-launch-v1.json",
+      "sha256": "e516b0c8b0166c2f736d5cfe568030c4376ec35b0f078c7863c86294a362f937"
+    },
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/orca-round822-settlement-v1.json",
+      "sha256": "945059d01b2a66f929ca3310a0beb1006295aa969780becd93da997ddb3fa262"
+    },
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/orca-round822-release-v1.json",
+      "sha256": "78f2fc5e18f0e411a781fe62a29ab840eb30b3499266cb9bd60b7666cd5495d4"
+    },
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round782-v1.txt",
+      "sha256": "3a6ef792921ff1c881df3438396a3c267571437e4e1cfaec58d15cc7b6885e2d"
+    },
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round783-v1.txt",
+      "sha256": "5dd2cad9263bd435c7cb788db02e614a4535c96cdf36cd443886b628e2d9794e"
+    },
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round817-v1.txt",
+      "sha256": "c11814ca952989f823fe75b6c0ece8a78e7db7f712e7b2bbaa361910089093fd"
+    }
+  ],
+  "reviewed_prior_report_sections": [
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round782-v1.txt",
+      "sections": ["Mapping to Strata", "Verification and limitations"],
+      "local_lines": "22-36",
+      "sha256": "3a6ef792921ff1c881df3438396a3c267571437e4e1cfaec58d15cc7b6885e2d"
+    },
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round783-v1.txt",
+      "sections": ["Intel LLM Scaler trace", "Recommended integration boundary"],
+      "local_lines": "19-29",
+      "sha256": "5dd2cad9263bd435c7cb788db02e614a4535c96cdf36cd443886b628e2d9794e"
+    },
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round817-v1.txt",
+      "sections": ["What an ISA finding can establish"],
+      "local_lines": "50-54",
+      "sha256": "c11814ca952989f823fe75b6c0ece8a78e7db7f712e7b2bbaa361910089093fd"
+    }
+  ],
+  "scope_fit": {
+    "rating": "strong",
+    "evidence": [
+      "Covers non-GEMM low-precision RMSNorm with residual, a fused activation-and-multiply path, and FP32 reduction boundaries.",
+      "Uses one pinned Intel SYCL implementation and one pinned ROCm Triton implementation, then separates portable layout principles from subgroup and target-specific behavior.",
+      "Explains vector-width eligibility, row alignment and stride constraints, masked tails, residual rounding, launch-fusion limits, and register/occupancy tradeoffs.",
+      "Includes a finite measurement method that checks generated code, memory transactions, resource use, numerical behavior, and caller-visible timing.",
+      "At 1335 words and seven source URLs, it fits the requested 1200-1800 word and eight-URL budgets."
+    ],
+    "gaps_or_limits": [
+      "It provides a measurement protocol, not instruction counts or measured bandwidth results for a compiled target kernel.",
+      "It contains no Strata source mapping or BMG runtime evidence; that is appropriate for a reusable knowledge collection."
+    ]
+  },
+  "substantive_evidence": {
+    "rating": "substantive_and_actionable_as_reference",
+    "strengths": [
+      "The vLLM XPU examples concretely distinguish aligned vector and scalar paths and show fused add/RMSNorm plus activation/multiply structures.",
+      "The AITER example exposes the residual store, FP32 reduction, and later reload, which makes the fusion-versus-live-register tradeoff concrete.",
+      "The report separates a source-level byte model from DRAM traffic and explicitly rejects source vector types as proof of generated packed instructions.",
+      "The measurement plan varies awkward tails and offsets, shape/stride, vector width and work-group size, and calls for numerical checks against FP32."
+    ],
+    "claim_calibration": [
+      "The vLLM source comment reporting roughly 85-89% bandwidth utilization is correctly labeled an unreproducible author claim, not a transferable result.",
+      "The AITER kernel stores through res_out_ptr.type.element_ty. The report's phrase 'input dtype' needs an outer-call dtype invariant to be exact; otherwise describe it as the residual-output pointer's declared element type."
+    ]
+  },
+  "primary_source_quality": {
+    "rating": "strong_primary_sources_with_line_anchor_defect",
+    "source_count": 7,
+    "evidence": [
+      "The two implementation examples are pinned to exact repository commits; the cited SYCL, optimization-guide, GPUOpen, and Triton paper sources are original or vendor-maintained references.",
+      "The report identifies vLLM XPU repository licensing and the AITER file's MIT header; it proposes no source reuse.",
+      "The cited implementations and platform documents establish design contracts only. They do not show that Strata selected the same route or that any approach is faster on BMG."
+    ],
+    "line_anchor_defect": {
+      "severity": "correction_needed_for_traceability",
+      "finding": "The three GitHub code links use line fragments beyond their pinned raw files' lengths. Raw file lengths are layernorm.cpp 1496 lines, activation.cpp 796 lines, and AITER rmsnorm.py 1043 lines. The report appears to use extracted-web line positions as source line numbers.",
+      "correct_source_lines_1_based": [
+        {
+          "file": "vllm-xpu-kernels/csrc/layernorm.cpp",
+          "for": "vector eligibility, alignment/stride checks and small-row packing; fused residual/RMSNorm storage and FP32 reduction",
+          "lines": ["431-463", "553-646"]
+        },
+        {
+          "file": "vllm-xpu-kernels/csrc/activation.cpp",
+          "for": "vector activation-and-multiply kernel and vector-width/work-group dispatch",
+          "lines": ["131-169", "440-472"]
+        },
+        {
+          "file": "aiter/ops/triton/_triton_kernels/normalization/rmsnorm.py",
+          "for": "blocked fused residual/RMSNorm path, masked remainder, FP32 reduction and later residual reload",
+          "lines": ["393-500"]
+        }
+      ]
+    }
+  },
+  "overlap_vs_incremental_contribution": {
+    "overall": "incremental_not_duplicate",
+    "prior_overlap": [
+      "R782 already explains typed producer/consumer boundaries, FP32 local reductions, and numerical-format limits for long-prefill state; it does not analyze vector instruction width, memory transaction alignment, tails, or occupancy for bandwidth kernels.",
+      "R783 covers typed GEMM producer/consumer design and a decode-oriented fused norm example; it explicitly defers broader norm/residual producer work and does not compare non-GEMM memory-layout/resource paths.",
+      "R817 establishes that static ISA presence does not prove runtime selection or performance. R822 repeats this evidence boundary appropriately without repeating the BMG GEMM-specific extraction recipe."
+    ],
+    "new_contribution": [
+      "Pinned source-level case studies for non-GEMM SYCL and Triton kernels.",
+      "A comparative treatment of vectorization eligibility, residual round-trip traffic, fusion and register pressure, including failure cases.",
+      "A discriminating measurement protocol that can be retrieved if Main later identifies one of these operations as material."
+    ]
+  },
+  "unsupported_bmg_or_performance_inferences": [
+    "The XPU SYCL source, fixed subgroup size, vector type, and vendor comments do not prove BMG code generation, runtime dispatch, memory transactions, occupancy, or speed for Strata.",
+    "The cited 85-89% bandwidth comment lacks enough device, shape, baseline, compiler and sampling detail to support a BMG or Strata performance claim.",
+    "ROCm Triton behavior and the CDNA2 register-pressure example do not establish Intel BMG behavior; transfer is limited to the general tradeoff, which still requires target measurements.",
+    "The source-level 10-byte-per-element estimate describes nominal operands in one fused residual/RMSNorm shape; it is not measured DRAM traffic or proof that this path limits end-to-end prefill."
+  ],
+  "main_retrieval_now": {
+    "status": "hold",
+    "collection_body_read_by_reviewer": true,
+    "collection_body_read_by_main": false,
+    "sections_main_needs_now": [],
+    "reason": "Main's actual 5-route GEMM measurement is underway, while no measured non-GEMM bandwidth bottleneck has been provided. R822 is a useful library reference outside the current decision path; retrieving its body now would not resolve the active GEMM comparison.",
+    "future_retrieval_trigger": "A completed, owned route/profile result names a material non-GEMM low-precision RMSNorm, activation, residual, or reduction component and its actual shape/source callsite."
+  },
+  "index_metadata_for_main": {
+    "r822_entry_present_in_input_index": false,
+    "recommended_entry": {
+      "round": 822,
+      "model": "gpt-6-luna",
+      "purpose": "knowledge collection",
+      "path": "research-round822-v1.txt",
+      "sha256": "6a25861e44921e0c9aaab100eb6600fdc3235fa2ab98e1ecf6adb3dfc311c8db",
+      "status": "reviewed; scope accepted; invalid source line anchors and one dtype wording correction recorded in research-scope-review-round824-v1.json; Main retrieval on hold",
+      "retrieval": "Keep indexed. Retrieve only for a concrete decision about a measured non-GEMM low-precision bandwidth component."
+    }
+  },
+  "next_scope": {
+    "title": "One measurement-selected BMG non-GEMM low-precision bottleneck",
+    "purpose": "decision support",
+    "schedulable_now": false,
+    "question": "After Main's current route measurement closes, if its evidence names one material non-GEMM low-precision operator and source callsite, compare the viable BMG/SYCL implementations for that exact operator and shape. Cover vectorized and scalar/tail paths, fusion with only its immediate producer or consumer, precision boundary, register/occupancy risk, and the counters that would distinguish the alternatives. Include applicability and counterevidence; do not repeat the general R822 survey.",
+    "prerequisites": [
+      "Main closes the current 5-route GEMM measurement and retains individual samples.",
+      "A route timing or component profile identifies one non-GEMM operator, its caller-visible contribution, exact shape/layout, and source callsite."
+    ],
+    "evidence_present": "The assigned review context says the 5-route GEMM measurement is still underway and supplies no named non-GEMM hotspot; prerequisites are absent.",
+    "budget": {
+      "report_words": "1200-1500",
+      "primary_urls_max": 8,
+      "single_operator_and_immediate_neighbors_only": true
+    },
+    "dispatch_recommendation": "Keep conditional until both prerequisites are recorded; do not schedule a session that can only repeat general kernel advice."
+  }
+}

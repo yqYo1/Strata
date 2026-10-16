@@ -1,0 +1,166 @@
+# R627: actual routed-ne distribution for packed-IQ XMX
+
+## Scope and evidence
+
+Read-only source/data audit only. The only new file is this report. No build,
+test, GPU invocation, process control, Git operation, or inspection of the live
+benchmark's raw outputs was performed. The data source is
+`selective-iq-model-assessment-v2.json`, whose receipt is complete and validates
+an exact-ne census for one 32,088-token prefill (prompt length 32,089; eight
+4,096-token chunks) across 48 layers. This is a route-shape census, not a
+hardware-cache residency or timing measurement. The receipt explicitly says
+`GPU_executed:false`; it reuses prior native request evidence and is not a
+replayed GPU result.
+
+The route census has 82,878 GU and 82,878 Down calls. GU formats are IQ3_XXS
+(type 18): 30,380; IQ3_S (21): 17,421; IQ2_S (22): 34,365; IQ4_XS (23): 712.
+Down formats are IQ4_NL (20): 67,746 and IQ4_XS (42): 15,132. Every ne histogram
+entry contributes the same count to both projections, so corresponding GU and
+Down call counts, route rows and ne quantiles match. Calls are numerous at small
+ne, but route rows and arithmetic have a long tail.
+
+## Cost census by ne band
+
+Combined GU+Down totals below are derived from each exact histogram entry and
+the recorded logical dimensions: GU N,K = 1280,2560; Down N,K = 2560,640.
+FLOPs are `2*ne*N*K` per call. Packed bytes count one full packed projection
+weight tensor read per call, using each layer's recorded tensor byte count.
+FP16 materialization counts the full logical `N*K*2` output that the current
+IQ-dequant-then-GEMM path materializes per call. The candidate's tiled kernel
+would avoid that full dense weight buffer, but still stages each matrix tile in
+local FP16; this is not a claim that all packed traffic or decode cost vanishes.
+
+| ne | GU+Down calls | routed rows | work (TFLOP) | packed weight bytes (GB) | full FP16 weight materialization (GB) |
+|---:|---:|---:|---:|---:|---:|
+| 1–8 | 75,412 | 222,190 | 1.092 | 77.460 | 370.665 |
+| 9–16 | 16,594 | 198,968 | 0.978 | 16.944 | 81.563 |
+| 17–32 | 14,924 | 349,352 | 1.717 | 15.180 | 73.354 |
+| 33–64 | 13,510 | 625,758 | 3.076 | 13.724 | 66.404 |
+| 65–128 | 11,934 | 1,099,866 | 5.406 | 12.142 | 58.658 |
+| 129–256 | 10,826 | 1,976,748 | 9.716 | 10.970 | 53.212 |
+| 257–512 | 8,040 | 2,914,184 | 14.324 | 8.115 | 39.518 |
+| 513–4096 | 14,516 | 23,417,414 | 115.101 | 14.819 | 71.349 |
+| **All** | **165,756** | **30,804,480** | **151.410** | **169.354** | **814.723** |
+
+The median ne is 11; mean 185.84; p90 418; maximum 4096. ne<=64 is 72.66%
+of calls but 5.38% of the combined FLOPs. ne>512 is 8.76% of calls but
+76.02% of FLOPs. Thus a call-count argument overstates the likely benefit for
+small-ne dispatch; an arithmetic-weighted view instead prioritizes the tail.
+The figures are derived work/traffic, not time savings. Packed weights are
+re-read from the logical perspective per projection; cache effects and data
+movement overlap are not represented.
+
+Per-format arithmetic makes the first candidate set clear. GU type 22 accounts
+for 34,365 calls / 42.06 TFLOP, type 18 for 30,380 / 35.75 TFLOP, type 21 for
+17,421 / 21.03 TFLOP, and type 23 for 712 / 2.10 TFLOP. Down type 20 accounts
+for 67,746 calls / 41.01 TFLOP; type 42 for 15,132 / 9.46 TFLOP. The v2
+proposal covers those exact six formats and roles. Prioritize measuring the
+four abundant formats (GU 18/21/22 and Down 20), then GU 23 and Down 42 as
+coverage checks; do not omit them from a model-level candidate merely because
+their sample is smaller.
+
+## Shape coverage and priority
+
+The v2 probe's `admit` currently limits M to 1280, although the census contains
+3,394 calls per role with ne>1280. Those calls represent 8,558,839 routed rows
+and 55.57% of either projection's FLOPs. A 1280 cap therefore excludes over
+half the actual arithmetic. The M bound must be raised through the observed
+4096 before the proposal can claim representative model coverage. This is an
+experiment proposal correction, not a claim that large launches have been
+validated. The census maximum is 4096; values above that are not needed for
+this receipt.
+
+The candidate uses an 8-row by 16-column output tile and pads M tails to 8.
+Tests only at M=4/16/64/128/512 miss useful transitions and do not characterize
+waste. Test actual M values around each tile/dispatch boundary: 1, 4, 7, 8, 9,
+15, 16, 17, 31, 32, 33, 63, 64, 65, 127, 128, 129, 255, 256, 257, 511, 512,
+513, 1024, 1280, 1281, 2048, 4095, 4096. The boundary neighbors expose the
+M-padding step; larger points cover the censused tail. Preserve the exact
+observed six type/role combinations and actual logical N,K: GU 1280x2560 and
+Down 2560x640 (N x K). For screening, use the same case in reference and packed
+arms and report active M, padded M, K tiles, shape, per-arm time and full-buffer
+numerical comparison. Report weighted estimates using census frequency
+separately from unweighted per-case timings.
+
+A practical staged measurement prioritization is:
+
+1. Cold per-shape, both arms, on the census-aligned N,K for ne 8/9, 16/17,
+   64/65, 128/129, 512/513, 1280/1281, 2048 and 4096. Add 1/4 to expose the
+   most frequent low-M cases. These resolve small-tile penalties and large-tail
+   eligibility before a broader sweep.
+2. Expand to the complete boundary set above for all six format/role pairs.
+   Include at least repeated representative calls only as a separate warm/cache
+   arm; the model census alone does not give hardware cache residency.
+3. For any favorable component cases, replay by the actual 32,088-token routing
+   sequence or a faithful exact-ne trace, preserving original per-layer,
+   format, role and ne. Compare measured end-to-end prefill wall time against
+   the active baseline. Do not infer it by multiplying isolated kernel speedup
+   by call share or FLOP share.
+
+The small-ne set deserves one carefully sampled evaluation because 45.5% of
+calls have ne<=8, but only 0.72% of total arithmetic. M=1,4,7,8,9 plus one
+mid point capture the tile utilization question. A broad low-ne shape sweep is
+lower priority than representing the >512 tail and the >1280 calls. If the
+candidate has a small-ne cutoff, set it from measured break-even by exact
+format/role and then verify it with the complete request; no universal ne
+threshold follows from this census.
+
+## v2 source audit against this distribution
+
+`packed-iq-xmx-probe-v2/probe.cpp` is still a standalone proposal, not product
+dispatch; its plan marks all builds/comparisons/GPU/fault injection NOT_RUN.
+The source's mapping fits the observed logical shapes: for GU, alternating
+output columns map through `source_row(col)` into gate/up halves; Down uses
+identity rows. The `8x16x16` kernel stages A/B into local half accessors, uses
+FP32 accumulator, and writes only active M rows. For valid census shapes, N and
+K are multiples of 16; one subgroup is the whole workgroup, so the two local
+barriers around matrix load/MAD and before output are uniform. The local-memory
+multiplicand `joint_matrix_load` overload and `joint_matrix_store` overload
+were source-audited in the v2 plan against the configured custom SYCL headers,
+which support decorated local pointers. This is API/source compatibility only;
+it does not prove compilation, backend lowering, device admission, correctness,
+or speed.
+
+The v2 admission check now requires exact M8/N16/K16 FP16/FP32 matrix
+combination fields, shared USM, FP16, matrix aspect, subgroup 16, workgroup
+size >=16 and local memory >=1280. It conservatively declines devices that
+advertise only maximum dimensions. This is safer than treating max dimensions
+as exact support, though it may decline an actually usable device; no fallback
+inside the probe may be relabeled as the packed arm. Extend only the M range to
+4096 for the census candidate; preserve all other eligibility limits and
+explicit decline behavior unless a separately documented device/API finding
+requires a change.
+
+The reference arm independently expands blocks to FP16 and invokes oneMKL
+row-major GEMM with X nontransposed, W transposed, alpha 1, beta 0; this matches
+the current SYCL `Gemm::f16` layout and call structure. Current production
+`Gemm::native` instead dequantizes blocks into a reusable scratch buffer in
+row chunks then calls `f16`; `iq_dequant_f16` uses `decode_block` and rounds via
+`f16_from_f32`, with the selected parallel IQ dequant option only enabled for
+measured type/role pairs under an immutable process environment. The candidate
+therefore tests a meaningful packed-versus-FP16 materialization component,
+but its random fixture blocks and X are not captured model weights/activations,
+and its one-case cold wall timing is not an end-to-end model performance
+result. Its FP16 quantization path is faithful to current rounding at the
+individual decoded value; joint-matrix accumulation changes sum order, which
+the comparator's conservative bound can screen but cannot establish model
+quality or exact logits.
+
+The v2 retirement handling fixes the v1 unknown-completion cleanup flaw by
+retaining queue/USM owners until explicit checked retirement, fail-stopping on
+post-runtime exceptions, and requiring `queue_retired` in comparison metadata.
+It is source-reviewed only. The plan still requires Main's separately recorded
+compiler/MKL/SYCL/UR/Level-Zero pins and supervised fault checks; no successful
+completion or fault-free claim follows from code inspection.
+
+## Decision
+
+Retain the v2 source as an unexecuted candidate. The new exact-ne evidence makes
+selective small-ne coverage alone a poor first priority: it is frequent but
+arithmetic-light. The most promising measurement priority is the large-ne tail
+(especially >512 and >1280), because 8.76% of calls carry 76.02% of FLOPs and
+the existing M cap excludes 55.57% of work. Include boundary-centered small-M
+cases to learn the tile break-even, then weight component results with the exact
+routing sequence and require end-to-end prefill improvement, full numerical
+review and Main's existing validation gates. No speedup, adoption, quality,
+or device-support conclusion is made by this read-only census/source audit.

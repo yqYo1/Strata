@@ -1,0 +1,15 @@
+from pathlib import Path
+s=Path('src/kernels/cpu/iq_single_avx2.cpp').read_text().replace('namespace strata::kernels::cpu {','namespace strata::kernels::cpu::lookup {')
+s=s.replace('#define GGML_CPU_FP16_TO_FP32(h) _mm_cvtss_f32(_mm_cvtph_ps(_mm_cvtsi32_si128((int)(h))))','extern "C" float ggml_table_f32_f16[65536];\n#define GGML_CPU_FP16_TO_FP32(h) ggml_table_f32_f16[(uint16_t)(h)]')
+Path('/tmp/strata-sycl-goal-single-fp16-lut-kernels.cpp').write_text(s)
+s=Path('/tmp/strata-sycl-goal-single-production-bench.cpp').read_text()
+s=s.replace('uint64_t hash(', 'namespace strata::kernels::cpu::lookup { bool iq256_single_gu_rows(int,const uint8_t*,size_t,size_t,int,const void*,float*,int,int); }\nuint64_t hash(')
+s=s.replace('(g->type!=18&&g->type!=22)', '(g->type!=18&&g->type!=21&&g->type!=22)').replace('nb*(g->type==18?98:82)','nb*(g->type==18?98:g->type==21?110:82)').replace('seen.size()!=2','seen.size()!=3').replace('vi<1','vi<2').replace('(g->type==18?2:4)', '(vi+1)')
+s=s.replace('if(!strata::kernels::cpu::iq256_single_gu_rows(g->type,blob,row,up,n,acts.data(),dst,0,rows))', 'if(!(vi==0?strata::kernels::cpu::iq256_single_gu_rows:strata::kernels::cpu::lookup::iq256_single_gu_rows)(g->type,blob,row,up,n,acts.data(),dst,0,rows))')
+Path('/tmp/strata-sycl-goal-single-fp16-lut-bench.cpp').write_text(s)
+s=Path('/tmp/strata-sycl-goal-single-production-build.sh').read_text()
+cmd='icpx -O3 -DNDEBUG -std=c++20 -march=znver3 -mtune=znver3 -mavx2 -mfma -mf16c -Iinclude -Ithird_party/ggml -c /tmp/strata-sycl-goal-single-fp16-lut-kernels.cpp -o /tmp/strata-sycl-goal-single-fp16-lut-kernels.o\n'
+s=s.replace('icpx -O3',cmd+'icpx -O3',1).replace('single-production-bench','single-fp16-lut-bench').replace('build-sycl-aot/ggml/src/libggml-cpu.a', '/tmp/strata-sycl-goal-single-fp16-lut-kernels.o build-sycl-aot/ggml/src/libggml-cpu.a')
+Path('/tmp/strata-sycl-goal-single-fp16-lut-build.sh').write_text(s)
+s=Path('/tmp/strata-sycl-goal-single-production-run.sh').read_text().replace('single-production-', 'single-fp16-lut-')
+Path('/tmp/strata-sycl-goal-single-fp16-lut-run.sh').write_text(s)

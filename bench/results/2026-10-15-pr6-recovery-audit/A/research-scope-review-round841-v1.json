@@ -1,0 +1,240 @@
+{
+  "review_id": "R841",
+  "reviewed_on": "2026-10-16",
+  "reviewer": {
+    "provider": "native Codex",
+    "model": "gpt-6-luna",
+    "reasoning_effort": "max"
+  },
+  "review_purpose": "Read-only scope, depth, novelty, primary-source, provenance, transfer-limit, and retrieval review of knowledge collections R839 and R840. No code, build, test, syntax check, GPU/profiler work, process inspection, Git action, cleanup, Orca action, or worker contact was performed.",
+  "inputs": {
+    "agents_md": {
+      "path": "AGENTS.md",
+      "sha256": "7f750320bef4146a2872086922d84fc9fa7a8351ae655b7876c912856e3747fe"
+    },
+    "artifact_retention": {
+      "path": "docs/ARTIFACT_RETENTION.md",
+      "sha256": "fdf86d7ea576d6f0400ec7e643b5ddca5c3c577dd053d66c2fd05220e64b1cc1"
+    },
+    "research_index": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+      "sha256": "e176d1307ac51a34d2d31dc465c5e4c98fb8bdcc54d9fc7227cabe33922a0618",
+      "modified": false
+    },
+    "subject_reports_and_specs": [
+      {
+        "round": 839,
+        "purpose_class": "knowledge collection",
+        "report": "bench/results/2026-10-15-pr6-recovery-audit/research-round839-v1.txt",
+        "report_sha256": "7cdaeca1f0c3d12892c3ee1d77947b2e8e0cef3f0e3390531220cdd89a17331f",
+        "whitespace_word_count": 1613,
+        "primary_url_count": 5,
+        "spec": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round839-spec-v1.txt",
+        "spec_sha256": "30a9dca7699b09b1bf24e66c29176ff6774a7541ff70634e6b2df909d98153a0"
+      },
+      {
+        "round": 840,
+        "purpose_class": "knowledge collection",
+        "report": "bench/results/2026-10-15-pr6-recovery-audit/A/research-round840-v1.txt",
+        "report_sha256": "c1928868d7062c3d1546b2eaa391fe5766f84086ccb2cda0510ed29bcc3fb9cd",
+        "whitespace_word_count": 1768,
+        "primary_url_count": 8,
+        "spec": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round840-spec-v1.txt",
+        "spec_sha256": "cc6ba6dd3288dc5f8dd35cf8edc711f2bf5edfbbb18553a1c14ceae4d46bacda"
+      }
+    ],
+    "prior_reviews_and_reports_used_for_metadata_comparison": [
+      {
+        "round": 811,
+        "report": "bench/results/2026-10-15-pr6-recovery-audit/research-round811-v1.txt",
+        "report_sha256": "11b00b86aef965f857f2d863fe74256275a00aa696602786f074510c6072e845",
+        "review": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round812-v1.json",
+        "review_sha256": "0545bece97b85a6b0f3cd728b4cc1ed4545428bc2b5efb603a2e514f952fa495"
+      },
+      {
+        "round": 820,
+        "report": "bench/results/2026-10-15-pr6-recovery-audit/research-round820-v1.txt",
+        "report_sha256": "9e48cf37ea8fb8db6343c5355a70d93e0e4f869066ec470a13b5bf30a068a295",
+        "review": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round823-v1.json",
+        "review_sha256": "52bd044c56a694d77bb3aa830ec0424c8445c65260bd6e3f282307dc9cf901c2"
+      },
+      {
+        "round": 825,
+        "report": "bench/results/2026-10-15-pr6-recovery-audit/research-round825-v1.txt",
+        "report_sha256": "0d5ea6670589646a5644d90ea07f9cd6eff52ffbb5b95ee1eabfd3db61417772",
+        "review": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round827-v1.json",
+        "review_sha256": "c28321f99d1477ac53762576964f533d6c0dd0b7f6db23a5eff5bac43db308ec"
+      },
+      {
+        "round": 832,
+        "report": "bench/results/2026-10-15-pr6-recovery-audit/research-round832-v1.txt",
+        "report_sha256": "457ebf72cef6c0f53072f461299cca37ec70c63f798b2effe6e5935f27213bfb",
+        "review": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round834-v1.json",
+        "review_sha256": "1ab0a14e569ea7382af305da3fdea4d2ef3bf596b8040b4997021c95bdfec983"
+      },
+      {
+        "round": 835,
+        "report": "bench/results/2026-10-15-pr6-recovery-audit/research-round835-v1.txt",
+        "report_sha256": "d3c1f6ee7c2920807936f0d21e8036441ac494d4978399302fa95be9f2910c2e",
+        "review": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round838-v1.json",
+        "review_sha256": "64885285e1f563774767893888ce4899639bc14c2fb1ec36e2c07530403c0b3e"
+      }
+    ]
+  },
+  "current_context_supplied_by_parent": {
+    "status": "Native16/QSA build and model mechanics pass; serialized three-arm x3 clean 39K benchmark is running; coarse CPU/QSA profiles and natural 32K numerical screen are planned; no final bottleneck data is available.",
+    "independently_revalidated": false
+  },
+  "report_reviews": {
+    "R839": {
+      "classification": "knowledge_collection",
+      "main_original_needed_now": false,
+      "scope_depth": {
+        "judgment": "Strong fit and substantive depth; 1,613 whitespace-delimited words and five primary URLs are within the 1,300–1,700-word and seven-source budgets.",
+        "evidence": "The report gives an explicit bank-index model, compares compact row-major, +1 padding and XOR swizzle using one fixed 32-bank/4-byte FP32 transpose geometry, and analyzes how instruction width, tile shape, lane assignment, access phase, padding and index cost alter the result. It separates source-level arithmetic from measurements and includes both an NVIDIA measured padding win and AMD read/write phase asymmetry.",
+        "limits": "The report's conflict equations assume the stated bank geometry and scalar request model. They are not a full instruction-level model for vectors or another GPU. It does not claim measured padding loss or occupancy loss from the 25% small-tile storage example."
+      },
+      "novelty_and_redundancy": {
+        "judgment": "Clear new increment over R811, R832, R835 and R838's prior coverage.",
+        "new_increment": "R839 centers address-to-bank mapping and local tile transforms. R811 concerns block-2D descriptor/message geometry and ragged edges; R832 concerns subgroup roles, cache lookahead, barriers and slot ownership; R835 concerns temporal stencil reuse, halo growth and capacity crossover. R838 is the review that recommended the R839 bank-layout scope and carries the R835/R836 assessment. R839's explicit exclusion of global transactions, pipeline scheduling and temporal blocking is followed.",
+        "conclusion": "Retain as a reusable bank-mapping knowledge archive, not as a Strata design or performance recommendation."
+      },
+      "primary_source_verification": {
+        "status": "Material model, measurement and architecture-boundary claims were checked against the named public primary sources.",
+        "verified": [
+          {
+            "source": "https://docs.nvidia.com/cuda/cuda-programming-guide/02-basics/writing-cuda-kernels.html",
+            "claim": "The guide specifies 32 shared-memory banks, successive 32-bit words in successive banks, and serialization for distinct conflicting addresses."
+          },
+          {
+            "source": "https://developer.nvidia.com/blog/efficient-matrix-transpose-cuda-cc/",
+            "claim": "For Tesla M2050/K20c, coalesced transpose is reported as 51.3/97.6 GB/s and padded no-bank-conflict transpose as 99.5/144.3 GB/s (ECC enabled). The article attributes the improvement to removing shared-memory bank conflicts in this case."
+          },
+          {
+            "source": "https://rocm.blogs.amd.com/software-tools-optimization/lds-bank-conflict/README.html",
+            "claim": "The MI-family example documents 64-lane waves and 32 four-byte banks, with distinct ds_write_b128/ds_read_b128 lane-group rules. Its [64,32] to [64,4,8] mapping is conflict-free for writes but two-way conflicting for reads; the article describes an XOR transform without another LDS buffer."
+          },
+          {
+            "source": "https://ieeexplore.ieee.org/document/7271051/",
+            "claim": "The abstract reports software bit-vector hash results of 23% speedup/96% fewer conflicts on Fermi and 33%/99% on Kepler, distinct from the report's illustrative c XOR r layout."
+          },
+          {
+            "source": "https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html",
+            "claim": "The specification defines local_accessor as work-group-local storage; it does not prescribe bank count, bank width, or a conflict-free layout."
+          }
+        ]
+      },
+      "provenance_and_applicability": {
+        "implementation_source": "No code, helper or test was copied or proposed. The report's formulas are independently stated derivations under explicitly assumed geometry. Source provenance is public NVIDIA/AMD vendor documentation and articles, Khronos specification, and an original IEEE paper.",
+        "unqualified": [
+          "No Xe2/BMG bank count, width, address mapping, instruction behavior, support or performance is established.",
+          "No local Strata source path, runtime behavior, performance measurement or adoption decision was reviewed or established."
+        ]
+      },
+      "corrections": [],
+      "retrieval": {
+        "sections_now": [],
+        "retrieve_when": "A closed profile or concrete source review identifies a tiled local-memory access whose bank serialization is material, and the candidate mapping has an architecture-specific support question.",
+        "main_correction_to_retain": "Treat bank geometry and conflict equations as architecture- and instruction-specific. The published NVIDIA and AMD behavior gives no BMG/Xe2 support or speed prediction."
+      }
+    },
+    "R840": {
+      "classification": "knowledge_collection",
+      "main_original_needed_now": false,
+      "scope_depth": {
+        "judgment": "Strong and dense comparison; 1,768 whitespace-delimited words and eight primary URLs meet the 1,200–1,800-word and eight-source limits.",
+        "evidence": "It compares two implemented linear-solver designs, records the materialized MAGMA buffers and the opaque cuSOLVER workspace boundary, scaling, correction strategy, stopping tests, iteration budgets, and fallback. It includes a source-derived storage calculation and an end-to-end measured counterexample. It explicitly separates source-pinned implementation details from published timing provenance.",
+        "limits": "The word count is close to the budget ceiling but remains substantive. MAGMA source pin and 2020 paper measurements are not proven to be the same exact implementation revision; the report correctly says so. cuSOLVER private scratch internals remain opaque."
+      },
+      "novelty_and_redundancy": {
+        "judgment": "Distinct and useful increment over R820 and R825.",
+        "new_increment": "R820 studies recurrent chunk-state materialization/rematerialization; R825 gives direct-16 adversarial numerical screening recipes. R840 instead analyzes an implemented residual-correction algorithm for a fixed linear system with a backward-error stop condition. This adds algorithmic numerical acceptance, conditioning limits and iteration overhead rather than another storage-dtype or GEMM arithmetic survey.",
+        "conclusion": "Keep as scientific numerical-method knowledge. The linear-system solver loop is not an LLM forward-pass recipe."
+      },
+      "primary_source_verification": {
+        "status": "Public API, pinned source, theorem-boundary and measured-counterexample claims were checked against primary sources.",
+        "verified": [
+          {
+            "source": "https://docs.nvidia.com/cuda/cusolver/",
+            "claim": "cuSOLVER 13.4 documents IRSXgesv, user-set main/lowest precisions, 50 default total iterations, 1e-4 default inner tolerance, residual stopping expression, default FP64 fallback on nonconvergence, input matrix unchanged on successful mixed refinement, and opaque queried workspace bytes."
+          },
+          {
+            "source": "https://github.com/icl-utk-edu/magma/blob/630c968a10c4d67a6e679ba942561520160bfc5d/src/dxgesv_gmres_gpu.cpp",
+            "claim": "Pinned source maps SHT to I16/O32/C32 Tensor-Core GEMM; keeps dA for residual computation while allocating dA_sprec, rounds leading dimensions to 32, aliases dSX to caller dworks and dR to dworkd, sets GMRES tolerances/limits, and dispatches FGMRES for GMSTRS."
+          },
+          {
+            "source": "https://github.com/icl-utk-edu/magma/blob/630c968a10c4d67a6e679ba942561520160bfc5d/src/dgmres_plu_gpu.cpp",
+            "claim": "Pinned source is the GPU FGMRES implementation named by the solver call."
+          },
+          {
+            "source": "https://github.com/icl-utk-edu/magma/blob/630c968a10c4d67a6e679ba942561520160bfc5d/README_FP16_Iterative_Refinement.txt",
+            "claim": "Pinned implementation note describes the convenience FP64-input/output FP16-Tensor-Core solver and fallback."
+          },
+          {
+            "source": "https://icl.utk.edu/files/publications/2020/icl-utk-1439-2020.pdf",
+            "claim": "The paper gives ramage02 order 16,830 and kappa-infinity 4.52e8; under the two-sided-scaled FP16-TC GM path it reports 83 iterations, 0.96 s and 0.79x speedup versus FP64 dgesv at 0.76 s. Its test system lists Quadro GV100 and RTX 8000."
+          },
+          {
+            "source": "https://eprints.maths.manchester.ac.uk/2562/",
+            "claim": "This cited 2017 preprint reports kappa-2 bounds of 1e4 for classical refinement and 1e8 for GMRES-IR; the report's kappa-2 value is accurate for this preprint."
+          },
+          {
+            "source": "https://epubs.siam.org/doi/10.1137/17M1140819",
+            "claim": "The final 2018 SIAM article abstract states the analogous bounds in the infinity norm, kappa-infinity <= 1e4 and <= 1e8. The Haidar solver paper's cited summary also uses kappa-infinity."
+          }
+        ]
+      },
+      "provenance_and_applicability": {
+        "implementation_source": "MAGMA is pinned to immutable commit 630c968a10c4d67a6e679ba942561520160bfc5d; cuSOLVER is identified by its 13.4 public docs because it is closed source. The MAGMA paper's published measurements are not bound to the pinned source commit. No third-party code was copied or adapted.",
+        "condition_number_and_roundoff_limits": "These are sufficient results for the named fixed linear-system algorithms and precision assignments. GMRES may not converge quickly. Keep the condition-number norm and cited paper revision attached to each bound; do not present kappa-2 and kappa-infinity cutoffs as directly interchangeable. Residual/backward-error acceptance alone does not guarantee small forward error for an ill-conditioned matrix.",
+        "bmg_limit": "All implementations and measurements are NVIDIA CUDA designs. They establish no Intel Xe2/BMG support, behavior, or performance.",
+        "llm_transfer_limit": "Transformer inference composes nonlinear attention, normalization, routing and recurrence. Rounding can change later activations and discrete expert choices; there is no single fixed Ax=b residual or solver contraction criterion. The solver guarantee cannot be transferred by analogy, and this report proposes no Strata precision change."
+      },
+      "corrections": [
+        {
+          "issue": "The report juxtaposes kappa-2 <= 1e4 from the 2017 preprint with kappa-infinity <= 1e8 from the solver paper.",
+          "correction": "The report accurately labels each cited source, but should state that the 2018 final SIAM article presents both bounds in the infinity norm. Keep the cited preprint's kappa-2 bound explicitly tied to that revision and avoid comparing the numerical cutoffs across norms as if they were identical guarantees.",
+          "severity": "source-version and norm precision"
+        },
+        {
+          "issue": "The table says the cuSOLVER contract specifies no automatic equilibration.",
+          "correction": "The cited cuSOLVER public docs do not document automatic equilibration. Phrase this as documentation silence, not as proof the private implementation cannot scale internally.",
+          "severity": "evidence-boundary wording"
+        }
+      ],
+      "retrieval": {
+        "sections_now": [],
+        "retrieve_when": "A concrete scientific linear-system solver decision asks about iterative-refinement buffers, correction cost, stopping tests, or precision conditions. This is not an LLM inference retrieval trigger.",
+        "main_correction_to_retain": "Do not map the solver's backward-error theorem to transformer activation rounding or model quality. Preserve condition-number norm and source revision when quoting bounds."
+      }
+    }
+  },
+  "main_retrieval_now": {
+    "status": "hold both collection bodies",
+    "sections_needed_now": [],
+    "reason": "The supplied Main status has no final component bottleneck/profile, and both items are knowledge collections. R839 becomes retrievable only for a concrete measured local-memory layout question. R840 applies to fixed linear systems and has no current neural-forward-pass design decision."
+  },
+  "next_knowledge_collection_scopes": [
+    {
+      "priority": 1,
+      "purpose_label": "knowledge collection",
+      "title": "Graph capture and replay for repeated GPU command DAGs",
+      "finite_question": "For repeated GPU workloads composed of many short kernels, compare eager queue submission with captured command-graph replay and graph update. How do capture/setup cost, replay count, host launch cost, node granularity, mutable parameters, dependency/lifetime rules, and runtime support set the break-even point? Include at least one measured win and one counterexample from named hardware/software versions. Distinguish reduced host submission time from reduced device execution time.",
+      "breadth_and_counterevidence": "Use primary CUDA and SYCL/vendor documentation plus original GPU or accelerator studies. Compare two or three concrete implementations in one table, and report how API maturity and graph mutability affect portability. Exclude in-kernel producer/consumer pipelines, barrier protocols, generic profiling recipes, and model-specific adoption claims. Do not infer Arc B570/Xe2 graph support or performance from another product.",
+      "report_budget": "1,300-1,700 substantive words; at most seven primary URLs; exact versions/hardware, measurement boundaries, applicability and evidence limits.",
+      "schedulable_now": true,
+      "prerequisites": "Public-source access only; no local profile is needed for a durable knowledge comparison.",
+      "prerequisite_evidence": "AGENTS.md prioritizes minimizing CPU work beyond transfer preparation, launch control and validation. Current profiles are still pending, so this remains a knowledge collection rather than decision support. Reviewed R811/R832/R835/R838 metadata covers 2D messages, in-kernel barriers/prefetch, stencil halos and bank mapping, not command-DAG capture/replay. R763's broad data-movement/residency scope does not supply a specific graph replay cost or update-contract comparison.",
+      "novelty_guard": "Focus on host-side command graph construction, replay and update amortization. Do not turn this into another pipeline, barrier, launch-profiling or generic kernel-fusion survey."
+    }
+  ],
+  "handling": {
+    "research_index_modified": false,
+    "collection_bodies_to_main": "held; no exact section needed now",
+    "local_product_source_read": false,
+    "worker_contact_or_steering": false,
+    "other_files_written": false,
+    "product_work": false
+  },
+  "operational_digest_ja_400_chars": "R839は1,613語・一次5 URLで予算内。pad/XOR導出、M2050/K20c実測、AMD read/write非対称を確認。BMG bank仕様・速度は未確立。R840は1,768語・8 URL。MAGMA固定版、cuSOLVER 13.4、ramage02 0.96秒/0.79倍を確認。κ₂とκ∞の境界は出典版ごとに保持。両本文は保留。"
+}

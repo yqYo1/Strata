@@ -1,0 +1,201 @@
+{
+  "status": "rejected after one raw prefill screening pair; no adoption",
+  "source_parent_commit": "3ad1392",
+  "hardware": {
+    "gpu": "Intel Arc B570 10 GiB",
+    "cpu": "Ryzen 5 5600X"
+  },
+  "change": "Loop over four stored XOR-8/4 partials, then finish XOR-2/1 in the original FP32 tree. Four inlined leaf bodies instead of sixteen.",
+  "binary_sha256": {
+    "old": "022f86ab49ed4aab2ea527e4c8651990942e630d7839ea4a2894e8ddac423a94",
+    "new": "e762918564365e239a577cbeff7890dc425c73f58e23948f25f296f288486bb4"
+  },
+  "validation": {
+    "JIT_MMQ": {
+      "tests": 3,
+      "geometries": 50,
+      "seconds": 13.08,
+      "passed": true
+    },
+    "AOT_MMQ": {
+      "tests": 3,
+      "geometries": 50,
+      "seconds": 2.53,
+      "passed": true
+    },
+    "all_four_output_ids_equal": true
+  },
+  "screen": {
+    "old1": {
+      "short": {
+        "tokens": 826,
+        "prefill_ms": 8945.5,
+        "output_ids": [
+          11855,
+          248046,
+          198,
+          248044,
+          248045,
+          846,
+          198,
+          248046
+        ]
+      },
+      "long": {
+        "prefetched_tokens": 4007,
+        "prefill_ms": 26535.0,
+        "output_ids": [
+          11855,
+          248046,
+          198,
+          248044,
+          248045,
+          846,
+          198,
+          248046
+        ],
+        "flags": [
+          "--pack",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "--native",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "--max-new",
+          "8",
+          "--max-context",
+          "8192",
+          "--spec",
+          "4",
+          "--spec-min-p",
+          "0.9",
+          "--mtp",
+          "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+          "--suffix-draft",
+          "0",
+          "--prefill",
+          "4096",
+          "--short-read",
+          "0",
+          "--expert-cache",
+          "512",
+          "--expert-profile",
+          "data/expert-profile.bin",
+          "--expert-cache-per-layer",
+          "--pool-workers",
+          "5",
+          "--adapt-swaps",
+          "0",
+          "--pcie-frac",
+          "0",
+          "--tokens-file",
+          "/tmp/strata-sycl-goal-prefill-scale-4k-tokens.txt",
+          "--check-logits",
+          "--stats"
+        ]
+      }
+    },
+    "new1": {
+      "short": {
+        "tokens": 826,
+        "prefill_ms": 9199.8,
+        "output_ids": [
+          11855,
+          248046,
+          198,
+          248044,
+          248045,
+          846,
+          198,
+          248046
+        ]
+      },
+      "long": {
+        "prefetched_tokens": 4007,
+        "prefill_ms": 26924.7,
+        "output_ids": [
+          11855,
+          248046,
+          198,
+          248044,
+          248045,
+          846,
+          198,
+          248046
+        ],
+        "flags": [
+          "--pack",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "--native",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "--max-new",
+          "8",
+          "--max-context",
+          "8192",
+          "--spec",
+          "4",
+          "--spec-min-p",
+          "0.9",
+          "--mtp",
+          "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+          "--suffix-draft",
+          "0",
+          "--prefill",
+          "4096",
+          "--short-read",
+          "0",
+          "--expert-cache",
+          "512",
+          "--expert-profile",
+          "data/expert-profile.bin",
+          "--expert-cache-per-layer",
+          "--pool-workers",
+          "5",
+          "--adapt-swaps",
+          "0",
+          "--pcie-frac",
+          "0",
+          "--tokens-file",
+          "/tmp/strata-sycl-goal-prefill-scale-4k-tokens.txt",
+          "--check-logits",
+          "--stats"
+        ]
+      }
+    }
+  },
+  "metadata": {
+    "xmx_variants": 54,
+    "grf_count": 128,
+    "scratch_bytes": {
+      "IQ2_S_tile8_raw": 1600,
+      "IQ2_S_tile8_packed": 1728
+    },
+    "raw_exact_tile8_code_bytes": {
+      "old": {
+        "20": 184000,
+        "22": 121856,
+        "42": 82560,
+        "21": 118720,
+        "18": 116480,
+        "23": 187520
+      },
+      "new": {
+        "20": 53184,
+        "22": 38336,
+        "42": 27328,
+        "21": 36928,
+        "18": 35776,
+        "23": 53056
+      }
+    }
+  },
+  "environment": {
+    "STRATA_SYCL_MMQ_XMX": "1",
+    "STRATA_SYCL_MMQ_XMX_TILE": "8",
+    "STRATA_SYCL_MMQ_XMX_EXACT": "1",
+    "STRATA_SYCL_MMQ_XMX_PACK": "0",
+    "STRATA_IQ_SINGLE_EXACT": "1",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "NEO_CACHE_PERSISTENT": "1"
+  },
+  "measurement_conditions": "No owned compilation or other GPU workload during timing; unrelated workstation services remained active. One pair is a screen, not a repeated median.",
+  "interpretation": "Both short and long prefills were slower despite smaller GPU code. Retained scratch and output evidence; reduced-array follow-up is separate."
+}

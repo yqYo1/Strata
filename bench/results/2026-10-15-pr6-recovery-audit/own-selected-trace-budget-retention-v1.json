@@ -1,0 +1,45 @@
+{
+  "schema": "strata-closed-trace-budget-retention-v1",
+  "state": "performed",
+  "owner": "Main",
+  "GPU_executed": false,
+  "raw_history_question": null,
+  "entries": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-selected-smoke-v1/owned/smoke-fp32.stderr",
+      "bytes": 67108864,
+      "allocated_bytes": 67159040,
+      "sha256": "465d2ada81a8f93b46344d16916969dbb798bdabd1384f05f6a0679707391bb9",
+      "reason": "Whole-model API trace hit known text budget before callback; no unresolved allocation-history consumer. Progress/lastAPI/ownedfailure/fresh independent fault window retained.",
+      "retained_replacement": "bench/results/2026-10-15-pr6-recovery-audit/own-selected-trace-budget-v1.stderr.txt",
+      "removed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-selected-log-reserve-host-regression-v1/owned/expected-budget-stop.stderr",
+      "bytes": 65011712,
+      "allocated_bytes": 65020928,
+      "sha256": "53395493c755ec04d570f5f6be59aadd22551fcf6677c97fd4c7e43af2863e12",
+      "reason": "CPU-only x-filled budget fixture is fully specified by retained actual argv and counts/hash; host regression and normal final utility verified.",
+      "retained_replacement": "bench/results/2026-10-15-pr6-recovery-audit/own-selected-log-reserve-host-regression-v1.json",
+      "removed": true
+    }
+  ],
+  "total_logical_bytes": 132120576,
+  "total_allocated_bytes": 132179968,
+  "original_failure_status_preserved": true,
+  "retained_excerpt_sha256": "af1819e24a9440b4d0f7034c7ae93d79285e787adf97460b3c8726f68538eaa9",
+  "retained_original_receipts": {
+    "bench/results/2026-10-15-pr6-recovery-audit/own-vllm-selected-smoke-v1.json": "d1a98dd50176706106b18516b7e379b5e53be18ff9cd2ff291c46285345fd247",
+    "bench/results/2026-10-15-pr6-recovery-audit/own-vllm-selected-trace-budget-forensics-v1.json": "67b72cefb6ae792f25f99e9afd41ee905d8792006841fc2039e2315ace127d65",
+    "bench/results/2026-10-15-pr6-recovery-audit/own-selected-log-reserve-host-regression-v1.json": "8d12bc300cf5adf76f1ff1d05eb9cf58995dd6a48d420eb3782f49e42a622021"
+  },
+  "source_recovery_commit": "67dbc7aa",
+  "serialized_lock": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock",
+  "original_raw_needed_by_next_selected_v2": false,
+  "available_bytes_before": 970668507136,
+  "available_bytes_after": 970668507136,
+  "available_bytes_delta": 0,
+  "available_delta_limit": "Concurrent nonmeasurement system writes and filesystem snapshots/compression can affect free-space delta; logical/allocated removed counts are separate.",
+  "performed_utc": "2026-10-16T03:45:08.106984+00:00",
+  "evidence_commit": "e0c39af7"
+}

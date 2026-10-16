@@ -1,0 +1,134 @@
+{
+  "original_result_statuses_unchanged": true,
+  "cases": {
+    "own-residual-quality-fp32-a-v1.json": {
+      "receipt_sha256": "fc5e36ec9847eced9d371991daefae5bc97a31f0bf4ba4f5b890a11d6b801e29",
+      "passed": true,
+      "complete": true,
+      "progress_and_lifecycle": [
+        "strata prefill dense: phase=retired residency=Full activations=0 full_bytes=2116951040 bank_bytes=50918400 snapshot_bytes=2116951040 overlay_rows=0 session_recapture=0 verifier=0 free_bytes=1139093504 total_bytes=10666115072",
+        "strata prefill dense: phase=bank residency=Bank activations=0 full_bytes=2116951040 bank_bytes=50918400 snapshot_bytes=2116951040 overlay_rows=0 session_recapture=0 verifier=0 free_bytes=4206104576 total_bytes=10666115072",
+        "strata prefill: layer-major candidate, tokens=78443 chunk=8192 residual_dtype=fp32 residual_element_bytes=4 residual_total=3213025280 residual_gpu_rows=32768 residual_gpu=1342177280 residual_host=1870848000 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
+        "strata trace: layer-major layer 0 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 1 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 2 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 3 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 4 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 5 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 6 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 7 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 8 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 9 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 10 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 11 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 12 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 13 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 14 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 15 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 16 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 17 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 18 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 19 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 20 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 21 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 22 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 23 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 24 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 25 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 26 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 27 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 28 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 29 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 30 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 31 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 32 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 33 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 34 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 35 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 36 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 37 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 38 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 39 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 40 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 41 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 42 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 43 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 44 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 45 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 46 of 48: completed 10 chunks",
+        "strata trace: layer-major layer 47 of 48: completed 10 chunks",
+        "strata prefill dense: phase=restored residency=Full activations=48 full_bytes=2116951040 bank_bytes=50918400 snapshot_bytes=2116951040 overlay_rows=0 session_recapture=0 verifier=0 free_bytes=1113399296 total_bytes=10666115072",
+        "strata dense prefill NLL: rows=78443 callback_ms=749978.137 single_row_head=1 performance_cohort=excluded"
+      ],
+      "diagnostic_stdout_summary": [
+        "speculation              1 rounds of 4, drafts accepted 0 of 0 (0.000), 1.00 tokens per round",
+        "accepted per round       0:1 1:0 2:0 3:0",
+        "verify window            wait for rings 71.817  pool 36.772  host 0.080  commit 0.034 ms/round; CPU experts 9.94 distinct / 9.94 routed per layer",
+        "pool multi               gate/up 23.483  quantize 0.101  down 10.467 ms/round; 28.7 GB/s over the rows phases; CPU pool call 36.577 ms/round",
+        "dispatch                 plan 2.329  activation quantize 0.147  jobs 0.027  run 34.059 ms/round",
+        "verify GPU overlap       48 of 48 shared/hit graphs complete when the CPU pool returned",
+        "mtp                      -nan ms/round drafting (0 rounds), MTP prompt 4806.3 ms, 1047 MiB of VRAM",
+        "output  : 1596",
+        "decode                   1 tokens in 3681.9 ms  ->  0.27 tok/s",
+        "prefill                  78443 tokens in 1005545.4 ms  ->  78.01 tok/s  (time to first token 1009535.2 ms)"
+      ]
+    },
+    "own-heads8-isolated-build-v1.json": {
+      "receipt_sha256": "48d84742ccd42feaf817563df3d9eb9bd0cdb3c533e9930cafa74c9a40981418",
+      "passed": true,
+      "complete": true
+    },
+    "own-heads8-isolated-correctness-v1.json": {
+      "receipt_sha256": "423e4b89d44dba76da182e2a00cf700258b53da64d6c3ab3b6baf994a9997083",
+      "passed": false,
+      "complete": false,
+      "failure_stderr": "UR adapter initialization failed: 2147483646 (UR_RESULT_ERROR_UNKNOWN)\n",
+      "failure_scope": "UR adapter initialization error then CPU spinning, owned SIGTERM exit-15, no fresh GPU fault/dump. Layer delimiter corrected only in new v2 recipe; original failure unchanged."
+    },
+    "own-heads8-isolated-correctness-v2.json": {
+      "receipt_sha256": "321aebad665ac7a87f974767b354538a6fa536443d92f0931c6f853ada50ee5f",
+      "passed": true,
+      "complete": true,
+      "trace_success_returns": {
+        "0": 774,
+        "1": 774
+      }
+    },
+    "own-heads8-isolated-bench-v1.json": {
+      "receipt_sha256": "ec0732e97cec27bd43b79ad715c7db286620523507453d27fe71a041c161fff2",
+      "passed": true,
+      "complete": true
+    }
+  },
+  "preserved_NLL_comparison_files": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-residual-quality-root-v1/fp32-a/recipe.json",
+      "bytes": 8835,
+      "sha256": "b385223aebcabf979596f0678803d464dc96847bd8713d037614b6977b402561"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-residual-quality-root-v1/fp32-a/faults.json",
+      "bytes": 406,
+      "sha256": "d6084687040c8bbe821af1d3ef75c05ace9fbf567ae7af4e9a553701aad025d9"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-residual-quality-root-v1/fp32-a/nll.bin",
+      "bytes": 941380,
+      "sha256": "17e6f5f911c01921ccdc6a59772858cfa89e6b18d636b13b0db9ff75b855f8cf"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-residual-quality-root-v1/fp32-a/nll.bin.meta",
+      "bytes": 368,
+      "sha256": "e9905a033c1e764c0566722da73a279e93b50ee8231b885f7430c85115d64d64"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-residual-quality-root-v1/fp32-a/closed.json",
+      "bytes": 1081,
+      "sha256": "0190183082d7ec8f8895a94a34d912864cfefae20f9ab7d803916bc35dbd1af0"
+    }
+  ],
+  "rejected_component": "Heads8 slower than baseline for nq128/256 in3 independent processes perarm/shape; canonical native/source remained unchanged.",
+  "retained_source_fixture": "own-prompt-heads8-v2/files/tests/sycl/prompt_heads8.cpp: source oracle consumer for next independent attention proposal; no compiled fixture consumer remains.",
+  "representative_dispatch_sha256": "b9a94c154ba58377ec1bdbf730fd3941e14053d0f31b70fe2ef96a2c5bb7d92a",
+  "manual_owned_stop_sha256": "10eb6a4548e6d86711fd8221caa880a5a8eb5a83192c131054b7256dceef7f09"
+}
