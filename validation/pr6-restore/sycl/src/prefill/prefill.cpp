@@ -3,6 +3,7 @@
 #include <sycl/sycl.hpp>
 #include <dpct/dpct.hpp>
 #include "strata/sycl_queue.hpp"
+#include "strata/sycl_retirement.hpp"
 #include "strata/prefill/prefill.hpp"
 #include "strata/prefill/draft_uploads.hpp"
 #include "strata/prefill/range_guard.hpp"
@@ -164,8 +165,9 @@ inline int ring_slots(size_t T) {
     const int r = v ? std::atoi(v) : g_ring_override > 0 ? g_ring_override : (g_pinned_share >= 0.9 ? pinned_ring : 96);
     if (v && r == STAGE) return STAGE; // Explicit opt-in to routed-only staging, including large chunks.
     // SYCL port: the stream-all walk (every non-resident expert of every layer, copied ahead across layers) hung on the
-    // B70 in its first large chunk until 2026-10-02 - the stager's and the PLE upload's host waits on queue events,
-    // which the Level Zero v2 adapter did not survive (Stager::issued_one, ple_done_seq). It runs since, and reads a
+    // B70 in its first large chunk until 2026-10-02 - the stager's and the PLE upload's host waits on queue events. The historical
+    // counter workaround was later rejected by safety review R2. Old measurements below are historical only:
+    // it read a
     // 40K prompt 4.8% faster than routed-only staging (1,159 vs 1,106 tok/s, same output): the default again.
     // STRATA_PREFILL_STREAM_ALL=0 keeps routed-only staging, =1 forces the walk.
     // It copies EVERY non-resident expert of a layer, routed or not: with a big host tier (the IQ2_XS: a quarter of the
@@ -255,9 +257,7 @@ struct Stager {
     std::vector<char> pinned;
     std::vector<std::vector<uint8_t>> pageable;   // the fallback when no more RAM can be pinned
     std::vector<dpct::event_ptr> dma_done;
-    uint64_t* done_seq = nullptr;            // page-locked: the copy queue's last finished DMA per buffer
-    std::vector<uint64_t> want;              // the sequence number each buffer's last DMA writes
-    uint64_t issue_seq = 0;
+    std::atomic<bool> stopping{false};
     bool measure_copies = false;
     std::atomic<uint64_t> host_copy_ns{0};
     std::atomic<bool> failed{false};
@@ -281,10 +281,6 @@ struct Stager {
         buf.assign((size_t) kRing, nullptr);
         pinned.assign((size_t) kRing, 0);
         dma_done.assign((size_t) kRing, nullptr);
-        want.assign((size_t) kRing, 0);
-        done_seq = sycl::malloc_host<uint64_t>((size_t) kRing, dpct::get_in_order_queue());
-        if (done_seq == nullptr) return false;
-        for (int i = 0; i < kRing; ++i) done_seq[i] = 0;
         pageable.resize(kRing);
         for (int i = 0; i < kRing; ++i) {
             /*
@@ -315,7 +311,6 @@ struct Stager {
         { std::lock_guard<std::mutex> lk(mu); quit = true; }
         cv.notify_all();
         for (auto& t : threads) t.join();
-        if (done_seq) sycl::free(done_seq, dpct::get_in_order_queue());
         // init may throw while resizing the parallel vectors. Only entries
         // actually constructed can be examined during partial-init cleanup.
         for (auto event : dma_done) if (event) dpct::destroy_event(event);
@@ -343,10 +338,17 @@ struct Stager {
                 if (j < 0) { active.fetch_sub(1, std::memory_order_acq_rel); break; }
                 const int b = j % kRing;
                 if (j >= kRing)   // job j - kRing's DMA from this buffer is queued
-                    while (issued.load(std::memory_order_acquire) <= j - kRing) std::this_thread::yield();
+                    detail::retirement_until([&] { return stopping.load(std::memory_order_acquire) ||
+                        issued.load(std::memory_order_acquire) > j - kRing; }, "stager issue gate");
+                if (stopping.load(std::memory_order_acquire)) {
+                    active.fetch_sub(1, std::memory_order_acq_rel); break;
+                }
                 // and done (#385) - for a generation's first kRing jobs that is the previous generation's last DMA from
                 // the buffer, which nothing else waits for when a chunk ends without a sync (no MTP)
-                while (!buffer_free(b)) std::this_thread::yield();
+                retire_buffer(b);
+                if (stopping.load(std::memory_order_acquire)) {
+                    active.fetch_sub(1, std::memory_order_acq_rel); break;
+                }
                 const Job& jb = jobs[(size_t) j];
                 const auto copy_start = measure_copies ? Clock::now() : Clock::time_point{};
                 if (jb.gsrc != nullptr) {
@@ -384,6 +386,7 @@ struct Stager {
         if (js.empty()) return;
         std::lock_guard<std::mutex> lk(mu);
         failed.store(false, std::memory_order_relaxed);
+        stopping.store(false, std::memory_order_release);
         jobs = std::move(js);
         if (ready_cap < jobs.size()) {
             ready_cap = jobs.size() * 2;
@@ -397,33 +400,30 @@ struct Stager {
     }
     /// Job j's bytes, in a pinned buffer (waits for the copy).
     const uint8_t* wait(int j) {
-        while (!ready[(size_t) j].load(std::memory_order_acquire)) std::this_thread::yield();
+        detail::retirement_until([&] { return ready[(size_t) j].load(std::memory_order_acquire) != 0; },
+                                 "stager host copy did not finish");
         return buf[j % kRing];
     }
-    /// The launching thread queued job j's DMA on `copy`: its buffer is free once that is done.
-    /// The launching thread queued job j's DMA on `copy`: its buffer is free once that is done.
-    // SYCL port: the copy queue writes a sequence number into page-locked host memory after the DMA and the stager
-    // thread polls it, instead of waiting on an event. A stager thread's host wait on the copy queue's events (the
-    // CUDA form, cudaEventSynchronize) hung a lent-slot prompt in its first full chunk under the Level Zero v2 adapter
-    // once the ring wrapped: no thread was waiting by then, the GPU sat busy - the event a host thread had waited on
-    // was still in a queue's wait list (the v1 adapter and a 256-buffer ring, which never waits, both ran). 2026-10-01
-    void issued_one(int j, dpct::queue_ptr copy) {
-        const uint64_t s = ++issue_seq;
-        // Publish a sequence only after its signal command was accepted. If
-        // fill throws, Restore drains the already accepted memcpy before
-        // finish() releases workers; they must not await an unqueued signal.
-        copy->fill<uint64_t>(done_seq + j % kRing, s, 1);
-        want[(size_t) (j % kRing)] = s;
-        issued.store(j + 1, std::memory_order_release);
+    // Publish only an accepted terminal event. The release/acquire issue gate
+    // protects the event object; ready protects its next overwrite on ring wrap.
+    void issued_one(int j, dpct::queue_ptr copy) noexcept {
+        try {
+            detail::RetirementDeadline deadline;
+            *dma_done[(size_t) (j % kRing)] = copy->ext_oneapi_submit_barrier();
+            issued.store(j + 1, std::memory_order_release);
+        } catch (...) {
+            // A memcpy may already have been accepted. Never unwind its owners.
+            detail::retirement_fail_stop("stager terminal event submission failed");
+        }
     }
-    bool buffer_free(int b) const {
-        return *(volatile const uint64_t*) (done_seq + b) >= want[(size_t) b];
-    }
-    /// No job is running after this (the end of a layer, or an early return in the middle of one).
-    void finish() {
-        head.store((uint64_t) gen << 32, std::memory_order_release);   // n = 0: nothing more to claim
+    void retire_buffer(int b) const { strata::retire_event(*dma_done[(size_t) b]); }
+    void finish() noexcept {
+        stopping.store(true, std::memory_order_release);
+        head.store((uint64_t) gen << 32, std::memory_order_release);
         issued.store(1 << 30, std::memory_order_release);
-        while (active.load(std::memory_order_acquire) != 0) std::this_thread::yield();
+        detail::retirement_until([&] { return active.load(std::memory_order_acquire) == 0; },
+                                 "stager cancellation did not finish");
+        for (auto event : dma_done) if (event) strata::retire_event(*event);
     }
 };
 
@@ -490,15 +490,15 @@ struct PeerPrefill {
         Adjust the selected device if needed.
         */
         dpct::select_device(dev);
-        if (s) s->wait();
+        if (s) strata::retire_queue(*s);
         ctx.reset();
         for (void *p : owned)
             DPCT_CHECK_ERROR(sycl::free(p, dpct::get_in_order_queue()));
         if (ev_done) dpct::destroy_event(ev_done);
-        if (s_out) s_out->wait();
+        if (s_out) strata::retire_queue(*s_out);
         for (dpct::event_ptr e : ev_grp) if (e) dpct::destroy_event(e);
         for (dpct::event_ptr e : ev_dm) if (e) dpct::destroy_event(e);
-        if (s_cp) s_cp->wait();
+        if (s_cp) strata::retire_queue(*s_cp);
         for (dpct::event_ptr e : pcopied) if (e) dpct::destroy_event(e);
         for (dpct::event_ptr e : pused) if (e) dpct::destroy_event(e);
         if (s_cp) dpct::get_current_device().destroy_queue(s_cp);
@@ -591,12 +591,6 @@ struct Prefill::Impl {
     dpct::event_ptr ple_copied[2] =
         {}; // one runs; the event marks that buffer's upload done
     std::vector<uint32_t> ple_rows[2];
-    // SYCL port: each buffer's upload is marked by a sequence number the queue writes into page-locked memory after
-    // it, polled by the host - not a host wait on `ple_copied` (a host wait on a queue's event hung the prompt path
-    // under the Level Zero v2 adapter once #374 moved it inside the layer loop; see Stager::issued_one)
-    uint64_t* ple_done_seq = nullptr;
-    uint64_t ple_want[2] = {};
-    uint64_t ple_seq = 0;
     float* ple_norm = nullptr;
     uint8_t* region = nullptr;               // the attention/MoE scratch region (idle while the PLE block runs)
     uint64_t region_bytes = 0;
@@ -662,8 +656,9 @@ void Prefill::reset() {
 void Prefill::release() {
     if (!impl_) return;
     impl_->ready = false;
-    if (impl_->cs) impl_->cs->wait();
-    if (impl_->copy) impl_->copy->wait();
+    detail::RetirementDeadline release_deadline;
+    if (impl_->cs) strata::retire_queue(*impl_->cs);
+    if (impl_->copy) strata::retire_queue(*impl_->copy);
     for (int i = 0; i < RING_MAX; ++i) {
         if (impl_->copied[i]) dpct::destroy_event(impl_->copied[i]);
         if (impl_->used[i]) dpct::destroy_event(impl_->used[i]);
@@ -672,7 +667,6 @@ void Prefill::release() {
         if (impl_->hand[b])
             sycl::free(impl_->hand[b], dpct::get_in_order_queue());
         if (impl_->ple_copied[b]) dpct::destroy_event(impl_->ple_copied[b]);
-        if (b == 1 && impl_->ple_done_seq) { sycl::free(impl_->ple_done_seq, dpct::get_in_order_queue()); impl_->ple_done_seq = nullptr; }
         if (impl_->ple_emb_host[b] && impl_->ple_pageable[b].empty())
             sycl::free(impl_->ple_emb_host[b], dpct::get_in_order_queue());
     }
@@ -888,6 +882,7 @@ bool Prefill::init(const core::WeightTable &wt, const core::ModelGeometry &g,
                    const core::ExpertCache *cache, const int32_t *host_res,
                    int64_t chunk, void *stream, std::string &err, void *borrow,
                    uint64_t borrow_bytes) try {
+    detail::RetirementDeadline init_deadline(std::chrono::seconds(600));
     Impl& m = *impl_;
     m.ready = false;
     if (m.init_attempted) {
@@ -958,15 +953,15 @@ bool Prefill::init(const core::WeightTable &wt, const core::ModelGeometry &g,
         m.owned.push_back(m.tok_dev);
         m.tok_host.resize((size_t) chunk);
     }
-    /*
-    DPCT1025: The SYCL queue is created ignoring the flag and priority
-    options.
-    */
-    if (DPCT_CHECK_ERROR(
-            m.copy = dpct::get_current_device().create_queue(true)) != 0) {
-        err = "prefill: copy stream"; return false;
+    // Explicit safety synchronization delta: uploads and consumers share the
+    // selected in-order queue. The old separate-queue timing claims do not apply.
+    if (!m.cs->is_in_order() || m.cs->get_context() != dpct::get_in_order_queue().get_context() ||
+        m.cs->get_device() != dpct::get_in_order_queue().get_device()) {
+        err = "prefill: checked retirement requires the allocation device/context and an in-order queue";
+        return false;
     }
-    m.copy_owned = true;
+    m.copy = m.cs; // borrowed; release must never destroy it
+    m.copy_owned = false;
     const size_t T = (size_t) chunk;
     m.T_max = chunk;
     m.borrowed = borrow != nullptr;
@@ -1048,11 +1043,6 @@ bool Prefill::init(const core::WeightTable &wt, const core::ModelGeometry &g,
         if (!m.ple_copied[b] &&
             DPCT_CHECK_ERROR(m.ple_copied[b] = new sycl::event()) != 0)
             ok = false;
-        if (!m.ple_done_seq) {
-            m.ple_done_seq = sycl::malloc_host<uint64_t>(2, dpct::get_in_order_queue());
-            if (m.ple_done_seq) m.ple_done_seq[0] = m.ple_done_seq[1] = 0;
-            else ok = false;
-        }
         m.ple_rows[b].resize(T * strata::kernels::PLE_N_HEADS);
     }
     if (ss.qsa_states[ss.qsa_primary()].kv_mode == 1) {   // KV streaming: the staging pool's identity page table
@@ -1069,7 +1059,7 @@ bool Prefill::init(const core::WeightTable &wt, const core::ModelGeometry &g,
             by memcpy API to ensure synchronization behavior.
             */
             DPCT_CHECK_ERROR(dpct::get_in_order_queue().memcpy(
-                m.ident_table, ident.data(), ident.size() * 4).wait()) != 0)
+                m.ident_table, ident.data(), ident.size() * 4).wait_and_throw()) != 0)
             ok = false;
         else
             m.owned.push_back(m.ident_table);
@@ -1222,8 +1212,8 @@ bool Prefill::relayout(int64_t chunk, void *borrow, uint64_t borrow_bytes,
         return false;
     }
     m.ready = false;
-    if (DPCT_CHECK_ERROR(m.cs->wait()) != 0 ||
-        DPCT_CHECK_ERROR(m.copy->wait()) != 0) {
+    if (DPCT_CHECK_ERROR(strata::retire_queue(*m.cs)) != 0 ||
+        DPCT_CHECK_ERROR(strata::retire_queue(*m.copy)) != 0) {
         err = "prefill: relayout: the stream failed";
         return false;
     }
@@ -1327,7 +1317,7 @@ bool Prefill::draft_kv(core::MtpDrafter& mtp, const float* R_rows, const int32_t
     int32_t* bnd = q8 ? (int32_t*) carve(16) : nullptr;
     if ((uint64_t) (q - m.region) > m.region_bytes) return false;
     static const bool timing = std::getenv("STRATA_DRAFT_TIMING") != nullptr;   // debug: where this pass's time goes
-    if (timing) m.cs->wait();
+    if (timing) strata::retire_queue(*m.cs);
     const auto ti0 = Clock::now();
     if (!mtp.idle(err)) return false;   // the drafter's own stream (its graph uploads) before this writes its K/V
     const double ms_idle = ms_since(ti0);
@@ -1339,7 +1329,7 @@ bool Prefill::draft_kv(core::MtpDrafter& mtp, const float* R_rows, const int32_t
     // kernels/batches, with each async source live through the final wait.
     detail::DraftHostUploads uploads(next_tokens, n, r0, B, g.hc, q8);
     detail::DraftUploadGuard upload_guard(
-        [&] { m.cs->wait_and_throw(); return true; },
+        [&] { strata::retire_queue(*m.cs); return true; },
         [] {
             std::fputs("prefill: draft uploads failed to retire; exiting with sources live\n", stderr);
             std::fflush(stderr);
@@ -1433,7 +1423,7 @@ bool Prefill::draft_kv(core::MtpDrafter& mtp, const float* R_rows, const int32_t
                       st.kv_int8 ? nullptr : st.v_pool, st.k_q, st.v_q, st.k_scale, st.v_scale, m.cs, &st.host);
         }
     }
-    if (DPCT_CHECK_ERROR(m.cs->wait_and_throw()) != 0) {
+    if (DPCT_CHECK_ERROR(strata::retire_queue(*m.cs)) != 0) {
         /*
         DPCT1009: SYCL reports errors using exceptions and does not use
         error codes. Please replace the "get_error_string_dummy(...)" with a
@@ -1578,7 +1568,7 @@ bool Prefill::set_peer(core::PeerExperts *peer, int64_t cap_rows,
     if (ok) {
         pp->ctx = std::make_unique<mmq::Context>();
         mmq::iota(pp->ident, pp->cap_rows, pp->s);
-        ok = DPCT_CHECK_ERROR(pp->s->wait()) == 0;
+        ok = DPCT_CHECK_ERROR(strata::retire_queue(*pp->s)) == 0;
     }
     size_t fb = 0, tb = 0;
     /*
@@ -1707,7 +1697,7 @@ struct PfTimer {
     void mark(int phase, dpct::queue_ptr s) {
         if (sync) {
             const auto t0 = std::chrono::steady_clock::now();
-            s->wait();
+            strata::retire_queue(*s);
             std::fprintf(stderr, "strata prefill sync: mark %lld phase %s done (waited %.1f ms)\n", ++n_sync,
                          phase < kPfCount ? kPfNames[phase] : "?",
                          std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count());
@@ -1914,6 +1904,8 @@ struct PeTimer {
 }  // namespace
 
 bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) {
+    // Declared first: also bounds waits/joins during all local owner cleanup.
+    detail::RetirementDeadline request_deadline(std::chrono::seconds(7200));
     if (!impl_ || !impl_->ready || !impl_->g || !impl_->ss || !impl_->wt || !impl_->cs || !impl_->copy ||
         !impl_->stager || impl_->T <= 0 || impl_->T_max < impl_->T) {
         err = "prefill: init must complete before run"; return false;
@@ -1921,6 +1913,16 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
     if (!detail::pr6_position_span(n, pos0, impl_->ss->max_cells) || (n && !tokens)) {
         err = "prefill: input span exceeds session capacity or physical 262144"; return false;
     }
+    struct RequestRetirement {
+        Impl& m;
+        bool success = false;
+        ~RequestRetirement() noexcept {
+            strata::retire_queue(*m.cs);
+            if (m.copy != m.cs) strata::retire_queue(*m.copy);
+            m.stager->finish();
+            if (!success) m.ready = false;
+        }
+    } request{*impl_};
     for (int64_t i = 0; i < n; ++i)
         if (tokens[i] < std::numeric_limits<int32_t>::min() ||
             tokens[i] > std::numeric_limits<int32_t>::max()) {
@@ -1938,7 +1940,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
     // complete recurrent/conv state, PLE history and all indexer state bytes.
     if (const char* path = std::getenv("STRATA_PREFILL_DUMP_STATE")) {
         Impl& m = *impl_;
-        m.cs->wait(); m.copy->wait();
+        strata::retire_queue(*m.cs); strata::retire_queue(*m.copy);
         core::ConversationCheckpoint checkpoint;
         checkpoint.ids.resize((size_t) (pos0 + n));
         if (!core::conversation_checkpoint_save(checkpoint, *m.ss, *m.g, err)) return false;
@@ -1966,6 +1968,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
         }
         if (std::fflush(file.get()) != 0) { err = "prefill: writing the state diagnostic failed"; return false; }
     }
+    request.success = true;
     return true;
 }
 
@@ -2059,7 +2062,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         decltype(on_chunk) chunk; decltype(on_stage_chunk) stage;
         ~Restore() noexcept {
             try {
-                m.cs->wait_and_throw(); m.copy->wait_and_throw(); m.stager->finish();
+                strata::retire_queue(*m.cs); strata::retire_queue(*m.copy); m.stager->finish();
             } catch (...) {
                 // Completion is unknown. Do not unwind local cache/residual
                 // owners or reinstall decode callbacks over outstanding work.
@@ -2083,7 +2086,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                  (unsigned long long) ((size_t) gpu_tokens * D * sizeof(float)), (long long) layer_cache.bytes());
     for (int64_t layer = 0; layer < g.n_layers; ++layer) {
         if (should_stop && should_stop()) { err = "cancelled"; return false; }
-        m.cs->wait(); m.copy->wait(); m.stager->finish();
+        strata::retire_queue(*m.cs); strata::retire_queue(*m.copy); m.stager->finish();
         phases.mark(kPfLayerLoad, strata::q_of(m.cs));
         const auto load_started = Clock::now();
         const size_t bytes = (size_t) layout.blob_bytes(layer);
@@ -2105,7 +2108,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             transfers.copy(m.copy, const_cast<uint8_t*>(layer_cache.device_slot(e)), m.stager->wait(e), bytes, layer);
             m.stager->issued_one(e, m.copy);
         }
-        m.copy->wait(); m.stager->finish();
+        strata::retire_queue(*m.copy); m.stager->finish();
         transfers.serial_layer_load_ms += ms_since(load_started);
         phases.mark(kPfStart, strata::q_of(m.cs));
         if (m.stager->failed.load(std::memory_order_relaxed)) {
@@ -2130,10 +2133,10 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                 const int64_t row = position - pos0;
                 if (row + count <= gpu_tokens)
                     transfers.device_residual(m.cs, device_rows.get() + (size_t) row * D, residual,
-                                              (size_t) count * D * sizeof(float), layer).wait();
+                                              (size_t) count * D * sizeof(float), layer).wait_and_throw();
                 else
                     transfers.activation(m.cs, rows.data() + (size_t) (row - gpu_tokens) * D, residual,
-                                         (size_t) count * D * sizeof(float), layer).wait();
+                                         (size_t) count * D * sizeof(float), layer).wait_and_throw();
                 phases.mark(kPfStart, strata::q_of(m.cs));
                 return true;
             }
@@ -2144,7 +2147,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         if (!run_impl(tokens, n, pos0, err)) return false;
     }
     phases.mark(kPfStart, strata::q_of(m.cs));
-    m.cs->wait(); phases.fold();
+    strata::retire_queue(*m.cs); phases.fold();
     phases.report(n, ms_since(started), stats_.ms_experts_host - old_stats.ms_experts_host,
                   stats_.ms_ple - old_stats.ms_ple);
     stats_.tokens = old_stats.tokens + n;
@@ -2265,7 +2268,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
         auto lap = [&](const char* what) {
             if (pt.on) { std::fprintf(stderr, "strata prefill timing: setup %s %.1f ms\n", what, ms_since(tlap)); tlap = Clock::now(); }
         };
-        if (pt.on) { m.cs->wait(); lap("work queued before the chunk"); }
+        if (pt.on) { strata::retire_queue(*m.cs); lap("work queued before the chunk"); }
         // ---- embeddings, broadcast to the four streams - or, in a later stage of a layer split, the rows the
         // previous stage handed on
         if (hand_in_ != nullptr) {
@@ -2316,7 +2319,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
             lap("token ids uploaded");
             if (nemb) {
                 nemb->gather_dev(m.tok_dev, T, m.emb, m.cs);
-                if (pt.on) { m.cs->wait(); lap("embedding gather (waited)"); }
+                if (pt.on) { strata::retire_queue(*m.cs); lap("embedding gather (waited)"); }
             } else {
                 const auto* codes = (const uint8_t*) wemb->data;
                 const auto* scales = (const float*) (codes + wemb->codes_bytes);
@@ -2374,54 +2377,14 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
             type of operand memory, so you may need to call wait() on event
             return by memcpy API to ensure synchronization behavior.
             */
-            if (DPCT_CHECK_ERROR(m.cs->memcpy(m.ple_emb,
-                                              m.ple_emb_host[ple_buf],
-                                              (size_t)T * N * 4)) != 0 ||
-                /*
-                DPCT1024: The original code returned the error code that was
-                further consumed by the program logic. This original code was
-                replaced with 0. You may need to rewrite the program logic
-                consuming the error code.
-                */
-                DPCT_CHECK_ERROR((m.ple_want[ple_buf] = ++m.ple_seq,
-                                  m.cs->fill<uint64_t>(m.ple_done_seq + ple_buf, m.ple_want[ple_buf], 1))) != 0) {
-                /*
-                DPCT1009: SYCL reports errors using exceptions and does not
-                use error codes. Please replace the
-                "get_error_string_dummy(...)" with a real error-handling
-                function.
-                */
-                /*
-                DPCT1010: SYCL uses exceptions to report errors and does not
-                use the error codes. The cudaGetLastError function call was
-                replaced with 0. You need to rewrite this code.
-                */
-                err = std::string("prefill: the PLE rows' upload failed: ") +
-                      dpct::get_error_string_dummy(0);
-                return false;
+            try {
+                *m.ple_copied[ple_buf] = m.cs->memcpy(m.ple_emb, m.ple_emb_host[ple_buf], (size_t) T * N * 4);
+            } catch (...) {
+                detail::retirement_fail_stop("PLE upload submission failed");
             }
             if (c0 + T < n) {   // SYCL port: T, this chunk's length (the first chunk can be shorter: chunk_len)
                 // the other buffer's upload (a chunk ago) is done before the SSD thread refills it
-                if (DPCT_CHECK_ERROR([&] {
-                        while (*(volatile const uint64_t*) (m.ple_done_seq + (ple_buf ^ 1)) < m.ple_want[ple_buf ^ 1])
-                            std::this_thread::yield();
-                    }()) != 0) {
-                    /*
-                    DPCT1009: SYCL reports errors using exceptions and does
-                    not use error codes. Please replace the
-                    "get_error_string_dummy(...)" with a real error-handling
-                    function.
-                    */
-                    /*
-                    DPCT1010: SYCL uses exceptions to report errors and does
-                    not use the error codes. The cudaGetLastError function call
-                    was replaced with 0. You need to rewrite this code.
-                    */
-                    err =
-                        std::string("prefill: the PLE rows' upload failed: ") +
-                        dpct::get_error_string_dummy(0);
-                    return false;
-                }
+                strata::retire_event(*m.ple_copied[ple_buf ^ 1]);
                 ple_next = std::async(std::launch::async, [&ple_gather, &ple_next_err, c1 = c0 + T, b = ple_buf ^ 1] {
                     return ple_gather(c1, b, ple_next_err);
                 });
@@ -2705,8 +2668,8 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
         if (!step_sync) return;
             core::progress_at(what, layer, p0);
             const auto ts = Clock::now();
-            const dpct::err0 a = DPCT_CHECK_ERROR(m.cs->wait()),
-                             b = DPCT_CHECK_ERROR(m.copy->wait());
+            const dpct::err0 a = DPCT_CHECK_ERROR(strata::retire_queue(*m.cs)),
+                             b = DPCT_CHECK_ERROR(strata::retire_queue(*m.copy));
             const double ms = ms_since(ts);
             if (ms > 250.0 || a != 0 || b != 0)
                 std::fprintf(stderr,
@@ -2957,7 +2920,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                         API to ensure synchronization behavior.
                         */
                         m.cs->memcpy(ids.data(), m.sel_ids, ids.size() * 4);
-                        m.cs->wait();
+                        strata::retire_queue(*m.cs);
                         double sum_w = 0, sum_u = 0;
                         for (int64_t t0 = 0; t0 + 16 <= T; t0 += 16) {
                             std::vector<int32_t> u;
@@ -3025,7 +2988,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                         API to ensure synchronization behavior.
                         */
                         m.cs->memcpy(b.data(), ids16, b.size() * 4);
-                        m.cs->wait();
+                        strata::retire_queue(*m.cs);
                         for (int64_t t = 0; t < T; ++t) {
                             const int64_t w = m.steps_host[(size_t) (t * strata::kernels::kStepCount + strata::kernels::kStepWidth)];
                             const int32_t *x = a.data() + t * m.cap, *y = b.data() + t * m.cap;
@@ -3059,7 +3022,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                             behavior.
                             */
                             m.cs->memcpy(h.data(), m.sel_ids, h.size() * 4);
-                            m.cs->wait();
+                            strata::retire_queue(*m.cs);
                             if (std::FILE* f = std::fopen(dump, "ab")) {
                                 const int32_t hdr[4] = {(int32_t) qsa_index, (int32_t) p0, (int32_t) T, (int32_t) m.cap};
                                 std::fwrite(hdr, 4, 4, f);
@@ -3079,10 +3042,10 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                     // STRATA_DUMP_SEL=<file>: the selected cells of every prompt position of the first QSA layer of the
                     // last chunk (int32 T, cap, then T*cap ids and T widths) - the input to the grouped-gather study
                     if (static const char* dsel = std::getenv("STRATA_DUMP_SEL"); dsel && c0 + T >= n && qsa_index == 0) {
-                        m.cs->wait();
+                        strata::retire_queue(*m.cs);
                         std::vector<int32_t> ids_h((size_t) T * m.cap), st_h((size_t) T * strata::kernels::kStepCount);
-                        m.cs->memcpy(ids_h.data(), m.sel_ids, ids_h.size() * 4).wait();
-                        m.cs->memcpy(st_h.data(), m.steps_dev, st_h.size() * 4).wait();
+                        m.cs->memcpy(ids_h.data(), m.sel_ids, ids_h.size() * 4).wait_and_throw();
+                        m.cs->memcpy(st_h.data(), m.steps_dev, st_h.size() * 4).wait_and_throw();
                         if (FILE* f = std::fopen(dsel, "wb")) {
                             const int32_t hdr[2] = {(int32_t) T, (int32_t) m.cap};
                             std::fwrite(hdr, 4, 2, f);
@@ -3233,7 +3196,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                         // work), not the host: the watchdog's report says so (only its text changes)
                         core::progress_at("reading the prompt (batched): waiting for the GPU (attention, router) at layer",
                                           l, p0);
-                        m.cs->wait();
+                        strata::retire_queue(*m.cs);
                         core::progress_at("reading the prompt (batched): layer", l, p0);
                         pt.fold();
                         if (pe.on) {   // the peer's marks so far are done: the primary waited for its last rows
@@ -3248,7 +3211,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                             needed.
                             */
                             int pd = 0; pd = dpct::get_current_device_id();
-                                dpct::select_device(pe.dev); m.pp->s->wait();
+                                dpct::select_device(pe.dev); strata::retire_queue(*m.pp->s);
                                 pe.fold(); dpct::select_device(pd);
                         }
                         std::fill(m.cnt.begin(), m.cnt.end(), 0);
@@ -3957,13 +3920,13 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                     moe_combine(m.Dm, m.slot_dev, m.w, m.shared, m.sg, m.bo, T, m.cs);
                     // debug: STRATA_DBG_NAN=1 reports the first layer of a chunk whose MoE produced non-finite values
                     if (static const bool dbg = std::getenv("STRATA_DBG_NAN") != nullptr; dbg) {
-                        m.cs->wait();
+                        strata::retire_queue(*m.cs);
                         auto bad = [&](const float *d, int64_t n) {
                             try {
                         std::vector<float> h((size_t)n);
                             dpct::get_in_order_queue()
                                 .memcpy(h.data(), d, (size_t)n * 4)
-                                .wait();
+                                .wait_and_throw();
                             int64_t c = 0;
                             for (float v : h) c += !std::isfinite(v);
                             return c;
@@ -3983,7 +3946,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                         // gate/up (non-finite count, largest finite magnitude)
                         auto bad16 = [&](const uint16_t* d, int64_t n, double& mx) {
                             std::vector<uint16_t> h((size_t) n);
-                            dpct::get_in_order_queue().memcpy(h.data(), d, (size_t) n * 2).wait();
+                            dpct::get_in_order_queue().memcpy(h.data(), d, (size_t) n * 2).wait_and_throw();
                             int64_t c = 0;
                             mx = 0;
                             for (uint16_t v : h) {
@@ -4056,7 +4019,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
             */
             if (DPCT_CHECK_ERROR(m.cs->memcpy(h, m.R, (size_t)T * D * 4)) !=
                     0 ||
-                DPCT_CHECK_ERROR(m.cs->wait()) != 0) {
+                DPCT_CHECK_ERROR(strata::retire_queue(*m.cs)) != 0) {
                 /*
                 DPCT1009: SYCL reports errors using exceptions and does not
                 use error codes. Please replace the
@@ -4083,14 +4046,14 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
             continue;   // the last stage reports the chunk (on_chunk)
         }
         if (const char* dump = (m.transfer_context && LE < g.n_layers) ? nullptr : std::getenv("STRATA_PREFILL_DUMP_R")) {   // debug: the final residuals, every 64th
-            m.cs->wait(); // position (A/B quality of this path)
+            strata::retire_queue(*m.cs); // position (A/B quality of this path)
             if (std::FILE* f = std::fopen(dump, c0 == 0 ? "wb" : "ab")) {
                 std::vector<float> row((size_t) D);
                 const int64_t stride = std::getenv("STRATA_PREFILL_DUMP_R_ALL") ? 1 : 64;
                 for (int64_t t = (stride - p0 % stride) % stride; t < T; t += stride) {
                     dpct::get_in_order_queue()
                         .memcpy(row.data(), m.R + t * D, (size_t)D * 4)
-                        .wait();
+                        .wait_and_throw();
                     const int64_t pos = p0 + t;
                     std::fwrite(&pos, sizeof pos, 1, f);
                     std::fwrite(row.data(), 4, row.size(), f);
@@ -4100,7 +4063,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
         }
         if (on_chunk || on_stage_chunk) {
             const auto toc = Clock::now();
-            if (DPCT_CHECK_ERROR(m.cs->wait()) != 0) {
+            if (DPCT_CHECK_ERROR(strata::retire_queue(*m.cs)) != 0) {
                 /*
                 DPCT1009: SYCL reports errors using exceptions and does not
                 use error codes. Please replace the
@@ -4127,13 +4090,13 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
     ss.ple_prev[0] = prev[0];
     ss.ple_prev[1] = prev[1];
     if (std::getenv("STRATA_DBG_NAN") != nullptr) {   // debug: the state the prompt leaves for the token path
-        m.cs->wait();
+        strata::retire_queue(*m.cs);
         auto bad = [&](const float *d, int64_t n) {
             try {
         std::vector<float> h((size_t)n);
             dpct::get_in_order_queue()
                 .memcpy(h.data(), d, (size_t)n * 4)
-                .wait();
+                .wait_and_throw();
             int64_t c = 0;
             double mx = 0;
             for (float v : h) { c += !std::isfinite(v); if (std::isfinite(v)) mx = std::max(mx, (double) std::fabs(v)); }
@@ -4153,7 +4116,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
         bad(ss.gdn_state, 64 * 1024);
         std::fprintf(stderr, "\n");
     }
-    if (DPCT_CHECK_ERROR(m.cs->wait()) != 0) {
+    if (DPCT_CHECK_ERROR(strata::retire_queue(*m.cs)) != 0) {
         /*
         DPCT1009: SYCL reports errors using exceptions and does not use
         error codes. Please replace the "get_error_string_dummy(...)" with a
@@ -4172,7 +4135,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
     DPCT1000: Error handling if-stmt was detected but could not be
     rewritten.
     */
-    if (const dpct::err0 cst = DPCT_CHECK_ERROR(m.copy->wait()); cst != 0) {
+    if (const dpct::err0 cst = DPCT_CHECK_ERROR(strata::retire_queue(*m.copy)); cst != 0) {
         /*
         DPCT1009: SYCL reports errors using exceptions and does not use
         error codes. Please replace the "get_error_string_dummy(...)" with a
@@ -4204,7 +4167,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
             Adjust the selected device if needed.
             */
             int pd = 0; pd = dpct::get_current_device_id();
-                dpct::select_device(pe.dev); m.pp->s->wait(); pe.fold();
+                dpct::select_device(pe.dev); strata::retire_queue(*m.pp->s); pe.fold();
                 dpct::select_device(pd);
             std::string pl;
             char b[96];
@@ -4222,7 +4185,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
         }
     }
     if (std::getenv("STRATA_STATE_HASH_GDN") != nullptr) {   // debug: the GDN states as the prompt path leaves them
-        m.cs->wait();
+        strata::retire_queue(*m.cs);
         std::vector<uint8_t> b((size_t) gdn_floats * 4);
         std::string line;
         char h[8];
@@ -4230,7 +4193,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
             dpct::get_in_order_queue()
                 .memcpy(b.data(), ss.gdn_state + (size_t)i * gdn_floats,
                         b.size())
-                .wait();
+                .wait_and_throw();
             uint64_t x = 1469598103934665603ull;
             for (uint8_t c : b) x = (x ^ c) * 1099511628211ull;
             std::snprintf(h, sizeof(h), "%04llx ", (unsigned long long) (x & 0xffff));
