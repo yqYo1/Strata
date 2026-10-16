@@ -1,0 +1,68 @@
+{
+  "schema": "strata-moe-window-bulk-source-arithmetic-v1",
+  "status": "source_arithmetic_only",
+  "GPU_executed": false,
+  "runtime_fit_proven": false,
+  "recipe_sha256": "756acf1d98d4b66ebf0ff89133d157c56e3b81f5f63a3d8a7fa2a3fc4cb51c20",
+  "base_sha256": "e85ec84e890b2d6bdb2823b8da02ae2f1091e4e4af89b2d52e6da244bbc7f64a",
+  "region": {
+    "down_bf16": {
+      "offset": 0,
+      "payload": 838860800,
+      "reserved": 838861056
+    },
+    "shared_bf16": {
+      "offset": 838861056,
+      "payload": 83886080,
+      "reserved": 83886336
+    },
+    "weights_f32": {
+      "offset": 922747392,
+      "payload": 655360,
+      "reserved": 655616
+    },
+    "ids_then_slots_i32": {
+      "offset": 923403008,
+      "payload": 655360,
+      "reserved": 655616
+    },
+    "shared_gate_f32": {
+      "offset": 924058624,
+      "payload": 65536,
+      "reserved": 65792
+    },
+    "injection_f32": {
+      "offset": 924124416,
+      "payload": 262144,
+      "reserved": 262400
+    },
+    "gather_f16": {
+      "offset": 924386816,
+      "payload": 41943040,
+      "reserved": 41943296
+    },
+    "gate_up_bf16": {
+      "offset": 966330112,
+      "payload": 20971520,
+      "reserved": 20971776
+    },
+    "hidden_f16": {
+      "offset": 987301888,
+      "payload": 10485760,
+      "reserved": 10486016
+    },
+    "expert_src_i32": {
+      "offset": 997787904,
+      "payload": 655360,
+      "reserved": 655616
+    }
+  },
+  "region_used_bytes": 998443520,
+  "region_capacity_bytes": 1180698624,
+  "region_arithmetic_spare_bytes": 182255104,
+  "extra_source_reservation_bytes": 622592,
+  "maximum_source_upload_bytes": 655360,
+  "decision": "Use one full-window source upload and gather from device_source+job.global_row. This is a true W*10 owner, not an offset into the old 8K job buffer. Keep each GEMM/gather output job <=8192 rows. Keep host source and device view alive through checked window drain.",
+  "API_count_only": "One source H2D submission per window instead of one per expert job; same total source-index bytes. Actual driver commands, staging, latency and throughput remain unmeasured.",
+  "preserved": "Original source-rebased32KiB contract and all host receipts remain immutable; this prospective engine integration choice does not retrospectively change their scope."
+}

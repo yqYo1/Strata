@@ -4494,13 +4494,14 @@
       "path": "research-round966-v1.txt",
       "sha256": "44ab01354870c5c0e3cf2384d2138eb0d7ae456181b207ac9e0982b1472d892b",
       "bytes": 12425,
-      "main_body_read": false,
+      "main_body_read": true,
       "status": "R968 source feasibility review completed with owner/callback/src_dev corrections; no runtime fit or implementation adoption. Original report body held by Main.",
       "retrieval_trigger": "A concrete MoE-only window implementation or owner/memory decision after independent review.",
       "schedulable_now": false,
       "review_path": "research-review-round968-v1.json",
       "operational_digest_path": "research-review-round968-v1.ja.md",
-      "reviewer_report_body_read": true
+      "reviewer_report_body_read": true,
+      "main_read_scope": "Only19–45 for the concrete window payload/owner decision after R968 review."
     }
   ],
   "main_initial_findings": [
@@ -6866,19 +6867,21 @@
     "main_reconciliation": "research-review-round953-main-reconciliation-v1.json"
   },
   "current_main_boundary": {
-    "recorded_utc": "2026-10-16T21:27:08.990424+00:00",
+    "recorded_utc": "2026-10-16T21:59:50.519859+00:00",
     "goal": "Dedicated long prefill repeated >600 then1000tok/s; eventual decode70tok/s. Not achieved.",
     "current_model_comparison": "Score33 optimized median459.1 versus packed459.3tok/s, six processes, final pair overlap qualification retained; no packed speed adoption. Earlier uncontaminated score33 cohort median464.1tok/s remains recorded.",
-    "changes": "R965 capacity review merged through PR28. Main source resource audit and same-model upload arithmetic distinguish GPU dequant/GEMM work from PCIe uploads. Source-only active metadata census found only layer47 with bytes==stride; padding a full batch grows requested bytes30.10164percent. R966 completed through Orca and awaits R968 native review; R967 targeted archive retrieval completed. No inference source or new speed result.",
-    "next": "Foreign CPU benchmark remains active; the finite waiter is closed and there is no native profile running. On actual resource release revalidate and complete the prepared profile/census once. Main next specifies legal row-bank/src_dev/callback phases before a MoE-only window implementation; no duplicate research is eligible.",
-    "compile_or_GPU_work_this_boundary": false,
-    "source_inspection_command": "Source owner/arithmetic review only; current closed observation and seven content hashes verified. No compiler/native/GPU execution.",
+    "changes": "C++ immutable router-ID/expert/source/slot/job map implemented; ASan+UBSan40 cases/2892850token-slots/14refusals PASS. R969 independent review indexed. Original failed multicall runner receipt preserved.",
+    "next": "Main engine integration: shared8K attention helper, GPU-only two-piece FFN window with full-window source owner/upload, cursor-only intermediate completion. Revalidate foreign benchmark before heavy build/GPU comparison.",
+    "compile_or_GPU_work_this_boundary": "Only bounded nice19 CPU C++ fixture compiled/executed. No SYCL/GPU.",
+    "source_inspection_command": "Current production sources unchanged; pending pair remains frozen.",
     "full_physical262144_model_consume_RESTORE": "Unqualified; component coverage is insufficient.",
-    "default_sync_PR": null,
+    "default_sync_PR": "https://github.com/yqYo1/Strata/pull/30",
     "independent_reviews_completed": [
       965,
       967,
-      968
+      968,
+      969,
+      970
     ]
   },
   "research_review_round955": {
@@ -7284,7 +7287,7 @@
     "status": "R968 source feasibility review completed with owner/callback/src_dev corrections; no runtime fit or implementation adoption. Original report body held by Main.",
     "runtime_proof": "orca-research-round966-runtime-v1.json",
     "report": "research-round966-v1.txt",
-    "Main_report_body_read": false,
+    "Main_report_body_read": true,
     "next": "Await worker_done without steering, then native Luna max review; Main keeps current paired profile first for runtime selection.",
     "scope_sha256": "fd263697e79565a67ffd30a880dc2d64fa39f815b1ee528d2fe98b8de958e83c",
     "spec_sha256": "a204c4f3857c0bbaa01369c50ba8e321dc8503642729c10bbe6b7d04dd30d615",
@@ -7294,7 +7297,15 @@
     "settlement_receipt": "orca-research-round966-settlement-v1.json",
     "review_path": "research-review-round968-v1.json",
     "review_sha256": "83f9167fd88f849a98ac51f0a46f1e36c7ceaa5d537cf8cd1e164721b1b9b445",
-    "operational_digest_path": "research-review-round968-v1.ja.md"
+    "operational_digest_path": "research-review-round968-v1.ja.md",
+    "Main_selected_retrieval": {
+      "lines": [
+        19,
+        45
+      ],
+      "sha256": "04f0f86341d47670ae68c2b2fe7841880a9ca0385ddc27f0b08d955aed835a0f",
+      "purpose": "Concrete Main GPU-only window layout and phase ownership plan; R968 corrections applied. Original collection reports remain unread."
+    }
   },
   "current_moe_order_resource_audit": {
     "report": "current-moe-order-resource-audit-v1.json",
@@ -7380,5 +7391,109 @@
     "runtime_or_fit_qualified": false,
     "performance_adopted": false,
     "new_research_schedulable_now": false
+  },
+  "moe_window_main_contract_current": {
+    "document": "moe-window-main-contract-v1.ja.md",
+    "planner": "moe_window_contract_v1.py",
+    "host_verifier": "verify_moe_window_contract_v1.py",
+    "host_receipt": "moe-window-contract-host-v1.json",
+    "status": "Main GPU-resident-window scheduling and typed-view contract; Python ownership/bounds oracle only. No C++ engine implementation or native execution.",
+    "GPU_residual_windows_only": true,
+    "operator_chunk": 8192,
+    "window_max_rows": 16384,
+    "expert_job_max_rows": 8192,
+    "region_used_bytes": 997820928,
+    "host_passes": {
+      "schedule_cases": 107,
+      "expert_cases": 24,
+      "negative_cases": 13
+    },
+    "current_oracle_limit": "v2 adds exact synthetic expert/job submissions, once-per-expert dequantization and H2D-source lifetime checks to frozen v1. It remains an abstract host oracle; no actual tensor/kernel/queue/engine or fit qualification.",
+    "checkpoint_caveat": "Existing caller-segment/prefix checkpoint coherence proposals are unqualified. Callback ordering alone does not qualify periodic prefix snapshots or RESTORE.",
+    "inference_implemented": false,
+    "performance_adopted": false,
+    "extended_planner": "moe_window_contract_v2.py",
+    "extended_host_verifier": "verify_moe_window_contract_v2.py",
+    "extended_host_receipt": "moe-window-contract-host-v2.json",
+    "extended_host_passes": {
+      "expert_phase_cases": 18,
+      "negative_cases": 16
+    },
+    "hashes": {
+      "moe-window-main-contract-v1.ja.md": "d83efe3a2717574972b715021b4f44d4d426564e66bc7b7bb1bb811e1d902a2d",
+      "moe_window_contract_v1.py": "e85ec84e890b2d6bdb2823b8da02ae2f1091e4e4af89b2d52e6da244bbc7f64a",
+      "verify_moe_window_contract_v1.py": "5e8fd9e059dddf8276157a32ada12a23cd0b4c5693bd69d0d381b7901e04a0ca",
+      "moe-window-contract-host-v1.json": "f907025529a17b719a4b4eee62545d5f76e956ce734f7e320d384444f30d193a",
+      "moe_window_contract_v2.py": "877cf1add201ebbfbd38bb2e9e60c66f6bc9f300219661621d806998af7ceb6a",
+      "verify_moe_window_contract_v2.py": "0977dcb72dd608bcbf1eae1ab09cf2658981bb3976055dbab4cdf49df931cef7",
+      "moe-window-contract-host-v2.json": "0e5037360a5c37024608dad4380e938180c944cffa9f4dda691f8a314e683b0e"
+    },
+    "source_pins": {
+      "src/prefill/prefill.cpp": "d6e466ca3a86f1dd8a1d6b648f3a57d496615b0a108df52d0727fdc9eb4c95e8",
+      "src/prefill/layer_major.inc": "9fcd5a32752464f488154a2922a33e5ab4cccff7674b3fcae7fa0f2bda12acdb",
+      "src/prefill/sycl/native16.cpp": "d953ae8dcb69be601c57ddf62bbd85ad054c3e7c0a90806461b49f96d18da891",
+      "src/prefill/sycl/postops.cpp": "f048a75d8c18dad5981a93206dcff107085714741326adc6d4cfd77c6927a78f",
+      "src/prefill/sycl/vllm_xe2/native16.cpp": "d8b361cabea29344b48aff5a9db41303f3ea715de47f27bc57f29f85c5f3aa2d",
+      "include/strata/prefill/layer_major_plan.hpp": "67bc25500ae777bfb387944a2415325868602b9da82aa945464b64b0a2b8b9fd",
+      "src/program/generate.cpp": "d05e9142917af145c1ba6d428180f8981f260c8a20b23ecf27bcc2033c9fe25a"
+    }
+  },
+  "native16_moe_window_main_contract_review_round969": {
+    "review_path": "research-review-round969-v1.json",
+    "operational_digest_path": "research-review-round969-v1.ja.md",
+    "review_sha256": "34b15d1b49126e5f205051e214219618f877834eb7905f3b4a4694790d074652",
+    "operational_digest_sha256": "17e354c70cb5f68293e1d90ec6db5a37e17acc5ece71ae5f3de76e869e98d317",
+    "status": "source_feasible_implementation_contract_incomplete",
+    "Main_digest_read": true,
+    "Main_review_JSON_read": true,
+    "schedulable_now": false,
+    "next_owner": "Main",
+    "retrieval_trigger": "Implement long-prefill two-piece GPU window: original request/PLE/state, immutable route map, both HC writes before MTP, actual allocation spans, periodic checkpoint gate."
+  },
+  "moe_window_cpp_route_map_current": {
+    "path": "moe-window-route-map-v1",
+    "ledger_sha256": "938a533d0b46175a4e4c4539ea42cc2664a368acb62cbfb553cf8a387c8debcb",
+    "receipt_path": "moe-window-route-map-v1/host-result-v2.json",
+    "receipt_sha256": "805bae73f48053e7e7f0977c5eabbe674507927b47a76107b15b859c1404c18b",
+    "checks": {
+      "passed": true,
+      "routing_cases": 40,
+      "token_slots_checked": 2892850,
+      "refusal_cases": 14,
+      "GPU_executed": false,
+      "tensor_math_checked": false
+    },
+    "status": "Actual sanitizer-checked C++ host route map only; no production/GPU integration or speed adoption. Initial runner failure preserved.",
+    "next_owner": "Main",
+    "next": "Connect immutable routes to GPU window after factoring attention-piece/FFN helpers.",
+    "independent_review": "research-review-round970-v1.json",
+    "review_status": "host_component_ready_engine_integration_pending"
+  },
+  "native16_moe_window_cpp_route_map_review_round970": {
+    "review_path": "research-review-round970-v1.json",
+    "review_sha256": "f6f6c3d24510ea3a37bfe97af44cbd9ad013a66b5486111efa2e00740352242c",
+    "operational_digest_path": "research-review-round970-v1.ja.md",
+    "operational_digest_sha256": "a8b9cc946a7ce52651f54e80e0d70b84d3e0005c8838e46a884d160679c488f9",
+    "Main_review_digest_read": true,
+    "Main_review_JSON_read": true,
+    "status": "host_route_map_supported_component_ready_engine_integration_pending",
+    "schedulable_now": false,
+    "next_owner": "Main",
+    "retrieval_trigger": "Integrate the actual router readback and immutable host route plan into the long-prefill two-piece GPU window; check slot/source orientation, 8K jobs, owner lifetime and full view extents.",
+    "reviewed_index_snapshot": "2e3bc7f7:bench/results/2026-10-15-pr6-recovery-audit/research-index.json; hash matched before subsequent Main update."
+  },
+  "moe_window_bulk_source_current": {
+    "decision_path": "moe-window-bulk-source-decision-v1.ja.md",
+    "decision_sha256": "c39b688de85736f4ba72a1abe542c3940408a1a3cfe4847e3e984bd74df978da",
+    "recipe": "calculate_moe_window_bulk_source_v1.py",
+    "recipe_sha256": "756acf1d98d4b66ebf0ff89133d157c56e3b81f5f63a3d8a7fa2a3fc4cb51c20",
+    "arithmetic_receipt": "moe-window-bulk-source-arithmetic-v1.json",
+    "arithmetic_receipt_sha256": "1b85c83d789df6d68866b75cfbb6d1b06b3d072d9e892d86cef4835399694548",
+    "region_used_bytes": 998443520,
+    "region_arithmetic_spare_bytes": 182255104,
+    "source_view_bytes": 655360,
+    "source_upload_submissions_per_window": 1,
+    "status": "Prospective Main engine connection choice; no GPU execution, physical fit or performance qualification. Original rebase32KiB contract stays immutable.",
+    "schedulable_now": false
   }
 }
