@@ -1,0 +1,166 @@
+--- a/src/kernels/sycl/fused_gdn.cpp
++++ b/src/kernels/sycl/fused_gdn.cpp
+@@ -66,6 +66,7 @@
+   });
+   finish(stream, e);
+ }
++template <bool WriteFloat = true>
+ void recurrence(float *state, const float *q, const float *k, const float *v,
+                 int stride, const float *gate, const float *beta,
+                 const float *z, const float *gamma, float eps, float *y, int hk,
+@@ -76,24 +77,36 @@
+   eps_check(eps);
+   const size_t vb = size_t(hv) * 128 * 4, qb = size_t(hk) * 128 * 4;
+   const size_t tail = size_t(stride) * (T - 1) * 4;
+-  validate_spans({{state, vb * 128}, {y, vb * T}}, {{q, qb + tail},
+-                                                    {k, qb + tail},
+-                                                    {v, vb + tail},
+-                                                    {gate, size_t(hv) * T * 4},
+-                                                    {beta, size_t(hv) * T * 4},
+-                                                    {z, vb * T},
+-                                                    {gamma, 128 * 4}});
+-  if (y16)
+-    validate_spans({{state, vb * 128}, {y, vb * T}, {y16, vb * T / 2}},
+-                   {{q, qb + tail},
+-                    {k, qb + tail},
+-                    {v, vb + tail},
++  if constexpr (WriteFloat) {
++    validate_spans({{state, vb * 128}, {y, vb * T}}, {{q, qb + tail},
++                                                      {k, qb + tail},
++                                                      {v, vb + tail},
++                                                      {gate, size_t(hv) * T * 4},
++                                                      {beta, size_t(hv) * T * 4},
++                                                      {z, vb * T},
++                                                      {gamma, 128 * 4}});
++    if (y16)
++      validate_spans({{state, vb * 128}, {y, vb * T}, {y16, vb * T / 2}},
++                     {{q, qb + tail},
++                      {k, qb + tail},
++                      {v, vb + tail},
++                      {gate, size_t(hv) * T * 4},
++                      {beta, size_t(hv) * T * 4},
++                      {z, vb * T},
++                      {gamma, 128 * 4}});
++    if (keep)
++      validate_spans({{state, vb * 128}, {y, vb * T}}, {{keep, 4}});
++  } else {
++    // A distinct prefill specialization, never used by decode/verify. The
++    // existing FP32 recurrence/reductions/state are unchanged; only the dead
++    // FP32 output store and its required allocation span are omitted.
++    dims(y == nullptr && y16 != nullptr && keep == nullptr && single && begin == 0);
++    validate_spans({{state, vb * 128}, {y16, vb * T / 2}},
++                   {{q, qb + tail}, {k, qb + tail}, {v, vb + tail},
+                     {gate, size_t(hv) * T * 4},
+-                    {beta, size_t(hv) * T * 4},
+-                    {z, vb * T},
++                    {beta, size_t(hv) * T * 4}, {z, vb * T},
+                     {gamma, 128 * 4}});
+-  if (keep)
+-    validate_spans({{state, vb * 128}, {y, vb * T}}, {{keep, 4}});
++  }
+   auto e = queue_for(stream).submit([&](sycl::handler &h) {
+     sycl::local_accessor<float, 1> sk(128, h), sq(128, h), red(512, h),
+         part(16, h);
+@@ -155,7 +168,8 @@
+               const float value =
+                   ((oc * sycl::rsqrt(ss / 128.f + eps)) * gamma[col]) *
+                   (1.f / (1.f + sycl::exp(-z[idx])));
+-              y[idx] = value;
++              if constexpr (WriteFloat)
++                y[idx] = value;
+               if (y16)
+                 y16[idx] = f16_from_f32(value);
+             }
+@@ -286,4 +300,13 @@
+                               beta, z, gamma, eps, y, 16, 48, int(T), nullptr,
+                               true, 0, stream, y16);
+ }
++void gdn_recurrence_output16(float *state, const float *h, const float *gate,
++                             const float *beta, const float *z, const float *gamma,
++                             float eps, uint16_t *y16, int64_t T, void *stream) {
++  strata::kernels::dims(T > 0 && T <= INT32_MAX && state && h && gate &&
++                         beta && z && gamma && y16 && stream);
++  strata::kernels::recurrence<false>(state, h, h + 16 * 128, h + 32 * 128,
++      10240, gate, beta, z, gamma, eps, nullptr, 16, 48, int(T), nullptr,
++      true, 0, stream, y16);
++}
+ } // namespace strata::prefill
+--- a/include/strata/prefill/kernels.hpp
++++ b/include/strata/prefill/kernels.hpp
+@@ -47,6 +47,13 @@
+ /// out projection reads); y is FP32 scratch.
+ void gdn_recurrence(float* state, const float* h, const float* gate, const float* beta, const float* z,
+                     const float* gamma, float eps, float* y, uint16_t* y16, int64_t T, void* stream);
++#if defined(STRATA_ENABLE_SYCL)
++/// Long native16 prefill variant: identical FP32 recurrence/state and FP16
++/// output rounding, with no FP32 output store. This does not shrink the arena.
++void gdn_recurrence_output16(float* state, const float* h, const float* gate, const float* beta,
++                             const float* z, const float* gamma, float eps, uint16_t* y16,
++                             int64_t T, void* stream);
++#endif
+
+ // ---- MoE
+ /// softmax over 512, top-10 (ties to the lower id), weights renormalised over the ten (the native router).
+--- a/src/prefill/prefill.cpp
++++ b/src/prefill/prefill.cpp
+@@ -483,6 +483,7 @@
+     detail::LayerMajorResidualPlan layer_major_residual;
+ #if defined(STRATA_ENABLE_SYCL)
+     bool native16_active = false;
++    bool gdn_output16_only = false; // immutable startup option; long native16 only
+     strata::kernels::QsaBf16PackedScratch qsa_prefix; // borrowed only during the long-prefill lease
+     // Disjoint typed subviews of existing QSA reservations; no new allocation.
+     uint16_t *qsa_Kraw16 = nullptr, *qsa_Krope16 = nullptr, *qsa_V16 = nullptr,
+@@ -748,6 +749,17 @@
+     }();
+     return mode;
+ }
++#if defined(STRATA_ENABLE_SYCL)
++bool gdn_output16_only_requested() {
++    static const bool requested = [] {
++        const char* v = std::getenv("STRATA_SYCL_PREFILL_GDN_OUTPUT16_ONLY");
++        if (!v || std::strcmp(v, "0") == 0) return false;
++        if (std::strcmp(v, "1") == 0) return true;
++        throw std::invalid_argument("prefill: STRATA_SYCL_PREFILL_GDN_OUTPUT16_ONLY requires exact 0 or 1");
++    }();
++    return requested;
++}
++#endif
+ struct ScratchPrefix {
+     float *emb, *R, *xn, *grs, *lo, *gated, *inj, *mixed, *bo;
+     uint16_t *xn16, *lo16, *mixed_bf, *mixed_h, *xn16_lo = nullptr,
+@@ -947,6 +959,9 @@
+     // Reuse the reserved FP32 arena, retaining the original short-input layout.
+     // R16 and gated_b16 occupy disjoint halves of the old gated allocation.
+     (void)native16::requested(); // validate the immutable startup setting
++    m.gdn_output16_only = gdn_output16_only_requested();
++    if (m.gdn_output16_only && !native16::requested())
++        throw std::invalid_argument("prefill GDN output16-only requires native16 BF16");
+     (void)native16::qsa::requested();
+     (void)native16::qsa::attention_math(); // immutable startup selector
+     m.R16 = reinterpret_cast<uint16_t*>(m.gated);
+@@ -2325,6 +2340,12 @@
+                     gdn_gates(m.ab, (const float*) wdt->data, (const float*) wsa->data, m.gate, m.beta, T, m.cs);
+                     gdn_conv(conv, m.qkv, (const float*) wc->data, m.hbuf, T, EPS, m.cs);
+                     pt.mark(kPfGdnRec, cs);
++#if defined(STRATA_ENABLE_SYCL)
++                    if (m.native16_active && m.gdn_output16_only)
++                        gdn_recurrence_output16(state, m.hbuf, m.gate, m.beta, m.z,
++                                               (const float*) wnm->data, EPS, m.y_h, T, m.cs);
++                    else
++#endif
+                     gdn_recurrence(state, m.hbuf, m.gate, m.beta, m.z, (const float*) wnm->data, EPS, m.y, m.y_h, T, m.cs);
+                     pt.mark(kPfGdnOut, cs);
+ #if defined(STRATA_ENABLE_SYCL)
+--- a/src/prefill/layer_major.inc
++++ b/src/prefill/layer_major.inc
+@@ -469,6 +469,9 @@
+                              "FP32 local accumulations/router/recurrent state; PLE and final callbacks bridge FP32; "
+                              "QSA tensor IO=%s, indexer/GDN internals FP32; reserved scratch arena unchanged; unqualified\n",
+                      qsa16_on ? "BF16" : "FP32");
++    if (native16_on && m.gdn_output16_only)
++        std::fprintf(stderr, "strata prefill: GDN output16-only; FP32 recurrence/state and FP16 output unchanged; "
++                             "FP32 output store omitted; arena reservation unchanged; unqualified\n");
+     for (; layer < g.n_layers; ++layer) {
+         if (profile) profile->layer = int(layer);
+         if (qsa_profile) qsa_profile->layer = int(layer);
