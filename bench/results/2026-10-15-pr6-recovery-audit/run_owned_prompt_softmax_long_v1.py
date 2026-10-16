@@ -35,7 +35,7 @@ def main():
     order=[('diagnostic','0',0),('diagnostic','1',0),('clean','0',0),('clean','1',0),('clean','1',1),('clean','0',1),('clean','0',2),('clean','1',2)]
     require((opts.phase,arm,repetition) in order,'declared independent-process order')
     position=order.index((opts.phase,arm,repetition))
-    dtype='fp32' if arm=='fp32' else 'bf16'
+    dtype='bf16'
     module = load_owner(P / 'bench/results/2026-10-14-niko-main-service-port/direct_owner.py')
     with (B / 'owned-v0141-measurement.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -104,10 +104,10 @@ def main():
         env.update(XDG_CACHE_HOME=str(root / 'cache'),
             STRATA_MEASUREMENT_ENGINE_START=str(root / 'engine-start.json'),
             STRATA_MEASUREMENT_ENGINE_EXIT=str(root / 'engine-exit.json'),
-            STRATA_SYCL_PREFILL_NATIVE16='0' if arm=='fp32' else 'bf16',
+            STRATA_SYCL_PREFILL_NATIVE16='bf16',
             STRATA_PREFILL_LAYER_MAJOR_R_DTYPE=dtype,
-            STRATA_SYCL_PREFILL_NATIVE16_BACKEND='own' if arm=='fp32' else 'vllm',
-            STRATA_SYCL_PREFILL_NATIVE16_QSA='1' if arm=='qsa' else '0',
+            STRATA_SYCL_PREFILL_NATIVE16_BACKEND='vllm',
+            STRATA_SYCL_PREFILL_NATIVE16_QSA='0',
             STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE='auto',STRATA_ROPE_TABLE='1',
             STRATA_PREFILL_LAYER_MAJOR_R_GPU='auto',STRATA_SYCL_PROMPT_SOFTMAX_SUBGROUP=arm)
         for k, v in dict(UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD='1', NEOReadDebugKeys='1',
@@ -205,8 +205,8 @@ def main():
             placement = [l for l in native.splitlines() if l.startswith('strata prefill: layer-major candidate,')]
             require(len(placement) == 1 and f'chunk=8192 residual_dtype={dtype} ' in placement[0] and
                 'residual_gpu_rows=39261 ' in placement[0] and 'residual_host=0 ' in placement[0], 'actual full prompt GPU residual placement, no backoff')
-            require(('strata prefill: native16 BF16 HC residual/projection IO' in native)==(arm!='fp32'),'actual native16 path')
-            require('[native16-route] engine='+('0 backend=own' if arm=='fp32' else 'bf16 backend=vllm') in native,'actual backend')
+            require('strata prefill: native16 BF16 HC residual/projection IO' in native,'actual native16 path')
+            require('[native16-route] engine=bf16 backend=vllm' in native,'actual backend')
             if opts.phase=='diagnostic':
                 completed=re.findall(r'^strata trace: layer-major layer (\d+) of (\d+): completed (\d+) chunks$',native,re.M)
                 require(completed==[(str(i),'48','5') for i in range(48)],'all48 layers/five chunks normally completed')

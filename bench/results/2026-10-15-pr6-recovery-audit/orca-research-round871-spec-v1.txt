@@ -1,0 +1,109 @@
+decision support. Main owns all implementation and measurement.
+Target/change: FP16 MoE scratch capacity across two causal prefill chunks
+Ownership: write ONLY /home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round871-v1.txt. Read-only sources; no other code/index/report edits, Git, builds, tests, GPU, profiler, process/device inspection, services, branches or workers. No XeStrata code/proposals/tests/helpers.
+Acceptance: substantive bounded report answering the finite question and alternatives, exact sources, counterevidence/applicability/limits; no implementation/adoption claim.
+{
+  "proposed_assignment_round": "R871",
+  "purpose_label": "decision support",
+  "title": "FP16 MoE scratch capacity across two causal prefill chunks",
+  "report_output": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round871-v1.txt",
+  "spec_output_if_dispatched": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/orca-research-round871-spec-v1.txt",
+  "schedulable_now": true,
+  "source_base": {
+    "revision": "16f9eefa216f9f6d2f1fd5c18980612e7d6b656a",
+    "read_only_source_paths_and_sha256": [
+      {
+        "path": "CMakeLists.txt",
+        "sha256": "03993aa5162ed3bf3f638c2755b5d44358c74945ea84b0862d0e76ab52eab4f1"
+      },
+      {
+        "path": "cmake/sycl_backend.cmake",
+        "sha256": "9a112ac469580302e8d124bc9bdf66c04f49f6020309e7d20e7771ab12757bef"
+      },
+      {
+        "path": "src/prefill/prefill.cpp",
+        "sha256": "d01662ae6c46bfdd2556da1345c5f9edb79f91694391eee2b2b0aebfeab831ce"
+      },
+      {
+        "path": "src/prefill/sycl/gemm16.cpp",
+        "sha256": "d5a0e8f8cdbc14f82edd7a883efc09d68ee92195b8fd51301e538b40cc6ed53c"
+      },
+      {
+        "path": "src/prefill/sycl/native16.cpp",
+        "sha256": "d953ae8dcb69be601c57ddf62bbd85ad054c3e7c0a90806461b49f96d18da891"
+      },
+      {
+        "path": "src/prefill/sycl/postops.cpp",
+        "sha256": "f048a75d8c18dad5981a93206dcff107085714741326adc6d4cfd77c6927a78f"
+      },
+      {
+        "path": "src/prefill/sycl/moe_mmq.cpp",
+        "sha256": "403dccf14f3a632f3cb5a6b7ecbaaf7dcfae5f0c3fbf875dae2789b6f85978f8"
+      },
+      {
+        "path": "src/prefill/sycl/moe_fused.cpp",
+        "sha256": "6321199ee8213ee1ff2b370929e7bc723e078d13e30a3b4ecb56fe8a3c03b438"
+      },
+      {
+        "path": "src/prefill/sycl/qsa_native16.cpp",
+        "sha256": "e4c2c32fec4c04f285e56f301cc405039b2283f17c2e28d420df5c6801a06f44"
+      },
+      {
+        "path": "src/kernels/sycl/gdn.cpp",
+        "sha256": "3de5ac1aa35184534834e8fd0957068509a0ecf5080a666354a98cd134d56117"
+      },
+      {
+        "path": "src/kernels/sycl/fused_gdn.cpp",
+        "sha256": "70abf4fd1359477a2e170b54f2172ba148a2ae21306e8145e070ebd0db7d995f"
+      },
+      {
+        "path": "include/strata/prefill/native16.hpp",
+        "sha256": "6c58224919bb999d73d2720d4be6f0779418d39e2181a4cc1c627239710dc46a"
+      },
+      {
+        "path": "include/strata/prefill/moe_fused.hpp",
+        "sha256": "41b58910e68ca3bf88e6b8c19bcb3dcb787fcf1882a66926970b4e3ea6fdecc9"
+      }
+    ],
+    "source_boundary": "Trace CMakeLists.txt and cmake/sycl_backend.cmake to keep the investigation on the configured SYCL source path. Read only the pinned source files above and the named Main review/profile artifacts. Do not use CUDA/HIP implementation or validation as evidence."
+  },
+  "shared_index": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+    "sha256": "0ea68239747e653fc0a4bbaf266ad15dc05624763ffab135348d1c4f19ecfae5"
+  },
+  "relevant_prior_report_pins": [
+    {
+      "round": "R701",
+      "path": "research-prefill-grouped-gemm-round701-v1.txt",
+      "sha256": "433856926a798356d1b6d231dfb3e2d99e82e0d38f8bbc11fd8c86c6eafe5012",
+      "use": "Read with the R701-R702 Main review; do not repeat its generic grouped-GEMM API survey."
+    },
+    {
+      "round": "R702",
+      "path": "research-prefill-expert-major-superchunk-round702-v1.txt",
+      "sha256": "a1030a224102651d76cf209e74891e864a1b77ff2a976bd3307f61f31dd4c5e1",
+      "use": "Read with the R701-R702 Main review; update its proposed liveness and order analysis against the current pinned source."
+    },
+    {
+      "round": "R870",
+      "path": "research-scope-review-round870-v1.json",
+      "sha256": "d66fb4ba5a05e7188127f3cbb2acf6eeedfc9f8d9c4591e770ab8aaaafca6a7d",
+      "use": "Use review metadata only; collection bodies R867-R869 remain held."
+    }
+  ],
+  "finite_question": "At the current 16f9eefa source, can the actual SYCL prefill MoE output/scratch reservations safely hold FP16 expert outputs for two consecutive 8192-row causal chunks represented as one expert-major 16384-row window? Reconstruct exact producers, consumers, routes, dimensions, alignments, allocations, and live intervals; compare the proposed window with the current per-chunk path and existing opt-in compact FP16 behavior. Determine which scratch bytes are genuinely reusable at every phase, and whether batching/reordering expert output work can occur while QSA, GDN/recurrent state, shared expert work, callbacks, checkpoints, and layer publication retain their current required order.",
+  "breadth_and_counterevidence": "Build one source-backed live-range table for GU, Hh, Dm, route/index arrays, shared-expert inputs/outputs, native16 temporaries, and relevant state/publication buffers. Show exact current element and byte capacities, alignment/padding, whether each plane aliases a larger FP32 reservation, and simultaneous peak bytes. Compare (a) present 8192 chunk storage, (b) two sequential FP16 chunks, and (c) the proposed contiguous expert-major 16384 window; distinguish serialized reuse from concurrently live storage and include route multiplicity/top-k and per-expert offsets. Check the existing STRATA_PREFILL_MOE_COMPACT_FP16 guard/fallback so an existing code path is not described as new. Map the outer operator order and publication points needed to preserve QSA/GDN state and physical-context behavior. Counterevidence must include any path/mode where the slot is not available, shape/alignment/streaming or peer constraints that block aliasing, any required conversion or extra transfer, and any ordering dependency that prevents a two-chunk window. A byte-capacity match alone is not an implementation recommendation. Keep FP16 numerical error, quality acceptance, performance, and default adoption as separate unanswered gates; keep FP32 accumulation, router decisions and recurrent state wherever current source requires them. Do not infer MoE service or speed from the nonexclusive unitrace totals.",
+  "novelty_guard": "This is an updated source-specific capacity/lifetime/order decision after R701-R702, not another grouped-GEMM API or superchunk literature survey. Limit analysis to the one FP16-output MoE scratch/window question and immediate current producer/consumer/state/publication obligations. Exclude broad native16 framework surveys, unrelated attention tuning, new kernel proposals, numerical-quality qualification, profiler interpretation, dispatch-threshold changes, and CUDA/HIP source. Do not read, copy, adapt, or use XeStrata source, tests, helpers, or archived proposals.",
+  "report_budget": "1,300-1,700 substantive words; at most 7 primary-source URLs (source code and the named Main review are not counted as URLs). Include a compact capacity/liveness table, exact source line references, explicit assumptions, counterevidence, and a short decision boundary. No patch, test, build, measurement, GPU run, or adoption claim.",
+  "prerequisites": [
+    "Parent-supplied immutable source revision 16f9eefa216f9f6d2f1fd5c18980612e7d6b656a and the listed read-only source path/hash pins.",
+    "The R701/R702 original reports and their Main review, current compact profile summary/receipt, and the pinned research-index snapshot are present."
+  ],
+  "prerequisite_evidence": "The parent supplied the current source revision and a specific finite question. All listed source files and source hashes are present in the shared worktree and match the v6 receipt's source-pin manifest for these unchanged paths. The R701/R702 reports and Main review are present with the hashes above. The v6 receipt is PASS and closed; its profile is explicitly limited to a 6354f0b4 build and nonexclusive whole-process sums, which makes it useful only as measurement context. No additional GPU or causal profile prerequisite is needed for a static source/capacity/order analysis.",
+  "schedulable_evidence": "Current source snapshot, existing compact FP16 mode, prior Main review, and closed profile summary are all supplied now. R870's empty follow-up list does not block this assignment because Main has supplied a new, narrower source decision question.",
+  "primary_sources": [],
+  "main_read_policy": "Main may read this decision-support report after the delegated native review and only for the stated decision.",
+  "Main_pre_dispatch_source_boundary_refinement": "Begin with the thirteen pinned source files. If necessary to close actual ownership/allocation/publication references, read additional own-Strata declarations/callers in include/strata, src/prefill or src/program; pin each exact path/SHA256 BEFORE use and list why. No Git, edits, build or device/process inspection. Only configured SYCL; no CUDA/HIP or XeStrata. The finite capacity/order question is unchanged.",
+  "Main_relative_path_resolution": "Report/review basenames resolve under /home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit; product source paths resolve under /home/yayoi/orca/workspaces/Strata/sycl."
+}
+Use injected Orca worker_done lifecycle. Final <=5 operational lines with report path/hash, no full body. Do not contact other workers.

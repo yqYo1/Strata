@@ -76,7 +76,10 @@ def main():
              864: 'orca-implement-unitrace-direct-collector-round864-launch-v1.json',
              867: 'orca-research-round867-launch-v1.json',
              868: 'orca-research-round868-launch-v1.json',
-             869: 'orca-research-round869-launch-v1.json'}
+             869: 'orca-research-round869-launch-v1.json',
+             871: 'orca-research-round871-launch-v1.json',
+             872: 'orca-research-round872-launch-v1.json',
+             873: 'orca-research-round873-launch-v1.json'}
     known = {}
     for n, name in names.items():
         v = json.loads((A / name).read_text())['receipt']['result']
