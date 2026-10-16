@@ -1,0 +1,7 @@
+R860はsource-only controllerを作成したが、要求した`unitrace --result-dir`経路に未許可の初期化後環境変更があるため、source blockerとして終了した。実行・GPU障害は発生していない。元の失敗outcome/worker問合せ/制約確認応答は保存する。
+
+Mainも、実際にbuildした公式pti-gpu commit `6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033`のsourceを読んだ。`tools/unitrace/src/unitrace.cc`のCreateConfigLog（905–921行）はUseResultDirectory=1時だけStringifyDeviceを呼び、GPU providerを初期化する。その後mainの1171行以降はUNITRACE_LD_PRELOAD_OLD/LD_PRELOAD等を書き換える。既存AGENTSのprocess environment immutability規則に例外を追加しない。
+
+これはunitrace一般の使用不可という結論ではない。同関数はresult-directoryが無ければprovider probeを呼ばないので、別のCLI出力方式も将来の監査候補である。また`tracer.cc`のcollector InitはFollowChildProcess=0の場合だけ初期化後LD_PRELOAD復元を行うため、R864ではFollowChildProcess=1、Session/StartPaused/metrics controlなしの直接collector方式を別の有限source-only taskとして監査・実装している。環境は最終native exec前に固定し、Python wrapperにはpreloadしない。既存generate.cppのCUDA_MODULE_LOADING設定もcollector初期化より前のnative環境へEAGERを入れて回避する。
+
+collectorsの実行・実カーネル時間測定はまだUNRUN。まず現行fixtureのtiny collector互換性、次に既存と同じ39K vLLM BF16経路をMainが直列実行する。区間時間からGPU busy率/occupancy/critical pathを捏造しない。

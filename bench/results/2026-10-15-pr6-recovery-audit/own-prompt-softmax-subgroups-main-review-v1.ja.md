@@ -1,0 +1,9 @@
+MainはR861のproposal.patch全369行、worker review、qualification planを読んだ。現在は **未適用・未ビルド・未実行**。旧FP32/typedBF16 attentionのsoftmaxが128-thread WG中16threadで32cellを逐次走査する箇所を、8 subgroup×2head、16lane×2cellへ割り振る提案である。実GPU serviceも改善率も未測定で、Attentionの33.961秒は既存の非排他queue windowのままである。
+
+各headを一つのsubgroupが所有し、全laneが2回のmax/sum collectiveへ到達する構成、missing rowでexpを評価しない分岐、最初の全欠損tileのmax=-inf/alpha0/sum0、FP32とtypedBF16の既存infinity/NaN規則、typedのquery_bad更新、既存WG barrierでP消費前にstoresを可視化する順序を確認した。新local array/barrier/launchはない。DPAS、Q/K/V scale、hi/lo分割、selection、公開ABIは変更していない。subgroupのpair和+reductionはFP32の加算順を変えるため、true/false間のbitwise一致は前提にしない。
+
+既存false側softmaxと独立FP64 oracle/許容値を保持し、late/early one-validの追加だけで境界を広げる。元FP32の16case、BF16の112caseをprefixとして残す。tableのlogical page1は追加one-valid caseのmasked設定でもresidentであり、空tileの前後とpartial CH後半のmass保持を検査できる。default falseでもkernel名/生成imageが同一とは主張せず、元binaryとのdefault回帰は別途確認する。外部実装の移植はなく、Strata既存コードと公式subgroup API意味に基づくMITの新規部分である。
+
+次の順序はMainが管理する：変更のない現行binaryのプロファイル、候補の新private build、対象INT8/direct経路とtyped経路のstrict oracle false/true確認、必要な追加mode回帰、32K selected比較、同じ入力・設定で繰り返すclean long-prefill。worker計画のcomponent測定や全context検査は用途を区別する。physical262144/RESTOREは最終採用の未完了要件として保持し、初期の性能screenの結果をそれらの受入へ読み替えない。R844 scale/R856 observerは混ぜない。
+
+同時にMainは、変更のない6354 engineでR_GPU上限65536にして、official39Kの全39261 prefill residual行をGPUへ置く設定を測定している。これはsoftmax変更ではない。元のR_GPU32768の9個別sampleを保持し、配置効果とkernel効果を別々に判断する。
