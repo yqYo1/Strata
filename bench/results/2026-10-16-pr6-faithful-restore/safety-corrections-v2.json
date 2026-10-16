@@ -1,0 +1,1788 @@
+{
+  "schema_version": 2,
+  "status": "SOURCE_ONLY_UNSAFE_TO_RUN",
+  "starting_head": "eb700276c8cd100eea5b70fe3767f1e02d0ae04c",
+  "source_head": "e0599bffeb129a2e2b13316888ad3af974546872",
+  "faithful_anchor": "efba8d47817811d493e28f396ebd0e14e161ca75",
+  "seven_fix_checkpoint": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+  "execution": {
+    "configure": "NOT_RUN",
+    "compile": "NOT_RUN",
+    "build": "NOT_RUN",
+    "tests": "NOT_RUN",
+    "native": "NOT_RUN",
+    "gpu": "NOT_RUN",
+    "profiler": "NOT_RUN",
+    "process_inspection": "NOT_RUN"
+  },
+  "throughput_remeasured": false,
+  "static_inspection": {
+    "resolver_groups": {
+      "_spec": [
+        {
+          "requested": "src/spec/suffix_drafter.cpp",
+          "selected": "src/spec/suffix_drafter.cpp"
+        },
+        {
+          "requested": "src/spec/controller.cpp",
+          "selected": "src/spec/controller.cpp"
+        },
+        {
+          "requested": "src/spec/draft_policy.cpp",
+          "selected": "src/spec/draft_policy.cpp"
+        }
+      ],
+      "_cpu": [
+        {
+          "requested": "src/kernels/cpu/expert.cpp",
+          "selected": "src/kernels/cpu/expert.cpp"
+        },
+        {
+          "requested": "src/kernels/cpu/pool.cpp",
+          "selected": "src/kernels/cpu/pool.cpp"
+        },
+        {
+          "requested": "src/kernels/cpu/expert_layout.cpp",
+          "selected": "src/kernels/cpu/expert_layout.cpp"
+        },
+        {
+          "requested": "src/kernels/cpu/q2_avx2.cpp",
+          "selected": "src/kernels/cpu/q2_avx2.cpp"
+        }
+      ],
+      "_cpu_native": [
+        {
+          "requested": "src/kernels/cpu/native_expert.cpp",
+          "selected": "src/kernels/cpu/native_expert.cpp"
+        },
+        {
+          "requested": "src/kernels/cpu/iq_avx512.cpp",
+          "selected": "src/kernels/cpu/iq_avx512.cpp"
+        },
+        {
+          "requested": "src/kernels/cpu/iq_avx2.cpp",
+          "selected": "src/kernels/cpu/iq_avx2.cpp"
+        },
+        {
+          "requested": "src/kernels/cpu/kq_avx2.cpp",
+          "selected": "src/kernels/cpu/kq_avx2.cpp"
+        }
+      ],
+      "_core": [
+        {
+          "requested": "src/core/device.cu",
+          "selected": "sycl/src/core/device.dp.cpp"
+        },
+        {
+          "requested": "src/core/pinned.cu",
+          "selected": "sycl/src/core/pinned.dp.cpp"
+        },
+        {
+          "requested": "src/platform/memory.cpp",
+          "selected": "src/platform/memory.cpp"
+        },
+        {
+          "requested": "src/core/graph.cpp",
+          "selected": "sycl/src/core/graph.cpp"
+        },
+        {
+          "requested": "src/core/weights.cpp",
+          "selected": "sycl/src/core/weights.cpp"
+        },
+        {
+          "requested": "src/core/layout.cpp",
+          "selected": "src/core/layout.cpp"
+        }
+      ],
+      "_kernels": [
+        {
+          "requested": "src/kernels/cuda/dequant_s2.cu",
+          "selected": "sycl/src/kernels/cuda/dequant_s2.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/s2_gemv.cu",
+          "selected": "sycl/src/kernels/cuda/s2_gemv.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/s_gemv.cu",
+          "selected": "sycl/src/kernels/cuda/s_gemv.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/s2_gemv_quads.cu",
+          "selected": "sycl/src/kernels/cuda/s2_gemv_quads.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/s2_gemv_fast.cu",
+          "selected": "sycl/src/kernels/cuda/s2_gemv_fast.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/router_top10.cu",
+          "selected": "sycl/src/kernels/cuda/router_top10.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/quantize_act.cu",
+          "selected": "sycl/src/kernels/cuda/quantize_act.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/rope.cu",
+          "selected": "sycl/src/kernels/cuda/rope.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/sampler.cu",
+          "selected": "sycl/src/kernels/cuda/sampler.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/s2_gemv_q8.cu",
+          "selected": "sycl/src/kernels/cuda/s2_gemv_q8.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/s2_expert_grouped.cu",
+          "selected": "sycl/src/kernels/cuda/s2_expert_grouped.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/shared_expert.cu",
+          "selected": "sycl/src/kernels/cuda/shared_expert.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/gr.cu",
+          "selected": "sycl/src/kernels/cuda/gr.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/gdn.cu",
+          "selected": "sycl/src/kernels/cuda/gdn.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/qsa.cu",
+          "selected": "sycl/src/kernels/cuda/qsa.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/elementwise.cu",
+          "selected": "sycl/src/kernels/cuda/elementwise.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/bf16_gemv.cu",
+          "selected": "sycl/src/kernels/cuda/bf16_gemv.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/native_mmvq.cu",
+          "selected": "sycl/src/kernels/cuda/native_mmvq.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/native_bf16.cu",
+          "selected": "sycl/src/kernels/cuda/native_bf16.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/native_gr_norm.cu",
+          "selected": "sycl/src/kernels/cuda/native_gr_norm.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/native_moe.cu",
+          "selected": "sycl/src/kernels/cuda/native_moe.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/native_gdn.cu",
+          "selected": "sycl/src/kernels/cuda/native_gdn.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/native_gr_postops.cu",
+          "selected": "sycl/src/kernels/cuda/native_gr_postops.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/native_router.cu",
+          "selected": "sycl/src/kernels/cuda/native_router.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/native_gdn_preprocess.cu",
+          "selected": "sycl/src/kernels/cuda/native_gdn_preprocess.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/native_qsa.cu",
+          "selected": "sycl/src/kernels/cuda/native_qsa.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/native_rope.cu",
+          "selected": "sycl/src/kernels/cuda/native_rope.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/native_ple_postops.cu",
+          "selected": "sycl/src/kernels/cuda/native_ple_postops.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/native_flash_attn.cu",
+          "selected": "sycl/src/kernels/cuda/native_flash_attn.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/native_qsa_indexer.cu",
+          "selected": "sycl/src/kernels/cuda/native_qsa_indexer.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/native_qsa_score.cu",
+          "selected": "sycl/src/kernels/cuda/native_qsa_score.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/ple.cu",
+          "selected": "sycl/src/kernels/cuda/ple.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/kv_q8.cu",
+          "selected": "sycl/src/kernels/cuda/kv_q8.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/kv_stream.cu",
+          "selected": "sycl/src/kernels/cuda/kv_stream.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/kv_q4.cu",
+          "selected": "sycl/src/kernels/cuda/kv_q4.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/fused_gr.cu",
+          "selected": "sycl/src/kernels/cuda/fused_gr.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/cvec.cu",
+          "selected": "sycl/src/kernels/cuda/cvec.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/qsa_decode_attn.cu",
+          "selected": "sycl/src/kernels/cuda/qsa_decode_attn.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/qsa_prompt_attn.cu",
+          "selected": "sycl/src/kernels/cuda/qsa_prompt_attn.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/fused_gdn.cu",
+          "selected": "sycl/src/kernels/cuda/fused_gdn.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/dequant_bf16.cu",
+          "selected": "sycl/src/kernels/cuda/dequant_bf16.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/qsa_select.cu",
+          "selected": "sycl/src/kernels/cuda/qsa_select.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/verify_kernels.cu",
+          "selected": "sycl/src/kernels/cuda/verify_kernels.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/cuda/iq_kernels.cu",
+          "selected": "sycl/src/kernels/cuda/iq_kernels.dp.cpp"
+        },
+        {
+          "requested": "src/kernels/ngram.cpp",
+          "selected": "src/kernels/ngram.cpp"
+        },
+        {
+          "requested": "src/ngram/ple_reader.cpp",
+          "selected": "sycl/src/ngram/ple_reader.cpp"
+        },
+        {
+          "requested": "src/platform/direct_file.cpp",
+          "selected": "sycl/src/platform/direct_file.cpp"
+        }
+      ],
+      "_engine": [
+        {
+          "requested": "src/core/layer.cpp",
+          "selected": "sycl/src/core/layer.cpp"
+        },
+        {
+          "requested": "src/core/session.cpp",
+          "selected": "sycl/src/core/session.cpp"
+        },
+        {
+          "requested": "src/core/expert_source.cpp",
+          "selected": "sycl/src/core/expert_source.cpp"
+        },
+        {
+          "requested": "src/core/remote_experts.cpp",
+          "selected": "sycl/src/core/remote_experts.cpp"
+        },
+        {
+          "requested": "src/core/expert_cache.cpp",
+          "selected": "sycl/src/core/expert_cache.cpp"
+        },
+        {
+          "requested": "src/core/native_head.cpp",
+          "selected": "sycl/src/core/native_head.cpp"
+        },
+        {
+          "requested": "src/core/native_dense.cpp",
+          "selected": "sycl/src/core/native_dense.cpp"
+        },
+        {
+          "requested": "src/core/verify.cpp",
+          "selected": "sycl/src/core/verify.cpp"
+        },
+        {
+          "requested": "src/core/mtp.cpp",
+          "selected": "sycl/src/core/mtp.cpp"
+        },
+        {
+          "requested": "src/core/conversation_snapshot.cpp",
+          "selected": "sycl/src/core/conversation_snapshot.cpp"
+        },
+        {
+          "requested": "src/core/conversation_state.cpp",
+          "selected": "sycl/src/core/conversation_state.cpp"
+        },
+        {
+          "requested": "src/core/conversation_memory.cpp",
+          "selected": "src/core/conversation_memory.cpp"
+        },
+        {
+          "requested": "src/core/peer_experts.cpp",
+          "selected": "sycl/src/core/peer_experts.cpp"
+        }
+      ],
+      "_prefill": [
+        {
+          "requested": "src/prefill/gemm.cu",
+          "selected": "sycl/src/prefill/gemm.dp.cpp"
+        },
+        {
+          "requested": "src/prefill/kernels.cu",
+          "selected": "sycl/src/prefill/kernels.dp.cpp"
+        },
+        {
+          "requested": "src/prefill/prefill.cpp",
+          "selected": "sycl/src/prefill/prefill.cpp"
+        }
+      ],
+      "_main": [
+        {
+          "requested": "src/program/generate.cpp",
+          "selected": "sycl/src/program/generate.cpp"
+        }
+      ]
+    },
+    "translation_units": 84,
+    "original_files_verified": 198,
+    "original_bytes": 4007615,
+    "external_vendor_hashes_required_by_wrapper": 49,
+    "actual_target_sources_cmake_check": "AUTHORED_NOT_EXECUTED",
+    "original_modes_verified": 198,
+    "scope": "Git object/source/parser/hash/diff inspection only; no configured-target or compiled/native observation",
+    "whitespace_diff_check": "inspected source diff with git diff --check; no new whitespace errors",
+    "full_historical_closure_pin": {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/historical-closure.json",
+      "sha256": "f32257a5005ada8ed1142c4bc6d575d246ac018312764ff2f9ce1203e7d6f3ee",
+      "bytes": 110463,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "81d17eb706935efae326577d75caa7be35fb5f5e"
+    }
+  },
+  "fixed_source_pins": [
+    {
+      "path": "validation/pr6-restore/CMakeLists.txt",
+      "sha256": "b4a912aef2de32a7476da647aec2dab9fedb1a2102bd6369ca1a21903c2a8ad1",
+      "bytes": 5714,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "be0ac55e51def99b3114d9abb0b0bf7a23aeb625"
+    },
+    {
+      "path": "validation/pr6-restore/README.md",
+      "sha256": "eb0f9d75123a9e58b917a586523911ffe03cd59b59977591ec0cb8989b2a4aef",
+      "bytes": 3432,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "96aef224d820de0da635e434069e856645c94189"
+    },
+    {
+      "path": "validation/pr6-restore/checked_dpct.cmake",
+      "sha256": "5757b9a1954558257fdc88d031aaeab7cbe7369d75191af21d547a890d2995e8",
+      "bytes": 2521,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "a18e322b47b16054b53f04a75019d4e4848b061d"
+    },
+    {
+      "path": "validation/pr6-restore/fixtures/CMakeLists.txt",
+      "sha256": "4e0879f5dad82e51d77cfdd89ba272c952f74da26048b2945c216a15baf48078",
+      "bytes": 1008,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "5aa9ea6cd81827c4d37b58e0a3a76e54737c6f37"
+    },
+    {
+      "path": "validation/pr6-restore/fixtures/allocated_fields.cpp",
+      "sha256": "32f96938d53d9b980bbb49f084db10838f54b9a25cde9fe0160e65a7ae1f450f",
+      "bytes": 1680,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "b8ff6ea2651a4efe10e18d1d5199f0ff0229197a"
+    },
+    {
+      "path": "validation/pr6-restore/fixtures/token_admission.cpp",
+      "sha256": "1f8ee5677ea435a6b8ee9d164d25fb0e1ae789b708f0c098ef8946f8b958cabd",
+      "bytes": 1295,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "ef69899ce50eb841813cc4037cf007edef3402c6"
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/allocated_fields.hpp",
+      "sha256": "c97062152c816942c7d13b68b391a704f1e37ef30f34607dcaeb2258fc4b3e72",
+      "bytes": 1152,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "46ba68c493ba36d3b31290018ad57b27a7e71b69"
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/layer.hpp",
+      "sha256": "4587a24f321d4e0bf5cf76f0355b5b2fcb8ccddd6d9ed7383729483b753c886f",
+      "bytes": 41997,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "78f20c91c11183b08cacc75fc633d7bd4bffea5e"
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/native_head.hpp",
+      "sha256": "04e88314b34833b89335973d22ad903764e8e534780cfdaa790f0258eb60ede2",
+      "bytes": 3493,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "097ef5946df4d70ae441d171ea9a3b9ce5011f5a"
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/token_admission.hpp",
+      "sha256": "06d69f2cc411a14764609ab1bdc27e652bd10a7b20e834f1ce791c8ffb31d5a7",
+      "bytes": 793,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "dd07a6de3ec35684b6413af457c18bc5dae029e8"
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/prefill/retirement.hpp",
+      "sha256": "205798bd97533112c1bbbba7d490b25dcc0a2c88ed39bc9337afc1fdaa81ab41",
+      "bytes": 1954,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "04efa6bdb1fc34a5c4661d9e4ae82e96703e9c4a"
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/core/mtp.hpp",
+      "sha256": "6e948585a01a4bec384af41dacacd1c3531f8bb7ea6b2db9c08bb295afac9971",
+      "bytes": 11751,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "1848b322bbcb1c85f66c3025ccc63ea080b6fece"
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/sycl_async_contract.hpp",
+      "sha256": "14751664b69dac54067a3721d64196c8696c37f5007b01d7530c9ea0c752ab97",
+      "bytes": 1283,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "ce8c3835e483b6340aee89afae82fa7af41c1853"
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/sycl_queue.hpp",
+      "sha256": "ed28dbecd3d0fc794c0f744ce131a0476412be5a5ae9dd3a0d88f436ae4aa8d2",
+      "bytes": 805,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "88d124eb600da37d89c714b1e19db1d36405139c"
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/sycl_retirement.hpp",
+      "sha256": "7b73763943e2833d3d126169e91142ceff600e4b08d9ed2692c044da344c24e7",
+      "bytes": 1241,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "20dd385f5b245d3fab268710611d4a1b7ca72405"
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/conversation_snapshot.cpp",
+      "sha256": "8dae319082b3a34d51506f93ebc9e56b814f1b14775aa28d69b2032294040ac0",
+      "bytes": 15130,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "0bdde1480702e7855ea76e6b871a69ff85862ed0"
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/conversation_state.cpp",
+      "sha256": "80aea00e2044791359a4aaad093147a375aa27c1c7e1c3bc6d73bd3bcee6f270",
+      "bytes": 17581,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "44be3d4580db767e856fbf9d6802a312dc1aac47"
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/expert_cache.cpp",
+      "sha256": "48346608bcdabb66050740e2fa76c3d5e53076eb61e7920d1aa16f2254c8e10d",
+      "bytes": 36326,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "9e2dafb69c1439592b1fcdf59fe76f7da81083a9"
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/layer.cpp",
+      "sha256": "9af142230c8b28d55731a1e9884e968b4b7f0f2cf5e7de4c689b8e83634b4215",
+      "bytes": 110127,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "82e9f3df42150f81a00fa0f5ca3f6c2c1f8496b7"
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/mtp.cpp",
+      "sha256": "ac0a15e6e55ef024807810cdc63691002aa9fb5c303b7481767be331a127a0f7",
+      "bytes": 64199,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "26820845458e381021b5b8ebc57663b5f0ce6747"
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/native_dense.cpp",
+      "sha256": "a8ce71277511c6eebe47e75d069633ccc39a5e8b1304cba22ce6efa565388b58",
+      "bytes": 12499,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "71633b9a60035a97b5fbe5499741c6da7fa62745"
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/native_head.cpp",
+      "sha256": "268c6b120d89726d4c786092d0f5a2c767322eda0b71d0dcabb8ddf3fc944323",
+      "bytes": 14760,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "4d089246f4117ef7c278f790293925ae7988ba58"
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/peer_experts.cpp",
+      "sha256": "5708f78a7571bb8e6ed883f5d582298fe238145d2a1d224939becc0332cf0360",
+      "bytes": 1525,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "63656fd6866d15670a940a9e25e7750f3b071ebc"
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/pinned.dp.cpp",
+      "sha256": "b060a4cba6a96cd9ea4384ce183704d00507364e879f4968fd54a5c31bdb3579",
+      "bytes": 30241,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "0ad50a1f6dec906805428b6833db88f29759ea71"
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/remote_experts.cpp",
+      "sha256": "d690dd752ba60040880a40ae87bc625e72ab530a26413f7d204ced14ad2e5f52",
+      "bytes": 21876,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "d1592df9d6842db2de1f84a9cd8e4c9c10b3e8e1"
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/session.cpp",
+      "sha256": "d36b94c8855af556955ba7dac38e6c0852e761d7f2a0dd1e4cc8495d2c2930f7",
+      "bytes": 67034,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "0b4187d6a65cc873c5595829fabfe881e230c2de"
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/verify.cpp",
+      "sha256": "435a59fe52e0b21c8a7d62752a01d1d62f72dbd0c30c1a94826fd8cd85570d8b",
+      "bytes": 108050,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "f446a3e3cce15ea601465f42296998b48ee14a14"
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/weights.cpp",
+      "sha256": "b2cf2e9f4e55876e2da40f5803fe403c44350225e3fa907fa02bfcdec76aa185",
+      "bytes": 24607,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "8ec6690bdda6688c99d42dd8a7c06331136ccb3c"
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/cvec.dp.cpp",
+      "sha256": "4b7c2c6985fc64edb1c363e79aa3a24e70dc1352fe9f34d2e830a05edaa5a4bd",
+      "bytes": 12550,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "00872ed89952d22e18e1f703c95b318beae007dd"
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/fused_gr.dp.cpp",
+      "sha256": "d52d47802e6073447ce87300776c4a338408b0bd5aabd1388c414cb46218b46f",
+      "bytes": 107140,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "7fc0e67ee622681101a535e1d5a078934bb3e81a"
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/kv_stream.dp.cpp",
+      "sha256": "4a22dd041b27bccc97baf80a5c3e089c8a895e31c711e46bb1da111f38af13f2",
+      "bytes": 21209,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "342dbdafd5a4242bf51ed0ce5df196eb33427b87"
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/qsa.dp.cpp",
+      "sha256": "0687f0bdc76c338842129b64176e6f3c9ab828727db293b539fc5782e9ff4b4b",
+      "bytes": 62703,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "a7a1afbac9bb6ac633ce970458a7b3794b357cd6"
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/s2_gemv_fast.dp.cpp",
+      "sha256": "830d04891f9e5744b083b6b60c142f80a15efce602606fb774a30010c5a3eeae",
+      "bytes": 11575,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "ace12b7038bfd00cae588a6826a3e59457f11838"
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/prefill/prefill.cpp",
+      "sha256": "74fb232fd2f5e1465303c1c5ebc7a4ba38d8610a8efe8585ad090081e2f93b04",
+      "bytes": 255317,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "24a17a0c7f95210405b5753832558c147ef71b7d"
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/program/generate.cpp",
+      "sha256": "8b4738d6a834688645a507a4a2faef21f63df9ac695ecae7f45571064451365b",
+      "bytes": 534399,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "58d6370e64c8bf9aab5deb519ce46e87ba938246"
+    }
+  ],
+  "full_patch": {
+    "path": "bench/results/2026-10-16-pr6-faithful-restore/safety-corrections-v2.patch",
+    "base": "eb700276c8cd100eea5b70fe3767f1e02d0ae04c",
+    "head": "e0599bffeb129a2e2b13316888ad3af974546872",
+    "sha256": "30de015d8d6678715d272b6c399a1b7455bb07ca94a08b0d6bd66a772717cb72",
+    "bytes": 159295
+  },
+  "fixed_metadata_pins": [
+    {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/historical-closure.json",
+      "sha256": "f32257a5005ada8ed1142c4bc6d575d246ac018312764ff2f9ce1203e7d6f3ee",
+      "bytes": 110463,
+      "revision": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "blob": "81d17eb706935efae326577d75caa7be35fb5f5e"
+    }
+  ],
+  "preservation": {
+    "faithful_anchor": {
+      "revision": "efba8d47817811d493e28f396ebd0e14e161ca75",
+      "reachable_original_ancestor": true
+    },
+    "seven_fix_checkpoint": {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "reachable_original_ancestor": true
+    },
+    "starting_head": {
+      "revision": "eb700276c8cd100eea5b70fe3767f1e02d0ae04c",
+      "reachable_original_ancestor": true
+    },
+    "unmodified_original_reports": [
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/independent-safety-review-v1.md",
+        "sha256": "8477e7a86161a2fbbe98e8d2093314c1328f2ebef3424e8ff94031e7754ebd6d",
+        "bytes": 15559,
+        "revision": "eb700276c8cd100eea5b70fe3767f1e02d0ae04c",
+        "blob": "b3345743258ebbd5ce1995a988c67e952fbf8d0d"
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/independent-safety-review-v1.json",
+        "sha256": "c3a5079fd174e38904fcd6eb97ca8fa3844d12ba60135568819b581c97c3f325",
+        "bytes": 31317,
+        "revision": "eb700276c8cd100eea5b70fe3767f1e02d0ae04c",
+        "blob": "ba54e7d3d9d355e3ba5fa7c16b3e12b85faa818a"
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/report.ja.md",
+        "sha256": "046f2cef75796c0f9e6506452e0b57c4d6b27d5214311db7aed9797763dd9e70",
+        "bytes": 35520,
+        "revision": "eb700276c8cd100eea5b70fe3767f1e02d0ae04c",
+        "blob": "0fa9e4820521f3c670f4cf7a6014fb6d98e9060e"
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/manifest.json",
+        "sha256": "898b95d087f6b01af0bb7c73cd64627813f904b3fee0e92e87fb017e51ae2ec2",
+        "bytes": 4473,
+        "revision": "eb700276c8cd100eea5b70fe3767f1e02d0ae04c",
+        "blob": "14aa23732a717a9ac068cb6140c1445515fc36d0"
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/historical-evidence.json",
+        "sha256": "f79415a9344545df0f72e47475c81e29fa6d0d14bc20158a960e203cb75e2d3a",
+        "bytes": 29459,
+        "revision": "eb700276c8cd100eea5b70fe3767f1e02d0ae04c",
+        "blob": "1816d533a4ecf3bb3ca31a4db2ef123b43c455e1"
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/fixed-source-pins.json",
+        "sha256": "9ed5a0761a342a86e36ea4c5a24f4dbac58d23758c0bfce7ca465f00b6aa209d",
+        "bytes": 3639,
+        "revision": "eb700276c8cd100eea5b70fe3767f1e02d0ae04c",
+        "blob": "f4939474704d00b84e2f1a60a99f92230168d2d5"
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/current-source-pins.json",
+        "sha256": "19621ea579db53ccf02d9b89e02cd5ecd92e1dc3d533a7a97e8dd9e75fdd8398",
+        "bytes": 52155,
+        "revision": "eb700276c8cd100eea5b70fe3767f1e02d0ae04c",
+        "blob": "1aa9c642134380dd742bd4983875fe61832a71a9"
+      }
+    ]
+  },
+  "source_commits": [
+    {
+      "commit": "9d38d9f11fe6949f5d1ba9abba13fc35223b1390",
+      "subject": "fix(validation): restore missing PR6 peer stub and full closure",
+      "exact_files": [
+        "bench/results/2026-10-16-pr6-faithful-restore/historical-closure.json",
+        "validation/pr6-restore/CMakeLists.txt",
+        "validation/pr6-restore/sycl/src/core/peer_experts.cpp"
+      ],
+      "full_patch_command": [
+        "git",
+        "show",
+        "--format=fuller",
+        "--binary",
+        "9d38d9f11fe6949f5d1ba9abba13fc35223b1390"
+      ]
+    },
+    {
+      "commit": "d2c6165bdc6a5a2bacd0ee89aeadf3b5bf08ccbd",
+      "subject": "fix(validation): distinguish borrowed and owned prefill queues",
+      "exact_files": [
+        "validation/pr6-restore/sycl/src/prefill/prefill.cpp"
+      ],
+      "full_patch_command": [
+        "git",
+        "show",
+        "--format=fuller",
+        "--binary",
+        "d2c6165bdc6a5a2bacd0ee89aeadf3b5bf08ccbd"
+      ]
+    },
+    {
+      "commit": "d2358ec418e41b55d01ec9827ba98a4d23dc4064",
+      "subject": "fix(validation): publish prefill readiness after complete initialization",
+      "exact_files": [
+        "validation/pr6-restore/sycl/src/prefill/prefill.cpp"
+      ],
+      "full_patch_command": [
+        "git",
+        "show",
+        "--format=fuller",
+        "--binary",
+        "d2358ec418e41b55d01ec9827ba98a4d23dc4064"
+      ]
+    },
+    {
+      "commit": "ca1aebced6ef5dc191b241aae4d905fd35319324",
+      "subject": "fix(validation): retire staging and PLE through bounded checked events",
+      "exact_files": [
+        "validation/pr6-restore/include/strata/prefill/retirement.hpp",
+        "validation/pr6-restore/sycl/include/strata/sycl_retirement.hpp",
+        "validation/pr6-restore/sycl/src/prefill/prefill.cpp"
+      ],
+      "full_patch_command": [
+        "git",
+        "show",
+        "--format=fuller",
+        "--binary",
+        "ca1aebced6ef5dc191b241aae4d905fd35319324"
+      ]
+    },
+    {
+      "commit": "e11f0bb2bdc19a61749fa8ac0720b94b063382a4",
+      "subject": "fix(validation): fail stop on errors from actual DPCT queue users",
+      "exact_files": [
+        "validation/pr6-restore/CMakeLists.txt",
+        "validation/pr6-restore/checked_dpct.cmake",
+        "validation/pr6-restore/sycl/include/strata/core/mtp.hpp",
+        "validation/pr6-restore/sycl/include/strata/sycl_async_contract.hpp",
+        "validation/pr6-restore/sycl/include/strata/sycl_queue.hpp",
+        "validation/pr6-restore/sycl/src/core/conversation_snapshot.cpp",
+        "validation/pr6-restore/sycl/src/core/conversation_state.cpp",
+        "validation/pr6-restore/sycl/src/core/expert_cache.cpp",
+        "validation/pr6-restore/sycl/src/core/layer.cpp",
+        "validation/pr6-restore/sycl/src/core/mtp.cpp",
+        "validation/pr6-restore/sycl/src/core/native_dense.cpp",
+        "validation/pr6-restore/sycl/src/core/native_head.cpp",
+        "validation/pr6-restore/sycl/src/core/pinned.dp.cpp",
+        "validation/pr6-restore/sycl/src/core/remote_experts.cpp",
+        "validation/pr6-restore/sycl/src/core/session.cpp",
+        "validation/pr6-restore/sycl/src/core/verify.cpp",
+        "validation/pr6-restore/sycl/src/core/weights.cpp",
+        "validation/pr6-restore/sycl/src/kernels/cuda/cvec.dp.cpp",
+        "validation/pr6-restore/sycl/src/kernels/cuda/fused_gr.dp.cpp",
+        "validation/pr6-restore/sycl/src/kernels/cuda/kv_stream.dp.cpp",
+        "validation/pr6-restore/sycl/src/kernels/cuda/qsa.dp.cpp",
+        "validation/pr6-restore/sycl/src/kernels/cuda/s2_gemv_fast.dp.cpp",
+        "validation/pr6-restore/sycl/src/prefill/prefill.cpp",
+        "validation/pr6-restore/sycl/src/program/generate.cpp"
+      ],
+      "full_patch_command": [
+        "git",
+        "show",
+        "--format=fuller",
+        "--binary",
+        "e11f0bb2bdc19a61749fa8ac0720b94b063382a4"
+      ]
+    },
+    {
+      "commit": "6a47d65ce1d830353c6abe5fe018b3e7288107e6",
+      "subject": "fix(validation): admit native embedding and draft vocabulary IDs",
+      "exact_files": [
+        "validation/pr6-restore/fixtures/CMakeLists.txt",
+        "validation/pr6-restore/fixtures/token_admission.cpp",
+        "validation/pr6-restore/include/strata/core/native_head.hpp",
+        "validation/pr6-restore/include/strata/core/token_admission.hpp",
+        "validation/pr6-restore/sycl/src/core/layer.cpp",
+        "validation/pr6-restore/sycl/src/core/mtp.cpp",
+        "validation/pr6-restore/sycl/src/core/native_head.cpp",
+        "validation/pr6-restore/sycl/src/core/verify.cpp",
+        "validation/pr6-restore/sycl/src/prefill/prefill.cpp"
+      ],
+      "full_patch_command": [
+        "git",
+        "show",
+        "--format=fuller",
+        "--binary",
+        "6a47d65ce1d830353c6abe5fe018b3e7288107e6"
+      ]
+    },
+    {
+      "commit": "b599101390143cc9fa7c34977f2f98bd3d583e31",
+      "subject": "fix(validation): make doorbell allocation transactional and null safe",
+      "exact_files": [
+        "validation/pr6-restore/fixtures/CMakeLists.txt",
+        "validation/pr6-restore/fixtures/allocated_fields.cpp",
+        "validation/pr6-restore/include/strata/core/allocated_fields.hpp",
+        "validation/pr6-restore/include/strata/core/layer.hpp",
+        "validation/pr6-restore/sycl/src/core/layer.cpp"
+      ],
+      "full_patch_command": [
+        "git",
+        "show",
+        "--format=fuller",
+        "--binary",
+        "b599101390143cc9fa7c34977f2f98bd3d583e31"
+      ]
+    },
+    {
+      "commit": "dbd24092cfe11f4fa868f7cee86fb7bc3daaefc1",
+      "subject": "fix(validation): bound issuer cancellation and QSA host admission",
+      "exact_files": [
+        "validation/pr6-restore/checked_dpct.cmake",
+        "validation/pr6-restore/sycl/src/prefill/prefill.cpp"
+      ],
+      "full_patch_command": [
+        "git",
+        "show",
+        "--format=fuller",
+        "--binary",
+        "dbd24092cfe11f4fa868f7cee86fb7bc3daaefc1"
+      ]
+    },
+    {
+      "commit": "7bf1783f0fc118a2657d991c3ad4c63f0f3dab23",
+      "subject": "fix(validation): compare full resolver inventory with actual target sources",
+      "exact_files": [
+        "validation/pr6-restore/CMakeLists.txt"
+      ],
+      "full_patch_command": [
+        "git",
+        "show",
+        "--format=fuller",
+        "--binary",
+        "7bf1783f0fc118a2657d991c3ad4c63f0f3dab23"
+      ]
+    },
+    {
+      "commit": "0f21f150c5c15097753389a0f3e3ff6ca86a2929",
+      "subject": "fix(validation): retain direct gather admission storage on rejected submission",
+      "exact_files": [
+        "validation/pr6-restore/sycl/include/strata/sycl_retirement.hpp",
+        "validation/pr6-restore/sycl/src/core/native_head.cpp"
+      ],
+      "full_patch_command": [
+        "git",
+        "show",
+        "--format=fuller",
+        "--binary",
+        "0f21f150c5c15097753389a0f3e3ff6ca86a2929"
+      ]
+    },
+    {
+      "commit": "da12a24cf788330e6df36545c5bef6e33b3d338f",
+      "subject": "fix(validation): publish actual DMA events and keep input refusal on host",
+      "exact_files": [
+        "validation/pr6-restore/sycl/src/prefill/prefill.cpp"
+      ],
+      "full_patch_command": [
+        "git",
+        "show",
+        "--format=fuller",
+        "--binary",
+        "da12a24cf788330e6df36545c5bef6e33b3d338f"
+      ]
+    },
+    {
+      "commit": "1804cd68feab26c63906720a876e2e4c6461f665",
+      "subject": "fix(validation): refuse failed staging data and document corrected route",
+      "exact_files": [
+        "validation/pr6-restore/README.md",
+        "validation/pr6-restore/sycl/src/prefill/prefill.cpp"
+      ],
+      "full_patch_command": [
+        "git",
+        "show",
+        "--format=fuller",
+        "--binary",
+        "1804cd68feab26c63906720a876e2e4c6461f665"
+      ]
+    },
+    {
+      "commit": "c94826b27c66605abf39346f48cbbcaa2e183f68",
+      "subject": "fix(validation): bound draft subset count before upload",
+      "exact_files": [
+        "validation/pr6-restore/sycl/src/core/mtp.cpp"
+      ],
+      "full_patch_command": [
+        "git",
+        "show",
+        "--format=fuller",
+        "--binary",
+        "c94826b27c66605abf39346f48cbbcaa2e183f68"
+      ]
+    },
+    {
+      "commit": "2fec70bffd6be8a1b3b77685119ddc8b4147b8e7",
+      "subject": "fix(validation): order direct gather ID admission with its producer",
+      "exact_files": [
+        "validation/pr6-restore/include/strata/core/native_head.hpp",
+        "validation/pr6-restore/sycl/src/core/native_head.cpp"
+      ],
+      "full_patch_command": [
+        "git",
+        "show",
+        "--format=fuller",
+        "--binary",
+        "2fec70bffd6be8a1b3b77685119ddc8b4147b8e7"
+      ]
+    },
+    {
+      "commit": "e0599bffeb129a2e2b13316888ad3af974546872",
+      "subject": "fix(validation): count DPCT return marker without CMake list separators",
+      "exact_files": [
+        "validation/pr6-restore/checked_dpct.cmake"
+      ],
+      "full_patch_command": [
+        "git",
+        "show",
+        "--format=fuller",
+        "--binary",
+        "e0599bffeb129a2e2b13316888ad3af974546872"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "R1",
+      "status": "SOURCE_CORRECTION_IMPLEMENTED_UNEXECUTED",
+      "trigger": "Historical resolver requests missing peer stub",
+      "source_proof_and_ownership_error_contract": "Complete original 84-TU/198-file inventory plus exact peer bytes; actual-target configure check authored",
+      "normal_math_order_or_intentional_delta": "No math/order change",
+      "commits": [
+        "9d38d9f11fe6949f5d1ba9abba13fc35223b1390",
+        "7bf1783f0fc118a2657d991c3ad4c63f0f3dab23"
+      ],
+      "exact_files": [
+        "bench/results/2026-10-16-pr6-faithful-restore/historical-closure.json",
+        "validation/pr6-restore/CMakeLists.txt",
+        "validation/pr6-restore/sycl/src/core/peer_experts.cpp"
+      ],
+      "patches": "source_commits entries contain immutable git show commands; full_patch contains complete source/closure diff",
+      "execution_qualification": "NOT_RUN"
+    },
+    {
+      "id": "R2",
+      "status": "SOURCE_CORRECTION_IMPLEMENTED_UNEXECUTED",
+      "trigger": "Ring/PLE reuse, partial submission, cancellation or uncompleted DMA",
+      "source_proof_and_ownership_error_contract": "Actual DMA events; issued-release/worker-acquire and ready-release/issuer-acquire; stop claims then drain active/event owners; uncertain completion exits with owners live",
+      "normal_math_order_or_intentional_delta": "Intentional same in-order copy/compute queue, event retirement, added final barriers/watchdogs; FP32 math and layer/chunk sequence preserved",
+      "commits": [
+        "ca1aebced6ef5dc191b241aae4d905fd35319324",
+        "dbd24092cfe11f4fa868f7cee86fb7bc3daaefc1",
+        "da12a24cf788330e6df36545c5bef6e33b3d338f",
+        "1804cd68feab26c63906720a876e2e4c6461f665"
+      ],
+      "exact_files": [
+        "validation/pr6-restore/README.md",
+        "validation/pr6-restore/checked_dpct.cmake",
+        "validation/pr6-restore/include/strata/prefill/retirement.hpp",
+        "validation/pr6-restore/sycl/include/strata/sycl_retirement.hpp",
+        "validation/pr6-restore/sycl/src/prefill/prefill.cpp"
+      ],
+      "patches": "source_commits entries contain immutable git show commands; full_patch contains complete source/closure diff",
+      "execution_qualification": "NOT_RUN"
+    },
+    {
+      "id": "R3",
+      "status": "SOURCE_CORRECTION_IMPLEMENTED_UNEXECUTED",
+      "trigger": "Delivered async error on actual DPCT default/private queues",
+      "source_proof_and_ownership_error_contract": "Force-included build-private hash-pinned dependency transform; registered owning checked queues; checking waits; nonempty error list exits 87",
+      "normal_math_order_or_intentional_delta": "No arithmetic change; uniform profiling/error-consumption policy and finite MTP retirement delta",
+      "commits": [
+        "e11f0bb2bdc19a61749fa8ac0720b94b063382a4",
+        "dbd24092cfe11f4fa868f7cee86fb7bc3daaefc1",
+        "e0599bffeb129a2e2b13316888ad3af974546872"
+      ],
+      "exact_files": [
+        "validation/pr6-restore/CMakeLists.txt",
+        "validation/pr6-restore/checked_dpct.cmake",
+        "validation/pr6-restore/sycl/include/strata/core/mtp.hpp",
+        "validation/pr6-restore/sycl/include/strata/sycl_async_contract.hpp",
+        "validation/pr6-restore/sycl/include/strata/sycl_queue.hpp",
+        "validation/pr6-restore/sycl/src/core/conversation_snapshot.cpp",
+        "validation/pr6-restore/sycl/src/core/conversation_state.cpp",
+        "validation/pr6-restore/sycl/src/core/expert_cache.cpp",
+        "validation/pr6-restore/sycl/src/core/layer.cpp",
+        "validation/pr6-restore/sycl/src/core/mtp.cpp",
+        "validation/pr6-restore/sycl/src/core/native_dense.cpp",
+        "validation/pr6-restore/sycl/src/core/native_head.cpp",
+        "validation/pr6-restore/sycl/src/core/pinned.dp.cpp",
+        "validation/pr6-restore/sycl/src/core/remote_experts.cpp",
+        "validation/pr6-restore/sycl/src/core/session.cpp",
+        "validation/pr6-restore/sycl/src/core/verify.cpp",
+        "validation/pr6-restore/sycl/src/core/weights.cpp",
+        "validation/pr6-restore/sycl/src/kernels/cuda/cvec.dp.cpp",
+        "validation/pr6-restore/sycl/src/kernels/cuda/fused_gr.dp.cpp",
+        "validation/pr6-restore/sycl/src/kernels/cuda/kv_stream.dp.cpp",
+        "validation/pr6-restore/sycl/src/kernels/cuda/qsa.dp.cpp",
+        "validation/pr6-restore/sycl/src/kernels/cuda/s2_gemv_fast.dp.cpp",
+        "validation/pr6-restore/sycl/src/prefill/prefill.cpp",
+        "validation/pr6-restore/sycl/src/program/generate.cpp"
+      ],
+      "patches": "source_commits entries contain immutable git show commands; full_patch contains complete source/closure diff",
+      "execution_qualification": "NOT_RUN"
+    },
+    {
+      "id": "R4",
+      "status": "SOURCE_CORRECTION_IMPLEMENTED_UNEXECUTED",
+      "trigger": "No-init destruction or early initialization failure",
+      "source_proof_and_ownership_error_contract": "Null queue pointers, explicit ownership bit, never destroy borrowed/default queue",
+      "normal_math_order_or_intentional_delta": "No normal math change; copy is later explicitly borrowed from compute",
+      "commits": [
+        "d2c6165bdc6a5a2bacd0ee89aeadf3b5bf08ccbd",
+        "ca1aebced6ef5dc191b241aae4d905fd35319324"
+      ],
+      "exact_files": [
+        "validation/pr6-restore/include/strata/prefill/retirement.hpp",
+        "validation/pr6-restore/sycl/include/strata/sycl_retirement.hpp",
+        "validation/pr6-restore/sycl/src/prefill/prefill.cpp"
+      ],
+      "patches": "source_commits entries contain immutable git show commands; full_patch contains complete source/closure diff",
+      "execution_qualification": "NOT_RUN"
+    },
+    {
+      "id": "R5",
+      "status": "SOURCE_CORRECTION_IMPLEMENTED_UNEXECUTED",
+      "trigger": "Late allocation/carve/relayout failure followed by run",
+      "source_proof_and_ownership_error_contract": "Ready published after all initialization/carving/checked retirement; cleared before mutation/failure; host geometry before allocation; reset before repeated init",
+      "normal_math_order_or_intentional_delta": "No arithmetic change; unsupported host geometry refused earlier",
+      "commits": [
+        "d2358ec418e41b55d01ec9827ba98a4d23dc4064",
+        "dbd24092cfe11f4fa868f7cee86fb7bc3daaefc1",
+        "da12a24cf788330e6df36545c5bef6e33b3d338f"
+      ],
+      "exact_files": [
+        "validation/pr6-restore/checked_dpct.cmake",
+        "validation/pr6-restore/sycl/src/prefill/prefill.cpp"
+      ],
+      "patches": "source_commits entries contain immutable git show commands; full_patch contains complete source/closure diff",
+      "execution_qualification": "NOT_RUN"
+    },
+    {
+      "id": "R6",
+      "status": "SOURCE_CORRECTION_IMPLEMENTED_UNEXECUTED",
+      "trigger": "Native ID at/above actual vocabulary, negative, int32 overflow; invalid draft subset",
+      "source_proof_and_ownership_error_contract": "Actual loaded table vocabulary; host span admission before submit; direct device-ID D2H/check before gather; private graph path limited to admitted host and bounded head/subset producers",
+      "normal_math_order_or_intentional_delta": "No valid embedding math changes; direct public gather adds checking D2H and requires in-order producer/immutable IDs",
+      "commits": [
+        "6a47d65ce1d830353c6abe5fe018b3e7288107e6",
+        "0f21f150c5c15097753389a0f3e3ff6ca86a2929",
+        "da12a24cf788330e6df36545c5bef6e33b3d338f",
+        "c94826b27c66605abf39346f48cbbcaa2e183f68",
+        "2fec70bffd6be8a1b3b77685119ddc8b4147b8e7"
+      ],
+      "exact_files": [
+        "validation/pr6-restore/fixtures/CMakeLists.txt",
+        "validation/pr6-restore/fixtures/token_admission.cpp",
+        "validation/pr6-restore/include/strata/core/native_head.hpp",
+        "validation/pr6-restore/include/strata/core/token_admission.hpp",
+        "validation/pr6-restore/sycl/include/strata/sycl_retirement.hpp",
+        "validation/pr6-restore/sycl/src/core/layer.cpp",
+        "validation/pr6-restore/sycl/src/core/mtp.cpp",
+        "validation/pr6-restore/sycl/src/core/native_head.cpp",
+        "validation/pr6-restore/sycl/src/core/verify.cpp",
+        "validation/pr6-restore/sycl/src/prefill/prefill.cpp"
+      ],
+      "patches": "source_commits entries contain immutable git show commands; full_patch contains complete source/closure diff",
+      "execution_qualification": "NOT_RUN"
+    },
+    {
+      "id": "R7",
+      "status": "SOURCE_CORRECTION_IMPLEMENTED_UNEXECUTED",
+      "trigger": "Any nonthrowing null or exception allocating five startup doorbell fields",
+      "source_proof_and_ownership_error_contract": "Transactional unexposed locals; nonnull before memset; free every preceding field; publish only after full success; cleanup error exits 88",
+      "normal_math_order_or_intentional_delta": "Healthy field allocation order/bytes/aliases and math unchanged",
+      "commits": [
+        "b599101390143cc9fa7c34977f2f98bd3d583e31"
+      ],
+      "exact_files": [
+        "validation/pr6-restore/fixtures/CMakeLists.txt",
+        "validation/pr6-restore/fixtures/allocated_fields.cpp",
+        "validation/pr6-restore/include/strata/core/allocated_fields.hpp",
+        "validation/pr6-restore/include/strata/core/layer.hpp",
+        "validation/pr6-restore/sycl/src/core/layer.cpp"
+      ],
+      "patches": "source_commits entries contain immutable git show commands; full_patch contains complete source/closure diff",
+      "execution_qualification": "NOT_RUN"
+    }
+  ],
+  "selected_queue_trace": [
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/core/mtp.hpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 1,
+      "q_of_count": 0
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/core/peer_experts.hpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 2,
+      "q_of_count": 0
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/core/remote_experts.hpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 1,
+      "q_of_count": 0
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/core/verify.hpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 2,
+      "q_of_count": 0
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/sycl_queue.hpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 1,
+      "q_of_count": 2
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/conversation_snapshot.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 1,
+      "q_of_count": 0
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/conversation_state.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 1,
+      "q_of_count": 0
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/device.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 4,
+      "q_of_count": 0
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/expert_cache.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 7,
+      "q_of_count": 1
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/expert_source.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 7,
+      "q_of_count": 1
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/gguf_expert_source.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 4,
+      "q_of_count": 0
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/graph.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 5
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/layer.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 13,
+      "q_of_count": 15
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/mtp.cpp",
+      "create_queue_sites": [
+        {
+          "line": 373,
+          "argument": "true"
+        }
+      ],
+      "direct_dpct_default_access_count": 34,
+      "q_of_count": 0
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/native_dense.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 6,
+      "q_of_count": 0
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/native_head.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 13,
+      "q_of_count": 1
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/pinned.dp.cpp",
+      "create_queue_sites": [
+        {
+          "line": 630,
+          "argument": "true"
+        }
+      ],
+      "direct_dpct_default_access_count": 2,
+      "q_of_count": 0
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/remote_experts.cpp",
+      "create_queue_sites": [
+        {
+          "line": 244,
+          "argument": "true"
+        }
+      ],
+      "direct_dpct_default_access_count": 19,
+      "q_of_count": 0
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/session.cpp",
+      "create_queue_sites": [
+        {
+          "line": 243,
+          "argument": "true"
+        },
+        {
+          "line": 1227,
+          "argument": "true"
+        }
+      ],
+      "direct_dpct_default_access_count": 7,
+      "q_of_count": 9
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/verify.cpp",
+      "create_queue_sites": [
+        {
+          "line": 509,
+          "argument": "true"
+        },
+        {
+          "line": 517,
+          "argument": "true"
+        }
+      ],
+      "direct_dpct_default_access_count": 16,
+      "q_of_count": 0
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/weights.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 21,
+      "q_of_count": 0
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/bf16_gemv.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 4
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/cvec.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 10,
+      "q_of_count": 1
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/dequant_bf16.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 1
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/dequant_s2.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 1,
+      "q_of_count": 0
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/elementwise.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 17
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/fused_gdn.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 3
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/fused_gr.dp.cpp",
+      "create_queue_sites": [
+        {
+          "line": 2006,
+          "argument": "true"
+        }
+      ],
+      "direct_dpct_default_access_count": 4,
+      "q_of_count": 2
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/gdn.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 7
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/gr.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 2
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/iq_kernels.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 12
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/kv_q4.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 4
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/kv_q8.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 2
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/kv_stream.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 1,
+      "q_of_count": 7
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/native_bf16.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 2
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/native_flash_attn.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 2
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/native_gdn.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 1
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/native_gdn_preprocess.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 5
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/native_gr_norm.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 1
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/native_gr_postops.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 4
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/native_mmvq.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 14
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/native_moe.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 2
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/native_ple_postops.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 2
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/native_qsa.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 3
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/native_qsa_indexer.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 3
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/native_qsa_score.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 1
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/native_rope.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 2
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/native_router.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 3
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/ple.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 2
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/qsa.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 2,
+      "q_of_count": 12
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/qsa_decode_attn.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 3
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/qsa_prompt_attn.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 1
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/qsa_prompt_attn_xmx.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 1
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/qsa_select.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 9
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/quantize_act.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 6
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/rope.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 1
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/router_top10.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 2
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/s2_expert_grouped.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 9
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/s2_gemv.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 1,
+      "q_of_count": 0
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/s2_gemv_fast.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 5,
+      "q_of_count": 0
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/s2_gemv_q8.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 1
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/s2_gemv_quads.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 2,
+      "q_of_count": 0
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/s_gemv.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 4,
+      "q_of_count": 7
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/sampler.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 2,
+      "q_of_count": 12
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/shared_expert.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 10
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/verify_kernels.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 23
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/prefill/gemm.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 4,
+      "q_of_count": 2
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/prefill/kernels.dp.cpp",
+      "create_queue_sites": [],
+      "direct_dpct_default_access_count": 0,
+      "q_of_count": 37
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/prefill/prefill.cpp",
+      "create_queue_sites": [
+        {
+          "line": 1498,
+          "argument": "true"
+        },
+        {
+          "line": 1511,
+          "argument": "true"
+        },
+        {
+          "line": 1563,
+          "argument": "true"
+        }
+      ],
+      "direct_dpct_default_access_count": 32,
+      "q_of_count": 7
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/program/generate.cpp",
+      "create_queue_sites": [
+        {
+          "line": 2451,
+          "argument": "true"
+        },
+        {
+          "line": 2763,
+          "argument": "true"
+        },
+        {
+          "line": 2771,
+          "argument": "true"
+        },
+        {
+          "line": 5739,
+          "argument": "true"
+        },
+        {
+          "line": 7823,
+          "argument": "true"
+        }
+      ],
+      "direct_dpct_default_access_count": 67,
+      "q_of_count": 7
+    }
+  ],
+  "provenance": {
+    "project_new_code": "Independently authored on starting child under repository LICENSE (MIT)",
+    "restored_source": {
+      "path": "sycl/src/core/peer_experts.cpp",
+      "sha256": "5708f78a7571bb8e6ed883f5d582298fe238145d2a1d224939becc0332cf0360",
+      "bytes": 1525,
+      "revision": "d0c5dda0dc2e8d82458c4b0ff31c4cef44c40b32",
+      "blob": "63656fd6866d15670a940a9e25e7750f3b071ebc"
+    },
+    "excluded_sources_consulted_or_adopted": false,
+    "current_native16_math_or_scheduling_imported": false,
+    "historical_dependency_inputs": [
+      {
+        "path": "sycl/include/dpct/device.hpp",
+        "sha256": "66776dce10405ad3826e6f19edf23a9811113fa6c62832de56d93d907b827154",
+        "bytes": 33781,
+        "revision": "d0c5dda0dc2e8d82458c4b0ff31c4cef44c40b32",
+        "blob": "b55d2dcf08ba3a548567a018220955d4cfc98272"
+      },
+      {
+        "path": "sycl/include/dpct/dpct.hpp",
+        "sha256": "df9291c2de32ec4a1072973e5fe25a78e3297ca23303f23d015bce3b0e64939f",
+        "bytes": 4623,
+        "revision": "d0c5dda0dc2e8d82458c4b0ff31c4cef44c40b32",
+        "blob": "6318e88cbf95e8ffee14e9ecaeab26514efe5bd8"
+      },
+      {
+        "path": "sycl/include/dpct/blas_utils.hpp",
+        "sha256": "66541bfa0442725401577cea576bcdb05c851f3f0bbb684f62dee842909c53b5",
+        "bytes": 119225,
+        "revision": "d0c5dda0dc2e8d82458c4b0ff31c4cef44c40b32",
+        "blob": "4a58aad3345bec1d94b2c519e50a79678225e228"
+      },
+      {
+        "path": "sycl/include/dpct/graph.hpp",
+        "sha256": "9933c09306a7a91bb242fa913694541fc4166bcf6d5a1a2a81ee9dac91b05f31",
+        "bytes": 7275,
+        "revision": "d0c5dda0dc2e8d82458c4b0ff31c4cef44c40b32",
+        "blob": "f17fc869eef190ea56a1d171a688459890b7c227"
+      }
+    ],
+    "dependency_change": "Only build-private generated device.hpp derivative, original Intel notice retained plus modification notice; no shared vendor/runtime installation edit and no vendor header added to Git",
+    "dependency_spdx": "Apache-2.0 WITH LLVM-exception",
+    "primary_license_review_url": "https://llvm.org/LICENSE.txt",
+    "policy_inputs": [
+      {
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/AGENTS.md",
+        "sha256": "7f750320bef4146a2872086922d84fc9fa7a8351ae655b7876c912856e3747fe",
+        "bytes": 12124
+      },
+      {
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/docs/ARTIFACT_RETENTION.md",
+        "sha256": "fdf86d7ea576d6f0400ec7e643b5ddca5c3c577dd053d66c2fd05220e64b1cc1",
+        "bytes": 8223
+      }
+    ],
+    "timeout_reference": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/own-native16-separate-queue-timeout-v2.ja.md",
+      "sha256": "bf1589f1cec774284611a6124752c9eaffa4eef2630103e02fe1b38bd76f8157",
+      "bytes": 2225,
+      "revision": "eb700276c8cd100eea5b70fe3767f1e02d0ae04c",
+      "blob": "46ebf70575d27acf35c118969991213ea2be0a66"
+    },
+    "timeout_interpretation": "Distinct source/runtime route; unresolved cause, not PR6 causal fault evidence",
+    "upstream_new_check": false,
+    "generated_dependency_expected_sha256": "5fbc6198ed723f4949245336963e871ac336b6b4c927eee657e0e71e0a233eb3",
+    "generated_dependency_identity_status": "source-calculated expected content only; actual CMake output and preprocessed use NOT_PROVED"
+  },
+  "primary_contract_references": [
+    {
+      "url": "https://github.khronos.org/SYCL_Reference/iface/event.html",
+      "usage": "API/license contract only; no implementation examples copied; retrieved 2026-10-16"
+    },
+    {
+      "url": "https://github.khronos.org/SYCL_Reference/iface/async_handler.html",
+      "usage": "API/license contract only; no implementation examples copied; retrieved 2026-10-16"
+    },
+    {
+      "url": "https://github.khronos.org/SYCL_Reference/iface/usm_allocations.html",
+      "usage": "API/license contract only; no implementation examples copied; retrieved 2026-10-16"
+    },
+    {
+      "url": "https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_oneapi_enqueue_barrier.asciidoc",
+      "usage": "API/license contract only; no implementation examples copied; retrieved 2026-10-16"
+    },
+    {
+      "url": "https://llvm.org/LICENSE.txt",
+      "usage": "API/license contract only; no implementation examples copied; retrieved 2026-10-16"
+    }
+  ],
+  "exit_contract": {
+    "86": "Uncertain completion/submission/retirement or process deadline; no unwinding/owner destruction",
+    "87": "Nonempty actual selected DPCT asynchronous error list; fail-stop",
+    "88": "Transactional field cleanup failed; fail-stop"
+  },
+  "deadlines_seconds": {
+    "retirement_or_host_gate_or_join_or_transfer": 60,
+    "prefill_init": 600,
+    "whole_prefill_request": 7200
+  },
+  "event_poll_sleep_microseconds": 50,
+  "residual_blockers": [
+    {
+      "id": "Q1",
+      "status": "UNRESOLVED",
+      "description": "Actual generated-header/preprocessor/ODR and toolchain compatibility; configure/build NOT_RUN"
+    },
+    {
+      "id": "Q2",
+      "status": "UNRESOLVED",
+      "description": "Installed runtime/provider default/private queue async delivery; bounded event retirement and concurrent same-queue issuer; failure injections NOT_RUN"
+    },
+    {
+      "id": "Q3",
+      "status": "UNRESOLVED",
+      "description": "Captured token-producer/replay/rebind ownership and direct-device ID immutability qualification; graph destruction and legacy mapped-doorbell signaling are not certified"
+    },
+    {
+      "id": "Q4",
+      "status": "UNRESOLVED",
+      "description": "All host/native numerical, quality, continuation, physical262144, RESTORE and decode gates NOT_RUN"
+    },
+    {
+      "id": "Q5",
+      "status": "UNRESOLVED",
+      "description": "No matched original-condition or official >=32K thinking performance measurement; old speed numbers do not qualify synchronization delta"
+    },
+    {
+      "id": "Q6",
+      "status": "UNRESOLVED",
+      "description": "Whole-engine synchronous error paths, allocators, hidden library queues/CPU fallback arithmetic and OS/driver progress are outside this bounded source proof"
+    }
+  ],
+  "main_only_sequence": [
+    "Review full patch/provenance; pinned offline dependencies; generate/preprocess checked header and verify actual target SOURCES/compile flags",
+    "Build/run existing draft/range plus new token_admission/allocated_fields host fixtures; no-init/init/relayout/null failure injection and reserved fail-stop exits",
+    "Finite model-free actual-event ring2/multiwrap/cross-generation/partial-submit/cancel/never-complete/blocked-provider/async default+private error injections; owner survival and no false publication",
+    "Only after prior source/failure gates: immutable child environment, supervised tiny 2/257-token native diagnostics with bounded tracing",
+    "4096/8087 odd tails, issuer modes, PLE buffering, MTP paths/graphs and host/mixed/GPU FP32 residual comparison; full numerical/state/quality evidence",
+    "Actual physical262144 page/indexer boundaries, export/exit/fresh RESTORE/continuation/branch; cold/warm/restored decode separately",
+    "Clean independent original-condition paired32768 and matched official>=32K thinking measurements with individual samples; no retrospective new600 claim"
+  ],
+  "retention": {
+    "owner": "Main",
+    "raw_measurement_traces_or_tensors_or_build_outputs_created": false,
+    "deleted_artifacts": [],
+    "delivery_artifacts": [
+      "safety-corrections-v2.md",
+      "safety-corrections-v2.json",
+      "safety-corrections-v2.patch"
+    ],
+    "next_review": "Main complete source/dependency/host failure review before native execution",
+    "patch_purpose": "Complete reviewable source diff against immutable assigned base; requested delivery evidence",
+    "raw_log_budget_for_future_main_runs_bytes": 67108864
+  },
+  "report": {
+    "path": "bench/results/2026-10-16-pr6-faithful-restore/safety-corrections-v2.md",
+    "sha256": "49abc3ac6bb0b9b225d96d6343b665d12f57a0ff4af6aa4b919134045fa045f8",
+    "bytes": 19905
+  },
+  "authorization_limits_respected": {
+    "main_source_worktree_writes": false,
+    "branch_switch_or_creation": false,
+    "push_pr_or_merge": false,
+    "shared_vendor_runtime_writes": false,
+    "nested_agents": false,
+    "external_messages": "Only Orca task lifecycle/escalation commands"
+  }
+}
