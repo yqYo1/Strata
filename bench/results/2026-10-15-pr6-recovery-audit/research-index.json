@@ -4479,6 +4479,18 @@
       "operational_digest_path": "research-review-round960-v1.ja.md",
       "main_body_read": false,
       "status": "Reviewed with scope/semantics/private-memory/full-context corrections; not a barrier-removal or speed qualification. Current-image/ISA reconciliation is separate Main evidence."
+    },
+    {
+      "round": 966,
+      "model": "gpt-6-luna",
+      "classification": "decision_support",
+      "path": "research-round966-v1.txt",
+      "sha256": "44ab01354870c5c0e3cf2384d2138eb0d7ae456181b207ac9e0982b1472d892b",
+      "bytes": 12425,
+      "main_body_read": false,
+      "status": "Orca worker succeeded and released; native Luna max R968 review pending. No runtime or implementation adoption.",
+      "retrieval_trigger": "A concrete MoE-only window implementation or owner/memory decision after independent review.",
+      "schedulable_now": false
     }
   ],
   "main_initial_findings": [
@@ -7254,14 +7266,18 @@
     "dispatch_id": "ctx_a9fa56e63485",
     "model": "gpt-6-luna",
     "scope_schedulable_at_dispatch": true,
-    "status": "Running source-only comparison: 16K MoE window with 8K causal operator chunks; no code implementation or native execution. Initial startup update prompt was skipped before task injection; same Luna process reused through explicit retry.",
+    "status": "Report completed1800words; accepted worker_done and successful owned-terminal release. Original body held by Main; native Luna max R968 review in progress.",
     "runtime_proof": "orca-research-round966-runtime-v1.json",
     "report": "research-round966-v1.txt",
     "Main_report_body_read": false,
     "next": "Await worker_done without steering, then native Luna max review; Main keeps current paired profile first for runtime selection.",
     "scope_sha256": "fd263697e79565a67ffd30a880dc2d64fa39f815b1ee528d2fe98b8de958e83c",
     "spec_sha256": "a204c4f3857c0bbaa01369c50ba8e321dc8503642729c10bbe6b7d04dd30d615",
-    "runtime_proof_sha256": "f9e7d1e5ea003bd76577b004d2721baa467bceb673873acc55c7c3827e39a98c"
+    "runtime_proof_sha256": "f9e7d1e5ea003bd76577b004d2721baa467bceb673873acc55c7c3827e39a98c",
+    "report_sha256": "44ab01354870c5c0e3cf2384d2138eb0d7ae456181b207ac9e0982b1472d892b",
+    "report_bytes": 12425,
+    "settlement_receipt": "orca-research-round966-settlement-v1.json",
+    "review_pending": "research-review-round968-v1.json"
   },
   "current_moe_order_resource_audit": {
     "report": "current-moe-order-resource-audit-v1.json",
@@ -7269,5 +7285,13 @@
     "finding": "Expert H2D is already once per layer; repeated per-chunk expert dequantization/GEMMs are a distinct target. R966 checks a MoE-only16K window without enlarging causal operators.",
     "implementation_adopted": false,
     "GPU_executed": false
+  },
+  "layer_upload_padding_current": {
+    "report": "layer-upload-padding-arithmetic-v1.json",
+    "sha256": "cb0227f4f37514b4208453e66c5aec5bf59a58952a44a75c73793809321413bc",
+    "status": "Same model/pack/MTP identity verified across old/current closed receipts. Full-stride bulk copies would request15.138816GB more (+30.10164percent) than the old exact-width upload total. Arithmetic only; current paired profile and true rectangular copy are unexecuted.",
+    "review_in_progress": "research-review-round967-v1.json",
+    "Main_collection_report_bodies_read": false,
+    "original_collection_retrieval": "R775 held; native reviewer retrieves only transfer-granularity applicability."
   }
 }
