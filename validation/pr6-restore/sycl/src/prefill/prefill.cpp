@@ -5,6 +5,7 @@
 #include "strata/sycl_queue.hpp"
 #include "strata/prefill/prefill.hpp"
 #include "strata/prefill/draft_uploads.hpp"
+#include "strata/prefill/range_guard.hpp"
 #include "strata/core/gguf_expert_source.hpp"
 #include "strata/core/mtp.hpp"
 #include "strata/core/progress.hpp"
@@ -1885,6 +1886,18 @@ struct PeTimer {
 }  // namespace
 
 bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) {
+    if (!impl_ || !impl_->g || !impl_->ss || !impl_->wt || !impl_->cs || !impl_->copy ||
+        !impl_->stager || impl_->T <= 0 || impl_->T_max < impl_->T) {
+        err = "prefill: init must complete before run"; return false;
+    }
+    if (!detail::pr6_position_span(n, pos0, impl_->ss->max_cells) || (n && !tokens)) {
+        err = "prefill: input span exceeds session capacity or physical 262144"; return false;
+    }
+    for (int64_t i = 0; i < n; ++i)
+        if (tokens[i] < std::numeric_limits<int32_t>::min() ||
+            tokens[i] > std::numeric_limits<int32_t>::max()) {
+            err = "prefill: token id cannot be represented by the int32 input kernels"; return false;
+        }
     const char* mode = std::getenv("STRATA_PREFILL_LAYER_MAJOR");
     const char* first_env = std::getenv("STRATA_PREFILL_FIRST");
     const int64_t first = first_env ? std::atoll(first_env) : 256;
@@ -1934,6 +1947,17 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     const core::OnDevice on_device(m.device);
     const auto& g = *m.g;
     if (n <= 0) return run_impl(tokens, n, pos0, err);
+    if (!m.cs->is_in_order() || !m.copy->is_in_order() ||
+        m.cs->get_context() != m.copy->get_context() ||
+        m.cs->get_context() != dpct::get_in_order_queue().get_context() ||
+        m.cs->get_device() != dpct::get_in_order_queue().get_device()) {
+        err = "prefill: layer-major requires in-order queues in the allocation device/context"; return false;
+    }
+    if (g.n_layers != 48 || g.n_expert != NE || g.n_embd != N || g.hc != HC ||
+        g.hc_lr != LR || g.n_ff != 640 || !m.ss->qsa_states ||
+        m.ss->qsa_ord0 != 0 || m.ss->qsa_alloc != 12) {
+        err = "prefill: layer-major fixed workspace geometry/session is unsupported"; return false;
+    }
     if (stage_lb_ != 0 || stage_le_ != g.n_layers || next_ || helper_ || m.pp || hand_in_ ||
         !m.compact || !m.src) {
         err = "prefill: layer-major currently requires a full single-GPU compact FP16 path";
@@ -1943,6 +1967,15 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         if (m.ss->qsa_states[m.ss->qsa_ord0 + i].kv_mode != 0) {
             err = "prefill: layer-major requires all K/V pages resident in VRAM";
             return false;
+        }
+    }
+    const auto shapes = strata::kernels::qsa_real_shapes();
+    const int64_t needed_pages = (pos0 + n + shapes.page_size - 1) / shapes.page_size;
+    for (int64_t i = 0; i < m.ss->qsa_alloc; ++i) {
+        const auto& state = m.ss->qsa_states[i];
+        if (!state.page_table || state.max_cells < pos0 + n ||
+            state.n_pages < needed_pages || state.n_slots != state.n_pages) {
+            err = "prefill: layer-major resident KV table/pool cannot cover the input span"; return false;
         }
     }
     if (const char* preload = std::getenv("STRATA_PREFILL_PRELOAD_PLE"); preload && preload[0] == '1') {
@@ -1973,15 +2006,17 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     if (gpu_tokens) {
         size_t free_bytes = 0, total_bytes = 0;
         dpct::get_current_device().get_memory_info(free_bytes, total_bytes);
-        const size_t bytes = (size_t) gpu_tokens * D * sizeof(float);
+        const size_t bytes = detail::pr6_product(detail::pr6_product((size_t) gpu_tokens, D), sizeof(float));
         if (free_bytes && bytes > free_bytes) {
             err = "prefill layer-major: requested GPU residual rows exceed free VRAM; lower STRATA_PREFILL_LAYER_MAJOR_R_GPU";
             return false;
         }
-        device_rows.reset(sycl::malloc_device<float>((size_t) gpu_tokens * D, *m.cs));
+        device_rows.reset(sycl::malloc_device<float>(detail::pr6_product((size_t) gpu_tokens, D), *m.cs));
         if (!device_rows) { err = "prefill layer-major: GPU residual allocation failed"; return false; }
     }
-    std::vector<float> rows((size_t) (n - gpu_tokens) * D);
+    const size_t host_elements = detail::pr6_product((size_t) (n - gpu_tokens), D);
+    (void) detail::pr6_product(host_elements, sizeof(float));
+    std::vector<float> rows(host_elements);
     std::vector<int32_t> residency((size_t) g.n_layers * g.n_expert, -1);
     ExpertTransferTimer transfers;
     transfers.residual_gpu_tokens = gpu_tokens;

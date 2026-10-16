@@ -76,3 +76,25 @@ kRing個の `dma_done[i]` と `buf[i]/pinned[i]` を読んでいた。実際に�
 は資源不足時のnull返却を定義する。Mainは各null-returnとvector部分初期化例外を
 注入し、false/fallback/cleanupと再initを確認する。全て未実行。歴史engine全体の
 allocation呼出しを機械的に書換えた修正ではなく、上記箇所が対象。
+
+## 修正E: prefillの入力/physical範囲とqueue契約
+
+旧public `Prefill::run` は未初期化 `impl_->T` を使い、負数/overflowや
+`pos0+n > ss.max_cells` を検査せずbatched KV append、RoPE、steps生成へ渡していた。
+`run_impl` にも入口range checkはなく、単一tokenのqsa_layer検査はこのbatched経路を
+保護しない。pos+nを作る前に減算で検証する。actual prefixの上限262144とsession容量を
+別々に守り、歴史の262146 allocation reserveを理由なく禁止しない。int32入力へ
+表せないtokenはcast前に拒否し、host/device残差のサイズ積をcheckedにした。
+
+旧layer-majorはin-order前提をcommentに持つがpublic initのstream引数を確認しない。
+out-of-order queueならH2D→kernelに依存がなく、別contextならdefault queueで作った
+USMへアクセスできない。layer-major入口で2queueのin-orderと同allocation context/device、
+固定workspace geometry、resident page table/poolの範囲を検査する。既存正常recipeの
+command順・mathは変えない。page table内のdevice page IDの実値はこのhost検査で
+検証したことにせず、session initializerのidentity-table契約とMainの実page fixtureが必要。
+
+`fixtures/range_guard.cpp` は65538条件、continuationがちょうど262144で終わる境界、
+1超過、INT64_MAXによる加算overflow、負数、size積overflowを含む。新規helper/fixtureは
+この歴史sourceの契約から独立に作成したrepository LICENSEのコード。未実行。
+[SYCL queue仕様](https://github.khronos.org/SYCL_Reference/iface/queue.html) の
+in-order保証は同じqueueへ順にsubmitしたcommand間のもので、CPU書換えを同期しない。
