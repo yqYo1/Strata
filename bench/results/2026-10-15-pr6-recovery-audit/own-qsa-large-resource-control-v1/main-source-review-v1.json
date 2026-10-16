@@ -1,0 +1,37 @@
+{
+  "schema": "strata-qsa-large-resource-main-source-review-v1",
+  "reviewed_utc": "2026-10-16T11:52:13.408242+00:00",
+  "base_commit": "3035e7e8b7417acadb80ddd7592f53a94b0d3625",
+  "preimage_sha256": "3a1fb967eb0cf2241b3eba4f8d58b4d8c2671b5b4a6969de62a64a133d584edc",
+  "source_sha256": "1575fabaffcf39b4e3ab25e94dae6e8e998362b1239e62fc93e76b53ec4df9a4",
+  "manifest_sha256": "f3c5b08f746db1c696cb3fe23460374a94a3d32bbe019452a370e75c3fb72b35",
+  "complete_CPP_patch_and_streaming_comparator_read": true,
+  "all_delivery_hashes_checked": true,
+  "production_inference_kernel_changed": false,
+  "purpose": "Distinguish tiny-grid submission/parallelism sensitivity from16384workgroups at production8192querybatch, without asserting exactscarceunit.",
+  "preservation": [
+    "Old128/256/smoke input/order/math preserved; new8192 uses128physicalreplicas viaquerymod128.",
+    "Allsame footprint/init perarm, fullphysical/table/selectedrowbyteproof, boundedcheckedsize_t extents.",
+    "Same FP32Q/O,K8V8,Mode1Direct1NativefalseKMapping0Softmaxfalse.",
+    "AllsmallFP64/fullfinite/fullbyte/inputguards/sourceunchanged/finalrepeatchecks and3Mainholds preserved.",
+    "Dump nowexclusive0600/nooverwrite; max192MiB+24, bounded193MiB.",
+    "Comparator streams everybyte/allFP32finite/wholeSHA and checksfileidentity/extents, no selfcomparison; old archived comparator unchanged."
+  ],
+  "capacities": {
+    "queries": 8192,
+    "physical_KV_replicas": 128,
+    "device_bytes": 823485888,
+    "max_host_vector_element_bytes": 1226138496,
+    "frame_bytes": 201326616,
+    "two_frame_budget_bytes": 404750336
+  },
+  "remaining": [
+    "Compile/link and actual3case smoke39kernels.",
+    "Comparatorvalid/invalidframehostchecks and oldshaperegression.",
+    "8192firstarmgates thenbalanced3independentprocesses/arm clean cohortrawframesretiredoneatatime.",
+    "No modelPP/physicaltraffic/occupancy/XMXresourceclaim yet."
+  ],
+  "GPU_executed": false,
+  "build_executed": false,
+  "provenance": "OwnprojectMIT fixture/source/publicAPI references only. No XeStrata implementation/helper/test/archive."
+}
