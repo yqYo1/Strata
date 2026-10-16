@@ -139,3 +139,28 @@ if(PR6_BUILD_PREFILL_API_HARNESS)
   set_property(TARGET pr6_prefill_api PROPERTY COMPILE_OPTIONS "${pr6_prefill_compile_options}")
   set_property(TARGET pr6_prefill_api PROPERTY LINK_OPTIONS "${pr6_prefill_link_options}")
 endif()
+
+# Independent model-free provider contract probe; no historical source/TU edits.
+option(PR6_BUILD_PROVIDER_CONTRACT_PROBE "Build separately reviewed model-free checked-provider probe" OFF)
+if(PR6_BUILD_PROVIDER_CONTRACT_PROBE)
+  if(NOT CMAKE_SYSTEM_NAME STREQUAL "Linux" OR NOT PR6_OPEN_SOURCE_LLVM_ONEMKL)
+    message(FATAL_ERROR "pr6_provider_probe requires the reviewed pinned Linux LLVM adapter")
+  endif()
+  find_package(Threads REQUIRED)
+  add_executable(pr6_provider_probe EXCLUDE_FROM_ALL harness/provider_probe.cpp)
+  set_target_properties(pr6_provider_probe PROPERTIES
+    CXX_STANDARD 20 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS OFF)
+  # Headers carry the same checked-DPCT forced preinclude and include precedence.
+  # No core/engine/kernel/prefill/ggml/oneMKL implementation is linked here.
+  target_link_libraries(pr6_provider_probe PRIVATE strata_includes Threads::Threads)
+  # Copy the GPU core's actual adapter-normalized flags, including SG32, precise,
+  # per-kernel split and AOT/JIT link backend settings; never inherit CPU -fno-sycl.
+  get_target_property(pr6_provider_compile_options strata_core COMPILE_OPTIONS)
+  get_target_property(pr6_provider_link_options strata_core LINK_OPTIONS)
+  if(NOT pr6_provider_compile_options OR NOT pr6_provider_link_options)
+    message(FATAL_ERROR "Historical GPU core compile/link options are unavailable")
+  endif()
+  set_property(TARGET pr6_provider_probe PROPERTY COMPILE_OPTIONS "${pr6_provider_compile_options}")
+  set_property(TARGET pr6_provider_probe PROPERTY LINK_OPTIONS "${pr6_provider_link_options}")
+  # Deliberately no CTest entries: Main owns each separate native process.
+endif()

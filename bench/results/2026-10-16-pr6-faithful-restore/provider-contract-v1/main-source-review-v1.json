@@ -1,0 +1,27 @@
+{
+  "schema": "strata-pr6-provider-proposal-main-source-review-v1",
+  "source_base_commit": "322e1fd86ac694dd9926998548702d2859bd254f",
+  "reviewed_complete_patch": true,
+  "reviewer": "Main",
+  "new_probe_sha256": "c5d1617fc215efdda8c44273f6542f06c95a81040607bd4567107dc872fc7448",
+  "patch_sha256": "dd1659e481b3e7aaa034552f939dcf3b8007a94f3dd9367eb12186ff88940c03",
+  "provenance": "Independent own-fork checked queue/retirement/upload guard; installed dependency API only. No XeStrata source.",
+  "checks": [
+    "Exact existing wrapper base bytes matched; git apply --check passed; applied additions only.",
+    "Full262-line C++ plus full opt-in CMake reviewed; target links only strata_includes and Threads.",
+    "Own arrays and device pointer remain live through accepted-copy/submit throws; retire_queue precedes mutation/free.",
+    "Source registration uses weak_ptr with dev_mgr queue ownership; destroy owned only after both queues retire, default never destroyed.",
+    "SG32 exact integer kernel128B and one in-order queue; full32-cell output and unchanged source validation.",
+    "Modeled host boundary follows accepted real upload; not provider-error proof; public nonempty exception_list unavailable77 remains HOLD.",
+    "All environment fixed by Main before exec; no environment changes after init; first DPCT call inside process deadline."
+  ],
+  "pending": [
+    "actual configure and generated compiler/link/private header review",
+    "compile/link and ELF/runtime closure",
+    "supervised separate-process provider cases",
+    "model numerical/state/physical262144/RESTORE",
+    "async87 real nonempty delivery remains unqualified"
+  ],
+  "GPU_executed": false,
+  "qualified_for_native_execution": false
+}
