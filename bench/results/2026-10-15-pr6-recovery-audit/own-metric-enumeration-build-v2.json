@@ -1,0 +1,320 @@
+{
+  "status": "BUILD_COMPLETE",
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "commands": [
+    {
+      "label": "journal-before",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-b",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-16T07:53:05.926268+00:00",
+      "wall_seconds": 12,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1218078,
+          "start_ticks": 48595004,
+          "sid": 1218078,
+          "pgid": 1218078
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 485950.04813684,
+      "pid": 1218078,
+      "spawn_return_monotonic": 485950.050033363,
+      "direct_identity": {
+        "pid": 1218078,
+        "state": "R",
+        "ppid": 1217787,
+        "pgid": 1218078,
+        "sid": 1218078,
+        "start_ticks": 48595004,
+        "rss_bytes": 483328
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T07:53:06.025032+00:00",
+      "elapsed_seconds": 0.09818449500016868,
+      "logs": {
+        "journal-before.stdout": {
+          "bytes": 156,
+          "sha256": "72eac5a37eac301c0cc42243764f48a132750b973db9d69790611ccc61fdcc8d"
+        },
+        "journal-before.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "host-build",
+      "argv": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-std=c++17",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fno-sycl",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-query-tiny-v1/enumerate_full.cpp",
+        "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+        "-ldl",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-enum-build-v2/metric-enumeration"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-enum-build-v2",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib"
+      },
+      "started_utc": "2026-10-16T07:53:06.025839+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1218081,
+          "start_ticks": 48595014,
+          "sid": 1218081,
+          "pgid": 1218081
+        },
+        {
+          "pid": 1218082,
+          "start_ticks": 48595015,
+          "sid": 1218081,
+          "pgid": 1218081
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 485950.14739441,
+      "pid": 1218081,
+      "spawn_return_monotonic": 485950.149018513,
+      "direct_identity": {
+        "pid": 1218081,
+        "state": "R",
+        "ppid": 1217787,
+        "pgid": 1218081,
+        "sid": 1218081,
+        "start_ticks": 48595014,
+        "rss_bytes": 262144
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 120070144,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T07:53:06.892337+00:00",
+      "elapsed_seconds": 0.8662123180110939,
+      "logs": {
+        "host-build.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "host-build.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "journal-end",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-b",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-16T07:53:11.164453+00:00",
+      "wall_seconds": 12,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1218247,
+          "start_ticks": 48595528,
+          "sid": 1218247,
+          "pgid": 1218247
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 485955.286828043,
+      "pid": 1218247,
+      "spawn_return_monotonic": 485955.288700612,
+      "direct_identity": {
+        "pid": 1218247,
+        "state": "R",
+        "ppid": 1217787,
+        "pgid": 1218247,
+        "sid": 1218247,
+        "start_ticks": 48595528,
+        "rss_bytes": 442368
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T07:53:11.264536+00:00",
+      "elapsed_seconds": 0.09963747800793499,
+      "logs": {
+        "journal-end.stdout": {
+          "bytes": 156,
+          "sha256": "3d48d373a4ec553050ed4db9aa103ea39dc892ec2bc23745af22950e828845dc"
+        },
+        "journal-end.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "journal-after",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-b",
+        "--after-cursor",
+        "s=9944479cfd1a45c28a589619cb8f2881;i=c27d431;b=cfda0b6a7c134fe2bdf58f9202770840;m=7120c2d678;t=65df0703cae26;x=36433e74988a5b1f",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-16T07:53:11.265279+00:00",
+      "wall_seconds": 12,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1218259,
+          "start_ticks": 48595538,
+          "sid": 1218259,
+          "pgid": 1218259
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 485955.386976982,
+      "pid": 1218259,
+      "spawn_return_monotonic": 485955.388680754,
+      "direct_identity": {
+        "pid": 1218259,
+        "state": "R",
+        "ppid": 1217787,
+        "pgid": 1218259,
+        "sid": 1218259,
+        "start_ticks": 48595538,
+        "rss_bytes": 442368
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T07:53:11.363808+00:00",
+      "elapsed_seconds": 0.0981026950175874,
+      "logs": {
+        "journal-after.stdout": {
+          "bytes": 739,
+          "sha256": "58a61157d2cb9737ae30d25cca2cb85c4a9de9a313c18efe54533497378777e5"
+        },
+        "journal-after.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "mode": "build",
+  "run_id": "enum-build-v2",
+  "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "started_utc": "2026-10-16T07:52:58.944453+00:00",
+  "manifest_sha256": "71ff9c1e30ee840e93205988398f3c11bac64b0ae9190ae6f0551f5913024338",
+  "reviewed_package_sha256": "1c8567870dd9990c5519a060663cd866811bfd59981b868b3f34e2c2a6c1929d",
+  "execution_kind": "HOST_COMPILATION",
+  "collection_qualified": false,
+  "no_gpu_commands_authored": true,
+  "ownership_closed": true,
+  "budgets": {
+    "raw_bytes": 33554432,
+    "private_bytes": 134217728,
+    "whole_seconds": 240.0,
+    "child_cpu_seconds": 90,
+    "child_rss_bytes": 2147483648
+  },
+  "retention": {
+    "owner": "Main",
+    "consumer": "one bounded actual metric-enumeration qualification",
+    "next_review": "After Main verifies compact API/identity/fault evidence; no automatic cleanup"
+  },
+  "binary_candidate": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-enum-build-v2/metric-enumeration",
+    "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-enum-build-v2/metric-enumeration",
+    "bytes": 43856,
+    "sha256": "1962482cc4f3e312bbc94a6c9c8eb10e46fd6e2cf3e312222d10902dde2d4eac"
+  },
+  "binary_review_required_before_enumeration": true,
+  "candidate_complete": true,
+  "fault_window": {
+    "before_cursor": "s=9944479cfd1a45c28a589619cb8f2881;i=c27d431;b=cfda0b6a7c134fe2bdf58f9202770840;m=7120c2d678;t=65df0703cae26;x=36433e74988a5b1f",
+    "after_cursor": "s=9944479cfd1a45c28a589619cb8f2881;i=c27d559;b=cfda0b6a7c134fe2bdf58f9202770840;m=71252be710;t=65df074a5bebe;x=c99e1bd2d9caeb23",
+    "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "row_count": 1,
+    "fault_filter": "(?i)(\\bxe\\b.*(fault|hang|reset|error|wedg|timeout|stuck)|GPU.*(fault|hang|wedg|reset)|GuC.*(fault|hang|reset|error))",
+    "fresh_faults": [],
+    "complete": true
+  },
+  "finished_utc": "2026-10-16T07:53:11.364910+00:00",
+  "elapsed_seconds": 12.420574771007523
+}

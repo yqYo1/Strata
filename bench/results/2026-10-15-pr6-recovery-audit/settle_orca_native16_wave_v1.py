@@ -92,7 +92,9 @@ def main():
              888: 'orca-pr6-safety-corrections-sol-launch-v2.json',
              890: 'orca-pr6-independent-safety-review-sol-launch-v2.json',
              891: 'orca-metric-query-tiny-sol-launch-v1.json',
-             893: 'orca-research-round893-launch-v1.json'}
+             893: 'orca-research-round893-launch-v1.json',
+             895: 'orca-metric-status-sol-launch-v2.json',
+             896: 'orca-research-round896-launch-v1.json'}
     known = {}
     for n, name in names.items():
         receipt = json.loads((A / name).read_text())
