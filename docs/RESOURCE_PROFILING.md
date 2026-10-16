@@ -31,6 +31,21 @@ and uncovered intervals. Name exact observed windows. An attention envelope is
 not the whole prefill, and startup/decode/teardown must not silently enter its
 utilization denominator. Do not bridge unrelated host/device clocks by assumption.
 
+Call a compute-command interval union **command coverage**, never arithmetic
+utilization. A command can spend its execution time on gathers, memory waits,
+barriers, reductions or poorly filled matrix tiles. For example, the recorded
+77.31% covers compute commands in a 94.945-second attention envelope; it does
+not mean 77.31% of the GPU's FLOP capacity, or of the whole prefill. Multiplying
+a resident model's tok/s by that fraction does not predict this engine's speed.
+
+Keep measured resident-model results as hardware references. Record actual input
+length, weight quantization, KV formats, flash attention, batch/microbatch,
+warmup and timed boundaries. Active parameter counts alone do not account for
+recurrent/attention work, routing, hyper-connections or matrix shapes. Such
+differences are hypotheses to quantify, not evidence that a slower implementation
+has reached its hardware limit. Preserve supplied results as user observations
+until reproduced; do not invent their individual samples from a mean and spread.
+
 Measure resource capacities for the operations actually used. Label older-stack
 or different-shape figures as references. Use controlled changes to distinguish
 competing explanations: lower bytes, better overlap, fewer submissions or better
@@ -58,3 +73,25 @@ Serialize builds/tests/GPU/cleanup, fix provider controls before native exec,
 and follow [artifact retention](ARTIFACT_RETENTION.md). Commit compact evidence
 and all samples used by decisions; retain large captures only for a named current
 question with a finite budget and review point.
+
+## Numerical reference for replacement kernels
+
+Use the reached SGLang/vLLM path for the same model as the preferred algorithm
+and precision reference. Record input/output storage, matrix accumulation,
+reductions, conversion/rounding points, normalization constants, routing and
+persistent-state updates at an immutable source revision. Related-model paths
+need an explicit semantic mapping. A framework's enabled flag or a BF16 tensor
+declaration alone does not prove the complete numerical contract.
+
+The user accepts the validated SGLang/vLLM contract, including its lower
+precision relative to llama.cpp. Do not require extra precision or identical
+outputs merely to match the old ggml/FP32 route. Keep that route and FP64 small
+oracles for finding implementation errors; explain their expected numerical
+differences instead of treating every difference as model degradation. Preserve
+input/lifetime/fault checks, state continuity and physical262144 boundaries.
+
+Apply changed acceptance criteria to new named comparisons. Preserve original
+failures and their criteria. Source agreement is useful evidence, but does not
+by itself prove the new kernel implemented the contract correctly. A precision
+change and a corrupted state or incorrect operation still require separate
+diagnosis. Speed adoption requires repeated clean long-input measurements.
