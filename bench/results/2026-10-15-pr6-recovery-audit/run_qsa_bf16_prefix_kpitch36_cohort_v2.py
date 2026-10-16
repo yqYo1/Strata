@@ -22,7 +22,7 @@ def main():
     child = A/'run_qsa_bf16_prefix_kpitch36_bench_v2.py'
     digest = sha(child)
     order = [('base',0),('kpitch36',0),('kpitch36',1),('base',1),('base',2),('kpitch36',2)]
-    rec = dict(schema='strata-prefix-probability-component-cohort-v1', passed=False, complete=False,
+    rec = dict(schema='strata-prefix-kpitch36-component-cohort-v2', passed=False, complete=False,
                order=order, child=dict(path=str(child),sha256=digest), completed=[], active_child_pid=None,
                scope='Component8192 queries/width2051/physical32768 fully initialized. Each process2warmups/10samples; six processes, same binary/inputs/allocations, prefix pack inside every call. Host time, not whole model PP or hardware utilization; no numerical/full-model256K/RESTORE adoption.')
     def persist():
