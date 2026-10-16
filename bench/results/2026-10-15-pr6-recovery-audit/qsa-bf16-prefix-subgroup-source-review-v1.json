@@ -1,0 +1,43 @@
+{
+  "schema": "strata-qsa-subgroup-qualification-source-review-v1",
+  "recorded_utc": "2026-10-16T19:36:16.595784+00:00",
+  "classification": "Main implementation/source review, not a numerical or performance result",
+  "GPU_executed": false,
+  "compiler_executed": false,
+  "production_selected": false,
+  "build_recipe": {
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/build_qsa_bf16_prefix_subgroup_v1.py",
+    "sha256": "556235354d9dc9cf691bc307c397867ad712d7374a6a9aff46cf15179067c6bc"
+  },
+  "fixture_controller": {
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/run_qsa_bf16_prefix_subgroup_v1.py",
+    "sha256": "8092cfa8b6a6bbf6a3546364de35bb948518f1d08741c4f5d6578060a30a19c2"
+  },
+  "unchanged_fixture": {
+    "path": "tests/sycl/qsa_bf16_prefix.cpp",
+    "sha256": "2f3e8b38edf565e0e90a499f11cb3dba5aa5490e74bcfaa7ce68c5af6d3fc8e7"
+  },
+  "static_review": [
+    "WG128 with required SIMD16 has eight subgroups. h=subgroup and h=subgroup+8 owns every one of sixteen real/padded head rows once; the loop count is uniform within every subgroup.",
+    "For each h, lane l stores dense16 P tile indices h*16+l and 256+h*16+l. Across sixteen h and sixteen lanes these are exactly the 512 original probability elements with no duplicate writer.",
+    "Every lane participates in invalid/max/sum reductions and broadcast with identical operation/source lane. Only lane0 accesses persistent per-head max, alpha, normalizer and diagnostic writes inside the row loop.",
+    "The existing WG barriers before softmax and before PV establish score visibility and P/state visibility. Subgroup collectives are not used as local-memory fences. The existing end-of-PV barrier protects the next tile state.",
+    "Both probability contributions stay FP32 through the sum; each value is separately rounded into BF16 P for PV. Only FP32 sum association differs; max/alpha/normalizer/accumulator remain FP32.",
+    "All-missing or invalid-width paths retain norm=0 and zero output; empty tiles after valid tiles retain prior max and norm. Invalid live Q/K/V diagnostics remain part of the unchanged fixture. These are source observations awaiting execution.",
+    "Kernel has no new host arithmetic, scratch allocation, queue synchronization, global copy, or WG barrier. Added collective/broadcast instructions may cost more than saved serial work; no speed claim."
+  ],
+  "prospective_gates": [
+    "Existing six-process packed model cohort closed; no foreign model benchmark or active Main job; exclusive measurement lock.",
+    "Supervised compile with exact reviewed LLVM/runtime/archive/source hashes and finite budgets, then first traced smoke and separate component process.",
+    "Same immutable per-process runtime environment and all mapped executable ELF hashes, actual B570/driver, journal cursor and fresh fault absence, exact PID/start identities absent at closure.",
+    "Unchanged independent host oracle 1BF16 ULP+2e-6, all input bytes/guards/logical prefix, masks/missing/tail, NaN diagnostics, alias/domain/extent refusal, repeat bits, component physical262144.",
+    "No model quality, full model context/RESTORE, or speed adoption follows from a component pass. Use matched current-implementation comparisons and long official bench.sh measurements before selecting a production path."
+  ],
+  "next_commands_when_resources_free": [
+    "python3 -B bench/results/2026-10-15-pr6-recovery-audit/build_qsa_bf16_prefix_subgroup_v1.py",
+    "python3 -B bench/results/2026-10-15-pr6-recovery-audit/run_qsa_bf16_prefix_subgroup_v1.py smoke",
+    "python3 -B bench/results/2026-10-15-pr6-recovery-audit/run_qsa_bf16_prefix_subgroup_v1.py component"
+  ],
+  "execution_status": "NOT_RUN: foreign CPU llama-bench PID3431768/start52544839 is live; queued existing paired profile has precedence. These commands are not a second queued job.",
+  "interpretation": "Source grammar and complete runner diff reviewed. No native compile or GPU test was run in this boundary. Preserve original failed receipts and do not loosen gates after seeing results."
+}

@@ -6994,5 +6994,16 @@
     "status": "Accepted and observed running; no steering; await exact worker_done. Main continues source/diagnostic work.",
     "main_report_body_read": false,
     "review_policy": "Completed report to native gpt-6-luna max before Main targeted retrieval."
+  },
+  "qsa_subgroup_softmax_candidate": {
+    "contract_path": "qsa-bf16-prefix-subgroup-contract-v1.ja.md",
+    "source_review_path": "qsa-bf16-prefix-subgroup-source-review-v1.json",
+    "build_recipe": "build_qsa_bf16_prefix_subgroup_v1.py",
+    "fixture_controller": "run_qsa_bf16_prefix_subgroup_v1.py",
+    "status": "Private candidate/qualified-runner implementation prepared, source reviewed; compile/smoke/component NOT_RUN. Existing paired current-model profile remains first queued diagnostic. No production or performance adoption.",
+    "resource_guard": "Exclusive Main lock plus qualified foreign model-owner inspection; CPU benchmark is also excluded.",
+    "main_test_owner": "Main only",
+    "physical_262144_model_qualified": false,
+    "RESTORE_qualified": false
   }
 }
