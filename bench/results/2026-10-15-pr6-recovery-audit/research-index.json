@@ -4494,13 +4494,14 @@
       "path": "research-round966-v1.txt",
       "sha256": "44ab01354870c5c0e3cf2384d2138eb0d7ae456181b207ac9e0982b1472d892b",
       "bytes": 12425,
-      "main_body_read": false,
+      "main_body_read": true,
       "status": "R968 source feasibility review completed with owner/callback/src_dev corrections; no runtime fit or implementation adoption. Original report body held by Main.",
       "retrieval_trigger": "A concrete MoE-only window implementation or owner/memory decision after independent review.",
       "schedulable_now": false,
       "review_path": "research-review-round968-v1.json",
       "operational_digest_path": "research-review-round968-v1.ja.md",
-      "reviewer_report_body_read": true
+      "reviewer_report_body_read": true,
+      "main_read_scope": "Only19–45 for the concrete window payload/owner decision after R968 review."
     }
   ],
   "main_initial_findings": [
@@ -7284,7 +7285,7 @@
     "status": "R968 source feasibility review completed with owner/callback/src_dev corrections; no runtime fit or implementation adoption. Original report body held by Main.",
     "runtime_proof": "orca-research-round966-runtime-v1.json",
     "report": "research-round966-v1.txt",
-    "Main_report_body_read": false,
+    "Main_report_body_read": true,
     "next": "Await worker_done without steering, then native Luna max review; Main keeps current paired profile first for runtime selection.",
     "scope_sha256": "fd263697e79565a67ffd30a880dc2d64fa39f815b1ee528d2fe98b8de958e83c",
     "spec_sha256": "a204c4f3857c0bbaa01369c50ba8e321dc8503642729c10bbe6b7d04dd30d615",
@@ -7294,7 +7295,15 @@
     "settlement_receipt": "orca-research-round966-settlement-v1.json",
     "review_path": "research-review-round968-v1.json",
     "review_sha256": "83f9167fd88f849a98ac51f0a46f1e36c7ceaa5d537cf8cd1e164721b1b9b445",
-    "operational_digest_path": "research-review-round968-v1.ja.md"
+    "operational_digest_path": "research-review-round968-v1.ja.md",
+    "Main_selected_retrieval": {
+      "lines": [
+        19,
+        45
+      ],
+      "sha256": "04f0f86341d47670ae68c2b2fe7841880a9ca0385ddc27f0b08d955aed835a0f",
+      "purpose": "Concrete Main GPU-only window layout and phase ownership plan; R968 corrections applied. Original collection reports remain unread."
+    }
   },
   "current_moe_order_resource_audit": {
     "report": "current-moe-order-resource-audit-v1.json",
@@ -7380,5 +7389,26 @@
     "runtime_or_fit_qualified": false,
     "performance_adopted": false,
     "new_research_schedulable_now": false
+  },
+  "moe_window_main_contract_current": {
+    "document": "moe-window-main-contract-v1.ja.md",
+    "planner": "moe_window_contract_v1.py",
+    "host_verifier": "verify_moe_window_contract_v1.py",
+    "host_receipt": "moe-window-contract-host-v1.json",
+    "status": "Main GPU-resident-window scheduling and typed-view contract; Python ownership/bounds oracle only. No C++ engine implementation or native execution.",
+    "GPU_residual_windows_only": true,
+    "operator_chunk": 8192,
+    "window_max_rows": 16384,
+    "expert_job_max_rows": 8192,
+    "region_used_bytes": 997820928,
+    "host_passes": {
+      "schedule_cases": 107,
+      "expert_cases": 24,
+      "negative_cases": 13
+    },
+    "current_oracle_limit": "v1 models the expert-loop phase atomically; it does not yet track each expert/job submission before combine. Extend that before using this as an implementation ownership gate. Original v1 host PASS scope/result remains unchanged.",
+    "checkpoint_caveat": "Existing caller-segment/prefix checkpoint coherence proposals are unqualified. Callback ordering alone does not qualify periodic prefix snapshots or RESTORE.",
+    "inference_implemented": false,
+    "performance_adopted": false
   }
 }
