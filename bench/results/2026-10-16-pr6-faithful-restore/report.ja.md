@@ -25,3 +25,22 @@ drainがthrowすればsourceを解放せずnative processを終了する。kerne
 layer-major schedulerは変更しない。fixtureはdeferred read、partial/full/262144、
 early return/exception、failed-drain fail-stopを対象にする。すべて未実行。
 歴史DPCT async handlerが例外を表示して握り潰す問題は本修正で解消したとは扱わない。
+
+## 修正B: 未発行のstager完了番号を待つ失敗経路
+
+歴史 `Stager::issued_one` は `want[slot]=s` を先に書き、続く `copy->fill` の
+受理後に `issued` をreleaseしていた。DMAが受理されてsignal fillだけがthrowすると、
+RestoreがDMAをdrainしてfinishの `issued=1<<30` でworkerを進めても、そのworkerは
+未発行の `done_seq>=s` を待ち続ける。少なくとも同じslotへ次のjobがclaim済みの
+ring wrap時に成立する。finishはそのworkerのactive==0を待つため正常な解放に到達しない。
+
+signal commandの受理後にだけwantをpublishするよう順を変えた。失敗時の旧wantは
+前回の受理済みsignalだけを指し、既存Restoreのcopy drain→finishの順でhost bufferを
+安全に返せる。通常時のGPU command列・コピー数・並列staging・kernel・精度は同じ。
+`Restore` はwaitがthrowした場合、ownerを解放せず明示的なfail-stopにした。旧destructorも
+暗黙noexceptでterminateするため、これを「旧版が必ずUAFする」とは主張しない。
+
+これはsource-proved failure-progress bugで、過去に当該fill失敗が観測されたという
+測定ではない。Mainはring2等の小規模fixtureでDMA受理後/signal enqueue失敗と
+早期cancelを注入し、worker終了・コピー元不変・owner存続を別途検証する。未実行。
+DPCTの非同期error握り潰し、無期限のdevice wait/pollは残る制約。

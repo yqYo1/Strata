@@ -407,8 +407,11 @@ struct Stager {
     // was still in a queue's wait list (the v1 adapter and a 256-buffer ring, which never waits, both ran). 2026-10-01
     void issued_one(int j, dpct::queue_ptr copy) {
         const uint64_t s = ++issue_seq;
-        want[(size_t) (j % kRing)] = s;
+        // Publish a sequence only after its signal command was accepted. If
+        // fill throws, Restore drains the already accepted memcpy before
+        // finish() releases workers; they must not await an unqueued signal.
         copy->fill<uint64_t>(done_seq + j % kRing, s, 1);
+        want[(size_t) (j % kRing)] = s;
         issued.store(j + 1, std::memory_order_release);
     }
     bool buffer_free(int b) const {
@@ -1989,8 +1992,16 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         const core::ExpertCache* cache; const int32_t* residency; ExpertTransferTimer* timer;
         float* gpu; int64_t gpu_tokens; PfTimer* phases;
         decltype(on_chunk) chunk; decltype(on_stage_chunk) stage;
-        ~Restore() {
-            m.cs->wait(); m.copy->wait(); m.stager->finish();
+        ~Restore() noexcept {
+            try {
+                m.cs->wait_and_throw(); m.copy->wait_and_throw(); m.stager->finish();
+            } catch (...) {
+                // Completion is unknown. Do not unwind local cache/residual
+                // owners or reinstall decode callbacks over outstanding work.
+                std::fputs("prefill: layer-major retirement failed; exiting with owners live\n", stderr);
+                std::fflush(stderr);
+                std::_Exit(1);
+            }
             p.stage_lb_ = lb; p.stage_le_ = le; p.hand_in_ = input; p.checkpoint_ready_ = ready;
             p.on_chunk = std::move(chunk); p.on_stage_chunk = std::move(stage);
             m.cache = cache; m.host_res = residency; m.transfer_context = timer;
