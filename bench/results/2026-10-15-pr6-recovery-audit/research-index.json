@@ -3946,6 +3946,100 @@
         ],
         "reason": "No new scope is schedulable now. Existing evidence justified source research, but no B570 support result was added. R875 and R914/R916 already bound current measurement questions; R911 is an OA-specific stopped route. Another generic counter survey or native counter task would have no qualified present consumer. Reconsider only if existing Main evidence supplies the prerequisites and a specific unresolved question."
       }
+    },
+    {
+      "round": 924,
+      "model": "Orca gpt-6-luna",
+      "read_only": true,
+      "path": "research-round924-v1.txt",
+      "title": "Subgroup roles and software pipelines for irregular gather plus matrix kernels",
+      "status": "R925-reviewed held knowledge collection; Main body held; no B570 support or component bottleneck claim.",
+      "sha256": "90750a064865261faaa214a0456313b5990e124663ac1c1cda007e1523438245",
+      "classification": "knowledge_collection",
+      "spec_path": "orca-research-round924-spec-v1.txt",
+      "spec_sha256": "49781f8f899e1f15af500ca4cd65c5aa708b055a359a207285bcbddb6dba04b9",
+      "eligibility_path": "research-round924-eligibility-v1.json",
+      "eligibility_sha256": "c311017ac2f69caa203b14bd2fc2d5f8efd4bff8fc8f333f3e4c93af613e75f0",
+      "review_round": "R925",
+      "review_path": "research-review-round925-v1.json",
+      "review_sha256": "a5c255f72b17acc5baa285e7a25b73024aadf2d4ef9c84170b597987ea8e9a39",
+      "operational_digest_path": "research-review-round925-v1.ja.md",
+      "operational_digest_sha256": "3ec4354e6fd73968268cc6a9df8fbc1cce123692529968eba19ec2994a38038c",
+      "main_body_read": false,
+      "retrieval": {
+        "needed_now": false,
+        "hold_body": true,
+        "main_body_read": false,
+        "sections": [
+          "25-31: retrieve for a concrete source/design review of same-tile V role staging or to distinguish it from R745 next-tile K double buffering.",
+          "15-21 and 35-41: retrieve only when a concrete schedule needs subgroup convergence, barrier/lifetime, copy/prefetch, or hardware-transfer semantics."
+        ],
+        "keys": [
+          "A loader subgroup cannot break a joint_matrix collective inside the same subgroup; role changes must preserve subgroup-wide convergence.",
+          "Cross-subgroup SLM publication and buffer reuse require work-group synchronization around producer/consumer lifetimes.",
+          "Same-tile V staging could overlap ordinary loads with current QK only in principle; no independent engine or concurrency is guaranteed.",
+          "A separate V tile costs 16 KiB half payload for CH=32, HD=256 before compiler/alignment effects; schedule wins only if exposed V work is hidden without resource contention or residency loss.",
+          "Prefetch is a cache hint; async copy provides an event contract but no particular engine/lowering guarantee.",
+          "CudaDMA and Hopper TMA are architecture-specific comparisons, not source adoption."
+        ],
+        "retrieve_when": "Only if a concrete Main-owned same-tile V staging design decision arises and existing phase evidence makes QK/V overlap relevant; current hardware-resource-followup-v7 does not qualify by itself.",
+        "retrieval_brief": "The Japanese digest is sufficient for now. Main should keep the original body unread unless that concrete source/design decision becomes active.",
+        "preserve_caveats": [
+          "No B570 subgroup concurrency, matrix combination, async-copy lowering, CPU fallback, SLM occupancy, barrier wait, cache/VRAM traffic, utilization, bottleneck, or speedup was established.",
+          "The report is knowledge collection, not a product proposal or source adoption.",
+          "R714 K-load/matrix overlap and R745 next-tile K double buffering already cover adjacent pipeline ideas; do not rerun rejected HRows8/KMapping2 candidates.",
+          "Do not treat current synthetic resource comparison as whole-model speed or proof of the exact scarce GPU resource."
+        ]
+      },
+      "tags": [
+        "Intel SYCL",
+        "joint_matrix",
+        "subgroup roles",
+        "same-tile V staging",
+        "SLM synchronization",
+        "async copy semantics",
+        "software pipeline",
+        "CudaDMA HPC",
+        "B570 evidence limits",
+        "held knowledge collection"
+      ],
+      "correction_ids": [
+        "R924-C1",
+        "R924-C2",
+        "R924-C3"
+      ],
+      "reviewer_retrieval_metadata": {
+        "review_round": "R925",
+        "review_path": "research-review-round925-v1.json",
+        "review_sha256": "a5c255f72b17acc5baa285e7a25b73024aadf2d4ef9c84170b597987ea8e9a39",
+        "operational_digest_path": "research-review-round925-v1.ja.md",
+        "operational_digest_sha256": "3ec4354e6fd73968268cc6a9df8fbc1cce123692529968eba19ec2994a38038c",
+        "main_original_needed_now": false,
+        "purpose_class": "knowledge_collection",
+        "scope_depth_review": "2,154 whitespace-delimited words across 59 lines. The report answers one finite schedule question, explains convergence, acquire/release barrier edges and local-buffer lifetimes, distinguishes software-issued gathers from hardware transfer engines, and compares failure conditions. Six primary source/document URLs and one non-LLM HPC paper support a working 2-4 page collection budget.",
+        "provenance_limit": "Official API/document pages support general contracts, while several URLs point to mutable branches/reference pages and no exact DPC++/IGC lowering or B570 runtime/binary behavior is established. The cited CudaDMA/Hopper evidence is architecture-specific.",
+        "source_context_corrections": [
+          {
+            "id": "R924-C1",
+            "report_lines": "53-54",
+            "correction": "The matrix-extension link names revision 12 but points to a mutable sycl branch, and the prefetch and Khronos reference URLs are also not immutable captures. Use these as version/date-labelled API documentation, not reproducible source pins. This does not invalidate the summarized contract; it limits exact source reproducibility.",
+            "evidence": "The matrix page identifies rev. 12 dated 2024-06-14 in its history. The review directly checked the cited API semantics on the linked official pages on 2026-10-16; no compiler/device source revision is pinned."
+          },
+          {
+            "id": "R924-C2",
+            "report_lines": "15-19, 35-39, 47",
+            "correction": "Keep backend lowering unresolved. The API pages define collectives, prefetch hints, and copy completion, but this review found no exact DPC++/IGC lowering, accepted B570 datatype/shape, fallback/emulation location, or concurrent subgroup execution evidence. Do not interpret “no CPU fallback evidence” as proof of a particular device implementation.",
+            "evidence": "The report itself asks that exact backend implementation/types/generated device code be checked and states no B570 or lowering result; the official docs establish only the cited API contracts."
+          },
+          {
+            "id": "R924-C3",
+            "report_lines": "45-47",
+            "correction": "The retrieval condition is not met by hardware-resource-followup-v7 alone. Its work-set and queue-grain results do not measure the QK/V phase boundary or identify SLM/XMX/VRAM/cache saturation. Do not launch a counter investigation from this report; wait for a concrete Main-owned source/design decision and relevant evidence already available to that decision.",
+            "evidence": "hardware-resource-followup-v7.json and own-qsa-resource-comparison-v1.json: 128x address-set expansion changed time by +1.8628%; splitting same work into 16 grain-8 calls took 2.6257x, with most extra whole wall in wait. No per-stage or resource-counter conclusion is recorded."
+          }
+        ],
+        "outcome": "Accepted as a held knowledge collection with explicit overlap boundaries, mutable-source and backend-lowering caveats, and no B570 support/resource/performance claim."
+      }
     }
   ],
   "main_initial_findings": [
@@ -5939,5 +6033,40 @@
       ],
       "reason": "No new scope is schedulable now. Existing evidence justified source research, but no B570 support result was added. R875 and R914/R916 already bound current measurement questions; R911 is an OA-specific stopped route. Another generic counter survey or native counter task would have no qualified present consumer. Reconsider only if existing Main evidence supplies the prerequisites and a specific unresolved question."
     }
+  },
+  "research_review_round925": {
+    "path": "research-review-round925-v1.json",
+    "sha256": "a5c255f72b17acc5baa285e7a25b73024aadf2d4ef9c84170b597987ea8e9a39",
+    "operational_digest_path": "research-review-round925-v1.ja.md",
+    "operational_digest_sha256": "3ec4354e6fd73968268cc6a9df8fbc1cce123692529968eba19ec2994a38038c",
+    "report_round": 924,
+    "status": "Accepted as a held knowledge collection with explicit overlap boundaries, mutable-source and backend-lowering caveats, and no B570 support/resource/performance claim.",
+    "report_index_snapshot_before_review_sha256": "393aa8f76d4eb7c1e8e2f03ee1d6add1daa1e63bd7ef200ba7c760d29176ac56",
+    "indexed_report_count_before": 288,
+    "indexed_report_count_after": 289,
+    "highest_indexed_report_round_after": 924,
+    "main_body_read": false,
+    "next_scope_eligibility": {
+      "recommended_now": false,
+      "schedulable_now": false,
+      "prerequisites_rechecked": true,
+      "dispatch_performed": false,
+      "prerequisites": [
+        {
+          "requirement": "A concrete Main-owned same-tile V staging source/design choice is active and needs further independent literature beyond R924/R714/R745.",
+          "evidence": "No such source candidate or implementation decision is present in the indexed/current evidence; R924 is architecture knowledge only."
+        },
+        {
+          "requirement": "Existing Main-owned evidence makes QK and V staging phases relevant to that decision.",
+          "evidence": "hardware-resource-followup-v7 measures address-set sensitivity and enqueue grain only. It has no QK/V split timing, and no B570 resource-counter proof; no new counter investigation is recommended."
+        },
+        {
+          "requirement": "The proposed question is non-duplicative and bounded after current PR6 work settles.",
+          "evidence": "R714 and R745 already cover adjacent overlap schedules; R914/R916 and current Main results cover completed controls. No additional generic subgroup pipeline survey has a current consumer."
+        }
+      ],
+      "reason": "No new research scope is schedulable now. Keep R924 as a held retrieval artifact and reconsider only when a concrete Main-owned same-tile source/design decision plus relevant existing evidence creates a finite unresolved question. Do not infer that this requires a counter investigation or native experiment."
+    },
+    "decision": "accepted_with_caveats"
   }
 }
