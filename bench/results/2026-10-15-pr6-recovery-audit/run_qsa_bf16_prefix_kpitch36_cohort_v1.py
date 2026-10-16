@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+if __name__ == '__main__': raise SystemExit('Superseded before GPU execution: use the corresponding v2 controller with distinct SYCL kernel identifiers.')
 """Serial independent-process component comparison; no model throughput claim."""
 import hashlib
 import json

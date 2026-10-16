@@ -1,0 +1,9 @@
+{
+  "original_build": "own-qsa-bf16-prefix-kpitch36-build-v1.json",
+  "original_status": "PASS compile only; no GPU execution",
+  "reason": "Private templated helper inherited same name as production. Parent-template-based SYCL lambda/kernel identifiers may collide when linking both objects; standalone compile does not qualify a two-arm binary.",
+  "disposition": "Superseded before any GPU launch; v2 renames helper to kpitch36_batch_impl and asserts all local matrix type/offset/size contracts, including newKV9216elements and72byte stride.",
+  "original_receipt_preserved": true,
+  "production_source_changed": false,
+  "qualified_performance_result": false
+}
