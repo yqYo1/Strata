@@ -1,0 +1,671 @@
+{
+  "schema_version": 1,
+  "kind": "independent implementation safety review / decision support",
+  "status": "complete_source_only_execution_blocked",
+  "reviewed_head": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+  "faithful_anchor": "efba8d47817811d493e28f396ebd0e14e161ca75",
+  "original": "d0c5dda0dc2e8d82458c4b0ff31c4cef44c40b32",
+  "finding_scope": "Full faithful-to-HEAD source/helper/fixture/wrapper diff, historical closure/resolver, seven fixes and bounded reachable lifetime/range/failure paths",
+  "execution": {
+    "configure": "NOT_RUN",
+    "build": "NOT_RUN",
+    "tests": "NOT_RUN",
+    "native_gpu_process_work": "NOT_RUN",
+    "source_writes": "two named review artifacts only",
+    "git_mutation": false,
+    "upstream_check": false
+  },
+  "aliases": {
+    "P": "validation/pr6-restore/sycl/src/prefill/prefill.cpp at reviewed_head",
+    "M": "validation/pr6-restore/sycl/src/core/mtp.cpp at reviewed_head",
+    "D": "sycl/include/dpct/device.hpp at original",
+    "generator": "validation/pr6-restore/sycl/src/program/generate.cpp at reviewed_head",
+    "other_short_names": "within validation/pr6-restore at reviewed_head"
+  },
+  "identity_verification": {
+    "historical_files": 197,
+    "matching_content_blobs_sha256_sizes_modes_at_anchor": 197,
+    "mismatches": [],
+    "external_vendor_files_matching_original": 49,
+    "fixed_source_pins_matching_head": 9,
+    "current_metadata_blob_pins_checked_without_reading_current_source_bodies": 221,
+    "manifest_completeness": "FAIL: missing original peer_experts.cpp; manifest 83 TUs versus 84 actual",
+    "missing_sy_cl_source_blob": "63656fd6866d15670a940a9e25e7750f3b071ebc",
+    "wrapper_changed_in_seven_fixes": false,
+    "root_cmake_changed_in_seven_fixes": false,
+    "faithful_to_head_diff": {
+      "historical_source_modified": 4,
+      "helper_fixture_files_added": 5,
+      "evidence_report_files_added_or_modified": 5
+    }
+  },
+  "findings": [
+    {
+      "id": "R1",
+      "priority": "blocker",
+      "gate": "host_configure",
+      "trigger": "Configure historical target through wrapper",
+      "invariant": "Complete historical source closure",
+      "evidence": [
+        "sycl/CMakeLists.txt:55-75,156-161",
+        "historical-closure.json:resolver_groups._engine",
+        "d0c5dda:sycl/src/core/peer_experts.cpp blob 63656fd6866d15670a940a9e25e7750f3b071ebc"
+      ],
+      "finding": "Missing peer_experts SYCL stub and missing resolver request; 84 required TUs, 83 reported",
+      "normal_math_order_change": false,
+      "recommendation": "Restore original stub unchanged, update closure, Main configure/build",
+      "classification": "source-proved build failure, not executed"
+    },
+    {
+      "id": "R2",
+      "priority": "blocker",
+      "gate": "before_first_gpu",
+      "trigger": "Normal stager ring reuse or PLE double-buffer reuse; signal never progresses on failure",
+      "invariant": "Source buffer reused only after synchronized DMA completion; bounded retirement",
+      "evidence": [
+        "P:258,285-287,345-349,410-427",
+        "P:1028,2358-2379"
+      ],
+      "finding": "Host USM ordinary GPU fill plus host volatile load has no atomic/system-scope or event-completion synchronization contract; waits are unbounded",
+      "normal_math_order_change": false,
+      "recommendation": "Replace or explicitly qualify protocol; matching supported atomic operations or bounded checked event completion; ring-wrap/cancel/async-failure fixtures by Main",
+      "classification": "source-proved missing synchronization/progress contract; no specific hardware fault asserted"
+    },
+    {
+      "id": "R3",
+      "priority": "blocker",
+      "gate": "before_first_gpu",
+      "trigger": "Queue receives asynchronous SYCL exception",
+      "invariant": "No failed upload/computation accepted as success",
+      "evidence": [
+        "D:69-79,616-627,670-692",
+        "P:2034,2080,4128-4158",
+        "M:1015,1068"
+      ],
+      "finding": "Pinned historical async handler logs and consumes exceptions; wait_and_throw cannot guarantee guard failure callback or error return",
+      "normal_math_order_change": false,
+      "recommendation": "Owned sticky errors or fail-stop checked before state publication and result acceptance; provider failure injection",
+      "classification": "source-proved error suppression; not standalone proof of outstanding-DMA free"
+    },
+    {
+      "id": "R4",
+      "priority": "high",
+      "gate": "before_first_gpu_failure_qualification",
+      "trigger": "Destroy/reset Prefill without init or after failure before private copy queue creation",
+      "invariant": "Only owned queues destroyed; shared default remains alive",
+      "evidence": [
+        "P:529-530,651-676,886-945",
+        "D:569,635-642,897-898"
+      ],
+      "finding": "Borrowed default copy pointer passed to destroy_queue, leaving DPCT default raw pointer dangling",
+      "normal_math_order_change": false,
+      "recommendation": "Null-initialize owned queue or track ownership; no-init/early-init failure lifecycle fixture"
+    },
+    {
+      "id": "R5",
+      "priority": "high",
+      "gate": "host_admission",
+      "trigger": "Call public run after late init allocation/carve failure",
+      "invariant": "Run requires successfully initialized workspace",
+      "evidence": [
+        "P:886-887,947,955-967,1053-1066,1889-1891",
+        "generator:7416-7420"
+      ],
+      "finding": "All run guard fields can be set before init completes; normal generator checks init return",
+      "normal_math_order_change": false,
+      "recommendation": "Explicit ready flag set only after success; validate chunk before allocation; late-failure rejection fixture"
+    },
+    {
+      "id": "R6",
+      "priority": "high",
+      "gate": "host_input_validation",
+      "trigger": "Native embedding input token >= vocabulary, representable in int32",
+      "invariant": "Every gather row index inside actual embedding table",
+      "evidence": [
+        "P:1896-1899,2263-2273",
+        "native_head.cpp:278-283",
+        "iq_kernels.dp.cpp:2381-2388",
+        "layer.cpp:1186-1191",
+        "generator:763-777,1352-1361"
+      ],
+      "finding": "Native gather path lacks vocabulary upper bound and forms out-of-range table pointer",
+      "normal_math_order_change": false,
+      "recommendation": "Validate embedding vocabulary for all public/native/draft entrypoints before submit; 0/last/one-past token fixtures",
+      "classification": "invalid-input defect, not valid tokenizer output regression"
+    },
+    {
+      "id": "R7",
+      "priority": "high",
+      "gate": "startup_allocation_failure",
+      "trigger": "Nonthrowing null host-USM allocation in normal startup doorbell_init",
+      "invariant": "Null allocation rejected before host access; partial allocations released",
+      "evidence": [
+        "layer.cpp:1164-1172",
+        "generator:2487-2492"
+      ],
+      "finding": "Doorbell helper accepts null via DPCT_CHECK_ERROR then memset(null)",
+      "normal_math_order_change": false,
+      "recommendation": "Add nonnull check and partial cleanup; inject failure for every field",
+      "classification": "reachable null-return hazard beyond D named sites"
+    }
+  ],
+  "fixes": [
+    {
+      "id": "A",
+      "commit": "aceb6b0f4b6f28e7447a580cf0725b04ac66f85a",
+      "assessment": "Ownership improved; immutable batch sources and guard destruction order sound; R3 limits failure detection"
+    },
+    {
+      "id": "B",
+      "commit": "47fb8e0584cb9fd195b5f994946701821fd8eadb",
+      "assessment": "Rejected-fill publication fixed; host want ordering sound under ready/issued protocol; accepted-signal polling remains R2"
+    },
+    {
+      "id": "C",
+      "commit": "9e770e33cdba51b2c5ab0ad96a3252a43820cc71",
+      "assessment": "Record and borrowed residual lease drains before early return; no normal math/order change found"
+    },
+    {
+      "id": "D",
+      "commit": "edf7cd79db63bd619db0f8105cf934ce30480fed",
+      "assessment": "Named nonnull/fallback and partial-vector cleanup fixes sound; not global allocation/lifecycle safety (R4/R5/R7)"
+    },
+    {
+      "id": "E",
+      "commit": "1ecced6604159621523e96c416aff4d4a7957adc",
+      "assessment": "Span/product/queue/capacity checks sound for valid recipe; incomplete readiness/vocabulary checks R5/R6"
+    },
+    {
+      "id": "F",
+      "commit": "00ae5188d4a4f72076ade6b36e6623b93977dce4",
+      "assessment": "Per-group residual lease correct under successful drain; same healthy group waits; R3 remains"
+    },
+    {
+      "id": "G",
+      "commit": "4338c60f799f6ac11b5d0c68a87367f278311345",
+      "assessment": "Opaque public type declaration resolves free-helper access without layout/math change; build unrun"
+    }
+  ],
+  "consulted_file_pins": [
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "AGENTS.md",
+      "blob": "1448cd1f29540d56ef6132e04a8336b7141d86a1",
+      "sha256": "7f750320bef4146a2872086922d84fc9fa7a8351ae655b7876c912856e3747fe",
+      "bytes": 12124
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "docs/ARTIFACT_RETENTION.md",
+      "blob": "52035fe10972bcb1d649d26080ea2e0a62ffc905",
+      "sha256": "fdf86d7ea576d6f0400ec7e643b5ddca5c3c577dd053d66c2fd05220e64b1cc1",
+      "bytes": 8223
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "CMakeLists.txt",
+      "blob": "a0946a32715fe21e47082978b08ffc72b279e17f",
+      "sha256": "03993aa5162ed3bf3f638c2755b5d44358c74945ea84b0862d0e76ab52eab4f1",
+      "bytes": 74233
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "validation/pr6-restore/CMakeLists.txt",
+      "blob": "583780b8791d2543d7c376b8921c026250f5f29e",
+      "sha256": "ff1e2286507cdd049c9e2af43dc59659fe9b8d6a3b23d8147f98f7f55db75491",
+      "bytes": 2296
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "validation/pr6-restore/LICENSE",
+      "blob": "6687a423dde6b7aff1b748c07f5ee93ff788089c",
+      "sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
+      "bytes": 1093
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "validation/pr6-restore/sycl/CMakeLists.txt",
+      "blob": "5c8e6c507f36e420be61d761a0514897781ef2b8",
+      "sha256": "1500925f231c5bd61c5f771e1b8cb3d396c9e6cb14330dda6069dc14e08dfd03",
+      "bytes": 17522
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "validation/pr6-restore/sycl/src/prefill/prefill.cpp",
+      "blob": "7079ec4171d467299c230bb57ab61efbb3e27406",
+      "sha256": "67a367b2ce6999c1bf1a20ef7700ee7d565cb02a0f674496c2ac6e16c6e5abba",
+      "bytes": 253213
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "validation/pr6-restore/sycl/src/prefill/gemm.dp.cpp",
+      "blob": "c4069b684abacd0b3d91cea413dd8d53f0e38dc9",
+      "sha256": "312d666717ef6821d0140b24ea7fc360434801bf3db3b9950dc657c38cadb201",
+      "bytes": 21211
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "validation/pr6-restore/sycl/src/prefill/kernels.dp.cpp",
+      "blob": "64d0e399bf99e2a44060fe11022313900b1739ff",
+      "sha256": "f775038b017344388ec9a3552cb03c68cb2b26fa0544d4e9bba325db874ccea0",
+      "bytes": 99455
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "validation/pr6-restore/sycl/src/core/mtp.cpp",
+      "blob": "00834cab5f45e89374eaf24f072a8e1ca8c1e16f",
+      "sha256": "958b9ba51f9ab5bbfc5b07dac2350795693edf5ae33e503faa182f524681bef6",
+      "bytes": 62149
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "validation/pr6-restore/sycl/src/core/expert_cache.cpp",
+      "blob": "5c24c0043aa4686a6ec2088163a237d3a6aaf98e",
+      "sha256": "9bf5acc8dacf77b2615096b9b363219e4ff2772fc9e1743b15f27f4f84b56dbf",
+      "bytes": 36276
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "validation/pr6-restore/sycl/src/core/layer.cpp",
+      "blob": "54da32fd567e9ce5390d0005ed8be30c4a03cfb9",
+      "sha256": "34e792f40ecf979f0061349c0a9cbc20e22a88f470adf90d761ecf642b2ed31c",
+      "bytes": 110126
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "validation/pr6-restore/sycl/src/core/session.cpp",
+      "blob": "895cf390600f3aa8dbf915d4dd82221e7df992f1",
+      "sha256": "a360961bf68516de02a34b73739515af8e470cc73d53cced0a17cfac661c92aa",
+      "bytes": 66964
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "validation/pr6-restore/sycl/src/core/native_dense.cpp",
+      "blob": "f8da1ab602996e59a9f7cb9f64e1f2c75baf9003",
+      "sha256": "63dd9fe875420f9c195bf3b36e9e30c14f7dbada40a60360067390ab0395fe8d",
+      "bytes": 12489
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "validation/pr6-restore/sycl/src/core/native_head.cpp",
+      "blob": "6b5a938f5f1a7bd3c49113d2db3b8d18576a9e0a",
+      "sha256": "397dd37b57125142e8594abf48b6a3894e461bf65cc92cf1a8ace69105080b7c",
+      "bytes": 12865
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "validation/pr6-restore/sycl/src/core/gguf_expert_source.cpp",
+      "blob": "8c228f3c9291a2e2144cb24c1a5879cd247b43b4",
+      "sha256": "cb37b9457f5d1f065f5ed1d685b9da6c1554ae8ca5055becfbbe72c724bc8da6",
+      "bytes": 8948
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/iq_kernels.dp.cpp",
+      "blob": "cecfcd81fb2957283bfe6d19442663ba67febd22",
+      "sha256": "7d14a2b16c6d081edfcd2943cb044ad4ebe711687971ac4fe53b39c1797d66bd",
+      "bytes": 136240
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/ple.dp.cpp",
+      "blob": "1d430071c5cd9f0c36b1239b31a2dee8987c636e",
+      "sha256": "548608cd7398f28e98d5426cf520a54469e400453964694573773cb6e6a089c3",
+      "bytes": 33163
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "validation/pr6-restore/sycl/src/program/generate.cpp",
+      "blob": "e601f33a507fd358b4772d09b6ce6971adbc5d13",
+      "sha256": "1c17b23834e22e3893212ccf8a2d409b5db9529696a78513f269157c9ee132d9",
+      "bytes": 534049
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "validation/pr6-restore/sycl/tools/prefill_profile.py",
+      "blob": "bde1ac0120ca61620bf1062bced192bb2cfac5f9",
+      "sha256": "ecd1fb9d4a89942d6f3d80f56264fcb1bd376106168357988f2ae9e847d4c42f",
+      "bytes": 14424
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "validation/pr6-restore/sycl/include/strata/sycl_queue.hpp",
+      "blob": "6df9898a8a59a7691742c5abdfc282f477eda51b",
+      "sha256": "8a2131bc55b071531e1075358381078d0622d884b9ef1be72edd0fd53136094e",
+      "bytes": 639
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "validation/pr6-restore/sycl/include/strata/core/session.hpp",
+      "blob": "3bb6e9d41a2a18befe2b218fc72cc042d17fd21d",
+      "sha256": "3b98234b00a8a7ad568f7d272c07d59609f777376994277505b16f00b208d659",
+      "bytes": 30604
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "validation/pr6-restore/include/strata/core/native_head.hpp",
+      "blob": "ff45dd6e20f4dc3233ca788a424730f9d0dc9e80",
+      "sha256": "d80052035aeba3dbbc90cf84549d8424a10335d28fb04140e2265ba7819d27dc",
+      "bytes": 2695
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "validation/pr6-restore/include/strata/prefill/prefill.hpp",
+      "blob": "87bc959784b320c1112234e3d8c0ec4e04060d51",
+      "sha256": "0e890e3db621f03d4b8f187661134663449e40121db626750b201170060b733d",
+      "bytes": 11967
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "validation/pr6-restore/include/strata/prefill/draft_uploads.hpp",
+      "blob": "717df032d9033cf025b65d998c61d7d2a4b762f3",
+      "sha256": "2d32126e28c67751d14bde6cd46f1db60b92aa3939b17a6f78fd66bc10955908",
+      "bytes": 3218
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "validation/pr6-restore/include/strata/prefill/range_guard.hpp",
+      "blob": "cb28986e92882da6fcc43a59cb3faf9cda4589a5",
+      "sha256": "d3f56e66d62a88d89054376a65ae9df1fa4066ca5c0158d9dcce458149c1683f",
+      "bytes": 883
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "validation/pr6-restore/fixtures/CMakeLists.txt",
+      "blob": "7bcc4baa3829b7e7fe8f63bab2eb803a205f4459",
+      "sha256": "a5dbcb71023b5be16aef49b39a26eb7d8318d3aba4c2353615b38c6309d9b76d",
+      "bytes": 631
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "validation/pr6-restore/fixtures/draft_uploads.cpp",
+      "blob": "0a3b495097925a780947dc70a70dbae119d9e693",
+      "sha256": "3f225561c83288b078fa0f20880c60d438096ea1ebbf3c27eca0763c092de6ee",
+      "bytes": 4764
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "validation/pr6-restore/fixtures/range_guard.cpp",
+      "blob": "294c4e5f0fa70c76b4c5239bec67472660c17812",
+      "sha256": "297bd7e5179df12302f2ff729b54370605231c3d1ba58561b997bb2c77dd0192",
+      "bytes": 1470
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/own-native16-separate-queue-timeout-v2.ja.md",
+      "blob": "46ebf70575d27acf35c118969991213ea2be0a66",
+      "sha256": "bf1589f1cec774284611a6124752c9eaffa4eef2630103e02fe1b38bd76f8157",
+      "bytes": 2225
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/own-native16-natural-quality-review-v1.ja.md",
+      "blob": "557a4f3db83f9731937fb3bbd2fd5db22dbd1370",
+      "sha256": "d9c9f1c88f0d61450f6d17102e48d0f072415ac6ac7920bddeeea8afc03b017b",
+      "bytes": 2639
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/historical-closure.json",
+      "blob": "5c82685191b795b437d2ea589533d1aad49d5916",
+      "sha256": "694c2264c5c32c669f78ec71ce0823585e9f4444c1b5d6e04d22f83867c963d9",
+      "bytes": 109670
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/historical-evidence.json",
+      "blob": "1816d533a4ecf3bb3ca31a4db2ef123b43c455e1",
+      "sha256": "f79415a9344545df0f72e47475c81e29fa6d0d14bc20158a960e203cb75e2d3a",
+      "bytes": 29459
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/fixed-source-pins.json",
+      "blob": "f4939474704d00b84e2f1a60a99f92230168d2d5",
+      "sha256": "9ed5a0761a342a86e36ea4c5a24f4dbac58d23758c0bfce7ca465f00b6aa209d",
+      "bytes": 3639
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/current-source-pins.json",
+      "blob": "1aa9c642134380dd742bd4983875fe61832a71a9",
+      "sha256": "19621ea579db53ccf02d9b89e02cd5ecd92e1dc3d533a7a97e8dd9e75fdd8398",
+      "bytes": 52155
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/manifest.json",
+      "blob": "14aa23732a717a9ac068cb6140c1445515fc36d0",
+      "sha256": "898b95d087f6b01af0bb7c73cd64627813f904b3fee0e92e87fb017e51ae2ec2",
+      "bytes": 4473
+    },
+    {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/report.ja.md",
+      "blob": "0fa9e4820521f3c670f4cf7a6014fb6d98e9060e",
+      "sha256": "046f2cef75796c0f9e6506452e0b57c4d6b27d5214311db7aed9797763dd9e70",
+      "bytes": 35520
+    }
+  ],
+  "additional_original_pins": [
+    {
+      "revision": "d0c5dda0dc2e8d82458c4b0ff31c4cef44c40b32",
+      "path": "sycl/src/core/peer_experts.cpp",
+      "blob": "63656fd6866d15670a940a9e25e7750f3b071ebc",
+      "sha256": "5708f78a7571bb8e6ed883f5d582298fe238145d2a1d224939becc0332cf0360",
+      "bytes": 1525
+    },
+    {
+      "revision": "d0c5dda0dc2e8d82458c4b0ff31c4cef44c40b32",
+      "path": "src/core/peer_experts.cpp",
+      "blob": "bf6284a623bd4812d51b145aa46cf28a32a9b8ff",
+      "sha256": "078fa5f8d866729210a13e6e6cc1ca0fa2a1a37eabd6b87e3b27d21a262bc0dc",
+      "bytes": 15157
+    },
+    {
+      "revision": "63326f98c36656cf3a3e1adcc54c3c25a02aa6ee",
+      "path": "include/strata/prefill/draft_uploads.hpp",
+      "blob": "717df032d9033cf025b65d998c61d7d2a4b762f3",
+      "sha256": "2d32126e28c67751d14bde6cd46f1db60b92aa3939b17a6f78fd66bc10955908",
+      "bytes": 3218
+    },
+    {
+      "revision": "332cc37242fb9456dbb3dcee7437945fd1605a6d",
+      "path": "include/strata/prefill/draft_uploads.hpp",
+      "blob": "717df032d9033cf025b65d998c61d7d2a4b762f3",
+      "sha256": "2d32126e28c67751d14bde6cd46f1db60b92aa3939b17a6f78fd66bc10955908",
+      "bytes": 3218
+    },
+    {
+      "revision": "63326f98c36656cf3a3e1adcc54c3c25a02aa6ee",
+      "path": "tests/cpu/draft_uploads.cpp",
+      "blob": "0a3b495097925a780947dc70a70dbae119d9e693",
+      "sha256": "3f225561c83288b078fa0f20880c60d438096ea1ebbf3c27eca0763c092de6ee",
+      "bytes": 4764
+    },
+    {
+      "revision": "332cc37242fb9456dbb3dcee7437945fd1605a6d",
+      "path": "tests/cpu/draft_uploads.cpp",
+      "blob": "0a3b495097925a780947dc70a70dbae119d9e693",
+      "sha256": "3f225561c83288b078fa0f20880c60d438096ea1ebbf3c27eca0763c092de6ee",
+      "bytes": 4764
+    }
+  ],
+  "historical_original_objects": {
+    "manifest_pin": {
+      "revision": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/historical-closure.json",
+      "blob": "5c82685191b795b437d2ea589533d1aad49d5916",
+      "sha256": "694c2264c5c32c669f78ec71ce0823585e9f4444c1b5d6e04d22f83867c963d9",
+      "bytes": 109670
+    },
+    "all_197_files_and_49_vendor_files": "Every file/blob/hash explicitly enumerated by this hash-pinned manifest was independently fetched from original Git and checked; all 197 were also fetched from faithful anchor and compared, including file modes",
+    "original_revision": "d0c5dda0dc2e8d82458c4b0ff31c4cef44c40b32",
+    "anchor_revision": "efba8d47817811d493e28f396ebd0e14e161ca75"
+  },
+  "historical_receipts_verified": [
+    {
+      "revision": "d0c5dda0dc2e8d82458c4b0ff31c4cef44c40b32",
+      "path": "bench/results/2026-10-05-sycl-prefill-scaling/layer-major/paired-normal-wall/summary.json",
+      "blob": "a621fc87359811d6cd42fb228f11d345acc47ac8",
+      "sha256": "dacfbc8edff7618a0efbff4415bf3938e7b75bb7884d080a8859b3d5039b4408"
+    },
+    {
+      "revision": "d0c5dda0dc2e8d82458c4b0ff31c4cef44c40b32",
+      "path": "bench/results/2026-10-05-sycl-prefill-scaling/layer-major/long-fixture/fixture.json",
+      "blob": "b2c2ea03f3244c76be2de0dd79a7244afff246aa",
+      "sha256": "fa51edd974d80a4d5bd3ed175a24e05303d7bdf3458bb821d7af91f08d9834f8"
+    },
+    {
+      "revision": "d0c5dda0dc2e8d82458c4b0ff31c4cef44c40b32",
+      "path": "bench/results/2026-10-05-sycl-prefill-scaling/layer-major/gpu-residual-validation/summary.json",
+      "blob": "4b031c10b8755510e6d062d50a53f955bfc4a3f1",
+      "sha256": "378b669e64c2f183e38517d3e4931109f13ce9da18f1371ec0d522d52db6c3c1"
+    },
+    {
+      "revision": "d0c5dda0dc2e8d82458c4b0ff31c4cef44c40b32",
+      "path": "bench/results/2026-10-05-sycl-prefill-scaling/layer-major/aot-validation/build.json",
+      "blob": "72ca09b22da46f3c0319e8faa73238b0d91bb3b2",
+      "sha256": "299cf983685832c98d762e69715f6f90388a808d25833f3f75f980996b8a2775"
+    },
+    {
+      "revision": "d0c5dda0dc2e8d82458c4b0ff31c4cef44c40b32",
+      "path": "bench/results/2026-10-05-sycl-prefill-scaling/layer-major/isolated-long-validation/README.md",
+      "blob": "8ba4e1cb6dae90801cc2116deb15a6d4a427ee7a",
+      "sha256": "7a2e9f6ca5054a3667deb0b4612dbf720ef2fe4419a1947472e30d6f9ba8b9d3"
+    },
+    {
+      "revision": "d0c5dda0dc2e8d82458c4b0ff31c4cef44c40b32",
+      "path": "bench/results/2026-10-05-sycl-prefill-scaling/layer-major/paired-normal-wall/baseline-p1/run.json",
+      "blob": "2b0bc23b28672bf90bfd8bc9584c421bc4b2ac64",
+      "sha256": "a5145d9086f6adfb5353fca4a56a270c5060e7830447e3decee733545a395114"
+    },
+    {
+      "revision": "d0c5dda0dc2e8d82458c4b0ff31c4cef44c40b32",
+      "path": "bench/results/2026-10-05-sycl-prefill-scaling/layer-major/paired-normal-wall/layer-major-p1/run.json",
+      "blob": "24420a064c3bc917afb18e77ed974a354acaaec0",
+      "sha256": "ec99fc923dd8064b61b15338bd330f4ae2a8922317517a42eb9c3d6566582d9c"
+    },
+    {
+      "revision": "d0c5dda0dc2e8d82458c4b0ff31c4cef44c40b32",
+      "path": "bench/results/2026-10-05-sycl-prefill-scaling/layer-major/paired-normal-wall/layer-major-p2/run.json",
+      "blob": "30dcffb4c9d57f1091b131964a04fccc12599467",
+      "sha256": "e5a608704cfc63a91015c84bcde55b6614207deb5397d837ba710d8a64e5ac57"
+    },
+    {
+      "revision": "d0c5dda0dc2e8d82458c4b0ff31c4cef44c40b32",
+      "path": "bench/results/2026-10-05-sycl-prefill-scaling/layer-major/paired-normal-wall/baseline-p2/run.json",
+      "blob": "76a60533c51cbbe549909aeffc62316b2c8f938b",
+      "sha256": "fd03dc328243042cd566e0fa68e62748a3f683685ae45bb513a2cd8de8013456"
+    },
+    {
+      "revision": "d0c5dda0dc2e8d82458c4b0ff31c4cef44c40b32",
+      "path": "bench/results/2026-10-05-sycl-prefill-scaling/layer-major/paired-normal-wall/baseline-p3/run.json",
+      "blob": "f4f372155a73b6e7caff567ae3380009574d1b54",
+      "sha256": "ce2db0681c4897e9cd6bf0ddcfb20536fcd5a2b1802abe0d658b11e6d3be798b"
+    },
+    {
+      "revision": "d0c5dda0dc2e8d82458c4b0ff31c4cef44c40b32",
+      "path": "bench/results/2026-10-05-sycl-prefill-scaling/layer-major/paired-normal-wall/layer-major-p3/run.json",
+      "blob": "353b41a0cfe65c4ede3ed764b7c52bd68674d8d6",
+      "sha256": "4d0b7b23e301e2f534552fd3edd3082be1b9aee85881a33b671bc9e0d0b16f93"
+    }
+  ],
+  "performance": {
+    "median_tokens_per_second": 645.8479513721903,
+    "individual_layer_major_ms": [
+      51172.7,
+      50688.0,
+      50736.4
+    ],
+    "individual_baseline_ms": [
+      72286.6,
+      72288.7,
+      72288.7
+    ],
+    "batched_tokens": 32768,
+    "file_tokens": 32769,
+    "chunk": 8192,
+    "logical_chunks": 4,
+    "capacity": 65538,
+    "kv": "K8V8 fully resident",
+    "gpu_residual_rows": 32768,
+    "mtp": null,
+    "ple": "pre-touched direct, no preload; startup separately accounted for RAM observations",
+    "helper_sha256": "ecd1fb9d4a89942d6f3d80f56264fcb1bd376106168357988f2ae9e847d4c42f",
+    "jit_binary_sha256": "eae0f3ed824d13cf25033e7dc60d1f8e69bb770b0b764ea6600a9900969b7ed9",
+    "aot_binary_sha256": "4f7b3e69f24db86ab523006d175c2aa0c7129797b0753fcda91bdf70bfcf4884",
+    "jit_complete_build_recipe": "NOT_PROVED",
+    "current_39k_403_comparison": "UNMATCHED; no causal attribution",
+    "new_measurement": false
+  },
+  "gates": {
+    "before_first_gpu": [
+      "Resolve R2/R3 synchronization/progress/error contract",
+      "Resolve R4 default-queue ownership and R7 normal startup null handling",
+      "Known risky separate-queue route remains source-only until addressed; current-project timeout is distinct evidence, not causality"
+    ],
+    "host_build_fixture": [
+      "R1 restore missing original stub and re-pin actual resolver",
+      "R5 initialized-state and chunk admission",
+      "R6 native vocabulary bounds",
+      "Main runs existing and targeted host failure fixtures",
+      "Pinned offline llama.cpp cleanliness; actual icpx/libsycl/UR/oneMKL build and graph API qualification"
+    ],
+    "later_execution": [
+      "Finite traced small diagnostic under immutable Main-owned safe env",
+      "Ring wrap/cancellation/synchronous and asynchronous failure injection",
+      "MTP both fallbacks, borrowed residuals and recapture/rebind",
+      "Numerical/state/quality and physical262144 continuation/page/indexer limits",
+      "RESTORE; cold/warm/restored decode",
+      "Original-condition paired reproduction; official >=32K thinking benchmark independent samples"
+    ]
+  },
+  "provenance": {
+    "helper_fixture_source": "Own fork commit 63326f98, introduced by 332cc372; exact added source inspected; byte-identical destination blobs",
+    "range_helper_fixture": "New MIT project code",
+    "excluded_sources_consulted": false,
+    "vendor": "Original external DPCT/ggml identity checked; not imported or modified",
+    "source_attribution_limit": "Git origin and exact code identity verified; no inference adoption implied"
+  },
+  "standards_consulted": [
+    {
+      "url": "https://github.khronos.org/SYCL_Reference/iface/usm_basic_concept.html",
+      "relevance": "Host USM accessibility/context and atomic capability are distinct from synchronization"
+    },
+    {
+      "url": "https://github.khronos.org/SYCL_Reference/iface/atomic_ref.html",
+      "relevance": "Atomic operation/scope contract differs from ordinary fill/volatile read"
+    },
+    {
+      "url": "https://github.khronos.org/SYCL_Reference/iface/async_handler.html",
+      "relevance": "Handler consumption of asynchronous errors"
+    }
+  ],
+  "reproduction_commands": [
+    "git diff efba8d47817811d493e28f396ebd0e14e161ca75 2170747a3d79e0fd40b9e86736dc1785435e630f -- validation",
+    "git show ORIGINAL:PATH and git rev-parse ORIGINAL:PATH for each historical-closure.json files and external_vendor_files entry",
+    "git show FAITHFUL:validation/pr6-restore/PATH and git ls-tree FAITHFUL validation/pr6-restore/PATH for each closure file; compare bytes, hashes, sizes, modes",
+    "Static parse strata_resolve calls and _kernel_cu in sycl/CMakeLists.txt; select migrated .dp.cpp/.cpp first, then root .cpp; compare every requested/selected entry to resolver_groups",
+    "git show d0c5dda0dc2e8d82458c4b0ff31c4cef44c40b32:sycl/src/core/peer_experts.cpp"
+  ],
+  "retention": {
+    "raw_logs_tensors_builds_created": false,
+    "deleted_artifacts": [],
+    "owner": "Main",
+    "next_review": "implementation corrections and host gates, before any native execution"
+  },
+  "report": {
+    "path": "bench/results/2026-10-16-pr6-faithful-restore/independent-safety-review-v1.md",
+    "sha256": "8477e7a86161a2fbbe98e8d2093314c1328f2ebef3424e8ff94031e7754ebd6d",
+    "words": 1992
+  },
+  "operational_digest": [
+    "Listed original objects match; actual CMake closure misses original peer stub (84 TUs needed).",
+    "Keep GPU route source-only: host-USM fill/volatile counters and swallowed async errors unresolved.",
+    "Fix borrowed-default queue destruction and failed-init admission.",
+    "Add native vocabulary bounds and normal startup doorbell null handling.",
+    "A/C/F lease ordering and G access change look sound within stated completion assumptions.",
+    "Main exclusively owns all actual host/build/native/failure/quality/performance/256K/RESTORE execution."
+  ]
+}
