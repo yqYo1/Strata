@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <array>
 #include <charconv>
+#include <cerrno>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
@@ -16,6 +17,7 @@
 #include <stdexcept>
 #include <string_view>
 #include <system_error>
+#include <unistd.h>
 
 #ifdef DPCT_USM_LEVEL_NONE
 #error "This probe requires the historical in-order USM queue contract"
@@ -31,6 +33,14 @@ void require(bool ok, const char* why) { if (!ok) throw std::runtime_error(why);
 void phase(const char* name) {
     std::fprintf(stderr, "pr6_provider_probe phase=%s\n", name);
     std::fflush(stderr);
+}
+void main_gate(const char* name) {
+    require(std::printf("PR6_PROVIDER_READY %s\n", name) > 0 &&
+            std::fflush(stdout) == 0, "cannot publish Main gate");
+    char byte = 0;
+    ssize_t count;
+    do { count = ::read(STDIN_FILENO, &byte, 1); } while (count < 0 && errno == EINTR);
+    require(count == 1 && byte == 'X', "Main gate not released");
 }
 struct Options {
     std::string_view name;
@@ -236,7 +246,9 @@ int main(int argc, char** argv) {
         // 90s direct / 120s total deadline, PID/start/maps and fault receipts.
         strata::prefill::detail::RetirementDeadline deadline;
         Probe p;
+        main_gate("before-runtime");
         p.init(o);
+        main_gate("before-operations");
         auto& queue = *(o.owned ? p.owned : p.borrowed);
         if (o.partial) p.partial_host(queue);
         p.baseline(queue, 11u);
@@ -246,6 +258,7 @@ int main(int argc, char** argv) {
                 p.injected_host_errors == (o.partial ? 1u : 0u), "incomplete operation receipt");
         p.close();
         phase("cleanup-complete");
+        main_gate("after-cleanup");
         const int written = std::printf(
             "{\"status\":\"PROBE_CASE_COMPLETE\",\"case\":\"%.*s\",\"device_ordinal\":%u,"
             "\"cells\":32,\"usm_bytes\":128,\"uploads\":%u,\"kernels\":%u,\"readbacks\":%u,"
