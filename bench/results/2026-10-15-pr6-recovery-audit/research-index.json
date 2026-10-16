@@ -2506,6 +2506,51 @@
       "read_only": true,
       "review": null,
       "status": "See current native16 pipeline metadata and associated Main/native review; original report unchanged."
+    },
+    {
+      "round": 835,
+      "path": "research-round835-v1.txt",
+      "sha256": "d3c1f6ee7c2920807936f0d21e8036441ac494d4978399302fa95be9f2910c2e",
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "review": "research-scope-review-round838-v1.json",
+      "status": "Knowledge bodyMainunread, retrieval follows native/Mainreviewmetadata."
+    },
+    {
+      "round": 836,
+      "path": "research-round836-v1.txt",
+      "sha256": "98deadb721df86f650da587bb7eb89a11d9e3305ef97150deb8da667748a447d",
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "review": "research-scope-review-round838-v1.json",
+      "status": "Knowledge bodyMainunread, retrieval follows native/Mainreviewmetadata."
+    },
+    {
+      "round": 838,
+      "path": "research-scope-review-round838-v1.json",
+      "sha256": "64885285e1f563774767893888ce4899639bc14c2fb1ec36e2c07530403c0b3e",
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "review": null,
+      "status": "Knowledge bodyMainunread, retrieval follows native/Mainreviewmetadata."
+    },
+    {
+      "round": 839,
+      "path": "research-round839-v1.txt",
+      "sha256": "7cdaeca1f0c3d12892c3ee1d77947b2e8e0cef3f0e3390531220cdd89a17331f",
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "review": null,
+      "status": "Knowledge bodyMainunread, retrieval follows native/Mainreviewmetadata."
+    },
+    {
+      "round": 840,
+      "path": "A/research-round840-v1.txt",
+      "sha256": "c1928868d7062c3d1546b2eaa391fe5766f84086ccb2cda0510ed29bcc3fb9cd",
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "review": null,
+      "status": "Knowledge bodyMainunread, retrieval follows native/Mainreviewmetadata."
     }
   ],
   "main_initial_findings": [
@@ -3931,21 +3976,23 @@
     "new_kernel_test": "own-native16-gemm-correctness-v2.json",
     "implementation_round787": "Main private build and2case traced smoke PASS; actual registered Device spans/checked copy drain hardened; full/componentmodel/physical262144/performance UNRUN.",
     "research_next": [
-      835,
-      836
+      839,
+      840
     ],
     "registry_lifetime_failure": "own-native16-registry-lifetime-v1.ja.md",
     "regression": "own-native16-regression-followup2-correctness-v2.json",
     "original_regression": "own-native16-regression-correctness-v2.json FAIL remains unchanged; separate-queue mechanism unresolved",
-    "model_mechanics": "main-vllm-model-smoke-v1 active; no result yet",
+    "model_mechanics": "own-vllm-model-smoke-v1.json PASS all3 independent/all48/twochunks/128finiteNLL+3FP64fullvocab checks, notqualityaccepted.",
     "clean_performance_controller": "run_owned_native16_clean_v1.py; first matched pair closed, BF16 regression not adopted",
     "clean_first_fp32": "346.5tok/s n1",
     "attention_main_review": "own-native16-attention-main-review-v1.ja.md",
-    "implementation_next": [],
+    "implementation_next": [
+      837
+    ],
     "clean_first_bf16": "123.8tok/s n1, same request/binary/GPU32768 residual rows; -64.27% throughput",
     "initial_long_comparison": "own-native16-first-long-comparison-v1.json",
     "performance_adopted": false,
-    "next": "Finish three-arm model mechanics. Long officialbench diagnostic/clean FP32/vLLM/vLLM+QSA >=32K actual at matched65536 resident/context, then numerical quality/full256K/RESTORE and publichook fixture. Legacy nativebanner still says QSA/GDN internalFP32; typedQSA env/source branch is new, fixbanner at nextsourceboundary.",
+    "next": "Complete immutable clean9process cohort, then Main coarse+QSA+issuing-threadCPU/wait profiles, sourceR837quality and R833publicfixture; newISA/full262144/RESTORE separate. Do not mutate source/binary duringcohort.",
     "onednn_candidate": "Main build-v3/smoke-v3 PASS. Check-v3 FAIL at strict exact BF16 identity/subnormal case12 after11numeric cases; exactbits not captured. No GPUfault/dump, ownership closure true; numerics exit1. Chain/lifecycle/scratch UNRUN. Hold secondary candidate; do not weaken old68tests.",
     "retention": "closed-native16-first-wave-retention-v1.json:366files/124263459logicalbytes retired; all statuses unchanged; currentv2build, oldoneGEMMexecutable, oldFP32NLLcontrols preserved.",
     "natural_input": "own-native16-natural-input-v1.json:32863 thinkingON,64 positions, no repeatedpadding, no GPU executed",
@@ -3973,7 +4020,15 @@
     "engine_components": "own-vllm-engine-components-check-v1.json PASS; nativefull/edges/chain/guards, old68, nativeops, fullattention, runtime/compat/samequeueFP32/staticteardown. OriginalseparatequeueFAILunchanged.",
     "implementation_round833": "Source-only PUBLIC Gemm fixture returned, fully reviewed Main + oracle strings checked; currentbinaryfreeze so not applied/tested yet. own-vllm-public-hook-main-review-v1.ja.md.",
     "research_831": "Main-requested source/lifetime review read. Highest severity route-inactive claim false (assignments in included layer_major.inc); correction in own-vllm-runtime-review-main-v1.ja.md. Conditional split/runtime lifetime risks retained, no observed current bug.",
-    "research_832": "Native834 reviewed; knowledge body Main UNREAD/hold; XeTLA Max vsBMG support and SYCL async-copy deprecation distinction recorded."
+    "research_832": "Native834 reviewed; knowledge body Main UNREAD/hold; XeTLA Max vsBMG support and SYCL async-copy deprecation distinction recorded.",
+    "clean_current": "First clean FP32=373.2, vLLM BF16=394.8, vLLM+typedQSA=380.3tok/s n1each. Serialcohort active each3process. QSAaddition notassumedbetter.",
+    "current_model_boundary": "own-vllm-engine-model-and-long-screen-v1.ja.md",
+    "diagnostics": "own-vllm-diagnostic-qsa-r0-v1.json PASS/closed/fault0;385tok/s trace+validation notclean.",
+    "research_835": "Native838 reviewed, bodyMainUNREAD/hold; stencilhalo crossover.",
+    "research_836": "Native838 reviewed, bodyMainUNREAD/hold untilGDNprofile. Corrected pinnedFLA final_state alwaysFP32, notselecteddtype.",
+    "implementation_round837": "Orca6.1sol natural32K fourarmqualitycontroller sourceonly active; Main manages future execution.",
+    "research_839": "Completed/released, native841review active, collection MainUNREAD.",
+    "research_840": "Completed/released at A/research-round840-v1.txt underauditfolder (nestedpath insettlement); native841review active, collectionMainUNREAD."
   },
   "upstream_observation_current": "upstream-observed-20261016-v1.json; fetched296b59d2 matches prior observed target; current pending upstream evaluation/functional ports not complete; next about48h."
 }
