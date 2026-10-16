@@ -6867,19 +6867,20 @@
     "main_reconciliation": "research-review-round953-main-reconciliation-v1.json"
   },
   "current_main_boundary": {
-    "recorded_utc": "2026-10-16T21:42:33.509974+00:00",
+    "recorded_utc": "2026-10-16T21:55:53.635577+00:00",
     "goal": "Dedicated long prefill repeated >600 then1000tok/s; eventual decode70tok/s. Not achieved.",
     "current_model_comparison": "Score33 optimized median459.1 versus packed459.3tok/s, six processes, final pair overlap qualification retained; no packed speed adoption. Earlier uncontaminated score33 cohort median464.1tok/s remains recorded.",
-    "changes": "Main executable GPU-resident MoE window contract with8K causal operators and8K expert microjobs. Guard-inclusive window views997820928B fit the existing region arithmetically. Host v1 checks107schedules/24expert cases/13refusals; v2 adds18synthetic expert phases/16refusals. No C++ or GPU implementation/qualification.",
-    "next": "Independent review of the completed Main ownership contract; preserve the frozen current binary/profile. Foreign CPU-only benchmark still requires revalidation before native timing. Caller periodic checkpoint coherence and exact window-ne observation remain explicit adoption gates.",
-    "compile_or_GPU_work_this_boundary": false,
-    "source_inspection_command": "Source owner/arithmetic review only; current closed observation and seven content hashes verified. No compiler/native/GPU execution.",
+    "changes": "C++ immutable router-ID/expert/source/slot/job map implemented; ASan+UBSan40 cases/2892850token-slots/14refusals PASS. R969 independent review indexed. Original failed multicall runner receipt preserved.",
+    "next": "Main engine integration: shared8K attention helper, GPU-only two-piece FFN window and cursor-only intermediate completion. Revalidate foreign benchmark before heavy build/GPU comparison.",
+    "compile_or_GPU_work_this_boundary": "Only bounded nice19 CPU C++ fixture compiled/executed. No SYCL/GPU.",
+    "source_inspection_command": "Current production sources unchanged; pending pair remains frozen.",
     "full_physical262144_model_consume_RESTORE": "Unqualified; component coverage is insufficient.",
     "default_sync_PR": null,
     "independent_reviews_completed": [
       965,
       967,
-      968
+      968,
+      969
     ]
   },
   "research_review_round955": {
@@ -7435,5 +7436,34 @@
       "include/strata/prefill/layer_major_plan.hpp": "67bc25500ae777bfb387944a2415325868602b9da82aa945464b64b0a2b8b9fd",
       "src/program/generate.cpp": "d05e9142917af145c1ba6d428180f8981f260c8a20b23ecf27bcc2033c9fe25a"
     }
+  },
+  "native16_moe_window_main_contract_review_round969": {
+    "review_path": "research-review-round969-v1.json",
+    "operational_digest_path": "research-review-round969-v1.ja.md",
+    "review_sha256": "34b15d1b49126e5f205051e214219618f877834eb7905f3b4a4694790d074652",
+    "operational_digest_sha256": "17e354c70cb5f68293e1d90ec6db5a37e17acc5ece71ae5f3de76e869e98d317",
+    "status": "source_feasible_implementation_contract_incomplete",
+    "Main_digest_read": true,
+    "Main_review_JSON_read": true,
+    "schedulable_now": false,
+    "next_owner": "Main",
+    "retrieval_trigger": "Implement long-prefill two-piece GPU window: original request/PLE/state, immutable route map, both HC writes before MTP, actual allocation spans, periodic checkpoint gate."
+  },
+  "moe_window_cpp_route_map_current": {
+    "path": "moe-window-route-map-v1",
+    "ledger_sha256": "938a533d0b46175a4e4c4539ea42cc2664a368acb62cbfb553cf8a387c8debcb",
+    "receipt_path": "moe-window-route-map-v1/host-result-v2.json",
+    "receipt_sha256": "805bae73f48053e7e7f0977c5eabbe674507927b47a76107b15b859c1404c18b",
+    "checks": {
+      "passed": true,
+      "routing_cases": 40,
+      "token_slots_checked": 2892850,
+      "refusal_cases": 14,
+      "GPU_executed": false,
+      "tensor_math_checked": false
+    },
+    "status": "Actual sanitizer-checked C++ host route map only; no production/GPU integration or speed adoption. Initial runner failure preserved.",
+    "next_owner": "Main",
+    "next": "Connect immutable routes to GPU window after factoring attention-piece/FFN helpers."
   }
 }
