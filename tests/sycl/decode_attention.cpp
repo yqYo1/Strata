@@ -39,6 +39,7 @@ void attention(const float *q, const QsaAttnPools &p, const int32_t *ids,
                const int32_t *steps, int64_t cap, const QsaShapes &s,
                float *scratch, float *out, int64_t nq) {
 #ifdef STRATA_TEST_PROMPT_MATRIX
+  (void)scratch;
   check(qsa_prompt_attn_batch(q, p, ids, steps, cap, s, out, nq,
                               &runtime->compute()),
         "matrix attention unavailable");
