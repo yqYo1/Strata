@@ -6939,7 +6939,7 @@
   },
   "current_tilepack_profile_attempt": {
     "v1": "qsa-bf16-prefix-tilepack-profile-pair-v1.json",
-    "outcome": "Preflight refused: foreign llama-bench holds the same B570; zero native/GPU launches by Main.",
+    "outcome": "Preflight refused: foreign CPU-only llama-bench (-dev none) is active. Open B570 descriptors were not GPU compute proof; Main waits for CPU/RAM timing isolation. Zero native inference launches by Main.",
     "original_failed_receipt_preserved": "own-qsa-bf16-prefix-tilepack-profile-census-bf16-prefix-optimized-r0-v1.json",
     "foreign_owner_observation": "foreign-model-owner-observation-v1.json",
     "prepared_fresh_attempt": "run_qsa_bf16_prefix_tilepack_profile_pair_v2.py",
@@ -6953,7 +6953,9 @@
       "cwd": "/home/yayoi/orca/workspaces/Strata/sycl"
     },
     "current_tool_exec_session": 99223,
-    "active_wait_receipt": "qsa-tilepack-profile-wait-v1.json"
+    "active_wait_receipt": "qsa-tilepack-profile-wait-v1.json",
+    "resource_correction": "foreign-owner-device-selection-correction-v1.json",
+    "wait_resource": "CPU/RAM measurement isolation, not established GPU compute use or device fault"
   },
   "residual_placement_current_preparation": {
     "report": "bf16-residual-placement-opportunity-v2.json",
