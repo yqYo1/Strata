@@ -526,6 +526,7 @@ struct Prefill::Impl {
     int64_t residual_gpu_tokens = 0;
     int64_t T = 0, T_max = 0;
     bool borrowed = false, compact = false, compact_hc = false;
+    bool ready = false, init_attempted = false;
     // cs is borrowed. copy is null until assigned, and is destroyed only if owned.
     dpct::queue_ptr cs = nullptr, copy = nullptr;
     bool copy_owned = false;
@@ -660,6 +661,7 @@ void Prefill::reset() {
 
 void Prefill::release() {
     if (!impl_) return;
+    impl_->ready = false;
     if (impl_->cs) impl_->cs->wait();
     if (impl_->copy) impl_->copy->wait();
     for (int i = 0; i < RING_MAX; ++i) {
@@ -887,6 +889,23 @@ bool Prefill::init(const core::WeightTable &wt, const core::ModelGeometry &g,
                    int64_t chunk, void *stream, std::string &err, void *borrow,
                    uint64_t borrow_bytes) try {
     Impl& m = *impl_;
+    m.ready = false;
+    if (m.init_attempted) {
+        err = "prefill: reset is required before another init attempt"; return false;
+    }
+    m.init_attempted = true;
+    // These bounds precede allocations, queue selection and any qsa_primary use.
+    // The workspace/kernels below have fixed dimensions for this artifact.
+    if (chunk <= 0 || chunk > 262144 || ss.max_cells <= 0 || chunk > ss.max_cells ||
+        ss.max_cells > 262146 || !ss.qsa_states || ss.qsa_ord0 < 0 || ss.qsa_alloc <= 0 ||
+        g.n_layers != 48 || g.qsa_interval != 4 || g.n_expert != NE || g.n_ff != 640 ||
+        g.n_embd != N || g.hc != HC || g.hc_lr != LR || ss.k != K ||
+        g.n_head != 24 || g.n_head_kv != 2 || g.head_dim != 256 ||
+        g.idx_q_heads != 4 || g.idx_key_dim != 128 ||
+        g.ssm_state_size != 128 || g.ssm_k_heads != 16 || g.ssm_v_heads != HV ||
+        g.ssm_d_conv != 4 || g.ssm_conv_channels != C || g.ssm_value_dim != ZV) {
+        err = "prefill: unsupported host chunk, session or artifact geometry"; return false;
+    }
     m.wt = &wt; m.g = &g; m.ss = &ss; m.src = src; m.cache = cache; m.host_res = host_res;
     m.T = chunk; m.cs = strata::q_of(stream); m.stats = &stats_;
     if (compact_prefill() && !m.cs->is_in_order()) {
@@ -1070,6 +1089,7 @@ bool Prefill::init(const core::WeightTable &wt, const core::ModelGeometry &g,
         err = "prefill: device buffers for a chunk of " + std::to_string(chunk) + " tokens do not fit";
         return false;
     }
+    m.ready = true; // publish only after every allocation and carve succeeds
     return true;
 }
 catch (sycl::exception const &exc) {
@@ -1197,10 +1217,11 @@ bool Prefill::carve(size_t T, void* alloc) {
 bool Prefill::relayout(int64_t chunk, void *borrow, uint64_t borrow_bytes,
                        std::string &err) try {
     Impl& m = *impl_;
-    if (!m.borrowed || borrow == nullptr || chunk <= 0 || chunk > m.T_max) {
+    if (!m.ready || !m.borrowed || borrow == nullptr || chunk <= 0 || chunk > m.T_max) {
         err = "prefill: relayout needs borrowed buffers and a chunk of at most " + std::to_string(m.T_max);
         return false;
     }
+    m.ready = false;
     if (DPCT_CHECK_ERROR(m.cs->wait()) != 0 ||
         DPCT_CHECK_ERROR(m.copy->wait()) != 0) {
         err = "prefill: relayout: the stream failed";
@@ -1218,6 +1239,7 @@ bool Prefill::relayout(int64_t chunk, void *borrow, uint64_t borrow_bytes,
         err = "prefill: device buffers for a chunk of " + std::to_string(chunk) + " tokens do not fit";
         return false;
     }
+    m.ready = true;
     return true;
 }
 catch (sycl::exception const &exc) {
@@ -1231,6 +1253,7 @@ int64_t Prefill::chunk() const { return impl_->T; }
 bool Prefill::draft_kv(core::MtpDrafter& mtp, const float* R_rows, const int32_t* next_tokens, int64_t n, int64_t cell0,
                        std::string& err) {
     Impl& m = *impl_;
+    if (!m.ready) { err = "prefill: init must complete before draft_kv"; return false; }
     static const bool off = [] { const char* v = std::getenv("STRATA_MTP_BATCH"); return v != nullptr && v[0] == '0'; }();
     // A ring (KV streaming: the drafter's window, page p in slot p % n_slots over a host copy) takes the same appends
     // with its own page table and host copy, as a streamed main layer does; the cells written are those the window can
@@ -1891,7 +1914,7 @@ struct PeTimer {
 }  // namespace
 
 bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) {
-    if (!impl_ || !impl_->g || !impl_->ss || !impl_->wt || !impl_->cs || !impl_->copy ||
+    if (!impl_ || !impl_->ready || !impl_->g || !impl_->ss || !impl_->wt || !impl_->cs || !impl_->copy ||
         !impl_->stager || impl_->T <= 0 || impl_->T_max < impl_->T) {
         err = "prefill: init must complete before run"; return false;
     }
