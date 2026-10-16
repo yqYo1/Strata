@@ -14,7 +14,7 @@ STRATA_SYCL_AOT_DOUBLE_GRF=OFF
 SYCL_TLA_SOURCE_DIR=/absolute/path/to/sycl-tla
 ```
 
-The module checks the exact bytes of 207 consumed TLA headers. The new source alone requests `spir64_gen`, `bmg-g21-a0`, GRF256 and the split-barrier/block2D/subgroup-matrix translator extensions. `-fno-sycl-rdc -c` asks the compiler to finish that source's device image inside a fat object. The object is a direct final-link input; no AOT target or GRF option propagates to the existing engine's generic JIT images. This uses the documented [Intel LLVM separate-compilation model](https://intel.github.io/llvm/design/CompilerAndRuntimeDesign.html#device-link-during-compilation). Actual installed-compiler mixed-image acceptance and runtime selection must be checked; source flags alone are not binary proof.
+The module checks the exact bytes of 207 consumed TLA headers. The new source alone requests `spir64_gen`, `bmg-g21-a0`, GRF256 and the split-barrier/block2D/subgroup-matrix translator extensions. TLA declares SPIR-V builtins with `SYCL_EXTERNAL`, which forbids `-fno-sycl-rdc`. An ordinary RDC object is device-linked separately with plain `-fsycl-link`; the host slice is extracted with `clang-offload-bundler`. Both resulting host objects are direct final-link inputs. Native relocatable device IR and AOT/GRF options do not enter the existing engine's generic JIT link. This uses the documented [Intel LLVM device-link stage](https://intel.github.io/llvm/design/CompilerAndRuntimeDesign.html#device-link). Actual installed-compiler mixed-image acceptance and runtime selection must be checked; source flags alone are not binary proof.
 
 Set the immutable child environment before starting the engine:
 

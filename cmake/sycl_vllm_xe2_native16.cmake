@@ -29,19 +29,40 @@ target_compile_features(strata_vllm_xe2_native16 PRIVATE cxx_std_20)
 target_compile_definitions(strata_vllm_xe2_native16 PRIVATE
   CUTLASS_ENABLE_HEADERS_ONLY CUTLASS_ENABLE_SYCL SYCL_INTEL_TARGET)
 target_compile_options(strata_vllm_xe2_native16 PRIVATE
-  -O3 -fsycl -fsycl-targets=spir64_gen -fno-sycl-rdc
+  -O3 -fsycl -fsycl-targets=spir64_gen
   -fno-fast-math -ffp-contract=off
   -fno-sycl-instrument-device-code -ftemplate-backtrace-limit=0
   "SHELL:-Xspirv-translator -spirv-ext=+SPV_INTEL_split_barrier,+SPV_INTEL_2d_block_io,+SPV_INTEL_subgroup_matrix_multiply_accumulate"
   "SHELL:-Xsycl-target-backend=spir64_gen \"-device bmg-g21-a0 -internal_options -cl-intel-256-GRF-per-thread\"")
-# Eagerly finish only this translation unit's device image during -c. Keep the
-# resulting fat object as a DIRECT final-link input, outside the generic engine
-# archives. No AOT/GRF flags propagate to the engine's existing JIT images.
-# Intel LLVM CompilerAndRuntimeDesign: "Device Link during compilation".
-# Exact installed-driver mixed-link acceptance still requires Main's tests.
+# TLA declares SPIR-V builtins with SYCL_EXTERNAL, so -fno-sycl-rdc cannot be
+# used. Finish this translation unit in a separate, ordinary -fsycl-link step.
+# That command produces a device registration object, not the original host
+# methods. Extract the host slice separately and link BOTH plain host objects
+# directly. No relocatable native device IR reaches the generic engine link.
+# Intel LLVM UsersManual "Link options" and sycl-offload-old-model.cpp cover
+# -fsycl-link for spir64_gen. Exact mixed-image acceptance requires Main tests.
+get_filename_component(_strata_sycl_bin "${CMAKE_CXX_COMPILER}" DIRECTORY)
+execute_process(COMMAND "${CMAKE_CXX_COMPILER}" -dumpmachine
+  OUTPUT_VARIABLE _strata_host_triple OUTPUT_STRIP_TRAILING_WHITESPACE
+  COMMAND_ERROR_IS_FATAL ANY)
+set(_strata_native_image "${CMAKE_CURRENT_BINARY_DIR}/strata_vllm_xe2_image.o")
+set(_strata_native_host "${CMAKE_CURRENT_BINARY_DIR}/strata_vllm_xe2_host.o")
+add_custom_command(OUTPUT "${_strata_native_image}" "${_strata_native_host}"
+  COMMAND "${CMAKE_CXX_COMPILER}" -O3 -fsycl -fsycl-targets=spir64_gen
+    -fsycl-link -fno-sycl-instrument-device-code
+    -Xspirv-translator -spirv-ext=+SPV_INTEL_split_barrier,+SPV_INTEL_2d_block_io,+SPV_INTEL_subgroup_matrix_multiply_accumulate
+    -Xsycl-target-backend=spir64_gen "-device bmg-g21-a0 -internal_options -cl-intel-256-GRF-per-thread"
+    $<TARGET_OBJECTS:strata_vllm_xe2_native16> -o "${_strata_native_image}"
+  COMMAND "${_strata_sycl_bin}/clang-offload-bundler" -unbundle -type=o
+    "-targets=host-${_strata_host_triple}"
+    "-input=$<TARGET_OBJECTS:strata_vllm_xe2_native16>"
+    "-output=${_strata_native_host}"
+  DEPENDS strata_vllm_xe2_native16 $<TARGET_OBJECTS:strata_vllm_xe2_native16>
+  COMMAND_EXPAND_LISTS VERBATIM)
+add_custom_target(strata_vllm_xe2_image DEPENDS "${_strata_native_image}" "${_strata_native_host}")
 target_compile_definitions(strata_prefill PRIVATE STRATA_SYCL_VLLM_XE2_NATIVE16=1)
-add_dependencies(strata_prefill strata_vllm_xe2_native16)
-target_link_libraries(strata_prefill INTERFACE "$<TARGET_OBJECTS:strata_vllm_xe2_native16>")
+add_dependencies(strata_prefill strata_vllm_xe2_image)
+target_link_libraries(strata_prefill INTERFACE "${_strata_native_image}" "${_strata_native_host}")
 message(STATUS "Strata: opt-in vLLM Xe2 native16; isolated BMG G21 AOT object; existing engine JIT; external TLA pinned; UNQUALIFIED")
 
 function(strata_add_vllm_native16_tests)

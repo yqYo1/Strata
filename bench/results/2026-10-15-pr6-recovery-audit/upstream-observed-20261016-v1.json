@@ -1,0 +1,76 @@
+{
+  "schema": "strata-upstream-observation-v2",
+  "queried_utc": "2026-10-16T01:12:02.319531+00:00",
+  "sole_upstream": "Niko1221/Strata",
+  "skill": ".claude/skills/strata-upstream-sync/SKILL.md",
+  "previous_observation": "bench/results/2026-10-14-primary-model-baseline/upstream-observed.json",
+  "previous_observed_sha": "296b59d2f73c8f04a805df29c2fa97655adace78",
+  "observed_sha": "296b59d2f73c8f04a805df29c2fa97655adace78",
+  "changed_since_previous_observation": false,
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "origin/main"
+      ],
+      "exit_code": 0,
+      "stdout": "296b59d2f73c8f04a805df29c2fa97655adace78\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "ls-remote",
+        "origin",
+        "HEAD",
+        "refs/heads/main",
+        "refs/tags/v0.1.44.1"
+      ],
+      "exit_code": 0,
+      "stdout": "296b59d2f73c8f04a805df29c2fa97655adace78\tHEAD\n296b59d2f73c8f04a805df29c2fa97655adace78\trefs/heads/main\n9791ea335ba2001c87b5f783146d6eb08fdd9e5e\trefs/tags/v0.1.44.1\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--short",
+        "--branch"
+      ],
+      "exit_code": 0,
+      "stdout": "## main...origin/main [ahead 628, behind 2174]\n?? .worktree/\n",
+      "stderr": ""
+    }
+  ],
+  "fetch": {
+    "first_command": [
+      "git",
+      "fetch",
+      "origin",
+      "--tags"
+    ],
+    "exit_code": 1,
+    "reason": "existing tags rejected; original tag refs not overwritten; main remote ref updated",
+    "followup_command": [
+      "git",
+      "fetch",
+      "--no-tags",
+      "origin",
+      "refs/heads/main:refs/remotes/origin/main"
+    ],
+    "followup_exit_code": 0
+  },
+  "source_fetched": true,
+  "integrated_upstream_target": "7695859aa13afb248bdb4d36f9b2e95707db079d",
+  "new_target_evaluation_complete": false,
+  "unmodified_upstream_performance_evaluation_complete": false,
+  "whole_function_ledger_complete": false,
+  "required_function_port_complete": false,
+  "default_promotion_complete": false,
+  "next_check_utc": "2026-10-18T01:12:02.319531+00:00",
+  "pending": "Continue existing296b59d2 feature ledger/vanilla performance/mandatory ports after current fixed native16 qualification boundary. No new inference change applied.",
+  "legacy_upstream_clone_root": "Already divergent main observed; left checkout/local tags untouched. Read-only reference access only; audit separately before any root pull/reset.",
+  "current_engine_commit": "5020c05e6c980a72441a7a0839b930fef2dbf956",
+  "current_build_source_changed_by_upstream_check": false
+}
