@@ -4495,9 +4495,12 @@
       "sha256": "44ab01354870c5c0e3cf2384d2138eb0d7ae456181b207ac9e0982b1472d892b",
       "bytes": 12425,
       "main_body_read": false,
-      "status": "Orca worker succeeded and released; native Luna max R968 review pending. No runtime or implementation adoption.",
+      "status": "R968 source feasibility review completed with owner/callback/src_dev corrections; no runtime fit or implementation adoption. Original report body held by Main.",
       "retrieval_trigger": "A concrete MoE-only window implementation or owner/memory decision after independent review.",
-      "schedulable_now": false
+      "schedulable_now": false,
+      "review_path": "research-review-round968-v1.json",
+      "operational_digest_path": "research-review-round968-v1.ja.md",
+      "reviewer_report_body_read": true
     }
   ],
   "main_initial_findings": [
@@ -6863,15 +6866,20 @@
     "main_reconciliation": "research-review-round953-main-reconciliation-v1.json"
   },
   "current_main_boundary": {
-    "recorded_utc": "2026-10-16T21:09:48.479581+00:00",
+    "recorded_utc": "2026-10-16T21:27:08.990424+00:00",
     "goal": "Dedicated long prefill repeated >600 then1000tok/s; eventual decode70tok/s. Not achieved.",
     "current_model_comparison": "Score33 optimized median459.1 versus packed459.3tok/s, six processes, final pair overlap qualification retained; no packed speed adoption. Earlier uncontaminated score33 cohort median464.1tok/s remains recorded.",
     "changes": "R965 capacity review merged through PR28. Main source resource audit and same-model upload arithmetic distinguish GPU dequant/GEMM work from PCIe uploads. Source-only active metadata census found only layer47 with bytes==stride; padding a full batch grows requested bytes30.10164percent. R966 completed through Orca and awaits R968 native review; R967 targeted archive retrieval completed. No inference source or new speed result.",
-    "next": "Await R966 source feasibility and native Luna max review without steering. Paired profile is prepared but not running: the finite foreign-owner waiter exited3. After actual foreign exit, revalidate before launching it once.",
+    "next": "Foreign CPU benchmark remains active; the finite waiter is closed and there is no native profile running. On actual resource release revalidate and complete the prepared profile/census once. Main next specifies legal row-bank/src_dev/callback phases before a MoE-only window implementation; no duplicate research is eligible.",
     "compile_or_GPU_work_this_boundary": false,
     "source_inspection_command": "Source owner/arithmetic review only; current closed observation and seven content hashes verified. No compiler/native/GPU execution.",
     "full_physical262144_model_consume_RESTORE": "Unqualified; component coverage is insufficient.",
-    "default_sync_PR": "https://github.com/yqYo1/Strata/pull/28"
+    "default_sync_PR": null,
+    "independent_reviews_completed": [
+      965,
+      967,
+      968
+    ]
   },
   "research_review_round955": {
     "review_path": "research-review-round955-v1.json",
@@ -7273,7 +7281,7 @@
     "dispatch_id": "ctx_a9fa56e63485",
     "model": "gpt-6-luna",
     "scope_schedulable_at_dispatch": true,
-    "status": "Report completed1800words; accepted worker_done and successful owned-terminal release. Original body held by Main; native Luna max R968 review in progress.",
+    "status": "R968 source feasibility review completed with owner/callback/src_dev corrections; no runtime fit or implementation adoption. Original report body held by Main.",
     "runtime_proof": "orca-research-round966-runtime-v1.json",
     "report": "research-round966-v1.txt",
     "Main_report_body_read": false,
@@ -7284,7 +7292,9 @@
     "report_sha256": "44ab01354870c5c0e3cf2384d2138eb0d7ae456181b207ac9e0982b1472d892b",
     "report_bytes": 12425,
     "settlement_receipt": "orca-research-round966-settlement-v1.json",
-    "review_pending": "research-review-round968-v1.json"
+    "review_path": "research-review-round968-v1.json",
+    "review_sha256": "83f9167fd88f849a98ac51f0a46f1e36c7ceaa5d537cf8cd1e164721b1b9b445",
+    "operational_digest_path": "research-review-round968-v1.ja.md"
   },
   "current_moe_order_resource_audit": {
     "report": "current-moe-order-resource-audit-v1.json",
@@ -7337,5 +7347,38 @@
     "new_research_needed": false,
     "runtime_screen_schedulable_now": false,
     "next": "After foreign model exit and the current profile, use exact widths to choose a bounded equal-payload copy screen. Only one layer supports a direct same-payload bulk path; do not credit its511call saving to all48 layers."
+  },
+  "native16_moe_window_review_round968": {
+    "review_path": "research-review-round968-v1.json",
+    "digest_path": "research-review-round968-v1.ja.md",
+    "reviewed_report_sha256": "44ab01354870c5c0e3cf2384d2138eb0d7ae456181b207ac9e0982b1472d892b",
+    "status": "source feasibility with implementation prerequisites; no runtime/fit/adoption qualification",
+    "retrieval_trigger": "Concrete Main plan or memory/route decision for a native16 16K MoE window.",
+    "schedulable_now": false,
+    "evidence": "Exact ne census is still unexecuted while the foreign CPU benchmark is active; measurement belongs to Main, so no duplicate research is recommended.",
+    "dispatch_performed": false,
+    "next_work_owner": "Main",
+    "review_sha256": "83f9167fd88f849a98ac51f0a46f1e36c7ceaa5d537cf8cd1e164721b1b9b445",
+    "operational_digest_sha256": "bbf62e62876490a35b50da2aabbf7c095deb4a177b0e421d2d4a3c0a64bcdf4b",
+    "Main_original_report_body_read": false,
+    "Main_review_digest_read": true,
+    "Main_tree_label_check": "All ten reviewed source hashes also verified directly against git tree2b357a8a14be9e10d5909591cc7f72a15c69046d; original reviewer receipt stays unchanged.",
+    "implementation_specified": false
+  },
+  "native16_moe_window_current_decision": {
+    "source_feasibility_supported": true,
+    "implementation_specified": false,
+    "payload_16K_slot_order_bytes": 1155137536,
+    "region_arithmetic_spare_bytes": 39778816,
+    "GDN_QSA_chunk_remains": 8192,
+    "requires_Main_plan": [
+      "Row-bank phase ownership, per8K HC write and callback/MTP order; do not park live16K rows in m.R or old gated aliases.",
+      "Rebase each expert source list at src_dev[0] or provide a true window-wide owner; old src_dev+o0 cannot assume capacity.",
+      "Respect ne==W, tails, cancellation/fault invalidation, PLE and MTP shared-region ownership."
+    ],
+    "measurement_scope_limit": "Pending current histogram census can attribute existing8K GEMM grid work, but does not record aligned per-expert counts across chunks. It cannot alone prove exact16K union/ne/reuse. Do not claim those observations from aggregated histograms.",
+    "runtime_or_fit_qualified": false,
+    "performance_adopted": false,
+    "new_research_schedulable_now": false
   }
 }
