@@ -357,14 +357,14 @@ struct Stager {
                     if (!jb.gsrc->read_into(jb.l, jb.e, buf[b], jb.bytes)) {
                         failed.store(true, std::memory_order_relaxed);
                         std::fprintf(stderr, "prefill: reading expert %d of layer %d from the GGUF failed\n", jb.e, jb.l);
-                        std::memset(buf[b], 0, jb.bytes);
+                        detail::retirement_fail_stop("GGUF staging read failed");
                     }
                 } else if (jb.from == nullptr) {
                     std::memcpy(buf[b], jb.src, jb.bytes);
                 } else if (!jb.from->copy_blob(jb.l, jb.e, buf[b])) {
                     failed.store(true, std::memory_order_relaxed);
                     std::fprintf(stderr, "prefill: the expert source could not copy expert %d of layer %d\n", jb.e, jb.l);
-                    std::abort();
+                    detail::retirement_fail_stop("expert source staging copy failed");
                 }
                 if (measure_copies)
                     host_copy_ns.fetch_add((uint64_t) std::chrono::duration_cast<std::chrono::nanoseconds>(

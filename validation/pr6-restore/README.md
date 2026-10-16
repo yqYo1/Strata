@@ -36,3 +36,19 @@ See `../../bench/results/2026-10-16-pr6-faithful-restore/report.ja.md` and
 IDs and SHA256s, resolved translation units and external headers. Runtime sources
 under `sycl/src/kernels/cuda/*.dp.cpp` are the historical SYCL migration output;
 no CUDA/HIP implementation is built or newly imported.
+
+Safety corrections v2 supersede the earlier incomplete closure count: the full
+historical resolver requires 84 TUs and 198 project files (4,007,615 original
+bytes). The faithful anchor still contains its original 197 files; R1 restores
+the missing original peer stub in a later commit. Original reports and review
+statuses remain historical records. See `safety-corrections-v2.md` and its JSON
+in that same results directory for exact corrected-source pins and Main's gates.
+
+V2 explicitly uses one selected in-order queue for prefill copies and compute,
+checked event retirement and finite fail-stop deadlines. It requires the outer
+wrapper: the wrapper generates a private checked DPCT header from the hash-pinned
+external dependency and force-includes it for the engine targets, preserving
+the vendor notice and leaving the external installation untouched. This changes
+synchronization/error handling and uniform queue profiling, so historical
+performance claims do not qualify the corrected route. Its status remains
+`SOURCE_ONLY_UNSAFE_TO_RUN` until Main reviews and executes the separate gates.
