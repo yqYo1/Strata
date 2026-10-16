@@ -26,10 +26,19 @@ string(REPLACE "${pr6_return}"
   "if (enable_exception_handler) ::strata::pr6_register_queue(_queues.back());\n    ${pr6_return}"
   pr6_device "${pr6_device}")
 set(pr6_checked_header "${CMAKE_CURRENT_BINARY_DIR}/pr6-checked-dpct.hpp")
+option(PR6_LLVM_SHUFFLE64_COMPAT "Private pinned LLVM 22 SPIR-V long-long shuffle adapter" OFF)
+set(pr6_shuffle_suffix "")
+if(PR6_LLVM_SHUFFLE64_COMPAT)
+  include("${CMAKE_CURRENT_LIST_DIR}/llvm_shuffle64.cmake")
+endif()
 # Force this header before any vendor relative #include "device.hpp". The same
 # original guard then suppresses the unmodified external header in every TU.
 file(WRITE "${pr6_checked_header}"
-  "// Modified for isolated Strata PR6 validation: fail-stop async handling and checked queue registration.\n#define STRATA_PR6_CHECKED_DPCT 1\n#ifndef DPCT_PROFILING_ENABLED\n#define DPCT_PROFILING_ENABLED\n#endif\n#include \"strata/sycl_async_contract.hpp\"\n${pr6_device}")
+  "// Modified for isolated Strata PR6 validation: fail-stop async handling and checked queue registration.\n#define STRATA_PR6_CHECKED_DPCT 1\n#ifndef DPCT_PROFILING_ENABLED\n#define DPCT_PROFILING_ENABLED\n#endif\n#include \"strata/sycl_async_contract.hpp\"\n${pr6_device}${pr6_shuffle_suffix}")
 file(SHA256 "${pr6_checked_header}" pr6_checked_hash)
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/pr6-checked-dpct.sha256" "${pr6_checked_hash}\n")
 message(STATUS "PR6 private checked DPCT header SHA256=${pr6_checked_hash}")
+if(PR6_LLVM_SHUFFLE64_COMPAT)
+  string(JSON pr6_shuffle_proof SET "${pr6_shuffle_proof}" checked_header_sha256 "\"${pr6_checked_hash}\"")
+  file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/pr6-llvm-shuffle64-proof.json" "${pr6_shuffle_proof}\n")
+endif()

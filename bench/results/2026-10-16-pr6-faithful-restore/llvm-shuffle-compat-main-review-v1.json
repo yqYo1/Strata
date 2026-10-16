@@ -1,0 +1,57 @@
+{
+  "schema": "strata-pr6-shuffle-compat-main-source-review-v1",
+  "created_utc": "2026-10-16T10:39:42.213761+00:00",
+  "reviewer": "Main",
+  "complete_delta_reviewed": true,
+  "original_patch_reverses_exactly": true,
+  "checks": [
+    "Only checked_dpct.cmake and new private transform helper modified; historical project bodies unchanged against322e1fd8.",
+    "Full input/util/span/replacement/result and compiler/header hashes checked by opt-in mode; no vendor installation mutation.",
+    "Same scope/index builtin with signed or unsigned native64bit aliases and bit_cast; no two-word/narrowing/math change.",
+    "Observed caller fullmask32, local t0..127/lane0..31, sourcecell0..31; initial issue unconditional and loop more workgroup uniform.",
+    "Include memory prerequisite before util originalguard, after checked device body; oldchecked owner/async transform preserved.",
+    "No new public full-group collective or divergent-mask guarantee; compile/device semantics still require tests."
+  ],
+  "source_base_commit": {
+    "commit": "322e1fd86ac694dd9926998548702d2859bd254f",
+    "commit_evidence": "Main v2 receipts; no Git command executed",
+    "checked_dpct_preimage_sha256": "5757b9a1954558257fdc88d031aaeab7cbe7369d75191af21d547a890d2995e8"
+  },
+  "source_files": [
+    {
+      "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/checked_dpct.cmake",
+      "bytes": 3008,
+      "sha256": "1155da5465207f6ae2bed3a195fb398cd0599f4e72daabb9814a4237e9a8f2d7"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/llvm_shuffle64.cmake",
+      "bytes": 6121,
+      "sha256": "44a05ec836e8011fd40ee5c9523e1185cf1bfebc4fc50e8390c347d1bd13a313"
+    }
+  ],
+  "generated_expected": {
+    "span_start": 20690,
+    "span_end": 21001,
+    "span_bytes": 311,
+    "span_count": 1,
+    "span_sha256": "40ad5a113889ddcc32d74a677e3e920dc6d853d54a98866e7cbb7adfa111c42f",
+    "replacement_sha256": "46b520f81366735619fa66e77211bdd464996eb1cd147cd654adc15571c70ece",
+    "generated_util_body_bytes": 52816,
+    "generated_util_body_sha256": "cb93a6d8ecb064bf8d693fad0c9c5e64ce753d6f4b126f5e086969d9b1228609",
+    "predicted_checked_header_bytes": 86798,
+    "predicted_checked_header_sha256": "e418eb84b52fe8516739b4559c612c72311236f344b88a970adcb5e4c5bf0c1f",
+    "prediction_method": "Source string construction and hashing only; no CMake invocation",
+    "build_outputs": [
+      "<build>/pr6-checked-dpct.hpp",
+      "<build>/pr6-checked-dpct.sha256",
+      "<build>/pr6-llvm-shuffle64-proof.json"
+    ]
+  },
+  "GPU_executed": false,
+  "pending": [
+    "OFF-mode generated-header equality and ON-mode source hash",
+    "new actual generated compile/link closure",
+    "compiler and native64bit oracle after provider gates",
+    "historical model math/state/quality/physical262144/RESTORE/600"
+  ]
+}
