@@ -108,7 +108,17 @@ def main():
             STRATA_SYCL_PREFILL_NATIVE16_BACKEND='vllm',
             STRATA_SYCL_PREFILL_NATIVE16_QSA='1',
             STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE='auto',STRATA_ROPE_TABLE='1')
-        env['STRATA_PREFILL_LAYER_MAJOR_R_GPU'] = 'auto' if arm=='gpuall' else '32768'
+        if arm=='gpuall':
+            first_path=A/'own-qsa-bf16-prefix-64k-diagnostic-gpu32768-r0-v1.json'
+            first=json.loads(first_path.read_text());closed(first)
+            count=int(re.search(r'tokens=(\d+) ',first['placement_lines'][0])[1])
+            req,=first['benchmark_result']['results']['prefill_only']['requests']
+            require(count==req['actual_prompt_tokens']-1 and count>=65536, 'known actual64K batched rows')
+            # Exact n includes the final partial chunk. Budget rejection occurs
+            # before request GPU work; there is no automatic partial fallback.
+            env['STRATA_PREFILL_LAYER_MAJOR_R_GPU']=str(count)
+        else:
+            env['STRATA_PREFILL_LAYER_MAJOR_R_GPU']='32768'
         for k, v in dict(UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD='1', NEOReadDebugKeys='1',
                 EnableDirectSubmission='0', STRATA_SYCL_PREFILL_SAME_QUEUE='1', SYCL_CACHE_PERSISTENT='0',
                 STRATA_SYCL_VERIFY_NATIVE_CAPTURE='0', STRATA_PREFILL_LAYER_MAJOR='1',
