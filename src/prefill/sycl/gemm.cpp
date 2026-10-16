@@ -1,4 +1,5 @@
 #include "strata/prefill/gemm.hpp"
+#include "native16_backend.hpp"
 #include "strata/kernels/iq_kernels.hpp"
 #include "strata/sycl/launch.hpp"
 #include "strata/sycl/cpu_wait_profile.hpp"
@@ -49,6 +50,7 @@ bool Gemm::init_external(void *stream, uint16_t *scratch, int64_t count,
       throw std::invalid_argument("SYCL GEMM is already initialized");
     scratch_valid(scratch, count);
     auto &q = queue_for(stream);
+    native16_backend_validate_config(q);
     stream_ = stream;
     scratch_ = scratch;
     scratch_elems_ = count;

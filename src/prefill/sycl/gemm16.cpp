@@ -2,6 +2,16 @@
 // Native 16-bit producer: FP32 matrix accumulation and FP32 beta epilogue,
 // followed by one output rounding inside this kernel. No full FP32 tensor.
 #include "strata/prefill/gemm.hpp"
+#include "strata/prefill/native16.hpp"
+#include "native16_backend.hpp"
+#if defined(STRATA_SYCL_VLLM_XE2_NATIVE16)
+#include "vllm_xe2/native16.hpp"
+#include <sycl/ext/oneapi/experimental/device_architecture.hpp>
+#endif
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <utility>
 #include "strata/sycl/cpu_wait_profile.hpp"
 #include "strata/sycl/launch.hpp"
 #include <algorithm>
@@ -12,7 +22,89 @@
 #include <sycl/ext/oneapi/matrix/matrix.hpp>
 
 namespace strata::prefill {
+#if defined(STRATA_SYCL_VLLM_XE2_NATIVE16)
+struct Native16BackendState {
+  // Member order ensures the original Runtime outlives the borrowing adapter.
+  std::shared_ptr<sycl_backend::Runtime> runtime;
+  experimental::vllm_xe2_native16::Gemm adapter;
+  Native16BackendState(std::shared_ptr<sycl_backend::Runtime> owner, sycl::queue &q)
+      : runtime(std::move(owner)), adapter(*runtime, q) {}
+};
+#endif
 namespace {
+enum class Backend { own, vllm };
+enum class VllmTile { automatic, compact, wide };
+struct BackendConfig { Backend backend; VllmTile tile; };
+const BackendConfig &backend_config() {
+  static const BackendConfig config = [] {
+    const char *name = std::getenv("STRATA_SYCL_PREFILL_NATIVE16_BACKEND");
+    const char *tile = std::getenv("STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE");
+    const bool use_vllm = name && std::strcmp(name, "vllm") == 0;
+    if (name && std::strcmp(name, "own") != 0 && !use_vllm)
+      throw std::invalid_argument("STRATA_SYCL_PREFILL_NATIVE16_BACKEND must be own or vllm");
+    VllmTile chosen = VllmTile::automatic;
+    if (tile && std::strcmp(tile, "auto") != 0) {
+      if (std::strcmp(tile, "compact") == 0) chosen = VllmTile::compact;
+      else if (std::strcmp(tile, "wide") == 0) chosen = VllmTile::wide;
+      else throw std::invalid_argument("STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE must be auto, compact or wide");
+    }
+    if (!use_vllm && chosen != VllmTile::automatic)
+      throw std::invalid_argument("VLLM_TILE=compact/wide requires NATIVE16_BACKEND=vllm");
+#if !defined(STRATA_SYCL_VLLM_XE2_NATIVE16)
+    if (use_vllm)
+      throw std::invalid_argument("requested vllm backend is not compiled: enable STRATA_SYCL_VLLM_XE2_NATIVE16");
+#endif
+    // Existing mode parser is immutable and does not select a device/provider.
+    const bool active = native16::requested();
+    std::fprintf(stderr, "[native16-route] engine=%s backend=%s tile=%s%s\n",
+        active ? "bf16" : "0", use_vllm ? "vllm" : "own",
+        use_vllm ? (chosen == VllmTile::automatic ? "auto(T<128:compact;else:wide)" :
+                    chosen == VllmTile::compact ? "compact" : "wide") : "own",
+        use_vllm ? " aot=bmg-g21-a0 isolated=1 experimental" : "");
+    return BackendConfig{use_vllm ? Backend::vllm : Backend::own, chosen};
+  }();
+  return config;
+}
+#if defined(STRATA_SYCL_VLLM_XE2_NATIVE16)
+void validate_vllm_aot_device(const sycl::queue &q) {
+  namespace ex = sycl::ext::oneapi::experimental;
+  const auto d = q.get_device();
+  if (!d.is_gpu() || d.get_info<sycl::info::device::vendor_id>() != 0x8086 ||
+      q.get_backend() != sycl::backend::ext_oneapi_level_zero ||
+      d.get_info<ex::info::device::architecture>() != ex::architecture::intel_gpu_bmg_g21)
+    throw std::invalid_argument("vllm engine hook requires Intel Level Zero BMG G21 AOT");
+}
+sycl::event vllm_submit(std::shared_ptr<Native16BackendState> &state,
+                        const uint16_t *x, const uint16_t *w, uint16_t *y,
+                        int64_t t, int64_t n, int64_t k, bool input_bf16,
+                        bool output_bf16, int64_t ld, float beta, void *stream) {
+  namespace vx = experimental::vllm_xe2_native16;
+  auto &q = sycl_backend::queue_for(stream);
+  if (!state) {
+    validate_vllm_aot_device(q);
+    // Bootstrap from one actually registered input element; the unchanged
+    // R810 adapter validates all complete logical/strided spans before enqueue.
+    auto owner = sycl_backend::runtime_for_device_span(x, sizeof(uint16_t), q);
+    state = std::make_shared<Native16BackendState>(std::move(owner), q);
+  }
+  if (&q != &state->adapter.queue())
+    throw std::invalid_argument("vllm Gemm stream address changed after binding");
+  const auto &config = backend_config();
+  const auto tile = config.tile == VllmTile::compact ||
+                    (config.tile == VllmTile::automatic && t < 128)
+      ? vx::Tile::compact_16x64 : vx::Tile::wide_128x128;
+  vx::Problem problem;
+  problem.x = x; problem.w = w; problem.y = y;
+  problem.t = t; problem.n = n; problem.k = k; problem.ldy = ld;
+  problem.input = input_bf16 ? vx::Storage::bf16 : vx::Storage::fp16;
+  problem.output = output_bf16 ? vx::Storage::bf16 : vx::Storage::fp16;
+  problem.beta = beta;
+  sycl_backend::cpu_wait_profile::Host submission(sycl_backend::cpu_wait_profile::gemm_submit);
+  auto event = state->adapter.beta0(problem, tile);
+  submission.finish();
+  return event;
+}
+#endif
 using namespace sycl_backend;
 namespace mx = sycl::ext::oneapi::experimental::matrix;
 namespace mi = sycl::ext::intel::experimental::matrix;
@@ -178,11 +270,29 @@ void dispatch(const uint16_t *x, const uint16_t *w, uint16_t *y,
   }
 }
 } // namespace
+void native16_backend_validate_config([[maybe_unused]] sycl::queue &q) {
+  const auto &config = backend_config();
+#if defined(STRATA_SYCL_VLLM_XE2_NATIVE16)
+  if (config.backend == Backend::vllm) validate_vllm_aot_device(q);
+#else
+  (void)config;
+#endif
+}
 void Gemm::f16_out16(const uint16_t *x, const uint16_t *w, uint16_t *y,
                      int64_t t, int64_t n, int64_t k, bool output_bf16,
                      int64_t ld, float beta) {
   if (!handle_)
     throw std::invalid_argument("uninitialized SYCL GEMM16");
+  if (backend_config().backend == Backend::vllm) {
+#if defined(STRATA_SYCL_VLLM_XE2_NATIVE16)
+    auto event = vllm_submit(out16_backend_, x, w, y, t, n, k, false,
+                             output_bf16, ld, beta, stream_);
+    sycl_backend::finish(stream_, event);
+    return;
+#else
+    throw std::invalid_argument("requested vllm backend is not compiled");
+#endif
+  }
   dispatch<sycl::half>(x, w, y, t, n, k, output_bf16, ld, beta,
                        stream_, out16_support_);
 }
@@ -191,6 +301,16 @@ void Gemm::bf16_out16(const uint16_t *x, const uint16_t *w, uint16_t *y,
                       int64_t ld, float beta) {
   if (!handle_)
     throw std::invalid_argument("uninitialized SYCL GEMM16");
+  if (backend_config().backend == Backend::vllm) {
+#if defined(STRATA_SYCL_VLLM_XE2_NATIVE16)
+    auto event = vllm_submit(out16_backend_, x, w, y, t, n, k, true,
+                             output_bf16, ld, beta, stream_);
+    sycl_backend::finish(stream_, event);
+    return;
+#else
+    throw std::invalid_argument("requested vllm backend is not compiled");
+#endif
+  }
   dispatch<BFloat>(x, w, y, t, n, k, output_bf16, ld, beta,
                    stream_, out16_support_);
 }

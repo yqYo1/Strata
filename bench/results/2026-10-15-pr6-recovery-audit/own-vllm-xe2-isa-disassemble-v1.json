@@ -1,0 +1,1084 @@
+{
+  "schema": "strata-r816-isa-probe-v1",
+  "mode": "disassemble",
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "commands": [
+    {
+      "label": "journal-before",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-b",
+        "--no-pager",
+        "-o",
+        "json",
+        "--show-cursor",
+        "-n",
+        "0"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/cache",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/tmp"
+      },
+      "started_utc": "2026-10-16T00:45:10.635868+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 48064,
+          "start_ticks": 46027475,
+          "sid": 48064,
+          "pgid": 48064
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 460274.757785704,
+      "pid": 48064,
+      "spawn_return_monotonic": 460274.759947215,
+      "direct_identity": {
+        "pid": 48064,
+        "state": "R",
+        "ppid": 47619,
+        "pgid": 48064,
+        "sid": 48064,
+        "start_ticks": 46027475,
+        "rss_bytes": 299008
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T00:45:10.734848+00:00",
+      "elapsed_seconds": 0.098373434972018,
+      "logs": {
+        "journal-before.stdout": {
+          "bytes": 139,
+          "sha256": "529149e221b1a864fdb087f6794079731bcddc01a00383c8a5532247027dbe3c"
+        },
+        "journal-before.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "disassemble",
+      "argv": [
+        "/usr/bin/ocloc",
+        "disasm",
+        "-file",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-extract-v1/image.1",
+        "-device",
+        "bmg",
+        "-dump",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/cache",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/tmp"
+      },
+      "started_utc": "2026-10-16T00:45:20.199517+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 48359,
+          "start_ticks": 46028432,
+          "sid": 48359,
+          "pgid": 48359
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 460284.321508748,
+      "pid": 48359,
+      "spawn_return_monotonic": 460284.323687351,
+      "direct_identity": {
+        "pid": 48359,
+        "state": "R",
+        "ppid": 47619,
+        "pgid": 48359,
+        "sid": 48359,
+        "start_ticks": 46028432,
+        "rss_bytes": 286720
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 5771264,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T00:45:20.332029+00:00",
+      "elapsed_seconds": 0.13182131899520755,
+      "logs": {
+        "disassemble.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "disassemble.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "journal-after",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-b",
+        "--no-pager",
+        "-o",
+        "json",
+        "--show-cursor",
+        "--after-cursor",
+        "s=9944479cfd1a45c28a589619cb8f2881;i=c26815b;b=cfda0b6a7c134fe2bdf58f9202770840;m=6b2a1f6ff2;t=65dea799947a0;x=f637861a4a530253"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/cache",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/tmp"
+      },
+      "started_utc": "2026-10-16T00:45:28.224691+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 48761,
+          "start_ticks": 46029234,
+          "sid": 48761,
+          "pgid": 48761
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 460292.346846097,
+      "pid": 48761,
+      "spawn_return_monotonic": 460292.348890497,
+      "direct_identity": {
+        "pid": 48761,
+        "state": "R",
+        "ppid": 47619,
+        "pgid": 48761,
+        "sid": 48761,
+        "start_ticks": 46029234,
+        "rss_bytes": 299008
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T00:45:28.322710+00:00",
+      "elapsed_seconds": 0.0971475460100919,
+      "logs": {
+        "journal-after.stdout": {
+          "bytes": 139,
+          "sha256": "529149e221b1a864fdb087f6794079731bcddc01a00383c8a5532247027dbe3c"
+        },
+        "journal-after.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "fresh_faults": [],
+  "driver_dump_exists": false,
+  "pins": {
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-extract-v1/record.json": {
+      "sha256": "0514c79b57c2143453e354f19fcf41f39304a1102560f15e15f375afebead09b",
+      "bytes": 61947,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-extract-v1/record.json"
+    },
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-xe2-qualification-v1/main_controller.py": {
+      "sha256": "0fab5e634a3d84901d585d748193461cad56698277e1ac6a9fa44541a7fb43ea",
+      "bytes": 43169,
+      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-xe2-qualification-v1/main_controller.py"
+    },
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-xe2-qualification-v1/manifest.json": {
+      "sha256": "7027faaa150d65f8581aebef1e731afe858288792dcedf8fb4409991806e1b58",
+      "bytes": 60376,
+      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-xe2-qualification-v1/manifest.json"
+    },
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-14-niko-main-service-port/direct_owner.py": {
+      "sha256": "a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f",
+      "bytes": 14781,
+      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-14-niko-main-service-port/direct_owner.py"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/libstrata_prefill.a": {
+      "sha256": "2c4a3df4fb96333957c909d2fd12ff245de4c103b34092cc341a8ef040e305ad",
+      "bytes": 1575354,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/libstrata_prefill.a"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/libstrata_engine.a": {
+      "sha256": "32f22e9ed728ca8cb43e5ce9138859d1d0037d6dcb38a8d2d901530ec9acafd1",
+      "bytes": 1474430,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/libstrata_engine.a"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/libstrata_kernels.a": {
+      "sha256": "5d1f670acedc219d5a2620ca5bce4629adb29ebfac9f1261174ef98fe239d9e1",
+      "bytes": 25455134,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/libstrata_kernels.a"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/libstrata_core.a": {
+      "sha256": "3e21617c74311f0b4338ceab476f76173da12b2c115dfae1ef9a6147d597501b",
+      "bytes": 267050,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/libstrata_core.a"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/libstrata_sycl_runtime.a": {
+      "sha256": "449f3b763ac5d078e106ad95ce28741a7ba19b979f525d79b6e4cd093e9c1bfd",
+      "bytes": 236068,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/libstrata_sycl_runtime.a"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/libstrata_kernels_cpu.a": {
+      "sha256": "7fca87bd2e877ddbc9e8acbab5caf69452fca98c703eded78995e9f0c6bffb24",
+      "bytes": 673120,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/libstrata_kernels_cpu.a"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/ggml/src/libggml-cpu.a": {
+      "sha256": "4c06418a5938121f22865aaecd518d1952a2618f95d5a3f5cc5c990c88c99448",
+      "bytes": 1942956,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/ggml/src/libggml-cpu.a"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/ggml/src/libggml-base.a": {
+      "sha256": "0e899a366b985d6cb77739412f04adbc625ddc9ddf0b30056b8743246e59186b",
+      "bytes": 1368302,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/ggml/src/libggml-base.a"
+    },
+    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so": {
+      "sha256": "51d6c16990701a5aaf9fbbde5d86f5a7197b81357b66b19cbb912206564cf4ee",
+      "bytes": 75459712,
+      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so.6"
+    },
+    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so": {
+      "sha256": "ffbbeff402fdf09baa53f8226b86f27046592d984ae2916b1bbc2e59132c7c89",
+      "bytes": 17488464,
+      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so.3"
+    },
+    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so": {
+      "sha256": "4e7ff529bec90a1b0ce70299258a64a2ebae7a5a6f3ec031306a6ddb39b5a650",
+      "bytes": 25021272,
+      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so.3"
+    },
+    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so": {
+      "sha256": "b4f086651ee5a8471140d53fedfdbbaba606287784763b0739f282872c31aa9b",
+      "bytes": 76168096,
+      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so.3"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++": {
+      "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb",
+      "bytes": 158664312,
+      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang-22"
+    },
+    "/usr/bin/ninja": {
+      "sha256": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb",
+      "bytes": 248040,
+      "realpath": "/usr/bin/ninja"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/build.ninja": {
+      "sha256": "8fda1042660697e783241e1bd161c703b7ca4cb949e1ad91d97bcb437b819c8e",
+      "bytes": 338560,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/build.ninja"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/compile_commands.json": {
+      "sha256": "e280751113e0247f86fe95407e527a186986a4b12bdc3fedf0f1c7359abf027c",
+      "bytes": 177125,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/compile_commands.json"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/CMakeCache.txt": {
+      "sha256": "fe8652004f1aeebd4548e149e5327cf212234fc9bee22c886d3c8daf058973d7",
+      "bytes": 33686,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/CMakeCache.txt"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/CMakeFiles/rules.ninja": {
+      "sha256": "f89445ae5a785ec3d1276bb4da873846701aec5cac2e5727b0263de3bcd83511",
+      "bytes": 190057,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/CMakeFiles/rules.ninja"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang-linker-wrapper": {
+      "sha256": "6065a2db28ad3d3fbf7a06a50d03d7ff848075054fb0784df965683f567e948f",
+      "bytes": 54121280,
+      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang-linker-wrapper"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/llvm-link": {
+      "sha256": "3fb6d2bc349d47f0419a7a4d3d536e6dbcb5ed2b2f33d57d1f04320786c129da",
+      "bytes": 6529528,
+      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/llvm-link"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/llvm-spirv": {
+      "sha256": "b2796ec080f1c9a1aa5f0084c0db771331bdd51809983dce3f9220a8a0ea677b",
+      "bytes": 18911288,
+      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/llvm-spirv"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/sycl-post-link": {
+      "sha256": "f39a6e752de9dc3c91f55349bb2dad3a994eb4c90fcbd57850420c71f6d1df94",
+      "bytes": 17734216,
+      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/sycl-post-link"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/llvm-objcopy": {
+      "sha256": "9dd4730187c3a5f7c35a137bf9a842edd5360305ac69c90e8fb97d78b4d56903",
+      "bytes": 7554040,
+      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/llvm-objcopy"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang-offload-wrapper": {
+      "sha256": "857bf7f9f40a4b533357b554fb113fde1d6db39d7ad5d28d14c315b1ea30a8df",
+      "bytes": 6436816,
+      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang-offload-wrapper"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/sycl.hpp": {
+      "sha256": "391b909a180e8103ae3a54966e3f911f8a24f4ba2bfd24c3676bbf565f5cddeb",
+      "bytes": 6558,
+      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/sycl.hpp"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/bfloat16.hpp": {
+      "sha256": "185bde75c6f1f108099c6372c5e83de9ddfbc6eb0bb290fd7ab1899af48aad05",
+      "bytes": 25188,
+      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/bfloat16.hpp"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/matrix.hpp": {
+      "sha256": "c298993bfc66b10f3204723c20afe960e07313b51add9ab28f549653dbde4da7",
+      "bytes": 821,
+      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/matrix/matrix.hpp"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/CMakeFiles/3.28.3/CMakeCXXCompiler.cmake": {
+      "sha256": "e6ddedaba00748468ef77929c50b1c8115c7eecbeac7083779ffbbaf7743bef5",
+      "bytes": 6298,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/CMakeFiles/3.28.3/CMakeCXXCompiler.cmake"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/strata": {
+      "sha256": "b66d13c5672c698f76577478e0018cb7557dfae6685dec31927ee9dc21ea03a4",
+      "bytes": 19052304,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/strata"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/sycl_gemm16_test": {
+      "sha256": "8da66b9ac892b78c697d8d01b2d612bc980c472c7497a5fa132aa6a3c6b10516",
+      "bytes": 11340728,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/sycl_gemm16_test"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/sycl_native16_prefill_test": {
+      "sha256": "6c71f9115dee3c98251c99c1e1e52b3e42ea9db1ce2089fabca950201fc2f23f",
+      "bytes": 340816,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/sycl_native16_prefill_test"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/sycl_runtime_test": {
+      "sha256": "140d136a9493f7e2b6b421ec665b76b0c31676e4cee0c869f0ff9d2e083e3163",
+      "bytes": 101392,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/sycl_runtime_test"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/sycl_compat_test": {
+      "sha256": "db36f1806ab5450ccae09d6279b55aad5cbea6a6cf5087b8e754b0d6f29cf3e1",
+      "bytes": 217248,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/sycl_compat_test"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/sycl_gemm_test": {
+      "sha256": "1b3a2a47874553743ed8413d997d4ddff976a686a8b14ad9c4710a9a44a55668",
+      "bytes": 11234232,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/sycl_gemm_test"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/prefill_layer_major_plan_test": {
+      "sha256": "8d6102c6dea3e83a9cedf56f755d62a0518685ab4e8aefc5dc61b61b666acab5",
+      "bytes": 22616,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/prefill_layer_major_plan_test"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/dense_prefill_nll_host_test": {
+      "sha256": "934c85223fd8f68d0bcbaadce53e4542c92c8b289336cd28dcf560c210c04b0b",
+      "bytes": 70848,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/dense_prefill_nll_host_test"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/sycl_allocation_teardown_test": {
+      "sha256": "ba65d1aef5da8ed9d9cee02d23796ee4a69e480ee0cc4920db5f1ea192b7adc6",
+      "bytes": 146728,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/sycl_allocation_teardown_test"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0": {
+      "sha256": "74243bafb2766fd1a038cf80fd62632b4aad9ecfdc0d3ce8711e4515a93d7008",
+      "bytes": 5314304,
+      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0": {
+      "sha256": "05bcafc4a0d45d33f957f16ffb4ba4776da675e79ade1121b93b94b8549335d8",
+      "bytes": 2388520,
+      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0": {
+      "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc",
+      "bytes": 19267664,
+      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0"
+    },
+    "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395": {
+      "sha256": "dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c",
+      "bytes": 61889928,
+      "realpath": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395"
+    },
+    "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0": {
+      "sha256": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363",
+      "bytes": 777528,
+      "realpath": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0"
+    },
+    "/usr/local/lib/libigc.so.2.41.5+1788943183": {
+      "sha256": "40badd8f1ee80ac844a8947f5e91e5654fbcd851caefe343b0e5ec4ce4d1b123",
+      "bytes": 104543000,
+      "realpath": "/usr/local/lib/libigc.so.2.41.5+1788943183"
+    },
+    "/usr/local/lib/libigdfcl.so.2.41.5+1788943183": {
+      "sha256": "ece8bcd533a44cc1684c1f24eeeca3302e4d19307a806fad5f1b83171f9fc1c3",
+      "bytes": 2554016,
+      "realpath": "/usr/local/lib/libigdfcl.so.2.41.5+1788943183"
+    },
+    "/usr/bin/cmake": {
+      "sha256": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
+      "bytes": 11796472,
+      "realpath": "/usr/bin/cmake"
+    },
+    "/usr/bin/git": {
+      "sha256": "2a8c18fbf43da9f692d75474c72bea9dfd796c260b0f3dfe456376abc3bbd668",
+      "bytes": 4066232,
+      "realpath": "/usr/bin/git"
+    },
+    "/usr/bin/ar": {
+      "sha256": "6452af2eea333b8c65e1adb92964fc8f97863ab003fa13f9d12bff5345cd7dbe",
+      "bytes": 55792,
+      "realpath": "/usr/bin/x86_64-linux-gnu-ar"
+    },
+    "/usr/bin/ranlib": {
+      "sha256": "60254978b8ee2c1b21b41d16a18a621dbbcc72e43eb2fa9f916818256c77e9ee",
+      "bytes": 55792,
+      "realpath": "/usr/bin/x86_64-linux-gnu-ranlib"
+    },
+    "/usr/bin/ld": {
+      "sha256": "e9ceb054c12207970f2726dfc07e9a66b411602748628baf27399f02a9bbb31b",
+      "bytes": 1359128,
+      "realpath": "/usr/bin/x86_64-linux-gnu-ld.bfd"
+    },
+    "/usr/bin/ocloc": {
+      "sha256": "76593e79a6a24277305ef6f2ad9fb042028205a0b028cd2beddd98a9681ce9b1",
+      "bytes": 6424,
+      "realpath": "/usr/bin/ocloc-26.31.1"
+    },
+    "/usr/bin/journalctl": {
+      "sha256": "36ac820bf284c5bbf286432ef32a18eaab12cbbf53be242d2a27aee5684aa0dd",
+      "bytes": 80800,
+      "realpath": "/usr/bin/journalctl"
+    },
+    "/usr/bin/python3": {
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+      "bytes": 8020928,
+      "realpath": "/usr/bin/python3.12"
+    },
+    "/usr/bin/readelf": {
+      "sha256": "64c58e15274bbbb5153f31078e455e9e77ee5f51489e709bba5bb788ce9df2b0",
+      "bytes": 789280,
+      "realpath": "/usr/bin/x86_64-linux-gnu-readelf"
+    },
+    "/etc/ld.so.cache": {
+      "sha256": "bce62f8c5c0f5969471080646abde986d6442c1a6066cce02c3e9ff7149e189d",
+      "bytes": 115623,
+      "realpath": "/etc/ld.so.cache"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/llvm-ar": {
+      "sha256": "ff39893b64046c4a1333436f79d40ebc3112cfec282f56a9ee715c049c6ed787",
+      "bytes": 10170752,
+      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/llvm-ar"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang-offload-bundler": {
+      "sha256": "423b72de1c4a9a39c8b069eea3f09665873adbdcfb8df742186e970bcb60bac1",
+      "bytes": 12172248,
+      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang-offload-bundler"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/spirv-to-ir-wrapper": {
+      "sha256": "9f41d32b625229727e12fa3b9713f91ed5ce0afe490117449882a914e767129a",
+      "bytes": 2275536,
+      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/spirv-to-ir-wrapper"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang-offload-deps": {
+      "sha256": "2a5ac45417460cacaaae8b36adbcf989583de8c68bd6ad506d4fd26829a860c4",
+      "bytes": 4427000,
+      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang-offload-deps"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/llvm-offload-binary": {
+      "sha256": "84578c4fe2f0581cc0256803fb9e0e00ffdb7b227bb143371075a78e0c7d2a3a",
+      "bytes": 6192256,
+      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/llvm-offload-binary"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/syclbin-dump": {
+      "sha256": "11cffddd63852638565d4b0290af533abd61461c7742f1f4fc90eea29b0cc541",
+      "bytes": 12935152,
+      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/syclbin-dump"
+    },
+    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so.6": {
+      "sha256": "51d6c16990701a5aaf9fbbde5d86f5a7197b81357b66b19cbb912206564cf4ee",
+      "bytes": 75459712,
+      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so.6"
+    },
+    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so.3": {
+      "sha256": "ffbbeff402fdf09baa53f8226b86f27046592d984ae2916b1bbc2e59132c7c89",
+      "bytes": 17488464,
+      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so.3"
+    },
+    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so.3": {
+      "sha256": "4e7ff529bec90a1b0ce70299258a64a2ebae7a5a6f3ec031306a6ddb39b5a650",
+      "bytes": 25021272,
+      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so.3"
+    },
+    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so.3": {
+      "sha256": "b4f086651ee5a8471140d53fedfdbbaba606287784763b0739f282872c31aa9b",
+      "bytes": 76168096,
+      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so.3"
+    },
+    "/usr/lib/x86_64-linux-gnu/libOpenCL.so.1.0.0": {
+      "sha256": "4f604bad7420b753bad559186002c58064d5c97813b107ea11c249fb1820b33a",
+      "bytes": 73384,
+      "realpath": "/usr/lib/x86_64-linux-gnu/libOpenCL.so.1.0.0"
+    },
+    "/usr/lib/x86_64-linux-gnu/libdl.so.2": {
+      "sha256": "c2994527172cc23b7fb0f7d611b71e00a37da27af12c2e5e9e0dc1a742886c96",
+      "bytes": 14408,
+      "realpath": "/usr/lib/x86_64-linux-gnu/libdl.so.2"
+    },
+    "/usr/lib/x86_64-linux-gnu/libpthread.so.0": {
+      "sha256": "90491a21ce44efcf3bd4b65ec82501c091d7ebe7f8d9b341dd01d721001d9ecd",
+      "bytes": 14408,
+      "realpath": "/usr/lib/x86_64-linux-gnu/libpthread.so.0"
+    },
+    "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": {
+      "sha256": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+      "bytes": 183024,
+      "realpath": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1"
+    },
+    "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": {
+      "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+      "bytes": 2592224,
+      "realpath": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33"
+    },
+    "/usr/lib/x86_64-linux-gnu/libm.so.6": {
+      "sha256": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+      "bytes": 952616,
+      "realpath": "/usr/lib/x86_64-linux-gnu/libm.so.6"
+    },
+    "/usr/lib/x86_64-linux-gnu/libc.so.6": {
+      "sha256": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+      "bytes": 2129424,
+      "realpath": "/usr/lib/x86_64-linux-gnu/libc.so.6"
+    },
+    "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": {
+      "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+      "bytes": 236616,
+      "realpath": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0": {
+      "sha256": "ebe65269abd5869010ab256375e8663f7a8f8b5453e0be0c78f615eb71581ab9",
+      "bytes": 306904,
+      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0"
+    },
+    "/usr/lib/x86_64-linux-gnu/libz.so.1.3": {
+      "sha256": "86200da370f20476a2507e9097a789b5ef97269b4ca8d5e164ad82dab9d99892",
+      "bytes": 113000,
+      "realpath": "/usr/lib/x86_64-linux-gnu/libz.so.1.3"
+    },
+    "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0": {
+      "sha256": "a7904f18d8d59c7128dec4d6f22ae2b2e8a51f91f6946ac4e68b1ec6e0a7a6f3",
+      "bytes": 878992,
+      "realpath": "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0"
+    },
+    "/usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5": {
+      "sha256": "0a2128bc10841fb29e76d08d945864dfb0b6a66da5df6df5d8299197439e54bb",
+      "bytes": 755864,
+      "realpath": "/usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5"
+    },
+    "/usr/local/lib/libopencl-clang2.so.22.1": {
+      "sha256": "02ba9fb0f16b7f02c012095c46f8053c4bc20f9b5bde3028eedff6dcfed94bfe",
+      "bytes": 158062480,
+      "realpath": "/usr/local/lib/libopencl-clang2.so.22.1"
+    },
+    "/usr/lib/x86_64-linux-gnu/libhwloc.so.15.7.0": {
+      "sha256": "86dff44a023254d997cea910b9a51f35afefe6780f4b5530f974a2009ba47487",
+      "bytes": 392576,
+      "realpath": "/usr/lib/x86_64-linux-gnu/libhwloc.so.15.7.0"
+    },
+    "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8": {
+      "sha256": "4298228175fa62a36af88b1afd4406cdd8b1bf166621f957d0dbbde45a698fe5",
+      "bytes": 207288,
+      "realpath": "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8"
+    },
+    "/usr/lib/x86_64-linux-gnu/libcap.so.2.66": {
+      "sha256": "6ac6abc86ac891c6e13486470e26f1d939f47fda9e6b5d5508a7f5ec881adc84",
+      "bytes": 51536,
+      "realpath": "/usr/lib/x86_64-linux-gnu/libcap.so.2.66"
+    },
+    "/opt/intel/oneapi/tbb/2023.1/lib/libtbb.so.12.19": {
+      "sha256": "2c1fcbc65a33771a5e02a201734774252528e10f57cef9e2f902fe209c0319e1",
+      "bytes": 4462408,
+      "realpath": "/opt/intel/oneapi/tbb/2023.1/lib/libtbb.so.12.19"
+    },
+    "/opt/intel/oneapi/compiler/2026.1/lib/libsvml.so": {
+      "sha256": "a6dbbc425c8270c3485e40ef0924ef38ed89ced4026056fd3f1f529774c4f86c",
+      "bytes": 28103240,
+      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libsvml.so"
+    },
+    "/opt/intel/oneapi/compiler/2026.1/lib/libimf.so": {
+      "sha256": "67a4b6c27002f59f26c411f4ec384300d781365af19d6a2eb9f0dd94d2a0f470",
+      "bytes": 4865192,
+      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libimf.so"
+    },
+    "/opt/intel/oneapi/compiler/2026.1/lib/libintlc.so.5": {
+      "sha256": "612ab119242ccda945de6eb354369b5bee6a158bc9724e4da5e466cb0ad630db",
+      "bytes": 415824,
+      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libintlc.so.5"
+    },
+    "/opt/intel/oneapi/tbb/2023.1/lib/libtbbmalloc.so.2.19": {
+      "sha256": "74410b8566ecedac338f072662272a970bb0230870c0a6ce964042bf9a26fbbb",
+      "bytes": 1184544,
+      "realpath": "/opt/intel/oneapi/tbb/2023.1/lib/libtbbmalloc.so.2.19"
+    },
+    "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0": {
+      "sha256": "db1856f379706d51b6ded84ce028d4aa48740ef63793f60e8a1e027c6db6ffb5",
+      "bytes": 846520,
+      "realpath": "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0"
+    },
+    "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.231": {
+      "sha256": "8f4ffe4a856c441d4c85bd7d7de6ad7672c59812fe4655d2a8843c32eba97075",
+      "bytes": 1367248,
+      "realpath": "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.231"
+    },
+    "/usr/lib/x86_64-linux-gnu/libdrm.so.2.134.0": {
+      "sha256": "0603c4dcb88bc9e076e34aedeec3513038e608d6d15d21330e49cb0ea38155e1",
+      "bytes": 92768,
+      "realpath": "/usr/lib/x86_64-linux-gnu/libdrm.so.2.134.0"
+    },
+    "/usr/lib/x86_64-linux-gnu/libnl-genl-3.so.200.26.0": {
+      "sha256": "0757db7e6c5fbc4d2a8bbedbac7061fbb8ebb6196b4d2954d3a321e9ff76933c",
+      "bytes": 27984,
+      "realpath": "/usr/lib/x86_64-linux-gnu/libnl-genl-3.so.200.26.0"
+    },
+    "/usr/lib/x86_64-linux-gnu/libnl-3.so.200.26.0": {
+      "sha256": "afcb69e2ef0b46c2ce7b7483848332fa9462776d33163f64209acf01f86eddd7",
+      "bytes": 133944,
+      "realpath": "/usr/lib/x86_64-linux-gnu/libnl-3.so.200.26.0"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/experimental/device_architecture.hpp": {
+      "sha256": "b69e126936a41b09b1a3b756cfbc8afe893f8c33505ce4a7e523da7860176204",
+      "bytes": 49122,
+      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/experimental/device_architecture.hpp"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/experimental/device_architecture.def": {
+      "sha256": "b96e316c9cfeedb4e1b1023e5e3d7c44729c4f89e52d35227b39c7e31b88e538",
+      "bytes": 10914,
+      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/experimental/device_architecture.def"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/info/ext_oneapi_device_traits.def": {
+      "sha256": "15f1420ee35939492d8c5c2275592d07e69f78a6c69dc0246a84e36518d1225d",
+      "bytes": 4473,
+      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/info/ext_oneapi_device_traits.def"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-extract-v1/image.1": {
+      "sha256": "82747258da6490567f960fe6c5020b2461f53029d85ee673291bb00c17bbabbe",
+      "bytes": 164264,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-extract-v1/image.1"
+    },
+    "/usr/bin/ocloc-26.31.1": {
+      "sha256": "76593e79a6a24277305ef6f2ad9fb042028205a0b028cd2beddd98a9681ce9b1",
+      "bytes": 6424,
+      "realpath": "/usr/bin/ocloc-26.31.1"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.note.intelgt.compat": {
+      "sha256": "27b041e4558fa1ea0c0df77ee78ffd453f87733204846a0aa91c93f0791d6fd9",
+      "bytes": 172,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.note.intelgt.compat"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.note.intelgt.metrics": {
+      "sha256": "709e80c88487a2411e1ee4dfb9f22a861492d20c4765150c0c794abd70f8147c",
+      "bytes": 3,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.note.intelgt.metrics"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tENS4_6half_tELNS1_4TileE0EEE": {
+      "sha256": "3b253ad2aae498bf41e83ce3af6e4e21b7b1cb5e0e2e0f7f2bcd78d57aaf923d",
+      "bytes": 45,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tENS4_6half_tELNS1_4TileE0EEE"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tENS4_6half_tELNS1_4TileE1EEE": {
+      "sha256": "3b253ad2aae498bf41e83ce3af6e4e21b7b1cb5e0e2e0f7f2bcd78d57aaf923d",
+      "bytes": 45,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tENS4_6half_tELNS1_4TileE1EEE"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE0EEE": {
+      "sha256": "3b253ad2aae498bf41e83ce3af6e4e21b7b1cb5e0e2e0f7f2bcd78d57aaf923d",
+      "bytes": 45,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE0EEE"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE1EEE": {
+      "sha256": "3b253ad2aae498bf41e83ce3af6e4e21b7b1cb5e0e2e0f7f2bcd78d57aaf923d",
+      "bytes": 45,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE1EEE"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tENS4_10bfloat16_tELNS1_4TileE0EEE": {
+      "sha256": "3b253ad2aae498bf41e83ce3af6e4e21b7b1cb5e0e2e0f7f2bcd78d57aaf923d",
+      "bytes": 45,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tENS4_10bfloat16_tELNS1_4TileE0EEE"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tENS4_10bfloat16_tELNS1_4TileE1EEE": {
+      "sha256": "3b253ad2aae498bf41e83ce3af6e4e21b7b1cb5e0e2e0f7f2bcd78d57aaf923d",
+      "bytes": 45,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tENS4_10bfloat16_tELNS1_4TileE1EEE"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tES5_LNS1_4TileE0EEE": {
+      "sha256": "3b253ad2aae498bf41e83ce3af6e4e21b7b1cb5e0e2e0f7f2bcd78d57aaf923d",
+      "bytes": 45,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tES5_LNS1_4TileE0EEE"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tES5_LNS1_4TileE1EEE": {
+      "sha256": "3b253ad2aae498bf41e83ce3af6e4e21b7b1cb5e0e2e0f7f2bcd78d57aaf923d",
+      "bytes": 45,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tES5_LNS1_4TileE1EEE"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.spv": {
+      "sha256": "d9243440188ae35aec9dd17c278697a321785f6685cf63426761ec29d9d3b894",
+      "bytes": 85048,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.spv"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.symtab": {
+      "sha256": "297103662c50b40a69a8499d44d732386ffb45fd3d56a73d387cc1ba1eadfbca",
+      "bytes": 3389,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.symtab"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tENS4_6half_tELNS1_4TileE0EEE.asm": {
+      "sha256": "22c104062ed9dd769c381169a56e69e4d9939e0213b6ed9da1a2b0a2f673af8d",
+      "bytes": 20550,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tENS4_6half_tELNS1_4TileE0EEE.asm"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tENS4_6half_tELNS1_4TileE1EEE.asm": {
+      "sha256": "203a97e0002139521824c6e52d37578db38e8153e5e8727b03f03661df4678f5",
+      "bytes": 74405,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tENS4_6half_tELNS1_4TileE1EEE.asm"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE0EEE.asm": {
+      "sha256": "3fab8838ecd01ca2fb95d4a7a5f916cc0c4668a7004c71e96b4d0fac94e6aa4f",
+      "bytes": 18984,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE0EEE.asm"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE1EEE.asm": {
+      "sha256": "b4bc62bf0e5153e113536eee73f88b128eeba15379d864a122314be7d7998d2b",
+      "bytes": 61970,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE1EEE.asm"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tENS4_10bfloat16_tELNS1_4TileE0EEE.asm": {
+      "sha256": "2d2f9a7be4a7ffe312b7252e97ada765ed583c0341912da5d0af6a0542a7936d",
+      "bytes": 18984,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tENS4_10bfloat16_tELNS1_4TileE0EEE.asm"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tENS4_10bfloat16_tELNS1_4TileE1EEE.asm": {
+      "sha256": "39662009ff74913f6b8cf82fe7964cfe1f6c7ff7b27255730159b2ea0128c4ea",
+      "bytes": 61970,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tENS4_10bfloat16_tELNS1_4TileE1EEE.asm"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tES5_LNS1_4TileE0EEE.asm": {
+      "sha256": "094970963535c33760d3f33cf34cc74157da1af6c6b2e7d50991aae243abd825",
+      "bytes": 20550,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tES5_LNS1_4TileE0EEE.asm"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tES5_LNS1_4TileE1EEE.asm": {
+      "sha256": "69e38b668e9295a6020a64a5bcbd0e8b0345921c1bb6af5fce25855a175683e6",
+      "bytes": 74405,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tES5_LNS1_4TileE1EEE.asm"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.ze_info": {
+      "sha256": "07ddf4089fb6704d6003b1de9f94e40879f2b13d5e61af8dcda2ce9facea3869",
+      "bytes": 25805,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.ze_info"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/sections.txt": {
+      "sha256": "61fe3f2d254f3659798fc0ba292ac44d81acb9f2b52dbcb71b6fa6ff8043f2dc",
+      "bytes": 2189,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/sections.txt"
+    }
+  },
+  "fault_windows": [
+    {
+      "label": "journal-before",
+      "after": null,
+      "end": "s=9944479cfd1a45c28a589619cb8f2881;i=c26815b;b=cfda0b6a7c134fe2bdf58f9202770840;m=6b2a1f6ff2;t=65dea799947a0;x=f637861a4a530253",
+      "entries": 0,
+      "faults": []
+    },
+    {
+      "label": "journal-after",
+      "after": "s=9944479cfd1a45c28a589619cb8f2881;i=c26815b;b=cfda0b6a7c134fe2bdf58f9202770840;m=6b2a1f6ff2;t=65dea799947a0;x=f637861a4a530253",
+      "end": "s=9944479cfd1a45c28a589619cb8f2881;i=c26815b;b=cfda0b6a7c134fe2bdf58f9202770840;m=6b2a1f6ff2;t=65dea799947a0;x=f637861a4a530253",
+      "entries": 0,
+      "faults": []
+    }
+  ],
+  "GPU_executed": false,
+  "offline_tool_may_query_device": true,
+  "source_sha256": "42e91edbfba3a56cb9ded14bcf704d4dc5de5ab454ba3de0ef6a85363d87f71e",
+  "invocation": [
+    "bench/results/2026-10-15-pr6-recovery-audit/run_owned_vllm_isa_probe_v1.py",
+    "disassemble",
+    "--root",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1",
+    "--prior",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-extract-v1/record.json",
+    "--prior-sha256",
+    "0514c79b57c2143453e354f19fcf41f39304a1102560f15e15f375afebead09b",
+    "--image",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-extract-v1/image.1",
+    "--image-sha256",
+    "82747258da6490567f960fe6c5020b2461f53029d85ee673291bb00c17bbabbe",
+    "--ocloc",
+    "/usr/bin/ocloc"
+  ],
+  "ISA_inference": "UNASSESSED; Main must inspect actual instructions and match runtime symbols",
+  "prior": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-extract-v1/record.json",
+    "sha256": "0514c79b57c2143453e354f19fcf41f39304a1102560f15e15f375afebead09b",
+    "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "ownership_closed": true,
+    "original_passed": true,
+    "all_commands_exit_zero": true,
+    "manual_reviewed_continuation_reason": null,
+    "original_status": null,
+    "original_error": null,
+    "original_GPU_executed": false,
+    "original_status_preserved": true,
+    "qualification": true,
+    "historical_build_only": false,
+    "historical_GPU_fault_check": "required clean"
+  },
+  "products": {
+    "fixture": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-vllm-build-v2/build/r810/strata_vllm_xe2_numerics",
+      "sha256": "b329140c351961a105514f49baa8ba43b55f933024d079f1dd7bc500f740c865",
+      "bytes": 393400,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-vllm-build-v2/build/r810/strata_vllm_xe2_numerics"
+    },
+    "benchmark": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-vllm-build-v2/build/paired_gemm",
+      "sha256": "6f0a3163e0212be2daeaf150041065b2adb2d0d1e204c5bde5c70e22e0761ab6",
+      "bytes": 11626344,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-vllm-build-v2/build/paired_gemm"
+    },
+    "component": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-vllm-build-v2/build/r810/libstrata_vllm_xe2_native16.a",
+      "sha256": "eb9ef8a760ed410829581938028f59a298bc3172ef9a86e6662b0148f8d84c86",
+      "bytes": 117402,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-vllm-build-v2/build/r810/libstrata_vllm_xe2_native16.a"
+    }
+  },
+  "driver_before": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  },
+  "disassembly_files": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.note.intelgt.compat",
+      "sha256": "27b041e4558fa1ea0c0df77ee78ffd453f87733204846a0aa91c93f0791d6fd9",
+      "bytes": 172,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.note.intelgt.compat"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.note.intelgt.metrics",
+      "sha256": "709e80c88487a2411e1ee4dfb9f22a861492d20c4765150c0c794abd70f8147c",
+      "bytes": 3,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.note.intelgt.metrics"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tENS4_6half_tELNS1_4TileE0EEE",
+      "sha256": "3b253ad2aae498bf41e83ce3af6e4e21b7b1cb5e0e2e0f7f2bcd78d57aaf923d",
+      "bytes": 45,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tENS4_6half_tELNS1_4TileE0EEE"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tENS4_6half_tELNS1_4TileE1EEE",
+      "sha256": "3b253ad2aae498bf41e83ce3af6e4e21b7b1cb5e0e2e0f7f2bcd78d57aaf923d",
+      "bytes": 45,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tENS4_6half_tELNS1_4TileE1EEE"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE0EEE",
+      "sha256": "3b253ad2aae498bf41e83ce3af6e4e21b7b1cb5e0e2e0f7f2bcd78d57aaf923d",
+      "bytes": 45,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE0EEE"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE1EEE",
+      "sha256": "3b253ad2aae498bf41e83ce3af6e4e21b7b1cb5e0e2e0f7f2bcd78d57aaf923d",
+      "bytes": 45,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE1EEE"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tENS4_10bfloat16_tELNS1_4TileE0EEE",
+      "sha256": "3b253ad2aae498bf41e83ce3af6e4e21b7b1cb5e0e2e0f7f2bcd78d57aaf923d",
+      "bytes": 45,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tENS4_10bfloat16_tELNS1_4TileE0EEE"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tENS4_10bfloat16_tELNS1_4TileE1EEE",
+      "sha256": "3b253ad2aae498bf41e83ce3af6e4e21b7b1cb5e0e2e0f7f2bcd78d57aaf923d",
+      "bytes": 45,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tENS4_10bfloat16_tELNS1_4TileE1EEE"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tES5_LNS1_4TileE0EEE",
+      "sha256": "3b253ad2aae498bf41e83ce3af6e4e21b7b1cb5e0e2e0f7f2bcd78d57aaf923d",
+      "bytes": 45,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tES5_LNS1_4TileE0EEE"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tES5_LNS1_4TileE1EEE",
+      "sha256": "3b253ad2aae498bf41e83ce3af6e4e21b7b1cb5e0e2e0f7f2bcd78d57aaf923d",
+      "bytes": 45,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tES5_LNS1_4TileE1EEE"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.spv",
+      "sha256": "d9243440188ae35aec9dd17c278697a321785f6685cf63426761ec29d9d3b894",
+      "bytes": 85048,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.spv"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.symtab",
+      "sha256": "297103662c50b40a69a8499d44d732386ffb45fd3d56a73d387cc1ba1eadfbca",
+      "bytes": 3389,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.symtab"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tENS4_6half_tELNS1_4TileE0EEE.asm",
+      "sha256": "22c104062ed9dd769c381169a56e69e4d9939e0213b6ed9da1a2b0a2f673af8d",
+      "bytes": 20550,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tENS4_6half_tELNS1_4TileE0EEE.asm"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tENS4_6half_tELNS1_4TileE1EEE.asm",
+      "sha256": "203a97e0002139521824c6e52d37578db38e8153e5e8727b03f03661df4678f5",
+      "bytes": 74405,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tENS4_6half_tELNS1_4TileE1EEE.asm"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE0EEE.asm",
+      "sha256": "3fab8838ecd01ca2fb95d4a7a5f916cc0c4668a7004c71e96b4d0fac94e6aa4f",
+      "bytes": 18984,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE0EEE.asm"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE1EEE.asm",
+      "sha256": "b4bc62bf0e5153e113536eee73f88b128eeba15379d864a122314be7d7998d2b",
+      "bytes": 61970,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE1EEE.asm"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tENS4_10bfloat16_tELNS1_4TileE0EEE.asm",
+      "sha256": "2d2f9a7be4a7ffe312b7252e97ada765ed583c0341912da5d0af6a0542a7936d",
+      "bytes": 18984,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tENS4_10bfloat16_tELNS1_4TileE0EEE.asm"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tENS4_10bfloat16_tELNS1_4TileE1EEE.asm",
+      "sha256": "39662009ff74913f6b8cf82fe7964cfe1f6c7ff7b27255730159b2ea0128c4ea",
+      "bytes": 61970,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tENS4_10bfloat16_tELNS1_4TileE1EEE.asm"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tES5_LNS1_4TileE0EEE.asm",
+      "sha256": "094970963535c33760d3f33cf34cc74157da1af6c6b2e7d50991aae243abd825",
+      "bytes": 20550,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tES5_LNS1_4TileE0EEE.asm"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tES5_LNS1_4TileE1EEE.asm",
+      "sha256": "69e38b668e9295a6020a64a5bcbd0e8b0345921c1bb6af5fce25855a175683e6",
+      "bytes": 74405,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tES5_LNS1_4TileE1EEE.asm"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.ze_info",
+      "sha256": "07ddf4089fb6704d6003b1de9f94e40879f2b13d5e61af8dcda2ce9facea3869",
+      "bytes": 25805,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/.ze_info"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/sections.txt",
+      "sha256": "61fe3f2d254f3659798fc0ba292ac44d81acb9f2b52dbcb71b6fa6ff8043f2dc",
+      "bytes": 2189,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r816-isa-disassemble-v1/isa/sections.txt"
+    }
+  ],
+  "ownership_closed": true,
+  "private_bytes": 538066,
+  "finished_utc": "2026-10-16T00:45:36.196180+00:00",
+  "retention": {
+    "owner": "Main",
+    "consumer": "actual R810 ISA/symbol/type inspection",
+    "byte_budget": 268435456,
+    "review": "retire duplicate raw disassembly/images after compact instruction/provenance proof is verified"
+  }
+}

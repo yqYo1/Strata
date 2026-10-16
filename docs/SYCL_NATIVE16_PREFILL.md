@@ -96,3 +96,9 @@ the proposal's `provenance.json` records all design and API sources. Framework
 wrappers, CUTLASS templates and third-party kernel code were not imported.
 Their per-file licenses were checked separately; newly authored project files
 use the repository MIT license. XeStrata is excluded as an implementation source.
+
+## Optional vLLM GEMM and typed QSA
+
+The optional `STRATA_SYCL_VLLM_XE2_NATIVE16` build adds the actual Intel BSD-3 vLLM Xe2 direct16-output core. See [SYCL_VLLM_XE2_NATIVE16.md](SYCL_VLLM_XE2_NATIVE16.md) for its explicit runtime selection, isolated AOT object and stricter shape/lifetime contract. Standalone operator gains are separate from whole-model acceptance.
+
+`STRATA_SYCL_PREFILL_NATIVE16_QSA=1` additionally keeps QSA projection/norm/RoPE/append/attention/gate boundaries typed16 for resident unrotated INT8 K/V with session RoPE tables. Indexer/local accumulation and GDN's existing internal FP32 boundaries remain explicit. The shared scratch arena reservation is unchanged. Streaming/host mirrors and rotated/Q4/hybrid KV are currently refused; do not infer full-context adoption from the component tests.

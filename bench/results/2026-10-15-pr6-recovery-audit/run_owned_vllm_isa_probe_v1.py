@@ -157,7 +157,10 @@ def main():
                      'disassembly must consume the immediately preceding qualified extraction')
                 need(args.ocloc.is_absolute() and args.ocloc.is_file(), 'existing explicit ocloc')
                 remember(image)
-                run('disassemble', [args.ocloc, 'disasm', '-file', image, '-device', 'bmg-g21', '-dump', root / 'isa'])
+                # Decoder -device takes a hardware family prefix, not ocloc's
+                # compile-time product-config acronym bmg-g21-a0. The ELF note
+                # retains the exact producer product configuration separately.
+                run('disassemble', [args.ocloc, 'disasm', '-file', image, '-device', 'bmg', '-dump', root / 'isa'])
                 files = sorted(p for p in (root / 'isa').rglob('*') if p.is_file())
                 need(0 < len(files) <= 1024, 'bounded disassembly artifact census')
                 record['disassembly_files'] = [dict(path=str(p), **remember(p)) for p in files]

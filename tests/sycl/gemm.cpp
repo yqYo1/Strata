@@ -136,8 +136,10 @@ void pipeline(cudaStream_t compute, bool separate, bool omit_device_events = fal
 
 }
 
-int main() {
+int main(int argc, char **argv) {
   try {
+    const bool same_queue_only = argc == 2 && std::string(argv[1]) == "--same-queue-only";
+    need(argc == 1 || same_queue_only, "usage: sycl_gemm_test [--same-queue-only]");
     cudaStream_t q;
     CHECK(cudaStreamCreate(&q));
     int cases = 0;
@@ -217,11 +219,13 @@ int main() {
       CHECK(cudaFree(dx));
       CHECK(cudaFree(dy));
     }
-    pipeline(q, true);
+    if (!same_queue_only) pipeline(q, true);
     pipeline(q, false);
     pipeline(q, false, true); // Host DMA events still protect changing payloads.
     CHECK(cudaStreamDestroy(q));
     std::cout << "SYCL oneMKL GEMM: " << cases << " CPU parity cases passed\n";
+    if (same_queue_only)
+      std::cout << "SAME_QUEUE_SUBSUITE_PASS; separate-queue case UNRUN (original timeout unresolved)\n";
   } catch (const std::exception &e) {
     std::cerr << e.what() << '\n';
     return 1;

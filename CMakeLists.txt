@@ -34,6 +34,10 @@ endif()
 
 option(STRATA_ENABLE_CUDA "Build the CUDA targets (Phase 2+)" OFF)
 option(STRATA_ENABLE_SYCL "Build the Intel GPU SYCL backend (requires icpx)" OFF)
+option(STRATA_SYCL_VLLM_XE2_NATIVE16 "Build experimental vLLM Xe2 native16 GEMM backend" OFF)
+if(STRATA_SYCL_VLLM_XE2_NATIVE16 AND NOT STRATA_ENABLE_SYCL)
+  message(FATAL_ERROR "STRATA_SYCL_VLLM_XE2_NATIVE16 requires STRATA_ENABLE_SYCL=ON")
+endif()
 option(STRATA_ENABLE_HIP "Build the HIP targets for wave32 AMD GPUs (gfx1100, gfx1201; gfx1030 unvalidated)" OFF)
 option(STRATA_PREFILL_MMQ "Build GGML MMQ prefill for HIP (SYCL has native MMQ built in)" OFF)
 # CUDA: MMQ prompt kernels for Q4_K / Q5_K / Q5_1 (Unsloth's UD-Q4_K_XL experts).  Off by default: the engine loads

@@ -14,7 +14,7 @@ namespace strata::sycl_backend {
 namespace {
 // This registry covers both engine arenas and CUDA-adapter device buffers.
 // Entries refer to their Allocation's retained Runtime; moves keep addresses.
-struct DeviceSpan { size_t bytes; const Runtime *runtime; };
+struct DeviceSpan { size_t bytes; std::shared_ptr<Runtime> runtime; };
 struct DeviceRegistry {
   std::mutex mutex;
   std::map<uintptr_t, DeviceSpan> spans;
@@ -165,8 +165,8 @@ sycl::event Runtime::copy(void *dst, const void *src, size_t bytes,
   });
 }
 
-void validate_device_span(const void *pointer, size_t bytes,
-                          const sycl::queue &queue) {
+std::shared_ptr<Runtime> runtime_for_device_span(const void *pointer, size_t bytes,
+                                               const sycl::queue &queue) {
   const auto address = reinterpret_cast<uintptr_t>(pointer);
   if (!pointer || !bytes || bytes > UINTPTR_MAX - address)
     throw std::invalid_argument("invalid registered SYCL device span");
@@ -181,6 +181,12 @@ void validate_device_span(const void *pointer, size_t bytes,
       queue.get_context() != entry.runtime->context() ||
       queue.get_device() != entry.runtime->device())
     throw std::invalid_argument("SYCL device span exceeds allocation or queue domain");
+  return entry.runtime;
+}
+
+void validate_device_span(const void *pointer, size_t bytes,
+                          const sycl::queue &queue) {
+  (void)runtime_for_device_span(pointer, bytes, queue);
 }
 
 Allocation::Allocation(std::shared_ptr<Runtime> runtime, size_t bytes,
@@ -206,7 +212,7 @@ Allocation::Allocation(std::shared_ptr<Runtime> runtime, size_t bytes,
       auto &registry = device_registry();
       std::lock_guard lock(registry.mutex);
       if (!registry.spans.emplace(reinterpret_cast<uintptr_t>(data_),
-                                  DeviceSpan{bytes_, runtime_.get()}).second)
+                                  DeviceSpan{bytes_, runtime_}).second)
         throw std::runtime_error("duplicate SYCL device allocation");
     } catch (...) {
       sycl::free(data_, runtime_->context());

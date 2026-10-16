@@ -39,6 +39,8 @@
 #include "strata/sycl/launch.hpp"
 #include "strata/sycl/cpu_wait_profile.hpp"
 #include "strata/prefill/native16.hpp"
+#include "strata/prefill/qsa_native16.hpp"
+#include "strata/kernels/mrope.hpp"
 #endif
 #include "strata/core/conversation_memory.hpp"
 
@@ -479,6 +481,9 @@ struct Prefill::Impl {
     detail::LayerMajorResidualPlan layer_major_residual;
 #if defined(STRATA_ENABLE_SYCL)
     bool native16_active = false;
+    // Disjoint typed subviews of existing QSA reservations; no new allocation.
+    uint16_t *qsa_Kraw16 = nullptr, *qsa_Krope16 = nullptr, *qsa_V16 = nullptr,
+             *qsa_Qfull16 = nullptr, *qsa_q16 = nullptr, *qsa_attn16 = nullptr;
     // Mutually exclusive with the FP32 operations of run_impl. These views
     // borrow untyped USM arena ranges; a short request still uses FP32 views.
     uint16_t *R16 = nullptr, *lo_b16 = nullptr, *gated_b16 = nullptr, *bo_b16 = nullptr;
@@ -939,6 +944,7 @@ bool Prefill::carve(size_t T, void* alloc) {
     // Reuse the reserved FP32 arena, retaining the original short-input layout.
     // R16 and gated_b16 occupy disjoint halves of the old gated allocation.
     (void)native16::requested(); // validate the immutable startup setting
+    (void)native16::qsa::requested();
     m.R16 = reinterpret_cast<uint16_t*>(m.gated);
     m.gated_b16 = m.R16 + T * D;
     m.lo_b16 = reinterpret_cast<uint16_t*>(m.lo);
@@ -969,6 +975,16 @@ bool Prefill::carve(size_t T, void* alloc) {
         m.Kc = b.take<float>(T * 512, ok); m.Vc = b.take<float>(T * 512, ok); m.Qf = b.take<float>(T * 12288, ok);
         m.q = b.take<float>(T * ZV, ok); m.idx_raw = b.take<float>(T * 128, ok); m.q_idx = b.take<float>(T * 512, ok);
         m.attn = b.take<float>(T * ZV, ok); m.attn_h = b.take<uint16_t>(T * ZV, ok);
+#if defined(STRATA_ENABLE_SYCL)
+        // K uses both halves of its original float reservation. Raw and
+        // normalized/rotated BF16 views must coexist during the fused kernel.
+        m.qsa_Kraw16 = reinterpret_cast<uint16_t*>(m.Kc);
+        m.qsa_Krope16 = m.qsa_Kraw16 ? m.qsa_Kraw16 + T * 512 : nullptr;
+        m.qsa_V16 = reinterpret_cast<uint16_t*>(m.Vc);
+        m.qsa_Qfull16 = reinterpret_cast<uint16_t*>(m.Qf);
+        m.qsa_q16 = reinterpret_cast<uint16_t*>(m.q);
+        m.qsa_attn16 = reinterpret_cast<uint16_t*>(m.attn);
+#endif
         m.sel_ids = b.take<int32_t>(T * (size_t) m.cap, ok);
         m.sel_scores = b.take<float>((size_t) m.sel_batch * (size_t) m.max_blocks, ok);
         m.attn_scratch = b.take<float>((size_t) m.attn_batch * strata::kernels::qsa_decode_attn_scratch_floats(m.cap, s), ok);
@@ -2329,6 +2345,9 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     auto* qp = m.layer_major_qsa_profile;
                     if (qp) qp->begin(QsaProfile::projections, m.cs);
                     const core::QsaState& st = ss.qsa_states[qsa_index];
+#if defined(STRATA_ENABLE_SYCL)
+                    const bool typed_qsa = m.native16_active && native16::qsa::requested();
+#endif
                     const core::WeightRef *wq = need(v, "attn_q.weight", err), *wk = need(v, "attn_k.weight", err),
                                           *wv = need(v, "attn_v.weight", err), *wo = need(v, "attn_output.weight", err),
                                           *wik = need(v, "indexer.k_proj.weight", err),
@@ -2338,13 +2357,33 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                                           *wikn = need(v, "indexer.k_norm.weight", err);
                     if (!wq || !wk || !wv || !wo || !wik || !wiq || !wqn || !wkn || !wiqn || !wikn) return false;
                     pt.mark(kPfQsa, cs);
+#if defined(STRATA_ENABLE_SYCL)
+                    if (typed_qsa) {
+                        if (!native_proj16(m.gemm, wk, m.mixed_h, m.qsa_Kraw16, T, v.name("attn_k.weight"), err) ||
+                            !native_proj16(m.gemm, wv, m.mixed_h, m.qsa_V16, T, v.name("attn_v.weight"), err) ||
+                            !native_proj16(m.gemm, wq, m.mixed_h, m.qsa_Qfull16, T, v.name("attn_q.weight"), err)) return false;
+                    } else {
+#endif
                     if (!native_proj(m.gemm, wk, m.mixed_h, m.Kc, T, v.name("attn_k.weight"), err)) return false;
                     if (!native_proj(m.gemm, wv, m.mixed_h, m.Vc, T, v.name("attn_v.weight"), err)) return false;
                     if (!native_proj(m.gemm, wq, m.mixed_h, m.Qf, T, v.name("attn_q.weight"), err)) return false;
+#if defined(STRATA_ENABLE_SYCL)
+                    }
+#endif
                     if (!bf16_proj(m.gemm, wik, m.mixed_bf, m.idx_raw, T, v.name("indexer.k_proj.weight"), err, 0, m.mixed_bf_lo)) return false;
                     if (!bf16_proj(m.gemm, wiq, m.mixed_bf, m.q_idx, T, v.name("indexer.q_proj.weight"), err, 0, m.mixed_bf_lo)) return false;
+#if defined(STRATA_ENABLE_SYCL)
+                    if (typed_qsa) {
+                        native16::qsa::norm_rope_split(m.qsa_Kraw16, static_cast<const float*>(wkn->data),
+                            m.qsa_Krope16, T, 2, 256, 512, 512, p0, st.max_cells,
+                            st.cos_tab, st.sin_tab, EPS, m.cs);
+                    } else {
+#endif
                     rms_rows(m.Kc, (const float*) wkn->data, T * 2, 256, 256, EPS, m.cs);
                     rope(m.Kc, T, 2, 256, 512, p0, strata::kernels::rope_scaling(), m.cs);
+#if defined(STRATA_ENABLE_SYCL)
+                    }
+#endif
                     // KV streaming: this layer's cells [0, p0) come in from the host copy to the staging pool, and the
                     // chunk's cells go to the host copy, the staging pool, and the VRAM slots of resident blocks
                     if (qp) qp->end(QsaProfile::projections, m.cs);
@@ -2359,6 +2398,13 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     }
                     if (qp) qp->end(QsaProfile::kv_stage, m.cs);
                     if (qp) qp->begin(QsaProfile::kv_append_query, m.cs);
+#if defined(STRATA_ENABLE_SYCL)
+                    if (typed_qsa) {
+                        native16::qsa::append_q8(m.qsa_Krope16, m.qsa_V16, T, 512, p0,
+                            {st.k_q, st.v_q, st.k_scale, st.v_scale, st.page_table},
+                            s, {st.n_pages, st.n_slots}, m.cs);
+                    } else {
+#endif
                     if (st.kv_hybrid) {   // K8V4: K INT8 unrotated, V rotated Q4_0 (only V and the output rotate)
                         strata::kernels::fwht256_inplace_cuda(m.Vc, T * 2, m.cs);
                         kv_append(m.Kc, m.Kc, T, p0, st.page_table, s.page_size, nullptr, nullptr,
@@ -2379,10 +2425,21 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                                       st.kv_int8 ? nullptr : st.v_pool, st.k_q, st.v_q, st.k_scale, st.v_scale, m.cs,
                                       &st.host, staged ? &m.stage : nullptr);
                     }
+#if defined(STRATA_ENABLE_SYCL)
+                    }
+                    if (typed_qsa) {
+                        native16::qsa::norm_rope_split(m.qsa_Qfull16, static_cast<const float*>(wqn->data),
+                            m.qsa_q16, T, 24, 512, 12288, 6144, p0, st.max_cells,
+                            st.cos_tab, st.sin_tab, EPS, m.cs);
+                    } else {
+#endif
                     split_q(m.Qf, m.q, T, m.cs);
                     rms_rows(m.q, (const float*) wqn->data, T * 24, 256, 256, EPS, m.cs);
                     rope(m.q, T, 24, 256, 6144, p0, strata::kernels::rope_scaling(), m.cs);
                     if (st.kv_rot) strata::kernels::fwht256_inplace_cuda(m.q, T * 24, m.cs);
+#if defined(STRATA_ENABLE_SYCL)
+                    }
+#endif
                     rms_rows(m.q_idx, (const float*) wiqn->data, T * 4, 128, 128, EPS, m.cs);
                     rope(m.q_idx, T, 4, 128, 512, p0, strata::kernels::rope_scaling(), m.cs);
                     // the indexer appends, token by token; then scores + selection for many queries at once:
@@ -2533,8 +2590,19 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     // decode kernel, 32 queries at a time (K8V4 runs the tensor kernel's mode 3: INT8 K,
                     // V dequantized from its q4_0 blocks to fp16 at gather)
                     static const bool old_attn = std::getenv("STRATA_PROMPT_ATTN_OLD") != nullptr;
-                    const bool matrix_used = !old_attn && strata::kernels::qsa_prompt_attn_batch(
-                        m.q, pools, m.sel_ids, m.steps_dev, m.cap, s, m.attn, T, m.cs);
+                    bool matrix_used = false;
+#if defined(STRATA_ENABLE_SYCL)
+                    if (typed_qsa) {
+                        matrix_used = strata::kernels::qsa_prompt_attn_bf16_batch(
+                            m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
+                            {st.n_pages, st.n_slots}, m.cs);
+                        if (!matrix_used) {
+                            err = "prefill QSA16: unsupported typed attention; no fallback submitted"; return false;
+                        }
+                    } else
+#endif
+                        matrix_used = !old_attn && strata::kernels::qsa_prompt_attn_batch(
+                            m.q, pools, m.sel_ids, m.steps_dev, m.cap, s, m.attn, T, m.cs);
                     if (qp) qp->dispatch(matrix_used, staged, T, m.cap);
                     if (observe_attn_dispatch) {
                         if (matrix_used) { ++matrix_chunks; matrix_queries += (uint64_t) T; }
@@ -2560,6 +2628,12 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     pt.mark(kPfQsa, cs);
                     if (qp) qp->end(QsaProfile::attention, m.cs);
                     if (qp) qp->begin(QsaProfile::output_projection, m.cs);
+#if defined(STRATA_ENABLE_SYCL)
+                    if (typed_qsa)
+                        native16::qsa::gate(m.qsa_attn16, m.qsa_Qfull16, m.attn_h,
+                            T, 6144, 12288, 6144, m.cs);
+                    else
+#endif
                     gate_attn(m.attn, m.Qf, m.attn_h, T, m.cs);
 #if defined(STRATA_ENABLE_SYCL)
                     if (m.native16_active) {

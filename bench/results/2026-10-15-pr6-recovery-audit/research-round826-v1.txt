@@ -1,0 +1,72 @@
+# R826 — Isolate the vLLM Xe2 native16 AOT image from the engine JIT link
+
+**Decision support; read-only design research.** Question: how can the R810 candidate alone receive a BMG G21 AOT build with GRF256, while the existing engine remains a generic `spir64`/JIT build with its current GRF policy? This report uses the R810 archived CMake file, the current research-index status, and only the R817 extraction/interpretation sections needed to avoid repeating its artifact-chain survey. R816 live files were not opened. No compiler, linker, tool help, loader, GPU, test, profiler, process inspection, Git command, or product edit was used. The R810 build and image-registration recipe below is proposed and untested.
+
+## Finding from the R810 CMake
+
+`own-vllm-xe2-native16-v1/CMakeLists.txt` defines a static library from only `native16.cpp`. Its compile options include `-fsycl-targets=spir64_gen`, strict floating-point flags, and the candidate's device definitions. The BMG target and 256-GRF backend options are instead placed in `target_link_options(... INTERFACE ...)`. Since a static archive has no final link step, those interface options propagate to the eventual executable or shared-library consumer. In the current recipe, the consumer's SYCL link receives `-fsycl-targets=spir64_gen`, the translator extensions, and `-device bmg-g21-a0 -internal_options -cl-intel-256-GRF-per-thread`.
+
+That placement is the isolation defect. If the consuming final SYCL link also sees the engine's device IR or generic device objects, it may process those inputs for `spir64_gen`; the BMG option is selected for that target, not for the archive that contributed a kernel. Leaving old host archives byte-identical does not establish that their device parts were left generic. The fixture option is OFF by default; if enabled, its separate `numerics_chain.cpp` and `runtime.cpp` executable adds more inputs to that consumer link, so it is not an appropriate image-only build target.
+
+R810's standalone source list is already a useful boundary: `native16.cpp` is the sole source for the static native16 library. The practical change is to move the AOT device link to a separate command whose inputs contain the native16 candidate's complete source/header closure, but no engine kernel translation units or engine device archives. Do not propagate its backend options through the production engine's `INTERFACE` link requirements.
+
+## What the Intel LLVM controls do
+
+The Intel LLVM Users Manual documents `-fsycl-link` as linking device modules and wrapping the result in a host-compatible object for a later ordinary host link. The compiler/runtime design describes the two-step model: create a fat object containing a fully linked device image, then link that object with host objects. It also states that a `-fno-sycl-rdc` object with a fully linked device image is unbundled at the final link and is not sent through another device-link stage. These controls provide the right architectural boundary for the candidate image; this is a separate device link, not the FPGA-specific `-fsycl-link=image` spelling. Intel's FPGA documentation defines `-fsycl-link=image` for making an FPGA hardware image, so it should not be used as a Xe2 GPU AOT flag.
+
+A wrapped SYCL image is not just raw device bytes. The compiler's offload wrapper stores image and kernel-symbol metadata in a host object and adds registration/unregistration functions that register the descriptor with the SYCL runtime. The separate-image flow should preserve that wrapper and let the normal final host link register the new AOT image alongside the engine's existing generic JIT image. Do not manually construct a wrapper or package a bare device binary as a substitute.
+
+Multiple targets can be included in a SYCL fat binary, and the backend option is target-triple-specific (`spir64_gen` here). That scope is still too broad for this requirement: one final link requesting both `spir64` and `spir64_gen` can produce both image kinds, but a `spir64_gen` backend option applies to all `spir64_gen` device modules processed by that link. It has no source-archive selector. The normal final engine link must therefore stay on its current generic `spir64` path and must not carry the candidate's BMG/GRF options.
+
+`-fsycl-device-code-split=per_kernel` creates a separate device module for each kernel and its dependencies; `per_source` creates a module per translation unit. These are module-layout controls, not a filter that keeps only a named kernel from an otherwise broad link, and not per-kernel GRF controls. If the whole engine is linked to `spir64_gen`, per-kernel splitting still sends every resulting engine module through the same target backend option. In a device-link command whose only source is `native16.cpp`, per-kernel splitting can keep its entry points separate for image attribution, but it will retain every kernel entry present/reachable from that source. R810's manifest lists four 16-bit input/output combinations and two tile shapes; the isolated source should not be described as a single specialization unless the input itself is narrowed to one.
+
+## One recommended qualification recipe
+
+Use the v711 `clang++` driver to make a host-compatible prelinked fat object from the R810 candidate alone. Pass the required Strata ABI headers and the already pinned pristine SYCL-TLA include tree. Keep `numerics_chain.cpp`, `runtime.cpp`, and all engine kernel sources out of this device-link step. The following command mirrors the R810 compile/target options and adds the documented separate device-link and per-kernel split controls; its flag acceptance and output form have not been tested with the installed build.
+
+```sh
+CXX=/approved/intel-llvm-v711/install/bin/clang++
+R810=bench/results/2026-10-15-pr6-recovery-audit/own-vllm-xe2-native16-v1
+OUT=/owned/r810-aot-output
+
+"$CXX" -std=c++20 -O3 -fsycl \
+  -fsycl-targets=spir64_gen \
+  -fsycl-device-code-split=per_kernel \
+  -DCUTLASS_ENABLE_HEADERS_ONLY -DCUTLASS_ENABLE_SYCL -DSYCL_INTEL_TARGET \
+  -I"$STRATA_SOURCE_DIR/include" -isystem "$SYCL_TLA_SOURCE_DIR/include" \
+  -fno-fast-math -ffp-contract=off -fno-sycl-instrument-device-code \
+  -Xspirv-translator \
+  -spirv-ext=+SPV_INTEL_split_barrier,+SPV_INTEL_2d_block_io,+SPV_INTEL_subgroup_matrix_multiply_accumulate \
+  -Xsycl-target-backend=spir64_gen \
+  "-device bmg-g21-a0 -internal_options -cl-intel-256-GRF-per-thread" \
+  -fsycl-link "$R810/native16.cpp" -o "$OUT/native16-bmg-g21-grf256.o"
+```
+
+Required inputs are the exact candidate source/package, the matching Strata include ABI, TLA revision/hash closure, and the exact approved compiler. If the candidate device call graph depends on any other device translation unit, add only that defining TU to this separate device-link input set; do not add the engine archive. The CMake file's candidate library currently lists no other source. Do not put `-Xsycl-target-backend` on the engine's final link.
+
+Then add the produced fat object to the ordinary engine final SYCL link while retaining the engine's existing `spir64` target and other link settings:
+
+```sh
+"$CXX" -fsycl -fsycl-targets=spir64 \
+  <existing engine host/device objects and libraries> \
+  "$OUT/native16-bmg-g21-grf256.o" \
+  <existing host libraries and link options> -o <engine executable>
+```
+
+The design documentation says a fully linked fat object is recognized at final host link and not sent through device linking again; its wrapper is carried into the executable for runtime registration. It does not document this exact v711 mixed case—prelinked `spir64_gen` object plus this engine's `spir64` device inputs—with the candidate object omitted from the final target list. Confirm v711 accepts that exact final command and preserves both image registrations before integrating the build rule. If the driver requires adding `spir64_gen` to the final target list and thereby recompiles generic engine IR for that target, stop: the safe mixed link has not been established, and a guessed flag or direct wrapper manipulation is not an acceptable substitute.
+
+## Build and runtime limits
+
+This recipe scopes GRF256 to the candidate's isolated AOT invocation, so it cannot apply that property to engine kernels that are absent from that input set. It does not guarantee the desired register allocation or compiled ISA; inspect the actual image/build record. The generic `spir64` path should preserve its JIT behavior and prior policy only if the final command leaves those inputs on that path and the driver retains the prelinked BMG object unchanged.
+
+The research index records R816's standalone BMG AOT build and its listed smoke/guard/edge/chain/full fixtures as passing, but makes no engine, performance, or quality adoption claim. That status does not answer this mixed-image final-link question. Nor does successful packaging prove that the runtime selects the BMG image for every intended call, that the candidate kernel is launched, or that latency/numerical/quality gates pass. The final receipt should pin compiler and linker commands, the image's kernel-symbol inventory, and final-image identities; runtime attribution and numerical/performance gates remain separate Main-owned evidence. R817's extraction/disassembly work is relevant only after this exact final binary exists, and does not replace those runtime checks.
+
+## Primary references
+
+1. [Intel LLVM Users Manual](https://github.com/intel/llvm/blob/sycl/sycl/doc/UsersManual.md) — `-fsycl-link`, target-specific options, `-fsycl-device-code-split`, and RDC behavior.
+2. [Intel LLVM Compiler and Runtime Design](https://github.com/intel/llvm/blob/sycl/sycl/doc/design/CompilerAndRuntimeDesign.md) — separate device link, fat-object final link, split modules, and registration wrapper.
+3. [Intel LLVM Offload Design](https://github.com/intel/llvm/blob/sycl/sycl/doc/design/OffloadDesign.md) — image packaging/registration flow, AOT target mapping, and new-driver boundaries.
+4. [Intel LLVM Get Started Guide](https://github.com/intel/llvm/blob/sycl/sycl/doc/GetStartedGuide.md) — `spir64_gen` AOT and multiple targets in a binary.
+5. [Intel FPGA Compilation Flags](https://www.intel.com/content/www/us/en/docs/oneapi/fpga-add-on/developer-guide/2024-1/fpga-compilation-flags.html) — `-fsycl-link=image` is defined for the FPGA image flow.
+
+**Conclusion:** separate the candidate's device-link command and feed its wrapped BMG AOT fat object to the unchanged generic engine host link. The CMake recipe as archived does not yet enforce that boundary because its interface link options reach the consumer's final device link. The proposed v711 flag acceptance and mixed `spir64`/prelinked-`spir64_gen` link remain UNTESTED, and no runtime-selection or performance claim follows from this source-level recipe.

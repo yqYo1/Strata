@@ -57,7 +57,7 @@ def main():
             fault_windows=[], recipe_sha256=sha(__file__), invocation=sys.argv,
             build_path=str(root/'build'), component_qualification=False, model_quality_qualified=False,
             physical_262144_qualified=False, performance_adopted=False,
-            build_scope='experimental whole-engine BMG AOT/GRF256; other kernels can change codegen; compare same-binary FP32 and historical FP32 separately',
+            build_scope='experimental isolated BMG AOT/GRF256 native object plus unchanged generic engine target; actual mixed-image linkage/selection requires inspection and component tests',
             retention=dict(owner='Main',consumer='enabled engine build/component/model qualification',
                 byte_budget=8<<30,review='at this build/test closure; keep canonical binaries and compact source/command evidence, retire duplicate successful full logs'))
         receipt = root/'record.json'
@@ -119,7 +119,7 @@ def main():
             commit=subprocess.check_output(['/usr/bin/git','rev-parse','HEAD'],cwd=P,text=True).strip()
             need(commit==args.source_commit,'Main must commit exact integrated source before build')
             names=subprocess.check_output(['/usr/bin/git','ls-tree','-r','--name-only',commit,'--',
-                'src','include','cmake','CMakeLists.txt','tests'],cwd=P,text=True).splitlines()
+                'src','include','cmake','CMakeLists.txt','tests','bench/sycl'],cwd=P,text=True).splitlines()
             for name in names:
                 value=sha(P/name)
                 need(hashlib.sha256(subprocess.check_output(['/usr/bin/git','show',commit+':'+name],cwd=P)).hexdigest()==value,
@@ -136,14 +136,15 @@ def main():
             options=list(reference['configure_argv'])
             options[options.index('-B')+1]=record['build_path']
             options=[v for v in options if not v.startswith('-DSTRATA_SYCL_DEVICE_ARCH:')]
-            options+=['-DSTRATA_SYCL_VLLM_XE2_NATIVE16=ON','-DSTRATA_SYCL_DEVICE_ARCH=bmg-g21-a0',
+            options+=['-DSTRATA_SYCL_VLLM_XE2_NATIVE16=ON','-DSTRATA_SYCL_DEVICE_ARCH=',
                 '-DSYCL_TLA_SOURCE_DIR='+meta['tla_root']]
             options[0]='/usr/bin/cmake'
             record['configure_argv']=options
             run('configure',options)
             cursor=journal('journal-after-configure',cursor)
             targets=['strata','sycl_gemm16_test','sycl_native16_prefill_test','sycl_native16_qsa_test',
-                'sycl_prompt_native16_test','sycl_runtime_test','sycl_compat_test','sycl_gemm_test',
+                'sycl_prompt_native16_test','sycl_vllm_native16_test','sycl_native16_paired_gemm_bench',
+                'sycl_runtime_test','sycl_compat_test','sycl_gemm_test',
                 'sycl_allocation_teardown_test','prefill_layer_major_plan_test','dense_prefill_nll_host_test']
             run('compile-link',['/usr/bin/cmake','--build',record['build_path'],'--target',*targets,'--parallel','2','--verbose'],build=True)
             cursor=journal('journal-after-build',cursor)

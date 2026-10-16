@@ -52,6 +52,12 @@ private:
 void validate_device_span(const void *pointer, size_t bytes,
                           const sycl::queue &queue);
 
+// Same exact-span/domain validation as above; returns the already registered
+// Allocation owner's original Runtime, retaining it without selecting a device.
+// Ownership of the buffer and queue is still the caller's asynchronous duty.
+std::shared_ptr<Runtime> runtime_for_device_span(const void *pointer, size_t bytes,
+                                               const sycl::queue &queue);
+
 enum class MemoryKind { Device, Host };
 
 // The engine uses one runtime per device so its arenas and launches share a

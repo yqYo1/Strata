@@ -1,0 +1,13 @@
+# vLLM native16 と typed QSA の実装境界
+
+Main がレビュー済みR821/R818を実際のsrc/include/cmake/testsへ適用した。defaultOFF。R810 core/adapter3filesはbyte同一でIntelBSD3 notice保持。HC/MoEの既存 out16 abstractionを実際のvLLM Xe2 DPAS coreへ接続し、QSAも別optinで16bit境界を接続した。局所FP32accum/norm/softmax、indexer、GDN内部の明示FP32境界は残る。scratch arena全体を半減したという変更ではない。
+
+Main変更: 旧engine全体のAOT/GRF256化を採用せず、新native16 TUだけ-fno-sycl-rdc -cで事前linkするOBJECTを最終hostlinkへ直接渡す。既存engine targetはgeneric/JIT。公式IntelLLVMmanual/design(ローカルcommit fbccb466cc122c294a6c746dcf0d37e45ff70f3c)のDevice Link during compilationを独立に確認した。R826の一般fsycl-link案を機械的に適用していない。現在のcompilerでの混在link/image選択はこれから検証する。
+
+QSA追加部はactualDeviceextent/context、logicaltableとphysicalpoolのowner容量を別々に検証。現sessionは最初のQSAのRoPE tablesを共有することをsession.cpp/layer.cppで再確認した。residentINT8/Mapping0/tableRoPEのみ。streaming/hostmirror/Q4等を黙ってoldFP32へfallbackしない。R818 fixtureの異なるvector型を一つのauto宣言で扱った箇所を2宣言へ修正した。oracle/math/toleranceは未変更。
+
+独立R810 numeric fixture、R816paired source/evidence headerをbyte同一でproduct側manualtargetsへ追加した。新Runtime/Gemm ABIを全consumerでfreshbuildする。旧oneMKLtestには--same-queue-onlyという明示subsuiteを追加、default全testは元のseparatequeue callを保持する。既知separatequeue timeoutは未解決でありsubsuitePASSからfullPASSへ読み替えない。
+
+R816 standalone component全gatesおよび18独立measurementprocess(270timed/570全検証)PASS、freshfault0。matchedwideはFP32より1.34–1.75x、旧own16より7.56–37.26x。actualruntimeimage164264BをET_EXEC PT_LOADの記録pointer/lengthとbytehashで照合し、8actualentryがdisassemblyと一致、DPAS HF/BF16 operands +F32C/D +block2D16bitstore確認。実効occupancy/新engine像同一性/wholeprefill速度/能力/物理262144/RESTOREはまだ合格していない。
+
+次はこのcommittedsourceを専用rootでfreshbuildし、Mainがcomponent/unchangedown68/samequeueFP32/Runtime/compat/teardown/modelをmeasurementlock下で直列実行する。モデル比較は生成text一致ではなく独立NLL/分布/有限性を用いる。長大性能は既存officialbench.sh、品質は同一自然入力を使う。

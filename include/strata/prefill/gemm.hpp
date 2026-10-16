@@ -8,9 +8,15 @@
 
 #include <cstddef>
 #include <cstdint>
+#if defined(STRATA_ENABLE_SYCL)
+#include <memory>
+#endif
 #include <string>
 
 namespace strata::prefill {
+#if defined(STRATA_ENABLE_SYCL)
+struct Native16BackendState;
+#endif
 
 class Gemm {
 public:
@@ -43,6 +49,9 @@ public:
     /// No implicit scratch, fallback, clamp, or allocation. Unsupported devices
     /// and geometry throw before submission. Caller retains buffers until the
     /// in-order stream completes; null stream follows synchronous finish().
+    /// Optional backend=vllm retains these tensor/storage meanings, but requires
+    /// beta=0, N%64=K%32=0, 64-byte bases, ldy%8=0 and a live full Y[T,ldy]
+    /// rectangle. See docs/SYCL_VLLM_XE2_NATIVE16.md for all limits. No fallback.
     void f16_out16(const uint16_t* X, const uint16_t* W, uint16_t* Y,
                    int64_t T, int64_t N, int64_t K, bool output_bf16 = false,
                    int64_t ldy = 0, float beta = 0.0f);
@@ -68,6 +77,9 @@ private:
     // bit 3: FP16 scalar output. Calls on a single Gemm require serialized
     // host ownership, as do init/rebind.
     uint8_t out16_support_ = 0;
+    // Populated only for vllm. Retains the original Runtime; borrows stream_.
+    // shared_ptr supports the incomplete state type at this public ABI boundary.
+    std::shared_ptr<Native16BackendState> out16_backend_;
 #endif
     void* handle_ = nullptr;
     void* stream_ = nullptr;

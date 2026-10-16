@@ -43,6 +43,10 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     const auto& g = *m.g;
     auto& ss = *m.ss;
     const bool native16_on = native16::requested();
+    const bool qsa16_on = native16::qsa::requested();
+    if (qsa16_on && !native16_on) {
+        err = "prefill QSA16: requires STRATA_SYCL_PREFILL_NATIVE16=bf16"; return false;
+    }
     const char* residual_option = std::getenv("STRATA_PREFILL_LAYER_MAJOR_R_DTYPE");
     if (native16_on && residual_option && std::strcmp(residual_option, "bf16")) {
         err = "prefill native16: residual storage must be bf16 (or leave R_DTYPE unset)"; return false;
@@ -143,6 +147,44 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                             q.host.k_pool && q.host.v_pool && m.stage.k_pool && m.stage.v_pool;
             if (!storage || !m.ident_table) {
                 err = "prefill layer-major: full-logical-range host/stage KV is unavailable"; return false;
+            }
+        }
+    }
+    // QSA16 v1 deliberately supports a resident text INT8 cache only. Reject
+    // every unsupported layer/device/domain BEFORE this request submits work.
+    if (qsa16_on) {
+        native16::qsa::validate_device(m.cs);
+        // The legacy OLD switch is presence-based, including a value of 0.
+        if (std::getenv("STRATA_PROMPT_ATTN_OLD")) {
+            err = "prefill QSA16: leave STRATA_PROMPT_ATTN_OLD unset"; return false;
+        }
+        const char* mapping = std::getenv("STRATA_SYCL_PROMPT_K_CELL_MAJOR");
+        if (mapping && std::strcmp(mapping, "0")) {
+            err = "prefill QSA16: requires prompt Mapping0"; return false;
+        }
+        const auto tab = strata::kernels::rope_table_for(strata::kernels::rope_scaling());
+        if (strata::kernels::mrope_table() || !tab.cos) {
+            err = "prefill QSA16: requires text positions and STRATA_ROPE_TABLE=1"; return false;
+        }
+        const auto shapes = strata::kernels::qsa_real_shapes();
+        for (int64_t i = 0; i < ss.qsa_alloc; ++i) {
+            const auto& q = ss.qsa_states[i];
+            if (q.kv_mode != 0 || !q.kv_int8 || q.kv_rot || q.kv_q4 || q.kv_hybrid || q.host.present() ||
+                q.n_slots != q.n_pages || tab.cos != q.cos_tab || tab.sin != q.sin_tab ||
+                tab.max_pos != q.max_cells) {
+                err = "prefill QSA16: requires resident unrotated INT8 K/V and the owning session RoPE tables";
+                return false;
+            }
+            sycl_backend::validate_device_span(q.cos_tab, size_t(q.max_cells) * 32 * sizeof(float),
+                                               sycl_backend::queue_for(m.cs));
+            sycl_backend::validate_device_span(q.sin_tab, size_t(q.max_cells) * 32 * sizeof(float),
+                                               sycl_backend::queue_for(m.cs));
+            // Owner n_slots sizes physical pools, n_pages sizes the table.
+            // max_cells is NOT used to guess allocated physical pages.
+            if (!strata::kernels::qsa_prompt_attn_bf16_validate(m.qsa_q16, core::qsa_attn_pools(q),
+                    m.sel_ids, m.steps_dev, m.cap, shapes, m.qsa_attn16, m.T,
+                    {q.n_pages, q.n_slots}, m.cs)) {
+                err = "prefill QSA16: typed attention capability/geometry unsupported"; return false;
             }
         }
     }

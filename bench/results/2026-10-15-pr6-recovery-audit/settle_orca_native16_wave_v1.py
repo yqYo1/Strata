@@ -48,7 +48,9 @@ def main():
              821: 'orca-implement-vllm-engine-hook-round821-launch-v1.json',
              822: 'orca-research-round822-launch-v1.json',
              825: 'orca-research-round825-launch-v1.json',
-             826: 'orca-research-round826-launch-v1.json'}
+             826: 'orca-research-round826-launch-v1.json',
+             828: 'orca-research-round828-launch-v1.json',
+             829: 'orca-research-round829-launch-v1.json'}
     known = {}
     for n, name in names.items():
         v = json.loads((A / name).read_text())['receipt']['result']
