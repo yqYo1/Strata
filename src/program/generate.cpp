@@ -4705,6 +4705,7 @@ int main(int argc, char** argv) {
             return 2;
         }
         strata::prefill::Prefill sp;
+        sp.requires_prefix_checkpoints = o.prompt_cache > 0 && o.prompt_cache_every > 0;
         void* borrow = nullptr;
         uint64_t borrow_bytes = 0;
         int32_t lend_first = -1;          // the first slot the prompt path may borrow (its largest chunk)
@@ -6685,6 +6686,7 @@ int main(int argc, char** argv) {
     int64_t pos_start = 0;
     int64_t spec_pos = -1;   // The native verifier may start at position zero (a one-token prompt).
     strata::prefill::Prefill prefill;
+    prefill.requires_prefix_checkpoints = false; // CLI callbacks do not save prefix model state
     double prefill_batched_ms = 0;
     std::FILE* final_r = o.dump_final_r.empty() ? nullptr : std::fopen(o.dump_final_r.c_str(), "wb");
     std::vector<float> final_r_host(final_r ? (size_t) (g.hc * g.n_embd) : 0);

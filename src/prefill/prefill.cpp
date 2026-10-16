@@ -39,6 +39,7 @@
 #include "strata/sycl/launch.hpp"
 #include "strata/sycl/cpu_wait_profile.hpp"
 #include "strata/prefill/native16.hpp"
+#include "strata/prefill/moe_window_routes.hpp"
 #include "strata/prefill/qsa_native16.hpp"
 #include "strata/kernels/qsa_bf16_attention_late_flags.hpp"
 #include "strata/kernels/qsa_bf16_prefix.hpp"
@@ -432,6 +433,28 @@ struct PeerPrefill {
     }
 };
 
+#if defined(STRATA_ENABLE_SYCL)
+// Request owner, declared before the outer checked lease. A failed drain aborts
+// while this object and all raw upload pointers remain alive.
+struct MoeWindowContext {
+    uint16_t* bank = nullptr;
+    uint64_t bank_bytes = 0;
+    std::vector<int32_t> ids;
+    std::shared_ptr<const detail::MoeWindowRoutes> routes;
+    std::function<bool(int64_t, int64_t, std::string&)> complete_piece;
+    uint64_t windows = 0, dequants = 0, jobs = 0, source_bytes = 0;
+};
+bool moe_window_requested() {
+    static const bool enabled = [] {
+        const char* v = std::getenv("STRATA_SYCL_PREFILL_MOE_WINDOW");
+        if (!v || std::strcmp(v, "0") == 0) return false;
+        if (std::strcmp(v, "2") == 0) return true;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_MOE_WINDOW must be 0 or 2");
+    }();
+    return enabled;
+}
+#endif
+
 struct Prefill::Impl {
     const core::WeightTable* wt = nullptr;
     const core::LayerView::Overlay* native_dense_overlay = nullptr;
@@ -482,6 +505,7 @@ struct Prefill::Impl {
     uint16_t* layer_major_fp16_stage = nullptr;
     detail::LayerMajorResidualPlan layer_major_residual;
 #if defined(STRATA_ENABLE_SYCL)
+    MoeWindowContext* moe_window = nullptr; // borrowed through checked layer-major lease
     bool native16_active = false;
     strata::kernels::QsaBf16PackedScratch qsa_prefix; // borrowed only during the long-prefill lease
     // Disjoint typed subviews of existing QSA reservations; no new allocation.
@@ -1688,6 +1712,9 @@ struct PeTimer {
 };
 }  // namespace
 
+#if defined(STRATA_ENABLE_SYCL)
+#include "moe_window.inc"
+#endif
 #include "layer_major.inc"
 
 bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) {
@@ -1841,10 +1868,26 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
     std::future<bool> ple_next;             // declared after everything it reads: an early return waits for it
     int ple_buf = 0;
 
+#if defined(STRATA_ENABLE_SYCL)
+    int64_t window_first = -1;
+#endif
     for (int64_t c0 = 0; c0 < n; c0 += m.T) {
         if (should_stop && should_stop()) { err = "cancelled"; return false; }
         if (std::getenv("STRATA_TRACE")) { std::fprintf(stderr, "strata trace: prompt chunk %lld of %lld\n", (long long) c0, (long long) n); std::fflush(stderr); }
         const int64_t T = std::min(m.T, n - c0), p0 = pos0 + c0;
+        bool window_piece = false;
+#if defined(STRATA_ENABLE_SYCL)
+        if (m.moe_window) {
+            if (window_first >= 0) {
+                if (c0 != window_first + m.T) { err = "prefill MoE window: piece order"; return false; }
+                window_piece = true;
+            } else if (c0 + m.T < n) {
+                const auto first = m.layer_major_residual.span(c0, T);
+                const auto second = m.layer_major_residual.span(c0 + m.T, std::min(m.T, n - c0 - m.T));
+                window_piece = first.device && second.device;
+            }
+        }
+#endif
         core::progress_at("reading the prompt (batched): preparing the chunk from token", p0);   // #251
         if (!m.layer_major_active || LE == g.n_layers) ++stats_.chunks;
         ro.chunk(T);
@@ -2267,7 +2310,9 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
             if (m.native16_active && l == 1 && ple_on)
                 native16::pack(m.R, m.R16, T * D, m.cs);
 #endif
-            for (int half = 0; half < 2; ++half) {
+            // Window pieces run the SAME causal attention/PLE body below. The
+            // shared FFN helper reads both completed bank pieces afterwards.
+            for (int half = 0; half < (window_piece ? 1 : 2); ++half) {
                 // ---- the hyper-connection read of this half
                 const char* pre = half == 0 ? "hc_attn_" : "hc_ffn_";
                 const std::string sn = std::string(pre) + "norm.weight", sd = std::string(pre) + "down.weight",
@@ -3446,6 +3491,40 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                 }
             }
         }
+#if defined(STRATA_ENABLE_SYCL)
+        if (window_piece) {
+            if (!m.native16_active || LE != LB + 1 || !m.moe_window || !m.moe_window->bank ||
+                stream_all || issuer.joinable()) { err = "prefill MoE window: invalid topology"; return false; }
+            const auto span = m.layer_major_residual.span(c0, T);
+            if (!span.device || span.offset_bytes > m.moe_window->bank_bytes ||
+                span.bytes > m.moe_window->bank_bytes - span.offset_bytes) {
+                err = "prefill MoE window: attention bank span"; return false;
+            }
+            auto* destination = reinterpret_cast<uint8_t*>(m.moe_window->bank) + span.offset_bytes;
+            sycl_backend::validate_device_span(destination, size_t(span.bytes), sycl_backend::queue_for(m.cs));
+            if (cudaMemcpyAsync(destination, m.R16, size_t(span.bytes), cudaMemcpyDeviceToDevice, m.cs) != cudaSuccess ||
+                cudaStreamSynchronize(m.cs) != cudaSuccess) {
+                err = "prefill MoE window: attention store/drain"; return false;
+            }
+            // Retire host token/step/PLE inputs before the next piece reuses them.
+            // Keep existing event pairs reusable and never report FFN completion.
+            if (m.layer_major_profile) m.layer_major_profile->chunk_retired();
+            if (m.layer_major_qsa_profile) m.layer_major_qsa_profile->chunk_retired();
+            if (window_first < 0) { window_first = c0; continue; }
+            const int64_t first = window_first, count = c0 + T - first;
+            if (!run_moe_window(LB, first, count, err)) return false;
+            if (m.layer_major_profile) m.layer_major_profile->chunk_retired();
+            if (LE == g.n_layers) stats_.tokens += count;
+            // BOTH bank writes are checked before MTP may reuse m.region/emb.
+            for (int64_t row = first; row < first + count; row += m.T) {
+                const int64_t size = std::min(m.T, first + count - row);
+                if (on_stage_chunk && !on_stage_chunk(pos0 + row + size, err)) return false;
+                if (!m.moe_window->complete_piece || !m.moe_window->complete_piece(row, size, err)) return false;
+            }
+            window_first = -1;
+            continue;
+        }
+#endif
         if (!ple_land()) return false;   // a stage that ends before layer 1: the rows land anyway, the next gather starts
         if (issuer.joinable()) {
             issuer.join();
