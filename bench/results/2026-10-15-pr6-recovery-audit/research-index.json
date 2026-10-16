@@ -4354,6 +4354,25 @@
       "retrieval_trigger": "A concrete Main-owned GDN recurrence, chunk-boundary, synchronization or precision decision needs the collection.",
       "review_sha256": "63756dfe2ba521b5abb1cf2d513af583c28d8c7d2c04398a7d9802831e2ffa30",
       "schedulable_now": false
+    },
+    {
+      "round": 945,
+      "classification": "decision_support",
+      "path": "research-round945-v1.txt",
+      "sha256": "f49f1b6c8eb726ea45d96b3d997838ebb7911e5c6fcc6b96322dbfa55ed0ecf2",
+      "review_path": "research-review-round947-v1.json",
+      "operational_digest_path": "research-review-round947-v1.ja.md",
+      "main_body_read": false,
+      "reviewer_report_body_read": true,
+      "status": "Accepted with scope, source-contract, and measurement caveats; two design hypotheses only, no local tile measurement or adoption.",
+      "retrieval_trigger": "A same-input selector/component result establishes overlap or separates loop/index/barrier from matrix work, and a concrete choice remains open.",
+      "review_sha256": "431bb6f441323391ae0244e23cd0b086ad355ee293bf797a6832cddeef7bd823",
+      "operational_digest_sha256": "6ac912739b4cf221616167259fc51cff74f83d48f57a7a787732729e8dd31979",
+      "schedulable_now": false,
+      "lifecycle_ACK": {
+        "path": "orca-research-round945-ack-v1.json",
+        "sha256": "16c4b40bf1b356cf92b9d819845889c3a1821b8e0c0015555922c6592e61f3a6"
+      }
     }
   ],
   "main_initial_findings": [
@@ -6620,5 +6639,42 @@
     ],
     "review_sha256": "63756dfe2ba521b5abb1cf2d513af583c28d8c7d2c04398a7d9802831e2ffa30",
     "main_ACK_observation": "orca-research-wave942-943-main-ack-observations-v1.json"
+  },
+  "research_review_round947": {
+    "review_path": "research-review-round947-v1.json",
+    "operational_digest_path": "research-review-round947-v1.ja.md",
+    "operational_digest_sha256": "6ac912739b4cf221616167259fc51cff74f83d48f57a7a787732729e8dd31979",
+    "main_body_read": false,
+    "reviewer_report_bodies_read": true,
+    "status": "R945 accepted with caveats; R946 recorded only as a failed launch with no report.",
+    "schedulable_now": false,
+    "correction_ids": [
+      "R945-C1",
+      "R945-C2",
+      "R945-C3",
+      "R945-C4",
+      "R946-C1"
+    ],
+    "review_sha256": "431bb6f441323391ae0244e23cd0b086ad355ee293bf797a6832cddeef7bd823",
+    "main_reconciliation": {
+      "ACK": "orca-research-round945-ack-v1.json",
+      "ACK_sha256": "16c4b40bf1b356cf92b9d819845889c3a1821b8e0c0015555922c6592e61f3a6",
+      "subsequent_component": "qsa-bf16-prefix-coalesced-boundary-v1.json",
+      "scope": "Reviewer used earlier host-preflight snapshot. Later Main build/smoke/component passed, still no timing/adoption. No original failed preflight rewritten."
+    },
+    "launch_failure_records": [
+      {
+        "round": 946,
+        "classification": "knowledge_collection",
+        "record_type": "launch_failure",
+        "dispatch_id": "ctx_6d9d3899debd",
+        "failure_stage": "agent_readiness",
+        "failure": "agent-update-prompt",
+        "report_path": null,
+        "report_sha256": null,
+        "release_state": "released; closed_agent_terminal; archive captured",
+        "index_as_research_report": false
+      }
+    ]
   }
 }
