@@ -411,10 +411,10 @@ struct Stager {
     }
     // Publish only an accepted terminal event. The release/acquire issue gate
     // protects the event object; ready protects its next overwrite on ring wrap.
-    void issued_one(int j, dpct::queue_ptr copy) noexcept {
+    void issued_one(int j, sycl::event completion) noexcept {
         try {
             detail::RetirementDeadline deadline;
-            *dma_done[(size_t) (j % kRing)] = copy->ext_oneapi_submit_barrier();
+            *dma_done[(size_t) (j % kRing)] = std::move(completion);
             issued.store(j + 1, std::memory_order_release);
         } catch (...) {
             // A memcpy may already have been accepted. Never unwind its owners.
@@ -1798,20 +1798,23 @@ struct ExpertTransferTimer {
     std::vector<Copy> device_residuals;
     int64_t residual_gpu_tokens = 0;
     double serial_layer_load_ms = 0;
+    sycl::event record(std::vector<Copy>& log, dpct::queue_ptr q, void* dst, const void* src,
+                       size_t bytes, int64_t layer) noexcept {
+        try {
+            detail::RetirementDeadline deadline;
+            auto event = q->memcpy(dst, src, bytes);
+            if (on) log.push_back({event, (uint64_t) bytes, layer});
+            return event;
+        } catch (...) { detail::retirement_fail_stop("transfer submission/recording failed"); }
+    }
     sycl::event device_residual(dpct::queue_ptr q, void* dst, const void* src, size_t bytes, int64_t layer) {
-        auto event = q->memcpy(dst, src, bytes);
-        if (on) device_residuals.push_back({event, (uint64_t) bytes, layer});
-        return event;
+        return record(device_residuals, q, dst, src, bytes, layer);
     }
     sycl::event activation(dpct::queue_ptr q, void* dst, const void* src, size_t bytes, int64_t layer) {
-        auto event = q->memcpy(dst, src, bytes);
-        if (on) activations.push_back({event, (uint64_t) bytes, layer});
-        return event;
+        return record(activations, q, dst, src, bytes, layer);
     }
     sycl::event copy(dpct::queue_ptr q, void* dst, const void* src, size_t bytes, int64_t layer) {
-        auto event = q->memcpy(dst, src, bytes);
-        if (on) copies.push_back({event, (uint64_t) bytes, layer});
-        return event;
+        return record(copies, q, dst, src, bytes, layer);
     }
     void report(int64_t tokens, int64_t chunks, int64_t layers, double wall_ms, double host_copy_ms,
                 double ple_preload_ms) const {
@@ -1934,16 +1937,6 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
     if (!detail::pr6_position_span(n, pos0, impl_->ss->max_cells) || (n && !tokens)) {
         err = "prefill: input span exceeds session capacity or physical 262144"; return false;
     }
-    struct RequestRetirement {
-        Impl& m;
-        bool success = false;
-        ~RequestRetirement() noexcept {
-            strata::retire_queue(*m.cs);
-            if (m.copy != m.cs) strata::retire_queue(*m.copy);
-            m.stager->finish();
-            if (!success) m.ready = false;
-        }
-    } request{*impl_};
     const auto* embedding = core::native_embed();
     const auto* canonical = embedding ? nullptr : impl_->wt->find("token_embd.weight");
     const int64_t vocabulary = embedding ? embedding->vocabulary() : canonical ? canonical->ne1 : 0;
@@ -1954,6 +1947,16 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
             err = "prefill: token outside the actual embedding vocabulary/int32 contract"; return false;
         }
     }
+    struct RequestRetirement {
+        Impl& m;
+        bool success = false;
+        ~RequestRetirement() noexcept {
+            strata::retire_queue(*m.cs);
+            if (m.copy != m.cs) strata::retire_queue(*m.copy);
+            m.stager->finish();
+            if (!success) m.ready = false;
+        }
+    } request{*impl_};
     const char* mode = std::getenv("STRATA_PREFILL_LAYER_MAJOR");
     const char* first_env = std::getenv("STRATA_PREFILL_FIRST");
     const int64_t first = first_env ? std::atoll(first_env) : 256;
@@ -2131,8 +2134,8 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         }
         m.stager->start(std::move(jobs));
         for (int32_t e = 0; e < g.n_expert; ++e) {
-            transfers.copy(m.copy, const_cast<uint8_t*>(layer_cache.device_slot(e)), m.stager->wait(e), bytes, layer);
-            m.stager->issued_one(e, m.copy);
+            auto completion = transfers.copy(m.copy, const_cast<uint8_t*>(layer_cache.device_slot(e)), m.stager->wait(e), bytes, layer);
+            m.stager->issued_one(e, std::move(completion));
         }
         strata::retire_queue(*m.copy); m.stager->finish();
         transfers.serial_layer_load_ms += ms_since(load_started);
@@ -2577,8 +2580,8 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                     call wait() on event return by memcpy API to ensure
                     synchronization behavior.
                     */
-                    transfers.copy(m.copy, m.stage_dev[sl], hb, bytes, en.l);
-                    m.stager->issued_one(en.job, m.copy);
+                    auto completion = transfers.copy(m.copy, m.stage_dev[sl], hb, bytes, en.l);
+                    m.stager->issued_one(en.job, std::move(completion));
                 }
                 dpct::sync_barrier(m.copied[sl], m.copy);
                 m.stage_live[sl] = true;
@@ -2649,8 +2652,8 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                         so you may need to call wait() on event return by memcpy
                         API to ensure synchronization behavior.
                         */
-                        transfers.copy(m.copy, m.stage_dev[sl], hb, bytes, en.l);
-                        m.stager->issued_one(en.job, m.copy);
+                        auto completion = transfers.copy(m.copy, m.stage_dev[sl], hb, bytes, en.l);
+                        m.stager->issued_one(en.job, std::move(completion));
                     }
                     dpct::sync_barrier(m.copied[sl], m.copy);
                     m.stage_live[sl] = true;
@@ -3715,9 +3718,9 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                                 on event return by memcpy API to ensure
                                 synchronization behavior.
                                 */
-                                transfers.copy(m.copy, m.stage_dev[sl], hb,
+                                auto completion = transfers.copy(m.copy, m.stage_dev[sl], hb,
                                                (size_t)lay.blob_bytes(l), l);
-                                m.stager->issued_one(job_of[j], m.copy);
+                                m.stager->issued_one(job_of[j], std::move(completion));
                             }
                             dpct::sync_barrier(m.copied[sl], m.copy);
                             m.stage_live[sl] = true;
