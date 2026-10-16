@@ -308,6 +308,7 @@ struct Stager {
         return true;
     }
     ~Stager() {
+        detail::RetirementDeadline destructor_deadline;
         finish();
         { std::lock_guard<std::mutex> lk(mu); quit = true; }
         cv.notify_all();
@@ -384,6 +385,9 @@ struct Stager {
     }
     /// A layer's jobs; the previous layer's are finished (finish()).
     void start(std::vector<Job>&& js) {
+        // Packed head has 16-bit job fields; reject before publishing metadata.
+        if (js.size() >= 65536 || gen == UINT32_MAX)
+            detail::retirement_fail_stop("stager generation/job range exhausted");
         if (js.empty()) return;
         std::lock_guard<std::mutex> lk(mu);
         failed.store(false, std::memory_order_relaxed);
@@ -893,7 +897,8 @@ bool Prefill::init(const core::WeightTable &wt, const core::ModelGeometry &g,
     // These bounds precede allocations, queue selection and any qsa_primary use.
     // The workspace/kernels below have fixed dimensions for this artifact.
     if (chunk <= 0 || chunk > 262144 || ss.max_cells <= 0 || chunk > ss.max_cells ||
-        ss.max_cells > 262146 || !ss.qsa_states || ss.qsa_ord0 < 0 || ss.qsa_alloc <= 0 ||
+        ss.max_cells > 262146 || !ss.qsa_states || ss.qsa_ord0 < 0 || ss.qsa_ord0 >= 12 ||
+        ss.qsa_alloc <= 0 || ss.qsa_alloc > 12 - ss.qsa_ord0 ||
         g.n_layers != 48 || g.qsa_interval != 4 || g.n_expert != NE || g.n_ff != 640 ||
         g.n_embd != N || g.hc != HC || g.hc_lr != LR || ss.k != K ||
         g.n_head != 24 || g.n_head_kv != 2 || g.head_dim != 256 ||
@@ -901,6 +906,13 @@ bool Prefill::init(const core::WeightTable &wt, const core::ModelGeometry &g,
         g.ssm_state_size != 128 || g.ssm_k_heads != 16 || g.ssm_v_heads != HV ||
         g.ssm_d_conv != 4 || g.ssm_conv_channels != C || g.ssm_value_dim != ZV) {
         err = "prefill: unsupported host chunk, session or artifact geometry"; return false;
+    }
+    for (int64_t i = ss.qsa_ord0; i < ss.qsa_ord0 + ss.qsa_alloc; ++i) {
+        const auto& state = ss.qsa_states[i];
+        if (state.max_cells <= 0 || state.max_cells > 262146 || state.max_cells < ss.max_cells ||
+            state.n_pages <= 0 || state.n_pages > INT32_MAX || state.n_slots <= 0 || state.n_slots > INT32_MAX) {
+            err = "prefill: invalid allocated QSA host geometry"; return false;
+        }
     }
     m.wt = &wt; m.g = &g; m.ss = &ss; m.src = src; m.cache = cache; m.host_res = host_res;
     m.T = chunk; m.cs = strata::q_of(stream); m.stats = &stats_;
@@ -2597,17 +2609,21 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
         struct IssuerJoin {
             std::atomic<bool>* stop;
             std::thread* t;
-            ~IssuerJoin() { if (t->joinable()) { stop->store(true); t->join(); } }
+            ~IssuerJoin() {
+                detail::RetirementDeadline deadline;
+                if (t->joinable()) { stop->store(true); t->join(); }
+            }
         } issuer_join{&a_stop, &issuer};
         const bool threaded_issue = stream_all && issuer_on;
         if (threaded_issue) {
             issuer = std::thread([&] {
                 const core::OnDevice od(m.device);
                 for (size_t idx = 0; idx < seq.size(); ++idx) {
-                    while (idx >= a_consumed.load(std::memory_order_acquire) + (size_t) m.ring) {
-                        if (a_stop.load(std::memory_order_acquire)) return;
-                        std::this_thread::yield();
-                    }
+                    detail::retirement_until([&] {
+                        return a_stop.load(std::memory_order_acquire) ||
+                               idx < a_consumed.load(std::memory_order_acquire) + (size_t) m.ring;
+                    }, "issuer ring consumer did not advance");
+                    if (a_stop.load(std::memory_order_acquire)) return;
                     const StreamEntry& en = seq[idx];
                     const int sl = (int) (idx % (size_t) m.ring);
                     const auto th = Clock::now();
@@ -2649,7 +2665,8 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
         // the consumer's side: entry k's copy is on the copy stream (the thread issued it), then k is given back
         auto wait_issued = [&](size_t k) {
             if (!threaded_issue) return;
-            while (a_issued.load(std::memory_order_acquire) <= k) std::this_thread::yield();
+            detail::retirement_until([&] { return a_issued.load(std::memory_order_acquire) > k; },
+                                     "issuer did not publish the requested DMA");
         };
         auto give_back = [&](size_t upto) {
             if (threaded_issue) a_consumed.store(upto, std::memory_order_release);
