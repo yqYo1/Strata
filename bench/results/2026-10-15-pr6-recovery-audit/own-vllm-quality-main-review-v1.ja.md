@@ -1,0 +1,7 @@
+# Main: R837四arm自然文screen source review
+
+run_screen.py全体、compare_screen.py全体、manifest/由来、旧oracle再利用とselected/dense schemaの契約をMainが確認した。sourceは統合6354f0b4/build99063573/model03b2bd38に固定。native環境をexec前に確定し、同じ32863ID/context=resident65536/chunk8192/R_GPU32768/ROPE1、二つの独立FP32 controlを先に完了してからBF16候補を起動する。control一致は生成文字列ではなく数値配列の再現性を分離するもの。候補生成の一致は要求しない。
+
+旧FP64read_row/pair_metrics/open_captureをSHA固定で直接importし、独立logsumexp-NLL照合1e-10、全語彙有限性、64位置のKL/L1/top1/rowhash、全32862位置のdense NLL差を保存。品質閾値は新設せず、PASSはcapture/所有/比較の正当性に限定する。
+
+900秒/arm、全体4200秒、RSS88GiB、raw384MiB未満/全disk1GiB、explicit prior正常PASS/sameboot/fault0とPID/start/session回収、source/toolchain/library/modelmetadata凍結、fresh journalの累積、停止時の原FAIL維持を確認した。Mainだけが測定lock下で実行する。ソースの静的レビューが終了、現時点で実行はUNRUN。実行前に最新closed profileのreceipt/SHAと期限を明示する。元source manifestは変更しない。
