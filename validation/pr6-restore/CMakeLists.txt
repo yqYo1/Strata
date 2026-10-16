@@ -116,6 +116,8 @@ if(PR6_BUILD_PREFILL_API_HARNESS)
     message(FATAL_ERROR "pr6_prefill_api requires Linux and STRATA_NATIVE_EXPERTS=ON")
   endif()
   add_executable(pr6_prefill_api EXCLUDE_FROM_ALL harness/prefill_api.cpp)
+  set_target_properties(pr6_prefill_api PROPERTIES
+    CXX_STANDARD 20 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS OFF)
   target_link_libraries(pr6_prefill_api PRIVATE strata_prefill)
   # The historical SYCL directory's flags are directory-scoped. Propagate its
   # actual target options to this sibling; plain host compilation is invalid.

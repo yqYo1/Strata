@@ -1,0 +1,110 @@
+diff --git a/validation/pr6-restore/CMakeLists.txt b/validation/pr6-restore/CMakeLists.txt
+index 238414b39bc20f260ad674e6c718534c4220acae..3d439ada8c0572693c5d08d44e21cfd8ed2de4b2 100644
+--- a/validation/pr6-restore/CMakeLists.txt
++++ b/validation/pr6-restore/CMakeLists.txt
+@@ -116,6 +116,8 @@ if(PR6_BUILD_PREFILL_API_HARNESS)
+     message(FATAL_ERROR "pr6_prefill_api requires Linux and STRATA_NATIVE_EXPERTS=ON")
+   endif()
+   add_executable(pr6_prefill_api EXCLUDE_FROM_ALL harness/prefill_api.cpp)
++  set_target_properties(pr6_prefill_api PROPERTIES
++    CXX_STANDARD 20 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS OFF)
+   target_link_libraries(pr6_prefill_api PRIVATE strata_prefill)
+   # The historical SYCL directory's flags are directory-scoped. Propagate its
+   # actual target options to this sibling; plain host compilation is invalid.
+diff --git a/validation/pr6-restore/harness/prefill_api.cpp b/validation/pr6-restore/harness/prefill_api.cpp
+index fc4be1eccfcfecffe0ed4181f20135e0712bb7fd..767c54434d8ed16ed9c049b34710c11e5f5e7b75 100644
+--- a/validation/pr6-restore/harness/prefill_api.cpp
++++ b/validation/pr6-restore/harness/prefill_api.cpp
+@@ -113,15 +113,20 @@ std::string sha256(const void* data, size_t size) {
+ struct Options {
+     std::string root, token_file, ple_file, kv, capture;
+     std::vector<std::string> shards;
++    bool validation_small_input = false;
+     int64_t count = 0, context = 0, chunk = 0, first = -1, gpu_rows = -1, ring = 0, logit = -1, device = -1;
+ };
+ Options parse(int argc, char** argv) {
+     Options o; std::set<std::string> seen;
+     for (int i = 1; i < argc; ++i) {
+         const std::string key = argv[i];
++        require(key == "--shard" || seen.insert(key).second, "duplicate option: " + key);
++        if (key == "--validation-small-input") {
++            o.validation_small_input = true; // Bare opt-in flag; never a speed sample.
++            continue;
++        }
+         require(i + 1 < argc, "every option requires a value: " + key);
+         const std::string value = argv[++i];
+-        require(key == "--shard" || seen.insert(key).second, "duplicate option: " + key);
+         if (key == "--model-root") o.root = value;
+         else if (key == "--shard") o.shards.push_back(value);
+         else if (key == "--tokens-file") o.token_file = value;
+@@ -138,8 +143,10 @@ Options parse(int argc, char** argv) {
+         else if (key == "--capture-final-row") o.capture = value;
+         else throw std::runtime_error("unknown option: " + key);
+     }
+-    require(o.count >= 32768 && o.count <= 262144 && o.context >= o.count && o.context <= 262144,
+-            "require 32768 <= token-count <= context <= 262144 (fresh position zero only)");
++    require(o.validation_small_input ? (o.count >= 1 && o.count < 32768) : (o.count >= 32768 && o.count <= 262144),
++            "require token-count=32768..262144, or --validation-small-input with token-count=1..32767 for safety/correctness only");
++    require(o.context >= 8192 && o.context >= o.count && o.context <= 262144,
++            "require 8192 <= context <= 262144 and token-count <= context (fresh position zero only)");
+     require(o.chunk == 8192 && o.first >= 0 && o.first <= o.chunk && o.gpu_rows >= 0 && o.gpu_rows <= o.count &&
+             o.ring >= 8 && o.ring <= 512 && o.logit >= 0 && o.device >= 0 && o.device <= INT32_MAX,
+             "explicit chunk=8192, first-chunk=0..8192, residual-gpu-tokens=0..count, ring-slots=8..512, logit-id/device>=0 required");
+@@ -233,6 +240,15 @@ struct Runtime {
+             core::set_native_embed(nullptr);
+             head.reset(); dense.reset(); embed.reset();
+             core::session_release(ss); // Partial session_init leaves value-initialized QSA entries.
++            for (int64_t j = 0; ss.qsa_states && j < ss.qsa_alloc; ++j) {
++                auto& state = ss.qsa_states[ss.qsa_ord0 + j];
++                // qsa_state_init uses the borrowed default allocation queue.
++                // Retired above; include nonnull fields of a partial init.
++                if (state.host_step) sycl::free(state.host_step, *allocation);
++                state.host_step = nullptr;
++                if (state.host_pos) sycl::free(state.host_pos, *allocation);
++                state.host_pos = nullptr;
++            }
+             delete[] ss.qsa_states; ss.qsa_states = nullptr;
+             for (auto* field : {&logits, &ple_scratch, &ple_emb, &session_arena, &weights}) {
+                 if (*field) sycl::free(*field, *allocation);
+@@ -251,7 +267,10 @@ const core::WeightRef& weight(const core::WeightTable& wt, const char* name) {
+ }
+ void wire_ple(Runtime& r) {
+     auto& w = r.ss.ple.w;
++    require(r.ple && r.ple->rows() == kernels::PLE_TABLE_ROWS, "PLE table does not cover the fixed artifact row domain");
+     const auto& key = weight(r.wt, "blk.1.ple_key.weight");
++    require(key.ne0 == 2560 && key.ne1 == 10240 && key.elements == int64_t(2560) * 10240,
++            "PLE key shape differs from the fixed operator");
+     if (!key.quantized()) {
+         require(key.data && key.bytes == uint64_t(2560) * 10240 * 2 && key.kind == core::WeightKind::Bf16InF32,
+                 "unquantized PLE key is not the retained BF16 representation");
+@@ -463,7 +482,8 @@ int main(int argc, char** argv) {
+         for (float v : final_row) residual_l2_squared += double(v)*double(v);
+         const auto residual_bounds = std::minmax_element(final_row.begin(), final_row.end());
+         const auto ple_prev0 = r.ss.ple_prev[0], ple_prev1 = r.ss.ple_prev[1];
+-        require(ple_prev0 == ids[ids.size()-2] && ple_prev1 == ids.back(), "PLE final token window mismatch");
++        const int64_t expected_prev0 = ids.size() > 1 ? ids[ids.size()-2] : -1;
++        require(ple_prev0 == expected_prev0 && ple_prev1 == ids.back(), "PLE final token window mismatch");
+         const auto expert_reads = r.experts->reads(); const bool expert_gguf = r.experts->gguf_mode();
+         if (!o.capture.empty()) {
+             // Exclusive create: never truncate an existing comparison fixture.
+@@ -471,14 +491,19 @@ int main(int argc, char** argv) {
+             require(bool(file),"cannot exclusively create final row capture");
+             require(std::fwrite(final_row.data(),sizeof(float),final_row.size(),file.get()) == final_row.size() &&
+                     std::fflush(file.get()) == 0,"final row capture write failed");
++            // fclose consumes the stream even on failure. Release first so an
++            // exception cannot make the unique_ptr close it a second time.
++            require(std::fclose(file.release()) == 0,"final row capture close failed");
+         }
+         phase("cleanup"); const auto cleanup_started = Clock::now(); r.close(); const double cleanup_ms = ms(cleanup_started);
+         phase("complete");
+-        const int64_t first_len = o.first > 0 && o.first < o.chunk && o.count > 2*o.first ? o.first : o.chunk;
++        const int64_t first_len = o.first > 0 && o.first < o.chunk && o.count > 2*o.first ? o.first : std::min(o.chunk,o.count);
+         const int64_t effective_gpu = o.gpu_rows == o.count ? o.count : o.gpu_rows < first_len ? 0 :
+                                       first_len + (o.gpu_rows-first_len)/o.chunk*o.chunk;
+         std::cout << std::setprecision(17)
+           << "{\"status\":\"PREFILL_ONLY_COMPLETED_UNCOMPARED\",\"baseline_commit\":" << quoted(baseline)
++          << ",\"validation_small_input\":" << (o.validation_small_input ? "true" : "false")
++          << ",\"measurement_scope\":" << quoted(o.validation_small_input ? "safety_correctness_only" : "long_input_prefill")
+           << ",\"model_root\":" << quoted(o.root) << ",\"shards\":[";
+         for (size_t i=0;i<o.shards.size();++i) std::cout << (i ? "," : "") << quoted(o.shards[i]);
+         std::cout << "],\"ple_file\":" << quoted(o.ple_file) << ",\"ple_io\":\"mmap\",\"kv\":" << quoted(o.kv)

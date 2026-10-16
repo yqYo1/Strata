@@ -1,0 +1,626 @@
+{
+  "schema_version": 1,
+  "kind": "independent_read_only_prefill_api_source_audit",
+  "status": "SOURCE_ONLY_UNSAFE_TO_RUN",
+  "source_review_decision": "CHANGES_REQUIRED",
+  "task_id": "task_40680c9cfa82",
+  "dispatch_id": "ctx_f0cbcdfdac66",
+  "generated_utc": "2026-10-16T09:28:49.348722+00:00",
+  "base_commit": "7b1bd9b67d58f2d653a2184b93e5ddb83f7dcc32",
+  "reviewed_commit": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+  "branch": "verify/pr6-prefill-restore",
+  "execution": {
+    "executed": "NONE",
+    "configure": false,
+    "preprocess": false,
+    "compile": false,
+    "link": false,
+    "host_test": false,
+    "sha_vectors": false,
+    "provider": false,
+    "runtime_or_device_query": false,
+    "gpu": false,
+    "model": false,
+    "profiler": false,
+    "process_inspection": false,
+    "git_mutation": false,
+    "implementation_edit": false,
+    "nested_agents": false,
+    "upstream_check": false
+  },
+  "source_changes": [
+    {
+      "path": "validation/pr6-restore/CMakeLists.txt",
+      "before": {
+        "path": "validation/pr6-restore/CMakeLists.txt",
+        "revision": "7b1bd9b67d58f2d653a2184b93e5ddb83f7dcc32",
+        "sha256": "b4a912aef2de32a7476da647aec2dab9fedb1a2102bd6369ca1a21903c2a8ad1",
+        "git_blob": "be0ac55e51def99b3114d9abb0b0bf7a23aeb625",
+        "bytes": 5714,
+        "worktree_matches": false
+      },
+      "after": {
+        "path": "validation/pr6-restore/CMakeLists.txt",
+        "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+        "sha256": "a93136f24b8c84d410f9d4106bc5b173892644eb27feb4e9f6225faf9870bc03",
+        "git_blob": "238414b39bc20f260ad674e6c718534c4220acae",
+        "bytes": 6993,
+        "worktree_matches": true
+      }
+    },
+    {
+      "path": "validation/pr6-restore/harness/prefill_api.cpp",
+      "before": null,
+      "after": {
+        "path": "validation/pr6-restore/harness/prefill_api.cpp",
+        "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+        "sha256": "89bdfd5ffed09d6ed218520f2ee3a983b2463a7e7c83fc4f2d5a42aa2669ace5",
+        "git_blob": "fc4be1eccfcfecffe0ed4181f20135e0712bb7fd",
+        "bytes": 33750,
+        "worktree_matches": true
+      }
+    }
+  ],
+  "diff": {
+    "bytes": 36347,
+    "sha256": "0f545a62243392cada87675c1982a61e51934dde6516ea8051c128aac5d84aac",
+    "stored_patch_bytes": 36219,
+    "stored_patch_sha256": "723aea1e71ada8b8fec7c71fb0516a0984fbcc997002021cc5a615f0a86f47a1",
+    "hunks_equal": true,
+    "difference": "abbreviated versus full index object identities only;128 bytes"
+  },
+  "preservation": {
+    "baseline_validation_files": 216,
+    "unchanged_existing_validation_files": 215,
+    "only_modified_existing_path": "validation/pr6-restore/CMakeLists.txt",
+    "new_source_path": "validation/pr6-restore/harness/prefill_api.cpp",
+    "historical_inventory_count": 198,
+    "external_vendor_inventory_count": 49,
+    "historical_closure_unchanged": true,
+    "physical_vendor_or_llama_qualified": false,
+    "kernel_math_layer_chunk_resolver_modified": false,
+    "root_current_engine_modified": false
+  },
+  "findings": [
+    {
+      "id": "H1",
+      "priority": "high",
+      "kind": "build_integration_defect",
+      "trigger": "Build opt-in sibling harness without externally supplying a C++20 standard when compiler default is pre-C++20.",
+      "sites": [
+        "CMakeLists.txt:118-128",
+        "sycl/CMakeLists.txt:15-17",
+        "harness/prefill_api.cpp:49,94-95,176-185"
+      ],
+      "finding": "Only COMPILE_OPTIONS/LINK_OPTIONS are copied; child-local CMAKE_CXX_STANDARD does not set the parent-created target CXX_STANDARD and no transitive cxx_std_20 requirement exists.",
+      "correction": "Declare CXX_STANDARD=20, CXX_STANDARD_REQUIRED=ON, CXX_EXTENSIONS=OFF on the new target, or equivalently publish its required compile features; inspect actual commands.",
+      "executed": false
+    },
+    {
+      "id": "H2",
+      "priority": "high",
+      "kind": "fixed_native_PLE_key_extent_admission_defect",
+      "trigger": "Otherwise valid model/pack has matching native Q8_0 PLE key shapes [2560,256] in its index and GGUF rather than [2560,10240].",
+      "sites": [
+        "harness/prefill_api.cpp:254-264",
+        "sycl/src/core/native_dense.cpp:187-210",
+        "src/core/layout.cpp:check_one",
+        "sycl/src/prefill/prefill.cpp:2762-2769",
+        "sycl/src/prefill/gemm.dp.cpp:488-506"
+      ],
+      "finding": "NativeDense proves agreement with index and uploads the small tensor; wire_ple checks only native pointers/type. Batched PLE dequantizes fixed 10240 by 2560, exceeding that allocation. Unquantized key also lacks axis checks although its byte count is fixed.",
+      "correction": "Admit key.ne0=2560, key.ne1=10240 and key.elements=2560*10240 for both native and unquantized paths before inference. Retain representation checks.",
+      "executed": false
+    },
+    {
+      "id": "H3",
+      "priority": "medium",
+      "kind": "fixed_PLE_table_domain_admission_defect",
+      "trigger": "Supply a separate valid one-row IQ4_NL PLE-only GGUF through --ple-file while using otherwise valid full model shards/pack.",
+      "sites": [
+        "harness/prefill_api.cpp:282-286,407-409",
+        "src/kernels/ngram.cpp:176-240,338-354",
+        "include/strata/kernels/ngram.hpp:47"
+      ],
+      "finding": "PleTable::open validates its declared shape/payload but not fixed PLE_TABLE_ROWS; ready checks is_open. Fixed artifact hash domains then address missing rows, which read_row silently substitutes with zeros.",
+      "correction": "Require table.rows()==PLE_TABLE_ROWS before wiring artifact hash constants and before inference.",
+      "executed": false
+    },
+    {
+      "id": "H4",
+      "priority": "medium",
+      "kind": "missing_required_small_input_gate",
+      "trigger": "Main attempts the required small-input fixed-model gate before 32768-token work.",
+      "sites": [
+        "harness/prefill_api.cpp:141-145",
+        "sycl/src/prefill/prefill.cpp:896-914",
+        "prefill-api-harness-v1.md:Accepted and held cases",
+        "harness/prefill_api.cpp:465-466,477-479"
+      ],
+      "finding": "All counts below32768 are refused and no second native small-input harness is delivered. This is an acknowledged validation gap, not an unsafe dispatch bypass.",
+      "correction": "Separately review explicit validation-only small-count admission or a separate harness; keep chunk8192 and context>=8192, handle count1 PLE prev as [-1,last] instead of ids[size-2], and report first_len=min(chunk,count) for short input. Begin fresh position0 after provider gates; add continuation separately. Never skip directly to32768.",
+      "executed": false
+    },
+    {
+      "id": "H5",
+      "priority": "low",
+      "kind": "bounded_process_lifetime_QSA_pinned_allocation_leak",
+      "trigger": "Any successful full session initialization, or partial initialization after host staging allocation.",
+      "sites": [
+        "harness/prefill_api.cpp:235-236",
+        "sycl/src/core/session.cpp:135-140",
+        "sycl/src/core/layer.cpp:683-707",
+        "include/strata/core/layer.hpp:206-268"
+      ],
+      "finding": "session_release unregisters rope only; deleting pointer-only QsaState does not free its host_step/host_pos USM. Successful fixed session loses24 pointers totaling1392 requested bytes before process exit, plus allocator overhead.",
+      "correction": "Under existing retired-owner cleanup, free each nonnull per-state host_step/host_pos before descriptor deletion, including partially initialized entries. This does not require changing historical session implementation.",
+      "executed": false
+    },
+    {
+      "id": "H6",
+      "priority": "low",
+      "kind": "optional_capture_close_status_ignored",
+      "trigger": "Opt-in capture fwrite and fflush succeed, then fclose reports an error.",
+      "sites": [
+        "harness/prefill_api.cpp:470-474"
+      ],
+      "finding": "unique_ptr invokes fclose but discards its result, so the receipt can advertise a capture despite a close failure. This is only the declared capture error contract, not a request for fsync or crash-durability.",
+      "correction": "If preserving the documented all-write-failures-are-failure contract, explicitly check the single close before receipt. No broader persistence protocol is required.",
+      "executed": false
+    }
+  ],
+  "source_pins": [
+    {
+      "path": "validation/pr6-restore/CMakeLists.txt",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "a93136f24b8c84d410f9d4106bc5b173892644eb27feb4e9f6225faf9870bc03",
+      "git_blob": "238414b39bc20f260ad674e6c718534c4220acae",
+      "bytes": 6993,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/checked_dpct.cmake",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "5757b9a1954558257fdc88d031aaeab7cbe7369d75191af21d547a890d2995e8",
+      "git_blob": "a18e322b47b16054b53f04a75019d4e4848b061d",
+      "bytes": 2521,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/harness/prefill_api.cpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "89bdfd5ffed09d6ed218520f2ee3a983b2463a7e7c83fc4f2d5a42aa2669ace5",
+      "git_blob": "fc4be1eccfcfecffe0ed4181f20135e0712bb7fd",
+      "bytes": 33750,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/sycl/CMakeLists.txt",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "1500925f231c5bd61c5f771e1b8cb3d396c9e6cb14330dda6069dc14e08dfd03",
+      "git_blob": "5c8e6c507f36e420be61d761a0514897781ef2b8",
+      "bytes": 17522,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/prefill/prefill.hpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "0e890e3db621f03d4b8f187661134663449e40121db626750b201170060b733d",
+      "git_blob": "87bc959784b320c1112234e3d8c0ec4e04060d51",
+      "bytes": 11967,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/prefill/gemm.hpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "2f7af7dc424aa8356b5486c06d876af4b57c201d9732945c9ce5d8091d435354",
+      "git_blob": "60d1c717480d5120d3714afbbeb7cde64597ccf5",
+      "bytes": 3014,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/prefill/retirement.hpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "e440caa8186efcbf33c79ed88f97fd3aa127cb48067d6406b8f541c0f46217ef",
+      "git_blob": "cc241b71471686f6999c45ed53a70db7b6589b27",
+      "bytes": 2344,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/prefill/prefill.cpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "334c5ac6f3da31796ff5dcc531d52d8f00eff7e47453735ce68e4a34b6f3063e",
+      "git_blob": "921fc0425b67206c7d0aafa270489054c2a4543e",
+      "bytes": 255672,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/prefill/gemm.dp.cpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "312d666717ef6821d0140b24ea7fc360434801bf3db3b9950dc657c38cadb201",
+      "git_blob": "c4069b684abacd0b3d91cea413dd8d53f0e38dc9",
+      "bytes": 21211,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/native_dense.hpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "8a897c58c76f38b622000dda001257e5e7047cf91af92236c737c50f281816e8",
+      "git_blob": "2d3cb94c68cffee83f30b89b6d4caa213e0d4bb7",
+      "bytes": 2475,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/native_head.hpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "f24610f43fc4e891d5d96466f19f2de77f3e34a717ae5265e7f50ae614a5d36c",
+      "git_blob": "756a2fb2b578d51ae764131936a237c71ff75197",
+      "bytes": 3667,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/native_dense.cpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "a8ce71277511c6eebe47e75d069633ccc39a5e8b1304cba22ce6efa565388b58",
+      "git_blob": "71633b9a60035a97b5fbe5499741c6da7fa62745",
+      "bytes": 12499,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/native_head.cpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "f45d658c199b159b8a43185d5b986f9c74265e52a9adb378e894c5577141fdb7",
+      "git_blob": "cbe713b7e0e651e4e0ba9d6629277de2367ecbd9",
+      "bytes": 14892,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/session.cpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "ed15ed6a115165b69c90b630d11d00db478d18241b8a8fd01767e01f6ce44819",
+      "git_blob": "c266403085dffb7fc862889e072e4a349d6cab67",
+      "bytes": 67731,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/core/session.hpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "ec390ba42eba0694255a07376c0aeff977c42141593339fbd29dcf4fac6af4a9",
+      "git_blob": "ffe19bc1d6183b6594f3b6bf3c91ffe785e661fe",
+      "bytes": 31475,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/layout.hpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "20afe27849aa28de7ec2f19fbf4be212240504008c643331eadbc10934821c0b",
+      "git_blob": "7b27fec9527b19a7a98f529ab3a81de6a519734a",
+      "bytes": 4392,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/src/core/layout.cpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "f1e166c91025710fe318c85f7fba27a721291ca2d27ececd797abafa5a5cc7eb",
+      "git_blob": "6d1b970bdae0dea5037da806640d2bcb4bea1765",
+      "bytes": 8362,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/weights.hpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "18063071334211c008f5ca17814eda86570f228ab47e916b30f1a9690750956e",
+      "git_blob": "5c6414f8cd1e01ba9ee21494d680479a9f0d1a42",
+      "bytes": 7890,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/weights.cpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "b2cf2e9f4e55876e2da40f5803fe403c44350225e3fa907fa02bfcdec76aa185",
+      "git_blob": "8ec6690bdda6688c99d42dd8a7c06331136ccb3c",
+      "bytes": 24607,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/expert_source.hpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "0c3e0826a2c06f98d182c110aaae41b9da8c9dcda84663f2996dac17a03dc439",
+      "git_blob": "8fbc4a58cd237f91f88dc642f6cb8ff04a060c5e",
+      "bytes": 47388,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/expert_source.cpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "5a04d7c19b0b305339c592275360f0ed41268ff0af1ce42f79ad7146681edbed",
+      "git_blob": "3b1d0fde42418654948454984c26768a1cdd9d71",
+      "bytes": 149701,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/src/kernels/cpu/expert_layout.cpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "89a60e5c44a3578108c7a35a65003006685992487e6dc6ad7b71b04c4a60211b",
+      "git_blob": "8b6e3bc2c5bab3b7e43f3183a94b4b30215a3e17",
+      "bytes": 13811,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/layer.hpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "4587a24f321d4e0bf5cf76f0355b5b2fcb8ccddd6d9ed7383729483b753c886f",
+      "git_blob": "78f20c91c11183b08cacc75fc633d7bd4bffea5e",
+      "bytes": 41997,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/layer.cpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "44cb1e9f6ff157f453eabaa0c48ff4090df60ce58003a57fc1dd3cbec7192d45",
+      "git_blob": "f507e037258a5fc5ece3ed1c7baac95a6372382b",
+      "bytes": 110377,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/ngram.hpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "c29820c46e92f532bf69143d9e4ea1acdfbf5df7d0f29705493fa9350261596b",
+      "git_blob": "a321ea70f94b520f791cfb2aa096373eb802a921",
+      "bytes": 13328,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/src/kernels/ngram.cpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "04ca129a5624329edd5b4193e26eb8bfeb249102ef515ee3c7177d8ae1634a0a",
+      "git_blob": "7292dd963bb121c59522de6447a822fb35ccb584",
+      "bytes": 23753,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/ple.dp.cpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "548608cd7398f28e98d5426cf520a54469e400453964694573773cb6e6a089c3",
+      "git_blob": "1d430071c5cd9f0c36b1239b31a2dee8987c636e",
+      "bytes": 33163,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/rope.dp.cpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "c5881e7d04c787658443ffa0781f0fa744663d3090a884bc3c1192687a1913ae",
+      "git_blob": "bfe7ecf97dbb812c4f8ac11e42e2890a731cb224",
+      "bytes": 8139,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/native_rope.dp.cpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "1098ca79de6df41786194f98a3a4052a411347623a0203bdf8436f274bd1d81c",
+      "git_blob": "9f67374c5819d8b362410f75e2ad1ca9b92133dc",
+      "bytes": 10231,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/kernels/rope_scaling.hpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "27587e1e4f00692bd17a92f1c92d7a354af5280a6159eaae458237020e81157a",
+      "git_blob": "5512e59b339d1fcc88f350d78a5b0eb4a0c8b1b6",
+      "bytes": 11852,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/kernels/mrope.hpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "55573e42044d18fd6e245f12fc3da1ee79120bfca80b5eb644cbc0515d1c63d5",
+      "git_blob": "ed27cf80911e92c48c0f019f09ea44ddbb8686ad",
+      "bytes": 4475,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/sycl_queue.hpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "ed28dbecd3d0fc794c0f744ce131a0476412be5a5ae9dd3a0d88f436ae4aa8d2",
+      "git_blob": "88d124eb600da37d89c714b1e19db1d36405139c",
+      "bytes": 805,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/sycl_retirement.hpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "7b73763943e2833d3d126169e91142ceff600e4b08d9ed2692c044da344c24e7",
+      "git_blob": "20dd385f5b245d3fab268710611d4a1b7ca72405",
+      "bytes": 1241,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/sycl_async_contract.hpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "14751664b69dac54067a3721d64196c8696c37f5007b01d7530c9ea0c752ab97",
+      "git_blob": "ce8c3835e483b6340aee89afae82fa7af41c1853",
+      "bytes": 1283,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/artifact/gguf_reader.hpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "fc8453a95677e797c8fb1198bfb47d715b73a53446d39a29920c372180ca5ee0",
+      "git_blob": "298dc3bc359e5ede9dc0d0685dea430ee8bedf61",
+      "bytes": 21441,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/program/generate.cpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "2b2462269fc1a3bb3e9dba89b5419ed20538b3ebd726c1c560ffad88fd78d41d",
+      "git_blob": "fa97bfe211365c1a1c857d317ab2f8fa254e2151",
+      "bytes": 535157,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/verify.cpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "4d8e43ad252e90c3404238073cd2d9eb8e1b985f04bc6a68129135855648f881",
+      "git_blob": "f13bc363d74f33567dbf6d7baec8bd9467da4607",
+      "bytes": 109629,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/device.dp.cpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "5efd74df905d8893cf83fff402ed9d25b922c7e5c0765b61987da894967ebfe5",
+      "git_blob": "c4199d2c4143f46876d84dc4370662fbb3f9b97d",
+      "bytes": 16317,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/iq_kernels.dp.cpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "7d14a2b16c6d081edfcd2943cb044ad4ebe711687971ac4fe53b39c1797d66bd",
+      "git_blob": "cecfcd81fb2957283bfe6d19442663ba67febd22",
+      "bytes": 136240,
+      "worktree_matches": true
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/native_mmvq.dp.cpp",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "f1ed7528db42c95955099b35fba08381b712ec4366344d267edebbf2336dc25f",
+      "git_blob": "d44715a62d13113b14498692f6d942e5b6c137c8",
+      "bytes": 129652,
+      "worktree_matches": true
+    }
+  ],
+  "input_report_pins": [
+    {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/safety-corrections-v3.md",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "b460211961fc8b3673faa9ad974fc1dee4131990e6dc21a1f0d6f189942f6f31",
+      "git_blob": "f3399e30b6a482ce2185bb1de75b425b9dd55fe1",
+      "bytes": 16760,
+      "worktree_matches": true
+    },
+    {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/safety-corrections-v3.json",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "74d0b716f18342ed26aa93a1efe7adb2643d3eb948ace12d5daec638576e39c6",
+      "git_blob": "b91a2223bddcbcf7924ec695b385f52822e019c3",
+      "bytes": 44112,
+      "worktree_matches": true
+    },
+    {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/independent-safety-review-v3.md",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "d1dc64d58ce53d696bea5f9cfd706ec5e32f21904dfa84b6d3f4bfd8e05562ae",
+      "git_blob": "a171e9a2c7f2e02b892681f1a29efd94f12d9211",
+      "bytes": 22116,
+      "worktree_matches": true
+    },
+    {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/independent-safety-review-v3.json",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "0e30d01eb9724b32c88b576fa436fefc740f2d11b46587c2c1f4c44f7ae4d66d",
+      "git_blob": "cca5ed8796426c4a0cc9af00193d689364d068aa",
+      "bytes": 106563,
+      "worktree_matches": true
+    },
+    {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/prefill-api-harness-v1.md",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "994c0b4ea1714c61560dbc65f22584d363beb0f6559c0ad4cdeec8571dafcd0b",
+      "git_blob": "7582163e82f516936536f74350c901cd4681fa42",
+      "bytes": 19088,
+      "worktree_matches": true
+    },
+    {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/prefill-api-harness-v1.json",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "d47028a79015a1c3e831460f78a26663e43299321bc5e4e94851ec2f5efc45dd",
+      "git_blob": "45ad6e1c866efe0aea962d897a8d8f02185169eb",
+      "bytes": 14799,
+      "worktree_matches": true
+    },
+    {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/prefill-api-harness-v1.patch",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "723aea1e71ada8b8fec7c71fb0516a0984fbcc997002021cc5a615f0a86f47a1",
+      "git_blob": "569b341d19dd77cbcc447588c3774e29fbdb757e",
+      "bytes": 36219,
+      "worktree_matches": true
+    },
+    {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/historical-closure.json",
+      "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+      "sha256": "f32257a5005ada8ed1142c4bc6d575d246ac018312764ff2f9ce1203e7d6f3ee",
+      "git_blob": "81d17eb706935efae326577d75caa7be35fb5f5e",
+      "bytes": 110463,
+      "worktree_matches": true
+    }
+  ],
+  "call_trace": [
+    "parse exact bounded LE int32 and immutable env before runtime",
+    "metadata architecture512x10/unscaled RoPE and retained native GR/PLE controls",
+    "served_names + BF16 key exception + embedding/head skip",
+    "checked default allocation + owning same-context in-order compute",
+    "WeightTable load/check_all then actual-vocab NativeEmbed/NativeDense/NativeHead load",
+    "resident session sizing/carve and physical arithmetic capacity gate",
+    "mmap PleTable + PLE wire (H2/H3 gaps) + session zero + FileExpertSource",
+    "Prefill init -> run mode2 -> layer_major -> unchanged fixed layer/chunk operators",
+    "final-layer synchronized on_stage/on_chunk sets checkpoint_ready before harness callback",
+    "checked final-row D2D -> ss.R alias block.R -> final finite readback",
+    "lm_head_mix block.R -> block.mixed -> NativeHead -> checked finite logits",
+    "retire/reset/unbind/release/free mapped owners/destroy owned compute (H5 staging leak)",
+    "optional capture and UNCOMPARED receipt (H6 close status)"
+  ],
+  "small_input_gate": {
+    "available_in_delivered_harness": false,
+    "minimum_tokens": 32768,
+    "next_source_action": "explicit reviewed validation-only short-count admission or separate native small-input harness",
+    "context_minimum_for_current_chunk": 8192,
+    "chunk": 8192,
+    "reduced_model_geometry_supported": false,
+    "continuation_supported": false,
+    "native_gate_now_authorized": false,
+    "additional_short_count_fixes": [
+      "count1 PLE predecessor handling at line466",
+      "effective first-chunk receipt min(chunk,count) at line477"
+    ]
+  },
+  "retained_statuses": {
+    "numerical_equivalence": "UNRUN",
+    "physical262144": "UNQUALIFIED",
+    "RESTORE": "UNQUALIFIED",
+    "native_fullmodel_CLI": "UNAVAILABLE",
+    "historical600": "NOT_REQUALIFIED",
+    "provider_approval": false,
+    "head_final_row_source_contract": "consistent;UNRUN"
+  },
+  "official_references": [
+    {
+      "url": "https://cmake.org/cmake/help/latest/prop_tgt/CXX_STANDARD.html",
+      "used_for": "target property initialized at creation rather than COMPILE_OPTIONS copying"
+    },
+    {
+      "url": "https://cmake.org/cmake/help/latest/manual/cmake-language.7.html#variables",
+      "used_for": "directory variable scope"
+    }
+  ],
+  "provenance": {
+    "new_files": "independently authored source review under repository LICENSE",
+    "external_implementation_import": false,
+    "excluded_sources_consulted": false,
+    "protected_credential_record_opened": false,
+    "LLVM_implementation_opened": false
+  },
+  "retention": {
+    "owner": "Main",
+    "raw_logs_tensors_binaries_profiler_created": false,
+    "deleted_artifacts": [],
+    "next_review": "source corrections and Main configure/build/provider gate decisions"
+  },
+  "report": {
+    "path": "bench/results/2026-10-16-pr6-faithful-restore/prefill-api-independent-review-v1.md",
+    "sha256": "f504fddd1af6688257bf1e6aed4e7abeebf363106a936dbce100e8cfc53a16a7",
+    "bytes": 17560
+  }
+}

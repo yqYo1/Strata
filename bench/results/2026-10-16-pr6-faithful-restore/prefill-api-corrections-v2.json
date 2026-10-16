@@ -1,0 +1,293 @@
+{
+  "schema": "strata-pr6-prefill-api-corrections-v2",
+  "created_utc": "2026-10-16T09:37:08.137326+00:00",
+  "status": "SOURCE_ONLY_UNSAFE_TO_RUN",
+  "implementation_status": "H1-H6_SOURCE_CORRECTIONS_DELIVERED",
+  "base_commit": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+  "worktree": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore",
+  "branch": "verify/pr6-prefill-restore",
+  "source_paths": [
+    {
+      "path": "validation/pr6-restore/CMakeLists.txt",
+      "before": {
+        "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+        "bytes": 6993,
+        "sha256": "a93136f24b8c84d410f9d4106bc5b173892644eb27feb4e9f6225faf9870bc03",
+        "git_blob": "238414b39bc20f260ad674e6c718534c4220acae"
+      },
+      "after": {
+        "path": "validation/pr6-restore/CMakeLists.txt",
+        "bytes": 7109,
+        "sha256": "5f7a282bd672cbbcf2fafee896df5daff6645acc5e66c80559ec8fe78094bd6f"
+      }
+    },
+    {
+      "path": "validation/pr6-restore/harness/prefill_api.cpp",
+      "before": {
+        "revision": "5f16e726e8f3a000e4f9ae23fcb6747cff592ae9",
+        "bytes": 33750,
+        "sha256": "89bdfd5ffed09d6ed218520f2ee3a983b2463a7e7c83fc4f2d5a42aa2669ace5",
+        "git_blob": "fc4be1eccfcfecffe0ed4181f20135e0712bb7fd"
+      },
+      "after": {
+        "path": "validation/pr6-restore/harness/prefill_api.cpp",
+        "bytes": 35576,
+        "sha256": "c6d9684f87a86ea1da3a947eb2130dd88baadc2cdbbb101321d10da10153bd46"
+      }
+    }
+  ],
+  "patch": {
+    "path": "bench/results/2026-10-16-pr6-faithful-restore/prefill-api-corrections-v2.patch",
+    "bytes": 7902,
+    "sha256": "2bb6da22961869a3506ed7fe8c5138cd4509bc5fe9bd998b3774fb4399678fdc"
+  },
+  "changes": [
+    {
+      "id": "H1",
+      "source_action": "Explicit target CXX_STANDARD=20, CXX_STANDARD_REQUIRED=ON, CXX_EXTENSIONS=OFF; inherited SYCL compile/link options retained."
+    },
+    {
+      "id": "H2",
+      "source_action": "Shared PLE key gate ne0=2560, ne1=10240, elements=26214400 precedes both native and unquantized wiring; prior pointer/type/BF16 byte checks retained."
+    },
+    {
+      "id": "H3",
+      "source_action": "Require opened table rows()==kernels::PLE_TABLE_ROWS (320001536) before wiring or inference."
+    },
+    {
+      "id": "H4",
+      "source_action": "Bare duplicate-rejected --validation-small-input flag admits only 1..32767; absent flag retains 32768..262144. Context>=8192, context>=count, context<=262144 and chunk8192 remain mandatory. Immutable const Options controls validation_small_input and measurement_scope receipt fields. Single-token predecessor is -1; normal first length uses min(chunk,count). Existing optional short-first dispatch retained."
+    },
+    {
+      "id": "H5",
+      "source_action": "After existing queue retirement and session_release, free each allocated QSA state host_step/host_pos through borrowed allocation queue, then clear pointers before descriptor deletion. Include partial-init nonnull fields."
+    },
+    {
+      "id": "H6",
+      "source_action": "After successful write/flush, release FILE unique_ptr ownership into exactly one checked fclose; close failure throws before success receipt, with no double close and no fsync."
+    }
+  ],
+  "small_input_contract": {
+    "flag": "--validation-small-input",
+    "takes_value": false,
+    "count_min": 1,
+    "count_max": 32767,
+    "context_min": 8192,
+    "context_max": 262144,
+    "chunk": 8192,
+    "position0": 0,
+    "measurement_scope": "safety_correctness_only",
+    "receipt_flag_source": "const auto o = parse(argc, argv)",
+    "continuation_api_added": false,
+    "reduced_model_geometry_supported": false,
+    "long_input_admission_unchanged": true,
+    "short_first_chunk_dispatch_unchanged": true,
+    "native_run_authorized": false
+  },
+  "source_review": {
+    "method": "Read-only source/Git/hash inspection, complete two-file patch review; Python3 only edits/hashes/metadata generation. No product code executed.",
+    "unchanged_other_tracked_validation_files": 215,
+    "unexpected_other_validation_changes": [],
+    "tracked_worktree_diff_paths": [
+      "validation/pr6-restore/CMakeLists.txt",
+      "validation/pr6-restore/harness/prefill_api.cpp"
+    ],
+    "sha_function_byte_identical": true,
+    "sha_function_sha256": "e6d0e91307560bffab8432eba71793fcbeb117c9eace93941a64733710ecc6f7",
+    "sha_function_bytes": 2566,
+    "expected_main_receipt_function_sha256": "e6d0e91307560bffab8432eba71793fcbeb117c9eace93941a64733710ecc6f7",
+    "main_sha_receipt": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-pr6-harness-host-sha-v1.json",
+      "bytes": 12766,
+      "sha256": "99a2afb95aeb72d937f563e320f311fe2ed7259fecfd8be5583e13dbe09cd050"
+    },
+    "main_sha_receipt_passed": true,
+    "main_sha_receipt_cases": 33,
+    "main_sha_scope": "SHA evidence function only, not native engine/provider/numerical/256K/historical600 qualification",
+    "worker_sha_execution": "NONE"
+  },
+  "exception_review": [
+    "Before session initialization, qsa_states is null; session_init value-initializes full geometry descriptors before per-state allocation. All qsa_alloc slots are inspected, including partially initialized and untouched null states. This harness uses the full session with qsa_ord0=0; no split-session generalization is claimed.",
+    "QSA staging malloc_host uses dpct::get_in_order_queue(); allocation=q_of(nullptr) is that borrowed checked default queue. No device switch occurs between initialization and cleanup. Compute and allocation are retired before the new frees; allocation remains live until after all frees. Owning compute alone is destroyed last.",
+    "Queue uncertainty preserves existing fail-stop86, delivered checked async errors87, cleanup exceptions/terminate88. A free exception stops the process before deletion or success; this is not a promise of complete reclamation on provider failure.",
+    "Capture open failure has no live stream; write/flush failure unwinds unique_ptr once and remains failure even if destructor close also fails. Successful write/flush enters checked fclose(file.release()); close failure cannot double-close and reaches ordinary failure before receipt. Failed partial capture is not removed by this delivery.",
+    "Provider partial-acceptance, allocator/free correctness, asynchronous error delivery and external library unwind behavior remain unexecuted dependencies. Source control-flow review does not certify them."
+  ],
+  "execution": {
+    "configure": "NONE",
+    "preprocess": "NONE",
+    "compile": "NONE",
+    "link": "NONE",
+    "host_tests": "NONE",
+    "syntax_check": "NONE",
+    "native_runtime": "NONE",
+    "device_query": "NONE",
+    "model": "NONE",
+    "GPU": "NONE",
+    "profiler": "NONE",
+    "process_inspection": "NONE",
+    "services": "NONE",
+    "packages": "NONE",
+    "permissions": "NONE",
+    "cleanup": "NONE",
+    "nested_agents": "NONE",
+    "git_mutation": "NONE"
+  },
+  "retained_statuses": {
+    "D3": "EXCLUDED_NO_OVERRIDE",
+    "numerical_equivalence": "UNRUN",
+    "physical262144": "UNQUALIFIED",
+    "RESTORE": "UNQUALIFIED",
+    "continuation": "UNQUALIFIED",
+    "native_fullmodel_CLI": "UNAVAILABLE",
+    "historical600": "NOT_REQUALIFIED",
+    "provider_approval": false,
+    "new_performance_samples": 0
+  },
+  "remaining_gates": [
+    "Main complete source/patch review, ordinary host parser/admission/receipt evidence as required; existing Main SHA-only33-vector result is preserved, not rerun.",
+    "Main coherent pinned compiler/libsycl/UR/Level Zero/oneMKL/offline llama/vendor/generated checked-header identity; configure probes; actual C++20/SYCL/precise/AOT compile options, target closure, ODR/ABI/link proof. A build grants no runtime approval.",
+    "Main separately admitted finite model-free checked-provider queue/event/pending/complete/async/partial-submit/retirement/cancel/no-init/late-init/relayout/ring/tail/borrowed-owner/cleanup gates with D3 excluded.",
+    "Main separately admitted full-model1-token then small odd/tail fresh-position-zero validation under immutable pre-exec environment, finite owned supervision/fault receipts; compare residual/logits and full KV/scales/GDN/conv/indexer/PLE state and task quality. Flag is source admission only.",
+    "Separate continuation API/state-comparison gate, both MTP branches and alternate draft-KV/draft/round/step/subset gates remain outside this one-shot harness.",
+    "Only after relevant gates, long-input correctness and matched clean individual performance samples; physical262144 allocation/page/indexer/recurrence/PLE and export/exit/fresh RESTORE/rewind/branch remain separate. Full decode remains held by D3."
+  ],
+  "input_reports": [
+    {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/prefill-api-independent-review-v1.md",
+      "bytes": 17560,
+      "sha256": "f504fddd1af6688257bf1e6aed4e7abeebf363106a936dbce100e8cfc53a16a7"
+    },
+    {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/prefill-api-independent-review-v1.json",
+      "bytes": 28201,
+      "sha256": "b62815fe9b1955b0dfb55bef479190ce37171578dca48644ac7c4fd7650f22f9"
+    },
+    {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/prefill-api-harness-v1.md",
+      "bytes": 19088,
+      "sha256": "994c0b4ea1714c61560dbc65f22584d363beb0f6559c0ad4cdeec8571dafcd0b"
+    },
+    {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/prefill-api-harness-v1.json",
+      "bytes": 14799,
+      "sha256": "d47028a79015a1c3e831460f78a26663e43299321bc5e4e94851ec2f5efc45dd"
+    },
+    {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/prefill-api-harness-v1.patch",
+      "bytes": 36219,
+      "sha256": "723aea1e71ada8b8fec7c71fb0516a0984fbcc997002021cc5a615f0a86f47a1"
+    },
+    {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/safety-corrections-v3.md",
+      "bytes": 16760,
+      "sha256": "b460211961fc8b3673faa9ad974fc1dee4131990e6dc21a1f0d6f189942f6f31"
+    },
+    {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/safety-corrections-v3.json",
+      "bytes": 44112,
+      "sha256": "74d0b716f18342ed26aa93a1efe7adb2643d3eb948ace12d5daec638576e39c6"
+    },
+    {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/independent-safety-review-v3.md",
+      "bytes": 22116,
+      "sha256": "d1dc64d58ce53d696bea5f9cfd706ec5e32f21904dfa84b6d3f4bfd8e05562ae"
+    },
+    {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/independent-safety-review-v3.json",
+      "bytes": 106563,
+      "sha256": "0e30d01eb9724b32c88b576fa436fefc740f2d11b46587c2c1f4c44f7ae4d66d"
+    }
+  ],
+  "source_contracts": [
+    {
+      "path": "AGENTS.md",
+      "bytes": 12124,
+      "sha256": "7f750320bef4146a2872086922d84fc9fa7a8351ae655b7876c912856e3747fe"
+    },
+    {
+      "path": "docs/ARTIFACT_RETENTION.md",
+      "bytes": 8223,
+      "sha256": "fdf86d7ea576d6f0400ec7e643b5ddca5c3c577dd053d66c2fd05220e64b1cc1"
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/core/session.hpp",
+      "bytes": 31475,
+      "sha256": "ec390ba42eba0694255a07376c0aeff977c42141593339fbd29dcf4fac6af4a9"
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/session.cpp",
+      "bytes": 67731,
+      "sha256": "ed15ed6a115165b69c90b630d11d00db478d18241b8a8fd01767e01f6ce44819"
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/layer.hpp",
+      "bytes": 41997,
+      "sha256": "4587a24f321d4e0bf5cf76f0355b5b2fcb8ccddd6d9ed7383729483b753c886f"
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/layer.cpp",
+      "bytes": 110377,
+      "sha256": "44cb1e9f6ff157f453eabaa0c48ff4090df60ce58003a57fc1dd3cbec7192d45"
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/sycl_queue.hpp",
+      "bytes": 805,
+      "sha256": "ed28dbecd3d0fc794c0f744ce131a0476412be5a5ae9dd3a0d88f436ae4aa8d2"
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/ngram.hpp",
+      "bytes": 13328,
+      "sha256": "c29820c46e92f532bf69143d9e4ea1acdfbf5df7d0f29705493fa9350261596b"
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/prefill/retirement.hpp",
+      "bytes": 2344,
+      "sha256": "e440caa8186efcbf33c79ed88f97fd3aa127cb48067d6406b8f541c0f46217ef"
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/sycl_retirement.hpp",
+      "bytes": 1241,
+      "sha256": "7b73763943e2833d3d126169e91142ceff600e4b08d9ed2692c044da344c24e7"
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/prefill/prefill.cpp",
+      "bytes": 255672,
+      "sha256": "334c5ac6f3da31796ff5dcc531d52d8f00eff7e47453735ce68e4a34b6f3063e"
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/native_dense.cpp",
+      "bytes": 12499,
+      "sha256": "a8ce71277511c6eebe47e75d069633ccc39a5e8b1304cba22ce6efa565388b58"
+    },
+    {
+      "path": "validation/pr6-restore/src/kernels/ngram.cpp",
+      "bytes": 23753,
+      "sha256": "04ca129a5624329edd5b4193e26eb8bfeb249102ef515ee3c7177d8ae1634a0a"
+    }
+  ],
+  "provenance": {
+    "new_code": "Independently authored narrowly against pinned own-fork source/review under repository LICENSE",
+    "external_implementation_import": false,
+    "XeStrata_source_helpers_tests_archive_consulted": false,
+    "protected_credential_record_opened": false,
+    "LLVM_implementation_opened": false,
+    "upstream_check_performed": false
+  },
+  "retention": {
+    "owner": "Main",
+    "new_artifacts": [
+      "prefill-api-corrections-v2.md",
+      "prefill-api-corrections-v2.json",
+      "prefill-api-corrections-v2.patch"
+    ],
+    "raw_logs_tensors_profiler_binaries_created": false,
+    "deleted_paths": [],
+    "next_review": "Main source acceptance, configure/build/provider and smallest short-model gate decisions"
+  },
+  "report": {
+    "path": "bench/results/2026-10-16-pr6-faithful-restore/prefill-api-corrections-v2.md",
+    "bytes": 8317,
+    "sha256": "294c200a028720f6695868cd90e180bdcd71d5792858fd953df41d55884bc84a"
+  }
+}
