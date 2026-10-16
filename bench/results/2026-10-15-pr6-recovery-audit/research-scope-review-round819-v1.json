@@ -1,0 +1,103 @@
+{
+  "round": 819,
+  "reviewed_on": "2026-10-16",
+  "reviewer": "native Codex gpt-6-luna",
+  "reasoning_effort": "max",
+  "review_purpose": "Review decision-support R817 for fit, depth, novelty against R805, static tool/version claims, command support in primary documentation, ISA evidence limits, and narrow retrieval for the imminent R810 build. Read-only review; only the two named review artifacts were written. No build, test, GPU/profiler work, process inspection, cleanup, Git, Orca, worker action, product edit, or research-index change was performed.",
+  "inputs": {
+    "report": {
+      "round": 817,
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round817-v1.txt",
+      "sha256": "c11814ca952989f823fe75b6c0ece8a78e7db7f712e7b2bbaa361910089093fd",
+      "bytes": 14127,
+      "whitespace_word_count": 1757,
+      "url_count": 7,
+      "purpose_class": "decision support"
+    },
+    "spec": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round817-spec-v1.txt",
+      "sha256": "b05b20ba85f279b46e78a4ba2584b6514e7af8f915583a89bd5fe9ac4d17d16f"
+    },
+    "launch": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round817-launch-v1.json",
+      "sha256": "595ba3ae666e886bdadeb1868f2d59b22a3e468f6b1abb4f0a8abbaf1a0f9b63",
+      "effective_agent": "codex",
+      "effective_model": "gpt-6-luna",
+      "receipt_state": "ready / input_accepted"
+    },
+    "research_index_snapshot": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+      "sha256": "fa2d602d4c701919053086eb3fde0e42e5520149524db001bbb90f38659185bc",
+      "sections_used": [
+        "native16_activation_pipeline status for R810/R816/R817",
+        "R805 and R817 retrieval/status metadata"
+      ],
+      "modified": false
+    },
+    "prior_review_metadata_only": [
+      {
+        "round": 806,
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round806-v1.json",
+        "sha256": "19cc906ca67eb6de4e8eb06c82c80b3d02e45aba60563c7f8460cdaf38091133",
+        "use": "R805 scope, novelty, and evidence-chain metadata; only the report sections identified by that review were consulted for the comparison."
+      },
+      {
+        "round": 814,
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round814-v1.json",
+        "sha256": "cd568ce7ea4c56f31dc74fb9d8ee89bd8942dfbf2cc57b7ea890739745e2af96",
+        "use": "R813 grouped scheduling metadata: actual route/live-byte evidence and R810 outcome were prerequisites; R817 is a separate, now concrete AOT artifact-chain question."
+      }
+    ]
+  },
+  "classification": "decision support",
+  "reviewer_report_read": true,
+  "scope_depth_review": "At 1,757 whitespace-delimited words and seven URLs, R817 meets its assigned 1,200–1,800-word and source limits. It stays on the R810 native16 candidate's Linux AOT artifact chain: static tool inventory, extraction/disassembly recipes, variant mapping, DPAS and block-2D evidence criteria, and bounded artifact retention. It keeps all compile, extraction, runtime, correctness, and performance states UNRUN. The content is substantive and sufficiently narrow.",
+  "novelty_and_redundancy": "R805 lays out a general evidence ladder from source/API through the actually loaded image and ISA to runtime measurements, and compares B-operand layouts. R817 does not repeat that layout survey. Its useful novelty is an actionable, candidate-specific extraction path for the R810 executable, with legacy versus new offload packaging, an external ocloc candidate, source-template variant mapping, and concrete limits on what a matching image's instructions can establish. This is a meaningful extension for the current build decision.",
+  "tool_presence_and_version_review": {
+    "static_observation": "The v711 installation files named in R817 (clang-offload-extract, clang-offload-bundler, llvm-offload-binary, llvm-objcopy, sycl-post-link, syclbin-dump, llvm-spirv, and spirv-to-ir-wrapper) were present as executable files under the absolute official LLVM install path recorded by the R810 manifest. No llvm-objdump, ocloc, or standalone IGA/IGA64 executable was found inside that prefix. The SYCL install header contains __SYCL_COMPILER_VERSION 20260915. No executable was invoked.",
+    "path_resolution": "The install is not at P/.tools/intel-llvm-v711/install in the current Strata worktree. The R810 manifest points to /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install. Only the official LLVM installation files were inspected; no XeStrata implementation source was read or used. Main should use this exact manifest path or its recorded approved equivalent, not assume a local P/.tools install.",
+    "version_limit": "R817 records LLVM 22.1.0 and Intel LLVM revision 504366f4b82ff00bbac7b0c956635eed8bc599d8 from static installation metadata; the report does not capture a compiler --version result or executable hash. Record the executed compiler's version/build output and binary hash in the R810 build receipt. The candidate ocloc is outside this prefix, and its exact path/version/hash and compatibility with the generated image remain unresolved."
+  },
+  "command_source_review": {
+    "status": "The command forms are supported by official documentation, but no extraction/disassembly command was run and this does not prove acceptance by the installed versions.",
+    "primary_source_urls": [
+      "https://intel.github.io/llvm/developer/Debugging.html",
+      "https://github.com/intel/llvm/blob/sycl/sycl/doc/design/OffloadDesign.md",
+      "https://ispc.github.io/ispc_for_xe.html",
+      "https://github.com/intel/compute-runtime/blob/master/third_party/aot_config_headers/platforms.h"
+    ],
+    "confirmed_forms": [
+      "Intel DPC++ Debugging documents clang-offload-extract <host-ELF> --output=<prefix> and a clang-offload-bundler --unbundle --type=o --targets=... --input=... --output=... example. R817 correctly makes unbundling conditional on finding a legacy Clang bundle and uses the discovered target label.",
+      "The Intel ISPC-for-Xe guide documents ocloc disasm -file <binary> -device <name> -dump <folder> and per-kernel .asm output. That page's example first creates the binary with ocloc; it does not establish that the external candidate accepts the R810-extracted AOT payload. R817 properly marks that as an assumption."
+    ],
+    "target_name_limit": "R810's manifest names bmg-g21-a0/bmg-g31-a0 for its AOT device choices, while the proposed ocloc command uses the shorter bmg-g21/bmg-g31 model names. Current Intel Compute Runtime platforms.h contains both those generic BMG aliases and stepping-specific AOT identifiers, so the spelling is plausible, but this current source is not the unidentified external ocloc build and does not prove its parser accepts the exact command. Check the candidate's own version/device metadata before disassembly.",
+    "packaging_limit": "Intel's offload design distinguishes legacy Clang bundles from the newer LLVM offload-binary container. The documented clang-offload-extract recipe covers the legacy bundle path; R817 appropriately avoids inventing an llvm-offload-binary extraction flag. If the final ELF is new-format and the documented extractor does not expose the image, the report supplies no executable recipe for that case; treat extraction as unresolved and stop rather than guess."
+  },
+  "evidence_limits": [
+    "No R810 compiler/linker/library-load run, extracted image, disassembly, device query, runtime image/entry attribution, or numerical/performance check exists. Static source types describe intent only.",
+    "A matching DPAS entry plus its device-IR/ISA operand types and template/symbol map can support native input and FP32 accumulation claims. The mnemonic alone does not prove C++ template types, all-math DPAS execution, or runtime selection.",
+    "Typed block-2D helpers in source do not prove emitted messages. A decoded message descriptor must be tied to the identified kernel and pointer arguments. A 16-bit store claim needs binding to the Y argument and inspection of all relevant writes; static instruction presence still does not prove runtime dispatch.",
+    "R817 correctly asks for full-entry GRF, spill/private-memory, and global traffic inspection, and distinguishes a global FP32 output staging buffer from the intended register accumulator. It gives no separate compiler resource/IR recipe that would always resolve whether an ambiguous private-memory transaction is a spill or a deliberate temporary; preserve that distinction as unresolved if assembly alone cannot attribute it.",
+    "No instruction presence/count, static code size, or queue identity establishes speed, occupancy, quality, or correctness. Runtime trace, numerical oracle, counters, and performance samples remain separate Main-owned gates."
+  ],
+  "main_retrieval": {
+    "main_original_needed_now": true,
+    "read_only_these_exact_sections": [
+      {
+        "section": "## Bounded extraction and disassembly recipes",
+        "trigger": "Before inspecting the first closed R810 AOT artifact; retain the conditional legacy-bundle and version-matched ocloc gates."
+      },
+      {
+        "section": "## What an ISA finding can establish",
+        "trigger": "When judging DPAS input/accumulator types, block-2D messages, direct 16-bit output, spill/private traffic, and the gap between static image evidence and runtime dispatch."
+      }
+    ],
+    "retrieval_brief": "R810's package and manifest already provide the source/template and tile-format mapping. Main can open just the two R817 sections above for this build. Confirm the real compiler/path and BMG target in the receipt, then map any disassembly to the exact optimized entry. If the installed ocloc version or an ambiguous scratch path is still unresolved, record it instead of treating it as a proof.",
+    "main_correction_to_retain": "The recipe syntax is documentation-backed; tool acceptance, payload format compatibility, actual image selection, and kernel launch remain untested. Do not infer performance or model quality from ISA."
+  },
+  "next_scope_recommendation": {
+    "status": "No new research task recommended now.",
+    "reason": "R817 answers the bounded AOT extraction/interpretation question at the source level. Main owns the imminent build and actual artifact; further research before the image/tool/version facts exist would be speculative."
+  },
+  "operational_digest_ja_400_chars": "R817は1,757語・7 URLで予算内。R805の一般的な証拠段階をR810用の抽出・disasm手順へ具体化し新規性があります。構文は[Intel Debugging](https://intel.github.io/llvm/developer/Debugging.html)と[ISPC Xe](https://ispc.github.io/ispc_for_xe.html)の公式例に合いますが、実ツール実行・payload適合・runtime選択は未確認。Mainは「Bounded extraction and disassembly recipes」「What an ISA finding can establish」の2節のみ参照。実LLVMはP/.tools外のR810記載パスでした。"
+}

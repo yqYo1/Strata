@@ -3722,9 +3722,9 @@
     "engine_build": "own-native16-prefill-build-v2.json",
     "engine_build_status": "Fresh v2 whole build+host+68GEMM PASS. Full separate-queue regression FAIL remains; narrow same-queue followup and both129token model arms PASS.",
     "new_kernel_test": "own-native16-gemm-correctness-v2.json",
-    "implementation_round787": "Full source/provenance review completed; unadopted/unbuilt. Need actualallocation extent/context guard consideration before production integration.",
+    "implementation_round787": "Main private build and2case traced smoke PASS; actual registered Device spans/checked copy drain hardened; full/componentmodel/physical262144/performance UNRUN.",
     "research_next": [
-      817
+      820
     ],
     "registry_lifetime_failure": "own-native16-registry-lifetime-v1.ja.md",
     "regression": "own-native16-regression-followup2-correctness-v2.json",
@@ -3734,13 +3734,12 @@
     "clean_first_fp32": "346.5tok/s n1",
     "attention_main_review": "own-native16-attention-main-review-v1.ja.md",
     "implementation_next": [
-      816,
-      818
+      821
     ],
     "clean_first_bf16": "123.8tok/s n1, same request/binary/GPU32768 residual rows; -64.27% throughput",
     "initial_long_comparison": "own-native16-first-long-comparison-v1.json",
     "performance_adopted": false,
-    "next": "Main R816 vLLM component compile/test/operator before engine hook. R818 QSA typed16 source-only in parallel. Main hardware-idle after oneDNN check closure; no source/default performance adoption.",
+    "next": "Main actual vLLM build/qualification/operator before engine hook. R821 source-only backend hook and R820 Luna scan collection in parallel. Default FP32 unchanged.",
     "onednn_candidate": "Main build-v3/smoke-v3 PASS. Check-v3 FAIL at strict exact BF16 identity/subnormal case12 after11numeric cases; exactbits not captured. No GPUfault/dump, ownership closure true; numerics exit1. Chain/lifecycle/scratch UNRUN. Hold secondary candidate; do not weaken old68tests.",
     "retention": "closed-native16-first-wave-retention-v1.json:366files/124263459logicalbytes retired; all statuses unchanged; currentv2build, oldoneGEMMexecutable, oldFP32NLLcontrols preserved.",
     "natural_input": "own-native16-natural-input-v1.json:32863 thinkingON,64 positions, no repeatedpadding, no GPU executed",
@@ -3751,10 +3750,11 @@
     "research_807": "Settled/released, review808 complete. Main read only What the kernel actually does and Smallest viable standalone adaptation for actual kernel selection; then read actual pinned BSD3 primary Xe2 core/grouped helper/launcher145lines and policy (policy not authorized for copying).",
     "research_808": "research-scope-review-round808-v1.json; no further general GEMM survey needed; actual execution remains UNRUN",
     "onednn_main_review": "own-native16-onednn-main-review-v1.ja.md; Main full source review completed, qualification controller R809 source-only active.",
-    "vllm_xe2_candidate": "R810 actual BSD3 Xe2 source returned/committed b3644165; Main full source+provenance review own-vllm-xe2-main-review-v1.ja.md; UNBUILT/UNRUN/unadopted.",
+    "vllm_xe2_candidate": "R810 fullMain source review complete; R816build-v1 preflightFAIL no command due historical build-only schema mismatch; Mainfix, build-v2 executing, no kernelqualification yet.",
     "research_811": "Completed/settled/released, reviewed812; collection body Main UNREAD. Surface/prefetch/tail contracts held for matching R810 source review decision; actual BMG behavior UNRUN.",
     "retention_screen": "closed-native16-screen-log-retention-v1.json:99closed log/duplicate files retired,64589559logicalbytes; onlyFP32-a+customBF16canonical64fullvocabularycaptures retained forR810/R804 numericalcomparison; privateR803exe/buildrecord still currentconsumer. Allstatusbytesunchanged.",
     "research_813": "Reviewed814; knowledge collection Main body UNREAD/hold. Overlap withR601/R627-633/R701-702; no new grouped survey until actualroute/livebyte/R810 evidence.",
-    "research_817": "OrcaLuna current-decision source research: exact AOT binary extraction/ISA proof, scope distinct fromR805general lowering; active, Main body notread."
+    "research_817": "Completed/reviewed819. Main retrieved only Bounded extraction and disassembly recipes and What an ISA finding can establish. No runtime ISA extraction performed.",
+    "implementation_round818": "Returned source-only typedQSA chain; Main source review in progress, nonapplied."
   }
 }

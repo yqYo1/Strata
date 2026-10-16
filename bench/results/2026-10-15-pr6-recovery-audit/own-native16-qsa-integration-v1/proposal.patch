@@ -1,0 +1,1560 @@
+--- a/cmake/sycl_backend.cmake
++++ b/cmake/sycl_backend.cmake
+@@ -110,7 +110,7 @@
+ set(MKL_LINK dynamic)
+ set(MKL_THREADING sequential)
+ find_package(MKL CONFIG REQUIRED)
+-add_library(strata_prefill STATIC src/prefill/prefill.cpp src/prefill/sycl/gemm.cpp src/prefill/sycl/gemm16.cpp src/prefill/sycl/native16.cpp src/prefill/sycl/postops.cpp src/prefill/sycl/blob.cpp src/prefill/sycl/moe_mmq.cpp src/prefill/sycl/moe_fused.cpp)
++add_library(strata_prefill STATIC src/prefill/prefill.cpp src/prefill/sycl/gemm.cpp src/prefill/sycl/gemm16.cpp src/prefill/sycl/native16.cpp src/prefill/sycl/qsa_native16.cpp src/prefill/sycl/postops.cpp src/prefill/sycl/blob.cpp src/prefill/sycl/moe_mmq.cpp src/prefill/sycl/moe_fused.cpp)
+ target_link_libraries(strata_prefill PUBLIC strata_engine MKL::MKL_SYCL::BLAS)
+ target_compile_definitions(strata_prefill PRIVATE STRATA_PREFILL_MMQ=1 STRATA_PREFILL_FUSED=1)
+ target_compile_options(strata_prefill PRIVATE -fno-fast-math -ffp-contract=off)
+@@ -397,6 +397,13 @@
+   target_link_libraries(sycl_prompt_k_cellmajor_test PRIVATE strata_kernels)
+   target_compile_definitions(sycl_prompt_k_cellmajor_test PRIVATE STRATA_TEST_PROMPT_MATRIX=1)
+   target_compile_options(sycl_prompt_k_cellmajor_test PRIVATE -fno-fast-math -ffp-contract=off)
++  # Manual only: Main owns serialized qualification after current GEMM cohorts.
++  add_executable(sycl_native16_qsa_test EXCLUDE_FROM_ALL tests/sycl/qsa_native16.cpp)
++  target_link_libraries(sycl_native16_qsa_test PRIVATE strata_prefill)
++  target_compile_options(sycl_native16_qsa_test PRIVATE -fno-fast-math -ffp-contract=off)
++  add_executable(sycl_prompt_native16_test EXCLUDE_FROM_ALL tests/sycl/prompt_native16.cpp)
++  target_link_libraries(sycl_prompt_native16_test PRIVATE strata_kernels)
++  target_compile_options(sycl_prompt_native16_test PRIVATE -fno-fast-math -ffp-contract=off)
+   add_executable(sycl_prompt_attention_test tests/sycl/decode_attention.cpp)
+   target_link_libraries(sycl_prompt_attention_test PRIVATE strata_kernels)
+   target_compile_definitions(sycl_prompt_attention_test PRIVATE STRATA_TEST_PROMPT_MATRIX=1)
+--- a/include/strata/kernels/qsa_prompt_attn.hpp
++++ b/include/strata/kernels/qsa_prompt_attn.hpp
+@@ -32,4 +32,41 @@
+ bool qsa_prompt_attn_batch(const float* q, const QsaAttnPools& pools, const int32_t* ids, const int32_t* steps,
+                            int64_t cap, const QsaShapes& s, float* attn, int64_t n_q, void* stream);
+ 
++#if defined(STRATA_ENABLE_SYCL)
++/// Bounds of the allocations behind pools; both counts are positive, and the
++/// caller must provide the actual accessible extents (not the selected width).
++/// Paged pools hold [physical_pages, 2, page_size, 256] INT8 codes and
++/// [physical_pages, 2, page_size, 4] FP16 scales. Table has logical_pages entries.
++struct QsaPromptBf16Bounds {
++    int64_t logical_pages = 0;
++    int64_t physical_pages = 0;
++};
++
++/// Explicit native-16 candidate, independent of all prompt environment flags.
++/// q/attn are BF16 bit patterns [n_q,24,256]; INT8 K/V and FP16 scales only.
++/// BF16 -> one scaled FP16 Q part, one FP16 probability part, FP32 scores,
++/// normalizers and matrix accumulators, then BF16 round-to-nearest-even output.
++/// Same selected IDs/width semantics as the FP32 prompt entry: masking is the
++/// selector's responsibility. Negative/out-of-bounds pages/IDs are missing.
++/// Invalid widths produce zero; cap <= 0 and unsupported geometry/mode/device
++/// return false without submission. n_q==0 is a successful no-op.
++/// Invalid/null/foreign/host/unregistered/overlapping spans throw before submission.
++/// Full spans must fit live Strata device allocations in the queue context/device. Caller
++/// owns truthful extents and allocation lifetimes through stream completion.
++/// Nonfinite Q or live KV scales produce BF16 quiet NaN when rows contribute;
++/// no selected/resident rows produce zero, including for nonfinite Q.
++/// No global FP32 query/output or scratch; no default route is changed.
++bool qsa_prompt_attn_bf16_batch(const uint16_t* q, const QsaAttnPools& pools,
++                                const int32_t* ids, const int32_t* steps,
++                                int64_t cap, const QsaShapes& s, uint16_t* attn,
++                                int64_t n_q, const QsaPromptBf16Bounds& bounds,
++                                void* stream);
++/// Same complete validation/capability checks; never submits or waits.
++bool qsa_prompt_attn_bf16_validate(const uint16_t* q, const QsaAttnPools& pools,
++                                const int32_t* ids, const int32_t* steps,
++                                int64_t cap, const QsaShapes& s, uint16_t* attn,
++                                int64_t n_q, const QsaPromptBf16Bounds& bounds,
++                                void* stream);
++#endif
++
+ }  // namespace strata::kernels
+--- /dev/null
++++ b/include/strata/prefill/qsa_native16.hpp
+@@ -0,0 +1,46 @@
++// SPDX-License-Identifier: MIT
++// Copyright (c) 2026 Niko1221 and the Strata contributors
++#pragma once
++#include "strata/kernels/qsa_prompt_attn.hpp"
++#include <cstdint>
++
++namespace strata::prefill::native16::qsa {
++// Explicit writable owner view. The attention pool API is intentionally const;
++// append must never cast away its constness.
++struct Q8WritePools {
++    int8_t* k_q = nullptr;
++    int8_t* v_q = nullptr;
++    uint16_t* k_scale = nullptr;
++    uint16_t* v_scale = nullptr;
++    const int32_t* page_table = nullptr;
++};
++// Startup-only opt-in. A short request does not activate this route.
++bool requested();
++// No submit. Required before enabling this path for any layer.
++void validate_device(void* stream);
++// BF16 input/output; local FP32 RMS and rotation, first 64 dimensions rotary.
++// One head has 256 values. input_head_stride=512 skips the gate half of Q.
++// cos/sin are the session-owned [table_rows,32] FP32 tables, not new tables.
++// Disjoint output; writes only heads*256 values per row, preserving padding.
++void norm_rope_split(const uint16_t* input, const float* weight,
++                     uint16_t* output, int64_t tokens, int64_t heads,
++                     int64_t input_head_stride, int64_t input_ld,
++                     int64_t output_ld, int64_t pos0, int64_t table_rows,
++                     const float* cos, const float* sin, float eps, void* stream);
++// BF16 attention and full BF16 [head,query256,gate256] projection -> FP16
++// projection input. No saturation, host math, FP32 intermediate or allocation.
++void gate(const uint16_t* attention, const uint16_t* query_and_gate,
++          uint16_t* output_fp16, int64_t tokens, int64_t attention_ld,
++          int64_t query_ld, int64_t output_ld, void* stream);
++// BF16 K/V -> paged INT8 codes and FP16 per-64 scales, directly on device.
++// Resident only; no mirror, stage, ring, rotation or folded pools. Capacities
++// are actual owner counts. Invalid table pages are skipped without access.
++// Caller owns an injective mapping for written cells (production mode0 uses
++// the identity table); concurrent aliases/mutation of that table are invalid.
++// Nonfinite input groups emit NaN scale + zero codes, retaining a diagnostic.
++void append_q8(const uint16_t* k, const uint16_t* v, int64_t tokens,
++               int64_t input_ld, int64_t pos0,
++               const Q8WritePools& pools,
++               const strata::kernels::QsaShapes& shapes,
++               const strata::kernels::QsaPromptBf16Bounds& bounds, void* stream);
++} // namespace strata::prefill::native16::qsa
+--- a/src/kernels/sycl/prompt_attention.cpp
++++ b/src/kernels/sycl/prompt_attention.cpp
+@@ -449,3 +449,307 @@
+   return true;
+ }
+ } // namespace strata::kernels
++
++// Native BF16 I/O candidate. Own MIT implementation built on this file's
++// existing head12+4 / WG128 Mapping0 algorithm; FP32 entry above is unchanged.
++namespace strata::kernels {
++namespace {
++float prompt_bf16_float(uint16_t bits) {
++  return sycl::bit_cast<float>(uint32_t(bits) << 16);
++}
++uint16_t prompt_bf16_bits(float value) {
++  const uint32_t bits = sycl::bit_cast<uint32_t>(value);
++  if ((bits & 0x7fffffffU) > 0x7f800000U)
++    return uint16_t((bits >> 16) | 0x0040U); // Quiet NaN; retain sign/payload.
++  return uint16_t((bits + 0x7fffU + ((bits >> 16) & 1U)) >> 16);
++}
++// Exact declared local storage: Q 8192, KV 16384, P 4096, scores 2048,
++// K/V scales 1024, max/sum/alpha 192, factors 16, rows 256, shifts/bad 128.
++constexpr size_t BF16_SLM = 32336;
++static_assert(BF16_SLM == (16 * HD + CH * HD + 4 * 16 * CH) * sizeof(sycl::half)
++    + (16 * CH + 2 * CH * 4 + 3 * 16 + 4) * sizeof(float)
++    + CH * sizeof(int64_t) + 2 * 16 * sizeof(int));
++bool prompt_bf16_matrix_available(const sycl::device &device) {
++  if (!device.is_gpu() || !device.has(sycl::aspect::fp16) ||
++      !device.has(sycl::aspect::ext_intel_matrix) ||
++      device.get_info<sycl::info::device::local_mem_size>() < BF16_SLM + 4096 ||
++      device.get_info<sycl::info::device::max_work_group_size>() < WG ||
++      device.get_info<sycl::info::device::max_work_item_sizes<1>>()[0] < WG)
++    return false;
++  const auto sizes = device.get_info<sycl::info::device::sub_group_sizes>();
++  if (std::find(sizes.begin(), sizes.end(), 16) == sizes.end())
++    return false;
++  try {
++    for (const auto &c : device.get_info<sycl::ext::oneapi::experimental::info::
++                                             device::matrix_combinations>())
++      if (c.atype == mx::matrix_type::fp16 &&
++          c.btype == mx::matrix_type::fp16 &&
++          c.ctype == mx::matrix_type::fp32 &&
++          c.dtype == mx::matrix_type::fp32 &&
++          (c.msize == 8 || (c.msize == 0 && c.max_msize >= 8)) &&
++          (c.nsize == 16 || (c.nsize == 0 && c.max_nsize >= 16)) &&
++          (c.ksize == 16 || (c.ksize == 0 && c.max_ksize >= 16)))
++        return true;
++  } catch (const sycl::exception &) {
++    return false;
++  }
++  return false;
++}
++void prompt_bf16_registered(sycl::queue &queue, Span span) {
++  // Full range, live Strata device allocation, and exact queue context/device.
++  // The caller still supplies true suballocation capacities from the owners.
++  validate_device_span(span.pointer, span.bytes, queue);
++}
++void launch_prompt_bf16(const uint16_t *query, QsaAttnPools pools,
++                       const int32_t *ids, const int32_t *steps, int64_t cap,
++                       QsaShapes shapes, uint16_t *output, int64_t queries,
++                       QsaPromptBf16Bounds bounds, void *stream) {
++  constexpr int KG = 4, VG = 4;
++  auto event = queue_for(stream).submit([&](sycl::handler &h) {
++    sycl::local_accessor<sycl::half, 1> qtile(16 * HD, h), kv(CH * HD, h),
++        probability(VG * 16 * CH, h);
++    sycl::local_accessor<float, 1> scores(16 * CH, h), ks(CH * KG, h),
++        vs(CH * VG, h), maxima(16, h), sums(16, h), alpha(16, h), factors(VG, h);
++    sycl::local_accessor<int64_t, 1> rows(CH, h);
++    sycl::local_accessor<int, 1> shifts(16, h), query_bad(16, h);
++    h.parallel_for(
++        sycl::nd_range<1>(size_t(queries) * shapes.n_head_kv * WG, WG),
++        [=](sycl::nd_item<1> it) [[sycl::reqd_sub_group_size(16)]] {
++          const size_t index = it.get_group_linear_id(),
++                       batch = index / shapes.n_head_kv,
++                       kvhead = index % shapes.n_head_kv;
++          const int tid = it.get_local_linear_id();
++          auto sg = it.get_sub_group();
++          const int subgroup = sg.get_group_linear_id(), lane = sg.get_local_linear_id();
++          const int hb = subgroup / 4, db = subgroup % 4;
++          auto kvp = kv.template get_multi_ptr<sycl::access::decorated::no>();
++          const uint16_t *q = query + (batch * shapes.n_head + kvhead * HEADS) * HD;
++          // Per-head power-of-two scaling respects BF16's wide exponent range.
++          // Only scalar register values widen; no global FP32 tensor exists.
++          for (int head = subgroup; head < 16; head += 8) {
++            float maximum = 0.f;
++            int bad = 0;
++            if (head < HEADS)
++              for (int d = lane; d < HD; d += 16) {
++                const float value = prompt_bf16_float(q[head * HD + d]);
++                if (sycl::isfinite(value))
++                  maximum = sycl::fmax(maximum, sycl::fabs(value));
++                else
++                  bad = 1;
++              }
++            maximum = sycl::reduce_over_group(sg, maximum, sycl::maximum<float>());
++            bad = sycl::reduce_over_group(sg, bad, sycl::maximum<int>());
++            if (lane == 0) {
++              int exponent = 0;
++              if (maximum > 0) (void)sycl::frexp(maximum, &exponent);
++              shifts[head] = maximum > 0 ? sycl::clamp(14 - exponent, -126, 126) : 0;
++              query_bad[head] = bad;
++              maxima[head] = -INFINITY;
++              sums[head] = 0.f;
++            }
++          }
++          it.barrier(sycl::access::fence_space::local_space);
++          for (int i = tid; i < 16 * HD; i += WG) {
++            float value = i < HEADS * HD ? prompt_bf16_float(q[i]) : 0.f;
++            if (!sycl::isfinite(value)) value = 0.f;
++            qtile[i] = sycl::half(sycl::ldexp(value, shifts[i / HD]));
++          }
++          using Acc = mx::joint_matrix<sycl::sub_group, float,
++                                       mx::use::accumulator, 8, 16>;
++          using A = mx::joint_matrix<sycl::sub_group, sycl::half,
++                                     mx::use::a, 8, 16, mx::layout::row_major>;
++          using B = mx::joint_matrix<sycl::sub_group, sycl::half,
++                                     mx::use::b, 16, 16, mx::layout::row_major>;
++          Acc acc[4];
++          for (int j = 0; j < 4; ++j) mx::joint_matrix_fill(sg, acc[j], 0.f);
++          const int count0 = steps[batch * kStepCount + kStepWidth];
++          const int count = count0 >= 0 && count0 <= cap ? count0 : 0;
++          int scales_bad = 0; // Uniform work-group value after each reduction.
++          it.barrier(sycl::access::fence_space::local_space);
++          for (int64_t c0 = 0; c0 < count; c0 += CH) {
++            if (tid < CH) {
++              int64_t row = -1;
++              if (c0 + tid < count) {
++                const int cell = ids[batch * cap + c0 + tid];
++                const int64_t logical = cell < 0 ? -1 : cell / shapes.page_size;
++                const int page = logical >= 0 && logical < bounds.logical_pages
++                                     ? pools.page_table[logical] : -1;
++                if (page >= 0 && page < bounds.physical_pages)
++                  row = (int64_t(page) * shapes.n_head_kv + kvhead) *
++                            shapes.page_size + cell % shapes.page_size;
++              }
++              rows[tid] = row;
++            }
++            for (int i = tid; i < 16 * CH; i += WG) scores[i] = 0.f;
++            it.barrier(sycl::access::fence_space::local_space);
++            for (int i = tid; i < HD * CH; i += WG) {
++              const int d = i / CH, c = i % CH;
++              kvp[i] = rows[c] >= 0 ? sycl::half(pools.k_q[rows[c] * HD + d])
++                                    : sycl::half(0.f);
++            }
++            int bad = 0;
++            for (int i = tid; i < CH * KG; i += WG) {
++              const int64_t row = rows[i / KG];
++              float k = row >= 0 ? scale<1, false>(pools, row, i % KG) : 0.f;
++              float v = row >= 0 ? scale<1, true>(pools, row, i % VG) : 0.f;
++              if (!sycl::isfinite(k)) { bad = 1; k = 0.f; }
++              if (!sycl::isfinite(v)) { bad = 1; v = 0.f; }
++              ks[i] = k; vs[i] = v;
++            }
++            scales_bad |= sycl::reduce_over_group(it.get_group(), bad, sycl::maximum<int>());
++            it.barrier(sycl::access::fence_space::local_space);
++            if (subgroup < 4) {
++              const int head = (subgroup / 2) * 8, cell = (subgroup % 2) * 16;
++              for (int g = 0; g < KG; ++g) {
++                Acc part; A a; B b;
++                mx::joint_matrix_fill(sg, part, 0.f);
++                for (int k = g * 64; k < (g + 1) * 64; k += 16) {
++                  mx::joint_matrix_load(sg, b, kvp + k * CH + cell, CH);
++                  mx::joint_matrix_load(sg, a,
++                      qtile.template get_multi_ptr<sycl::access::decorated::no>() +
++                          head * HD + k, HD);
++                  mx::joint_matrix_mad(sg, part, a, b, part);
++                }
++                mi::joint_matrix_apply(sg, part, [=](float &value, size_t r, size_t c) {
++                  // Apply ldexp last: qdown need not itself be representable.
++                  scores[(head + r) * CH + cell + c] += sycl::ldexp(
++                      value * (ks[(cell + c) * KG + g] * .0625f), -shifts[head + r]);
++                });
++              }
++            }
++            it.barrier(sycl::access::fence_space::local_space);
++            if (tid < 16) {
++              const float old_max = maxima[tid];
++              float m = old_max;
++              for (int c = 0; c < CH; ++c)
++                if (rows[c] >= 0) {
++                  const float score = scores[tid * CH + c];
++                  if (sycl::isnan(score)) query_bad[tid] = 1;
++                  m = sycl::fmax(m, score);
++                }
++              // Equal infinite maxima share mass; missing chunks add no mass.
++              // No exp(inf-inf) or exp(-inf-(-inf)) is evaluated.
++              const float a = sums[tid] > 0.f
++                  ? (old_max == m ? 1.f : (m == INFINITY ? 0.f : sycl::exp(old_max - m)))
++                  : 0.f;
++              float total = 0.f;
++              for (int c = 0; c < CH; ++c) {
++                const float score = scores[tid * CH + c];
++                const float p = rows[c] < 0 ? 0.f
++                    : (sycl::isinf(m) ? (score == m ? 1.f : 0.f) : sycl::exp(score - m));
++                scores[tid * CH + c] = p;
++                total += p;
++              }
++              maxima[tid] = m;
++              sums[tid] = sycl::fma(sums[tid], a, total);
++              alpha[tid] = a;
++            }
++            // The same bounded tile now holds V codes in cell-major order.
++            for (int i = tid; i < CH * HD; i += WG) {
++              const int c = i / HD, d = i % HD;
++              kvp[i] = rows[c] >= 0 ? sycl::half(pools.v_q[rows[c] * HD + d])
++                                    : sycl::half(0.f);
++            }
++            it.barrier(sycl::access::fence_space::local_space);
++            if (tid < VG) {
++              float m = 0.f;
++              for (int c = 0; c < CH; ++c) m = sycl::fmax(m, sycl::fabs(vs[c * VG + tid]));
++              factors[tid] = m;
++            }
++            it.barrier(sycl::access::fence_space::local_space);
++            for (int i = tid; i < VG * 16 * CH; i += WG) {
++              const int g = i / (16 * CH), r = (i / CH) % 16, c = i % CH;
++              const float m = factors[g];
++              // Divide FIRST: |vs/m|<=1 for finite scales, including 2^-24.
++              // P is one FP16 part, bounded by 16384, never a hi+lo emulation.
++              const float p = m > 0.f
++                  ? (scores[r * CH + c] * (vs[c * VG + g] / m)) * 16384.f : 0.f;
++              probability[i] = sycl::half(p);
++            }
++            it.barrier(sycl::access::fence_space::local_space);
++            for (int j = 0; j < 4; ++j) {
++              const int dim = (db * 4 + j) * 16, vg = dim / 64;
++              Acc part; A a; B b;
++              mx::joint_matrix_fill(sg, part, 0.f);
++              for (int k = 0; k < CH; k += 16) {
++                mx::joint_matrix_load(sg, b, kvp + k * HD + dim, HD);
++                mx::joint_matrix_load(sg, a,
++                    probability.template get_multi_ptr<sycl::access::decorated::no>() +
++                        (vg * 16 + hb * 8) * CH + k, CH);
++                mx::joint_matrix_mad(sg, part, a, b, part);
++              }
++              mi::joint_matrix_apply(sg, acc[j],
++                  [=](float &value, size_t r, size_t) { value *= alpha[hb * 8 + r]; });
++              const float down = factors[vg] * (1.f / 16384.f);
++              mx::joint_matrix_apply(sg, acc[j], part,
++                  [=](float &value, float &partial) { value += partial * down; });
++            }
++            it.barrier(sycl::access::fence_space::local_space);
++          }
++          for (int j = 0; j < 4; ++j)
++            mi::joint_matrix_apply(sg, acc[j], [=](float &value, size_t r, size_t c) {
++              const int head = hb * 8 + r;
++              if (head < HEADS) {
++                const float sum = sums[head];
++                output[(batch * shapes.n_head + kvhead * HEADS + head) * HD +
++                       (db * 4 + j) * 16 + c] = sum == 0.f ? uint16_t(0)
++                    : (query_bad[head] || scales_bad ? uint16_t(0x7fc0)
++                                                    : prompt_bf16_bits(value / sum));
++              }
++            });
++        });
++  });
++  finish(stream, event);
++}
++} // namespace
++
++bool qsa_prompt_attn_bf16_validate(const uint16_t *q, const QsaAttnPools &p,
++                                const int32_t *ids, const int32_t *steps,
++                                int64_t cap, const QsaShapes &s, uint16_t *out,
++                                int64_t nq, const QsaPromptBf16Bounds &bounds,
++                                void *stream) {
++  if (nq == 0) return true;
++  // Explicit Mode1 only. Do not inspect old prompt environment switches.
++  if (nq < 0 || nq > 65535 || cap <= 0 || cap > INT_MAX ||
++      s.head_dim != HD || s.n_head_kv != 2 || s.n_head != HEADS * 2 ||
++      s.page_size <= 0 || s.page_size > INT_MAX ||
++      bounds.logical_pages <= 0 || bounds.logical_pages > INT_MAX ||
++      bounds.physical_pages <= 0 || bounds.physical_pages > INT_MAX ||
++      !p.k_q || !p.v_q || !p.k_scale || !p.v_scale || p.k_pool || p.v_pool || p.k_q4 || p.v_q4)
++    return false;
++  auto &queue = queue_for(stream);
++  if (!prompt_bf16_matrix_available(queue.get_device())) return false;
++  const size_t n = checked_count(checked_count(nq, s.n_head), HD);
++  const size_t rows = checked_count(checked_count(bounds.physical_pages, 2), s.page_size);
++  const Span output{out, checked_count(n, 2)};
++  const Span inputs[] = {
++      {q, checked_count(n, 2)},
++      {ids, checked_count(checked_count(nq, cap), 4)},
++      {steps, checked_count(checked_count(nq, kStepCount), 4)},
++      {p.page_table, checked_count(bounds.logical_pages, 4)},
++      {p.k_q, checked_count(rows, HD)}, {p.v_q, checked_count(rows, HD)},
++      {p.k_scale, checked_count(checked_count(rows, 4), 2)},
++      {p.v_scale, checked_count(checked_count(rows, 4), 2)}};
++  // Byte-aligned INT8 pools are legal; scalar I/O/scales are 2-byte aligned,
++  // indices/table 4-byte aligned. Every full input is disjoint from output.
++  for (const auto &input : inputs) validate_spans({output}, {input}, 1);
++  validate_spans({output}, {{q, inputs[0].bytes},
++                           {p.k_scale, inputs[6].bytes}, {p.v_scale, inputs[7].bytes}}, 2);
++  validate_spans({}, {{ids, inputs[1].bytes}, {steps, inputs[2].bytes},
++                      {p.page_table, inputs[3].bytes}}, 4);
++  prompt_bf16_registered(queue, output);
++  for (const auto &input : inputs) prompt_bf16_registered(queue, input);
++  return true;
++}
++
++bool qsa_prompt_attn_bf16_batch(const uint16_t *q, const QsaAttnPools &p,
++                                const int32_t *ids, const int32_t *steps,
++                                int64_t cap, const QsaShapes &s, uint16_t *out,
++                                int64_t nq, const QsaPromptBf16Bounds &bounds,
++                                void *stream) {
++  if (!qsa_prompt_attn_bf16_validate(q, p, ids, steps, cap, s, out, nq, bounds, stream))
++    return false;
++  if (nq != 0) launch_prompt_bf16(q, p, ids, steps, cap, s, out, nq, bounds, stream);
++  return true;
++}
++} // namespace strata::kernels
+--- a/src/prefill/layer_major.inc
++++ b/src/prefill/layer_major.inc
+@@ -43,6 +43,10 @@
+     const auto& g = *m.g;
+     auto& ss = *m.ss;
+     const bool native16_on = native16::requested();
++    const bool qsa16_on = native16::qsa::requested();
++    if (qsa16_on && !native16_on) {
++        err = "prefill QSA16: requires STRATA_SYCL_PREFILL_NATIVE16=bf16"; return false;
++    }
+     const char* residual_option = std::getenv("STRATA_PREFILL_LAYER_MAJOR_R_DTYPE");
+     if (native16_on && residual_option && std::strcmp(residual_option, "bf16")) {
+         err = "prefill native16: residual storage must be bf16 (or leave R_DTYPE unset)"; return false;
+@@ -143,6 +147,44 @@
+                             q.host.k_pool && q.host.v_pool && m.stage.k_pool && m.stage.v_pool;
+             if (!storage || !m.ident_table) {
+                 err = "prefill layer-major: full-logical-range host/stage KV is unavailable"; return false;
++            }
++        }
++    }
++    // QSA16 v1 deliberately supports a resident text INT8 cache only. Reject
++    // every unsupported layer/device/domain BEFORE this request submits work.
++    if (qsa16_on) {
++        native16::qsa::validate_device(m.cs);
++        // The legacy OLD switch is presence-based, including a value of 0.
++        if (std::getenv("STRATA_PROMPT_ATTN_OLD")) {
++            err = "prefill QSA16: leave STRATA_PROMPT_ATTN_OLD unset"; return false;
++        }
++        const char* mapping = std::getenv("STRATA_SYCL_PROMPT_K_CELL_MAJOR");
++        if (mapping && std::strcmp(mapping, "0")) {
++            err = "prefill QSA16: requires prompt Mapping0"; return false;
++        }
++        const auto tab = strata::kernels::rope_table_for(strata::kernels::rope_scaling());
++        if (strata::kernels::mrope_table() || !tab.cos) {
++            err = "prefill QSA16: requires text positions and STRATA_ROPE_TABLE=1"; return false;
++        }
++        const auto shapes = strata::kernels::qsa_real_shapes();
++        for (int64_t i = 0; i < ss.qsa_alloc; ++i) {
++            const auto& q = ss.qsa_states[i];
++            if (q.kv_mode != 0 || !q.kv_int8 || q.kv_rot || q.kv_q4 || q.kv_hybrid || q.host.present() ||
++                q.n_slots != q.n_pages || tab.cos != q.cos_tab || tab.sin != q.sin_tab ||
++                tab.max_pos != q.max_cells) {
++                err = "prefill QSA16: requires resident unrotated INT8 K/V and the owning session RoPE tables";
++                return false;
++            }
++            sycl_backend::validate_device_span(q.cos_tab, size_t(q.max_cells) * 32 * sizeof(float),
++                                               sycl_backend::queue_for(m.cs));
++            sycl_backend::validate_device_span(q.sin_tab, size_t(q.max_cells) * 32 * sizeof(float),
++                                               sycl_backend::queue_for(m.cs));
++            // Owner n_slots sizes physical pools, n_pages sizes the table.
++            // max_cells is NOT used to guess allocated physical pages.
++            if (!strata::kernels::qsa_prompt_attn_bf16_validate(m.qsa_q16, core::qsa_attn_pools(q),
++                    m.sel_ids, m.steps_dev, m.cap, shapes, m.qsa_attn16, m.T,
++                    {q.n_pages, q.n_slots}, m.cs)) {
++                err = "prefill QSA16: typed attention capability/geometry unsupported"; return false;
+             }
+         }
+     }
+--- a/src/prefill/prefill.cpp
++++ b/src/prefill/prefill.cpp
+@@ -39,6 +39,8 @@
+ #include "strata/sycl/launch.hpp"
+ #include "strata/sycl/cpu_wait_profile.hpp"
+ #include "strata/prefill/native16.hpp"
++#include "strata/prefill/qsa_native16.hpp"
++#include "strata/kernels/mrope.hpp"
+ #endif
+ #include "strata/core/conversation_memory.hpp"
+ 
+@@ -479,6 +481,9 @@
+     detail::LayerMajorResidualPlan layer_major_residual;
+ #if defined(STRATA_ENABLE_SYCL)
+     bool native16_active = false;
++    // Disjoint typed subviews of existing QSA reservations; no new allocation.
++    uint16_t *qsa_Kraw16 = nullptr, *qsa_Krope16 = nullptr, *qsa_V16 = nullptr,
++             *qsa_Qfull16 = nullptr, *qsa_q16 = nullptr, *qsa_attn16 = nullptr;
+     // Mutually exclusive with the FP32 operations of run_impl. These views
+     // borrow untyped USM arena ranges; a short request still uses FP32 views.
+     uint16_t *R16 = nullptr, *lo_b16 = nullptr, *gated_b16 = nullptr, *bo_b16 = nullptr;
+@@ -939,6 +944,7 @@
+     // Reuse the reserved FP32 arena, retaining the original short-input layout.
+     // R16 and gated_b16 occupy disjoint halves of the old gated allocation.
+     (void)native16::requested(); // validate the immutable startup setting
++    (void)native16::qsa::requested();
+     m.R16 = reinterpret_cast<uint16_t*>(m.gated);
+     m.gated_b16 = m.R16 + T * D;
+     m.lo_b16 = reinterpret_cast<uint16_t*>(m.lo);
+@@ -969,6 +975,16 @@
+         m.Kc = b.take<float>(T * 512, ok); m.Vc = b.take<float>(T * 512, ok); m.Qf = b.take<float>(T * 12288, ok);
+         m.q = b.take<float>(T * ZV, ok); m.idx_raw = b.take<float>(T * 128, ok); m.q_idx = b.take<float>(T * 512, ok);
+         m.attn = b.take<float>(T * ZV, ok); m.attn_h = b.take<uint16_t>(T * ZV, ok);
++#if defined(STRATA_ENABLE_SYCL)
++        // K uses both halves of its original float reservation. Raw and
++        // normalized/rotated BF16 views must coexist during the fused kernel.
++        m.qsa_Kraw16 = reinterpret_cast<uint16_t*>(m.Kc);
++        m.qsa_Krope16 = m.qsa_Kraw16 ? m.qsa_Kraw16 + T * 512 : nullptr;
++        m.qsa_V16 = reinterpret_cast<uint16_t*>(m.Vc);
++        m.qsa_Qfull16 = reinterpret_cast<uint16_t*>(m.Qf);
++        m.qsa_q16 = reinterpret_cast<uint16_t*>(m.q);
++        m.qsa_attn16 = reinterpret_cast<uint16_t*>(m.attn);
++#endif
+         m.sel_ids = b.take<int32_t>(T * (size_t) m.cap, ok);
+         m.sel_scores = b.take<float>((size_t) m.sel_batch * (size_t) m.max_blocks, ok);
+         m.attn_scratch = b.take<float>((size_t) m.attn_batch * strata::kernels::qsa_decode_attn_scratch_floats(m.cap, s), ok);
+@@ -2329,6 +2345,9 @@
+                     auto* qp = m.layer_major_qsa_profile;
+                     if (qp) qp->begin(QsaProfile::projections, m.cs);
+                     const core::QsaState& st = ss.qsa_states[qsa_index];
++#if defined(STRATA_ENABLE_SYCL)
++                    const bool typed_qsa = m.native16_active && native16::qsa::requested();
++#endif
+                     const core::WeightRef *wq = need(v, "attn_q.weight", err), *wk = need(v, "attn_k.weight", err),
+                                           *wv = need(v, "attn_v.weight", err), *wo = need(v, "attn_output.weight", err),
+                                           *wik = need(v, "indexer.k_proj.weight", err),
+@@ -2338,13 +2357,33 @@
+                                           *wikn = need(v, "indexer.k_norm.weight", err);
+                     if (!wq || !wk || !wv || !wo || !wik || !wiq || !wqn || !wkn || !wiqn || !wikn) return false;
+                     pt.mark(kPfQsa, cs);
++#if defined(STRATA_ENABLE_SYCL)
++                    if (typed_qsa) {
++                        if (!native_proj16(m.gemm, wk, m.mixed_h, m.qsa_Kraw16, T, v.name("attn_k.weight"), err) ||
++                            !native_proj16(m.gemm, wv, m.mixed_h, m.qsa_V16, T, v.name("attn_v.weight"), err) ||
++                            !native_proj16(m.gemm, wq, m.mixed_h, m.qsa_Qfull16, T, v.name("attn_q.weight"), err)) return false;
++                    } else {
++#endif
+                     if (!native_proj(m.gemm, wk, m.mixed_h, m.Kc, T, v.name("attn_k.weight"), err)) return false;
+                     if (!native_proj(m.gemm, wv, m.mixed_h, m.Vc, T, v.name("attn_v.weight"), err)) return false;
+                     if (!native_proj(m.gemm, wq, m.mixed_h, m.Qf, T, v.name("attn_q.weight"), err)) return false;
++#if defined(STRATA_ENABLE_SYCL)
++                    }
++#endif
+                     if (!bf16_proj(m.gemm, wik, m.mixed_bf, m.idx_raw, T, v.name("indexer.k_proj.weight"), err, 0, m.mixed_bf_lo)) return false;
+                     if (!bf16_proj(m.gemm, wiq, m.mixed_bf, m.q_idx, T, v.name("indexer.q_proj.weight"), err, 0, m.mixed_bf_lo)) return false;
++#if defined(STRATA_ENABLE_SYCL)
++                    if (typed_qsa) {
++                        native16::qsa::norm_rope_split(m.qsa_Kraw16, static_cast<const float*>(wkn->data),
++                            m.qsa_Krope16, T, 2, 256, 512, 512, p0, st.max_cells,
++                            st.cos_tab, st.sin_tab, EPS, m.cs);
++                    } else {
++#endif
+                     rms_rows(m.Kc, (const float*) wkn->data, T * 2, 256, 256, EPS, m.cs);
+                     rope(m.Kc, T, 2, 256, 512, p0, strata::kernels::rope_scaling(), m.cs);
++#if defined(STRATA_ENABLE_SYCL)
++                    }
++#endif
+                     // KV streaming: this layer's cells [0, p0) come in from the host copy to the staging pool, and the
+                     // chunk's cells go to the host copy, the staging pool, and the VRAM slots of resident blocks
+                     if (qp) qp->end(QsaProfile::projections, m.cs);
+@@ -2359,6 +2398,13 @@
+                     }
+                     if (qp) qp->end(QsaProfile::kv_stage, m.cs);
+                     if (qp) qp->begin(QsaProfile::kv_append_query, m.cs);
++#if defined(STRATA_ENABLE_SYCL)
++                    if (typed_qsa) {
++                        native16::qsa::append_q8(m.qsa_Krope16, m.qsa_V16, T, 512, p0,
++                            {st.k_q, st.v_q, st.k_scale, st.v_scale, st.page_table},
++                            s, {st.n_pages, st.n_slots}, m.cs);
++                    } else {
++#endif
+                     if (st.kv_hybrid) {   // K8V4: K INT8 unrotated, V rotated Q4_0 (only V and the output rotate)
+                         strata::kernels::fwht256_inplace_cuda(m.Vc, T * 2, m.cs);
+                         kv_append(m.Kc, m.Kc, T, p0, st.page_table, s.page_size, nullptr, nullptr,
+@@ -2379,10 +2425,21 @@
+                                       st.kv_int8 ? nullptr : st.v_pool, st.k_q, st.v_q, st.k_scale, st.v_scale, m.cs,
+                                       &st.host, staged ? &m.stage : nullptr);
+                     }
++#if defined(STRATA_ENABLE_SYCL)
++                    }
++                    if (typed_qsa) {
++                        native16::qsa::norm_rope_split(m.qsa_Qfull16, static_cast<const float*>(wqn->data),
++                            m.qsa_q16, T, 24, 512, 12288, 6144, p0, st.max_cells,
++                            st.cos_tab, st.sin_tab, EPS, m.cs);
++                    } else {
++#endif
+                     split_q(m.Qf, m.q, T, m.cs);
+                     rms_rows(m.q, (const float*) wqn->data, T * 24, 256, 256, EPS, m.cs);
+                     rope(m.q, T, 24, 256, 6144, p0, strata::kernels::rope_scaling(), m.cs);
+                     if (st.kv_rot) strata::kernels::fwht256_inplace_cuda(m.q, T * 24, m.cs);
++#if defined(STRATA_ENABLE_SYCL)
++                    }
++#endif
+                     rms_rows(m.q_idx, (const float*) wiqn->data, T * 4, 128, 128, EPS, m.cs);
+                     rope(m.q_idx, T, 4, 128, 512, p0, strata::kernels::rope_scaling(), m.cs);
+                     // the indexer appends, token by token; then scores + selection for many queries at once:
+@@ -2533,8 +2590,19 @@
+                     // decode kernel, 32 queries at a time (K8V4 runs the tensor kernel's mode 3: INT8 K,
+                     // V dequantized from its q4_0 blocks to fp16 at gather)
+                     static const bool old_attn = std::getenv("STRATA_PROMPT_ATTN_OLD") != nullptr;
+-                    const bool matrix_used = !old_attn && strata::kernels::qsa_prompt_attn_batch(
+-                        m.q, pools, m.sel_ids, m.steps_dev, m.cap, s, m.attn, T, m.cs);
++                    bool matrix_used = false;
++#if defined(STRATA_ENABLE_SYCL)
++                    if (typed_qsa) {
++                        matrix_used = strata::kernels::qsa_prompt_attn_bf16_batch(
++                            m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
++                            {st.n_pages, st.n_slots}, m.cs);
++                        if (!matrix_used) {
++                            err = "prefill QSA16: unsupported typed attention; no fallback submitted"; return false;
++                        }
++                    } else
++#endif
++                        matrix_used = !old_attn && strata::kernels::qsa_prompt_attn_batch(
++                            m.q, pools, m.sel_ids, m.steps_dev, m.cap, s, m.attn, T, m.cs);
+                     if (qp) qp->dispatch(matrix_used, staged, T, m.cap);
+                     if (observe_attn_dispatch) {
+                         if (matrix_used) { ++matrix_chunks; matrix_queries += (uint64_t) T; }
+@@ -2560,6 +2628,12 @@
+                     pt.mark(kPfQsa, cs);
+                     if (qp) qp->end(QsaProfile::attention, m.cs);
+                     if (qp) qp->begin(QsaProfile::output_projection, m.cs);
++#if defined(STRATA_ENABLE_SYCL)
++                    if (typed_qsa)
++                        native16::qsa::gate(m.qsa_attn16, m.qsa_Qfull16, m.attn_h,
++                            T, 6144, 12288, 6144, m.cs);
++                    else
++#endif
+                     gate_attn(m.attn, m.Qf, m.attn_h, T, m.cs);
+ #if defined(STRATA_ENABLE_SYCL)
+                     if (m.native16_active) {
+--- /dev/null
++++ b/src/prefill/sycl/qsa_native16.cpp
+@@ -0,0 +1,184 @@
++// SPDX-License-Identifier: MIT
++// Copyright (c) 2026 Niko1221 and the Strata contributors
++#include "strata/prefill/qsa_native16.hpp"
++#include "strata/kernels/bf16_bits.hpp"
++#include "strata/kernels/f16_bits.hpp"
++#include "strata/sycl/launch.hpp"
++#include <algorithm>
++#include <cmath>
++#include <cstring>
++#include <cstdlib>
++#include <sycl/ext/intel/math.hpp>
++
++namespace strata::prefill::native16::qsa {
++namespace {
++using namespace strata::sycl_backend;
++constexpr int HD = 256, NH = 24, KH = 2;
++void need(bool ok, const char* message) {
++    if (!ok) throw std::invalid_argument(message);
++}
++size_t bytes(int64_t rows, int64_t ld, size_t element_bytes) {
++    const size_t n = checked_count(rows, ld);
++    need(n <= SIZE_MAX / element_bytes, "QSA16 byte overflow");
++    return n * element_bytes;
++}
++void domains(sycl::queue& queue, std::initializer_list<Span> outputs,
++             std::initializer_list<Span> inputs, size_t alignment = 2) {
++    validate_spans(outputs, inputs, alignment);
++    for (auto s : outputs) validate_device_span(s.pointer, s.bytes, queue);
++    for (auto s : inputs) validate_device_span(s.pointer, s.bytes, queue);
++}
++float load(uint16_t x) { return strata::kernels::f32_from_bf16(x); }
++uint16_t store(float x) { return strata::kernels::bf16_from_f32(x); }
++void shape(int64_t tokens, int64_t ld, int64_t width) {
++    need(tokens > 0 && tokens <= 8192 && ld >= width,
++         "QSA16 unsupported tokens or stride");
++}
++} // namespace
++
++bool requested() {
++    static const bool result = [] {
++        const char* value = std::getenv("STRATA_SYCL_PREFILL_NATIVE16_QSA");
++        if (!value || !std::strcmp(value, "0")) return false;
++        if (!std::strcmp(value, "1")) return true;
++        throw std::invalid_argument("STRATA_SYCL_PREFILL_NATIVE16_QSA must be 0 or 1");
++    }();
++    return result;
++}
++void validate_device(void* stream) {
++    auto& queue = queue_for(stream);
++    const auto device = queue.get_device();
++    const auto subgroups = device.get_info<sycl::info::device::sub_group_sizes>();
++    need(device.is_gpu() && device.has(sycl::aspect::fp16) &&
++         device.get_info<sycl::info::device::max_work_group_size>() >= HD &&
++         device.get_info<sycl::info::device::max_work_item_sizes<1>>()[0] >= HD &&
++         std::find(subgroups.begin(), subgroups.end(), 32) != subgroups.end(),
++         "QSA16 requires GPU, FP16, WG256 and SG32");
++}
++void norm_rope_split(const uint16_t* x, const float* w, uint16_t* y,
++                     int64_t tokens, int64_t heads, int64_t head_stride,
++                     int64_t input_ld, int64_t output_ld, int64_t pos0,
++                     int64_t table_rows, const float* cosine, const float* sine,
++                     float eps, void* stream) {
++    need((heads == KH || heads == NH) && head_stride >= HD &&
++         head_stride <= INT64_MAX / heads, "QSA16 unsupported head geometry");
++    shape(tokens, input_ld, heads * head_stride);
++    shape(tokens, output_ld, heads * HD);
++    need(pos0 >= 0 && table_rows > 0 && table_rows <= 262144 &&
++         pos0 <= table_rows && tokens <= table_rows - pos0 &&
++         std::isfinite(eps) && eps >= 0, "QSA16 invalid RoPE extent/epsilon");
++    validate_device(stream);
++    auto& queue = queue_for(stream);
++    domains(queue, {{y, bytes(tokens, output_ld, 2)}},
++        {{x, bytes(tokens, input_ld, 2)}, {w, HD * 4},
++         {cosine, bytes(table_rows, 32, 4)}, {sine, bytes(table_rows, 32, 4)}});
++    // Float table/weight alignment is checked independently of BF16 views.
++    validate_spans({}, {{w, HD * 4}, {cosine, bytes(table_rows, 32, 4)},
++                        {sine, bytes(table_rows, 32, 4)}}, 4);
++    auto event = queue.parallel_for(
++        sycl::nd_range<1>(size_t(tokens) * heads * HD, HD),
++        [=](sycl::nd_item<1> it) [[sycl::reqd_sub_group_size(32)]] {
++            const size_t row = it.get_group_linear_id(), t = row / heads, h = row % heads;
++            const int d = it.get_local_linear_id();
++            const size_t begin = t * input_ld + h * head_stride;
++            const float value = load(x[begin + d]);
++            const int bad = sycl::reduce_over_group(it.get_group(),
++                sycl::isfinite(value) ? 0 : 1, sycl::maximum<int>());
++            const float maximum = sycl::reduce_over_group(it.get_group(),
++                sycl::isfinite(value) ? sycl::fabs(value) : 0.f, sycl::maximum<float>());
++            // Scale before squaring: BF16's full finite range must not overflow
++            // the FP32 RMS reduction. This is local FP32, not a tensor restore.
++            const float scale = sycl::fmax(maximum, sycl::sqrt(eps));
++            const float a = scale > 0.f ? value / scale : 0.f;
++            const float ss = sycl::reduce_over_group(it.get_group(), a * a, sycl::plus<float>());
++            const float reciprocal = sycl::rsqrt(ss / float(HD) +
++                (scale > 0.f ? (eps / scale) / scale : 0.f));
++            float result = (a * reciprocal) * w[d];
++            if (d < 64) {
++                const int pair = d % 32;
++                const float u = ((load(x[begin + pair]) / scale) * reciprocal) * w[pair];
++                const float v = ((load(x[begin + pair + 32]) / scale) * reciprocal) * w[pair + 32];
++                const float c = cosine[(pos0 + t) * 32 + pair], s = sine[(pos0 + t) * 32 + pair];
++                result = d < 32 ? u * c - v * s : u * s + v * c;
++            }
++            // Diagnose nonfinite source for the entire normalized head.
++            y[t * output_ld + h * HD + d] = bad ? uint16_t(0x7fc0) : store(result);
++        });
++    finish(stream, event);
++}
++void gate(const uint16_t* a, const uint16_t* q, uint16_t* y, int64_t tokens,
++          int64_t attention_ld, int64_t query_ld, int64_t output_ld, void* stream) {
++    shape(tokens, attention_ld, NH * HD); shape(tokens, query_ld, NH * 2 * HD);
++    shape(tokens, output_ld, NH * HD);
++    validate_device(stream);
++    auto& queue = queue_for(stream);
++    domains(queue, {{y, bytes(tokens, output_ld, 2)}},
++        {{a, bytes(tokens, attention_ld, 2)}, {q, bytes(tokens, query_ld, 2)}});
++    auto event = queue.parallel_for(sycl::range<1>(size_t(tokens) * NH * HD),
++        [=](sycl::id<1> id) {
++            const size_t i = id[0], t = i / (NH * HD), h = i / HD % NH, d = i % HD;
++            const float z = load(q[t * query_ld + h * 2 * HD + HD + d]);
++            const float sigmoid = 1.f / (1.f + sycl::exp(-z));
++            const float result = load(a[t * attention_ld + h * HD + d]) * sigmoid;
++            y[t * output_ld + h * HD + d] = strata::kernels::f16_from_f32(result);
++        });
++    finish(stream, event);
++}
++void append_q8(const uint16_t* k, const uint16_t* v, int64_t tokens,
++               int64_t input_ld, int64_t pos0,
++               const Q8WritePools& p,
++               const strata::kernels::QsaShapes& s,
++               const strata::kernels::QsaPromptBf16Bounds& bounds, void* stream) {
++    shape(tokens, input_ld, KH * HD);
++    need(s.n_head == NH && s.n_head_kv == KH && s.head_dim == HD &&
++         s.page_size > 0 && s.page_size <= 262144 &&
++         bounds.logical_pages > 0 && bounds.logical_pages <= 262144 &&
++         bounds.physical_pages > 0 && bounds.physical_pages <= 262144,
++         "QSA16 append requires resident INT8 pools");
++    const int64_t cells = int64_t(checked_count(bounds.logical_pages, s.page_size));
++    need(cells <= 262144 && pos0 >= 0 && pos0 <= cells && tokens <= cells - pos0,
++         "QSA16 append exceeds logical table");
++    validate_device(stream);
++    auto& queue = queue_for(stream);
++    const int64_t rows = int64_t(checked_count(checked_count(bounds.physical_pages, KH), s.page_size));
++    const Span outputs[] = {{p.k_q, bytes(rows, HD, 1)}, {p.v_q, bytes(rows, HD, 1)},
++        {p.k_scale, bytes(rows, 4, 2)}, {p.v_scale, bytes(rows, 4, 2)}};
++    const Span inputs[] = {{k, bytes(tokens, input_ld, 2)}, {v, bytes(tokens, input_ld, 2)},
++        {p.page_table, bytes(bounds.logical_pages, 1, 4)}};
++    // Identical K/V or scale outputs are not a folded-pool opt-in.
++    domains(queue, {outputs[0], outputs[1], outputs[2], outputs[3]},
++        {inputs[0], inputs[1], inputs[2]}, 1);
++    validate_spans({}, {{k, inputs[0].bytes}, {v, inputs[1].bytes}, outputs[2], outputs[3]}, 2);
++    validate_spans({}, {inputs[2]}, 4);
++    const auto pools = p; const auto shapes = s; const auto b = bounds;
++    auto event = queue.parallel_for(
++        sycl::nd_range<1>(size_t(tokens) * 2 * KH * 4 * 64, 64),
++        [=](sycl::nd_item<1> it) [[sycl::reqd_sub_group_size(32)]] {
++            const size_t group = it.get_group_linear_id();
++            const int lane = it.get_local_linear_id(), g = group % 4;
++            const size_t h = group / 4 % KH, which = group / (4 * KH) % 2,
++                         t = group / (4 * KH * 2);
++            const float x = load((which ? v : k)[t * input_ld + h * HD + g * 64 + lane]);
++            const int bad = sycl::reduce_over_group(it.get_group(),
++                sycl::isfinite(x) ? 0 : 1, sycl::maximum<int>());
++            const float maximum = sycl::reduce_over_group(it.get_group(),
++                sycl::isfinite(x) ? sycl::fabs(x) : 0.f, sycl::maximum<float>());
++            const uint16_t scale_bits = bad ? uint16_t(0x7e00) :
++                strata::kernels::f16_from_f32(sycl::ext::intel::math::fdiv_rn(maximum, 127.f));
++            const float scale = strata::kernels::f32_from_f16(scale_bits);
++            // Never convert NaN/Inf to int. Preserve their diagnostic in scale.
++            const int code = !bad && sycl::isfinite(scale) && scale > 0.f ?
++                int(sycl::clamp(sycl::rint(sycl::ext::intel::math::fdiv_rn(x, scale)), -127.f, 127.f)) : 0;
++            const int64_t pos = pos0 + t, logical = pos / shapes.page_size;
++            const int64_t physical = pools.page_table[logical];
++            // Uniform per workgroup, after all group functions. No divergent
++            // barriers or collectives, even for absent/out-of-range pages.
++            if (physical >= 0 && physical < b.physical_pages) {
++                const size_t row = (physical * KH + h) * shapes.page_size + pos % shapes.page_size;
++                (which ? pools.v_q : pools.k_q)[row * HD + g * 64 + lane] = int8_t(code);
++                if (!lane) (which ? pools.v_scale : pools.k_scale)[row * 4 + g] = scale_bits;
++            }
++        });
++    finish(stream, event);
++}
++} // namespace strata::prefill::native16::qsa
+--- /dev/null
++++ b/tests/sycl/prompt_native16.cpp
+@@ -0,0 +1,424 @@
++// SPDX-License-Identifier: MIT
++// Own BF16 fixture adapted from the explicitly pinned independent FP64 oracle
++// in own-prompt-heads8-v2/files/tests/sycl/prompt_heads8.cpp. No head8 kernel used.
++// Source-only proposal: Main owns compilation, tracing, GPU runs and retention.
++#include "strata/kernels/qsa_prompt_attn.hpp"
++#include "strata/sycl/runtime.hpp"
++#include "strata/sycl/checked_cleanup.hpp"
++#include <algorithm>
++#include <bit>
++#include <chrono>
++#include <cmath>
++#include <cstdlib>
++#include <fstream>
++#include <iomanip>
++#include <iostream>
++#include <limits>
++#include <sstream>
++#include <stdexcept>
++#include <string>
++#include <vector>
++using namespace strata;
++using namespace strata::kernels;
++namespace {
++std::shared_ptr<sycl_backend::Runtime> runtime;
++std::ofstream dump;
++uint64_t dump_offset = 0;
++int repetitions = 0, benchmark_nq = 0;
++constexpr int cells = 2113, cap = 2051, heads = 24, kvheads = 2, dim = 256;
++void check(bool value, const char *what) {
++  if (!value) throw std::runtime_error(what);
++}
++void checked_drain() noexcept {
++  sycl_backend::checked_cleanup([] { runtime->wait(); }, [] {},
++      "R787 BF16 fixture drain failed");
++}
++struct Drain { ~Drain() noexcept { checked_drain(); } };
++template <class T> struct Buffer {
++  sycl_backend::Allocation allocation;
++  explicit Buffer(size_t count)
++      : allocation(runtime, count * sizeof(T), sycl_backend::MemoryKind::Device) {}
++  T *data() { return allocation.as<T>(); }
++  void put(const std::vector<T> &values) {
++    check(values.size() * sizeof(T) == allocation.size(), "full fixture upload size");
++    try { runtime->wait(runtime->compute().memcpy(data(), values.data(), allocation.size())); }
++    catch (...) { checked_drain(); throw; }
++  }
++  std::vector<T> get() {
++    std::vector<T> values(allocation.size() / sizeof(T));
++    try { runtime->wait(runtime->compute().memcpy(values.data(), data(), allocation.size())); }
++    catch (...) { checked_drain(); throw; }
++    return values;
++  }
++};
++// Host oracle conversions are independent of production conversion helpers.
++uint16_t bf16(float value) {
++  uint32_t bits = std::bit_cast<uint32_t>(value);
++  if (std::isnan(value)) return uint16_t((bits >> 16) | 0x40u);
++  uint32_t upper = bits >> 16, lower = bits & 0xffffu;
++  if (lower > 0x8000u || (lower == 0x8000u && (upper & 1u))) ++upper;
++  return uint16_t(upper);
++}
++float expand(uint16_t bits) { return std::bit_cast<float>(uint32_t(bits) << 16); }
++uint16_t fp16(float value) { return std::bit_cast<uint16_t>(_Float16(value)); }
++float expand_half(uint16_t bits) { return float(std::bit_cast<_Float16>(bits)); }
++double bf16_spacing(float value) {
++  const uint16_t bits = bf16(std::fabs(value));
++  if (bits >= 0x7f7f) return std::numeric_limits<double>::infinity();
++  return double(expand(uint16_t(bits + 1))) - double(expand(bits));
++}
++template <class T> uint64_t hash(const std::vector<T> &values) {
++  uint64_t h = 14695981039346656037ULL;
++  const auto *bytes = reinterpret_cast<const unsigned char *>(values.data());
++  for (size_t i = 0; i < values.size() * sizeof(T); ++i) h = (h ^ bytes[i]) * 1099511628211ULL;
++  return h;
++}
++std::string hex(uint64_t h) {
++  std::ostringstream text; text << std::hex << std::setfill('0') << std::setw(16) << h;
++  return text.str();
++}
++void attention(const uint16_t *query, const QsaAttnPools &p,
++               const int32_t *ids, const int32_t *steps, const QsaShapes &shape,
++               uint16_t *out, int nq, const QsaPromptBf16Bounds &bounds) {
++  check(qsa_prompt_attn_bf16_batch(query,p,ids,steps,cap,shape,out,nq,bounds,
++                                  &runtime->compute()), "BF16 Mode1 matrix attention unavailable");
++}
++// Profiles cover distinct rounding/range mechanisms; none changes process env.
++void run(int page_size, bool masked, int nq, int width, const std::string &profile,
++         bool extended = false) {
++  auto shape = qsa_real_shapes(); shape.page_size = page_size;
++  const int pages = (cells + page_size - 1) / page_size;
++  const int rows = pages * page_size * kvheads;
++  const QsaPromptBf16Bounds bounds{pages,pages};
++  std::vector<int32_t> table(pages);
++  for (int i = 0; i < pages; ++i) table[i] = pages - 1 - i;
++  if (masked) for (int i = 0; i < pages; i += 3) table[i] = -1;
++  std::vector<uint16_t> ks(rows*4), vs(ks.size());
++  std::vector<int8_t> k8(rows*dim), v8(k8.size());
++  for (size_t i = 0; i < k8.size(); ++i) {
++    k8[i] = int8_t(int(i*7%255)-127);
++    v8[i] = int8_t(int(i*11%255)-127);
++  }
++  for (size_t i = 0; i < ks.size(); ++i) {
++    ks[i] = fp16(.007f+float(i%7)*.0001f);
++    vs[i] = fp16(.008f+float(i%11)*.0002f);
++  }
++  std::vector<uint16_t> query(size_t(nq)*heads*dim);
++  for (size_t i = 0; i < query.size(); ++i) {
++    float amplitude = (i/dim)%12 < 8 ? 4.f : 0x1p-80f;
++    if (profile == "range") amplitude = (i/dim)%2 ? 0x1p-110f : 0x1p110f;
++    query[i] = bf16(float(std::sin(i*.019))*amplitude);
++  }
++  if (profile == "zero") {
++    std::fill(query.begin(),query.end(),bf16(0.f));
++    std::fill(vs.begin(),vs.end(),fp16(0.f));
++  } else if (profile == "smallp") {
++    // Exp arguments span ~[-64,0]. V groups include minimum subnormal, zero,
++    // maximum finite and negative finite scales; no reciprocal overflow allowed.
++    std::fill(query.begin(),query.end(),bf16(0.f));
++    for (int h = 0; h < nq*heads; ++h) query[h*dim] = bf16(4.f);
++    std::fill(ks.begin(),ks.end(),fp16(1.f));
++    for (size_t i = 0; i < vs.size(); ++i) {
++      const float values[] = {0x1p-24f,0.f,65504.f,-0x1p-24f};
++      vs[i] = fp16(values[i%4]);
++    }
++  } else if (profile == "positive_infinity_score" || profile == "negative_infinity_score") {
++    // Finite operands overflow FP32 scores uniformly, so the FP64 reference
++    // remains a uniform distribution. Explicitly exercise inf-inf avoidance.
++    const uint16_t q = profile[0] == 'p' ? uint16_t(0x7f7f) : uint16_t(0xff7f);
++    std::fill(query.begin(),query.end(),q);
++    std::fill(k8.begin(),k8.end(),int8_t(127));
++    std::fill(ks.begin(),ks.end(),fp16(65504.f));
++  }
++  std::vector<int32_t> ids(size_t(nq)*cap), steps(size_t(nq)*kStepCount);
++  for (int b = 0; b < nq; ++b) {
++    const int position = cells - 1 - (b%3)*37;
++    steps[b*kStepCount+kStepPos] = position;
++    steps[b*kStepCount+kStepNKv] = position+1;
++    steps[b*kStepCount+kStepNBid] = (position+1)/4;
++    steps[b*kStepCount+kStepWidth] = width;
++    for (int i = 0; i < cap; ++i) {
++      const int cell = (i*17+b*3)%cells;
++      // Causal masking belongs to selected IDs. The kernel must not infer it
++      // from a different step field, union rows, or expose a future cache cell.
++      ids[b*cap+i] = cell <= position ? cell : -1;
++    }
++    ids[b*cap+5] = -1;
++  }
++  const uint16_t guard = bf16(1234.f);
++  const std::vector<uint16_t> sentinel(query.size()+32,guard);
++  Buffer<uint16_t> dks(ks.size()), dvs(vs.size()), q(query.size()),
++      out(query.size()+32), single(query.size()+32);
++  Buffer<int8_t> dk8(k8.size()), dv8(v8.size());
++  Buffer<int32_t> dt(table.size()), di(ids.size()), ds(steps.size());
++  Drain drain; // After ALL host/device owners, before the first upload.
++  dks.put(ks); dvs.put(vs); dk8.put(k8); dv8.put(v8);
++  q.put(query); dt.put(table); di.put(ids); ds.put(steps);
++  QsaAttnPools p;
++  p.page_table = dt.data(); p.k_q = dk8.data(); p.v_q = dv8.data();
++  p.k_scale = dks.data(); p.v_scale = dvs.data();
++  out.put(sentinel); single.put(sentinel);
++  auto unchanged = [&] {
++    check(q.get()==query && di.get()==ids && ds.get()==steps && dt.get()==table &&
++          dk8.get()==k8 && dv8.get()==v8 && dks.get()==ks && dvs.get()==vs,
++          "input immutability, including current table/step/scales");
++  };
++  auto checked = [&](Buffer<uint16_t> &buffer, bool zero = false, bool finite = true) {
++    auto all = buffer.get();
++    for (int i = 0; i < 16; ++i) {
++      check(all[i]==guard,"BF16 output prefix guard");
++      check(all[all.size()-16+i]==guard,"BF16 output suffix guard");
++    }
++    for (size_t i = 16; i < all.size()-16; ++i) {
++      if (zero) check(expand(all[i])==0.f,"expected zero output");
++      if (finite) check(std::isfinite(expand(all[i])),"full BF16 output finite");
++    }
++    return all;
++  };
++  auto invoke = [&] { attention(q.data(),p,di.data(),ds.data(),shape,out.data()+16,nq,bounds); };
++  std::cout << "case_start nq=" << nq << " page=" << page_size << " masked=" << masked
++            << " width=" << width << " profile=" << profile << "\n";
++  invoke();
++  auto y = checked(out);
++  if (dump.is_open()) {
++    const size_t bytes = query.size()*sizeof(uint16_t);
++    dump.write(reinterpret_cast<const char*>(y.data()+16),bytes);
++    check(bool(dump),"BF16 output dump write");
++    std::cout << "dump offset=" << dump_offset << " bytes=" << bytes
++              << " dtype=bf16 shape=" << nq << ",24,256 output_guarded_fnv1a64=" << hex(hash(y)) << "\n";
++    dump_offset += bytes;
++  }
++  if (repetitions) {
++    // Each sample measures the full submission-to-completion dependency, with
++    // clean immutable env. Separate Main-owned processes establish repeats.
++    runtime->wait();
++    for (int sample = 0; sample < repetitions; ++sample) {
++      const auto begin = std::chrono::steady_clock::now(); invoke(); runtime->wait();
++      const double ms = std::chrono::duration<double,std::milli>(
++          std::chrono::steady_clock::now()-begin).count();
++      std::cout << "sample index=" << sample << " nq=" << nq << " cap=" << cap
++                << " width=" << width << " wall_ms=" << std::setprecision(10) << ms << "\n";
++    }
++    check(checked(out)==y,"repeat BF16 bit identity");
++  } else {
++    for (int b = 0; b < nq; ++b)
++      attention(q.data()+b*heads*dim,p,di.data()+b*cap,ds.data()+b*kStepCount,
++                shape,single.data()+16+b*heads*dim,1,bounds);
++    check(checked(single)==y,"batch/single BF16 bit identity");
++  }
++  // Independent scalar FP64 reference: exact BF16 queries and stored INT8/FP16
++  // cache, no production helpers and no reproduction of XMX/online recurrence.
++  auto load = [&](bool value,int row,int d) {
++    return double((value?v8:k8)[row*dim+d]) *
++           double(expand_half((value?vs:ks)[row*4+d/64]));
++  };
++  double worst_raw = 0, worst_rounded = 0, worst_budget_ratio = 0;
++  for (int b = 0; b < nq; ++b) {
++    if (benchmark_nq && b!=0 && b!=1 && b!=2 && b!=nq-1) continue;
++    const int count = width >= 0 && width <= cap ? width : 0;
++    for (int h = 0; h < heads; ++h) {
++      std::vector<double> weights(count,0.);
++      std::vector<int> selected_rows(count,-1);
++      double maximum = -INFINITY, sum = 0;
++      for (int j = 0; j < count; ++j) {
++        const int cell = ids[b*cap+j];
++        const int page = cell < 0 ? -1 : table[cell/page_size];
++        if (page < 0) { weights[j] = -INFINITY; continue; }
++        const int row = (page*kvheads+h/12)*page_size+cell%page_size;
++        selected_rows[j] = row;
++        double dot = 0;
++        for (int d = 0; d < dim; ++d)
++          dot += double(expand(query[(b*heads+h)*dim+d])) * load(false,row,d);
++        weights[j] = dot/16.; maximum = std::max(maximum,weights[j]);
++      }
++      for (auto &w : weights) { w = std::isfinite(w) ? std::exp(w-maximum) : 0.; sum += w; }
++      for (int d = 0; d < dim; ++d) {
++        double reference = 0, magnitude = 0;
++        for (int j = 0; j < count; ++j) if (selected_rows[j]>=0) {
++          const double term = weights[j]*load(true,selected_rows[j],d);
++          reference += term; magnitude += std::abs(term);
++        }
++        if (sum) { reference /= sum; magnitude /= sum; }
++        const float actual = expand(y[16+(b*heads+h)*dim+d]);
++        const float rounded = expand(bf16(float(reference)));
++        const double raw = std::abs(double(actual)-reference);
++        const double error = std::abs(double(actual)-double(rounded));
++        // Predetermined component screen: one-part probability rounding plus
++        // two BF16 output steps, with a tiny absolute floor for zero/subnormal.
++        // It is not an end-to-end model quality or full-context acceptance gate.
++        const double budget = .001*magnitude + 2.*bf16_spacing(float(reference)) + 1e-12;
++        worst_raw = std::max(worst_raw,raw); worst_rounded = std::max(worst_rounded,error);
++        worst_budget_ratio = std::max(worst_budget_ratio,error/budget);
++        if (!(std::isfinite(actual) && error <= budget)) {
++          std::cerr << "oracle_error b=" << b << " head=" << h << " d=" << d
++                    << " actual=" << actual << " fp64=" << reference << " bf16_ref=" << rounded
++                    << " abs_raw=" << raw << " abs_rounded=" << error << " budget=" << budget << "\n";
++          throw std::runtime_error("native16 attention FP64/BF16 rounding screen");
++        }
++      }
++    }
++  }
++  unchanged();
++  if (!benchmark_nq) {
++    // All missing, then recover the real valid/mixed page table and prove the
++    // original result returns before exercising invalid-width paths.
++    const auto original_table = table;
++    table.assign(pages,-1); dt.put(table); out.put(sentinel); invoke();
++    (void)checked(out,true); unchanged();
++    table = original_table; dt.put(table); out.put(sentinel); invoke();
++    check(checked(out)==y,"recover valid table and original BF16 output"); unchanged();
++    const auto original_steps = steps;
++    for (int invalid_width : {0,-1,cap+1}) {
++      for (int b = 0; b < nq; ++b) steps[b*kStepCount+kStepWidth] = invalid_width;
++      ds.put(steps); out.put(sentinel); invoke(); (void)checked(out,true); unchanged();
++    }
++    steps = original_steps; ds.put(steps);
++  }
++  if (extended) {
++    out.put(sentinel);
++    auto reject = [&](QsaAttnPools pools,QsaShapes geometry,int64_t capacity,
++                      int64_t queries,QsaPromptBf16Bounds extent) {
++      check(!qsa_prompt_attn_bf16_batch(q.data(),pools,di.data(),ds.data(),capacity,
++             geometry,out.data()+16,queries,extent,&runtime->compute()),"unsupported must return false");
++      check(out.get()==sentinel,"unsupported must leave output untouched");
++    };
++    reject(p,shape,0,nq,bounds); reject(p,shape,-1,nq,bounds);
++    reject(p,shape,int64_t(std::numeric_limits<int32_t>::max())+1,nq,bounds);
++    reject(p,shape,cap,-1,bounds); reject(p,shape,cap,65536,bounds);
++    auto badshape = shape; badshape.n_head = 8; reject(p,badshape,cap,nq,bounds);
++    badshape = shape; badshape.head_dim = 128; reject(p,badshape,cap,nq,bounds);
++    badshape = shape; badshape.n_head_kv = 1; reject(p,badshape,cap,nq,bounds);
++    badshape = shape; badshape.page_size = 0; reject(p,badshape,cap,nq,bounds);
++    reject(p,shape,cap,nq,{0,pages}); reject(p,shape,cap,nq,{pages,0});
++    auto badp = p; badp.k_q = nullptr; reject(badp,shape,cap,nq,bounds);
++    badp = p; badp.v_q = nullptr; reject(badp,shape,cap,nq,bounds);
++    badp = p; badp.k_scale = nullptr; reject(badp,shape,cap,nq,bounds);
++    badp = p; badp.v_scale = nullptr; reject(badp,shape,cap,nq,bounds);
++    badp = p; badp.k_q4 = reinterpret_cast<const uint8_t*>(q.data()); reject(badp,shape,cap,nq,bounds);
++    badp = p; badp.v_q4 = reinterpret_cast<const uint8_t*>(q.data()); reject(badp,shape,cap,nq,bounds);
++    check(qsa_prompt_attn_bf16_batch(nullptr,{},nullptr,nullptr,0,{},nullptr,0,{},
++                                   &runtime->compute()),"nq0 null successful no-op");
++    auto invalid_span = [&](const uint16_t *query_ptr,QsaAttnPools pools,
++                            const int32_t *ids_ptr,uint16_t *output_ptr) {
++      bool threw = false;
++      try { (void)qsa_prompt_attn_bf16_batch(query_ptr,pools,ids_ptr,ds.data(),cap,
++              shape,output_ptr,nq,bounds,&runtime->compute()); }
++      catch (const std::invalid_argument &) { threw = true; }
++      check(threw,"invalid span must throw before submission");
++      check(out.get()==sentinel,"invalid span original output untouched");
++    };
++    invalid_span(q.data(),p,di.data(),q.data());
++    invalid_span(q.data(),p,reinterpret_cast<const int32_t*>(out.data()+16),out.data()+16);
++    badp = p; badp.page_table = reinterpret_cast<const int32_t*>(out.data()+16);
++    invalid_span(q.data(),badp,di.data(),out.data()+16);
++    invalid_span(q.data(),p,di.data(),reinterpret_cast<uint16_t*>(dk8.data()+8));
++    invalid_span(query.data(),p,di.data(),out.data()+16); // ordinary host pointer
++    invalid_span(nullptr,p,di.data(),out.data()+16);
++    badp = p; badp.page_table = nullptr; invalid_span(q.data(),badp,di.data(),out.data()+16);
++    invalid_span(reinterpret_cast<const uint16_t*>(reinterpret_cast<const unsigned char*>(q.data())+1),
++                 p,di.data(),out.data()+16);
++    unchanged();
++    const auto original_table = table;
++    table.assign(pages,pages); dt.put(table); invoke(); (void)checked(out,true); unchanged();
++    table = original_table; dt.put(table);
++    const auto original_ids = ids;
++    std::fill(ids.begin(),ids.end(),pages*page_size); di.put(ids); invoke();
++    (void)checked(out,true); unchanged(); ids = original_ids; di.put(ids);
++    // Nonfinite live scale is a declared diagnostic NaN, never an overflowing
++    // probability cast. Missing rows do not read their invalid scales.
++    const auto original_vs = vs;
++    std::fill(vs.begin(),vs.end(),uint16_t(0x7c00)); dvs.put(vs);
++    out.put(sentinel); invoke();
++    auto nonfinite = checked(out,false,false);
++    for (size_t i = 16; i < nonfinite.size()-16; ++i)
++      check(std::isnan(expand(nonfinite[i])),"infinite V scale must diagnose NaN");
++    unchanged();
++    table.assign(pages,-1); dt.put(table); invoke(); (void)checked(out,true); unchanged();
++    table = original_table; dt.put(table); vs = original_vs; dvs.put(vs);
++    const auto original_query = query;
++    query[0] = 0x7f80; q.put(query); out.put(sentinel); invoke();
++    nonfinite = checked(out,false,false);
++    for (int b = 0; b < nq; ++b) for (int h = 0; h < heads; ++h)
++      for (int d = 0; d < dim; ++d)
++        check(b==0 && h==0 ? std::isnan(expand(nonfinite[16+(b*heads+h)*dim+d]))
++                           : std::isfinite(expand(nonfinite[16+(b*heads+h)*dim+d])),
++              "nonfinite Q isolated to affected head");
++    unchanged();
++    table.assign(pages,-1); dt.put(table); invoke(); (void)checked(out,true); unchanged();
++    table = original_table; dt.put(table);
++    query[0] = 0x7fc1; q.put(query); invoke(); nonfinite = checked(out,false,false);
++    for (int d = 0; d < dim; ++d)
++      check(std::isnan(expand(nonfinite[16+d])),"NaN Q diagnostic");
++    unchanged(); query = original_query; q.put(query);
++    const auto original_ks = ks;
++    std::fill(ks.begin(),ks.end(),uint16_t(0x7c00)); dks.put(ks); invoke();
++    nonfinite = checked(out,false,false);
++    for (size_t i = 16; i < nonfinite.size()-16; ++i)
++      check(std::isnan(expand(nonfinite[i])),"infinite K scale must diagnose NaN");
++    unchanged(); ks = original_ks; dks.put(ks); out.put(sentinel); invoke();
++    check(checked(out)==y,"nonfinite-case recovery to original BF16 output"); unchanged();
++  }
++  std::cout << "case dtype=bf16 nq=" << nq << " shape=" << nq << ",24,256 page=" << page_size
++            << " masked=" << masked << " width=" << width << " profile=" << profile
++            << " oracle=" << (benchmark_nq?"FP64_queries_0_1_2_last":"FP64_full")
++            << " max_abs_raw=" << worst_raw << " max_abs_bf16_ref=" << worst_rounded
++            << " max_budget_ratio=" << worst_budget_ratio
++            << " input_q_fnv1a64=" << hex(hash(query)) << " ids_fnv1a64=" << hex(hash(ids))
++            << " steps_fnv1a64=" << hex(hash(steps)) << " table_fnv1a64=" << hex(hash(table))
++            << " k_fnv1a64=" << hex(hash(k8)) << " v_fnv1a64=" << hex(hash(v8))
++            << " ks_fnv1a64=" << hex(hash(ks)) << " vs_fnv1a64=" << hex(hash(vs))
++            << " output_guarded_fnv1a64=" << hex(hash(y))
++            << " finite=PASS guards=PASS inputs=PASS qualification=COMPONENT_ONLY_UNQUALIFIED\n";
++}
++} // namespace
++int main(int argc,char **argv) {
++  try {
++    std::cout.setf(std::ios::unitbuf);
++    // No setenv/unsetenv, before or after provider initialization. Main selects
++    // traced smoke and clean benchmarks as separate owned child processes.
++    const bool smoke = argc>=2 && std::string(argv[1])=="--smoke";
++    const bool bench = argc==6 && std::string(argv[1])=="--bench";
++    check((smoke && (argc==2 || argc==4)) || bench || (!smoke && (argc==1 || argc==3)),
++          "usage: fixture [--dump PATH] | --smoke [--dump PATH] | --bench 128|256 repeats1..20 --dump PATH");
++    const char *dump_path = nullptr;
++    auto integer = [](const char *text) {
++      char *end = nullptr; const long n = std::strtol(text,&end,10);
++      check(end!=text && *end=='\0',"invalid integer"); return n;
++    };
++    if (bench) {
++      const long n = integer(argv[2]), r = integer(argv[3]);
++      check(n==128 || n==256,"benchmark nq128/256 required");
++      check(r>=1 && r<=20,"benchmark repetitions1..20 required");
++      benchmark_nq = int(n); repetitions = int(r);
++      check(std::string(argv[4])=="--dump","benchmark requires full output dump"); dump_path = argv[5];
++    } else if (argc==(smoke?4:3)) {
++      check(std::string(argv[smoke?2:1])=="--dump","expected --dump"); dump_path = argv[smoke?3:2];
++    }
++    if (dump_path) { dump.open(dump_path,std::ios::binary|std::ios::trunc); check(bool(dump),"cannot open dump"); }
++    // Algebraic write coverage for the preserved 12 active + 4 pad rows.
++    std::vector<int> coverage(heads*dim);
++    for (int kvh = 0; kvh < 2; ++kvh) for (int sg = 0; sg < 8; ++sg)
++      for (int j = 0; j < 4; ++j) for (int r = 0; r < 8; ++r) for (int c = 0; c < 16; ++c) {
++        const int h = (sg/4)*8+r, d = ((sg%4)*4+j)*16+c;
++        if (h<12) ++coverage[(kvh*12+h)*dim+d];
++      }
++    for (int writes : coverage) check(writes==1,"head12+4 unique full write coverage");
++    runtime = sycl_backend::runtime_for();
++    if (bench) run(4,false,benchmark_nq,2051,"regular");
++    else if (smoke) { run(4,false,1,33,"regular",true); run(4,true,3,33,"regular"); }
++    else {
++      for (int n : {1,3}) for (int width : {0,1,31,32,33,2051,-1,2052})
++        for (int page : {1,4,16}) for (bool masked : {false,true})
++          run(page,masked,n,width,"regular");
++      run(4,false,3,33,"regular",true);
++      for (const char *profile : {"range","zero","smallp","positive_infinity_score","negative_infinity_score"})
++        for (int page : {1,4,16}) run(page,false,3,2051,profile);
++    }
++    runtime->wait();
++    if (dump.is_open()) { dump.flush(); check(bool(dump),"dump flush"); dump.close(); check(!dump.fail(),"dump close"); }
++    std::cout << "fixture=PASS model_quality=UNRUN whole_prefill=UNRUN physical262144=UNRUN faults=EXTERNAL_REQUIRED\n";
++  } catch (const std::exception &error) {
++    if (runtime) { try { runtime->wait(); } catch (...) { std::abort(); } }
++    std::cerr << error.what() << "\n"; return 1;
++  }
++}
+--- /dev/null
++++ b/tests/sycl/qsa_native16.cpp
+@@ -0,0 +1,296 @@
++// SPDX-License-Identifier: MIT
++// Copyright (c) 2026 Niko1221 and the Strata contributors
++// Independent FP64/dyadic component oracle, not model-quality acceptance.
++#include "strata/prefill/qsa_native16.hpp"
++#include "strata/sycl/runtime.hpp"
++#include "strata/sycl/checked_cleanup.hpp"
++#include <algorithm>
++#include <cmath>
++#include <cstdint>
++#include <iostream>
++#include <limits>
++#include <stdexcept>
++#include <vector>
++
++namespace sb = strata::sycl_backend;
++namespace qa = strata::prefill::native16::qsa;
++namespace sk = strata::kernels;
++namespace {
++void require(bool ok, const char* message) {
++    if (!ok) throw std::runtime_error(message);
++}
++// Arithmetic IEEE encoders/decoders, independent of production bit helpers.
++double even(double v) {
++    const double n = std::floor(v), f = v - n;
++    return n + (f > .5 || (f == .5 && std::fmod(n, 2.) != 0.));
++}
++uint16_t encode(double value, bool half = false) {
++    const int p = half ? 10 : 7, lo = half ? -14 : -126, hi = half ? 15 : 127;
++    const unsigned sign = std::signbit(value) ? 0x8000 : 0, inf = half ? 0x7c00 : 0x7f80;
++    if (std::isnan(value)) return uint16_t(sign | inf | (half ? 0x200 : 0x40));
++    if (std::isinf(value)) return uint16_t(sign | inf);
++    double a = std::fabs(value);
++    if (a == 0.) return uint16_t(sign);
++    int e; std::frexp(a, &e); --e;
++    const double quantum = std::ldexp(1., std::max(e, lo) - p);
++    a = even(a / quantum) * quantum;
++    if (a == 0.) return uint16_t(sign);
++    std::frexp(a, &e); --e;
++    if (e > hi) return uint16_t(sign | inf);
++    if (e < lo) return uint16_t(sign | unsigned(std::ldexp(a, p - lo)));
++    const unsigned exponent = unsigned(e - lo + 1);
++    const unsigned mantissa = unsigned((std::ldexp(a, -e) - 1.) * double(1u << p));
++    return uint16_t(sign | (exponent << p) | mantissa);
++}
++double decode(uint16_t bits, bool half = false) {
++    const int p = half ? 10 : 7, bias = half ? 15 : 127;
++    const unsigned mask = (1u << p) - 1, e = (bits & 0x7fff) >> p, m = bits & mask;
++    const unsigned all = half ? 31 : 255;
++    double a = e == all ? (m ? std::numeric_limits<double>::quiet_NaN() : INFINITY) :
++        (e ? std::ldexp(1. + double(m) / double(1u << p), int(e) - bias) :
++             std::ldexp(double(m), 1 - bias - p));
++    return bits & 0x8000 ? -a : a;
++}
++double spacing(double value) {
++    int e; std::frexp(std::fabs(value), &e);
++    return std::ldexp(1., std::max(e - 1, -126) - 7);
++}
++template<class T> struct Buffer {
++    std::shared_ptr<sb::Runtime> runtime;
++    sb::Allocation memory;
++    size_t count;
++    Buffer(std::shared_ptr<sb::Runtime> r, size_t n) : runtime(r),
++        memory(r, n * sizeof(T), sb::MemoryKind::Device), count(n) {}
++    T* data() { return memory.as<T>(); }
++    void put(const std::vector<T>& values) {
++        require(values.size() == count, "upload size");
++        try { runtime->wait(runtime->compute().memcpy(data(), values.data(), memory.size())); }
++        catch (...) {
++            sb::checked_cleanup([&] { runtime->wait(); }, [] {}, "QSA16 upload drain failed");
++            throw;
++        }
++    }
++    std::vector<T> get() {
++        std::vector<T> values(count);
++        try { runtime->wait(runtime->compute().memcpy(values.data(), data(), memory.size())); }
++        catch (...) {
++            sb::checked_cleanup([&] { runtime->wait(); }, [] {}, "QSA16 readback drain failed");
++            throw;
++        }
++        return values;
++    }
++};
++// Declare after every host/device owner, before the FIRST copy or kernel.
++// A failed checked drain ends the process before any owner can unwind.
++struct Drain {
++    std::shared_ptr<sb::Runtime> runtime;
++    sycl::queue* extra = nullptr;
++    ~Drain() noexcept {
++        sb::checked_cleanup([&] {
++            if (extra) extra->wait_and_throw();
++            runtime->wait();
++        }, [] {}, "QSA16 fixture drain failed");
++    }
++};
++template<class F> void invalid(F f) {
++    bool rejected = false;
++    try { f(); } catch (const std::invalid_argument&) { rejected = true; }
++    require(rejected, "invalid interface accepted");
++}
++constexpr size_t G = 16;
++constexpr uint16_t guard = 0x449a;
++
++void norm_case(std::shared_ptr<sb::Runtime> r, int T, int heads, int pos0,
++               int exponent, bool special = false, bool exact = false) {
++    const int hs = heads == 24 ? 512 : 256, il = heads * hs + 18,
++              ol = heads * 256 + 10, rows = pos0 + T + 2;
++    const float eps = exact || exponent != 0 ? 0.f : 1e-5f;
++    std::vector<uint16_t> x(G + T * il + G, guard), out(G + T * ol + G, guard);
++    std::vector<float> w(G + 256 + G, 1234.f), c(G + rows * 32 + G, 1234.f), s(c);
++    for (int d = 0; d < 256; ++d) w[G + d] = float((d % 5 + 1) / 4.);
++    for (int t = 0; t < T; ++t) for (int h = 0; h < heads; ++h)
++        for (int d = 0; d < 256; ++d) {
++            const double v = exact ? (d % 2 ? -2. : 2.) :
++                std::ldexp(double((t * 37 + h * 13 + d * 7) % 65 - 32) / 16., exponent);
++            x[G + t * il + h * hs + d] = encode(v);
++            if (hs == 512) x[G + t * il + h * hs + 256 + d] = encode(double(d % 17) / 8.);
++        }
++    if (special) x[G + il * (T - 1)] = 0x7fc1; // one normalized head diagnoses NaN
++    for (int p = 0; p < rows; ++p) for (int d = 0; d < 32; ++d) {
++        const double angle = double(p) * std::pow(1e7, -2. * d / 64.);
++        c[G + p * 32 + d] = exact ? (p % 2 ? 0.f : 1.f) : float(std::cos(angle));
++        s[G + p * 32 + d] = exact ? (p % 2 ? 1.f : 0.f) : float(std::sin(angle));
++    }
++    Buffer<uint16_t> dx(r, x.size()), dy(r, out.size());
++    Buffer<float> dw(r, w.size()), dc(r, c.size()), ds(r, s.size());
++    Drain drain{r};
++    dx.put(x); dy.put(out); dw.put(w); dc.put(c); ds.put(s);
++    auto run = [&] {
++        qa::norm_rope_split(dx.data() + G, dw.data() + G, dy.data() + G, T, heads,
++            hs, il, ol, pos0, rows, dc.data() + G, ds.data() + G, eps, &r->compute());
++    };
++    run();
++    auto actual = dy.get();
++    for (int t = 0; t < T; ++t) for (int h = 0; h < heads; ++h) {
++        double sum = 0.; bool bad = false;
++        for (int d = 0; d < 256; ++d) {
++            const double a = decode(x[G + t * il + h * hs + d]);
++            bad |= !std::isfinite(a); sum += a * a;
++        }
++        const double rs = 1. / std::sqrt(sum / 256. + eps);
++        auto normalized = [&](int d) { return decode(x[G + t * il + h * hs + d]) * rs * w[G + d]; };
++        for (int d = 0; d < 256; ++d) {
++            double ref = normalized(d);
++            if (d < 64) {
++                const int pair = d % 32;
++                const double a = normalized(pair), b = normalized(pair + 32),
++                    co = c[G + (pos0 + t) * 32 + pair], si = s[G + (pos0 + t) * 32 + pair];
++                ref = d < 32 ? a * co - b * si : a * si + b * co;
++            }
++            const size_t i = G + t * ol + h * 256 + d;
++            if (bad) require(std::isnan(decode(actual[i])), "norm NaN masked");
++            else if (exact) require(actual[i] == encode(ref), "dyadic norm/split/RoPE mismatch");
++            else require(std::isfinite(decode(actual[i])) &&
++                std::fabs(decode(actual[i]) - ref) <= 2. * spacing(ref) + 2e-6,
++                "FP64 norm/split/RoPE screen");
++            out[i] = actual[i];
++        }
++    }
++    require(actual == out, "norm output guards/stride padding modified");
++    require(dx.get() == x && dw.get() == w && dc.get() == c && ds.get() == s,
++            "norm original inputs changed");
++    invalid([&] { qa::norm_rope_split(dx.data() + G, dw.data() + G, dx.data() + G,
++        T, heads, hs, il, ol, pos0, rows, dc.data() + G, ds.data() + G, eps, &r->compute()); });
++    invalid([&] { qa::norm_rope_split(dx.data() + G, dw.data() + G, dy.data() + G,
++        T, heads, hs, il, ol, rows, rows, dc.data() + G, ds.data() + G, eps, &r->compute()); });
++    invalid([&] { qa::norm_rope_split(dx.data() + G, dw.data() + G, dy.data() + G,
++        T, heads, hs, il, ol, pos0, 262144, dc.data() + G, ds.data() + G, eps, &r->compute()); });
++    invalid([&] { qa::norm_rope_split(dx.data() + G, dw.data() + G, dy.data() + G,
++        T, heads, hs, il - 19, ol, pos0, rows, dc.data() + G, ds.data() + G, eps, &r->compute()); });
++    invalid([&] { qa::norm_rope_split(dx.data() + G, dw.data() + G, dy.data() + G,
++        T, heads, hs, il, ol, pos0, rows, dc.data() + G, ds.data() + G, -1.f, &r->compute()); });
++    run(); require(dy.get() == actual, "norm rejection/recovery changed result");
++}
++
++void gate_case(std::shared_ptr<sb::Runtime> r, int T) {
++    const int al = 6144 + 10, ql = 12288 + 18, yl = 6144 + 26;
++    std::vector<uint16_t> a(G + T * al + G, guard), q(G + T * ql + G, guard), y(G + T * yl + G, guard);
++    const double av[] = {1., -2., -2., 0., 1., INFINITY, NAN, std::ldexp(1., -133), std::ldexp(1., 120)};
++    const double gv[] = {0., 2., -2., INFINITY, -INFINITY, -INFINITY, 0., 0., 0.};
++    for (int t = 0; t < T; ++t) for (int h = 0; h < 24; ++h) for (int d = 0; d < 256; ++d) {
++        const int c = (t + h + d) % 9;
++        a[G + t * al + h * 256 + d] = encode(av[c]);
++        q[G + t * ql + h * 512 + d] = encode(777.); // query half is not the gate
++        q[G + t * ql + h * 512 + 256 + d] = encode(gv[c]);
++    }
++    Buffer<uint16_t> da(r, a.size()), dq(r, q.size()), dy(r, y.size());
++    sycl::context context(r->device());
++    sycl::queue other(context, r->device(), sycl::property::queue::in_order{});
++    Drain drain{r, &other};
++    da.put(a); dq.put(q); dy.put(y);
++    auto run = [&] { qa::gate(da.data() + G, dq.data() + G, dy.data() + G, T, al, ql, yl, &r->compute()); };
++    run(); auto actual = dy.get();
++    for (int t = 0; t < T; ++t) for (int h = 0; h < 24; ++h) for (int d = 0; d < 256; ++d) {
++        const double at = decode(a[G + t * al + h * 256 + d]),
++                     z = decode(q[G + t * ql + h * 512 + 256 + d]),
++                     ref = at * (1. / (1. + std::exp(-z)));
++        const size_t i = G + t * yl + h * 256 + d;
++        if (std::isnan(ref)) require(std::isnan(decode(actual[i], true)), "gate NaN masked");
++        else require(actual[i] == encode(ref, true), "gate FP64/dyadic rounded result");
++        y[i] = actual[i];
++    }
++    require(actual == y && da.get() == a && dq.get() == q, "gate guards/strides/immutable inputs");
++    invalid([&] { qa::gate(da.data() + G, dq.data() + G, da.data() + G, T, al, ql, yl, &r->compute()); });
++    invalid([&] { qa::gate(da.data() + G, dq.data() + G, dy.data() + G, T, al, ql, 6143, &r->compute()); });
++    invalid([&] { qa::gate(da.data() + G, dq.data() + G, dy.data() + dy.count - G,
++        T, al, ql, yl, &r->compute()); });
++    invalid([&] { qa::gate(da.data() + G, dq.data() + G,
++        reinterpret_cast<uint16_t*>(reinterpret_cast<uint8_t*>(dy.data()) + 1),
++        T, al, ql, yl, &r->compute()); });
++    // Same GPU with a distinct context: registry must reject before submission.
++    invalid([&] { qa::gate(da.data() + G, dq.data() + G, dy.data() + G, T, al, ql, yl, &other); });
++    run(); require(dy.get() == actual, "gate rejection/recovery changed result");
++}
++
++void append_case(std::shared_ptr<sb::Runtime> r) {
++    constexpr int T = 3, ld = 526, pos0 = 3, pages = 3, physical = 2, page_size = 4;
++    const size_t cache_rows = physical * 2 * page_size;
++    std::vector<uint16_t> k(G + T * ld + G, guard), v(k), scales(G + cache_rows * 4 + G, 0x3555);
++    std::vector<int8_t> codes(G + cache_rows * 256 + G, int8_t(85));
++    std::vector<int32_t> table(G + pages + G, 123456); table[G] = 1; table[G + 1] = 0; table[G + 2] = -1;
++    for (int t = 0; t < T; ++t) for (int h = 0; h < 2; ++h) for (int d = 0; d < 256; ++d) {
++        double x = d % 64 == 0 ? 127. : d % 64 == 1 ? .5 :
++                   d % 64 == 2 ? -1.5 : double((t * 11 + h * 7 + d) % 63 - 31);
++        k[G + t * ld + h * 256 + d] = encode(x);
++        v[G + t * ld + h * 256 + d] = encode(x / 2.);
++    }
++    Buffer<uint16_t> dk(r, k.size()), dv(r, v.size()), dks(r, scales.size()), dvs(r, scales.size());
++    Buffer<int8_t> dkc(r, codes.size()), dvc(r, codes.size());
++    Buffer<int32_t> dt(r, table.size());
++    Drain drain{r};
++    dk.put(k); dv.put(v); dks.put(scales); dvs.put(scales); dkc.put(codes); dvc.put(codes); dt.put(table);
++    qa::Q8WritePools p{}; p.k_q = dkc.data() + G; p.v_q = dvc.data() + G;
++    p.k_scale = dks.data() + G; p.v_scale = dvs.data() + G; p.page_table = dt.data() + G;
++    auto s = sk::qsa_real_shapes(); s.page_size = page_size;
++    sk::QsaPromptBf16Bounds b{pages, physical};
++    auto run = [&] { qa::append_q8(dk.data() + G, dv.data() + G, T, ld, pos0, p, s, b, &r->compute()); };
++    run();
++    auto kc = codes, vc = codes, ks = scales, vs = scales;
++    for (int t = 0; t < T; ++t) for (int h = 0; h < 2; ++h) for (int g = 0; g < 4; ++g) {
++        const int pos = pos0 + t, row = (table[G + pos / page_size] * 2 + h) * page_size + pos % page_size;
++        ks[G + row * 4 + g] = encode(1., true); vs[G + row * 4 + g] = encode(.5, true);
++        for (int lane = 0; lane < 64; ++lane) {
++            const double x = decode(k[G + t * ld + h * 256 + g * 64 + lane]);
++            const double rounded = std::copysign(even(std::fabs(x)), x);
++            kc[G + row * 256 + g * 64 + lane] = int8_t(rounded);
++            vc[G + row * 256 + g * 64 + lane] = int8_t(rounded);
++        }
++    }
++    require(dkc.get() == kc && dvc.get() == vc && dks.get() == ks && dvs.get() == vs,
++            "typed Q8 dyadic oracle/guards/page boundary/tails");
++    require(dk.get() == k && dv.get() == v && dt.get() == table, "Q8 original input immutability");
++    // Missing and physically invalid pages must leave every byte unchanged.
++    table[G] = -1; table[G + 1] = physical; dt.put(table); run();
++    require(dkc.get() == kc && dvc.get() == vc && dks.get() == ks && dvs.get() == vs,
++            "invalid Q8 page accessed");
++    invalid([&] { auto bad = b; bad.physical_pages = 3;
++        qa::append_q8(dk.data() + G, dv.data() + G, T, ld, pos0, p, s, bad, &r->compute()); });
++    invalid([&] { auto bad = p; bad.v_q = bad.k_q;
++        qa::append_q8(dk.data() + G, dv.data() + G, T, ld, pos0, bad, s, b, &r->compute()); });
++    invalid([&] { qa::append_q8(dk.data() + G, dv.data() + G, T, ld, pages * page_size,
++        p, s, b, &r->compute()); });
++    // Recover valid mapping, diagnose NaN/Inf groups without integer UB.
++    table[G] = 1; table[G + 1] = 0; dt.put(table);
++    k[G] = 0x7fc1; v[G] = 0x7f80; dk.put(k); dv.put(v); run();
++    const int first_row = (1 * 2) * page_size + pos0;
++    const auto badks = dks.get(), badvs = dvs.get();
++    require(std::isnan(decode(badks[G + first_row * 4], true)) &&
++            std::isnan(decode(badvs[G + first_row * 4], true)), "Q8 nonfinite scale diagnostic masked");
++    const auto badkc = dkc.get(), badvc = dvc.get();
++    for (int d = 0; d < 64; ++d) require(badkc[G + first_row * 256 + d] == 0 &&
++        badvc[G + first_row * 256 + d] == 0, "Q8 nonfinite group integer conversion");
++    require(dk.get() == k && dv.get() == v && dt.get() == table, "Q8 special input immutability");
++    k[G] = encode(127.); v[G] = encode(63.5); dk.put(k); dv.put(v); run();
++    require(dkc.get() == kc && dvc.get() == vc && dks.get() == ks && dvs.get() == vs,
++            "Q8 rejection/special recovery");
++}
++} // namespace
++int main() try {
++    auto runtime = sb::runtime_for();
++    qa::validate_device(&runtime->compute());
++    for (int T : {1, 3, 17}) for (int heads : {2, 24}) {
++        norm_case(runtime, T, heads, 5, 0);
++        norm_case(runtime, T, heads, 0, 0, false, true);
++    }
++    norm_case(runtime, 3, 24, 5, 0, true);
++    norm_case(runtime, 1, 2, 0, 120);
++    norm_case(runtime, 1, 24, 0, -128);
++    for (int T : {1, 3, 17}) gate_case(runtime, T);
++    append_case(runtime);
++    runtime->wait();
++    std::cout << "QSA16 local component screen PASS; attention/model/physical262144/RESTORE/performance unqualified\n";
++    return 0;
++} catch (const std::exception& e) {
++    std::cerr << "QSA16 component failure: " << e.what() << '\n';
++    return 1;
++}
