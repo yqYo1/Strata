@@ -153,6 +153,17 @@ softmax qualificationのsource63326f98はlow-level fixture合格のMain記録で
 old/newともoneMKL GPU queueだけを根拠に「全算術がGPU」とは断定せず、Mainがactual device kernelと
 CPU library/fallback、wait内thread CPUとhost computation/submissionを分けて評価する。
 
+
+| 修正 | commit |
+| --- | --- |
+| A | `aceb6b0f` |
+| B | `47fb8e05` |
+| C | `9e770e33` |
+| D | `edf7cd79` |
+| E | `1ecced66` |
+| F | `00ae5188` |
+| G | `4338c60f` |
+
 ## 修正A: draft upload のhost source寿命
 
 歴史 `prefill.cpp:1321-1343` はループ内の `bh[4]` と次の反復で書き換える
@@ -374,3 +385,8 @@ Git object/sourceの読取り、source closureの静的解決とhash採録、dif
 初回復元のcached diffには歴史由来trailing whitespaceが6件あり、blob一致を守って変更しなかった。
 修正patchのdiff checkには新たなwhitespace問題を加えていない。
 今回のsource案の採否・build可能性の実証・速度・quality・full256K・RESTORE・decodeはMainの実行gateに残る。
+
+最終static identity採録: anchorの197/197 blobと197/197 modeが元treeに一致。
+実装commit f263d87dとの差はprofile helperだけ（196/197一致）。
+anchor後の歴史変更はengine/header 4ファイル、追加helper/fixture 5ファイル。
+Main checkoutや通常root buildのsourceは変更していない。

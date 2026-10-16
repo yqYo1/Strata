@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "source_only_unsafe_anchor",
+  "status": "source_only_fixed_unvalidated",
   "base_commit": "08874a80989c13f3fe4b8e13c085e69f6fdea5f2",
   "current_source_commit": "63326f98c36656cf3a3e1adcc54c3c25a02aa6ee",
   "historical_implementation_commit": "f263d87d44aa671d056c33e6c6b6b0635fc25b8c",
@@ -21,5 +21,95 @@
     "external hash-pinned vendor include paths",
     "require offline pinned llama.cpp; no fetch",
     "historical parity group disabled (engine closure only)"
-  ]
+  ],
+  "restore_commit": "efba8d47817811d493e28f396ebd0e14e161ca75",
+  "fixed_engine_source_commit": "4338c60f799f6ac11b5d0c68a87367f278311345",
+  "fixes": [
+    {
+      "id": "A",
+      "commit": "aceb6b0f4b6f28e7447a580cf0725b04ac66f85a",
+      "bug": "draft token/bounds asynchronous host lifetime"
+    },
+    {
+      "id": "B",
+      "commit": "47fb8e0584cb9fd195b5f994946701821fd8eadb",
+      "bug": "unsubmitted staging signal published before acceptance; retirement failure ownership explicit"
+    },
+    {
+      "id": "C",
+      "commit": "9e770e33cdba51b2c5ab0ad96a3252a43820cc71",
+      "bug": "MTP E-4 local records destroyed before upload retirement on early failure"
+    },
+    {
+      "id": "D",
+      "commit": "edf7cd79db63bd619db0f8105cf934ce30480fed",
+      "bug": "null USM allocations accepted and partial-init stager destructor out-of-bounds"
+    },
+    {
+      "id": "E",
+      "commit": "1ecced6604159621523e96c416aff4d4a7957adc",
+      "bug": "unchecked input spans/size products/in-order context/page capacity preconditions"
+    },
+    {
+      "id": "F",
+      "commit": "00ae5188d4a4f72076ade6b36e6623b93977dce4",
+      "bug": "MTP per-group failure returns before borrowed residual retirement"
+    },
+    {
+      "id": "G",
+      "commit": "4338c60f799f6ac11b5d0c68a87367f278311345",
+      "bug": "free compact allocator helpers name private opaque Impl type, violating C++ access rules"
+    }
+  ],
+  "artifacts": [
+    "report.ja.md",
+    "historical-closure.json",
+    "current-source-pins.json",
+    "historical-evidence.json",
+    "fixed-source-pins.json"
+  ],
+  "historical_source_files": 197,
+  "historical_source_bytes": 4006090,
+  "historical_translation_units": 83,
+  "current_static_source_pins": 221,
+  "external_vendor_files": 49,
+  "historical_source_identity_applies_to": "restore commit, not subsequent fixed files",
+  "remaining_gates": [
+    "Main complete source review",
+    "provider/async error/completion sequence and graph caller qualification",
+    "host fixtures",
+    "configure and build",
+    "small validated native diagnostics and failure injections",
+    "independent numerical/state/quality checks",
+    "original-condition paired reproduction",
+    "matched official bench >=32K thinking ON independent samples",
+    "physical262144 and RESTORE",
+    "cold/warm/restored decode"
+  ],
+  "prohibited_actions_performed": false,
+  "upstream_new_check": false,
+  "static_identity": {
+    "restore_blobs_matched": 197,
+    "restore_modes_matched": 197,
+    "historical_files": 197,
+    "f263_matching_files": 196,
+    "only_f263_to_final_difference": "sycl/tools/prefill_profile.py (RAM PLE/startup harness; engine unchanged)",
+    "failures": [],
+    "historical_files_modified_after_restore": 4,
+    "files_added_after_restore": 5,
+    "external_vendor_count": 49
+  },
+  "current_metadata_source_receipts": [
+    "../2026-10-15-pr6-recovery-audit/own-resident39k-summary-v1.json",
+    "../2026-10-15-pr6-recovery-audit/own-current-device-profile-summary-v1.json",
+    "../2026-10-15-pr6-recovery-audit/own-prompt-softmax-qualification-v1.ja.md"
+  ],
+  "retention": {
+    "raw_logs_generated": false,
+    "raw_tensors_generated": false,
+    "build_outputs_generated": false,
+    "deleted_artifacts": [],
+    "owner": "Main",
+    "next_review": "source review then serialized Main-owned execution gates"
+  }
 }

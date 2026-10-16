@@ -1,0 +1,1304 @@
+{
+  "revision": "63326f98c36656cf3a3e1adcc54c3c25a02aa6ee",
+  "kind": "static resolver closure, native experts Linux/Clang, optional vLLM included and labeled; no configure/build executed",
+  "targets": {
+    "strata_sycl_runtime": [
+      "src/sycl/compat.cpp",
+      "src/sycl/runtime.cpp"
+    ],
+    "strata_core": [
+      "src/core/graph.cpp",
+      "src/core/layout.cpp",
+      "src/core/pinned.cu",
+      "src/core/weights.cpp",
+      "src/platform/memory.cpp",
+      "src/sycl/device.cpp"
+    ],
+    "strata_kernels": [
+      "src/kernels/ngram.cpp",
+      "src/kernels/sycl/attention.cpp",
+      "src/kernels/sycl/bf16_gemv.cpp",
+      "src/kernels/sycl/cvec.cpp",
+      "src/kernels/sycl/decode_attention.cpp",
+      "src/kernels/sycl/elementwise.cpp",
+      "src/kernels/sycl/expert_routing.cpp",
+      "src/kernels/sycl/fused_gdn.cpp",
+      "src/kernels/sycl/fused_gr.cpp",
+      "src/kernels/sycl/gdn.cpp",
+      "src/kernels/sycl/gr.cpp",
+      "src/kernels/sycl/iq.cpp",
+      "src/kernels/sycl/kv.cpp",
+      "src/kernels/sycl/kv_stream.cpp",
+      "src/kernels/sycl/native_flash_attn.cpp",
+      "src/kernels/sycl/native_iq4xs_esimd.cpp",
+      "src/kernels/sycl/native_iq_esimd.cpp",
+      "src/kernels/sycl/native_mmq_xmx.cpp",
+      "src/kernels/sycl/native_mmvq.cpp",
+      "src/kernels/sycl/native_q2.cpp",
+      "src/kernels/sycl/native_q2_esimd.cpp",
+      "src/kernels/sycl/native_q3_esimd.cpp",
+      "src/kernels/sycl/native_q4_esimd.cpp",
+      "src/kernels/sycl/native_q5_head.cpp",
+      "src/kernels/sycl/native_qsa_indexer.cpp",
+      "src/kernels/sycl/native_router.cpp",
+      "src/kernels/sycl/ple.cpp",
+      "src/kernels/sycl/prompt_attention.cpp",
+      "src/kernels/sycl/qsa_index.cpp",
+      "src/kernels/sycl/qsa_select.cpp",
+      "src/kernels/sycl/quantize_act.cpp",
+      "src/kernels/sycl/rope.cpp",
+      "src/kernels/sycl/router.cpp",
+      "src/kernels/sycl/s2_experts.cpp",
+      "src/kernels/sycl/s2_gemv_q8.cpp",
+      "src/kernels/sycl/s_gemv.cpp",
+      "src/kernels/sycl/sampler.cpp",
+      "src/kernels/sycl/sequence.cpp",
+      "src/kernels/sycl/shared_expert.cpp",
+      "src/ngram/ple_reader.cpp",
+      "src/platform/direct_file.cpp"
+    ],
+    "strata_engine": [
+      "src/core/conversation_memory.cpp",
+      "src/core/conversation_snapshot.cpp",
+      "src/core/conversation_state.cpp",
+      "src/core/expert_cache.cpp",
+      "src/core/expert_source.cpp",
+      "src/core/layer.cpp",
+      "src/core/mtp.cpp",
+      "src/core/native_dense.cpp",
+      "src/core/native_head.cpp",
+      "src/core/peer_experts.cpp",
+      "src/core/remote_experts.cpp",
+      "src/core/session.cpp",
+      "src/core/verify.cpp"
+    ],
+    "strata_prefill": [
+      "src/prefill/prefill.cpp",
+      "src/prefill/sycl/blob.cpp",
+      "src/prefill/sycl/gemm.cpp",
+      "src/prefill/sycl/gemm16.cpp",
+      "src/prefill/sycl/moe_fused.cpp",
+      "src/prefill/sycl/moe_mmq.cpp",
+      "src/prefill/sycl/native16.cpp",
+      "src/prefill/sycl/postops.cpp",
+      "src/prefill/sycl/qsa_native16.cpp"
+    ],
+    "strata_spec": [
+      "src/spec/controller.cpp",
+      "src/spec/draft_policy.cpp",
+      "src/spec/suffix_drafter.cpp"
+    ],
+    "strata_kernels_cpu": [
+      "src/kernels/cpu/expert.cpp",
+      "src/kernels/cpu/expert_layout.cpp",
+      "src/kernels/cpu/iq_avx2.cpp",
+      "src/kernels/cpu/iq_avx512.cpp",
+      "src/kernels/cpu/iq_single_avx2.cpp",
+      "src/kernels/cpu/kq_avx2.cpp",
+      "src/kernels/cpu/native_expert.cpp",
+      "src/kernels/cpu/pool.cpp",
+      "src/kernels/cpu/q2_avx2.cpp"
+    ],
+    "strata": [
+      "src/program/generate.cpp",
+      "src/program/dense_prefill_nll.cpp"
+    ],
+    "optional_vllm_object": [
+      "src/prefill/sycl/vllm_xe2/native16.cpp"
+    ]
+  },
+  "files": [
+    {
+      "path": "CMakeLists.txt",
+      "blob": "a0946a32715fe21e47082978b08ffc72b279e17f",
+      "sha256": "03993aa5162ed3bf3f638c2755b5d44358c74945ea84b0862d0e76ab52eab4f1"
+    },
+    {
+      "path": "LICENSE",
+      "blob": "6687a423dde6b7aff1b748c07f5ee93ff788089c",
+      "sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0"
+    },
+    {
+      "path": "bench.sh",
+      "blob": "590a0b4b2a8e89281f163fee618abe0591dcbf44",
+      "sha256": "56ff8c4a49ce489a50555c0e33c4ec6dd7276d41a98f833cc82ed0bb2f15dcb9"
+    },
+    {
+      "path": "cmake/sycl_backend.cmake",
+      "blob": "093500d659dea046e29111f7cfd9e4eaa39964ac",
+      "sha256": "9a112ac469580302e8d124bc9bdf66c04f49f6020309e7d20e7771ab12757bef"
+    },
+    {
+      "path": "cmake/sycl_vllm_xe2_native16.cmake",
+      "blob": "ecabc1b7547d93aac261ee368a4d727b6f6e61fb",
+      "sha256": "067e616de5a9072a83215b3c957df4366064c5a7e2b36c308f8cbab28ae1d303"
+    },
+    {
+      "path": "include/strata/artifact/dequant.hpp",
+      "blob": "c064dd7999388eee2972dedf448578b37a213633",
+      "sha256": "51fcc756845ddbadb62e4164ec3b88a5cea7d66ceb13d60f12897f41c5ddf255"
+    },
+    {
+      "path": "include/strata/artifact/gguf_reader.hpp",
+      "blob": "298dc3bc359e5ede9dc0d0685dea430ee8bedf61",
+      "sha256": "fc8453a95677e797c8fb1198bfb47d715b73a53446d39a29920c372180ca5ee0"
+    },
+    {
+      "path": "include/strata/artifact/gguf_split.hpp",
+      "blob": "0f01001fbbc539feb1526a433044bcf03553cd0e",
+      "sha256": "6280aabf7e4b77447caa5d046d7b7389c82af08b2d02c004897d0d4826a09760"
+    },
+    {
+      "path": "include/strata/artifact/iq_codebooks.hpp",
+      "blob": "2d59f5e0bfb55c7ad18e6e9b2d0b7b93b236f529",
+      "sha256": "302000e6a85fa7224bff9a10155601a82391b7a64d5ee76fba1f76b537bb6c71"
+    },
+    {
+      "path": "include/strata/core/canonical_bank_policy.hpp",
+      "blob": "710d4f1ba8d26f8deb0e4b71044697b101f3a5de",
+      "sha256": "e109a52c2fccf88b8f17b108aabdf7f5e0b76b30f7fe3bc8670b84c281e9490c"
+    },
+    {
+      "path": "include/strata/core/canonical_dense_bank.hpp",
+      "blob": "94695aa681480d8c7ce0853745d2dc8d0fa1fa42",
+      "sha256": "25f046a7899f5959a046348587c71d35b6211c9568494e77609ec7a30c5fc29a"
+    },
+    {
+      "path": "include/strata/core/conversation_buffer.hpp",
+      "blob": "1cb8af77047f441231dc0ee368215443a0ae27de",
+      "sha256": "12f1abac2ec75cc71e8cf308a5a691923d8b617317560e009a41f713809f49d4"
+    },
+    {
+      "path": "include/strata/core/conversation_cache.hpp",
+      "blob": "0a190c709e00497fa001bb14804e4c209432fc11",
+      "sha256": "94a84eace5d0ece1a2ba0a0a18994181d6c23121f279fbe95e283ad8b519ff45"
+    },
+    {
+      "path": "include/strata/core/conversation_memory.hpp",
+      "blob": "0e908b40c52365ecd3a5ed25b63a66c995987afd",
+      "sha256": "b4c784080bfda39adb7a2fd4c64bac27a77bb7a6f4557b609e08c2afcb7f9954"
+    },
+    {
+      "path": "include/strata/core/conversation_snapshot.hpp",
+      "blob": "a840bf2eda95ce4a1c37ffa26e4007455fe53368",
+      "sha256": "078b537fc2a526f27727f9cd81bd0ac37fed9bc3fd4f64a1509d131fd77f414b"
+    },
+    {
+      "path": "include/strata/core/coupled_draft.hpp",
+      "blob": "d095e3a01c3e105155a58d7474bc80d8091e22dd",
+      "sha256": "9b1773764c3867599a42a48aa41444bf79441254e9250de542d5427f093f599b"
+    },
+    {
+      "path": "include/strata/core/device.hpp",
+      "blob": "d161c01aa83e96150c48f370ff4ef22cba33a105",
+      "sha256": "dfed509262b091e47a98c00b4f7a7fc3ae4062b9aab668b30eb0342a5dc1639f"
+    },
+    {
+      "path": "include/strata/core/emulate.hpp",
+      "blob": "6f28b97f723a0112fd19557fdc94d4047f0d104d",
+      "sha256": "eb3df4efe89642f069420e0f68ec526b33d4cc66f9a6b26de0583492b5758a77"
+    },
+    {
+      "path": "include/strata/core/expert_cache.hpp",
+      "blob": "0f87884d60fb065778d15e3b9099ccff408339ae",
+      "sha256": "50f26589b6488e677ac6675b824c56d143dea081b46722508d332c58d9799b41"
+    },
+    {
+      "path": "include/strata/core/expert_slot_sizes.hpp",
+      "blob": "90e912aa612636f03acd38dec37f7c76ed2f7a38",
+      "sha256": "93ea194c1b4d63c71747d27fa6eda8d10ae4f1c308ba9ac8d6e026ce6a6b81b2"
+    },
+    {
+      "path": "include/strata/core/expert_source.hpp",
+      "blob": "45f961d4fff3691bc345935536e0124e9ffcc0fa",
+      "sha256": "cf1462b078e8b373507acd7b2097c67f83438cb25a94e68da95530d0bebc15f2"
+    },
+    {
+      "path": "include/strata/core/graph.hpp",
+      "blob": "369bfe3f23121b1204901c12a19842cd20ed5824",
+      "sha256": "21fb807b9c3cbd8665b14145ca19d4d9a93fa897d378042254f4e4cb1f9060a4"
+    },
+    {
+      "path": "include/strata/core/hit_hook.hpp",
+      "blob": "8c21035c9d5f5e77513788764a7aeeabcd207fa4",
+      "sha256": "4c006f473d71a79cf03d9ce07cb246dc8b5ec10269fd335960a27733d51bc033"
+    },
+    {
+      "path": "include/strata/core/layer.hpp",
+      "blob": "83ffd3fb67dbf65271707105b42150fd4b2f852b",
+      "sha256": "80c2e1a8cac8a1600418dbf26d035b342136fb4164636196f51122205656cfb1"
+    },
+    {
+      "path": "include/strata/core/layout.hpp",
+      "blob": "37f9e898bb418e7d4f69c8ac2598ec6e6eecd846",
+      "sha256": "b7e818dc936ecb5a41226e0ffc9f7312cde3dd87614d3a3a2c8c1c04cc7cebeb"
+    },
+    {
+      "path": "include/strata/core/mtp.hpp",
+      "blob": "52fdfbbe0bdbe70942a80cc046f6f115abff80d3",
+      "sha256": "397d8951d0e366efc003d6b080b641e2af0565d252227d48d239706700c310b2"
+    },
+    {
+      "path": "include/strata/core/mtp_expert_source.hpp",
+      "blob": "295488444c37fbfac6887a5f12d50e5e071ac7a6",
+      "sha256": "11b545fc4ce99c3f3fcf65b67dc7d4626a7538d2129373198624ab2f24b4be32"
+    },
+    {
+      "path": "include/strata/core/native_dense.hpp",
+      "blob": "8a0a63c57879df59566b85d114f7e3621eba0ac2",
+      "sha256": "0c263f02639ce96b0a805e88c15b2686d5c1809b601b403ac3eee2626cb0dea9"
+    },
+    {
+      "path": "include/strata/core/native_dense_bank_policy.hpp",
+      "blob": "a888d8aa8cd25df5585764fb224738e5c1bfbf68",
+      "sha256": "c3e37260e0cc60bcacb65ec31e3aea08c285debd23fe9239b36fc8af542cb40f"
+    },
+    {
+      "path": "include/strata/core/native_head.hpp",
+      "blob": "5aa2df0318f63848ec47417299f9c19983acf4db",
+      "sha256": "a212993bbcd2acaf4e6cb8599d2f6c3b87e0d60f93fe93b0559d10eeafaa9d0f"
+    },
+    {
+      "path": "include/strata/core/on_device.hpp",
+      "blob": "ed876f46b39d7ca27133d164f63c6a222d95de82",
+      "sha256": "f9317a4c19eb32924462b8aa9829a97528064f6a8fcdb64a746bb13a60c773a2"
+    },
+    {
+      "path": "include/strata/core/peer_experts.hpp",
+      "blob": "a6e3766a9a24b2714692f374e1fd37110c8a1e12",
+      "sha256": "02ef10cd0b6a9c0ee8b6de3a4489e5fdabb108f0182539fd4ab49705428e7f59"
+    },
+    {
+      "path": "include/strata/core/pinned.hpp",
+      "blob": "9c9c380503db22c9055fee6fe7270de2d513ccd0",
+      "sha256": "90216fc44216de8820fb50525061bac7cbf427d5fd166650a8911a953961e788"
+    },
+    {
+      "path": "include/strata/core/prefill_head_scope.hpp",
+      "blob": "74f067b36c593e78f8a194aa424d04790f95e176",
+      "sha256": "2ebabef8e097ec13aa72ccbf503ebd711e60aa03a06e1fcbfee1d3a4bbfa669d"
+    },
+    {
+      "path": "include/strata/core/progress.hpp",
+      "blob": "46c93783cb7b21c90cdacda716caf561a30b0bd6",
+      "sha256": "f72c21548bea3b8a8b07488bcd561d6c16e5960f5dbf78fca642011d3f8ff923"
+    },
+    {
+      "path": "include/strata/core/remote_experts.hpp",
+      "blob": "805bc950f846bd633893d5af71d8107efba9c3c2",
+      "sha256": "d4efb5a0cc06465e48e7df6f1f6e2d4a50d785a237da0232aab3cecad697af9e"
+    },
+    {
+      "path": "include/strata/core/session.hpp",
+      "blob": "9c121d3348ce11e776b70ee964eb265a59c8e59a",
+      "sha256": "b7f6e053fd3c4c454980f071ada8bbc4ad0fc92902d9009d9c8761aaaefcfbb9"
+    },
+    {
+      "path": "include/strata/core/verify.hpp",
+      "blob": "60f355de41206aa3a71903cd41d76ee23f2af210",
+      "sha256": "919fa11c4d9daaef800b8081f5a2eb0b7868b8d5212532969f8434a9a1a609cc"
+    },
+    {
+      "path": "include/strata/core/watchdog_lifecycle.hpp",
+      "blob": "db6f6fec9fd99797d755db87159076ca38ef1c76",
+      "sha256": "799a747cb5f10c59920e30ecfff258ec657638b51d2699c0bd4222088402ac4e"
+    },
+    {
+      "path": "include/strata/core/weights.hpp",
+      "blob": "b4a5daad622032e194e549c9bdccf30f0c131786",
+      "sha256": "07bc2e6eb56867630372d3ae4a698409cbb587e737da106a253b89e23caf2dcc"
+    },
+    {
+      "path": "include/strata/kernels/bf16_bits.hpp",
+      "blob": "5c32532f6715ada4f4b96aa63e168aa0303c2180",
+      "sha256": "813b51f17c5c264d642f4d77b3d6e5f35e7ea7310ba87b18b3a2a5bc9185198f"
+    },
+    {
+      "path": "include/strata/kernels/bf16_gemv.hpp",
+      "blob": "78d3c05a17bd3f723af5e147a55dd32c6e2a1746",
+      "sha256": "2704fa4ff747a9cdcfe0d708d1540045ddcb7e31043806902fdeab235dbff317"
+    },
+    {
+      "path": "include/strata/kernels/cpu/expert.hpp",
+      "blob": "ab05db844cbfb1f3dd13ff6b0b18671be2b02580",
+      "sha256": "ae3e6f4c079a0dcbf300d59c83a1b3b88377abf3115210543161e41ee83df6e0"
+    },
+    {
+      "path": "include/strata/kernels/cpu/expert_layout.hpp",
+      "blob": "9a8b9918302201f7cfc1dd79d64fd19a67c933ba",
+      "sha256": "00eeaf7d0bde06f3db22d7865f932393cd5e1026434cd0009780d3f063bdf651"
+    },
+    {
+      "path": "include/strata/kernels/cpu/iq_avx2.hpp",
+      "blob": "c55391d3301cb3a7ab5c4422621d2843615b3dd6",
+      "sha256": "37c785fdd73a641cd925c395e44a53e88775613c0cb23c066393d0d7421cd90a"
+    },
+    {
+      "path": "include/strata/kernels/cpu/iq_avx512.hpp",
+      "blob": "a9a71c461a74b5a14ef28addc0bae9e60a585df4",
+      "sha256": "ede01ee7e474f5d816d9bc6ad6b0804cabd924c69b2b3d536d40f2432410841b"
+    },
+    {
+      "path": "include/strata/kernels/cpu/kq_avx2.hpp",
+      "blob": "01b7a63cc9a669938cc5646bb1627c516cf0aa45",
+      "sha256": "c4cd342ba0f2ffd34f6b5ac9c254c59d0a521370de0d7650f0c28e7a390b55dd"
+    },
+    {
+      "path": "include/strata/kernels/cpu/native_expert.hpp",
+      "blob": "9b807427ae361b9e27ecc6b933411f5e6ae64d97",
+      "sha256": "45ccf6df8b4cc5b468a245a2ddee845e0b10ece14951a5a7ab7b6ffbca087e94"
+    },
+    {
+      "path": "include/strata/kernels/cpu/pool.hpp",
+      "blob": "76bda6def83c4be67dce71f3cd8a80b43f4e6027",
+      "sha256": "177897a23a38f78f51545bc50a056d3cd8feb03c0b594a0026e66fab92cec07a"
+    },
+    {
+      "path": "include/strata/kernels/cvec.hpp",
+      "blob": "a447eb52851d1df8ee323984a78d05ad3bf07620",
+      "sha256": "34e0a44c41392634451d4d676a0035623b205cf2952685aa1946b4df78dd5a65"
+    },
+    {
+      "path": "include/strata/kernels/elementwise.hpp",
+      "blob": "a1eca0cdb22aeaf77cb5981208b9c43a5eeaa621",
+      "sha256": "97014c150169fd4867b161dc3c3c5c7c66ced295de311eb2d5e77341603a22d0"
+    },
+    {
+      "path": "include/strata/kernels/f16_bits.hpp",
+      "blob": "396d690a392b3b77254ab98f218e3ef138a88f4f",
+      "sha256": "0f74e6dd832da427b681c9971265a0af1a91198694fdef3654d860b98863fc8c"
+    },
+    {
+      "path": "include/strata/kernels/fused_gdn.hpp",
+      "blob": "0cf7c66c38ed3d8a6b666c75041f0ba6eb0e3907",
+      "sha256": "595205dcf531d8fb758bcd7b2d3ac4e4158bd06f20160199e592824d530e2078"
+    },
+    {
+      "path": "include/strata/kernels/fused_gr.hpp",
+      "blob": "78ac1b3423e77516fa045945a64de1b59acdc407",
+      "sha256": "e953ecdca811cc703d08d4034f8162e9a39eaeb04c4c9a7e9e8c61881a2a2bdf"
+    },
+    {
+      "path": "include/strata/kernels/gdn.hpp",
+      "blob": "898e2a855d0234d35cddca6f93888423225e6c9d",
+      "sha256": "f44626e3f52813b9be289aee72f708e9ad61aa9b3a0e43037ba5ff8b358fc638"
+    },
+    {
+      "path": "include/strata/kernels/gr.hpp",
+      "blob": "ce15813a86f8b8d114dfbc1c4be04a006d4d9d69",
+      "sha256": "2a5bbba0ea74752dceba2e14bcf5e7c470dd69dd74e533a3e2e9aa76804ef74e"
+    },
+    {
+      "path": "include/strata/kernels/iq_kernels.hpp",
+      "blob": "272000c288b758cc0c7eca031f6c204a6cdfa05c",
+      "sha256": "0db8b5c104e2b29dbd0e12bf2f12b6a1d4403ffb1340398d7bf4f58a60742f30"
+    },
+    {
+      "path": "include/strata/kernels/kv_q4.hpp",
+      "blob": "930b628c10fd1a6f2302d1f90ed1792ca1c867aa",
+      "sha256": "c7624d5567d464edd0e5e99951dca08f8a748545af2f0be4f18398a011c8ab89"
+    },
+    {
+      "path": "include/strata/kernels/kv_q8.hpp",
+      "blob": "a535cc32d8ff446792cef966670cc0586d1fe5ec",
+      "sha256": "8917232c10900e85a6193012d2cc56138c7ab000c01d964bc9d296cf2b2e4bb6"
+    },
+    {
+      "path": "include/strata/kernels/kv_stream.hpp",
+      "blob": "db203896906675599523293b7394702e0675a758",
+      "sha256": "d3389020074da15a5b414667089734d0f46b20697b23dc5a46e04f6ea6dbaea9"
+    },
+    {
+      "path": "include/strata/kernels/kv_stream_copy_groups.hpp",
+      "blob": "96e40435dbb4565bc6ec02fc976092bd158a50dd",
+      "sha256": "555fa50267ec129f9e6f57da7b7187e60114c9daeebfc1722746ca3fd2213780"
+    },
+    {
+      "path": "include/strata/kernels/mrope.hpp",
+      "blob": "4c46b638ab0da89d5242248db34c34b12897a8f3",
+      "sha256": "92f208409f99116676ca6cce1579cd16c0365e515d02071ec55522a7b28e02c6"
+    },
+    {
+      "path": "include/strata/kernels/native_flash_attn.hpp",
+      "blob": "b517156e21a636764fcf53f039c35529eb7d16cd",
+      "sha256": "6cc7bb288fc263ee800f5b5329bcc8d139ddde7e31a022364850cf80b1e5f7ff"
+    },
+    {
+      "path": "include/strata/kernels/native_gdn.hpp",
+      "blob": "feebefe959ca477ef06ea746c9f1359c7f050b41",
+      "sha256": "2b65e1b5b689c06d099bc061d746d606dcc5b974a7bffe0820ce01e7295d1971"
+    },
+    {
+      "path": "include/strata/kernels/native_gdn_preprocess.hpp",
+      "blob": "58334f4242e04c478a69a8a05831aa4bbc2735b1",
+      "sha256": "7533d8464b6ae8e2800e43ee3036d23f21181c2472c069d19bacf115beeafc69"
+    },
+    {
+      "path": "include/strata/kernels/native_gr_norm.hpp",
+      "blob": "9211ec4677c7c3d87ba45b18f42f592a9da042bc",
+      "sha256": "4f589ca2af997968ecfa6276baca2e4c094834590248f4ccf8fb4a8ce1af5623"
+    },
+    {
+      "path": "include/strata/kernels/native_gr_postops.hpp",
+      "blob": "6c1006089a409aea5777f017d5835d109cff2fd4",
+      "sha256": "59f6488e41b29bb38e1c3e9beec7bb47ed102a98c07991f00f4fde9ccc03ebba"
+    },
+    {
+      "path": "include/strata/kernels/native_mmvq.hpp",
+      "blob": "1acd8139d46e360c5408bc808c6d4b3b08d94766",
+      "sha256": "bcbadff81f650d62866889cfcbf2fba1f6798a82bb5de8a4a2bef6d844e7c589"
+    },
+    {
+      "path": "include/strata/kernels/native_moe.hpp",
+      "blob": "34760efe64a6f03551007fc5406e7fb5f7c92dc6",
+      "sha256": "b8400379c2f0deea4f440a2aeb343d45377f4a334bf4b1c8eb8aa933eaace51f"
+    },
+    {
+      "path": "include/strata/kernels/native_ple_postops.hpp",
+      "blob": "97c499034698ea07d9d10c992f60658be51abf16",
+      "sha256": "eeeec9650c6e19402dcec9c4c807ff5a62f0b64b4a3ad86e6a286489ee7af091"
+    },
+    {
+      "path": "include/strata/kernels/native_qsa.hpp",
+      "blob": "c56eb4d29c369345c74101d3e6bf11b8244b7b29",
+      "sha256": "ef43d79914eb433458e2b212a9733e6a0e15be115aa156675d18a8d012c66387"
+    },
+    {
+      "path": "include/strata/kernels/native_qsa_indexer.hpp",
+      "blob": "35403397e0745f22634e0dbb1d872ae30d10190f",
+      "sha256": "cea70ddd1963972eee73372cb2c8b8dcebd06c4424080eff23cbd3ca43571962"
+    },
+    {
+      "path": "include/strata/kernels/native_rope.hpp",
+      "blob": "e2940948b0574127da6f6eff16dff350a5b79d41",
+      "sha256": "38fb7dbdf43fda7134dd13bda06e97f82525ff0d6d39ec39a976bd8366378bda"
+    },
+    {
+      "path": "include/strata/kernels/native_router.hpp",
+      "blob": "0511b0b0103871eecb535e6f6ed004873c6e2e35",
+      "sha256": "e5e0a529c11235080ec541cdc65a1ac1c0dba8eb994cf5373609fc8985311502"
+    },
+    {
+      "path": "include/strata/kernels/ngram.hpp",
+      "blob": "9aae9c08c8aedc28c2d5efda77870a13f0f18f6c",
+      "sha256": "cac660e7566e7df9d6bae18e19728362b6516d9f14707104a4d7a797b2f3975a"
+    },
+    {
+      "path": "include/strata/kernels/ple.hpp",
+      "blob": "fabad838a3e0ca8d45f4d3576168f120785c1252",
+      "sha256": "d658e7186f1e81a8b183a583b5fa6bfaf228042cda4e88aa1c41ada260db6b12"
+    },
+    {
+      "path": "include/strata/kernels/qsa.hpp",
+      "blob": "dc26024ad5931b64046ebeb4ee78ca3fac4ac957",
+      "sha256": "87c02222284f842fcecb46a422b119af769c72c3914edc8da5b2ee782456dc74"
+    },
+    {
+      "path": "include/strata/kernels/qsa_decode_attn.hpp",
+      "blob": "33db6aa43871511cf6c71e3dbb736ed5a2a208bb",
+      "sha256": "3745db42a1a1fa84a40a5040352a9d5f16f735ae431389b8617dd6cd11bfdd14"
+    },
+    {
+      "path": "include/strata/kernels/qsa_indexer_device_batch_plan.hpp",
+      "blob": "64583ca3cbb3f87d70f13dada17ac182595a94fb",
+      "sha256": "9ea0fd4089652726eb07e22a029a97c3ba9a8d02fc218efb214f80898c4e3f5d"
+    },
+    {
+      "path": "include/strata/kernels/qsa_prompt_attn.hpp",
+      "blob": "7ab3f5c2304ebd631d337e22c794cf9e68b8674e",
+      "sha256": "e5ed40cde930e09265b6b4b4ba27ae1118444fed8078d39689a08692dca0e230"
+    },
+    {
+      "path": "include/strata/kernels/qsa_select.hpp",
+      "blob": "1a818fa2a352a297bd5e4c3e8c4de085ff97197d",
+      "sha256": "b35332883920f679aa65ed859ad78ed93c30b7a450ec3efe75ab61e392ae200c"
+    },
+    {
+      "path": "include/strata/kernels/quantize_act.hpp",
+      "blob": "49d858b25e9a3a00246ba6a7206c33b0de285afd",
+      "sha256": "baad6fe6c691f8f5aee2d6dbbb3513eead12c754b485ee41af4618d5035772f7"
+    },
+    {
+      "path": "include/strata/kernels/rope.hpp",
+      "blob": "45e54faf05ba966e6ac25b63c8b3eb286cd17c39",
+      "sha256": "bd9094c0f0f761971a6760fde2b84a5660c934ce9a654dc287c686acd284a65a"
+    },
+    {
+      "path": "include/strata/kernels/rope_scaling.hpp",
+      "blob": "b494ddc75eae1dfb4dc4a7d172ee81af9863d978",
+      "sha256": "05a8dcf57c9b12a23128f22e4bef01445c3a37991df5e1ffacd01d077c46595d"
+    },
+    {
+      "path": "include/strata/kernels/router_top10.hpp",
+      "blob": "e10295e1e325d76477bbd0eeb52d71be284f0621",
+      "sha256": "cd0d8e91e702bfa2cfd681d4ccf4f6c4c62af2cd612d2d109e5369845ddf362d"
+    },
+    {
+      "path": "include/strata/kernels/s2_expert_grouped.hpp",
+      "blob": "af6f52f99d377f5e201bc35d80310dbfc7baf916",
+      "sha256": "74802f312c20daa90b7fbacba4a3357c8e94c7ecdab75f402be507dd303a8193"
+    },
+    {
+      "path": "include/strata/kernels/s2_gemv_q8.hpp",
+      "blob": "9c7beb97ed727b4f8111f360b6b9bfb7a57cb975",
+      "sha256": "5c2ccbdc5b3f3a66b9afef5bc799ae2a83bcb2103b258bb84e8d82aad06b4eb1"
+    },
+    {
+      "path": "include/strata/kernels/s_gemv.hpp",
+      "blob": "340df04e47fc4c3643b228e7ab7bd1936327e935",
+      "sha256": "369ab6cc010b49ac1d82bb680246e93b4c10f4f7081f56a325f6c7138ab1c3fb"
+    },
+    {
+      "path": "include/strata/kernels/sampler.hpp",
+      "blob": "a74010110ef3ce0790be9d5007dc268475dd31d9",
+      "sha256": "2fadb4618763906f7bb6718db199628e22522f266a52b1ab03f8c87a4e5b9a0e"
+    },
+    {
+      "path": "include/strata/kernels/shared_expert.hpp",
+      "blob": "8909ed9e607026d4a407b7bb0858517bb94855b6",
+      "sha256": "9f49d44286650219f488dea3fbe0474b009498e88921cc3ef806e87c372da8e2"
+    },
+    {
+      "path": "include/strata/kernels/verify_kernels.hpp",
+      "blob": "0940208a3583484124d2663ac362d72b94858e9e",
+      "sha256": "59f66a3437f4f70304b3ed84fd2fc9697d0e7cf4f939e49c0e18e490c738158d"
+    },
+    {
+      "path": "include/strata/ngram/ple_reader.hpp",
+      "blob": "2884817ef895f19deb7f40b22a20036c9fc0dafe",
+      "sha256": "d19b99a681a533f47144293bb170913c1496b5e0c344aed097ad1418375f7498"
+    },
+    {
+      "path": "include/strata/platform/direct_file.hpp",
+      "blob": "c59eb91005f7d2d8f84e9f1769d37a984e35a8ef",
+      "sha256": "ae9a8999aef1769d729e5d6e4058888a14b758cbce3804b291809b1a521a4253"
+    },
+    {
+      "path": "include/strata/platform/memory.hpp",
+      "blob": "ece6c9e4a1768922b784e5f34e31100b5f9a6ab1",
+      "sha256": "7272eb1956a73f63b0a352e747c71d72caff6a023ef0cdeeaa1222d05059bdea"
+    },
+    {
+      "path": "include/strata/prefill/draft_uploads.hpp",
+      "blob": "717df032d9033cf025b65d998c61d7d2a4b762f3",
+      "sha256": "2d32126e28c67751d14bde6cd46f1db60b92aa3939b17a6f78fd66bc10955908"
+    },
+    {
+      "path": "include/strata/prefill/gemm.hpp",
+      "blob": "b0a23925f53ffe25761d7be6f12fccfa9025ba97",
+      "sha256": "091984410aacd56f33748c4ef9c730405f2862f9a32d6de6c59fa74063a5fc43"
+    },
+    {
+      "path": "include/strata/prefill/kernels.hpp",
+      "blob": "a09842d84484b87abdc245649165e4be87a3fb8b",
+      "sha256": "fbe63ba2e37e9d4e89e82e3f82743a99ee24f822ebbd287c5d14c6efb07e1aeb"
+    },
+    {
+      "path": "include/strata/prefill/layer26_phase_audit.hpp",
+      "blob": "f92eec20ef52f2f23a80ec110abb116f9f859785",
+      "sha256": "1eb0a7e3a439a0b29f1864977a82ec1db46f8583e4ef9cb02cd9bbdfac388dcf"
+    },
+    {
+      "path": "include/strata/prefill/layer_major_boundary_audit.hpp",
+      "blob": "f40afabae05f0c406eca64c6d94ff03921241532",
+      "sha256": "dc4d8a277d85c0b0c857ca1a86069bff0019b5160e1f8078cb60dac479136d68"
+    },
+    {
+      "path": "include/strata/prefill/layer_major_plan.hpp",
+      "blob": "ecd7a4d860e0dddd12841e1631296556dfeec1a4",
+      "sha256": "67bc25500ae777bfb387944a2415325868602b9da82aa945464b64b0a2b8b9fd"
+    },
+    {
+      "path": "include/strata/prefill/layermajor_coarse_profile.hpp",
+      "blob": "7ff1d1daba87d5b5f2ec941c838e39ee6172a803",
+      "sha256": "36d7a9b9059a83f44cac57c6d06229455a2f86114710f73fa422ed4dc940c2a6"
+    },
+    {
+      "path": "include/strata/prefill/layermajor_qsa_profile.hpp",
+      "blob": "656cbc0262cc2d7b0d8b2af43ad13da34520eade",
+      "sha256": "1495cdd3f1e5892c4ac4011b92a6420034c97d7b18a74ed6f14a50a2924e3370"
+    },
+    {
+      "path": "include/strata/prefill/layermajor_shape_census.hpp",
+      "blob": "c2b29d68c86cc4c975db9dc7f1d64f43a33a889a",
+      "sha256": "1cce413ca7a8a07e7f61c8579b255b4cedf7a9ad771b707c1b105a32c06e746e"
+    },
+    {
+      "path": "include/strata/prefill/moe_fused.hpp",
+      "blob": "17e685a0f6fb129696af3ea23e163e178f524a89",
+      "sha256": "41b58910e68ca3bf88e6b8c19bcb3dcb787fcf1882a66926970b4e3ea6fdecc9"
+    },
+    {
+      "path": "include/strata/prefill/moe_fused_iq.hpp",
+      "blob": "9004f96d702d3bc427d965d7a32a749b6947390d",
+      "sha256": "89e1eabb7e51571c35111f6f9e7bbba13cc516f2ed8d99bcb9cdc680dd99499e"
+    },
+    {
+      "path": "include/strata/prefill/moe_mmq.hpp",
+      "blob": "2f77c42f02fcd06aaeb147c2fa548c6231589fa2",
+      "sha256": "942c4213480e53b02c09fdf2868b1c4ba63b705805d6163979a132eca2bcceaf"
+    },
+    {
+      "path": "include/strata/prefill/native16.hpp",
+      "blob": "28a7501ddc6de95e127714fc4d6ce8522f401325",
+      "sha256": "6c58224919bb999d73d2720d4be6f0779418d39e2181a4cc1c627239710dc46a"
+    },
+    {
+      "path": "include/strata/prefill/prefill.hpp",
+      "blob": "da6288f459c19edd8fbf3dcb8e8beb70cf735bbf",
+      "sha256": "dc23be25e15138ff4ce58a2696be7e0f67ded25b79107366da0103681668828d"
+    },
+    {
+      "path": "include/strata/prefill/qsa_native16.hpp",
+      "blob": "8987084162b807e5f863579c6688eef7c7bdb379",
+      "sha256": "bec2752c14828808b7b1f8edd4dd1d2d9fe231015bf28b84746deb2c64eead69"
+    },
+    {
+      "path": "include/strata/program/conv_cache.hpp",
+      "blob": "7fe4bfa75fb0cd0c4bacf2721b342ababff738ec",
+      "sha256": "bac12824a15f99197e94305f90953914efd622b0380853675453f841a332eb5b"
+    },
+    {
+      "path": "include/strata/program/dense_prefill_nll.hpp",
+      "blob": "dd679705d358de893c2bcd16c2f5bba2657a0122",
+      "sha256": "bb30107d937447dd2f8693bd7413ae349d1434fc2eeeffe3e13c0f2af7f4052f"
+    },
+    {
+      "path": "include/strata/program/logits_selection.hpp",
+      "blob": "04462a826da152b812c3dc83bfb6901b443548a9",
+      "sha256": "f023d183fecb0c236dd0941988c672f6096fa92963393d4d879767838313e006"
+    },
+    {
+      "path": "include/strata/program/prefill_logits.hpp",
+      "blob": "011fc476c6a2a9f658cae99df5021cc9a34a771f",
+      "sha256": "ae38a167d585785c705cb0d51185bc5ee922d8360a3174630b717857d5b2fa73"
+    },
+    {
+      "path": "include/strata/program/prompt_checkpoint.hpp",
+      "blob": "7cfeb189eac66c5389d9f3e59861ce226b93507c",
+      "sha256": "2aff5e194df8d808c8daeb33ab980f5a90f0ad7e22dbc82c93114ee0816f5857"
+    },
+    {
+      "path": "include/strata/spec/controller.hpp",
+      "blob": "4864ce93acd70f51996998157166b278be097de0",
+      "sha256": "e1c8400792ec87882646c96b22d768e2f62a5cfebf4b415798ef177ea6e60cce"
+    },
+    {
+      "path": "include/strata/spec/draft_policy.hpp",
+      "blob": "c77b869668ea93528f77f8566edbf7b22335289d",
+      "sha256": "d7810bde5ca46b65f41e0eb3351ea86e55ea6a048e18b53a8761f0fc62b63bc5"
+    },
+    {
+      "path": "include/strata/spec/suffix_drafter.hpp",
+      "blob": "731bbef1b3bfb0a9a79db7e2a469166304383180",
+      "sha256": "30c7b82d26f013c4029f4db93947dd20060a7163840a5547dbb2513a5ee4844c"
+    },
+    {
+      "path": "include/strata/sycl/checked_cleanup.hpp",
+      "blob": "835ad4c1e5ccc895193016e5674760c0eb424d5f",
+      "sha256": "c2c9bdee7b3a6eac9fb9ae9d965cec237b2971a83ec7a3a8f9ff274b3e53f683"
+    },
+    {
+      "path": "include/strata/sycl/compat/cuda_runtime.h",
+      "blob": "3504cdb396640d5e0d1aa3e1008b4c4f717ea5f8",
+      "sha256": "39b71df35e317851bd16b383027f088be159be2e0d602c592e8ddab30fe7e26a"
+    },
+    {
+      "path": "include/strata/sycl/cpu_wait_profile.hpp",
+      "blob": "263886d3d78f21b24b044cf19a96d11e280c1dfa",
+      "sha256": "f29b86702df27fa6510cfc31d13d0442f9386cdae491952fefbcfa7b0816567d"
+    },
+    {
+      "path": "include/strata/sycl/esimd_half.hpp",
+      "blob": "fb1830a450d0ef76d501baf588e1047dc747ab1d",
+      "sha256": "4df77302592b43546b831505c5d71ef2202890bebafeb9c244e81def3dc4394e"
+    },
+    {
+      "path": "include/strata/sycl/gguf_decode.hpp",
+      "blob": "7c7d998e4aaf0b4e26f0dd57920c6204917fb768",
+      "sha256": "be53c2b1d612433720599999ea0bc4902d2d550e16270a9eebe8e6868fb91c50"
+    },
+    {
+      "path": "include/strata/sycl/iq_parallel_decode.hpp",
+      "blob": "925c05c46a184f77c1245e968af2abc74c707e48",
+      "sha256": "282f95240c9ce614df0d05f9944a52d8154be64a01ba5ff898f0248e860bc234"
+    },
+    {
+      "path": "include/strata/sycl/launch.hpp",
+      "blob": "d939acd1cce9b0f273eb42d5b066759f225c4670",
+      "sha256": "9c5aaf14e4b92232d4dcd4e2e68071201d436d287a9615088a9428d88f53b1ce"
+    },
+    {
+      "path": "include/strata/sycl/native_mmq.hpp",
+      "blob": "a62b25d258380367e0a765d664262c2222b3a354",
+      "sha256": "756b2275ecfb6737857a127cd951ad478b7b4db2ce7f90ec99e01d64311f3c85"
+    },
+    {
+      "path": "include/strata/sycl/native_q2.hpp",
+      "blob": "e78e49be45a44267ec86e31db50d0a64c081773c",
+      "sha256": "679b2f78ad4014d8055339322b9a4b527b02c325784e3474b81152538a863190"
+    },
+    {
+      "path": "include/strata/sycl/runtime.hpp",
+      "blob": "003e22323b4088d45594dc3a8bb84ae2b93886cd",
+      "sha256": "a0e0687886e09c50922d01f7023ba3b51e8ac2dbe43f461a798ba82438b2a074"
+    },
+    {
+      "path": "include/strata/sycl/sform.hpp",
+      "blob": "d546b40d247e93873c00becc1d3360b7927351ea",
+      "sha256": "5317d2217ec1949e23fdd6f0a8a716cdc6d76a785a9d1d1792fa36680981059f"
+    },
+    {
+      "path": "src/core/conversation_checked.hpp",
+      "blob": "4355dc4e3a8dcd60723d38b7a4b041893a132a19",
+      "sha256": "8fb6f2734b3b96d3590644133ccd07f09befda6ef2243325ef8ea3f1c6a972ad"
+    },
+    {
+      "path": "src/core/conversation_memory.cpp",
+      "blob": "bd5740f2fce5397feb1014fe6b529658ac5a9c18",
+      "sha256": "2654582ed22f147a3e83073664d74ff67f3f8a550d58c30654a417e8aa5b2b2a"
+    },
+    {
+      "path": "src/core/conversation_snapshot.cpp",
+      "blob": "759daa65a5372a029e5238f16491c053c9058c93",
+      "sha256": "57ced89d4e3e90f5a93b597b04d1c73f406f20a742e43174eb042b4dea885fe2"
+    },
+    {
+      "path": "src/core/conversation_state.cpp",
+      "blob": "3e97827cb1d525b7efdf81a668083b52ff99869d",
+      "sha256": "296a5e2de758e638a80ddaf6a25f9a48419c88bc42d8ceb68eae4df7fb933c7d"
+    },
+    {
+      "path": "src/core/expert_cache.cpp",
+      "blob": "61b35fd3f4650200ce2005b0f0e283c8bf273d0f",
+      "sha256": "7d9a7fe0c54e8d55addcc9e9d7117d0b3addd3da294feb3b78b0fde735ce806e"
+    },
+    {
+      "path": "src/core/expert_source.cpp",
+      "blob": "ec21a4bc484248259d15f55a86ac48423a300986",
+      "sha256": "fac2d982477f1ba76f202ef8aa0cf88b76b8de41c449e362f7405ddfa4151f2a"
+    },
+    {
+      "path": "src/core/graph.cpp",
+      "blob": "2e9c7e70e8d39a0b76d5af423a75fb79ab888f80",
+      "sha256": "ac8b1de9372b6755bb5c9be30b83c76fef2f89186b0f7e5316676448f66483c3"
+    },
+    {
+      "path": "src/core/layer.cpp",
+      "blob": "e124894d2bdbe4030543a7c8156e22563455ffc4",
+      "sha256": "4273fc8c08bb0c58ad471d963f232a457dbc96ea6bd20fa1b45d27fee3428cfb"
+    },
+    {
+      "path": "src/core/layout.cpp",
+      "blob": "6d1b970bdae0dea5037da806640d2bcb4bea1765",
+      "sha256": "f1e166c91025710fe318c85f7fba27a721291ca2d27ececd797abafa5a5cc7eb"
+    },
+    {
+      "path": "src/core/mtp.cpp",
+      "blob": "b553ee0f6ccc6584dac1fff3e4c7ea1aeb22f8c7",
+      "sha256": "04cb9d86e2861877263dd2177fce893bd0dd7b17c045594292ee6d6625d09c1f"
+    },
+    {
+      "path": "src/core/native_dense.cpp",
+      "blob": "4de67d8f2c2000a4405a97aed0ba22977f0e7909",
+      "sha256": "4424972f8bd8c1f0e71ea360140a6cd3c56ed6a5533d1354bdbcdbc13d387d42"
+    },
+    {
+      "path": "src/core/native_head.cpp",
+      "blob": "0d370d1f91401a12b6d571b5254544af23dede4e",
+      "sha256": "6a6942d485ad3ed5e43c0dd7977e92e4594d6adee0648d03edc0e60df6ff91d8"
+    },
+    {
+      "path": "src/core/peer_experts.cpp",
+      "blob": "35e4950980587b9617c7fa2eb4340a60a1ab903d",
+      "sha256": "cace1613f7cb115f7d8ca835c132c1e86e32cbc183e6057dbb33a74e32699224"
+    },
+    {
+      "path": "src/core/pinned.cu",
+      "blob": "7d8e3134ad7553a1042eba8db3319ddd9762496a",
+      "sha256": "7328f4b067e94717b9308047f21e683c739a912663f3d9892470639edae9ccc7"
+    },
+    {
+      "path": "src/core/remote_experts.cpp",
+      "blob": "53d8d7643c45d7bd80bdcff5db456f660758cac1",
+      "sha256": "7c10c2b923bdd5105d6626d0d1950883da7e53f64e581a67ef0fdacd3e3284b7"
+    },
+    {
+      "path": "src/core/session.cpp",
+      "blob": "3284c2424dbe01b6d428b94b5269a9e02bb46cbb",
+      "sha256": "4c1aa246e568f96b40b9f9e16000e1f1dc6d75c99168cb26baef56a43b4e4bce"
+    },
+    {
+      "path": "src/core/verify.cpp",
+      "blob": "40abb23b8b46228cf0131c91ca57f4426fd1b5ef",
+      "sha256": "4d14222687b0d470b213ce2c062ba157c80e47ca58a13a796b82e6171a3eaba3"
+    },
+    {
+      "path": "src/core/weights.cpp",
+      "blob": "e81343f5fc166c394c4c52108fdf39d799506407",
+      "sha256": "a05a22cf8b91d36b312e19a3da757b50ea61e5f4c2ff1ce537d46e86b6d6e07b"
+    },
+    {
+      "path": "src/kernels/cpu/expert.cpp",
+      "blob": "045e3d58aa5dffaccb6ae35d8c94d1ba77dbf897",
+      "sha256": "9bcf5d889818ef3cb9619df6536e8844d151714803ac8930eada115a61b62e48"
+    },
+    {
+      "path": "src/kernels/cpu/expert_layout.cpp",
+      "blob": "4583b1077c25926ffe4594e00013cda3cb28c67f",
+      "sha256": "62a20856e50a955776cab30c293b2a5a03ad68cd08895fa1d984d14e791927d3"
+    },
+    {
+      "path": "src/kernels/cpu/iq_avx2.cpp",
+      "blob": "09d178db6b778b824fa880e3121e355fa9ba1e26",
+      "sha256": "80efab0bed11ddf3980c0d146101218efa061cf5304e39fc88d93e5e94a99136"
+    },
+    {
+      "path": "src/kernels/cpu/iq_avx512.cpp",
+      "blob": "26d2c5a715e32a1129ea623b3b9ab1988d697150",
+      "sha256": "c57d176884fcd34ab730e4684fb560a21aa1ec2a5dde8759a1705c0344658b96"
+    },
+    {
+      "path": "src/kernels/cpu/iq_single_avx2.cpp",
+      "blob": "99a32cce9ac9442b1989059b3989b23a810d8e14",
+      "sha256": "8579db5f02086cc660d376a77e00a9285e038f6757a53e8b2a8ef6d79eb2074f"
+    },
+    {
+      "path": "src/kernels/cpu/kq_avx2.cpp",
+      "blob": "a34731198c3fb5addde74145e15164fd986d5ae4",
+      "sha256": "9bdade163b90b219ab3be746818cb2e6e9bca93813f69e2cb4e8e448b633c4f1"
+    },
+    {
+      "path": "src/kernels/cpu/native_expert.cpp",
+      "blob": "df107d5c36c9021033f72704fe0c7246919dbde9",
+      "sha256": "fcb4a7c74ba45a13da162eed832860f9644f4544d3f269b9c8588f01b40fb106"
+    },
+    {
+      "path": "src/kernels/cpu/pool.cpp",
+      "blob": "c1655928af64daefd68c0a249e81a94c9d9f56bb",
+      "sha256": "ff9287b125a9830fcbad823af99534a5e1c2fbba489c6a2f8d6d6173ae8042e0"
+    },
+    {
+      "path": "src/kernels/cpu/q2_avx2.cpp",
+      "blob": "8e276a5ee7511ef1952b558156cf34eac136c302",
+      "sha256": "9d43e6314a75a1095953f935ed95583141afff67ba5e4da96b6e2520c5a95eee"
+    },
+    {
+      "path": "src/kernels/ngram.cpp",
+      "blob": "a533dbf5106b031e35c7605f9e9a5add3170714f",
+      "sha256": "3bff07eba26ed24c3a3cf2e571d4e7c5a457236e7de4d6a5b0f0a5e89ff23db2"
+    },
+    {
+      "path": "src/kernels/sycl/attention.cpp",
+      "blob": "8f7ca5641d5043d67a8af4d7782d640267ff8ce5",
+      "sha256": "23cf287ae852aa6c906f2c9653cc289f07cdf9c1b5432e6b220589da64f704c7"
+    },
+    {
+      "path": "src/kernels/sycl/bf16_gemv.cpp",
+      "blob": "060a9f73e2bfb8ba5e29d5c88020608512ac48b1",
+      "sha256": "66af4ff08c9010e6276857dc2557af12923cf0e334d7b871b6a60b2dc428fcdf"
+    },
+    {
+      "path": "src/kernels/sycl/cvec.cpp",
+      "blob": "1324ee926a2da7ba548bfee281ecd225f662c8ec",
+      "sha256": "f75e954c60a795813d00a43a0a4f60e880d8edad34a8d500847c62010778e3ec"
+    },
+    {
+      "path": "src/kernels/sycl/decode_attention.cpp",
+      "blob": "94832323e470d1fb2b378a5f15b5a3c5df306552",
+      "sha256": "ecbe949d2b93386ad47580d7211fae73b12539d35f6b5e6c4b39fa829201c59e"
+    },
+    {
+      "path": "src/kernels/sycl/elementwise.cpp",
+      "blob": "487a335d3599e100c2e40e4304ac682c98daea75",
+      "sha256": "69161a4894ea5b28b9b281ae31aa03dca948b64a2fb6c54fd582f0f943636172"
+    },
+    {
+      "path": "src/kernels/sycl/expert_routing.cpp",
+      "blob": "e024b61649e5bbb63a4aed5abee4dd5d7bec97fc",
+      "sha256": "3fee7357d857c3d9f7d0c30b41d8eed719914b76e7ecacf30a6b3ac11e837f07"
+    },
+    {
+      "path": "src/kernels/sycl/fused_gdn.cpp",
+      "blob": "a96a12e541b59fa3146486e6c11074f1ed2f0286",
+      "sha256": "70abf4fd1359477a2e170b54f2172ba148a2ae21306e8145e070ebd0db7d995f"
+    },
+    {
+      "path": "src/kernels/sycl/fused_gr.cpp",
+      "blob": "aa9d3ca231674dd4026d01a5bd68da976eb5eccc",
+      "sha256": "34abe455a3bf8906b7c854b540b73eaad57e9bcabfc3647baf763598f5de6c2b"
+    },
+    {
+      "path": "src/kernels/sycl/gdn.cpp",
+      "blob": "b2352509f526c690b249aca870752c5979a41dc2",
+      "sha256": "3de5ac1aa35184534834e8fd0957068509a0ecf5080a666354a98cd134d56117"
+    },
+    {
+      "path": "src/kernels/sycl/gr.cpp",
+      "blob": "0eaf8327589637d40e64cfe10df6fbf9a4b7acb6",
+      "sha256": "74370693d67f427bc496e24861a19c330010af50ffac4aa2b881d93fbe64f80e"
+    },
+    {
+      "path": "src/kernels/sycl/iq.cpp",
+      "blob": "ee649afc43eb071d3efff2d83b29d5ad5b394565",
+      "sha256": "414872755b46a01b3cdb940e39fe65c2bc5595ca62ff970c0465e6d79c5f49ef"
+    },
+    {
+      "path": "src/kernels/sycl/kv.cpp",
+      "blob": "a34cb61d939d464d08a451a6cd3ac28400458fa7",
+      "sha256": "4e501f6839c20972b46f58d87c4ee3444f771c64cbcc07528a7f23d25461e07f"
+    },
+    {
+      "path": "src/kernels/sycl/kv_stream.cpp",
+      "blob": "4661968bcb93c4a61e3b70bcd2743572daef3e3b",
+      "sha256": "4473c66af0c24663534fe2ca01e56cdb41f96c3aaae7de61eabeda8d25294696"
+    },
+    {
+      "path": "src/kernels/sycl/native_flash_attn.cpp",
+      "blob": "e7f2987be4b66c48d8ee3a18e2d46d5c747248c9",
+      "sha256": "7b61ec26317256848dbd37b4405c2e4cb0b18f024e659d0694a0a5765f0480ca"
+    },
+    {
+      "path": "src/kernels/sycl/native_iq4xs_esimd.cpp",
+      "blob": "83297a5eceaed9f378ac5ca5676e2b9aa1aeb2bd",
+      "sha256": "5e6b78ca4a9775304a9f209f6750fff88b608281fefed7242cb6709c655957ef"
+    },
+    {
+      "path": "src/kernels/sycl/native_iq_esimd.cpp",
+      "blob": "7262877fd8ded173758bd011723151e16805dfef",
+      "sha256": "cdd822167d73c4446ca195b3f5c937c2fe545710000d87a707ffc9857fce18c1"
+    },
+    {
+      "path": "src/kernels/sycl/native_mmq_xmx.cpp",
+      "blob": "0bfcb3a6bb6154795fcda86bbc3297acbe2b51fb",
+      "sha256": "f5f69d0920c694fc84eb912ff282ae96770428a93887689fb4177ac4bfffdaef"
+    },
+    {
+      "path": "src/kernels/sycl/native_mmvq.cpp",
+      "blob": "8a250026810725811c1132132d59391b9579e5b9",
+      "sha256": "0d1bb33524ebc91e398805085b5057e4d22f5da39831f976d4d1330932005b79"
+    },
+    {
+      "path": "src/kernels/sycl/native_q2.cpp",
+      "blob": "25c587db624beba5461458e63abf0ad946bcbc75",
+      "sha256": "3ca3d71448488f56a5e9cdef71f888b103e38b28fd201264301ef0cd31155218"
+    },
+    {
+      "path": "src/kernels/sycl/native_q2_esimd.cpp",
+      "blob": "434c727834119b7db6a05eac1ba69b7703ebd36c",
+      "sha256": "3365fe1b905684d50d9a6de902a2faf27833325382c2418afc7b55ee99681fd2"
+    },
+    {
+      "path": "src/kernels/sycl/native_q3_esimd.cpp",
+      "blob": "839a3ef00c236c8cf02b91d656bed68903d01b5d",
+      "sha256": "8348851986f91d162b08d4be20c7551aadc8c732f4b9fca5a8c79fc9f6f82a8c"
+    },
+    {
+      "path": "src/kernels/sycl/native_q4_esimd.cpp",
+      "blob": "516c387333ce990411f76310bcbfcbf463641cea",
+      "sha256": "ced4f387fcfb318b0e3f4f2bdebbf4270cef4a0d3e27560fa9fbca7919505a68"
+    },
+    {
+      "path": "src/kernels/sycl/native_q5_head.cpp",
+      "blob": "8dec705940dce92611237f38530d00ff38e3e8bd",
+      "sha256": "c916932c0b2d5e37876b3f36221d071c8586b69e488142ef0d08f33a71002365"
+    },
+    {
+      "path": "src/kernels/sycl/native_qsa_indexer.cpp",
+      "blob": "020179807111daba4c922137d96bcea028bec5d7",
+      "sha256": "a9d18fc8cbd36dd319c27caa4e76ca10d01aec921e1e8f499e78b2a6b16a4fd0"
+    },
+    {
+      "path": "src/kernels/sycl/native_router.cpp",
+      "blob": "e892a7fb4c1dad88ab55c278c0dd9d755db44f1e",
+      "sha256": "1494eeff9c64ab77a692394e9366ee189fa8ed52f9f6a3088538d86acd901119"
+    },
+    {
+      "path": "src/kernels/sycl/ple.cpp",
+      "blob": "5d690bcb4eb192d3651e935912df5768005335ae",
+      "sha256": "5ea6ce675c7e541905f17d1048b56e41cd9834704314bf4ff43f3084d54c7b91"
+    },
+    {
+      "path": "src/kernels/sycl/prompt_attention.cpp",
+      "blob": "95ba212bd0d20a6a355515a8effb4b88997902d5",
+      "sha256": "5fa7927e611b8cb746e1d11bd70a8e2aae3c66a48b02a93eb55e86eb9bf0076f"
+    },
+    {
+      "path": "src/kernels/sycl/qsa_index.cpp",
+      "blob": "14dcfdef314244ec1199df52e1b7bf4d277a8430",
+      "sha256": "5424b1489fb2dcabad0abf49ffa4c4501c8b89e8519f61649d8d53cb20dbdf8f"
+    },
+    {
+      "path": "src/kernels/sycl/qsa_select.cpp",
+      "blob": "e0c213bd44de937426c3774e2230ca87d298e7cf",
+      "sha256": "377ad7713ebf9af859cd02614871de705a998af3f5f5cf5f551b881a43d29bfa"
+    },
+    {
+      "path": "src/kernels/sycl/quantize_act.cpp",
+      "blob": "8b12904115a0863579a398101e44b90910f39185",
+      "sha256": "16cf784f88631e416624d7bdff0fbf140ec60a5f42c29107ad16695234dfd3f4"
+    },
+    {
+      "path": "src/kernels/sycl/rope.cpp",
+      "blob": "a0d093a0d5aeb855d1c03124aa78ac4461e94bc2",
+      "sha256": "ae875617716a0d6c2f5ec260b24fbf541b24b616f733645e975b6418127588da"
+    },
+    {
+      "path": "src/kernels/sycl/router.cpp",
+      "blob": "d5b558310af15b29e4fd04e06344c0aae2b7f1bc",
+      "sha256": "3ade9d977da5f34db0154db5153debdf389753b74fc8b43dfd604aba4fabd029"
+    },
+    {
+      "path": "src/kernels/sycl/s2_experts.cpp",
+      "blob": "c1e178c96b31436676149cb9ad42cea465ed2d3b",
+      "sha256": "95dc6af42be07d192a5500b509d5ec579ce8d1e472d5d16b1c8126a710aa3fba"
+    },
+    {
+      "path": "src/kernels/sycl/s2_gemv_q8.cpp",
+      "blob": "9c00278ac23ff413226099e39d4bd1b5a88caa7e",
+      "sha256": "76662fdd179d6ee153eade1397102abd20558aca1cda7b3c8df875ba2a7440d6"
+    },
+    {
+      "path": "src/kernels/sycl/s_gemv.cpp",
+      "blob": "cbc99538d7ba73dfccd26bc5654b376be917de91",
+      "sha256": "e7f9afb96939ab016b91b2ac0b9d62cb85980ba93dc9e8f39ac2202b3c56249e"
+    },
+    {
+      "path": "src/kernels/sycl/sampler.cpp",
+      "blob": "3ce12dc5c2ceccf8b5a2f8a7a75dc39bc08232d4",
+      "sha256": "9a8549f6b5865fac7a3ac89ddd3ecfe6ca4bce6bb1d4ad78cdd951600fe3f054"
+    },
+    {
+      "path": "src/kernels/sycl/sequence.cpp",
+      "blob": "0fff49a88a5af59c520d9f44c77eb299b5fba0a5",
+      "sha256": "14ed9efceafac9828d495e0265d5831e0e2f5eea071e9edb159df94580c730b8"
+    },
+    {
+      "path": "src/kernels/sycl/shared_expert.cpp",
+      "blob": "79595bc02e628771e18879aedd513e0a87f4f96c",
+      "sha256": "c73d4399715dd5b4cbe99ead6eb962b3606b9c0829c90cff138ae9c927f45a8c"
+    },
+    {
+      "path": "src/ngram/ple_reader.cpp",
+      "blob": "a03e4c046c9b5e95f605a1c6593622706f094086",
+      "sha256": "ddec6dbcc8afd8186c724403d5aaa54b70b9fbd551fea733ce422974131ede9e"
+    },
+    {
+      "path": "src/platform/direct_file.cpp",
+      "blob": "cd4f6a71be6b37f98eb80124aaa63b8be96f97ce",
+      "sha256": "be3fa0296a934b797744e365b9848fcfa6d3a48f8304defbcb30298c7140465b"
+    },
+    {
+      "path": "src/platform/memory.cpp",
+      "blob": "f3b40e8d6efeb1a47cba2c6c7b54cd0724c00b21",
+      "sha256": "51e55255db8d617cf0ec19064eb68ac53187e930cabe69e0e7335c1320721220"
+    },
+    {
+      "path": "src/prefill/layer_major.inc",
+      "blob": "48592003e6d34ace95ff213aa12ad2d73a4aa14e",
+      "sha256": "e2def3bbd248c06c25ff2fce7ebc0ce49aecfcb0e418115196da8bb4b99960b1"
+    },
+    {
+      "path": "src/prefill/prefill.cpp",
+      "blob": "efefaec353c7ed89f60df0ee9cfb2173879b484d",
+      "sha256": "d01662ae6c46bfdd2556da1345c5f9edb79f91694391eee2b2b0aebfeab831ce"
+    },
+    {
+      "path": "src/prefill/sycl/blob.cpp",
+      "blob": "1ed7d2a49af27f0cb0f590191a70e4f4759edea8",
+      "sha256": "dfd21046aded93fe2f2b7134d1db2a2c7c0e4301ef3e4868b79abd28068f7f73"
+    },
+    {
+      "path": "src/prefill/sycl/gemm.cpp",
+      "blob": "3fcd791b065fb445c8291a4d1281ec1d281b19d2",
+      "sha256": "023bc6c5633b7ae58636dc1ba732d7db77514cca98925100e031c0e0d3c7bcd9"
+    },
+    {
+      "path": "src/prefill/sycl/gemm16.cpp",
+      "blob": "22c8c47e81b27193bfb70f23ab3b4a6f0988a12b",
+      "sha256": "d5a0e8f8cdbc14f82edd7a883efc09d68ee92195b8fd51301e538b40cc6ed53c"
+    },
+    {
+      "path": "src/prefill/sycl/moe_fused.cpp",
+      "blob": "043b4c26a8bdc35576de3714908f619c96d9419a",
+      "sha256": "6321199ee8213ee1ff2b370929e7bc723e078d13e30a3b4ecb56fe8a3c03b438"
+    },
+    {
+      "path": "src/prefill/sycl/moe_mmq.cpp",
+      "blob": "d917588b6c5378cbda7e90ae997d80aa99e36818",
+      "sha256": "403dccf14f3a632f3cb5a6b7ecbaaf7dcfae5f0c3fbf875dae2789b6f85978f8"
+    },
+    {
+      "path": "src/prefill/sycl/native16.cpp",
+      "blob": "99a521b8d2a59f7b90f1b5d142b9b87120c4b300",
+      "sha256": "d953ae8dcb69be601c57ddf62bbd85ad054c3e7c0a90806461b49f96d18da891"
+    },
+    {
+      "path": "src/prefill/sycl/native16_backend.hpp",
+      "blob": "cabceafc07acbbd6d58f0ae87d78eb00875cc748",
+      "sha256": "66570f66c95477a8e32a3daf4b0ff1bf670fd46a32876e9c15925220098c8d8f"
+    },
+    {
+      "path": "src/prefill/sycl/postops.cpp",
+      "blob": "8044b36f8b72533a9b75bd62373300e3b571d871",
+      "sha256": "f048a75d8c18dad5981a93206dcff107085714741326adc6d4cfd77c6927a78f"
+    },
+    {
+      "path": "src/prefill/sycl/qsa_native16.cpp",
+      "blob": "1e5d6c346e7d09490226fae28d88fbc1ed9a1cc0",
+      "sha256": "e4c2c32fec4c04f285e56f301cc405039b2283f17c2e28d420df5c6801a06f44"
+    },
+    {
+      "path": "src/prefill/sycl/vllm_xe2/native16.cpp",
+      "blob": "ed8c6eada7198f3336691897afc464a0bb27dd1b",
+      "sha256": "d8b361cabea29344b48aff5a9db41303f3ea715de47f27bc57f29f85c5f3aa2d"
+    },
+    {
+      "path": "src/prefill/sycl/vllm_xe2/native16.hpp",
+      "blob": "9f56a3741632d04c598dcad3cc40a38cc73cc38c",
+      "sha256": "eec1581b369759e4fd6c8ea7f2012cf9518bd4341c01e19362cc10b3553b066b"
+    },
+    {
+      "path": "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp",
+      "blob": "92ddc34bd6ae07d462db222db77d0ffd107091ec",
+      "sha256": "114210ceb61f769d1ba7717690b43027a74f07cf7bdb0cb82d7ea3cd28dbd1c0"
+    },
+    {
+      "path": "src/program/dense_prefill_nll.cpp",
+      "blob": "0685b48f55edf70f877bcdc1b28794a6190391a7",
+      "sha256": "3ae6177e93b6dde0328ce71f289a0ca7a70940b9a52d7dc2375488efbff23b42"
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "blob": "d1f7ecb5e060587ea3fd30a77f5d045f2946c85e",
+      "sha256": "d05e9142917af145c1ba6d428180f8981f260c8a20b23ecf27bcc2033c9fe25a"
+    },
+    {
+      "path": "src/spec/controller.cpp",
+      "blob": "be31270177f26a44ee3626831e831512d03c414c",
+      "sha256": "9ea393b4d369ddce11315032695899a51deeb697e1a7745dc397724f4db7351f"
+    },
+    {
+      "path": "src/spec/draft_policy.cpp",
+      "blob": "1ac771985bf6345b6d9ec6649c6aa09a6e828c3f",
+      "sha256": "1668fb1ac1a3e57cb9e7b350a25a86c59ab2b2a4f2517ef213629e82863c03ea"
+    },
+    {
+      "path": "src/spec/suffix_drafter.cpp",
+      "blob": "6f04f76d5959751286dbf0ea7bbe47c17eabf514",
+      "sha256": "a3e8b6487d34dcdb8208c482190ad9079e759a40f995167bb33a951f30de19ff"
+    },
+    {
+      "path": "src/sycl/compat.cpp",
+      "blob": "bb80ddeb14c4555c9aae57cca38f8b1926ab698f",
+      "sha256": "64cb6ea563a5d2f4f2abe4726d8d2130c5611b1938423dfe5131691cb936e9c0"
+    },
+    {
+      "path": "src/sycl/device.cpp",
+      "blob": "b3d9216a78fd97fad5056f38e8e549af200b0175",
+      "sha256": "bd6a65f29cfc6497fd19228741026f4edad29d31e1690cef6cfe36ad7de760d6"
+    },
+    {
+      "path": "src/sycl/runtime.cpp",
+      "blob": "ef98d0588890e84c6d668c9566a01e429710afc2",
+      "sha256": "e6c20e148bc7ceec250ad9a58ddfc851c1476aaab3d68982d2aee2897e572b83"
+    },
+    {
+      "path": "third_party/ggml/ggml-common.h",
+      "blob": "1dbbe326d0fc6a5ce8a86d237cb94901340443af",
+      "sha256": "0061131b615c5721fc88a78feeb22c1f8c450f1c2646a317d80796a653bf595c"
+    },
+    {
+      "path": "tools/strata_bench.py",
+      "blob": "dbacd93bce144b5738c4d6e5536c45701025ce85",
+      "sha256": "be421b2775569cd1bd937a35c606985c532c7d98f344a42d119a005ae54e9559"
+    }
+  ],
+  "external_includes": {
+    "sycl/sycl.hpp": [
+      "include/strata/sycl/runtime.hpp",
+      "include/strata/sycl/compat/cuda_runtime.h",
+      "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp",
+      "src/prefill/sycl/native16_backend.hpp"
+    ],
+    "sycl/half_type.hpp": [
+      "third_party/ggml/ggml-common.h"
+    ],
+    "sycl/ext/intel/esimd.hpp": [
+      "src/kernels/sycl/native_iq_esimd.cpp",
+      "include/strata/sycl/esimd_half.hpp",
+      "src/kernels/sycl/fused_gr.cpp",
+      "src/kernels/sycl/native_q3_esimd.cpp",
+      "src/kernels/sycl/native_q5_head.cpp",
+      "src/kernels/sycl/native_q4_esimd.cpp",
+      "src/kernels/sycl/native_mmq_xmx.cpp",
+      "src/kernels/sycl/native_q2_esimd.cpp",
+      "src/kernels/sycl/native_iq4xs_esimd.cpp"
+    ],
+    "sycl/ext/intel/experimental/esimd/math.hpp": [
+      "src/kernels/sycl/native_iq_esimd.cpp",
+      "src/kernels/sycl/fused_gr.cpp",
+      "src/kernels/sycl/native_q3_esimd.cpp",
+      "src/kernels/sycl/native_q4_esimd.cpp",
+      "src/kernels/sycl/native_mmq_xmx.cpp",
+      "src/kernels/sycl/native_q2_esimd.cpp",
+      "src/kernels/sycl/native_iq4xs_esimd.cpp"
+    ],
+    "sycl/ext/intel/math.hpp": [
+      "src/kernels/sycl/native_q2.cpp",
+      "src/kernels/sycl/kv.cpp",
+      "src/prefill/sycl/moe_mmq.cpp",
+      "src/kernels/sycl/ple.cpp",
+      "src/kernels/sycl/quantize_act.cpp",
+      "cmake/sycl_backend.cmake",
+      "src/kernels/sycl/native_mmvq.cpp",
+      "src/kernels/sycl/qsa_index.cpp",
+      "src/prefill/sycl/qsa_native16.cpp",
+      "src/prefill/sycl/moe_fused.cpp"
+    ],
+    "ggml.h": [
+      "src/kernels/cpu/native_expert.cpp"
+    ],
+    "ggml-cpu.h": [
+      "src/kernels/cpu/native_expert.cpp"
+    ],
+    "sycl/ext/oneapi/experimental/graph.hpp": [
+      "src/sycl/compat.cpp"
+    ],
+    "sycl/ext/intel/experimental/grf_size_properties.hpp": [
+      "src/prefill/sycl/vllm_xe2/native16.cpp",
+      "src/kernels/sycl/native_mmq_xmx.cpp"
+    ],
+    "sycl/ext/oneapi/experimental/device_architecture.hpp": [
+      "src/prefill/sycl/vllm_xe2/native16.cpp",
+      "src/prefill/sycl/gemm16.cpp"
+    ],
+    "cute/tensor.hpp": [
+      "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp"
+    ],
+    "cute/atom/mma_atom.hpp": [
+      "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp"
+    ],
+    "cute/atom/copy_traits_xe_2d.hpp": [
+      "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp"
+    ],
+    "cute/util/xe_split_barrier.hpp": [
+      "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp"
+    ],
+    "cutlass/numeric_types.h": [
+      "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp"
+    ],
+    "sycl/ext/oneapi/bfloat16.hpp": [
+      "src/prefill/sycl/gemm16.cpp"
+    ],
+    "sycl/ext/oneapi/matrix/matrix.hpp": [
+      "src/prefill/sycl/gemm16.cpp",
+      "src/kernels/sycl/prompt_attention.cpp"
+    ],
+    "oneapi/mkl/blas.hpp": [
+      "src/prefill/sycl/gemm.cpp"
+    ]
+  },
+  "measured_403_source": "6354f0b4ff3731466795410e11ca9ef785c9d326",
+  "measured_403_binary": "85643f3926bb9d212945659cb7ddb264e101ca9b2d5fa8f19430e945140ad191"
+}
