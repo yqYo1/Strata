@@ -41,7 +41,7 @@ def main():
     with (B / 'owned-v0141-measurement.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         refs = {name: json.loads((A / name).read_text()) for name in (
-            'own-qsa-bf16-prefix-tilepack-engine-build-v1.json', 'own-qsa-bf16-prefix-tilepack-model-smoke-v1.json',
+            'own-qsa-bf16-prefix-tilepack-engine-build-v2.json', 'own-qsa-bf16-prefix-tilepack-model-smoke-v1.json',
             'own-selector-clean-1-r2-v1.json', 'bench-prefill-only-host-v2.json')}
         build, smoke, old, host = refs.values()
         def closed(v):

@@ -23,7 +23,7 @@ DEVICE = Path('/sys/bus/pci/devices/0000:05:00.0')
 
 
 def main():
-    build_path=A/'own-qsa-bf16-prefix-tilepack-engine-build-v1.json'
+    build_path=A/'own-qsa-bf16-prefix-tilepack-engine-build-v2.json'
     component_path=A/'own-qsa-bf16-prefix-tilepack-engine-component-v1.json'
     opts=argparse.Namespace(build=build_path,build_sha256=sha(build_path),prior=component_path,prior_sha256=sha(component_path))
     module = load_owner(P / 'bench/results/2026-10-14-niko-main-service-port/direct_owner.py')

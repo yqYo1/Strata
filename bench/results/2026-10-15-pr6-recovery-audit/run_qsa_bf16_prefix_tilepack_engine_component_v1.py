@@ -16,7 +16,7 @@ def pin(p):
 def main():
  assert len(sys.argv)==2 and sys.argv[1] in ['smoke','component','base-smoke','base-component']; label=sys.argv[1]; mode=label.removeprefix('base-'); baseline=label.startswith('base-')
  root=B/f'main-qsa-bf16-prefix-tilepack-engine-{label}-v1';dst=A/f'own-qsa-bf16-prefix-tilepack-engine-{label}-v1.json';assert not root.exists() and not dst.exists()
- buildpath=A/'own-qsa-bf16-prefix-tilepack-engine-build-v1.json';build=json.loads(buildpath.read_text());assert build['passed'] and build['complete'] and build['ownership_closed']
+ buildpath=A/'own-qsa-bf16-prefix-tilepack-engine-build-v2.json';build=json.loads(buildpath.read_text());assert build['passed'] and build['complete'] and build['ownership_closed']
  if mode=='component':
   gate=json.loads((A/('own-qsa-bf16-prefix-tilepack-engine-'+('base-' if baseline else '')+'smoke-v1.json')).read_text());assert gate['passed'] and gate['complete'] and gate['ownership_closed'] and not gate['fresh_faults']
  static_argv=['/usr/bin/readelf','-d',build['products']['sycl_qsa_bf16_prefix_optimized_test' if baseline else 'sycl_qsa_bf16_prefix_tilepack_test']['path']]

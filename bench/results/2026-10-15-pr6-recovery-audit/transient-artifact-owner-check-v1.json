@@ -1,0 +1,150 @@
+{
+  "schema": "strata-transient-artifact-owner-check-v1",
+  "passed": true,
+  "complete": true,
+  "GPU_executed": false,
+  "helper_sha256": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+  "checks": [
+    "deterministic disappeared entry skipped; present file exact bytes/one stat",
+    "permission failure propagates",
+    "actual owned transient writer normal exit, anchored observation/reap/empty session, no cleanup signals",
+    "artifact cap still fails and pinned-pidfd cleanup reaps/empties owned session; negative result not normal PASS"
+  ],
+  "commands": [
+    {
+      "label": "transient-writer",
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "-c",
+        "from pathlib import Path;import sys,time;p=Path(sys.argv[1]);p.mkdir();\nfor i in range(1200):\n q=p/str(i);q.write_bytes(b'x'*128);q.unlink();time.sleep(.001)\nprint('transient_files=1200 status=PASS',flush=True)",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-transient-artifact-owner-check-v1/transient"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-16T18:15:25.219176+00:00",
+      "wall_seconds": 15,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3337769,
+          "start_ticks": 52328934,
+          "sid": 3337769,
+          "pgid": 3337769
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 523289.340514394,
+      "pid": 3337769,
+      "spawn_return_monotonic": 523289.342317458,
+      "direct_identity": {
+        "pid": 3337769,
+        "state": "R",
+        "ppid": 3337711,
+        "pgid": 3337769,
+        "sid": 3337769,
+        "start_ticks": 52328934,
+        "rss_bytes": 466944
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 9994240,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T18:15:26.853326+00:00",
+      "elapsed_seconds": 1.634082336036954,
+      "logs": {
+        "transient-writer.stdout": {
+          "bytes": 33,
+          "sha256": "cad976d0cb57ffd510d7378d8254660c9932e21060197c8dbac702abb8a6a05d"
+        },
+        "transient-writer.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "artifact-cap-negative",
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "-c",
+        "from pathlib import Path;import sys,time;Path(sys.argv[1]).write_bytes(b'x'*65536);time.sleep(10)",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-transient-artifact-owner-check-v1/oversize"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-16T18:15:26.853653+00:00",
+      "wall_seconds": 15,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3337819,
+          "start_ticks": 52329097,
+          "sid": 3337819,
+          "pgid": 3337819
+        }
+      ],
+      "cleanup": [
+        {
+          "pid": 3337819,
+          "start_ticks": 52329097,
+          "signal": "SIGTERM",
+          "result": "sent"
+        }
+      ],
+      "observation_complete": false,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 523290.974975603,
+      "pid": 3337819,
+      "spawn_return_monotonic": 523290.976765602,
+      "direct_identity": {
+        "pid": 3337819,
+        "state": "R",
+        "ppid": 3337711,
+        "pgid": 3337819,
+        "sid": 3337819,
+        "start_ticks": 52329097,
+        "rss_bytes": 512000
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 10080256,
+      "error": "RuntimeError('artifact cap')",
+      "error_traceback": "Traceback (most recent call last):\n  File \"/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/direct_owner_transient_artifacts_v1.py\", line 265, in run\n    poll(); require(time.monotonic()<deadline,'utility deadline')\n    ^^^^^^\n  File \"/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/direct_owner_transient_artifacts_v1.py\", line 224, in poll\n    require(artifact_bytes(self.output.parent)<=total_cap,'artifact cap')\n  File \"/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/direct_owner_transient_artifacts_v1.py\", line 33, in require\n    raise RuntimeError(message)\nRuntimeError: artifact cap\n",
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": -15,
+      "finished_utc": "2026-10-16T18:15:27.407585+00:00",
+      "elapsed_seconds": 0.5538867189898156,
+      "logs": {
+        "artifact-cap-negative.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "artifact-cap-negative.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "all_owned_identities_absent": true,
+  "ownership_closed": true
+}
