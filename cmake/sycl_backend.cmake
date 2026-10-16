@@ -136,6 +136,9 @@ target_compile_options(sycl_gemm16_test PRIVATE -fno-fast-math -ffp-contract=off
 add_executable(sycl_native16_prefill_test EXCLUDE_FROM_ALL tests/sycl/native16_prefill.cpp)
 target_link_libraries(sycl_native16_prefill_test PRIVATE strata_prefill)
 target_compile_options(sycl_native16_prefill_test PRIVATE -fno-fast-math -ffp-contract=off)
+add_executable(sycl_moe_window_test EXCLUDE_FROM_ALL tests/sycl/moe_window.cpp)
+target_link_libraries(sycl_moe_window_test PRIVATE strata_prefill)
+target_compile_options(sycl_moe_window_test PRIVATE -fno-fast-math -ffp-contract=off)
 add_executable(sycl_allocation_teardown_test EXCLUDE_FROM_ALL tests/sycl/allocation_teardown.cpp)
 target_link_libraries(sycl_allocation_teardown_test PRIVATE strata_sycl_runtime)
 # Standalone synthetic hot-operand row/column oneMKL descriptor diagnostic.
