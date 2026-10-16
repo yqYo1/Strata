@@ -4,6 +4,7 @@
 #include <dpct/dpct.hpp>
 #include "strata/sycl_queue.hpp"
 #include "strata/prefill/prefill.hpp"
+#include "strata/prefill/draft_uploads.hpp"
 #include "strata/core/gguf_expert_source.hpp"
 #include "strata/core/mtp.hpp"
 #include "strata/core/progress.hpp"
@@ -1301,7 +1302,16 @@ bool Prefill::draft_kv(core::MtpDrafter& mtp, const float* R_rows, const int32_t
     strata::kernels::QsaShapes s = strata::kernels::qsa_real_shapes();
     s.n_head = g.n_head; s.n_head_kv = g.n_head_kv; s.head_dim = g.head_dim; s.idx_n_head = g.idx_q_heads;
     s.idx_dim = g.idx_key_dim;
-    std::vector<int32_t> tk((size_t) B);
+    // Explicit port of the fork's independent immutable-upload fix. Same
+    // kernels/batches, with each async source live through the final wait.
+    detail::DraftHostUploads uploads(next_tokens, n, r0, B, g.hc, q8);
+    detail::DraftUploadGuard upload_guard(
+        [&] { m.cs->wait_and_throw(); return true; },
+        [] {
+            std::fputs("prefill: draft uploads failed to retire; exiting with sources live\n", stderr);
+            std::fflush(stderr);
+            std::_Exit(1);
+        });
     if (q8) {
         if (!m.mmq_ctx) m.mmq_ctx = std::make_unique<mmq::Context>();
         mmq::iota(ident, B * g.hc, m.cs);
@@ -1319,15 +1329,14 @@ bool Prefill::draft_kv(core::MtpDrafter& mtp, const float* R_rows, const int32_t
     };
     for (int64_t b0 = r0; b0 < n; b0 += B) {
         const int64_t nb = std::min(B, n - b0), c0 = cell0 + b0;
-        for (int64_t i = 0; i < nb; ++i) tk[(size_t) i] = next_tokens[b0 + i];
-        const int32_t bh[4] = {0, (int32_t) nb, 0, (int32_t) (nb * g.hc)};
+        upload_guard.arm();
         /*
         DPCT1124: cudaMemcpyAsync is migrated to asynchronous memcpy API.
         While the origin API might be synchronous, it depends on the type of
         operand memory, so you may need to call wait() on event return by memcpy
         API to ensure synchronization behavior.
         */
-        if (q8 && DPCT_CHECK_ERROR(m.cs->memcpy(bnd, bh, sizeof bh)) != 0) {
+        if (q8 && DPCT_CHECK_ERROR(m.cs->memcpy(bnd, uploads.bounds(b0), 4 * sizeof(int32_t))) != 0) {
             err = "prefill: the draft bounds' upload failed";
             return false;
         }
@@ -1337,7 +1346,7 @@ bool Prefill::draft_kv(core::MtpDrafter& mtp, const float* R_rows, const int32_t
         operand memory, so you may need to call wait() on event return by memcpy
         API to ensure synchronization behavior.
         */
-        if (DPCT_CHECK_ERROR(m.cs->memcpy(tok, tk.data(), (size_t)nb * 4)) !=
+        if (DPCT_CHECK_ERROR(m.cs->memcpy(tok, uploads.tokens(b0), (size_t)nb * 4)) !=
             0) {
             err = "prefill: the draft tokens' upload failed";
             return false;
@@ -1391,7 +1400,7 @@ bool Prefill::draft_kv(core::MtpDrafter& mtp, const float* R_rows, const int32_t
                       st.kv_int8 ? nullptr : st.v_pool, st.k_q, st.v_q, st.k_scale, st.v_scale, m.cs, &st.host);
         }
     }
-    if (DPCT_CHECK_ERROR(m.cs->wait()) != 0) {
+    if (DPCT_CHECK_ERROR(m.cs->wait_and_throw()) != 0) {
         /*
         DPCT1009: SYCL reports errors using exceptions and does not use
         error codes. Please replace the "get_error_string_dummy(...)" with a
@@ -1406,6 +1415,7 @@ bool Prefill::draft_kv(core::MtpDrafter& mtp, const float* R_rows, const int32_t
               dpct::get_error_string_dummy(0);
         return false;
     }
+    upload_guard.retire();
     mtp.ms_prefill += ms_since(t0);
     if (timing)
         std::fprintf(stderr, "strata draft kv: %lld cells from %lld (first needed %lld), batch %lld: drafter idle %.1f ms, "
