@@ -4468,6 +4468,17 @@
         "built": false,
         "GPU_executed": false
       }
+    },
+    {
+      "round": 959,
+      "model": "gpt-6-luna",
+      "classification": "decision_support",
+      "path": "research-round959-v1.txt",
+      "sha256": "eaab10f74bf1b36ac8d032b3ba785f0b5c0162aa5c83f8d1106095c139c5650d",
+      "review_path": "research-review-round960-v1.json",
+      "operational_digest_path": "research-review-round960-v1.ja.md",
+      "main_body_read": false,
+      "status": "Reviewed with scope/semantics/private-memory/full-context corrections; not a barrier-removal or speed qualification. Current-image/ISA reconciliation is separate Main evidence."
     }
   ],
   "main_initial_findings": [
@@ -6833,28 +6844,15 @@
     "main_reconciliation": "research-review-round953-main-reconciliation-v1.json"
   },
   "current_main_boundary": {
-    "recorded_date": "2026-10-17 JST",
-    "source_state": "feature/sycl; PR22 merged into own fork main665baa4c; later component/codegen/research evidence on feature/sycl.",
-    "precision_reference": "Actual same-model SGLang/vLLM storage/rounding/accumulation/routing/state contract; FP32/llama diagnostic references are not exact-output acceptance standard.",
-    "latest_matched_clean_model": "qsa-bf16-prefix-optimized-clean-summary-v1.json",
-    "model_medians_tok_s": {
-      "score32": 445.7,
-      "score33": 464.1
-    },
-    "processes_per_arm": 3,
-    "actual_input_tokens": 39262,
-    "throughput_gain_percent": 4.1283374467,
-    "model_scope": "Official bench.sh, BF16 native hidden/GEMM/QSA, C8192/context+resident65536/GPU residual32768+RAM rest/thinking ON/output24. Not sustained decode or broad quality.",
-    "rejected_component": "qsa-bf16-prefix-kpitch36-cohort-v2.json; K36+contiguous producer19.58%slower; no production integration.",
-    "codegen": "qsa-bf16-prefix-kpitch36-codegen-summary-v1.json; static counts/resources, no physicalutilization or proven cause.",
-    "active_private_experiment": "tilepack-v1 component sixprocess PASS:333.381292→311.120328ms,−6.6773%; IGC4977→3901staticinstructions/SLMload576→306/staticDPAS16→24. Candidate integrated opt-in; fresh full engine qualification pending.",
-    "required_pending": [
-      "Repeated longPP>600 then1000tok/s.",
-      "Physical full-model262144 consume and saved-session RESTORE.",
-      "General numerical/task validation under actual framework contract.",
-      "PR6 faithful restore work remains unfinished; preserve its child."
-    ],
-    "engine_qualification": "tilepack engine buildv2+all4engine-linked structural processes PASS/fault0; source1bb3f9f5, originalbuildv1 observer interruption preservedFAIL. Paired129 mechanics active."
+    "recorded_utc": "2026-10-16T19:46:37.233433+00:00",
+    "goal": "Dedicated long prefill repeated >600 then1000tok/s; eventual decode70tok/s. Not achieved.",
+    "current_model_comparison": "Score33 optimized median459.1 versus packed459.3tok/s, six processes, final pair overlap qualification retained; no packed speed adoption. Earlier uncontaminated score33 cohort median464.1tok/s remains recorded.",
+    "changes": "Supervised subgroup-softmax fixture controller; bounded R959/R960 source contract audit; current engine embedded native16 image reconciled with eight prior ISA entries. No production inference change in this boundary.",
+    "next": "Existing exact-identity waiter gets precedence: after foreign CPU benchmark exits, run one paired current-model profile/census. Main then analyzes it before choosing placement, MoE scheduling or private QSA/GEMM experiments.",
+    "compile_or_GPU_work_this_boundary": false,
+    "source_inspection_command": "python3 -B bench/results/2026-10-15-pr6-recovery-audit/audit_vllm_split_barrier_isa_v1.py",
+    "full_physical262144_model_consume_RESTORE": "Unqualified; component coverage is insufficient.",
+    "default_sync_PR": "https://github.com/yqYo1/Strata/pull/24"
   },
   "research_review_round955": {
     "review_path": "research-review-round955-v1.json",
@@ -6898,5 +6896,172 @@
     "concurrency_addendum": "qsa-bf16-prefix-tilepack-cohort-concurrency-v1.json",
     "reason": "Inconclusive difference and large candidate variance; final pair overlapped user-requested OpenCode functional test, without causal resource attribution. No sample substitution.",
     "next": "Paired current engine profile plus actual MoE shape census, then new independent timing comparison; no concurrent functional jobs. Full-model physical262144, saved-session RESTORE and general-quality qualifications remain pending."
+  },
+  "research_review_round956": {
+    "review_path": "research-review-round956-v1.json",
+    "review_sha256": "cc15181e83a33d16d7745b4abf2051cb83fcbb0e1e7b5b35529c8a4eaedfc36c",
+    "operational_digest_path": "research-review-round956-v1.ja.md",
+    "operational_digest_sha256": "240f9e2b0f49c2d372bede8d66c9726e54319c34be53fc7d0943eb1c61d63255",
+    "main_read": "Operational digest and index proposal only; reviewed collection bodies remain unread by Main.",
+    "schedulable_now": false,
+    "decision": "No new MoE research before current actual route counts/stage attribution/live bytes and existing source review are reconciled. Existing R601/628/633/701/702/813/814 cover the general alternatives.",
+    "index_entry_proposal": {
+      "key": "research_review_round956",
+      "review_path": "research-review-round956-v1.json",
+      "operational_digest_path": "research-review-round956-v1.ja.md",
+      "operational_digest_sha256": "240f9e2b0f49c2d372bede8d66c9726e54319c34be53fc7d0943eb1c61d63255",
+      "reviewed_rounds": [
+        601,
+        627,
+        628,
+        633,
+        701,
+        702
+      ],
+      "main_body_read": false,
+      "reviewer_report_bodies_read": true,
+      "status": "Existing MoE scheduling/reuse knowledge is useful but current eligibility evidence is incomplete; no fresh research was dispatched.",
+      "schedulable_now": false,
+      "dispatch_performed": false,
+      "conditional_prerequisites": [
+        "current route ne/identity census across chunks",
+        "stage-attributed current profile",
+        "live memory owner map",
+        "R810 source review outcome",
+        "exclusive B570 availability"
+      ],
+      "collection_report_round813": "held; retrieve only selected sections after prerequisites"
+    },
+    "main_reconciliation": "research-review-round956-main-reconciliation-v1.json",
+    "source_review_prerequisite": "R810 core/adapter/provenance review already satisfied; current source hashes reconciled. Other runtime prerequisites remain."
+  },
+  "current_tilepack_profile_attempt": {
+    "v1": "qsa-bf16-prefix-tilepack-profile-pair-v1.json",
+    "outcome": "Preflight refused: foreign CPU-only llama-bench (-dev none) is active. Open B570 descriptors were not GPU compute proof; Main waits for CPU/RAM timing isolation. Zero native inference launches by Main.",
+    "original_failed_receipt_preserved": "own-qsa-bf16-prefix-tilepack-profile-census-bf16-prefix-optimized-r0-v1.json",
+    "foreign_owner_observation": "foreign-model-owner-observation-v1.json",
+    "prepared_fresh_attempt": "run_qsa_bf16_prefix_tilepack_profile_pair_v2.py",
+    "bounded_exit_wait": "wait_then_run_tilepack_profile_v1.py",
+    "wait_state": "launched and observed live; pidfd read-only wait, no foreign signals; active wait receipt is not committed until closed",
+    "next": "After exact foreign PID3431768/start52544839 exits, attempt exactly one fresh paired profile/census under existing owner/runtime/fault/serialization guards. Then run analyze_qsa_bf16_prefix_tilepack_profile_pair_v2.py; no clean speed adoption from instrumented samples.",
+    "waiter_identity": {
+      "pid": 3474427,
+      "start_ticks": 52649657,
+      "state": "S",
+      "cwd": "/home/yayoi/orca/workspaces/Strata/sycl"
+    },
+    "current_tool_exec_session": 99223,
+    "active_wait_receipt": "qsa-tilepack-profile-wait-v1.json",
+    "resource_correction": "foreign-owner-device-selection-correction-v1.json",
+    "wait_resource": "CPU/RAM measurement isolation, not established GPU compute use or device fault"
+  },
+  "residual_placement_current_preparation": {
+    "report": "bf16-residual-placement-opportunity-v2.json",
+    "prepared_controller": "run_qsa_bf16_prefix_64k_placement_v2.py",
+    "built_or_GPU_run": false,
+    "preserved_current_profile_pair": true,
+    "39K_requested_both_direction_payload_opportunity_bytes": 12499804160,
+    "actual64K_admission_or_speed_qualified": false,
+    "next": "After current paired profile closure and Main review, diagnostic64K-min input at fixed score33 row-major, then exact-allGPU diagnostic, then independent repeated clean comparison. Native setup memory at context131072 is not inferred from older65536 snapshot."
+  },
+  "research_review_round958": {
+    "review_path": "research-review-round958-v1.json",
+    "operational_digest_path": "research-review-round958-v1.ja.md",
+    "main_collection_report_bodies_read": false,
+    "reviewer_selected_sections_read": true,
+    "status": "Existing reviewed work does not resolve the exact split-barrier contract; one bounded source-only decision-support audit is schedulable now.",
+    "schedulable_now": true,
+    "dispatch_performed": true,
+    "retrieval_trigger": "Fresh source-contract audit only; R811 and R924 selected sections and source hashes are recorded in this review.",
+    "review_sha256": "2f7298d39783891056b84dd78371fc1b5d05cb18a57beb54c5de26deaee9b949",
+    "operational_digest_sha256": "8409e4689ea7e5e459a9298ca8493d4a11d4748d4eda8e393170d6ef61cbd0d4",
+    "dispatch_scope": "orca-research-round959-scope-v1.json"
+  },
+  "research_round959_current": {
+    "classification": "decision_support",
+    "model": "gpt-6-luna",
+    "source_only": true,
+    "task_id": "task_608a4e3509e4",
+    "dispatch_id": "ctx_d1daa6df9484",
+    "terminal": "term_428e7859-075b-4adc-8caf-fa5c9b684f2f",
+    "spec_path": "orca-research-round959-spec-v1.txt",
+    "launch_path": "orca-research-round959-launch-v1.json",
+    "live_model_evidence_path": "orca-research-round959-live-model-v1.json",
+    "scope_path": "orca-research-round959-scope-v1.json",
+    "report_path": "research-round959-v1.txt",
+    "status": "Completed, settled and lifecycle acknowledged; Main-created idle terminal closed. Native Luna max R960 review accepted with four explicit corrections, original report immutable. No new scope scheduled.",
+    "main_report_body_read": false,
+    "review_policy": "Completed report to native gpt-6-luna max before Main targeted retrieval.",
+    "report_sha256": "eaab10f74bf1b36ac8d032b3ba785f0b5c0162aa5c83f8d1106095c139c5650d",
+    "report_bytes": 11534,
+    "completion_path": "orca-research-round959-completion-v1.json",
+    "settlement_path": "orca-research-round959-settlement-v1.json",
+    "release_path": "orca-research-round959-release-v1.json",
+    "ack_path": "orca-research-round959-ack-v1.json",
+    "terminal_close_path": "orca-research-round959-terminal-close-v1.json",
+    "native_review_task": "/root/review_research_round960",
+    "review_path": "research-review-round960-v1.json",
+    "raw_auxiliary_receipts_pending_retirement": [
+      {
+        "path": "orca-research-round959-heartbeat-v1.json",
+        "bytes": 1087,
+        "sha256": "f6f0f722b33c0ee30222f11c1cec280a6bdf7d38e44bc68e910c986fab6bd7d6",
+        "reason": "Redundant successful heartbeat/ack after exact worker_done and final settlement recorded. Main cleanup deferred while foreign CPU benchmark/queued measurement are active.",
+        "owner": "Main",
+        "byte_budget": 4096,
+        "consumer": "No further technical consumer; pending serialized retirement manifest",
+        "next_review": "First idle measurement-lock boundary after the foreign benchmark and queued diagnostic close."
+      },
+      {
+        "path": "orca-research-round959-heartbeat-ack-v1.json",
+        "bytes": 479,
+        "sha256": "b688b9a1c3a152f8aacfe74081b50d998ea41e4dd023272ce48fb62bbd28a029",
+        "reason": "Redundant successful heartbeat/ack after exact worker_done and final settlement recorded. Main cleanup deferred while foreign CPU benchmark/queued measurement are active.",
+        "owner": "Main",
+        "byte_budget": 4096,
+        "consumer": "No further technical consumer; pending serialized retirement manifest",
+        "next_review": "First idle measurement-lock boundary after the foreign benchmark and queued diagnostic close."
+      }
+    ]
+  },
+  "qsa_subgroup_softmax_candidate": {
+    "contract_path": "qsa-bf16-prefix-subgroup-contract-v1.ja.md",
+    "source_review_path": "qsa-bf16-prefix-subgroup-source-review-v1.json",
+    "build_recipe": "build_qsa_bf16_prefix_subgroup_v1.py",
+    "fixture_controller": "run_qsa_bf16_prefix_subgroup_v1.py",
+    "status": "Private candidate/qualified-runner implementation prepared, source reviewed; compile/smoke/component NOT_RUN. Existing paired current-model profile remains first queued diagnostic. No production or performance adoption.",
+    "resource_guard": "Exclusive Main lock plus qualified foreign model-owner inspection; CPU benchmark is also excluded.",
+    "main_test_owner": "Main only",
+    "physical_262144_model_qualified": false,
+    "RESTORE_qualified": false
+  },
+  "research_review_round960": {
+    "review_path": "research-review-round960-v1.json",
+    "operational_digest_path": "research-review-round960-v1.ja.md",
+    "source_report_path": "research-round959-v1.txt",
+    "source_report_sha256": "eaab10f74bf1b36ac8d032b3ba785f0b5c0162aa5c83f8d1106095c139c5650d",
+    "source_report_bytes": 11534,
+    "main_collection_report_bodies_read": false,
+    "reviewer_selected_sections_read": true,
+    "status": "Source/API contract classification reviewed with scope and private-memory-lowering corrections. No removal, performance, inference-adoption or full-context qualification claim. No fresh research scheduled until exact lowering and a concrete active Xe2 question exist.",
+    "schedulable_now": false,
+    "dispatch_performed": false,
+    "retrieval_trigger": "Only a concrete local implementation or qualification decision for the separate vLLM Xe2 dense GEMM kernel; not the QSA subgroup-softmax candidate.",
+    "review_sha256": "1648fe605b6fe0c340e4a8642d28aa97a0fa90fe91909e1f92636e232fb396e8",
+    "operational_digest_sha256": "eec2cb8a5ea57293e38961abb154b1c650a3b7995e9409cedf4c06bbe454a4ac"
+  },
+  "vllm_split_barrier_current_evidence": {
+    "audit_source": "audit_vllm_split_barrier_isa_v1.py",
+    "audit_receipt": "vllm-split-barrier-current-image-audit-v1.json",
+    "receipt_sha256": "8d7c9a71e5e881d757387234d1626d1b3e8499094709bb6c9e2a1a9bc5f3335b",
+    "current_engine_sha256": "af043aad32981c58a9191efb55e5ed09d85970924b4f09a5a830da39151da352",
+    "embedded_image_sha256": "b00f74ec86404be55d19ff3b827eba4a5cf4ec7ce1785e00b188bcb8cac15808",
+    "file_offset": 5431760,
+    "prior_ISA_entries_reconciled": 8,
+    "current_JIT_native_output_captured": false,
+    "barrier_removal_proven_safe": false,
+    "barrier_cost_measured": false,
+    "fresh_scope_schedulable_now": false,
+    "review_reconciliation": "R960 formal-contract audit remains unchanged. One missing artifact prerequisite is partly resolved by exact existing IR/ISA retrieval; this does not replace current-runtime native capture or provide a concrete measured scheduling change. No new research or private barrier implementation follows automatically."
   }
 }

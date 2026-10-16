@@ -1,0 +1,234 @@
+{
+  "review_id": "R958",
+  "review_type": "native Codex research-library review",
+  "task_classification": "decision_support",
+  "recorded_on": "2026-10-17",
+  "read_only_boundary": {
+    "instructions": [
+      {
+        "path": "AGENTS.md",
+        "sha256": "d0c7e1a40a05087803345d23792c468e760aceb3bba2e012efb59dd01175e89c"
+      },
+      {
+        "path": "docs/ARTIFACT_RETENTION.md",
+        "sha256": "fdf86d7ea576d6f0400ec7e643b5ddca5c3c577dd053d66c2fd05220e64b1cc1"
+      }
+    ],
+    "research_index_modified": false,
+    "product_source_modified": false,
+    "build_test_gpu_profiler_or_process_inspection_run": false,
+    "git_or_orca_action": false,
+    "cleanup_performed": false,
+    "additional_agents_spawned": false,
+    "main_collection_report_bodies_read": false,
+    "reviewer_selected_sections_read": true,
+    "files_written": [
+      "bench/results/2026-10-15-pr6-recovery-audit/research-review-round958-v1.json",
+      "bench/results/2026-10-15-pr6-recovery-audit/research-review-round958-v1.ja.md"
+    ]
+  },
+  "index_snapshot": {
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+    "sha256": "d4983659f868ba0681f63f7d0bb0b4ce78653a44120be7774ffac6513df513dc",
+    "modified": false
+  },
+  "finite_question_reviewed": "Does the reviewed research library explain why the current xe_gemm_bsd.hpp K loop uses one ScopeWorkgroup split-barrier pair around block2D copies, prefetch, fragment reorder, and DPAS, and does it separate correctness dependencies from performance scheduling?",
+  "reviewed_library_records": [
+    {
+      "round": 807,
+      "path": "research-round807-v1.txt",
+      "sha256": "f24bf7f5209531335869a6a3eceb9dcaa766528f43d12daeec36d7e6417955ef",
+      "sections_read": [
+        "5-15: actual kernel operations and existing work-group barrier mention"
+      ],
+      "finding": "Describes the barrier pair in the K-step but gives no contract or reason for ScopeWorkgroup."
+    },
+    {
+      "round": 808,
+      "path": "research-scope-review-round808-v1.json",
+      "sha256": "982178525167ead2b1e6eba2eb60efcd997cbeee563acfeb2016c6b2a94bad8e",
+      "sections_read": [
+        "108-126: dependency pin and remaining source/API question boundary"
+      ],
+      "finding": "Reviews source selection and integration gates; does not analyze split-barrier scope or semantics."
+    },
+    {
+      "round": 811,
+      "path": "research-round811-v1.txt",
+      "sha256": "11b00b86aef965f857f2d863fe74256275a00aa696602786f074510c6072e845",
+      "review_path": "research-scope-review-round812-v1.json",
+      "review_sha256": "0545bece97b85a6b0f3cd728b4cc1ed4545428bc2b5efb603a2e514f952fa495",
+      "sections_read": [
+        "17-21: 2D load/store/prefetch API and clipping limits",
+        "33-43: K-prefetch bounds and unresolved BMG facts"
+      ],
+      "finding": "Relevant to block2D and prefetch contracts, but it does not address split barriers, register-fragment handoff, DPAS, or work-group scope. R812's retrieval conditions confirm it was a descriptor/prefetch review."
+    },
+    {
+      "round": 924,
+      "path": "research-round924-v1.txt",
+      "sha256": "90750a064865261faaa214a0456313b5990e124663ac1c1cda007e1523438245",
+      "review_path": "research-review-round925-v1.json",
+      "review_sha256": "a5c255f72b17acc5baa285e7a25b73024aadf2d4ef9c84170b597987ea8e9a39",
+      "operational_digest_path": "research-review-round925-v1.ja.md",
+      "operational_digest_sha256": "3ec4354e6fd73968268cc6a9df8fbc1cce123692529968eba19ec2994a38038c",
+      "sections_read": [
+        "15-21: subgroup convergence and work-group barrier semantics for cross-subgroup SLM",
+        "25-30: producer/consumer lifetime edges and schedule trade-offs",
+        "35-39: async-copy and prefetch limits"
+      ],
+      "finding": "Distinguishes correctness barriers for explicit cross-subgroup SLM publication/reuse from possible overlap scheduling. It reviews a different QSA kernel with explicit local tiles, not the current TLA register-fragment path; it does not establish the current pair's necessity or hidden helper storage."
+    },
+    {
+      "round": 810,
+      "path": "own-vllm-xe2-main-review-v1.ja.md",
+      "sha256": "749ec7e9a9b1df9356bf8434fc54c53eba9eec6b97d21cfd08d07d3468b5359e",
+      "sections_read": [
+        "5-9: derived kernel operations, provenance, uniform K loop, and source review boundary"
+      ],
+      "finding": "Main records all-lane uniform barrier convergence and unresolved runtime/ISA questions, but not the work-group pair's correctness dependency versus scheduling purpose."
+    },
+    {
+      "round": 821,
+      "path": "own-vllm-engine-hook-main-review-v1.ja.md",
+      "sha256": "bea4896255fa12b37b8cd80776ae963bb15fb134e6efe9ce3e528accf6802427",
+      "sections_read": [
+        "3-7: integration, ownership, queue, and source review summary"
+      ],
+      "finding": "Confirms the same R810 core and adapter are integrated; adds no split-barrier contract analysis."
+    }
+  ],
+  "active_source_reconciliation": {
+    "source_review_reconciliation": {
+      "path": "research-review-round956-main-reconciliation-v1.json",
+      "sha256": "26ad2e4b1daaccd5cdd6c7703b86548f05d729bf8fc4f5cc618644f9f001fdd9",
+      "finding": "Current native16.cpp, native16.hpp, and xe_gemm_bsd.hpp hashes match the fully reviewed R810 source. R821 integration review exists."
+    },
+    "current_files": [
+      {
+        "path": "src/prefill/sycl/vllm_xe2/native16.cpp",
+        "sha256": "d8b361cabea29344b48aff5a9db41303f3ea715de47f27bc57f29f85c5f3aa2d"
+      },
+      {
+        "path": "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp",
+        "sha256": "114210ceb61f769d1ba7717690b43027a74f07cf7bdb0cb82d7ea3cd28dbd1c0"
+      },
+      {
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/own-vllm-xe2-native16-v1/provenance.md",
+        "sha256": "c89374a2e777ef5f05a8b8ffc2fb6a0ae27ea54d74ad2629cf63650c2e254ef0"
+      }
+    ],
+    "immutable_source_pins": {
+      "vllm_xpu_kernels": "6b30c9b92cc525c32729df988b5f918e7c5661a5",
+      "intel_sycl_tla": "87f6850680a580654b9ea2c80dbc01aeb36ad231",
+      "provenance_boundary": "The core derives from the marked vLLM BSD-3 source; TLA dependencies are pinned and inventoried. The unmarked policy header is not used. XeStrata source, helpers, tests, diagnostics, and archives are excluded."
+    },
+    "current_loop_facts": [
+      "The two active tile policies use K=32; the adapter rejects K values not divisible by 32.",
+      "In xe_gemm_bsd.hpp, ScopeWorkgroup is selected at line 115; each uniform K iteration calls barrier_arrive at line 129, block2D copies at 131-132, bounded future prefetch at 134-137, fragment reorder at 139-140, cute::gemm/DPAS at 142, and barrier_wait at 144.",
+      "The source uses the supplied Runtime and in-order queue. The kernel has no explicit local_accessor or named SLM buffer, but that source fact does not rule out requirements inside TLA copy/reorder/MMA helpers or backend lowering.",
+      "The pinned TLA helper xe_split_barrier.hpp defines the one-scope overload by passing that scope as both execution and memory scope to __spirv_ControlBarrierArriveINTEL/WaitINTEL; its default memory_semantics argument is SemanticsNone. Its comment says the barrier loosely synchronizes subgroups within a work-group.",
+      "The pinned TLA GEMM companion describes the same loop ordering. The performance guide calls the barriers work-group scoped and says changing them changes synchronization granularity; neither statement alone proves that this current barrier pair is dispensable or a correctness requirement."
+    ],
+    "pinned_local_tla_sources_read": [
+      {
+        "path": "include/cute/util/xe_split_barrier.hpp",
+        "sha256": "a69cc8bb1ecea9fa10323b9b9fcfeffe2e96ac7c4bea7d4002f1dadb5e6b4d2a"
+      },
+      {
+        "path": "media/docs/cpp/xe_rearchitecture.md",
+        "sha256": "a5cdf086d739118074a7197825f9e15ca9c595783d9cee16bea4467b3413e3d4"
+      },
+      {
+        "path": "media/docs/cpp/cute/11_intel_gemm_companion.md",
+        "sha256": "45c0a3060070f6b8879feadcb4e876c071bfd13448be8ebe7aca1500497940aa"
+      },
+      {
+        "path": "media/docs/cpp/cute/12_intel_performance_guide.md",
+        "sha256": "69bf0a32deeea1ab335ccf89aff7035fa6ce28945cd8b6ff1322ba859a9d9532"
+      }
+    ]
+  },
+  "conclusion": {
+    "existing_library_answers_exact_question": false,
+    "why_not": "R807 and R810 describe the pair and uniform control flow but do not classify the dependency. R811 addresses block2D descriptor/prefetch edges. R924 explains work-group barriers for explicit cross-subgroup SLM and possible overlap costs in another kernel. The pinned TLA helper/docs provide a useful 'loosely synchronize' intent and the default SemanticsNone detail, but the reviewed library has not audited the formal builtin contract against this exact register-fragment/reorder/DPAS path.",
+    "current_boundary": "No explicit SLM use is visible in the Strata kernel, but no hidden-storage or TLA collective contract is ruled out. The available source does not justify removing, weakening, or reclassifying the pair as performance-only.",
+    "performance_evidence": "Main-supplied paired component times at M=160 (GU wide 0.174759 ms, Down wide 0.122230 ms) and dense M=8192 GU 1.203226 ms are submit-through-completion times, not isolated device service or barrier timings. They do not identify a barrier bottleneck. No current MoE ne census is available, and no tile/grouping adoption is requested. Neither is a prerequisite for this source/API contract audit."
+  },
+  "retrieval_for_main": {
+    "main_collection_report_bodies_read": false,
+    "selected_section_metadata": [
+      {
+        "path": "research-round811-v1.txt",
+        "sha256": "11b00b86aef965f857f2d863fe74256275a00aa696602786f074510c6072e845",
+        "sections": "17-21 and 33-43",
+        "use": "Pinned block2D and prefetch API limits only; these sections do not resolve barrier semantics."
+      },
+      {
+        "path": "research-round924-v1.txt",
+        "sha256": "90750a064865261faaa214a0456313b5990e124663ac1c1cda007e1523438245",
+        "sections": "15-21, 25-30, and 35-39",
+        "use": "General convergence, cross-subgroup local-memory lifetime edges, and the distinction between prefetch hints and completed copies; different kernel, no BMG proof."
+      }
+    ],
+    "operational_digest_sufficient": true
+  },
+  "next_scope_eligibility": {
+    "recommended_now": true,
+    "schedulable_now": true,
+    "prerequisites_rechecked": true,
+    "dispatch_performed": false,
+    "reason": "A concrete source/API question is active, the current reviewed kernel and exact immutable vLLM/TLA source pins are present, and the unresolved issue is formal source contract rather than runtime performance. A GPU census, B570 availability, and barrier timing are not prerequisites; the fresh session must remain source-only.",
+    "prerequisites": [
+      {
+        "requirement": "Exact current Strata kernel and adapter are identified and match the already reviewed R810 source.",
+        "evidence": "R956 main reconciliation records exact current/R810 hashes; source review R810 and integration review R821 are present."
+      },
+      {
+        "requirement": "The derivative source origin and TLA helper revision are immutable and license provenance is recorded.",
+        "evidence": "own-vllm-xe2-native16-v1/provenance.md pins vLLM 6b30c9b92cc525c32729df988b5f918e7c5661a5 and SYCL-TLA 87f6850680a580654b9ea2c80dbc01aeb36ad231, retains the BSD-3 boundary, and excludes the unmarked policy and XeStrata."
+      },
+      {
+        "requirement": "Prior reviewed research has been checked for overlap and the question is distinct.",
+        "evidence": "R807/R810 cover operation order and convergence; R811 covers 2D messages/prefetch; R924 covers a different explicit-SLM producer/consumer design. None analyzes the exact split-barrier builtin against this current register-fragment/reorder/DPAS sequence."
+      },
+      {
+        "requirement": "The task can answer a finite contract question without GPU or process work.",
+        "evidence": "Pinned source and public API/spec documents are sufficient inputs. The current component timings are not a barrier measurement and must not be treated as one."
+      }
+    ],
+    "candidate_fresh_scope": {
+      "classification": "decision_support",
+      "title": "Work-group split-barrier contract in the pinned Xe2 block2D/DPAS K loop",
+      "finite_question": "For the exact current native16 K=32 loop and pinned vLLM/TLA sources, what does the one-scope split-barrier API guarantee for execution and memory, and which correctness dependencies, collective/convergence rules, or helper/backend contracts require or permit a ScopeWorkgroup pair around the current block2D copy, prefetch, reorder, and DPAS sequence? Separate documented correctness requirements from TLA's scheduling intent and state what remains unknown without exact lowering/runtime evidence. Do not recommend deleting or weakening the barrier.",
+      "report_budget_words": "1200-1500",
+      "report_budget_bytes": 24576,
+      "source_limit": 7,
+      "sources": "Use the pinned current Strata source, vLLM 6b30c9b92cc525c32729df988b5f918e7c5661a5, TLA 87f6850680a580654b9ea2c80dbc01aeb36ad231, and exact-version official SYCL/Intel/SPIR-V contract documents. Compare counterevidence and cite immutable revisions/editions.",
+      "required_distinctions": [
+        "Execution rendezvous versus memory-ordering semantics, including the helper's SemanticsNone default.",
+        "Per-work-item/register-fragment and subgroup collective dependencies versus cross-subgroup/work-group communication or hidden helper storage.",
+        "Uniform-loop/convergence correctness versus the documented performance scheduling purpose of loosely keeping subgroups together.",
+        "Prefetch as a hint versus a completed transfer or data dependency.",
+        "Published API/source guarantees versus configured compiler, BMG runtime, emitted lowering, and performance, which remain unverified."
+      ],
+      "exclusions": [
+        "No builds, tests, GPU jobs, profiler, process inspection, or Git commands.",
+        "No tile/grouping survey, barrier-removal proposal, measured bottleneck claim, or inference adoption conclusion.",
+        "No XeStrata material or unmarked policy implementation; no code, helper, diagnostic, test, or archive may be copied or adapted.",
+        "Do not assume that lack of an explicit local_accessor proves no shared storage or collective dependency inside TLA."
+      ]
+    }
+  },
+  "index_entry_proposal": {
+    "key": "research_review_round958",
+    "review_path": "research-review-round958-v1.json",
+    "operational_digest_path": "research-review-round958-v1.ja.md",
+    "main_collection_report_bodies_read": false,
+    "reviewer_selected_sections_read": true,
+    "status": "Existing reviewed work does not resolve the exact split-barrier contract; one bounded source-only decision-support audit is schedulable now.",
+    "schedulable_now": true,
+    "dispatch_performed": false,
+    "retrieval_trigger": "Fresh source-contract audit only; R811 and R924 selected sections and source hashes are recorded in this review."
+  }
+}
