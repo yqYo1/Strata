@@ -1,0 +1,2294 @@
+--- /dev/null
++++ bench/results/2026-10-15-pr6-recovery-audit/own-metric-query-tiny-v1/README.md
+@@ -0,0 +1,23 @@
++# Source-only tiny metric-query proposal
++
++**HOLD: strict collection qualification cannot pass with the pinned collector's internal API-status loss.** No build, syntax check, test, native run, process/device inspection or GPU measurement was performed by this worker. Main owns review and every later execution. This is a source package, not a metric result or permission diagnosis.
++
++`main_controller.py` supplies one bounded, non-root **diagnostic-only** run of the original pinned `sycl_prompt_native16_test --smoke`. It preloads only the native child with the existing `libunitrace_tool.so` SHA256 `8a8fe37441606bf66ab42fc39cc447b5257f48d09f04fbcc60703e30826671eb`. It has no launcher, build, model, retry, privilege or cleanup mode. `passed`, `complete` and `collection_qualified` remain false; successful observable gates produce `diagnostic_complete=true`, status `HOLD_API_STATUS`, exit 2. Other outcomes remain `INCOMPLETE`, including unavailable dependencies, permissions or unsupported operations. No result from this controller unlocks a model metric pass.
++
++`metrics.py` reads the pinned official Linux query format using a complete ordered 83-metric driver catalog, exact PID-named file, finite typed values and exact compute-dispatch counts from `summary.py`. A partial/unknown schema, extra side file, duplicate instance or nonzero sample index fails. PTI quotes names without escaping embedded quotes; the reader splits the known numeric suffix from the right. Detailed compute shapes are removed only for matching the nonverbose summary names. Counter text floats retain PTI's six-decimal limitation.
++
++`summary.py` is a focused adaptation of the pinned project summary/property parser. It retains both timing table, aggregate, numerical and compute-property checks, removes timeline/model processing, and adds bounded decoding. The controller imports only the reviewed project's ownership, identity, map, source, health and fault helpers by exact SHA256. Importing the old controller does not call its main function or import a GPU runtime. Its pinned pure Python timeline module is a transitive import, not an enabled DeviceTimeline collection control.
++
++`enumerate_full.cpp` is an additive revision of `own-metric-enumeration-v1/enumerate.cpp` SHA256 `07c20d237b5e1377c429f5479ee7d029c328a0c422552f248842257ef1afbd9c`. It requests all supported metric properties under the original total 4096 cap and additionally requires FLAT before `zeInit`; it still submits no GPU commands. Its enum-name include is an explicit pinned reference to the unchanged original `result_names.inc`. The original v1 source, executable, receipts and seals were not edited. Main must separately review/build/run a new full-catalog helper under owned control; the v1 controller's hard-coded source path must not be silently reused or its source/pins edited in place. This package does not perform that host build or enumeration.
++
++Before considering even diagnostic execution, Main must:
++
++1. Review `source.patch`, `controller-v3.delta.patch`, `enumeration-v1.delta.patch`, provenance, and the complete source. Pin `SHA256SUMS` externally. No tests were run; Main should syntax-check and exercise malformed/truncated/unknown-column/quoted-kernel/typed-value/coverage cases offline before any device work.
++2. Decide the surfaced API-status issue in `implementation-report.md`. A separate collector/status-observation proposal would need its own explicit review; this package changes neither collector nor provider and has no switch that waives the hold.
++3. If a diagnostic is useful despite the hold, separately close a full-catalog build and enumeration, with the actual build receipt, executable, stdout and normal ownership/fault gates. The build receipt must identify this reviewed package hash, mode `build`, the exact `enumerate_full.cpp` path in its single `host-build` command and `binary_candidate`. The enumeration receipt uses the existing v1 controller record fields, plus FLAT in its actual native environment. This is a receipt contract for Main's separately reviewed controller extension, not an invented result. No automatic transition from build/enumeration to query is provided.
++4. Review all additional metric dependencies without replacing original ELF/file pins. Author an external dependency-review report with `approved=true`, `elf_pins` and `file_pins`; empty mappings are valid only if Main has checked the original inventory suffices. New dependencies require independent provenance/license review. The controller never enrolls live files into the allowlist.
++5. Author a fresh external seal as specified below, select the latest closed sameboot health receipt explicitly, serialize all build/test/GPU/retention work, then launch the controller in an isolated host Python process. Only its native fixture child receives collector controls. There is no execution command with fabricated run IDs, receipt hashes or approval values here.
++
++The external seal must contain `status="MAIN_REVIEWED_SEALED"`, `review_scope="DIAGNOSTIC_ONLY_API_STATUS_HOLD"`, a fresh `run_id` matching `v[1-9][0-9]{0,3}`, current `boot_id`, externally reviewed `reviewed_package_sha256`, UTC `retention_review_utc` within 48 hours, `health_receipt`, `additional_dependency_review` and `catalog`. All artifact pins use the original `{path,realpath,bytes,sha256}` format. `additional_dependency_review` contains `report` (artifact pin) and the exact `elf_pins`/`file_pins` mappings from that report. `catalog` has exactly four artifact pins: `receipt`, `build_receipt`, `binary`, `stdout`. The controller flags are `--seal`, `--seal-sha256`, `--reviewed-package-sha256`, `--run-id`; run it with the reviewed host Python using `-I -B`. The seal belongs outside this source package and cannot rewrite the original inventory.
++
++The run uses native wall and CPU limits of 90 seconds, whole controller limit 300 seconds, decoding at most 15 seconds, 4096 query rows, 64 KiB per decoded line, combined raw output 64 MiB including all collector/partial sides and closure logs, and private files 1 GiB. The raw live work budget is 62 MiB with 2 MiB reserved for closure. It records original oracle stdout, all owned stdout/stderr unchanged, actual mapping snapshots, native argv/PID/start/environment, sameboot journal boundaries/faults, dump checks and owned closure. Unknown mappings fail. Snapshot evidence covers file-backed executable maps observed during the child lifetime, not unloaded libraries, anonymous JIT code or kernel parameter internals. Main retains compact evidence and reviews raw retirement; the code deletes nothing.
+--- /dev/null
++++ bench/results/2026-10-15-pr6-recovery-audit/own-metric-query-tiny-v1/controller-v3.delta.patch
+@@ -0,0 +1,1018 @@
++--- immutable/b81a06f1/own-vllm-resource-timeline-v3/controller.py
+++++ proposal/own-metric-query-tiny-v1/main_controller.py
++@@ -1,8 +1,7 @@
++ #!/usr/bin/env python3
++-"""Main-only, source-delivered resource timeline diagnostic. Repository LICENSE.
++-
++-No unitrace executable, build, automatic arm/retry, runtime environment mutation,
++-new GPU runtime/context/queue, tensor capture, service, reset or cleanup.
+++"""Main-only source proposal: one original BF16 --smoke MetricQuery diagnostic.
+++Repository LICENSE. No launcher, collector build, model mode, retry or cleanup.
+++Strict API-status qualification is HOLD even if all observable gates succeed.
++ """
++ import argparse
++ import datetime
++@@ -14,48 +13,32 @@
++ import os
++ from pathlib import Path
++ import re
++-import select
++ import selectors
++-import shutil
++-import subprocess
++ import sys
++ import time
++ sys.dont_write_bytecode = True
++-sys.path.insert(0, str(Path(__file__).resolve().parent))
++-import timeline
++-
++ D = Path(__file__).resolve().parent
++ A = D.parent
++ P = A.parents[2]
++ B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
++-OWNER = P / 'bench/results/2026-10-14-niko-main-service-port/direct_owner.py'
++-OWNER_SHA = 'a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f'
++-PY = '/home/yayoi/.local/share/strata-sycl/venv/bin/python'
++-RUNNER = D / 'run_server_job.py'
++-DEVICE = Path('/sys/bus/pci/devices/0000:05:00.0')
++-SOURCE = '63326f98c36656cf3a3e1adcc54c3c25a02aa6ee'
++-BUILD_SHA = '3fca64de3664a74ac5a376e4e40cb8a3e2910113f29a4597a564c2f903381327'
++-ENGINE_SHA = '6334491b623ead7b83c7ff5aaee84583294b3ecd4b12c6d06b77d1fe7e7a691d'
++-LIB = B / 'main-primary-unitrace-build-root-v1/build/libunitrace_tool.so'
++-LIB_SHA = '8a8fe37441606bf66ab42fc39cc447b5257f48d09f04fbcc60703e30826671eb'
++-RAW_CAP, DISK_CAP, RESERVE = 62 << 20, 1 << 30, 150
++-HOST_ENV = dict(PATH='/usr/bin:/bin', HOME='/home/yayoi', LANG='C.UTF-8', LC_ALL='C.UTF-8', PYTHONDONTWRITEBYTECODE='1')
++-FAULT = re.compile(r'(?i)(\bxe\b.*(fault|hang|reset|error|wedg|timeout|stuck)|GPU.*(fault|hang|wedg|reset)|GuC.*(fault|hang|reset|error))')
++-ERROR = re.compile(r'\[ERROR\]|(?:UR|ZE)_RESULT_ERROR_|terminate called|what\(\):|retirement failed|Strata SYCL cleanup:|Unable to (?:create|trace|initialize)|not enabled for tracing|(?:collection|profile|trace).*truncat', re.I)
++-MODEL = re.compile(r'(^|/)(strata(?:[-_.][^/]*)?|sycl_[^/]*|paired_gemm|strata_vllm_xe2_numerics|bench\.sh|engine[-_]wrapper\.py|run_server_job\.py|ninja|cmake|ctest|unitrace|clang(?:\+\+)?(?:-[0-9]+)?)$')
++-COLLECTOR = dict(UNITRACE_HostTiming='1', UNITRACE_DeviceTiming='1',
++-    UNITRACE_DeviceTimeline='1',
++-    UNITRACE_FollowChildProcess='1', UNITRACE_LogToFile='1', ZE_ENABLE_TRACING_LAYER='1',
++-    CUDA_MODULE_LOADING='EAGER')
++-WARNINGS = dict(UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION',
++-    UR_LOG_VALIDATION='level:warning;flush:warning;output:stderr',
++-    UR_LOG_LOADER='level:warning;flush:warning;output:stderr',
++-    UR_LOG_LEVEL_ZERO='level:warning;flush:warning;output:stderr')
++-QUALIFICATION = ('quality_qualified', 'model_quality_qualified', 'performance_qualified',
++-    'performance_adopted', 'default_adopted', 'physical_262144_qualified', 'restore_qualified')
++-
++-
++-def require(value, message):
+++BASE = A / 'own-vllm-resource-timeline-v3'
+++BASE_MANIFEST_SHA = '61da9469e3f975c72d770beee77d45118c988eb6d3d82b6dbe1b568cd9ea3f1c'
+++IMPORTS = {
+++    BASE / 'controller.py': 'b81a06f1e0866d571748e7cf767d07930fa165339c152cfbf7d8b3f386005a38',
+++    BASE / 'timeline.py': '2121482d114f1de1fb087a6bc1425314022af1198a3242986b571a2664ed2c12',
+++    P / 'bench/results/2026-10-14-niko-main-service-port/direct_owner.py':
+++        'a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f'}
+++ENUM_RECEIPT = B / 'main-metric-enum-query-v1/record.json'
+++ENUM_SHA = '5f9f2debab68c87ddcf6346874a9edcf132b1d85cf6731144f9ccb6827ed1af5'
+++STRICT_HOLD = 'PTI_QUERY_API_STATUS_LOSS: GetData and decode statuses are not all recorded by pinned collector'
+++RAW, WORK_RAW, PRIVATE = 64 << 20, 62 << 20, 1 << 30
+++CONTROLS = dict(UNITRACE_MetricQuery='1', UNITRACE_MetricGroup='ComputeBasic',
+++    UNITRACE_HostTiming='1', UNITRACE_DeviceTiming='1', UNITRACE_FollowChildProcess='1',
+++    UNITRACE_LogToFile='1', ZE_ENABLE_TRACING_LAYER='1', ZET_ENABLE_METRICS='1',
+++    ZE_FLAT_DEVICE_HIERARCHY='FLAT', CUDA_MODULE_LOADING='EAGER')
+++
+++
+++def need(value, message):
++     if not value:
++         raise RuntimeError(message)
++ 
++@@ -65,655 +48,317 @@
++         return hashlib.file_digest(stream, 'sha256').hexdigest()
++ 
++ 
++-def utc():
++-    return datetime.datetime.now(datetime.timezone.utc).isoformat()
++-
++-
++-def boot_id():
++-    return Path('/proc/sys/kernel/random/boot_id').read_text().strip()
++-
++-
++-def artifact(path):
++-    path = Path(path)
++-    st = path.stat()
++-    return dict(path=str(path), realpath=str(path.resolve(strict=True)), bytes=st.st_size, sha256=sha(path))
++-
++-
++-def safe_path(path):
++-    path = Path(path).resolve(strict=True)
++-    require(not path.is_relative_to(B / 'prefill-gemm-only-contract-root-v1'), 'protected input forbidden')
++-    llvm = Path('/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install')
++-    require('XeStrata' not in str(path) or path.is_relative_to(llvm), 'excluded engine source forbidden')
++-    return path
++-
++-
++-def check_pin(path, pin):
++-    p = safe_path(path)
++-    require(str(p) == pin['realpath'] and p.stat().st_size == pin['bytes'] and sha(p) == pin['sha256'], 'file pin: ' + str(path))
++-
++-
++-def identity(pid):
++-    try:
++-        v = Path('/proc', str(pid), 'stat').read_text().rsplit(')', 1)[1].split()
++-        return dict(pid=pid, state=v[0], ppid=int(v[1]), pgid=int(v[2]), sid=int(v[3]), start_ticks=int(v[19]))
++-    except (FileNotFoundError, ProcessLookupError):
++-        return None
++-
++-
++-def absence(commands):
++-    rows = []
++-    for command in commands:
++-        require(command.get('direct_identity') and command.get('owners'), 'required owned PID/start evidence')
++-        for old in command['owners'] + [command['direct_identity']]:
++-            now = identity(old['pid'])  # PermissionError for an owned identity is never waived.
++-            absent = now is None or now['start_ticks'] != old['start_ticks']
++-            rows.append(dict(original=old, current=now, original_absent=absent))
++-            require(absent, 'owned PID/start remains: ' + str(old))
++-    return rows
++-
++-
++-def health_gate(path, digest, module, current_boot, manifest, tiny=False):
++-    require(re.fullmatch('[0-9a-f]{64}', digest or ''), 'explicit receipt SHA256')
++-    require(sha(path) == digest, 'selected receipt hash')
++-    value = json.loads(Path(path).read_text())
++-    require(value.get('passed') is True and value.get('complete') is True and value.get('active') is False and
++-            value.get('ownership_closed') is True and value.get('boot_id') == current_boot and
++-            value.get('boot_unchanged') is True and value.get('driver_dump_exists') is False and
++-            value.get('fresh_faults') == [], 'explicit latest closed PASS, sameboot, fault/dump gate')
++-    require(value.get('source_commit') == SOURCE and value.get('source_pins') == manifest['source_pins'], 'same frozen product sources')
++-    commands = value.get('commands', [])
++-    require(commands and all(module.closed(c) and c.get('exit_code') == 0 for c in commands), 'all selected receipt commands normally closed')
++-    absent = absence(commands)
++-    if tiny:
++-        require(value.get('schema') == 'strata-unitrace-direct-v1' and value.get('mode') == 'tiny' and
++-                value.get('collector_compatible') is True and value.get('manifest_sha256') == manifest['_sha256'] and
++-                value.get('collector_library_sha256') == LIB_SHA and value.get('binary_sha256') == manifest['tiny']['sha256'] and
++-                value.get('collection', {}).get('proved') is True and
++-                value.get('collection', {}).get('resource_timeline', {}).get('proved') is True, 'same-package tiny collector compatibility PASS required')
++-    else:
++-        require(value.get('schema') == 'strata-prompt-softmax-long-v1' and
++-                value.get('binary_sha256') == ENGINE_SHA and
++-                value.get('build_receipt_sha256') == BUILD_SHA and
++-                value.get('arm') == '0' and value.get('phase') in ('diagnostic', 'clean'),
++-                'explicit current qualified softmax0 long health gate')
++-        require(value['environment']['STRATA_SYCL_PROMPT_SOFTMAX_SUBGROUP'] == '0' and
++-                value['environment']['STRATA_PREFILL_LAYER_MAJOR_R_GPU'] == 'auto' and
++-                value['environment']['STRATA_SYCL_PREFILL_NATIVE16_BACKEND'] == 'vllm',
++-                'same runtime route/softmax/placement')
++-        check_pin(manifest['engine']['path'], manifest['engine'])
++-    return dict(selection='Main explicitly selected latest closed PASS; no discovery/fallback/waiver',
++-                receipt=artifact(path), original_status_preserved=True, owner_absence=absent, schema=value.get('schema'))
++-
++-
++-def owner_scan(model_files):
++-    """Read-only same-UID scan. Protected services are visible limits, never a clearance claim."""
++-    limits, suspects = [], []
++-    population = list(Path('/proc').iterdir())
++-    require(len(population) < 131072, 'bounded proc population')
++-    for p in population:
++-        if not p.name.isdecimal() or int(p.name) == os.getpid():
++-            continue
++-        try:
++-            if p.stat().st_uid != os.getuid():
++-                continue
++-            try:
++-                args = [a.decode(errors='replace') for a in (p / 'cmdline').read_bytes().split(b'\0') if a]
++-            except PermissionError as error:
++-                comm = (p / 'comm').read_text().strip()
++-                require(comm in ('systemd', '(sd-pam)', 'sd-pam', 'gpg-agent', 'ssh-agent'), 'unknown same-UID cmdline visibility denial')
++-                limits.append(dict(pid=int(p.name), comm=comm, cmdline_visibility='denied', error=repr(error)))
++-                continue
++-            matches = [a for a in args if a in model_files or a.endswith('.gguf') or
++-                       (not a.startswith('-') and MODEL.search(a)) or a.startswith('serve.') or
++-                       (str(P / 'serve') in a and a.endswith('.py'))]
++-            exe = None
++-            try:
++-                exe = str((p / 'exe').resolve(strict=True))
++-            except PermissionError as error:
++-                limits.append(dict(pid=int(p.name), cmdline=args, exe_visibility='denied', error=repr(error)))
++-            if exe and MODEL.search(exe):
++-                matches.append(exe)
++-            if matches:
++-                suspects.append(dict(pid=int(p.name), cmdline=args, exe=exe, matches=matches))
++-        except (FileNotFoundError, ProcessLookupError):
++-            continue
++-    require(not suspects, 'foreign model/fixture/build/test owner: ' + json.dumps(suspects))
++-    return dict(same_uid_suspects=suspects, executable_visibility_limits=limits,
++-        scope='Same-UID cmdline plus accessible exe scan; cannot exclude hidden/foreign GPU owners. Main serializes all GPU/build/test/cleanup work.')
++-
++-
++-def native_snapshot(pid, expected, env, pins, expected_sid):
++-    """Only our already owned child. Bind actual maps dev/inode to pre-pinned ELF bytes."""
++-    before = identity(pid)
++-    require(before and before['sid'] == expected_sid, 'actual native session')
++-    proc = Path('/proc', str(pid))
++-    raw = (proc / 'maps').read_text()
++-    needed = ('libunitrace_tool.so', 'libxptifw.so', 'libsycl.so', 'libze_loader.so',
++-              'libze_tracing_layer.so', 'libze_intel_gpu.so', 'libur_adapter_level_zero')
++-    if not all(n in raw for n in needed):
++-        return None
++-    args = [a.decode() for a in (proc / 'cmdline').read_bytes().split(b'\0') if a]
++-    effective = dict(a.decode().split('=', 1) for a in (proc / 'environ').read_bytes().split(b'\0') if a)
++-    require(effective == env and args and str(Path(args[0]).resolve()) == expected['realpath'], 'actual native exec argv/environment')
++-    require(str((proc / 'exe').resolve(strict=True)) == expected['realpath'], 'actual /proc native executable')
++-    with (proc / 'exe').open('rb') as stream:
++-        require(hashlib.file_digest(stream, 'sha256').hexdigest() == expected['sha256'], 'actual executable open-file SHA')
++-    loaded = []
++-    for line in raw.splitlines():
++-        fields = line.split(None, 5)
++-        if len(fields) == 6 and fields[5].startswith('/') and 'x' in fields[1]:
++-            require(not fields[5].endswith(' (deleted)'), 'mapped ELF deleted')
++-            loaded.append(str(safe_path(fields[5])))
++-    missing = sorted(set(loaded) - set(pins))
++-    require(not missing, 'unsealed actual loaded dependencies (all at snapshot): ' + json.dumps(missing))
++-    mappings = []
++-    seen = set()
++-    for line in raw.splitlines():
++-        fields = line.split(None, 5)
++-        if len(fields) != 6 or not fields[5].startswith('/') or 'x' not in fields[1]:
++-            continue
++-        name = fields[5]
++-        require(not name.endswith(' (deleted)'), 'mapped ELF deleted')
++-        path = safe_path(name)
++-        if str(path) in seen:
++-            continue
++-        seen.add(str(path))
++-        require(str(path) in pins, 'unsealed actual loaded dependency: ' + str(path))
++-        st = path.stat()
++-        major, minor = [int(v, 16) for v in fields[3].split(':')]
++-        require(st.st_ino == int(fields[4]) and os.major(st.st_dev) == major and os.minor(st.st_dev) == minor, 'mapped ELF dev/inode')
++-        check_pin(path, pins[str(path)])
++-        mappings.append(dict(mapping=line, **artifact(path)))
++-    require(str(LIB.resolve()) in seen, 'actual loaded collector mapping required')
++-    after = identity(pid)
++-    require(after and after['start_ticks'] == before['start_ticks'], 'native PID/start stable during snapshot')
++-    signature = '\n'.join(l for l in raw.splitlines() if len(l.split(None, 5)) == 6 and
++-        'x' in l.split(None, 5)[1] and l.split(None, 5)[5].startswith('/'))
++-    return dict(native=before, argv=args, executable=expected, effective_environment=effective,
++-        executable_mappings=mappings, maps_sha256=hashlib.sha256(raw.encode()).hexdigest(),
++-        executable_maps_sha256=hashlib.sha256(signature.encode()).hexdigest(),
++-        captured_utc=utc(), anonymous_executable_mapping_scope='File-backed executable maps at capture only; no JIT ISA/occupancy claim')
++-
++-
++-def native_wrapper(spec_path, argv):
++-    """Private model wrapper entry. Python is never preloaded; only native Popen env is."""
++-    spec = json.loads(Path(spec_path).read_text())
++-    require(not any(k.startswith(('UNITRACE_', 'PTI_', 'XPTI_', 'ZE_ENABLE_')) or k == 'LD_PRELOAD' for k in os.environ), 'wrapper must never inherit collector environment')
++-    check_pin(spec['engine']['path'], spec['engine'])
++-    check_pin(D / 'timeline.py', spec['timeline_helper'])
++-    env = spec['native_environment']
++-    start = dict(engine=spec['engine']['path'], binary_sha256=spec['engine']['sha256'],
++-        argv=[spec['engine']['path'], *argv], wrapper=identity(os.getpid()), started_utc=utc(),
++-        experiment_environment=env, collector_snapshot=None, mapping_snapshots=[], errors=[])
++-    proc = subprocess.Popen(start['argv'], env=env, cwd=spec['native_cwd'])
++-    fd = os.pidfd_open(proc.pid)
++-    watch = select.poll(); watch.register(fd, select.POLLIN)
++-    try:
++-        native = identity(proc.pid)
++-        require(native and native['ppid'] == os.getpid() and native['sid'] == os.getsid(0), 'native wrapper child binding')
++-        start['native'] = native
++-        pipe = os.stat('/proc/' + str(proc.pid) + '/fd/0')
++-        start['stdin'] = dict(device=pipe.st_dev, inode=pipe.st_ino)
++-        Path(spec['start_path']).write_text(json.dumps(start, indent=2) + '\n')
++-        deadline = time.monotonic() + 890
++-        while not watch.poll(0):
++-            require(time.monotonic() < deadline, 'native wrapper deadline; outer Owner performs pidfd closure')
++-            maps = Path('/proc', str(proc.pid), 'maps').read_text()
++-            signature = '\n'.join(l for l in maps.splitlines() if len(l.split(None, 5)) == 6 and
++-                'x' in l.split(None, 5)[1] and l.split(None, 5)[5].startswith('/'))
++-            digest = hashlib.sha256(signature.encode()).hexdigest()
++-            if start['collector_snapshot'] is None or digest != start['collector_snapshot']['executable_maps_sha256']:
++-                snapshot = native_snapshot(proc.pid, spec['engine'], env, spec['elf_pins'], os.getsid(0))
++-                if snapshot:
++-                    require(len(start['mapping_snapshots']) < 64, 'bounded executable-map changes')
++-                    start['mapping_snapshots'].append(snapshot)
++-                    start['collector_snapshot'] = snapshot
++-                    Path(spec['start_path']).write_text(json.dumps(start, indent=2) + '\n')
++-            watch.poll(2 if start['collector_snapshot'] is None else 50)
++-        start.update(pid=proc.pid, exit_code=proc.wait(), finished_utc=utc())
++-        require(start['collector_snapshot'] is not None, 'actual native library mapping absent')
++-    except BaseException as error:
++-        start['errors'].append(repr(error))
++-        # Leave any live native in the anchored outer Owner session; do not adopt
++-        # or signal numeric PIDs. An error can never become a normal collection.
++-        raise
++-    finally:
++-        os.close(fd)
++-        Path(spec['exit_path']).write_text(json.dumps(start, indent=2) + '\n')
++-    return 0 if start['exit_code'] == 0 else 1
++-
++-
++-def parse_collection(directory, pid, suite=None):
++-    """Official timing CSV plus compute-only Kernel Properties; names may contain commas."""
++-    files = sorted(p for p in directory.rglob('*') if p.is_file())
++-    expected = directory / ('timing.' + str(pid) + '.log')
++-    require(files == [expected], 'one actual native PID-named summary; unexpected/partial collector sides fail')
++-    require(expected.stat().st_size <= timeline.MAX_RAW, 'finite offline timeline input budget')
++-    raw = expected.read_text(encoding='utf-8', errors='strict')
++-    require(raw.endswith('\n') and not ERROR.search(raw), 'complete collector log without errors/truncation')
++-    events, raw = timeline.split(raw)
++-    sections = {'API': [], 'Device': []}
++-    totals, clocks, headers, properties = {}, {}, {}, []
++-    section = backend = table = None
++-    property_header = False
++-    def name_of(text):
++-        return text[1:-1] if len(text) >= 2 and text[0] == text[-1] == '"' else text
++-    for line in raw.splitlines():
++-        match = re.fullmatch(r'=== (API|Device) Timing Summary ===', line.strip())
++-        if match:
++-            section, backend, table = match[1], None, None
++-            require(section not in totals, 'duplicate collector section')
++-            totals[section] = None
++-            continue
++-        if line.strip() == '=== Kernel Properties ===':
++-            require(section == 'Device' and not property_header, 'single kernel-properties section after device table')
++-            section, table = 'Properties', None
++-            continue
++-        if not line.strip():
++-            table = None
++-            continue
++-        if section == 'Properties':
++-            fields = [v.strip() for v in line.rsplit(',', 7)]
++-            head = ['Kernel', 'Compiled', 'SIMD', 'Number of Arguments', 'SLM Per Work Group',
++-                    'Private Memory Per Thread', 'Spill Memory Per Thread', 'Register File Size Per Thread']
++-            if fields == head:
++-                require(not property_header, 'one official kernel-properties header')
++-                property_header = True
++-                continue
++-            require(property_header and len(fields) == 8, 'complete properties row: ' + line)
++-            name, compiled, simd, nargs, slm, private, spill, grf = fields
++-            require(compiled in ('AOT', 'JIT') and (simd == 'ANY' or re.fullmatch(r'[1-9][0-9]*', simd)) and
++-                    all(re.fullmatch(r'[0-9]+', v) for v in (nargs, slm, private, spill)) and
++-                    (grf == 'unknown' or re.fullmatch(r'[1-9][0-9]*', grf)), 'official kernel property values')
++-            properties.append(dict(name=name_of(name), compiled=compiled, reported_SIMD=simd,
++-                arguments=int(nargs), SLM_bytes_per_workgroup=int(slm), private_bytes_per_thread=int(private),
++-                spill_bytes_per_thread=int(spill), register_file_registers_per_thread=None if grf == 'unknown' else int(grf),
++-                raw_row=line, scope='Reported compiled-kernel properties; no occupancy or all-input spill guarantee'))
++-            continue
++-        if section is None:
++-            require(not line.strip(), 'unexpected collector preamble')
++-            continue
++-        match = re.fullmatch(r'\s*Total Execution Time \(ns\):\s*(\d+)\s*', line)
++-        if match:
++-            clocks[section] = int(match[1]); continue
++-        match = re.fullmatch(r'\s*Total (API|Device) Time for L0 backend \(ns\):\s*(\d+)\s*', line)
++-        if match:
++-            require(match[1] == section and totals[section] is None, 'summary type/uniqueness')
++-            totals[section] = int(match[2]); continue
++-        if line.strip() == '== L0 Backend ==':
++-            backend = 'L0'; continue
++-        fields = [v.strip() for v in line.rsplit(',', 6)]
++-        head = ['Function' if section == 'API' else 'Kernel', 'Calls', 'Time (ns)', 'Time (%)', 'Average (ns)', 'Min (ns)', 'Max (ns)']
++-        if fields == head:
++-            require(backend == 'L0' and section not in headers, 'one L0 table header')
++-            headers[section] = line; table = section; continue
++-        require(table == section and backend == 'L0' and len(fields) == 7, 'unparsed/partial timing row: ' + line)
++-        name, calls, total, percent, average, minimum, maximum = fields
++-        require(all(re.fullmatch(r'\d+', v) for v in (calls, total, average, minimum, maximum)), 'integer aggregate units')
++-        calls, total, average, minimum, maximum = map(int, (calls, total, average, minimum, maximum))
++-        percentage = float(percent)
++-        require(name and calls > 0 and total >= 0 and math.isfinite(percentage) and 0 <= percentage <= 100.01 and
++-                0 <= minimum <= maximum and average == total // calls and minimum <= average <= maximum, 'timing row values')
++-        sections[section].append(dict(name=name_of(name), calls=calls, time_ns=total, percent=percentage,
++-            average_ns=average, min_ns=minimum, max_ns=maximum, raw_row=line))
++-    require(set(totals) == set(headers) == set(clocks) == {'API', 'Device'}, 'both emitted summaries required')
++-    for section, rows in sections.items():
++-        require(rows and totals[section] and sum(v['time_ns'] for v in rows) == totals[section], 'all rows and exact aggregate sum: ' + section)
++-    require(any(r['name'].startswith('ze') for r in sections['API']), 'actual Level Zero host API rows')
++-    require(property_header and properties and all(any(r['name'] == prop['name'] for r in sections['Device']) for prop in properties),
++-            'compute-kernel properties must match actual device timing rows; copies/barriers alone are not kernel collection')
++-    require({prop['name'] for prop in properties} ==
++-            {timeline.base_name(e['name']) for e in events if timeline.SHAPE.search(e['name'])},
++-            'complete two-way compute-property/name coverage; truncated property tail fails')
++-    result = dict(proved=True, emitted_collection_pid=pid, emitted_pid_evidence=expected.name,
++-        files=[artifact(expected)], raw_summary=raw, headers=headers, totals_ns=totals,
++-        collector_execution_time_ns=clocks, host_API_rows=sections['API'], device_rows=sections['Device'],
++-        kernel_properties=properties, command_counts={k: sum(r['calls'] for r in v) for k, v in sections.items()},
++-        interpretation='Nonexclusive whole-process kernel/command sums and host API elapsed times. Includes startup/teardown and may overlap. Compiled properties are not measured occupancy. No busy union, critical path, prefill-only attribution or clean speed claim.')
++-    result['resource_timeline'] = timeline.extract(events, result, expected, directory.parent / 'timeline-samples.json', suite)
++-    return result
++-
++-
++-def validate_model(root, result):
++-    require(result.get('passed') is True and result.get('bench_exit_code') == result.get('server_exit_code') == 0, 'normal benchmark/server closure')
++-    entry = result['real_engine_exit']
++-    require(entry['exit_code'] == 0 and not entry['errors'] and entry['binary_sha256'] == ENGINE_SHA, 'normal actual native exit')
++-    suites = list((root / 'stock-results').glob('*/results.json'))
++-    require(len(suites) == 1, 'exactly one fresh official benchmark suite')
++-    suite = json.loads(suites[0].read_text())
++-    cohort = suite['results']['prefill_only']
++-    require(suite['complete'] and not suite['results']['failures'] and cohort['complete'] and
++-            cohort['eligible_runs'] == len(cohort['requests']) == 1 and suite['params']['think'] is True and
++-            suite['params']['mode'] == 'prefill-only', 'complete thinkingON official prefill-only request')
++-    request = cohort['requests'][0]
++-    require(request['ok'] and request['eligible'] and request['stream_complete'] and
++-            request['actual_prompt_tokens'] == request['actual_read_tokens'] == 39262 and
++-            request['actual_reused_tokens'] == 0 and request['generated_tokens'] == 24 and request['thinking_requested'], 'exact actual39262 input/24 output/no reuse')
++-    native = (root / 'owned/engine.stderr').read_text(errors='strict')
++-    require(not ERROR.search(native), 'native/validation/collector error')
++-    placement = [l for l in native.splitlines() if l.startswith('strata prefill: layer-major candidate,')]
++-    require(len(placement) == 1 and all(v in placement[0] for v in
++-        ('tokens=39261 ', 'chunk=8192 ', 'residual_dtype=bf16 ', 'residual_gpu_rows=39261 ', 'residual_host=0 ')), 'actual batched count, chunk and placement; no backoff')
++-    require('strata prefill: native16 BF16 HC residual/projection IO' in native and
++-            '[native16-route] engine=bf16 backend=vllm' in native, 'actual BF16/vLLM route')
++-    completed = re.findall(r'^strata trace: layer-major layer (\d+) of (\d+): completed (\d+) chunks$', native, re.M)
++-    require(completed == [(str(i), '48', '5') for i in range(48)], 'all48 layers/five chunks normally completed')
++-    wait = [l for l in native.splitlines() if l.startswith('strata prefill cpu wait:')]
++-    host = [l for l in native.splitlines() if l.startswith('strata prefill cpu host:')]
++-    coarse = [l for l in native.splitlines() if l.startswith('strata lm profile:')]
++-    qsa = [l for l in native.splitlines() if 'qsa profile:' in l]
++-    require(coarse and qsa and len(wait) == len(host) == 1 and 'available=1 complete=1' in wait[0] and
++-            'available=1 open_regions=0' in host[0], 'existing closed coarse/QSA/main-thread CPU-wait evidence')
++-    return dict(suite=suite, suite_file=artifact(suites[0]), placement=placement,
++-        coarse_profile_lines=coarse, qsa_profile_lines=qsa, cpu_wait_lines=wait, cpu_host_lines=host,
++-        CPU_interpretation='Issuing thread CLOCK_THREAD_CPUTIME_ID; explicit waits separately recorded. Host API elapsed includes waits, not CPU computation. Other threads/unclassified CPU remain separate.')
+++def imported(path, name):
+++    spec = importlib.util.spec_from_file_location(name, path)
+++    module = importlib.util.module_from_spec(spec)
+++    spec.loader.exec_module(module)
+++    return module
+++
+++
+++def package(digest):
+++    need(sha(D / 'SHA256SUMS') == digest, 'externally reviewed full source package')
+++    names = set()
+++    for line in (D / 'SHA256SUMS').read_text().splitlines():
+++        h, name = line.split('  ', 1)
+++        need(re.fullmatch('[a-f0-9]{64}', h) and not Path(name).is_absolute() and
+++             '..' not in Path(name).parts and name not in names, 'strict source snapshot')
+++        need(not (D / name).is_symlink() and sha(D / name) == h, 'reviewed package bytes')
+++        names.add(name)
+++    need(names == {str(p.relative_to(D)) for p in D.rglob('*') if p.is_file() and p.name != 'SHA256SUMS'}, 'complete source snapshot')
++ 
++ 
++ def main():
+++    controller_started = time.monotonic()
+++    deadline = controller_started + 300
++     parser = argparse.ArgumentParser(description=__doc__)
++-    parser.add_argument('--mode', choices=('tiny', 'model'), required=True)
++-    parser.add_argument('--run-id', required=True, help='fresh vN; never retry/resume/overwrite')
++-    parser.add_argument('--manifest-sha256', required=True)
++-    parser.add_argument('--health-receipt', type=Path, required=True, help='Main explicitly chooses latest closed sameboot PASS')
++-    parser.add_argument('--health-sha256', required=True)
++-    parser.add_argument('--tiny-receipt', type=Path)
++-    parser.add_argument('--tiny-sha256')
++-    parser.add_argument('--raw-budget-mib', type=int, choices=(64, 128, 256), default=64)
++-    parser.add_argument('--retention-review-utc', required=True, help='explicit UTC review deadline within48h')
+++    parser.add_argument('--seal', type=Path, required=True, help='Main-authored external review seal; never a live pin refresher')
+++    parser.add_argument('--seal-sha256', required=True)
+++    parser.add_argument('--reviewed-package-sha256', required=True)
+++    parser.add_argument('--run-id', required=True)
++     args = parser.parse_args()
++-    global RAW_CAP
++-    RAW_CAP = (args.raw_budget_mib << 20) - (2 << 20)
++-    require(re.fullmatch(r'v[1-9][0-9]{0,3}', args.run_id), 'finite fresh run ID')
++-    require((args.mode == 'model' and args.tiny_receipt is not None and args.tiny_sha256 is not None) or
++-            (args.mode == 'tiny' and args.tiny_receipt is None and args.tiny_sha256 is None), 'model requires explicit latest tiny PASS; tiny runs no model')
++-    require(not any(k.startswith(('UNITRACE_', 'PTI_', 'XPTI_', 'ZE_ENABLE_', 'ZEL_')) or k == 'LD_PRELOAD' for k in os.environ), 'controller cannot be preloaded/inherit collector controls')
++-    manifest_path = D / 'manifest.json'
++-    require(sha(manifest_path) == args.manifest_sha256, 'externally selected sealed manifest')
++-    manifest = json.loads(manifest_path.read_text()); manifest['_sha256'] = args.manifest_sha256
++-    for name, pin in manifest['package_files'].items():
++-        check_pin(D / name, pin)
++-    spec = importlib.util.spec_from_file_location('direct_unitrace_owner', OWNER)
++-    require(sha(OWNER) == OWNER_SHA, 'qualified Owner source')
++-    module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
++-    review = datetime.datetime.fromisoformat(args.retention_review_utc.replace('Z', '+00:00'))
+++    need(D == Path('/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-query-tiny-v1'), 'canonical source package')
+++    need(os.geteuid() != 0, 'non-root controller/native only')
+++    need(re.fullmatch('v[1-9][0-9]{0,3}', args.run_id), 'fresh finite run identity')
+++    need(not any(k.startswith(('UNITRACE_', 'PTI_', 'XPTI_', 'ZE_ENABLE_', 'ZEL_', 'ZET_')) or
+++                 k == 'LD_PRELOAD' for k in os.environ), 'unpreloaded controller without collector controls')
+++    package(args.reviewed_package_sha256)
+++    need(sha(args.seal) == args.seal_sha256, 'external Main seal')
+++    seal = json.loads(args.seal.read_text())
+++    need(seal['status'] == 'MAIN_REVIEWED_SEALED' and seal['run_id'] == args.run_id and
+++         seal['reviewed_package_sha256'] == args.reviewed_package_sha256 and
+++         seal['review_scope'] == 'DIAGNOSTIC_ONLY_API_STATUS_HOLD', 'explicit review; strict API gate cannot be waived here')
+++    for path, digest in IMPORTS.items():
+++        need(not path.is_symlink() and sha(path) == digest, 'qualified helper import source')
+++    need(sha(BASE / 'manifest.json') == BASE_MANIFEST_SHA, 'unchanged original inventory')
+++    base = imported(BASE / 'controller.py', 'query_original_guards')
+++    owner_module = imported(base.OWNER, 'query_original_owner')
+++    # The base import adds its own timeline directory. Add this package only
+++    # afterward, with all package bytes already reviewed, for these offline readers.
+++    sys.path.insert(0, str(D))
+++    from metrics import decode, finite_text
+++    from summary import parse_summary, ERROR
+++    manifest = json.loads((BASE / 'manifest.json').read_text())
+++    manifest['_sha256'] = BASE_MANIFEST_SHA
+++    extra = seal['additional_dependency_review']
+++    base.check_pin(extra['report']['path'], extra['report'])
+++    review = json.loads(Path(extra['report']['path']).read_text())
+++    need(review['approved'] is True and review['elf_pins'] == extra['elf_pins'] and
+++         review['file_pins'] == extra['file_pins'], 'separate Main review of additional dependencies')
+++    need(not set(extra['elf_pins']).intersection(manifest['elf_pins']) and
+++         not set(extra['file_pins']).intersection(manifest['file_pins']), 'additional review cannot replace original pins')
+++    pins = dict(manifest['file_pins'])
+++    for path, v in {**extra['file_pins'], **extra['elf_pins']}.items():
+++        need(path not in pins or pins[path] == v, 'no conflicting additional pins')
+++        pins[path] = v
+++    allowed = {**manifest['elf_pins'], **extra['elf_pins']}
+++    need(set(seal['catalog']) == {'receipt', 'build_receipt', 'binary', 'stdout'}, 'exact catalog artifact schema')
+++    inputs = [extra['report'], seal['health_receipt'], *seal['catalog'].values()]
+++    for v in inputs:
+++        need(v['path'] not in pins or pins[v['path']] == v, 'no conflicting receipt pins')
+++        pins[v['path']] = v
+++    need(base.boot_id() == seal['boot_id'], 'explicit sameboot selection')
+++    retention = datetime.datetime.fromisoformat(seal['retention_review_utc'].replace('Z', '+00:00'))
++     now = datetime.datetime.now(datetime.timezone.utc)
++-    require(review.tzinfo and review.utcoffset() == datetime.timedelta(0) and
++-            datetime.timedelta(0) < review - now <= datetime.timedelta(hours=48), 'finite UTC retention deadline')
++-    require(D == P / 'bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v3' and B.resolve() == B, 'canonical package/state roots')
++-    root = B / ('main-vllm-resource-timeline-' + args.mode + '-' + args.run_id)
++-    target = A / ('own-vllm-resource-timeline-' + args.mode + '-' + args.run_id + '.json')
++-    whole, native_wall = (300, 90) if args.mode == 'tiny' else (1200, 900)
+++    need(retention.tzinfo and retention.utcoffset() == datetime.timedelta(0) and
+++         datetime.timedelta(0) < retention-now <= datetime.timedelta(hours=48), 'finite UTC review point')
+++    root = B / ('main-metric-query-tiny-' + args.run_id)
++     with (B / 'owned-v0141-measurement.lock').open('a') as lock:
++         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
++-        require(not root.exists() and not root.is_symlink() and not target.exists() and not target.is_symlink(), 'fresh private root/receipt')
++-        root.mkdir(mode=0o700); (root / 'collector').mkdir(mode=0o700)
++-        started = time.monotonic(); deadline = started + whole; work_deadline = deadline - RESERVE
++-        record = dict(schema='strata-unitrace-direct-v1', mode=args.mode, run_id=args.run_id,
++-            status='RUNNING', passed=False, complete=False, active=False, GPU_executed=False,
++-            source_commit=SOURCE, source_pins=manifest['source_pins'],
++-            binary_sha256=manifest['tiny' if args.mode == 'tiny' else 'engine']['sha256'], engine_sha256=ENGINE_SHA,
++-            collector_library_sha256=LIB_SHA, collector_compatible=False, manifest_sha256=args.manifest_sha256,
++-            boot_id=boot_id(), boot_unchanged=False, driver_dump_exists=None, fresh_faults=[],
++-            commands=[], fault_windows=[], pin_checkpoints=[], owner_scans=[], started_utc=utc(),
++-            controller=artifact(__file__), controller_identity=identity(os.getpid()),
++-            python=artifact(sys.executable), invocation=list(sys.orig_argv), private_root=str(root),
++-            original_failure_status_preserved=True, ownership_closed=False,
++-            budget=dict(whole_seconds=whole, native_seconds=native_wall, closure_reserve_seconds=RESERVE,
++-                native_and_side_raw_bytes=RAW_CAP, closure_raw_bytes=2 << 20, Owner_aggregate_bytes=64 << 20, total_raw_bytes=args.raw_budget_mib << 20,
++-                private_bytes=DISK_CAP, tensors=False),
++-            retention=dict(owner='Main', consumer='Main direct collector compatibility and BF16 long-prefill review',
++-                byte_budget=args.raw_budget_mib << 20,
++-                exception_consumer='Exact whole-command/QSA-envelope copy-compute overlap, per-copy requested bytes, all interval-to-summary counts; text device timeline only, no full API trace',
++-                review_deadline_utc=review.isoformat(), cleanup_performed=False,
++-                next_review='After aggregate/oracle verification, retain compact evidence; Main handles serialized raw-log retirement'),
++-            **{k: False for k in QUALIFICATION})
++-        owner = None
++-        closing = settling = False
+++        need(not root.exists() and not root.is_symlink(), 'fresh private directory; no retry/overwrite')
+++        root.mkdir(mode=0o700)
+++        sides = root / 'collector'; sides.mkdir(mode=0o700)
+++        started = controller_started; work_end = deadline - 100
+++        record = dict(schema='strata-metric-query-tiny-v1', status='INCOMPLETE', passed=False,
+++            complete=False, active=False, collection_qualified=False, diagnostic_complete=False,
+++            qualification_hold=STRICT_HOLD, source_commit=base.SOURCE, source_pins=manifest['source_pins'],
+++            original_manifest_sha256=BASE_MANIFEST_SHA, binary=manifest['tiny'], collector=manifest['collector'],
+++            reviewed_package_sha256=args.reviewed_package_sha256, seal_sha256=args.seal_sha256,
+++            boot_id=seal['boot_id'], commands=[], fresh_faults=[], fault_windows=[],
+++            GPU_executed=False, ownership_closed=False, original_failure_status_preserved=True,
+++            budget=dict(native_seconds=90, whole_seconds=300, raw_bytes=RAW, private_bytes=PRIVATE,
+++                        decode_seconds=15, metric_rows=4096, line_bytes=65536),
+++            retention=dict(owner='Main', consumer='one original BF16 tiny MetricQuery diagnostic; strict API hold',
+++                next_review=retention.isoformat(), cleanup_performed=False),
+++            model_quality_qualified=False, performance_qualified=False, physical_262144_qualified=False)
+++        owner = None; closing = settling = False; cursor = None
++ 
++         def budget():
++-            files = [p for p in root.rglob('*') if p.is_file()]
++-            private = sum(p.stat().st_size for p in files)
++-            raw = sum(p.stat().st_size for p in files if p.is_relative_to(root / 'collector') or
++-                p.suffix in ('.stdout', '.stderr', '.log', '.jsonl', '.partial'))
++-            record.update(private_bytes=private, raw_text_bytes=raw)
++-            require(private <= DISK_CAP and raw <= ((args.raw_budget_mib << 20) if closing else RAW_CAP), 'whole private/log/collector-side budget')
+++            files = list(root.rglob('*'))
+++            need(len(files) <= 4096 and all(not p.is_symlink() for p in files), 'bounded private regular artifacts')
+++            private = sum(p.stat().st_size for p in files if p.is_file())
+++            raw = sum(p.stat().st_size for p in files if p.is_file() and
+++                      (p.is_relative_to(sides) or p.suffix in ('.stdout', '.stderr')))
+++            record.update(private_bytes=private, raw_bytes=raw)
+++            need(private <= PRIVATE and raw <= (RAW if closing else WORK_RAW), 'live total/side/partial raw budget')
++ 
++         def persist():
++-            record['active'] = owner is not None and owner.active is not None
+++            record['active'] = bool(owner and owner.active is not None)
++             problem = None
++-            if owner:
++-                try:
++-                    budget()  # Every Owner scan, not only stdout/stderr; includes ALL collector sides.
++-                except BaseException as error:
++-                    record['budget_error'] = repr(error)
++-                    record['passed'] = record['complete'] = record['collector_compatible'] = False
++-                    problem = error
+++            try:
+++                budget()
+++            except BaseException as error:
+++                record['budget_error'] = repr(error); problem = error
+++                record['diagnostic_complete'] = False
++             (root / 'record.json').write_text(json.dumps(record, indent=2, allow_nan=False) + '\n')
++             if problem and record['active'] and not settling:
++-                raise problem  # Owner catches, pins and closes its own session.
++-
++-        owner = module.Owner(root / 'owned', persist); record['commands'] = owner.commands
++-        persist()
++-        cursor = None
+++                raise problem
+++
+++        owner = owner_module.Owner(root / 'owned', persist); record['commands'] = owner.commands
++ 
++         def remaining(cap):
++-            end = deadline if closing else work_deadline
++-            require(time.monotonic() < end, 'controller parent deadline')
++-            return min(cap, end - time.monotonic())
+++            end = deadline if closing else work_end
+++            need(time.monotonic() < end, 'finite controller/closure deadline')
+++            return min(cap, end-time.monotonic())
+++
+++        def frozen():
+++            remaining(1)
+++            need(base.boot_id() == record['boot_id'] and sha(args.seal) == args.seal_sha256, 'sameboot/frozen seal')
+++            package(args.reviewed_package_sha256)
+++            need(sha(BASE / 'manifest.json') == BASE_MANIFEST_SHA and sha(ENUM_RECEIPT) == ENUM_SHA, 'original inventory/enumeration receipt unchanged')
+++            for path, digest in IMPORTS.items():
+++                need(sha(path) == digest, 'pinned imports unchanged')
+++            for path, v in pins.items():
+++                base.check_pin(path, v); remaining(1)
+++            for path, v in manifest['elf_pins'].items():
+++                base.check_pin(path, v); remaining(1)
+++            for path, digest in manifest['source_pins'].items():
+++                need(sha(P / path) == digest, 'original product source freeze'); remaining(1)
+++
+++        def driver():
+++            need(base.boot_id() == record['boot_id'] and (base.DEVICE / 'driver').resolve().name == 'xe', 'sameboot xe')
+++            pci = {n: (base.DEVICE / n).read_text().strip() for n in ('vendor', 'device', 'revision', 'subsystem_vendor', 'subsystem_device')}
+++            need(pci['vendor'] == '0x8086' and pci['device'] == '0xe20c', 'exact B570 PCI05:00.0 target')
+++            dump = (base.DEVICE / 'devcoredump').exists() or bool(list(Path('/sys/class/devcoredump').glob('devcd*')))
+++            need(not dump, 'driver dump exists; no reset/deletion')
+++            record.update(driver_dump_exists=dump, boot_unchanged=True)
+++            previous = record.setdefault('driver_snapshots', [])
+++            snap = dict(kernel=os.uname().release, pci=pci)
+++            need(not previous or previous[0] == snap, 'stable driver/PCI identity')
+++            previous.append(snap)
++ 
++         def utility(label, argv):
++-            c, out, err = owner.run(label, argv, HOST_ENV, P, wall=remaining(12), cpu=60,
++-                rss_cap=2 << 30, text_cap=2 << 20, total_cap=DISK_CAP, file_cap=2 << 20)
++-            require(module.closed(c) and c.get('exit_code') == 0, 'normal utility closure: ' + label)
++-            absence([c]); budget()
+++            c, out, _ = owner.run(label, argv, base.HOST_ENV, P, wall=remaining(12), cpu=30,
+++                rss_cap=2 << 30, text_cap=1 << 19, file_cap=1 << 19, total_cap=PRIVATE)
+++            need(owner_module.closed(c) and c['exit_code'] == 0, 'normal owned utility closure')
+++            base.absence([c]); budget()
++             return out.read_text()
++ 
++-        def frozen(label):
++-            remaining(1)
++-            require(boot_id() == record['boot_id'] and sha(manifest_path) == args.manifest_sha256, 'frozen boot/manifest')
++-            for name, pin in manifest['package_files'].items():
++-                check_pin(D / name, pin)
++-            for path, pin in manifest['file_pins'].items():
++-                check_pin(path, pin)
++-            for name, digest in manifest['source_pins'].items():
++-                require(sha(P / name) == digest, 'qualified source freeze: ' + name)
++-            for path, pin in manifest['model_stat_pins'].items():
++-                st = safe_path(path).stat()
++-                require(st.st_size == pin['bytes'] and st.st_mtime_ns == pin['mtime_ns'], 'model stat identity (not full shard SHA)')
++-            record['pin_checkpoints'].append(dict(label=label, checked_utc=utc(), source_files=len(manifest['source_pins']),
++-                build_receipt_sha256=BUILD_SHA, products=len(manifest['products']), file_pins=len(manifest['file_pins'])))
++-            remaining(1)
++-
++-        def driver(label):
++-            require(boot_id() == record['boot_id'] and (DEVICE / 'driver').resolve().name == 'xe' and
++-                    (DEVICE / 'vendor').read_text().strip() == '0x8086', 'sameboot Intel xe device')
++-            dumps = list(Path('/sys/class/devcoredump').glob('devcd*'))
++-            record['driver_dump_exists'] = (DEVICE / 'devcoredump').exists() or bool(dumps)
++-            record['boot_unchanged'] = True
++-            snap = dict(label=label, kernel=os.uname().release, driver='xe',
++-                pci={n: (DEVICE / n).read_text().strip() for n in ('vendor','device','revision','subsystem_vendor','subsystem_device')},
++-                dumps=list(map(str, dumps)))
++-            previous = record.setdefault('driver_snapshots', [])
++-            if previous:
++-                require(snap['pci'] == previous[0]['pci'] and snap['kernel'] == previous[0]['kernel'], 'driver identity unchanged')
++-            previous.append(snap)
++-            require(not record['driver_dump_exists'], 'driver dump present; no reset/deletion')
++-
++         try:
++-            frozen('preflight')
++-            for component in manifest['component_receipts']:
++-                check_pin(component['path'], component)
++-                gate = json.loads(Path(component['path']).read_text())
++-                require(gate['passed'] and gate['complete'] and not gate['active'] and gate['ownership_closed'] and
++-                        gate['boot_id'] == record['boot_id'] and gate['source_pins'] == manifest['source_pins'] and
++-                        gate['source_commit'] == SOURCE and gate['fresh_faults'] == [] and gate['driver_dump_exists'] is False and
++-                        gate['products'] == manifest['products'] and all(module.closed(c) and c['exit_code'] == 0 for c in gate['commands']),
++-                        'exact sameboot current components and tiny/smoke oracle prerequisite')
++-                absence(gate['commands'])
++-            record['health_selection'] = health_gate(args.health_receipt, args.health_sha256, module, record['boot_id'], manifest)
++-            if args.mode == 'model':
++-                record['tiny_selection'] = health_gate(args.tiny_receipt, args.tiny_sha256, module, record['boot_id'], manifest, tiny=True)
++-            record['owner_scans'].append(owner_scan(manifest['model_stat_pins']))
++-            driver('before')
++-            profile = manifest['profile']
++-            base_env = dict(profile['environment'])
++-            for name in ('STRATA_MEASUREMENT_ENGINE_START', 'STRATA_MEASUREMENT_ENGINE_EXIT'):
++-                base_env.pop(name, None)
++-            base_env.update(XDG_CACHE_HOME=str(root / 'cache'), **WARNINGS)
++-            native_env = dict(base_env, **COLLECTOR, LD_PRELOAD=str(LIB), UNITRACE_LogFilename=str(root / 'collector/timing.log'))
++-            require(not any(k.startswith(('PTI_', 'XPTI_', 'ZEL_', 'IGC_')) for k in native_env) and
++-                    native_env['UR_ENABLE_LAYERS'] == 'UR_LAYER_PARAMETER_VALIDATION', 'no conditional control/XPTI/full API trace environment')
++-            require(set(k for k in native_env if k.startswith('UNITRACE_')) == set(k for k in COLLECTOR if k.startswith('UNITRACE_')) | {'UNITRACE_LogFilename'}, 'only exact timing/text-timeline native controls; no verbose/metrics/Chrome/tiles/filter/API logs')
++-            if args.mode == 'tiny':
++-                native_env['STRATA_SYCL_PREFILL_NATIVE16_BACKEND'] = 'own'
++-            record['native_environment'] = native_env
++-            record['host_environment'] = base_env
++-            match = re.search(r'-- cursor: (\S+)', utility('journal-before', ['journalctl','-k','-b','-n','0','--show-cursor','--no-pager']))
++-            require(match is not None, 'fresh kernel journal cursor')
++-            cursor = match[1]
++-            record['fault_windows'].append(dict(command='native-smoke' if args.mode == 'tiny' else 'official-bench', before_cursor=cursor, boot_id=record['boot_id']))
++-            if args.mode == 'tiny':
++-                exe = manifest['tiny']
++-                proof = {}
++-
++-                def smoke_io(io, entry):
++-                    record['GPU_executed'] = True
++-                    io.proc.stdin.close()
++-                    with selectors.DefaultSelector() as ready:
++-                        ready.register(io.proc.stdout, selectors.EVENT_READ)
++-                        while not io.exit_watch.poll(0) or not io.eof:
++-                            io.poll(); remaining(1)
++-                            if not proof and not io.exit_watch.poll(0):
++-                                snap = native_snapshot(io.proc.pid, exe, native_env, manifest['elf_pins'], io.proc.pid)
+++            frozen(); driver()
+++            for v in manifest['component_receipts']:
+++                base.check_pin(v['path'], v)
+++                r = json.loads(Path(v['path']).read_text())
+++                need(r['passed'] and r['complete'] and not r['active'] and r['ownership_closed'] and
+++                     r['boot_id'] == record['boot_id'] and r['source_pins'] == manifest['source_pins'] and
+++                     r['source_commit'] == base.SOURCE and r['products'] == manifest['products'] and
+++                     not r['fresh_faults'] and r['driver_dump_exists'] is False and
+++                     all(owner_module.closed(c) and c['exit_code'] == 0 for c in r['commands']), 'original sameboot component gates')
+++                base.absence(r['commands'])
+++            h = seal['health_receipt']
+++            record['health_selection'] = base.health_gate(h['path'], h['sha256'], owner_module, record['boot_id'], manifest)
+++            record['owner_scan_before'] = base.owner_scan({})
+++            cat = seal['catalog']; r = json.loads(Path(cat['receipt']['path']).read_text())
+++            need(r['passed'] and r['complete'] and not r['active'] and r['ownership_closed'] and
+++                 r['boot_id'] == record['boot_id'] and r['mode'] == 'enumerate' and
+++                 r['enumeration_summary']['status'] == 'ENUMERATION_PASS' and
+++                 r['fault_window']['complete'] and not r['fault_window']['fresh_faults'] and
+++                 all(owner_module.closed(c) and c['exit_code'] == 0 for c in r['commands']), 'closed actual full-catalog enumeration')
+++            base.absence(r['commands'])
+++            build = json.loads(Path(cat['build_receipt']['path']).read_text())
+++            need(build['passed'] and build['complete'] and not build['active'] and build['ownership_closed'] and
+++                 build['mode'] == 'build' and build['binary_candidate'] == cat['binary'] and
+++                 build['boot_id'] == record['boot_id'] and
+++                 build['reviewed_package_sha256'] == args.reviewed_package_sha256 and
+++                 all(owner_module.closed(c) and c['exit_code'] == 0 for c in build['commands']), 'reviewed separately closed full-catalog build')
+++            builds = [c for c in build['commands'] if c['label'] == 'host-build']
+++            need(len(builds) == 1 and str(D / 'enumerate_full.cpp') in builds[0]['argv'], 'full-catalog source path in reviewed build recipe')
+++            base.absence(build['commands'])
+++            native = [c for c in r['commands'] if c['label'] == 'native-enumeration']
+++            need(len(native) == 1 and native[0]['argv'] == [cat['binary']['path'], '--main-owned-hold'] and
+++                 r['native_snapshot']['identity']['pid'] == native[0]['pid'] and
+++                 r['native_snapshot']['identity']['start_ticks'] == native[0]['direct_identity']['start_ticks'] and
+++                 r['native_snapshot']['environment']['ZET_ENABLE_METRICS'] == '1' and
+++                 r['native_snapshot']['environment']['ZE_FLAT_DEVICE_HIERARCHY'] == 'FLAT', 'actual full-catalog binary/env/PID binding')
+++            need(any(v['pin'] == cat['binary'] for v in r['native_snapshot']['mappings']), 'actual full-catalog executable mapping pin')
+++            logpin = native[0]['logs']['native-enumeration.stdout']
+++            need(logpin['sha256'] == cat['stdout']['sha256'] and logpin['bytes'] == cat['stdout']['bytes'], 'actual enumeration stdout hash/size')
+++            rows = [json.loads(l) for l in finite_text(cat['stdout']['path'], time.monotonic()+10, 4 << 20).splitlines()]
+++            need(len(rows) <= 40000 and all(v['code'] == 0 for v in rows if v.get('kind') == 'result'), 'all enumeration API results preserved/successful')
+++            groups = [v for v in rows if v.get('kind') == 'group' and v['name'] == 'ComputeBasic' and v['query_event_based']]
+++            need(len(groups) == 1 and groups[0]['target'] and groups[0]['metric_count'] == 83 and
+++                 groups[0]['sampling_flags'] == 1, 'unambiguous ComputeBasic EVENT_BASED group')
+++            g = groups[0]
+++            catalog = [v for v in rows if v.get('kind') == 'metric' and
+++                       (v['driver'], v['root'], v['group']) == (g['driver'], g['root'], g['group'])]
+++            need(len(catalog) == 83 and [m['metric'] for m in catalog] == list(range(83)), 'full ordered schema; sampled v1 is insufficient')
+++            record['catalog_selection'] = dict(receipt=cat['receipt'], group=g, metrics=catalog)
+++            env = dict(manifest['profile']['environment'])
+++            for k in ('STRATA_MEASUREMENT_ENGINE_START', 'STRATA_MEASUREMENT_ENGINE_EXIT'):
+++                env.pop(k, None)
+++            need(not any(k.startswith(('UNITRACE_', 'PTI_', 'XPTI_', 'ZEL_', 'IGC_', 'ZE_ENABLE_', 'ZET_')) or k == 'LD_PRELOAD' for k in env), 'no inherited trace/filter/programmatic controls')
+++            env.update(base.WARNINGS, **CONTROLS, LD_PRELOAD=str(base.LIB),
+++                UNITRACE_LogFilename=str(sides / 'query.csv'), XDG_CACHE_HOME=str(root / 'cache'),
+++                STRATA_SYCL_PREFILL_NATIVE16_BACKEND='own')
+++            record['native_environment'] = env
+++            start = utility('journal-before', ['/usr/bin/journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'])
+++            match = re.search(r'-- cursor: (\S+)', start); need(match, 'initial journal boundary'); cursor = match[1]
+++            record['fault_windows'].append(dict(before_cursor=cursor, boot_id=record['boot_id'], complete=False))
+++            proofs = []
+++
+++            def smoke_io(io, entry):
+++                record['GPU_executed'] = True; io.proc.stdin.close()
+++                next_map_check = 0
+++                with selectors.DefaultSelector() as ready:
+++                    ready.register(io.proc.stdout, selectors.EVENT_READ)
+++                    while not io.exit_watch.poll(0) or not io.eof:
+++                        io.poll(); remaining(1)
+++                        if not io.exit_watch.poll(0) and time.monotonic() >= next_map_check:
+++                            raw_maps = Path('/proc', str(io.proc.pid), 'maps').read_text()
+++                            signature = '\n'.join(l for l in raw_maps.splitlines() if len(l.split(None, 5)) == 6 and
+++                                'x' in l.split(None, 5)[1] and l.split(None, 5)[5].startswith('/'))
+++                            digest = hashlib.sha256(signature.encode()).hexdigest()
+++                            if not proofs or proofs[-1]['executable_maps_sha256'] != digest:
+++                                snap = base.native_snapshot(io.proc.pid, manifest['tiny'], env, allowed, io.proc.pid)
++                                 if snap:
++-                                    proof.update(snap)
++-                            if ready.select(.002):
++-                                io.read(); io.pending.clear()
++-
++-                c, out, err = owner.run('native-smoke', [exe['path'], '--smoke'], native_env, root / 'collector', interaction=smoke_io,
++-                    wall=remaining(native_wall), cpu=180, rss_cap=8 << 30, text_cap=min(RAW_CAP, 64 << 20), total_cap=DISK_CAP, file_cap=RAW_CAP)
++-                require(module.closed(c) and c.get('exit_code') == 0, 'normal tiny owned native closure')
++-                absence([c]); record['actual_native'] = proof
++-                require(proof and proof['native']['pid'] == c['pid'] and proof['native']['start_ticks'] == c['direct_identity']['start_ticks'], 'actual tiny PID/start/library capture')
++-                stdout, stderr = out.read_text(), err.read_text()
++-                record['oracle_stdout'] = stdout
++-                rows = [l for l in stdout.splitlines() if l.startswith('case dtype=bf16 ')]
++-                require(len(rows) == 2 and all('oracle=FP64_full ' in l and
++-                    'finite=PASS guards=PASS inputs=PASS qualification=COMPONENT_ONLY_UNQUALIFIED' in l for l in rows) and
++-                    stdout.count('fixture=PASS model_quality=UNRUN whole_prefill=UNRUN physical262144=UNRUN faults=EXTERNAL_REQUIRED') == 1 and
++-                    not ERROR.search(stderr), 'unchanged tiny FP64 oracle/finite/guards/input checks')
++-                record['collection'] = parse_collection(root / 'collector', c['pid'])
++-                record['wrapper_wall_seconds'] = c['elapsed_seconds']
++-            else:
++-                require(profile['config']['host'] == '127.0.0.1' and profile['config']['parallel'] == 1, 'loopback/single request config')
++-                args_native = list(profile['config']['args'])
++-                external = Path(args_native[args_native.index('--expert-profile') + 1])
++-                local = root / 'expert-profile.bin'; shutil.copyfile(external, local)
++-                record['expert_profile'] = dict(external=artifact(external), local_initial=artifact(local))
++-                args_native[args_native.index('--expert-profile') + 1] = str(local)
++-                wrapper_spec = dict(engine=manifest['engine'], native_environment=native_env, elf_pins=manifest['elf_pins'],
++-                    timeline_helper=manifest['package_files']['timeline.py'],
++-                    native_cwd=str(root / 'collector'), start_path=str(root / 'engine-start.json'), exit_path=str(root / 'engine-exit.json'))
++-                spec_path = root / 'native-spec.json'; spec_path.write_text(json.dumps(wrapper_spec, indent=2) + '\n')
++-                wrapper = root / 'engine-wrapper.py'
++-                wrapper.write_text('#!' + PY + '\nimport hashlib,runpy,sys\n'
++-                    + 'p=' + repr(str(Path(__file__).resolve())) + '\n'
++-                    + 'with open(p,"rb") as f: assert hashlib.file_digest(f,"sha256").hexdigest()==' + repr(sha(__file__)) + '\n'
++-                    + 'sys.exit(runpy.run_path(p)["native_wrapper"](' + repr(str(spec_path)) + ',sys.argv[1:]))\n')
++-                wrapper.chmod(0o700)
++-                config = dict(profile['config'], exe=str(wrapper), args=args_native, env={}, log=str(root / 'owned/engine.stderr'))
++-                plan = dict(port=18489, url='http://127.0.0.1:18489', runs=1,
++-                    benchmark_options=profile['benchmark_options'], bench_timeout_seconds=720)
++-                (root / 'config.json').write_text(json.dumps(config, indent=2) + '\n')
++-                (root / 'plan.json').write_text(json.dumps(plan, indent=2) + '\n')
++-                record.update(config=config, plan=plan, wrapper=artifact(wrapper), native_spec=artifact(spec_path),
++-                    generated_inputs=[artifact(root / n) for n in ('engine-wrapper.py','native-spec.json','config.json','plan.json')])
++-                c, out, err = owner.run('official-bench', [PY, str(RUNNER), str(root), 'extended-bench'], base_env, P,
++-                    wall=remaining(native_wall), cpu=21600, rss_cap=88 << 30, text_cap=min(RAW_CAP, 64 << 20), total_cap=DISK_CAP, file_cap=RAW_CAP)
++-                record['GPU_executed'] = (root / 'engine-start.json').exists()
++-                require(module.closed(c) and c.get('exit_code') == 0, 'normal official bench owned session')
++-                absence([c])
++-                result = json.loads((root / 'result.json').read_text()); record['result'] = result
++-                for pin in record['generated_inputs']:
++-                    check_pin(pin['path'], pin)
++-                record['model_evidence'] = validate_model(root, result)
++-                entry = result['real_engine_exit']
++-                require(entry['experiment_environment'] == native_env and entry['native']['sid'] == c['pid'] and
++-                        entry['native']['ppid'] == entry['wrapper']['pid'], 'actual model native immutable environment/session')
++-                record['actual_native'] = entry['collector_snapshot']
++-                require(record['actual_native']['native']['start_ticks'] == entry['native']['start_ticks'] and
++-                        record['actual_native']['native']['pid'] == entry['native']['pid'], 'actual model collector mapping bound to exec')
++-                record['collection'] = parse_collection(root / 'collector', entry['native']['pid'], record['model_evidence']['suite'])
++-                verify = utility('verify-request-journal', ['/usr/bin/python3','-B','-c',
++-                    'import sys,json;sys.path.insert(0,"tools");from strata_bench import verify_request_journal;print(json.dumps(verify_request_journal(sys.argv[1])))',
++-                    str(Path(record['model_evidence']['suite_file']['path']).parent)])
++-                record['request_journal_verification'] = json.loads(verify)
++-                require(record['request_journal_verification']['valid'] and record['request_journal_verification']['complete'] and
++-                        not record['request_journal_verification']['pending'], 'official request identity journal')
++-                require(sha(external) == record['expert_profile']['external']['sha256'], 'external profile untouched')
++-                record['wrapper_wall_seconds'] = c['elapsed_seconds']
++-            budget()
++-            frozen('post-native')
++-            record['candidate_collection_complete'] = True
+++                                    need(len(proofs) < 64, 'bounded actual loaded-map changes'); proofs.append(snap)
+++                                    record['mapping_snapshots'] = proofs
+++                            next_map_check = time.monotonic()+.05
+++                        if ready.select(.002):
+++                            io.read(); io.pending.clear()
+++
+++            c, out, err = owner.run('native-smoke', [manifest['tiny']['path'], '--smoke'], env, sides,
+++                interaction=smoke_io, wall=remaining(90), cpu=90, rss_cap=8 << 30,
+++                text_cap=WORK_RAW, total_cap=PRIVATE, file_cap=WORK_RAW)
+++            record['native_exit_code'] = c['exit_code']; base.absence([c])
+++            need(owner_module.closed(c) and c['exit_code'] == 0, 'normal original tiny native closure')
+++            need(proofs and all(p['native']['pid'] == c['pid'] and
+++                 p['native']['start_ticks'] == c['direct_identity']['start_ticks'] and
+++                 p['argv'] == [manifest['tiny']['path'], '--smoke'] for p in proofs), 'actual original argv/PID/start/maps/env')
+++            stdout, stderr = out.read_text(), err.read_text()
+++            record['oracle_stdout'] = stdout
+++            cases = [l for l in stdout.splitlines() if l.startswith('case dtype=bf16 ')]
+++            need(len(cases) == 2 and all('oracle=FP64_full ' in l and
+++                 'finite=PASS guards=PASS inputs=PASS qualification=COMPONENT_ONLY_UNQUALIFIED' in l for l in cases) and
+++                 stdout.count('fixture=PASS model_quality=UNRUN whole_prefill=UNRUN physical262144=UNRUN faults=EXTERNAL_REQUIRED') == 1 and
+++                 not ERROR.search(stderr), 'unchanged two full FP64 oracle/finite/guards/input/tolerance gates')
+++            fields = [dict(v.split('=', 1) for v in line.split() if '=' in v) for line in cases]
+++            need([(v['nq'], v['shape'], v['page'], v['masked'], v['width'], v['profile']) for v in fields] ==
+++                 [('1', '1,24,256', '4', '0', '33', 'regular'), ('3', '3,24,256', '4', '1', '33', 'regular')] and
+++                 all(math.isfinite(float(v['max_budget_ratio'])) and 0 <= float(v['max_budget_ratio']) <= 1 for v in fields),
+++                 'original case identities and predetermined numerical budget')
+++            summary_path = sides / ('query.' + str(c['pid']) + '.csv')
+++            metrics_path = sides / ('query.metrics.' + str(c['pid']) + '.csv')
+++            need(sorted(p for p in sides.rglob('*') if p.is_file()) == sorted([summary_path, metrics_path]), 'exact original native PID-named files; unknown/partial sides fail')
+++            decode_end = min(work_end, time.monotonic()+15)
+++            summary = parse_summary(summary_path, decode_end)
+++            record['summary'] = summary
+++            record['query'] = decode(metrics_path, catalog, summary['expected_compute_calls'], decode_end)
+++            frozen(); budget()
+++            record['candidate_diagnostic_complete'] = True
++         except BaseException as error:
++             record['error'] = repr(error)
++         finally:
++             closing = True
++             try:
++-                if owner.active is None and cursor:
++-                    boundary = utility('journal-end-cursor', ['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'])
++-                    cursor_match = re.search(r'-- cursor: (\S+)', boundary)
++-                    require(cursor_match is not None, 'final kernel journal cursor')
++-                    # End boundary is obtained BEFORE the after-cursor query:
++-                    # the query covers that boundary and any later rows it sees.
++-                    # JSON mode has no artificial "no entries" row to parse.
++-                    text = utility('journal-after', ['journalctl','-k','-b','--after-cursor',cursor,'--no-pager','-o','json'])
++-                    rows = [json.loads(l) for l in text.splitlines() if l.strip()]
++-                    require(all(v.get('_BOOT_ID') == record['boot_id'].replace('-', '') for v in rows), 'journal sameboot identity')
++-                    fresh = [v for v in rows if FAULT.search(str(v.get('MESSAGE', '')))]
++-                    record['fresh_faults'] = fresh
++-                    record['fault_windows'][-1].update(after_cursor=cursor_match[1],
++-                        last_returned_cursor=rows[-1].get('__CURSOR') if rows else None, checked_utc=utc(),
++-                        fresh_faults=fresh, fault_filter=FAULT.pattern, row_count=len(rows), complete=True)
++-                    require(not fresh, 'fresh GPU faults')
++-                require(cursor and record['fault_windows'][-1].get('complete'), 'per-command fault window complete')
++-                driver('after')
++-                frozen('closure')
++-                record['final_PID_start_absence'] = absence(owner.commands)
++-                if (root / 'engine-start.json').exists():
++-                    entry = json.loads((root / 'engine-start.json').read_text())
++-                    record['wrapper_native_PID_start_absence'] = absence([dict(
++-                        direct_identity=entry['wrapper'], owners=[entry['wrapper'], entry['native']])])
++-                record['owner_scans'].append(owner_scan(manifest['model_stat_pins']))
++-                for selection in ('health_selection', 'tiny_selection'):
++-                    if selection in record:
++-                        pin = record[selection]['receipt']; check_pin(pin['path'], pin)
+++                need(owner.active is None and cursor, 'closed ownership and initial journal cursor required')
+++                end = utility('journal-end', ['/usr/bin/journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'])
+++                match = re.search(r'-- cursor: (\S+)', end); need(match, 'final journal boundary')
+++                raw = utility('journal-after', ['/usr/bin/journalctl', '-k', '-b', '--after-cursor', cursor, '--no-pager', '-o', 'json'])
+++                journal = [json.loads(l) for l in raw.splitlines() if l.strip()]
+++                need(all(v.get('_BOOT_ID') == record['boot_id'].replace('-', '') for v in journal), 'sameboot journal records')
+++                faults = [v for v in journal if base.FAULT.search(str(v.get('MESSAGE', '')))]
+++                record['fresh_faults'] = faults
+++                record['fault_windows'][-1].update(after_cursor=match[1], row_count=len(journal),
+++                    last_returned_cursor=journal[-1].get('__CURSOR') if journal else None,
+++                    fault_filter=base.FAULT.pattern, fresh_faults=faults, complete=True)
+++                need(not faults, 'fresh GPU faults'); driver(); frozen()
+++                record['final_PID_start_absence'] = base.absence(owner.commands)
+++                record['owner_scan_after'] = base.owner_scan({})
+++                record['ownership_closed'] = owner.active is None and all(owner_module.closed(c) for c in owner.commands)
+++                need(record['ownership_closed'] and all(c['exit_code'] == 0 for c in owner.commands), 'normal commands/reap/session-empty closure')
++                 budget(); remaining(1)
++-                record['ownership_closed'] = owner.active is None and all(module.closed(c) and c.get('exit_code') == 0 for c in owner.commands)
++-                require(record['ownership_closed'], 'every command normally reaped/session empty')
++-                record['passed'] = bool(record.get('candidate_collection_complete') and not record.get('error') and not record.get('budget_error'))
++-                record['complete'] = record['passed']
++-                record['collector_compatible'] = record['passed']
+++                record['diagnostic_complete'] = bool(record.get('candidate_diagnostic_complete') and
+++                    not record.get('error') and not record.get('budget_error'))
++             except BaseException as error:
++-                record['closure_error'] = repr(error)
++-                record['passed'] = record['complete'] = record['collector_compatible'] = False
++-            record['active'] = owner.active is not None
++-            # Inventory failure/partial sides too; never silently erase or count
++-            # an unexpected side as successful collection. No cleanup here.
++-            record['collector_sides'] = [(artifact(p) if owner.active is None else
++-                dict(path=str(p), bytes=p.stat().st_size, status='ACTIVE_UNSEALED'))
++-                for p in sorted((root / 'collector').rglob('*')) if p.is_file()]
++-            record['status'] = 'PASS' if record['passed'] else 'FAIL'
++-            record.update(finished_utc=utc(), elapsed_seconds=time.monotonic() - started)
++-            # Failure remains a failure even when a valid partial table survived.
++-            settling = True
++-            persist()
++-            record['status'] = 'PASS' if record['passed'] else 'FAIL'
++-            with target.open('x') as stream:
++-                json.dump(record, stream, indent=2, allow_nan=False); stream.write('\n')
++-        print(json.dumps(dict(status=record['status'], receipt=str(target), sha256=sha(target),
++-            clean_speed=False, adoption=False)), flush=True)
++-        return 0 if record['passed'] else 1
+++                record['closure_error'] = repr(error); record['diagnostic_complete'] = False
+++            # No pass branch exists while pinned PTI can suppress an API error.
+++            record['status'] = 'HOLD_API_STATUS' if record['diagnostic_complete'] else 'INCOMPLETE'
+++            record['finished_utc'] = base.utc(); record['elapsed_seconds'] = time.monotonic()-started
+++            record['collector_sides'] = []
+++            if owner.active is None:
+++                files = sorted(p for p in sides.rglob('*') if p.is_file() or p.is_symlink())
+++                can_hash = (time.monotonic() < deadline-2 and len(files) <= 4096 and
+++                    all(not p.is_symlink() for p in files) and
+++                    sum(p.stat().st_size for p in files) <= RAW)
+++                record['collector_sides'] = ([base.artifact(p) for p in files] if can_hash else
+++                    [dict(path=str(p), bytes=p.lstat().st_size,
+++                          hash_status='DEFERRED_MAIN_REVIEW_BUDGET_OR_UNSAFE_FILE') for p in files[:4096]])
+++                if not can_hash:
+++                    record.update(status='INCOMPLETE', diagnostic_complete=False, side_inventory_incomplete=True)
+++            settling = True; persist()
+++        print(json.dumps(dict(status=record['status'], receipt=str(root / 'record.json'),
+++            sha256=sha(root / 'record.json'), collection_qualified=False)), flush=True)
+++        return 2  # Diagnostic-only HOLD/INCOMPLETE; cannot unlock a model metric pass.
++ 
++ 
++ if __name__ == '__main__':
+--- /dev/null
++++ bench/results/2026-10-15-pr6-recovery-audit/own-metric-query-tiny-v1/enumerate_full.cpp
+@@ -0,0 +1,215 @@
++// Independently authored for Strata; repository LICENSE applies.
++// Source delivery only. Main must review and qualify every execution separately.
++#include "ze_api.h"
++#include "zet_api.h"
++#include <algorithm>
++#include <cstdint>
++#include <cstdlib>
++#include <cstring>
++#include <dlfcn.h>
++#include <iomanip>
++#include <iostream>
++#include <poll.h>
++#include <stdexcept>
++#include <string>
++#include <unistd.h>
++#include <vector>
++
++namespace {
++// Encode bytes as JSON ASCII escapes; a provider string cannot inject a row.
++std::string quoted(const char* p, size_t cap) {
++    std::string s = "\"";
++    constexpr char hex[] = "0123456789abcdef";
++    for (size_t i = 0; i < cap && p[i]; ++i) {
++        const auto c = static_cast<unsigned char>(p[i]);
++        if (c == '"' || c == '\\') { s += '\\'; s += static_cast<char>(c); }
++        else if (c < 32 || c >= 127) {
++            s += "\\u00"; s += hex[c >> 4]; s += hex[c & 15];
++        } else s += static_cast<char>(c);
++    }
++    return s + '"';
++}
++template<size_t N> std::string q(const char (&p)[N]) { return quoted(p, N); }
++const char* result_name(ze_result_t r) {
++    switch (r) {
++#define RESULT(name) case name: return #name;
++#include "../own-metric-enumeration-v1/result_names.inc"
++#undef RESULT
++    default: return "ZE_RESULT_UNRECOGNIZED";
++    }
++}
++const char* metric_type(zet_metric_type_t t) {
++    switch (t) {
++#define TYPE(n) case ZET_METRIC_TYPE_##n: return "ZET_METRIC_TYPE_" #n;
++    TYPE(DURATION) TYPE(EVENT) TYPE(EVENT_WITH_RANGE) TYPE(THROUGHPUT)
++    TYPE(TIMESTAMP) TYPE(FLAG) TYPE(RATIO) TYPE(RAW) TYPE(IP)
++    TYPE(EVENT_EXP_TIMESTAMP) TYPE(EVENT_EXP_START) TYPE(EVENT_EXP_END)
++    TYPE(EVENT_EXP_MONOTONIC_WRAPS_VALUE) TYPE(EXP_EXPORT_DMA_BUF)
++#undef TYPE
++    default: return "ZET_METRIC_TYPE_UNRECOGNIZED";
++    }
++}
++const char* value_type(zet_value_type_t t) {
++    switch (t) {
++#define TYPE(n) case ZET_VALUE_TYPE_##n: return "ZET_VALUE_TYPE_" #n;
++    TYPE(UINT32) TYPE(UINT64) TYPE(FLOAT32) TYPE(FLOAT64) TYPE(BOOL8)
++    TYPE(STRING) TYPE(UINT8) TYPE(UINT16)
++#undef TYPE
++    default: return "ZET_VALUE_TYPE_UNRECOGNIZED";
++    }
++}
++struct Stop { const char* status; };
++void bounded(bool yes) { if (!yes) throw Stop{"INCOMPLETE"}; }
++// Log entry before calling the provider and result immediately afterward.
++template<class F> void api(const char* name, F fn) {
++    std::cout << "{\"kind\":\"entry\",\"api\":" << quoted(name, 128) << "}\n" << std::flush;
++    const ze_result_t r = fn();
++    std::cout << "{\"kind\":\"result\",\"api\":" << quoted(name, 128)
++              << ",\"code\":" << static_cast<uint32_t>(r) << ",\"hex\":\"0x"
++              << std::hex << static_cast<uint32_t>(r) << std::dec << "\",\"name\":\""
++              << result_name(r) << "\"}\n" << std::flush;
++    if (r != ZE_RESULT_SUCCESS) {
++        switch (r) {
++        case ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE:
++        case ZE_RESULT_ERROR_UNSUPPORTED_FEATURE:
++        case ZE_RESULT_ERROR_UNSUPPORTED_VERSION:
++        case ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION:
++        case ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS:
++        case ZE_RESULT_ERROR_NOT_AVAILABLE:
++        case ZE_RESULT_ERROR_UNINITIALIZED: throw Stop{"UNAVAILABLE"};
++        default: throw Stop{"ERROR"};
++        }
++    }
++}
++template<class H, class F> std::vector<H> handles(const char* name, uint32_t cap, F fn) {
++    uint32_t n = 0;
++    api(name, [&] { return fn(&n, nullptr); });
++    std::cout << "{\"kind\":\"count\",\"api\":" << quoted(name, 128) << ",\"count\":" << n << "}\n";
++    bounded(n <= cap);
++    if (!n) return {};
++    std::vector<H> out(n); uint32_t written = n;
++    api(name, [&] { return fn(&written, out.data()); });
++    bounded(written == n); // No automatic retry or silent topology change.
++    for (auto h : out) bounded(h != nullptr);
++    return out;
++}
++uint32_t total_groups = 0, total_metrics = 0, selected = 0, selected_groups = 0;
++void groups(ze_device_handle_t device, bool target, uint32_t driver, uint32_t root) {
++    const auto gs = handles<zet_metric_group_handle_t>("zetMetricGroupGet", 256,
++        [&](uint32_t* n, zet_metric_group_handle_t* p) { return zetMetricGroupGet(device, n, p); });
++    bounded(gs.size() + total_groups <= 1024);
++    for (size_t g = 0; g < gs.size(); ++g) {
++        ++total_groups;
++        zet_metric_group_properties_t gp{}; gp.stype = ZET_STRUCTURE_TYPE_METRIC_GROUP_PROPERTIES;
++        api("zetMetricGroupGetProperties", [&] { return zetMetricGroupGetProperties(gs[g], &gp); });
++        std::cout << "{\"kind\":\"group\",\"driver\":" << driver << ",\"root\":" << root
++                  << ",\"group\":" << g << ",\"target\":" << (target ? "true" : "false")
++                  << ",\"name\":" << q(gp.name) << ",\"description\":" << q(gp.description)
++                  << ",\"domain\":" << gp.domain << ",\"metric_count\":" << gp.metricCount
++                  << ",\"sampling_flags\":" << gp.samplingType
++                  << ",\"query_event_based\":" << bool(gp.samplingType & ZET_METRIC_GROUP_SAMPLING_TYPE_FLAG_EVENT_BASED)
++                  << ",\"time_based\":" << bool(gp.samplingType & ZET_METRIC_GROUP_SAMPLING_TYPE_FLAG_TIME_BASED)
++                  << ",\"tracer_based\":" << bool(gp.samplingType & ZET_METRIC_GROUP_SAMPLING_TYPE_FLAG_EXP_TRACER_BASED)
++                  << ",\"unknown_sampling_bits\":" << (gp.samplingType & ~uint32_t(7)) << "}\n";
++        uint32_t count = 0;
++        api("zetMetricGet", [&] { return zetMetricGet(gs[g], &count, nullptr); });
++        bounded(count == gp.metricCount);
++        const uint32_t requested = count; // Full schema, still bounded by total 4096 below.
++        std::cout << "{\"kind\":\"metric_scope\",\"available\":" << count << ",\"requested\":"
++                  << requested << ",\"complete_catalog\":" << "true" << "}\n";
++        if (!requested) continue;
++        bounded(requested <= 4096 - total_metrics); // Check before allocation, without unsigned addition overflow.
++        std::vector<zet_metric_handle_t> ms(requested); uint32_t got = requested;
++        api("zetMetricGet", [&] { return zetMetricGet(gs[g], &got, ms.data()); });
++        bounded(got == requested);
++        for (uint32_t m = 0; m < got; ++m) {
++            bounded(ms[m] != nullptr); ++total_metrics;
++            zet_metric_properties_t mp{}; mp.stype = ZET_STRUCTURE_TYPE_METRIC_PROPERTIES;
++            api("zetMetricGetProperties", [&] { return zetMetricGetProperties(ms[m], &mp); });
++            std::cout << "{\"kind\":\"metric\",\"driver\":" << driver << ",\"root\":" << root
++                      << ",\"group\":" << g << ",\"metric\":" << m << ",\"name\":" << q(mp.name)
++                      << ",\"description\":" << q(mp.description) << ",\"component\":" << q(mp.component)
++                      << ",\"units\":" << q(mp.resultUnits) << ",\"tier\":" << mp.tierNumber
++                      << ",\"metric_type\":" << uint32_t(mp.metricType) << ",\"metric_type_name\":\"" << metric_type(mp.metricType)
++                      << "\",\"result_type\":" << uint32_t(mp.resultType) << ",\"result_type_name\":\"" << value_type(mp.resultType) << "\"}\n";
++        }
++        if (target) ++selected_groups; // Nonempty group with sampled property calls completed.
++    }
++}
++void enumerate() {
++    const char* enabled = std::getenv("ZET_ENABLE_METRICS");
++    if (!enabled || std::strcmp(enabled, "1")) throw Stop{"ENVIRONMENT_REJECTED"};
++    const char* hierarchy = std::getenv("ZE_FLAT_DEVICE_HIERARCHY");
++    if (!hierarchy || std::strcmp(hierarchy, "FLAT")) throw Stop{"ENVIRONMENT_REJECTED"};
++    api("zeInit", [] { return zeInit(0); }); // Raw driver enumeration; no selector assumptions.
++    const auto ds = handles<ze_driver_handle_t>("zeDriverGet", 8,
++        [](uint32_t* n, ze_driver_handle_t* p) { return zeDriverGet(n, p); });
++    if (ds.empty()) throw Stop{"UNAVAILABLE"};
++    for (uint32_t d = 0; d < ds.size(); ++d) {
++        ze_driver_properties_t dp{}; dp.stype = ZE_STRUCTURE_TYPE_DRIVER_PROPERTIES;
++        api("zeDriverGetProperties", [&] { return zeDriverGetProperties(ds[d], &dp); });
++        ze_api_version_t version{};
++        api("zeDriverGetApiVersion", [&] { return zeDriverGetApiVersion(ds[d], &version); });
++        std::cout << "{\"kind\":\"driver\",\"driver\":" << d << ",\"version\":" << dp.driverVersion
++                  << ",\"api_version\":" << uint32_t(version) << ",\"uuid\":\"";
++        for (auto b : dp.uuid.id) std::cout << std::hex << std::setw(2) << std::setfill('0') << unsigned(b);
++        std::cout << std::dec << "\"}\n";
++        // Generic properties list is bounded; unlike handle arrays these are values.
++        uint32_t ec = 0;
++        api("zeDriverGetExtensionProperties", [&] { return zeDriverGetExtensionProperties(ds[d], &ec, nullptr); });
++        bounded(ec <= 512); std::vector<ze_driver_extension_properties_t> ex(ec);
++        uint32_t en = ec;
++        if (ec) api("zeDriverGetExtensionProperties", [&] { return zeDriverGetExtensionProperties(ds[d], &en, ex.data()); });
++        bounded(en == ec); bool pci_supported = false;
++        for (const auto& e : ex) {
++            if (std::strncmp(e.name, ZE_PCI_PROPERTIES_EXT_NAME, sizeof(e.name)) == 0 &&
++                e.version >= ZE_PCI_PROPERTIES_EXT_VERSION_1_0) pci_supported = true;
++        }
++        auto pci = reinterpret_cast<decltype(&zeDevicePciGetPropertiesExt)>(dlsym(RTLD_DEFAULT, "zeDevicePciGetPropertiesExt"));
++        std::cout << "{\"kind\":\"pci_interface\",\"advertised\":" << (pci_supported ? "true" : "false")
++                  << ",\"loader_symbol\":" << (pci ? "true" : "false") << "}\n";
++        const auto roots = handles<ze_device_handle_t>("zeDeviceGet", 32,
++            [&](uint32_t* n, ze_device_handle_t* p) { return zeDeviceGet(ds[d], n, p); });
++        for (uint32_t r = 0; r < roots.size(); ++r) {
++            ze_device_properties_t p{}; p.stype = ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES;
++            api("zeDeviceGetProperties", [&] { return zeDeviceGetProperties(roots[r], &p); });
++            bool target = false;
++            std::cout << "{\"kind\":\"root\",\"driver\":" << d << ",\"root\":" << r
++                      << ",\"name\":" << q(p.name) << ",\"vendor_id\":" << p.vendorId
++                      << ",\"device_id\":" << p.deviceId << ",\"type\":" << uint32_t(p.type)
++                      << ",\"flags\":" << p.flags << ",\"uuid\":\"";
++            for (auto b : p.uuid.id) std::cout << std::hex << std::setw(2) << std::setfill('0') << unsigned(b);
++            std::cout << std::dec << "\"}\n";
++            if (pci_supported && pci) {
++                ze_pci_ext_properties_t b{}; b.stype = ZE_STRUCTURE_TYPE_PCI_EXT_PROPERTIES;
++                api("zeDevicePciGetPropertiesExt", [&] { return pci(roots[r], &b); });
++                std::cout << "{\"kind\":\"pci\",\"domain\":" << b.address.domain << ",\"bus\":" << b.address.bus
++                          << ",\"device\":" << b.address.device << ",\"function\":" << b.address.function << "}\n";
++                target = p.type == ZE_DEVICE_TYPE_GPU && p.vendorId == 0x8086 && p.deviceId == 0xe20c &&
++                    !(p.flags & ZE_DEVICE_PROPERTY_FLAG_SUBDEVICE) && b.address.domain == 0 && b.address.bus == 5 &&
++                    b.address.device == 0 && b.address.function == 0;
++            }
++            if (target) ++selected;
++            groups(roots[r], target, d, r);
++        }
++    }
++    if (selected != 1 || selected_groups == 0) throw Stop{"UNAVAILABLE"};
++}
++}
++int main(int argc, char** argv) {
++    // Main must request a hold, inspect owned PID/start/env/maps, then send exactly X.
++    if (argc != 2 || std::strcmp(argv[1], "--main-owned-hold")) return 64;
++    std::cout << std::boolalpha;
++    const char* status = "ENUMERATION_PASS";
++    try { enumerate(); }
++    catch (const Stop& e) { status = e.status; }
++    catch (const std::exception&) { status = "HOST_ERROR"; }
++    std::cout << "{\"kind\":\"summary\",\"status\":\"" << status << "\",\"selected_roots\":" << selected
++              << ",\"selected_nonempty_groups\":" << selected_groups << ",\"groups\":" << total_groups
++              << ",\"sampled_metrics\":" << total_metrics << ",\"collection_qualified\":false}\n"
++              << "{\"kind\":\"main_snapshot_hold\",\"milliseconds\":15000}\n" << std::flush;
++    pollfd input{STDIN_FILENO, POLLIN, 0};
++    char ack = 0;
++    if (poll(&input, 1, 15000) != 1 || !(input.revents & POLLIN) || read(STDIN_FILENO, &ack, 1) != 1 || ack != 'X') return 65;
++    return std::strcmp(status, "ENUMERATION_PASS") == 0 ? 0 : 2;
++}
+--- /dev/null
++++ bench/results/2026-10-15-pr6-recovery-audit/own-metric-query-tiny-v1/enumeration-v1.delta.patch
+@@ -0,0 +1,35 @@
++--- immutable/07c20d23/own-metric-enumeration-v1/enumerate.cpp
+++++ proposal/own-metric-query-tiny-v1/enumerate_full.cpp
++@@ -33,7 +33,7 @@
++ const char* result_name(ze_result_t r) {
++     switch (r) {
++ #define RESULT(name) case name: return #name;
++-#include "result_names.inc"
+++#include "../own-metric-enumeration-v1/result_names.inc"
++ #undef RESULT
++     default: return "ZE_RESULT_UNRECOGNIZED";
++     }
++@@ -114,11 +114,11 @@
++         uint32_t count = 0;
++         api("zetMetricGet", [&] { return zetMetricGet(gs[g], &count, nullptr); });
++         bounded(count == gp.metricCount);
++-        const uint32_t requested = std::min(count, uint32_t(8));
+++        const uint32_t requested = count; // Full schema, still bounded by total 4096 below.
++         std::cout << "{\"kind\":\"metric_scope\",\"available\":" << count << ",\"requested\":"
++-                  << requested << ",\"complete_catalog\":" << (count <= 8 ? "true" : "false") << "}\n";
+++                  << requested << ",\"complete_catalog\":" << "true" << "}\n";
++         if (!requested) continue;
++-        bounded(total_metrics + requested <= 4096);
+++        bounded(requested <= 4096 - total_metrics); // Check before allocation, without unsigned addition overflow.
++         std::vector<zet_metric_handle_t> ms(requested); uint32_t got = requested;
++         api("zetMetricGet", [&] { return zetMetricGet(gs[g], &got, ms.data()); });
++         bounded(got == requested);
++@@ -139,6 +139,8 @@
++ void enumerate() {
++     const char* enabled = std::getenv("ZET_ENABLE_METRICS");
++     if (!enabled || std::strcmp(enabled, "1")) throw Stop{"ENVIRONMENT_REJECTED"};
+++    const char* hierarchy = std::getenv("ZE_FLAT_DEVICE_HIERARCHY");
+++    if (!hierarchy || std::strcmp(hierarchy, "FLAT")) throw Stop{"ENVIRONMENT_REJECTED"};
++     api("zeInit", [] { return zeInit(0); }); // Raw driver enumeration; no selector assumptions.
++     const auto ds = handles<ze_driver_handle_t>("zeDriverGet", 8,
++         [](uint32_t* n, ze_driver_handle_t* p) { return zeDriverGet(n, p); });
+--- /dev/null
++++ bench/results/2026-10-15-pr6-recovery-audit/own-metric-query-tiny-v1/implementation-report.md
+@@ -0,0 +1,39 @@
++# Tiny MetricQuery source decision
++
++Status: **SOURCE_ONLY_UNRUN / STRICT_QUALIFICATION_HOLD**. The finite implementation task produced an additive controller, two offline readers and a complete-catalog enumerator revision. There is no new metric, performance, permission, native, fault or GPU result in this report. Existing original receipts remain unchanged.
++
++## Exact starting evidence
++
++The source/build baseline is project revision `63326f98c36656cf3a3e1adcc54c3c25a02aa6ee`; current reviewed inventory is `own-vllm-resource-timeline-v3/manifest.json` SHA256 `61da9469e3f975c72d770beee77d45118c988eb6d3d82b6dbe1b568cd9ea3f1c`. The controller and transitive timeline module are pinned separately in the source. The native fixture is SHA256 `d564fc95854988efb24b990ba64bcd5ac092fdfb597c21b0d4a65c4c54e23bef`. All original file, product, source, ELF and component-receipt pins are inherited without live reenrollment; model state is not loaded or executed.
++
++Main's closed enumeration build receipt `B/main-metric-enum-build-v1/record.json` is SHA256 `a24e2955d61fe5a1f4aec0b8e4bf237d659e1238842d4799343bc8f167ab696e`. Its closed enumeration receipt `B/main-metric-enum-query-v1/record.json` is SHA256 `5f9f2debab68c87ddcf6346874a9edcf132b1d85cf6731144f9ccb6827ed1af5`. The relevant exact stdout is SHA256 `98c0622e126785ca9c5d81d055649b58eaf7e82cf9808a913f854956672f5da4`, 109630 bytes. Only the ComputeBasic group/property schema fields were inspected: target driver/root 0/0, event group 3/domain 3/83 metrics/flags 1 versus time group 2/domain 3/69 metrics/flags 2. The first eight event metrics are GpuTime[ns], GpuCoreClocks[cycles], AvgGpuCoreFrequencyMHz[MHz], ResultUncertainty[%], GPU_BUSY[%], IA_VERTEX[events], GPGPU_THREADGROUP_COUNT[events], ASYNC_GPGPU_THREADGROUP_COUNT[events]. Those eight do not establish the remaining 75 columns. Enumeration is not collection qualification; `observation_paranoid=1` alone proves neither availability nor unavailability.
++
++`B` here means `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007`. Every inspected input is pinned in `source-provenance.json`. Main's separate full resource timeline evidence supplied in the assignment was not reread: it supplies motivation, not metric schema or collection qualification.
++
++## Official path, controls and environment audit
++
++The implementation reference is **official Intel PTI revision `6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033`**, MIT. Local source hashes read for this task match the already reviewed immutable official source inventory wherever that inventory contains them; exact paths/hashes and gaps are recorded in provenance. No PTI implementation is copied into the new Python metric reader. The existing project summary/enumerator adaptations retain the repository LICENSE. No XeStrata source/helper/test/archive or protected credential record was opened; the LLVM installation path is only an inherited toolchain/runtime dependency.
++
++The documented [`--metric-query`/`--group` mapping](https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/tools/unitrace/src/unitrace.cc#L348) is `UNITRACE_MetricQuery=1` and `UNITRACE_MetricGroup=ComputeBasic`. `tracer.cc:148–151` enables metric query for any nonempty value, so the proposal sets exactly `1` and leaves all stream/sampling variables absent rather than assigning a misleading `0`. `CollectorOptions::DeriveFlags` requires explicit `UNITRACE_DeviceTiming=1` for kernel tracing when bypassing launcher argument processing. Host timing supplies the already understood summary and is not full API tracing. No DeviceTimeline, Chrome, sampling interval, conditional filter, session, start-paused, ITT or unitrace launcher is enabled.
++
++[`ze_collector.h:2001–2051`](https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/tools/unitrace/src/levelzero/ze_collector.h#L2001) selects a matching name **and** EVENT_BASED flag, then activates exactly one group. It will not select the same-name TIME_BASED group. Query pool type is PERFORMANCE; per-kernel append begin/end and `zetMetricQueryGetData` collect the data. Linux `DumpKernelProfiles` calls `zetMetricGroupCalculateMultipleMetricValuesExp` within the same native process; there is no parent decoder process, raw `.q` file or launcher DataDir requirement on this Linux query path. The `.q` writer and parent postprocessing are Windows-only and outside scope.
++
++[`README:570–585`](https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/tools/unitrace/README.md#L570) requires FLAT hierarchy. The explicit `ZE_FLAT_DEVICE_HIERARCHY=FLAT` spelling/value is documented in Intel's [GPU device hierarchy guide](https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2024-1/exposing-device-hierarchy.html). That live guide establishes the control spelling only; it is not a source/binary pin. `ZET_ENABLE_METRICS=1`, tracing enable, FLAT, all query/output controls and the existing `CUDA_MODULE_LOADING=EAGER` safety value are fixed in the child's environment **before exec**. Python/controller/utility processes are never preloaded.
++
++The selected library constructor path is `tracer.cc Init -> ReadArgs -> UniTracer::Create -> InitializeL0 -> ZeCollector::Create -> EnumerateAndSetupDevices`. A source search of the collector, loader, tracer, logger factory, timer, kernel IDs, memory and control code found no selected unconditional environment write after provider initialization. `tracer.cc:344–356` restores or unsets LD_PRELOAD only for FollowChildProcess=0; the proposal fixes FollowChildProcess=1. `unicontrol.h:386–417` writes PTI_ENABLE_COLLECTION only through IttPause/IttResume/IttStop; the installed build has ITT/OMP/OpenCL disabled, and this unchanged fixture has no ITT calls or setenv/unsetenv. Session/conditional control and time-sampling paths are absent. XPTI support is built but no XPTI subscription/control is enabled. The launcher has its own environment writes; it is neither invoked nor modified. No post-provider environment-mutation exception is proposed. Provider internals and arbitrary future code are not certified by a source search of PTI.
++
++The checked original CMake cache reports BUILD_WITH_L0=1, BUILD_WITH_XPTI=1, BUILD_WITH_ITT=0, BUILD_WITH_OMP=0, BUILD_WITH_OPENCL=0, BUILD_WITH_MPI=0, BUILD_WITH_PERFETTO=OFF and Release. Actual metric dependencies can be loaded lazily: original libigdmd/libigdml/runtime/driver pins are retained, but their existence is not proof of successful query initialization. Unknown actual mappings stop the diagnostic and need separate Main dependency review. No package or provider mutation is included.
++
++## Why strict qualification is held
++
++Pinned official [`QueryKernelCommandMetrics`, lines 2274–2313](https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/tools/unitrace/src/levelzero/ze_collector.h#L2274) drops a failed first `zetMetricQueryGetData`/empty-size outcome without reporting its numeric status. The second call's return status is assigned but **not checked** before retaining the buffer when its size is unchanged. A CSV row or exit zero therefore cannot prove every internal metric API succeeded. The offline decoder cannot reconstruct an unreported status. Lines 2590–2635 emit a generic calculate-metrics warning on decode failure without the exact status. The per-sample output loop also assigns, rather than appends, the row string, losing earlier rows if `num_samples>1`; the proposed parser rejects any sample index other than 0 and requires exact per-kernel dispatch counts, but that is not general multi-device qualification.
++
++These are source findings, not observed failures on this host. The controller preserves every emitted native/API/validation message byte-for-byte and rejects warnings/errors, missing rows and unknown files, but it explicitly cannot meet the stronger requirement to preserve **every internal API error**. Main was notified through Orca before completion. No unauthorized collector patch/build, undocumented control or trace was added. A separate Main-reviewed solution for exact status observation is the unresolved qualification gate; no manifest boolean, diagnostic success, root/sysctl change or model run resolves it in this package.
++
++## Preservation and review boundary
++
++The unchanged fixture executes its original nq=1/page4/unmasked/width33 and nq=3/page4/masked/width33 cases, independent FP64_full oracle, original `.001*magnitude + 2*bf16_spacing(reference) + 1e-12` budget, finite/guards/input identity, batch/single identity and existing invalid-input/recovery checks. It is invoked only as `--smoke`, with no altered source, tolerance, input, repetitions or dump path. The controller preserves the original output gates and checks original case identities and finite max_budget_ratio<=1. Nothing claims model or 262144-context qualification.
++
++Needed ownership, native map dev/inode/hash, sameboot health/source/product, kernel journal/fault/dump, exclusive lock, finite deadlines and raw/private budgets remain present. Side budgets include all partial/raw files during the native child, not just final CSVs. Original native and utility errors remain in owned logs and receipts; they are never reclassified as passes. Decode is finite, one known schema, one group, one target device, and requires exact two-way compute-name/count coverage with the original timing/property output. It proves no occupancy, bandwidth, bottleneck or performance outcome. The new source proposal retains a hard API-status HOLD even after every observable gate closes normally.
++
++Main must review the complete additive and immutable-base deltas, then own dependency closure, any full-catalog host build, offline validation, native fixture execution and retention. No Git mutation, source integration, test/build/run or cleanup was done here. Report/source hashes are in `SHA256SUMS`; provenance pins the original base and input receipts, and the patch is generated against those exact source bytes rather than a moving worktree. Raw files created by a later diagnostic have a named consumer/review point and no automatic cleanup. Retire them only after Main verifies compact evidence and records a path/hash/reason deletion manifest under the same exclusive lock.
+--- /dev/null
++++ bench/results/2026-10-15-pr6-recovery-audit/own-metric-query-tiny-v1/main_controller.py
+@@ -0,0 +1,365 @@
++#!/usr/bin/env python3
++"""Main-only source proposal: one original BF16 --smoke MetricQuery diagnostic.
++Repository LICENSE. No launcher, collector build, model mode, retry or cleanup.
++Strict API-status qualification is HOLD even if all observable gates succeed.
++"""
++import argparse
++import datetime
++import fcntl
++import hashlib
++import importlib.util
++import json
++import math
++import os
++from pathlib import Path
++import re
++import selectors
++import sys
++import time
++sys.dont_write_bytecode = True
++D = Path(__file__).resolve().parent
++A = D.parent
++P = A.parents[2]
++B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
++BASE = A / 'own-vllm-resource-timeline-v3'
++BASE_MANIFEST_SHA = '61da9469e3f975c72d770beee77d45118c988eb6d3d82b6dbe1b568cd9ea3f1c'
++IMPORTS = {
++    BASE / 'controller.py': 'b81a06f1e0866d571748e7cf767d07930fa165339c152cfbf7d8b3f386005a38',
++    BASE / 'timeline.py': '2121482d114f1de1fb087a6bc1425314022af1198a3242986b571a2664ed2c12',
++    P / 'bench/results/2026-10-14-niko-main-service-port/direct_owner.py':
++        'a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f'}
++ENUM_RECEIPT = B / 'main-metric-enum-query-v1/record.json'
++ENUM_SHA = '5f9f2debab68c87ddcf6346874a9edcf132b1d85cf6731144f9ccb6827ed1af5'
++STRICT_HOLD = 'PTI_QUERY_API_STATUS_LOSS: GetData and decode statuses are not all recorded by pinned collector'
++RAW, WORK_RAW, PRIVATE = 64 << 20, 62 << 20, 1 << 30
++CONTROLS = dict(UNITRACE_MetricQuery='1', UNITRACE_MetricGroup='ComputeBasic',
++    UNITRACE_HostTiming='1', UNITRACE_DeviceTiming='1', UNITRACE_FollowChildProcess='1',
++    UNITRACE_LogToFile='1', ZE_ENABLE_TRACING_LAYER='1', ZET_ENABLE_METRICS='1',
++    ZE_FLAT_DEVICE_HIERARCHY='FLAT', CUDA_MODULE_LOADING='EAGER')
++
++
++def need(value, message):
++    if not value:
++        raise RuntimeError(message)
++
++
++def sha(path):
++    with Path(path).open('rb') as stream:
++        return hashlib.file_digest(stream, 'sha256').hexdigest()
++
++
++def imported(path, name):
++    spec = importlib.util.spec_from_file_location(name, path)
++    module = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(module)
++    return module
++
++
++def package(digest):
++    need(sha(D / 'SHA256SUMS') == digest, 'externally reviewed full source package')
++    names = set()
++    for line in (D / 'SHA256SUMS').read_text().splitlines():
++        h, name = line.split('  ', 1)
++        need(re.fullmatch('[a-f0-9]{64}', h) and not Path(name).is_absolute() and
++             '..' not in Path(name).parts and name not in names, 'strict source snapshot')
++        need(not (D / name).is_symlink() and sha(D / name) == h, 'reviewed package bytes')
++        names.add(name)
++    need(names == {str(p.relative_to(D)) for p in D.rglob('*') if p.is_file() and p.name != 'SHA256SUMS'}, 'complete source snapshot')
++
++
++def main():
++    controller_started = time.monotonic()
++    deadline = controller_started + 300
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--seal', type=Path, required=True, help='Main-authored external review seal; never a live pin refresher')
++    parser.add_argument('--seal-sha256', required=True)
++    parser.add_argument('--reviewed-package-sha256', required=True)
++    parser.add_argument('--run-id', required=True)
++    args = parser.parse_args()
++    need(D == Path('/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-query-tiny-v1'), 'canonical source package')
++    need(os.geteuid() != 0, 'non-root controller/native only')
++    need(re.fullmatch('v[1-9][0-9]{0,3}', args.run_id), 'fresh finite run identity')
++    need(not any(k.startswith(('UNITRACE_', 'PTI_', 'XPTI_', 'ZE_ENABLE_', 'ZEL_', 'ZET_')) or
++                 k == 'LD_PRELOAD' for k in os.environ), 'unpreloaded controller without collector controls')
++    package(args.reviewed_package_sha256)
++    need(sha(args.seal) == args.seal_sha256, 'external Main seal')
++    seal = json.loads(args.seal.read_text())
++    need(seal['status'] == 'MAIN_REVIEWED_SEALED' and seal['run_id'] == args.run_id and
++         seal['reviewed_package_sha256'] == args.reviewed_package_sha256 and
++         seal['review_scope'] == 'DIAGNOSTIC_ONLY_API_STATUS_HOLD', 'explicit review; strict API gate cannot be waived here')
++    for path, digest in IMPORTS.items():
++        need(not path.is_symlink() and sha(path) == digest, 'qualified helper import source')
++    need(sha(BASE / 'manifest.json') == BASE_MANIFEST_SHA, 'unchanged original inventory')
++    base = imported(BASE / 'controller.py', 'query_original_guards')
++    owner_module = imported(base.OWNER, 'query_original_owner')
++    # The base import adds its own timeline directory. Add this package only
++    # afterward, with all package bytes already reviewed, for these offline readers.
++    sys.path.insert(0, str(D))
++    from metrics import decode, finite_text
++    from summary import parse_summary, ERROR
++    manifest = json.loads((BASE / 'manifest.json').read_text())
++    manifest['_sha256'] = BASE_MANIFEST_SHA
++    extra = seal['additional_dependency_review']
++    base.check_pin(extra['report']['path'], extra['report'])
++    review = json.loads(Path(extra['report']['path']).read_text())
++    need(review['approved'] is True and review['elf_pins'] == extra['elf_pins'] and
++         review['file_pins'] == extra['file_pins'], 'separate Main review of additional dependencies')
++    need(not set(extra['elf_pins']).intersection(manifest['elf_pins']) and
++         not set(extra['file_pins']).intersection(manifest['file_pins']), 'additional review cannot replace original pins')
++    pins = dict(manifest['file_pins'])
++    for path, v in {**extra['file_pins'], **extra['elf_pins']}.items():
++        need(path not in pins or pins[path] == v, 'no conflicting additional pins')
++        pins[path] = v
++    allowed = {**manifest['elf_pins'], **extra['elf_pins']}
++    need(set(seal['catalog']) == {'receipt', 'build_receipt', 'binary', 'stdout'}, 'exact catalog artifact schema')
++    inputs = [extra['report'], seal['health_receipt'], *seal['catalog'].values()]
++    for v in inputs:
++        need(v['path'] not in pins or pins[v['path']] == v, 'no conflicting receipt pins')
++        pins[v['path']] = v
++    need(base.boot_id() == seal['boot_id'], 'explicit sameboot selection')
++    retention = datetime.datetime.fromisoformat(seal['retention_review_utc'].replace('Z', '+00:00'))
++    now = datetime.datetime.now(datetime.timezone.utc)
++    need(retention.tzinfo and retention.utcoffset() == datetime.timedelta(0) and
++         datetime.timedelta(0) < retention-now <= datetime.timedelta(hours=48), 'finite UTC review point')
++    root = B / ('main-metric-query-tiny-' + args.run_id)
++    with (B / 'owned-v0141-measurement.lock').open('a') as lock:
++        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
++        need(not root.exists() and not root.is_symlink(), 'fresh private directory; no retry/overwrite')
++        root.mkdir(mode=0o700)
++        sides = root / 'collector'; sides.mkdir(mode=0o700)
++        started = controller_started; work_end = deadline - 100
++        record = dict(schema='strata-metric-query-tiny-v1', status='INCOMPLETE', passed=False,
++            complete=False, active=False, collection_qualified=False, diagnostic_complete=False,
++            qualification_hold=STRICT_HOLD, source_commit=base.SOURCE, source_pins=manifest['source_pins'],
++            original_manifest_sha256=BASE_MANIFEST_SHA, binary=manifest['tiny'], collector=manifest['collector'],
++            reviewed_package_sha256=args.reviewed_package_sha256, seal_sha256=args.seal_sha256,
++            boot_id=seal['boot_id'], commands=[], fresh_faults=[], fault_windows=[],
++            GPU_executed=False, ownership_closed=False, original_failure_status_preserved=True,
++            budget=dict(native_seconds=90, whole_seconds=300, raw_bytes=RAW, private_bytes=PRIVATE,
++                        decode_seconds=15, metric_rows=4096, line_bytes=65536),
++            retention=dict(owner='Main', consumer='one original BF16 tiny MetricQuery diagnostic; strict API hold',
++                next_review=retention.isoformat(), cleanup_performed=False),
++            model_quality_qualified=False, performance_qualified=False, physical_262144_qualified=False)
++        owner = None; closing = settling = False; cursor = None
++
++        def budget():
++            files = list(root.rglob('*'))
++            need(len(files) <= 4096 and all(not p.is_symlink() for p in files), 'bounded private regular artifacts')
++            private = sum(p.stat().st_size for p in files if p.is_file())
++            raw = sum(p.stat().st_size for p in files if p.is_file() and
++                      (p.is_relative_to(sides) or p.suffix in ('.stdout', '.stderr')))
++            record.update(private_bytes=private, raw_bytes=raw)
++            need(private <= PRIVATE and raw <= (RAW if closing else WORK_RAW), 'live total/side/partial raw budget')
++
++        def persist():
++            record['active'] = bool(owner and owner.active is not None)
++            problem = None
++            try:
++                budget()
++            except BaseException as error:
++                record['budget_error'] = repr(error); problem = error
++                record['diagnostic_complete'] = False
++            (root / 'record.json').write_text(json.dumps(record, indent=2, allow_nan=False) + '\n')
++            if problem and record['active'] and not settling:
++                raise problem
++
++        owner = owner_module.Owner(root / 'owned', persist); record['commands'] = owner.commands
++
++        def remaining(cap):
++            end = deadline if closing else work_end
++            need(time.monotonic() < end, 'finite controller/closure deadline')
++            return min(cap, end-time.monotonic())
++
++        def frozen():
++            remaining(1)
++            need(base.boot_id() == record['boot_id'] and sha(args.seal) == args.seal_sha256, 'sameboot/frozen seal')
++            package(args.reviewed_package_sha256)
++            need(sha(BASE / 'manifest.json') == BASE_MANIFEST_SHA and sha(ENUM_RECEIPT) == ENUM_SHA, 'original inventory/enumeration receipt unchanged')
++            for path, digest in IMPORTS.items():
++                need(sha(path) == digest, 'pinned imports unchanged')
++            for path, v in pins.items():
++                base.check_pin(path, v); remaining(1)
++            for path, v in manifest['elf_pins'].items():
++                base.check_pin(path, v); remaining(1)
++            for path, digest in manifest['source_pins'].items():
++                need(sha(P / path) == digest, 'original product source freeze'); remaining(1)
++
++        def driver():
++            need(base.boot_id() == record['boot_id'] and (base.DEVICE / 'driver').resolve().name == 'xe', 'sameboot xe')
++            pci = {n: (base.DEVICE / n).read_text().strip() for n in ('vendor', 'device', 'revision', 'subsystem_vendor', 'subsystem_device')}
++            need(pci['vendor'] == '0x8086' and pci['device'] == '0xe20c', 'exact B570 PCI05:00.0 target')
++            dump = (base.DEVICE / 'devcoredump').exists() or bool(list(Path('/sys/class/devcoredump').glob('devcd*')))
++            need(not dump, 'driver dump exists; no reset/deletion')
++            record.update(driver_dump_exists=dump, boot_unchanged=True)
++            previous = record.setdefault('driver_snapshots', [])
++            snap = dict(kernel=os.uname().release, pci=pci)
++            need(not previous or previous[0] == snap, 'stable driver/PCI identity')
++            previous.append(snap)
++
++        def utility(label, argv):
++            c, out, _ = owner.run(label, argv, base.HOST_ENV, P, wall=remaining(12), cpu=30,
++                rss_cap=2 << 30, text_cap=1 << 19, file_cap=1 << 19, total_cap=PRIVATE)
++            need(owner_module.closed(c) and c['exit_code'] == 0, 'normal owned utility closure')
++            base.absence([c]); budget()
++            return out.read_text()
++
++        try:
++            frozen(); driver()
++            for v in manifest['component_receipts']:
++                base.check_pin(v['path'], v)
++                r = json.loads(Path(v['path']).read_text())
++                need(r['passed'] and r['complete'] and not r['active'] and r['ownership_closed'] and
++                     r['boot_id'] == record['boot_id'] and r['source_pins'] == manifest['source_pins'] and
++                     r['source_commit'] == base.SOURCE and r['products'] == manifest['products'] and
++                     not r['fresh_faults'] and r['driver_dump_exists'] is False and
++                     all(owner_module.closed(c) and c['exit_code'] == 0 for c in r['commands']), 'original sameboot component gates')
++                base.absence(r['commands'])
++            h = seal['health_receipt']
++            record['health_selection'] = base.health_gate(h['path'], h['sha256'], owner_module, record['boot_id'], manifest)
++            record['owner_scan_before'] = base.owner_scan({})
++            cat = seal['catalog']; r = json.loads(Path(cat['receipt']['path']).read_text())
++            need(r['passed'] and r['complete'] and not r['active'] and r['ownership_closed'] and
++                 r['boot_id'] == record['boot_id'] and r['mode'] == 'enumerate' and
++                 r['enumeration_summary']['status'] == 'ENUMERATION_PASS' and
++                 r['fault_window']['complete'] and not r['fault_window']['fresh_faults'] and
++                 all(owner_module.closed(c) and c['exit_code'] == 0 for c in r['commands']), 'closed actual full-catalog enumeration')
++            base.absence(r['commands'])
++            build = json.loads(Path(cat['build_receipt']['path']).read_text())
++            need(build['passed'] and build['complete'] and not build['active'] and build['ownership_closed'] and
++                 build['mode'] == 'build' and build['binary_candidate'] == cat['binary'] and
++                 build['boot_id'] == record['boot_id'] and
++                 build['reviewed_package_sha256'] == args.reviewed_package_sha256 and
++                 all(owner_module.closed(c) and c['exit_code'] == 0 for c in build['commands']), 'reviewed separately closed full-catalog build')
++            builds = [c for c in build['commands'] if c['label'] == 'host-build']
++            need(len(builds) == 1 and str(D / 'enumerate_full.cpp') in builds[0]['argv'], 'full-catalog source path in reviewed build recipe')
++            base.absence(build['commands'])
++            native = [c for c in r['commands'] if c['label'] == 'native-enumeration']
++            need(len(native) == 1 and native[0]['argv'] == [cat['binary']['path'], '--main-owned-hold'] and
++                 r['native_snapshot']['identity']['pid'] == native[0]['pid'] and
++                 r['native_snapshot']['identity']['start_ticks'] == native[0]['direct_identity']['start_ticks'] and
++                 r['native_snapshot']['environment']['ZET_ENABLE_METRICS'] == '1' and
++                 r['native_snapshot']['environment']['ZE_FLAT_DEVICE_HIERARCHY'] == 'FLAT', 'actual full-catalog binary/env/PID binding')
++            need(any(v['pin'] == cat['binary'] for v in r['native_snapshot']['mappings']), 'actual full-catalog executable mapping pin')
++            logpin = native[0]['logs']['native-enumeration.stdout']
++            need(logpin['sha256'] == cat['stdout']['sha256'] and logpin['bytes'] == cat['stdout']['bytes'], 'actual enumeration stdout hash/size')
++            rows = [json.loads(l) for l in finite_text(cat['stdout']['path'], time.monotonic()+10, 4 << 20).splitlines()]
++            need(len(rows) <= 40000 and all(v['code'] == 0 for v in rows if v.get('kind') == 'result'), 'all enumeration API results preserved/successful')
++            groups = [v for v in rows if v.get('kind') == 'group' and v['name'] == 'ComputeBasic' and v['query_event_based']]
++            need(len(groups) == 1 and groups[0]['target'] and groups[0]['metric_count'] == 83 and
++                 groups[0]['sampling_flags'] == 1, 'unambiguous ComputeBasic EVENT_BASED group')
++            g = groups[0]
++            catalog = [v for v in rows if v.get('kind') == 'metric' and
++                       (v['driver'], v['root'], v['group']) == (g['driver'], g['root'], g['group'])]
++            need(len(catalog) == 83 and [m['metric'] for m in catalog] == list(range(83)), 'full ordered schema; sampled v1 is insufficient')
++            record['catalog_selection'] = dict(receipt=cat['receipt'], group=g, metrics=catalog)
++            env = dict(manifest['profile']['environment'])
++            for k in ('STRATA_MEASUREMENT_ENGINE_START', 'STRATA_MEASUREMENT_ENGINE_EXIT'):
++                env.pop(k, None)
++            need(not any(k.startswith(('UNITRACE_', 'PTI_', 'XPTI_', 'ZEL_', 'IGC_', 'ZE_ENABLE_', 'ZET_')) or k == 'LD_PRELOAD' for k in env), 'no inherited trace/filter/programmatic controls')
++            env.update(base.WARNINGS, **CONTROLS, LD_PRELOAD=str(base.LIB),
++                UNITRACE_LogFilename=str(sides / 'query.csv'), XDG_CACHE_HOME=str(root / 'cache'),
++                STRATA_SYCL_PREFILL_NATIVE16_BACKEND='own')
++            record['native_environment'] = env
++            start = utility('journal-before', ['/usr/bin/journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'])
++            match = re.search(r'-- cursor: (\S+)', start); need(match, 'initial journal boundary'); cursor = match[1]
++            record['fault_windows'].append(dict(before_cursor=cursor, boot_id=record['boot_id'], complete=False))
++            proofs = []
++
++            def smoke_io(io, entry):
++                record['GPU_executed'] = True; io.proc.stdin.close()
++                next_map_check = 0
++                with selectors.DefaultSelector() as ready:
++                    ready.register(io.proc.stdout, selectors.EVENT_READ)
++                    while not io.exit_watch.poll(0) or not io.eof:
++                        io.poll(); remaining(1)
++                        if not io.exit_watch.poll(0) and time.monotonic() >= next_map_check:
++                            raw_maps = Path('/proc', str(io.proc.pid), 'maps').read_text()
++                            signature = '\n'.join(l for l in raw_maps.splitlines() if len(l.split(None, 5)) == 6 and
++                                'x' in l.split(None, 5)[1] and l.split(None, 5)[5].startswith('/'))
++                            digest = hashlib.sha256(signature.encode()).hexdigest()
++                            if not proofs or proofs[-1]['executable_maps_sha256'] != digest:
++                                snap = base.native_snapshot(io.proc.pid, manifest['tiny'], env, allowed, io.proc.pid)
++                                if snap:
++                                    need(len(proofs) < 64, 'bounded actual loaded-map changes'); proofs.append(snap)
++                                    record['mapping_snapshots'] = proofs
++                            next_map_check = time.monotonic()+.05
++                        if ready.select(.002):
++                            io.read(); io.pending.clear()
++
++            c, out, err = owner.run('native-smoke', [manifest['tiny']['path'], '--smoke'], env, sides,
++                interaction=smoke_io, wall=remaining(90), cpu=90, rss_cap=8 << 30,
++                text_cap=WORK_RAW, total_cap=PRIVATE, file_cap=WORK_RAW)
++            record['native_exit_code'] = c['exit_code']; base.absence([c])
++            need(owner_module.closed(c) and c['exit_code'] == 0, 'normal original tiny native closure')
++            need(proofs and all(p['native']['pid'] == c['pid'] and
++                 p['native']['start_ticks'] == c['direct_identity']['start_ticks'] and
++                 p['argv'] == [manifest['tiny']['path'], '--smoke'] for p in proofs), 'actual original argv/PID/start/maps/env')
++            stdout, stderr = out.read_text(), err.read_text()
++            record['oracle_stdout'] = stdout
++            cases = [l for l in stdout.splitlines() if l.startswith('case dtype=bf16 ')]
++            need(len(cases) == 2 and all('oracle=FP64_full ' in l and
++                 'finite=PASS guards=PASS inputs=PASS qualification=COMPONENT_ONLY_UNQUALIFIED' in l for l in cases) and
++                 stdout.count('fixture=PASS model_quality=UNRUN whole_prefill=UNRUN physical262144=UNRUN faults=EXTERNAL_REQUIRED') == 1 and
++                 not ERROR.search(stderr), 'unchanged two full FP64 oracle/finite/guards/input/tolerance gates')
++            fields = [dict(v.split('=', 1) for v in line.split() if '=' in v) for line in cases]
++            need([(v['nq'], v['shape'], v['page'], v['masked'], v['width'], v['profile']) for v in fields] ==
++                 [('1', '1,24,256', '4', '0', '33', 'regular'), ('3', '3,24,256', '4', '1', '33', 'regular')] and
++                 all(math.isfinite(float(v['max_budget_ratio'])) and 0 <= float(v['max_budget_ratio']) <= 1 for v in fields),
++                 'original case identities and predetermined numerical budget')
++            summary_path = sides / ('query.' + str(c['pid']) + '.csv')
++            metrics_path = sides / ('query.metrics.' + str(c['pid']) + '.csv')
++            need(sorted(p for p in sides.rglob('*') if p.is_file()) == sorted([summary_path, metrics_path]), 'exact original native PID-named files; unknown/partial sides fail')
++            decode_end = min(work_end, time.monotonic()+15)
++            summary = parse_summary(summary_path, decode_end)
++            record['summary'] = summary
++            record['query'] = decode(metrics_path, catalog, summary['expected_compute_calls'], decode_end)
++            frozen(); budget()
++            record['candidate_diagnostic_complete'] = True
++        except BaseException as error:
++            record['error'] = repr(error)
++        finally:
++            closing = True
++            try:
++                need(owner.active is None and cursor, 'closed ownership and initial journal cursor required')
++                end = utility('journal-end', ['/usr/bin/journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'])
++                match = re.search(r'-- cursor: (\S+)', end); need(match, 'final journal boundary')
++                raw = utility('journal-after', ['/usr/bin/journalctl', '-k', '-b', '--after-cursor', cursor, '--no-pager', '-o', 'json'])
++                journal = [json.loads(l) for l in raw.splitlines() if l.strip()]
++                need(all(v.get('_BOOT_ID') == record['boot_id'].replace('-', '') for v in journal), 'sameboot journal records')
++                faults = [v for v in journal if base.FAULT.search(str(v.get('MESSAGE', '')))]
++                record['fresh_faults'] = faults
++                record['fault_windows'][-1].update(after_cursor=match[1], row_count=len(journal),
++                    last_returned_cursor=journal[-1].get('__CURSOR') if journal else None,
++                    fault_filter=base.FAULT.pattern, fresh_faults=faults, complete=True)
++                need(not faults, 'fresh GPU faults'); driver(); frozen()
++                record['final_PID_start_absence'] = base.absence(owner.commands)
++                record['owner_scan_after'] = base.owner_scan({})
++                record['ownership_closed'] = owner.active is None and all(owner_module.closed(c) for c in owner.commands)
++                need(record['ownership_closed'] and all(c['exit_code'] == 0 for c in owner.commands), 'normal commands/reap/session-empty closure')
++                budget(); remaining(1)
++                record['diagnostic_complete'] = bool(record.get('candidate_diagnostic_complete') and
++                    not record.get('error') and not record.get('budget_error'))
++            except BaseException as error:
++                record['closure_error'] = repr(error); record['diagnostic_complete'] = False
++            # No pass branch exists while pinned PTI can suppress an API error.
++            record['status'] = 'HOLD_API_STATUS' if record['diagnostic_complete'] else 'INCOMPLETE'
++            record['finished_utc'] = base.utc(); record['elapsed_seconds'] = time.monotonic()-started
++            record['collector_sides'] = []
++            if owner.active is None:
++                files = sorted(p for p in sides.rglob('*') if p.is_file() or p.is_symlink())
++                can_hash = (time.monotonic() < deadline-2 and len(files) <= 4096 and
++                    all(not p.is_symlink() for p in files) and
++                    sum(p.stat().st_size for p in files) <= RAW)
++                record['collector_sides'] = ([base.artifact(p) for p in files] if can_hash else
++                    [dict(path=str(p), bytes=p.lstat().st_size,
++                          hash_status='DEFERRED_MAIN_REVIEW_BUDGET_OR_UNSAFE_FILE') for p in files[:4096]])
++                if not can_hash:
++                    record.update(status='INCOMPLETE', diagnostic_complete=False, side_inventory_incomplete=True)
++            settling = True; persist()
++        print(json.dumps(dict(status=record['status'], receipt=str(root / 'record.json'),
++            sha256=sha(root / 'record.json'), collection_qualified=False)), flush=True)
++        return 2  # Diagnostic-only HOLD/INCOMPLETE; cannot unlock a model metric pass.
++
++
++if __name__ == '__main__':
++    sys.exit(main())
+--- /dev/null
++++ bench/results/2026-10-15-pr6-recovery-audit/own-metric-query-tiny-v1/metrics.py
+@@ -0,0 +1,97 @@
++"""Offline strict pinned-PTI Linux MetricQuery text decoder. Repository LICENSE.
++
++Original code; API/schema design references are recorded in source-provenance.json.
++No runtime import, subprocess, environment modification or device access.
++"""
++from collections import Counter
++import math
++from pathlib import Path
++import re
++import time
++
++SHAPE = re.compile(r'\[SIMD(?:[1-9][0-9]*|_ANY) \{([0-9]+); ([0-9]+); ([0-9]+)\} \{([0-9]+); ([0-9]+); ([0-9]+)\}\]$')
++
++def need(value, message):
++    if not value:
++        raise ValueError(message)
++
++
++def finite_text(path, deadline, cap=62 << 20):
++    p = Path(path)
++    need(time.monotonic() < deadline and p.is_file() and not p.is_symlink(), 'decoder deadline/regular file')
++    need(0 < p.stat().st_size <= cap, 'finite nonempty decoder input')
++    raw = p.read_text(encoding='utf-8', errors='strict')
++    need(raw.endswith('\n') and '\x00' not in raw and time.monotonic() < deadline, 'complete finite UTF-8 input')
++    return raw
++
++
++def decode(path, catalog, expected_calls, deadline):
++    """Catalog is complete, ordered driver metadata, never inferred from CSV names.
++
++    Official PTI wraps names in quotes without escaping embedded quotes, so
++    split from the right by the known column count. Reject extra device
++    sections, partial files, nonfinite values and incomplete kernel coverage.
++    Only a single B570 sample (SubDeviceId=0) is accepted: pinned PTI overwrites
++    earlier sample strings when a query yields multiple samples.
++    """
++    need(len(catalog) == 83 and [m['metric'] for m in catalog] == list(range(83)), 'complete ComputeBasic EVENT_BASED schema')
++    labels = []
++    for m in catalog:
++        units = m['units']
++        if 'null' in units:
++            units = ''
++        elif 'percent' in units:
++            units = '%'
++        label = m['name'] + ('[' + units + ']' if units else '')
++        need(label and ',' not in label and '\n' not in label, 'unambiguous official metric label')
++        labels.append(label)
++        need(m['result_type_name'] in {'ZET_VALUE_TYPE_UINT32', 'ZET_VALUE_TYPE_UINT64',
++             'ZET_VALUE_TYPE_FLOAT32', 'ZET_VALUE_TYPE_FLOAT64', 'ZET_VALUE_TYPE_BOOL8'}, 'unsupported PTI typed-value schema')
++    need(len(set(labels)) == 83, 'unique ordered metric labels')
++    header = 'Kernel,GlobalInstanceId,SubDeviceId,' + ','.join(labels)
++    state, rows, ids, counts = 0, [], set(), Counter()
++    for number, line in enumerate(finite_text(path, deadline).splitlines(), 1):
++        need(time.monotonic() < deadline and number <= 10000 and len(line) <= 65536, 'finite metric decode budget')
++        if not line:
++            continue
++        if state == 0:
++            need(line == '=== Device #0 Metrics ===', 'one exact target-device query section')
++            state = 1
++            continue
++        if state == 1:
++            need(line == header, 'unknown/incomplete/reordered metric schema')
++            state = 2
++            continue
++        need(not line.startswith(('===', 'Kernel,')), 'duplicate/device/unknown query section')
++        f = line.rsplit(',', 85)
++        need(len(f) == 86 and f[0].startswith('"') and f[0].endswith('"'), 'quoted kernel and exact 83-value row')
++        name, instance, subdevice = f[0][1:-1], f[1], f[2]
++        need(SHAPE.search(name), 'full detailed compute kernel shape')
++        normalized = SHAPE.sub('', name)
++        need(normalized in expected_calls, 'known detailed compute kernel name')
++        need(re.fullmatch(r'[1-9][0-9]*', instance) and 0 < int(instance) < 2**64 and
++             subdevice == '0' and instance not in ids, 'unique finite instance/single sample')
++        ids.add(instance)
++        values = []
++        for m, text in zip(catalog, f[3:]):
++            kind = m['result_type_name']
++            if kind in ('ZET_VALUE_TYPE_UINT32', 'ZET_VALUE_TYPE_UINT64', 'ZET_VALUE_TYPE_BOOL8'):
++                need(re.fullmatch(r'[0-9]+', text), 'integer metric encoding')
++                value = int(text)
++                bound = {'ZET_VALUE_TYPE_UINT32': 2**32, 'ZET_VALUE_TYPE_UINT64': 2**64,
++                         'ZET_VALUE_TYPE_BOOL8': 2}[kind]
++                need(value < bound, 'typed integer metric range')
++            else:
++                need(re.fullmatch(r'-?[0-9]+\.[0-9]{6}', text), 'official std::to_string floating encoding')
++                value = float(text)
++                need(math.isfinite(value), 'finite metric value')
++            values.append(value)
++        need(values[0] > 0 and labels[0] == 'GpuTime[ns]', 'positive decoded measured query duration')
++        counts[normalized] += 1
++        need(len(rows) < 4096, 'finite query row count')
++        rows.append(dict(kernel=name, summary_kernel=normalized, global_instance_id=int(instance), subdevice_id=0, values=values))
++    need(state == 2 and rows and dict(counts) == dict(expected_calls), 'complete two-way compute dispatch/query counts')
++    return dict(decoded=True, group='ComputeBasic', sampling='EVENT_BASED', device=0,
++                metric_columns=labels, rows=rows, kernel_calls=dict(counts),
++                collection_qualified=False, numerical_precision='PTI decimal text; float values rounded to six decimal places',
++                limitation='No exact internal API-status evidence; no multi-sample support, model/performance/occupancy claim')
+--- /dev/null
++++ bench/results/2026-10-15-pr6-recovery-audit/own-metric-query-tiny-v1/source-provenance.json
+@@ -0,0 +1,382 @@
++{
++  "schema": "strata-metric-query-tiny-source-v1",
++  "status": "SOURCE_ONLY_UNRUN_STRICT_QUALIFICATION_HOLD",
++  "created_utc": "2026-10-16T07:44:01.729488+00:00",
++  "base_source_commit": "63326f98c36656cf3a3e1adcc54c3c25a02aa6ee",
++  "official_pti_commit": "6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033",
++  "license": {
++    "path": "/home/yayoi/orca/workspaces/Strata/sycl/LICENSE",
++    "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/LICENSE",
++    "bytes": 1093,
++    "sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0"
++  },
++  "input_pins": {
++    "/home/yayoi/orca/workspaces/Strata/sycl/AGENTS.md": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/AGENTS.md",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/AGENTS.md",
++      "bytes": 12124,
++      "sha256": "7f750320bef4146a2872086922d84fc9fa7a8351ae655b7876c912856e3747fe"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/docs/ARTIFACT_RETENTION.md": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/docs/ARTIFACT_RETENTION.md",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/docs/ARTIFACT_RETENTION.md",
++      "bytes": 8223,
++      "sha256": "fdf86d7ea576d6f0400ec7e643b5ddca5c3c577dd053d66c2fd05220e64b1cc1"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/LICENSE": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/LICENSE",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/LICENSE",
++      "bytes": 1093,
++      "sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/prompt_native16.cpp": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/prompt_native16.cpp",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/prompt_native16.cpp",
++      "bytes": 23036,
++      "sha256": "c8e14f3aa7f44625bb345182f1e315ae10d645f854493fa5d64ed23b2717a69f"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v3/manifest.json": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v3/manifest.json",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v3/manifest.json",
++      "bytes": 356129,
++      "sha256": "61da9469e3f975c72d770beee77d45118c988eb6d3d82b6dbe1b568cd9ea3f1c"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v3/controller.py": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v3/controller.py",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v3/controller.py",
++      "bytes": 49251,
++      "sha256": "b81a06f1e0866d571748e7cf767d07930fa165339c152cfbf7d8b3f386005a38"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v3/timeline.py": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v3/timeline.py",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v3/timeline.py",
++      "bytes": 13562,
++      "sha256": "2121482d114f1de1fb087a6bc1425314022af1198a3242986b571a2664ed2c12"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-14-niko-main-service-port/direct_owner.py": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-14-niko-main-service-port/direct_owner.py",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-14-niko-main-service-port/direct_owner.py",
++      "bytes": 14781,
++      "sha256": "a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-enumeration-v1/enumerate.cpp": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-enumeration-v1/enumerate.cpp",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-enumeration-v1/enumerate.cpp",
++      "bytes": 12158,
++      "sha256": "07c20d237b5e1377c429f5479ee7d029c328a0c422552f248842257ef1afbd9c"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-enumeration-v1/result_names.inc": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-enumeration-v1/result_names.inc",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-enumeration-v1/result_names.inc",
++      "bytes": 2861,
++      "sha256": "2357c387c4e30434a5c9187f41cf4d0343852c2a389dc76460ac64fb58a19779"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-enumeration-v1/main_controller.py": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-enumeration-v1/main_controller.py",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-enumeration-v1/main_controller.py",
++      "bytes": 17497,
++      "sha256": "ae69c353d822e1f2b35d3c96ef79fad73badb5d715a40892f019e3e0f58ba09f"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-enumeration-v1/source-provenance.json": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-enumeration-v1/source-provenance.json",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-enumeration-v1/source-provenance.json",
++      "bytes": 16168,
++      "sha256": "9c0f13813af24698315f2cfd0eb4519361819dfaa931e92aefe1f9b5e55af68a"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-enumeration-v1/implementation-report.md": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-enumeration-v1/implementation-report.md",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-enumeration-v1/implementation-report.md",
++      "bytes": 14035,
++      "sha256": "f65bfb935a2536121d10e0460202b6b4ed6d4db108e538dab448cec7b4a2a706"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-unitrace-launcher-immutability-main-v1.ja.md": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-unitrace-launcher-immutability-main-v1.ja.md",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-unitrace-launcher-immutability-main-v1.ja.md",
++      "bytes": 1720,
++      "sha256": "acf5c52349800de2a73081a23230076ede4f5e6ff0c19bc1516e8695f0c62c79"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-components-smoke-v1.json": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-components-smoke-v1.json",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-components-smoke-v1.json",
++      "bytes": 89107,
++      "sha256": "f59bc11c027046d36defe2fba2ab496b1165671cca9f2eb79ad84cdab5093e4e"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-tiny-v4.json": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-tiny-v4.json",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-tiny-v4.json",
++      "bytes": 137932,
++      "sha256": "8e7bc299316b25f4a4ac5060bee0ceeebd111f5af652e8dea07e4c357ffe9f18"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-enum-build-v1/record.json": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-enum-build-v1/record.json",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-enum-build-v1/record.json",
++      "bytes": 10228,
++      "sha256": "a24e2955d61fe5a1f4aec0b8e4bf237d659e1238842d4799343bc8f167ab696e"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-enum-query-v1/record.json": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-enum-query-v1/record.json",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-enum-query-v1/record.json",
++      "bytes": 17892,
++      "sha256": "5f9f2debab68c87ddcf6346874a9edcf132b1d85cf6731144f9ccb6827ed1af5"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-enum-query-v1/owned/native-enumeration.stdout": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-enum-query-v1/owned/native-enumeration.stdout",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-enum-query-v1/owned/native-enumeration.stdout",
++      "bytes": 109630,
++      "sha256": "98c0622e126785ca9c5d81d055649b58eaf7e82cf9808a913f854956672f5da4"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/CMakeCache.txt": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/CMakeCache.txt",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/CMakeCache.txt",
++      "bytes": 20949,
++      "sha256": "a4e19ac6cd0447d357a7a3739ec85f09e64eb6854d5529dff5bd8a66582ab8d9"
++    }
++  },
++  "official_sources": {
++    "LICENSE": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/LICENSE",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/LICENSE",
++      "bytes": 1069,
++      "sha256": "7d52740ffc5194d8baaa65c30b138a6560e573e6cc87d8d7c1cc655018a1063a",
++      "url": "https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/LICENSE",
++      "prior_immutable_inventory_match": true
++    },
++    "tools/unitrace/README.md": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/README.md",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/README.md",
++      "bytes": 62549,
++      "sha256": "00eacd9512a5d7141cf606c76061b35e75e9119600e7b020db48516ce3d27649",
++      "url": "https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/tools/unitrace/README.md",
++      "prior_immutable_inventory_match": true
++    },
++    "chapters/metrics_collection/LevelZero.md": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/chapters/metrics_collection/LevelZero.md",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/chapters/metrics_collection/LevelZero.md",
++      "bytes": 15720,
++      "sha256": "3b297194a9f9a974451bc9cdd21cf922628b7b784d3f250be7ba077676f0dd9c",
++      "url": "https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/chapters/metrics_collection/LevelZero.md",
++      "prior_immutable_inventory_match": true
++    },
++    "tools/unitrace/src/unitrace.cc": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/unitrace.cc",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/unitrace.cc",
++      "bytes": 63408,
++      "sha256": "d5a275a78d6d99a4aa82b1e7cb464ff4974c4eb4c46f068f9f1f5b9978d04293",
++      "url": "https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/tools/unitrace/src/unitrace.cc",
++      "prior_immutable_inventory_match": true
++    },
++    "tools/unitrace/src/tracer.cc": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/tracer.cc",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/tracer.cc",
++      "bytes": 10851,
++      "sha256": "e770574b66edce42941fd211ae934c10db3eab4dc44a92d05a719099be1eac85",
++      "url": "https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/tools/unitrace/src/tracer.cc",
++      "prior_immutable_inventory_match": true
++    },
++    "tools/unitrace/src/tracer.h": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/tracer.h",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/tracer.h",
++      "bytes": 21841,
++      "sha256": "2cdfffb4f48043853e29f29432231bc0305f84f7e88785f0bcd502f0f57d21ba",
++      "url": "https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/tools/unitrace/src/tracer.h",
++      "prior_immutable_inventory_match": true
++    },
++    "tools/unitrace/src/collector_options.h": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/collector_options.h",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/collector_options.h",
++      "bytes": 2347,
++      "sha256": "538b78a6b641e12942d902a22e4cecc188ab4f4aa398f01d5bc1be083e327480",
++      "url": "https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/tools/unitrace/src/collector_options.h",
++      "prior_immutable_inventory_match": true
++    },
++    "tools/unitrace/src/levelzero/ze_collector.h": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/levelzero/ze_collector.h",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/levelzero/ze_collector.h",
++      "bytes": 253227,
++      "sha256": "6ee0130e2b03918a5e4bb5d310dacb94e5ba06bf67c21a23d3134dc406aa9122",
++      "url": "https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/tools/unitrace/src/levelzero/ze_collector.h",
++      "prior_immutable_inventory_match": true
++    },
++    "tools/unitrace/src/levelzero/ze_loader.h": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/levelzero/ze_loader.h",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/levelzero/ze_loader.h",
++      "bytes": 1861,
++      "sha256": "b03af278d5d3b94a4add734d7688282cfaca0a75fe691122d0cfee2637aab9ed",
++      "url": "https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/tools/unitrace/src/levelzero/ze_loader.h",
++      "prior_immutable_inventory_match": true
++    },
++    "tools/unitrace/src/levelzero/ze_metrics.h": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/levelzero/ze_metrics.h",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/levelzero/ze_metrics.h",
++      "bytes": 54396,
++      "sha256": "5d32b2cd390e0548d73f629c54d031450ed693fc0483d8b9c86ab48651e18d55",
++      "url": "https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/tools/unitrace/src/levelzero/ze_metrics.h",
++      "prior_immutable_inventory_match": true
++    },
++    "tools/unitrace/src/utils/logger_factory.cc": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/utils/logger_factory.cc",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/utils/logger_factory.cc",
++      "bytes": 18907,
++      "sha256": "933f8f1dad0274935550bfe3ed86603e7f71be2a9c16bf3211ddec629a955122",
++      "url": "https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/tools/unitrace/src/utils/logger_factory.cc",
++      "prior_immutable_inventory_match": true
++    },
++    "tools/unitrace/src/utils/logger_factory.h": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/utils/logger_factory.h",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/utils/logger_factory.h",
++      "bytes": 5600,
++      "sha256": "10fe896cd024977d81e999b94c20c42979ad69d333e7265c92ca38e032321e08",
++      "url": "https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/tools/unitrace/src/utils/logger_factory.h",
++      "prior_immutable_inventory_match": true
++    },
++    "tools/unitrace/src/utils/utils_ze.h": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/utils/utils_ze.h",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/utils/utils_ze.h",
++      "bytes": 13958,
++      "sha256": "62ca770c3873bbbf91b79891f3da616a98b59e567807c62ce2469c81cee701a8",
++      "url": "https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/tools/unitrace/src/utils/utils_ze.h",
++      "prior_immutable_inventory_match": true
++    },
++    "tools/unitrace/src/unicontrol.h": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/unicontrol.h",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/unicontrol.h",
++      "bytes": 24645,
++      "sha256": "6818690299873bc5b34db9df4135a220909277e6785eeff1d3d5809ab7ef17c7",
++      "url": "https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/tools/unitrace/src/unicontrol.h",
++      "prior_immutable_inventory_match": true
++    },
++    "tools/unitrace/src/unikernel.h": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/unikernel.h",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/unikernel.h",
++      "bytes": 1962,
++      "sha256": "68b0dc77d4a68156415031336c76a1376f5f129926e3c975076108053059758a",
++      "url": "https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/tools/unitrace/src/unikernel.h",
++      "prior_immutable_inventory_match": true
++    },
++    "tools/unitrace/src/unitimer.h": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/unitimer.h",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/unitimer.h",
++      "bytes": 5881,
++      "sha256": "44b529c2ad00957d0253bdbecb84791b55a6796c8587469adee76da7c08c9185",
++      "url": "https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/tools/unitrace/src/unitimer.h",
++      "prior_immutable_inventory_match": true
++    },
++    "tools/unitrace/src/unimemory.h": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/unimemory.h",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/unimemory.h",
++      "bytes": 681,
++      "sha256": "ea0ddd61912776868157dbdb8ce7292a77f1db13b718f4a317c8432ffda230dd",
++      "url": "https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/tools/unitrace/src/unimemory.h",
++      "prior_immutable_inventory_match": true
++    },
++    "tools/unitrace/src/utils/utils_host.h": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/utils/utils_host.h",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/utils/utils_host.h",
++      "bytes": 1026,
++      "sha256": "11e6d93171bc694bf75dc043124026709bf8bfc2f1999337184ef61f8946763b",
++      "url": "https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/tools/unitrace/src/utils/utils_host.h",
++      "prior_immutable_inventory_match": true
++    },
++    "utils/utils.h": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/utils/utils.h",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/utils/utils.h",
++      "bytes": 6472,
++      "sha256": "ea95b21d57249e163274a30e8445073735a9862a0151dd553e6e2e7d0dd707e7",
++      "url": "https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/utils/utils.h",
++      "prior_immutable_inventory_match": true
++    }
++  },
++  "origin": {
++    "main_controller.py": "New project code; exact pinned imports of prior project Owner/controller guard helpers, no PTI implementation copied.",
++    "metrics.py": "Independently authored strict offline parser from official documented/source format; detailed shape normalization references pinned independent project timeline reader.",
++    "summary.py": "Focused adaptation of parse_collection in pinned own-vllm-resource-timeline-v3/controller.py b81a06f1e0866d571748e7cf767d07930fa165339c152cfbf7d8b3f386005a38; original plain summary/property gates retained.",
++    "enumerate_full.cpp": "Minimal additive revision of independent project own-metric-enumeration-v1/enumerate.cpp 07c20d237b5e1377c429f5479ee7d029c328a0c422552f248842257ef1afbd9c; explicit old result_names.inc import, full capped metadata enumeration and pre-init FLAT requirement."
++  },
++  "source_files": {
++    "main_controller.py": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-query-tiny-v1/main_controller.py",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-query-tiny-v1/main_controller.py",
++      "bytes": 24910,
++      "sha256": "ecb45cdf76badde6bf83ae53eaecbe8cd1f5807661736a8b60c875174fca0088"
++    },
++    "metrics.py": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-query-tiny-v1/metrics.py",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-query-tiny-v1/metrics.py",
++      "bytes": 5293,
++      "sha256": "ce978565e9cdd786f4269dbacb5a8e3542e17bd7dca90e85a6ce77486b73f3df"
++    },
++    "summary.py": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-query-tiny-v1/summary.py",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-query-tiny-v1/summary.py",
++      "bytes": 6557,
++      "sha256": "7a4be674dcbab0bbc8952cbd8cd54bcdd033c94fd92bf41b55547ea7c276c5ff"
++    },
++    "enumerate_full.cpp": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-query-tiny-v1/enumerate_full.cpp",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-query-tiny-v1/enumerate_full.cpp",
++      "bytes": 12413,
++      "sha256": "d5752111fb1a87dd700ecf5a12983795a73fc9a44474e925252c5958c34bbba3"
++    }
++  },
++  "runtime_inventory": {
++    "manifest": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v3/manifest.json",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v3/manifest.json",
++      "bytes": 356129,
++      "sha256": "61da9469e3f975c72d770beee77d45118c988eb6d3d82b6dbe1b568cd9ea3f1c"
++    },
++    "policy": "Keep original source/product/build/runtime/ELF inventory byte-identical; externally reviewed disjoint additional dependencies only. No live pin enrollment.",
++    "collector": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/libunitrace_tool.so",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/libunitrace_tool.so",
++      "bytes": 3864048,
++      "sha256": "8a8fe37441606bf66ab42fc39cc447b5257f48d09f04fbcc60703e30826671eb"
++    },
++    "tiny": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/sycl_prompt_native16_test",
++      "sha256": "d564fc95854988efb24b990ba64bcd5ac092fdfb597c21b0d4a65c4c54e23bef",
++      "bytes": 902000,
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/sycl_prompt_native16_test"
++    },
++    "owner_sha256": "a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f"
++  },
++  "web_reference": {
++    "url": "https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2024-1/exposing-device-hierarchy.html",
++    "scope": "Official control spelling ZE_FLAT_DEVICE_HIERARCHY=FLAT only; not binary/source version evidence."
++  },
++  "audit": {
++    "selected_post_provider_environment_mutation_found": false,
++    "excluded_selected_paths": [
++      "FollowChildProcess=0 LD_PRELOAD restore",
++      "ITT pause/resume/stop environment controls",
++      "session/start-paused/metric-streaming controls",
++      "unitrace launcher initialization and env mutation"
++    ],
++    "strict_api_status_hold": "Pinned official collector omits exact GetData and decode API-status evidence; all emitted errors preserved, no qualification PASS branch.",
++    "subdevice_limit": "Only sample0 and exact compute dispatch counts accepted; pinned official Linux row loop overwrites earlier samples.",
++    "worker_execution": {
++      "build": false,
++      "compiler": false,
++      "syntax_check": false,
++      "tests": false,
++      "native": false,
++      "runtime": false,
++      "GPU": false,
++      "device_query": false,
++      "process_inspection": false,
++      "package_or_service_changes": false,
++      "privilege_queries": false,
++      "git_mutations": false,
++      "source_writes_outside_named_directory": false
++    },
++    "forbidden_sources": "No XeStrata implementation/helper/test/archive or protected credential record opened; inherited LLVM install binary/header paths only remain in original inventory."
++  },
++  "main_gates": [
++    "Complete source and immutable-base delta review",
++    "Offline syntax and meaningful decoder/error/budget gate validation",
++    "Separate full-catalog dependency/build/source/actual executable receipt review and owned enumeration",
++    "Separate additional dependency provenance/license review",
++    "Resolve exact internal API-status preservation in separately reviewed proposal before collection qualification; diagnostic-only run cannot resolve it",
++    "Main exclusively owns serialized fixture/GPU/fault/retention work; no model metric pass permitted"
++  ]
++}
+--- /dev/null
++++ bench/results/2026-10-15-pr6-recovery-audit/own-metric-query-tiny-v1/summary.py
+@@ -0,0 +1,93 @@
++"""Offline summary parser adapted from the pinned project controller b81a06f1.
++Repository LICENSE. Complete source delta and origin are in this package.
++No timeline, model or RESTORE machinery; keep all original summary/property gates.
++"""
++import math
++import re
++import time
++from metrics import finite_text, need as require
++ERROR = re.compile(r'\[ERROR\]|\[WARNING\]|(?:UR|ZE)_RESULT_ERROR_|terminate called|what\(\):|oracle_error|retirement failed|Strata SYCL cleanup:|Unable to (?:create|trace|initialize)|not enabled for tracing|(?:collection|profile|trace).*truncat', re.I)
++
++def parse_summary(expected, deadline):
++    raw = finite_text(expected, deadline)
++    require(raw.endswith('\n') and not ERROR.search(raw), 'complete collector log without errors/truncation')
++    sections = {'API': [], 'Device': []}
++    totals, clocks, headers, properties = {}, {}, {}, []
++    section = backend = table = None
++    property_header = False
++    def name_of(text):
++        return text[1:-1] if len(text) >= 2 and text[0] == text[-1] == '"' else text
++    for number, line in enumerate(raw.splitlines(), 1):
++        require(time.monotonic() < deadline and number <= 10000 and len(line) <= 65536, "finite summary decode")
++        match = re.fullmatch(r'=== (API|Device) Timing Summary ===', line.strip())
++        if match:
++            section, backend, table = match[1], None, None
++            require(section not in totals, 'duplicate collector section')
++            totals[section] = None
++            continue
++        if line.strip() == '=== Kernel Properties ===':
++            require(section == 'Device' and not property_header, 'single kernel-properties section after device table')
++            section, table = 'Properties', None
++            continue
++        if not line.strip():
++            table = None
++            continue
++        if section == 'Properties':
++            fields = [v.strip() for v in line.rsplit(',', 7)]
++            head = ['Kernel', 'Compiled', 'SIMD', 'Number of Arguments', 'SLM Per Work Group',
++                    'Private Memory Per Thread', 'Spill Memory Per Thread', 'Register File Size Per Thread']
++            if fields == head:
++                require(not property_header, 'one official kernel-properties header')
++                property_header = True
++                continue
++            require(property_header and len(fields) == 8, 'complete properties row: ' + line)
++            name, compiled, simd, nargs, slm, private, spill, grf = fields
++            require(compiled in ('AOT', 'JIT') and (simd == 'ANY' or re.fullmatch(r'[1-9][0-9]*', simd)) and
++                    all(re.fullmatch(r'[0-9]+', v) for v in (nargs, slm, private, spill)) and
++                    (grf == 'unknown' or re.fullmatch(r'[1-9][0-9]*', grf)), 'official kernel property values')
++            properties.append(dict(name=name_of(name), compiled=compiled, reported_SIMD=simd,
++                arguments=int(nargs), SLM_bytes_per_workgroup=int(slm), private_bytes_per_thread=int(private),
++                spill_bytes_per_thread=int(spill), register_file_registers_per_thread=None if grf == 'unknown' else int(grf),
++                raw_row=line, scope='Reported compiled-kernel properties; no occupancy or all-input spill guarantee'))
++            continue
++        if section is None:
++            require(not line.strip(), 'unexpected collector preamble')
++            continue
++        match = re.fullmatch(r'\s*Total Execution Time \(ns\):\s*(\d+)\s*', line)
++        if match:
++            clocks[section] = int(match[1]); continue
++        match = re.fullmatch(r'\s*Total (API|Device) Time for L0 backend \(ns\):\s*(\d+)\s*', line)
++        if match:
++            require(match[1] == section and totals[section] is None, 'summary type/uniqueness')
++            totals[section] = int(match[2]); continue
++        if line.strip() == '== L0 Backend ==':
++            backend = 'L0'; continue
++        fields = [v.strip() for v in line.rsplit(',', 6)]
++        head = ['Function' if section == 'API' else 'Kernel', 'Calls', 'Time (ns)', 'Time (%)', 'Average (ns)', 'Min (ns)', 'Max (ns)']
++        if fields == head:
++            require(backend == 'L0' and section not in headers, 'one L0 table header')
++            headers[section] = line; table = section; continue
++        require(table == section and backend == 'L0' and len(fields) == 7, 'unparsed/partial timing row: ' + line)
++        name, calls, total, percent, average, minimum, maximum = fields
++        require(all(re.fullmatch(r'\d+', v) for v in (calls, total, average, minimum, maximum)), 'integer aggregate units')
++        calls, total, average, minimum, maximum = map(int, (calls, total, average, minimum, maximum))
++        percentage = float(percent)
++        require(name and calls > 0 and total >= 0 and math.isfinite(percentage) and 0 <= percentage <= 100.01 and
++                0 <= minimum <= maximum and average == total // calls and minimum <= average <= maximum, 'timing row values')
++        sections[section].append(dict(name=name_of(name), calls=calls, time_ns=total, percent=percentage,
++            average_ns=average, min_ns=minimum, max_ns=maximum, raw_row=line))
++    require(set(totals) == set(headers) == set(clocks) == {'API', 'Device'}, 'both emitted summaries required')
++    for section, rows in sections.items():
++        require(rows and totals[section] and sum(v['time_ns'] for v in rows) == totals[section], 'all rows and exact aggregate sum: ' + section)
++    require(any(r['name'].startswith('ze') for r in sections['API']), 'actual Level Zero host API rows')
++    require(property_header and properties and all(any(r['name'] == prop['name'] for r in sections['Device']) for prop in properties),
++            'compute-kernel properties must match actual device timing rows; copies/barriers alone are not kernel collection')
++    result = dict(proved=True,
++        headers=headers, totals_ns=totals,
++        collector_execution_time_ns=clocks, host_API_rows=sections['API'], device_rows=sections['Device'],
++        kernel_properties=properties, command_counts={k: sum(r['calls'] for r in v) for k, v in sections.items()},
++        interpretation='Nonexclusive whole-process kernel/command sums and host API elapsed times. Includes startup/teardown and may overlap. Compiled properties are not measured occupancy. No busy union, critical path, prefill-only attribution or clean speed claim.')
++    compute = {p["name"] for p in properties}
++    result["expected_compute_calls"] = {name: sum(r["calls"] for r in sections["Device"] if r["name"] == name) for name in compute}
++    return result
++

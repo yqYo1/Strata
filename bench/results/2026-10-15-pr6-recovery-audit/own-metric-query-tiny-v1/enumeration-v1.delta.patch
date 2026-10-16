@@ -1,0 +1,35 @@
+--- immutable/07c20d23/own-metric-enumeration-v1/enumerate.cpp
++++ proposal/own-metric-query-tiny-v1/enumerate_full.cpp
+@@ -33,7 +33,7 @@
+ const char* result_name(ze_result_t r) {
+     switch (r) {
+ #define RESULT(name) case name: return #name;
+-#include "result_names.inc"
++#include "../own-metric-enumeration-v1/result_names.inc"
+ #undef RESULT
+     default: return "ZE_RESULT_UNRECOGNIZED";
+     }
+@@ -114,11 +114,11 @@
+         uint32_t count = 0;
+         api("zetMetricGet", [&] { return zetMetricGet(gs[g], &count, nullptr); });
+         bounded(count == gp.metricCount);
+-        const uint32_t requested = std::min(count, uint32_t(8));
++        const uint32_t requested = count; // Full schema, still bounded by total 4096 below.
+         std::cout << "{\"kind\":\"metric_scope\",\"available\":" << count << ",\"requested\":"
+-                  << requested << ",\"complete_catalog\":" << (count <= 8 ? "true" : "false") << "}\n";
++                  << requested << ",\"complete_catalog\":" << "true" << "}\n";
+         if (!requested) continue;
+-        bounded(total_metrics + requested <= 4096);
++        bounded(requested <= 4096 - total_metrics); // Check before allocation, without unsigned addition overflow.
+         std::vector<zet_metric_handle_t> ms(requested); uint32_t got = requested;
+         api("zetMetricGet", [&] { return zetMetricGet(gs[g], &got, ms.data()); });
+         bounded(got == requested);
+@@ -139,6 +139,8 @@
+ void enumerate() {
+     const char* enabled = std::getenv("ZET_ENABLE_METRICS");
+     if (!enabled || std::strcmp(enabled, "1")) throw Stop{"ENVIRONMENT_REJECTED"};
++    const char* hierarchy = std::getenv("ZE_FLAT_DEVICE_HIERARCHY");
++    if (!hierarchy || std::strcmp(hierarchy, "FLAT")) throw Stop{"ENVIRONMENT_REJECTED"};
+     api("zeInit", [] { return zeInit(0); }); // Raw driver enumeration; no selector assumptions.
+     const auto ds = handles<ze_driver_handle_t>("zeDriverGet", 8,
+         [](uint32_t* n, ze_driver_handle_t* p) { return zeDriverGet(n, p); });
