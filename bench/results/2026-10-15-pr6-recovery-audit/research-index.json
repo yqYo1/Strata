@@ -6844,15 +6844,15 @@
     "main_reconciliation": "research-review-round953-main-reconciliation-v1.json"
   },
   "current_main_boundary": {
-    "recorded_utc": "2026-10-16T20:24:36.821985+00:00",
+    "recorded_utc": "2026-10-16T20:29:33.790799+00:00",
     "goal": "Dedicated long prefill repeated >600 then1000tok/s; eventual decode70tok/s. Not achieved.",
     "current_model_comparison": "Score33 optimized median459.1 versus packed459.3tok/s, six processes, final pair overlap qualification retained; no packed speed adoption. Earlier uncontaminated score33 cohort median464.1tok/s remains recorded.",
-    "changes": "R962/R963 audit integrated through PR25. A second Main source audit caught missing allocation-domain/extent validation in the unexecuted GDN proposal; v1 blocked, corrected v2 privately prepared and exact-base patch validated. Product source unchanged.",
-    "next": "Existing exact-identity waiter has precedence. After the foreign CPU benchmark exits, run and analyze the paired model profile/census before selecting placement, MoE or private kernel work. No duplicate waiter or foreign process changes.",
+    "changes": "R962/R963 arena audit integrated through PR25. Main caught and corrected missing allocation/domain validation in the unexecuted GDN proposal before native execution; v1 blocked, v2 independently source-reviewed by native Luna-max R964. Product source unchanged; no new performance result.",
+    "next": "Exact foreign CPU benchmark PID3431768/start52544839 is live, as is waiter3474427/start52649657. Existing waiter alone attempts paired current-model profile after foreign exit, with its original finite budget. Analyze profile before placement/MoE/QSA/GDN selection. Do not execute blocked v1; v2 requires native compile, traced8-launch smoke/refusal0 and clean fault result before longer component/regressions.",
     "compile_or_GPU_work_this_boundary": false,
     "source_inspection_command": "Isolated Git index patch validation and immutable source/fixture hashes; no native execution.",
     "full_physical262144_model_consume_RESTORE": "Unqualified; component coverage is insufficient.",
-    "default_sync_PR": "https://github.com/yqYo1/Strata/pull/25"
+    "default_sync_PR": "https://github.com/yqYo1/Strata/pull/26"
   },
   "research_review_round955": {
     "review_path": "research-review-round955-v1.json",
@@ -7145,7 +7145,24 @@
     "physical262144_model_qualified": false,
     "RESTORE_qualified": false,
     "performance_adopted": false,
-    "superseded_v1": "gdn-output16-only-v1/DO_NOT_RUN.json"
+    "superseded_v1": "gdn-output16-only-v1/DO_NOT_RUN.json",
+    "native_source_review": "research-review-round964-v1.json",
+    "source_review_disposition": "source_corrected_accept_for_staged_qualification_with_gates",
+    "prospective_traced_kernel_counts": {
+      "smoke": {
+        "legacy": 2,
+        "candidate": 6,
+        "total": 8
+      },
+      "component": {
+        "legacy": 4,
+        "candidate": 14,
+        "total": 18
+      },
+      "all_refusals": 0
+    },
+    "trace_gate": "All accepted baseline/repeat/split outputs must pass before expected launch totals can qualify rejection; preserve UR entries/results and fresh fault receipt. No component launch before smoke passes.",
+    "supported_target": "This PC only: 64-bit size_t; fixed dimensions and T<=INT32_MAX bound span products. 32-bit is not a qualified target."
   },
   "research_review_round963": {
     "review_path": "research-review-round963-v1.json",
@@ -7161,5 +7178,18 @@
     "index_edit_performed": true,
     "review_sha256": "0dffe65849692b954762e46748dcbff518473c138c472b62b2a91e80bf3f0ed4",
     "dispatch_performed": false
+  },
+  "research_review_round964": {
+    "review_path": "research-review-round964-v1.json",
+    "operational_digest_path": "research-review-round964-v1.ja.md",
+    "status": "v2 source review accepted for staged qualification with launch-count and runtime gates; not compiled/run/adopted; profile retains precedence",
+    "schedulable_now": false,
+    "dispatch_performed": false,
+    "reviewed_candidate_patch_sha256": "a1d4a334ebe6f58a228dfd5f6bb45efae8ec9ef96465bc89aca3d95a769c7974",
+    "original_v1_status": "blocked_unexecuted_preserve_unchanged",
+    "review_sha256": "13eae04202e264e96723bf5b654e110426906b8d529d50cf92c5146ad28d84e7",
+    "operational_digest_sha256": "fc8a3fcc365e2c07bcfa0a46a966c55832611402e53cf0427ffc98b3f08ce9cc",
+    "Main_source_review_digest_read": true,
+    "reviewer_scope": "Completed concrete source-correction report and full private patch/fixture; not a new Orca knowledge-collection task."
   }
 }
