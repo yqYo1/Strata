@@ -19,6 +19,7 @@
 #include <array>
 #include <bit>
 #include <charconv>
+#include <cerrno>
 #include <chrono>
 #include <cmath>
 #include <cstdio>
@@ -37,6 +38,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <unistd.h>
 
 extern char** environ; // Target is explicitly Linux-only in the validation wrapper.
 namespace {
@@ -52,6 +54,17 @@ constexpr const char* baseline = "7b1bd9b67d58f2d653a2184b93e5ddb83f7dcc32";
 void require(bool ok, const std::string& why) { if (!ok) throw std::runtime_error(why); }
 double ms(Clock::time_point start) { return std::chrono::duration<double, std::milli>(Clock::now() - start).count(); }
 void phase(const char* name) { std::fprintf(stderr, "pr6_prefill_api phase=%s\n", name); std::fflush(stderr); }
+// Main owns process/environment/ELF-map inspection and the external deadline.
+// One byte per hold; no line buffering, prefetch or runtime call for readiness.
+void main_gate(const char* name, unsigned& released) {
+    require(std::printf("PR6_PREFILL_READY %s\n", name) > 0 &&
+            std::fflush(stdout) == 0, "cannot publish Main gate");
+    char byte = 0;
+    ssize_t count;
+    do { count = ::read(STDIN_FILENO, &byte, 1); } while (count < 0 && errno == EINTR);
+    require(count == 1 && byte == 'X', "Main gate not released");
+    ++released;
+}
 int64_t number(const std::string& value) {
     int64_t result = 0;
     auto [end, error] = std::from_chars(value.data(), value.data() + value.size(), result);
@@ -173,6 +186,10 @@ std::map<std::string, std::string> environment(const Options& o) {
         {"STRATA_PREFILL_FIRST", std::to_string(o.first)},
         {"STRATA_PREFILL_LAYER_MAJOR_R_GPU", std::to_string(o.gpu_rows)},
         {"STRATA_PREFILL_RING", std::to_string(o.ring)}};
+    // Fixed pre-exec supervisor policy only. The restored engine does not read
+    // these names; acceptance does not establish a behavioral guarantee.
+    const std::map<std::string, std::string> fixed_optional{
+        {"STRATA_SYCL_PREFILL_SAME_QUEUE", "1"}, {"STRATA_SYCL_VERIFY_NATIVE_CAPTURE", "0"}};
     const std::set<std::string> optional{"STRATA_TRACE", "STRATA_PREFILL_TIMING", "STRATA_PREFILL_TRANSFER_TIMING"};
     std::map<std::string, std::string> result;
     for (char** p = environ; *p; ++p) {
@@ -181,7 +198,9 @@ std::map<std::string, std::string> environment(const Options& o) {
         if (equal == std::string::npos) continue;
         const auto key = entry.substr(0, equal), value = entry.substr(equal + 1);
         if (key.starts_with("STRATA_")) {
-            require(required.contains(key) || (optional.contains(key) && value == "1"), "unsupported inherited engine variable: " + key);
+            require(required.contains(key) || (optional.contains(key) && value == "1") ||
+                    (fixed_optional.contains(key) && fixed_optional.at(key) == value),
+                    "unsupported inherited engine variable: " + key);
         }
         bool relevant = key == "PATH" || key == "LD_LIBRARY_PATH";
         for (const auto* prefix : {"STRATA_", "SYCL_", "ONEAPI_", "ZE_", "ZES_", "UR_", "IGC_", "NEO_", "MKL_", "OMP_", "DPCPP_"})
@@ -317,6 +336,8 @@ int main(int argc, char** argv) {
         const auto started = Clock::now();
         const auto o = parse(argc, argv);
         const auto env = environment(o);
+        unsigned main_gates_released = 0;
+        main_gate("before-runtime", main_gates_released);
         std::string token_digest;
         const auto ids = tokens(o, token_digest); // Immutable through retirement and all owner destruction.
         core::ModelGeometry g;
@@ -385,6 +406,11 @@ int main(int argc, char** argv) {
                     r.compute->get_device() == r.allocation->get_device(), "checked queues do not share the allocation context/device");
             device_name = r.compute->get_device().get_info<sycl::info::device::name>();
             driver = r.compute->get_device().get_info<sycl::info::device::driver_version>();
+            require(std::fprintf(stderr, "pr6_prefill_api device=%s driver=%s\n", device_name.c_str(), driver.c_str()) > 0 &&
+                    std::fflush(stderr) == 0, "cannot publish selected device/driver");
+            // Intentionally within the existing 600s initialization deadline:
+            // Main must budget this inspection together with runtime/model load.
+            main_gate("runtime-ready", main_gates_released);
             r.allocate(r.weights, weight_bytes);
             require(r.wt.load(o.root, r.weights, weight_bytes, err, &skip), err);
             require(core::check_all(r.wt, g, err), err);
@@ -456,6 +482,7 @@ int main(int argc, char** argv) {
         require(r.prefill->init(r.wt,g,r.ss,r.experts.get(),nullptr,nullptr,o.chunk,r.compute,err),err);
         require(r.prefill->chunk() == o.chunk && r.ss.db == nullptr, "prefill chunk/doorbell gate failed");
         const double prefill_init_ms = ms(pf_init_started);
+        main_gate("before-prefill", main_gates_released);
         phase("prefill_run"); const auto run_started = Clock::now();
         require(r.prefill->run(ids.data(),o.count,0,err),err);
         strata::retire_queue(*r.compute);
@@ -496,12 +523,15 @@ int main(int argc, char** argv) {
             require(std::fclose(file.release()) == 0,"final row capture close failed");
         }
         phase("cleanup"); const auto cleanup_started = Clock::now(); r.close(); const double cleanup_ms = ms(cleanup_started);
+        main_gate("after-cleanup", main_gates_released);
+        require(main_gates_released == 4, "incomplete Main inspection gate receipt");
         phase("complete");
         const int64_t first_len = o.first > 0 && o.first < o.chunk && o.count > 2*o.first ? o.first : std::min(o.chunk,o.count);
         const int64_t effective_gpu = o.gpu_rows == o.count ? o.count : o.gpu_rows < first_len ? 0 :
                                       first_len + (o.gpu_rows-first_len)/o.chunk*o.chunk;
         std::cout << std::setprecision(17)
           << "{\"status\":\"PREFILL_ONLY_COMPLETED_UNCOMPARED\",\"baseline_commit\":" << quoted(baseline)
+          << ",\"main_gates_released\":" << main_gates_released
           << ",\"validation_small_input\":" << (o.validation_small_input ? "true" : "false")
           << ",\"measurement_scope\":" << quoted(o.validation_small_input ? "safety_correctness_only" : "long_input_prefill")
           << ",\"model_root\":" << quoted(o.root) << ",\"shards\":[";

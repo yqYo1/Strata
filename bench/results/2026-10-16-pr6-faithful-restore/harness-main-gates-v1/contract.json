@@ -1,0 +1,41 @@
+{
+  "status": "SOURCE_PROPOSAL_UNBUILT_UNEXECUTED",
+  "target": "validation/pr6-restore/harness/prefill_api.cpp",
+  "gate_protocol": {
+    "transport": "stdout flushed ASCII line; stdin exactly one byte X per gate; EINTR retry only",
+    "lines": [
+      "PR6_PREFILL_READY before-runtime",
+      "PR6_PREFILL_READY runtime-ready",
+      "PR6_PREFILL_READY before-prefill",
+      "PR6_PREFILL_READY after-cleanup"
+    ],
+    "final_receipt_field": "main_gates_released",
+    "required_count": 4,
+    "failure": "Publish/flush error, EOF, non-X byte or read error fails; no completion JSON on gate failure. Existing runtime cleanup/fail-stop remains authoritative."
+  },
+  "env_fixed_optional": {
+    "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+    "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0"
+  },
+  "env_contract": "Absent permitted; other values rejected; existing required and trace/timing-only optional variables unchanged; existing relevant environment receipt unchanged; no environment mutation.",
+  "historical_env_consumers": "Neither fixed optional name occurs in validation/pr6-restore source at capture. Prefill already aliases copy=cs with copy_owned=false independently; verifier remains excluded. These accepted names give no new behavioral guarantee.",
+  "deadlines": "Existing initialization 600s and retirement/head/cleanup budgets unchanged. runtime-ready hold consumes initialization budget; Main external supervisor must bound each hold and total runtime with room for remaining load. Other three holds outside initialization deadline. No new process watchdog.",
+  "measurement": "Original timer placements unchanged: initialization includes runtime-ready inspection; prefill_run including final callback copy, prefill_init and cleanup exclude new holds; wall_to_receipt includes all holds. No speed claim from this proposal.",
+  "owners": "No new queue, allocation, submission, wait, free or owner mutation in gate helper. All Runtime and host buffer lifetimes retained; after-cleanup only after r.close returns successfully.",
+  "required_main_gates": [
+    "complete patch review against captured preimage",
+    "integration only after current build closes",
+    "compile/ELF-map/provider and fixed-env qualification",
+    "four-release/error protocol qualification",
+    "supervised model-small safety/correctness/fault and cleanup qualification",
+    "separate long officialbench-derived input measurement",
+    "model quality/state",
+    "physical262144",
+    "RESTORE",
+    "repeated >600 tok/s; continue toward1000"
+  ],
+  "validation_run_by_worker": [],
+  "protected_record_opened": false,
+  "git_commands_run": false,
+  "existing_files_modified": false
+}
