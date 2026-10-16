@@ -15,7 +15,9 @@ set(pr6_device "${pr6_before}${pr6_handler}${pr6_after}")
 # Register the actual owning shared_ptr; stale pointer addresses cannot authorize
 # a later unrelated queue. Every selected default/create_queue(true) uses this.
 set(pr6_return "return _queues.back().get();")
-string(REGEX MATCHALL "return _queues[.]back[(][)][.]get[(][)];" pr6_returns "${pr6_device}")
+# Exclude the C++ semicolon from the match: CMake would treat it as a list
+# separator and count an extra empty item under CMP0007 NEW.
+string(REGEX MATCHALL "return _queues[.]back[(][)][.]get[(][)]" pr6_returns "${pr6_device}")
 list(LENGTH pr6_returns pr6_return_count)
 if(NOT pr6_return_count EQUAL 1)
   message(FATAL_ERROR "Pinned DPCT queue-creation return is not unique")
