@@ -1,0 +1,301 @@
+{
+  "review_round": "R870",
+  "review_type": "native Codex decision-support review of completed Orca knowledge collections",
+  "review_date": "2026-10-16",
+  "assignment": {
+    "requested_reports": [
+      "R867",
+      "R868",
+      "R869"
+    ],
+    "purpose": "Review report/spec/primary-source fit, scope, depth, novelty, and source accuracy; keep Main knowledge bodies held.",
+    "plan_path": "research-scope-plan-round866-v1.json",
+    "plan_sha256": "c1f2eb2964a07074633844bdb6d5c8ba8995d7145eedd8212c18a2eb64c7ff26",
+    "plan_review": "All three finite questions, word budgets, primary-source bounds, prior-overlap boundaries, and public-source-only prerequisites match their completed task specifications.",
+    "index_before_path": "research-index.json",
+    "index_before_sha256": "40e0c42af082876d385220522f43df698e5db542b65873ebd1ce24cf29352e1c",
+    "index_before_report_count": 270
+  },
+  "overall": {
+    "result": "accepted_as_knowledge_collection",
+    "factual_corrections": [],
+    "main_body_read": false,
+    "main_retrieval_needed_now": false,
+    "collection_bodies_main_held": true,
+    "future_scope_recommendations": [],
+    "next_scope_reason": "No profile-independent follow-up is needed to make a current Main decision; wait for Main to state a concrete question from its own causal measurements before scheduling a dependent study."
+  },
+  "operational_digest": {
+    "path": "research-scope-review-round870-v1.ja.md",
+    "sha256": "568dbd678c155aacc8dbf7466a9b7ba2e03c0c453b27876611f949ba20aee403"
+  },
+  "reports": [
+    {
+      "round": "R867",
+      "classification": "knowledge_collection",
+      "title": "Fusion and materialization boundaries in GPU analytical query pipelines",
+      "scope_and_novelty_assessment": "The report answers the assigned finite question, remains within its named mechanism boundary, and is distinct from indexed/reviewed adjacent reports. No new implementation or product recommendation is made.",
+      "budget_assessment": {
+        "substantive_words_before_source_ledger_or_contexts": 1461,
+        "all_whitespace_words": 1650,
+        "primary_urls": 4,
+        "scope_budget": "pass"
+      },
+      "source_accuracy": "Verified against the linked original papers or official API/vendor documentation; claims remain bounded by the source environment and timing contract.",
+      "source_checks": [
+        {
+          "source": "Wu et al., Optimizing Data Warehousing Applications for GPUs Using Kernel Fusion/Fission (2012)",
+          "url": "https://www.istc-cc.cmu.edu/publications/papers/2012/optimizing-warehousing.pdf",
+          "verified": "The controlled pair of random-int32 SELECTs keeps 25%; reported average fused throughput is 49.9% above host round-trip and 6.2% above retaining the intermediate in GPU memory. The paper separates those throughput findings from GPU-only compute and identifies the round-trip as 54.0% of total time for that arm.",
+          "scope_limit": "Fermi/C2070-era measurements and manually transformed kernels; not a portable threshold."
+        },
+        {
+          "source": "Cao et al., GPU Database Systems Characterization and Optimization (PVLDB 17(3), 2023)",
+          "url": "https://www.vldb.org/pvldb/vol17/p441-cao.pdf",
+          "verified": "Q21 Table 4 gives TQP idx_select 9.55 ms/23.13%; the paper describes idx_select as creating a tensor after predicate evaluation. It reports 172 BlazingSQL and 190 TQP kernels versus four each for Crystal and HeavyDB, with the hash-join build separated.",
+          "scope_limit": "Cross-system characterization, not a controlled fusion-only ablation; the report says so."
+        },
+        {
+          "source": "Wu et al., Red Fox: An Execution Environment for Relational Query Processing on GPUs (CGO 2014)",
+          "url": "https://istc-cc.cmu.edu/publications/papers/2014/cgo14_redfox.pdf",
+          "verified": "Section 5.3 supports the Q1 plan-ordering example: selection moved earlier, aggregation performed as soon as ready, intermediate footprint halved, and 0.16 s execution excluding PCIe, reported as 1.8x faster than original.",
+          "scope_limit": "Plan reordering, not a fusion ablation."
+        },
+        {
+          "source": "Menon et al., Relaxed Operator Fusion for In-Memory Databases (PVLDB 11(1), 2017)",
+          "url": "https://www.vldb.org/pvldb/vol11/p1-menon.pdf",
+          "verified": "The staged fusion/compiler analogy is CPU/in-memory and the report explicitly denies transfer of its performance numbers to GPU."
+        }
+      ],
+      "corrections": [],
+      "nonblocking_review_notes": [
+        "The report correctly labels its byte/launch model as analytical and distinguishes controlled Fermi microbenchmarks from cross-system Q21 characterization."
+      ],
+      "main_retrieval": {
+        "needed_now": false,
+        "hold_body": true,
+        "main_body_read": false,
+        "sections": [
+          "15-24",
+          "25-34",
+          "35-42",
+          "43-46"
+        ],
+        "keys": [
+          "relational pipeline fusion vs materialization",
+          "selection and compaction costs",
+          "launch and intermediate byte model",
+          "resource pressure and pipeline breakers",
+          "noncausal cross-system timing limits"
+        ],
+        "preserve_caveats": [
+          "C2070 measurements and Red Fox plan-reordering are historical, system-specific evidence, not a controlled universal fusion crossover.",
+          "Cao et al. compare different query systems rather than isolating fusion as a single experimental variable.",
+          "The byte/launch model is arithmetic, not measured bandwidth or a Strata/Arc result."
+        ]
+      },
+      "tags": [
+        "GPU analytical query",
+        "operator fusion",
+        "materialization",
+        "selection projection",
+        "relational pipeline",
+        "launch overhead",
+        "intermediate reuse"
+      ],
+      "lifecycle": {
+        "launch_path": "orca-research-round867-launch-v1.json",
+        "launch_sha256": "a87ea55ebc2e51ac68d429db807cc8e6f5bb4073f0a86810f911961be4bd062d",
+        "settlement_path": "orca-round867-settlement-v1.json",
+        "settlement_sha256": "1d42a549d8516aad44ddacf43e011918a9c2f2d01d0dcb360a96a60cdb34069c",
+        "release_path": "orca-round867-release-v1.json",
+        "release_sha256": "db2cb739400a1d467de0ceb0fb7a8af7b71c17d8cb117fdad5d8461dcb5736a0",
+        "state": "worker succeeded/settled; release completed; transcript captured"
+      }
+    },
+    {
+      "round": "R868",
+      "classification": "knowledge_collection",
+      "title": "Tile-local attachment lifetime and external-memory traffic in tile-based rendering",
+      "scope_and_novelty_assessment": "The report answers the assigned finite question, remains within its named mechanism boundary, and is distinct from indexed/reviewed adjacent reports. No new implementation or product recommendation is made.",
+      "budget_assessment": {
+        "substantive_words_before_source_ledger_or_contexts": 1573,
+        "all_whitespace_words": 1872,
+        "primary_urls": 7,
+        "scope_budget": "pass"
+      },
+      "source_accuracy": "Verified against the linked original papers or official API/vendor documentation; claims remain bounded by the source environment and timing contract.",
+      "source_checks": [
+        {
+          "source": "Khronos Vulkan 1.4.365 specification (2026-10-02)",
+          "url": "https://registry.khronos.org/vulkan/specs/latest/html/vkspec.html",
+          "verified": "The retrieved official build metadata reports version 1.4.365 dated 2026-10-02. The normative STORE_OP_NONE definition says no store access only when the pass writes no values; if it writes values it behaves like DONT_CARE. The report distinguishes that from mutable guide advice.",
+          "scope_limit": "The URL tracks latest; report pins the observed version/date."
+        },
+        {
+          "source": "Khronos Vulkan TBR Best Practices",
+          "url": "https://docs.vulkan.org/guide/latest/tile_based_rendering_best_practices.html",
+          "verified": "Guide describes tile size as opaque, says subpass merge is implementation-dependent, points to merge feedback, and documents transient/lazy attachments and inline MSAA resolve as opportunities rather than universal physical guarantees.",
+          "scope_limit": "Mutable guide, explicitly labeled non-normative and retrieval-dated in report."
+        },
+        {
+          "source": "Microsoft Direct3D 12 Render Passes",
+          "url": "https://learn.microsoft.com/en-us/windows/win32/direct3d12/direct3d-12-render-passes",
+          "verified": "The API enables drivers to minimize load/store traffic, but runtime mapping to ordinary surfaces and lack of performance benefit on unsupported drivers are documented; application dependency/resource-state duties remain.",
+          "scope_limit": "D3D12 driver support only."
+        },
+        {
+          "source": "Arm Understanding Render Passes, document 102479_0100_02_en",
+          "url": "https://documentation-service.arm.com/static/6560a5942c8b3557fee70a16",
+          "verified": "The cited 1440p RGBA8 60-FPS 4x-MSAA round-trip and inline-resolve arithmetic is present in the 2021 guide. The report labels its separate 1920x1080 arithmetic as a byte model, not measured bandwidth.",
+          "scope_limit": "Mali guidance/example only."
+        },
+        {
+          "source": "Arm GPU Best Practices Developer Guide, issue 10",
+          "url": "https://documentation-service.arm.com/static/67a62b17091bfc3e0a947695",
+          "verified": "AFBC is described as transparent where eligible; issue 10 documents that transient-attachment usage can block AFBC before Valhall, and warns that image/storage/access choices can prevent compression or trigger decompression.",
+          "scope_limit": "Arm/Mali generation-specific."
+        },
+        {
+          "source": "Apple, Tailor Your Apps for Apple GPUs and Tile-Based Deferred Rendering",
+          "url": "https://developer.apple.com/documentation/metal/tailor-your-apps-for-apple-gpus-and-tile-based-deferred-rendering?language=objc",
+          "verified": "Apple documentation describes imageblock/tile memory shared between fragment and tile stages, and combining rendering and compute in a pass through tile shaders.",
+          "scope_limit": "Apple silicon/Metal example only."
+        }
+      ],
+      "corrections": [],
+      "nonblocking_review_notes": [
+        "The 1,872 whitespace-token count includes source ledger and structure; the body through the source ledger is 1,573 words and fits the substantive 1,300–1,700 budget.",
+        "The STORE_OP_NONE guide/spec distinction is handled correctly; mutable guide and vendor examples remain explicitly version/device bounded."
+      ],
+      "main_retrieval": {
+        "needed_now": false,
+        "hold_body": true,
+        "main_body_read": false,
+        "sections": [
+          "6-9",
+          "10-26",
+          "27-32",
+          "33-42"
+        ],
+        "keys": [
+          "API content/lifetime contract vs physical DRAM behavior",
+          "subpass merging and local reads",
+          "transient/lazy attachments",
+          "store/load and MSAA resolve byte arithmetic",
+          "tile working-set capacity",
+          "AFBC access constraints and portability limits"
+        ],
+        "preserve_caveats": [
+          "The mutable Vulkan guide and Apple page are retrieval-dated; the normative Vulkan specification is identified as 1.4.365 dated 2026-10-02.",
+          "Subpass merge, tile residency, and compression are implementation/device choices; no Intel compute or Arc claim follows.",
+          "Arm AFBC restrictions and Apple imageblock behavior apply only to documented vendor generations/APIs."
+        ]
+      },
+      "tags": [
+        "tile-based rendering",
+        "Vulkan render pass",
+        "transient attachment",
+        "attachment lifetime",
+        "MSAA resolve",
+        "load store ops",
+        "AFBC compression"
+      ],
+      "lifecycle": {
+        "launch_path": "orca-research-round868-launch-v1.json",
+        "launch_sha256": "3accdd53285ab8f5730a3900345e50e600deb302c91333f3b68793a8c9733d5e",
+        "settlement_path": "orca-round868-settlement-v1.json",
+        "settlement_sha256": "6f57f16ad5918f1ececf9be9a566989c0e9dfacdb0021414525009edce9841f0",
+        "release_path": "orca-round868-release-v1.json",
+        "release_sha256": "f74bed4d21dffed525445b607cbb4d640bac42f24644bf0c2ae6eab6d85a6e5f",
+        "state": "worker succeeded/settled; release completed; transcript captured"
+      }
+    },
+    {
+      "round": "R869",
+      "classification": "knowledge_collection",
+      "title": "Direction-optimized single-GPU BFS frontier representation and switching costs",
+      "scope_and_novelty_assessment": "The report answers the assigned finite question, remains within its named mechanism boundary, and is distinct from indexed/reviewed adjacent reports. No new implementation or product recommendation is made.",
+      "budget_assessment": {
+        "substantive_words_before_source_ledger_or_contexts": 1612,
+        "all_whitespace_words": 1700,
+        "primary_urls": 4,
+        "scope_budget": "pass"
+      },
+      "source_accuracy": "Verified against the linked original papers or official API/vendor documentation; claims remain bounded by the source environment and timing contract.",
+      "source_checks": [
+        {
+          "source": "Beamer et al., Direction-Optimizing Breadth-First Search (SC 2012)",
+          "url": "https://www.scottbeamer.net/pubs/beamer-sc2012.pdf",
+          "verified": "The paper documents push/pull, queue-to-bitmap conversion, that a directed graph may require an inverse graph that nearly doubles storage, and the CPU-tuned alpha=14/beta=24 thresholds. It also records conversion and frontier-degree accounting overhead and long-tail counterexamples.",
+          "scope_limit": "Shared-memory CPU evidence, not a GPU threshold."
+        },
+        {
+          "source": "Wang et al., Gunrock: A High-Performance Graph Processing Library on the GPU (PPoPP 2016)",
+          "url": "https://arxiv.org/html/1501.05387v6",
+          "verified": "The original paper gives the frontier-bitmap pull implementation and 1.52x scale-free and 1.28x small-degree/large-diameter BFS group speedups; the report identifies K40c/dataset/timing context and limits interpretation to that system.",
+          "scope_limit": "Historical K40c group-level result, not a universal graph-family rule."
+        },
+        {
+          "source": "Yang, Buluç, and Owens, GraphBLAST (arXiv:1908.01407v1)",
+          "url": "https://arxiv.org/pdf/1908.01407v1",
+          "verified": "Table 9 and §4.3.1 give |Ef*|>|E|/10 for push-to-pull and the reverse below the same estimate, with d|Vf|≈|Ef| and |Eu|≈|E| approximations; §4.3 reports both CSR/CSC plus a single-format memory/performance tradeoff and sparse/dense vectors.",
+          "scope_limit": "Pinned arXiv v1; report preserves the paper’s approximate cost model."
+        },
+        {
+          "source": "Artiles and Saeed, TurboBFS (IPDPSW 2021)",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9007172/",
+          "verified": "The source reports the Titan Xp experiments: top-down best on 21/38 regular and 7/23 irregular graphs; bottom-up on 15/38 regular and 5/23 irregular; hybrid on 6/23 irregular. For the eight larger graphs, first three regular favor bottom-up and five irregular favor hybrid. The report preserves graph-set and format/setup caveats.",
+          "scope_limit": "Paper’s named graph sets and timing boundaries; incomparable to Beamer/Gunrock/GraphBLAST absolute rates."
+        }
+      ],
+      "corrections": [],
+      "nonblocking_review_notes": [
+        "The analytic expected-prefix model is not presented as measured TEPS; CPU, K40c, Titan Xp, and GraphBLAST historical observations remain separated.",
+        "The TurboBFS prose distinguishes graph-family counts and marks preprocessing/timing ambiguities rather than normalizing headline rates."
+      ],
+      "main_retrieval": {
+        "needed_now": false,
+        "hold_body": true,
+        "main_body_read": false,
+        "sections": [
+          "5-20",
+          "21-28",
+          "29-32"
+        ],
+        "keys": [
+          "push frontier edge volume",
+          "pull prefix scans and early exit",
+          "queue/bitmap conversion",
+          "directed graph incoming adjacency storage",
+          "direction-switch crossover models",
+          "format and per-level setup costs"
+        ],
+        "preserve_caveats": [
+          "Beamer alpha/beta thresholds come from a shared-memory CPU study and are not GPU prescriptions.",
+          "Gunrock and TurboBFS results are historical named-device measurements with distinct datasets and metrics.",
+          "TurboBFS graph conversion/setup timing boundaries and undirected stored-arc conventions remain unclear; absolute TEPS should not be compared across papers.",
+          "No Intel Arc/SYCL prediction or Strata adoption follows."
+        ]
+      },
+      "tags": [
+        "GPU BFS",
+        "push pull",
+        "direction optimization",
+        "frontier bitmap",
+        "CSR CSC",
+        "graph traversal",
+        "frontier switching"
+      ],
+      "lifecycle": {
+        "launch_path": "orca-research-round869-launch-v1.json",
+        "launch_sha256": "cea37b07818c051a9f71ce10a94dccf66fd39f39c4b109d2eb8a8df54de5bbc7",
+        "settlement_path": "orca-round869-settlement-v1.json",
+        "settlement_sha256": "8270bd4cf17f6601e1dbae847b91c521e5baf3c22b53e7c8cabe7d2ed91ad978",
+        "release_path": "orca-round869-release-v1.json",
+        "release_sha256": "04e215688fdd99b73dcf2e908002ce3638ebaab0da586250386f600af9727153",
+        "state": "worker succeeded/settled; release completed; transcript captured"
+      }
+    }
+  ]
+}
