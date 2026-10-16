@@ -1,0 +1,2000 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -34,6 +34,10 @@
+ 
+ option(STRATA_ENABLE_CUDA "Build the CUDA targets (Phase 2+)" OFF)
+ option(STRATA_ENABLE_SYCL "Build the Intel GPU SYCL backend (requires icpx)" OFF)
++option(STRATA_SYCL_VLLM_XE2_NATIVE16 "Build opt-in unqualified R810 vLLM Xe2 native16 backend" OFF)
++if(STRATA_SYCL_VLLM_XE2_NATIVE16 AND NOT STRATA_ENABLE_SYCL)
++  message(FATAL_ERROR "STRATA_SYCL_VLLM_XE2_NATIVE16 requires STRATA_ENABLE_SYCL=ON")
++endif()
+ option(STRATA_ENABLE_HIP "Build the HIP targets for wave32 AMD GPUs (gfx1100, gfx1201; gfx1030 unvalidated)" OFF)
+ option(STRATA_PREFILL_MMQ "Build GGML MMQ prefill for HIP (SYCL has native MMQ built in)" OFF)
+ # CUDA: MMQ prompt kernels for Q4_K / Q5_K / Q5_1 (Unsloth's UD-Q4_K_XL experts).  Off by default: the engine loads
+--- a/cmake/sycl_backend.cmake
++++ b/cmake/sycl_backend.cmake
+@@ -45,6 +45,11 @@
+ 
+ set(STRATA_SYCL_DEVICE_ARCH "" CACHE STRING "Intel GPU AOT target, e.g. bmg_g21 (empty uses JIT)")
+ option(STRATA_SYCL_AOT_DOUBLE_GRF "Use 256 GRFs for ESIMD AOT images (no effect for JIT)" OFF)
++if(STRATA_SYCL_VLLM_XE2_NATIVE16)
++  if(NOT STRATA_SYCL_DEVICE_ARCH STREQUAL "bmg-g21-a0" OR STRATA_PORTABLE OR STRATA_SYCL_AOT_DOUBLE_GRF)
++    message(FATAL_ERROR "VLLM Xe2 requires STRATA_SYCL_DEVICE_ARCH=bmg-g21-a0, STRATA_PORTABLE=OFF, STRATA_SYCL_AOT_DOUBLE_GRF=OFF")
++  endif()
++endif()
+ if(STRATA_SYCL_DEVICE_ARCH)
+   if(STRATA_PORTABLE)
+     message(FATAL_ERROR "STRATA_SYCL_DEVICE_ARCH selects a GPU-specific binary; disable STRATA_PORTABLE")
+@@ -57,6 +62,11 @@
+   target_compile_options(strata_sycl_runtime PUBLIC -fsycl-targets=spir64_gen)
+   target_link_options(strata_sycl_runtime PUBLIC -fsycl-targets=spir64_gen)
+   set(_strata_sycl_aot_options "-device ${STRATA_SYCL_DEVICE_ARCH}")
++  if(STRATA_SYCL_VLLM_XE2_NATIVE16)
++    # Exact R810 backend request, one string rather than competing -device flags.
++    # Applies at whole-engine device link; Main must assess other-kernel effects.
++    string(APPEND _strata_sycl_aot_options " -internal_options -cl-intel-256-GRF-per-thread")
++  endif()
+   if(STRATA_SYCL_AOT_DOUBLE_GRF)
+     # oneAPI 2026.1 AOT does not forward the per-kernel grf_size property.
+     # Keep this diagnostic override optional: it also changes decode kernels.
+@@ -114,6 +124,9 @@
+ target_link_libraries(strata_prefill PUBLIC strata_engine MKL::MKL_SYCL::BLAS)
+ target_compile_definitions(strata_prefill PRIVATE STRATA_PREFILL_MMQ=1 STRATA_PREFILL_FUSED=1)
+ target_compile_options(strata_prefill PRIVATE -fno-fast-math -ffp-contract=off)
++if(STRATA_SYCL_VLLM_XE2_NATIVE16)
++  include(cmake/sycl_vllm_xe2_native16.cmake)
++endif()
+ # Manual native FP16/BF16 I/O fixture: never in the default build or CTest.
+ add_executable(sycl_gemm16_test EXCLUDE_FROM_ALL tests/sycl/gemm16.cpp)
+ target_link_libraries(sycl_gemm16_test PRIVATE strata_prefill)
+--- a/include/strata/prefill/gemm.hpp
++++ b/include/strata/prefill/gemm.hpp
+@@ -8,9 +8,15 @@
+ 
+ #include <cstddef>
+ #include <cstdint>
++#if defined(STRATA_ENABLE_SYCL)
++#include <memory>
++#endif
+ #include <string>
+ 
+ namespace strata::prefill {
++#if defined(STRATA_ENABLE_SYCL)
++struct Native16BackendState;
++#endif
+ 
+ class Gemm {
+ public:
+@@ -43,6 +49,9 @@
+     /// No implicit scratch, fallback, clamp, or allocation. Unsupported devices
+     /// and geometry throw before submission. Caller retains buffers until the
+     /// in-order stream completes; null stream follows synchronous finish().
++    /// Optional backend=vllm retains these tensor/storage meanings, but requires
++    /// beta=0, N%64=K%32=0, 64-byte bases, ldy%8=0 and a live full Y[T,ldy]
++    /// rectangle. See docs/SYCL_VLLM_XE2_NATIVE16.md for all limits. No fallback.
+     void f16_out16(const uint16_t* X, const uint16_t* W, uint16_t* Y,
+                    int64_t T, int64_t N, int64_t K, bool output_bf16 = false,
+                    int64_t ldy = 0, float beta = 0.0f);
+@@ -68,6 +77,9 @@
+     // bit 3: FP16 scalar output. Calls on a single Gemm require serialized
+     // host ownership, as do init/rebind.
+     uint8_t out16_support_ = 0;
++    // Populated only for vllm. Retains the original Runtime; borrows stream_.
++    // shared_ptr supports the incomplete state type at this public ABI boundary.
++    std::shared_ptr<Native16BackendState> out16_backend_;
+ #endif
+     void* handle_ = nullptr;
+     void* stream_ = nullptr;
+--- a/include/strata/sycl/runtime.hpp
++++ b/include/strata/sycl/runtime.hpp
+@@ -52,6 +52,12 @@
+ void validate_device_span(const void *pointer, size_t bytes,
+                           const sycl::queue &queue);
+ 
++// Same exact-span/domain validation as above; returns the already registered
++// Allocation owner's original Runtime, retaining it without selecting a device.
++// Ownership of the buffer and queue is still the caller's asynchronous duty.
++std::shared_ptr<Runtime> runtime_for_device_span(const void *pointer, size_t bytes,
++                                               const sycl::queue &queue);
++
+ enum class MemoryKind { Device, Host };
+ 
+ // The engine uses one runtime per device so its arenas and launches share a
+--- a/src/sycl/runtime.cpp
++++ b/src/sycl/runtime.cpp
+@@ -14,7 +14,7 @@
+ namespace {
+ // This registry covers both engine arenas and CUDA-adapter device buffers.
+ // Entries refer to their Allocation's retained Runtime; moves keep addresses.
+-struct DeviceSpan { size_t bytes; const Runtime *runtime; };
++struct DeviceSpan { size_t bytes; std::shared_ptr<Runtime> runtime; };
+ struct DeviceRegistry {
+   std::mutex mutex;
+   std::map<uintptr_t, DeviceSpan> spans;
+@@ -165,8 +165,8 @@
+   });
+ }
+ 
+-void validate_device_span(const void *pointer, size_t bytes,
+-                          const sycl::queue &queue) {
++std::shared_ptr<Runtime> runtime_for_device_span(const void *pointer, size_t bytes,
++                                               const sycl::queue &queue) {
+   const auto address = reinterpret_cast<uintptr_t>(pointer);
+   if (!pointer || !bytes || bytes > UINTPTR_MAX - address)
+     throw std::invalid_argument("invalid registered SYCL device span");
+@@ -181,6 +181,12 @@
+       queue.get_context() != entry.runtime->context() ||
+       queue.get_device() != entry.runtime->device())
+     throw std::invalid_argument("SYCL device span exceeds allocation or queue domain");
++  return entry.runtime;
++}
++
++void validate_device_span(const void *pointer, size_t bytes,
++                          const sycl::queue &queue) {
++  (void)runtime_for_device_span(pointer, bytes, queue);
+ }
+ 
+ Allocation::Allocation(std::shared_ptr<Runtime> runtime, size_t bytes,
+@@ -206,7 +212,7 @@
+       auto &registry = device_registry();
+       std::lock_guard lock(registry.mutex);
+       if (!registry.spans.emplace(reinterpret_cast<uintptr_t>(data_),
+-                                  DeviceSpan{bytes_, runtime_.get()}).second)
++                                  DeviceSpan{bytes_, runtime_}).second)
+         throw std::runtime_error("duplicate SYCL device allocation");
+     } catch (...) {
+       sycl::free(data_, runtime_->context());
+--- a/src/prefill/sycl/gemm.cpp
++++ b/src/prefill/sycl/gemm.cpp
+@@ -1,4 +1,5 @@
+ #include "strata/prefill/gemm.hpp"
++#include "native16_backend.hpp"
+ #include "strata/kernels/iq_kernels.hpp"
+ #include "strata/sycl/launch.hpp"
+ #include "strata/sycl/cpu_wait_profile.hpp"
+@@ -49,6 +50,7 @@
+       throw std::invalid_argument("SYCL GEMM is already initialized");
+     scratch_valid(scratch, count);
+     auto &q = queue_for(stream);
++    native16_backend_validate_config(q);
+     stream_ = stream;
+     scratch_ = scratch;
+     scratch_elems_ = count;
+--- a/src/prefill/sycl/gemm16.cpp
++++ b/src/prefill/sycl/gemm16.cpp
+@@ -2,6 +2,16 @@
+ // Native 16-bit producer: FP32 matrix accumulation and FP32 beta epilogue,
+ // followed by one output rounding inside this kernel. No full FP32 tensor.
+ #include "strata/prefill/gemm.hpp"
++#include "strata/prefill/native16.hpp"
++#include "native16_backend.hpp"
++#if defined(STRATA_SYCL_VLLM_XE2_NATIVE16)
++#include "vllm_xe2/native16.hpp"
++#include <sycl/ext/oneapi/experimental/device_architecture.hpp>
++#endif
++#include <cstdio>
++#include <cstdlib>
++#include <cstring>
++#include <utility>
+ #include "strata/sycl/cpu_wait_profile.hpp"
+ #include "strata/sycl/launch.hpp"
+ #include <algorithm>
+@@ -12,7 +22,89 @@
+ #include <sycl/ext/oneapi/matrix/matrix.hpp>
+ 
+ namespace strata::prefill {
++#if defined(STRATA_SYCL_VLLM_XE2_NATIVE16)
++struct Native16BackendState {
++  // Member order ensures the original Runtime outlives the borrowing adapter.
++  std::shared_ptr<sycl_backend::Runtime> runtime;
++  experimental::vllm_xe2_native16::Gemm adapter;
++  Native16BackendState(std::shared_ptr<sycl_backend::Runtime> owner, sycl::queue &q)
++      : runtime(std::move(owner)), adapter(*runtime, q) {}
++};
++#endif
+ namespace {
++enum class Backend { own, vllm };
++enum class VllmTile { automatic, compact, wide };
++struct BackendConfig { Backend backend; VllmTile tile; };
++const BackendConfig &backend_config() {
++  static const BackendConfig config = [] {
++    const char *name = std::getenv("STRATA_SYCL_PREFILL_NATIVE16_BACKEND");
++    const char *tile = std::getenv("STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE");
++    const bool use_vllm = name && std::strcmp(name, "vllm") == 0;
++    if (name && std::strcmp(name, "own") != 0 && !use_vllm)
++      throw std::invalid_argument("STRATA_SYCL_PREFILL_NATIVE16_BACKEND must be own or vllm");
++    VllmTile chosen = VllmTile::automatic;
++    if (tile && std::strcmp(tile, "auto") != 0) {
++      if (std::strcmp(tile, "compact") == 0) chosen = VllmTile::compact;
++      else if (std::strcmp(tile, "wide") == 0) chosen = VllmTile::wide;
++      else throw std::invalid_argument("STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE must be auto, compact or wide");
++    }
++    if (!use_vllm && chosen != VllmTile::automatic)
++      throw std::invalid_argument("VLLM_TILE=compact/wide requires NATIVE16_BACKEND=vllm");
++#if !defined(STRATA_SYCL_VLLM_XE2_NATIVE16)
++    if (use_vllm)
++      throw std::invalid_argument("requested vllm backend is not compiled: enable STRATA_SYCL_VLLM_XE2_NATIVE16");
++#endif
++    // Existing mode parser is immutable and does not select a device/provider.
++    const bool active = native16::requested();
++    std::fprintf(stderr, "[native16-route] engine=%s backend=%s tile=%s%s\n",
++        active ? "bf16" : "0", use_vllm ? "vllm" : "own",
++        use_vllm ? (chosen == VllmTile::automatic ? "auto(T<128:compact;else:wide)" :
++                    chosen == VllmTile::compact ? "compact" : "wide") : "own",
++        use_vllm ? " aot=bmg-g21-a0 proposal=R810 UNQUALIFIED" : "");
++    return BackendConfig{use_vllm ? Backend::vllm : Backend::own, chosen};
++  }();
++  return config;
++}
++#if defined(STRATA_SYCL_VLLM_XE2_NATIVE16)
++void validate_vllm_aot_device(const sycl::queue &q) {
++  namespace ex = sycl::ext::oneapi::experimental;
++  const auto d = q.get_device();
++  if (!d.is_gpu() || d.get_info<sycl::info::device::vendor_id>() != 0x8086 ||
++      q.get_backend() != sycl::backend::ext_oneapi_level_zero ||
++      d.get_info<ex::info::device::architecture>() != ex::architecture::intel_gpu_bmg_g21)
++    throw std::invalid_argument("vllm engine hook requires Intel Level Zero BMG G21 AOT");
++}
++sycl::event vllm_submit(std::shared_ptr<Native16BackendState> &state,
++                        const uint16_t *x, const uint16_t *w, uint16_t *y,
++                        int64_t t, int64_t n, int64_t k, bool input_bf16,
++                        bool output_bf16, int64_t ld, float beta, void *stream) {
++  namespace vx = experimental::vllm_xe2_native16;
++  auto &q = sycl_backend::queue_for(stream);
++  if (!state) {
++    validate_vllm_aot_device(q);
++    // Bootstrap from one actually registered input element; the unchanged
++    // R810 adapter validates all complete logical/strided spans before enqueue.
++    auto owner = sycl_backend::runtime_for_device_span(x, sizeof(uint16_t), q);
++    state = std::make_shared<Native16BackendState>(std::move(owner), q);
++  }
++  if (&q != &state->adapter.queue())
++    throw std::invalid_argument("vllm Gemm stream address changed after binding");
++  const auto &config = backend_config();
++  const auto tile = config.tile == VllmTile::compact ||
++                    (config.tile == VllmTile::automatic && t < 128)
++      ? vx::Tile::compact_16x64 : vx::Tile::wide_128x128;
++  vx::Problem problem;
++  problem.x = x; problem.w = w; problem.y = y;
++  problem.t = t; problem.n = n; problem.k = k; problem.ldy = ld;
++  problem.input = input_bf16 ? vx::Storage::bf16 : vx::Storage::fp16;
++  problem.output = output_bf16 ? vx::Storage::bf16 : vx::Storage::fp16;
++  problem.beta = beta;
++  sycl_backend::cpu_wait_profile::Host submission(sycl_backend::cpu_wait_profile::gemm_submit);
++  auto event = state->adapter.beta0(problem, tile);
++  submission.finish();
++  return event;
++}
++#endif
+ using namespace sycl_backend;
+ namespace mx = sycl::ext::oneapi::experimental::matrix;
+ namespace mi = sycl::ext::intel::experimental::matrix;
+@@ -178,11 +270,29 @@
+   }
+ }
+ } // namespace
++void native16_backend_validate_config([[maybe_unused]] sycl::queue &q) {
++  const auto &config = backend_config();
++#if defined(STRATA_SYCL_VLLM_XE2_NATIVE16)
++  if (config.backend == Backend::vllm) validate_vllm_aot_device(q);
++#else
++  (void)config;
++#endif
++}
+ void Gemm::f16_out16(const uint16_t *x, const uint16_t *w, uint16_t *y,
+                      int64_t t, int64_t n, int64_t k, bool output_bf16,
+                      int64_t ld, float beta) {
+   if (!handle_)
+     throw std::invalid_argument("uninitialized SYCL GEMM16");
++  if (backend_config().backend == Backend::vllm) {
++#if defined(STRATA_SYCL_VLLM_XE2_NATIVE16)
++    auto event = vllm_submit(out16_backend_, x, w, y, t, n, k, false,
++                             output_bf16, ld, beta, stream_);
++    sycl_backend::finish(stream_, event);
++    return;
++#else
++    throw std::invalid_argument("requested vllm backend is not compiled");
++#endif
++  }
+   dispatch<sycl::half>(x, w, y, t, n, k, output_bf16, ld, beta,
+                        stream_, out16_support_);
+ }
+@@ -191,6 +301,16 @@
+                       int64_t ld, float beta) {
+   if (!handle_)
+     throw std::invalid_argument("uninitialized SYCL GEMM16");
++  if (backend_config().backend == Backend::vllm) {
++#if defined(STRATA_SYCL_VLLM_XE2_NATIVE16)
++    auto event = vllm_submit(out16_backend_, x, w, y, t, n, k, true,
++                             output_bf16, ld, beta, stream_);
++    sycl_backend::finish(stream_, event);
++    return;
++#else
++    throw std::invalid_argument("requested vllm backend is not compiled");
++#endif
++  }
+   dispatch<BFloat>(x, w, y, t, n, k, output_bf16, ld, beta,
+                    stream_, out16_support_);
+ }
+--- /dev/null
++++ b/cmake/sycl_vllm_xe2_native16.cmake
+@@ -0,0 +1,41 @@
++# Authored for Strata; repository LICENSE (MIT) applies.
++# Called only with STRATA_SYCL_VLLM_XE2_NATIVE16=ON, after strata_prefill exists.
++set(SYCL_TLA_SOURCE_DIR "" CACHE PATH "Existing Intel sycl-tla 87f6850680a580654b9ea2c80dbc01aeb36ad231 source")
++if(NOT IS_ABSOLUTE "${SYCL_TLA_SOURCE_DIR}" OR NOT IS_DIRECTORY "${SYCL_TLA_SOURCE_DIR}/include")
++  message(FATAL_ERROR "VLLM Xe2 needs explicit absolute existing SYCL_TLA_SOURCE_DIR; no dependency is fetched")
++endif()
++# Enforce the exact R810 include bytes, including inactive literal branches.
++# Hash pinning covers dirty files too; no Git, network or dependency CMake runs.
++file(READ "${CMAKE_CURRENT_LIST_DIR}/vllm_xe2_tla_headers.json" _strata_tla_pins)
++string(JSON _strata_tla_count LENGTH "${_strata_tla_pins}" headers)
++math(EXPR _strata_tla_last "${_strata_tla_count} - 1")
++foreach(i RANGE 0 ${_strata_tla_last})
++  string(JSON path GET "${_strata_tla_pins}" headers ${i} path)
++  string(JSON expected GET "${_strata_tla_pins}" headers ${i} sha256)
++  if(NOT EXISTS "${SYCL_TLA_SOURCE_DIR}/${path}")
++    message(FATAL_ERROR "Pinned TLA header missing: ${path}")
++  endif()
++  file(SHA256 "${SYCL_TLA_SOURCE_DIR}/${path}" actual)
++  if(NOT actual STREQUAL expected)
++    message(FATAL_ERROR "TLA header differs from 87f68506/R810: ${path}")
++  endif()
++endforeach()
++add_library(strata_vllm_xe2_native16 STATIC src/prefill/sycl/vllm_xe2/native16.cpp)
++# The existing production target supplies the sole Runtime/Allocation registry.
++# Never add R810 numerics_chain.cpp or src/sycl/runtime.cpp to this target.
++target_link_libraries(strata_vllm_xe2_native16 PUBLIC strata_sycl_runtime)
++target_include_directories(strata_vllm_xe2_native16 SYSTEM PRIVATE "${SYCL_TLA_SOURCE_DIR}/include")
++target_compile_features(strata_vllm_xe2_native16 PRIVATE cxx_std_20)
++target_compile_definitions(strata_vllm_xe2_native16 PRIVATE
++  CUTLASS_ENABLE_HEADERS_ONLY CUTLASS_ENABLE_SYCL SYCL_INTEL_TARGET)
++target_compile_options(strata_vllm_xe2_native16 PRIVATE
++  -O3 -fsycl -fsycl-targets=spir64_gen -fno-fast-math -ffp-contract=off
++  -fno-sycl-instrument-device-code -ftemplate-backtrace-limit=0)
++# The Runtime target supplies one canonical BMG G21 backend/GRF option string.
++# Translator flags below are the exact R810 proposal flags; acceptance UNRUN.
++target_link_options(strata_vllm_xe2_native16 INTERFACE
++  -fsycl -fsycl-targets=spir64_gen
++  "SHELL:-Xspirv-translator -spirv-ext=+SPV_INTEL_split_barrier,+SPV_INTEL_2d_block_io,+SPV_INTEL_subgroup_matrix_multiply_accumulate")
++target_compile_definitions(strata_prefill PRIVATE STRATA_SYCL_VLLM_XE2_NATIVE16=1)
++target_link_libraries(strata_prefill PRIVATE strata_vllm_xe2_native16)
++message(STATUS "Strata: opt-in R810 vLLM Xe2 native16; BMG G21 AOT; external TLA include bytes pinned; UNQUALIFIED")
+--- /dev/null
++++ b/cmake/vllm_xe2_tla_headers.json
+@@ -0,0 +1,1041 @@
++{
++  "revision": "87f6850680a580654b9ea2c80dbc01aeb36ad231",
++  "origin": "R810 manifest.json source_pins.tla_headers; conservative literal include closure",
++  "headers": [
++    {
++      "path": "include/cute/algorithm/axpby.hpp",
++      "sha256": "2b11f2d6dc6d00c3374b68b0cfbd69c6e3529611a6e56b86e38d025f42c69a0b",
++      "bytes": 3254
++    },
++    {
++      "path": "include/cute/algorithm/clear.hpp",
++      "sha256": "28f97f81b281fea7ccde08a6e1f082f63384e741943b64d304df2e00bc2e5965",
++      "bytes": 2418
++    },
++    {
++      "path": "include/cute/algorithm/cooperative_copy.hpp",
++      "sha256": "e03e105882db8a5df784bfb08a817b8d90789b297fd0ad6e113314486c34965a",
++      "bytes": 14553
++    },
++    {
++      "path": "include/cute/algorithm/cooperative_gemm.hpp",
++      "sha256": "d0de07433f3be215a196acc0cfc969db16ca6b162193634ee0eb502378aee029",
++      "bytes": 24449
++    },
++    {
++      "path": "include/cute/algorithm/copy.hpp",
++      "sha256": "3b47a251bbfef136850e52000fe955d8341fe54b770e4814e32094ba72713417",
++      "bytes": 20355
++    },
++    {
++      "path": "include/cute/algorithm/fill.hpp",
++      "sha256": "e06904e6b029b9a96f4806abd9d7a2006052bff8249fe54d010dc3f682580bce",
++      "bytes": 2911
++    },
++    {
++      "path": "include/cute/algorithm/functional.hpp",
++      "sha256": "a4cd5531fc2d3e0140cda9ad7762538ac11c24041b7ed2eb48f4c3e6490e6786",
++      "bytes": 11058
++    },
++    {
++      "path": "include/cute/algorithm/gemm.hpp",
++      "sha256": "c13946d914d1516b75e9c792da87c4018ce3d9e2de165f5f3a961614af3624ca",
++      "bytes": 19468
++    },
++    {
++      "path": "include/cute/algorithm/prefer.hpp",
++      "sha256": "4faa5471b2712b90de71825644025212246a5cdd499fae27f4da6c1ec71e38d7",
++      "bytes": 2124
++    },
++    {
++      "path": "include/cute/algorithm/prefetch.hpp",
++      "sha256": "d708f5dad04c2da8138d2e88e120c75ccab34b3da7702821b9db29b7f977ed55",
++      "bytes": 5666
++    },
++    {
++      "path": "include/cute/algorithm/reorder.hpp",
++      "sha256": "1f065cc489aade1ff1546ec2a3b97c5f792f90feea248d73bf52a391b99a8acb",
++      "bytes": 11189
++    },
++    {
++      "path": "include/cute/algorithm/tensor_algorithms.hpp",
++      "sha256": "36d7105ddd3e1adf8fa2248b111efd93bda03855024c08bd3e1ec06869d97d28",
++      "bytes": 5501
++    },
++    {
++      "path": "include/cute/algorithm/tuple_algorithms.hpp",
++      "sha256": "4c95c63c694762527eb4f00a57cc2f2b79761e0487d798014b5649f2e99138bb",
++      "bytes": 26209
++    },
++    {
++      "path": "include/cute/arch/cluster_sm90.hpp",
++      "sha256": "d70030bec8a3ebb36949408c3ee0951124aa1d1d0b610ac5682c1bc3bda2d5d6",
++      "bytes": 7678
++    },
++    {
++      "path": "include/cute/arch/config.hpp",
++      "sha256": "80fe05a1d3911a14ecf888cd444d629c99be03d0d164f7db7f9d3385f1ea221a",
++      "bytes": 9038
++    },
++    {
++      "path": "include/cute/arch/copy.hpp",
++      "sha256": "dc13ab845a0fc0d9cedcffc8abe2088b0c1027defe398470d860092d8f0c0d5a",
++      "bytes": 3657
++    },
++    {
++      "path": "include/cute/arch/copy_sm100.hpp",
++      "sha256": "43f813e1e4541bc682112e7791a9e38d44cabbbd90875858d249b9c79df4c50e",
++      "bytes": 355764
++    },
++    {
++      "path": "include/cute/arch/copy_sm100_tma.hpp",
++      "sha256": "e205145d40d887c1aea5682de7f10c325fc752dee3cf1ca10a4aea1a58076f24",
++      "bytes": 28765
++    },
++    {
++      "path": "include/cute/arch/copy_sm50.hpp",
++      "sha256": "523dc2ea1257bb0efff64f626c3aadcfc623e02cbdef249ab8ab57d6475796a5",
++      "bytes": 3449
++    },
++    {
++      "path": "include/cute/arch/copy_sm75.hpp",
++      "sha256": "6a07a69b464e1475131c2bd2c85ca095d1a5f39d0fe3b383f0bfa1ab3f020337",
++      "bytes": 9076
++    },
++    {
++      "path": "include/cute/arch/copy_sm80.hpp",
++      "sha256": "31e731ed99243ba10413cc0752ce546bc6933df2c13eb8f66244cb22de9aa7e5",
++      "bytes": 6850
++    },
++    {
++      "path": "include/cute/arch/copy_sm90.hpp",
++      "sha256": "7668c6f9304866f65655555c39f5e10fa6ffb02df964a8e7918ac877d41cc0db",
++      "bytes": 7267
++    },
++    {
++      "path": "include/cute/arch/copy_sm90_desc.hpp",
++      "sha256": "f73c66128fb1fc3781800854648409958613946f0dfcbec9d6942cf1c93047ad",
++      "bytes": 20176
++    },
++    {
++      "path": "include/cute/arch/copy_sm90_tma.hpp",
++      "sha256": "d31756a7105dc875751fdef875be1b9f2bc008111d0c45734fed39465c12c636",
++      "bytes": 57107
++    },
++    {
++      "path": "include/cute/arch/copy_xe.hpp",
++      "sha256": "c41d8da8a713d401f06192008cb682774791e515d3985b8deee3ca01dcdfcfcd",
++      "bytes": 9285
++    },
++    {
++      "path": "include/cute/arch/copy_xe_2d.hpp",
++      "sha256": "83abda61c5407213dc6d7232203699223c29b9544e9391adeb483200b8ad0b27",
++      "bytes": 8711
++    },
++    {
++      "path": "include/cute/arch/copy_xe_legacy.hpp",
++      "sha256": "aa81a6ae12976daeb211a048d08977ae036ac48dc3a98efc1d5387419c1fc2d0",
++      "bytes": 2558
++    },
++    {
++      "path": "include/cute/arch/copy_xe_legacy_U16.hpp",
++      "sha256": "7de6f3d0b2d9fb7d6bb448c744baee41211ff35f8c6e8b3a0cead66dfdd8137d",
++      "bytes": 23582
++    },
++    {
++      "path": "include/cute/arch/copy_xe_legacy_U32.hpp",
++      "sha256": "2caa7c99ac4365e858a930313839e97b43fac6df56f9ee7f8ba7fa9ce819f434",
++      "bytes": 18987
++    },
++    {
++      "path": "include/cute/arch/copy_xe_legacy_U4.hpp",
++      "sha256": "441e19d15b793690abf243fb652c6d8f0b8106c75e590417ae15f833260c123d",
++      "bytes": 8386
++    },
++    {
++      "path": "include/cute/arch/copy_xe_legacy_U64.hpp",
++      "sha256": "842bda843e0dc48dac32af7a79409828d3c73fa1b14caba56a4f510cc185d0e5",
++      "bytes": 3734
++    },
++    {
++      "path": "include/cute/arch/copy_xe_legacy_U8.hpp",
++      "sha256": "aacc7f4014592df39fba5351aacbd980ede5135a12ee5f5fe683eae617ed0cb2",
++      "bytes": 31355
++    },
++    {
++      "path": "include/cute/arch/copy_xe_legacy_builtin.hpp",
++      "sha256": "71c379a86bccbc51ac96d1272ff2699648394b443a653a7e049f2b2b47822d15",
++      "bytes": 75733
++    },
++    {
++      "path": "include/cute/arch/copy_xe_legacy_spirv.hpp",
++      "sha256": "f6053299f71790f8e5303aa43be96ca2afa3938de76764d349a51a280afa5a78",
++      "bytes": 31113
++    },
++    {
++      "path": "include/cute/arch/mma.hpp",
++      "sha256": "8f65943f681e16ed11df4bc7bcf6c97ebd808b6b2d950f6cc5ef29805a154029",
++      "bytes": 2492
++    },
++    {
++      "path": "include/cute/arch/mma_sm100.hpp",
++      "sha256": "68306540dfc897b8247e456a271479c66e15c74de9d204997d67daf48470f5a3",
++      "bytes": 3046
++    },
++    {
++      "path": "include/cute/arch/mma_sm100_desc.hpp",
++      "sha256": "762d488e441c4949fb2273d510ad629efaeaefbf0064025b4cb7a51cff27194a",
++      "bytes": 26060
++    },
++    {
++      "path": "include/cute/arch/mma_sm100_umma.hpp",
++      "sha256": "7ba0cef9f7fe47148851c8c259df4943f6b1ffa1ba5ef268878596a375a54b1e",
++      "bytes": 70401
++    },
++    {
++      "path": "include/cute/arch/mma_sm120.hpp",
++      "sha256": "4de2816faaf3176326eb9fea837f5ea06dbb21d2b49dacd8f9a8f33d89c98133",
++      "bytes": 112483
++    },
++    {
++      "path": "include/cute/arch/mma_sm120_sparse.hpp",
++      "sha256": "9926f677ef823178f653c9e6c6d810ccec16a6f34ab781901a57797c2388a724",
++      "bytes": 129088
++    },
++    {
++      "path": "include/cute/arch/mma_sm61.hpp",
++      "sha256": "2bb069b72a3e7a9bdba0285419e1403e0858bdb232daa631e717146a0e230e53",
++      "bytes": 3240
++    },
++    {
++      "path": "include/cute/arch/mma_sm70.hpp",
++      "sha256": "96ba15da71b45fa63439dc4d244603e06ebb7a61eb77c8abbe2068bdd153d4c2",
++      "bytes": 12572
++    },
++    {
++      "path": "include/cute/arch/mma_sm75.hpp",
++      "sha256": "294a178c553e8230e2c7045ceb91800183f47bd6288d0d817bfa8e0167071686",
++      "bytes": 4377
++    },
++    {
++      "path": "include/cute/arch/mma_sm80.hpp",
++      "sha256": "d73a7389dd6e23cd68a732615c7a4b2adbca19c2f681722829172b625f09c878",
++      "bytes": 72025
++    },
++    {
++      "path": "include/cute/arch/mma_sm89.hpp",
++      "sha256": "fd7e5afd5b45bfbb33558d6b2e3718b8e4ffe370228460e91bf4a7ca7167b2ee",
++      "bytes": 10132
++    },
++    {
++      "path": "include/cute/arch/mma_sm90.hpp",
++      "sha256": "eede4c08af6c2d79a6a956072c91a902026dec8112fa8f43392fd11a2dab9de5",
++      "bytes": 363677
++    },
++    {
++      "path": "include/cute/arch/mma_sm90_desc.hpp",
++      "sha256": "4ae842109e111094fe5fd5276e46bb99f5446f97e806b50ecd55ac47dc9fa658",
++      "bytes": 6036
++    },
++    {
++      "path": "include/cute/arch/mma_sm90_gmma.hpp",
++      "sha256": "bbe378e69891013e93ae348850a80d39ea299249d0211758c5d849cd46b4c17a",
++      "bytes": 969217
++    },
++    {
++      "path": "include/cute/arch/mma_sm90_gmma_ext.hpp",
++      "sha256": "af6c9ea73dce26b0e19e66d9d8596fea671f2a2b730d6b9a1579a513ccc647e1",
++      "bytes": 2785259
++    },
++    {
++      "path": "include/cute/arch/mma_sm90_gmma_sparse.hpp",
++      "sha256": "b933601f83fc8fa796f127f099fc0e23ff11051b6a2d8f9b2a5d8d87bd5329ed",
++      "bytes": 1031952
++    },
++    {
++      "path": "include/cute/arch/mma_sm90_gmma_sparse_ext.hpp",
++      "sha256": "d9208b9dfcfefe4a4bd26e343f5d6b164c4916b6673bf559767660764af951e0",
++      "bytes": 2932673
++    },
++    {
++      "path": "include/cute/arch/mma_xe.hpp",
++      "sha256": "908fb2f32356740b3baf0029c7b5a9467df8fca3c0dd724c5c61561c9d96f1d7",
++      "bytes": 12578
++    },
++    {
++      "path": "include/cute/arch/mma_xe_legacy.hpp",
++      "sha256": "b3c0dbc6af976832f4c4d7ec2809744db1710e303df974a69b42067eb7e0b4b9",
++      "bytes": 19898
++    },
++    {
++      "path": "include/cute/arch/mma_xe_legacy_builtin.hpp",
++      "sha256": "d99e0d2d6950ec7e54db4d2ddcf3634048d6325f1f2209a3d7c78e4c3f5a6ec6",
++      "bytes": 8826
++    },
++    {
++      "path": "include/cute/arch/mma_xe_legacy_spirv.hpp",
++      "sha256": "a9dcde4cac63693eef3eb193d5ad6f2a746a2cf576a53c0d874af8987c012cb7",
++      "bytes": 9666
++    },
++    {
++      "path": "include/cute/arch/quantize_xe.hpp",
++      "sha256": "c52ddbcdab344f2d14ec1454919cc543a409608973b71809be654a5331ba76c9",
++      "bytes": 14512
++    },
++    {
++      "path": "include/cute/arch/reorder.hpp",
++      "sha256": "70a03d88c08c5a60fbfb6db622df9f9388f428187e9a324e7cc98ccb9a052660",
++      "bytes": 2368
++    },
++    {
++      "path": "include/cute/arch/reorder_xe.hpp",
++      "sha256": "9de51ddf6fedbe67b1bba6fb2fa81ce75fcb3796fe15649c2097e8e960c1b5e0",
++      "bytes": 61010
++    },
++    {
++      "path": "include/cute/arch/reorder_xe35.hpp",
++      "sha256": "f57b5def45142f02c7b6968127888a359ce50f6527ae623002a7488007c711b8",
++      "bytes": 13303
++    },
++    {
++      "path": "include/cute/arch/simd_sm100.hpp",
++      "sha256": "28cd9f7509cf4ab6e9ba13dc8984f49621588cc72126331b18780cd428d4622d",
++      "bytes": 3221
++    },
++    {
++      "path": "include/cute/arch/tmem_allocator_sm100.hpp",
++      "sha256": "d2624ee696271ecb6e8c99884cc9a531a1ce059de10cbdf487d555bdc6f044c0",
++      "bytes": 7233
++    },
++    {
++      "path": "include/cute/arch/util.hpp",
++      "sha256": "f0e7ec477c5bf534faf24feea7413196e4f614250c3ba6e489f19ce56f9fef49",
++      "bytes": 11100
++    },
++    {
++      "path": "include/cute/atom/copy_atom.hpp",
++      "sha256": "c824c9a37b884406c27e38681c31f8c9b2d5e81e6c953cbeeeb5a53895016a1c",
++      "bytes": 28982
++    },
++    {
++      "path": "include/cute/atom/copy_traits.hpp",
++      "sha256": "f1434137f94707650fba379eb53b8c307273917d33329e2688f556e5e5d162ca",
++      "bytes": 5956
++    },
++    {
++      "path": "include/cute/atom/copy_traits_sm100.hpp",
++      "sha256": "cd8afe8362df160458da38c2f4075773feb465bc69039bfff4deb6fbbb7bfc24",
++      "bytes": 146519
++    },
++    {
++      "path": "include/cute/atom/copy_traits_sm100_tma.hpp",
++      "sha256": "503a21d3e73660acd6af18d7887677bcbf62b0617a6d4b3855c9eed2ad53a141",
++      "bytes": 22227
++    },
++    {
++      "path": "include/cute/atom/copy_traits_sm50.hpp",
++      "sha256": "312058966e3779166e8eb164cd9b5845b3a716f91fd5590c347b04b8c6a103b7",
++      "bytes": 3062
++    },
++    {
++      "path": "include/cute/atom/copy_traits_sm75.hpp",
++      "sha256": "58fee5b1eaaf0d19e4aa7b44600e8749ac54d34ffb2cfd82a46d547744f06eed",
++      "bytes": 5546
++    },
++    {
++      "path": "include/cute/atom/copy_traits_sm80.hpp",
++      "sha256": "9d768405d7ddcb1612572cb7439fb522fb96f3121337bfc0bc188e4d5ebd1e78",
++      "bytes": 6269
++    },
++    {
++      "path": "include/cute/atom/copy_traits_sm90.hpp",
++      "sha256": "843805a1b64a5c9c2d21871cb96e5b49f2c2a202bea17c3dd18812264fb22c9b",
++      "bytes": 4589
++    },
++    {
++      "path": "include/cute/atom/copy_traits_sm90_tma.hpp",
++      "sha256": "0b6fda004649aa51dce59652319150faa7bb42adc59952f7922e6604571b1bea",
++      "bytes": 67995
++    },
++    {
++      "path": "include/cute/atom/copy_traits_sm90_tma_swizzle.hpp",
++      "sha256": "369a9c662b6b08fcf24b50c750e4f2adce089deb01a5d4348a6776b992633805",
++      "bytes": 4322
++    },
++    {
++      "path": "include/cute/atom/copy_traits_xe.hpp",
++      "sha256": "d0447355df457c7b4f790f24078cb5f2c0dc2d8a3c37f349b9d4a8dfe433940d",
++      "bytes": 4634
++    },
++    {
++      "path": "include/cute/atom/copy_traits_xe_2d.hpp",
++      "sha256": "240a052619e659bc3d694ed37c5be821534ca16a5011f65856b0f3318862d4c1",
++      "bytes": 89551
++    },
++    {
++      "path": "include/cute/atom/copy_traits_xe_legacy.hpp",
++      "sha256": "bf3dc3857c4f165257eabc740ef3b4ffd075eff3fb8331181fe2894a3ee69b49",
++      "bytes": 106429
++    },
++    {
++      "path": "include/cute/atom/mma_atom.hpp",
++      "sha256": "89dd662858e3a17cd7a119ecc5f3896c2e4ba02c66ac736227dfe47f3d10c267",
++      "bytes": 32297
++    },
++    {
++      "path": "include/cute/atom/mma_traits.hpp",
++      "sha256": "5144ee9f8496a9fa06679b7b1da616cc46cacc962f04722826e86ed168899982",
++      "bytes": 7580
++    },
++    {
++      "path": "include/cute/atom/mma_traits_sm100.hpp",
++      "sha256": "06f6ac58f8e3672b9b41bcb47e2e47c78bb8ddb2a26c68d5fb584dfc64f12631",
++      "bytes": 188292
++    },
++    {
++      "path": "include/cute/atom/mma_traits_sm120.hpp",
++      "sha256": "084d939b07fd21651841edfeca3edfa679c2fd59279e769d65256d9a865c2bcb",
++      "bytes": 11592
++    },
++    {
++      "path": "include/cute/atom/mma_traits_sm120_sparse.hpp",
++      "sha256": "be6f0182446037c966eb98404580457b5434021e07e8044b4236b3034129e456",
++      "bytes": 14353
++    },
++    {
++      "path": "include/cute/atom/mma_traits_sm61.hpp",
++      "sha256": "9a9d01cbfea0a69525d073bc7b973740d5ba2e0929f76067d54858357d8ef057",
++      "bytes": 2773
++    },
++    {
++      "path": "include/cute/atom/mma_traits_sm70.hpp",
++      "sha256": "23c72c128f8d58cac840089bcf07b120a2f4f6cb1b1b95c3b055dae2c34df8eb",
++      "bytes": 6092
++    },
++    {
++      "path": "include/cute/atom/mma_traits_sm75.hpp",
++      "sha256": "6cc3179ea53ef83d2f12373c2c421fd94dad84afab477876f43f77d24c281b0f",
++      "bytes": 3303
++    },
++    {
++      "path": "include/cute/atom/mma_traits_sm80.hpp",
++      "sha256": "58b972a2ec119bb15db0605a2613cd39ca52e09f630095e35677f5a17770d084",
++      "bytes": 21919
++    },
++    {
++      "path": "include/cute/atom/mma_traits_sm89.hpp",
++      "sha256": "170bd190b81fda2cd6d3a055e84933e7718c36f958f2e7d25f278e0414f815bc",
++      "bytes": 4577
++    },
++    {
++      "path": "include/cute/atom/mma_traits_sm90.hpp",
++      "sha256": "10965f179974148f8febbe9cd771a5f5c742c4d2444d72cad22bc23b5693ec25",
++      "bytes": 5478
++    },
++    {
++      "path": "include/cute/atom/mma_traits_sm90_gmma.hpp",
++      "sha256": "956d254e25fbc5a0f400424bdfecb5a5857d258a0da3839bfa971f0fc56f19d3",
++      "bytes": 284435
++    },
++    {
++      "path": "include/cute/atom/mma_traits_sm90_gmma_ext.hpp",
++      "sha256": "d0e1e9736ad8eadda9ef36268a9e92d1488d37579566c4936f3a9ccdffdb0e42",
++      "bytes": 634907
++    },
++    {
++      "path": "include/cute/atom/mma_traits_sm90_gmma_sparse.hpp",
++      "sha256": "3e4fde935f2c1134dfb99de542358f0d5aa3b23f53473b97b8b102424fdb7205",
++      "bytes": 268085
++    },
++    {
++      "path": "include/cute/atom/mma_traits_sm90_gmma_sparse_ext.hpp",
++      "sha256": "6b5b3fd9c3a115bba3af79fb4c3525b4ad9340dcd4e5211a6bb8daf551f1b986",
++      "bytes": 603207
++    },
++    {
++      "path": "include/cute/atom/mma_traits_xe.hpp",
++      "sha256": "dd63d8df24cbe4e0fd25920b61f4f96aa18dbdda314f6b4bd7920617eca876b2",
++      "bytes": 8842
++    },
++    {
++      "path": "include/cute/atom/mma_traits_xe_legacy.hpp",
++      "sha256": "a0e0270f5d77818ac2b04a33a59c7e7bd76c4333e5042e9c2f4604258b76b188",
++      "bytes": 14100
++    },
++    {
++      "path": "include/cute/atom/partitioner.hpp",
++      "sha256": "e96b8b24c50ec888e805e95205f402a2216ec984a24bc2ddcb21bd8ed083fc02",
++      "bytes": 3624
++    },
++    {
++      "path": "include/cute/atom/quantize_atom.hpp",
++      "sha256": "5cc594483f25e19e778bf04fe828f775a547bf65ddba363665b7a4728df3ecae",
++      "bytes": 2159
++    },
++    {
++      "path": "include/cute/atom/quantize_atom_xe.hpp",
++      "sha256": "0f4e5221c86c19cdcf98c58a599aaf2cc428b46d1286279be212a8d583788f2e",
++      "bytes": 3673
++    },
++    {
++      "path": "include/cute/atom/reorder_atom.hpp",
++      "sha256": "58ba036310c141eb4bfbe54da51851cfa358a7196ab2ebf4e0587c24f2fc960e",
++      "bytes": 2246
++    },
++    {
++      "path": "include/cute/atom/reorder_atom_xe.hpp",
++      "sha256": "3c14031d72d315351e9fdfb9a955c9d831ed1c59385053c99e6155b82fbb5860",
++      "bytes": 10767
++    },
++    {
++      "path": "include/cute/config.hpp",
++      "sha256": "ee41e7700f9a0a494169fe766bb56a20d25ac699ef79e520222795376d69db3a",
++      "bytes": 5788
++    },
++    {
++      "path": "include/cute/container/alignment.hpp",
++      "sha256": "f07ee602b36e06208eb2766c86be4f5b61b5bc5c2a6ee111d996280460fca48f",
++      "bytes": 3243
++    },
++    {
++      "path": "include/cute/container/array.hpp",
++      "sha256": "20a453d936b6f849670d67ea9ce267052d96752a98f0aff70be4377fbc556efa",
++      "bytes": 9098
++    },
++    {
++      "path": "include/cute/container/array_aligned.hpp",
++      "sha256": "def0627cc4c07ea19b41f2582c30832ba44daa1cab68ba26418c52c176a0f765",
++      "bytes": 2119
++    },
++    {
++      "path": "include/cute/container/array_subbyte.hpp",
++      "sha256": "e7d8534728dc4039691a37b631d35c40d7422dd1e747090eff96290d1f9cf195",
++      "bytes": 18563
++    },
++    {
++      "path": "include/cute/container/bit_field.hpp",
++      "sha256": "44c497437463c5b0e44289b4c0c7d9c69043c3095ab93132ce855ada7158ff8a",
++      "bytes": 5587
++    },
++    {
++      "path": "include/cute/container/cuda_types.hpp",
++      "sha256": "2726a840e42e21c4840127fcb9c492ba99b5de2ee368034e837e0d4da2088443",
++      "bytes": 4640
++    },
++    {
++      "path": "include/cute/container/tuple.hpp",
++      "sha256": "a26f57a49b0f7f35168ad4988113536d5af335ff3dc63512dfbd5f1651ba4462",
++      "bytes": 20945
++    },
++    {
++      "path": "include/cute/container/type_list.hpp",
++      "sha256": "11ed2094e6a9bc28dc8a148ba943decb577d50dbe824be7bf761eba060251ee2",
++      "bytes": 4141
++    },
++    {
++      "path": "include/cute/int_tuple.hpp",
++      "sha256": "82676c854acc044f48b1bd5e179e28dec422bdafd229797d005cdf3dc63f7ad0",
++      "bytes": 26820
++    },
++    {
++      "path": "include/cute/layout.hpp",
++      "sha256": "67bcc579c6854e8f73ab1c184b5e3a1c2c756d88694e9936d4b1f5d6d7ab5cf2",
++      "bytes": 66838
++    },
++    {
++      "path": "include/cute/layout_composed.hpp",
++      "sha256": "54f1fbd500c43c68755c018f8eb1706b43e463e5a35527714e7e9e7eef2d34f1",
++      "bytes": 18748
++    },
++    {
++      "path": "include/cute/numeric/arithmetic_tuple.hpp",
++      "sha256": "9af461c3764f0e98d4d198c50f7b9a417c41f75be9b9f3652ba96b7429500d62",
++      "bytes": 16191
++    },
++    {
++      "path": "include/cute/numeric/complex.hpp",
++      "sha256": "2852d6ca5131305f3e6c9c40082a616afd1085b8c1420d31a7a22c5d91803223",
++      "bytes": 2886
++    },
++    {
++      "path": "include/cute/numeric/int.hpp",
++      "sha256": "26853bc58995932ef47745c58bc8500101a16a1e49140a56b9cff99573e8566f",
++      "bytes": 4179
++    },
++    {
++      "path": "include/cute/numeric/integer_sequence.hpp",
++      "sha256": "34dcf102cedc0bf4e30891fec07cffee5d2e7ad7f0998ca64dd981cc45fe69d3",
++      "bytes": 5143
++    },
++    {
++      "path": "include/cute/numeric/integral_constant.hpp",
++      "sha256": "51d6e296d6253f550282ebcfe3030a530612be7eea8a316f2c8c1535e3602777",
++      "bytes": 15269
++    },
++    {
++      "path": "include/cute/numeric/integral_ratio.hpp",
++      "sha256": "0181b139d610bbb5503d6c7a21b6b55392c3912505cca39c9e86ef2422458581",
++      "bytes": 8454
++    },
++    {
++      "path": "include/cute/numeric/math.hpp",
++      "sha256": "bed15cfe8363236e8c7ac06cf94efeb086ed30309c61fa30716afc770b8c10ff",
++      "bytes": 9993
++    },
++    {
++      "path": "include/cute/numeric/numeric_types.hpp",
++      "sha256": "e2439ce3fc7e821966142a1ae3cd584fadf89bcbf45d7df27cf2499bc1d0bb64",
++      "bytes": 6580
++    },
++    {
++      "path": "include/cute/numeric/real.hpp",
++      "sha256": "04d22a2a9a9f7d7a02b744de255a55df30ba12b2105ce0585b2f7f8a10724fa1",
++      "bytes": 2538
++    },
++    {
++      "path": "include/cute/pointer.hpp",
++      "sha256": "5200e0be69bd7dd2fb4a214bd54100e66ae986aacaf69acb9f22ff788e1bc6d2",
++      "bytes": 12083
++    },
++    {
++      "path": "include/cute/pointer_base.hpp",
++      "sha256": "b5abdc6ed02e90ea2098a7094b13ce06f98abf562b53b5f1acc9992131ff651f",
++      "bytes": 11156
++    },
++    {
++      "path": "include/cute/pointer_flagged.hpp",
++      "sha256": "2320c0cecbbae3381e59c99cbb9f926c59bf7bbc9289dd725c9b88feeeb22efa",
++      "bytes": 7428
++    },
++    {
++      "path": "include/cute/pointer_sparse.hpp",
++      "sha256": "21a60a84ded6bcb2243292ca5ec7a5e495928921071848935e99ebef8659cbca",
++      "bytes": 7239
++    },
++    {
++      "path": "include/cute/pointer_swizzle.hpp",
++      "sha256": "5452d2cd15476b2d0e62fcb739b918f5b2dc1cc7fff1f9c3aaee068f30d51fa2",
++      "bytes": 6415
++    },
++    {
++      "path": "include/cute/quantization/dequantize.hpp",
++      "sha256": "9351dc87e7093f1809c55891c162301da9a3760a4c870f428b32bca962f60d25",
++      "bytes": 7598
++    },
++    {
++      "path": "include/cute/quantization/quantize.hpp",
++      "sha256": "5bf865551c3771068f26b76efaaf22a06ea89e3122775688327d1fd5c65bc4ec",
++      "bytes": 15872
++    },
++    {
++      "path": "include/cute/stride.hpp",
++      "sha256": "e77d5febafa814d8bc6150261e099f3b54dcbb74d653415fd6f4c8c4c68fbeb8",
++      "bytes": 21477
++    },
++    {
++      "path": "include/cute/swizzle.hpp",
++      "sha256": "308f641a775688413cc2c0e2ba5a5b52670589b731e468acb8929dd6ff6c0a34",
++      "bytes": 16120
++    },
++    {
++      "path": "include/cute/swizzle_layout.hpp",
++      "sha256": "ca1b8460d0f57d451459e9ae827aa24090b0b7bab0399c018543b0e19a692c1c",
++      "bytes": 22448
++    },
++    {
++      "path": "include/cute/tensor.hpp",
++      "sha256": "21ce110e2a7c030a7fdfb3540d7c4ff69adfc441e93e986eba2b554738d0f8c0",
++      "bytes": 2740
++    },
++    {
++      "path": "include/cute/tensor_impl.hpp",
++      "sha256": "1a364eb5aa03b3a46d6cfcb0932414f7ed53d459cce4ffc6f4a0770342208489",
++      "bytes": 37715
++    },
++    {
++      "path": "include/cute/tensor_sg.hpp",
++      "sha256": "f18507c8357d23c47e95d4da9b3e2b59a99d25d87f31e89a8e1b8dc2f77ec754",
++      "bytes": 7321
++    },
++    {
++      "path": "include/cute/tensor_zip.hpp",
++      "sha256": "aec4c5c59b3c603af1d4b91f2251f4ea2b253d9c4894a2112ed5fdd47c31d41f",
++      "bytes": 8755
++    },
++    {
++      "path": "include/cute/underscore.hpp",
++      "sha256": "65edce496beb4b954cc64602ccb9b81a11635187b0626c9a95e327a68604f5f5",
++      "bytes": 6282
++    },
++    {
++      "path": "include/cute/util/compat.hpp",
++      "sha256": "3aa96ca1f4bb6d20a71be266526cd770e374b1806512d7d4d731c4e89508ddb4",
++      "bytes": 940
++    },
++    {
++      "path": "include/cute/util/compat/atomic.hpp",
++      "sha256": "3133d3658e19d4d775b12a5bd2dcb1404a1f4e741074d95d459c6c9241f94ca2",
++      "bytes": 21256
++    },
++    {
++      "path": "include/cute/util/compat/compat.hpp",
++      "sha256": "cf31cec967e75bf6567a806fd0b517a0076dffcf83842ac18a1c2ca9412c07a7",
++      "bytes": 1364
++    },
++    {
++      "path": "include/cute/util/compat/defs.hpp",
++      "sha256": "d5b9b65ac00a504838341b6d01fb99332698bd8f004466348c0d64dffdd97bef",
++      "bytes": 3804
++    },
++    {
++      "path": "include/cute/util/compat/device.hpp",
++      "sha256": "f00ad846274d2e5c2779d00d1845c01c4b93432afd7b9a7ab0b7438716f57f4d",
++      "bytes": 34073
++    },
++    {
++      "path": "include/cute/util/compat/dims.hpp",
++      "sha256": "db8630b574206e6134668208e6c81adc408b7f8b8532ec8cfea4dba61a102c3a",
++      "bytes": 2201
++    },
++    {
++      "path": "include/cute/util/compat/group_utils.hpp",
++      "sha256": "9c2f9aa2274b7304f9c344d31e1f17b3fd35f32a15238bed13ddf20ea1391faf",
++      "bytes": 49642
++    },
++    {
++      "path": "include/cute/util/compat/id_query.hpp",
++      "sha256": "0fe02adf1468f5fbaa5d84816ba9cce8d7d6bc431b453cdf7ffafe64b81499e2",
++      "bytes": 2693
++    },
++    {
++      "path": "include/cute/util/compat/kernel.hpp",
++      "sha256": "b99e20a76416c30fb0d3e8d9b3b04ed1730b30dacce6390b501ba1336dd528b6",
++      "bytes": 15200
++    },
++    {
++      "path": "include/cute/util/compat/launch.hpp",
++      "sha256": "be603614e8c4525a023328d0bfd3bf3dff5bb1903916ed8027ec703482eba73d",
++      "bytes": 7289
++    },
++    {
++      "path": "include/cute/util/compat/launch_policy.hpp",
++      "sha256": "567d11137e6c00968a8eae4ffb6ddf6acb5ba745140807549d0b380b816ee1d7",
++      "bytes": 10403
++    },
++    {
++      "path": "include/cute/util/compat/math.hpp",
++      "sha256": "f79f2cdd7778f6288430da76afa0d325f7fb1dd35d7a3f48e946ad4fe8714b64",
++      "bytes": 103714
++    },
++    {
++      "path": "include/cute/util/compat/memory.hpp",
++      "sha256": "159f561511a05c1e1de61323db11c9a316dfdd3c231e016f36733ce690f82df9",
++      "bytes": 68979
++    },
++    {
++      "path": "include/cute/util/compat/traits.hpp",
++      "sha256": "a2af37e6ce92ab6aee4124d942870847e5e6ca6bca8f344375c38ab0f987eb6f",
++      "bytes": 11178
++    },
++    {
++      "path": "include/cute/util/compat/util.hpp",
++      "sha256": "b8fdfb98bcbf53590042c203c7b8e0f43937c50643f81d9d352a7e9ac0186534",
++      "bytes": 45438
++    },
++    {
++      "path": "include/cute/util/debug.hpp",
++      "sha256": "61ecbff19c19004eee8982c1850da0a2a0bf83886ae46f72a4c7084b7371cee8",
++      "bytes": 5712
++    },
++    {
++      "path": "include/cute/util/print.hpp",
++      "sha256": "526c7d1574664fde99aa9a22e4d160b23424fca130406bf49a7356188b0336f5",
++      "bytes": 7345
++    },
++    {
++      "path": "include/cute/util/print_latex.hpp",
++      "sha256": "7e5ed4dc823eae7df6d9b5009dadf550696491fca4580e6570d1fce8a6c1dbd9",
++      "bytes": 14969
++    },
++    {
++      "path": "include/cute/util/print_tensor.hpp",
++      "sha256": "1d07ad75a942234b8d440719b9a67aeb239934fd0c68ecdd560c175b59fb6c6b",
++      "bytes": 5881
++    },
++    {
++      "path": "include/cute/util/sycl_vec.hpp",
++      "sha256": "678cda41ce6911d411b07044e293f79d70f8a5e4774bf42558c40e5f7a7ea7fb",
++      "bytes": 4935
++    },
++    {
++      "path": "include/cute/util/type_traits.hpp",
++      "sha256": "bc73d5973fc59cf84eb5d0bf17ca725c54105458e447282ef6ae8c420f029f41",
++      "bytes": 10461
++    },
++    {
++      "path": "include/cute/util/xe_split_barrier.hpp",
++      "sha256": "a69cc8bb1ecea9fa10323b9b9fcfeffe2e96ac7c4bea7d4002f1dadb5e6b4d2a",
++      "bytes": 3967
++    },
++    {
++      "path": "include/cutlass/arch/config.h",
++      "sha256": "fa43ab70628f699518e446dd528a0b4a4606432def639342b744ab22eafe07ab",
++      "bytes": 9833
++    },
++    {
++      "path": "include/cutlass/arch/synclog.hpp",
++      "sha256": "478e6dbc5b7af9549f31198ec848c146fe8e35200d392f12779329b8f1be837b",
++      "bytes": 47855
++    },
++    {
++      "path": "include/cutlass/array.h",
++      "sha256": "038bdd0e14c8aca1ef163957175a02f7cdca5db37b330f9f494001d19b52527d",
++      "bytes": 74316
++    },
++    {
++      "path": "include/cutlass/array_subbyte.h",
++      "sha256": "19496f601472bde0d7fb9f4a36b8c49ac357781be2b9180630ab03fb697c6287",
++      "bytes": 13537
++    },
++    {
++      "path": "include/cutlass/bfloat16.h",
++      "sha256": "26ab3f56a0e34576bcdbcbaac94816129103826b4fc0c963203a2c4eb1ec854b",
++      "bytes": 20042
++    },
++    {
++      "path": "include/cutlass/complex.h",
++      "sha256": "6fb816c348fae8b03d59e520cedda02e6aba96cc509081f0e6e29e51f4bef481",
++      "bytes": 24221
++    },
++    {
++      "path": "include/cutlass/conv/conv2d_problem_size.h",
++      "sha256": "a341c409c9ff1eeeb82b70fd20c0b23f61390086a16081f71b435cfd00e2fa15",
++      "bytes": 23454
++    },
++    {
++      "path": "include/cutlass/conv/conv3d_problem_size.h",
++      "sha256": "17e17e6f572a8abe2da85c856a71a72191c6f52ed3c7a0eac902804b12af6738",
++      "bytes": 18548
++    },
++    {
++      "path": "include/cutlass/conv/convolution.h",
++      "sha256": "bcd79d6d36415c0082fb1d16329d05ee25b27cab0d30c0f33df8fdd035c9d247",
++      "bytes": 7293
++    },
++    {
++      "path": "include/cutlass/coord.h",
++      "sha256": "221601f0f502d7ace04c66c58cafeaf0b8b10e15c283e4ddfb284dbc8c61544d",
++      "bytes": 11830
++    },
++    {
++      "path": "include/cutlass/core_io.h",
++      "sha256": "a7dff07d51ee7c380f10b4412e5d94ca943bea40e23efd45fa5b681be126c927",
++      "bytes": 11942
++    },
++    {
++      "path": "include/cutlass/cuda_host_adapter.hpp",
++      "sha256": "557749adc8e74862c3c438e5a7298b737178f9d999e62702a492d0d5e484f7b7",
++      "bytes": 14976
++    },
++    {
++      "path": "include/cutlass/cutlass.h",
++      "sha256": "bc803ca12d44efa958b9608a2104d0a724471c157bf7d64464574881b900291f",
++      "bytes": 7431
++    },
++    {
++      "path": "include/cutlass/detail/dependent_false.hpp",
++      "sha256": "4bf38c035f080d1a0cd49722cd81990f0ae34368ada7efa304f76f7367231513",
++      "bytes": 3710
++    },
++    {
++      "path": "include/cutlass/detail/helper_macros.hpp",
++      "sha256": "e1ca65db5c576875cec7bc4832d5fb5ec06ed9e3ba1a2c74b9eb2d54b2c6902e",
++      "bytes": 8660
++    },
++    {
++      "path": "include/cutlass/exmy_base.h",
++      "sha256": "49bdc92fd4e2f2264ab777358b7a2810d697ef7069b484a5eaa9715def8db859",
++      "bytes": 45116
++    },
++    {
++      "path": "include/cutlass/fast_math.h",
++      "sha256": "09cd2774f554e2b7f4f4fe20b0c6ff05fee31971d8619d2e199a5e6f6bd028a2",
++      "bytes": 29847
++    },
++    {
++      "path": "include/cutlass/float8.h",
++      "sha256": "4690dfdbc7c6d6213ad55e9a4e60b9b6e827d15d0a387dc4eaa3106c2266aef7",
++      "bytes": 50687
++    },
++    {
++      "path": "include/cutlass/float_subbyte.h",
++      "sha256": "fd47999da1bc4c7add3e9a378539265c5be6f15e478eb035fa25d87e5d0f59dc",
++      "bytes": 24831
++    },
++    {
++      "path": "include/cutlass/floating_point_nvrtc.h",
++      "sha256": "9e460f494422cc738a3d9c224df0ff89079002eec477b99cfcb475033d784c2c",
++      "bytes": 3365
++    },
++    {
++      "path": "include/cutlass/functional.h",
++      "sha256": "dc37709fe046213f3540bac43a2f820b991182f2ffe4ce9481d71575afd104b1",
++      "bytes": 31395
++    },
++    {
++      "path": "include/cutlass/gemm/gemm_enumerated_types.h",
++      "sha256": "93833fb86b1a2bf87f0ec4b64d51d2d5f65399ea40ba84cdef2e8b3489a8c144",
++      "bytes": 3174
++    },
++    {
++      "path": "include/cutlass/gemm_coord.h",
++      "sha256": "1b9d463105ef5a9f3b66b7ee4c589e3e9535241ec44d146fe4a12c5209f29ac9",
++      "bytes": 10599
++    },
++    {
++      "path": "include/cutlass/gpu_generics.h",
++      "sha256": "5ccbc0b402fe627e376674ece5d04967ef9db074a3e2fed279e5b6f90564738c",
++      "bytes": 14407
++    },
++    {
++      "path": "include/cutlass/half.h",
++      "sha256": "f598ebf1cf43caa2251669c4a8ced5a3e4f4d7b2ddd9ae1992f5dd2585059ca5",
++      "bytes": 24265
++    },
++    {
++      "path": "include/cutlass/integer_subbyte.h",
++      "sha256": "c9c5e105f5fcac25d8ca344e733c19f3f4e4ceccf2c53c228904d7134cefeb2e",
++      "bytes": 9487
++    },
++    {
++      "path": "include/cutlass/layout/matrix.h",
++      "sha256": "f7ff90051e0b2c7ea6f1295e62a2550e89aec5f8385a26c38ad38890a670341d",
++      "bytes": 34719
++    },
++    {
++      "path": "include/cutlass/layout/pitch_linear.h",
++      "sha256": "f3d01d0cafed30d817c41ec5c4acc8c89d405bce9854eb7f0cd68f8363ed146a",
++      "bytes": 4697
++    },
++    {
++      "path": "include/cutlass/layout/tensor.h",
++      "sha256": "f28a7de48179ffd3c8e86649613a928f886cc64c140af527335db8aa6051d51e",
++      "bytes": 18713
++    },
++    {
++      "path": "include/cutlass/layout/vector.h",
++      "sha256": "4c08c6e7935d76ba92318c281abb803b3cf669a76ac87f15881fdc8ab526c90a",
++      "bytes": 3354
++    },
++    {
++      "path": "include/cutlass/matrix.h",
++      "sha256": "1f49e26e9f35de517ffcbc26bd67199f62037ecde1e7404e3a2f329ae2a6a848",
++      "bytes": 363945
++    },
++    {
++      "path": "include/cutlass/matrix_coord.h",
++      "sha256": "22b96274790f0f1dfd44aa476c1575c3ba44ac905353efc3325404530e39fe7e",
++      "bytes": 4991
++    },
++    {
++      "path": "include/cutlass/matrix_shape.h",
++      "sha256": "a5aa67691c6391a462696556df9a50d84746005d52f5980ee57870165edc0722",
++      "bytes": 2726
++    },
++    {
++      "path": "include/cutlass/numeric_conversion.h",
++      "sha256": "814e3291ed8e2e6b92e04f9009131526b84ac4fbe62510c5fa30da12c29df90a",
++      "bytes": 248116
++    },
++    {
++      "path": "include/cutlass/numeric_size.h",
++      "sha256": "8b6948eb7e6e2675e95b57f3c32e90fbfcd53a1c05043305b34ccbec1642bf26",
++      "bytes": 3504
++    },
++    {
++      "path": "include/cutlass/numeric_types.h",
++      "sha256": "d0caaa13b790351b7052aef6f0811fd11a06814b56389680c4d32955dd77aaeb",
++      "bytes": 4884
++    },
++    {
++      "path": "include/cutlass/pitch_linear_coord.h",
++      "sha256": "5ae2681cc9098e616dafebe3386bdd5d56c7dce33754beb6f6485716d127c952",
++      "bytes": 5492
++    },
++    {
++      "path": "include/cutlass/platform/platform.h",
++      "sha256": "37d4615109d5718be599441c6cd276e1d96cd119bada93aa6eddf427b1abffdf",
++      "bytes": 28882
++    },
++    {
++      "path": "include/cutlass/quaternion.h",
++      "sha256": "521209fca5d47f6a11fecbcbe03af5ad0e84375e63f44d2031614b3b4e1d4bd6",
++      "bytes": 20891
++    },
++    {
++      "path": "include/cutlass/real.h",
++      "sha256": "6fd96474fd128d6ee44bfdc9274a9cabf805bd726ff7a1563b70fd3b41fbbf44",
++      "bytes": 2432
++    },
++    {
++      "path": "include/cutlass/subbyte_reference.h",
++      "sha256": "e49ab0b69c5d1cff243946d4678dc3bf56e0835d2278235f49de6894feca276b",
++      "bytes": 40804
++    },
++    {
++      "path": "include/cutlass/sycl_complex.h",
++      "sha256": "45eb7315e0e2462665de9d02f5ebf74470ac36eadb713d9e5ef7544f31a0e67f",
++      "bytes": 2523
++    },
++    {
++      "path": "include/cutlass/sycl_fp16.h",
++      "sha256": "630025aca75d8d7280373e120a93b053219443af0a689ef73aaab745de6437ee",
++      "bytes": 2026
++    },
++    {
++      "path": "include/cutlass/sycl_vector_types.h",
++      "sha256": "86234b39776a43a0909c9d180cd6f894edbeec9357e3e629a43c0bfdda5119bc",
++      "bytes": 3370
++    },
++    {
++      "path": "include/cutlass/tensor_coord.h",
++      "sha256": "e97dbe66edce5c63d4207355163188fc50c10a86359f51e111478f51f7089214",
++      "bytes": 8964
++    },
++    {
++      "path": "include/cutlass/tensor_ref.h",
++      "sha256": "734908cf9b867f28439ae59023fde6b1e36a71f7aacd8ee065146e8d3b23863e",
++      "bytes": 12344
++    },
++    {
++      "path": "include/cutlass/tensor_view.h",
++      "sha256": "b54b39df08a95ddf0bc522d3ff13ac97f17ef74ef82bcbd07d517a7cdb21c233",
++      "bytes": 9818
++    },
++    {
++      "path": "include/cutlass/tfloat32.h",
++      "sha256": "b012ed976992f253810eefe562a75be5244358d2168887a569e7ea23f6df1542",
++      "bytes": 15120
++    },
++    {
++      "path": "include/cutlass/trace.h",
++      "sha256": "b124b4c1cb13a7877188f142a39fb88f652ac3ff0bf7a1d8af9faed29b805f96",
++      "bytes": 2581
++    },
++    {
++      "path": "include/cutlass/transform/thread/unary_op.h",
++      "sha256": "7f9a91bdc04947599cecede830e1f33ed90d9ee8beb4c446cb0d62d66a1929f5",
++      "bytes": 4309
++    },
++    {
++      "path": "include/cutlass/uint128.h",
++      "sha256": "25baea85103a373fe395ab20f0e6dbccf06c88245e7dc1d31d335564c959738f",
++      "bytes": 7964
++    },
++    {
++      "path": "include/cutlass/uint256.h",
++      "sha256": "c3ab76ecc5fff8cc57bef0d7c4406521e1aae480e65a22f70c7c8138cf075578",
++      "bytes": 3173
++    }
++  ]
++}
+--- /dev/null
++++ b/docs/SYCL_VLLM_XE2_NATIVE16.md
+@@ -0,0 +1,188 @@
++# Optional vLLM Xe2 native16 backend (R821)
++
++Source proposal only. Default OFF and not adopted. Main owns all compilation,
++execution and qualification. This document reports no build, flag acceptance,
++ISA, GPU, numerical, fault, performance, task-quality or physical-context result.
++The original FP32 GEMMs, short-input/decode source and routing stay unchanged.
++R818's independent typed-attention proposal is not included here.
++
++## Build and select
++
++Review the complete R821 patch against its pinned production source first.
++Keep the already qualified official LLVM compiler and existing local ggml/MKL
++paths. Add these cache settings to Main's isolated whole-engine build recipe:
++
++```text
++STRATA_ENABLE_SYCL=ON
++STRATA_SYCL_VLLM_XE2_NATIVE16=ON
++STRATA_SYCL_DEVICE_ARCH=bmg-g21-a0
++STRATA_SYCL_AOT_DOUBLE_GRF=OFF
++STRATA_PORTABLE=OFF
++SYCL_TLA_SOURCE_DIR=/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f
++```
++
++`SYCL_TLA_SOURCE_DIR` must already exist and be absolute. It is the official
++Intel sycl-tla source at `87f6850680a580654b9ea2c80dbc01aeb36ad231`.
++The CMake module checks the exact bytes of all 207 conservative R810 include
++closure headers, including dirty modifications. It does not run dependency
++CMake, Git, FetchContent, a download, or an installation step. The inventory
++is source metadata; no TLA header is vendored. Revision identity outside the
++consumed header closure remains Main's source-provenance responsibility.
++
++The adapter receives C++20, `CUTLASS_ENABLE_HEADERS_ONLY`,
++`CUTLASS_ENABLE_SYCL`, `SYCL_INTEL_TARGET`, `-O3 -fsycl`,
++`-fsycl-targets=spir64_gen`, `-fno-fast-math -ffp-contract=off`,
++`-fno-sycl-instrument-device-code`, and `-ftemplate-backtrace-limit=0`.
++Final device link requests the exact R810 translator extensions:
++
++```text
++-Xspirv-translator -spirv-ext=+SPV_INTEL_split_barrier,+SPV_INTEL_2d_block_io,+SPV_INTEL_subgroup_matrix_multiply_accumulate
++-Xsycl-target-backend=spir64_gen "-device bmg-g21-a0 -internal_options -cl-intel-256-GRF-per-thread"
++```
++
++Kernel properties remain R810's subgroup16/GRF256. These flags and properties
++are requests; compiler/ocloc acceptance and generated instructions are UNRUN.
++The Runtime target supplies one canonical backend option string, avoiding
++conflicting `-device`/GRF options. The opt-in global GRF256 link option can also
++affect other SYCL images, including decode, even while their sources and route
++are unchanged. Main must record that whole-engine build difference and assess
++it; an isolated adapter-flag effect cannot be inferred from a benchmark.
++With the option OFF, the existing AOT/JIT flags remain as before.
++
++Set immutable child environment before native exec:
++
++| Setting | Effect |
++| --- | --- |
++| `STRATA_SYCL_PREFILL_NATIVE16=bf16` | Existing native16 bulk prefill mode |
++| `STRATA_SYCL_PREFILL_NATIVE16_BACKEND=vllm` | Both public `*_out16` calls use the actual R810 adapter |
++| Backend unset or `own` | Existing joint-matrix GEMM16 route |
++| `STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE=auto` or unset | Initial static rule: T<128 compact, otherwise wide |
++| Tile `compact` | Explicit R810 16x64x32, 64-thread experiment |
++| Tile `wide` | Explicit R810 128x128x32, 128-thread experiment |
++
++The threshold is an untuned source choice, not a performance finding. Explicit
++tile controls enable separate-process experiments without environment mutation.
++Invalid names reject; explicit compact/wide with backend own also rejects.
++Requesting vllm in an OFF build rejects during `Gemm::init_external` (or the
++first out16 call). A compiled vllm request rejects non-Intel/non-Level-Zero/
++non-G21 queues at initialization. The unchanged adapter checks the full device
++capabilities before its first submission. No G31 image is compiled by this hook,
++so the wrapper restricts the otherwise G21/G31-capable R810 source to G21.
++
++One concise `[native16-route]` line is emitted per successful process config
++initialization, including existing bulk mode `engine=0|bf16`, backend and tile.
++For vllm it also identifies G21 AOT/R810/UNQUALIFIED. `engine=0 backend=vllm`
++does not mean the whole model uses 16-bit GEMMs: only actual out16 calls route
++there. To benchmark the existing bulk chain, use `engine=bf16`. Failed or never
++reached initialization need not emit a line; there is no per-kernel trace.
++Keep separate processes for each arm and retain the actual effective environment.
++
++## Tensor and failure contract
++
++The imported R810 `native16.hpp`, `native16.cpp` and `xe_gemm_bsd.hpp` are
++byte-identical to the source package. `f16_out16` selects FP16 X and W;
++`bf16_out16` selects BF16 X and W. `output_bf16` independently selects Y.
++All four combinations reach the corresponding actual adapter template path.
++X is compact `[T,K]`; W is compact `[N,K]`, used transposed mathematically;
++Y has shape `[T,N]`, physical row pitch `ldy`, with `ldy=0` meaning N.
++FP32 accumulation/reorder fragments remain local, followed by a direct typed
++16-bit block store. No global FP32 output, scratch tensor, cast kernel,
++CPU GEMM, oneDNN/oneMKL fallback, packing or transpose is introduced.
++
++The vllm selection requires beta +/-0; nonzero, NaN or infinite beta rejects.
++It requires T,N,K>0; N%64=0; K%32=0; ldy>=N and ldy%8=0; and all base pointers
++64-byte aligned. The entire X and W rectangles and entire Y[T,ldy] rectangle
++must lie in live registered Strata Device allocations in the supplied queue's
++actual context/device. Y cannot overlap either input; read-only X/W aliasing
++is allowed. Host USM, foreign raw USM, ordinary host pointers, overflow, unsupported
++architecture or missing capabilities reject without GEMM submission. There is
++no route retry, silent fallback, tail padding or reinterpretation as float.
++The exact R810 guard also caps width/pitch/height at 0xFFFFFF, complete byte
++rectangles and total work-items at INT_MAX, and requires Linux LP64.
++Ragged T keeps the real logical surfaces; block2D tail behavior still needs Main's
++hardware checks. Unsupported N/K tails are rejected rather than claimed safe.
++
++The default own route retains its original beta, N/K%16, 2-byte alignment and
++last-live-output-element extent contract. The vllm route's stronger constraints
++are intentional and visible. Synchronous guards run before this GEMM enqueue;
++a preceding producer/dequantization may already be outstanding on the queue.
++On any enqueue/asynchronous exception callers must retain owners and drain or
++fail-stop using existing checked cleanup. A timeout does not authorize frees.
++
++## Existing Runtime and lifetime
++
++The production allocation registry now retains each Allocation's original
++`shared_ptr<Runtime>` and can return that existing owner after the same actual
++allocation-extent/context/device checks. It creates no Runtime, provider,
++ordinal selection or queue. Existing `validate_device_span` delegates to that
++same validation and preserves all previous rejects. Its returned shared owner
++adds reference-count work; quantify host overhead separately if relevant.
++The adapter target links the one existing `strata_sycl_runtime`; it never compiles
++a second Runtime source or R810's standalone fixture.
++
++Each production Gemm lazily stores a state that retains that original Runtime
++and constructs the unchanged adapter over the original stream's queue. It
++bootstraps ownership from one registered X element; R810 then validates all full
++spans before enqueue. There is no extra device allocation or scratch. The queue
++must have been created by that Runtime, stay alive at its original address,
++and retain its original async handler. Matching SYCL domains do not independently
++prove queue origin; this remains the original engine's caller obligation.
++The hook checks the borrowed queue address on reuse. Gemm calls/init/rebind and
++allocation destruction remain serialized by the caller. A buffer owner is not
++retained by retaining Runtime: every X/W/Y owner must outlive submitted work.
++The existing in-order queue expresses producer/consumer dependencies. The
++actual returned GEMM event uses the original `finish(stream,event)` contract,
++so non-null streams remain asynchronous and null stream retains its existing
++synchronous behavior. No default-provider call is added; the old null-stream
++`queue_for` path itself still has its original default-runtime semantics.
++
++## Long-prefill call-site inspection and limits
++
++This is source inspection of production `9c1a2020`, not model-shape or allocation
++runtime evidence. All sites keep the original row/column/stride values:
++
++| Site | Actual source mapping | Static compatibility and remaining limits |
++| --- | --- | --- |
++| `bf16_proj16`, HC down/up | `T=rows`, N=`ne1>0?ne1:1`, K=`ne0`, compact Y | HC constants LR=320,D=10240 are N%64/K%32 compatible. N=1 fallback would reject. Resident BF16 weight base and actual extent are checked. |
++| `native_proj16`, GDN/QSA output and shared experts | Per column slice r: `T=rows`, N=`min(scratch_elems/K,n-r)`, K=`ne0`, Y=`y+r`, ldy=`ne1` | No copied/packed layout. Existing scratch has 33,554,432 elements. A matrix that fits scratch uses r=0. Larger matrices can produce non-64 N, non-64-byte y+r, or a conservative T*ldy span beyond the standalone logical Y allocation; those reject. No generalized slice support is claimed. |
++| Routed expert gate/up | X=`Xs+scratch_row*2560`, W=`dq_gu[q]`, Y=`GU_b16+scratch_row*1280`, T=ne,N=1280,K=2560 | All row offsets preserve 64-byte alignment if bases are aligned; T is ragged and must stay within real registered extents. |
++| Routed expert down | X=`Hh+scratch_row*640`, W=`dq_d[q]`, Y=`Dm_b16+o0*2560`, T=ne,N=2560,K=640 | Offsets likewise preserve 64-byte alignment; true bounds are checked. |
++
++`Alloc::take` rounds each region with 256-byte spacing, which preserves alignment
++from an aligned arena base; it does not prove a user-supplied base is aligned.
++The registered Allocation bounds remain authoritative. HC/sharing/routed
++constants provide shape evidence only; `WeightRef::ne0/ne1` vary by actual model
++and cannot be inferred from comments. Very large rectangles fail the R810
++INT_MAX guard. No support claim is made for a physical 262144-row full matrix,
++for grouped MoE, arbitrary variants, column-sliced matrices, or R818 sites.
++The routed calls are individual dense GEMMs under the existing CPU grouping and
++copy schedule. This hook does not port or remove that host grouping work.
++Router/injection/scalar shared gate and existing QSA/GDN internals remain FP32;
++changing this backend does not implement the independent attention proposal.
++
++## Source and license acknowledgement
++
++Intel's 2025 BSD-3 copyright, conditions and disclaimer are retained in full in
++`src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp`. Its actual tile body derives from
++vllm-project/vllm-xpu-kernels `6b30c9b92cc525c32729df988b5f918e7c5661a5`,
++`csrc/xpu/grouped_gemm/xe_2/gemm_xe2.hpp`, through the exact R810 adaptation.
++That core remains BSD-3 and is not relicensed as MIT. The R810 adapter/header,
++new engine hook/build glue/inventory/docs and new project changes follow Strata's
++repository MIT LICENSE. No unmarked vLLM policy, grouped scheduler, Torch wrapper,
++or XeStrata implementation/helper/test is included or used as a design basis.
++
++External TLA's conservative include inventory contains 192 BSD-3-Clause files
++and 15 Apache-2.0 WITH LLVM-exception files. Original external notices remain
++unchanged. Source/binary redistribution must retain the relevant Intel/NVIDIA BSD
++notices, conditions and disclaimers and applicable Apache/LLVM-exception notices;
++the root BSD label alone does not cover every transitive header. The R810
++`provenance.md` and `manifest.json` retain the per-header attribution evidence.
++This acknowledgement does not replace the actual third-party terms.
++
++Before integration/adoption Main must review the full patch and imported notices,
++qualify R810 and the enabled whole-engine link/flags, compile every type/tile,
++inspect actual device images, run guards/numerics/chains plus unchanged old
++GEMM checks, then perform bounded real-model correctness and whole-dependency
++performance measurements. Resolve any exact arithmetic/subnormal mismatch
++without weakening the prior result. Quality and physical-context gates remain
++independent. Keep this option OFF pending those decisions.
+--- /dev/null
++++ b/src/prefill/sycl/native16_backend.hpp
+@@ -0,0 +1,8 @@
++// Authored for Strata; repository LICENSE (MIT) applies.
++#pragma once
++#include <sycl/sycl.hpp>
++namespace strata::prefill {
++// Read once per process, before submissions. Does not mutate the environment.
++// Throws for malformed configuration or a requested backend absent at build.
++void native16_backend_validate_config(sycl::queue &queue);
++}
+--- /dev/null
++++ b/src/prefill/sycl/vllm_xe2/native16.cpp
+@@ -0,0 +1,186 @@
++// Authored for Strata; repository LICENSE (MIT) applies.
++// Dense adapter/policies use public pinned SYCL-TLA APIs, not the unlicensed
++// vLLM policy header or a replacement joint_matrix implementation.
++#include "native16.hpp"
++#include "xe_gemm_bsd.hpp"
++#include "strata/sycl/launch.hpp"
++#include <sycl/ext/intel/experimental/grf_size_properties.hpp>
++#include <sycl/ext/oneapi/experimental/device_architecture.hpp>
++#include <algorithm>
++#include <cmath>
++#include <limits>
++#include <stdexcept>
++#include <type_traits>
++
++namespace strata::experimental::vllm_xe2_native16 {
++namespace {
++using namespace cute;
++using sycl_backend::validate_device_span;
++using sycl_backend::validate_spans;
++static_assert(sizeof(long) == 8, "Pinned TLA block2D payload ABI needs LP64");
++static_assert(sizeof(cutlass::half_t) == 2 && sizeof(cutlass::bfloat16_t) == 2);
++
++size_t mul(size_t a, size_t b) {
++  if (b && a > std::numeric_limits<size_t>::max() / b)
++    throw std::invalid_argument("Xe2 GEMM: size multiplication overflow");
++  return a * b;
++}
++
++struct Geometry {
++  int t, n, k, ld;
++  size_t xb, wb, yb, groups_m, groups_n, threads;
++};
++
++Geometry geometry(const Problem &p, Tile tile) {
++  if (p.t <= 0 || p.n <= 0 || p.k <= 0 || p.ldy < 0 ||
++      p.beta != 0 || !std::isfinite(p.beta))
++    throw std::invalid_argument("Xe2 GEMM: positive dimensions, beta=0 required");
++  if ((p.input != Storage::fp16 && p.input != Storage::bf16) ||
++      (p.output != Storage::fp16 && p.output != Storage::bf16))
++    throw std::invalid_argument("Xe2 GEMM: invalid storage kind");
++  const int64_t ld = p.ldy ? p.ldy : p.n;
++  // V1 intentionally accepts full K tiles and N multiples of 64 only. M is
++  // logical, unpadded, including 1/3/17. No assumption of K-tail safety.
++  if (ld < p.n || p.n % 64 || p.k % 32 || ld % 8)
++    throw std::invalid_argument("Xe2 GEMM: N%64=0, K%32=0, ldy>=N, ldy%8=0 required");
++  constexpr int64_t surface_max = 0xFFFFFF; // strict pinned TLA assertion bound
++  if (p.t > surface_max || p.n > surface_max || p.k > surface_max ||
++      ld > surface_max || p.n * 2 > surface_max ||
++      p.k * 2 > surface_max || ld * 2 > surface_max)
++    throw std::invalid_argument("Xe2 GEMM: block2D width/pitch/height limit");
++  const size_t xc = mul(size_t(p.t), size_t(p.k));
++  const size_t wc = mul(size_t(p.n), size_t(p.k));
++  const size_t yc = mul(size_t(p.t), size_t(ld));
++  // CuTe dynamic shapes/strides/coordinate products use int in this adapter.
++  // Reject the complete byte rectangles conservatively, including row padding.
++  const size_t xb = mul(xc, 2), wb = mul(wc, 2), yb = mul(yc, 2);
++  if (std::max({xb, wb, yb}) > size_t(std::numeric_limits<int>::max()))
++    throw std::invalid_argument("Xe2 GEMM: int coordinate extent limit");
++  int bm, bn;
++  size_t threads;
++  switch (tile) {
++  case Tile::compact_16x64: bm = 16; bn = 64; threads = 64; break;
++  case Tile::wide_128x128: bm = 128; bn = 128; threads = 128; break;
++  default: throw std::invalid_argument("Xe2 GEMM: invalid tile");
++  }
++  const size_t gm = size_t(p.t - 1) / size_t(bm) + 1;
++  const size_t gn = size_t(p.n - 1) / size_t(bn) + 1;
++  if (mul(mul(gm, gn), threads) > size_t(std::numeric_limits<int>::max()))
++    throw std::invalid_argument("Xe2 GEMM: int launch extent limit");
++  return {int(p.t), int(p.n), int(p.k), int(ld), xb, wb, yb, gm, gn, threads};
++}
++
++bool check_device(sycl_backend::Runtime &runtime, const sycl::queue &q) {
++  if (!q.has_property<sycl::property::queue::in_order>() ||
++      q.get_context() != runtime.context() || q.get_device() != runtime.device())
++    throw std::invalid_argument("Xe2 GEMM: caller Runtime in-order queue required");
++  const auto d = q.get_device();
++  namespace ex = sycl::ext::oneapi::experimental;
++  if (!d.is_gpu() || d.get_info<sycl::info::device::vendor_id>() != 0x8086 ||
++      q.get_backend() != sycl::backend::ext_oneapi_level_zero ||
++      !d.has(sycl::aspect::usm_device_allocations))
++    throw std::invalid_argument("Xe2 GEMM: Intel Level Zero device USM GPU required");
++  // Architecture query, not a name substring or assumed device ordinal.
++  // Unsupported query throws; there is no software or generic-device fallback.
++  const auto arch = d.get_info<ex::info::device::architecture>();
++  if (arch != ex::architecture::intel_gpu_bmg_g21 &&
++      arch != ex::architecture::intel_gpu_bmg_g31)
++    throw std::invalid_argument("Xe2 GEMM: BMG G21/G31 architecture required");
++  const auto sgs = d.get_info<sycl::info::device::sub_group_sizes>();
++  const auto max_items = d.get_info<sycl::info::device::max_work_item_sizes<3>>();
++  if (std::find(sgs.begin(), sgs.end(), size_t(16)) == sgs.end() ||
++      d.get_info<sycl::info::device::max_work_group_size>() < 128 ||
++      max_items[2] < 128)
++    throw std::invalid_argument("Xe2 GEMM: SG16 and 128 work-items required");
++  runtime.check();
++  return d.has(sycl::aspect::fp16);
++}
++
++// Independently selected geometry, expressed through the public TLA helper.
++// No policy/header code copied from gemm_xe2_policy.hpp. These are qualification
++// variants, not a measured shape selector or occupancy/performance claim.
++template <Tile> struct ShapePolicy;
++template <> struct ShapePolicy<Tile::compact_16x64> {
++  using Shape = cute::Shape<Int<16>, Int<64>, Int<32>>;
++  using Subgroups = Layout<cute::Shape<Int<1>, Int<4>, Int<1>>,
++                          Stride<Int<4>, Int<1>, Int<0>>>;
++  static constexpr int threads = 64;
++};
++template <> struct ShapePolicy<Tile::wide_128x128> {
++  using Shape = cute::Shape<Int<128>, Int<128>, Int<32>>;
++  using Subgroups = Layout<cute::Shape<Int<4>, Int<2>, Int<1>>,
++                          Stride<Int<2>, Int<1>, Int<0>>>;
++  static constexpr int threads = 128;
++};
++template <class Input, class Output, Tile Policy> class DenseKernel;
++
++template <class Input, class Output, Tile Policy>
++sycl::event enqueue(sycl::queue &q, const Problem &p, Geometry g) {
++  using P = ShapePolicy<Policy>;
++  using Atom = MMA_Atom<XE_DPAS_TT<8, float, Input>>;
++  using MMA = typename TiledMMAHelper<Atom, Layout<typename P::Shape>,
++                                     typename P::Subgroups>::TiledMMA;
++  static_assert(size(typename P::Subgroups{}) * 16 == P::threads);
++  static_assert(decltype(size(MMA{}))::value == P::threads);
++  static_assert(P::threads % 16 == 0);
++  static_assert(get<0>(MMA{}.tile_mnk()) == get<0>(typename P::Shape{}));
++  static_assert(get<1>(MMA{}.tile_mnk()) == get<1>(typename P::Shape{}));
++  static_assert(get<2>(MMA{}.tile_mnk()) == 32);
++  static_assert(std::is_same_v<typename MMA::ValTypeC, float>);
++  static_assert(std::is_same_v<typename MMA::ValTypeD, float>);
++  const auto x = reinterpret_cast<const Input *>(p.x);
++  const auto w = reinterpret_cast<const Input *>(p.w);
++  auto y = reinterpret_cast<Output *>(p.y);
++  namespace ex = sycl::ext::oneapi::experimental;
++  namespace ix = sycl::ext::intel::experimental;
++  const ex::properties props{ex::sub_group_size<16>, ix::grf_size<256>};
++  const sycl::range<3> local(1, 1, P::threads);
++  const sycl::range<3> global(g.groups_m, g.groups_n, P::threads);
++  return q.submit([&](sycl::handler &h) {
++    h.parallel_for<DenseKernel<Input, Output, Policy>>(
++        sycl::nd_range<3>(global, local), props, [=](sycl::nd_item<3> item) {
++      // Pass full logical surfaces to TLA, never a padded-M allocation view.
++      // All tensors are coordinate views; OOB tile coordinates are suppressed
++      // by block2D surfaces, without divergent workgroup control flow.
++      auto a = make_tensor(make_gmem_ptr(x),
++          make_layout(make_shape(g.t, g.k), make_stride(g.k, _1{})));
++      auto b = make_tensor(make_gmem_ptr(w),
++          make_layout(make_shape(g.n, g.k), make_stride(g.k, _1{})));
++      auto d = make_tensor(make_gmem_ptr(y),
++          make_layout(make_shape(g.t, g.n), make_stride(g.ld, _1{})));
++      auto coord = make_coord(int(item.get_group(0)), int(item.get_group(1)), _, 0);
++      derived::xe_gemm_beta0<void, void, void>(a, b, d, coord, MMA{});
++    });
++  });
++}
++
++template <class I, class O>
++sycl::event select_tile(sycl::queue &q, const Problem &p, Geometry g, Tile tile) {
++  if (tile == Tile::compact_16x64)
++    return enqueue<I, O, Tile::compact_16x64>(q, p, g);
++  return enqueue<I, O, Tile::wide_128x128>(q, p, g);
++}
++} // namespace
++
++Gemm::Gemm(sycl_backend::Runtime &runtime, sycl::queue &q)
++    : runtime_(runtime), queue_(q), has_fp16_(check_device(runtime, q)) {}
++
++sycl::event Gemm::beta0(const Problem &p, Tile tile) {
++  const auto g = geometry(p, tile);
++  if (!has_fp16_ && (p.input == Storage::fp16 || p.output == Storage::fp16))
++    throw std::invalid_argument("Xe2 GEMM: native fp16 support required");
++  validate_spans({{p.y, g.yb}}, {{p.x, g.xb}, {p.w, g.wb}}, 64);
++  validate_device_span(p.x, g.xb, queue_);
++  validate_device_span(p.w, g.wb, queue_);
++  validate_device_span(p.y, g.yb, queue_);
++  runtime_.check();
++  if (p.input == Storage::fp16) {
++    if (p.output == Storage::fp16)
++      return select_tile<cutlass::half_t, cutlass::half_t>(queue_, p, g, tile);
++    return select_tile<cutlass::half_t, cutlass::bfloat16_t>(queue_, p, g, tile);
++  }
++  if (p.output == Storage::fp16)
++    return select_tile<cutlass::bfloat16_t, cutlass::half_t>(queue_, p, g, tile);
++  return select_tile<cutlass::bfloat16_t, cutlass::bfloat16_t>(queue_, p, g, tile);
++}
++} // namespace strata::experimental::vllm_xe2_native16
+--- /dev/null
++++ b/src/prefill/sycl/vllm_xe2/native16.hpp
+@@ -0,0 +1,46 @@
++// Authored for Strata; repository LICENSE (MIT) applies.
++#pragma once
++#include "strata/sycl/runtime.hpp"
++#include <cstdint>
++
++namespace strata::experimental::vllm_xe2_native16 {
++
++enum class Storage { fp16, bf16 };
++enum class Tile { compact_16x64, wide_128x128 };
++
++struct Problem {
++  const uint16_t *x = nullptr; // compact X[T,K], same input type as W
++  const uint16_t *w = nullptr; // compact W[N,K], no transpose or packing
++  uint16_t *y = nullptr;       // Y[T,ldy], independent output type
++  int64_t t = 0, n = 0, k = 0, ldy = 0; // ldy=0 means N
++  Storage input = Storage::fp16, output = Storage::bf16;
++  float beta = 0; // only +/-0 accepted; no alpha, bias or activation
++};
++
++// Source proposal only. Does not alter Gemm::*_out16 or select a runtime/device.
++// Runtime, queue and all registered Allocation owners must outlive submitted
++// work. Caller serializes owner destruction/reallocation with submissions.
++// Queue must have been made by this Runtime (compute/transfer/make_queue), be
++// in order, and remain alive at its original address for this object's life.
++// This object borrows them; it owns no runtime, queue, USM or scratch buffer.
++class Gemm {
++public:
++  Gemm(sycl_backend::Runtime &runtime, sycl::queue &queue);
++  Gemm(const Gemm &) = delete;
++  Gemm &operator=(const Gemm &) = delete;
++
++  // Returns the actual GEMM event, without a wait, copy, retry or fallback.
++  // All synchronous guards run before enqueue. An enqueue/asynchronous error
++  // still requires the caller to drain the queue before releasing any owner.
++  // Explicit tile makes later operator comparisons possible without env edits.
++  sycl::event beta0(const Problem &problem, Tile tile = Tile::wide_128x128);
++  sycl::queue &queue() const { return queue_; }
++
++private:
++  sycl_backend::Runtime &runtime_;
++  sycl::queue &queue_;
++  // Immutable per-object query result; constructor either succeeds or throws.
++  const bool has_fp16_;
++};
++
++} // namespace strata::experimental::vllm_xe2_native16
+--- /dev/null
++++ b/src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp
+@@ -0,0 +1,151 @@
++/***************************************************************************************************
++ * Copyright (C) 2025 Intel Corporation, All rights reserved.
++ * SPDX-License-Identifier: BSD-3-Clause
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions are met:
++ *
++ * 1. Redistributions of source code must retain the above copyright notice,
++ *this list of conditions and the following disclaimer.
++ *
++ * 2. Redistributions in binary form must reproduce the above copyright notice,
++ * this list of conditions and the following disclaimer in the documentation
++ * and/or other materials provided with the distribution.
++ *
++ * 3. Neither the name of the copyright holder nor the names of its
++ * contributors may be used to endorse or promote products derived from
++ * this software without specific prior written permission.
++ *
++ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
++ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
++ *ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
++ *LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
++ *CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
++ *SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
++ *INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
++ *CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
++ *ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
++ *POSSIBILITY OF SUCH DAMAGE.
++ *
++ **************************************************************************************************/
++
++#pragma once
++// Derived from vllm-project/vllm-xpu-kernels at
++// 6b30c9b92cc525c32729df988b5f918e7c5661a5, gemm_xe2.hpp lines 95-247.
++// Only the 16-bit beta-zero tile is retained. Full Intel BSD notice above.
++// Changes: clean namespace/name, remove unused typedefs/scales/bias/FP8,
++// bound initial prefetch by actual K tiles, trim unrelated includes.
++#include <sycl/sycl.hpp>
++#include <cute/tensor.hpp>
++#include <cute/atom/mma_atom.hpp>
++#include <cute/atom/copy_traits_xe_2d.hpp>
++#include <cute/util/xe_split_barrier.hpp>
++#include <cutlass/numeric_types.h>
++
++namespace strata::experimental::vllm_xe2_native16::derived {
++using namespace cute;
++template <
++    class GmemTiledCopyA,
++    class GmemTiledCopyB,
++    class GmemTiledCopyC,
++    class ATensor,
++    class BTensor,
++    class DTensor,
++    class TiledMMA>
++CUTE_DEVICE void xe_gemm_beta0(
++    ATensor const& A,  // (M,K)
++    BTensor const& B,  // (N,K)
++    DTensor& C,  // (M,N)
++    Coord<int, int, cute::Underscore, int> blk_coord,
++    TiledMMA const& mma) {
++  auto item = sycl::ext::oneapi::this_work_item::get_nd_item<3>();
++  auto wg_m = get<0>(blk_coord);
++  auto wg_n = get<1>(blk_coord);
++  int local_id = item.get_local_linear_id();
++
++  Tensor cA = make_identity_tensor(A.shape());
++  Tensor cB = make_identity_tensor(B.shape());
++  Tensor cC = make_identity_tensor(C.shape());
++
++  auto wg_tile = mma.tile_mnk();
++  auto wg_coord = make_coord(wg_m, wg_n, 0);
++
++  Tensor gA = local_tile(
++      cA, select<0, 2>(wg_tile), make_coord(wg_m, _));  // (BLK_M,BLK_K,k)
++  Tensor gB = local_tile(
++      cB, select<1, 2>(wg_tile), make_coord(wg_n, _));  // (BLK_N,BLK_K,k)
++  Tensor gC =
++      local_tile(cC, wg_tile, wg_coord, Step<_1, _1, X>{});  // (BLK_M,BLK_N)
++
++  auto copy_a = get_block_2d_copy_A<GmemTiledCopyA>(mma, A);
++  auto copy_b = get_block_2d_copy_B<GmemTiledCopyB>(mma, B);
++  auto copy_c = get_block_2d_copy_D<GmemTiledCopyC>(mma, C);
++
++  auto thr_mma = mma.get_slice(local_id);
++  auto thr_copy_a = copy_a.get_slice(local_id);
++  auto thr_copy_b = copy_b.get_slice(local_id);
++  auto thr_copy_c = copy_c.get_slice(local_id);
++
++  auto tCrA = thr_mma.partition_sg_fragment_A(gA(_, _, 0));
++  auto tCrB = thr_mma.partition_sg_fragment_B(gB(_, _, 0));
++
++  auto tArA = thr_copy_a.partition_sg_fragment_D(gA(_, _, 0));
++  auto tBrB = thr_copy_b.partition_sg_fragment_D(gB(_, _, 0));
++
++  Tensor tAgA = thr_copy_a.partition_S(gA);
++  Tensor tBgB = thr_copy_b.partition_S(gB);
++
++  /* Partition C */
++  auto tCrC = thr_mma.partition_sg_fragment_C(gC);
++  auto tCrC_out = thr_copy_c.partition_sg_fragment_S(gC);
++  auto tCgC = thr_copy_c.partition_D(gC);
++
++  auto prefetch_a = make_block_2d_prefetch(copy_a);
++  auto prefetch_b = make_block_2d_prefetch(copy_b);
++
++  auto thr_prefetch_A = prefetch_a.get_slice(local_id);
++  auto thr_prefetch_B = prefetch_b.get_slice(local_id);
++
++  auto pAgA = thr_prefetch_A.partition_S(gA);
++  auto pBgB = thr_prefetch_B.partition_S(gB);
++
++  const int prefetch_dist = 3;
++
++  constexpr SPIRVScope barrier_scope = ScopeWorkgroup;
++
++  int k_tile_count = ceil_div(shape<1>(A), get<2>(wg_tile));
++  int k_tile_prefetch = 0;
++
++  clear(tCrC);
++
++  CUTE_UNROLL
++  for (; k_tile_prefetch < prefetch_dist && k_tile_prefetch < k_tile_count; k_tile_prefetch++) {
++    prefetch(prefetch_a, pAgA(_, _, _, k_tile_prefetch));
++    prefetch(prefetch_b, pBgB(_, _, _, k_tile_prefetch));
++  }
++
++  for (int k_tile = 0; k_tile < k_tile_count; k_tile++, k_tile_prefetch++) {
++    barrier_arrive(barrier_scope);
++
++    copy(copy_a, tAgA(_, _, _, k_tile), tArA);
++    copy(copy_b, tBgB(_, _, _, k_tile), tBrB);
++
++    if (k_tile_prefetch < k_tile_count) {
++      prefetch(prefetch_a, pAgA(_, _, _, k_tile_prefetch));
++      prefetch(prefetch_b, pBgB(_, _, _, k_tile_prefetch));
++    }
++
++    reorder(tArA, tCrA);
++    reorder(tBrB, tCrB);
++
++    cute::gemm(mma, tCrA, tCrB, tCrC);
++
++    barrier_wait(barrier_scope);
++  }
++
++  reorder(tCrC, tCrC_out);
++  copy(copy_c, tCrC_out, tCgC);
++}
++
++} // namespace strata::experimental::vllm_xe2_native16::derived
