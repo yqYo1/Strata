@@ -27,6 +27,7 @@
 #include "strata/kernels/kv_q4.hpp"
 #include "strata/core/layer.hpp"
 #include "strata/core/native_head.hpp"
+#include "strata/core/token_admission.hpp"
 #include "strata/kernels/verify_kernels.hpp"
 #include "strata/kernels/qsa_decode_attn.hpp"
 #include "strata/kernels/qsa_decode_attn_variant.hpp"
@@ -1255,6 +1256,13 @@ bool Prefill::draft_kv(core::MtpDrafter& mtp, const float* R_rows, const int32_t
     if (off || n <= 0 || m.g == nullptr || m.region == nullptr || (st.kv_mode != 0 && !(st.kv_mode == 2 && ring_ok)) ||
         st.kv_hybrid || mtp.device() != m.device)
         return false;
+    const auto* admitted_embed = core::native_embed();
+    const auto* admitted_weight = admitted_embed ? nullptr : m.wt->find("token_embd.weight");
+    if (!detail::pr6_position_span(n, cell0, m.ss->max_cells) ||
+        !core::detail::embedding_tokens(next_tokens, n, admitted_embed ? admitted_embed->vocabulary() :
+                                       admitted_weight ? admitted_weight->ne1 : 0)) {
+        err = "prefill draft: token outside the embedding vocabulary or invalid span"; return false;
+    }
     const auto t0 = Clock::now();
     const core::ModelGeometry& g = *m.g;
     const int64_t Nn = g.n_embd, HCN = g.hc * g.n_embd, KV = g.n_head_kv * g.head_dim;
@@ -1377,7 +1385,7 @@ bool Prefill::draft_kv(core::MtpDrafter& mtp, const float* R_rows, const int32_t
         }
         // the input branches: the next token's embedding, and this cell's final residual rows
         if (nemb) {
-            nemb->gather_dev(tok, nb, emb, m.cs);
+            nemb->gather_dev_admitted(tok, nb, emb, m.cs);
         } else {
             const auto* codes = (const uint8_t*) wemb->data;
             const auto* scales = (const float*) (codes + wemb->codes_bytes);
@@ -1924,11 +1932,16 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
             if (!success) m.ready = false;
         }
     } request{*impl_};
-    for (int64_t i = 0; i < n; ++i)
-        if (tokens[i] < std::numeric_limits<int32_t>::min() ||
-            tokens[i] > std::numeric_limits<int32_t>::max()) {
-            err = "prefill: token id cannot be represented by the int32 input kernels"; return false;
+    const auto* embedding = core::native_embed();
+    const auto* canonical = embedding ? nullptr : impl_->wt->find("token_embd.weight");
+    const int64_t vocabulary = embedding ? embedding->vocabulary() : canonical ? canonical->ne1 : 0;
+    for (int64_t i = 0; i < n; ++i) {
+        const bool override_row = embd_rows && embd_rows[pos0 + i];
+        if (tokens[i] < INT32_MIN || tokens[i] > INT32_MAX ||
+            (!override_row && !core::detail::embedding_token(tokens[i], vocabulary))) {
+            err = "prefill: token outside the actual embedding vocabulary/int32 contract"; return false;
         }
+    }
     const char* mode = std::getenv("STRATA_PREFILL_LAYER_MAJOR");
     const char* first_env = std::getenv("STRATA_PREFILL_FIRST");
     const int64_t first = first_env ? std::atoll(first_env) : 256;
@@ -2319,7 +2332,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
             }
             lap("token ids uploaded");
             if (nemb) {
-                nemb->gather_dev(m.tok_dev, T, m.emb, m.cs);
+                nemb->gather_dev_admitted(m.tok_dev, T, m.emb, m.cs);
                 if (pt.on) { strata::retire_queue(*m.cs); lap("embedding gather (waited)"); }
             } else {
                 const auto* codes = (const uint8_t*) wemb->data;

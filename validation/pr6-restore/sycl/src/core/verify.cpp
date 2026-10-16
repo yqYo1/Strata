@@ -7,6 +7,7 @@
 #endif
 
 #include "strata/core/native_head.hpp"
+#include "strata/core/token_admission.hpp"
 #include "strata/core/on_device.hpp"
 #include "strata/core/peer_experts.hpp"
 #include "strata/kernels/iq_kernels.hpp"
@@ -357,6 +358,11 @@ bool Verifier::init(const WeightTable &wt, const ModelGeometry &g,
     const WeightRef* wo = wt.find("output.weight");
     if (wo == nullptr) { err = "verify: output.weight is missing"; return false; }
     n_vocab_ = wo->ne1;
+    if (n_vocab_ <= 0 || n_vocab_ > INT32_MAX ||
+        (native_embed() && n_vocab_ > native_embed()->vocabulary()) ||
+        (head && head->vocabulary() != n_vocab_)) {
+        err = "verify: head IDs do not fit the actual native embedding vocabulary"; return false;
+    }
 
     const strata::kernels::QsaShapes s = shapes_of(g);
     cap_ = strata::kernels::qsa_selection_width(strata::kernels::kTopkMaxCells, s);
@@ -623,7 +629,7 @@ bool Verifier::record_window(int T, dpct::queue_ptr cs, std::string &err) {
             copy_from_mapped(inj2_ + (size_t) t * HC, hand_in_ + (size_t) t * HB + HC * N + N, HC, cs);
         }
     } else if (const NativeEmbed* ne = native_embed()) {       // plan v0.3 P6: the GGUF-form table
-        ne->gather_dev(tok_, T, emb_, cs);
+        ne->gather_dev_admitted(tok_, T, emb_, cs);
         broadcast_streams(emb_, R_, N, (int) HC, T, cs);
     } else {
         const WeightRef* w = wt.find("token_embd.weight");
@@ -1434,6 +1440,10 @@ catch (sycl::exception const &exc) {
 bool Verifier::run(int T, const int32_t *tokens, int64_t pos0, PoolMultiFn pool,
                    void *user, int32_t *out, std::string &err) try {
     using namespace strata::kernels;
+    if (T < 1 || T > max_t_ ||
+        !detail::embedding_tokens(tokens, T, native_embed() ? native_embed()->vocabulary() : n_vocab_)) {
+        err = "verify: token outside the embedding vocabulary"; return false;
+    }
     const OnDevice on_device(device_);
     if (T < 1 || T > max_t_) { err = "verify: window size out of range"; return false; }
     const ModelGeometry& g = *g_;

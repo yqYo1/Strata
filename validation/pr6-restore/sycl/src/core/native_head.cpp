@@ -2,6 +2,9 @@
 #include <sycl/sycl.hpp>
 #include <dpct/dpct.hpp>
 #include "strata/core/native_head.hpp"
+#include "strata/core/token_admission.hpp"
+#include "strata/sycl_queue.hpp"
+#include "strata/sycl_retirement.hpp"
 #include "strata/artifact/gguf_reader.hpp"
 #include "strata/kernels/iq_kernels.hpp"
 #include "strata/kernels/native_mmvq.hpp"
@@ -161,6 +164,9 @@ NativeEmbed::~NativeEmbed() {
 
 bool NativeEmbed::load(const std::vector<std::string> &shards, int64_t n_embd,
                        int64_t n_vocab, std::string &err) try {
+    if (n_embd <= 0 || n_embd > INT32_MAX || n_vocab <= 0 || n_vocab > INT32_MAX) {
+        err = "native embedding: dimensions exceed the int32 kernel contract"; return false;
+    }
     try {
         const strata::GgufModel model(shards);
         // --embd-gguf's one-tensor file (tools/embd_bf16_pack.py) says "strata-embd": only its tensor is checked
@@ -196,7 +202,7 @@ bool NativeEmbed::load(const std::vector<std::string> &shards, int64_t n_embd,
         check the migrated code.
         */
         if (DPCT_CHECK_ERROR(host_ = (void *)sycl::malloc_host(
-                                 bytes_, dpct::get_in_order_queue())) != 0) {
+                                 bytes_, dpct::get_in_order_queue())) != 0 || !host_) {
             // Under WSL2 the driver's pinned/mapped host budget (~1 GiB) can be spent by the GPU contexts
             // themselves (three cards). The table is only gathered from, so keep it in the current device's VRAM
             // instead: it costs its size there and reads faster than over PCIe.
@@ -208,7 +214,7 @@ bool NativeEmbed::load(const std::vector<std::string> &shards, int64_t n_embd,
             void* d = nullptr;
             if (DPCT_CHECK_ERROR(d = (void *)sycl::malloc_device(
                                      bytes_, dpct::get_in_order_queue())) !=
-                    0 ||
+                    0 || !d ||
                 /*
                 DPCT1114: cudaMemcpy is migrated to asynchronization memcpy,
                 assuming in the original code the source host memory is pageable
@@ -275,11 +281,29 @@ catch (sycl::exception const &exc) {
   std::exit(1);
 }
 
-void NativeEmbed::gather_dev(const int32_t* tokens, int64_t n_tok, float* out, void* stream) const {
+void NativeEmbed::gather_dev_admitted(const int32_t* tokens, int64_t n_tok, float* out, void* stream) const {
+    if (n_tok == 0) return;
+    if (!dev_ || !tokens || !out || n_tok < 0 || n_tok > 262144 || vocabulary() <= 0)
+        throw std::invalid_argument("native embedding: invalid gather geometry or unloaded table");
     strata::kernels::iq_embed_rows(type_, dev_, row_, tokens, n_tok, n_embd_, out, stream);
 }
 
+void NativeEmbed::gather_dev(const int32_t* tokens, int64_t n_tok, float* out, void* stream) const {
+    if (n_tok == 0) return;
+    if (!dev_ || !tokens || !out || n_tok < 0 || n_tok > 262144)
+        throw std::invalid_argument("native embedding: invalid direct gather arguments");
+    std::vector<int32_t> ids((size_t) n_tok);
+    // IDs originate on the device here: a checked D2H transfer is required to
+    // inspect them. No embedding kernel is submitted before admission succeeds.
+    strata::retire_event(strata::q_of(stream)->memcpy(ids.data(), tokens, ids.size() * sizeof(int32_t)));
+    if (!detail::embedding_tokens(ids.data(), n_tok, vocabulary()))
+        throw std::invalid_argument("native embedding: token outside the actual vocabulary");
+    gather_dev_admitted(tokens, n_tok, out, stream);
+}
+
 void NativeEmbed::gather_one(int64_t token, float* out, void* stream) const {
+    if (!out || !detail::embedding_token(token, vocabulary()))
+        throw std::invalid_argument("native embedding: token outside the actual vocabulary");
     strata::kernels::iq_dequant_f32(type_, (const uint8_t*) dev_ + (size_t) token * row_, n_embd_, out, stream);
 }
 

@@ -8,6 +8,7 @@
 #include "strata/core/on_device.hpp"
 
 #include "strata/core/native_head.hpp"
+#include "strata/core/token_admission.hpp"
 #include "strata/core/peer_experts.hpp"
 #include "strata/kernels/bf16_gemv.hpp"
 #include "strata/kernels/cpu/expert.hpp"
@@ -511,6 +512,13 @@ bool MtpDrafter::bind(const WeightTable &wt, const NativeHead *head,
     const WeightRef* wo = wt.find("output.weight");
     if (!wo) { err = "mtp: output.weight is missing"; return false; }
     n_vocab_ = wo->ne1;
+    const auto* embedding = native_embed();
+    const auto* canonical = embedding ? nullptr : wt.find("token_embd.weight");
+    const int64_t embedding_vocabulary = embedding ? embedding->vocabulary() : canonical ? canonical->ne1 : 0;
+    if (n_vocab_ <= 0 || n_vocab_ > INT32_MAX || n_vocab_ > embedding_vocabulary ||
+        !head || head->vocabulary() != n_vocab_) {
+        err = "mtp: head IDs do not fit the actual embedding vocabulary"; return false;
+    }
     if (head == nullptr || !head->loaded()) { err = "mtp: the draft layer needs the native head (--native)"; return false; }
     if (head_logits_ == nullptr &&
         DPCT_CHECK_ERROR(head_logits_ = sycl::malloc_device<float>(
@@ -524,6 +532,14 @@ bool MtpDrafter::bind(const WeightTable &wt, const NativeHead *head,
         std::vector<uint8_t> raw;
         if (read_file(rt_dir_ + "/draft_vocab.bin", raw) && raw.size() >= 4 && raw.size() % 4 == 0) {
             n_dvocab_ = (int64_t) (raw.size() / 4);
+            // The mapped draft head is also a direct gather: validate its actual
+            // file IDs before any allocation/upload/gather of this subset.
+            for (size_t offset = 0; offset < raw.size(); offset += sizeof(int32_t)) {
+                int32_t id; std::memcpy(&id, raw.data() + offset, sizeof(id));
+                if (!detail::embedding_token(id, n_vocab_)) {
+                    err = "mtp: draft vocabulary ID outside the head/embedding table"; return false;
+                }
+            }
             const int64_t row_bytes = (int64_t) head->row_bytes();   // a vocabulary row of the native head
             if (DPCT_CHECK_ERROR(dvocab_ = (int32_t *)sycl::malloc_device(
                                      raw.size(), dpct::get_in_order_queue())) !=
@@ -574,7 +590,7 @@ bool MtpDrafter::record_forward(int T, int step_row0, dpct::queue_ptr cs,
         const WeightRef* we = wt_->find("token_embd.weight");
         if (!we) { err = "mtp: token_embd.weight is missing"; return false; }
         if (const NativeEmbed* ne = native_embed()) {   // plan v0.3 P6: the GGUF-form table
-            ne->gather_dev(tok_, T, emb_, cs);
+            ne->gather_dev_admitted(tok_, T, emb_, cs);
         } else {
             const auto* codes = (const uint8_t*) we->data;
             const auto* scales = (const float*) (codes + we->codes_bytes);
@@ -884,6 +900,10 @@ void MtpDrafter::kv_restore(int64_t upto) {
 
 bool MtpDrafter::prefill(const float *R_rows, const int32_t *next_tokens,
                          int64_t n, int64_t cell0, std::string &err) try {
+    if (!wt_ || !g_ || !cs_ || !detail::embedding_tokens(next_tokens, n,
+            native_embed() ? native_embed()->vocabulary() : n_vocab_)) {
+        err = "mtp prefill: token outside the embedding vocabulary"; return false;
+    }
     const OnDevice on_device(device_);
     const Clock::time_point t0 = Clock::now();
     const int64_t HCN = g_->hc * g_->n_embd;
@@ -1096,6 +1116,9 @@ bool MtpDrafter::draft(int T, const int32_t* tokens, int64_t p, int a, int32_t* 
                        float* probs, float min_p, int* n_drafts) {
     const OnDevice on_device(device_);
     if (T < 1 || T > max_t_ || a < 0 || a >= T) { err = "mtp: draft arguments out of range"; return false; }
+    if (!detail::embedding_tokens(tokens, T, native_embed() ? native_embed()->vocabulary() : n_vocab_)) {
+        err = "mtp draft: token outside the embedding vocabulary"; return false;
+    }
     const bool cp = coupled_active_;   // coupled draft sampling for this request: its own graphs
     if (!capture_round(T, cp, err)) return false;
     const Clock::time_point t0 = Clock::now();
@@ -1170,6 +1193,10 @@ bool MtpDrafter::draft(int T, const int32_t* tokens, int64_t p, int a, int32_t* 
 bool MtpDrafter::draft_first(int T, const float *R_row, int32_t token,
                              int64_t cell, int32_t *drafts, std::string &err,
                              float *probs, float min_p, int *n_drafts) try {
+    if (T < 1 || T > max_t_ || !R_row || !window_R_ ||
+        !detail::embedding_token(token, native_embed() ? native_embed()->vocabulary() : n_vocab_)) {
+        err = "mtp first draft: token outside the embedding vocabulary"; return false;
+    }
     const OnDevice on_device(device_);
     // row 0 is the real pair; rows 1.. repeat it and only write cells the next round overwrites
     const int64_t HCN = g_->hc * g_->n_embd;
