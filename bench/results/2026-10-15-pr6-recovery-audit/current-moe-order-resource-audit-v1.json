@@ -27,6 +27,11 @@
       "source": "src/prefill/sycl/gemm16.cpp:98",
       "fact": "The current vLLM adapter selects compact16x64 for ne<128 and wide128x128 otherwise.",
       "consequence": "The pending exact ne census can quantify grid/padding work, but not realized matrix utilization or speed. More rows are not automatically faster."
+    },
+    {
+      "source": "src/prefill/prefill.cpp:1002",
+      "fact": "For T=8192, Dm reserves T*10*2560*4=838860800 payload bytes (800MiB), while the active Dm_b16 alias uses T*10*2560*2=419430400 bytes (400MiB). This is an arena slice, not a separate allocation.",
+      "consequence": "Do not count the unused half as automatically freed VRAM. The shared reservation is currently set by the larger GDN inner set1180698624B, versus the current compactMoE inner set1087671808B. Reducing only Dm leaves that maximum unchanged. Native16 compact storage and phase ownership must be budgeted together."
     }
   ],
   "decision": "R966 investigates a bounded16K MoE window while keeping GDN/QSA causal chunks at8K. No loop reorder, chunk-guard widening or new native/GPU execution was made. Current paired profile and source feasibility must inform the implementation choice.",
