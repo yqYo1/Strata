@@ -125,9 +125,12 @@ are outside this work's scope.
   Keep conditional scopes with missing prerequisites in the index for later;
   do not start a session that can only report that its prerequisite is absent.
 - Keep findings in files and commit reviewed reports. Research is not
-  implementation adoption. Main implements, or assigns a separate
-  **gpt-6.1-sol** implementation task pinned to an immutable source base. Main
-  reviews the complete patch and exclusively manages all testing and GPU work.
+  implementation adoption. Main implements and exclusively manages testing and
+  GPU work. Following the user's 2026-10-16 resource-limit instruction, do not
+  launch new **gpt-6.1-sol** workers through Orca or native Codex. Already running
+  workers may finish without intervention. Continue the specified **gpt-6-luna**
+  research and native **gpt-6-luna max** report review; do not substitute another
+  expensive implementation model.
 
 Use the project-only [strata-upstream-sync skill](.agents/skills/strata-upstream-sync/SKILL.md).
 Its files live in `.claude/skills/strata-upstream-sync`, exposed by the relative
