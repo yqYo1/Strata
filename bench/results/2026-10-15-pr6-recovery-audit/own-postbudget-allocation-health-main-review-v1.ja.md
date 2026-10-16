@@ -1,0 +1,3 @@
+# Main: postbudget64B health
+
+元postfault health source05acc6c7から、fresh output名・active状態の逐次公開・最新logbudget失敗d1a98dd5と独立CPU閉鎖観測67b72cefのpin/同boot/正常回収/全旧PID不在条件だけを追加。元denseNLL失敗bf9d6f00と新trace容量失敗の両方をFAILのまま保持する。実fixture/64B/45秒/全432source314build/runtime/products/freshkernel/dumpの契約は同じ。Mainは生成差分と追加条件を確認した。モデル/GEMM/NLL再実行を含まず、小さいadapter健康だけを観測する。モデル再開では別の新warnings-only selectedv2を使い、全モデルfullAPItraceを拒否し、62MiB/64MiBの閉鎖用容量をCPUテスト8d12bc30で確認済み。旧source/receipt変更なし。

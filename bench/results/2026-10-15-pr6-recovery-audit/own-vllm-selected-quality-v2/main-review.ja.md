@@ -1,0 +1,7 @@
+# Main: selected診断v2の変更点
+
+元R852 v1はcommit67dbc7aaで保存済み。smoke-v1はfullURtraceが64MiB上限に達しSIGXFSZ(-25)、候補2arm未実行。元receipt d1a98dd5はFAILのまま、CPU独立journal/PID観測67b72cefはfreshfault0/dumpfalse/全旧PID不在を確認した。原因はtrace容量であり、GPUハングや正常モデル資格として扱わない。旧source/manifest/失敗receiptを編集しない。
+
+Mainはv1の577+367行を全文レビュー済み。本v2はそこから限定変更: canonical package/schemaをv2へ、新nativeのtext/file上限62MiB（Owner総量64MiB内に最終journal用2MiBを残す、64地点raw63,569,928Bは65,011,712B上限内）、全モデルfullAPItrace optionは出力root/exec前に明示拒否。通常STRATA_TRACE1+warningvalidationは維持。新manifestにはMain変更と原R852の由来を明記。数学oracle、selected位置/target、精度/採用基準、source432/build314、model/input/profile/runtime pins、Owner/pidfd/queue/ドライバ/保持/失敗保存契約は不変。
+
+CPU-onlyで同じOwner/file上限の大量stderr停止と、別の最終確認コマンドの通常閉鎖を確認済み（8d12bc300cf5adf76f1ff1d05eb9cf58995dd6a48d420eb3782f49e42a622021）。別の64B健康確認も正常終了/freshfault0/dumpfalse（fdac8189553bae1cf1ae5a3f72cd01b334455320a7268014b75f18ef2ea1ac9b）。これを最新gateとしてwarnings-only synthetic129/3armから再開する。元長文denseNLLは起動しない。モデルsource/compiled productsには変更なし。Mainが全GPU実行を直列管理する。
