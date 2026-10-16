@@ -1,0 +1,25 @@
+
+# Independent fixed-geometry bitwise oracle; no historical source/TU edits.
+option(PR6_BUILD_SHUFFLE64_PROBE "Build separately reviewed model-free 64-bit DPCT oracle" OFF)
+if(PR6_BUILD_SHUFFLE64_PROBE)
+  if(NOT CMAKE_SYSTEM_NAME STREQUAL "Linux" OR NOT PR6_OPEN_SOURCE_LLVM_ONEMKL OR
+     NOT PR6_LLVM_SHUFFLE64_COMPAT)
+    message(FATAL_ERROR "pr6_shuffle64_probe requires the reviewed pinned Linux LLVM and private shuffle/shift adapter")
+  endif()
+  find_package(Threads REQUIRED)
+  add_executable(pr6_shuffle64_probe EXCLUDE_FROM_ALL harness/shuffle64_probe.cpp)
+  set_target_properties(pr6_shuffle64_probe PROPERTIES
+    CXX_STANDARD 20 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS OFF)
+  target_compile_definitions(pr6_shuffle64_probe PRIVATE STRATA_PR6_SHUFFLE64_ORACLE=1)
+  # Same checked preinclude/include precedence, with no inference/ggml/MKL linkage.
+  target_link_libraries(pr6_shuffle64_probe PRIVATE strata_includes Threads::Threads)
+  get_target_property(pr6_shuffle64_compile_options strata_core COMPILE_OPTIONS)
+  get_target_property(pr6_shuffle64_link_options strata_core LINK_OPTIONS)
+  if(NOT pr6_shuffle64_compile_options OR NOT pr6_shuffle64_link_options)
+    message(FATAL_ERROR "Historical GPU core compile/link options are unavailable")
+  endif()
+  # Actual adapter-normalized SYCL/SG32/precise/split/backend flags; no CPU flags.
+  set_property(TARGET pr6_shuffle64_probe PROPERTY COMPILE_OPTIONS "${pr6_shuffle64_compile_options}")
+  set_property(TARGET pr6_shuffle64_probe PROPERTY LINK_OPTIONS "${pr6_shuffle64_link_options}")
+  # No CTest entry: Main exclusively owns the supervised native child.
+endif()

@@ -1,0 +1,258 @@
+{
+  "schema": "strata-pr6-shuffle64-oracle-proposal-v1",
+  "status": "SOURCE_ONLY_UNSAFE_TO_RUN",
+  "created_utc": "2026-10-16T11:17:09.398428+00:00",
+  "task_id": "task_4ac2f48f36bc",
+  "dispatch_id": "ctx_5dea05b0e81a",
+  "assignment_class": "finite SOURCE implementation / decision support",
+  "source_base": {
+    "assigned_commit": "15a444bb91d54dbb86418158d9204308c6eeb5df",
+    "git_verified": false,
+    "authoritative_consulted_snapshot": {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/shuffle-oracle-v1/input-source-snapshot.json",
+      "bytes": 6520,
+      "sha256": "a855fbf5304c920ca4301c76d9b4b7787a2667c0b00a358be9aa0593ce8c17a7"
+    },
+    "wrapper_preimage": {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/shuffle-oracle-v1/base-CMakeLists.txt",
+      "bytes": 9229,
+      "sha256": "30ab30817c362eb20d31d6a75b7b975d7c846523cd3971996e9425741c906e81"
+    },
+    "snapshot_changes_at_final_identity_read": []
+  },
+  "delivery_files": [
+    {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/shuffle-oracle-v1/shuffle64_probe.cpp",
+      "bytes": 18085,
+      "sha256": "c08980b6b38e59aef77ecc9629a7cb3116953e8716598d95388d5e78b1458177"
+    },
+    {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/shuffle-oracle-v1/cmake-addition.txt",
+      "bytes": 1632,
+      "sha256": "f3f2288d05077037b35515ee88548e6c272da721d005ac461501fa30f07caba8"
+    },
+    {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/shuffle-oracle-v1/integration.patch",
+      "bytes": 20694,
+      "sha256": "4410940698621d2e769a7129265606938df697c7604a7e4a8d4009339ddf6f25"
+    },
+    {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/shuffle-oracle-v1/README.ja.md",
+      "bytes": 9787,
+      "sha256": "72ed107af622870181440ba776061ef74b56db9e06295d5bf1256a47ad3d36ec"
+    },
+    {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/shuffle-oracle-v1/base-CMakeLists.txt",
+      "bytes": 9229,
+      "sha256": "30ab30817c362eb20d31d6a75b7b975d7c846523cd3971996e9425741c906e81"
+    },
+    {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/shuffle-oracle-v1/input-source-snapshot.json",
+      "bytes": 6520,
+      "sha256": "a855fbf5304c920ca4301c76d9b4b7787a2667c0b00a358be9aa0593ce8c17a7"
+    }
+  ],
+  "patch": {
+    "applied": false,
+    "targets": [
+      "validation/pr6-restore/CMakeLists.txt",
+      "validation/pr6-restore/harness/shuffle64_probe.cpp"
+    ],
+    "existing_delta": "append opt-in sibling target only",
+    "new_cpp_byte_identical_to_delivery": true,
+    "generation": "Python difflib from captured exact preimage; no Git or patch execution"
+  },
+  "build_contract": {
+    "option": "PR6_BUILD_SHUFFLE64_PROBE",
+    "default": false,
+    "target": "pr6_shuffle64_probe",
+    "exclude_from_all": true,
+    "requires": [
+      "existing PR6_MAIN_REVIEWED_BUILD",
+      "Linux",
+      "PR6_OPEN_SOURCE_LLVM_ONEMKL",
+      "PR6_LLVM_SHUFFLE64_COMPAT",
+      "existing LLVM22/compiler/API/vendor exact hash gates"
+    ],
+    "language": "C++20 REQUIRED; extensions OFF",
+    "link_libraries": [
+      "strata_includes",
+      "Threads::Threads"
+    ],
+    "compile_and_link_options": "adapter-normalized actual strata_core COMPILE_OPTIONS/LINK_OPTIONS",
+    "checked_preinclude": "strata_includes existing forced private checked DPCT header",
+    "no_inference_arithmetic_libraries": true,
+    "no_ctest": true
+  },
+  "matrix": {
+    "types": [
+      "long long",
+      "unsigned long long"
+    ],
+    "physical_lanes": 32,
+    "workgroups_per_kernel": 1,
+    "kernels": 2,
+    "input_banks": 2,
+    "logical_widths": [
+      8,
+      16,
+      32
+    ],
+    "member_mask": "0xffffffffu",
+    "broadcast_remotes": "every remote in [0,width)",
+    "lane_varying_remote": "(lane*5+3)%width",
+    "shift_deltas_by_width": {
+      "8": [
+        1,
+        2,
+        4
+      ],
+      "16": [
+        1,
+        2,
+        4,
+        8
+      ],
+      "32": [
+        1,
+        2,
+        4,
+        8,
+        16
+      ]
+    },
+    "helper_calls_per_lane_per_bank": {
+      "select": 59,
+      "shift_right": 12
+    },
+    "values_bitwise_checked": 9088,
+    "select_values": 7552,
+    "shift_values": 1536,
+    "boundary_self_values": 356,
+    "mapping_records": 64,
+    "fallback_type_controls_added": false,
+    "arbitrary_or_divergent_masks": false
+  },
+  "reference": {
+    "select": "start_index=id/width*width; logical_remote_id=start_index+remote%width; input[bank][logical_remote_id]",
+    "shift_right": "start_index=id/width*width; source=(id-start_index)<delta ? id : id-delta; input[bank][source]",
+    "payloads": "uint64_t bit representations, sycl::bit_cast to/from exact long-long types; no narrowing",
+    "CPU_DPCT_emulation": false,
+    "comparison": "uint64_t equality of all 64 bits, all results after retirement"
+  },
+  "bounded_footprint": {
+    "input_bytes": 512,
+    "result_per_type_bytes_pinned_ABI_expected": 37632,
+    "output_bytes_pinned_ABI_expected": 75264,
+    "device_bytes_pinned_ABI_expected": 75776,
+    "all_explicit_host_and_USM_payload_bytes_pinned_ABI_expected": 226816,
+    "compile_time_total_bound": "3*sizeof(Output)+2*sizeof(Input)<1MiB",
+    "uploads": 2,
+    "kernels": 2,
+    "readbacks": 1,
+    "normal_retirement_barriers": 2,
+    "normal_explicit_queue_commands": 7,
+    "driver_internal_operation_count": "not asserted"
+  },
+  "lifetime_contract": {
+    "queue": "actual checked default in-order DPCT, borrowed and never destroyed",
+    "owners": "Probe input + immutable seed + readback + two USM pointers outlive every accepted command",
+    "before_host_checks": "retire final real D2H event; retire complete queue; check complete/empty; consume async",
+    "submission_throw": "RAII close retires whole queue with all owners live even when no event was returned",
+    "cleanup": "full checked retirement before free; no owner replacement before retirement",
+    "process_deadline_seconds": 60,
+    "unknown_completion_exit": 86,
+    "existing_nonempty_async_delivery_exit": 87,
+    "post_quiescence_cleanup_failure_exit": 88,
+    "terminate_exit": 86,
+    "ordinary_host_failure_after_retirement_exit": 1,
+    "pre_runtime_argument_env_failure_exit": 64
+  },
+  "main_supervision": {
+    "stdin_gates": [
+      "PR6_SHUFFLE64_READY before-runtime",
+      "PR6_SHUFFLE64_READY before-operations",
+      "PR6_SHUFFLE64_READY after-cleanup"
+    ],
+    "release": "one byte X for each flushed gate",
+    "argv": "no arguments; fixed device ordinal 0",
+    "required_preexec_env": "ONEAPI_DEVICE_SELECTOR=level_zero:gpu; all other runtime/provider/collector env frozen by Main",
+    "environment_mutation_in_source": false,
+    "direct_deadline_seconds": 90,
+    "total_deadline_seconds": 120,
+    "raw_log_budget_bytes": 67108864,
+    "external_receipts_required": [
+      "owned PID/start/boot",
+      "binary and effective environment",
+      "runtime maps and identity",
+      "journal before/after boundaries and fault findings",
+      "actual exit and process disappearance/survivor/cleanup"
+    ],
+    "success_candidate": "SHUFFLE64_ORACLE_COMPLETE one compact JSON after cleanup + third gate + exit0; not standalone provider/model qualification"
+  },
+  "prior_evidence": {
+    "provider_four_cases": "Coordinator assignment reports actual32 integer cells +128B copies/default/owned/host-unwind exact, exit0/fault0; not rerun or generalized",
+    "shift_v3_compile_failure": "Preserved as failed; corrected shift v2 still compile/native-unqualified",
+    "dormant_cluster_route": "Still returns false; not enabled",
+    "model": "quality/state/fullphysical262144/RESTORE/600 remain unqualified"
+  },
+  "provenance": {
+    "new_files": "Independently authored under repository LICENSE (MIT), no copied external implementation/template",
+    "allowed_references": [
+      "own checked queue/retirement/provider source and reports",
+      "pinned historical Intel DPCT API contract and arithmetic routing formula",
+      "installed LLVM SYCL public subgroup API definitions only"
+    ],
+    "excluded": "No XeStrata implementation, helper, test, archive or enclosing-checkout source consulted",
+    "skill": "Project-only strata-upstream-sync provenance/scope principles; no upstream or Git action"
+  },
+  "source_review": {
+    "method": "manual complete source and CMake read; fixed loop/tail/count/lifetime analysis only",
+    "no_compiler_or_test_claim": true,
+    "guard_accounting": "per bank/type: width8 4*7=28; width16 2*15=30; width32 1*31=31; total89*4=356",
+    "complete_source_and_CMake_patch_read": true
+  },
+  "not_performed": [
+    "compiler",
+    "preprocessor",
+    "CMake/configure",
+    "build",
+    "tests/host fixture",
+    "native/runtime/device/GPU",
+    "profiler",
+    "process inspection",
+    "package/service/permissions/sysctl/reset",
+    "cleanup",
+    "Git",
+    "nested agents"
+  ],
+  "remaining_assumptions": [
+    "Provider honors in-order ordering and retirement barrier closes accepted partial submissions",
+    "Checked registry retains real default queue ownership throughout lifetime",
+    "Pinned compiler/SYCL bit_cast and subgroup ABI generate intended real operation; build/native qualification required",
+    "Only fixed WG32 mapping covered; no historical WG128/1024 or dormant cluster guarantee"
+  ],
+  "remaining_gates": [
+    "Main full patch/preimage/provenance review and integration",
+    "Fresh generated header/proof and actual compile/link/ELF/runtime closure",
+    "Compile/link of exact signed and unsigned helper branches",
+    "Main supervised finite native oracle with external fault0 and exit/cleanup receipts",
+    "Nonempty async87/pending/partial provider-failure/86/88 qualification remains separate",
+    "Model quality/state/physical262144/RESTORE/repeated600"
+  ],
+  "retention": {
+    "owner": "Main",
+    "consumer": "shuffle/shift compatibility source review then first fresh build/native bitwise gate",
+    "next_review": "complete source patch and generated-command review / first new build or failure",
+    "raw_captures_created": false,
+    "deleted_paths": []
+  },
+  "additional_consulted_source_pins": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-historical-dependencies-v1/vendor/sycl/include/dpct/device.hpp",
+      "bytes": 33781,
+      "sha256": "66776dce10405ad3826e6f19edf23a9811113fa6c62832de56d93d907b827154",
+      "role": "Historical allowed dependency singleton/default queue API inspection; no enclosing project implementation"
+    }
+  ]
+}

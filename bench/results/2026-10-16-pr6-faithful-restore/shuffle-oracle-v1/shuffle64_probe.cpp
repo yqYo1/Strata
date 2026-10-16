@@ -1,0 +1,344 @@
+// Independently authored project proposal under the repository LICENSE.
+// SOURCE ONLY: Main owns review, integration, compilation and all execution.
+#include "strata/sycl_queue.hpp"
+#include "strata/sycl_retirement.hpp"
+#include "strata/core/validation_control.hpp"
+
+#include <algorithm>
+#include <array>
+#include <cerrno>
+#include <cstddef>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <exception>
+#include <stdexcept>
+#include <string_view>
+#include <type_traits>
+#include <unistd.h>
+
+#ifdef DPCT_USM_LEVEL_NONE
+#error "This oracle requires the historical in-order USM queue contract"
+#endif
+#ifndef STRATA_PR6_SHUFFLE64_ORACLE
+#error "Use the reviewed opt-in shuffle64 target"
+#endif
+static_assert(!strata::core::detail::concurrent_doorbell_admitted());
+namespace {
+constexpr unsigned lanes = 32, banks = 2, types = 2;
+// Per bank: (8+16+32) broadcast selects, 3 varying selects, 3+4+5 shifts.
+constexpr unsigned select_calls = 59, shift_calls = 12;
+constexpr unsigned slots = select_calls + shift_calls;
+constexpr unsigned values = types * banks * slots * lanes;
+constexpr uint64_t sentinel = UINT64_C(0xa5a5a5a5a5a5a5a5);
+static_assert(values == 9088 && sizeof(long long) == 8 &&
+              sizeof(unsigned long long) == 8 && sizeof(uint64_t) == 8);
+template<class T> class Shuffle64Kernel;
+struct Mapping {
+    uint32_t workgroup_lane, physical_lane, physical_size, physical_max_size;
+    uint32_t subgroup_id, subgroup_count, workgroup_id, workgroup_size;
+    uint32_t selects, shifts;
+};
+struct Result {
+    Mapping mapping[lanes];
+    uint64_t bits[banks][slots][lanes];
+};
+using Input = std::array<std::array<uint64_t, lanes>, banks>;
+using Output = std::array<Result, types>;
+static_assert(std::is_trivially_copyable_v<Input> &&
+              std::is_trivially_copyable_v<Output>);
+static_assert(sizeof(Input) == banks * lanes * sizeof(uint64_t) &&
+              sizeof(Output) == types * sizeof(Result));
+// Two host outputs (immutable upload seed + readback), host input and USM.
+static_assert(3 * sizeof(Output) + 2 * sizeof(Input) < 1024 * 1024);
+
+void require(bool ok, const char* why) { if (!ok) throw std::runtime_error(why); }
+void phase(const char* name) {
+    std::fprintf(stderr, "pr6_shuffle64_probe phase=%s\n", name);
+    std::fflush(stderr);
+}
+void main_gate(const char* name, unsigned& released) {
+    require(std::printf("PR6_SHUFFLE64_READY %s\n", name) > 0 &&
+            std::fflush(stdout) == 0, "cannot publish Main gate");
+    char byte = 0;
+    ssize_t count;
+    do { count = ::read(STDIN_FILENO, &byte, 1); } while (count < 0 && errno == EINTR);
+    require(count == 1 && byte == 'X', "Main gate not released");
+    ++released;
+}
+uint64_t pattern(unsigned bank, unsigned lane) {
+    if (bank == 1) return (UINT64_C(1) << 40) + lane;
+    switch (lane % 8) {
+    case 0: return UINT64_MAX; // -1 as signed storage, UINT64_MAX as unsigned.
+    case 1: return 0;
+    case 2: return UINT64_C(0x8000000000000000); // signed minimum / high bit.
+    case 3: return UINT64_C(0x7fffffffffffffff); // signed maximum.
+    case 4: return (UINT64_C(1) << 32) + 17;
+    case 5: return (UINT64_C(1) << 40) + lane;
+    case 6: return UINT64_C(0x8000000100000000) | lane;
+    default: return UINT64_C(0x1234567887654300) | lane;
+    }
+}
+struct Probe {
+    // No host source mutation or owner destruction until full queue retirement.
+    Input input{};
+    Output seed{}, output{};
+    sycl::queue* borrowed = nullptr;
+    uint64_t* device_input = nullptr;
+    Result* device_output = nullptr;
+    unsigned uploads = 0, kernels = 0, readbacks = 0, barriers = 0;
+    unsigned checked_values = 0, checked_mappings = 0;
+    unsigned checked_selects = 0, checked_shifts = 0, checked_guards = 0;
+    unsigned mismatches = 0;
+    bool closed = false;
+    Probe() {
+        for (unsigned b = 0; b < banks; ++b)
+            for (unsigned i = 0; i < lanes; ++i) input[b][i] = pattern(b, i);
+        for (auto& result : seed) {
+            for (auto& m : result.mapping)
+                m = {UINT32_MAX, UINT32_MAX, UINT32_MAX, UINT32_MAX, UINT32_MAX,
+                     UINT32_MAX, UINT32_MAX, UINT32_MAX, UINT32_MAX, UINT32_MAX};
+            for (auto& bank : result.bits)
+                for (auto& row : bank)
+                    for (auto& bit : row) bit = sentinel;
+        }
+    }
+    Probe(const Probe&) = delete;
+    Probe& operator=(const Probe&) = delete;
+    void init() {
+        phase("runtime-init");
+        // Fixed ordinal; Main pins ONEAPI_DEVICE_SELECTOR before exec.
+        dpct::select_device(0);
+        borrowed = &dpct::get_in_order_queue();
+        require(strata::q_of(nullptr) == borrowed && strata::q_of(borrowed) == borrowed,
+                "default queue lacks actual checked registration");
+        const auto d = borrowed->get_device();
+        const auto groups = d.get_info<sycl::info::device::sub_group_sizes>();
+        require(d.is_gpu() && borrowed->get_backend() == sycl::backend::ext_oneapi_level_zero &&
+                d.has(sycl::aspect::usm_device_allocations) &&
+                std::find(groups.begin(), groups.end(), size_t(lanes)) != groups.end() &&
+                d.get_info<sycl::info::device::max_work_group_size>() >= lanes,
+                "requires Level Zero GPU, device USM and SG32/WG32");
+        require(borrowed->has_property<sycl::property::queue::in_order>(),
+                "default queue is not in order");
+        std::fprintf(stderr, "pr6_shuffle64_probe device=%s driver=%s\n",
+                     d.get_info<sycl::info::device::name>().c_str(),
+                     d.get_info<sycl::info::device::driver_version>().c_str());
+        std::fflush(stderr);
+        device_input = sycl::malloc_device<uint64_t>(banks * lanes, *borrowed);
+        require(device_input != nullptr, "input allocation returned null");
+        device_output = sycl::malloc_device<Result>(types, *borrowed);
+        require(device_output != nullptr, "output allocation returned null");
+        phase("owners-ready");
+    }
+    template<class T> void submit(unsigned type_index) {
+        static_assert(std::is_same_v<T, long long> ||
+                      std::is_same_v<T, unsigned long long>);
+        auto* in = device_input;
+        auto* out = device_output + type_index;
+        (void)borrowed->submit([=](sycl::handler& cgh) {
+            cgh.parallel_for<Shuffle64Kernel<T>>(
+                sycl::nd_range<1>(sycl::range<1>(lanes), sycl::range<1>(lanes)),
+                [=](sycl::nd_item<1> item) [[sycl::reqd_sub_group_size(32)]] {
+                    const auto g = item.get_sub_group();
+                    const unsigned lane = unsigned(item.get_local_linear_id());
+                    auto& m = out->mapping[lane];
+                    m = {lane, uint32_t(g.get_local_linear_id()),
+                         uint32_t(g.get_local_linear_range()), uint32_t(g.get_max_local_range()[0]),
+                         uint32_t(g.get_group_linear_id()), uint32_t(g.get_group_linear_range()),
+                         uint32_t(item.get_group_linear_id()), uint32_t(item.get_local_range(0)), 0, 0};
+                    // Uniform per subgroup; bad geometry fails the host mapping
+                    // check, never records a successful empty-operation oracle.
+                    if (g.get_local_linear_range() != lanes) return;
+                    unsigned selects = 0, shifts = 0;
+                    for (unsigned b = 0; b < banks; ++b) {
+                        const T x = sycl::bit_cast<T>(in[b * lanes + lane]);
+                        unsigned slot = 0;
+                        // All loop bounds and all calls are subgroup-uniform.
+                        for (unsigned width = 8; width <= lanes; width *= 2) {
+                            for (unsigned remote = 0; remote < width; ++remote) {
+                                const T y = dpct::experimental::select_from_sub_group(
+                                    0xffffffffu, g, x, int(remote), int(width));
+                                out->bits[b][slot++][lane] = sycl::bit_cast<uint64_t>(y);
+                                ++selects;
+                            }
+                            const unsigned remote = (lane * 5 + 3) % width;
+                            const T y = dpct::experimental::select_from_sub_group(
+                                0xffffffffu, g, x, int(remote), int(width));
+                            out->bits[b][slot++][lane] = sycl::bit_cast<uint64_t>(y);
+                            ++selects;
+                            for (unsigned delta = 1; delta < width; delta *= 2) {
+                                const T z = dpct::experimental::shift_sub_group_right(
+                                    0xffffffffu, g, x, delta, int(width));
+                                out->bits[b][slot++][lane] = sycl::bit_cast<uint64_t>(z);
+                                ++shifts;
+                            }
+                        }
+                    }
+                    m.selects = selects; m.shifts = shifts;
+                });
+        });
+        ++kernels;
+    }
+    void run() {
+        phase("upload-and-real-helpers");
+        (void)borrowed->memcpy(device_input, input.data(), sizeof(input)); ++uploads;
+        (void)borrowed->memcpy(device_output, seed.data(), sizeof(seed)); ++uploads;
+        submit<long long>(0);
+        submit<unsigned long long>(1);
+        auto download = borrowed->memcpy(output.data(), device_output, sizeof(output)); ++readbacks;
+        strata::retire_event(download);
+        strata::retire_queue(*borrowed); ++barriers;
+        try {
+            if (download.get_info<sycl::info::event::command_execution_status>() !=
+                    sycl::info::event_command_status::complete || !borrowed->ext_oneapi_empty())
+                strata::prefill::detail::retirement_fail_stop("final completion unavailable");
+            borrowed->throw_asynchronous();
+        } catch (...) { strata::prefill::detail::retirement_fail_stop("completion query failed"); }
+        phase("retired-before-host-reference");
+    }
+    void compare(unsigned t, unsigned b, unsigned slot, unsigned lane,
+                 unsigned source, bool is_shift, bool guard) {
+        const uint64_t got = output[t].bits[b][slot][lane];
+        const uint64_t expected = input[b][source];
+        ++checked_values;
+        if (is_shift) ++checked_shifts; else ++checked_selects;
+        if (guard) ++checked_guards;
+        if (got != expected) {
+            if (mismatches == 0) {
+                std::fprintf(stderr,
+                    "BIT_MISMATCH type=%u bank=%u slot=%u lane=%u source=%u got=%016llx expected=%016llx\n",
+                    t, b, slot, lane, source, static_cast<unsigned long long>(got),
+                    static_cast<unsigned long long>(expected));
+                std::fflush(stderr);
+            }
+            ++mismatches;
+        }
+    }
+    void verify() {
+        // Validate physical mapping before using the host lane-routing model.
+        for (unsigned t = 0; t < types; ++t)
+            for (unsigned i = 0; i < lanes; ++i) {
+                const auto& m = output[t].mapping[i];
+                const bool valid = m.workgroup_lane == i && m.physical_lane == i &&
+                        m.physical_size == lanes && m.physical_max_size == lanes &&
+                        m.subgroup_id == 0 && m.subgroup_count == 1 &&
+                        m.workgroup_id == 0 && m.workgroup_size == lanes &&
+                        m.selects == banks * select_calls && m.shifts == banks * shift_calls;
+                if (!valid) {
+                    std::fprintf(stderr,
+                        "MAPPING_MISMATCH type=%u cell=%u wg_lane=%u sg_lane=%u sg_size=%u sg_max=%u "
+                        "sg_id=%u sg_count=%u wg_id=%u wg_size=%u selects=%u shifts=%u\n",
+                        t, i, m.workgroup_lane, m.physical_lane, m.physical_size, m.physical_max_size,
+                        m.subgroup_id, m.subgroup_count, m.workgroup_id, m.workgroup_size, m.selects, m.shifts);
+                    std::fflush(stderr);
+                    throw std::runtime_error("physical SG32 mapping or actual helper count mismatch");
+                }
+                ++checked_mappings;
+            }
+        for (unsigned b = 0; b < banks; ++b)
+            for (unsigned i = 0; i < lanes; ++i)
+                require(input[b][i] == pattern(b, i), "retained input source changed");
+        for (unsigned t = 0; t < types; ++t)
+            for (unsigned b = 0; b < banks; ++b) {
+                unsigned slot = 0;
+                for (unsigned width = 8; width <= lanes; width *= 2) {
+                    // Reference only: no DPCT/helper execution on the CPU.
+                    for (unsigned remote = 0; remote < width; ++remote, ++slot)
+                        for (unsigned id = 0; id < lanes; ++id) {
+                            const unsigned start_index = id / width * width;
+                            const unsigned logical_remote_id = start_index + remote % width;
+                            compare(t, b, slot, id, logical_remote_id, false, false);
+                        }
+                    for (unsigned id = 0; id < lanes; ++id) {
+                        const unsigned remote = (id * 5 + 3) % width;
+                        const unsigned start_index = id / width * width;
+                        compare(t, b, slot, id, start_index + remote % width, false, false);
+                    }
+                    ++slot;
+                    for (unsigned delta = 1; delta < width; delta *= 2, ++slot)
+                        for (unsigned id = 0; id < lanes; ++id) {
+                            const unsigned start_index = id / width * width;
+                            const bool guard = (id - start_index) < delta;
+                            compare(t, b, slot, id, guard ? id : id - delta, true, guard);
+                        }
+                }
+                require(slot == slots, "host reference tail mismatch");
+            }
+        require(checked_mappings == types * lanes && checked_values == values &&
+                checked_selects == types * banks * select_calls * lanes &&
+                checked_shifts == types * banks * shift_calls * lanes &&
+                checked_guards == 356, "incomplete bitwise verification receipt");
+        if (mismatches != 0) {
+            std::fprintf(stderr, "BITWISE_FAILED checked=%u selects=%u shifts=%u guards=%u mismatches=%u\n",
+                         checked_values, checked_selects, checked_shifts, checked_guards, mismatches);
+            std::fflush(stderr);
+            throw std::runtime_error("64-bit helper result mismatch");
+        }
+        require(uploads == 2 && kernels == 2 && readbacks == 1 && barriers == 1,
+                "incomplete real-operation receipt");
+        phase("all-bits-verified");
+    }
+    void close() noexcept {
+        if (closed) return;
+        bool quiescent = false;
+        try {
+            strata::prefill::detail::RetirementDeadline deadline;
+            // A barrier retires ALL accepted work, including a submit/copy that
+            // throws before returning an event. Owners remain live throughout.
+            if (borrowed) { strata::retire_queue(*borrowed); ++barriers; }
+            quiescent = true;
+            if (device_output) sycl::free(device_output, *borrowed);
+            device_output = nullptr;
+            if (device_input) sycl::free(device_input, *borrowed);
+            device_input = nullptr;
+            borrowed = nullptr; // Borrowed default is never destroyed here.
+            closed = true;
+        } catch (...) { std::_Exit(quiescent ? 88 : 86); }
+    }
+    ~Probe() { close(); }
+};
+} // namespace
+int main(int argc, char**) {
+    // Unknown completion keeps owners live via process fail-stop, without unwind.
+    std::set_terminate([] { std::_Exit(86); });
+    const char* selector = std::getenv("ONEAPI_DEVICE_SELECTOR");
+    if (argc != 1 || !selector || std::string_view(selector) != "level_zero:gpu") {
+        std::fprintf(stderr, "no arguments; Main must set ONEAPI_DEVICE_SELECTOR=level_zero:gpu before exec\n");
+        return 64;
+    }
+    try {
+        // 60s process fail-stop begins before any DPCT/runtime initialization.
+        // Main separately owns 90s direct/120s total, PID/start/maps/journal/budget.
+        strata::prefill::detail::RetirementDeadline deadline;
+        Probe p;
+        unsigned released = 0;
+        main_gate("before-runtime", released);
+        p.init();
+        main_gate("before-operations", released);
+        p.run();
+        p.verify();
+        p.close();
+        require(p.closed && p.barriers == 2, "cleanup receipt incomplete");
+        phase("cleanup-complete");
+        main_gate("after-cleanup", released);
+        const int written = std::printf(
+            "{\"status\":\"SHUFFLE64_ORACLE_COMPLETE\",\"types\":2,\"banks\":2,\"mask\":\"ffffffff\","
+            "\"logical_widths\":[8,16,32],\"lanes\":32,\"physical_mappings_checked\":%u,"
+            "\"bitwise64_values_checked\":%u,\"select_values_checked\":%u,\"shift_values_checked\":%u,"
+            "\"boundary_self_values_checked\":%u,\"mismatches\":%u,\"uploads\":%u,\"kernels\":%u,"
+            "\"readbacks\":%u,\"retirement_barriers\":%u,\"explicit_queue_commands\":%u,\"device_bytes\":%zu,"
+            "\"main_gates_released\":%u,\"cleanup_complete\":true,\"external_fault_receipt_required\":true,"
+            "\"model_quality_qualified\":false}\n",
+            p.checked_mappings, p.checked_values, p.checked_selects, p.checked_shifts, p.checked_guards,
+            p.mismatches, p.uploads, p.kernels, p.readbacks, p.barriers,
+            p.uploads + p.kernels + p.readbacks + p.barriers, sizeof(Input) + sizeof(Output), released);
+        return written > 0 && std::fflush(stdout) == 0 ? 0 : 1;
+    } catch (const std::exception& e) {
+        std::fprintf(stderr, "SHUFFLE64_ORACLE_FAILED after owner retirement: %s\n", e.what());
+        return 1;
+    } catch (...) {
+        std::fprintf(stderr, "SHUFFLE64_ORACLE_FAILED unexpected host exception after retirement\n");
+        return 1;
+    }
+}
