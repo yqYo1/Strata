@@ -1,6 +1,6 @@
 {
   "schema": "strata-bf16-prefix-boundary-v1",
-  "updated_utc": "2026-10-16T15:32:50.955924+00:00",
+  "updated_utc": "2026-10-16T15:42:30.132843+00:00",
   "source_commit": "d9f9a395",
   "arithmetic_reference": "Pinned same-model SGLang BF16 prefill design; vLLM is an alternative contract with post-QK scaling. Not a claim that either CUDA runtime executed on this machine.",
   "policy": "Intermediate BF16 storage/operands, FP32 matrix accumulation/normalization; no exact FP32/llama.cpp or identical-token adoption gate. Old strict scalar failure remains failed.",
@@ -127,9 +127,36 @@
     "No default inference adoption or quality acceptance"
   ],
   "next": [
-    "Reprofile faster BF16-prefix route using current binary, same workload and CPU/wait plus coarse/QSA queue diagnostics; do not infer hardware saturation from command coverage.",
+    "QSA attention remains21.5123s in the current instrumented89.2009s path. Investigate BF16 tile/operand reuse with resource-discriminating component changes; MoE20.1915s needs device dequant/conversion/GEMM separation before bank/grouped-GEMM adoption.",
     "Use the reached same-model SGLang/vLLM numerical contract; resolve implementation discrepancies rather than requiring exact llama.cpp/FP32 output.",
     "Prioritize measured resource bottlenecks until repeated long-input prefill exceeds600 tok/s, aiming1000.",
     "Mode1/full-model physical262144/RESTORE remain explicit qualification work before broader adoption."
-  ]
+  ],
+  "current_resource_diagnostic": {
+    "status": "PASS_SCOPED_PROFILE",
+    "summary": "qsa-bf16-prefix-profile-summary-v1.json",
+    "sha256": "e87bfdeecdbbb3189ee3480ec97e2c37a1465850ebb93e958b5e7da8881c0d09",
+    "wrapper_ms": 89200.9,
+    "queue_interval_ms": {
+      "input": 1237.19,
+      "QSA": 27481.6,
+      "GDN": 9240.38,
+      "MoE": 20191.5,
+      "upload": 8405.17,
+      "store": 1363.03
+    },
+    "qsa_interval_ms": {
+      "projections": 1211.91,
+      "kv_stage": 0.274484,
+      "kv_append_query": 264.425,
+      "indexer_append": 3.12875,
+      "selection": 3888.12,
+      "attention": 21512.3,
+      "output_projection": 599.163
+    },
+    "issuing_thread_CPU_wait_fraction": 0.75399547643104,
+    "PMU_collected": false,
+    "interpretation": "Instrumented n1; nonexclusive queue intervals include host gaps. CPU stamps apply to issuing thread only. Copy bytes are requested payload, not wire/DRAM traffic. No counter-based PCIe/VRAM/XMX saturation result, clean speed or full-context/RESTORE qualification."
+  },
+  "retention": "retention-qsa-bf16-prefix-closed-v1.json"
 }
