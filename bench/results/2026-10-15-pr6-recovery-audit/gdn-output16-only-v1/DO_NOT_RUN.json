@@ -1,0 +1,9 @@
+{
+  "schema": "strata-unexecuted-proposal-block-v1",
+  "blocked": true,
+  "superseded_by": "bench/results/2026-10-15-pr6-recovery-audit/gdn-output16-only-v2/manifest.json",
+  "reason": "v1 source_findings claimed allocation-extent validation, but validate_spans only checks nonnull/alignment/address overflow and disjoint numeric ranges. It never checks the live Allocation registry. The v1 short-output negative test therefore could enqueue an out-of-bounds write; v1 must not be built/executed. This was caught by Main source audit before any native compile or execution.",
+  "original_source_review_preserved": true,
+  "compiler_executed": false,
+  "GPU_executed": false
+}
