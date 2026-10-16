@@ -1,6 +1,6 @@
 {
   "schema": "strata-bf16-prefix-boundary-v1",
-  "updated_utc": "2026-10-16T15:01:44.077589+00:00",
+  "updated_utc": "2026-10-16T15:32:50.955924+00:00",
   "source_commit": "d9f9a395",
   "arithmetic_reference": "Pinned same-model SGLang BF16 prefill design; vLLM is an alternative contract with post-QK scaling. Not a claim that either CUDA runtime executed on this machine.",
   "policy": "Intermediate BF16 storage/operands, FP32 matrix accumulation/normalization; no exact FP32/llama.cpp or identical-token adoption gate. Old strict scalar failure remains failed.",
@@ -66,7 +66,59 @@
       "diagnostic_only_prompt_tps": 448.8,
       "fresh_faults": [],
       "ownership_closed": true,
-      "clean_repeated_comparison": "ACTIVE: run_qsa_bf16_prefix_clean_cohort_v1.py / qsa-bf16-prefix-clean-cohort-v1.json; independent9processes; not yet qualified or adopted"
+      "clean_repeated_comparison": {
+        "status": "CLOSED_PASS_PERFORMANCE_ONLY",
+        "cohort": "qsa-bf16-prefix-clean-cohort-v1.json",
+        "summary": "qsa-bf16-prefix-clean-summary-v1.json",
+        "summary_sha256": "e4c28db478892ef3760f50f5f51bdfa57ac43d041e3f8a61e9522c13c97a46f4",
+        "statistics": {
+          "current": {
+            "n": 3,
+            "median_tps": 393.4,
+            "mean_tps": 393.3666666666667,
+            "sample_stdev_tps": 0.7505553499465125,
+            "min_tps": 392.6,
+            "max_tps": 394.1,
+            "median_prompt_ms": 99808.0
+          },
+          "bf16": {
+            "n": 3,
+            "median_tps": 406.1,
+            "mean_tps": 406.1,
+            "sample_stdev_tps": 0.29999999999998295,
+            "min_tps": 405.8,
+            "max_tps": 406.4,
+            "median_prompt_ms": 96690.6
+          },
+          "bf16-prefix": {
+            "n": 3,
+            "median_tps": 445.4,
+            "mean_tps": 445.4,
+            "sample_stdev_tps": 3.5,
+            "min_tps": 441.9,
+            "max_tps": 448.9,
+            "median_prompt_ms": 88141.2
+          }
+        },
+        "comparisons": {
+          "bf16": {
+            "median_tps_ratio": 1.032282663955262,
+            "median_tps_gain_percent": 3.2282663955262025,
+            "median_prompt_latency_reduction_percent": 3.1233969220904045,
+            "observed_ranges_disjoint": true
+          },
+          "bf16-prefix": {
+            "median_tps_ratio": 1.132180986273513,
+            "median_tps_gain_percent": 13.218098627351305,
+            "median_prompt_latency_reduction_percent": 11.689243347226675,
+            "observed_ranges_disjoint": true
+          }
+        },
+        "identical_request_body_sha256": "29b01aab07f2462abc11c3efedaf421000c80e362a0e80ef1b9c08b91227a334",
+        "ownership_closed_all9": true,
+        "fresh_faults_all9": [],
+        "default_adopted": false
+      }
     }
   },
   "scope_limits": [
@@ -75,9 +127,9 @@
     "No default inference adoption or quality acceptance"
   ],
   "next": [
-    "Finish all48 model mechanics and preserve per-arm NLL/fullvocabulary checks",
-    "Run diagnostic then independent repeated clean official bench.sh actual32K+ comparisons against the current best hidden-BF16 path",
-    "Close per-stage numerical contract on varied bounded inputs before broader adoption",
-    "Expand typed Mode1 append/stage/mirror support and full-context/RESTORE validation when implementing it"
+    "Reprofile faster BF16-prefix route using current binary, same workload and CPU/wait plus coarse/QSA queue diagnostics; do not infer hardware saturation from command coverage.",
+    "Use the reached same-model SGLang/vLLM numerical contract; resolve implementation discrepancies rather than requiring exact llama.cpp/FP32 output.",
+    "Prioritize measured resource bottlenecks until repeated long-input prefill exceeds600 tok/s, aiming1000.",
+    "Mode1/full-model physical262144/RESTORE remain explicit qualification work before broader adoption."
   ]
 }
