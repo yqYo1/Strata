@@ -1,6 +1,6 @@
 {
   "schema": "strata-bf16-prefix-boundary-v1",
-  "updated_utc": "2026-10-16T14:54:06.717155+00:00",
+  "updated_utc": "2026-10-16T15:01:44.077589+00:00",
   "source_commit": "d9f9a395",
   "arithmetic_reference": "Pinned same-model SGLang BF16 prefill design; vLLM is an alternative contract with post-QK scaling. Not a claim that either CUDA runtime executed on this machine.",
   "policy": "Intermediate BF16 storage/operands, FP32 matrix accumulation/normalization; no exact FP32/llama.cpp or identical-token adoption gate. Old strict scalar failure remains failed.",
@@ -56,7 +56,18 @@
     "packed_median_ms": 390.186218,
     "latency_reduction_percent": 30.9546758,
     "pack_in_every_timed_call": true,
-    "whole_model_new_path": "UNRUN"
+    "whole_model_new_path": {
+      "diagnostic": "own-qsa-bf16-prefix-diagnostic-bf16-prefix-r0-v1.json",
+      "actual_prompt_tokens": 39262,
+      "batched_prefill_tokens": 39261,
+      "context_and_resident": 65536,
+      "chunk": 8192,
+      "transient_prefix_bytes": 80726784,
+      "diagnostic_only_prompt_tps": 448.8,
+      "fresh_faults": [],
+      "ownership_closed": true,
+      "clean_repeated_comparison": "ACTIVE: run_qsa_bf16_prefix_clean_cohort_v1.py / qsa-bf16-prefix-clean-cohort-v1.json; independent9processes; not yet qualified or adopted"
+    }
   },
   "scope_limits": [
     "Mode0 resident K8V8/text/owned RoPE only at model entry; Mode1 still explicitly rejected",
