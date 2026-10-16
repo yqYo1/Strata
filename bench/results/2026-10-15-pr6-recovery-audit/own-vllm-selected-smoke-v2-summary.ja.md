@@ -1,0 +1,5 @@
+# Main: postbudget warnings-only129 selected gate
+
+元receipt4f88862459b71fc9c64d7831ad043ded677578d33047ef22896c8671bd51968fはPASS/complete/activefalse。6354実engine、同source432/build314/runtime/model/input/profile、FP32/vLLMBF16/typedQSAの3別processが全48層・2chunk・1生成を通常終了し、3地点×全248320logitのfinite/target/shapeと独立FP64比較を完了。freshfault0/dumpfalse、全Owner通常閉鎖・旧PID/start不在。
+
+全モデルfullAPItraceなし、STRATA_TRACE1とwarningvalidation。62MiB native/64MiB Ownerの修正後、stderr各約28KB。元tracebudget失敗d1a98dd5とdenseNLL失敗bf9d6f00はFAILのまま。小さいsynthetic model mechanicsのgateであり、一般品質/性能/256K/RESTOREの承認ではない。次のnatural32863/64selected4armはこの新PASSをMainが明示指定し、denseNLLは起動しない。raw9MBは次のscreenがhealth比較器で再参照する現consumerがあるため、それまで保持。
