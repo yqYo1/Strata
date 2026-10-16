@@ -295,7 +295,12 @@ void NativeEmbed::gather_dev(const int32_t* tokens, int64_t n_tok, float* out, v
     std::vector<int32_t> ids((size_t) n_tok);
     // IDs originate on the device here: a checked D2H transfer is required to
     // inspect them. No embedding kernel is submitted before admission succeeds.
-    strata::retire_event(strata::q_of(stream)->memcpy(ids.data(), tokens, ids.size() * sizeof(int32_t)));
+    try {
+        strata::prefill::detail::RetirementDeadline deadline;
+        strata::retire_event(strata::q_of(stream)->memcpy(ids.data(), tokens, ids.size() * sizeof(int32_t)));
+    } catch (...) {
+        strata::prefill::detail::retirement_fail_stop("direct embedding ID download submission failed");
+    }
     if (!detail::embedding_tokens(ids.data(), n_tok, vocabulary()))
         throw std::invalid_argument("native embedding: token outside the actual vocabulary");
     gather_dev_admitted(tokens, n_tok, out, stream);

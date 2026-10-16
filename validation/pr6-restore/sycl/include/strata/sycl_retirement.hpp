@@ -4,7 +4,7 @@
 #include "strata/prefill/retirement.hpp"
 
 namespace strata {
-inline void retire_event(const sycl::event& event) noexcept {
+inline void retire_event(sycl::event event) noexcept {
     try {
         prefill::detail::RetirementDeadline deadline;
         prefill::detail::retirement_until([&] {
