@@ -421,7 +421,7 @@ struct Doorbell {
     uint32_t* d_flag = nullptr;
 };
 
-/// Allocates the four mapped-pinned regions.  Returns the bytes, or 0 on failure.
+/// Allocates the five mapped-pinned regions.  Returns the bytes, or 0 on failure.
 uint64_t doorbell_init(const ModelGeometry& g, int64_t k, Doorbell& db);
 void doorbell_free(Doorbell& db);
 /// Zeroes `h_seq` (and `h_flag`), so a caller can wait for it to become `expected` from a known state.

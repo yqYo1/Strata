@@ -5,6 +5,8 @@
 #include <dpct/dpct.hpp>
 #include "strata/sycl_queue.hpp"
 #include "strata/core/layer.hpp"
+#include "strata/core/allocated_fields.hpp"
+#include <limits>
 #include "strata/core/native_head.hpp"
 #include "strata/kernels/bf16_bits.hpp"
 #include "strata/kernels/bf16_gemv.hpp"
@@ -1153,23 +1155,31 @@ try {
 // ================================ THE DOORBELL ================================
 namespace {}
 // namespace
-uint64_t doorbell_init(const ModelGeometry& g, int64_t k, Doorbell& db) {    db.n_embd = g.n_embd;    db.k = k;    uint64_t bytes = 0;
-// ONE region per field, each MAPPED PINNED, so the device and the host have different pointers to the same
-// bytes and no copy is needed to publish them.
-/*
-DPCT1048: The original value cudaHostAllocMapped is not meaningful in the
-migrated code and was removed or replaced with 0. You may need to check the
-migrated code.
-*/
-auto alloc = [&](size_t n, void** h, void** d, const char* what) {
-                                                                          try {
-if (DPCT_CHECK_ERROR(*h = (void *)sycl::malloc_host(n, dpct::get_in_order_queue())) != 0) {            std::fprintf(stderr, "doorbell_init: cudaHostAlloc(%s) failed\n", what);            return false;        }        if (DPCT_CHECK_ERROR(*d = (void *)*h) != 0) {            std::fprintf(stderr, "doorbell_init: cudaHostGetDevicePointer(%s) failed\n", what);            return false;        }        std::memset(*h, 0, n);        bytes += n;        return true;    }
-catch (sycl::exception const &exc) {
-  std::cerr << exc.what() << "Exception caught at file:" << __FILE__
-            << ", line:" << __LINE__ << std::endl;
-  std::exit(1);
+uint64_t doorbell_init(const ModelGeometry& g, int64_t k, Doorbell& db) {
+    // An existing doorbell may still be visible to a graph: never overwrite it.
+    if (db.h_x_f || db.h_ids || db.h_weights || db.h_seq || db.h_flag ||
+        db.d_x_f || db.d_ids || db.d_weights || db.d_seq || db.d_flag ||
+        g.n_embd <= 0 || k <= 0 || k > g.n_expert ||
+        uint64_t(g.n_embd) > (std::numeric_limits<size_t>::max() - 8) / 4 ||
+        uint64_t(k) > (std::numeric_limits<size_t>::max() - 8 - size_t(g.n_embd) * 4) / 8)
+        return 0;
+    const std::array<size_t, 5> sizes{size_t(g.n_embd) * 4, size_t(k) * 4, size_t(k) * 4, 4, 4};
+    const auto fields = detail::allocate_zeroed_fields(sizes,
+        [](size_t bytes) -> void* { return sycl::malloc_host(bytes, dpct::get_in_order_queue()); },
+        [](void* pointer) { sycl::free(pointer, dpct::get_in_order_queue()); });
+    if (!fields[0]) return 0;
+    // Host USM has the same device-visible address in this SYCL route. Publish
+    // aliases only after ALL five nonnull checks and memset operations succeed.
+    db.h_x_f = db.d_x_f = static_cast<float*>(fields[0]);
+    db.h_ids = db.d_ids = static_cast<int32_t*>(fields[1]);
+    db.h_weights = db.d_weights = static_cast<float*>(fields[2]);
+    db.h_seq = db.d_seq = static_cast<uint32_t*>(fields[3]);
+    db.h_flag = db.d_flag = static_cast<uint32_t*>(fields[4]);
+    db.n_embd = g.n_embd; db.k = k;
+    uint64_t bytes = 0;
+    for (size_t count : sizes) bytes += count;
+    return bytes;
 }
-};    if (!alloc((size_t) g.n_embd * 4, (void**) &db.h_x_f, (void**) &db.d_x_f, "x_f")) return 0;    if (!alloc((size_t) k * 4, (void**) &db.h_ids, (void**) &db.d_ids, "ids")) return 0;    if (!alloc((size_t) k * 4, (void**) &db.h_weights, (void**) &db.d_weights, "weights")) return 0;    if (!alloc(4, (void**) &db.h_seq, (void**) &db.d_seq, "seq")) return 0;    if (!alloc(4, (void**) &db.h_flag, (void**) &db.d_flag, "flag")) return 0;    return bytes;}
 void doorbell_free(Doorbell &db) {
     if (db.h_x_f) sycl::free(db.h_x_f, dpct::get_in_order_queue());
     if (db.h_ids) sycl::free(db.h_ids, dpct::get_in_order_queue());
