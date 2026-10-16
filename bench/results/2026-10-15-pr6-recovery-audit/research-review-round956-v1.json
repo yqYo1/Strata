@@ -1,0 +1,261 @@
+{
+  "review_id": "R956",
+  "review_type": "native Codex research-library review",
+  "task_classification": "decision_support",
+  "read_only_boundary": {
+    "instructions": [
+      {
+        "path": "AGENTS.md",
+        "sha256": "d0c7e1a40a05087803345d23792c468e760aceb3bba2e012efb59dd01175e89c"
+      },
+      {
+        "path": "docs/ARTIFACT_RETENTION.md",
+        "sha256": "fdf86d7ea576d6f0400ec7e643b5ddca5c3c577dd053d66c2fd05220e64b1cc1"
+      }
+    ],
+    "research_index_modified": false,
+    "collection_report_R813_body_read": false,
+    "commands_excluded": [
+      "Git",
+      "build/test/GPU/profiler/process inspection",
+      "Orca dispatch or messages",
+      "source/product edits",
+      "cleanup"
+    ],
+    "files_written": [
+      "bench/results/2026-10-15-pr6-recovery-audit/research-review-round956-v1.json",
+      "bench/results/2026-10-15-pr6-recovery-audit/research-review-round956-v1.ja.md"
+    ]
+  },
+  "index_snapshot": {
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+    "sha256": "185c1fe7fe7329a4022385a829f31410fd51a585519d86968c795e3f19309717"
+  },
+  "reviewed_reports": [
+    {
+      "round": 601,
+      "path": "research-profiled-dequant-reuse-round601-v1.txt",
+      "sha256": "5a14919125b5df65a12d23ec3277a519b292762ed886db4b3834747a156f5b70",
+      "sections_read": [
+        "5-11: observation and evidence boundary",
+        "13-20: per-expert storage and lifetime",
+        "23-36: bounded decoded-weight LRU and fused dequant candidates",
+        "37-41: disposition"
+      ],
+      "operational_finding": "A bounded single-layer LRU depends on ordered cross-chunk expert reuse and live VRAM admission; aggregate call/ne counts do not establish hits. Fused dequant is a separate shape/format-specific path with a strict rounding contract."
+    },
+    {
+      "round": 627,
+      "path": "research-census-small-ne-packed-xmx-round627-v1.txt",
+      "sha256": "b7093f4919c276f049c6b7c07a5c89199d10b67997da056c0ca93aaace17b98a",
+      "sections_read": [
+        "3-20: census identity and limitations",
+        "22-60: ne-band call/row/FLOP census",
+        "62-107: tile-shape coverage and staged evaluation"
+      ],
+      "operational_finding": "The archived 32K/4K-chunk census is not current C8192 route evidence; many small-ne calls account for little work, and aggregate counts do not establish current model service-time wins."
+    },
+    {
+      "round": 628,
+      "path": "research-census-gemm-scheduling-round628-v1.txt",
+      "sha256": "0673f8002340a7bcab787df248fe9a2db42dbf0cc13b28920b77fd70f82cded6",
+      "sections_read": [
+        "5-13: small-ne MMVQ and grouped-MMQ candidates",
+        "14-33: old census scope and aggregation loss",
+        "34-45: current issuer schedule and numerical/queue differences",
+        "46-63: required gates and candidates not to repeat"
+      ],
+      "operational_finding": "Per-layer aggregate ne cannot recover per-chunk groups or expert order. MMVQ/MMQ change the arithmetic path; layer-major requires MMQ off. Current oneMKL service and route-specific grouping need exact current evidence."
+    },
+    {
+      "round": 633,
+      "path": "research-bounded-expert-wave-round633-v1.txt",
+      "sha256": "48fa9d788f34bbe214aa77ce0a1bdbd7cf53a38f22a92ee5c59ff168e3055990",
+      "sections_read": [
+        "5-10: bounded-wave disposition",
+        "23-30: wave ownership and schedule",
+        "31-36: top-k slot reduction order",
+        "37-59: retained-byte arithmetic",
+        "66-72: evidence and implementation gates"
+      ],
+      "operational_finding": "A 2/4-chunk wave needs ordered route identities, full-live memory admission, and unchanged slot-order FP32 combine. Its listed byte subtotal is not admission or speed evidence."
+    },
+    {
+      "round": 701,
+      "path": "research-prefill-grouped-gemm-round701-v1.txt",
+      "sha256": "433856926a798356d1b6d231dfb3e2d99e82e0d38f8bbc11fd8c86c6eafe5012",
+      "sections_read": [
+        "11-16: current per-expert route and old-census boundary",
+        "17-28: oneMKL grouped API and ownership constraints",
+        "29-37: required command/lifetime and same-workload gates",
+        "38-49: limits of old profile and existing grouped-GEMM proposals"
+      ],
+      "operational_finding": "The grouped API does not prove device-launch reduction. Exact current layer/chunk shapes and the full gather/dequant/operand lifetime cost must be measured; old profile intervals cannot estimate the benefit."
+    },
+    {
+      "round": 702,
+      "path": "research-prefill-expert-major-superchunk-round702-v1.txt",
+      "sha256": "a1030a224102651d76cf209e74891e864a1b77ff2a976bd3307f61f31dd4c5e1",
+      "sections_read": [
+        "5-13: 64K proposal and memory/reduction-order conclusion",
+        "52-61: 64K live-byte estimate and alternatives",
+        "63-69: route, state, admission and measurement prerequisites"
+      ],
+      "operational_finding": "The 64K exact-slot-output proposal carries about 7.22 GiB before existing workset owners, and about 9.72 GiB with a separate FP32 residual. These are design-specific subtotals, not a general MoE lower bound or current admission result."
+    }
+  ],
+  "eligibility_metadata_reviewed": [
+    {
+      "review_round": 814,
+      "path": "research-scope-review-round814-v1.json",
+      "sha256": "cd568ce7ea4c56f31dc74fb9d8ee89bd8942dfbf2cc57b7ea890739745e2af96",
+      "collection_report": "research-round813-v1.txt",
+      "collection_report_sha256": "c300d4579575557c934882f4a4ec821022521c50e4de10fdb7c4139faa798be1",
+      "classification": "knowledge_collection",
+      "schedulable_now": false,
+      "prior_conditions": [
+        "actual per-expert route counts across chunks",
+        "live memory-byte map",
+        "R810 source-review outcome"
+      ],
+      "handling": "Report body remains unread/held; use only after its recorded prerequisites and a concrete retrieval question."
+    }
+  ],
+  "current_main_evidence": {
+    "main_supplied_boundary": {
+      "request_rows": 39261,
+      "chunk_rows": 8192,
+      "chunk_count": 5,
+      "native16_dtype_note": "Current BF16 paths can consume FP16 weights/input directly and write BF16 output without an obligatory BF16 weight conversion.",
+      "moe_census_profile_state": "Prepared but not launched because a foreign llama-bench owns B570; no result is assumed.",
+      "prior_whole_profile": {
+        "moe_seconds_nonexclusive": 20.19,
+        "cpu_grouping_seconds_nonexclusive": 0.085,
+        "gemm_launches": 123156,
+        "limitation": "These values do not establish a critical-path bottleneck or that launches dominate."
+      }
+    },
+    "component_measurement": [
+      {
+        "path": "own-vllm-xe2-paired-results-v2.ja.md",
+        "sha256": "a15d6bb7195a4a1fd7afc2c8fc643d5b9cb63f4fbc9e58cfa1a963d0fd6c1fe8"
+      },
+      {
+        "path": "own-vllm-xe2-paired-summary-v2.json",
+        "sha256": "d81acdeddbcf7794ce875ce44f8e5481b22a490b2bcb3b2562d4615578a04f28"
+      }
+    ],
+    "component_result_summary": {
+      "device": "Arc B570",
+      "design": "3 independent processes, 270 timed submits total; native FP16 input/BF16 output microbench, not actual model GEMM service time",
+      "shape_160_1280_2560_ms": {
+        "wide128x128": 0.174759,
+        "compact16x64": 0.218802
+      },
+      "shape_160_2560_640_ms": {
+        "wide128x128": 0.12223,
+        "compact16x64": 0.140114
+      },
+      "dense_8192_1280_2560_wide_ms": 1.203226,
+      "limitation": "Component medians at M=160 and dense M=8192 do not establish the exact per-expert ne distribution, current MoE-stage attribution, or a dispatch threshold."
+    }
+  },
+  "decision": {
+    "fresh_scope_schedulable_now": false,
+    "dispatch_performed": false,
+    "reason": "The new component timing is useful but does not supply actual per-expert routed M counts/order, current MoE-stage critical-path attribution, or the live allocation map. Prior R814 eligibility is therefore unmet; existing reports already cover LRU reuse, small-ne dispatch, grouped GEMM, bounded waves, and superchunk capacity.",
+    "evidence_not_established": [
+      "that M=160 is representative of current per-expert MoE GEMMs",
+      "that wide128x128 wins across the current ne distribution or end-to-end MoE layer",
+      "that grouped GEMM, LRU reuse, or cross-chunk waves reduce the measured critical path",
+      "that a candidate fits the live <10 GiB working set or physical-context fallback",
+      "model numerical/task quality or production adoption"
+    ],
+    "held_next_action": {
+      "type": "eligibility recheck; no fresh Orca task yet",
+      "prerequisites": [
+        "A closed, source-safe current 39K/C8192 census with per-layer/per-chunk/per-role ne distributions; ordered expert identities across chunks are needed before any R601/R633 reuse claim.",
+        "A current stage profile separating dequant, GEMM, transfer, issuer/grouping, host submission, and CPU time inside GPU waits, followed by exclusive clean samples if timing is needed.",
+        "A live GPU/RAM owner and reserve map for BF16 state, weights, scratch, KV and required physical-262144 correctness/fallback; remain under the actual 10 GiB device limit.",
+        "Resolve the R810 source/provenance review gate and first retrieve only relevant R813 sections under the R814 conditions.",
+        "B570 available for serialized Main-owned measurement; researchers must not inspect or compete for it."
+      ],
+      "possible_fresh_scope_only_if_still_unresolved": {
+        "classification": "decision_support",
+        "title": "Route-weighted native16 MoE tile-dispatch threshold",
+        "finite_question": "Given the exact current layer/chunk/role ne histogram and the already measured B570 wide128x128 versus compact16x64 component points, which expert-row bands, if any, justify a tile-dispatch threshold for direct FP16-input/BF16-output GEMM after accounting for actual GU/Down shapes and measured preparation/launch costs? State where the present samples do not support a threshold. First compare against the relevant R813 material; do not repeat its grouped-residency survey.",
+        "report_budget_words": "1400-1800",
+        "source_limit": 6,
+        "limitations": [
+          "Research cannot replace missing current-M shape measurements or actual model timing.",
+          "Only pinned and license-checked SGLang/vLLM/Intel references may inform implementation options; XeStrata is excluded.",
+          "No build, test, GPU run, implementation, or adoption claim."
+        ]
+      }
+    }
+  },
+  "retrieval_map": [
+    {
+      "question": "Cross-chunk decoded-weight reuse/cache hit calculation",
+      "path": "research-profiled-dequant-reuse-round601-v1.txt",
+      "sha256": "5a14919125b5df65a12d23ec3277a519b292762ed886db4b3834747a156f5b70",
+      "sections": "13-20, 23-36"
+    },
+    {
+      "question": "Old routed ne distribution and tile-shape gaps",
+      "path": "research-census-small-ne-packed-xmx-round627-v1.txt",
+      "sha256": "b7093f4919c276f049c6b7c07a5c89199d10b67997da056c0ca93aaace17b98a",
+      "sections": "22-60, 62-107"
+    },
+    {
+      "question": "Small-ne dispatch/group eligibility and exact per-chunk census gates",
+      "path": "research-census-gemm-scheduling-round628-v1.txt",
+      "sha256": "0673f8002340a7bcab787df248fe9a2db42dbf0cc13b28920b77fd70f82cded6",
+      "sections": "5-13, 14-45, 46-63"
+    },
+    {
+      "question": "Bounded 2/4-chunk wave legality, slot-order reduction, live memory, callback/fault gates",
+      "path": "research-bounded-expert-wave-round633-v1.txt",
+      "sha256": "48fa9d788f34bbe214aa77ce0a1bdbd7cf53a38f22a92ee5c59ff168e3055990",
+      "sections": "23-59, 60-72"
+    },
+    {
+      "question": "Grouped GEMM API and current-profile evidence gates",
+      "path": "research-prefill-grouped-gemm-round701-v1.txt",
+      "sha256": "433856926a798356d1b6d231dfb3e2d99e82e0d38f8bbc11fd8c86c6eafe5012",
+      "sections": "17-37, 38-49"
+    },
+    {
+      "question": "64K superchunk capacity and state prerequisites",
+      "path": "research-prefill-expert-major-superchunk-round702-v1.txt",
+      "sha256": "a1030a224102651d76cf209e74891e864a1b77ff2a976bd3307f61f31dd4c5e1",
+      "sections": "52-69"
+    },
+    {
+      "question": "R813 prior scope eligibility (metadata only; body held)",
+      "path": "research-scope-review-round814-v1.json",
+      "sha256": "cd568ce7ea4c56f31dc74fb9d8ee89bd8942dfbf2cc57b7ea890739745e2af96",
+      "sections": "scope_assessment, applicability_and_limits, next_research"
+    }
+  ],
+  "index_entry_proposal": {
+    "key": "research_review_round956",
+    "review_path": "research-review-round956-v1.json",
+    "operational_digest_path": "research-review-round956-v1.ja.md",
+    "operational_digest_sha256": "240f9e2b0f49c2d372bede8d66c9726e54319c34be53fc7d0943eb1c61d63255",
+    "reviewed_rounds": [601, 627, 628, 633, 701, 702],
+    "main_body_read": false,
+    "reviewer_report_bodies_read": true,
+    "status": "Existing MoE scheduling/reuse knowledge is useful but current eligibility evidence is incomplete; no fresh research was dispatched.",
+    "schedulable_now": false,
+    "dispatch_performed": false,
+    "conditional_prerequisites": [
+      "current route ne/identity census across chunks",
+      "stage-attributed current profile",
+      "live memory owner map",
+      "R810 source review outcome",
+      "exclusive B570 availability"
+    ],
+    "collection_report_round813": "held; retrieve only selected sections after prerequisites"
+  }
+}

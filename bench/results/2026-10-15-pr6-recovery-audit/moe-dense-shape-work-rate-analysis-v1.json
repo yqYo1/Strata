@@ -1,0 +1,150 @@
+{
+  "schema": "strata-moe-dense-shape-work-rate-analysis-v1",
+  "GPU_executed": false,
+  "source_receipt": {
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/own-vllm-xe2-paired-summary-v2.json",
+    "sha256": "d81acdeddbcf7794ce875ce44f8e5481b22a490b2bcb3b2562d4615578a04f28"
+  },
+  "current_source_commit": "6ee2fe1129b3d420caa623ba6b3884a363f70e11",
+  "source_pins": {
+    "src/prefill/sycl/vllm_xe2/native16.cpp": "d8b361cabea29344b48aff5a9db41303f3ea715de47f27bc57f29f85c5f3aa2d",
+    "src/prefill/sycl/gemm16.cpp": "d5a0e8f8cdbc14f82edd7a883efc09d68ee92195b8fd51301e538b40cc6ed53c",
+    "src/prefill/prefill.cpp": "d6e466ca3a86f1dd8a1d6b648f3a57d496615b0a108df52d0727fdc9eb4c95e8"
+  },
+  "derived_cases": [
+    {
+      "geometry": [
+        160,
+        1280,
+        2560
+      ],
+      "input_format": "fp16",
+      "output_format": "bf16",
+      "logical_FLOP": 1048576000,
+      "single_input_weight_output_rectangle_bytes": 7782400,
+      "rectangle_is_not_physical_traffic": true,
+      "policies": {
+        "vllm_compact16x64_bf16_output": {
+          "median_of_three_process_medians_ms": 0.218802,
+          "process_medians_ms": [
+            0.218802,
+            0.220456,
+            0.206819
+          ],
+          "logical_work_TFLOP_s_from_submit_through_completion": 4.792351075401505,
+          "workgroups": 200,
+          "threads_per_WG": 64,
+          "padded_M": 160,
+          "nominal_M_padding_factor": 1.0,
+          "logical_rectangle_GB_s_from_submit_through_completion": 35.56823063774554
+        },
+        "vllm_wide128x128_bf16_output": {
+          "median_of_three_process_medians_ms": 0.174759,
+          "process_medians_ms": [
+            0.175391,
+            0.174759,
+            0.15869899999999998
+          ],
+          "logical_work_TFLOP_s_from_submit_through_completion": 6.000125887650993,
+          "workgroups": 20,
+          "threads_per_WG": 128,
+          "padded_M": 256,
+          "nominal_M_padding_factor": 1.6,
+          "logical_rectangle_GB_s_from_submit_through_completion": 44.53218432240972
+        }
+      }
+    },
+    {
+      "geometry": [
+        160,
+        2560,
+        640
+      ],
+      "input_format": "fp16",
+      "output_format": "bf16",
+      "logical_FLOP": 524288000,
+      "single_input_weight_output_rectangle_bytes": 4300800,
+      "rectangle_is_not_physical_traffic": true,
+      "policies": {
+        "vllm_compact16x64_bf16_output": {
+          "median_of_three_process_medians_ms": 0.140114,
+          "process_medians_ms": [
+            0.140114,
+            0.141426,
+            0.127139
+          ],
+          "logical_work_TFLOP_s_from_submit_through_completion": 3.741867336597342,
+          "workgroups": 400,
+          "threads_per_WG": 64,
+          "padded_M": 160,
+          "nominal_M_padding_factor": 1.0,
+          "logical_rectangle_GB_s_from_submit_through_completion": 30.695005495525074
+        },
+        "vllm_wide128x128_bf16_output": {
+          "median_of_three_process_medians_ms": 0.12223,
+          "process_medians_ms": [
+            0.12223,
+            0.122952,
+            0.10986699999999999
+          ],
+          "logical_work_TFLOP_s_from_submit_through_completion": 4.289356131882516,
+          "workgroups": 40,
+          "threads_per_WG": 128,
+          "padded_M": 256,
+          "nominal_M_padding_factor": 1.6,
+          "logical_rectangle_GB_s_from_submit_through_completion": 35.186124519348766
+        }
+      }
+    },
+    {
+      "geometry": [
+        8192,
+        1280,
+        2560
+      ],
+      "input_format": "fp16",
+      "output_format": "bf16",
+      "logical_FLOP": 53687091200,
+      "single_input_weight_output_rectangle_bytes": 69468160,
+      "rectangle_is_not_physical_traffic": true,
+      "policies": {
+        "vllm_compact16x64_bf16_output": {
+          "median_of_three_process_medians_ms": 2.929199,
+          "process_medians_ms": [
+            2.929199,
+            2.8483750000000003,
+            2.9605870000000003
+          ],
+          "logical_work_TFLOP_s_from_submit_through_completion": 18.328249873088172,
+          "workgroups": 10240,
+          "threads_per_WG": 64,
+          "padded_M": 8192,
+          "nominal_M_padding_factor": 1.0,
+          "logical_rectangle_GB_s_from_submit_through_completion": 23.71575300961116
+        },
+        "vllm_wide128x128_bf16_output": {
+          "median_of_three_process_medians_ms": 1.203226,
+          "process_medians_ms": [
+            1.212935,
+            1.184942,
+            1.203226
+          ],
+          "logical_work_TFLOP_s_from_submit_through_completion": 44.61929113898802,
+          "workgroups": 640,
+          "threads_per_WG": 128,
+          "padded_M": 8192,
+          "nominal_M_padding_factor": 1.0,
+          "logical_rectangle_GB_s_from_submit_through_completion": 57.73492261636633
+        }
+      }
+    }
+  ],
+  "not_measured": [
+    "actual current model ne histogram",
+    "per-kernel GPU service/occupancy",
+    "physical VRAM or PCIe bandwidth",
+    "power or thermal state during these historical component samples"
+  ],
+  "decision": "The measured effective work rate depends strongly on GEMM shape. Do not infer whole-model throughput as a fixed fraction of dense-model throughput from command-coverage percentage or active parameter count. Small-tile versus wide-tile crossover is empirical; more workgroups alone is not an adoption rule. Current paired model profile and ne census must precede selector changes.",
+  "next_experiment_if_supported_by_census": "Consider 64x128 with 2x2 subgroups as a private controlled alternative: same32x64 per-subgroup output geometry as wide128x128/4x2, half WG threads. At M160,30WGs/padded192 versus20WGs/padded256, with more B reloads across M partitions. Preserve K32,FP32 accum/native16 storage and all existing safety/numerical gates. Not implemented/built/measured."
+}
