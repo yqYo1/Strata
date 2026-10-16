@@ -47,10 +47,12 @@ def main():
     assert sha(helper) == metadata['package_files']['main_controller.py']['sha256']
     health = load('moe_build_health', helper)
     previous_path = A / 'own-qsa-bf16-prefix-tilepack-engine-build-v2.json'
+    assert sha(previous_path) == 'a1b8916840e5482fcf7dca9bd1fead4a68882e7dcf5af676432980afe4771fc8', 'qualified build recipe changed'
     previous = json.loads(previous_path.read_text())
     assert previous['passed'] and previous['complete'] and previous['ownership_closed']
     assert all(owned.closed(c) and c['exit_code'] == 0 for c in previous['commands'])
     engine = json.loads((A / 'moe-window-engine-source-v1.json').read_text())
+    assert sha(A / 'moe-window-fixture-syntax-v1.json') == '8025294a62c04fda5fd6366dfca31509fe675c1e8006338e773af1c90cb2ffa2', 'fixture syntax receipt changed'
     syntax = json.loads((A / 'moe-window-fixture-syntax-v1.json').read_text())
     assert syntax['passed'] and syntax['complete'] and syntax['ownership_closed']
     # The engine manifest and fixture syntax receipt are separate pinned source
@@ -67,7 +69,12 @@ def main():
     pins = {str(P / name): sha(P / name) for name in names}
     old_primary = Path('/home/yayoi/orca/workspaces/Strata/sycl')
     for name, value in previous['frozen_files'].items():
-        if not Path(name).is_relative_to(old_primary):
+        # Old build products/configurations are historical evidence, not inputs
+        # to this fresh build. Their retirement must not invalidate this recipe.
+        if not Path(name).is_relative_to(old_primary) and not Path(name).is_relative_to(B):
+            if '/MistVVK/XeStrata/' in name:
+                llvm = Path('/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install')
+                assert Path(name).is_relative_to(llvm), 'XeStrata project source is excluded'
             assert sha(name) == value['sha256'], name
             pins[name] = value['sha256']
     for path in (Path(__file__), owner_path, helper, previous_path):
