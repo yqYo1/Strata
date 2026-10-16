@@ -1,0 +1,47 @@
+{
+  "schema": "strata-coalesced-layout-component-boundary-v1",
+  "source_base": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_bf16_prefix.cpp",
+    "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_bf16_prefix.cpp",
+    "bytes": 14044,
+    "sha256": "b55684754231c007877e967375f721cf4d88746b698d2a7a9811d2bcdf578081"
+  },
+  "source_diff": "--- a/src/kernels/sycl/qsa_bf16_prefix.cpp\n+++ b/src/kernels/sycl/qsa_bf16_prefix.cpp\n@@ -168,10 +168,10 @@\n         }\n         item.barrier(sycl::access::fence_space::local_space);\n         for (int i = tid; i < Cells * Dim; i += Workgroup) {\n-          const int cell = i % Cells, d = i / Cells;\n+          const int cell = i / Dim, d = i % Dim;\n           const int64_t row = rows[cell];\n           const uint16_t bits = row >= 0 ? packed.k[row * Dim + d] : uint16_t(0);\n-          kv[i] = sycl::bit_cast<BFloat>(bits); // Same local K transpose.\n+          kv[d * Cells + cell] = sycl::bit_cast<BFloat>(bits); // Coalesced global K, same local transpose.\n         }\n         if (tid < Cells) local_live |= rows[tid] >= 0;\n         item.barrier(sycl::access::fence_space::local_space);\n",
+  "candidate_source": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-bf16-prefix-coalesced-build-v1/qsa_bf16_prefix_coalesced.cpp",
+    "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-bf16-prefix-coalesced-build-v1/qsa_bf16_prefix_coalesced.cpp",
+    "bytes": 14073,
+    "sha256": "9a6d9d10df41d5f108031d774c5da0266f2c9c9367759b911b845635e051b14e"
+  },
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-bf16-prefix-coalesced-build-v1/sycl_qsa_bf16_prefix_coalesced",
+    "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-bf16-prefix-coalesced-build-v1/sycl_qsa_bf16_prefix_coalesced",
+    "bytes": 950424,
+    "sha256": "d60b7587420964ab27bc41b6db925ca42e7e03b9ebf737dd4466eab4d22655db"
+  },
+  "build_receipt": "own-qsa-bf16-prefix-coalesced-build-v1.json",
+  "host_preflight_failure": "qsa-bf16-prefix-coalesced-preflight-v1.json",
+  "original_failure_preserved": true,
+  "traced_smoke": "own-qsa-bf16-prefix-coalesced-smoke-v1.json",
+  "traced_component": "own-qsa-bf16-prefix-coalesced-component-v1.json",
+  "component_cases": 11,
+  "component_UR_kernel_submissions": 60,
+  "component_physical_KV_cells": 262144,
+  "GPU_faults": [],
+  "ownership_closed": true,
+  "production_changed": false,
+  "speed_qualified": false,
+  "whole_model_physical256K_qualified": false,
+  "RESTORE_qualified": false,
+  "next": "Keep production layout; bounded same-order parallel probability component, including additional barriers and exact BF16 operand/FP32 online contract. Current model speed remains445.4 median;600/1000 goal open.",
+  "timing_result": {
+    "status": "CLOSED_COMPONENT_PERFORMANCE_REJECTED",
+    "cohort": "qsa-bf16-prefix-layout-cohort-v1.json",
+    "sha256": "7b701b180d0b626a8020aae2b1a390fe18c700233a7e385d5ae7e0f6a0d6be01",
+    "base_median_ms": 390.8470115,
+    "coalesced_median_ms": 454.675873,
+    "latency_ratio": 1.163309068822188,
+    "adopted": false,
+    "source_production_unchanged": true
+  }
+}
