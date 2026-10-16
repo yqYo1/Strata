@@ -1,0 +1,346 @@
+--- a/tests/sycl/qsa_resource_control.cpp
++++ b/tests/sycl/qsa_resource_control.cpp
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: MIT
+ // Copyright (c) 2026 Niko1221 and the Strata contributors
+ // Own component diagnostic, adapted from tests/sycl/prompt_k_cellmajor.cpp.
++// Query/physical-replica separation is an own source-only controlled diagnostic.
+ // See the accompanying proposal manifest for the immutable source/provenance.
+ #include "strata/kernels/qsa_prompt_attn.hpp"
+ #include "strata/sycl/runtime.hpp"
+@@ -13,7 +14,8 @@
+ #include <cstdint>
+ #include <cstdlib>
+ #include <cstring>
+-#include <fstream>
++#include <fcntl.h>
++#include <limits>
+ #include <iomanip>
+ #include <iostream>
+ #include <stdexcept>
+@@ -27,9 +29,23 @@
+ namespace {
+ constexpr int Heads = 24, KvHeads = 2, Dim = 256, Page = 4, Guard = 16;
+ constexpr size_t QueryStride = Heads * Dim;
++static_assert(sizeof(float) == 4 && std::numeric_limits<float>::is_iec559);
+ std::shared_ptr<sycl_backend::Runtime> runtime;
+ void require(bool ok, const char *message) {
+   if (!ok) throw std::runtime_error(message);
++}
++size_t checked_add(size_t a, size_t b) {
++  require(b <= std::numeric_limits<size_t>::max() - a, "size addition overflow");
++  return a + b;
++}
++size_t checked_mul(size_t a, size_t b) {
++  require(a == 0 || b <= std::numeric_limits<size_t>::max() / a, "size product overflow");
++  return a * b;
++}
++template<class T> size_t guarded_count(size_t count) {
++  const size_t n = checked_add(count, 2 * Guard);
++  (void)checked_mul(n, sizeof(T));
++  return n;
+ }
+ void main_gate(const char *phase) {
+   std::cout << "QSA_RESOURCE_READY " << phase << '\n';
+@@ -50,20 +66,20 @@
+   size_t count;
+   sycl_backend::Allocation allocation;
+   explicit Buffer(size_t n)
+-      : count(n), allocation(runtime, (n + 2 * Guard) * sizeof(T),
++      : count(n), allocation(runtime, checked_mul(guarded_count<T>(n), sizeof(T)),
+                             sycl_backend::MemoryKind::Device) {}
+   T *raw() { return allocation.as<T>(); }
+   T *data() { return raw() + Guard; }
+   static T canary() { return T(73); }
+   void put(const std::vector<T> &input) {
+     require(input.size() == count, "buffer upload extent");
+-    std::vector<T> guarded(count + 2 * Guard, canary());
++    std::vector<T> guarded(guarded_count<T>(count), canary());
+     std::copy(input.begin(), input.end(), guarded.begin() + Guard);
+     Drain drain; // Includes a partially accepted memcpy followed by an exception.
+     runtime->wait(runtime->compute().memcpy(raw(), guarded.data(), allocation.size()));
+   }
+   std::vector<T> get() {
+-    std::vector<T> result(count + 2 * Guard);
++    std::vector<T> result(guarded_count<T>(count));
+     Drain drain; // result must stay live through a failed event wait as well.
+     runtime->wait(runtime->compute().memcpy(result.data(), raw(), allocation.size()));
+     for (int i = 0; i < Guard; ++i)
+@@ -74,13 +90,13 @@
+   void unchanged(const std::vector<T> &expected) {
+     const auto actual = get();
+     require(expected.size() == count &&
+-                std::memcmp(actual.data() + Guard, expected.data(), count * sizeof(T)) == 0,
++                std::memcmp(actual.data() + Guard, expected.data(), checked_mul(count, sizeof(T))) == 0,
+             "input buffer changed");
+   }
+ };
+ template<class T> bool exact(const std::vector<T> &a, const std::vector<T> &b) {
+   return a.size() == b.size() &&
+-         std::memcmp(a.data(), b.data(), a.size() * sizeof(T)) == 0;
++         std::memcmp(a.data(), b.data(), checked_mul(a.size(), sizeof(T))) == 0;
+ }
+ uint16_t half(float x) { return std::bit_cast<uint16_t>(_Float16(x)); }
+ float decode(uint16_t x) { return float(std::bit_cast<_Float16>(x)); }
+@@ -88,7 +104,8 @@
+ template<class T> uint64_t fingerprint(const std::vector<T> &v) {
+   const auto *p = reinterpret_cast<const unsigned char *>(v.data());
+   uint64_t hash = UINT64_C(14695981039346656037);
+-  for (size_t i = 0; i < v.size() * sizeof(T); ++i)
++  const size_t bytes = checked_mul(v.size(), sizeof(T));
++  for (size_t i = 0; i < bytes; ++i)
+     hash = (hash ^ p[i]) * UINT64_C(1099511628211);
+   return hash;
+ }
+@@ -106,8 +123,8 @@
+ };
+ Options options(int argc, char **argv) {
+   require(argc == 2 || argc == 14,
+-          "usage: fixture --smoke | --bench --nq 128|256 --reuse shared|replicated "
+-          "--grain 1|8|32|whole --repeats 1..20 --warmups 2..5 --dump PATH");
++          "usage: fixture --smoke | --bench --nq 128|256|8192 --reuse shared|replicated "
++          "--grain 1|8|32|whole (128/256) or 512|whole (8192) --repeats 1..20 --warmups 2..5 --dump PATH");
+   Options o;
+   if (argc == 2) {
+     require(std::string(argv[1]) == "--smoke", "expected --smoke");
+@@ -119,14 +136,16 @@
+               std::string(argv[8]) == "--repeats" && std::string(argv[10]) == "--warmups" &&
+               std::string(argv[12]) == "--dump", "benchmark argument order");
+   const long nq = integer(argv[3]), reps = integer(argv[9]), warm = integer(argv[11]);
+-  require(nq == 128 || nq == 256, "nq must be 128 or 256");
++  require(nq == 128 || nq == 256 || nq == 8192, "nq must be 128, 256 or 8192");
+   require(reps >= 1 && reps <= 20 && warm >= 2 && warm <= 5, "repeat/warmup bounds");
+   o.nq = int(nq); o.repetitions = int(reps); o.warmups = int(warm);
+   const std::string reuse(argv[5]), grain(argv[7]);
+   require(reuse == "shared" || reuse == "replicated", "invalid reuse arm");
+   o.replicated = reuse == "replicated";
+   const long g = grain == "whole" ? nq : integer(argv[7]);
+-  require(g == 1 || g == 8 || g == 32 || g == nq, "invalid enqueue grain");
++  require(nq == 8192 ? (g == 512 || g == nq)
++                      : (g == 1 || g == 8 || g == 32 || g == nq),
++          "invalid grain for nq: 8192 permits only 512 or whole");
+   o.grain = int(g); o.dump = argv[13];
+   require(!o.dump.empty(), "empty dump path");
+   return o;
+@@ -145,20 +164,22 @@
+                "controls=argv_once environment_mutations=0\n";
+ }
+ struct Frame {
+-  const int nq, cap, cells, pages, padded_cells;
++  const int nq, nreplica, cap, cells, pages, padded_cells;
+   const size_t base_rows, rows;
+   std::vector<int8_t> k, v;
+   std::vector<uint16_t> ks, vs;
+   std::vector<int32_t> table, shared_ids, replicated_ids, steps;
+   std::vector<float> query;
+   Frame(int n, bool bench, int scenario)
+-      : nq(n), cap(bench ? 2051 : 67), cells(bench ? 2113 : 79),
++      : nq(n), nreplica(n == 8192 ? 128 : n),
++        cap(bench ? 2051 : 67), cells(bench ? 2113 : 79),
+         pages((cells + Page - 1) / Page), padded_cells(pages * Page),
+-        base_rows(size_t(padded_cells) * KvHeads), rows(base_rows * nq),
+-        k(rows * Dim), v(k.size()), ks(rows * 4), vs(ks.size()),
+-        table(size_t(nq) * pages), shared_ids(size_t(nq) * cap),
+-        replicated_ids(shared_ids.size()), steps(size_t(nq) * kStepCount),
+-        query(size_t(nq) * QueryStride) {
++        base_rows(checked_mul(size_t(padded_cells), KvHeads)),
++        rows(checked_mul(base_rows, size_t(nreplica))),
++        k(checked_mul(rows, Dim)), v(k.size()), ks(checked_mul(rows, 4)), vs(ks.size()),
++        table(checked_mul(size_t(nreplica), pages)), shared_ids(checked_mul(size_t(nq), cap)),
++        replicated_ids(shared_ids.size()), steps(checked_mul(size_t(nq), kStepCount)),
++        query(checked_mul(size_t(nq), QueryStride)) {
+     for (size_t i = 0; i < base_rows * Dim; ++i) {
+       k[i] = int8_t(int(i * 7 % 255) - 127);
+       v[i] = int8_t(int(i * 11 % 255) - 127);
+@@ -167,7 +188,7 @@
+       ks[i] = half(.007f + float(i % 7) * .0001f);
+       vs[i] = half(.008f + float(i % 11) * .0002f);
+     }
+-    for (int b = 0; b < nq; ++b) {
++    for (int b = 0; b < nreplica; ++b) {
+       if (b) {
+         std::memcpy(k.data() + size_t(b) * base_rows * Dim, k.data(), base_rows * Dim);
+         std::memcpy(v.data() + size_t(b) * base_rows * Dim, v.data(), base_rows * Dim);
+@@ -176,6 +197,8 @@
+       }
+       for (int p = 0; p < pages; ++p)
+         table[b * pages + p] = scenario == 1 && p % 3 == 0 ? -1 : b * pages + pages - 1 - p;
++    }
++    for (int b = 0; b < nq; ++b) {
+       // The prompt entrypoint consumes only kStepWidth: no ID-based RoPE,
+       // positional bias, causal mask, sorting, deduplication or index selection.
+       steps[b * kStepCount + kStepPos] = 4096 + b;
+@@ -188,7 +211,7 @@
+         if (scenario == 1 && j % 11 == 5) c = -1;
+         if (scenario == 1 && j == 6) c = shared_ids[b * cap + 4]; // Explicit duplicate.
+         shared_ids[b * cap + j] = c;
+-        replicated_ids[b * cap + j] = c < 0 ? c : b * padded_cells + c;
++        replicated_ids[b * cap + j] = c < 0 ? c : (b % nreplica) * padded_cells + c;
+       }
+     }
+     for (size_t i = 0; i < query.size(); ++i) query[i] = float(std::sin(i * .019));
+@@ -199,14 +222,36 @@
+   }
+   int64_t row(int cell, int h) const {
+     if (cell < 0) return -1;
+-    require(cell / Page < int(table.size()), "host ID table bounds");
++    require(h >= 0 && h < KvHeads, "host KV head bounds");
++    require(size_t(cell / Page) < table.size(), "host ID table bounds");
+     const int p = table[cell / Page];
+     if (p < 0) return -1;
++    require(size_t(p) < checked_mul(size_t(nreplica), pages), "host physical page bounds");
+     const int64_t r = (int64_t(p) * KvHeads + h) * Page + cell % Page;
+     require(r >= 0 && size_t(r) < rows, "host physical row bounds");
+     return r;
+   }
+-  void proof() const {
++  void proof(int scenario) const {
++    // Byte-prove every physical row and scale, including padding/unselected rows.
++    // Prove the complete logical->physical table, not just selected addresses.
++    for (int b = 0; b < nreplica; ++b) {
++      const size_t code_offset = checked_mul(checked_mul(size_t(b), base_rows), Dim);
++      const size_t scale_offset = checked_mul(checked_mul(size_t(b), base_rows), 4);
++      const size_t code_bytes = checked_mul(base_rows, Dim);
++      const size_t scale_bytes = checked_mul(checked_mul(base_rows, 4), sizeof(uint16_t));
++      require(std::memcmp(k.data(), k.data() + code_offset, code_bytes) == 0 &&
++                  std::memcmp(v.data(), v.data() + code_offset, code_bytes) == 0 &&
++                  std::memcmp(ks.data(), ks.data() + scale_offset, scale_bytes) == 0 &&
++                  std::memcmp(vs.data(), vs.data() + scale_offset, scale_bytes) == 0,
++              "full physical replica K/V/scales identity");
++      for (int p = 0; p < pages; ++p) {
++        const int expected = scenario == 1 && p % 3 == 0 ? -1 : b * pages + pages - 1 - p;
++        require(table[size_t(b) * pages + p] == expected, "complete page table identity");
++        require(expected == -1 || (expected >= 0 &&
++                    size_t(expected) < checked_mul(size_t(nreplica), pages)),
++                "complete page table bounds");
++      }
++    }
+     for (float x : query) require(std::isfinite(x), "host query finite");
+     for (uint16_t x : ks) require(std::isfinite(decode(x)), "host K scale finite");
+     for (uint16_t x : vs) require(std::isfinite(decode(x)), "host V scale finite");
+@@ -218,13 +263,13 @@
+         ++selected;
+         const int c = shared_ids[b * cap + j], rc = replicated_ids[b * cap + j];
+         require(c == -1 || (c >= 0 && c < cells), "host logical cell bounds");
+-        require(c < 0 ? rc == c : rc == b * padded_cells + c, "ID translation proof");
++        require(c < 0 ? rc == c : rc == (b % nreplica) * padded_cells + c, "ID translation proof");
+         if (c >= 0) { duplicates += seen_cell[c]; seen_cell[c] = true; }
+         for (int h = 0; h < KvHeads; ++h) {
+           const int64_t a = row(c, h), r = row(rc, h);
+           require((a < 0) == (r < 0), "missing page equivalence");
+           if (a < 0) { if (h == 0) ++missing; continue; }
+-          require(r == int64_t(b * base_rows) + a, "replica physical mapping proof");
++          require(r == int64_t(size_t(b % nreplica) * base_rows) + a, "replica physical mapping proof");
+           require(std::memcmp(k.data() + a * Dim, k.data() + r * Dim, Dim) == 0 &&
+                       std::memcmp(v.data() + a * Dim, v.data() + r * Dim, Dim) == 0 &&
+                       std::memcmp(ks.data() + a * 4, ks.data() + r * 4, 8) == 0 &&
+@@ -239,7 +284,7 @@
+     const size_t ur = std::count(seen_replicated.begin(), seen_replicated.end(), true);
+     if (cap == 2051)
+       require(selected == size_t(nq) * cap && resident == selected && missing == 0 && duplicates == 0 &&
+-                  us == size_t(cap) * KvHeads && ur == us * nq,
++                  us == size_t(cap) * KvHeads && ur == checked_mul(us, size_t(nreplica)),
+               "benchmark uniform resident unique cohort contract");
+     std::cout << "host_model_proof=PASS selected_slots=" << selected << " resident_slots=" << resident
+               << " missing_slots=" << missing << " duplicate_slots=" << duplicates
+@@ -297,25 +342,48 @@
+ double milliseconds(Clock::time_point a, Clock::time_point b) {
+   return std::chrono::duration<double, std::milli>(b - a).count();
+ }
++// Exclusive creation keeps the canonical frame intact. Failed partial files are
++// left for Main's recorded retention review; no overwrite/unlink is attempted.
++struct DumpFile {
++  int fd;
++  explicit DumpFile(const std::string &path)
++      : fd(::open(path.c_str(), O_WRONLY | O_CREAT | O_EXCL | O_CLOEXEC | O_NOFOLLOW, 0600)) {
++    require(fd >= 0, "dump exclusive open (path must not exist)");
++  }
++  ~DumpFile() { if (fd >= 0) ::close(fd); }
++  void write(const void *data, size_t bytes) {
++    const auto *p = static_cast<const char *>(data);
++    while (bytes) {
++      const size_t chunk = std::min(bytes, size_t(1024 * 1024));
++      const ssize_t done = ::write(fd, p, chunk);
++      if (done < 0 && errno == EINTR) continue;
++      require(done > 0, "dump write");
++      p += done; bytes -= size_t(done);
++    }
++  }
++  void close_checked() {
++    const int owned = fd;
++    fd = -1; // Linux close errors must not be retried against a reused descriptor.
++    require(::close(owned) == 0, "dump close");
++  }
++};
+ void write_dump(const std::string &path, const Frame &f, const std::vector<float> &y) {
+-  // One initial frame only, <= 24 + 256*24*256*4 bytes (< 7 MiB).
++  // One initial frame only: max 192 MiB payload + 24 bytes, budget 193 MiB.
+   const char magic[8] = {'Q','R','C','V','1','L','E','\0'};
+   require(std::endian::native == std::endian::little, "dump requires little endian");
+   const uint32_t nq = f.nq, cap = f.cap;
+   const uint64_t count = f.query.size();
+-  require(24 + count * sizeof(float) <= 7 * 1024 * 1024, "dump budget");
+-  std::ofstream out(path, std::ios::binary | std::ios::trunc);
+-  require(bool(out), "dump open");
+-  out.write(magic, 8); out.write(reinterpret_cast<const char *>(&nq), 4);
+-  out.write(reinterpret_cast<const char *>(&cap), 4);
+-  out.write(reinterpret_cast<const char *>(&count), 8);
+-  out.write(reinterpret_cast<const char *>(y.data() + Guard), count * sizeof(float));
+-  out.flush(); require(bool(out), "dump write/flush");
+-  out.close(); require(!out.fail(), "dump close");
++  const size_t payload = checked_mul(f.query.size(), sizeof(float));
++  require(checked_add(24, payload) <= size_t(193) * 1024 * 1024, "dump budget");
++  require(y.size() == guarded_count<float>(f.query.size()), "dump output extent");
++  DumpFile out(path);
++  out.write(magic, 8); out.write(&nq, 4); out.write(&cap, 4); out.write(&count, 8);
++  out.write(y.data() + Guard, payload);
++  out.close_checked(); // All writes and the final close must succeed.
+ }
+ void run(const Options &o, int scenario) {
+   Frame f(o.nq, o.bench, scenario);
+-  f.proof(); // Actual selected byte comparisons, not a construction-only assertion.
++  f.proof(scenario); // Actual selected byte comparisons, not a construction-only assertion.
+   std::cout << "raw_widths=";
+   if (scenario == 0) std::cout << f.cap << "_for_all_" << f.nq;
+   else for (int b = 0; b < f.nq; ++b)
+@@ -323,9 +391,12 @@
+   std::cout << '\n';
+   std::cout << "case=" << scenario << " nq=" << f.nq << " cap=" << f.cap
+             << " width=" << (scenario == 0 ? "uniform" : "smoke_variable")
+-            << " pages_per_replica=" << f.pages << " physical_pages=" << f.pages * f.nq
++            << " nreplica=" << f.nreplica
++            << " pages_per_replica=" << f.pages << " physical_pages=" << f.pages * f.nreplica
+             << " reuse=" << (o.replicated ? "replicated" : "shared") << " grain=" << o.grain
+             << " calls_per_work=" << (f.nq + o.grain - 1) / o.grain
++            << " workgroups_total=" << size_t(f.nq) * KvHeads
++            << " workgroups_per_full_call=" << size_t(o.grain) * KvHeads
+             << " warmups=" << o.warmups << " repetitions=" << o.repetitions
+             << " fingerprints=FNV1a64_native_bytes"
+             << " k=" << fingerprint(f.k) << " v=" << fingerprint(f.v)
+@@ -339,11 +410,22 @@
+   Buffer<int32_t> table(f.table.size()), si(f.shared_ids.size()), ri(f.replicated_ids.size()), steps(f.steps.size());
+   Buffer<float> q(f.query.size()), out(f.query.size());
+   Drain drain; // Declared after every allocation; covers partial submit throws.
+-  const size_t device_bytes = k.allocation.size() + v.allocation.size() + ks.allocation.size() + vs.allocation.size()
+-      + table.allocation.size() + si.allocation.size() + ri.allocation.size() + steps.allocation.size()
+-      + q.allocation.size() + out.allocation.size();
++  size_t device_bytes = 0, host_frame_bytes = 0;
++  auto account = [&](const auto &buffer) {
++    device_bytes = checked_add(device_bytes, buffer.allocation.size());
++  };
++  account(k); account(v); account(ks); account(vs); account(table);
++  account(si); account(ri); account(steps); account(q); account(out);
++  auto host_account = [&](const auto &vector) {
++    host_frame_bytes = checked_add(host_frame_bytes,
++        checked_mul(vector.size(), sizeof(vector[0])));
++  };
++  host_account(f.k); host_account(f.v); host_account(f.ks); host_account(f.vs);
++  host_account(f.table); host_account(f.shared_ids); host_account(f.replicated_ids);
++  host_account(f.steps); host_account(f.query);
+   require(device_bytes < size_t(1024) * 1024 * 1024, "device allocation budget exceeds 1 GiB");
+-  std::cout << "device_bytes=" << device_bytes << " footprint_and_initialization=identical_across_arms\n";
++  std::cout << "device_bytes=" << device_bytes << " host_frame_payload_bytes=" << host_frame_bytes
++            << " footprint_and_initialization=identical_across_arms\n";
+   k.put(f.k); v.put(f.v); ks.put(f.ks); vs.put(f.vs); table.put(f.table);
+   si.put(f.shared_ids); ri.put(f.replicated_ids); steps.put(f.steps); q.put(f.query);
+   out.put(std::vector<float>(f.query.size(), 1234.f));

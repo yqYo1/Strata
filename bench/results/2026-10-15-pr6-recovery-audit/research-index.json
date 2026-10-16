@@ -6068,5 +6068,87 @@
       "reason": "No new research scope is schedulable now. Keep R924 as a held retrieval artifact and reconsider only when a concrete Main-owned same-tile source/design decision plus relevant existing evidence creates a finite unresolved question. Do not infer that this requires a counter investigation or native experiment."
     },
     "decision": "accepted_with_caveats"
+  },
+  "research_scope_plan_928_930": {
+    "purpose": "decision support",
+    "origin": "Explicit user request: compare reached CUDA Qwen4-Exp paths, prioritize SGLang/vLLM processing and numerical contracts.",
+    "model": "Orca gpt-6-luna",
+    "main_body_read": false,
+    "steering_performed": false,
+    "source_worker_implementation_forbidden": true,
+    "scopes": [
+      {
+        "round": 928,
+        "spec": {
+          "path": "orca-research-round928-spec-v1.txt",
+          "sha256": "2b1c01c9ba78f777589dc3bb88c25d076cbfb9ab69a6605d29dba410b823c603"
+        },
+        "launch": {
+          "path": "orca-research-round928-launch-v1.json",
+          "sha256": "73025a5510b2731f860384de269ecea321ec8d469f1e34515b888b82cccec5d0"
+        },
+        "status": "Settled/released, SHA verified; native Luna-max review pending"
+      },
+      {
+        "round": 929,
+        "spec": {
+          "path": "orca-research-round929-spec-v1.txt",
+          "sha256": "9e8d502c86e0b284c2ac599e134606f348a37ebdb196c13402a85f1654bd84ab"
+        },
+        "launch": {
+          "path": "orca-research-round929-launch-v1.json",
+          "sha256": "4dae9c1c2b1c3cfdaafc43a852fbe9beeb7334934b1c6c90e58ea14096633289"
+        },
+        "status": "Dispatched; completion pending"
+      },
+      {
+        "round": 930,
+        "spec": {
+          "path": "orca-research-round930-spec-v1.txt",
+          "sha256": "66dd5b1f880c5f442e3ef7b15940390fcaac226ef5634c184310685ed645f415"
+        },
+        "launch": {
+          "path": "orca-research-round930-launch-v1.json",
+          "sha256": "4a7175a6669e057e62060bca489bc3b547f1ac52ffd3b116b0a5885ea7949416"
+        },
+        "status": "Dispatched; completion pending"
+      }
+    ]
+  },
+  "hardware_resource_followup_8192": {
+    "result": {
+      "path": "hardware-resource-followup-v8.json",
+      "sha256": "8e7bb8e53705d4d66ad73122f40919b8f3d53387b507ee4e5bf0357d27601b3d"
+    },
+    "report": {
+      "path": "hardware-resource-followup-v8.ja.md",
+      "sha256": "8d12e449acd0d192f315945c43c4b5a5aecc44c6665bde55d424d02da56008dd"
+    },
+    "status": "Nine clean independent processes/90 samples/fullframe comparisons closed PASS; B128x working set +20.29%, C16command grain +4.89%. No physical unit saturation/model speed adoption.",
+    "retirement": {
+      "path": "qsa-large-resource-raw-retirement-v1.json",
+      "sha256": "c37b9390fd5628a12d536edb7a170131aab52058951eb55978830bdebdfaa50b"
+    }
+  },
+  "resident_dense_reference_current": {
+    "result": {
+      "path": "dense-reference-audit-v1.json",
+      "sha256": "5c39b6b72a82db622d64bd9218a32e2c017b153a10c0f75296f4f8437bdd8b77"
+    },
+    "report": {
+      "path": "dense-reference-audit-v1.ja.md",
+      "sha256": "3425cc11f2feb55dc5a23db426034040b72502a3ff1515fdc3cbcac615a33a8d"
+    },
+    "status": "User supplied966.57+/-10.59tok/s pp131072; matching local source/header audit, no fresh Main benchmark. Compute77.31% is scoped command coverage, never arithmetic utilization."
+  },
+  "numerical_reference_policy_current": {
+    "instruction_date": "2026-10-16",
+    "preferred": "Reached SGLang/vLLM model algorithm and validated numerical contract, including lower precision.",
+    "old_FP32_role": "Diagnostic reference, not mandatory additional precision or identical-output adoption gate.",
+    "historical_failed_receipts": "Preserved unchanged; record new criteria prospectively.",
+    "dependency_audit": {
+      "path": "prefill-backend-dependency-audit-v1.ja.md",
+      "sha256": "e7cd620558bcddaa1827c62a23b16664be1007e3047ebdad3d397641ae69f46c"
+    }
   }
 }

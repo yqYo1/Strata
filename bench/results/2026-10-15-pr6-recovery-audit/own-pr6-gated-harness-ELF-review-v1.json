@@ -1,0 +1,57 @@
+{
+  "schema": "strata-pr6-gated-harness-ELF-review-v1",
+  "passed": true,
+  "GPU_executed": false,
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-gated-harness-build-v1/pr6_prefill_api",
+    "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-gated-harness-build-v1/pr6_prefill_api",
+    "bytes": 24536872,
+    "sha256": "56bd0fefdf117f1cd6baea6a32f9acad0c8d82ba438b6fd6b2c61cc70f3db88f"
+  },
+  "build_receipt_sha256": "5f715ea950ed374ff04c9ff9c00545c74c7ec7777f1768065596fa88f288f20d",
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/readelf",
+        "-d",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-gated-harness-build-v1/pr6_prefill_api"
+      ],
+      "exit_code": 0,
+      "stdout": "\nDynamic section at offset 0x130ed58 contains 33 entries:\n  Tag        Type                         Name/Value\n 0x0000000000000001 (NEEDED)             Shared library: [libm.so.6]\n 0x0000000000000001 (NEEDED)             Shared library: [libmkl_sycl_blas.so.6]\n 0x0000000000000001 (NEEDED)             Shared library: [libmkl_intel_ilp64.so.3]\n 0x0000000000000001 (NEEDED)             Shared library: [libmkl_sequential.so.3]\n 0x0000000000000001 (NEEDED)             Shared library: [libmkl_core.so.3]\n 0x0000000000000001 (NEEDED)             Shared library: [libstdc++.so.6]\n 0x0000000000000001 (NEEDED)             Shared library: [libgcc_s.so.1]\n 0x0000000000000001 (NEEDED)             Shared library: [libsycl.so.9]\n 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]\n 0x000000000000001d (RUNPATH)            Library runpath: [/opt/intel/oneapi/mkl/2026.1/lib]\n 0x000000000000000c (INIT)               0x40b000\n 0x000000000000000d (FINI)               0x7c11a0\n 0x0000000000000019 (INIT_ARRAY)         0x170e8e0\n 0x000000000000001b (INIT_ARRAYSZ)       112 (bytes)\n 0x000000000000001a (FINI_ARRAY)         0x170e950\n 0x000000000000001c (FINI_ARRAYSZ)       16 (bytes)\n 0x000000006ffffef5 (GNU_HASH)           0x4003b0\n 0x0000000000000005 (STRTAB)             0x402b90\n 0x0000000000000006 (SYMTAB)             0x400568\n 0x000000000000000a (STRSZ)              19635 (bytes)\n 0x000000000000000b (SYMENT)             24 (bytes)\n 0x0000000000000015 (DEBUG)              0x0\n 0x0000000000000003 (PLTGOT)             0x170efe8\n 0x0000000000000002 (PLTRELSZ)           8688 (bytes)\n 0x0000000000000014 (PLTREL)             RELA\n 0x0000000000000017 (JMPREL)             0x408108\n 0x0000000000000007 (RELA)               0x407e08\n 0x0000000000000008 (RELASZ)             768 (bytes)\n 0x0000000000000009 (RELAENT)            24 (bytes)\n 0x000000006ffffffe (VERNEED)            0x407b78\n 0x000000006fffffff (VERNEEDNUM)         4\n 0x000000006ffffff0 (VERSYM)             0x407844\n 0x0000000000000000 (NULL)               0x0\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/readelf",
+        "-l",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-gated-harness-build-v1/pr6_prefill_api"
+      ],
+      "exit_code": 0,
+      "stdout": "\nElf file type is EXEC (Executable file)\nEntry point 0x40ea20\nThere are 14 program headers, starting at offset 64\n\nProgram Headers:\n  Type           Offset             VirtAddr           PhysAddr\n                 FileSiz            MemSiz              Flags  Align\n  PHDR           0x0000000000000040 0x0000000000400040 0x0000000000400040\n                 0x0000000000000310 0x0000000000000310  R      0x8\n  INTERP         0x0000000000000350 0x0000000000400350 0x0000000000400350\n                 0x000000000000001c 0x000000000000001c  R      0x1\n      [Requesting program interpreter: /lib64/ld-linux-x86-64.so.2]\n  LOAD           0x0000000000000000 0x0000000000400000 0x0000000000400000\n                 0x000000000000a2f8 0x000000000000a2f8  R      0x1000\n  LOAD           0x000000000000b000 0x000000000040b000 0x000000000040b000\n                 0x00000000003b61ad 0x00000000003b61ad  R E    0x1000\n  LOAD           0x00000000003c2000 0x00000000007c2000 0x00000000007c2000\n                 0x0000000000f4bc68 0x0000000000f4bc68  R      0x1000\n  LOAD           0x000000000130e8d0 0x000000000170e8d0 0x000000000170e8d0\n                 0x0000000000002db0 0x0000000000092e70  RW     0x1000\n  DYNAMIC        0x000000000130ed58 0x000000000170ed58 0x000000000170ed58\n                 0x0000000000000260 0x0000000000000260  RW     0x8\n  NOTE           0x0000000000000370 0x0000000000400370 0x0000000000400370\n                 0x0000000000000020 0x0000000000000020  R      0x8\n  NOTE           0x0000000000000390 0x0000000000400390 0x0000000000400390\n                 0x0000000000000020 0x0000000000000020  R      0x4\n  TLS            0x000000000130e8d0 0x000000000170e8d0 0x000000000170e8d0\n                 0x0000000000000004 0x000000000000a1b0  R      0x10\n  GNU_PROPERTY   0x0000000000000370 0x0000000000400370 0x0000000000400370\n                 0x0000000000000020 0x0000000000000020  R      0x8\n  GNU_EH_FRAME   0x000000000128e8f0 0x000000000168e8f0 0x000000000168e8f0\n                 0x000000000001179c 0x000000000001179c  R      0x4\n  GNU_STACK      0x0000000000000000 0x0000000000000000 0x0000000000000000\n                 0x0000000000000000 0x0000000000000000  RW     0x10\n  GNU_RELRO      0x000000000130e8d0 0x000000000170e8d0 0x000000000170e8d0\n                 0x0000000000000730 0x0000000000000730  R      0x1\n\n Section to Segment mapping:\n  Segment Sections...\n   00     \n   01     .interp \n   02     .interp .note.gnu.property .note.ABI-tag .gnu.hash .dynsym .dynstr .gnu.version .gnu.version_r .rela.dyn .rela.plt \n   03     .init .plt .text .fini \n   04     .rodata __CLANG_OFFLOAD_BUNDLE__sycl-spir64 .tgtimg .eh_frame_hdr .eh_frame .gcc_except_table \n   05     .tdata .init_array .fini_array .data.rel.ro .dynamic .got .got.plt .data .bss \n   06     .dynamic \n   07     .note.gnu.property \n   08     .note.ABI-tag \n   09     .tdata .tbss \n   10     .note.gnu.property \n   11     .eh_frame_hdr \n   12     \n   13     .tdata .init_array .fini_array .data.rel.ro .dynamic .got \n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/readelf",
+        "-h",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-gated-harness-build-v1/pr6_prefill_api"
+      ],
+      "exit_code": 0,
+      "stdout": "ELF Header:\n  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 \n  Class:                             ELF64\n  Data:                              2's complement, little endian\n  Version:                           1 (current)\n  OS/ABI:                            UNIX - System V\n  ABI Version:                       0\n  Type:                              EXEC (Executable file)\n  Machine:                           Advanced Micro Devices X86-64\n  Version:                           0x1\n  Entry point address:               0x40ea20\n  Start of program headers:          64 (bytes into file)\n  Start of section headers:          24534504 (bytes into file)\n  Flags:                             0x0\n  Size of this header:               64 (bytes)\n  Size of program headers:           56 (bytes)\n  Number of program headers:         14\n  Size of section headers:           64 (bytes)\n  Number of section headers:         37\n  Section header string table index: 36\n",
+      "stderr": ""
+    }
+  ],
+  "DT_NEEDED": [
+    "libm.so.6",
+    "libmkl_sycl_blas.so.6",
+    "libmkl_intel_ilp64.so.3",
+    "libmkl_sequential.so.3",
+    "libmkl_core.so.3",
+    "libstdc++.so.6",
+    "libgcc_s.so.1",
+    "libsycl.so.9",
+    "libc.so.6"
+  ],
+  "static_dependencies_unchanged": true,
+  "scope": "Static ELF only of four-hold prefill-only API. Next Main owns runtime env/maps/model-small safety; no modelquality/PP assertion."
+}

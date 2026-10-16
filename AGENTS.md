@@ -52,6 +52,16 @@ are outside this work's scope.
   alone does not satisfy this work. Keep necessary local FP32 accumulation,
   reductions, router decisions and recurrent state distinct from tensor storage;
   record remaining FP32 boundaries, provenance and numerical/performance gates.
+- Numerical reference policy (2026-10-16): prioritize the actual SGLang/vLLM
+  execution path for this model when selecting long-prefill algorithms and
+  precision. Compare storage, accumulation, reductions, rounding locations,
+  normalization constants, routing and persistent state. A matching validated
+  SGLang/vLLM numerical contract is acceptable; disagreement with llama.cpp or
+  a more precise FP32 oracle alone is not a reason to reject it. Keep existing
+  FP32/ggml references for diagnostics, rather than imposing their extra precision
+  as the adoption standard. Source flags alone do not prove the implemented
+  contract. Record revised criteria prospectively and preserve original failed
+  receipts; retain bounds, lifetime, fault and physical-context correctness gates.
 - Keep long-prefill inference math on the GPU and minimize CPU work beyond
   transfer preparation, launch control and validation. Audit existing CPU
   grouping/index operations and library fallback or emulation paths explicitly;
@@ -125,9 +135,12 @@ are outside this work's scope.
   Keep conditional scopes with missing prerequisites in the index for later;
   do not start a session that can only report that its prerequisite is absent.
 - Keep findings in files and commit reviewed reports. Research is not
-  implementation adoption. Main implements, or assigns a separate
-  **gpt-6.1-sol** implementation task pinned to an immutable source base. Main
-  reviews the complete patch and exclusively manages all testing and GPU work.
+  implementation adoption. Main implements and exclusively manages testing and
+  GPU work. Following the user's 2026-10-16 resource-limit instruction, do not
+  launch new **gpt-6.1-sol** workers through Orca or native Codex. Already running
+  workers may finish without intervention. Continue the specified **gpt-6-luna**
+  research and native **gpt-6-luna max** report review; do not substitute another
+  expensive implementation model.
 
 Use the project-only [strata-upstream-sync skill](.agents/skills/strata-upstream-sync/SKILL.md).
 Its files live in `.claude/skills/strata-upstream-sync`, exposed by the relative

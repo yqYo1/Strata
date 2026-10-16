@@ -1,0 +1,799 @@
+{
+  "schema": "strata-qsa-frame-comparator-check-v1",
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "commands": [
+    {
+      "label": "equal",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-large-resource-control-v1/compare_frames.py",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/good-a.bin",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/good-b.bin"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-16T12:06:08.264245+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2418701,
+          "start_ticks": 50113238,
+          "sid": 2418701,
+          "pgid": 2418701
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 501132.38574972,
+      "pid": 2418701,
+      "spawn_return_monotonic": 501132.387699038,
+      "direct_identity": {
+        "pid": 2418701,
+        "state": "R",
+        "ppid": 2418655,
+        "pgid": 2418701,
+        "sid": 2418701,
+        "start_ticks": 50113238,
+        "rss_bytes": 466944
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 7954432,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T12:06:08.499428+00:00",
+      "elapsed_seconds": 0.23492995096603408,
+      "logs": {
+        "equal.stdout": {
+          "bytes": 944,
+          "sha256": "98eb848ded390ab15fd995bba2ff8a292dc038210508fe598be096b6677bcc38"
+        },
+        "equal.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "finite-one-byte-difference",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-large-resource-control-v1/compare_frames.py",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/good-a.bin",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/different.bin"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-16T12:06:08.499964+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2418708,
+          "start_ticks": 50113262,
+          "sid": 2418708,
+          "pgid": 2418708
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 501132.621464507,
+      "pid": 2418708,
+      "spawn_return_monotonic": 501132.623556453,
+      "direct_identity": {
+        "pid": 2418708,
+        "state": "R",
+        "ppid": 2418655,
+        "pgid": 2418708,
+        "sid": 2418708,
+        "start_ticks": 50113262,
+        "rss_bytes": 401408
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 12455936,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-16T12:06:08.725751+00:00",
+      "elapsed_seconds": 0.22555674298200756,
+      "logs": {
+        "finite-one-byte-difference.stdout": {
+          "bytes": 946,
+          "sha256": "470c31fe3294ee587e6f2d8870356ff415f12025745fbd95c10ff28649208421"
+        },
+        "finite-one-byte-difference.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "equal-nonfinite-rejected",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-large-resource-control-v1/compare_frames.py",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/nonfinite-a.bin",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/nonfinite-b.bin"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-16T12:06:08.726333+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2418714,
+          "start_ticks": 50113284,
+          "sid": 2418714,
+          "pgid": 2418714
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 501132.847867853,
+      "pid": 2418714,
+      "spawn_return_monotonic": 501132.850091857,
+      "direct_identity": {
+        "pid": 2418714,
+        "state": "R",
+        "ppid": 2418655,
+        "pgid": 2418714,
+        "sid": 2418714,
+        "start_ticks": 50113284,
+        "rss_bytes": 466944
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 13180928,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-16T12:06:08.930303+00:00",
+      "elapsed_seconds": 0.20370026503223926,
+      "logs": {
+        "equal-nonfinite-rejected.stdout": {
+          "bytes": 304,
+          "sha256": "7f4c5d47f841010fb2247b12fd8d9897f502795fb046e9064083f75ad66d9129"
+        },
+        "equal-nonfinite-rejected.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "truncated-rejected",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-large-resource-control-v1/compare_frames.py",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/good-a.bin",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/truncated.bin"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-16T12:06:08.930957+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2418723,
+          "start_ticks": 50113305,
+          "sid": 2418723,
+          "pgid": 2418723
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 501133.052534837,
+      "pid": 2418723,
+      "spawn_return_monotonic": 501133.05477395,
+      "direct_identity": {
+        "pid": 2418723,
+        "state": "R",
+        "ppid": 2418655,
+        "pgid": 2418723,
+        "sid": 2418723,
+        "start_ticks": 50113305,
+        "rss_bytes": 507904
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 13099008,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-16T12:06:09.050041+00:00",
+      "elapsed_seconds": 0.1187798700411804,
+      "logs": {
+        "truncated-rejected.stdout": {
+          "bytes": 314,
+          "sha256": "375ad6f0eaa24c70ed7a010c16e5e4c7cd32c055fee8e3152ba3950565921a77"
+        },
+        "truncated-rejected.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "appended-rejected",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-large-resource-control-v1/compare_frames.py",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/good-a.bin",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/appended.bin"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-16T12:06:09.050699+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2418732,
+          "start_ticks": 50113317,
+          "sid": 2418732,
+          "pgid": 2418732
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 501133.172313155,
+      "pid": 2418732,
+      "spawn_return_monotonic": 501133.174435338,
+      "direct_identity": {
+        "pid": 2418732,
+        "state": "R",
+        "ppid": 2418655,
+        "pgid": 2418732,
+        "sid": 2418732,
+        "start_ticks": 50113317,
+        "rss_bytes": 466944
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 13172736,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-16T12:06:09.162660+00:00",
+      "elapsed_seconds": 0.11161180096678436,
+      "logs": {
+        "appended-rejected.stdout": {
+          "bytes": 313,
+          "sha256": "c2bd209c22a4428183b1fb148a8f552b62dd2e8bc31db12c8aa8a67fd67a7133"
+        },
+        "appended-rejected.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "same-inode-rejected",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-large-resource-control-v1/compare_frames.py",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/good-a.bin",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/hardlink.bin"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-16T12:06:09.163351+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2418735,
+          "start_ticks": 50113328,
+          "sid": 2418735,
+          "pgid": 2418735
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 501133.284980893,
+      "pid": 2418735,
+      "spawn_return_monotonic": 501133.287008999,
+      "direct_identity": {
+        "pid": 2418735,
+        "state": "R",
+        "ppid": 2418655,
+        "pgid": 2418735,
+        "sid": 2418735,
+        "start_ticks": 50113328,
+        "rss_bytes": 466944
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 13619200,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-16T12:06:09.271094+00:00",
+      "elapsed_seconds": 0.10737308504758403,
+      "logs": {
+        "same-inode-rejected.stdout": {
+          "bytes": 209,
+          "sha256": "b61d87459d5b3580b74f9c2b0c2e97a234e995a5f5d214a78101d1625744339c"
+        },
+        "same-inode-rejected.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "symlink-rejected",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-large-resource-control-v1/compare_frames.py",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/good-a.bin",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/symlink.bin"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-16T12:06:09.271805+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2418738,
+          "start_ticks": 50113339,
+          "sid": 2418738,
+          "pgid": 2418738
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 501133.393484025,
+      "pid": 2418738,
+      "spawn_return_monotonic": 501133.395582333,
+      "direct_identity": {
+        "pid": 2418738,
+        "state": "R",
+        "ppid": 2418655,
+        "pgid": 2418738,
+        "sid": 2418738,
+        "start_ticks": 50113339,
+        "rss_bytes": 573440
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 13516800,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-16T12:06:09.383234+00:00",
+      "elapsed_seconds": 0.1110202280106023,
+      "logs": {
+        "symlink-rejected.stdout": {
+          "bytes": 331,
+          "sha256": "0f156cc7539036550ad99b6f3ae4157e3c20bd3c142b38c2f0c0c1ad6b691cfa"
+        },
+        "symlink-rejected.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "mixed-shape-rejected",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-large-resource-control-v1/compare_frames.py",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/good-a.bin",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/large-a.bin"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-16T12:06:09.384012+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2418741,
+          "start_ticks": 50113350,
+          "sid": 2418741,
+          "pgid": 2418741
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 501133.505903887,
+      "pid": 2418741,
+      "spawn_return_monotonic": 501133.507970385,
+      "direct_identity": {
+        "pid": 2418741,
+        "state": "R",
+        "ppid": 2418655,
+        "pgid": 2418741,
+        "sid": 2418741,
+        "start_ticks": 50113350,
+        "rss_bytes": 466944
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 13168640,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-16T12:06:09.494126+00:00",
+      "elapsed_seconds": 0.10967142001027241,
+      "logs": {
+        "mixed-shape-rejected.stdout": {
+          "bytes": 196,
+          "sha256": "00a711fdff4f2bb94b6e7065f74a461084486507b933a1f55c75824f864e62a9"
+        },
+        "mixed-shape-rejected.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "large-full-finite-equal",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-large-resource-control-v1/compare_frames.py",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/large-a.bin",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/large-b.bin"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-16T12:06:09.494925+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2418750,
+          "start_ticks": 50113361,
+          "sid": 2418750,
+          "pgid": 2418750
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 501133.616668163,
+      "pid": 2418750,
+      "spawn_return_monotonic": 501133.618698944,
+      "direct_identity": {
+        "pid": 2418750,
+        "state": "R",
+        "ppid": 2418655,
+        "pgid": 2418750,
+        "sid": 2418750,
+        "start_ticks": 50113361,
+        "rss_bytes": 581632
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 17944576,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T12:06:15.487047+00:00",
+      "elapsed_seconds": 5.991646907990798,
+      "logs": {
+        "large-full-finite-equal.stdout": {
+          "bytes": 956,
+          "sha256": "29cba3f299a7cf40a44f6d4e05229f2ff5654292ad7d4cf2e4725836ac7d5b56"
+        },
+        "large-full-finite-equal.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "GPU_executed": false,
+  "helper": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-large-resource-control-v1/compare_frames.py",
+    "bytes": 5805,
+    "sha256": "e057abe02fd802544bc0f85791052ac59c116a073e71f692c14d332fffcbb7a1"
+  },
+  "fixture_pins": {
+    "good-a.bin": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/good-a.bin",
+      "bytes": 3145752,
+      "sha256": "90cb74980b68b9da5fb447967de1059e7bb917ae20777ffe54fa51e9bb45f983"
+    },
+    "good-b.bin": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/good-b.bin",
+      "bytes": 3145752,
+      "sha256": "90cb74980b68b9da5fb447967de1059e7bb917ae20777ffe54fa51e9bb45f983"
+    },
+    "different.bin": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/different.bin",
+      "bytes": 3145752,
+      "sha256": "1e350d96942034497776dc00f14cb42a921e053cf288db0d1e58b8e96a223950"
+    },
+    "nonfinite-a.bin": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/nonfinite-a.bin",
+      "bytes": 3145752,
+      "sha256": "58a2b555ee5413962fcf0ac84c33a9f7822724aecb337570af61b446cb58c103"
+    },
+    "nonfinite-b.bin": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/nonfinite-b.bin",
+      "bytes": 3145752,
+      "sha256": "58a2b555ee5413962fcf0ac84c33a9f7822724aecb337570af61b446cb58c103"
+    },
+    "truncated.bin": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/truncated.bin",
+      "bytes": 3145748,
+      "sha256": "4710d3e007597d43f9222b42d7f7c5c2488aefe68991fba45ea519e72b9a988d"
+    },
+    "appended.bin": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/appended.bin",
+      "bytes": 3145756,
+      "sha256": "79d151efa15278108cb20aa9d5f15f7e93100e28d6ed7cf4afcf63b759795acc"
+    },
+    "large-a.bin": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/large-a.bin",
+      "bytes": 201326616,
+      "sha256": "4ddacac81b41fde4aca1a79a4ef04aac7509bfa5739d0d9d3ec8970187f36581"
+    },
+    "large-b.bin": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/large-b.bin",
+      "bytes": 201326616,
+      "sha256": "4ddacac81b41fde4aca1a79a4ef04aac7509bfa5739d0d9d3ec8970187f36581"
+    }
+  },
+  "cases": [
+    {
+      "name": "equal",
+      "expected_pass": true,
+      "exit_code": 0,
+      "result": {
+        "status": "PASS",
+        "scope": "full_initial_frame_bytes_only",
+        "process_and_fault_validation": "EXTERNAL_REQUIRED",
+        "comparison": "streaming_all_payload_bytes_and_all_finite",
+        "frames": [
+          {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/good-a.bin",
+            "bytes": 3145752,
+            "nq": 128,
+            "cap": 2051,
+            "count": 786432,
+            "sha256": "90cb74980b68b9da5fb447967de1059e7bb917ae20777ffe54fa51e9bb45f983",
+            "finite": true
+          },
+          {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/good-b.bin",
+            "bytes": 3145752,
+            "nq": 128,
+            "cap": 2051,
+            "count": 786432,
+            "sha256": "90cb74980b68b9da5fb447967de1059e7bb917ae20777ffe54fa51e9bb45f983",
+            "finite": true,
+            "exact_reference": true,
+            "first_mismatch_byte": null
+          }
+        ]
+      },
+      "stderr": ""
+    },
+    {
+      "name": "finite-one-byte-difference",
+      "expected_pass": false,
+      "exit_code": 1,
+      "result": {
+        "status": "FAIL",
+        "scope": "full_initial_frame_bytes_only",
+        "process_and_fault_validation": "EXTERNAL_REQUIRED",
+        "comparison": "streaming_all_payload_bytes_and_all_finite",
+        "frames": [
+          {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/good-a.bin",
+            "bytes": 3145752,
+            "nq": 128,
+            "cap": 2051,
+            "count": 786432,
+            "sha256": "90cb74980b68b9da5fb447967de1059e7bb917ae20777ffe54fa51e9bb45f983",
+            "finite": true
+          },
+          {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/different.bin",
+            "bytes": 3145752,
+            "nq": 128,
+            "cap": 2051,
+            "count": 786432,
+            "sha256": "1e350d96942034497776dc00f14cb42a921e053cf288db0d1e58b8e96a223950",
+            "finite": true,
+            "exact_reference": false,
+            "first_mismatch_byte": 27
+          }
+        ]
+      },
+      "stderr": ""
+    },
+    {
+      "name": "equal-nonfinite-rejected",
+      "expected_pass": false,
+      "exit_code": 1,
+      "result": {
+        "status": "FAIL",
+        "error": "nonfinite frame: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/nonfinite-a.bin",
+        "scope": "full_initial_frame_bytes_only",
+        "process_and_fault_validation": "EXTERNAL_REQUIRED",
+        "frames_completed": []
+      },
+      "stderr": ""
+    },
+    {
+      "name": "truncated-rejected",
+      "expected_pass": false,
+      "exit_code": 1,
+      "result": {
+        "status": "FAIL",
+        "error": "invalid frame extent/header: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/truncated.bin",
+        "scope": "full_initial_frame_bytes_only",
+        "process_and_fault_validation": "EXTERNAL_REQUIRED",
+        "frames_completed": []
+      },
+      "stderr": ""
+    },
+    {
+      "name": "appended-rejected",
+      "expected_pass": false,
+      "exit_code": 1,
+      "result": {
+        "status": "FAIL",
+        "error": "invalid frame extent/header: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/appended.bin",
+        "scope": "full_initial_frame_bytes_only",
+        "process_and_fault_validation": "EXTERNAL_REQUIRED",
+        "frames_completed": []
+      },
+      "stderr": ""
+    },
+    {
+      "name": "same-inode-rejected",
+      "expected_pass": false,
+      "exit_code": 1,
+      "result": {
+        "status": "FAIL",
+        "error": "reference and candidate must be distinct files",
+        "scope": "full_initial_frame_bytes_only",
+        "process_and_fault_validation": "EXTERNAL_REQUIRED",
+        "frames_completed": []
+      },
+      "stderr": ""
+    },
+    {
+      "name": "symlink-rejected",
+      "expected_pass": false,
+      "exit_code": 1,
+      "result": {
+        "status": "FAIL",
+        "error": "[Errno 40] Too many levels of symbolic links: '/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/symlink.bin'",
+        "scope": "full_initial_frame_bytes_only",
+        "process_and_fault_validation": "EXTERNAL_REQUIRED",
+        "frames_completed": []
+      },
+      "stderr": ""
+    },
+    {
+      "name": "mixed-shape-rejected",
+      "expected_pass": false,
+      "exit_code": 1,
+      "result": {
+        "status": "FAIL",
+        "error": "same nq/cap/count cohort required",
+        "scope": "full_initial_frame_bytes_only",
+        "process_and_fault_validation": "EXTERNAL_REQUIRED",
+        "frames_completed": []
+      },
+      "stderr": ""
+    },
+    {
+      "name": "large-full-finite-equal",
+      "expected_pass": true,
+      "exit_code": 0,
+      "result": {
+        "status": "PASS",
+        "scope": "full_initial_frame_bytes_only",
+        "process_and_fault_validation": "EXTERNAL_REQUIRED",
+        "comparison": "streaming_all_payload_bytes_and_all_finite",
+        "frames": [
+          {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/large-a.bin",
+            "bytes": 201326616,
+            "nq": 8192,
+            "cap": 2051,
+            "count": 50331648,
+            "sha256": "4ddacac81b41fde4aca1a79a4ef04aac7509bfa5739d0d9d3ec8970187f36581",
+            "finite": true
+          },
+          {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-frame-comparator-check-v1/fixtures/large-b.bin",
+            "bytes": 201326616,
+            "nq": 8192,
+            "cap": 2051,
+            "count": 50331648,
+            "sha256": "4ddacac81b41fde4aca1a79a4ef04aac7509bfa5739d0d9d3ec8970187f36581",
+            "finite": true,
+            "exact_reference": true,
+            "first_mismatch_byte": null
+          }
+        ]
+      },
+      "stderr": ""
+    }
+  ],
+  "scope": "Host-only independent synthetic IEEE-FP32 frames, including full201326616byte8192 frames; not GPU/model output or a performance measurement.",
+  "retention": {
+    "owner": "Main",
+    "consumer": "Full streaming comparator qualification",
+    "next_review": "After this compact evidence is committed, retire all synthetic raw fixtures and successful output duplicates."
+  },
+  "ownership_closed": true
+}
