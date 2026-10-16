@@ -1,0 +1,41 @@
+{
+  "schema": "strata-score-pad-component-boundary-v1",
+  "source_base_sha256": "b55684754231c007877e967375f721cf4d88746b698d2a7a9811d2bcdf578081",
+  "build": "own-qsa-bf16-prefix-score-pad-build-v1.json",
+  "component": "own-qsa-bf16-prefix-score-pad-component-v1.json",
+  "cohort": "qsa-bf16-prefix-score-pad-cohort-v1.json",
+  "cohort_sha256": "4349d85671269130dbce039d139a37bd5f451821c80127c6fa0fd1eb4fb621b7",
+  "statistics": {
+    "base": {
+      "independent_processes": 3,
+      "process_medians_ms": [
+        390.857487,
+        390.7987455,
+        390.8693055
+      ],
+      "median_ms": 390.857487,
+      "mean_ms": 390.841846,
+      "sample_sd_ms": 0.037790991793679556,
+      "min_ms": 390.7987455,
+      "max_ms": 390.8693055
+    },
+    "pad": {
+      "independent_processes": 3,
+      "process_medians_ms": [
+        333.18699300000003,
+        332.806483,
+        332.92692650000004
+      ],
+      "median_ms": 332.92692650000004,
+      "mean_ms": 332.9734675,
+      "sample_sd_ms": 0.19447753992621422,
+      "min_ms": 332.806483,
+      "max_ms": 333.18699300000003
+    }
+  },
+  "latency_ratio": 0.8517859771738235,
+  "latency_reduction_percent": 14.821402282617646,
+  "default_adopted": false,
+  "model_speed_qualified": false,
+  "next": "Measure combined p distribution+score padding, then integrate supported component into full engine and official32K+/64K model comparisons. Baseline model445.4 tok/s;600/1000goal open."
+}
