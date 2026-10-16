@@ -52,8 +52,8 @@ def main():
     assert previous['passed'] and previous['complete'] and previous['ownership_closed']
     assert all(owned.closed(c) and c['exit_code'] == 0 for c in previous['commands'])
     engine = json.loads((A / 'moe-window-engine-source-v1.json').read_text())
-    assert sha(A / 'moe-window-fixture-syntax-v1.json') == '8025294a62c04fda5fd6366dfca31509fe675c1e8006338e773af1c90cb2ffa2', 'fixture syntax receipt changed'
-    syntax = json.loads((A / 'moe-window-fixture-syntax-v1.json').read_text())
+    assert sha(A / 'moe-window-fixture-syntax-v2.json') == 'f3ce30e628e29fdf2a5fd50105a7ccb1e9d7fb3618a2891b06923434d560ea97', 'fixture syntax receipt changed'
+    syntax = json.loads((A / 'moe-window-fixture-syntax-v2.json').read_text())
     assert syntax['passed'] and syntax['complete'] and syntax['ownership_closed']
     # The engine manifest and fixture syntax receipt are separate pinned source
     # boundaries. Later reports/commits do not authorize changing their code.
