@@ -1,5 +1,5 @@
 // Authored for Strata; repository LICENSE (MIT) applies.
-// Matched live-prefix baseline/coalesced-K layout timing, not model PP or utilization.
+// Matched live-prefix baseline/candidate timing, not model PP or utilization.
 // Every physical input is initialized; both arms allocate/initialize scratch.
 // Identical prefix pack time and cache effects are included in every call.
 #include "strata/kernels/qsa_bf16_prefix.hpp"
@@ -19,9 +19,15 @@
 
 using namespace strata;
 using namespace strata::kernels;
+#ifndef STRATA_QSA_PREFIX_CANDIDATE
+#define STRATA_QSA_PREFIX_CANDIDATE qsa_bf16_prefix_coalesced_batch
+#endif
+#ifndef STRATA_QSA_PREFIX_CANDIDATE_NAME
+#define STRATA_QSA_PREFIX_CANDIDATE_NAME "coalesced"
+#endif
 namespace strata::kernels {
-// Independently linked layout-only variant of the same public signature.
-bool qsa_bf16_prefix_coalesced_batch(const uint16_t *, const QsaAttnPools &,
+// A separately compiled candidate with the same public signature.
+bool STRATA_QSA_PREFIX_CANDIDATE(const uint16_t *, const QsaAttnPools &,
     const int32_t *, const int32_t *, int64_t, const QsaShapes &, uint16_t *,
     int64_t, const QsaPromptBf16Bounds &, int64_t, const QsaBf16PackedScratch &, void *);
 }
@@ -120,7 +126,7 @@ void run(const std::string &arm,int nq,int repetitions,int Cells) {
     bool ok=false;
     if (arm=="base") ok=qsa_bf16_prefix_batch(dqb.data(),pools,di.data(),ds.data(),Cap,shape,
         ob.data()+16,nq,{Pages,Pages},Cells,{pk.data()+16,pv.data()+16,bad.data()+16},&rt->compute());
-    if (arm=="coalesced") ok=qsa_bf16_prefix_coalesced_batch(dqb.data(),pools,di.data(),ds.data(),Cap,shape,
+    if (arm==STRATA_QSA_PREFIX_CANDIDATE_NAME) ok=STRATA_QSA_PREFIX_CANDIDATE(dqb.data(),pools,di.data(),ds.data(),Cap,shape,
         ob.data()+16,nq,{Pages,Pages},Cells,{pk.data()+16,pv.data()+16,bad.data()+16},&rt->compute());
     require(ok,"selected matrix entry unavailable; no fallback");
   };
@@ -219,9 +225,9 @@ int main(int argc,char **argv) {
   try {
     std::cout.setf(std::ios::unitbuf);std::cout<<std::setprecision(12);
     require(argc==9 && std::string(argv[1])=="--arm" && std::string(argv[3])=="--nq" &&
-            std::string(argv[5])=="--repeats" && std::string(argv[7])=="--cells","--arm base|coalesced --nq 3|8192 --repeats 1|10 --cells 2113|32768");
+            std::string(argv[5])=="--repeats" && std::string(argv[7])=="--cells","--arm base|" STRATA_QSA_PREFIX_CANDIDATE_NAME " --nq 3|8192 --repeats 1|10 --cells 2113|32768");
     const std::string arm=argv[2];const int nq=std::stoi(argv[4]),reps=std::stoi(argv[6]),cells=std::stoi(argv[8]);
-    require((arm=="base" || arm=="coalesced") && (nq==3 || nq==8192) &&
+    require((arm=="base" || arm==STRATA_QSA_PREFIX_CANDIDATE_NAME) && (nq==3 || nq==8192) &&
             (reps==1 || reps==10) && (cells==2113 || cells==32768),"bounded benchmark arguments");
     for (auto [key,value] : {std::pair{"STRATA_SYCL_PROMPT_DIRECT","1"},
         {"STRATA_SYCL_PROMPT_K_CELL_MAJOR","0"},{"STRATA_SYCL_PROMPT_SOFTMAX_SUBGROUP","0"},

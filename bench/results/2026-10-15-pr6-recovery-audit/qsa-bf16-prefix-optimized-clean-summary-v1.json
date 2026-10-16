@@ -1,0 +1,177 @@
+{
+  "schema": "strata-qsa-bf16-prefix-optimized-summary-v1",
+  "passed": true,
+  "complete": true,
+  "cohort_sha256": "0dd4ee33f4a05ec0e2b8a9bc7a9687ea5aef947c91257e1eea1d1f193abd8002",
+  "samples": [
+    {
+      "arm": "bf16-prefix",
+      "repetition": 0,
+      "receipt": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-bf16-prefix-optimized-clean-bf16-prefix-r0-v1.json",
+      "sha256": "7260ea6d649716e4092b52895cbe0419ecde3a93e0f98555ba8b5d3a274d098e",
+      "binary_sha256": "1468ff56a9aa815c51f2f1cacc8ea99151152862f625d6ee73b5845620fe8066",
+      "source_commit": "81470f58085e64151e05414be168450744c319e0",
+      "request_sha256": "29b01aab07f2462abc11c3efedaf421000c80e362a0e80ef1b9c08b91227a334",
+      "actual_prompt_tokens": 39262,
+      "prompt_tps": 445.7,
+      "prompt_ms": 88086.8,
+      "placement": [
+        "strata prefill: layer-major candidate, tokens=39261 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=804065280 residual_gpu_rows=32768 residual_gpu=671088640 residual_host=132976640 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592"
+      ],
+      "QSA_arithmetic": [
+        "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=80726784; source=resident-Mode0 score_pitch=32"
+      ],
+      "fresh_faults": [],
+      "normal_native_exit": true
+    },
+    {
+      "arm": "bf16-prefix-optimized",
+      "repetition": 0,
+      "receipt": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-bf16-prefix-optimized-clean-bf16-prefix-optimized-r0-v1.json",
+      "sha256": "ac613462f3d63332f109a78b3173b26c1daa55f7c7055409f033fa3c8a050f61",
+      "binary_sha256": "1468ff56a9aa815c51f2f1cacc8ea99151152862f625d6ee73b5845620fe8066",
+      "source_commit": "81470f58085e64151e05414be168450744c319e0",
+      "request_sha256": "29b01aab07f2462abc11c3efedaf421000c80e362a0e80ef1b9c08b91227a334",
+      "actual_prompt_tokens": 39262,
+      "prompt_tps": 463.4,
+      "prompt_ms": 84719.9,
+      "placement": [
+        "strata prefill: layer-major candidate, tokens=39261 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=804065280 residual_gpu_rows=32768 residual_gpu=671088640 residual_host=132976640 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592"
+      ],
+      "QSA_arithmetic": [
+        "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=80726784; source=resident-Mode0 score_pitch=33"
+      ],
+      "fresh_faults": [],
+      "normal_native_exit": true
+    },
+    {
+      "arm": "bf16-prefix-optimized",
+      "repetition": 1,
+      "receipt": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-bf16-prefix-optimized-clean-bf16-prefix-optimized-r1-v1.json",
+      "sha256": "9a06de050639f21521cdbeec57311129e0f4e4574379f8d1b97e60ac0a028e23",
+      "binary_sha256": "1468ff56a9aa815c51f2f1cacc8ea99151152862f625d6ee73b5845620fe8066",
+      "source_commit": "81470f58085e64151e05414be168450744c319e0",
+      "request_sha256": "29b01aab07f2462abc11c3efedaf421000c80e362a0e80ef1b9c08b91227a334",
+      "actual_prompt_tokens": 39262,
+      "prompt_tps": 464.1,
+      "prompt_ms": 84598.4,
+      "placement": [
+        "strata prefill: layer-major candidate, tokens=39261 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=804065280 residual_gpu_rows=32768 residual_gpu=671088640 residual_host=132976640 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592"
+      ],
+      "QSA_arithmetic": [
+        "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=80726784; source=resident-Mode0 score_pitch=33"
+      ],
+      "fresh_faults": [],
+      "normal_native_exit": true
+    },
+    {
+      "arm": "bf16-prefix",
+      "repetition": 1,
+      "receipt": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-bf16-prefix-optimized-clean-bf16-prefix-r1-v1.json",
+      "sha256": "51ad6a2b225a5d2714c0b534b0159ed66f613482b82bd21b6798465539e715f9",
+      "binary_sha256": "1468ff56a9aa815c51f2f1cacc8ea99151152862f625d6ee73b5845620fe8066",
+      "source_commit": "81470f58085e64151e05414be168450744c319e0",
+      "request_sha256": "29b01aab07f2462abc11c3efedaf421000c80e362a0e80ef1b9c08b91227a334",
+      "actual_prompt_tokens": 39262,
+      "prompt_tps": 446.7,
+      "prompt_ms": 87902.1,
+      "placement": [
+        "strata prefill: layer-major candidate, tokens=39261 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=804065280 residual_gpu_rows=32768 residual_gpu=671088640 residual_host=132976640 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592"
+      ],
+      "QSA_arithmetic": [
+        "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=80726784; source=resident-Mode0 score_pitch=32"
+      ],
+      "fresh_faults": [],
+      "normal_native_exit": true
+    },
+    {
+      "arm": "bf16-prefix",
+      "repetition": 2,
+      "receipt": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-bf16-prefix-optimized-clean-bf16-prefix-r2-v1.json",
+      "sha256": "c046bea6d8ce4e5b8c5712a94857384a69f6ca3d34c9942a08deb67177675c1e",
+      "binary_sha256": "1468ff56a9aa815c51f2f1cacc8ea99151152862f625d6ee73b5845620fe8066",
+      "source_commit": "81470f58085e64151e05414be168450744c319e0",
+      "request_sha256": "29b01aab07f2462abc11c3efedaf421000c80e362a0e80ef1b9c08b91227a334",
+      "actual_prompt_tokens": 39262,
+      "prompt_tps": 441.2,
+      "prompt_ms": 88994.0,
+      "placement": [
+        "strata prefill: layer-major candidate, tokens=39261 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=804065280 residual_gpu_rows=32768 residual_gpu=671088640 residual_host=132976640 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592"
+      ],
+      "QSA_arithmetic": [
+        "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=80726784; source=resident-Mode0 score_pitch=32"
+      ],
+      "fresh_faults": [],
+      "normal_native_exit": true
+    },
+    {
+      "arm": "bf16-prefix-optimized",
+      "repetition": 2,
+      "receipt": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-bf16-prefix-optimized-clean-bf16-prefix-optimized-r2-v1.json",
+      "sha256": "6cadfd1635a815847a7f5d60db656e13466c325826cf02bd80727a8fc8f49b64",
+      "binary_sha256": "1468ff56a9aa815c51f2f1cacc8ea99151152862f625d6ee73b5845620fe8066",
+      "source_commit": "81470f58085e64151e05414be168450744c319e0",
+      "request_sha256": "29b01aab07f2462abc11c3efedaf421000c80e362a0e80ef1b9c08b91227a334",
+      "actual_prompt_tokens": 39262,
+      "prompt_tps": 464.5,
+      "prompt_ms": 84518.0,
+      "placement": [
+        "strata prefill: layer-major candidate, tokens=39261 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=804065280 residual_gpu_rows=32768 residual_gpu=671088640 residual_host=132976640 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592"
+      ],
+      "QSA_arithmetic": [
+        "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=80726784; source=resident-Mode0 score_pitch=33"
+      ],
+      "fresh_faults": [],
+      "normal_native_exit": true
+    }
+  ],
+  "statistics": {
+    "bf16-prefix": {
+      "independent_processes": 3,
+      "individual_prompt_tps": [
+        445.7,
+        446.7,
+        441.2
+      ],
+      "median_tps": 445.7,
+      "min_tps": 441.2,
+      "max_tps": 446.7,
+      "mean_tps": 444.5333333333333,
+      "sample_sd_tps": 2.9297326385411577,
+      "individual_prompt_ms": [
+        88086.8,
+        87902.1,
+        88994.0
+      ],
+      "median_prompt_ms": 88086.8
+    },
+    "bf16-prefix-optimized": {
+      "independent_processes": 3,
+      "individual_prompt_tps": [
+        463.4,
+        464.1,
+        464.5
+      ],
+      "median_tps": 464.1,
+      "min_tps": 463.4,
+      "max_tps": 464.5,
+      "mean_tps": 464.0,
+      "sample_sd_tps": 0.5567764362830165,
+      "individual_prompt_ms": [
+        84719.9,
+        84598.4,
+        84518.0
+      ],
+      "median_prompt_ms": 84598.4
+    }
+  },
+  "full_model_262144_qualified": false,
+  "RESTORE_qualified": false,
+  "general_quality_qualified": false,
+  "decode_performance_qualified": false,
+  "scope": "Officialbench39K thinkingON/24output cap, independent fresh processes, same engine/context65536/chunk8192/GPU32768+RAM residuals, BF16 tensor/FP32 online-state contract unchanged. Not a long decode benchmark or task-quality test.",
+  "throughput_gain_percent": 4.128337446713037,
+  "prompt_latency_reduction_percent": 3.9601847268830426,
+  "decision": "Prefer optimized score33 for this qualified dedicated Mode0 workload",
+  "prefill600_milestone_reached": false
+}

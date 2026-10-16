@@ -1,0 +1,175 @@
+{
+  "passed": true,
+  "complete": true,
+  "GPU_executed": false,
+  "active": false,
+  "build_receipt": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-bf16-prefix-optimized-engine-build-v1.json",
+    "sha256": "29411a04ac2b0b14084fe689db4e0e98d3070633a63df2d90ab083fe0707ba39",
+    "bytes": 808379
+  },
+  "probe": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/qsa_prefix_matrix_layout_contract_v1.cpp",
+    "sha256": "caa0b836d33780e136875ca4fb345454be9d60af4908f0b5f5ccd2ea1b580a70",
+    "bytes": 891
+  },
+  "controller": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/check_qsa_prefix_matrix_layout_contract_v1.py",
+    "sha256": "112d1e2b124851ad42aa328807f8aa20e9f2afeb42a8f9b585759dc8918fd718",
+    "bytes": 3094
+  },
+  "commands": [
+    {
+      "label": "layout-assertions",
+      "argv": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-std=c++20",
+        "-O3",
+        "-DNDEBUG",
+        "-DSTRATA_ENABLE_SYCL=1",
+        "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+        "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fsycl",
+        "-fsycl-id-queries-range=size_t",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsyntax-only",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/qsa_prefix_matrix_layout_contract_v1.cpp"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "GIT_TERMINAL_PROMPT": "0",
+        "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+        "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+        "PYTHONPATH": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/niko-service-test-deps-v1:/home/yayoi/orca/workspaces/Strata/sycl/tools:/home/yayoi/orca/workspaces/Strata/sycl",
+        "PIP_CONFIG_FILE": "/dev/null",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-bf16-prefix-optimized-engine-build-v1/cache",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-bf16-prefix-optimized-engine-build-v1/tmp"
+      },
+      "started_utc": "2026-10-16T17:10:18.935560+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3177448,
+          "start_ticks": 51938305,
+          "sid": 3177448,
+          "pgid": 3177448
+        },
+        {
+          "pid": 3177451,
+          "start_ticks": 51938306,
+          "sid": 3177448,
+          "pgid": 3177448
+        },
+        {
+          "pid": 3177551,
+          "start_ticks": 51938622,
+          "sid": 3177448,
+          "pgid": 3177448
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 519383.057299661,
+      "pid": 3177448,
+      "spawn_return_monotonic": 519383.060604046,
+      "direct_identity": {
+        "pid": 3177448,
+        "state": "R",
+        "ppid": 3177221,
+        "pgid": 3177448,
+        "sid": 3177448,
+        "start_ticks": 51938305,
+        "rss_bytes": 454656
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 327614464,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T17:10:25.149987+00:00",
+      "elapsed_seconds": 6.213983621972147,
+      "logs": {
+        "layout-assertions.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "layout-assertions.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "scope": "Exact current production template instantiations: BF16sizeof2; Q/KV/P standard layout,trivially copyable,align>=4,memberoffset0/mod4,exactarraybytes; both host/device syntax compilation. Not IGC codegen, runtime address observation, speed or full-context/RESTORE.",
+  "argv": [
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+    "-std=c++20",
+    "-O3",
+    "-DNDEBUG",
+    "-DSTRATA_ENABLE_SYCL=1",
+    "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+    "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-fsycl",
+    "-fsycl-id-queries-range=size_t",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-fsyntax-only",
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/qsa_prefix_matrix_layout_contract_v1.cpp"
+  ],
+  "environment": {
+    "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+    "OMP_NUM_THREADS": "1",
+    "GIT_TERMINAL_PROMPT": "0",
+    "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+    "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+    "PYTHONPATH": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/niko-service-test-deps-v1:/home/yayoi/orca/workspaces/Strata/sycl/tools:/home/yayoi/orca/workspaces/Strata/sycl",
+    "PIP_CONFIG_FILE": "/dev/null",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+    "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+    "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-bf16-prefix-optimized-engine-build-v1/cache",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-bf16-prefix-optimized-engine-build-v1/tmp"
+  },
+  "stdout": "",
+  "stderr": "",
+  "ownership_closed": true
+}

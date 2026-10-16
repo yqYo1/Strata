@@ -1,0 +1,74 @@
+{
+  "schema": "strata-parallel-probability-boundary-v1",
+  "previous_goal_turn_classification": "progress",
+  "previous_turn_evidence": "Completed and committed actual39K clean9process cohort with445.4 median; current resource profile; rejected16.33%-slower coalesced K, default updated through PR21. This changed the next experiment.",
+  "source_base": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_bf16_prefix.cpp",
+    "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_bf16_prefix.cpp",
+    "bytes": 14044,
+    "sha256": "b55684754231c007877e967375f721cf4d88746b698d2a7a9811d2bcdf578081"
+  },
+  "source_diff": "--- a/src/kernels/sycl/qsa_bf16_prefix.cpp\n+++ b/src/kernels/sycl/qsa_bf16_prefix.cpp\n@@ -199,16 +199,24 @@\n             if (sycl::isfinite(score)) m = sycl::fmax(m, score);\n           }\n           const float a = normalizer[tid] > 0.f ? sycl::exp2(maximum[tid] - m) : 0.f;\n+          maximum[tid] = m; alpha[tid] = a;\n+        }\n+        // All row maxima must be consumed before reusing scores as FP32 p.\n+        item.barrier(sycl::access::fence_space::local_space);\n+        for (int i = tid; i < 16 * Cells; i += Workgroup) {\n+          const int head = i / Cells, cell = i % Cells;\n+          const float score = scores[i];\n+          const float p = rows[cell] >= 0 && sycl::isfinite(score)\n+              ? sycl::exp2(score - maximum[head]) : 0.f;\n+          scores[i] = p;\n+          probability[i] = BFloat(p);\n+        }\n+        item.barrier(sycl::access::fence_space::local_space);\n+        if (tid < 16) {\n+          // Preserve the original FP32 sum order and one explicit fma/update.\n           float sum = 0.f;\n-          for (int c = 0; c < Cells; ++c) {\n-            const float score = scores[tid * Cells + c];\n-            const float p = rows[c] >= 0 && sycl::isfinite(score)\n-                ? sycl::exp2(score - m) : 0.f;\n-            sum += p;\n-            probability[tid * Cells + c] = BFloat(p);\n-          }\n-          maximum[tid] = m; alpha[tid] = a;\n-          normalizer[tid] = sycl::fma(normalizer[tid], a, sum);\n+          for (int c = 0; c < Cells; ++c) sum += scores[tid * Cells + c];\n+          normalizer[tid] = sycl::fma(normalizer[tid], alpha[tid], sum);\n         }\n         for (int i = tid; i < Cells * Dim; i += Workgroup) {\n           const int cell = i / Dim, d = i % Dim;\n",
+  "candidate_source": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-bf16-prefix-parallel-probability-build-v1/qsa_bf16_prefix_parallel_probability.cpp",
+    "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-bf16-prefix-parallel-probability-build-v1/qsa_bf16_prefix_parallel_probability.cpp",
+    "bytes": 14492,
+    "sha256": "7f715b2214f85cfc052b7bf28e527b264d10089ec8b479f015db46ff2ad6a8d9"
+  },
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-bf16-prefix-parallel-probability-build-v1/sycl_qsa_bf16_prefix_parallel_probability",
+    "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-bf16-prefix-parallel-probability-build-v1/sycl_qsa_bf16_prefix_parallel_probability",
+    "bytes": 950736,
+    "sha256": "61c90bf7e4bc8959d3cc516bbc06da3614e6a6511379a3fcc8ffb1f9224d8e4a"
+  },
+  "build_receipt": "own-qsa-bf16-prefix-parallel-probability-build-v1.json",
+  "traced_smoke": "own-qsa-bf16-prefix-parallel-probability-smoke-v1.json",
+  "traced_component": "own-qsa-bf16-prefix-parallel-probability-component-v1.json",
+  "component_cases": 11,
+  "component_UR_kernel_submissions": 60,
+  "component_physical_KV_cells": 262144,
+  "faults": [],
+  "ownership_closed": true,
+  "production_changed": false,
+  "precision": "Same BF16 operands/P/output and FP32 accumulation/online state. Same max scan, exp2 arguments,32value sequential sum and fma update; only p element work moves across128 threads with two extra uniform local barriers. No CPU tensor math added. Source equality is not runtime qualification by itself.",
+  "speed_qualified": false,
+  "full_model_physical256K_qualified": false,
+  "RESTORE_qualified": false,
+  "next": "Evaluate independent FP32 score pitch32 versus33, then combine only supported variants and qualify full-engine integration/official32K+ clean runs. No600/1000 milestone or full256K/RESTORE claim.",
+  "timing": {
+    "status": "CLOSED_COMPONENT_GAIN",
+    "cohort": "qsa-bf16-prefix-probability-cohort-v1.json",
+    "sha256": "05866b8721bcd2dcb1788e47232b2c3ac52f84ccec26fe5ea2a96bae02ee6741",
+    "statistics": {
+      "base": {
+        "independent_processes": 3,
+        "process_medians_ms": [
+          390.7248495,
+          390.81101850000005,
+          390.7874015
+        ],
+        "median_ms": 390.7874015,
+        "mean_ms": 390.7744231666667,
+        "sample_sd_ms": 0.04452641903785434,
+        "min_ms": 390.7248495,
+        "max_ms": 390.81101850000005
+      },
+      "parallel": {
+        "independent_processes": 3,
+        "process_medians_ms": [
+          351.97608,
+          351.9238325,
+          351.9877495
+        ],
+        "median_ms": 351.97608,
+        "mean_ms": 351.962554,
+        "sample_sd_ms": 0.034037629606809845,
+        "min_ms": 351.9238325,
+        "max_ms": 351.9877495
+      }
+    },
+    "latency_ratio": 0.9006843072447412,
+    "latency_reduction_percent": 9.931569275525876,
+    "whole_model_gain_qualified": false
+  }
+}

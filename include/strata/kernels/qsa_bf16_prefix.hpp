@@ -16,5 +16,10 @@ bool qsa_bf16_prefix_batch(const uint16_t *q, const QsaAttnPools &pools,
     const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
     uint16_t *out, int64_t queries, const QsaPromptBf16Bounds &bounds,
     int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream);
+// Same arithmetic and update order, FP32 score row pitch33 (+64 local bytes).
+bool qsa_bf16_prefix_optimized_batch(const uint16_t *q, const QsaAttnPools &pools,
+    const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
+    uint16_t *out, int64_t queries, const QsaPromptBf16Bounds &bounds,
+    int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream);
 } // namespace strata::kernels
 #endif

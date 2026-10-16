@@ -1,0 +1,302 @@
+{
+  "round": 949,
+  "review_date": "2026-10-17",
+  "reviewer": "native Codex gpt-6-luna",
+  "reasoning_effort": "max",
+  "reviewed_rounds": [
+    948
+  ],
+  "decision": "accepted_with_caveats",
+  "scope": "Review the completed R948 decision-support report for scope, depth, novelty, source provenance, local applicability and lifecycle disposition. Main has not read the report body. No product/index/controller edit or implementation/measurement action was made.",
+  "source_pins": {
+    "round948_report": {
+      "path": "research-round948-v1.txt",
+      "classification": "decision_support",
+      "sha256_expected": "9a80f69764b6a782ccf764ba2acbc340e54ac93333f31f12f9504dc21612381c",
+      "sha256_verified": "9a80f69764b6a782ccf764ba2acbc340e54ac93333f31f12f9504dc21612381c",
+      "hash_matches": true,
+      "report_bytes": 11272,
+      "word_count_whitespace_delimited": 1477,
+      "budget_words": {
+        "minimum": 1000,
+        "maximum": 1600
+      },
+      "maximum_bytes": 24576
+    },
+    "local_source": {
+      "path": "src/kernels/sycl/qsa_bf16_prefix.cpp",
+      "sha256_reported": "b55684754231c007877e967375f721cf4d88746b698d2a7a9811d2bcdf578081",
+      "sha256_verified": "b55684754231c007877e967375f721cf4d88746b698d2a7a9811d2bcdf578081",
+      "hash_matches": true,
+      "applicability": "The hash-pinned file is a diagnostic kernel source. Its header says “No production caller” (line 4); the pitch proposal applies to this component source only until the real production caller and configured SYCL entrypoint are traced."
+    },
+    "research_index": {
+      "path": "research-index.json",
+      "sha256": "36916bc88bbd758ce5b7548efdc35f8944a89a3b81ca8a0eb8b2616f5746a2d4",
+      "index_edited": false
+    },
+    "prior_review": {
+      "path": "research-review-round947-v1.json",
+      "sha256": "431bb6f441323391ae0244e23cd0b086ad355ee293bf797a6832cddeef7bd823",
+      "digest_path": "research-review-round947-v1.ja.md",
+      "digest_sha256": "6ac912739b4cf221616167259fc51cff74f83d48f57a7a787732729e8dd31979"
+    }
+  },
+  "lifecycle_disposition": {
+    "requested_model": "gpt-6-luna",
+    "observed_model_screen": "GPT-6-Luna xhigh",
+    "initial_launch": {
+      "path": "orca-research-round948-launch-v1.json",
+      "sha256": "cdf4f92f0b53cb74eaf2fbe5790749a8cfc1489bb888b430a026e0e4feebcacd",
+      "state": "failed at agent_readiness; CLI exit 1; error agent-update-prompt",
+      "release_path": "orca-research-round948-release-v1.json",
+      "release_sha256": "2ecc7d2244a20f623f75267e4294d75951d12f8cd1798287065e6f84941b10f7",
+      "release_state": "released; terminal closed; archive captured"
+    },
+    "main_created_terminal": {
+      "create_path": "orca-research-round948-terminal-create-v1.json",
+      "create_sha256": "14d5714c1c62fa6201502ed72681e60df04b005376a0ab26e3aaa4a852c432fb",
+      "ready_path": "orca-research-round948-terminal-ready-v1.json",
+      "ready_sha256": "6948334539ca01fd3d7eb31ffacc11a8b020e406a03714bffd2ba25d024c861b",
+      "model_observation_path": "orca-research-round948-model-observed-v1.json",
+      "model_observation_sha256": "d9bcc4a74e5d16e243fcf409d214e5cb624cb5935ff3c233f2ee13154fb9becc",
+      "model_observation": "Actual startup screen showed GPT-6-Luna xhigh; user/project config hashes matched and no update/package change was observed."
+    },
+    "retry": {
+      "path": "orca-research-round948-retry-launch-v1.json",
+      "sha256": "0c3e9e9904eb207ccb827f8d1f746e36fad1487bbb63efeff78d88bef546bc21",
+      "dispatch_id": "ctx_50ab161c3c58",
+      "state": "ready/input_accepted; turnStart observed"
+    },
+    "final_proof": {
+      "path": "orca-research-round948-final-proof-v1.json",
+      "sha256": "9bb69693bddc875d4b68014d2ad3202131b4089f62cd7ab349ea003f6bcdf61c",
+      "technical_report_complete": true,
+      "worker_done_confirmed": false,
+      "evidence": "The exact final transcript says the report was completed, but worker_done could not be confirmed because the Orca runtime was unavailable and its CLI call hung. Do not synthesize a successful worker_done or ACK."
+    },
+    "fenced_dispatch": {
+      "path": "orca-research-round948-fenced-v1.json",
+      "sha256": "63f79045efcb91a0e3b5a1bff42f1e53f5bbdfcd61111bbcc24b8bde4f0605c2",
+      "state": "abandoned; no process stopped or deleted"
+    },
+    "owned_terminal_close": {
+      "path": "orca-research-round948-owned-terminal-close-v1.json",
+      "sha256": "c5ad94946e0b4de4218c02750156e2333eaca22d8498aeb109b9553af080e5c3",
+      "state": "Main-created exact terminal closed after matching incarnation and idle proof"
+    },
+    "content_vs_delivery": "The report exists, its hash matches, and its technical completeness is supported by the transcript. The worker delivery lifecycle remained unconfirmed and was fenced as abandoned. Index these as separate content and lifecycle facts."
+  },
+  "scope_depth_novelty": {
+    "assessment": "The 1,477-word report answers one finite question: scalar FP32 score staging for a 16x32 logical tile. It traces matrix-apply writes and scalar max/sum reads, contrasts pitch32 control with pitch33 padding and two alternative maps, preserves BF16 Q/K/V/P, FP32 accumulation/online state and reduction/update order, and gives bounded opposite-outcome decision rules.",
+    "novelty": "This is distinct from R568 head-tile/SLM work and R945/R947 adjacent-query union and N64 staging. The prior review/index record no local score-pitch measurement or adoption; R948 isolates only the scalar score address map.",
+    "depth": "Good for decision support: alternatives include mapping/bijection, producer and consumer implications, resource cost, numerical boundaries, measurement plan, source provenance and counterevidence. The public-source gap is explicitly stated.",
+    "source_contract": "The report correctly treats score SLM bank arithmetic as conditional on a simple interleave model, not a measured B570 bank map. It does not attribute the existing nonexclusive profile to SLM conflicts or claim occupancy/XMX/VRAM saturation."
+  },
+  "source_and_provenance_checks": {
+    "local_source_check": {
+      "path": "src/kernels/sycl/qsa_bf16_prefix.cpp",
+      "check": "Source hash matches R948. It declares scores as scalar local_accessor<float,1>, writes matrix-apply coordinates into that array, and reads rows for sequential max/sum. Matrix load operands are BF16 qtile/kv and probability/kv. The header’s “No production caller” statement limits applicability to a diagnostic component.",
+      "logical_payload": "Source declares 28,160 bytes and a +4,096-byte device-local-memory admission margin. Pitch33 would add 64 logical bytes to 28,224; physical allocation rounding and device admission remain unknown.",
+      "measurement_boundary": "Main supplied that its pitch33-only 6-process comparison is active and must not be consumed partially. Main’s 11 structural/numerical cases, including the physical 262,144-context cases, passed; those results do not establish speed. The suggested five-process-per-arm plan is superseded while that same candidate comparison runs.",
+      "matrix_alignment_limit": "Matrix extension requires matrix-load/store base pointers to be 4-byte aligned. Source offsets and element strides are multiples of 4/8 bytes, but the source/spec citations do not alone prove each local_accessor<BFloat> base pointer alignment; retain this implementation-level check. This does not change the score-only candidate mapping."
+    },
+    "external_spot_checks": [
+      {
+        "source": "Intel oneAPI GPU Optimization Guide 2025.2, Shared Local Memory",
+        "url": "https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2025-2/shared-local-memory.html",
+        "result": "States bank count is device-dependent and says 64 consecutive bytes map to 16 consecutive 4-byte banks “at the time of writing.” It provides no B570/Xe2 bank address hash."
+      },
+      {
+        "source": "Intel Arc B570 specifications",
+        "url": "https://www.intel.com/content/www/us/en/products/sku/241676/intel-arc-b570-graphics/specifications.html",
+        "result": "Identifies B570 as Xe2/Battlemage; no SLM bank geometry."
+      },
+      {
+        "source": "Intel oneAPI GPU Optimization Guide 2025.2, Intel XMX joint_matrix",
+        "url": "https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2025-2/programming-intel-xmx-using-sycl-joint-matrix.html",
+        "result": "Describes coordinate-aware joint_matrix_apply and subgroup collective usage; this supports callback API context, not its physical lane/store issue order."
+      },
+      {
+        "source": "Intel LLVM experimental joint_matrix specification at nightly-2026-09-27",
+        "url": "https://github.com/intel/llvm/blob/nightly-2026-09-27/sycl/doc/extensions/experimental/sycl_ext_matrix/sycl_ext_oneapi_matrix.asciidoc",
+        "result": "Lists BMG G21 BF16 A/B to FP32 accumulator shapes including 8x16x16; requires matrix load/store stride bytes to be a multiple of 8 and base pointer alignment of 4 bytes. These restrictions apply to matrix operands, not the scalar scores local_accessor."
+      },
+      {
+        "source": "Khronos SYCL 2020 specification, local_accessor",
+        "url": "https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html",
+        "result": "Defines per-work-group local memory and element indexing, not a physical SLM bank map. The cited HTML is the live SYCL 2020 page and should be revision-pinned if reused as frozen evidence."
+      },
+      {
+        "source": "Intel OpenCL graphics memory guide 2019.4",
+        "url": "https://www.intel.com/content/www/us/en/docs/opencl-sdk/developer-guide-processor-graphics/2019-4/memory-hierarchy.html",
+        "result": "The cited 16-bank/4-byte organization is explicitly scoped to Gen7.5; it does not establish Xe2 layout."
+      },
+      {
+        "source": "Intel Gen12LP SLM walkthrough",
+        "url": "https://www.intel.com/content/www/us/en/developer/articles/technical/iso3dfd-code-walkthrough.html",
+        "result": "Describes Gen12LP banking improvements over Gen9, counterevidence to carrying a fixed old-generation bank model forward."
+      },
+      {
+        "source": "Intel oneAPI GPU Optimization Guide 2025.2, occupancy",
+        "url": "https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2025-2/thread-mapping-and-gpu-occupancy.html",
+        "result": "Discusses resource rounding and SLM/register occupancy tradeoffs; numerical allocation buckets cited are for Data Center GPU Max 1550 and cannot be applied to B570."
+      }
+    ],
+    "excluded_material": "No XeStrata project source, helpers, diagnostics, tests, archives or proposals were opened or used. The implementation/design context is the local MIT Strata source plus Intel/Khronos primary references; no implementation code was copied."
+  },
+  "operational_corrections": [
+    {
+      "id": "R948-C1",
+      "type": "source_applicability",
+      "correction": "R948 calls qsa_bf16_prefix.cpp the production source/current path. Its header says “No production caller.” Treat the report as guidance for the diagnostic kernel/component only; trace the configured build’s actual production caller before making production performance or adoption claims."
+    },
+    {
+      "id": "R948-C2",
+      "type": "compiler_cost",
+      "correction": "The statement that pitch33 has “no extra arithmetic in the addressing expressions” is not established. Row pitch 33 can change index arithmetic and lowering versus pitch32. Compare generated code or compiler reports before treating address cost as unchanged."
+    },
+    {
+      "id": "R948-C3",
+      "type": "experiment_lifecycle",
+      "correction": "The proposed five-process-per-arm score-pitch comparison is redundant while Main’s clean six-process pitch33 comparison is active. Do not consume partial timings or duplicate the cohort. After closure, only repeat or expand if the result leaves a concrete question."
+    },
+    {
+      "id": "R948-C4",
+      "type": "resource_estimate",
+      "correction": "28,224 bytes is the pitch33 logical payload estimate after adding 64 bytes to the source’s 28,160; it is not a B570 allocation, occupancy, admission or performance result. Account for the source guard’s +64 logical bytes, then verify actual device/compiler behavior."
+    },
+    {
+      "id": "R948-C5",
+      "type": "measurement_attribution",
+      "correction": "The supplied 89.2009-second wrapper and 21.5123-second attention-plus-prefixpack intervals are nonexclusive and lack PMU/physical VRAM/PCIe/XMX/SLM-counter evidence. Treat any pitch benefit as a component measurement, not a bank-conflict or whole-prefill attribution."
+    },
+    {
+      "id": "R948-C6",
+      "type": "matrix_operand_alignment",
+      "correction": "The reported matrix operand offsets and byte strides meet their multiples, but the 4-byte base-pointer requirement is separate. The local source does not explicitly establish the local_accessor<BFloat> base alignment; retain compiler/runtime confirmation before treating operand alignment as source-proven. This is orthogonal to the score-only pitch experiment."
+    },
+    {
+      "id": "R948-C7",
+      "type": "citation_pin",
+      "correction": "The cited Khronos sycl-2020.html URL is a live page that currently serves revision 12, not an immutable revision URL. The local_accessor claim is supported, but pin the revision when this source is retrieved as frozen evidence."
+    }
+  ],
+  "content_disposition": {
+    "round948": "Accepted with caveats as decision support for a diagnostic score-layout experiment. It is not an implementation, measurement result, production-path qualification, numerical adoption, or long-prefill milestone.",
+    "delivery": "Technical report complete and hash-verified; worker_done was not confirmed, and dispatch lifecycle is abandoned/fenced."
+  },
+  "retrieval": {
+    "needed_now": false,
+    "hold_body_until_trigger": true,
+    "main_body_read": false,
+    "reviewer_report_body_read": true,
+    "sections": [
+      "Current score producer/consumer mapping",
+      "Pitch33 and alternative layout tradeoffs",
+      "B570 evidence limits and bounded experiment"
+    ],
+    "keys": [
+      "Pitch33 is a 64-byte logical padding hypothesis, not a known B570 bank optimization.",
+      "All arithmetic/rounding order is preserved only when producer and consumer use the same bijective address map.",
+      "No production caller is recorded for this file; do not transfer diagnostic timing to the product path.",
+      "The current Main-owned pitch33 comparison is still active; no interim result is usable."
+    ],
+    "retrieve_when": "After Main’s active clean pitch33 comparison closes, if it leaves a concrete score-layout, compiler-lowering or production-caller applicability question. Trace the actual production caller before any production performance decision."
+  },
+  "next_scope_eligibility": {
+    "recommended_now": false,
+    "schedulable_now": false,
+    "prerequisites_rechecked": true,
+    "dispatch_performed": false,
+    "current_evidence": [
+      "Main’s clean six-process pitch33 comparison is active; partial timings are explicitly unavailable for review.",
+      "The Main-supplied 11 structural/numerical cases pass, but no candidate speed result is complete.",
+      "Intel primary sources establish API/resource context but do not disclose a B570/Xe2 SLM bank hash; source-only research cannot establish the missing device behavior.",
+      "The pinned kernel has no production caller in its header, so production-path relevance still requires a Main-owned entrypoint trace."
+    ],
+    "prerequisites": [
+      {
+        "requirement": "Close the Main-owned same-input pitch33 comparison with correctness and per-process samples; do not use its active partial timings.",
+        "evidence": "Current comparison is active; no final result supplied."
+      },
+      {
+        "requirement": "Trace the configured SYCL production entrypoint before claiming product-path applicability.",
+        "evidence": "The pinned kernel header says “No production caller.”"
+      },
+      {
+        "requirement": "Only dispatch a fresh hardware-source question if compiler/device evidence leaves a finite external question beyond the current report.",
+        "evidence": "No B570 SLM bank counters or compiler-lowering evidence supplied; measurement and source tracing are Main-owned prerequisites."
+      }
+    ],
+    "reason": "Main-owned measurement and source tracing remain the next actions. A new research dispatch now would be premature and could only repeat the known public-source limit."
+  },
+  "proposed_index_entries": {
+    "edit_index": false,
+    "report_entries": [
+      {
+        "round": 948,
+        "model": "gpt-6-luna",
+        "classification": "decision_support",
+        "path": "research-round948-v1.txt",
+        "sha256": "9a80f69764b6a782ccf764ba2acbc340e54ac93333f31f12f9504dc21612381c",
+        "review_path": "research-review-round949-v1.json",
+        "operational_digest_path": "research-review-round949-v1.ja.md",
+        "operational_digest_sha256": "8aab26a4daa438eaacd235c55f2a6ee75ee4f18825d9bf5307e7dd9f184d66c6",
+        "main_body_read": false,
+        "reviewer_report_body_read": true,
+        "status": "Accepted with source-applicability, operand-alignment and codegen caveats; diagnostic score-layout hypothesis only; no speed/adoption result. Technical report exists, but worker_done is unconfirmed and dispatch lifecycle is abandoned.",
+        "retrieval_trigger": "After the active Main comparison closes, if a concrete score-layout/compiler-lowering issue remains; trace the actual production caller before transferring conclusions.",
+        "schedulable_now": false
+      }
+    ],
+    "review_key": {
+      "research_review_round949": {
+        "review_path": "research-review-round949-v1.json",
+        "operational_digest_path": "research-review-round949-v1.ja.md",
+        "operational_digest_sha256": "8aab26a4daa438eaacd235c55f2a6ee75ee4f18825d9bf5307e7dd9f184d66c6",
+        "report_sha256": "9a80f69764b6a782ccf764ba2acbc340e54ac93333f31f12f9504dc21612381c",
+        "main_body_read": false,
+        "reviewer_report_body_read": true,
+        "status": "R948 accepted with caveats; content status and abandoned/unconfirmed delivery lifecycle recorded separately.",
+        "schedulable_now": false,
+        "correction_ids": [
+          "R948-C1",
+          "R948-C2",
+          "R948-C3",
+          "R948-C4",
+          "R948-C5",
+          "R948-C6",
+          "R948-C7"
+        ]
+      }
+    }
+  },
+  "artifact_policy": {
+    "files_read": [
+      "AGENTS.md",
+      "bench/results/2026-10-15-pr6-recovery-audit/research-round948-v1.txt",
+      "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+      "bench/results/2026-10-15-pr6-recovery-audit/research-review-round947-v1.json",
+      "bench/results/2026-10-15-pr6-recovery-audit/research-review-round947-v1.ja.md",
+      "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round948-spec-v1.txt",
+      "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round948-launch-v1.json",
+      "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round948-release-v1.json",
+      "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round948-terminal-create-v1.json",
+      "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round948-terminal-ready-v1.json",
+      "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round948-model-observed-v1.json",
+      "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round948-retry-launch-v1.json",
+      "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round948-final-proof-v1.json",
+      "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round948-fenced-v1.json",
+      "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round948-owned-terminal-close-v1.json",
+      "src/kernels/sycl/qsa_bf16_prefix.cpp"
+    ],
+    "external_sources": [
+      "Intel SLM guide and B570 specifications",
+      "Intel joint_matrix guide and pinned Intel LLVM extension specification",
+      "Khronos SYCL 2020 specification",
+      "Intel Gen7.5 memory guide, Gen12LP walkthrough, and occupancy guide"
+    ],
+    "actions": "Read-only report, local-source, index, review, lifecycle and cited-public-source review; verified local hashes; wrote only research-review-round949-v1.json and research-review-round949-v1.ja.md. No Git, builds, tests, GPU/profiler/process work, Orca actions, cleanup, controller edits, source edits, or index edits."
+  }
+}
