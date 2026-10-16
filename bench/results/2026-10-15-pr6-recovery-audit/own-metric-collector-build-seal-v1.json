@@ -1,0 +1,325 @@
+{
+  "schema": "strata-pti-query-build-v2",
+  "mode": "build",
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "ownership_closed": true,
+  "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "reviewed_package_sha256": "1816ff99b174030b6586283fde10f28f49afb3eca008a72de7a5b3e118167cff",
+  "binary_candidate": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-build-v5/build/libunitrace_tool.so",
+    "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-build-v5/build/libunitrace_tool.so",
+    "bytes": 4238768,
+    "sha256": "9f6b0497322af26a85e5f916404f6a257ba6e687917deb21e665723062afb21c"
+  },
+  "source_receipt": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-collector-source-seal-v1.json",
+    "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-collector-source-seal-v1.json",
+    "bytes": 3695,
+    "sha256": "a32cc2c5fc4f038187bec31d9fb3daa159d814e26d3be6bfa4f255c6559e3587"
+  },
+  "toolchain_inputs": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-collector-toolchain-inputs-v1.json",
+    "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-collector-toolchain-inputs-v1.json",
+    "bytes": 158483,
+    "sha256": "c2d92d5215fb5f99c4f0f7a49c22584d6c6d1694e3ca6fe4e7978e5dfb494380"
+  },
+  "recipe": [
+    [
+      "/usr/bin/cmake",
+      "-S",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-source-v1/src/tools/unitrace",
+      "-B",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-build-v5/build",
+      "-G",
+      "Ninja",
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+      "-DCMAKE_C_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang",
+      "-DONEAPI_COMPILER_HOME=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install",
+      "-DBUILD_WITH_MPI=0",
+      "-DBUILD_WITH_ITT=0",
+      "-DBUILD_WITH_OMP=0",
+      "-DBUILD_WITH_OPENCL=0",
+      "-DBUILD_WITH_L0=1",
+      "-DBUILD_WITH_PERFETTO=OFF",
+      "-DBUILD_WITH_XPTI=1",
+      "-DXptifw_LIBRARY=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libxptifw.so.1.0.1",
+      "-DXptifw_INCLUDE_DIR=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+      "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+    ],
+    [
+      "/usr/bin/cmake",
+      "--build",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-build-v5/build",
+      "--parallel",
+      "2"
+    ]
+  ],
+  "commands": [
+    {
+      "label": "collector-configure",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-source-v1/src/tools/unitrace",
+        "-B",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-build-v5/build",
+        "-G",
+        "Ninja",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-DCMAKE_C_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang",
+        "-DONEAPI_COMPILER_HOME=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install",
+        "-DBUILD_WITH_MPI=0",
+        "-DBUILD_WITH_ITT=0",
+        "-DBUILD_WITH_OMP=0",
+        "-DBUILD_WITH_OPENCL=0",
+        "-DBUILD_WITH_L0=1",
+        "-DBUILD_WITH_PERFETTO=OFF",
+        "-DBUILD_WITH_XPTI=1",
+        "-DXptifw_LIBRARY=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libxptifw.so.1.0.1",
+        "-DXptifw_INCLUDE_DIR=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-build-v5"
+      },
+      "started_utc": "2026-10-16T08:47:10.223579+00:00",
+      "wall_seconds": 900,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1370738,
+          "start_ticks": 48919434,
+          "sid": 1370738,
+          "pgid": 1370738
+        },
+        {
+          "pid": 1370839,
+          "start_ticks": 48919564,
+          "sid": 1370738,
+          "pgid": 1370738
+        },
+        {
+          "pid": 1370840,
+          "start_ticks": 48919565,
+          "sid": 1370738,
+          "pgid": 1370840
+        },
+        {
+          "pid": 1370841,
+          "start_ticks": 48919565,
+          "sid": 1370738,
+          "pgid": 1370840
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 489194.345716368,
+      "pid": 1370738,
+      "spawn_return_monotonic": 489194.347816743,
+      "direct_identity": {
+        "pid": 1370738,
+        "state": "R",
+        "ppid": 1370684,
+        "pgid": 1370738,
+        "sid": 1370738,
+        "start_ticks": 48919434,
+        "rss_bytes": 454656
+      },
+      "peak_live_owned_identities": 4,
+      "peak_session_rss_bytes": 95850496,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T08:47:12.583290+00:00",
+      "elapsed_seconds": 2.3588466540095396,
+      "logs": {
+        "collector-configure.stdout": {
+          "bytes": 1822,
+          "sha256": "190b7c47c7ef5383900fc47cd934fa40338e6c1e9af8da025f26b3fd2e21b76d"
+        },
+        "collector-configure.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "collector-build",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-build-v5/build",
+        "--parallel",
+        "2"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-build-v5"
+      },
+      "started_utc": "2026-10-16T08:47:13.405673+00:00",
+      "wall_seconds": 900,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1370901,
+          "start_ticks": 48919752,
+          "sid": 1370901,
+          "pgid": 1370901
+        },
+        {
+          "pid": 1370902,
+          "start_ticks": 48919753,
+          "sid": 1370901,
+          "pgid": 1370901
+        },
+        {
+          "pid": 1370914,
+          "start_ticks": 48919760,
+          "sid": 1370901,
+          "pgid": 1370914
+        },
+        {
+          "pid": 1370915,
+          "start_ticks": 48919760,
+          "sid": 1370901,
+          "pgid": 1370914
+        },
+        {
+          "pid": 1370918,
+          "start_ticks": 48919764,
+          "sid": 1370901,
+          "pgid": 1370918
+        },
+        {
+          "pid": 1370919,
+          "start_ticks": 48919764,
+          "sid": 1370901,
+          "pgid": 1370918
+        },
+        {
+          "pid": 1370948,
+          "start_ticks": 48919847,
+          "sid": 1370901,
+          "pgid": 1370948
+        },
+        {
+          "pid": 1370949,
+          "start_ticks": 48919847,
+          "sid": 1370901,
+          "pgid": 1370948
+        },
+        {
+          "pid": 1371041,
+          "start_ticks": 48920072,
+          "sid": 1370901,
+          "pgid": 1371041
+        },
+        {
+          "pid": 1371042,
+          "start_ticks": 48920072,
+          "sid": 1370901,
+          "pgid": 1371042
+        },
+        {
+          "pid": 1371043,
+          "start_ticks": 48920073,
+          "sid": 1370901,
+          "pgid": 1371041
+        },
+        {
+          "pid": 1371044,
+          "start_ticks": 48920073,
+          "sid": 1370901,
+          "pgid": 1371042
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 489197.527841162,
+      "pid": 1370901,
+      "spawn_return_monotonic": 489197.529816271,
+      "direct_identity": {
+        "pid": 1370901,
+        "state": "R",
+        "ppid": 1370684,
+        "pgid": 1370901,
+        "sid": 1370901,
+        "start_ticks": 48919752,
+        "rss_bytes": 618496
+      },
+      "peak_live_owned_identities": 6,
+      "peak_session_rss_bytes": 438050816,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T08:47:54.544396+00:00",
+      "elapsed_seconds": 41.138049593020696,
+      "logs": {
+        "collector-build.stdout": {
+          "bytes": 2721,
+          "sha256": "e9d5f823962895d14104083939a8db0320fe6f257a76b1171cd48ab84ef591b7"
+        },
+        "collector-build.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "compile_commands": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-build-v5/build/compile_commands.json",
+    "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-build-v5/build/compile_commands.json",
+    "bytes": 8102,
+    "sha256": "ca41762fd2ce0ba2ad2a284333803cb8e0538f379fbe57ddec02c7de4b743eac"
+  },
+  "build_log": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-build-v5/owned/collector-build.stdout",
+    "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-build-v5/owned/collector-build.stdout",
+    "bytes": 2721,
+    "sha256": "e9d5f823962895d14104083939a8db0320fe6f257a76b1171cd48ab84ef591b7"
+  },
+  "dependency_inventory": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-collector-compile-proof-v1.json",
+    "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-collector-compile-proof-v1.json",
+    "bytes": 156866,
+    "sha256": "4504acbf5fc1029f365fbf37373a49759ed7201fef9be684b8028a481370f899"
+  },
+  "binary_inspection": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-collector-binary-inspection-v1.json",
+    "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-collector-binary-inspection-v1.json",
+    "bytes": 1841,
+    "sha256": "1253f3c7c277d9a02e832ef42ccd7c8c4c32a81841367bfbb0f826f35d40ba50"
+  },
+  "actual_candidate": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-collector-build-candidate-v5.json",
+    "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-collector-build-candidate-v5.json",
+    "bytes": 50456,
+    "sha256": "725f4d066d72097e4f394f0b11a03a4b6021e911fe179f4e4822325527eecdd1"
+  },
+  "actual_build_reviewed_package_sha256": "a9de0e10438e7249224aacc185b8dec4678596f16b9b92a6efb652c83636980d",
+  "host_admission_only_reviewed_v4": true,
+  "generated_inputs_captured_during_build": true,
+  "GPU_executed": false,
+  "launcher_executed": false
+}

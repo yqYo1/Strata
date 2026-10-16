@@ -1,0 +1,182 @@
+[
+  {
+    "original_line": 95,
+    "api": "zetMetricQueryDestroy",
+    "site": "query-destroy",
+    "original_call": "ZE_FUNC(zetMetricQueryDestroy)(it->first)"
+  },
+  {
+    "original_line": 103,
+    "api": "zetMetricQueryPoolDestroy",
+    "site": "pool-destroy",
+    "original_call": "ZE_FUNC(zetMetricQueryPoolDestroy)(*it)"
+  },
+  {
+    "original_line": 128,
+    "api": "zetMetricQueryPoolCreate",
+    "site": "pool-create",
+    "original_call": "ZE_FUNC(zetMetricQueryPoolCreate)(context, device, group, &desc, &pool)"
+  },
+  {
+    "original_line": 137,
+    "api": "zetMetricQueryCreate",
+    "site": "query-create",
+    "original_call": "ZE_FUNC(zetMetricQueryCreate)(pool, i, &query)"
+  },
+  {
+    "original_line": 145,
+    "api": "zetMetricQueryCreate",
+    "site": "query-create",
+    "original_call": "ZE_FUNC(zetMetricQueryCreate)(pool, pool_size_ - 1, &query)"
+  },
+  {
+    "original_line": 161,
+    "api": "zetMetricQueryPoolCreate",
+    "site": "pool-create",
+    "original_call": "ZE_FUNC(zetMetricQueryPoolCreate)(context, device, group, &desc, &pool)"
+  },
+  {
+    "original_line": 169,
+    "api": "zetMetricQueryCreate",
+    "site": "query-create",
+    "original_call": "ZE_FUNC(zetMetricQueryCreate)(pool, i, &query)"
+  },
+  {
+    "original_line": 177,
+    "api": "zetMetricQueryCreate",
+    "site": "query-create",
+    "original_call": "ZE_FUNC(zetMetricQueryCreate)(pool, pool_size_ - 1, &query)"
+  },
+  {
+    "original_line": 215,
+    "api": "zetMetricQueryReset",
+    "site": "query-reset",
+    "original_call": "ZE_FUNC(zetMetricQueryReset)(query)"
+  },
+  {
+    "original_line": 1443,
+    "api": "zetContextActivateMetricGroups",
+    "site": "deactivate",
+    "original_call": "ZE_FUNC(zetContextActivateMetricGroups)(it->first, it->second, 0, nullptr)"
+  },
+  {
+    "original_line": 1454,
+    "api": "zeContextDestroy",
+    "site": "context-destroy",
+    "original_call": "ZE_FUNC(zeContextDestroy)(context)"
+  },
+  {
+    "original_line": 1940,
+    "api": "zeContextCreate",
+    "site": "context-create",
+    "original_call": "ZE_FUNC(zeContextCreate)(driver, &cdesc, &context)"
+  },
+  {
+    "original_line": 2004,
+    "api": "zetMetricGroupGet",
+    "site": "group-count",
+    "original_call": "ZE_FUNC(zetMetricGroupGet)(device, &num_groups, nullptr)"
+  },
+  {
+    "original_line": 2011,
+    "api": "zetMetricGroupGet",
+    "site": "group-list",
+    "original_call": "ZE_FUNC(zetMetricGroupGet)(device, &num_groups, groups.data())"
+  },
+  {
+    "original_line": 2020,
+    "api": "zetMetricGroupGetProperties",
+    "site": "group-properties",
+    "original_call": "ZE_FUNC(zetMetricGroupGetProperties)(groups[k], &group_props)"
+  },
+  {
+    "original_line": 2042,
+    "api": "zetContextActivateMetricGroups",
+    "site": "activate",
+    "original_call": "ZE_FUNC(zetContextActivateMetricGroups)(context, device, 1, &group)"
+  },
+  {
+    "original_line": 2236,
+    "api": "zetMetricGroupGetProperties",
+    "site": "schema-group",
+    "original_call": "ZE_FUNC(zetMetricGroupGetProperties)(group, &group_props)"
+  },
+  {
+    "original_line": 2252,
+    "api": "zetMetricGet",
+    "site": "schema-list",
+    "original_call": "ZE_FUNC(zetMetricGet)(group, &metric_count, metrics.data())"
+  },
+  {
+    "original_line": 2260,
+    "api": "zetMetricGetProperties",
+    "site": "schema-metric",
+    "original_call": "ZE_FUNC(zetMetricGetProperties)(metric, &metric_props)"
+  },
+  {
+    "original_line": 2277,
+    "api": "zeEventQueryStatus",
+    "site": "query-ready",
+    "original_call": "ZE_FUNC(zeEventQueryStatus)(command_metric_query->metric_query_event_)"
+  },
+  {
+    "original_line": 2283,
+    "api": "zetMetricQueryGetData",
+    "site": "data-size",
+    "original_call": "ZE_FUNC(zetMetricQueryGetData)(command_metric_query->metric_query_, &size, nullptr)"
+  },
+  {
+    "original_line": 2289,
+    "api": "zetMetricQueryGetData",
+    "site": "data-read",
+    "original_call": "ZE_FUNC(zetMetricQueryGetData)(command_metric_query->metric_query_, &size2, kmetrics->data())"
+  },
+  {
+    "original_line": 2592,
+    "api": "zetMetricGroupCalculateMultipleMetricValuesExp",
+    "site": "calculate-size",
+    "original_call": "ZE_FUNC(zetMetricGroupCalculateMultipleMetricValuesExp)(\n          group, ZET_METRIC_GROUP_CALCULATION_TYPE_METRIC_VALUES,\n          it->second.metrics_->size(), it->second.metrics_->data(), &num_samples, &num_metrics,\n          nullptr, nullptr)"
+  },
+  {
+    "original_line": 2601,
+    "api": "zetMetricGroupCalculateMultipleMetricValuesExp",
+    "site": "calculate-read",
+    "original_call": "ZE_FUNC(zetMetricGroupCalculateMultipleMetricValuesExp)(\n            group, ZET_METRIC_GROUP_CALCULATION_TYPE_METRIC_VALUES,\n            it->second.metrics_->size(), it->second.metrics_->data(), &num_samples, &num_metrics,\n            samples.data(), metrics.data())"
+  },
+  {
+    "original_line": 3596,
+    "api": "zetCommandListAppendMetricQueryBegin",
+    "site": "query-begin",
+    "original_call": "ZE_FUNC(zetCommandListAppendMetricQueryBegin)(command_list, ze_instance_data.query_)"
+  },
+  {
+    "original_line": 3706,
+    "api": "zetCommandListAppendMetricQueryEnd",
+    "site": "query-end",
+    "original_call": "ZE_FUNC(zetCommandListAppendMetricQueryEnd)(command_list, query, metric_query_event, 0, nullptr)"
+  },
+  {
+    "original_line": 3856,
+    "api": "zetCommandListAppendMetricQueryEnd",
+    "site": "query-end",
+    "original_call": "ZE_FUNC(zetCommandListAppendMetricQueryEnd)(command_list, query, metric_query_event, 0, nullptr)"
+  },
+  {
+    "original_line": 3991,
+    "api": "zetCommandListAppendMetricQueryEnd",
+    "site": "query-end",
+    "original_call": "ZE_FUNC(zetCommandListAppendMetricQueryEnd)(command_list, query, metric_query_event, 0, nullptr)"
+  },
+  {
+    "original_line": 4128,
+    "api": "zetCommandListAppendMetricQueryEnd",
+    "site": "query-end",
+    "original_call": "ZE_FUNC(zetCommandListAppendMetricQueryEnd)(command_list, query, metric_query_event, 0, nullptr)"
+  },
+  {
+    "original_line": 4253,
+    "api": "zetCommandListAppendMetricQueryEnd",
+    "site": "query-end",
+    "original_call": "ZE_FUNC(zetCommandListAppendMetricQueryEnd)(command_list, query, metric_query_event, 0, nullptr)"
+  }
+]

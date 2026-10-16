@@ -1,0 +1,167 @@
+{
+  "schema": "strata-metric-status-offline-v3",
+  "status": "OFFLINE_TESTS_PASS_COLLECTION_HELD",
+  "passed": true,
+  "active": false,
+  "commands": [
+    {
+      "label": "test_offline.py",
+      "argv": [
+        "/usr/bin/python3",
+        "-I",
+        "-B",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-query-tiny-v3/test_offline.py",
+        "-v"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-16T08:31:10.822319+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1332240,
+          "start_ticks": 48823494,
+          "sid": 1332240,
+          "pgid": 1332240
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 488234.9437972,
+      "pid": 1332240,
+      "spawn_return_monotonic": 488234.945102869,
+      "direct_identity": {
+        "pid": 1332240,
+        "state": "R",
+        "ppid": 1332202,
+        "pgid": 1332240,
+        "sid": 1332240,
+        "start_ticks": 48823494,
+        "rss_bytes": 466944
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 12886016,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T08:31:11.028358+00:00",
+      "elapsed_seconds": 0.20582039502914995,
+      "logs": {
+        "test_offline.py.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "test_offline.py.stderr": {
+          "bytes": 1499,
+          "sha256": "dc1100d8cb5040be5d50e68e1a0027db4224b94ef18064e9ec4bcb2055732879"
+        }
+      }
+    },
+    {
+      "label": "test_contracts_offline.py",
+      "argv": [
+        "/usr/bin/python3",
+        "-I",
+        "-B",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-query-tiny-v3/test_contracts_offline.py",
+        "-v"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-16T08:31:11.028871+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1332246,
+          "start_ticks": 48823515,
+          "sid": 1332246,
+          "pgid": 1332246
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 488235.150504866,
+      "pid": 1332246,
+      "spawn_return_monotonic": 488235.151987809,
+      "direct_identity": {
+        "pid": 1332246,
+        "state": "R",
+        "ppid": 1332202,
+        "pgid": 1332246,
+        "sid": 1332246,
+        "start_ticks": 48823515,
+        "rss_bytes": 466944
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 12484608,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T08:31:11.321672+00:00",
+      "elapsed_seconds": 0.2926323659485206,
+      "logs": {
+        "test_contracts_offline.py.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "test_contracts_offline.py.stderr": {
+          "bytes": 2221,
+          "sha256": "79c5108ac3700250146803eb3e63a170ae9d4828858ba48f4f67d29de45c3fdf"
+        }
+      }
+    }
+  ],
+  "GPU_executed": false,
+  "collector_built": false,
+  "collection_qualified": false,
+  "source_package_sha256": "a9de0e10438e7249224aacc185b8dec4678596f16b9b92a6efb652c83636980d",
+  "source_review": "Main read v1/v2 source and exact v3 controller delta, catalog identity, report validity and both offline suites; unchanged C++ patch and copied guards are byte-compared before tests. No build/native qualifier yet.",
+  "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "complete": true,
+  "ownership_closed": true,
+  "outputs": [
+    {
+      "script": "test_offline.py",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "test_exact_patch_and_every_selected_metric_call_wrapped (__main__.Source.test_exact_patch_and_every_selected_metric_call_wrapped) ... ok\ntest_no_environment_write_in_new_collector_header (__main__.Source.test_no_environment_write_in_new_collector_header) ... ok\ntest_standalone_imports_do_not_launch_or_import_device_packages (__main__.Source.test_standalone_imports_do_not_launch_or_import_device_packages) ... ok\ntest_exact_symbolic_numeric_agreement (__main__.Status.test_exact_symbolic_numeric_agreement) ... ok\ntest_failure_with_exit_zero_and_csv_still_holds (__main__.Status.test_failure_with_exit_zero_and_csv_still_holds) ... ok\ntest_interleaved_status (__main__.Status.test_interleaved_status) ... ok\ntest_missing_close (__main__.Status.test_missing_close) ... ok\ntest_missing_result_even_with_complete_csv (__main__.Status.test_missing_result_even_with_complete_csv) ... ok\ntest_missing_sample (__main__.Status.test_missing_sample) ... ok\ntest_missing_whole_calculation_with_repaired_sequences (__main__.Status.test_missing_whole_calculation_with_repaired_sequences) ... ok\ntest_partial_multisample_calculation (__main__.Status.test_partial_multisample_calculation) ... ok\ntest_truncated_line (__main__.Status.test_truncated_line) ... ok\ntest_valid_exact_reconciliation (__main__.Status.test_valid_exact_reconciliation) ... ok\ntest_wrong_catalog (__main__.Status.test_wrong_catalog) ... ok\n\n----------------------------------------------------------------------\nRan 14 tests in 0.068s\n\nOK\n"
+    },
+    {
+      "script": "test_contracts_offline.py",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "test_actual_enum_controller_and_compiled_query_v1_source_are_distinct_valid_identities (__main__.ExistingCatalog.test_actual_enum_controller_and_compiled_query_v1_source_are_distinct_valid_identities) ... ok\ntest_missing_main_review_fault_or_native_environment_change_is_rejected (__main__.ExistingCatalog.test_missing_main_review_fault_or_native_environment_change_is_rejected) ... ok\ntest_relabeling_build_package_as_query_v1_is_rejected (__main__.ExistingCatalog.test_relabeling_build_package_as_query_v1_is_rejected) ... ok\ntest_wrong_source_enum_package_or_changed_exact_argv_is_rejected (__main__.ExistingCatalog.test_wrong_source_enum_package_or_changed_exact_argv_is_rejected) ... ok\ntest_api_false_or_missing_sample_never_qualifies (__main__.Reports.test_api_false_or_missing_sample_never_qualifies) ... ok\ntest_each_compromised_flag_on_second_actual_row_holds_even_when_api_passes (__main__.Reports.test_each_compromised_flag_on_second_actual_row_holds_even_when_api_passes) ... ok\ntest_flag_type_description_or_numeric_type_change_holds (__main__.Reports.test_flag_type_description_or_numeric_type_change_holds) ... ok\ntest_invalid_flag_encoding_still_fails_format_decoder (__main__.Reports.test_invalid_flag_encoding_still_fails_format_decoder) ... ok\ntest_last_row_and_deadline_are_checked (__main__.Reports.test_last_row_and_deadline_are_checked) ... ok\ntest_unknown_missing_duplicate_reordered_driver_columns_hold (__main__.Reports.test_unknown_missing_duplicate_reordered_driver_columns_hold) ... ok\ntest_unknown_missing_or_reordered_csv_column_holds_in_unchanged_decoder (__main__.Reports.test_unknown_missing_or_reordered_csv_column_holds_in_unchanged_decoder) ... ok\ntest_valid_raw_format_api_and_semantic_layers_remain_separate (__main__.Reports.test_valid_raw_format_api_and_semantic_layers_remain_separate) ... ok\ntest_valid_split_frequency_and_all_midquery_metadata_are_preserved (__main__.Reports.test_valid_split_frequency_and_all_midquery_metadata_are_preserved) ... ok\ntest_zero_duration_clock_or_available_count_holds (__main__.Reports.test_zero_duration_clock_or_available_count_holds) ... ok\n\n----------------------------------------------------------------------\nRan 14 tests in 0.152s\n\nOK\n"
+    }
+  ],
+  "unchanged_v2_sources": [
+    "pti-query-status.patch",
+    "metric_query_audit.h",
+    "metric_query_result_names.inc",
+    "patched-source-sha256.json",
+    "call-sites.json",
+    "result_codes.json",
+    "status_reader.py",
+    "collector_identity.py",
+    "synthetic_fixtures.py",
+    "test_offline.py",
+    "PTI-LICENSE.txt"
+  ]
+}

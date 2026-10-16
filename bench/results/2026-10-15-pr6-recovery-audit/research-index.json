@@ -3538,6 +3538,81 @@
         "sha256": "98eb4237257fc7caf4d4b2c5e3d227e8857dd677ee0182dc0b2062b2b9655940",
         "scope": "Only reviewed decision-support sections retrieved; no unrelated knowledge archive bodies read"
       }
+    },
+    {
+      "round": 902,
+      "model": "Orca gpt-6-luna",
+      "read_only": true,
+      "path": "research-round902-v1.txt",
+      "title": "What the captured Mode1 QSA properties say about GPU resources",
+      "status": "R903-reviewed decision support; accepted with R902-C1 SKU-scope retrieval caveat and C2/C3 property guardrails; no occupancy or bottleneck claim.",
+      "sha256": "de71a415a1a520d3b5f358094f11395e551e3d3434febc9f6520928dbb0a41e3",
+      "classification": "decision_support",
+      "spec_path": "orca-research-round902-spec-v1.txt",
+      "spec_sha256": "35931e3f250266a9de3a6aa6f9b4e92cd46407637a0aa0840b2dce85bd5ff0a9",
+      "review_round": "R903",
+      "review_path": "research-scope-review-round903-v1.json",
+      "review_sha256": "964654fbdce679e6d325ac87590efa90c4c8479aff3952ec48f9ca75c3f41241",
+      "operational_digest_path": "research-scope-review-round903-v1.ja.md",
+      "operational_digest_sha256": "c7f32206856f82981f064e4cf006c5c1fb1107b19216e30c1be4755431b9ccdb",
+      "main_body_read": false,
+      "retrieval": {
+        "needed_now": true,
+        "hold_body": false,
+        "main_body_read": false,
+        "sections": [
+          "7–15: pinned diagnostic and qualification boundary; reconcile the receipt versus dispatch call/time mismatch before using a time denominator.",
+          "19–31: exact Mode1 QSA property row and PTI/Level Zero field meanings; apply R902-C3 to the zero private/spill entries.",
+          "35–48: create-time localMemSize, later SLM argument sizing, distinct per-work-group/per-core reference capacities and unknown runtime residency; apply R902-C1 and R902-C2.",
+          "50–52: conditional next diagnostic and counterevidence; retain the B580 SKU caveat and do not infer an SLM/GRF bottleneck."
+        ],
+        "keys": [
+          "Mode1 QSA: reported 4,096-byte create-time localMemSize, 128 register-file-size value, zero private/spill metadata",
+          "Level Zero SLM argument size is passed separately; PTI properties table does not record it",
+          "Xe2-HPG architecture table is B580 representative evidence, not same-run B570 device properties",
+          "per-work-group maximum and per-core SLM pool are separate limits; neither determines actual occupancy",
+          "no actual local allocation, active work-group count, resource stalls, or bottleneck is established"
+        ],
+        "preserve_caveats": [
+          "Apply R902-C1: label Intel’s public 128 KiB figures as B580/Xe2-HPG reference evidence; do not call them B570-specific or same-run queries.",
+          "Apply R902-C2: 4,096 B is the create-time kernel property; whether it includes any static local-accessor allocation or all launch-time SLM is not settled by this capture. Do not call it static-only or a total.",
+          "Apply R902-C3: zero private/spill are numeric metadata for this compiled kernel object; PTI reserves “unknown” for a zero register-file extension value. Do not generalize to runtime/all-input spill behavior.",
+          "Do not divide a published core pool by the row’s 4 KiB to infer resident work-groups.",
+          "No hardware counters were collected; no resource-limited occupancy, performance, adoption, model quality, RESTORE, or physical 262144-context result follows."
+        ],
+        "retrieval_brief": "Main may read only the named R902 sections for current QSA metadata and resource framing, applying C1–C3. The body is released as decision support with no occupancy or bottleneck claim."
+      },
+      "correction_ids": [
+        "R902-C1",
+        "R902-C2",
+        "R902-C3"
+      ],
+      "tags": [
+        "Intel Arc B570",
+        "Mode1 QSA",
+        "Level Zero kernel properties",
+        "SLM",
+        "GRF",
+        "occupancy evidence boundary"
+      ],
+      "reviewer_retrieval_metadata": {
+        "report_sha256": "de71a415a1a520d3b5f358094f11395e551e3d3434febc9f6520928dbb0a41e3",
+        "spec_sha256": "35931e3f250266a9de3a6aa6f9b4e92cd46407637a0aa0840b2dce85bd5ff0a9",
+        "review_sha256": "964654fbdce679e6d325ac87590efa90c4c8479aff3952ec48f9ca75c3f41241",
+        "operational_digest_sha256": "c7f32206856f82981f064e4cf006c5c1fb1107b19216e30c1be4755431b9ccdb",
+        "purpose_class": "decision_support",
+        "review_round": "R903",
+        "main_original_needed_now": true,
+        "retrieval_brief": "Main may read only the named R902 sections for current QSA metadata and resource framing, applying C1–C3. The body is released as decision support with no occupancy or bottleneck claim.",
+        "scope_depth_review": "1,450 whitespace-delimited words, one table, five primary URLs; within the 1,300–1,700 word and six-source limits.",
+        "provenance_limit": "PTI and Level Zero establish provider-field semantics and query timing. Public 128 KiB and 1,024 work-group figures are from Intel’s representative B580 Xe2-HPG row, not a B570 same-run query. The capture establishes no actual active occupancy or bottleneck.",
+        "source_context_corrections": [
+          "R902-C1",
+          "R902-C2",
+          "R902-C3"
+        ],
+        "outcome": "Accepted as decision support with localized hardware SKU caveat and retrieval guardrails."
+      }
     }
   ],
   "main_initial_findings": [
@@ -5334,5 +5409,15 @@
       "dispatch_performed": false,
       "reason": "The local catalog still has collection_qualified=false and the separate status-loss gate remains unresolved; wait for Main-owned valid collection and a concrete open interpretation."
     }
+  },
+  "research_review_round903": {
+    "path": "research-scope-review-round903-v1.json",
+    "sha256": "964654fbdce679e6d325ac87590efa90c4c8479aff3952ec48f9ca75c3f41241",
+    "operational_digest_path": "research-scope-review-round903-v1.ja.md",
+    "operational_digest_sha256": "c7f32206856f82981f064e4cf006c5c1fb1107b19216e30c1be4755431b9ccdb",
+    "report_round": 902,
+    "status": "Accepted as decision support with the localized R902-C1 SKU-scope retrieval caveat and guardrails C2/C3. Main can retrieve the exact current Mode1 QSA metadata and API interpretation; no SLM/register occupancy, resource bottleneck, performance, adoption, model-quality, RESTORE, or physical 262144-context claim follows.",
+    "report_count_after_append": 284,
+    "report_index_snapshot_before_review_sha256": "b1471cef658977de93bef5f58ccf44efae1c6f075d19d2ead6e5eb73dec1ddba"
   }
 }

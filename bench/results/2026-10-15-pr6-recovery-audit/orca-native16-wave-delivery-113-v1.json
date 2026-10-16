@@ -1,0 +1,53 @@
+{
+  "id": "a9772438-4c73-490c-bcfa-93fc75602ce8",
+  "ok": true,
+  "result": {
+    "runId": "run_c8f478972ec8",
+    "deliveryId": "delivery_f71c3f98426b",
+    "messages": [
+      {
+        "id": "msg_f00ace888623",
+        "run_id": "run_c8f478972ec8",
+        "delivery_contract": "current_delivery",
+        "from_handle": "term_06687500-a3cb-4d14-82d4-1d800e3eb5aa",
+        "to_handle": "run:run_c8f478972ec8",
+        "subject": "D1-D5 source delivery complete; native execution held",
+        "body": "Implemented finite D1/D2/D4/D5 source corrections, hard D3 handshake/verifier exclusion, and two unexecuted host fixtures on the pinned validation branch, with the complete v3 patch and hashes. All 13 prior result artifacts and 56 kernel files remain byte-identical, while the retained CLI fallback is the original explicit no-capture/no-pool diagnostic and the full native-pack CLI is unsupported. Status remains SOURCE_ONLY_UNSAFE_TO_RUN; Main must review the patch, run host/build/provider/numerical gates, and review a separate no-doorbell prefill harness before native qualification or performance claims.",
+        "type": "worker_done",
+        "priority": "normal",
+        "thread_id": null,
+        "payload": "{\"taskId\":\"task_08d5d970525c\",\"dispatchId\":\"ctx_fe4210560094\",\"outcome\":\"succeeded\",\"filesModified\":[\"validation/pr6-restore/README.md\",\"validation/pr6-restore/fixtures/CMakeLists.txt\",\"validation/pr6-restore/fixtures/bounded_join.cpp\",\"validation/pr6-restore/fixtures/validation_control.cpp\",\"validation/pr6-restore/include/strata/core/native_head.hpp\",\"validation/pr6-restore/include/strata/core/validation_control.hpp\",\"validation/pr6-restore/include/strata/prefill/retirement.hpp\",\"validation/pr6-restore/sycl/include/strata/core/mtp.hpp\",\"validation/pr6-restore/sycl/include/strata/core/session.hpp\",\"validation/pr6-restore/sycl/include/strata/core/verify.hpp\",\"validation/pr6-restore/sycl/include/strata/sycl_doorbell.hpp\",\"validation/pr6-restore/sycl/src/core/layer.cpp\",\"validation/pr6-restore/sycl/src/core/mtp.cpp\",\"validation/pr6-restore/sycl/src/core/native_head.cpp\",\"validation/pr6-restore/sycl/src/core/session.cpp\",\"validation/pr6-restore/sycl/src/core/verify.cpp\",\"validation/pr6-restore/sycl/src/prefill/prefill.cpp\",\"validation/pr6-restore/sycl/src/program/generate.cpp\",\"bench/results/2026-10-16-pr6-faithful-restore/safety-corrections-v3.md\",\"bench/results/2026-10-16-pr6-faithful-restore/safety-corrections-v3.json\",\"bench/results/2026-10-16-pr6-faithful-restore/safety-corrections-v3.patch\"],\"reportPath\":\"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/bench/results/2026-10-16-pr6-faithful-restore/safety-corrections-v3.md\"}",
+        "created_at": "2026-10-16T08:20:24Z",
+        "delivered_at": null
+      },
+      {
+        "id": "msg_d6fc5cf3951c",
+        "run_id": "run_c8f478972ec8",
+        "delivery_contract": "current_delivery",
+        "from_handle": "term_ba1d926d-fac0-4c24-a805-6aba3f069813",
+        "to_handle": "run:run_c8f478972ec8",
+        "subject": "alive",
+        "body": "",
+        "type": "heartbeat",
+        "priority": "normal",
+        "thread_id": null,
+        "payload": "{\"taskId\":\"task_65a912ee6041\",\"dispatchId\":\"ctx_951a2183269f\",\"phase\":\"reviewing\"}",
+        "created_at": "2026-10-16T08:21:20Z",
+        "delivered_at": null
+      }
+    ],
+    "count": 2,
+    "replayed": false,
+    "acknowledged": null,
+    "timedOut": false,
+    "cancelled": false,
+    "connectionLost": false,
+    "mutation": {
+      "requestId": "5a6eb096-cd71-4bd4-9874-f6188e311ebf",
+      "replayed": false
+    }
+  },
+  "_meta": {
+    "runtimeId": "e9030fc3-f028-4352-a34d-eb9385c8d79e"
+  }
+}

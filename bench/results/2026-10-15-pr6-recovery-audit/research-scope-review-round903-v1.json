@@ -1,0 +1,156 @@
+{
+  "schema": "strata-research-scope-review-v1",
+  "review_round": "R903",
+  "report_round": 902,
+  "purpose_class": "decision_support",
+  "report_title": "What the captured Mode1 QSA properties say about GPU resources",
+  "reviewed_at_utc": "2026-10-16T08:52:46Z",
+  "reviewer": {
+    "model": "gpt-6-luna",
+    "reasoning_effort": "max",
+    "role": "native Codex research-scope reviewer"
+  },
+  "inputs": {
+    "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round902-v1.txt",
+    "report_sha256": "de71a415a1a520d3b5f358094f11395e551e3d3434febc9f6520928dbb0a41e3",
+    "assignment_spec_path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/orca-research-round902-spec-v1.txt",
+    "assignment_spec_sha256": "35931e3f250266a9de3a6aa6f9b4e92cd46407637a0aa0840b2dce85bd5ff0a9",
+    "report_recorded_index_snapshot_sha256": "b1471cef658977de93bef5f58ccf44efae1c6f075d19d2ead6e5eb73dec1ddba",
+    "index_before_path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+    "index_before_sha256": "b1471cef658977de93bef5f58ccf44efae1c6f075d19d2ead6e5eb73dec1ddba",
+    "index_before_report_count": 283,
+    "index_before_highest_report_round": 896,
+    "pinned_receipt_path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-model-v4.json",
+    "pinned_receipt_sha256": "a6e8d8c6f16482b0db8a29012017659746f0f877a7c25c41f4616df5be5bbee2",
+    "pinned_pti_commit": "6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033",
+    "pinned_pti_sha256_as_reported": "6ee0130e2b03918a5e4bb5d310dacb94e5ba06bf67c21a23d3134dc406aa9122"
+  },
+  "dispatch_context": {
+    "report_state": "The report and spec were present; their local SHA256 values are pinned here. The shared index matched the report-recorded snapshot before this sole-writer update.",
+    "index_snapshot_note": "The index contained 283 report records through R896; its existing report list includes mixed string and object entries, all preserved. R902 is appended as a new object record.",
+    "main_body_read_before_review": false,
+    "reviewer_opened": [
+      "R902 report and assignment spec",
+      "research-index.json metadata and R898 review schema/retrieval metadata only",
+      "pinned diagnostic receipt limited to the kernel_properties rows and top-level qualification flags",
+      "Intel PTI source at the assigned immutable commit",
+      "Level Zero v1.19.12 kernel API and programming guide",
+      "Intel Xe GPU Architecture Guide 2025.2, B570 SKU specification, and Shared Local Memory guide 2024.0"
+    ],
+    "excluded_material": "No R875, R893, or R896 report body; no knowledge-collection body; no XeStrata source, helper, test, archive, or proposal; no unrelated product source.",
+    "actions": "Only this review JSON, its Japanese operational digest, and the shared research-index entry were written. Official primary-source pages and the pinned PTI header were read. No Git, builds, tests, compiler/binary tools, runtime/device queries, profiler, process/service inspection, implementation, or cleanup was performed."
+  },
+  "scope_depth_review": {
+    "word_count_whitespace_delimited": 1450,
+    "primary_source_url_count": 5,
+    "comparison_table_count": 1,
+    "budget_result": "Within the assigned 1,300–1,700-word and six-primary-source limits.",
+    "coverage": "The report maps the exact Mode1 QSA property row to the pinned PTI and Level Zero fields, then separates create-time metadata, launch-time SLM argument sizes, published architectural limits, and actual occupancy. It ends with one conditional diagnostic question and preserves the unqualified prefill, quality, RESTORE, and physical-context boundaries.",
+    "assessment": "Substantive, coherent, and well scoped. The provider-property wording does not assert that localMemSize is static-only or a complete launch total, and it does not convert 4 KiB into a resident-work-group ceiling. The only material attribution correction is that the architecture guide table is the B580 representative SKU row; it is not a B570 runtime query or B570-specific specification. Zero private/spill entries are correctly treated as properties for this compiled object rather than universal runtime guarantees."
+  },
+  "novelty_and_redundancy": {
+    "result": "Distinct decision-support increment; accept with a localized SKU-scope retrieval caveat.",
+    "metadata_only_comparisons": [
+      "R875: broad phase/profiler and metric-capability map; body not reopened.",
+      "R893: QSA source-route and local-array estimate; body not reopened.",
+      "R896: B570 counter catalog/semantics and collection gates; body not reopened."
+    ],
+    "novel_increment": "R902 connects the newly captured exact compiled-kernel property row to PTI field provenance and Level Zero API semantics, then explains why the reported per-work-group property and public architecture capacities do not establish actual residency. This is separate from source-route reconstruction and counter-schema interpretation.",
+    "bodies_reopened": false
+  },
+  "primary_source_audit": [
+    {
+      "id": "PINNED-PTI-KERNEL-PROPERTIES",
+      "url": "https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/tools/unitrace/src/levelzero/ze_collector.h",
+      "verified": "On the successful kernel-create callback PTI queries zeKernelGetProperties and copies maxSubgroupSize, numKernelArgs, localMemSize, privateMemSize, spillMemSize, required group size and the experimental register-file extension. PTI prints private/spill numbers literally; zero registerFileSize is the condition that prints “unknown”. The report’s field mapping is consistent with the pinned source.",
+      "limits": "The query is captured at kernel creation and PTI does not record later local argument byte sizes in this properties table. The experimental register field is provider metadata, not active register demand or occupancy. The report-provided file SHA was not independently byte-verified through the browser review; the immutable Git commit and inspected source path were confirmed."
+    },
+    {
+      "id": "LEVEL-ZERO-KERNEL-API",
+      "url": "https://oneapi-src.github.io/level-zero-spec/level-zero/1.19.12/core/api/apis/kernel.html",
+      "verified": "The specification defines localMemSize as local memory used by each thread group, privateMemSize as compiler-allocated private memory used by each thread, and spillMemSize as compiler-allocated spill memory. For an SLM argument, zeKernelSetArgumentValue receives the resource byte size through argSize.",
+      "limits": "The API description does not label localMemSize as static-only or define it as the complete per-dispatch sum including later SLM argument values."
+    },
+    {
+      "id": "LEVEL-ZERO-INVARIANT-PROPERTIES",
+      "url": "https://oneapi-src.github.io/level-zero-spec/level-zero/1.19.12/core/PROG.html",
+      "verified": "The programming guide calls zeKernelGetProperties invariant kernel-object properties and describes group size as separately set or defaulted for launch.",
+      "limits": "This supports reading the table as object properties, not actual launch residency; it does not independently specify how each SYCL local accessor is lowered or accounted by the driver."
+    },
+    {
+      "id": "INTEL-XE-GPU-ARCHITECTURE-GUIDE",
+      "url": "https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2025-2/intel-xe-gpu-architecture.html",
+      "verified": "The Xe2-HPG column lists 128 KiB SLM per Xe-core, 128 KiB maximum SLM per work-group, maximum work-group size 1,024, subgroups 16/32, and 128/256 GRFs per thread in regular/large register mode. The table uses B580 as its representative Xe2-HPG model and says the table describes one popular model per microarchitecture.",
+      "limits": "It is a B580 representative hardware row, not a B570 SKU-specific local-memory query. Do not state its capacities as measured or queried B570 values without corroboration."
+    },
+    {
+      "id": "INTEL-B570-SKU-SPECIFICATION",
+      "url": "https://www.intel.com/content/www/us/en/products/sku/241676/intel-arc-b570-graphics/specifications.html",
+      "verified": "Intel lists B570 as Xe2 with 18 Xe-cores and 144 vector engines.",
+      "limits": "The page does not publish B570 SLM capacity, per-work-group SLM maximum, work-group limit, or runtime occupancy."
+    },
+    {
+      "id": "INTEL-SHARED-LOCAL-MEMORY-GUIDE",
+      "url": "https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2024-0/shared-local-memory.html",
+      "verified": "The guide describes SLM as Xe-core local and work-group shared, and says the amount available to a work-group is device-dependent and may depend on work-group size.",
+      "limits": "It gives no exact B570 allocation rounding, reservations, or active-work-group residency for this kernel."
+    }
+  ],
+  "corrections": [
+    {
+      "id": "R902-C1",
+      "type": "SKU scope of public capacity evidence",
+      "severity": "minor retrieval correction",
+      "finding": "The architecture guide table cited at report line 39 is explicitly the Xe2-HPG representative B580 row, while the captured device is B570. The B570 SKU page confirms Xe2 and core/vector-engine counts but does not establish the table’s SLM/work-group figures as B570-specific values.",
+      "action": "When reusing lines 39–41 or 52, call 128 KiB/core and 128 KiB/work-group the published B580/Xe2-HPG reference figures, not a same-run B570 query. Keep exact B570 limits pending runtime query or SKU-specific authoritative evidence. This correction does not change the no-occupancy/no-bottleneck conclusion."
+    },
+    {
+      "id": "R902-C2",
+      "type": "provider local-memory property boundary",
+      "severity": "retrieval guardrail; report wording is appropriately bounded",
+      "finding": "The Level Zero API says localMemSize is per-thread-group local memory, and SLM argument bytes are supplied via argSize. The PTI capture queries properties at successful kernel creation and does not capture the later per-launch local-argument sizes. Available evidence does not classify the 4,096-byte value as static-only or as a complete launch total.",
+      "action": "Read 4,096 B only as this kernel object’s reported localMemSize at creation. Do not add it to the 44,500-byte source estimate, subtract, or use either to compute resident groups. Collect actual local argument sizes and launch group size if the qualified component diagnostic needs a total."
+    },
+    {
+      "id": "R902-C3",
+      "type": "zero-valued metadata interpretation",
+      "severity": "retrieval guardrail; no report correction required",
+      "finding": "PTI emits privateMemSize and spillMemSize as numeric values, including zero. Its special “unknown” text path applies to registerFileSize equal to zero. Thus the row’s zeroes are reported values for this compiled object, not a universal all-input guarantee and not a basis to relabel the fields undefined.",
+      "action": "Preserve the report’s object/specialization scope and its no-runtime-guarantee caveat. Do not turn zero private/spill metadata into an all-launch no-spill or residency claim."
+    }
+  ],
+  "retrieval": {
+    "needed_now": true,
+    "hold_body": false,
+    "main_body_read": false,
+    "sections": [
+      "7–15: pinned diagnostic and qualification boundary; reconcile the receipt versus dispatch call/time mismatch before using a time denominator.",
+      "19–31: exact Mode1 QSA property row and PTI/Level Zero field meanings; apply R902-C3 to the zero private/spill entries.",
+      "35–48: create-time localMemSize, later SLM argument sizing, distinct per-work-group/per-core reference capacities and unknown runtime residency; apply R902-C1 and R902-C2.",
+      "50–52: conditional next diagnostic and counterevidence; retain the B580 SKU caveat and do not infer an SLM/GRF bottleneck."
+    ],
+    "keys": [
+      "Mode1 QSA: reported 4,096-byte create-time localMemSize, 128 register-file-size value, zero private/spill metadata",
+      "Level Zero SLM argument size is passed separately; PTI properties table does not record it",
+      "Xe2-HPG architecture table is B580 representative evidence, not same-run B570 device properties",
+      "per-work-group maximum and per-core SLM pool are separate limits; neither determines actual occupancy",
+      "no actual local allocation, active work-group count, resource stalls, or bottleneck is established"
+    ],
+    "preserve_caveats": [
+      "Apply R902-C1: label Intel’s public 128 KiB figures as B580/Xe2-HPG reference evidence; do not call them B570-specific or same-run queries.",
+      "Apply R902-C2: 4,096 B is the create-time kernel property; whether it includes any static local-accessor allocation or all launch-time SLM is not settled by this capture. Do not call it static-only or a total.",
+      "Apply R902-C3: zero private/spill are numeric metadata for this compiled kernel object; PTI reserves “unknown” for a zero register-file extension value. Do not generalize to runtime/all-input spill behavior.",
+      "Do not divide a published core pool by the row’s 4 KiB to infer resident work-groups.",
+      "No hardware counters were collected; no resource-limited occupancy, performance, adoption, model quality, RESTORE, or physical 262144-context result follows."
+    ],
+    "retrieval_brief": "Main may read only the named R902 sections for current QSA metadata and resource framing, applying C1–C3. The body is released as decision support with no occupancy or bottleneck claim."
+  },
+  "next_scope_eligibility": {
+    "recommended_now": false,
+    "schedulable_now": false,
+    "prerequisites_rechecked": true,
+    "dispatch_performed": false,
+    "reason": "The R902 inputs still state that actual hardware-counter collection is unrun, and the assignment places B570 collector qualification with Main. No new research session is needed before that evidence exists. If a later bounded question remains, require B570 SKU-specific sources or explicitly label B580 as a representative reference, and keep per-work-group maximum, per-core SLM pool, and measured occupancy as separate quantities."
+  },
+  "outcome": "Accepted as decision support with the localized R902-C1 SKU-scope retrieval caveat and guardrails C2/C3. Main can retrieve the exact current Mode1 QSA metadata and API interpretation; no SLM/register occupancy, resource bottleneck, performance, adoption, model-quality, RESTORE, or physical 262144-context claim follows."
+}
