@@ -455,7 +455,7 @@ bool session_replay_stages_per_layer(const ModelGeometry& g, int64_t pos, int32_
         }
         dpct::sync_barrier(ev[(size_t)(l * 4 + 3)], cs);
     }
-    if (DPCT_CHECK_ERROR(cs->wait()) != 0) {
+    if (DPCT_CHECK_ERROR(cs->wait_and_throw()) != 0) {
         err = "stages: final sync"; return false;
     }
 
@@ -543,7 +543,7 @@ bool session_replay_stage_sweep(const ModelGeometry &g, int64_t pos,
         }
     }
     dpct::sync_barrier(b, cs);
-    if (DPCT_CHECK_ERROR(cs->wait()) != 0) {
+    if (DPCT_CHECK_ERROR(cs->wait_and_throw()) != 0) {
         dpct::destroy_event(a);
         dpct::destroy_event(b);
         err = "session_replay_stage_sweep: sync";
@@ -651,7 +651,7 @@ bool session_replay_stage_prefixes(const ModelGeometry &g, int64_t pos,
         }
         dpct::sync_barrier(ev[(size_t)(l * 6 + 5)], cs);
     }
-    if (DPCT_CHECK_ERROR(cs->wait()) != 0) {
+    if (DPCT_CHECK_ERROR(cs->wait_and_throw()) != 0) {
         err = "prefixes: final sync"; return false;
     }
 
@@ -1080,7 +1080,7 @@ bool session_loop(const ModelGeometry &g, int64_t pos, int32_t pos_base,
         if (!overlap) {
             // THE COMPARISON ARM.  The same sequence with the pipeline removed: the CPU does not start until the
             // layer is over, so nothing overlaps and the difference is attributable to the doorbell alone.
-            if (DPCT_CHECK_ERROR(cs->wait()) != 0) {
+            if (DPCT_CHECK_ERROR(cs->wait_and_throw()) != 0) {
                 err = "session_loop: sync at layer " + std::to_string(l);
                 return false;
             }
@@ -1122,7 +1122,7 @@ bool session_loop(const ModelGeometry &g, int64_t pos, int32_t pos_base,
         // exists to show what the pipeline is worth, and hiding its cost here would defeat the comparison.
         gr.ms_host += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t_ring).count();
     }
-    if (DPCT_CHECK_ERROR(cs->wait()) != 0) {
+    if (DPCT_CHECK_ERROR(cs->wait_and_throw()) != 0) {
         err = "session_loop: final sync"; return false;
     }
     return true;
@@ -1168,7 +1168,7 @@ bool session_token(const WeightTable &tables, const ModelGeometry &g,
             // P2.X3 forbids in the fast path.  It exists to turn an ASYNCHRONOUS error - a kernel reading a
             // buffer a later layer wrote, or an out-of-range launch - into a failure AT THE LAYER THAT CAUSED
             // IT, instead of a wrong number 40 layers later or at the end of the token.
-            const dpct::err0 e = DPCT_CHECK_ERROR(cs->wait());
+            const dpct::err0 e = DPCT_CHECK_ERROR(cs->wait_and_throw());
             /*
             DPCT1000: Error handling if-stmt was detected but could not be
             rewritten.
@@ -1400,7 +1400,7 @@ bool session_run_token(const ModelGeometry &g, int64_t pos, int32_t pos_base,
         tg.ms_pool += std::chrono::duration<double, std::milli>(t2 - t1).count();
     }
     progress_at("token: waiting for the GPU to finish the token");
-    const dpct::err0 se = DPCT_CHECK_ERROR(cs->wait());
+    const dpct::err0 se = DPCT_CHECK_ERROR(cs->wait_and_throw());
     /*
     DPCT1009: SYCL reports errors using exceptions and does not use error
     codes. Please replace the "get_error_string_dummy(...)" with a real

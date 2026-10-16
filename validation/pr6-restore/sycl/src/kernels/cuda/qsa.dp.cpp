@@ -814,7 +814,7 @@ void step_upload_raw(const int32_t *h_step) try {
     synchronization behavior.
     */
     if (DPCT_CHECK_ERROR(dpct::get_in_order_queue().memcpy(
-            d, h_step, qsa_step_bytes()).wait()) != 0) {
+            d, h_step, qsa_step_bytes()).wait_and_throw()) != 0) {
         std::fprintf(stderr, "qsa: step upload: cudaMemcpy failed\n");
         std::exit(1);
     }

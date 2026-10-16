@@ -751,10 +751,10 @@ uint64_t qsa_state_init(const ModelGeometry &g, int64_t max_cells, void *base,
                                           hc.data(), hs.data());
         dpct::get_in_order_queue()
             .memcpy(st.cos_tab, hc.data(), hc.size() * 4)
-            .wait();
+            .wait_and_throw();
         dpct::get_in_order_queue()
             .memcpy(st.sin_tab, hs.data(), hs.size() * 4)
-            .wait();
+            .wait_and_throw();
         st.owns_rope = true;
         if (s.n_rot == 64)   // the native and prompt-path rope kernels read it (mrope.hpp, STRATA_ROPE_TABLE=1)
             strata::kernels::rope_table_set(st.cos_tab, st.sin_tab, (int) max_cells, strata::kernels::rope_scaling());
@@ -766,7 +766,7 @@ uint64_t qsa_state_init(const ModelGeometry &g, int64_t max_cells, void *base,
         for (int64_t i = 0; i < pages; ++i) tab[(size_t) i] = (int32_t) i;
         dpct::get_in_order_queue()
             .memcpy(st.page_table, tab.data(), tab.size() * 4)
-            .wait();
+            .wait_and_throw();
     } else if (p.mode == 1) {
         strata::kernels::kv_stream_reset(st.map, nullptr);
     } else {

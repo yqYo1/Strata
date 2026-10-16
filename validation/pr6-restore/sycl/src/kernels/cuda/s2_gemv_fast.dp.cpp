@@ -59,7 +59,7 @@ void ensure_lut() try {
     const dpct::err0 e =
         DPCT_CHECK_ERROR(dpct::get_in_order_queue()
                              .memcpy(c_codes.get_ptr(), host, sizeof(host))
-                             .wait());
+                             .wait_and_throw());
 
     g_lut_ready[dev] = true;
 }

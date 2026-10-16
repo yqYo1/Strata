@@ -21,6 +21,7 @@
 
 #include <sycl/sycl.hpp>
 #include <dpct/dpct.hpp>
+#include "strata/sycl_retirement.hpp"
 #include "strata/core/layer.hpp"
 #include "strata/core/session.hpp"
 #include "strata/kernels/sampler.hpp"
@@ -105,7 +106,7 @@ public:
     int64_t first_needed() const { return (window_ > 0 && prompt_len_ > 0) ? prompt_len_ - window_ - 64 : 0; }
     int device() const { return device_; }
     bool idle(std::string &err) try {
-        if (cs_ && DPCT_CHECK_ERROR(cs_->wait()) != 0) {
+        if (cs_ && DPCT_CHECK_ERROR(strata::retire_queue(*cs_)) != 0) {
             err = "mtp: its stream failed"; return false;
         }
         return true;

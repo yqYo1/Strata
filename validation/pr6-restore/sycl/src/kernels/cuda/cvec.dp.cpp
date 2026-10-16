@@ -50,7 +50,7 @@ bool upload_here(std::string &err) try {
         to ensure synchronization behavior.
         */
         DPCT_CHECK_ERROR(dpct::get_in_order_queue().memcpy(
-            t.dir, g_dir_host.data(), g_dir_host.size() * sizeof(float)).wait()) !=
+            t.dir, g_dir_host.data(), g_dir_host.size() * sizeof(float)).wait_and_throw()) !=
             0 ||
         /*
         DPCT1114: cudaMemcpy is migrated to asynchronization memcpy,
@@ -59,10 +59,10 @@ bool upload_here(std::string &err) try {
         to ensure synchronization behavior.
         */
         DPCT_CHECK_ERROR(dpct::get_in_order_queue().memcpy(
-            t.s, g_s_host.data(), g_s_host.size() * sizeof(float)).wait()) != 0 ||
+            t.s, g_s_host.data(), g_s_host.size() * sizeof(float)).wait_and_throw()) != 0 ||
         DPCT_CHECK_ERROR(dpct::get_in_order_queue()
                              .memcpy(t.on, &flag, sizeof(int))
-                             .wait()) != 0) {
+                             .wait_and_throw()) != 0) {
         err = "control vector: device allocation failed";
         t = DevTables{};
         return false;
@@ -244,7 +244,7 @@ void cvec_set_enabled(bool on) {
         dpct::get_current_device()
             .queues_wait_and_throw(); // nothing in flight may still read the
                                       // flag
-        dpct::get_in_order_queue().memcpy(g_dev[d].on, &v, sizeof(int)).wait();
+        dpct::get_in_order_queue().memcpy(g_dev[d].on, &v, sizeof(int)).wait_and_throw();
     }
     /*
     DPCT1093: The "prev" device may be not the one intended for use. Adjust

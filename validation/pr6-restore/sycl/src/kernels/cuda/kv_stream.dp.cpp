@@ -472,7 +472,7 @@ KvStreamCounters kv_stream_counters(const KvStreamMap &m) try {
     KvStreamCounters r;
     if (m.ctl == nullptr ||
         DPCT_CHECK_ERROR(
-            dpct::get_in_order_queue().memcpy(c, m.ctl, sizeof(c)).wait()) !=
+            dpct::get_in_order_queue().memcpy(c, m.ctl, sizeof(c)).wait_and_throw()) !=
             0) return r;
     const unsigned long long* u = reinterpret_cast<const unsigned long long*>(c + 4);
     r.misses = u[0];

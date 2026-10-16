@@ -51,6 +51,7 @@ foreach(i RANGE 0 ${vendor_last})
     message(FATAL_ERROR "Historical dependency hash mismatch: ${path}")
   endif()
 endforeach()
+include("${CMAKE_CURRENT_LIST_DIR}/checked_dpct.cmake")
 set(STRATA_GGML_DIR "" CACHE PATH "External llama.cpp 3cf03257f219afbe7334045ff7c6a06ac68c627d checkout")
 if(NOT IS_ABSOLUTE "${STRATA_GGML_DIR}" OR NOT EXISTS "${STRATA_GGML_DIR}/ggml/CMakeLists.txt")
   message(FATAL_ERROR "Supply the pinned offline llama.cpp checkout in STRATA_GGML_DIR; Main verifies HEAD and diff")
@@ -63,3 +64,8 @@ if(STRATA_SYCL_PARITY)
   message(FATAL_ERROR "This closure restores target strata only; historical parity targets were not copied")
 endif()
 add_subdirectory(sycl)
+# Target propagation covers every engine TU, without editing/building a shared
+# vendor installation or injecting project code into the external ggml target.
+target_compile_options(strata_includes INTERFACE
+  "$<$<COMPILE_LANGUAGE:CXX>:-include>"
+  "$<$<COMPILE_LANGUAGE:CXX>:${pr6_checked_header}>")

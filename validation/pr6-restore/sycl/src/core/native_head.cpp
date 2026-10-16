@@ -59,7 +59,7 @@ bool NativeHead::load(const std::vector<std::string> &shards, int64_t n_in,
             status = DPCT_CHECK_ERROR(
                 dpct::get_in_order_queue()
                     .memcpy(weights, gguf.tensor_data(*tensor), bytes)
-                    .wait());
+                    .wait_and_throw());
         /*
         DPCT1000: Error handling if-stmt was detected but could not be
         rewritten.
@@ -216,7 +216,7 @@ bool NativeEmbed::load(const std::vector<std::string> &shards, int64_t n_embd,
                 return by memcpy API to ensure synchronization behavior.
                 */
                 DPCT_CHECK_ERROR(dpct::get_in_order_queue().memcpy(
-                    d, gguf.tensor_data(*t), bytes_).wait()) != 0) {
+                    d, gguf.tensor_data(*t), bytes_).wait_and_throw()) != 0) {
                 if (d) sycl::free(d, dpct::get_in_order_queue());
                 /*
                 DPCT1026: The call to cudaGetLastError was removed because

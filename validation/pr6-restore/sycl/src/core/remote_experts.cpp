@@ -131,7 +131,7 @@ void RemoteExperts::close() {
     if (device_ < 0) return;
     DeviceScope scope(device_);
     if (scope.ok) {
-        if (stream_) stream_->wait();
+        if (stream_) stream_->wait_and_throw();
         cache_.close();
         if (d_x_) sycl::free(d_x_, dpct::get_in_order_queue());
         if (d_out_) sycl::free(d_out_, dpct::get_in_order_queue());
@@ -461,7 +461,7 @@ bool RemoteExperts::finish(float *out, std::string &err) try {
     DeviceScope scope(device_);
     if (!scope.ok) { err = scope.error(device_); return false; }
     const auto w0 = std::chrono::steady_clock::now();
-    if (!check(DPCT_CHECK_ERROR(stream_->wait()), "finish", err,
+    if (!check(DPCT_CHECK_ERROR(stream_->wait_and_throw()), "finish", err,
                device_)) return false;
     ms_wait_ += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - w0).count();
     for (size_t i = 0; i < original_row_.size(); ++i)

@@ -113,7 +113,7 @@ bool transfer(void *dst, const void *src, size_t n, std::string &error) try {
     if (!src || !dst) { error = "conversation snapshot: missing state buffer"; return false; }
     // Default handles both device allocations and device-mapped host pool aliases.
     const dpct::err0 e =
-        DPCT_CHECK_ERROR(dpct::get_in_order_queue().memcpy(dst, src, n).wait());
+        DPCT_CHECK_ERROR(dpct::get_in_order_queue().memcpy(dst, src, n).wait_and_throw());
     if (e == 0) return true;
     /*
     DPCT1009: SYCL reports errors using exceptions and does not use error

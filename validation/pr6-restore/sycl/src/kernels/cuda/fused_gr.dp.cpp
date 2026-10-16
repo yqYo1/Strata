@@ -2077,7 +2077,7 @@ bool fused_gr_selftest(bool ok_variant[4], std::string why[4]) try {
             return by memcpy API to ensure synchronization behavior.
             */
             DPCT_CHECK_ERROR(st->memcpy(h2.data(), d2, n * 4)) != 0 ||
-            DPCT_CHECK_ERROR(st->wait()) != 0) {
+            DPCT_CHECK_ERROR(st->wait_and_throw()) != 0) {
             why[0] = "reading back the check failed";
             ok = false;
             return false;
@@ -2135,7 +2135,7 @@ bool fused_gr_selftest(bool ok_variant[4], std::string why[4]) try {
             use the error codes. The cudaGetLastError function call was replaced
             with 0. You need to rewrite this code.
             */
-            if (0 != 0 || DPCT_CHECK_ERROR(st->wait()) != 0) {
+            if (0 != 0 || DPCT_CHECK_ERROR(st->wait_and_throw()) != 0) {
                 why[0] = "a kernel of the check failed";
                 ok = false;
                 break;
@@ -2150,7 +2150,7 @@ bool fused_gr_selftest(bool ok_variant[4], std::string why[4]) try {
         ok_variant[2] = ok_variant[3] = false;
     }
     if (st != &dpct::get_in_order_queue()) {
-        st->wait();
+        st->wait_and_throw();
         dpct::get_current_device().destroy_queue(st);
     }
     sycl::free(base, dpct::get_in_order_queue());

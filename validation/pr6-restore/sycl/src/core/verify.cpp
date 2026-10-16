@@ -283,15 +283,15 @@ Verifier::~Verifier() try {
         Verifier* me = this;
         slot.compare_exchange_strong(me, nullptr);
     }
-    if (cs_) cs_->wait();
-    if (copy_) copy_->wait();
+    if (cs_) cs_->wait_and_throw();
+    if (copy_) copy_->wait_and_throw();
     if (host_staging_) sycl::free(host_staging_, dpct::get_in_order_queue());
     for (auto& e : exec_)
         if (e) delete (e);
     if (commit_exec_) delete (commit_exec_);
     if (cs_) dpct::get_current_device().destroy_queue(cs_);
     if (copy_) {
-        copy_->wait(); dpct::get_current_device().destroy_queue(copy_);
+        copy_->wait_and_throw(); dpct::get_current_device().destroy_queue(copy_);
     }
     if (arena_) sycl::free(arena_, dpct::get_in_order_queue());
     void* hosts[] = {h_tok_, h_step_, h_pos_, h_commit_, h_ple_, h_out_, h_x_, h_ids_, h_w_, h_seq_, h_flag_, h_ymiss_,
@@ -457,7 +457,7 @@ bool Verifier::init(const WeightTable &wt, const ModelGeometry &g,
         err = "verify: the device arena (" + std::to_string(count.used >> 20) + " MiB) does not fit";
         return false;
     }
-    dpct::get_in_order_queue().memset(arena_, 0, count.used).wait();
+    dpct::get_in_order_queue().memset(arena_, 0, count.used).wait_and_throw();
     if (g_trace && trace_h_ == nullptr) {   // #649: the breadcrumbs, mapped so they read while the GPU hangs
         trace_n_ = (size_t) (g.n_layers + 1) * kProfPer * 2;
         if (!mapped(trace_n_ * 8, (void**) &trace_h_, (void**) &trace_m_)) {
@@ -485,7 +485,7 @@ bool Verifier::init(const WeightTable &wt, const ModelGeometry &g,
                                  np * 8, dpct::get_in_order_queue())) != 0) {
             prof_on_ = false; prof_ = nullptr;
         } else {
-            dpct::get_in_order_queue().memset(prof_, 0, np * 8).wait();
+            dpct::get_in_order_queue().memset(prof_, 0, np * 8).wait_and_throw();
             prof_h_.assign(np, 0);
         }
     }
@@ -524,7 +524,7 @@ bool Verifier::init(const WeightTable &wt, const ModelGeometry &g,
             DPCT_CHECK_ERROR(skip_ = (uint32_t *)sycl::malloc_device(
                                  64, dpct::get_in_order_queue())) == 0 &&
             DPCT_CHECK_ERROR(
-                dpct::get_in_order_queue().memset(skip_, 0, 64).wait()) == 0;
+                dpct::get_in_order_queue().memset(skip_, 0, 64).wait_and_throw()) == 0;
         if (ok2 && hits.slot_off != nullptr && hits.n_slots > 0) {
             ok2 = DPCT_CHECK_ERROR(
                       slot_off_d_ = sycl::malloc_device<unsigned long long>(
@@ -534,7 +534,7 @@ bool Verifier::init(const WeightTable &wt, const ModelGeometry &g,
                                        .memcpy(slot_off_d_, hits.slot_off,
                                                (size_t)hits.n_slots *
                                                    sizeof(unsigned long long))
-                                       .wait()) == 0;
+                                       .wait_and_throw()) == 0;
         }
         /*
         DPCT1026: The call to cudaGetLastError was removed because this
@@ -597,7 +597,7 @@ bool Verifier::record_window(int T, dpct::queue_ptr cs, std::string &err) {
     auto stamp = [&](int64_t l, int i, int grp) {
         if (trace_m_ != nullptr) gpu_stamp(trace_m_, (int) ((l * kProfPer + i) * 2 + grp), cs);   // #649
         if (!prof_on_ || grp != 0) return;
-        if (eager) { cs->wait(); prof_h_[(size_t) (l * kProfPer + i)] = (unsigned long long) std::chrono::steady_clock::now().time_since_epoch().count(); }
+        if (eager) { cs->wait_and_throw(); prof_h_[(size_t) (l * kProfPer + i)] = (unsigned long long) std::chrono::steady_clock::now().time_since_epoch().count(); }
         else gpu_stamp(prof_, (int) (l * kProfPer + i), cs);
     };
     const int tb_[2] = {0, (T + 1) / 2}, te_[2] = {G == 2 ? (T + 1) / 2 : T, T};
@@ -1331,7 +1331,7 @@ bool Verifier::capture(int T, std::string &err) try {
     DPCT1007: Migration of cudaGraphUpload is not supported.
     */
     const dpct::err0 ue = 0;   // no cudaGraphUpload on SYCL: a finalized command_graph is already resident
-    const dpct::err0 us = DPCT_CHECK_ERROR(cs_->wait());
+    const dpct::err0 us = DPCT_CHECK_ERROR(cs_->wait_and_throw());
     std::fprintf(
         stderr,
         "strata verify: captured the %d-token window (upload %s, sync %s)\n", T,
@@ -1597,7 +1597,7 @@ bool Verifier::run(int T, const int32_t *tokens, int64_t pos0, PoolMultiFn pool,
     // watchdog then releases every verifier's GPU waits (release_live_verifiers) before it ends the engine, so no
     // spin kernel outlives the process.  The wait itself stays a blocking sync (a polling wait cost decode upstream).
     trace_ev("SYNC", -1, -1, 0);
-    const dpct::err0 se = DPCT_CHECK_ERROR(cs_->wait());
+    const dpct::err0 se = DPCT_CHECK_ERROR(cs_->wait_and_throw());
     trace_ev("SYNCED", -1, -1, (int64_t) se);
     if (std::getenv("STRATA_VERIFY_DEBUG") != nullptr) {
         const Clock::time_point t_done = Clock::now();
@@ -1627,14 +1627,14 @@ bool Verifier::run(int T, const int32_t *tokens, int64_t pos0, PoolMultiFn pool,
         std::vector<uint32_t> sk((size_t) Gd, 0);
         std::vector<int32_t> id0((size_t) ss.k, 0);
         std::vector<int32_t> res0((size_t) 16, 0);
-        cs_->memcpy(sk.data(), skip_, sk.size() * 4).wait();
-        cs_->memcpy(id0.data(), ids_, id0.size() * 4).wait();
-        cs_->memcpy(res0.data(), hits_.d_res, res0.size() * 4).wait();
+        cs_->memcpy(sk.data(), skip_, sk.size() * 4).wait_and_throw();
+        cs_->memcpy(id0.data(), ids_, id0.size() * 4).wait_and_throw();
+        cs_->memcpy(res0.data(), hits_.d_res, res0.size() * 4).wait_and_throw();
         std::fprintf(stderr, "verify dbg: window T=%d: host seq=%u (expected %lld), skip[]=", T, *(volatile uint32_t*) h_seq_,
                      (long long) ((le_ - lb_) * Gd));
         for (int i = 0; i < Gd; ++i) std::fprintf(stderr, " %u", sk[(size_t) i]);
         std::vector<float> w0((size_t) ss.k, 0.f);
-        cs_->memcpy(w0.data(), w_, w0.size() * 4).wait();
+        cs_->memcpy(w0.data(), w_, w0.size() * 4).wait_and_throw();
         std::fprintf(stderr, "; layer-0 weights:");
         for (size_t i = 0; i < w0.size(); ++i) std::fprintf(stderr, " %.3g", w0[i]);
         std::fprintf(stderr, "; layer-0 ids:");
@@ -1645,7 +1645,7 @@ bool Verifier::run(int T, const int32_t *tokens, int64_t pos0, PoolMultiFn pool,
                      ((volatile int32_t*) h_out_)[2], ((volatile int32_t*) h_out_)[3]);
         auto stat = [&](const char* what, const float* dev, size_t n) {   // token 0's vector: where do the zeros begin?
             std::vector<float> v(n, 0.f);
-            cs_->memcpy(v.data(), dev, n * 4).wait();
+            cs_->memcpy(v.data(), dev, n * 4).wait_and_throw();
             double sum = 0, mx = 0; size_t nonfinite = 0;
             for (float x : v) { if (!std::isfinite(x)) { ++nonfinite; continue; } sum += std::fabs(x); mx = std::max(mx, (double) std::fabs(x)); }
             std::fprintf(stderr, "verify dbg:   %-8s n=%zu mean|.|=%.4g max|.|=%.4g nonfinite=%zu first4=%g %g %g %g\n", what, n,
@@ -1654,8 +1654,8 @@ bool Verifier::run(int T, const int32_t *tokens, int64_t pos0, PoolMultiFn pool,
         if (dbgR_) {
             const size_t N = (size_t) g.n_embd;
             std::vector<float> r((size_t) g.n_layers * N), m((size_t) g.n_layers * N);
-            cs_->memcpy(r.data(), dbgR_, r.size() * 4).wait();
-            cs_->memcpy(m.data(), dbgM_, m.size() * 4).wait();
+            cs_->memcpy(r.data(), dbgR_, r.size() * 4).wait_and_throw();
+            cs_->memcpy(m.data(), dbgM_, m.size() * 4).wait_and_throw();
             for (int64_t l = 0; l < g.n_layers; ++l) {
                 double sr = 0, sm = 0; size_t nr = 0, nm = 0;
                 for (size_t i = 0; i < N; ++i) {
@@ -1669,7 +1669,7 @@ bool Verifier::run(int T, const int32_t *tokens, int64_t pos0, PoolMultiFn pool,
         }
         {   // the device plan of the last layer group and the MoE parts it produced (token 0)
             std::vector<int32_t> pc(4, 0);
-            cs_->memcpy(pc.data(), plan_, 16).wait();
+            cs_->memcpy(pc.data(), plan_, 16).wait_and_throw();
             std::fprintf(stderr, "verify dbg:   plan (last layer, grp 0): groups=%d entries=%d pcie=%d\n", pc[0], pc[1], pc[2]);
         }
         stat("parts_", parts_, (size_t) ss.k * g.n_embd);
@@ -1681,13 +1681,13 @@ bool Verifier::run(int T, const int32_t *tokens, int64_t pos0, PoolMultiFn pool,
         stat("mixed_", mixed_, (size_t) g.n_embd);
     }
     progress_at("verify window: waiting for the expert copies", (int64_t) T);
-    copy_->wait(); // no host function of this window may raise flag B in the
+    copy_->wait_and_throw(); // no host function of this window may raise flag B in the
                    // next one
     if (prof_on_ && G == 1) {       // the window's GPU stage stamps
         if (std::getenv("STRATA_VERIFY_EAGER") == nullptr)   // eager: prof_h_ already holds the host clocks
             dpct::get_in_order_queue()
                 .memcpy(prof_h_.data(), prof_, prof_h_.size() * 8)
-                .wait();
+                .wait_and_throw();
         const int64_t L = g.n_layers;
         auto at = [&](int64_t l, int i) { return prof_h_[(size_t) (l * kProfPer + i)]; };
         // D8: the derived columns below read stamps the hc-read kernels write themselves or the next
@@ -1733,7 +1733,7 @@ bool Verifier::run(int T, const int32_t *tokens, int64_t pos0, PoolMultiFn pool,
         SamplerParams sp = sampling_;
         sp.counter = (uint64_t) pos0;
         sample_tokens(head_logits_, T, (int) n_vocab_, hist_d_, hist_len_, sp, m_out_, cs_);
-        if (DPCT_CHECK_ERROR(cs_->wait()) !=
+        if (DPCT_CHECK_ERROR(cs_->wait_and_throw()) !=
             0) { // m_out_ is the mapped h_out_: synced, it is readable
             err = "verify: the head sampling failed";
             return false;
@@ -1746,7 +1746,7 @@ bool Verifier::run(int T, const int32_t *tokens, int64_t pos0, PoolMultiFn pool,
             std::vector<float> h((size_t) T * (size_t) n_vocab_);
             dpct::get_in_order_queue()
                 .memcpy(h.data(), head_logits_, h.size() * 4)
-                .wait();
+                .wait_and_throw();
             for (int t = 0; t < T && !reported; ++t) {
                 int64_t bad = 0;
                 for (int64_t v = 0; v < n_vocab_; ++v) bad += !std::isfinite(h[(size_t) t * n_vocab_ + v]);
@@ -1852,7 +1852,7 @@ bool Verifier::window_logprobs(const int32_t* targets, int T, int64_t pos0, int3
     }
     // run() synchronized cs_ before returning, so the head of this window is complete
     std::vector<float> h((size_t) T * (size_t) n_vocab_);
-    cs_->memcpy(h.data(), head_logits_, h.size() * sizeof(float)).wait();
+    cs_->memcpy(h.data(), head_logits_, h.size() * sizeof(float)).wait_and_throw();
     for (int t = 0; t < T; ++t) {
         const float* row = h.data() + (size_t) t * (size_t) n_vocab_;
         const int32_t tgt = targets[t];
@@ -1958,7 +1958,7 @@ bool Verifier::commit_finish(std::string &err) try {
     const OnDevice on_device(device_);
     const int n_keep = pending_commit_;
     pending_commit_ = 0;
-    const dpct::err0 se = DPCT_CHECK_ERROR(cs_->wait());
+    const dpct::err0 se = DPCT_CHECK_ERROR(cs_->wait_and_throw());
     if (se != 0) {
         err = std::string("verify: commit: ") + dpct::get_error_string_dummy(se);
         return false;
@@ -1986,7 +1986,7 @@ bool Verifier::copy_logits(int t, float* host) const {
     if (next_ != nullptr) return next_->copy_logits(t, host);   // a layer split: the head is on the last stage
     if (head_logits_ == nullptr || host == nullptr || t < 0 || n_vocab_ <= 0) return false;
     try {
-        cs_->memcpy(host, head_logits_ + (size_t) t * (size_t) n_vocab_, (size_t) n_vocab_ * sizeof(float)).wait();
+        cs_->memcpy(host, head_logits_ + (size_t) t * (size_t) n_vocab_, (size_t) n_vocab_ * sizeof(float)).wait_and_throw();
     } catch (sycl::exception const&) {
         return false;
     }

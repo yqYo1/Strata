@@ -1,6 +1,7 @@
 // src/core/mtp.cpp - see include/strata/core/mtp.hpp.
 #include <sycl/sycl.hpp>
 #include <dpct/dpct.hpp>
+#include "strata/sycl_retirement.hpp"
 #include "strata/core/mtp.hpp"
 #include "strata/prefill/draft_uploads.hpp"
 #include "strata/core/coupled_draft.hpp"
@@ -117,7 +118,7 @@ bool read_file(const std::string& path, std::vector<uint8_t>& out) {
 }  // namespace
 
 MtpDrafter::~MtpDrafter() {
-    if (cs_) cs_->wait();
+    if (cs_) strata::retire_queue(*cs_);
     for (auto &e : prefill_exec_) if (e) delete (e);
     for (auto &e : prefill_dev_exec_) if (e) delete (e);
     if (pf_dev_) sycl::free(pf_dev_, dpct::get_in_order_queue());
@@ -224,7 +225,7 @@ bool MtpDrafter::load(const std::string &rt_dir, const ModelGeometry &g,
         memory is not pageable, call wait() on event return by memcpy API to
         ensure synchronization behavior.
         */
-        dpct::get_in_order_queue().memcpy(dense_, blob.data(), blob.size()).wait();
+        dpct::get_in_order_queue().memcpy(dense_, blob.data(), blob.size()).wait_and_throw();
         vram_ += blob.size();
     }
     // ---- the 512 routed experts, one blob each
@@ -248,7 +249,7 @@ bool MtpDrafter::load(const std::string &rt_dir, const ModelGeometry &g,
             if (std::fread(chunk.data(), 1, (size_t) n, f) != (size_t) n) { err = "mtp: experts.bin is truncated"; return false; }
             dpct::get_in_order_queue()
                 .memcpy(experts_ + off, chunk.data(), n)
-                .wait();
+                .wait_and_throw();
             off += n;
         }
         vram_ += bytes;
@@ -347,7 +348,7 @@ bool MtpDrafter::load(const std::string &rt_dir, const ModelGeometry &g,
                              count.used, dpct::get_in_order_queue())) != 0) {
         err = "mtp: buffers do not fit"; return false;
     }
-    dpct::get_in_order_queue().memset(arena_, 0, count.used).wait();
+    dpct::get_in_order_queue().memset(arena_, 0, count.used).wait_and_throw();
     Bump real;
     real.base = (uint8_t*) arena_;
     carve(real);
@@ -362,7 +363,7 @@ bool MtpDrafter::load(const std::string &rt_dir, const ModelGeometry &g,
         memory is not pageable, call wait() on event return by memcpy API to
         ensure synchronization behavior.
         */
-        dpct::get_in_order_queue().memcpy(ident_, id.data(), id.size() * 4).wait();
+        dpct::get_in_order_queue().memcpy(ident_, id.data(), id.size() * 4).wait_and_throw();
     }
     /*
     DPCT1025: The SYCL queue is created ignoring the flag and priority
@@ -422,12 +423,12 @@ bool MtpDrafter::setup_coupled(std::string& err) try {
         err = "mtp: the coupled draft sampler's buffers do not fit";
         return false;
     }
-    q.memset(cring_, 0xff, ring).wait();   // -1: no token
+    q.memset(cring_, 0xff, ring).wait_and_throw();   // -1: no token
     std::fill(h_chist_, h_chist_ + kCoupledHistCap, -1);
     vram_ += sizeof(strata::kernels::SamplerParams) + ring + scratch;
     if (dhead_ != nullptr) {   // token id -> subset index (-1: not in the draft head), for the penalties
         std::vector<int32_t> sub((size_t) n_dvocab_), inv((size_t) n_vocab_, -1);
-        q.memcpy(sub.data(), dvocab_, sub.size() * sizeof(int32_t)).wait();
+        q.memcpy(sub.data(), dvocab_, sub.size() * sizeof(int32_t)).wait_and_throw();
         for (size_t i = 0; i < sub.size(); ++i)
             if (sub[i] >= 0 && sub[i] < n_vocab_ && inv[(size_t) sub[i]] < 0) inv[(size_t) sub[i]] = (int32_t) i;
         dinv_ = (int32_t*) sycl::malloc_device(inv.size() * sizeof(int32_t), q);
@@ -435,7 +436,7 @@ bool MtpDrafter::setup_coupled(std::string& err) try {
             err = "mtp: the coupled draft sampler's token map does not fit";
             return false;
         }
-        q.memcpy(dinv_, inv.data(), inv.size() * sizeof(int32_t)).wait();
+        q.memcpy(dinv_, inv.data(), inv.size() * sizeof(int32_t)).wait_and_throw();
         vram_ += inv.size() * sizeof(int32_t);
     }
     dpct::get_current_device().queues_wait_and_throw();
@@ -536,7 +537,7 @@ bool MtpDrafter::bind(const WeightTable &wt, const NativeHead *head,
             }
             dpct::get_in_order_queue()
                 .memcpy(dvocab_, raw.data(), raw.size())
-                .wait();
+                .wait_and_throw();
             strata::kernels::gather_rows((const uint8_t*) head->weights(), row_bytes, dvocab_, n_dvocab_, dhead_, nullptr);
             dpct::get_current_device().queues_wait_and_throw();
             vram_ += (uint64_t) (n_dvocab_ * row_bytes) + raw.size();
@@ -764,7 +765,7 @@ bool finish_capture(dpct::queue_ptr cs, bool ok,
     DPCT1007: Migration of cudaGraphUpload is not supported.
     */
     // no cudaGraphUpload on SYCL: a finalized command_graph is already resident
-    cs->wait();
+    cs->wait_and_throw();
     return true;
 }
 catch (sycl::exception const &exc) {
@@ -878,7 +879,7 @@ void MtpDrafter::kv_restore(int64_t upto) {
     const strata::kernels::QsaShapes s = shapes_of(*g_);
     const int64_t b1 = (upto + s.page_size - 1) / s.page_size, b0 = std::max<int64_t>(0, b1 - st_.n_slots);
     strata::kernels::kv_ring_restore(qsa_attn_pools(st_), st_.host, qsa_kv_format(st_), b0, b1, st_.n_slots, s, cs_);
-    cs_->wait();
+    strata::retire_queue(*cs_);
 }
 
 bool MtpDrafter::prefill(const float *R_rows, const int32_t *next_tokens,
@@ -924,7 +925,7 @@ bool MtpDrafter::prefill(const float *R_rows, const int32_t *next_tokens,
         // Explicit port of the fork's independent fallback-upload lease fix.
         // A capture/submission failure below must retire rec before it dies.
         strata::prefill::detail::DraftUploadGuard record_lease(
-            [&] { cs_->wait_and_throw(); return true; },
+            [&] { strata::retire_queue(*cs_); return true; },
             [] {
                 std::fputs("mtp prefill: record upload failed to retire; exiting with source live\n", stderr);
                 std::fflush(stderr);
@@ -1012,7 +1013,7 @@ bool MtpDrafter::prefill(const float *R_rows, const int32_t *next_tokens,
                 return false;
             }
         }
-        if (DPCT_CHECK_ERROR(cs_->wait_and_throw()) != 0) {
+        if (DPCT_CHECK_ERROR(strata::retire_queue(*cs_)) != 0) {
             /*
             DPCT1009: SYCL reports errors using exceptions and does not use
             error codes. Please replace the "get_error_string_dummy(...)" with a
@@ -1035,7 +1036,7 @@ bool MtpDrafter::prefill(const float *R_rows, const int32_t *next_tokens,
     // accepting that D2D copy must drain this separate queue before returning
     // to a caller that may immediately destroy the prompt workspace.
     strata::prefill::detail::DraftUploadGuard residual_lease(
-        [&] { cs_->wait_and_throw(); return true; },
+        [&] { strata::retire_queue(*cs_); return true; },
         [] {
             std::fputs("mtp prefill: borrowed residual failed to retire; exiting with owner live\n", stderr);
             std::fflush(stderr);
@@ -1065,7 +1066,7 @@ bool MtpDrafter::prefill(const float *R_rows, const int32_t *next_tokens,
                                          (size_t)T * HCN * sizeof(float))) !=
                 0 ||
             DPCT_CHECK_ERROR((cs_)->ext_oneapi_graph(*prefill_exec_[T])) != 0 ||
-            DPCT_CHECK_ERROR(cs_->wait()) != 0) {
+            DPCT_CHECK_ERROR(strata::retire_queue(*cs_)) != 0) {
             /*
             DPCT1009: SYCL reports errors using exceptions and does not use
             error codes. Please replace the "get_error_string_dummy(...)" with a
@@ -1115,7 +1116,7 @@ bool MtpDrafter::draft(int T, const int32_t* tokens, int64_t p, int a, int32_t* 
     h_row_[1] = 0;
     std::atomic_thread_fence(std::memory_order_seq_cst);
     if (DPCT_CHECK_ERROR((cs_)->ext_oneapi_graph(*(cp ? round_exec_c_[T] : round_exec_[T]))) != 0 ||
-        DPCT_CHECK_ERROR(cs_->wait()) != 0) {
+        DPCT_CHECK_ERROR(strata::retire_queue(*cs_)) != 0) {
         /*
         DPCT1009: SYCL reports errors using exceptions and does not use error
         codes. Please replace the "get_error_string_dummy(...)" with a real
@@ -1139,7 +1140,7 @@ bool MtpDrafter::draft(int T, const int32_t* tokens, int64_t p, int a, int32_t* 
         put(max_t_ + j - 1, coupled_draft_cell(p, a, j));   // p + a + j; coupled: drawn at counter cell + 1
         std::atomic_thread_fence(std::memory_order_seq_cst);
         if (DPCT_CHECK_ERROR((cs_)->ext_oneapi_graph(*(cp ? step_exec_c_[j] : step_exec_[j]))) != 0 ||
-            DPCT_CHECK_ERROR(cs_->wait()) != 0) {
+            DPCT_CHECK_ERROR(strata::retire_queue(*cs_)) != 0) {
             /*
             DPCT1009: SYCL reports errors using exceptions and does not use
             error codes. Please replace the "get_error_string_dummy(...)" with a
@@ -1175,7 +1176,7 @@ bool MtpDrafter::draft_first(int T, const float *R_row, int32_t token,
     for (int t = 0; t < T; ++t)
         if (DPCT_CHECK_ERROR(dpct::get_in_order_queue().memcpy(
                 (void *)(window_R_ + (size_t)t * HCN), R_row,
-                (size_t)HCN * sizeof(float)).wait()) != 0) {
+                (size_t)HCN * sizeof(float)).wait_and_throw()) != 0) {
             err = "mtp: staging the first residual failed";
             return false;
         }

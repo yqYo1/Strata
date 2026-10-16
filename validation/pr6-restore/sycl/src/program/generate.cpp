@@ -283,7 +283,7 @@ bool resident_stage_swaps(strata::core::FileExpertSource &src,
         kept.push_back(s);
     }
     if (!staged.empty()) {
-        if (DPCT_CHECK_ERROR(stream->wait()) != 0) return false;
+        if (DPCT_CHECK_ERROR(stream->wait_and_throw()) != 0) return false;
         for (const Staged& x : staged)
             if (!src.stage_exchange(x.layer, x.in, x.out, x.q)) return false;
     }
@@ -1222,7 +1222,7 @@ double probe_pcie_h2d_gbps(std::string *samples = nullptr) try {
     ensure synchronization behavior.
     */
     dpct::get_in_order_queue().memcpy(
-        d, h, kBytes).wait(); // warmup: context up, copy engine primed
+        d, h, kBytes).wait_and_throw(); // warmup: context up, copy engine primed
     float ms[kBursts] = {};
 #if defined(STRATA_USE_HIP) && defined(_WIN32)
     // Windows HIP: the events do not bracket the copies there (an RX 6800 read 3,300-26,000 GB/s, so every link kept
@@ -1251,7 +1251,7 @@ double probe_pcie_h2d_gbps(std::string *samples = nullptr) try {
             type of operand memory, so you may need to call wait() on event
             return by memcpy API to ensure synchronization behavior.
             */
-            dpct::get_in_order_queue().memcpy(d, h, kBytes).wait();
+            dpct::get_in_order_queue().memcpy(d, h, kBytes).wait_and_throw();
             dpct::sync_barrier(ev[b + 1]);
         }
         ok = DPCT_CHECK_ERROR(ev[kBursts]->wait_and_throw()) == 0;
@@ -2411,7 +2411,7 @@ int main(int argc, char **argv) try {
             */
             DPCT_CHECK_ERROR(dpct::get_in_order_queue().memcpy(
                 d_mrope, mrope_host.data(),
-                mrope_host.size() * sizeof(int32_t)).wait()) != 0) {
+                mrope_host.size() * sizeof(int32_t)).wait_and_throw()) != 0) {
             std::fprintf(stderr, "strata generate: cannot allocate the image position table\n");
             return 1;
         }
@@ -2626,7 +2626,7 @@ int main(int argc, char **argv) try {
                 (size_t)K * g.n_embd * 4, dpct::get_in_order_queue())) != 0 ||
         DPCT_CHECK_ERROR(dpct::get_in_order_queue()
                              .memset(d_parts, 0, (size_t)K * g.n_embd * 4)
-                             .wait()) != 0) {
+                             .wait_and_throw()) != 0) {
         std::fprintf(stderr, "strata generate: the parts buffer failed\n");
         return 1;
     }
@@ -2792,7 +2792,7 @@ int main(int argc, char **argv) try {
                 */
                 DPCT_CHECK_ERROR(dpct::get_in_order_queue().memcpy(
                     st.mrope, mrope_host.data(),
-                    mrope_host.size() * sizeof(int32_t)).wait()) != 0) {
+                    mrope_host.size() * sizeof(int32_t)).wait_and_throw()) != 0) {
                 std::fprintf(stderr, "strata generate: layer split, CUDA%d: the image position table failed\n", st.dev);
                 return 1;
             }
@@ -3581,7 +3581,7 @@ int main(int argc, char **argv) try {
             if (!auto_cache || attempt - failed >= 6) break;
             dpct::get_in_order_queue()
                 .memset(xcache.device_slot(0), 0, (size_t)xcache.bytes())
-                .wait();
+                .wait_and_throw();
             dpct::get_current_device().queues_wait_and_throw();
             size_t free_b = 0, total_b = 0;
             /*
@@ -3681,7 +3681,7 @@ int main(int argc, char **argv) try {
             for (size_t b0 = 0, k = 0; b0 < fills.size() && read_ok; b0 += kBatch, ++k) {
                 const size_t n = std::min(kBatch, fills.size() - b0);
                 uint8_t* set = pin + (k % 2) * kBatch * blob_cap;
-                done[k % 2].wait();                       // the copies that last read this half are finished
+                done[k % 2].wait_and_throw();                       // the copies that last read this half are finished
                 std::atomic<size_t> next{0};
                 std::atomic<bool> ok{true};
                 std::vector<std::thread> ts;
@@ -3701,7 +3701,7 @@ int main(int argc, char **argv) try {
                     fill_bytes += nb;
                 }
             }
-            q.wait();
+            q.wait_and_throw();
             sycl::free(pin, q);
             if (!read_ok) {
                 std::fprintf(stderr, "strata generate: the profile fill could not read an expert from the GGUF\n");
@@ -3792,7 +3792,7 @@ int main(int argc, char **argv) try {
                         if (gguf_src.pinned(l, e))
                             tab[(size_t) (l * g.n_expert + e)] = (unsigned long long) gguf_src.device_alias(l, e);
                 mirror_table_d = sycl::malloc_device<unsigned long long>(tab.size(), dpct::get_in_order_queue());
-                dpct::get_in_order_queue().memcpy(mirror_table_d, tab.data(), tab.size() * sizeof(unsigned long long)).wait();
+                dpct::get_in_order_queue().memcpy(mirror_table_d, tab.data(), tab.size() * sizeof(unsigned long long)).wait_and_throw();
             }
         }
         unmirrored_misses = (int64_t) miss.size() - (int64_t) (gguf_src.mirrored_bytes() ? std::count_if(miss.begin(), miss.end(),
@@ -3992,7 +3992,7 @@ int main(int argc, char **argv) try {
             ok = DPCT_CHECK_ERROR(dpct::get_in_order_queue()
                                       .memcpy(routers[(size_t)l].data(),
                                               w->data, (size_t)w->bytes)
-                                      .wait()) == 0;
+                                      .wait_and_throw()) == 0;
         }
         const char* kv = std::getenv("STRATA_LOOKAHEAD_K");
         if (ok && lookahead.start(std::move(routers), g.n_embd, g.n_expert, kv ? std::atoi(kv) : 10, &src, err)) {
@@ -4569,7 +4569,7 @@ int main(int argc, char **argv) try {
                 return 1;
             }
             // The sync is INSIDE the interval on purpose: it is the wait for the GPU, so t1 - t0 is GPU time.
-            if (DPCT_CHECK_ERROR(strata::q_of(main_cs)->wait()) != 0) {
+            if (DPCT_CHECK_ERROR(strata::q_of(main_cs)->wait_and_throw()) != 0) {
                 std::fprintf(
                     stderr,
                     "strata generate: gpu-only-full layers faulted: %s\n",
@@ -4592,7 +4592,7 @@ int main(int argc, char **argv) try {
                 std::fprintf(stderr, "strata generate: gpu-only-full lm_head: %s\n", err.c_str());
                 return 1;
             }
-            if (DPCT_CHECK_ERROR(strata::q_of(main_cs)->wait()) != 0) {
+            if (DPCT_CHECK_ERROR(strata::q_of(main_cs)->wait_and_throw()) != 0) {
                 std::fprintf(
                     stderr, "strata generate: gpu-only-full head faulted: %s\n",
                     /*
@@ -4679,7 +4679,7 @@ int main(int argc, char **argv) try {
             by memcpy API to ensure synchronization behavior.
             */
             DPCT_CHECK_ERROR(dpct::get_in_order_queue().memcpy(
-                d_res, host_res.data(), host_res.size() * sizeof(int32_t)).wait()) !=
+                d_res, host_res.data(), host_res.size() * sizeof(int32_t)).wait_and_throw()) !=
                 0) {
             std::fprintf(stderr, "strata generate: the device residency table could not be staged\n");
             return 1;
@@ -4724,7 +4724,7 @@ int main(int argc, char **argv) try {
                 */
                 DPCT_CHECK_ERROR(dpct::get_in_order_queue().memcpy(
                     st->d_res, host_res.data(),
-                    host_res.size() * sizeof(int32_t)).wait()) != 0) {
+                    host_res.size() * sizeof(int32_t)).wait_and_throw()) != 0) {
                 std::fprintf(stderr, "strata generate: layer split: CUDA%d residency table failed\n", st->dev);
                 return 1;
             }
@@ -5361,13 +5361,13 @@ int main(int argc, char **argv) try {
                     */
                     dpct::get_in_order_queue().memcpy(d_res, host_res.data(),
                                                       host_res.size() *
-                                                          sizeof(int32_t)).wait();
+                                                          sizeof(int32_t)).wait_and_throw();
                 for (auto& st : stages) {
                     const strata::core::OnDevice on(st->dev);
                     dpct::get_in_order_queue()
                         .memcpy(st->d_res, host_res.data(),
                                 host_res.size() * sizeof(int32_t))
-                        .wait();
+                        .wait_and_throw();
                 }
             }
         }
@@ -5757,13 +5757,13 @@ int main(int argc, char **argv) try {
                 event return by memcpy API to ensure synchronization behavior.
                 */
                 dpct::get_in_order_queue().memcpy(
-                    d_res, host_res.data(), host_res.size() * sizeof(int32_t)).wait();
+                    d_res, host_res.data(), host_res.size() * sizeof(int32_t)).wait_and_throw();
             for (auto& st : stages) {
                 const strata::core::OnDevice on(st->dev);
                 dpct::get_in_order_queue()
                     .memcpy(st->d_res, host_res.data(),
                             host_res.size() * sizeof(int32_t))
-                    .wait();
+                    .wait_and_throw();
             }
         }
         catch (sycl::exception const &exc) {
@@ -6414,7 +6414,7 @@ int main(int argc, char **argv) try {
                               dpct::get_in_order_queue()
                                   .memcpy(d_mrope, mrope_host.data(),
                                           mrope_host.size() * sizeof(int32_t))
-                                  .wait()) == 0;
+                                  .wait_and_throw()) == 0;
                     for (auto& st : stages) {
                         const strata::core::OnDevice on(st->dev);
                         dpct::get_current_device().queues_wait_and_throw();
@@ -6424,7 +6424,7 @@ int main(int argc, char **argv) try {
                                 dpct::get_in_order_queue()
                                     .memcpy(st->mrope, mrope_host.data(),
                                             mrope_host.size() * sizeof(int32_t))
-                                    .wait()) == 0;
+                                    .wait_and_throw()) == 0;
                     }
                     return ok;
                 }
@@ -6566,11 +6566,11 @@ int main(int argc, char **argv) try {
             int64_t reread_to = -1;   // STRATA_CKPT_REREAD only: read [0, reread_to) again instead of restoring
             if (resume == 0) {
                 strata::core::session_zero(ss, g, nullptr, main_cs);
-                main_stream->wait();
+                main_stream->wait_and_throw();
                 for (auto& st : stages) {
                     const strata::core::OnDevice on(st->dev);
                     strata::core::session_zero(st->ss, g, nullptr, (void*) st->stream);
-                    st->stream->wait();
+                    st->stream->wait_and_throw();
                 }
                 checks.clear();
             } else if (!from_live) {
@@ -6585,11 +6585,11 @@ int main(int argc, char **argv) try {
                     // (--adapt-swaps 0) the answer must match the restored one token for token; anything the
                     // checkpoint missed shows up as a difference.
                     strata::core::session_zero(ss, g, nullptr, main_cs);
-                    main_stream->wait();
+                    main_stream->wait_and_throw();
                     for (auto& st : stages) {
                         const strata::core::OnDevice on(st->dev);
                         strata::core::session_zero(st->ss, g, nullptr, (void*) st->stream);
-                        st->stream->wait();
+                        st->stream->wait_and_throw();
                     }
                     reread_to = resume;
                     std::fprintf(stderr, "strata serve: STRATA_CKPT_REREAD: reading %lld tokens again instead of "
@@ -7000,7 +7000,7 @@ int main(int argc, char **argv) try {
                     dpct::get_in_order_queue()
                         .memcpy(d_hist, hist_stage.data(),
                                 (size_t)T * (size_t)hist_n * sizeof(int32_t))
-                        .wait();
+                        .wait_and_throw();
                 }
                 tr("window", p, T);
                 const Clock::time_point tw0 = Clock::now();
@@ -7158,7 +7158,7 @@ int main(int argc, char **argv) try {
                                             static_cast<const uint8_t *>(p) +
                                                 offset,
                                             n)
-                                    .wait()) != 0) {
+                                    .wait_and_throw()) != 0) {
                             hash_ok = false;
                             break;
                         }
@@ -7403,7 +7403,7 @@ int main(int argc, char **argv) try {
                 dpct::get_in_order_queue()
                     .memcpy(d_res, host_res.data(),
                             host_res.size() * sizeof(int32_t))
-                    .wait();
+                    .wait_and_throw();
                 borrow = xcache.device_slot(first);
                 borrow_bytes = xcache.slot_offsets() ? (uint64_t) (xcache.bytes() - (int64_t) xcache.slot_offsets()[first])
                                                      : (uint64_t) k * (uint64_t) blob;
@@ -7465,7 +7465,7 @@ int main(int argc, char **argv) try {
             dpct::get_in_order_queue()
                 .memcpy(d_res, host_res.data(),
                         host_res.size() * sizeof(int32_t))
-                .wait();
+                .wait_and_throw();
             std::fprintf(stderr, "strata generate: %zu lent slots refilled in %.1f ms\n", lent.size(),
                          std::chrono::duration<double, std::milli>(Clock::now() - tr).count());
         }
@@ -7567,7 +7567,7 @@ int main(int argc, char **argv) try {
             dpct::get_in_order_queue()
                 .memcpy(final_r_host.data(), ss.R,
                         final_r_host.size() * sizeof(float))
-                .wait();
+                .wait_and_throw();
             const int64_t posrec[2] = {pos, tok};
             std::fwrite(posrec, sizeof posrec, 1, final_r);
             std::fwrite(final_r_host.data(), sizeof(float), final_r_host.size(), final_r);
@@ -7636,7 +7636,7 @@ int main(int argc, char **argv) try {
         if (read_logits &&
             (DPCT_CHECK_ERROR(strata::q_of(token_stream)->memcpy(
                  logits.data(), d_logits, (size_t)n_vocab * 4)) != 0 ||
-             DPCT_CHECK_ERROR(strata::q_of(token_stream)->wait()) != 0)) {
+             DPCT_CHECK_ERROR(strata::q_of(token_stream)->wait_and_throw()) != 0)) {
             std::fprintf(stderr, "strata generate: reading the logits back failed\n");
             return 1;
         }
@@ -7684,7 +7684,7 @@ int main(int argc, char **argv) try {
         */
         if (DPCT_CHECK_ERROR(strata::q_of(token_stream)->memcpy(
                 &next, d_next, sizeof(int))) != 0 ||
-            DPCT_CHECK_ERROR(strata::q_of(token_stream)->wait()) != 0) {
+            DPCT_CHECK_ERROR(strata::q_of(token_stream)->wait_and_throw()) != 0) {
             std::fprintf(
                 stderr,
                 "strata generate: reading the sampled token back failed: %s\n",
@@ -7862,7 +7862,7 @@ int main(int argc, char **argv) try {
                 event return by memcpy API to ensure synchronization behavior.
                 */
                 dpct::get_in_order_queue().memcpy(
-                    d_res, host_res.data(), host_res.size() * sizeof(int32_t)).wait();
+                    d_res, host_res.data(), host_res.size() * sizeof(int32_t)).wait_and_throw();
         }
         catch (sycl::exception const &exc) {
           std::cerr << exc.what() << "Exception caught at file:" << __FILE__
@@ -8224,7 +8224,7 @@ int main(int argc, char **argv) try {
         if (DPCT_CHECK_ERROR(dpct::get_in_order_queue()
                                  .memcpy(mx.data(), ss.block.mixed,
                                          mx.size() * sizeof(float))
-                                 .wait()) != 0) {
+                                 .wait_and_throw()) != 0) {
             std::fprintf(stderr, "strata generate: reading mixed back failed\n");
             return 1;
         }
@@ -8247,7 +8247,7 @@ int main(int argc, char **argv) try {
         if (DPCT_CHECK_ERROR(
                 dpct::get_in_order_queue()
                     .memcpy(R.data(), ss.R, R.size() * sizeof(float))
-                    .wait()) != 0) {
+                    .wait_and_throw()) != 0) {
             std::fprintf(stderr, "strata generate: reading R back failed\n");
             return 1;
         }

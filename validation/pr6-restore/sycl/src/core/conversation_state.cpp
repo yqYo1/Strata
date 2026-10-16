@@ -41,7 +41,7 @@ bool copy(void* dst, const void* src, size_t bytes, std::string& error) {
     if (!bytes) return true;
     if (!dst || !src) return fail(error, "missing running-state buffer");
     try {
-        dpct::get_in_order_queue().memcpy(dst, src, bytes).wait();
+        dpct::get_in_order_queue().memcpy(dst, src, bytes).wait_and_throw();
         return true;
     } catch (sycl::exception const& e) {
         error = std::string("conversation snapshot running-state copy: ") + e.what();

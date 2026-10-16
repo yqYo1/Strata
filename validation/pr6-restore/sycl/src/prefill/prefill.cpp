@@ -1079,6 +1079,7 @@ bool Prefill::init(const core::WeightTable &wt, const core::ModelGeometry &g,
         err = "prefill: device buffers for a chunk of " + std::to_string(chunk) + " tokens do not fit";
         return false;
     }
+    strata::retire_queue(*m.cs);
     m.ready = true; // publish only after every allocation and carve succeeds
     return true;
 }
@@ -4087,6 +4088,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
         }
     }
     if (next_run.valid() && !next_run.get()) { err = next_err; return false; }
+    strata::retire_queue(*m.cs);
     ss.ple_prev[0] = prev[0];
     ss.ple_prev[1] = prev[1];
     if (std::getenv("STRATA_DBG_NAN") != nullptr) {   // debug: the state the prompt leaves for the token path

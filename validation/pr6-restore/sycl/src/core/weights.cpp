@@ -460,7 +460,7 @@ bool WeightTable::load(const std::string &pack_dir, void *arena_base,
                 event return by memcpy API to ensure synchronization behavior.
                 */
                 if (DPCT_CHECK_ERROR(dpct::get_in_order_queue().memcpy(
-                        dst_base + r.dst_off + out_at, host_src, out_bytes).wait()) !=
+                        dst_base + r.dst_off + out_at, host_src, out_bytes).wait_and_throw()) !=
                     0) {
                     err = "cudaMemcpy failed for " + r.name;
                     sycl::free(stage_in, dpct::get_in_order_queue());

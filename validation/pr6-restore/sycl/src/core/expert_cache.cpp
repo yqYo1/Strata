@@ -531,7 +531,7 @@ bool ExpertCache::open(int64_t n_slots, int64_t n_layers, int64_t n_expert,
     // Zeroed so a slot read before it is filled is a DETERMINISTIC wrong answer rather than whatever the
     // allocator handed back.  A stale block of a previous process's memory would still sum to finite floats.
     if (DPCT_CHECK_ERROR(
-            dpct::get_in_order_queue().memset(base_, 0, (size_t)want).wait()) !=
+            dpct::get_in_order_queue().memset(base_, 0, (size_t)want).wait_and_throw()) !=
         0) {
         err = "ExpertCache: cudaMemset of the slot arena failed";
         close();
@@ -751,7 +751,7 @@ bool ExpertCache::fill_slot_blocking(int32_t slot, const uint8_t *host_blob,
     synchronization behavior.
     */
     const dpct::err0 e =
-        DPCT_CHECK_ERROR(dpct::get_in_order_queue().memcpy(dst, host_blob, n).wait());
+        DPCT_CHECK_ERROR(dpct::get_in_order_queue().memcpy(dst, host_blob, n).wait_and_throw());
 #endif
     /*
     DPCT1000: Error handling if-stmt was detected but could not be
@@ -795,7 +795,7 @@ bool ExpertCache::fill_slot_queued(int32_t slot, const uint8_t *host_blob,
     ensure synchronization behavior.
     */
     const dpct::err0 e =
-        DPCT_CHECK_ERROR(dpct::get_in_order_queue().memcpy(dst, host_blob, n).wait());
+        DPCT_CHECK_ERROR(dpct::get_in_order_queue().memcpy(dst, host_blob, n).wait_and_throw());
     /*
     DPCT1000: Error handling if-stmt was detected but could not be
     rewritten.
@@ -823,7 +823,7 @@ catch (sycl::exception const &exc) {
 }
 
 bool ExpertCache::sync_queued(std::string &err) try {
-    const dpct::err0 e = DPCT_CHECK_ERROR(dpct::get_in_order_queue().wait());
+    const dpct::err0 e = DPCT_CHECK_ERROR(dpct::get_in_order_queue().wait_and_throw());
     /*
     DPCT1000: Error handling if-stmt was detected but could not be
     rewritten.
@@ -862,7 +862,7 @@ bool ExpertCache::verify_slot(int32_t slot, const uint8_t *host_blob,
     // comparison meaningful.
     std::vector<uint8_t> got((size_t) nb);
     const dpct::err0 e = DPCT_CHECK_ERROR(
-        dpct::get_in_order_queue().memcpy(got.data(), src, (size_t)nb).wait());
+        dpct::get_in_order_queue().memcpy(got.data(), src, (size_t)nb).wait_and_throw());
     /*
     DPCT1000: Error handling if-stmt was detected but could not be
     rewritten.

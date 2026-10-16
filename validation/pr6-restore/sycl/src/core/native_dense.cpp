@@ -190,7 +190,7 @@ bool NativeDense::load(const std::vector<std::string> &shards,
                     status = DPCT_CHECK_ERROR(
                         dpct::get_in_order_queue()
                             .memcpy(data.get(), gguf.tensor_data(tensor), bytes)
-                            .wait());
+                            .wait_and_throw());
                 /*
                 DPCT1000: Error handling if-stmt was detected but could not
                 be rewritten.

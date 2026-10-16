@@ -639,7 +639,7 @@ StreamStats stream_bandwidth(const uint8_t *src, uint64_t bytes, uint64_t chunk,
         */
         s->memcpy(dst, src + off, (size_t)chunk);
     }
-    s->wait();
+    s->wait_and_throw();
 
     const auto t0 = std::chrono::steady_clock::now();
     for (int it = 0; it < iters; ++it) {
@@ -653,7 +653,7 @@ StreamStats stream_bandwidth(const uint8_t *src, uint64_t bytes, uint64_t chunk,
             s->memcpy(dst, src + off, (size_t)chunk);
         }
     }
-    s->wait();
+    s->wait_and_throw();
     st.seconds = std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();
 
     dpct::get_current_device().destroy_queue(s);
