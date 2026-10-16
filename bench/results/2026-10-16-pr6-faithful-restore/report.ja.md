@@ -58,3 +58,21 @@ Prefillのcompute/copy drainはこのqueueをretireしない。drafter destructo
 完了が不明ならowner存続中にfail-stopする。E-4のgroup順、固定graph引数、精度、
 通常時のwait回数、`pf_dev_` 再利用方針は変えない。主経路の `draft_kv` が断る
 構成でもこのfallbackは使われるため、修正Aとは別の必須修正。未実行。
+
+## 修正D: allocation失敗とpartial-init cleanup
+
+歴史の `DPCT_CHECK_ERROR(p=sycl::malloc_...)==0` はthrowがなければ0で、
+`nullptr` も成功にしていた。新しいprivate layer-cacheの `open_sized`、
+prefill Alloc、stager pinned buffer、PLE host rows、group host buffer、token buffer、
+hand-off、streamed identity table、MTP mapped allocation/record bufferに実在する。
+nullのままmemset/memcpyまたはhost writeへ進むか、必要なpageable fallbackを飛ばす。
+戻り値の非nullも検査し、元のfail/fallbackへ入れる。正常allocationで処理順・計算は同じ。
+
+Stager::initでvector初期化が途中でbad_allocとなる場合、旧destructorは常に
+kRing個の `dma_done[i]` と `buf[i]/pinned[i]` を読んでいた。実際に構築された
+要素数だけをcleanupするよう変更した。これはallocation失敗下のbounds UBの修正である。
+
+[SYCL USM allocation仕様](https://github.khronos.org/SYCL_Reference/iface/usm_allocations.html)
+は資源不足時のnull返却を定義する。Mainは各null-returnとvector部分初期化例外を
+注入し、false/fallback/cleanupと再initを確認する。全て未実行。歴史engine全体の
+allocation呼出しを機械的に書換えた修正ではなく、上記箇所が対象。

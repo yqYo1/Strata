@@ -218,7 +218,7 @@ struct Alloc {
         }
         void* p = nullptr;
         if (DPCT_CHECK_ERROR(p = (void *)sycl::malloc_device(
-                                 bytes, dpct::get_in_order_queue())) != 0) {
+                                 bytes, dpct::get_in_order_queue())) != 0 || !p) {
             ok = false; return nullptr;
         }
         owned->push_back(p);
@@ -293,7 +293,7 @@ struct Stager {
             */
             pinned[i] = DPCT_CHECK_ERROR(
                             buf[i] = (unsigned char *)sycl::malloc_host(
-                                blob_bytes, dpct::get_in_order_queue())) == 0;
+                                blob_bytes, dpct::get_in_order_queue())) == 0 && buf[i] != nullptr;
             if (!pinned[i]) {
                 /*
                 DPCT1026: The call to cudaGetLastError was removed because
@@ -315,11 +315,12 @@ struct Stager {
         cv.notify_all();
         for (auto& t : threads) t.join();
         if (done_seq) sycl::free(done_seq, dpct::get_in_order_queue());
-        for (int i = 0; i < kRing; ++i) {
-            if (dma_done[i]) dpct::destroy_event(dma_done[i]);
-            if (buf[i] && pinned[i])
+        // init may throw while resizing the parallel vectors. Only entries
+        // actually constructed can be examined during partial-init cleanup.
+        for (auto event : dma_done) if (event) dpct::destroy_event(event);
+        for (size_t i = 0; i < buf.size(); ++i)
+            if (buf[i] && i < pinned.size() && pinned[i])
                 sycl::free(buf[i], dpct::get_in_order_queue());
-        }
     }
     void work() {
         /*
@@ -903,9 +904,9 @@ bool Prefill::init(const core::WeightTable &wt, const core::ModelGeometry &g,
         check the migrated code.
         */
         if (!m.hand[b] &&
-            DPCT_CHECK_ERROR(
+            (DPCT_CHECK_ERROR(
                 m.hand[b] = (float *)sycl::malloc_host(
-                    (size_t)chunk * D * 4, dpct::get_in_order_queue())) != 0) {
+                    (size_t)chunk * D * 4, dpct::get_in_order_queue())) != 0 || !m.hand[b])) {
             err = "prefill: the layer split's hand-off buffers";
             return false;
         }
@@ -917,7 +918,7 @@ bool Prefill::init(const core::WeightTable &wt, const core::ModelGeometry &g,
         if (const dpct::err0 e = DPCT_CHECK_ERROR(
                 m.tok_dev = sycl::malloc_device<int32_t>(
                     (size_t)chunk, dpct::get_in_order_queue()));
-            e != 0) {
+            e != 0 || !m.tok_dev) {
             /*
             DPCT1009: SYCL reports errors using exceptions and does not use
             error codes. Please replace the "get_error_string_dummy(...)" with a
@@ -986,7 +987,7 @@ bool Prefill::init(const core::WeightTable &wt, const core::ModelGeometry &g,
             */
             if (DPCT_CHECK_ERROR(h = (void *)sycl::malloc_host(
                                      need * 4, dpct::get_in_order_queue())) ==
-                    0 &&
+                    0 && h != nullptr &&
                 DPCT_CHECK_ERROR(d = (void *)h) == 0) {
                 m.grp_host = (int32_t*) h;
                 m.grp_dev = (int32_t*) d;
@@ -1008,9 +1009,9 @@ bool Prefill::init(const core::WeightTable &wt, const core::ModelGeometry &g,
             meaningful in the migrated code and was removed or replaced with 0.
             You may need to check the migrated code.
             */
-            DPCT_CHECK_ERROR(
+            (DPCT_CHECK_ERROR(
                 m.ple_emb_host[b] = (float *)sycl::malloc_host(
-                    (size_t)T * N * 4, dpct::get_in_order_queue())) != 0) {
+                    (size_t)T * N * 4, dpct::get_in_order_queue())) != 0 || !m.ple_emb_host[b])) {
             /*
             DPCT1026: The call to cudaGetLastError was removed because this
             functionality is redundant in SYCL.
@@ -1035,7 +1036,7 @@ bool Prefill::init(const core::WeightTable &wt, const core::ModelGeometry &g,
         for (int64_t i = 0; i < pages; ++i) ident[(size_t) i] = (int32_t) i;
         if (DPCT_CHECK_ERROR(
                 m.ident_table = (int32_t *)sycl::malloc_device(
-                    ident.size() * 4, dpct::get_in_order_queue())) != 0 ||
+                    ident.size() * 4, dpct::get_in_order_queue())) != 0 || !m.ident_table ||
             /*
             DPCT1114: cudaMemcpy is migrated to asynchronization memcpy,
             assuming in the original code the source host memory is pageable

@@ -509,7 +509,7 @@ bool ExpertCache::open(int64_t n_slots, int64_t n_layers, int64_t n_expert,
         if (!open_segmented(want, err)) return false;
     } else if (DPCT_CHECK_ERROR(
                    base_ = (uint8_t *)sycl::malloc_device(
-                       (size_t)want, dpct::get_in_order_queue())) != 0) {
+                       (size_t)want, dpct::get_in_order_queue())) != 0 || !base_) {
         base_ = nullptr;
         char buf[256];
         std::snprintf(

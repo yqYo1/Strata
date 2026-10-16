@@ -67,7 +67,7 @@ bool mapped(size_t bytes, void **h, void **d) try {
     */
     if (DPCT_CHECK_ERROR(*h = (void *)sycl::malloc_host(
                              bytes, dpct::get_in_order_queue())) !=
-        0) return false;
+        0 || !*h) return false;
     std::memset(*h, 0, bytes);
     return DPCT_CHECK_ERROR(*d = (void *)*h) == 0;
 }
@@ -914,7 +914,7 @@ bool MtpDrafter::prefill(const float *R_rows, const int32_t *next_tokens,
             pf_cap_ = 0;
             if (DPCT_CHECK_ERROR(pf_dev_ = sycl::malloc_device<int32_t>(
                                      (size_t)(n * per_row),
-                                     dpct::get_in_order_queue())) != 0) {
+                                     dpct::get_in_order_queue())) != 0 || !pf_dev_) {
                 err = "mtp prefill: the input records do not fit";
                 return false;
             }
