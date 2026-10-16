@@ -1,0 +1,76 @@
+{
+  "schema": "strata-native16-chunk-budget-review-v1",
+  "status": "accepted_with_provenance_caveat",
+  "revision_labels": {
+    "assignment_review_source": "61ca36d8",
+    "budget_receipt_source_commit": "74567523bb40e5ac755cc426b04a8b0436a0b091",
+    "runtime_observation_source_commit": "1bb3f9f56e3a2d730d2980f49e226bd1b1557ef3",
+    "commit_locator_note": "The receipt's source_commit differs from the assignment revision; all seven pinned source-file hashes match the reviewed tree, so content identity is verified. Preserve the original receipt and record both commit labels."
+  },
+  "hash_audit": {
+    "budget_report": {
+      "path": "native16-chunk-budget-v1.json",
+      "sha256": "45446a13ed369a6f22166dee96ffc8d636876e319a4f6c9fe77d7580ce106ef5"
+    },
+    "calculator_not_executed": {
+      "path": "calculate_native16_chunk_budget_v1.py",
+      "sha256": "da37f2ca973f23b1491467b92c34e603b8102d9158ce5570d82f736432c6a07b"
+    },
+    "source_pin_match_count": "7/7",
+    "source_pins": {
+      "src/prefill/prefill.cpp": "d6e466ca3a86f1dd8a1d6b648f3a57d496615b0a108df52d0727fdc9eb4c95e8",
+      "src/prefill/layer_major.inc": "9fcd5a32752464f488154a2922a33e5ab4cccff7674b3fcae7fa0f2bda12acdb",
+      "src/prefill/sycl/qsa_native16.cpp": "73cdfa797bb7ad84a511013981f8424cfe6c162cb9dec481ca268fc256843d24",
+      "src/program/generate.cpp": "d05e9142917af145c1ba6d428180f8981f260c8a20b23ecf27bcc2033c9fe25a",
+      "include/strata/kernels/qsa.hpp": "87c02222284f842fcecb46a422b119af769c72c3914edc8da5b2ee782456dc74",
+      "src/kernels/sycl/decode_attention.cpp": "ecbe949d2b93386ad47580d7211fae73b12539d35f6b5e6c4b39fa829201c59e",
+      "src/sycl/compat.cpp": "64cb6ea563a5d2f4f2abe4726d8d2130c5611b1938423dfe5131691cb936e9c0"
+    },
+    "closed_observation": {
+      "path": "own-qsa-bf16-prefix-tilepack-clean-bf16-prefix-optimized-r0-v2.json",
+      "sha256": "f279fd81aef8cab999a7122a23e5e5bc6cf94b4b088a8bae6afabe2a354361ba",
+      "native_log_sha256": "8714f61224c184a530f88464384f4615578bdefaedad6c6ca377001cf401af04",
+      "ownership_closed": true,
+      "active": false,
+      "fresh_faults": 0,
+      "after_detach_free_bytes": 4908777472
+    }
+  },
+  "findings": [
+    {
+      "id": "R965-F1",
+      "status": "confirmed",
+      "source_spans": ["src/prefill/prefill.cpp:200-223", "src/prefill/prefill.cpp:752-780", "src/prefill/prefill.cpp:832-837", "src/prefill/prefill.cpp:933-1025", "src/prefill/prefill.cpp:1370-1410"],
+      "detail": "Alloc::take adds 256 bytes then rounds to 256-byte alignment. Under alias=1, the 8K prefix family matches the ten actual scratch takes; mixed, bo and PLE reuse emb. The 8K family total is 2,311,569,920 B. At 16K the direct Alloc total is 4,515,021,312 B, a 2,203,451,392 B increase. Separate tok_dev is T*4 B and its 32,768 B increase is included in the reported total delta of 2,203,484,160 B. Mode0 excludes the mode1 identity table/staging; MMQ=0 excludes MMQ buffers; compact MoE, BF16x2=0, and fused=0 match the counted families. GEMM scratch, steps, shared region, dequant ring, eight direct upload slots and PLE norm all match source ownership."
+    },
+    {
+      "id": "R965-F2",
+      "status": "confirmed_with_runtime_limits",
+      "source_spans": ["src/prefill/prefill.cpp:159-176", "src/prefill/prefill.cpp:628-641", "src/prefill/prefill.cpp:717-737", "src/prefill/prefill.cpp:955-1025", "src/kernels/sycl/decode_attention.cpp:181-190", "include/strata/kernels/qsa.hpp:95-135"],
+      "detail": "Observed layer_cache 1,363,148,800/512 = 2,662,400 B per expert, a 256-aligned blob stride. Each ring Alloc::take(MAXBLOB) is stride+256 B; eight slots are 21,301,248 B. The 39K active-prefix owner is separately 80,726,784 B. With max_cells<=262144, cap=2051, max_blocks=65538, sel_batch=256 and attn_batch=32, QSA inner upper bounds are 1,120,979,712 B at 8K and 2,148,682,496 B at 16K. GDN inner sets are 1,180,698,624 B and 2,361,395,200 B; compact MoE is smaller at both sizes. The outer region Alloc guard is counted, so GDN sets the shared-region family."
+    },
+    {
+      "id": "R965-F3",
+      "status": "confirmed",
+      "detail": "The closed log reports after-detach free=4,908,777,472 B and separately records the cache, prefix and residual GPU rows. With those owners plus 512 MiB headroom, the 16K arithmetic margin is 53,458,176 B (50.98 MiB) for 32,768 residual rows and -79,518,464 B (-75.83 MiB) for all 39,261 rows. This is a prior 39K/context65536 snapshot; allocator fragmentation, private workspace and runtime headroom remain unqualified."
+    },
+    {
+      "id": "R965-F4",
+      "status": "ordering_confirmed_limits_retained",
+      "source_spans": ["src/program/generate.cpp:125-160", "src/program/generate.cpp:315-423", "src/prefill/layer_major.inc:92-105", "src/prefill/sycl/qsa_native16.cpp:23-36"],
+      "detail": "With native and canonical dense-bank options enabled in the receipt, generate.cpp prepares destinations, retires graph readers, enters the native/canonical banks and binds PLE before invoking the MTP helper. Its after-detach memory mark is inside that helper immediately before prompt.run. The measurement therefore includes the entered banks and 8K Prefill owners; cache, QSA prefix and residual allocations occur later and are subtracted separately. Source still rejects m.T/m.T_max>8192 in layer_major.inc and tokens>8192 in the native16 QSA shape guard. Optional profiling/audit guards also need review. No 16K kernel execution or guard change is implied."
+    }
+  ],
+  "decision": "Do not widen 16K guards or change the arena based on 4.9 GB free alone. Keep the queued profile/census first, then existing 64K placement/QSA decisions. No 16K patch, native compile/run, or physical-fit, performance, physical-262144, numerical, or RESTORE qualification follows.",
+  "index_entry_proposal": {
+    "key": "native16_chunk_capacity_review_round965",
+    "review_path": "research-review-round965-v1.json",
+    "operational_digest_path": "research-review-round965-v1.ja.md",
+    "reviewed_budget_sha256": "45446a13ed369a6f22166dee96ffc8d636876e319a4f6c9fe77d7580ce106ef5",
+    "reviewed_calculator_sha256": "da37f2ca973f23b1491467b92c34e603b8102d9158ce5570d82f736432c6a07b",
+    "status": "source arithmetic accepted with commit-locator caveat; no runtime or capacity qualification",
+    "schedulable_now": false,
+    "dispatch_performed": false,
+    "retrieval_trigger": "Only when a concrete source or memory-admission decision revisits native16 16K chunk sizing."
+  }
+}
