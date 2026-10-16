@@ -65,7 +65,10 @@ def main():
              846: 'orca-implement-vllm-public-qualification-round846-launch-v1.json',
              847: 'orca-research-round847-launch-v1.json',
              849: 'orca-research-round849-launch-v1.json',
-             850: 'orca-research-round850-launch-v1.json'}
+             850: 'orca-research-round850-launch-v1.json',
+             852: 'orca-implement-vllm-selected-quality-round852-launch-v1.json',
+             854: 'orca-research-round854-launch-v1.json',
+             855: 'orca-research-round855-launch-v1.json'}
     known = {}
     for n, name in names.items():
         v = json.loads((A / name).read_text())['receipt']['result']
@@ -96,6 +99,12 @@ def main():
             n, task = known[p['dispatchId']]
             assert p['taskId'] == task
             if m['type'] == 'heartbeat':
+                state['processed'].append(m['id'])
+                continue
+            if m['type'] == 'status':
+                # A payload-free liveness notification is not completion.
+                # Keep the durable delivery, without releasing a live worker.
+                assert set(p) == {'taskId', 'dispatchId'}
                 state['processed'].append(m['id'])
                 continue
             assert m['type'] == 'worker_done' and p['outcome'] in ('succeeded', 'failed')
