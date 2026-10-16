@@ -83,9 +83,69 @@ if(NOT pr6_shuffle_util_hash STREQUAL "cb93a6d8ecb064bf8d693fad0c9c5e64ce753d6f4
    NOT pr6_shuffle_new_hash STREQUAL "46b520f81366735619fa66e77211bdd464996eb1cd147cd654adc15571c70ece")
   message(FATAL_ERROR "PR6 generated shuffle adaptation hash mismatch")
 endif()
+# Original util.hpp byte span [24013,24322), lines 555-563. The checked
+# select adaptation above adds 976 bytes before it: [24989,25298) here.
+# Adapt only the observed shift-right operation; leave left/xor helpers intact.
+set(pr6_shift_old [=[#if defined(__SPIR__)
+  unsigned int id = g.get_local_linear_id();
+  unsigned int start_index =
+      id / logical_sub_group_size * logical_sub_group_size;
+  T result = __spirv_GroupNonUniformShuffleUp(__spv::Scope::Subgroup, x, delta);
+  if ((id - start_index) < delta) {
+    result = x;
+  }
+  return result;]=])
+string(SHA256 pr6_shift_old_hash "${pr6_shift_old}")
+string(LENGTH "${pr6_shift_old}" pr6_shift_old_length)
+string(FIND "${pr6_shuffle_util}" "${pr6_shift_old}" pr6_shift_start)
+if(NOT pr6_shift_old_hash STREQUAL "cf84272978a99b9556b72a8fb075be116a8068e5de96675d8df42b7d0fa21b13" OR
+   NOT pr6_shift_old_length EQUAL 309 OR NOT pr6_shift_start EQUAL 24989)
+  message(FATAL_ERROR "PR6 pinned shift adaptation span mismatch")
+endif()
+string(SUBSTRING "${pr6_shuffle_util}" 25298 -1 pr6_shift_after)
+string(FIND "${pr6_shift_after}" "${pr6_shift_old}" pr6_shift_duplicate)
+if(NOT pr6_shift_duplicate EQUAL -1)
+  message(FATAL_ERROR "PR6 pinned shift adaptation span is not unique")
+endif()
+set(pr6_shift_new [=[#if defined(__SPIR__)
+  unsigned int id = g.get_local_linear_id();
+  unsigned int start_index =
+      id / logical_sub_group_size * logical_sub_group_size;
+  // Strata PR6 compatibility: preserve all bits and the original shift/guard.
+  if constexpr (std::is_same_v<T, long long> ||
+                std::is_same_v<T, unsigned long long>) {
+    using pr6_shift_scalar = std::conditional_t<
+        std::is_signed_v<T>, sycl::opencl::cl_long, sycl::opencl::cl_ulong>;
+    static_assert(sizeof(T) == 8 && sizeof(pr6_shift_scalar) == 8,
+                  "PR6 shift requires 64-bit scalar storage");
+    static_assert(std::is_same_v<pr6_shift_scalar,
+                                std::conditional_t<std::is_signed_v<T>,
+                                                   long, unsigned long>>,
+                  "PR6 shift requires the pinned native OpenCL scalar ABI");
+    T result = sycl::bit_cast<T>(__spirv_GroupNonUniformShuffleUp(
+        __spv::Scope::Subgroup, sycl::bit_cast<pr6_shift_scalar>(x), delta));
+    if ((id - start_index) < delta) {
+      result = x;
+    }
+    return result;
+  } else {
+    T result = __spirv_GroupNonUniformShuffleUp(__spv::Scope::Subgroup, x, delta);
+    if ((id - start_index) < delta) {
+      result = x;
+    }
+    return result;
+  }]=])
+string(SUBSTRING "${pr6_shuffle_util}" 0 24989 pr6_shift_before)
+set(pr6_shuffle_util "${pr6_shift_before}${pr6_shift_new}${pr6_shift_after}")
+string(SHA256 pr6_shuffle_util_hash "${pr6_shuffle_util}")
+string(SHA256 pr6_shift_new_hash "${pr6_shift_new}")
+if(NOT pr6_shuffle_util_hash STREQUAL "1f1a2d88b8ed217737c13ccce347b3d802e8ab389925054aafca7ef932407e36" OR
+   NOT pr6_shift_new_hash STREQUAL "4bad21494f42ef9b7c7edd7270e6efdb315900ceb2521828c382a4cd8aafa00b")
+  message(FATAL_ERROR "PR6 generated shift adaptation hash mismatch")
+endif()
 # util.hpp requires memory.hpp's declarations. Load it after the checked device
 # body and before any image.hpp/dpct.hpp relative include can see original util.
 # Its original guard suppresses that original header in all later includes.
-set(pr6_shuffle_suffix "\n// Modified for isolated Strata PR6 LLVM 22 64-bit shuffle compatibility.\n#ifdef __DPCT_UTIL_HPP__\n#error PR6_original_DPCT_util_was_included_before_the_checked_adapter\n#endif\n// LLVM22 requires explicit kernel names at namespace scope.\nnamespace dpct { namespace detail { class dpct_memcpy_3d_detail; class dpct_memcpy_3d_detail_usmnone; } }\n#include <dpct/memory.hpp>\n${pr6_shuffle_util}")
-set(pr6_shuffle_proof "{\"schema\":\"strata-pr6-llvm-shuffle64-v1\",\"input_sha256\":\"${pr6_shuffle_input_hash}\",\"original_span_start\":20690,\"original_span_end\":21001,\"original_span_count\":1,\"original_span_sha256\":\"${pr6_shuffle_old_hash}\",\"replacement_sha256\":\"${pr6_shuffle_new_hash}\",\"generated_util_body_sha256\":\"${pr6_shuffle_util_hash}\"}")
+set(pr6_shuffle_suffix "\n// Modified for isolated Strata PR6 LLVM 22 64-bit shuffle and shift compatibility.\n#ifdef __DPCT_UTIL_HPP__\n#error PR6_original_DPCT_util_was_included_before_the_checked_adapter\n#endif\n// LLVM22 requires explicit kernel names at namespace scope.\nnamespace dpct { namespace detail { class dpct_memcpy_3d_detail; class dpct_memcpy_3d_detail_usmnone; } }\n#include <dpct/memory.hpp>\n${pr6_shuffle_util}")
+set(pr6_shuffle_proof "{\"schema\":\"strata-pr6-llvm-shuffle64-v2\",\"input_sha256\":\"${pr6_shuffle_input_hash}\",\"original_span_start\":20690,\"original_span_end\":21001,\"original_span_count\":1,\"original_span_sha256\":\"${pr6_shuffle_old_hash}\",\"replacement_sha256\":\"${pr6_shuffle_new_hash}\",\"shift_original_span_start\":24013,\"shift_original_span_end\":24322,\"shift_adapted_input_span_start\":24989,\"shift_adapted_input_span_end\":25298,\"shift_original_span_count\":1,\"shift_original_span_sha256\":\"${pr6_shift_old_hash}\",\"shift_replacement_sha256\":\"${pr6_shift_new_hash}\",\"generated_util_body_sha256\":\"${pr6_shuffle_util_hash}\"}")
 message(STATUS "PR6 private shuffle util body SHA256=${pr6_shuffle_util_hash}")

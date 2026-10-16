@@ -1,0 +1,1625 @@
+{
+  "schema": "strata-pr6-llvm-shift-compat-source-proposal-v2",
+  "status": "SOURCE_ONLY_UNSAFE_TO_RUN",
+  "assignment": {
+    "task_id": "task_bd867e15ba39",
+    "dispatch_id": "ctx_4f9cb157cb1d",
+    "class": "source-only implementation",
+    "scope": "One private compatibility adapter; no testing or GPU work"
+  },
+  "base": {
+    "commit": "ae8f85f1431586353c660c468854164089b2b8fc",
+    "commit_evidence": "Assignment and Main closed v3 receipt; no Git command executed",
+    "helper_preimage_sha256": "b275253f52d1d54b56e00efc2e5f75891cb41b9a15fff16f175875c9eaf0f898",
+    "preimage_pinning": "Captured complete helper text in worker memory before first source edit; difflib patch made against those exact bytes"
+  },
+  "changed_source": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/llvm_shuffle64.cmake",
+    "bytes": 9684,
+    "sha256": "bd2d0398b317a64349d25bb135bd648545327e85f50e47f34b619dc5cd541036"
+  },
+  "patch": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/bench/results/2026-10-16-pr6-faithful-restore/llvm-shift-compat-v2.patch",
+    "bytes": 5668,
+    "sha256": "3983f565e1cc8119b63c0e03a5cd95117f5dc094868c70776a50f3e58cf21454"
+  },
+  "report": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/bench/results/2026-10-16-pr6-faithful-restore/llvm-shift-compat-v2.md",
+    "bytes": 12107,
+    "sha256": "20048190086f56c1898b4bde6046af4de4db783fa09ad520148d28f4d15bdb06"
+  },
+  "patch_scope": "Complete helper delta only; new report artifacts separately pinned",
+  "patch_method": "Python difflib unified_diff, a/ and b/ relative paths; no Git",
+  "provenance": {
+    "authorship": "Independently authored project adapter and reports under repository MIT LICENSE; private generated Intel dependency retains its original notice",
+    "vendor_origin_blob": "033f6c74564f64ca7701c4f4fe68fe75cf7d8702",
+    "vendor_input": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-historical-dependencies-v1/vendor/sycl/include/dpct/util.hpp",
+      "bytes": 51840,
+      "sha256": "c76e74a7d18721523839e30c8d77e89f108423e49044aebb8f50ae1fbd3f424b"
+    },
+    "XeStrata_implementation_read": false,
+    "installed_dependency_API_only": true,
+    "compiler_sha256_from_existing_pin": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb",
+    "installed_API_headers": [
+      {
+        "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/aliases.hpp",
+        "bytes": 8076,
+        "sha256": "b7339db39e3234ca06be4610c31ad620e09e2f1122784a9c63b0dab6cb8a9d8f"
+      },
+      {
+        "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/detail/generic_type_traits.hpp",
+        "bytes": 8968,
+        "sha256": "f468d7738636ecd239fa2c89920d30908aff2c9129af5e479b952e84a483faa4"
+      },
+      {
+        "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/__spirv/spirv_ops.hpp",
+        "bytes": 47493,
+        "sha256": "4a449dfb36cc9d977a2c9567131b7e2dd666a54b56e4cdf0f1a1dd42ab8c7625"
+      }
+    ]
+  },
+  "observed_failure": {
+    "receipt": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-pr6-harness-build-v3.json",
+      "bytes": 49994,
+      "sha256": "b611135c2182bb3c48a8fd6792e0f3a15d170c1ef2dd5d1e97fb11a657fb101c"
+    },
+    "passed": false,
+    "complete": false,
+    "exit_code": 1,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "stdout": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-harness-build-v3/owned/build-prefill-harness.stdout",
+      "bytes": 2249955,
+      "sha256": "f5c1d937c0d8aa0c7deae32f383c54b08d71b844131bded3d4653d7fc18ed945"
+    },
+    "receipt_stdout_sha256": "f5c1d937c0d8aa0c7deae32f383c54b08d71b844131bded3d4653d7fc18ed945",
+    "excerpt_lines": [
+      16468,
+      16472
+    ],
+    "operation": "__spirv_GroupNonUniformShuffleUp",
+    "generated_header_line": 1591,
+    "instantiation": "dpct::experimental::shift_sub_group_right<unsigned long long>",
+    "caller": "sycl/src/kernels/cuda/qsa_select.dp.cpp:1027",
+    "status_preserved": "compile failure; no reclassification"
+  },
+  "transforms": [
+    {
+      "operation": "select",
+      "original_span_start": 20690,
+      "original_span_end": 21001,
+      "adapted_input_span_start": 20690,
+      "adapted_input_span_end": 21001,
+      "span_bytes": 311,
+      "span_count": 1,
+      "span_sha256": "40ad5a113889ddcc32d74a677e3e920dc6d853d54a98866e7cbb7adfa111c42f",
+      "replacement_bytes": 1287,
+      "replacement_sha256": "46b520f81366735619fa66e77211bdd464996eb1cd147cd654adc15571c70ece"
+    },
+    {
+      "operation": "shift_right",
+      "original_span_start": 24013,
+      "original_span_end": 24322,
+      "adapted_input_span_start": 24989,
+      "adapted_input_span_end": 25298,
+      "span_bytes": 309,
+      "span_count": 1,
+      "span_sha256": "cf84272978a99b9556b72a8fb075be116a8068e5de96675d8df42b7d0fa21b13",
+      "replacement_bytes": 1274,
+      "replacement_sha256": "4bad21494f42ef9b7c7edd7270e6efdb315900ceb2521828c382a4cd8aafa00b"
+    }
+  ],
+  "predicted_util_body": {
+    "bytes": 53781,
+    "sha256": "1f1a2d88b8ed217737c13ccce347b3d802e8ab389925054aafca7ef932407e36"
+  },
+  "predicted_checked_header": {
+    "bytes": 87940,
+    "sha256": "22709e0715e75621996b9eb289d507a11fcb2919770e161221cf74cd1cca9b21",
+    "method": "Python source-string construction only; no CMake artifact was generated"
+  },
+  "predicted_proof": {
+    "schema": "strata-pr6-llvm-shuffle64-v2",
+    "input_sha256": "c76e74a7d18721523839e30c8d77e89f108423e49044aebb8f50ae1fbd3f424b",
+    "original_span_start": 20690,
+    "original_span_end": 21001,
+    "original_span_count": 1,
+    "original_span_sha256": "40ad5a113889ddcc32d74a677e3e920dc6d853d54a98866e7cbb7adfa111c42f",
+    "replacement_sha256": "46b520f81366735619fa66e77211bdd464996eb1cd147cd654adc15571c70ece",
+    "shift_original_span_start": 24013,
+    "shift_original_span_end": 24322,
+    "shift_adapted_input_span_start": 24989,
+    "shift_adapted_input_span_end": 25298,
+    "shift_original_span_count": 1,
+    "shift_original_span_sha256": "cf84272978a99b9556b72a8fb075be116a8068e5de96675d8df42b7d0fa21b13",
+    "shift_replacement_sha256": "4bad21494f42ef9b7c7edd7270e6efdb315900ceb2521828c382a4cd8aafa00b",
+    "generated_util_body_sha256": "1f1a2d88b8ed217737c13ccce347b3d802e8ab389925054aafca7ef932407e36",
+    "checked_header_sha256": "22709e0715e75621996b9eb289d507a11fcb2919770e161221cf74cd1cca9b21"
+  },
+  "preserved_inputs_and_receipts": [
+    {
+      "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/bench/results/2026-10-16-pr6-faithful-restore/llvm-shuffle-compat-v1.md",
+      "bytes": 13319,
+      "sha256": "3eca53f37b2fdd551ee9a20ebb05e1f3e51e46fbb255c3e9afdc05e0f67aa238"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/bench/results/2026-10-16-pr6-faithful-restore/llvm-shuffle-compat-v1.json",
+      "bytes": 10885,
+      "sha256": "a29abe4d2a9cb1047fff296cdf02e390336e22c2e902c55d98f3c8236c297d15"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/bench/results/2026-10-16-pr6-faithful-restore/llvm-shuffle-compat-v1.patch",
+      "bytes": 8086,
+      "sha256": "ae3c47ddf3daad7939bd4ca4ea77673bccc8e89a1d98bbe0724e7bc2cbc9bb76"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/bench/results/2026-10-16-pr6-faithful-restore/llvm-memory-name-compat-main-v2.json",
+      "bytes": 1439,
+      "sha256": "6c3366671f58124e6fb66e5188c79d2018d104d41392c25071930b88a9663f1d"
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-pr6-harness-build-v3.json",
+      "bytes": 49994,
+      "sha256": "b611135c2182bb3c48a8fd6792e0f3a15d170c1ef2dd5d1e97fb11a657fb101c"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-harness-build-v3/owned/build-prefill-harness.stdout",
+      "bytes": 2249955,
+      "sha256": "f5c1d937c0d8aa0c7deae32f383c54b08d71b844131bded3d4653d7fc18ed945"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/checked_dpct.cmake",
+      "bytes": 3008,
+      "sha256": "1155da5465207f6ae2bed3a195fb398cd0599f4e72daabb9814a4237e9a8f2d7"
+    }
+  ],
+  "closure_audit": {
+    "manifest": {
+      "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/bench/results/2026-10-16-pr6-faithful-restore/historical-closure.json",
+      "bytes": 110463,
+      "sha256": "f32257a5005ada8ed1142c4bc6d575d246ac018312764ff2f9ce1203e7d6f3ee"
+    },
+    "historical_revision": "d0c5dda0dc2e8d82458c4b0ff31c4cef44c40b32",
+    "historical_files": 198,
+    "historical_translation_units": 84,
+    "original_manifest_hash_matches": 171,
+    "original_manifest_hash_match_note": "Original historical identity comparison; separate Main fixed-source identities are outside this source-only acceptance. No historical body was edited by this worker.",
+    "other_unqualified_or_aliased_helper_name_occurrences": 0,
+    "vendor_files": 49,
+    "original_vendor_hash_matches": 49,
+    "source_callsite_count": 113,
+    "participating_files": 33,
+    "operation_counts": {
+      "shift_sub_group_left": 39,
+      "permute_sub_group_by_xor": 59,
+      "select_from_sub_group": 8,
+      "shift_sub_group_right": 7
+    },
+    "source_value_type_counts": {
+      "float": 78,
+      "double": 11,
+      "uint8_t": 1,
+      "int": 20,
+      "long long": 1,
+      "unsigned long long": 2
+    },
+    "scope": "Source inventory of explicitly qualified calls across the selected historical project file closure, plus vendor helper/caller search; not compiler reachability or execution coverage",
+    "inventory": [
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/bf16_gemv.dp.cpp",
+          "bytes": 11878,
+          "sha256": "f6a1ecdde48ce4023a91d8723a12f1a006d29a3d4d88bc75c59d6e66c2a0c127"
+        },
+        "sites": [
+          {
+            "line": 62,
+            "operation": "shift_sub_group_left",
+            "source_value": "acc",
+            "source_value_type": "float",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/cvec.dp.cpp",
+          "bytes": 12550,
+          "sha256": "4b7c2c6985fc64edb1c363e79aa3a24e70dc1352fe9f34d2e830a05edaa5a4bd"
+        },
+        "sites": [
+          {
+            "line": 129,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "dot",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          },
+          {
+            "line": 155,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "p",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/elementwise.dp.cpp",
+          "bytes": 34704,
+          "sha256": "9127065091922e30990b76eae1490d585954657768af79f59ac0501c2b012748"
+        },
+        "sites": [
+          {
+            "line": 160,
+            "operation": "shift_sub_group_left",
+            "source_value": "acc",
+            "source_value_type": "float",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          },
+          {
+            "line": 173,
+            "operation": "select_from_sub_group",
+            "source_value": "inv",
+            "source_value_type": "float",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "0"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/fused_gdn.dp.cpp",
+          "bytes": 14974,
+          "sha256": "e15875df661dc90675fba4d14a3922881af854e72f62b63f58b541a205445819"
+        },
+        "sites": [
+          {
+            "line": 105,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "sq_part",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o2"
+          },
+          {
+            "line": 149,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "sq",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          },
+          {
+            "line": 219,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "acc",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/fused_gr.dp.cpp",
+          "bytes": 107140,
+          "sha256": "d52d47802e6073447ce87300776c4a338408b0bd5aabd1388c414cb46218b46f"
+        },
+        "sites": [
+          {
+            "line": 55,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "v",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/gdn.dp.cpp",
+          "bytes": 18087,
+          "sha256": "e3c4d51990410a447cde819433dfcba2161af1b5629c0259d442e11c309e2a47"
+        },
+        "sites": [
+          {
+            "line": 164,
+            "operation": "shift_sub_group_left",
+            "source_value": "acc",
+            "source_value_type": "double",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          },
+          {
+            "line": 204,
+            "operation": "shift_sub_group_left",
+            "source_value": "acc",
+            "source_value_type": "double",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/gr.dp.cpp",
+          "bytes": 36804,
+          "sha256": "efd1d6314c3871f16ca5f13af8fda1cbb773eb7d8c1d2daf2268487d2bae6367"
+        },
+        "sites": [
+          {
+            "line": 89,
+            "operation": "shift_sub_group_left",
+            "source_value": "v",
+            "source_value_type": "double",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          },
+          {
+            "line": 101,
+            "operation": "select_from_sub_group",
+            "source_value": "v",
+            "source_value_type": "double",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "0"
+          },
+          {
+            "line": 117,
+            "operation": "shift_sub_group_left",
+            "source_value": "v",
+            "source_value_type": "float",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          },
+          {
+            "line": 129,
+            "operation": "select_from_sub_group",
+            "source_value": "v",
+            "source_value_type": "float",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "0"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/iq_kernels.dp.cpp",
+          "bytes": 136240,
+          "sha256": "7d14a2b16c6d081edfcd2943cb044ad4ebe711687971ac4fe53b39c1797d66bd"
+        },
+        "sites": [
+          {
+            "line": 670,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "v",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          },
+          {
+            "line": 688,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "v",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          },
+          {
+            "line": 1556,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "amax",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          },
+          {
+            "line": 1564,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "sum",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/kv_q4.dp.cpp",
+          "bytes": 16393,
+          "sha256": "fd2ca410f67da27afd22d028607af374a889c1d0c3132c1f349a741177aee0a9"
+        },
+        "sites": [
+          {
+            "line": 61,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "val",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "h"
+          },
+          {
+            "line": 99,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "amax",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          },
+          {
+            "line": 107,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "mval",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          },
+          {
+            "line": 122,
+            "operation": "shift_sub_group_left",
+            "source_value": "qc",
+            "source_value_type": "uint8_t",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "16"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/kv_q8.dp.cpp",
+          "bytes": 9631,
+          "sha256": "a40e785be2b427311d6255b410fa844362ccb38061cddf67ac51e525b22b58ac"
+        },
+        "sites": [
+          {
+            "line": 60,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "a",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/kv_stream.dp.cpp",
+          "bytes": 21209,
+          "sha256": "4a22dd041b27bccc97baf80a5c3e089c8a895e31c711e46bb1da111f38af13f2"
+        },
+        "sites": [
+          {
+            "line": 73,
+            "operation": "shift_sub_group_right",
+            "source_value": "x",
+            "source_value_type": "int",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          },
+          {
+            "line": 93,
+            "operation": "shift_sub_group_right",
+            "source_value": "t",
+            "source_value_type": "int",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/native_bf16.dp.cpp",
+          "bytes": 18086,
+          "sha256": "f5848ac7e12a630b61a49cb942165f0983ba595cd6339a01e97b31a48a521e94"
+        },
+        "sites": [
+          {
+            "line": 48,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "value",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "offset"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/native_flash_attn.dp.cpp",
+          "bytes": 17876,
+          "sha256": "f35d581af3124ea55301a2905392a25af23baa64a62cc42cef83ebd97bb8b99e"
+        },
+        "sites": [
+          {
+            "line": 44,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "x",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "Width",
+            "routing_argument": "offset"
+          },
+          {
+            "line": 58,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "x",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "offset"
+          },
+          {
+            "line": 165,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "next_max",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "offset"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/native_gdn.dp.cpp",
+          "bytes": 7472,
+          "sha256": "3386b8564345f3514a8585e5864a4e81374e0866f01686aaf73623cddd2ab4ac"
+        },
+        "sites": [
+          {
+            "line": 50,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "value",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffff",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "offset"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/native_gdn_preprocess.dp.cpp",
+          "bytes": 15907,
+          "sha256": "f618623173b3a6dce49e38ba02df84a2f5efe61455e8e7781d946f95bd1bd3df"
+        },
+        "sites": [
+          {
+            "line": 48,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "value",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "offset"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/native_gr_norm.dp.cpp",
+          "bytes": 6780,
+          "sha256": "6571837cb1d5ead89883e97a9a3335fcb9d9b2b9e268d813f71b2b7469da5c92"
+        },
+        "sites": [
+          {
+            "line": 48,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "value",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "offset"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/native_mmvq.dp.cpp",
+          "bytes": 129652,
+          "sha256": "f1ed7528db42c95955099b35fba08381b712ec4366344d267edebbf2336dc25f"
+        },
+        "sites": [
+          {
+            "line": 141,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "x",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffff",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "offset"
+          },
+          {
+            "line": 176,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "x",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffff",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "offset"
+          },
+          {
+            "line": 1314,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "v",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/native_ple_postops.dp.cpp",
+          "bytes": 23706,
+          "sha256": "e5b568486c577fe8a52b870ab067333b27bab9876fc6ef336cfac628626072d1"
+        },
+        "sites": [
+          {
+            "line": 46,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "x",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "offset"
+          },
+          {
+            "line": 168,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "value",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "offset"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/native_qsa.dp.cpp",
+          "bytes": 9520,
+          "sha256": "6e3312b767f4828bc3310284cc93cfa92ce18abd28be827b51e83d696ed6d195"
+        },
+        "sites": [
+          {
+            "line": 49,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "value",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "offset"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/native_qsa_indexer.dp.cpp",
+          "bytes": 27463,
+          "sha256": "92cd45f344b7c8c3522e5ae3b0e5476dc5ed9ec4882058bd79bcc6fa19589a90"
+        },
+        "sites": [
+          {
+            "line": 46,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "x",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "offset"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/native_router.dp.cpp",
+          "bytes": 11108,
+          "sha256": "8eaf9967e8cf39996d84db4f0610bae7b6f8b09d5751dcd4342caaa091a8d3ee"
+        },
+        "sites": [
+          {
+            "line": 45,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "value",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "mask"
+          },
+          {
+            "line": 59,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "value",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "mask"
+          },
+          {
+            "line": 117,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "best",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "mask"
+          },
+          {
+            "line": 125,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "expert",
+            "source_value_type": "int",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "mask"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/ple.dp.cpp",
+          "bytes": 33163,
+          "sha256": "548608cd7398f28e98d5426cf520a54469e400453964694573773cb6e6a089c3"
+        },
+        "sites": [
+          {
+            "line": 104,
+            "operation": "shift_sub_group_left",
+            "source_value": "v",
+            "source_value_type": "double",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          },
+          {
+            "line": 129,
+            "operation": "shift_sub_group_left",
+            "source_value": "v",
+            "source_value_type": "double",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/qsa.dp.cpp",
+          "bytes": 62703,
+          "sha256": "0687f0bdc76c338842129b64176e6f3c9ab828727db293b539fc5782e9ff4b4b"
+        },
+        "sites": [
+          {
+            "line": 382,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "acc",
+            "source_value_type": "double",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          },
+          {
+            "line": 605,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "v",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          },
+          {
+            "line": 619,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "v",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/qsa_decode_attn.dp.cpp",
+          "bytes": 32963,
+          "sha256": "f81d612175a7a5dab778874c118ae4962afb3a9c0833e2ec4a7517b8abee2e0c"
+        },
+        "sites": [
+          {
+            "line": 33,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "v",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          },
+          {
+            "line": 47,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "v",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/qsa_prompt_attn.dp.cpp",
+          "bytes": 78393,
+          "sha256": "ddc49440b4ea233076d2e7395c434da8542a891342d4aff54d5da299b56632f6"
+        },
+        "sites": [
+          {
+            "line": 175,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "qm",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          },
+          {
+            "line": 518,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "mx",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          },
+          {
+            "line": 538,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "sum",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          },
+          {
+            "line": 585,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "vmax",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          },
+          {
+            "line": 772,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "qm",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          },
+          {
+            "line": 853,
+            "operation": "select_from_sub_group",
+            "source_value": "r",
+            "source_value_type": "long long",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "cell"
+          },
+          {
+            "line": 954,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "mx",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          },
+          {
+            "line": 974,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "sum",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          },
+          {
+            "line": 1007,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "vmax",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/qsa_select.dp.cpp",
+          "bytes": 84414,
+          "sha256": "1999b6e9089a0f25060dc30a3668d25862612a1c2440d9d660979c42000f3673"
+        },
+        "sites": [
+          {
+            "line": 63,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "d",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          },
+          {
+            "line": 608,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "d",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          },
+          {
+            "line": 646,
+            "operation": "shift_sub_group_right",
+            "source_value": "x",
+            "source_value_type": "int",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          },
+          {
+            "line": 668,
+            "operation": "shift_sub_group_right",
+            "source_value": "z",
+            "source_value_type": "int",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          },
+          {
+            "line": 925,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "d",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          },
+          {
+            "line": 1027,
+            "operation": "shift_sub_group_right",
+            "source_value": "x",
+            "source_value_type": "unsigned long long",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          },
+          {
+            "line": 1050,
+            "operation": "shift_sub_group_right",
+            "source_value": "z",
+            "source_value_type": "unsigned long long",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          },
+          {
+            "line": 1204,
+            "operation": "shift_sub_group_right",
+            "source_value": "incl",
+            "source_value_type": "int",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/router_top10.dp.cpp",
+          "bytes": 27751,
+          "sha256": "9b344ff0a7b7bed128dbe83134108f502ef8f463c0841884ee957af4ec8766c7"
+        },
+        "sites": [
+          {
+            "line": 116,
+            "operation": "shift_sub_group_left",
+            "source_value": "mx",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          },
+          {
+            "line": 136,
+            "operation": "shift_sub_group_left",
+            "source_value": "v",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          },
+          {
+            "line": 230,
+            "operation": "shift_sub_group_left",
+            "source_value": "bv",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          },
+          {
+            "line": 238,
+            "operation": "shift_sub_group_left",
+            "source_value": "bi",
+            "source_value_type": "int",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          },
+          {
+            "line": 265,
+            "operation": "shift_sub_group_left",
+            "source_value": "v",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          },
+          {
+            "line": 274,
+            "operation": "shift_sub_group_left",
+            "source_value": "ix",
+            "source_value_type": "int",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/s2_expert_grouped.dp.cpp",
+          "bytes": 89615,
+          "sha256": "e4aaaec3412f7f57d3d4b58f48e608dbd7e5dfeb2f94ba6b7589007a77eda93a"
+        },
+        "sites": [
+          {
+            "line": 122,
+            "operation": "shift_sub_group_left",
+            "source_value": "v",
+            "source_value_type": "float",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          },
+          {
+            "line": 518,
+            "operation": "shift_sub_group_left",
+            "source_value": "acc",
+            "source_value_type": "float",
+            "member_mask_expression": "mask",
+            "logical_size_expression": "8",
+            "routing_argument": "4"
+          },
+          {
+            "line": 532,
+            "operation": "shift_sub_group_left",
+            "source_value": "acc",
+            "source_value_type": "float",
+            "member_mask_expression": "mask",
+            "logical_size_expression": "8",
+            "routing_argument": "1"
+          },
+          {
+            "line": 546,
+            "operation": "shift_sub_group_left",
+            "source_value": "acc",
+            "source_value_type": "float",
+            "member_mask_expression": "mask",
+            "logical_size_expression": "8",
+            "routing_argument": "2"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/s_gemv.dp.cpp",
+          "bytes": 55234,
+          "sha256": "fd710fcd7cbb9d98353680d860f0841d72d3968864ccbb4d8871ee676a743532"
+        },
+        "sites": [
+          {
+            "line": 344,
+            "operation": "shift_sub_group_left",
+            "source_value": "acc",
+            "source_value_type": "float",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "step"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/sampler.dp.cpp",
+          "bytes": 89730,
+          "sha256": "7128cc57a06b86103e0615bf4f47a325b162d81fb24911885a443eaf3d0fe138"
+        },
+        "sites": [
+          {
+            "line": 177,
+            "operation": "shift_sub_group_left",
+            "source_value": "bv",
+            "source_value_type": "float",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          },
+          {
+            "line": 185,
+            "operation": "shift_sub_group_left",
+            "source_value": "best",
+            "source_value_type": "int",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          },
+          {
+            "line": 209,
+            "operation": "shift_sub_group_left",
+            "source_value": "wv",
+            "source_value_type": "float",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          },
+          {
+            "line": 217,
+            "operation": "shift_sub_group_left",
+            "source_value": "wi",
+            "source_value_type": "int",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          },
+          {
+            "line": 306,
+            "operation": "shift_sub_group_left",
+            "source_value": "bv",
+            "source_value_type": "float",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          },
+          {
+            "line": 309,
+            "operation": "shift_sub_group_left",
+            "source_value": "best",
+            "source_value_type": "int",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          },
+          {
+            "line": 327,
+            "operation": "shift_sub_group_left",
+            "source_value": "bv",
+            "source_value_type": "float",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          },
+          {
+            "line": 331,
+            "operation": "shift_sub_group_left",
+            "source_value": "best",
+            "source_value_type": "int",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          },
+          {
+            "line": 378,
+            "operation": "shift_sub_group_left",
+            "source_value": "bv",
+            "source_value_type": "float",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          },
+          {
+            "line": 382,
+            "operation": "shift_sub_group_left",
+            "source_value": "best",
+            "source_value_type": "int",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          },
+          {
+            "line": 519,
+            "operation": "shift_sub_group_left",
+            "source_value": "bv",
+            "source_value_type": "float",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          },
+          {
+            "line": 527,
+            "operation": "shift_sub_group_left",
+            "source_value": "best",
+            "source_value_type": "int",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          },
+          {
+            "line": 552,
+            "operation": "shift_sub_group_left",
+            "source_value": "wv",
+            "source_value_type": "float",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          },
+          {
+            "line": 562,
+            "operation": "shift_sub_group_left",
+            "source_value": "wi",
+            "source_value_type": "int",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          },
+          {
+            "line": 664,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "bv",
+            "source_value_type": "float",
+            "member_mask_expression": "kFullMask",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          },
+          {
+            "line": 672,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "bi",
+            "source_value_type": "int",
+            "member_mask_expression": "kFullMask",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          },
+          {
+            "line": 717,
+            "operation": "select_from_sub_group",
+            "source_value": "sum",
+            "source_value_type": "double",
+            "member_mask_expression": "kFullMask",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "0"
+          },
+          {
+            "line": 740,
+            "operation": "select_from_sub_group",
+            "source_value": "cut",
+            "source_value_type": "int",
+            "member_mask_expression": "kFullMask",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "0"
+          },
+          {
+            "line": 773,
+            "operation": "select_from_sub_group",
+            "source_value": "sum",
+            "source_value_type": "double",
+            "member_mask_expression": "kFullMask",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "0"
+          },
+          {
+            "line": 887,
+            "operation": "shift_sub_group_left",
+            "source_value": "bv",
+            "source_value_type": "float",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          },
+          {
+            "line": 895,
+            "operation": "shift_sub_group_left",
+            "source_value": "best",
+            "source_value_type": "int",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          },
+          {
+            "line": 918,
+            "operation": "shift_sub_group_left",
+            "source_value": "wv",
+            "source_value_type": "float",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          },
+          {
+            "line": 928,
+            "operation": "shift_sub_group_left",
+            "source_value": "wi",
+            "source_value_type": "int",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/shared_expert.dp.cpp",
+          "bytes": 30182,
+          "sha256": "5d76bef03b142676bb83b4332bd7b93df350da2a225953d0cfc78aef4704ab9c"
+        },
+        "sites": [
+          {
+            "line": 126,
+            "operation": "shift_sub_group_left",
+            "source_value": "v",
+            "source_value_type": "double",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "off"
+          },
+          {
+            "line": 138,
+            "operation": "select_from_sub_group",
+            "source_value": "v",
+            "source_value_type": "double",
+            "member_mask_expression": "0xFFFFFFFFu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "0"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/kernels/cuda/verify_kernels.dp.cpp",
+          "bytes": 58084,
+          "sha256": "9d9de2d984d135c4ad725e7a0377acda88cebd290a8c028b6a59dac8be9bdef0"
+        },
+        "sites": [
+          {
+            "line": 72,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "sq",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          },
+          {
+            "line": 176,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "a",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          },
+          {
+            "line": 309,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "sq_part",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o2"
+          },
+          {
+            "line": 497,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "s",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          }
+        ]
+      },
+      {
+        "source": {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/src/prefill/kernels.dp.cpp",
+          "bytes": 99455,
+          "sha256": "f775038b017344388ec9a3552cb03c68cb2b26fa0544d4e9bba325db874ccea0"
+        },
+        "sites": [
+          {
+            "line": 31,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "v",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          },
+          {
+            "line": 44,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "v",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          },
+          {
+            "line": 1081,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "best",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "m"
+          },
+          {
+            "line": 1089,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "ex",
+            "source_value_type": "int",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "m"
+          },
+          {
+            "line": 1308,
+            "operation": "permute_sub_group_by_xor",
+            "source_value": "a",
+            "source_value_type": "float",
+            "member_mask_expression": "0xffffffffu",
+            "logical_size_expression": "32 (default)",
+            "routing_argument": "o"
+          }
+        ]
+      }
+    ]
+  },
+  "affected_shift_callers": {
+    "source": "sycl/src/kernels/cuda/qsa_select.dp.cpp",
+    "lines": [
+      1027,
+      1050
+    ],
+    "function": "cl_excl_scan64",
+    "types": [
+      "unsigned long long"
+    ],
+    "member_mask": "0xffffffffu",
+    "logical_size": 32,
+    "delta_values": [
+      1,
+      2,
+      4,
+      8,
+      16
+    ],
+    "source_lane_range": [
+      0,
+      31
+    ],
+    "source_workgroup_threads": 1024,
+    "source_warp_count": 32,
+    "source_shared_sum_elements": 33,
+    "packed_values": "uint32_t gt in low32 and uint32_t eq in high32; original unsigned64 arithmetic unchanged",
+    "convergence": "First loop unconditional in scan; second under source warp==0 after workgroup barrier; lane>=o guard occurs after collective",
+    "mapping_prerequisite": "A physical32 subgroup aligned with source local_id(2) warps; not qualified by source inspection",
+    "compile_reachability": "Unsigned64 first call instantiated in Main v3 receipt; second same-typed call identified from source",
+    "runtime_reachability": "Dormant cluster scan: qsa_block_topk_cluster returns false in unconditional SYCL #if1 branch, launch remains inactive",
+    "member_mask_limit": "Original SPIR branch does not consume member_mask; no arbitrary-mask claim"
+  },
+  "preservation": {
+    "select_adapter": true,
+    "namespace_memory_kernel_forward_declarations": true,
+    "checked_device_queue_async_controls": true,
+    "logical_size_id_delta_guard": true,
+    "same_SPIRV_builtin_and_scope": true,
+    "all64bits": true,
+    "non_long_long_fallback": true,
+    "NVPTX_host_branches": true,
+    "left_xor_helpers_unchanged": true,
+    "historical_bodies_edited": false,
+    "original_vendor_edited": false,
+    "native_TUs_removed": false
+  },
+  "source_limited_holds": [
+    "No integer64 masked left/xor caller identified; leave these helpers unchanged",
+    "Signed-long-long shift branch is symmetric ABI handling without an identified historical caller",
+    "Arbitrary member masks, divergent participation and other overloads unqualified",
+    "Double64 left/xor/select retain original overloads and are not integer64 compatibility evidence"
+  ],
+  "worker_execution": {
+    "CMake": false,
+    "compiler": false,
+    "preprocessor": false,
+    "build": false,
+    "tests": false,
+    "native_binary": false,
+    "runtime": false,
+    "GPU": false,
+    "process_inspection": false,
+    "Git": false,
+    "cleanup": false,
+    "nested_agents": false
+  },
+  "performed_work": [
+    "Read assigned source/receipts/API definitions",
+    "Inspected selected closure callsites and source declarations",
+    "Edited one compatibility generator",
+    "Constructed strings and hashed source/proof predictions",
+    "Generated exact preimage-based source patch and durable reports"
+  ],
+  "next_owner": "Main",
+  "next_gates": [
+    "Complete patch/preimage review",
+    "Fresh isolated recipe and generated proof comparison",
+    "Actual commands and complete historical/native TU closure review",
+    "Compile/link including signed/unsigned64 overloads and include-order controls",
+    "Owned provider-qualified full32 bitwise select/shift oracles with high64/signed/boundary patterns, logical8/16/32 and guard coverage; separate unchanged-type controls"
+  ],
+  "remaining_holds": [
+    "nonempty async87",
+    "pending-event behavior",
+    "full model numerical/task checks",
+    "shared state",
+    "physical262144",
+    "RESTORE",
+    "repeated prefill >600 tok/s"
+  ],
+  "retention": {
+    "owner": "Main",
+    "consumer": "Private LLVM22 compatibility source review and next configure/compile boundary",
+    "next_review": "First fresh configure/compile result or superseding failure",
+    "raw_captures_created": false,
+    "deleted_paths": []
+  }
+}
