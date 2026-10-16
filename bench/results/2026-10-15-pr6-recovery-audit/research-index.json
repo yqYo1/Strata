@@ -2479,6 +2479,33 @@
       "read_only": true,
       "status": "Native scope review complete; see associated research-scope-review JSON for corrections and retrieval conditions. Main collection body unread unless explicit selected-section retrieval recorded.",
       "review": null
+    },
+    {
+      "round": 831,
+      "path": "research-round831-v1.txt",
+      "sha256": "b891601adfaddd05c35f5909d9a29e8aef84ae08f2c1ad405c5b22788ae10fe6",
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "review": null,
+      "status": "See current native16 pipeline metadata and associated Main/native review; original report unchanged."
+    },
+    {
+      "round": 832,
+      "path": "research-round832-v1.txt",
+      "sha256": "457ebf72cef6c0f53072f461299cca37ec70c63f798b2effe6e5935f27213bfb",
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "review": "research-scope-review-round834-v1.json",
+      "status": "See current native16 pipeline metadata and associated Main/native review; original report unchanged."
+    },
+    {
+      "round": 834,
+      "path": "research-scope-review-round834-v1.json",
+      "sha256": "1ab0a14e569ea7382af305da3fdea4d2ef3bf596b8040b4997021c95bdfec983",
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "review": null,
+      "status": "See current native16 pipeline metadata and associated Main/native review; original report unchanged."
     }
   ],
   "main_initial_findings": [
@@ -3878,7 +3905,7 @@
   },
   "native16_activation_pipeline": {
     "request_date": "2026-10-16 JST",
-    "state": "5020c05e implementation integrated; first whole build FAIL at TLA SYCL_EXTERNAL with fno-rdc; source-only separate fsycl-link correction committed next; no integrated GPU executed yet.",
+    "state": "Actual integrated6354f0b4 build+host, traced smoke and full integrated component/samequeue+teardown PASS; three-arm129 all48 model mechanics active. DefaultOFF/unadopted.",
     "reference_repositories": [
       "sgl-project/sglang",
       "vllm-project/vllm",
@@ -3899,28 +3926,26 @@
     "review": "research-scope-review-round785-v1.json",
     "collection_round786": "Completed/reviewed; Main body unread",
     "source_commit": "9c1a2020",
-    "engine_build": "own-vllm-engine-build-v1.json",
-    "engine_build_status": "FAIL immutable, normal compiler exit1; ownership closed, no GPU/fault/dump. Native core unchanged; reviewed compile/link-only correction.",
+    "engine_build": "own-vllm-engine-build-v2.json",
+    "engine_build_status": "own-vllm-engine-build-v2.json PASS closed; TLA native RDC compiled and separately AOT linked, host slice extracted; old engine generic JIT.",
     "new_kernel_test": "own-native16-gemm-correctness-v2.json",
     "implementation_round787": "Main private build and2case traced smoke PASS; actual registered Device spans/checked copy drain hardened; full/componentmodel/physical262144/performance UNRUN.",
     "research_next": [
-      831,
-      832
+      835,
+      836
     ],
     "registry_lifetime_failure": "own-native16-registry-lifetime-v1.ja.md",
     "regression": "own-native16-regression-followup2-correctness-v2.json",
     "original_regression": "own-native16-regression-correctness-v2.json FAIL remains unchanged; separate-queue mechanism unresolved",
-    "model_mechanics": "own-native16-model-smoke-v2.json PASS, both normal, all128 NLL finite plus3 independent full-vocabulary checks; synthetic only, not quality acceptance",
+    "model_mechanics": "main-vllm-model-smoke-v1 active; no result yet",
     "clean_performance_controller": "run_owned_native16_clean_v1.py; first matched pair closed, BF16 regression not adopted",
     "clean_first_fp32": "346.5tok/s n1",
     "attention_main_review": "own-native16-attention-main-review-v1.ja.md",
-    "implementation_next": [
-      833
-    ],
+    "implementation_next": [],
     "clean_first_bf16": "123.8tok/s n1, same request/binary/GPU32768 residual rows; -64.27% throughput",
     "initial_long_comparison": "own-native16-first-long-comparison-v1.json",
     "performance_adopted": false,
-    "next": "Main closed-failure incremental rebuild, integrated component gates and three-arm all48 model mechanics, actual32K+ officialbench performance/quality/fullcontext. Experimental defaultOFF.",
+    "next": "Finish three-arm model mechanics. Long officialbench diagnostic/clean FP32/vLLM/vLLM+QSA >=32K actual at matched65536 resident/context, then numerical quality/full256K/RESTORE and publichook fixture. Legacy nativebanner still says QSA/GDN internalFP32; typedQSA env/source branch is new, fixbanner at nextsourceboundary.",
     "onednn_candidate": "Main build-v3/smoke-v3 PASS. Check-v3 FAIL at strict exact BF16 identity/subnormal case12 after11numeric cases; exactbits not captured. No GPUfault/dump, ownership closure true; numerics exit1. Chain/lifecycle/scratch UNRUN. Hold secondary candidate; do not weaken old68tests.",
     "retention": "closed-native16-first-wave-retention-v1.json:366files/124263459logicalbytes retired; all statuses unchanged; currentv2build, oldoneGEMMexecutable, oldFP32NLLcontrols preserved.",
     "natural_input": "own-native16-natural-input-v1.json:32863 thinkingON,64 positions, no repeatedpadding, no GPU executed",
@@ -3944,7 +3969,11 @@
     "research_826": "Settled/released/native827 reviewed. Main read only What the Intel LLVM controls do and One recommended qualification recipe, then independently read officialLLVM design/manual separatecompilation sections. Prototype uses documented fno-sycl-rdc -c, mixed-link acceptance not yet executed.",
     "research_828": "Native830 reviewed; knowledge Main body UNREAD/hold, blockscaled lossy activation storage/transport.",
     "research_829": "Native830 reviewed; knowledge Main body UNREAD/hold, lossless GPU state compression; exact revisions need fixing before reuse.",
-    "engine_build_correction": "build_owned_vllm_prefill_v2.py: ordinary RDC compile, separate plain fsycl-link native wrapper, extract host slice; no global AOT/GRF. Compiler/link/runtime acceptance UNRUN."
+    "engine_build_correction": "build_owned_vllm_prefill_v2.py: ordinary RDC compile, separate plain fsycl-link native wrapper, extract host slice; no global AOT/GRF. Compiler/link/runtime acceptance UNRUN.",
+    "engine_components": "own-vllm-engine-components-check-v1.json PASS; nativefull/edges/chain/guards, old68, nativeops, fullattention, runtime/compat/samequeueFP32/staticteardown. OriginalseparatequeueFAILunchanged.",
+    "implementation_round833": "Source-only PUBLIC Gemm fixture returned, fully reviewed Main + oracle strings checked; currentbinaryfreeze so not applied/tested yet. own-vllm-public-hook-main-review-v1.ja.md.",
+    "research_831": "Main-requested source/lifetime review read. Highest severity route-inactive claim false (assignments in included layer_major.inc); correction in own-vllm-runtime-review-main-v1.ja.md. Conditional split/runtime lifetime risks retained, no observed current bug.",
+    "research_832": "Native834 reviewed; knowledge body Main UNREAD/hold; XeTLA Max vsBMG support and SYCL async-copy deprecation distinction recorded."
   },
   "upstream_observation_current": "upstream-observed-20261016-v1.json; fetched296b59d2 matches prior observed target; current pending upstream evaluation/functional ports not complete; next about48h."
 }
