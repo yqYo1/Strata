@@ -1,0 +1,94 @@
+{
+  "schema": "strata-moe-window-route-map-review-v1",
+  "review_round": 970,
+  "classification": "decision_support",
+  "status": "host_route_map_supported_component_ready_engine_integration_pending",
+  "review_scope": "Main-authored C++ host route-map proposal, its report and receipts; R969 review/digest; relevant index entries; narrow current prefill consumers.",
+  "scope_assessment": {
+    "depth": "Sufficient for the host routing component: implementation, independent synthetic reference, refusal cases, artifact ledger and limits are all covered.",
+    "relation_to_round969": "The route-map proposal closes R969's specific missing host contract for actual ID input, expert offsets, stable source rows, original-slot map and bounded jobs. It does not close R969's GPU window, callback, queue lifetime, checkpoint, or full-context gates.",
+    "redundancy": "Low; the new report adds a concrete implementation and host receipt to the prior design contract.",
+    "provenance": "The report attributes the code and fixture to Main under the repository MIT license and states that no XeStrata source or helpers were used. This review did not use external implementation sources."
+  },
+  "reviewed_inputs_sha256": {
+    "AGENTS.md": "d0c7e1a40a05087803345d23792c468e760aceb3bba2e012efb59dd01175e89c",
+    "bench/results/2026-10-15-pr6-recovery-audit/research-index.json": "f384ebe28221fab2105a26f5f3783add400fd1fd9d3b5b8ad3bd7f6bf82e459f",
+    "bench/results/2026-10-15-pr6-recovery-audit/research-review-round969-v1.json": "34b15d1b49126e5f205051e214219618f877834eb7905f3b4a4694790d074652",
+    "bench/results/2026-10-15-pr6-recovery-audit/research-review-round969-v1.ja.md": "17e354c70cb5f68293e1d90ec6db5a37e17acc5ece71ae5f3de76e869e98d317",
+    "bench/results/2026-10-15-pr6-recovery-audit/moe-window-route-map-v1/main-report.ja.md": "b2242d895db9b46f36b44212bf79ab6fa82bcd555d58c4a29331a1ee8a31e7b3",
+    "bench/results/2026-10-15-pr6-recovery-audit/moe-window-route-map-v1/artifacts.json": "938a533d0b46175a4e4c4539ea42cc2664a368acb62cbfb553cf8a387c8debcb",
+    "bench/results/2026-10-15-pr6-recovery-audit/moe-window-route-map-v1/moe_window_routes.hpp": "29ca1c2adc9bfe241aca0e18fb188567b07839a16a2ccec4dbc6630f139bbd93",
+    "bench/results/2026-10-15-pr6-recovery-audit/moe-window-route-map-v1/verify_routes.cpp": "74eb87f2c9303124276982bc6762e8e4c9b0add8ffa84e846074a2c26e609113",
+    "bench/results/2026-10-15-pr6-recovery-audit/moe-window-route-map-v1/run_host_check.py": "928e7beea93c6d4a68c76a3328028ee30f638843cdb5a91de45ef684da884dfd",
+    "bench/results/2026-10-15-pr6-recovery-audit/moe-window-route-map-v1/run_host_check_v2.py": "4210e70a610ebbf06f3c6ad9a48cb5beeaca0e96c7e321a0282194ab0f6129f1",
+    "bench/results/2026-10-15-pr6-recovery-audit/moe-window-route-map-v1/host-result-v1.json": "9222c30e7ec07e74a080576881b7db36d1684daafcdba76cfdbbc8e9394672fd",
+    "bench/results/2026-10-15-pr6-recovery-audit/moe-window-route-map-v1/host-result-v2.json": "805bae73f48053e7e7f0977c5eabbe674507927b47a76107b15b859c1404c18b",
+    "src/prefill/prefill.cpp": "d6e466ca3a86f1dd8a1d6b648f3a57d496615b0a108df52d0727fdc9eb4c95e8",
+    "src/prefill/layer_major.inc": "9fcd5a32752464f488154a2922a33e5ab4cccff7674b3fcae7fa0f2bda12acdb",
+    "src/prefill/sycl/postops.cpp": "f048a75d8c18dad5981a93206dcff107085714741326adc6d4cfd77c6927a78f",
+    "src/prefill/sycl/native16.cpp": "d953ae8dcb69be601c57ddf62bbd85ad054c3e7c0a90806461b49f96d18da891"
+  },
+  "reviewed_index_entries": {
+    "native16_moe_window_main_contract_review_round969": {
+      "status": "source_feasible_implementation_contract_incomplete",
+      "schedulable_now": false,
+      "retrieval_trigger": "Implement long-prefill two-piece GPU window: original request/PLE/state, immutable route map, both HC writes before MTP, actual allocation spans, periodic checkpoint gate."
+    },
+    "moe_window_cpp_route_map_current": {
+      "status": "Actual sanitizer-checked C++ host route map only; no production/GPU integration or speed adoption. Initial runner failure preserved.",
+      "checks": {
+        "passed": true,
+        "routing_cases": 40,
+        "token_slots_checked": 2892850,
+        "refusal_cases": 14,
+        "GPU_executed": false,
+        "tensor_math_checked": false
+      },
+      "next_owner": "Main"
+    }
+  },
+  "correctness_findings": [
+    {
+      "finding": "No defect found in the scoped host route-map algorithm.",
+      "evidence": "build() bounds rows to 1..16384, requires exactly rows*10 IDs, rejects null input, validates all IDs in [0,511], rejects duplicate experts within a token, and bounds each expert count by rows before increment. Prefix offsets conserve all rows*10 routes.",
+      "limit": "The hard-coded geometry is specific to this model contract; the integration caller must establish that its router actually has 512 experts and top-k 10."
+    },
+    {
+      "finding": "The map conserves token-slot identity and expert jobs.",
+      "evidence": "A stable scan maps each flattened token-slot index to a grouped route row and stores its source token row at that grouped position. Jobs remain expert-ordered, cover each expert interval contiguously, cap at 8192 rows and use the same global route offset for host source and Down destination. The fixture compares source ordering to an independent scan and checks one-to-one slot/job coverage with integer witnesses, including ne==W split into two jobs.",
+      "consumer_alignment": "Current prefill grouping uses slot[original token-slot] -> grouped row and src[grouped row] -> token row; current gather reads mixed[src[row]], and native16 combine reads D[slot[t,k]]. The proposed map has the same orientation and global row convention."
+    },
+    {
+      "finding": "The published host metadata has a useful but caller-enforced lifetime contract.",
+      "evidence": "build() consumes the raw ID span synchronously and owns derived vectors. The plan is returned as shared_ptr<const>, and copy/move operations are deleted, so published vector storage cannot be resized through this API. The fixture retains a second shared owner after clearing the submitter's owner and checks the upload pointer remains readable.",
+      "limit": "job_source() returns a raw pointer whose validity still depends on the caller retaining the plan. The type does not own or retire device views, queue work, host staging, or enforce retention until checked drain. The fixture does not run an asynchronous transfer."
+    }
+  ],
+  "host_receipt_assessment": {
+    "v2": "Receipt reports Clang 21.1.8, C++17, -O1, -Wall/-Wextra/-Wpedantic/-Werror, AddressSanitizer and UndefinedBehaviorSanitizer; compile and fixture completed with no sanitizer stderr. It reports 40 synthetic routing cases, 2,892,850 token-slots and 14 refusal cases. The artifact ledger hashes match the reviewed report, code, runners and receipts.",
+    "v1": "The initial runner failure is preserved and explicitly superseded by v2 after correcting executable invocation; it does not invalidate the v2 result.",
+    "what_sanitizers_support": "Host memory/undefined-behavior checks for the exercised C++ route-builder and verifier paths, including the simulated 8K source copy and slot witness checks.",
+    "not_proven": [
+      "A production router's ID output; fixture IDs are synthesized by five deterministic patterns.",
+      "Production C++/SYCL integration, actual gather/GEMM/Down/combine execution or tensor numerics.",
+      "Asynchronous queue/DMA ownership, checked drain, cancellation/fault handling, actual pointer extents or device/context registration.",
+      "Physical VRAM fit, 262144-context correctness, checkpoint/RESTORE coherence, MTP behavior or speed."
+    ]
+  },
+  "integration_readiness": {
+    "host_component": "Ready as an isolated host route-map candidate; no scoped correctness defect found.",
+    "engine_window": "Pending Main integration and validation. Preserve R969's shared attention-piece/FFN-window boundary and sequential PLE/GDN/QSA state updates; connect real readback and typed views; validate actual allocation spans and every window row before submission; retain the shared plan and all host/device inputs through both HC writes and checked drain; expand only final bank slices before existing callbacks/MTP. Keep the periodic checkpoint gate until same-prefix all-layer plus MTP RESTORE is verified.",
+    "adoption": "No performance, GPU, numerical, fit, full-context or RESTORE adoption follows from this host receipt."
+  },
+  "next_owner": "Main",
+  "next_action": "Integrate the route map into the bounded two-piece long-prefill GPU window, then perform Main-owned focused correctness and lifetime checks before any performance decision.",
+  "fresh_research": {
+    "dispatch_recommended": false,
+    "reason": "This report resolves the specific host-map gap identified at R969. Remaining questions are implementation and validation gates owned by Main; no novel eligible research scope is recorded."
+  },
+  "retrieval": {
+    "key": "native16_moe_window_cpp_route_map_review_round970",
+    "trigger": "Integrate the actual router readback and immutable host route plan into the long-prefill two-piece GPU window; check slot/source orientation, 8K jobs, owner lifetime and full view extents.",
+    "next_owner": "Main"
+  }
+}
