@@ -1,0 +1,56 @@
+Orca gpt-6-luna read-only KNOWLEDGE COLLECTION. All relative audit evidence/report paths resolve against /home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit.
+{
+  "proposed_assignment_round": "R876",
+  "purpose_label": "knowledge collection",
+  "title": "When temporal blocking helps iterative GPU stencils, and when halo and resource costs erase the gain",
+  "report_output": "research-round876-v1.txt",
+  "spec_output_if_dispatched": "orca-research-round876-spec-v1.txt",
+  "research_worker_model": "Orca gpt-6-luna",
+  "schedulable_now": true,
+  "shared_index": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+    "sha256": "efe5425f61c5fb0415f3ad83a4b2024ac013e311e98243b5d7e955a9734fed27"
+  },
+  "relevant_prior_report_metadata": [
+    {
+      "path": "research-round839-v1.txt",
+      "sha256": "7cdaeca1f0c3d12892c3ee1d77947b2e8e0cef3f0e3390531220cdd89a17331f",
+      "classification": "knowledge collection; Main body held",
+      "use": "Metadata-only boundary: local-memory bank mapping and tile transforms. Do not open its body."
+    },
+    {
+      "path": "research-round855-v1.txt",
+      "sha256": "e226747e0572d52dbb5f7f151da6d9f111ef1a7ce2c86e1bb84cb5f6efd022a9",
+      "classification": "knowledge collection; Main body held",
+      "use": "Metadata-only boundary: GPU convolution mapping/reuse/workspace. Do not open its body."
+    },
+    {
+      "path": "research-scope-review-round870-v1.json",
+      "sha256": "d66fb4ba5a05e7188127f3cbb2acf6eeedfc9f8d9c4591e770ab8aaaafca6a7d",
+      "use": "Recent held scopes included tile rendering and BFS; this assignment excludes both."
+    }
+  ],
+  "finite_question": "For iterative single-GPU 3D stencil updates, when does temporal blocking reduce off-chip traffic enough to offset halo recomputation, synchronization, local-memory/register capacity and lower occupancy? Compare a streaming baseline, spatial blocking, and a small set of shared-memory/register or deep temporal-blocking designs across stencil radius, tile dimensions and blocked time steps.",
+  "breadth_and_counterevidence": "Use primary stencil papers to compare data movement and redundant-work models alongside measured results. Record stencil shape/radius, tile and time-depth, precision, GPU generation, memory/local-storage assumptions, boundary treatment and timing boundary. Include a regime where temporal blocking wins, and counterexamples where small domains, wide halos, deep time blocks, register/local-memory pressure, or low occupancy erase gains. Separate measured GPU data from analytical or modeled results and explain why NVIDIA-specific features do not directly predict SYCL/Intel GPU performance.",
+  "novelty_guard": "Keep this at iterative stencil time blocking. R855 covers convolution mapping and workspace; R839 covers bank indexing; neither is an iterative stencil time-depth crossover. Exclude convolution lowering, rendering, BFS, GPU microkernel bank-conflict equations, compiler tuning, Strata changes, XeStrata, and any local build or measurement.",
+  "report_budget": "1300-1700 substantive words, at most 7 primary URLs, one compact algorithm/resource table, one halo/redundant-work model, measured favorable and unfavorable regimes, applicability and evidence limits.",
+  "prerequisites": [
+    "Public access to the original stencil sources below.",
+    "No local GPU, code, build, test, profiler or process result is required."
+  ],
+  "prerequisite_evidence": "The two cited original papers are publicly accessible primary research sources and provide measured GPU stencil alternatives, time-depth/resource tradeoffs and counterexamples. The shared index and R839/R855/R870 review metadata bound adjacent scopes without opening held knowledge reports.",
+  "primary_sources": [
+    {
+      "title": "Revisiting Temporal Blocking Stencil Optimizations",
+      "url": "https://arxiv.org/abs/2305.07390",
+      "use_and_limit": "Original study comparing temporal-blocking approaches and contemporary NVIDIA GPU behavior; keep hardware-specific results explicit."
+    },
+    {
+      "title": "AN5D: Automated Stencil Framework for High-Degree Temporal Blocking on GPUs",
+      "url": "https://arxiv.org/abs/2001.01473",
+      "use_and_limit": "Original framework paper for deep temporal blocking and generated stencil kernels; do not generalize its best-case results beyond evaluated stencils and GPUs."
+    }
+  ],
+  "collection_handling": "Keep the report body unread by Main until a native Codex reviewer records scope, depth, redundancy, source checks, and retrieval metadata."
+}
+Main independently opened the two listed arXiv URLs and confirmed their exact titles on2026-10-16 before dispatch; no local hardware prerequisite is missing. Read AGENTS.md. Write ONLY /home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round876-v1.txt. Do not write a literal A/ directory. No builds/tests/GPU/native/device queries/profilers/process inspection/Git/product edits, environment/service/permission changes, or nested agents; no XeStrata source/helpers/tests/derived archives. Do not steer any worker. Main continues tuning and owns all actual execution. Knowledge report body is for the file library and native Luna-max reviewer; final digest to Main must contain only path/hash, scope/outcome and source/count metadata, not knowledge findings. Keep prior index/review boundaries so this is not repeated bank mapping, convolution, graph traversal or ordinary loop fusion. Use original technical papers and original practitioner technical blogs where useful, <=7primary URLs, substantive report budget. Settle via exact live Orca preamble.

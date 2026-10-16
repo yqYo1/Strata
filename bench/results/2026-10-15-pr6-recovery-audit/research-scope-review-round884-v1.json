@@ -1,0 +1,166 @@
+{
+  "review_round": "R884",
+  "review_type": "native Codex scope, depth, novelty, source, and retrieval review",
+  "review_date": "2026-10-16",
+  "reviewer": {
+    "model": "gpt-6-luna",
+    "reasoning_effort": "max"
+  },
+  "assignment": {
+    "requested_reports": ["R877"],
+    "purpose": "Review the completed knowledge collection against its dispatch specification, plan, primary-source evidence, and prior scope metadata. Main must keep the report body held.",
+    "plan_path": "research-scope-plan-round875-v1.json",
+    "plan_sha256": "867c3661f1da206594aaa1d32381262df4d8402cb861b1d9181e45e2a837d522",
+    "dispatch_spec_path": "orca-research-round877-spec-v1.txt",
+    "dispatch_spec_sha256": "cdf8d772c0ce0215b68eef0f2f5ce33ae37010df356ad2e6ae50c670c189b6b8",
+    "report_path": "research-round877-v1.txt",
+    "report_sha256": "d49f4e2aff95528793519a51676d57857cd644590c09c62987f6f0ebd00bf845",
+    "index_before_path": "research-index.json",
+    "index_before_sha256": "8a8fe3c5a6b96cfb3a7ccbea10042c89375791c9ed30946f91752625d0a5e67a",
+    "index_before_report_count": 278,
+    "index_before_highest_report_round": 876,
+    "plan_index_snapshot_sha256": "49305c5d4903c68d741e2f86065deac4b05befb3977f5fbf7a2ecd9e7f772361",
+    "dispatch_spec_index_snapshot_sha256": "efe5425f61c5fb0415f3ad83a4b2024ac013e311e98243b5d7e955a9734fed27"
+  },
+  "overall": {
+    "result": "accepted_as_knowledge_collection_with_two_source_context_corrections",
+    "correction_ids": ["R877-C1", "R877-C2"],
+    "reviewer_read_report_body": true,
+    "main_body_read": false,
+    "main_retrieval_needed_now": false,
+    "collection_bodies_main_held": ["R877"],
+    "future_scope_recommendations": [],
+    "next_scope_reason": "The assignment is finite and substantive, and its geometric fixed-radius scope is distinct from the adjacent graph and relational-query collections. No concrete current engine question calls for retrieving it or repeating a generic neighbor-search survey."
+  },
+  "report": {
+    "round": "R877",
+    "path": "research-round877-v1.txt",
+    "sha256": "d49f4e2aff95528793519a51676d57857cd644590c09c62987f6f0ebd00bf845",
+    "classification": "knowledge_collection",
+    "title": "Geometric GPU neighbor search: cell lists, stenciled cells and bounding-volume hierarchies",
+    "budget_assessment": {
+      "all_whitespace_words": 1545,
+      "primary_urls": 3,
+      "comparison_tables": 1,
+      "judgment": "Within the 1,300–1,700-word and seven-primary-URL limits. It compares the requested methods and build/query/reuse phases, gives measured examples and counterexamples with workload conditions, and separates measured claims from inferences."
+    },
+    "scope_and_novelty_assessment": {
+      "judgment": "Finite and substantively answered, with no material scope overlap in the adjacent reviewed collections.",
+      "scope_coverage": "Covers direct all-pairs, uniform and stenciled cells, and linear or quantized BVHs; treats build, query/list emission, candidate work, storage, repeated force use, and Verlet rebuild correctness as separate costs. Direct all-pairs crossover is explicitly labeled as inference because the cited GPU papers do not measure it.",
+      "overlap": "R867 concerns GPU analytical-query fusion and materialization, R869 concerns GPU BFS frontier traversal, and R872 concerns relational equijoin methods. Their scope-review metadata establish adjacent exclusions; their held report bodies were not read for this review. R877's moving-particle geometry and distance-cutoff question is distinct.",
+      "novel_increment": "Introduces an independent geometric-search comparison with workload-specific evidence for cell/stencil and hierarchy crossovers, including candidate false positives, buffer reuse, and correctness limits. It does not imply adoption or transfer to Strata.",
+      "conclusion": "Archive as a useful held knowledge collection; no redundant follow-up scope is recommended."
+    },
+    "depth_and_applicability": {
+      "judgment": "Coherent and adequately detailed for the requested comparison.",
+      "strengths": "Keeps the K80 and multi-GPU-generation paper results separate, distinguishes list-build gains from whole-run gains, includes hierarchy-loses and grid-favoring cases, and identifies candidate/output memory and periodic-image concerns. It gives explicit source-specific conditions and marks unmeasured direct-search and triclinic extrapolations as inference.",
+      "limits": "The evidence is historical CUDA/NVIDIA HOOMD-blue work; no SYCL, Intel Arc, Strata implementation, or target-device performance follows. The direct fused all-pairs crossover is conceptual only. The 2023 neighbor-list artifact study is GROMACS correctness evidence, not a GPU comparison.",
+      "provenance_and_adoption": "Research-only; no code, helper, test, product source, local measurement, or implementation adoption was proposed or inspected."
+    },
+    "source_accuracy": {
+      "status": "The three cited primary studies and their titles were verified. The reviewed numerical and algorithmic details are consistent with the source papers, subject to the two source-context corrections below.",
+      "verified": [
+        "Howard et al. 2016: K80/CUDA 7 single-precision setup; 192,000-particle periodic mixture; zero-buffer per-step rebuild; rBB and xB comparison; colloid/solvent parameters, rebuild counts, and build-versus-whole-run speedups; bin-width and memory-layout observations.",
+        "Howard et al. 2019: exact arXiv v2; HOOMD-blue 2.4.1 benchmark setup; cubic periodic systems; build-plus-traversal timing; K80, GTX 1080, P100 and V100 cases in single/double precision; 10-bit quantization, outward rounding, false-positive counts, and the sorted-grid versus atomic-grid limitation.",
+        "Kim, Fábián and Hummer 2023: DOI/title and author manuscript; missed interactions from an insufficient outer cutoff and infrequent GROMACS neighbor-list updates, pressure-tensor artifacts, membrane deformation under barostatting, water examples, and pressure oscillations associated with dynamic pruning."
+      ],
+      "limits": "The 2016 and 2019 values are paper-specific CUDA results with distinct timing boundaries; the 2023 paper does not compare GPU search performance. None establish an Arc/SYCL crossover. The review did not inspect local source or run experiments.",
+      "source_checks": [
+        {
+          "title": "Efficient neighbor list calculation for molecular simulation of colloidal systems using graphics processing units",
+          "url": "https://pccm.princeton.edu/sites/g/files/toruqf2196/files/media/irg-2a_04-panagiotopoulos.pdf",
+          "source_version": "Author-hosted primary PDF of the 2016 Computer Physics Communications article.",
+          "verified": "Title/authors and the report's quoted synthetic-mixture, colloid-solution, bin-width, neighbor-list layout, rebuild-count, and speedup claims."
+        },
+        {
+          "title": "Quantized bounding volume hierarchies for neighbor search in molecular simulations on graphics processing units",
+          "url": "https://arxiv.org/html/1901.08088v2",
+          "source_version": "Exact arXiv v2, 25 March 2019.",
+          "verified": "Title/authors, build and traversal methodology, hardware/precision cases, 16-byte quantized nodes, false-positive counts, grid-baseline caveat, and named exception cases."
+        },
+        {
+          "title": "Neighbor List Artifacts in Molecular Dynamics Simulations",
+          "url": "https://pure.mpg.de/rest/items/item_3553453_2/component/file_3575843/content",
+          "source_version": "Author-institution copy of the 2023 Journal of Chemical Theory and Computation paper, DOI 10.1021/acs.jctc.3c00777.",
+          "verified": "Title/authors and the GROMACS-specific missed-pair, pressure-tensor, membrane/water, and dynamic-pruning findings. This is correctness context, not GPU performance evidence."
+        }
+      ]
+    },
+    "corrections": [
+      {
+        "id": "R877-C1",
+        "type": "source-context omission",
+        "severity": "applicability metadata",
+        "correction": "The report identifies the 0.9× high-density single-precision result in the 2019 figure but omits the GPU. That specific ρ=0.8, N=128,000 result is Tesla K80; the same figure reports 1.0× on GTX 1080, 1.5× on P100, and 2.4× on V100. Preserve the K80 label when reusing this as the grid-favoring counterexample so the point is not generalized across devices."
+      },
+      {
+        "id": "R877-C2",
+        "type": "source-context nuance",
+        "severity": "applicability metadata",
+        "correction": "The report says the WCA cutoff's low cell occupancy made grids less favorable. The 2019 source says BVH generally outperformed the grid by a larger factor for WCA, but specifically reports a smaller BVH speedup than for Lennard-Jones on the high-density GTX 1080 case: lower occupancy also meant fewer direct distance evaluations per particle for the grid. Preserve both effects and avoid treating low occupancy as a one-directional rule."
+      }
+    ]
+  },
+  "previous_scope_metadata": [
+    {
+      "round": "R867",
+      "report_path": "research-round867-v1.txt",
+      "report_sha256": "a900ab303fa6dcf3d500da2dc7b3a3531c39c6551633b0aae56aec9740fbe403",
+      "review_path": "research-scope-review-round870-v1.json",
+      "review_sha256": "d66fb4ba5a05e7188127f3cbb2acf6eeedfc9f8d9c4591e770ab8aaaafca6a7d",
+      "use": "Metadata-only boundary: GPU analytical query fusion/materialization; prior report body not read."
+    },
+    {
+      "round": "R869",
+      "report_path": "research-round869-v1.txt",
+      "report_sha256": "347cce413e90ce0eccda5741be517b2bbd3ac3a2ecf7be71308883e7e5f8292c",
+      "review_path": "research-scope-review-round870-v1.json",
+      "review_sha256": "d66fb4ba5a05e7188127f3cbb2acf6eeedfc9f8d9c4591e770ab8aaaafca6a7d",
+      "use": "Metadata-only boundary: GPU BFS frontier and direction traversal; prior report body not read."
+    },
+    {
+      "round": "R872",
+      "report_path": "research-round872-v1.txt",
+      "report_sha256": "da93aecb7b3123073c524ac35bc109631e68fda8f483547f9292d390967ec317",
+      "review_path": "A/research-scope-review-round874-v1.json",
+      "review_sha256": "c43a0a8878bf48f2977451adf04e293485dee34510501212b9ff86d64749e637",
+      "use": "Metadata-only boundary: GPU relational equijoin structures and skew; prior report body not read."
+    }
+  ],
+  "retrieval": {
+    "needed_now": false,
+    "hold_body": true,
+    "main_body_read": false,
+    "sections": [
+      "20-26: measured comparison and device/timing boundaries",
+      "28-38: geometry, memory, and candidate work",
+      "40-44: Verlet reuse and correctness"
+    ],
+    "keys": [
+      "fixed-radius geometric neighbor search",
+      "cell and stenciled-cell crossover",
+      "linear and quantized BVH build/query costs",
+      "neighbor-list memory and overflow",
+      "Verlet skin and rebuild correctness"
+    ],
+    "retrieve_when": "A concrete future engineering or measurement question asks for fixed-radius particle-neighbor-search tradeoffs; retrieve only the relevant sections.",
+    "preserve_caveats": [
+      "Historical NVIDIA CUDA and HOOMD-blue measurements do not establish SYCL or Arc behavior.",
+      "R877-C1: the 0.9× grid-favoring point is the high-density single-precision Tesla K80 case.",
+      "R877-C2: WCA's overall BVH advantage has a high-density GTX 1080 nuance; occupancy alone does not imply one crossover direction.",
+      "The 2019 sorted-grid baseline was roughly 2× slower than HOOMD-blue's optimized atomic grid in selected tests.",
+      "Direct fused all-pairs crossover is inference; cited papers did not measure it.",
+      "The 2023 GROMACS artifact study is correctness evidence, not a GPU benchmark."
+    ]
+  },
+  "next_scope_eligibility": {
+    "current_action": "No new scope recommended. Keep this collection indexed and held; any future dispatch requires a concrete question and a fresh prerequisite check."
+  },
+  "handling": {
+    "index_before_modified": false,
+    "previous_collection_report_bodies_read": [],
+    "worker_contact_or_steering": false,
+    "product_source_or_measurement_access": false,
+    "only_authorized_outputs_written": true
+  }
+}

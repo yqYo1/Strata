@@ -1,0 +1,55 @@
+Orca gpt-6-luna read-only KNOWLEDGE COLLECTION. All relative report/evidence paths resolve against /home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit.
+{
+  "proposed_assignment_round": "R877",
+  "purpose_label": "knowledge collection",
+  "title": "Geometric GPU neighbor search: cell lists, stenciled cells and bounding-volume hierarchies",
+  "report_output": "research-round877-v1.txt",
+  "spec_output_if_dispatched": "orca-research-round877-spec-v1.txt",
+  "research_worker_model": "Orca gpt-6-luna",
+  "schedulable_now": true,
+  "shared_index": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+    "sha256_at_dispatch": "efe5425f61c5fb0415f3ad83a4b2024ac013e311e98243b5d7e955a9734fed27",
+    "handling": "Reviewed library metadata may append concurrently; record the actual read hash and preserve scope exclusions. This is not a product-source pin."
+  },
+  "relevant_prior_report_metadata": [
+    {
+      "path": "research-scope-review-round870-v1.json",
+      "sha256": "d66fb4ba5a05e7188127f3cbb2acf6eeedfc9f8d9c4591e770ab8aaaafca6a7d",
+      "use": "Metadata-only boundary: R869 studied BFS traversal and R867 query fusion; both held bodies remain unread."
+    },
+    {
+      "path": "A/research-scope-review-round874-v1.json",
+      "sha256": "c43a0a8878bf48f2977451adf04e293485dee34510501212b9ff86d64749e637",
+      "use": "Metadata-only boundary: R872 studied relational equijoin build/probe/partition. This scope concerns geometric distance cutoffs and moving particles."
+    }
+  ],
+  "finite_question": "For GPU molecular or particle workloads with a fixed interaction radius, how do direct all-pairs search, uniform/stenciled cell lists, and linear or quantized BVHs trade construction cost, candidate-pair waste, memory capacity, divergence and reuse across force steps? Identify how particle density, box geometry, cutoff and size disparity change the crossover, and account for the correctness/performance tradeoff of rebuilding a Verlet list periodically.",
+  "breadth_and_counterevidence": "Compare build, query/list emission and repeated force-step costs rather than reporting neighbor-search time alone. Record particle counts, density or volume fraction, cutoff/skin, species-size disparity, periodic-boundary model, GPU generation and precision. Include a case favoring cell lists and a case favoring a hierarchy, plus a counterexample where hierarchy traversal or list construction loses. Explain candidate false positives, output/list memory, overflow handling, rebuild interval and numerical/correctness limits. Keep each paper's hardware and timing boundary separate.",
+  "novelty_guard": "This is geometric fixed-radius neighbor search for moving particles, not relational hash joins, query execution, BFS, or generic GPU hash tables. Exclude multi-GPU communication, full force-field tuning, product changes, local implementations, XeStrata, and unsupported speed comparisons across papers.",
+  "report_budget": "1300-1700 substantive words, at most 7 primary URLs, one phase/crossover table, explicit workload conditions and at least one counterexample for each favored structure.",
+  "prerequisites": [
+    "Public access to the original GPU neighbor-search papers below.",
+    "No local GPU, code, model, build, test, profiler or process result is required."
+  ],
+  "prerequisite_evidence": "The cited original HOOMD-blue studies compare GPU cell-list variants and BVH methods under distinct density and particle-size regimes. R870/R874 metadata provide adjacent graph and relational-join exclusions without reading their held collection bodies.",
+  "primary_sources": [
+    {
+      "title": "Efficient neighbor list calculation for molecular simulation of colloidal systems using graphics processing units",
+      "url": "https://pccm.princeton.edu/sites/pccm/files/media/irg-2a_04-panagiotopoulos.pdf",
+      "use_and_limit": "Original GPU study comparing stenciled cell lists and LBVH for colloidal systems; preserve its workload and GPU-specific limits."
+    },
+    {
+      "title": "Quantized bounding volume hierarchies for neighbor search in molecular simulations on graphics processing units",
+      "url": "https://www.sciencedirect.com/science/article/pii/S092702561930206X",
+      "use_and_limit": "Original quantized-BVH study and uniform-grid comparisons; keep the reported 2-4x result bounded to its benchmark suite."
+    },
+    {
+      "title": "Neighbor List Artifacts in Molecular Dynamics Simulations",
+      "url": "https://pubs.acs.org/doi/10.1021/acs.jctc.3c00777",
+      "use_and_limit": "Primary recent study of neighbor-list update artifacts; use for the correctness consequences of list lifetime, not as a GPU performance comparison."
+    }
+  ],
+  "collection_handling": "Keep the report body unread by Main until a native Codex reviewer records scope, depth, redundancy, source checks, and retrieval metadata."
+}
+Read AGENTS.md. Write ONLY /home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round877-v1.txt. No literal A directory. No builds/tests/GPU/native/device queries/profilers/process inspection/Git/product edits or environment/service/permission changes; no nested agents or steering. No XeStrata source/helpers/tests/derived archives. Verify original sources and titles before attribution; an accessible original-author preprint may replace a paywalled publisher copy with the relationship recorded. The finite geometry/resource/crossover question is eligible without any local result. Primary literature and original technical blogs are allowed within7URLs and substantive word budget. Main continues code review and serialized execution. Main must not read this knowledge report merely because it arrived; final metadata digest only path/hash, scope/outcome, counts, no technical findings. Native Luna-max reviews after completion. Settle via exact live Orca preamble.

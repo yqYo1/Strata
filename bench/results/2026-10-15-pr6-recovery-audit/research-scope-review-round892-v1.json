@@ -1,0 +1,114 @@
+{
+  "schema": "strata-research-scope-review-v1",
+  "review_round": "R892",
+  "report_round": 886,
+  "purpose_class": "knowledge_collection",
+  "report_title": "When hardware-supported 2:4 structured sparsity accelerates matrix inference end to end",
+  "reviewer": "native Codex gpt-6-luna, max reasoning",
+  "inputs": {
+    "report_path": "A/research-round886-v1.txt",
+    "report_sha256": "4bb0a2adf1da555ac54b1e6b5f38f4d8c81086ad41cc009f32989f0e2dcf5eaf",
+    "assignment_spec_path": "A/orca-research-round886-spec-v1.txt",
+    "assignment_spec_sha256": "197f06204a0c74d24e63efa6887e06db850d48375bfe3aecc5f9ed5a478b181e",
+    "approved_plan_path": "A/research-scope-plan-round885-v1.json",
+    "approved_plan_sha256": "2380ef94e59c902cd5834314d19d561d8227f814e5f7798bc4e016ea0ce10ba9",
+    "index_before_path": "A/research-index.json",
+    "index_before_sha256": "08b68574f6a580ee095cf394d364ca2ef914a4cd33b6f09d6a10e2dd55547618"
+  },
+  "dispatch_context": {
+    "worker_result": "R886 succeeded and the Orca worker was released.",
+    "assignment_index_snapshot_sha256": "112e7e18e1f5d1ed77be2428b6fa9d779ed4180eecd32390e328d733c9ce02f2",
+    "snapshot_note": "The assignment used the plan's 279-entry index snapshot through R877. R885 review metadata was added later and called for refreshing the index before dispatch. This review pins the actual 280-entry index immediately before its update; the older dispatch snapshot is recorded as provenance, not substituted for the review's pre-update hash."
+  },
+  "scope_depth_review": {
+    "word_count_whitespace_delimited": 1546,
+    "primary_source_url_count": 4,
+    "comparison_table_count": 1,
+    "budget_result": "Within the assigned 1,400–1,700-word and six-primary-URL limits.",
+    "coverage": "Answers the finite Ampere 2:4 question across hardware eligibility, compressed representation, A100 peak rates, sampled INT8 GEMM behavior, TensorRT 8.0 A100 network evidence, pruning quality, conversion boundary, and dense-selected tactics. It includes a favorable network case, an unfavorable MobileNet quality case before channel permutation, and a hypothesis-only portability checklist.",
+    "evidence_limits": "The chart-derived ResNeXt values are visual estimates rather than raw samples. The post does not publish per-batch latency, repetitions, clocks, or tactic logs; the GEMM paper does not give a universal crossover. The report states these boundaries and does not infer an Arc result."
+  },
+  "novelty_and_redundancy": {
+    "result": "Distinct 2:4 hardware-instruction and sparse-versus-dense tactic crossover collection; no earlier indexed report is specifically about this topic.",
+    "metadata_only_exclusions_respected": [
+      "R778: general sparse SpMV/SpMM formats, conversion, permutation, and reuse.",
+      "R563/R564/R701: Strata dense or grouped-GEMM accounting.",
+      "R873: dense ASIC dataflow.",
+      "R885: programmable PIM offload accounting."
+    ],
+    "bodies_reopened": false
+  },
+  "primary_source_audit": [
+    {
+      "id": "R1",
+      "title": "NVIDIA A100 Tensor Core GPU Architecture In-Depth",
+      "url": "https://images.nvidia.com/aem-dam/en-zz/Solutions/data-center/nvidia-ampere-architecture-whitepaper.pdf",
+      "verified_version": "Official whitepaper V1.0; title page labels the A100 Tensor Core GPU Architecture.",
+      "audit": "Supports the A100 2:4 pattern, compressed storage, skipped-zero Sparse MMA, and the illustrative N versus N/2 cycle example. The report correctly treats 2x as an eligible-operation ceiling rather than a network multiplier."
+    },
+    {
+      "id": "R2",
+      "title": "Accelerating Sparse Deep Neural Networks",
+      "url": "https://arxiv.org/abs/2104.08378",
+      "verified_version": "arXiv v1, submitted 2021-04-16.",
+      "audit": "Primary paper confirms 16-bit/INT8 peak rates, TF32's 1:2 pattern, metadata and storage arithmetic, dimension multiples as stated by the paper, cuSPARSELt-versus-cuBLAS GEMM comparison, N=10K at sequence 256 and batch 40, pruning/retraining, and the cited ResNet-50/MobileNet v2 accuracy examples."
+    },
+    {
+      "id": "R3",
+      "title": "Accelerating Inference with Sparsity Using the NVIDIA Ampere Architecture and NVIDIA TensorRT",
+      "url": "https://developer.nvidia.com/blog/accelerating-inference-with-sparsity-using-ampere-and-tensorrt",
+      "verified_version": "NVIDIA Technical Blog, 2021-07-20; describes TensorRT 8.0 and A100 FP16 measurements.",
+      "audit": "Confirms ResNeXt-101_32x8d ImageNet Top-1 of 79.3 for both dense and sparse FP16. Vendor prose says performance approaches 20% at larger batch sizes and performance per watt reaches 36% at smaller batches. The report's 1.10–1.18 and per-batch efficiency figures are chart read-offs and are correctly marked approximate, but its short-answer 10–18% range could be mistaken for the vendor's stated maximum; preserve the distinction in R886-C2."
+    },
+    {
+      "id": "R4",
+      "title": "TensorRT structured sparsity documentation",
+      "reported_url": "https://docs.nvidia.com/deeplearning/tensorrt/10.16.1/inference-library/io-formats-sparsity.html",
+      "reported_version_claim": "TensorRT 10.16.1, current documentation, last updated 2026-05-07.",
+      "verified_current_url": "https://docs.nvidia.com/deeplearning/tensorrt/latest/inference-library/data-formats-tensors.html",
+      "verified_current_version": "TensorRT 11.4.0 is listed as latest; page title is Data Formats and Tensors, sparsity section last updated 2026-10-05.",
+      "verified_versioned_10x_url": "https://docs.nvidia.com/deeplearning/tensorrt/10.x.x/inference-library/io-formats-sparsity.html",
+      "verified_versioned_10x_metadata": "Archived reference page; it lists 10.16.1 as latest within 10.x and says last updated 2026-05-23. Its heading is I/O Formats, with sparsity as a section. The report's /10.16.1/ URL returns 404.",
+      "audit": "The current 11.4 page independently confirms the 2:4 convolution and MatrixMultiply checks, FP16/INT8 enablement, and that eligible layers may retain dense tactics; its example says 53 layers eligible and 22 chose sparse tactics. The 10.x archive retains the old 3-eligible/2-selected log. Neither example gives device, batch, layer shapes, latency, or accuracy."
+    }
+  ],
+  "corrections": [
+    {
+      "id": "R886-C1",
+      "severity": "material source/version correction",
+      "finding": "R4's literal /10.16.1/ URL is dead, its page title/version date are inaccurate, and the report calls an archived TensorRT 10.x page current even though TensorRT 11.4.0 is current on 2026-10-16.",
+      "action": "For current behavior, cite the verified 11.4.0 Data Formats and Tensors URL and record its sparsity section/date. If retaining the TensorRT 10.16.1 counterexample specifically, link the /10.x.x/ archived page, label it archived, use the I/O Formats title, and correct the page update date to 2026-05-23. The 10.x example remains valid as version-scoped documentation, not as current-version evidence."
+    },
+    {
+      "id": "R886-C2",
+      "severity": "clarifying source-context correction",
+      "finding": "The blog's own prose says performance is approaching 20% at large batch sizes; the 18% upper value is a visual chart estimate, not its reported maximum or raw measurement.",
+      "action": "Keep per-batch values labeled approximate chart read-offs. When summarizing the vendor's stated maximum, report 'approaching 20%' and retain the separate 'up to 36% performance per watt at smaller batch sizes' claim. Do not infer precise latencies or a timing boundary absent from the post."
+    }
+  ],
+  "retrieval": {
+    "needed_now": false,
+    "hold_body": true,
+    "main_body_read": false,
+    "retrieve_when": "A concrete later question asks about hardware-enforced 2:4 sparse matrix inference, pruning quality, or a sparse/dense library tactic crossover.",
+    "sections": [
+      "Mechanism and eligibility: 2:4 storage, types, dimensions, and sparse MMA rates.",
+      "GEMM and network evidence: A100 INT8 matrix samples and TensorRT 8.0 ResNeXt chart.",
+      "Accuracy, conversion, and tactic crossover: recovered quality, dense-selected layers, and timing limits."
+    ],
+    "preserve_caveats": [
+      "R886-C1: repair or replace the stale TensorRT 10.16.1 citation before quoting its runtime guidance.",
+      "R886-C2: vendor prose says approaching 20%; chart read-offs are approximate and not raw per-batch measurements.",
+      "NVIDIA results do not establish Intel/Arc/SYCL behavior or adoption."
+    ],
+    "retrieval_brief": "Keep the report body held. Retrieve only sections needed for a concrete 2:4 inference question and apply R886-C1/C2 first."
+  },
+  "next_scope_eligibility": {
+    "recommended_now": false,
+    "schedulable_now": false,
+    "prerequisites_rechecked": false,
+    "dispatch_performed": false,
+    "reason": "This knowledge collection has no present Strata implementation or measurement question attached. Retain it for scoped retrieval; do not dispatch a repeat survey."
+  },
+  "outcome": "Accepted as a held knowledge collection with two source-context corrections. R886's report body remains unread by Main."
+}

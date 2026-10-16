@@ -79,10 +79,24 @@ def main():
              869: 'orca-research-round869-launch-v1.json',
              871: 'orca-research-round871-launch-v1.json',
              872: 'orca-research-round872-launch-v1.json',
-             873: 'orca-research-round873-launch-v1.json'}
+             873: 'orca-research-round873-launch-v1.json',
+             875: 'orca-research-round875-launch-v2.json',
+             876: 'orca-research-round876-launch-v1.json',
+             877: 'orca-research-round877-launch-v1.json',
+             878: 'orca-resource-timeline-sol-launch-v1.json',
+             879: 'orca-pr6-faithful-restore-sol-launch-v1.json',
+             883: 'orca-pr6-independent-safety-review-sol-launch-v1.json',
+             885: 'orca-research-round885-launch-v1.json',
+             886: 'orca-research-round886-launch-v1.json',
+             887: 'orca-metric-enumeration-sol-launch-v1.json',
+             888: 'orca-pr6-safety-corrections-sol-launch-v2.json',
+             890: 'orca-pr6-independent-safety-review-sol-launch-v2.json',
+             891: 'orca-metric-query-tiny-sol-launch-v1.json',
+             893: 'orca-research-round893-launch-v1.json'}
     known = {}
     for n, name in names.items():
-        v = json.loads((A / name).read_text())['receipt']['result']
+        receipt = json.loads((A / name).read_text())
+        v = receipt.get('receipt', receipt)['result']
         known[v['dispatchId']] = (n, v['taskId'])
     statefile = A / 'orca-native16-wave-settlement-state-v1.json'
     state = json.loads(statefile.read_text()) if statefile.exists() else dict(
@@ -118,11 +132,36 @@ def main():
                 assert set(p) == {'taskId', 'dispatchId'}
                 state['processed'].append(m['id'])
                 continue
+            if m['type'] == 'escalation' and set(p) == {'taskId', 'dispatchId'}:
+                # Inspect the exact dispatch; a payload-free attention notice
+                # never itself authorizes release, retry or a live-worker nudge.
+                inspected = call(['worker-show', '--dispatch', p['dispatchId']])
+                shown = inspected['result']
+                assert shown['dispatch']['taskId'] == task and shown['dispatch']['id'] == p['dispatchId']
+                assert shown['projection']['attention']['requiresAction'] is False
+                archive = A / ('orca-wave-escalation-' + m['id'] + '-v1.json')
+                if not archive.exists():
+                    archive.write_text(json.dumps(inspected, indent=2) + '\n')
+                state.setdefault('escalation_inspections', {})[m['id']] = archive.name
+                state['processed'].append(m['id'])
+                continue
             assert m['type'] == 'worker_done' and p['outcome'] in ('succeeded', 'failed')
             path = Path(p['reportPath'])
+            workspace = (Path('/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore')
+                         if n in (879, 883, 888, 890) else A.parents[2])
             if not path.is_absolute():
-                path = A.parents[2] / path
-            assert path.exists() and path.is_relative_to(A)
+                path = workspace / path
+            if n == 879:
+                assert path == workspace / 'bench/results/2026-10-16-pr6-faithful-restore/report.ja.md'
+            elif n == 883:
+                assert path == workspace / 'bench/results/2026-10-16-pr6-faithful-restore/independent-safety-review-v1.md'
+            elif n == 888:
+                assert path == workspace / 'bench/results/2026-10-16-pr6-faithful-restore/safety-corrections-v2.md'
+            elif n == 890:
+                assert path == workspace / 'bench/results/2026-10-16-pr6-faithful-restore/independent-safety-review-v2.md'
+            else:
+                assert path.is_relative_to(A)
+            assert path.exists()
             settlement = A / f'orca-round{n}-settlement-v1.json'
             if not settlement.exists():
                 settlement.write_text(json.dumps(call(['worker-show', '--dispatch', p['dispatchId']]), indent=2) + '\n')
@@ -134,7 +173,7 @@ def main():
             release = A / f'orca-round{n}-release-v1.json'
             if not release.exists():
                 release.write_text(json.dumps(call(['worker-release', '--dispatch', p['dispatchId']]), indent=2) + '\n')
-            state['completed'][str(n)] = dict(path=str(path.relative_to(A)), outcome=p['outcome'],
+            state['completed'][str(n)] = dict(path=str(path if n in (879, 883, 888, 890) else path.relative_to(A)), outcome=p['outcome'],
                 sha256=hashlib.sha256(path.read_bytes()).hexdigest() if path.is_file() else None)
             state['processed'].append(m['id'])
             statefile.write_text(json.dumps(state, indent=2) + '\n')

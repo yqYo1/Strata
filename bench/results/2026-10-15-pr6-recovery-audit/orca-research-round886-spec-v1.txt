@@ -1,0 +1,81 @@
+KNOWLEDGE COLLECTION ONLY; recurring independent Orca gpt-6-luna. You may write ONLY /home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round886-v1.txt. Read AGENTS.md parallel research/retention rules and shared research-index.json (snapshot at dispatch SHA112e7e18e1f5d1ed77be2428b6fa9d779ed4180eecd32390e328d733c9ce02f2). Main continues implementation and serialized GPU measurements; no intervention. NO product edits, Git commands, builds/tests/GPU/runtime/device/profiler/process inspection, services/permissions, source copying/adaptation from XeStrata, nested agents or index edits. This is a bounded knowledge study of architecture/source results, NOT CUDA/HIP implementation or local tuning and NOT an Arc sparsity recommendation. Body remains HELD from Main for native Codex gpt-6-luna-max review. Final max3 operational lines with report path and completion only, no knowledge digest. Previous R885 PIM collection is distinct and in scope review; do not redo it. Follow planned relevant prior report metadata to exclude repeats, primary sources must be read/verified, all claims scoped to devices/dtypes/batches/timing/accuracy. Report1400–1700 substantive words,<=6primary URLs, mechanism/eligibility/measured favorable and counterexample regimes. Approved immutable plan SHA2380ef94e59c902cd5834314d19d561d8227f814e5f7798bc4e016ea0ce10ba9. Finite assignment:
+{
+  "proposed_assignment_round": "R886",
+  "purpose_label": "knowledge collection",
+  "title": "When hardware-supported 2:4 structured sparsity accelerates matrix inference end to end",
+  "report_output": "research-round886-v1.txt",
+  "spec_output_if_dispatched": "orca-research-round886-spec-v1.txt",
+  "research_worker_model": "Orca gpt-6-luna",
+  "schedulable_now": true,
+  "shared_index": {
+    "path": "research-index.json",
+    "sha256": "112e7e18e1f5d1ed77be2428b6fa9d779ed4180eecd32390e328d733c9ce02f2"
+  },
+  "finite_question": "For NVIDIA Ampere-era sparse Tensor Core inference, when does a 2:4 weight pattern deliver a useful measured end-to-end gain over dense Tensor Core execution after accounting for supported dimensions/types, pruning and fine-tuning quality, sparse metadata/representation, batch size, and runtime tactic choice? Which conclusions follow from hardware peak rates, which follow from published model measurements, and which cannot transfer to GPUs without the documented sparse instruction path?",
+  "breadth_and_counterevidence": "Compare the sparse MMA mechanism and its 2:4 eligibility constraints with dense execution, then relate those to the published A100/TensorRT network measurements at their stated batch sizes and timing boundaries. Cover at least one sparse win and the dense-selected/slower regime documented by the runtime or source. Record matrix role and dimensions, datatype/accumulation, batch, compression or preprocessing boundary, model accuracy metric, and architecture/runtime version where the sources provide them; mark missing fields explicitly. Distinguish theoretical 2x math throughput from layer speed and whole-network speed, and accuracy after pruning/fine-tuning from unchanged dense-model accuracy. Close with a short evaluation checklist for a different accelerator that has explicit sparse-matrix hardware support, clearly labeled as a hypothesis framework rather than an Intel/Arc prediction.",
+  "novelty_guard": "This is the fixed hardware-defined 2:4 pattern and sparse Tensor Core tactic crossover, not general sparse matrix format selection, sparse storage, dense GEMM tiling, ASIC dataflow, or new precision. R778 covers SpMV/SpMM format conversion and reuse; R563/R564/R701 cover Strata dense or grouped-GEMM boundaries; R873 covers dense fully-connected ASIC dataflow. Keep those as metadata-only exclusions and do not reopen their bodies. No implementation, pruning, model change, local GPU run, adoption recommendation, XeStrata use, or inferred Arc capability is in scope.",
+  "report_budget": "1,400-1,700 substantive words, no more than 6 primary URLs, one table linking hardware eligibility to layer/network evidence, and explicit favorable and unfavorable cases with device, batch, accuracy, and timing boundaries.",
+  "prerequisites": [
+    "Public access to the Ampere architecture whitepaper, original Sparse Tensor Core study, and official TensorRT/benchmark documentation listed below.",
+    "No local GPU, model, code, build, test, profiler, or process result is required."
+  ],
+  "prerequisite_evidence": "The NVIDIA A100 whitepaper, the original arXiv Sparse Tensor Core paper, the NVIDIA inference benchmark blog, and current TensorRT sparsity documentation are publicly accessible primary sources. They include the hardware pattern, supported-operator constraints, measured model-level examples, and a runtime case where a dense tactic may be selected. `research-index.json` contains no 2:4/structured-sparsity topic; the general sparse SpMV/SpMM, dense GEMM, and dense ASIC dataflow boundaries are recorded below.",
+  "relevant_prior_report_metadata": [
+    {
+      "path": "research-round778-v1.txt",
+      "sha256": "21b4de9846f73f882671dbefb8353d730f75284435a179c48531abfd30da5102",
+      "review_path": "research-scope-review-round780-v1.json",
+      "review_sha256": "6c073b4aa3c12207cd26e1e5aa8a2de597e87b5d6a48355c12180f6b016d8b4e",
+      "use": "Metadata-only exclusion: sparse SpMV/SpMM format conversion, permutation, and reuse crossovers. R886 is hardware-enforced 2:4 inference, not a general sparse format survey."
+    },
+    {
+      "path": "research-own-prefill-gemm-down-gap-round563-v1.txt",
+      "sha256": "7d81c93666c78be65d864bebdef811b689e15f56d007f3f0b0726498b85f58da",
+      "use": "Metadata-only exclusion: Strata dense prefill GEMM source/performance boundary."
+    },
+    {
+      "path": "research-current-qsa-matrix-work-round564-v1.txt",
+      "sha256": "28f2e1360f5292b3217589fb9fd66d85815fd2ad1f9a291e5dfdc8b3daf88591",
+      "use": "Metadata-only exclusion: current matrix-work mapping and accounting."
+    },
+    {
+      "path": "research-prefill-grouped-gemm-round701-v1.txt",
+      "sha256": "433856926a798356d1b6d231dfb3e2d99e82e0d38f8bbc11fd8c86c6eafe5012",
+      "use": "Metadata-only exclusion: Strata grouped GEMM workspace and accumulation choices."
+    },
+    {
+      "path": "research-round873-v1.txt",
+      "sha256": "1ae234df104e5260955c71bb25c22ad26c6f51e3e76186ebf0460266119f755e",
+      "review_path": "A/research-scope-review-round874-v1.json",
+      "review_sha256": "c43a0a8878bf48f2977451adf04e293485dee34510501212b9ff86d64749e637",
+      "use": "Metadata-only exclusion: dense fully-connected ASIC dataflow and precision architecture, not fixed structured-sparse GPU instructions."
+    }
+  ],
+  "primary_sources": [
+    {
+      "title": "NVIDIA A100 Tensor Core GPU Architecture In-Depth",
+      "url": "https://images.nvidia.com/aem-dam/en-zz/Solutions/data-center/nvidia-ampere-architecture-whitepaper.pdf",
+      "source_version": "Official A100/Ampere architecture whitepaper.",
+      "use_and_limit": "Primary hardware source for the 2:4 sparse matrix definition, compression/metadata, MMA behavior, and peak rates. Peak throughput is not an application speedup."
+    },
+    {
+      "title": "Accelerating Sparse Deep Neural Networks",
+      "url": "https://arxiv.org/abs/2104.08378",
+      "source_version": "Original Sparse Tensor Core design and behavior study.",
+      "use_and_limit": "Primary design and evaluation study for 2:4 sparse math. Preserve exact network, accuracy, datatype, and hardware conditions; do not generalize its results beyond them."
+    },
+    {
+      "title": "Accelerating Inference with Sparsity Using the NVIDIA Ampere Architecture and NVIDIA TensorRT",
+      "url": "https://developer.nvidia.com/blog/accelerating-inference-with-sparsity-using-ampere-and-tensorrt",
+      "source_version": "NVIDIA technical blog updated July 20, 2021, describing TensorRT 8.0 and A100 measurements.",
+      "use_and_limit": "Primary vendor benchmark report with model-level batch-dependent performance and performance-per-watt results. Label vendor measurements, system/runtime version, and the reported maximum; do not treat them as a universal multiplier."
+    },
+    {
+      "title": "TensorRT I/O Formats: Structured Sparsity",
+      "url": "https://docs.nvidia.com/deeplearning/tensorrt/10.x.x/inference-library/io-formats-sparsity.html",
+      "source_version": "Official TensorRT 10.x documentation as accessed on 2026-10-16.",
+      "use_and_limit": "Primary current runtime documentation for eligible matrix/convolution patterns, enablement, and tactic selection including cases where dense can be faster. Record documentation version and treat library behavior as TensorRT-specific."
+    }
+  ],
+  "collection_handling": "Knowledge body stays unread by Main until a native Codex gpt-6-luna max review records source accuracy, scope, depth, redundancy, corrections, and retrieval metadata."
+}

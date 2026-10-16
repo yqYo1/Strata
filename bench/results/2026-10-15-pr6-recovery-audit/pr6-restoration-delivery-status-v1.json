@@ -1,0 +1,63 @@
+{
+  "schema": "strata-pr6-restoration-delivery-status-v1",
+  "created_utc": "2026-10-16T07:36:35.191564+00:00",
+  "validation_branch": "verify/pr6-prefill-restore",
+  "worktree": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore",
+  "source_checkpoint": "2776c37b095e2b84a28f575ad43d888c1c42d254",
+  "faithful_original_anchor": "efba8d47817811d493e28f396ebd0e14e161ca75",
+  "first_seven_fix_checkpoint": "2170747a3d79e0fd40b9e86736dc1785435e630f",
+  "reviewed_first_checkpoint": "eb700276c8cd100eea5b70fe3767f1e02d0ae04c",
+  "historical_result": {
+    "median_tok_s": 645.847951,
+    "input_file_tokens": 32769,
+    "batched_tokens": 32768,
+    "matched_current_reproduction": false
+  },
+  "source_closure": {
+    "original_project_files": 198,
+    "translation_units": 84,
+    "note": "Initial197-file faithful anchor omitted requested original peer stub. Original anchor preserved; exact original stub added separately and resolver inventory corrected."
+  },
+  "safety_corrections_source_only": [
+    "Checked memcpy events replace host-USM fill/volatile polling for Stager and PLE",
+    "Finite deadlines/fail-stop while preserving owners on uncertain retirement",
+    "Build-private checked DPCT handler/default-queue registration, no shared vendor edit",
+    "Borrowed/default queue ownership and explicit init readiness",
+    "Native embedding vocabulary admission before gather",
+    "Transactional doorbell allocation null/partial cleanup"
+  ],
+  "source_diff_from_first_review": {
+    "changed_validation_files": 35,
+    "insertions": 845,
+    "deletions": 320
+  },
+  "execution": {
+    "configure": "UNRUN",
+    "build": "UNRUN",
+    "host_fixtures": "PASS_HOST_HELPERS_ONLY",
+    "GPU": "UNRUN",
+    "performance": "UNRUN"
+  },
+  "status": "SOURCE_ONLY_UNSAFE_TO_RUN",
+  "next_gate": "Independent gpt-6.1-sol v2 review completed and released; Main read full review. D1 false queue-completion boolean/error-code interpretation, D2 position arithmetic, D3 mapped-doorbell atomic contract, D4 failed reload metadata, D5 join deadline need source repairs or explicit route exclusion. Host-only fixtures and preprocessing/build may proceed as separate Main-owned gates; no GPU/model execution. Main subsequently built/ran4 ordinary C++ helper fixtures; all8build/testcommands exit0. Does not qualify actual DMA/provider/events, engine build, physical GPU256K or model.",
+  "research_lifecycle": "Restorer, independent v1 reviewer, safety-fix implementer and independent v2 reviewer all completed/released without mid-task steering; Main owns all executions.",
+  "integration": "Child deliberately unfinished and retained; no current inference adoption or new600claim. Main will integrate reviewed useful source/history/reports into feature/sycl, update fork default, then retire child after validation.",
+  "second_review_findings": [
+    "D1 boolean ext_oneapi_empty discarded by DPCT_CHECK_ERROR",
+    "D2 unchecked position/lookahead arithmetic",
+    "D3 host volatile vs device atomic doorbell protocol",
+    "D4 failed repeated embedding load metadata inconsistency",
+    "D5 normal issuer join bound mismatch"
+  ],
+  "host_fixture_receipt": {
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/own-pr6-host-fixtures-v1.json",
+    "sha256": "c063e637bd2ae28c15822d4797447da0804041287f1154859a6948775f61b616"
+  },
+  "validation_branch_publication": {
+    "head": "185fc2d2642071f8fff43a7b426f936f3a974a09",
+    "remote_head": "185fc2d2642071f8fff43a7b426f936f3a974a09",
+    "source_unchanged_since": "2776c37b095e2b84a28f575ad43d888c1c42d254",
+    "change": "Second independent safety review committed; active unfinished validation branch pushed to own fork.",
+    "push_completed": true
+  }
+}
