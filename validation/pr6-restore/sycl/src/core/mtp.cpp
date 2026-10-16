@@ -1031,6 +1031,16 @@ bool MtpDrafter::prefill(const float *R_rows, const int32_t *next_tokens,
         ms_prefill += ms_since(t0);
         return true;
     }
+    // The per-group branch also borrows R_rows from Prefill. A failure after
+    // accepting that D2D copy must drain this separate queue before returning
+    // to a caller that may immediately destroy the prompt workspace.
+    strata::prefill::detail::DraftUploadGuard residual_lease(
+        [&] { cs_->wait_and_throw(); return true; },
+        [] {
+            std::fputs("mtp prefill: borrowed residual failed to retire; exiting with owner live\n", stderr);
+            std::fflush(stderr);
+            std::_Exit(1);
+        });
     for (int64_t c = 0; c < n; c += max_t_) {
         const int T = (int) std::min<int64_t>(max_t_, n - c);
         if (cell0 + c + T <= first_needed) continue;
@@ -1050,6 +1060,7 @@ bool MtpDrafter::prefill(const float *R_rows, const int32_t *next_tokens,
         operand memory, so you may need to call wait() on event return by memcpy
         API to ensure synchronization behavior.
         */
+        residual_lease.arm();
         if (DPCT_CHECK_ERROR(cs_->memcpy(Rin_, R_rows + (size_t)c * HCN,
                                          (size_t)T * HCN * sizeof(float))) !=
                 0 ||
@@ -1070,6 +1081,7 @@ bool MtpDrafter::prefill(const float *R_rows, const int32_t *next_tokens,
             return false;
         }
     }
+    residual_lease.retire();
     ms_prefill += ms_since(t0);
     return true;
 }

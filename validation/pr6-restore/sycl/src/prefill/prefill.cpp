@@ -1949,6 +1949,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     if (n <= 0) return run_impl(tokens, n, pos0, err);
     if (!m.cs->is_in_order() || !m.copy->is_in_order() ||
         m.cs->get_context() != m.copy->get_context() ||
+        m.cs->get_device() != m.copy->get_device() ||
         m.cs->get_context() != dpct::get_in_order_queue().get_context() ||
         m.cs->get_device() != dpct::get_in_order_queue().get_device()) {
         err = "prefill: layer-major requires in-order queues in the allocation device/context"; return false;

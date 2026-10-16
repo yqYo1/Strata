@@ -98,3 +98,16 @@ command順・mathは変えない。page table内のdevice page IDの実値はこ
 この歴史sourceの契約から独立に作成したrepository LICENSEのコード。未実行。
 [SYCL queue仕様](https://github.khronos.org/SYCL_Reference/iface/queue.html) の
 in-order保証は同じqueueへ順にsubmitしたcommand間のもので、CPU書換えを同期しない。
+
+## 修正F: MTP別queueが読む借用residualの早期解放
+
+MTPのper-group-sync fallbackでも、`R_rows`→`Rin_` のcopy受理後にgraph launchが
+失敗すればそのgroupのwaitを通らずreturnする。MTPは `cs_`、caller Prefillは `m.cs` を
+使う。standalone generatorの宣言順はMTPが3143、Prefillが7370なので失敗return時に
+Prefillが先に破棄される。MTP destructorが後でwaitしてもPrefillのworkspaceを
+読み終わる前にfreeし得る。これはlocal recとは別の、借用device ownerの欠陥。
+
+per-group分岐にもcopy前arm/return前drainのguardを入れ、正常時は既存group waitの
+後にretireする。kernel・graph・batch順・正常wait回数は変わらない。修正Cの
+record guardは非per-group分岐でこの借用leaseも一緒にretireする。
+queue admissionもcopy deviceまで一致を確認するよう補完した。全て未実行。
