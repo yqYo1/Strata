@@ -49,6 +49,7 @@ def main():
     h = imported('integrated_components_helpers', helper)
     o = imported('integrated_components_owner', owner_path)
     need = h.require
+    base = dict(meta['execution_environment'])
     root = args.root.absolute()
     need(root.parent == B and re.fullmatch('main-vllm-engine-components-'+args.mode+'-[A-Za-z0-9_-]{1,32}', root.name), 'root scope')
     need(not root.exists() and not root.is_symlink(), 'fresh root only')
@@ -72,7 +73,6 @@ def main():
         record['commands'] = owner.commands
         save()
         deadline = time.monotonic()+1800
-        base = dict(meta['measurement_environment'])
         record['base_environment'] = base
         cursor = None
         build = None
