@@ -1,0 +1,154 @@
+{
+  "schema": "strata-resource-measurement-preparation-v1",
+  "recorded_utc": "2026-10-16T06:19:52.219289+00:00",
+  "new_GPU_measurement_executed": false,
+  "inputs": [
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/own-vllm-profile-bf16-r0-v1.json",
+      "sha256": "17038b329632e6bbe6c2d58d583a2bee9fdabae71b9a445968765663d8c8adcf"
+    },
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/own-current-device-profile-summary-v1.json",
+      "sha256": "40da5cbb8de6529973b8f06c623bbafd3cbf7d88a4c907df29bed14954eae860"
+    },
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/own-resident39k-summary-v1.json",
+      "sha256": "a3bea3911ea2c13794b7acb3b5ffa0d84e021e08775c22f848cbb8e1aba3c0ae"
+    },
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/own-host-transfer-component-v1.json",
+      "sha256": "d853e07eeae7ca24fdd4d20b7a42552152c532c8dadcd85c2f9d62bf67444b01"
+    },
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/resource-topology-observation-v1.json",
+      "sha256": "fb23cec9923dfdb24c26e3ddd0288c64e7abd801630eaf18660365194df29be3"
+    }
+  ],
+  "source_pins": {
+    "src/kernels/sycl/prompt_attention.cpp": "5fa7927e611b8cb746e1d11bd70a8e2aae3c66a48b02a93eb55e86eb9bf0076f",
+    "include/strata/kernels/qsa.hpp": "87c02222284f842fcecb46a422b119af769c72c3914edc8da5b2ee782456dc74",
+    "src/prefill/prefill.cpp": "d01662ae6c46bfdd2556da1345c5f9edb79f91694391eee2b2b0aebfeab831ce"
+  },
+  "profile_scope": "Existing old6354 BF16/QSA0 fixed32768 residual diagnostic; requested bytes, not physical bus/DRAM traffic; not current all-GPU residual setup.",
+  "coarse_requested_bytes": {
+    "expert_upload": 50292326400,
+    "input_bytes_host_device": [
+      6249902080,
+      31541166080
+    ],
+    "store_bytes_host_device": [
+      6249902080,
+      31541166080
+    ]
+  },
+  "attention_source_work": {
+    "batched_queries": 39261,
+    "QSA_layers": 12,
+    "kv_heads": 2,
+    "selected_width": "min(position+1,2051), fresh pos0=0",
+    "tiles32_all_layers_and_KV_heads": 59649720,
+    "joint_matrix_mad_calls": 15270328320,
+    "source_issued_FLOPs_including_padding_and_hi_lo": 62547264798720,
+    "selected_cell_logical_KV_payload_upper_bytes": 993764040192,
+    "limits": "Source work accounting, not measured instructions/cache/DRAM traffic, hardware utilization or critical path. Invalid pages suppress payload reads. Do not divide by unmatched whole-process service to claim resource saturation."
+  },
+  "softmax_samples": [
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-long-clean-0-r0-v1.json",
+      "sha256": "a9be0a840b8ecf6bd5f6d1ae434648866070f493e77148178a1f235efd79a608",
+      "arm": "0",
+      "repetition": 0,
+      "original_passed": true,
+      "original_complete": true,
+      "prompt_tps": 403.4,
+      "comparison_eligible": true,
+      "error": null
+    },
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-long-clean-1-r0-v1.json",
+      "sha256": "4065bcda49468ff52b56d38cb8de051106c1a792533a31ed791b8c17460690f5",
+      "arm": "1",
+      "repetition": 0,
+      "original_passed": true,
+      "original_complete": true,
+      "prompt_tps": 404.2,
+      "comparison_eligible": true,
+      "error": null
+    },
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-long-clean-1-r1-v1.json",
+      "sha256": "ac8b0a66521bffa98daf1e8714e4bd8f5ffa259d0153ff7155592440a4d6e77a",
+      "arm": "1",
+      "repetition": 1,
+      "original_passed": true,
+      "original_complete": true,
+      "prompt_tps": 404.8,
+      "comparison_eligible": true,
+      "error": null
+    },
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-long-clean-0-r1-v1.json",
+      "sha256": "d45130fd43d88c2d17a5081df7657f1f817ecd83c6bc7ba8074b959341fc8d67",
+      "arm": "0",
+      "repetition": 1,
+      "original_passed": false,
+      "original_complete": false,
+      "prompt_tps": 402.4,
+      "comparison_eligible": false,
+      "error": "RuntimeError('file identity changed: /home/yayoi/orca/workspaces/Strata/sycl/AGENTS.md')"
+    }
+  ],
+  "softmax_cohort_status": "INCOMPLETE_ADMINISTRATIVE_FAILURE_HOLD_NO_ADOPTION",
+  "failed_sample_preserved": {
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-long-clean-0-r1-v1.json",
+    "sha256": "d45130fd43d88c2d17a5081df7657f1f817ecd83c6bc7ba8074b959341fc8d67"
+  },
+  "failure_review": {
+    "cause": "Main added only a hardware-measurement paragraph to AGENTS.md during a frozen run; final build-file pin rejected that documentation change after normal inference and request verification.",
+    "normal_model_exit": true,
+    "fresh_GPU_faults": 0,
+    "AGENTS_restored_sha256": "7f750320bef4146a2872086922d84fc9fa7a8351ae655b7876c912856e3747fe",
+    "expected_AGENTS_sha256": "7f750320bef4146a2872086922d84fc9fa7a8351ae655b7876c912856e3747fe",
+    "original_failed_status_rewritten": false,
+    "failed_sample_promoted_to_PASS": false,
+    "reason_to_hold": "User now prioritizes identifying hardware-resource saturation; small softmax diagnostic gain and incomplete clean cohort are insufficient adoption evidence. No automatic retry."
+  },
+  "required_measurement_policy": [
+    "Compare actual current workload bytes/arithmetic/dependencies with separately measured operation-specific PCIe, RAM, VRAM and GPU compute capacities.",
+    "Distinguish transferred payload, physical bus/DRAM bytes, service sum, busy union, overlap and critical-path waits.",
+    "Separate CPU calculation/submission from GPU-completion polling and other CPU threads.",
+    "Measure native device/copy timeline plus transfer sizes before deciding which hardware resource is saturated.",
+    "Do not infer hardware utilization, occupancy, SLM conflicts, XMX saturation or full-prefill critical path from stage durations/property snapshots.",
+    "Retain original independent samples and failures; separate instrumented diagnosis from clean throughput."
+  ],
+  "active_work": {
+    "historical_restore": {
+      "branch": "verify/pr6-prefill-restore",
+      "base_commit": "08874a80989c13f3fe4b8e13c085e69f6fdea5f2",
+      "task_id": "task_00abc6a80d11",
+      "dispatch_id": "ctx_a9c4d296a850",
+      "actual_model": "gpt-6.1-sol",
+      "report_in_child": "bench/results/2026-10-16-pr6-faithful-restore/report.ja.md",
+      "Main_owns_tests": true
+    },
+    "timeline_source_proposal": {
+      "task_id": "task_f981af7ebe67",
+      "dispatch_id": "ctx_b2fdf7587fd8",
+      "actual_model": "gpt-6.1-sol",
+      "Main_owns_tests": true
+    },
+    "resource_research": {
+      "round": 875,
+      "task_id": "task_e8a697e1d7df",
+      "dispatch_id": "ctx_36199a0607bb",
+      "actual_model": "gpt-6-luna",
+      "report_body_Main_held_until_native_review": true
+    },
+    "R876_R877": "Eligible knowledge scopes remain undispatched while3Orca workers fill current practical capacity."
+  },
+  "hardware_bottleneck_proven": false,
+  "performance_adopted": false,
+  "quality_qualified": false,
+  "physical_262144_qualified": false,
+  "restore_qualified": false
+}

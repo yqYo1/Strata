@@ -2925,6 +2925,148 @@
         "release_sha256": "04e215688fdd99b73dcf2e908002ce3638ebaab0da586250386f600af9727153",
         "state": "worker succeeded/settled; released; transcript captured"
       }
+    },
+    {
+      "round": 871,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-round871-v1.txt",
+      "status": "R874-reviewed decision-support source audit; Main retrieval needed with exact line ranges. R871-C1 records an unpinned src/prefill/sycl/gemm.cpp citation; hold that clause pending reconciliation.",
+      "sha256": "d472b8abba13df53085bf1c1bbf0c1cfc539f0f3e681cccb90c05b2d96e16a32",
+      "classification": "decision_support",
+      "spec_path": "orca-research-round871-spec-v1.txt",
+      "spec_sha256": "17e3235abfaad4414e29ee78053a1ffb4f48a3744fd9ae9ec2cef7dbf84c3f02",
+      "review_round": "R874",
+      "review_path": "A/research-scope-review-round874-v1.json",
+      "review_sha256": "c43a0a8878bf48f2977451adf04e293485dee34510501212b9ff86d64749e637",
+      "main_body_read": false,
+      "retrieval": {
+        "needed_now": true,
+        "hold_body": false,
+        "sections": [
+          "7-12: output-format and Dm payload fit; apply R871-C1 to line 9",
+          "15-28: capacities, live ranges, route/shared/state planes, phase overlay",
+          "26-28: routed-row count, slot-order combine, arena aliasing",
+          "32-36: chunk reuse, causal order, callbacks/checkpoints, peer/MMQ limits",
+          "40: decision boundary and separate precision/performance/adoption gates"
+        ],
+        "keys": [
+          "two-chunk Dm byte capacity",
+          "native16 BF16 output and FP16 scratch distinction",
+          "route multiplicity and slot-order combine",
+          "scratch live intervals and phase overlay",
+          "QSA/GDN/PLE order and callback publication"
+        ],
+        "preserve_caveats": [
+          "R871-C1: src/prefill/sycl/gemm.cpp is cited but not source-pinned in the report.",
+          "Exact payload fit does not prove simultaneous two-chunk route, input, residual, and callback lifetimes.",
+          "Static source analysis supplies no speed, numerical-quality, or adoption result."
+        ]
+      },
+      "correction_ids": [
+        "R871-C1"
+      ],
+      "tags": [
+        "SYCL prefill",
+        "native16",
+        "MoE scratch",
+        "live ranges",
+        "causal order",
+        "publication boundary"
+      ]
+    },
+    {
+      "round": 872,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-round872-v1.txt",
+      "status": "R874-reviewed knowledge collection; Main body held. Report findings are source-bounded; R872-C1 corrects only the assigned paper-title metadata.",
+      "sha256": "da93aecb7b3123073c524ac35bc109631e68fda8f483547f9292d390967ec317",
+      "classification": "knowledge_collection",
+      "spec_path": "orca-research-round872-spec-v1.txt",
+      "spec_sha256": "841a1c8d429b61f0568fd30f545bf5e3dbf0d032591e187e588477e641344969",
+      "review_round": "R874",
+      "review_path": "A/research-scope-review-round874-v1.json",
+      "review_sha256": "c43a0a8878bf48f2977451adf04e293485dee34510501212b9ff86d64749e637",
+      "main_body_read": false,
+      "retrieval": {
+        "needed_now": false,
+        "hold_body": true,
+        "sections": [
+          "7-11",
+          "15-19",
+          "23-29",
+          "33-43"
+        ],
+        "keys": [
+          "direct hash versus partitioned hash versus sort-merge",
+          "narrow/wide join crossover and materialization",
+          "many-to-many output cardinality",
+          "key versus partition skew",
+          "table load factor and memory limits"
+        ],
+        "preserve_caveats": [
+          "Cross-paper timings are not controlled rankings.",
+          "Hash-table probe microbenchmarks are not end-to-end join results.",
+          "The 2023 skew evidence is primarily primary-foreign-key evidence, not arbitrary many-to-many hot-key behavior."
+        ]
+      },
+      "correction_ids": [
+        "R872-C1"
+      ],
+      "tags": [
+        "GPU equijoin",
+        "partitioned hash",
+        "sort-merge",
+        "materialization",
+        "key skew",
+        "memory capacity"
+      ]
+    },
+    {
+      "round": 873,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-round873-v1.txt",
+      "status": "R874-reviewed knowledge collection; Main body held; no factual corrections.",
+      "sha256": "1ae234df104e5260955c71bb25c22ad26c6f51e3e76186ebf0460266119f755e",
+      "classification": "knowledge_collection",
+      "spec_path": "orca-research-round873-spec-v1.txt",
+      "spec_sha256": "82c1c1e6c9b535b1de1c1a49f64fdea02251083689969cd6d09384386bab5bc5",
+      "review_round": "R874",
+      "review_path": "A/research-scope-review-round874-v1.json",
+      "review_sha256": "c43a0a8878bf48f2977451adf04e293485dee34510501212b9ff86d64749e637",
+      "main_body_read": false,
+      "retrieval": {
+        "needed_now": false,
+        "hold_body": true,
+        "sections": [
+          "9-22",
+          "26-34",
+          "38-48"
+        ],
+        "keys": [
+          "stationary dataflow mechanisms",
+          "partial-sum traffic and local capacity model",
+          "Eyeriss modeled FC evidence and limits",
+          "TPU v1 measured MLP counters",
+          "flexible mapping and interconnect costs"
+        ],
+        "preserve_caveats": [
+          "Eyeriss FC ratios are analytical model results, separate from fabricated-chip specifications.",
+          "TPU v1 data are historical production-app counters without individual MLP matrix shapes.",
+          "Neither ASIC report establishes a desktop SYCL/GPU performance prediction."
+        ]
+      },
+      "correction_ids": [],
+      "tags": [
+        "inference ASIC",
+        "weight stationary",
+        "output stationary",
+        "row stationary",
+        "fully connected",
+        "PE utilization"
+      ]
     }
   ],
   "main_initial_findings": [
@@ -4509,5 +4651,36 @@
       869
     ],
     "next_scope_recommendations": []
+  },
+  "research_review_874": {
+    "path": "A/research-scope-review-round874-v1.json",
+    "sha256": "c43a0a8878bf48f2977451adf04e293485dee34510501212b9ff86d64749e637",
+    "operational_digest_path": "A/research-scope-review-round874-v1.ja.md",
+    "operational_digest_sha256": "bf3b5fa162e256015c0331c936f1b778ebb7214f95330cbad0667ca7399db871",
+    "index_before_sha256": "0ea68239747e653fc0a4bbaf266ad15dc05624763ffab135348d1c4f19ecfae5",
+    "indexed_report_count_after": 276,
+    "highest_indexed_report_round_after": 873,
+    "collection_bodies_main_read": false,
+    "decision_support_retrieval": {
+      "round": 871,
+      "needed_now": true,
+      "sections": [
+        "7-12: output-format/Dm fit, with R871-C1 on line 9",
+        "15-28: capacities and live ranges",
+        "26-28: routes, combine order, arena aliasing",
+        "32-36: causal order, callbacks/checkpoints, unsupported paths",
+        "40: decision boundary"
+      ]
+    },
+    "held_reports": [
+      872,
+      873
+    ],
+    "correction_ids": [
+      "R871-C1",
+      "R872-C1"
+    ],
+    "next_scope_recommendations": [],
+    "next_scope_reason": "No current long-candidate speed result is available while Main runs the first 39K R861 diagnostic; wait for Main evidence to define the next finite decision question."
   }
 }

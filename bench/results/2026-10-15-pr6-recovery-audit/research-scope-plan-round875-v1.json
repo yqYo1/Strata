@@ -1,0 +1,341 @@
+{
+  "schema": "strata-research-scope-plan-v1",
+  "plan_round": "R875-R877",
+  "created_date": "2026-10-16",
+  "plan_status": "Planning only. No Orca workers were dispatched.",
+  "shared_index": {
+    "path": "research-index.json",
+    "sha256": "49305c5d4903c68d741e2f86065deac4b05befb3977f5fbf7a2ecd9e7f772361",
+    "indexed_report_count": 276,
+    "highest_indexed_round": 873
+  },
+  "latest_scope_review": {
+    "path": "A/research-scope-review-round874-v1.json",
+    "sha256": "c43a0a8878bf48f2977451adf04e293485dee34510501212b9ff86d64749e637",
+    "operational_digest_path": "A/research-scope-review-round874-v1.ja.md",
+    "operational_digest_sha256": "bf3b5fa162e256015c0331c936f1b778ebb7214f95330cbad0667ca7399db871",
+    "reviewed_plan": {
+      "path": "research-scope-plan-round871-v1.json",
+      "sha256": "dd7b992f88814e69df3a803e80f82be5b0ee5a4f2f69b7080df5ae49a2367c53"
+    },
+    "relevance": "R874 had no next-scope recommendation because the first R861 long diagnostic had not yet completed. The supplied R861 paired diagnostics and current attention profile now define a new, bounded decision-support question."
+  },
+  "prior_attention_scope_metadata": [
+    {
+      "round": "R714",
+      "path": "research-prefill-attention-roofline-round714-v1.txt",
+      "sha256": "50c7fda4b6bc69fb41ad04f1bf6cc7de89b0dcc429ad95e3afb7db840e60b6a9",
+      "indexed_status": "Conditional mode-1 cell-major gather/SLM layout hypothesis using non-Xe primary references; no implementation, profiler or performance proof.",
+      "overlap_guard": "Do not repeat a generic gather/SLM layout survey. R875 must map the current kernel's executed phases to specific available measurements."
+    },
+    {
+      "round": "R725",
+      "path": "research-own-prompt-load-coalescing-round725-v1.txt",
+      "sha256": "23e309f7ed1b8063b0569bd5cc5a22cc5c9456c089337f3bd4eb32594b87223c",
+      "indexed_status": "Own-source K-only cell-major gather hypothesis; V already contiguous; no implementation, profiling or speed result.",
+      "overlap_guard": "R875 profiles the active mapping-0 kernel and makes no KMapping 1/2 retest or gather-layout proposal."
+    },
+    {
+      "round": "R736",
+      "path": "research-prompt-tile-geometry-round736-v1.txt",
+      "sha256": "e00f6408ba295e27aeafb3e2b7a86df427c09c190ce130298839ccb81631eabd",
+      "indexed_status": "Prompt tile resource/arithmetic/geometry analysis; no selected CH/WG variant."
+    },
+    {
+      "round": "R745",
+      "path": "research-prompt-resource-next-round745-v1.txt",
+      "sha256": "bd4e6db2de4fc0bb1f8390cd59ee337e2561417d103220d8723069700b3b03ef",
+      "indexed_status": "Global FP16 scale and all-subgroup PV mapping recorded; same-thread next-K gather did not establish overlap; double buffering unimplemented."
+    },
+    {
+      "round": "R746",
+      "path": "research-attention-roofline-round746-v1.txt",
+      "sha256": "cb63bf26f97fe9988bbfe0c96d05030c1053b3786cdb12562922652bc1c769b7",
+      "indexed_status": "One-layer arithmetic must be multiplied by 12 for full phase; source width deterministic from step; no hardware-utilization or performance claim."
+    },
+    {
+      "round": "R747",
+      "path": "research-prompt-headtile-round747-v1.txt",
+      "sha256": "46741f755592ed371083d96eebd378aa47dbf32c72c808914929f7e8e292f1be",
+      "indexed_status": "Head-tile SLM byte accounting corrected for an unused placeholder; no occupancy claim."
+    },
+    {
+      "round": "R748",
+      "path": "research-profile-counters-round748-v1.txt",
+      "sha256": "ab24673915a52a96de33e2096070e98098c62b207a1ed72faad5122661da2582",
+      "indexed_status": "Unprivileged hardware-counter access was blocked; no profiler/GPU queries were run.",
+      "overlap_guard": "R875 must not re-survey generic profiler products. It asks what the already exercised unitrace path and existing Intel documentation can measure for this exact kernel and what remains unobservable without counters."
+    }
+  ],
+  "later_scope_metadata": [
+    {
+      "round": "R839",
+      "path": "research-round839-v1.txt",
+      "sha256": "7cdaeca1f0c3d12892c3ee1d77947b2e8e0cef3f0e3390531220cdd89a17331f",
+      "classification": "knowledge collection; Main body held",
+      "topic_boundary": "Local-memory bank-index mapping and tile transforms; not stencil time-depth tradeoffs or spatial neighbor search."
+    },
+    {
+      "round": "R855",
+      "path": "research-round855-v1.txt",
+      "sha256": "e226747e0572d52dbb5f7f151da6d9f111ef1a7ce2c86e1bb84cb5f6efd022a9",
+      "classification": "knowledge collection; Main body held",
+      "topic_boundary": "GPU convolution mapping, reuse and workspace; not iterative stencil temporal blocking."
+    },
+    {
+      "round": "R870",
+      "path": "research-scope-review-round870-v1.json",
+      "sha256": "d66fb4ba5a05e7188127f3cbb2acf6eeedfc9f8d9c4591e770ab8aaaafca6a7d",
+      "classification": "native review metadata only",
+      "topic_boundary": "R867 query fusion, R868 tile rendering, R869 BFS; collection bodies remain held."
+    },
+    {
+      "round": "R874",
+      "path": "A/research-scope-review-round874-v1.json",
+      "sha256": "c43a0a8878bf48f2977451adf04e293485dee34510501212b9ff86d64749e637",
+      "classification": "native review metadata only",
+      "topic_boundary": "R872 GPU equijoin build/probe/partition crossovers and R873 non-LLM MLP ASIC stationary dataflows; collection bodies remain held."
+    }
+  ],
+  "assignments": [
+    {
+      "proposed_assignment_round": "R875",
+      "purpose_label": "decision support",
+      "title": "Distinguishing memory, synchronization, and matrix-compute limits in the current QSA prompt-attention kernel",
+      "report_output": "research-round875-v1.txt",
+      "spec_output_if_dispatched": "orca-research-round875-spec-v1.txt",
+      "research_worker_model": "Orca gpt-6-luna",
+      "schedulable_now": true,
+      "eligibility": {
+        "decision_question_is_new": true,
+        "local_source_snapshot_is_pinned": true,
+        "current_long_diagnostic_receipts_are_present": true,
+        "tool_capability_can_be_answered_without_a_GPU_run": true,
+        "active_clean_cohort_is_not_a_prerequisite": true,
+        "recorded_evidence": "The paired R861 diagnostic receipts are complete, pass, have fault0, identify source revision 63326f98c36656cf3a3e1adcc54c3c25a02aa6ee and binary 6334491b623ead7b83c7ff5aaee84583294b3ecd4b12c6d06b77d1fe7e7a691d. The current source file hash matches the receipts. The existing unitrace direct-model receipt proves unitrace is already exercised. The profile summary and R748 metadata show that timing/property collection exists while usable hardware counters have not been established."
+      },
+      "shared_index": {
+        "path": "research-index.json",
+        "sha256": "49305c5d4903c68d741e2f86065deac4b05befb3977f5fbf7a2ecd9e7f772361"
+      },
+      "pinned_local_source_set": {
+        "source_revision": "63326f98c36656cf3a3e1adcc54c3c25a02aa6ee",
+        "files": [
+          {
+            "path": "src/kernels/sycl/prompt_attention.cpp",
+            "sha256": "5fa7927e611b8cb746e1d11bd70a8e2aae3c66a48b02a93eb55e86eb9bf0076f",
+            "use": "Current SYCL kernel templates, local accessors, per-chunk dataflow, matrix operations, barriers, softmax variants and dispatch."
+          },
+          {
+            "path": "include/strata/kernels/qsa_prompt_attn.hpp",
+            "sha256": "e5ed40cde930e09265b6b4b4ba27ae1118444fed8078d39689a08692dca0e230",
+            "use": "Current prompt-attention interface and pool/selection semantics."
+          },
+          {
+            "path": "include/strata/kernels/qsa_decode_attn.hpp",
+            "sha256": "3745db42a1a1fa84a40a5040352a9d5f16f735ae431389b8617dd6cd11bfdd14",
+            "use": "Shared QSA structures and step-width contract referenced by the pinned SYCL source."
+          }
+        ],
+        "pin_rule": "Use only these local source files and the named evidence artifacts. Verify SHA-256 before reading. Do not use Git commands. Do not read CUDA/HIP files or validation as evidence. Do not open, search or use XeStrata code, libraries, tests, helper code or archived proposals."
+      },
+      "named_local_evidence": [
+        {
+          "path": "own-current-device-profile-summary-v1.json",
+          "sha256": "40da5cbb8de6529973b8f06c623bbafd3cbf7d88a4c907df29bed14954eae860",
+          "meaning_and_limit": "Old whole-process profile from source 6354f0b4ff3731466795410e11ca9ef785c9d326 and binary 85643f3926bb9d212945659cb7ddb264e101ca9b2d5fa8f19430e945140ad191. The attention row is 33.966 s over 72 warmup/model launches, but device-service sums are nonexclusive and do not prove critical path, busy union, occupancy, clean speed or current R861 kernel time. The 4096 B property is a kernel-create snapshot before later local-argument settings, not proven launch-time SLM or occupancy."
+        },
+        {
+          "path": "own-prompt-softmax-qualification-v1.ja.md",
+          "sha256": "f13f3e34f1715edc094710353b73b9b12ac71abe65781c775f7ffaa422afcb7c",
+          "meaning_and_limit": "R861 implementation and full correctness qualification. Its 32336 B local-argument count is requested local storage for a different capture context; do not add it to the old profile's 4096 B or treat either value as occupancy."
+        },
+        {
+          "path": "own-prompt-softmax-long-diagnostic-0-r0-v1.json",
+          "sha256": "ff1b4389097e8e1187bf10c2ef27adb78c7325dc8d074793ff48ec60837c99eb",
+          "meaning_and_limit": "R861 arm 0 diagnostic; current source/binary identity and actual 39262-input long-prefill configuration."
+        },
+        {
+          "path": "own-prompt-softmax-long-diagnostic-1-r0-v1.json",
+          "sha256": "7d34f0db394d977ba6f660970c9761d55f9fb699a18ca3c7a48aaf098da0b3cf",
+          "meaning_and_limit": "R861 arm 1 diagnostic; same workload with the subgroup-softmax variant."
+        },
+        {
+          "path": "own-prompt-k-cellmajor-comparison-v2.json",
+          "sha256": "dd4756b277d865d96bd2d995d0aa72ad76716e29cc444ee575b91fc82f1a246e",
+          "meaning_and_limit": "Clean component screen rejected unpadded cell-major K mapping: +11.28% median time. This does not identify the bottleneck; do not repeat mapping 1. The shared index's prefill_prompt_K_padded entry records mapping-2 results and non-adoption; do not rerun it as part of R875."
+        }
+      ],
+      "finite_question": "For the exact R861 SYCL prompt-attention source and active baseline/softmax specializations, which observations from the already exercised Intel unitrace path can distinguish (a) external K/V, page-table and scale traffic or poor memory use, (b) local-memory/barrier/synchronization cost, and (c) joint-matrix/XMX or other arithmetic saturation? Reconstruct the source-level 32-cell loop and its global inputs, local buffers, reductions, barriers, QK/PV matrix operations and scaling; then give one minimal, serialized, source/build-matched profiling recipe using currently exercised unitrace and, only if already present and supported, VTune. State which counter groups or traces answer each hypothesis, what their platform/access prerequisites are, and what remains inconclusive if hardware metrics are still unavailable.",
+      "breadth_and_counterevidence": "Include one source-to-phase-to-metric table. For every phase, state whether it reads selected IDs/page-table data, K or V codes/scales, reuses local data, performs FP16 hi/lo joint-matrix products, updates online softmax state, or reaches a workgroup barrier. Compare unitrace timing/submission traces, per-kernel metric query or metric sampling, and supported stall sampling only to the extent documented for the actual device; distinguish timing from hardware counters. Explain how to separate global/L3 traffic and bandwidth, EU/XMX activity, occupancy, instruction mix, and sampled stalls from a synchronization hypothesis. Reconcile the old 4096 B property and the new 32336 B requested local arguments by build/context and explain why neither alone establishes physical SLM use or occupancy. Give one smallest useful profile plan for Main to schedule after the active clean cohort closes, with separate process arms, exact source and binary identity, kernel-name filter, and one counter group per pass if needed. Include counter evidence that would favor each hypothesis and counterevidence that would reject it. If supported metrics or symbols are unavailable, report the exact evidence ceiling rather than proposing privilege changes or a new tool installation.",
+      "novelty_guard": "This is a measured-device, current-source diagnostic design for the active prompt-attention implementation, not a profiler product survey or a new kernel proposal. Do not infer critical path or occupancy from nonexclusive service sums, property snapshots, local-argument bytes or per-kernel durations. Do not claim the current kernel is memory-, barrier- or compute-bound. Do not repeat R714/R725 cell-major K gathering, R736 geometry, R745 double buffering, R746 static arithmetic scaling, R747 resource-byte accounting, or KMapping 1/2 component screens. Do not read any knowledge-collection report body. No CPU/CUDA/HIP implementation or validation evidence and no XeStrata material.",
+      "report_budget": "1300-1700 substantive words, no more than 7 primary URLs, one phase/metric table, one minimal profile recipe and a short decision boundary. No build, test, profiler, GPU job, process inspection, Git command, patch or adoption claim.",
+      "prerequisites": [
+        "The parent-supplied immutable revision and three local source path hashes above.",
+        "The named current profile summary, R861 qualification/diagnostic receipts, K-mapping comparison, and shared index snapshot.",
+        "The current unitrace direct-model receipt identified by the summary; do not inspect process state or assume any unrecorded profiler installation."
+      ],
+      "prerequisite_evidence": "Source revision and prompt_attention.cpp SHA-256 exactly match both R861 diagnostics. The R861 diagnostics are closed and fault-free. A passed unitrace direct-model receipt is named by the profile summary. R748 metadata records that unprivileged hardware-counter access was blocked. The scope can answer the supported-measurement question from pinned source, records and official documentation without a new GPU run or a current clean-cohort result.",
+      "primary_sources": [
+        {
+          "title": "Intel PTI-GPU unitrace README",
+          "url": "https://github.com/intel/pti-gpu/blob/master/tools/unitrace/README.md",
+          "use_and_limit": "Primary tool documentation for unitrace device timing, kernel filtering, metric query/sampling, metric groups and conditional stall-sampling support. Record the documentation snapshot date and exact advertised limitations."
+        },
+        {
+          "title": "Intel VTune Profiler GPU Compute/Media Hotspots Analysis, 2026.1",
+          "url": "https://www.intel.com/content/www/us/en/docs/vtune-profiler/user-guide/2026-1/gpu-compute-media-hotspots-analysis.html",
+          "use_and_limit": "Primary current analysis documentation for characterization/source analysis, occupancy and GPU metrics; only recommend if already installed and supported by the recorded platform."
+        },
+        {
+          "title": "Intel VTune Profiler knob reference, 2026.1",
+          "url": "https://www.intel.com/content/www/us/en/docs/vtune-profiler/user-guide/2026-1/knob.html",
+          "use_and_limit": "Primary reference for metric groups and source-analysis modes; preserve distinctions between estimated basic-block or memory latency and a direct barrier-cost measurement."
+        },
+        {
+          "title": "Configure GPU Analysis from the Command Line, 2026.0",
+          "url": "https://www.intel.com/content/www/us/en/docs/vtune-profiler/user-guide/2026-0/configuring-gpu-analysis-from-command-line.html",
+          "use_and_limit": "Primary reference for GPU counter presets and their platform requirements; do not assume a preset is supported on this device."
+        },
+        {
+          "title": "Intel Profiling Tools Interfaces for GPU, oneAPI Optimization Guide 2025.0",
+          "url": "https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2025-0/performance-tools-in-intel-profiling-tools.html",
+          "use_and_limit": "Primary overview of Intel GPU profiling tools; use only to relate unitrace capabilities, not to substitute generic advice for source-specific analysis."
+        }
+      ],
+      "collection_handling": "Decision-support report may be reviewed and retrieved by Main after native Codex scope/depth/source review. Research makes no implementation or inference-adoption decision."
+    },
+    {
+      "proposed_assignment_round": "R876",
+      "purpose_label": "knowledge collection",
+      "title": "When temporal blocking helps iterative GPU stencils, and when halo and resource costs erase the gain",
+      "report_output": "research-round876-v1.txt",
+      "spec_output_if_dispatched": "orca-research-round876-spec-v1.txt",
+      "research_worker_model": "Orca gpt-6-luna",
+      "schedulable_now": true,
+      "shared_index": {
+        "path": "research-index.json",
+        "sha256": "49305c5d4903c68d741e2f86065deac4b05befb3977f5fbf7a2ecd9e7f772361"
+      },
+      "relevant_prior_report_metadata": [
+        {
+          "path": "research-round839-v1.txt",
+          "sha256": "7cdaeca1f0c3d12892c3ee1d77947b2e8e0cef3f0e3390531220cdd89a17331f",
+          "classification": "knowledge collection; Main body held",
+          "use": "Metadata-only boundary: local-memory bank mapping and tile transforms. Do not open its body."
+        },
+        {
+          "path": "research-round855-v1.txt",
+          "sha256": "e226747e0572d52dbb5f7f151da6d9f111ef1a7ce2c86e1bb84cb5f6efd022a9",
+          "classification": "knowledge collection; Main body held",
+          "use": "Metadata-only boundary: GPU convolution mapping/reuse/workspace. Do not open its body."
+        },
+        {
+          "path": "research-scope-review-round870-v1.json",
+          "sha256": "d66fb4ba5a05e7188127f3cbb2acf6eeedfc9f8d9c4591e770ab8aaaafca6a7d",
+          "use": "Recent held scopes included tile rendering and BFS; this assignment excludes both."
+        }
+      ],
+      "finite_question": "For iterative single-GPU 3D stencil updates, when does temporal blocking reduce off-chip traffic enough to offset halo recomputation, synchronization, local-memory/register capacity and lower occupancy? Compare a streaming baseline, spatial blocking, and a small set of shared-memory/register or deep temporal-blocking designs across stencil radius, tile dimensions and blocked time steps.",
+      "breadth_and_counterevidence": "Use primary stencil papers to compare data movement and redundant-work models alongside measured results. Record stencil shape/radius, tile and time-depth, precision, GPU generation, memory/local-storage assumptions, boundary treatment and timing boundary. Include a regime where temporal blocking wins, and counterexamples where small domains, wide halos, deep time blocks, register/local-memory pressure, or low occupancy erase gains. Separate measured GPU data from analytical or modeled results and explain why NVIDIA-specific features do not directly predict SYCL/Intel GPU performance.",
+      "novelty_guard": "Keep this at iterative stencil time blocking. R855 covers convolution mapping and workspace; R839 covers bank indexing; neither is an iterative stencil time-depth crossover. Exclude convolution lowering, rendering, BFS, GPU microkernel bank-conflict equations, compiler tuning, Strata changes, XeStrata, and any local build or measurement.",
+      "report_budget": "1300-1700 substantive words, at most 7 primary URLs, one compact algorithm/resource table, one halo/redundant-work model, measured favorable and unfavorable regimes, applicability and evidence limits.",
+      "prerequisites": [
+        "Public access to the original stencil sources below.",
+        "No local GPU, code, build, test, profiler or process result is required."
+      ],
+      "prerequisite_evidence": "The two cited original papers are publicly accessible primary research sources and provide measured GPU stencil alternatives, time-depth/resource tradeoffs and counterexamples. The shared index and R839/R855/R870 review metadata bound adjacent scopes without opening held knowledge reports.",
+      "primary_sources": [
+        {
+          "title": "Revisiting Temporal Blocking Stencil Optimizations",
+          "url": "https://arxiv.org/abs/2305.07390",
+          "use_and_limit": "Original study comparing temporal-blocking approaches and contemporary NVIDIA GPU behavior; keep hardware-specific results explicit."
+        },
+        {
+          "title": "AN5D: Automated Stencil Framework for High-Degree Temporal Blocking on GPUs",
+          "url": "https://arxiv.org/abs/2001.01473",
+          "use_and_limit": "Original framework paper for deep temporal blocking and generated stencil kernels; do not generalize its best-case results beyond evaluated stencils and GPUs."
+        }
+      ],
+      "collection_handling": "Keep the report body unread by Main until a native Codex reviewer records scope, depth, redundancy, source checks, and retrieval metadata."
+    },
+    {
+      "proposed_assignment_round": "R877",
+      "purpose_label": "knowledge collection",
+      "title": "Geometric GPU neighbor search: cell lists, stenciled cells and bounding-volume hierarchies",
+      "report_output": "research-round877-v1.txt",
+      "spec_output_if_dispatched": "orca-research-round877-spec-v1.txt",
+      "research_worker_model": "Orca gpt-6-luna",
+      "schedulable_now": true,
+      "shared_index": {
+        "path": "research-index.json",
+        "sha256": "49305c5d4903c68d741e2f86065deac4b05befb3977f5fbf7a2ecd9e7f772361"
+      },
+      "relevant_prior_report_metadata": [
+        {
+          "path": "research-scope-review-round870-v1.json",
+          "sha256": "d66fb4ba5a05e7188127f3cbb2acf6eeedfc9f8d9c4591e770ab8aaaafca6a7d",
+          "use": "Metadata-only boundary: R869 studied BFS traversal and R867 query fusion; both held bodies remain unread."
+        },
+        {
+          "path": "A/research-scope-review-round874-v1.json",
+          "sha256": "c43a0a8878bf48f2977451adf04e293485dee34510501212b9ff86d64749e637",
+          "use": "Metadata-only boundary: R872 studied relational equijoin build/probe/partition. This scope concerns geometric distance cutoffs and moving particles."
+        }
+      ],
+      "finite_question": "For GPU molecular or particle workloads with a fixed interaction radius, how do direct all-pairs search, uniform/stenciled cell lists, and linear or quantized BVHs trade construction cost, candidate-pair waste, memory capacity, divergence and reuse across force steps? Identify how particle density, box geometry, cutoff and size disparity change the crossover, and account for the correctness/performance tradeoff of rebuilding a Verlet list periodically.",
+      "breadth_and_counterevidence": "Compare build, query/list emission and repeated force-step costs rather than reporting neighbor-search time alone. Record particle counts, density or volume fraction, cutoff/skin, species-size disparity, periodic-boundary model, GPU generation and precision. Include a case favoring cell lists and a case favoring a hierarchy, plus a counterexample where hierarchy traversal or list construction loses. Explain candidate false positives, output/list memory, overflow handling, rebuild interval and numerical/correctness limits. Keep each paper's hardware and timing boundary separate.",
+      "novelty_guard": "This is geometric fixed-radius neighbor search for moving particles, not relational hash joins, query execution, BFS, or generic GPU hash tables. Exclude multi-GPU communication, full force-field tuning, product changes, local implementations, XeStrata, and unsupported speed comparisons across papers.",
+      "report_budget": "1300-1700 substantive words, at most 7 primary URLs, one phase/crossover table, explicit workload conditions and at least one counterexample for each favored structure.",
+      "prerequisites": [
+        "Public access to the original GPU neighbor-search papers below.",
+        "No local GPU, code, model, build, test, profiler or process result is required."
+      ],
+      "prerequisite_evidence": "The cited original HOOMD-blue studies compare GPU cell-list variants and BVH methods under distinct density and particle-size regimes. R870/R874 metadata provide adjacent graph and relational-join exclusions without reading their held collection bodies.",
+      "primary_sources": [
+        {
+          "title": "Efficient neighbor list calculation for molecular simulation of colloidal systems using graphics processing units",
+          "url": "https://pccm.princeton.edu/sites/pccm/files/media/irg-2a_04-panagiotopoulos.pdf",
+          "use_and_limit": "Original GPU study comparing stenciled cell lists and LBVH for colloidal systems; preserve its workload and GPU-specific limits."
+        },
+        {
+          "title": "Quantized bounding volume hierarchies for neighbor search in molecular simulations on graphics processing units",
+          "url": "https://www.sciencedirect.com/science/article/pii/S092702561930206X",
+          "use_and_limit": "Original quantized-BVH study and uniform-grid comparisons; keep the reported 2-4x result bounded to its benchmark suite."
+        },
+        {
+          "title": "Neighbor List Artifacts in Molecular Dynamics Simulations",
+          "url": "https://pubs.acs.org/doi/10.1021/acs.jctc.3c00777",
+          "use_and_limit": "Primary recent study of neighbor-list update artifacts; use for the correctness consequences of list lifetime, not as a GPU performance comparison."
+        }
+      ],
+      "collection_handling": "Keep the report body unread by Main until a native Codex reviewer records scope, depth, redundancy, source checks, and retrieval metadata."
+    }
+  ],
+  "global_handling": {
+    "research_worker_model": "Orca gpt-6-luna",
+    "label_every_assignment": true,
+    "research_is_read_only": true,
+    "worker_may_write_only_its_named_report": true,
+    "prohibited_worker_actions": [
+      "Git commands",
+      "builds",
+      "tests",
+      "GPU jobs",
+      "profilers",
+      "process inspection",
+      "product edits",
+      "reading or using XeStrata source, tests, helpers, libraries, or archived proposals"
+    ],
+    "collection_body_policy": "Main must leave knowledge-collection report bodies unread on arrival. Delegate scope/depth/redundancy/index review to a native Codex gpt-6-luna max reviewer; retain report hashes, retrieval metadata, and a short operational digest.",
+    "index_policy": "Do not edit research-index.json as part of assignments. Pin each report and source metadata during the later review.",
+    "report_source_policy": "Reports state source origin/version, applicability, exact measurement or model boundary, counterevidence and evidence limits. No research report establishes local performance, code adoption or product behavior."
+  },
+  "main_operational_digest": [
+    "R875 is eligible now: it maps the pinned active attention kernel to a minimal unitrace/conditional-VTune diagnostic and distinguishes what current traces, counters and properties can establish.",
+    "R875 preserves the source/binary mismatch in the old 6354 profile and the nonexclusive nature of its 33.966 s attention sum; no bottleneck or occupancy conclusion is assumed.",
+    "R876 is an eligible stencil temporal-blocking knowledge collection; R877 is an eligible geometric particle-neighbor-search collection.",
+    "The knowledge scopes passed index-metadata overlap checks; their bodies remain unread by Main until native review.",
+    "All outputs are planning-only, 1300-1700 substantive words and at most 7 primary URLs; no workers were dispatched."
+  ]
+}
