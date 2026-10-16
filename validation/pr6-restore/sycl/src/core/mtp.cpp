@@ -532,6 +532,7 @@ bool MtpDrafter::bind(const WeightTable &wt, const NativeHead *head,
         std::vector<uint8_t> raw;
         if (read_file(rt_dir_ + "/draft_vocab.bin", raw) && raw.size() >= 4 && raw.size() % 4 == 0) {
             n_dvocab_ = (int64_t) (raw.size() / 4);
+            if (n_dvocab_ > INT32_MAX) { err = "mtp: draft subset exceeds int32 kernel count"; return false; }
             // The mapped draft head is also a direct gather: validate its actual
             // file IDs before any allocation/upload/gather of this subset.
             for (size_t offset = 0; offset < raw.size(); offset += sizeof(int32_t)) {
