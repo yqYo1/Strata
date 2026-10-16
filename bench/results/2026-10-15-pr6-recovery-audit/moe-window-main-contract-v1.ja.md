@@ -38,6 +38,13 @@ FP32 `m.R` と旧gated allocationへ16Kの生きた残差を置かない。PLE�
 MTP/head/NLL callbackはphase7でのみm.Rを使う。native/canonical weight overlayの寿命、
 outer checked lease、同じqueueと起動後不変の環境設定は既存どおり維持する。
 
+helperにはrequest相対row、piece長、絶対positionを別々に渡す。後続窓をtokensのsliceと
+row=0の`run_impl`呼び出しへ置換しない。残差spanは元requestのrow、QSA/convの位置は
+pos0+rowで計算する。PLEのgatherは元request前の2tokenと元tokens全体の相対rowを使い、
+履歴更新はlayer1のattentionで各piece一度だけ行う。FFN準備でPLEやembeddingを再実行しない。
+qsa/gdn ordinalもlayerから一度決め、同じpieceの再処理やstate二重appendを避ける。
+既存`run_impl`の分割はこの引数を持つ共有operator helperとして行い、短入力の経路を維持する。
+
 ## 窓のviewと所有者
 
 regionとは別の既存m.emb（8K×2560×4=83,886,080 B）を、phase2–4の窓mixed FP16と
@@ -90,3 +97,10 @@ stateを持つproducerとRESTOREを確認する。古い未検証patchを取り�
 262144/262143行のケースもallocation/GDN/QSA実行・最後のprompt token消費・RESTOREの証明ではない。
 実GPUではbiased ne=W、端数、nonzero pos0、PLE、MTP fast/fallback、fault/cancel、丸め/route/state、
 full physical contextとRESTOREを検証し、その後に公式bench.shの32K以上・thinking有効で反復比較する。
+
+`moe-window-contract-host-v1.json` は107配置・24expert分割・13拒否条件のPASS。
+そのphaseモデルではexpert loopを一つの操作として扱っており、全job投入自体は証明しない。
+元結果を保存したまま、`moe_window_contract_v2.py` と専用verifierでこの範囲を追加した。
+v2は18通りのsynthetic routing/最終layer有無と16拒否条件のPASSで、全job/route保存、
+一expert一展開、combine前の投入完了、drainまでのhost source不変をチェックする。
+synthetic countsは実モデルの窓neや性能を表さない。実queueや数値の証明には引き上げない。

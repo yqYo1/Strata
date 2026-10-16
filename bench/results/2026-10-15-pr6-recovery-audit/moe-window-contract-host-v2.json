@@ -1,0 +1,502 @@
+{
+  "schema": "strata-moe-window-contract-host-v2",
+  "passed": true,
+  "complete": true,
+  "recorded_utc": "2026-10-16T21:41:02.121241+00:00",
+  "execution_tree": "e588b2fa5e45d4042390bf48e244361ad1e9fcd3",
+  "inputs": {
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe_window_contract_v2.py": "877cf1add201ebbfbd38bb2e9e60c66f6bc9f300219661621d806998af7ceb6a",
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/verify_moe_window_contract_v2.py": "0977dcb72dd608bcbf1eae1ab09cf2658981bb3976055dbab4cdf49df931cef7",
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe_window_contract_v1.py": "e85ec84e890b2d6bdb2823b8da02ae2f1091e4e4af89b2d52e6da244bbc7f64a",
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-window-contract-host-v1.json": "f907025529a17b719a4b4eee62545d5f76e956ce734f7e320d384444f30d193a"
+  },
+  "cases": [
+    {
+      "rows": 8193,
+      "synthetic_distribution": "ten_hot",
+      "final_layer": false,
+      "passed": true,
+      "expert_dequantizations": 10,
+      "GEMM_pairs": 20,
+      "routed_rows": 81930,
+      "emissions": [
+        {
+          "row": 0,
+          "count": 8192,
+          "position": 253951,
+          "operation": "internal_bank_completion"
+        },
+        {
+          "row": 8192,
+          "count": 1,
+          "position": 262143,
+          "operation": "internal_bank_completion"
+        }
+      ]
+    },
+    {
+      "rows": 8193,
+      "synthetic_distribution": "ten_hot",
+      "final_layer": true,
+      "passed": true,
+      "expert_dequantizations": 10,
+      "GEMM_pairs": 20,
+      "routed_rows": 81930,
+      "emissions": [
+        {
+          "row": 0,
+          "count": 8192,
+          "position": 253951,
+          "operation": "FP32_callback_from_bank"
+        },
+        {
+          "row": 8192,
+          "count": 1,
+          "position": 262143,
+          "operation": "FP32_callback_from_bank"
+        }
+      ]
+    },
+    {
+      "rows": 8193,
+      "synthetic_distribution": "balanced",
+      "final_layer": false,
+      "passed": true,
+      "expert_dequantizations": 512,
+      "GEMM_pairs": 512,
+      "routed_rows": 81930,
+      "emissions": [
+        {
+          "row": 0,
+          "count": 8192,
+          "position": 253951,
+          "operation": "internal_bank_completion"
+        },
+        {
+          "row": 8192,
+          "count": 1,
+          "position": 262143,
+          "operation": "internal_bank_completion"
+        }
+      ]
+    },
+    {
+      "rows": 8193,
+      "synthetic_distribution": "balanced",
+      "final_layer": true,
+      "passed": true,
+      "expert_dequantizations": 512,
+      "GEMM_pairs": 512,
+      "routed_rows": 81930,
+      "emissions": [
+        {
+          "row": 0,
+          "count": 8192,
+          "position": 253951,
+          "operation": "FP32_callback_from_bank"
+        },
+        {
+          "row": 8192,
+          "count": 1,
+          "position": 262143,
+          "operation": "FP32_callback_from_bank"
+        }
+      ]
+    },
+    {
+      "rows": 8193,
+      "synthetic_distribution": "two_hot",
+      "final_layer": false,
+      "passed": true,
+      "expert_dequantizations": 512,
+      "GEMM_pairs": 514,
+      "routed_rows": 81930,
+      "emissions": [
+        {
+          "row": 0,
+          "count": 8192,
+          "position": 253951,
+          "operation": "internal_bank_completion"
+        },
+        {
+          "row": 8192,
+          "count": 1,
+          "position": 262143,
+          "operation": "internal_bank_completion"
+        }
+      ]
+    },
+    {
+      "rows": 8193,
+      "synthetic_distribution": "two_hot",
+      "final_layer": true,
+      "passed": true,
+      "expert_dequantizations": 512,
+      "GEMM_pairs": 514,
+      "routed_rows": 81930,
+      "emissions": [
+        {
+          "row": 0,
+          "count": 8192,
+          "position": 253951,
+          "operation": "FP32_callback_from_bank"
+        },
+        {
+          "row": 8192,
+          "count": 1,
+          "position": 262143,
+          "operation": "FP32_callback_from_bank"
+        }
+      ]
+    },
+    {
+      "rows": 16383,
+      "synthetic_distribution": "ten_hot",
+      "final_layer": false,
+      "passed": true,
+      "expert_dequantizations": 10,
+      "GEMM_pairs": 20,
+      "routed_rows": 163830,
+      "emissions": [
+        {
+          "row": 0,
+          "count": 8192,
+          "position": 245761,
+          "operation": "internal_bank_completion"
+        },
+        {
+          "row": 8192,
+          "count": 8191,
+          "position": 253953,
+          "operation": "internal_bank_completion"
+        }
+      ]
+    },
+    {
+      "rows": 16383,
+      "synthetic_distribution": "ten_hot",
+      "final_layer": true,
+      "passed": true,
+      "expert_dequantizations": 10,
+      "GEMM_pairs": 20,
+      "routed_rows": 163830,
+      "emissions": [
+        {
+          "row": 0,
+          "count": 8192,
+          "position": 245761,
+          "operation": "FP32_callback_from_bank"
+        },
+        {
+          "row": 8192,
+          "count": 8191,
+          "position": 253953,
+          "operation": "FP32_callback_from_bank"
+        }
+      ]
+    },
+    {
+      "rows": 16383,
+      "synthetic_distribution": "balanced",
+      "final_layer": false,
+      "passed": true,
+      "expert_dequantizations": 512,
+      "GEMM_pairs": 512,
+      "routed_rows": 163830,
+      "emissions": [
+        {
+          "row": 0,
+          "count": 8192,
+          "position": 245761,
+          "operation": "internal_bank_completion"
+        },
+        {
+          "row": 8192,
+          "count": 8191,
+          "position": 253953,
+          "operation": "internal_bank_completion"
+        }
+      ]
+    },
+    {
+      "rows": 16383,
+      "synthetic_distribution": "balanced",
+      "final_layer": true,
+      "passed": true,
+      "expert_dequantizations": 512,
+      "GEMM_pairs": 512,
+      "routed_rows": 163830,
+      "emissions": [
+        {
+          "row": 0,
+          "count": 8192,
+          "position": 245761,
+          "operation": "FP32_callback_from_bank"
+        },
+        {
+          "row": 8192,
+          "count": 8191,
+          "position": 253953,
+          "operation": "FP32_callback_from_bank"
+        }
+      ]
+    },
+    {
+      "rows": 16383,
+      "synthetic_distribution": "two_hot",
+      "final_layer": false,
+      "passed": true,
+      "expert_dequantizations": 512,
+      "GEMM_pairs": 514,
+      "routed_rows": 163830,
+      "emissions": [
+        {
+          "row": 0,
+          "count": 8192,
+          "position": 245761,
+          "operation": "internal_bank_completion"
+        },
+        {
+          "row": 8192,
+          "count": 8191,
+          "position": 253953,
+          "operation": "internal_bank_completion"
+        }
+      ]
+    },
+    {
+      "rows": 16383,
+      "synthetic_distribution": "two_hot",
+      "final_layer": true,
+      "passed": true,
+      "expert_dequantizations": 512,
+      "GEMM_pairs": 514,
+      "routed_rows": 163830,
+      "emissions": [
+        {
+          "row": 0,
+          "count": 8192,
+          "position": 245761,
+          "operation": "FP32_callback_from_bank"
+        },
+        {
+          "row": 8192,
+          "count": 8191,
+          "position": 253953,
+          "operation": "FP32_callback_from_bank"
+        }
+      ]
+    },
+    {
+      "rows": 16384,
+      "synthetic_distribution": "ten_hot",
+      "final_layer": false,
+      "passed": true,
+      "expert_dequantizations": 10,
+      "GEMM_pairs": 20,
+      "routed_rows": 163840,
+      "emissions": [
+        {
+          "row": 0,
+          "count": 8192,
+          "position": 245760,
+          "operation": "internal_bank_completion"
+        },
+        {
+          "row": 8192,
+          "count": 8192,
+          "position": 253952,
+          "operation": "internal_bank_completion"
+        }
+      ]
+    },
+    {
+      "rows": 16384,
+      "synthetic_distribution": "ten_hot",
+      "final_layer": true,
+      "passed": true,
+      "expert_dequantizations": 10,
+      "GEMM_pairs": 20,
+      "routed_rows": 163840,
+      "emissions": [
+        {
+          "row": 0,
+          "count": 8192,
+          "position": 245760,
+          "operation": "FP32_callback_from_bank"
+        },
+        {
+          "row": 8192,
+          "count": 8192,
+          "position": 253952,
+          "operation": "FP32_callback_from_bank"
+        }
+      ]
+    },
+    {
+      "rows": 16384,
+      "synthetic_distribution": "balanced",
+      "final_layer": false,
+      "passed": true,
+      "expert_dequantizations": 512,
+      "GEMM_pairs": 512,
+      "routed_rows": 163840,
+      "emissions": [
+        {
+          "row": 0,
+          "count": 8192,
+          "position": 245760,
+          "operation": "internal_bank_completion"
+        },
+        {
+          "row": 8192,
+          "count": 8192,
+          "position": 253952,
+          "operation": "internal_bank_completion"
+        }
+      ]
+    },
+    {
+      "rows": 16384,
+      "synthetic_distribution": "balanced",
+      "final_layer": true,
+      "passed": true,
+      "expert_dequantizations": 512,
+      "GEMM_pairs": 512,
+      "routed_rows": 163840,
+      "emissions": [
+        {
+          "row": 0,
+          "count": 8192,
+          "position": 245760,
+          "operation": "FP32_callback_from_bank"
+        },
+        {
+          "row": 8192,
+          "count": 8192,
+          "position": 253952,
+          "operation": "FP32_callback_from_bank"
+        }
+      ]
+    },
+    {
+      "rows": 16384,
+      "synthetic_distribution": "two_hot",
+      "final_layer": false,
+      "passed": true,
+      "expert_dequantizations": 512,
+      "GEMM_pairs": 514,
+      "routed_rows": 163840,
+      "emissions": [
+        {
+          "row": 0,
+          "count": 8192,
+          "position": 245760,
+          "operation": "internal_bank_completion"
+        },
+        {
+          "row": 8192,
+          "count": 8192,
+          "position": 253952,
+          "operation": "internal_bank_completion"
+        }
+      ]
+    },
+    {
+      "rows": 16384,
+      "synthetic_distribution": "two_hot",
+      "final_layer": true,
+      "passed": true,
+      "expert_dequantizations": 512,
+      "GEMM_pairs": 514,
+      "routed_rows": 163840,
+      "emissions": [
+        {
+          "row": 0,
+          "count": 8192,
+          "position": 245760,
+          "operation": "FP32_callback_from_bank"
+        },
+        {
+          "row": 8192,
+          "count": 8192,
+          "position": 253952,
+          "operation": "FP32_callback_from_bank"
+        }
+      ]
+    }
+  ],
+  "negative_cases": [
+    {
+      "case": "combine_without_any_expert_job",
+      "passed": true
+    },
+    {
+      "case": "job_without_dequantization",
+      "passed": true
+    },
+    {
+      "case": "duplicate_dequantization",
+      "passed": true
+    },
+    {
+      "case": "skip_first_job",
+      "passed": true
+    },
+    {
+      "case": "repeat_job",
+      "passed": true
+    },
+    {
+      "case": "combine_with_missing_jobs",
+      "passed": true
+    },
+    {
+      "case": "host_H2D_owner_reused_early",
+      "passed": true
+    },
+    {
+      "case": "queue_changed_during_window",
+      "passed": true
+    },
+    {
+      "case": "route_mass_overflow",
+      "passed": true
+    },
+    {
+      "case": "expert_exceeds_window",
+      "passed": true
+    },
+    {
+      "case": "negative_expert_count",
+      "passed": true
+    },
+    {
+      "case": "missing_expert_bin",
+      "passed": true
+    },
+    {
+      "case": "first_MTP_while_second_injection_live",
+      "passed": true
+    },
+    {
+      "case": "partial_write_region_release",
+      "passed": true
+    },
+    {
+      "case": "failed_retirement_preserves_host_and_device_owners",
+      "passed": true
+    },
+    {
+      "case": "resume_invalid_window",
+      "passed": true
+    }
+  ],
+  "elapsed_host_check_seconds": 0.1319158460246399,
+  "scope": "Extends frozen v1 scheduling/memory checks with exact synthetic expert/job coverage, once-per-expert dequantization, immutable host source, and callback/retirement state checks. No actual tensors, numerical math, C++ engine, GPU, queue, DMA, allocation, fault recovery or physical-context/RESTORE execution.",
+  "distributions_are_synthetic": true,
+  "GPU_executed": false,
+  "native_compiler_executed": false,
+  "inference_implemented": false,
+  "performance_adopted": false
+}

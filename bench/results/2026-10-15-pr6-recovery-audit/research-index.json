@@ -6867,11 +6867,11 @@
     "main_reconciliation": "research-review-round953-main-reconciliation-v1.json"
   },
   "current_main_boundary": {
-    "recorded_utc": "2026-10-16T21:27:08.990424+00:00",
+    "recorded_utc": "2026-10-16T21:42:33.509974+00:00",
     "goal": "Dedicated long prefill repeated >600 then1000tok/s; eventual decode70tok/s. Not achieved.",
     "current_model_comparison": "Score33 optimized median459.1 versus packed459.3tok/s, six processes, final pair overlap qualification retained; no packed speed adoption. Earlier uncontaminated score33 cohort median464.1tok/s remains recorded.",
-    "changes": "R965 capacity review merged through PR28. Main source resource audit and same-model upload arithmetic distinguish GPU dequant/GEMM work from PCIe uploads. Source-only active metadata census found only layer47 with bytes==stride; padding a full batch grows requested bytes30.10164percent. R966 completed through Orca and awaits R968 native review; R967 targeted archive retrieval completed. No inference source or new speed result.",
-    "next": "Foreign CPU benchmark remains active; the finite waiter is closed and there is no native profile running. On actual resource release revalidate and complete the prepared profile/census once. Main next specifies legal row-bank/src_dev/callback phases before a MoE-only window implementation; no duplicate research is eligible.",
+    "changes": "Main executable GPU-resident MoE window contract with8K causal operators and8K expert microjobs. Guard-inclusive window views997820928B fit the existing region arithmetically. Host v1 checks107schedules/24expert cases/13refusals; v2 adds18synthetic expert phases/16refusals. No C++ or GPU implementation/qualification.",
+    "next": "Independent review of the completed Main ownership contract; preserve the frozen current binary/profile. Foreign CPU-only benchmark still requires revalidation before native timing. Caller periodic checkpoint coherence and exact window-ne observation remain explicit adoption gates.",
     "compile_or_GPU_work_this_boundary": false,
     "source_inspection_command": "Source owner/arithmetic review only; current closed observation and seven content hashes verified. No compiler/native/GPU execution.",
     "full_physical262144_model_consume_RESTORE": "Unqualified; component coverage is insufficient.",
@@ -7406,9 +7406,34 @@
       "expert_cases": 24,
       "negative_cases": 13
     },
-    "current_oracle_limit": "v1 models the expert-loop phase atomically; it does not yet track each expert/job submission before combine. Extend that before using this as an implementation ownership gate. Original v1 host PASS scope/result remains unchanged.",
+    "current_oracle_limit": "v2 adds exact synthetic expert/job submissions, once-per-expert dequantization and H2D-source lifetime checks to frozen v1. It remains an abstract host oracle; no actual tensor/kernel/queue/engine or fit qualification.",
     "checkpoint_caveat": "Existing caller-segment/prefix checkpoint coherence proposals are unqualified. Callback ordering alone does not qualify periodic prefix snapshots or RESTORE.",
     "inference_implemented": false,
-    "performance_adopted": false
+    "performance_adopted": false,
+    "extended_planner": "moe_window_contract_v2.py",
+    "extended_host_verifier": "verify_moe_window_contract_v2.py",
+    "extended_host_receipt": "moe-window-contract-host-v2.json",
+    "extended_host_passes": {
+      "expert_phase_cases": 18,
+      "negative_cases": 16
+    },
+    "hashes": {
+      "moe-window-main-contract-v1.ja.md": "d83efe3a2717574972b715021b4f44d4d426564e66bc7b7bb1bb811e1d902a2d",
+      "moe_window_contract_v1.py": "e85ec84e890b2d6bdb2823b8da02ae2f1091e4e4af89b2d52e6da244bbc7f64a",
+      "verify_moe_window_contract_v1.py": "5e8fd9e059dddf8276157a32ada12a23cd0b4c5693bd69d0d381b7901e04a0ca",
+      "moe-window-contract-host-v1.json": "f907025529a17b719a4b4eee62545d5f76e956ce734f7e320d384444f30d193a",
+      "moe_window_contract_v2.py": "877cf1add201ebbfbd38bb2e9e60c66f6bc9f300219661621d806998af7ceb6a",
+      "verify_moe_window_contract_v2.py": "0977dcb72dd608bcbf1eae1ab09cf2658981bb3976055dbab4cdf49df931cef7",
+      "moe-window-contract-host-v2.json": "0e5037360a5c37024608dad4380e938180c944cffa9f4dda691f8a314e683b0e"
+    },
+    "source_pins": {
+      "src/prefill/prefill.cpp": "d6e466ca3a86f1dd8a1d6b648f3a57d496615b0a108df52d0727fdc9eb4c95e8",
+      "src/prefill/layer_major.inc": "9fcd5a32752464f488154a2922a33e5ab4cccff7674b3fcae7fa0f2bda12acdb",
+      "src/prefill/sycl/native16.cpp": "d953ae8dcb69be601c57ddf62bbd85ad054c3e7c0a90806461b49f96d18da891",
+      "src/prefill/sycl/postops.cpp": "f048a75d8c18dad5981a93206dcff107085714741326adc6d4cfd77c6927a78f",
+      "src/prefill/sycl/vllm_xe2/native16.cpp": "d8b361cabea29344b48aff5a9db41303f3ea715de47f27bc57f29f85c5f3aa2d",
+      "include/strata/prefill/layer_major_plan.hpp": "67bc25500ae777bfb387944a2415325868602b9da82aa945464b64b0a2b8b9fd",
+      "src/program/generate.cpp": "d05e9142917af145c1ba6d428180f8981f260c8a20b23ecf27bcc2033c9fe25a"
+    }
   }
 }
