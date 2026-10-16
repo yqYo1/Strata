@@ -1,0 +1,3 @@
+R881がR876をレビュー。review SHA-256: `3d92ce64beccd7bab11d30507e757b62951097ee0ddafcab021f9aa9083d0d10`。report: `8a03aac51233784ff5a5992831254f3ac87e15d71e3a86315398e57f0d82f5ec`、spec: `c8f6a6afb6a3d8184ff415e4e575fe88d72eff2e4e8d18a7842509aab3df9815`、更新前index: `efe5425f61c5fb0415f3ad83a4b2024ac013e311e98243b5d7e955a9734fed27`。
+本文は1,640語・一次URL 2件で指定予算内。内容はまとまっているが、R835/R838レビューとの範囲重複が大きく、新規性は限定的。補正メタデータは1件（R876-C1）。
+Mainには本文を渡さず保留。現時点で取得不要。R877は計画上 `schedulable_now=true` だが、起動前にindex参照と前提条件を再確認する。ここでは起動していない。

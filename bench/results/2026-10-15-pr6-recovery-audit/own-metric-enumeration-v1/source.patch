@@ -1,0 +1,1994 @@
+--- /dev/null
++++ b/bench/results/2026-10-15-pr6-recovery-audit/own-metric-enumeration-v1/enumerate.cpp
+@@ -0,0 +1,213 @@
++// Independently authored for Strata; repository LICENSE applies.
++// Source delivery only. Main must review and qualify every execution separately.
++#include "ze_api.h"
++#include "zet_api.h"
++#include <algorithm>
++#include <cstdint>
++#include <cstdlib>
++#include <cstring>
++#include <dlfcn.h>
++#include <iomanip>
++#include <iostream>
++#include <poll.h>
++#include <stdexcept>
++#include <string>
++#include <unistd.h>
++#include <vector>
++
++namespace {
++// Encode bytes as JSON ASCII escapes; a provider string cannot inject a row.
++std::string quoted(const char* p, size_t cap) {
++    std::string s = "\"";
++    constexpr char hex[] = "0123456789abcdef";
++    for (size_t i = 0; i < cap && p[i]; ++i) {
++        const auto c = static_cast<unsigned char>(p[i]);
++        if (c == '"' || c == '\\') { s += '\\'; s += static_cast<char>(c); }
++        else if (c < 32 || c >= 127) {
++            s += "\\u00"; s += hex[c >> 4]; s += hex[c & 15];
++        } else s += static_cast<char>(c);
++    }
++    return s + '"';
++}
++template<size_t N> std::string q(const char (&p)[N]) { return quoted(p, N); }
++const char* result_name(ze_result_t r) {
++    switch (r) {
++#define RESULT(name) case name: return #name;
++#include "result_names.inc"
++#undef RESULT
++    default: return "ZE_RESULT_UNRECOGNIZED";
++    }
++}
++const char* metric_type(zet_metric_type_t t) {
++    switch (t) {
++#define TYPE(n) case ZET_METRIC_TYPE_##n: return "ZET_METRIC_TYPE_" #n;
++    TYPE(DURATION) TYPE(EVENT) TYPE(EVENT_WITH_RANGE) TYPE(THROUGHPUT)
++    TYPE(TIMESTAMP) TYPE(FLAG) TYPE(RATIO) TYPE(RAW) TYPE(IP)
++    TYPE(EVENT_EXP_TIMESTAMP) TYPE(EVENT_EXP_START) TYPE(EVENT_EXP_END)
++    TYPE(EVENT_EXP_MONOTONIC_WRAPS_VALUE) TYPE(EXP_EXPORT_DMA_BUF)
++#undef TYPE
++    default: return "ZET_METRIC_TYPE_UNRECOGNIZED";
++    }
++}
++const char* value_type(zet_value_type_t t) {
++    switch (t) {
++#define TYPE(n) case ZET_VALUE_TYPE_##n: return "ZET_VALUE_TYPE_" #n;
++    TYPE(UINT32) TYPE(UINT64) TYPE(FLOAT32) TYPE(FLOAT64) TYPE(BOOL8)
++    TYPE(STRING) TYPE(UINT8) TYPE(UINT16)
++#undef TYPE
++    default: return "ZET_VALUE_TYPE_UNRECOGNIZED";
++    }
++}
++struct Stop { const char* status; };
++void bounded(bool yes) { if (!yes) throw Stop{"INCOMPLETE"}; }
++// Log entry before calling the provider and result immediately afterward.
++template<class F> void api(const char* name, F fn) {
++    std::cout << "{\"kind\":\"entry\",\"api\":" << quoted(name, 128) << "}\n" << std::flush;
++    const ze_result_t r = fn();
++    std::cout << "{\"kind\":\"result\",\"api\":" << quoted(name, 128)
++              << ",\"code\":" << static_cast<uint32_t>(r) << ",\"hex\":\"0x"
++              << std::hex << static_cast<uint32_t>(r) << std::dec << "\",\"name\":\""
++              << result_name(r) << "\"}\n" << std::flush;
++    if (r != ZE_RESULT_SUCCESS) {
++        switch (r) {
++        case ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE:
++        case ZE_RESULT_ERROR_UNSUPPORTED_FEATURE:
++        case ZE_RESULT_ERROR_UNSUPPORTED_VERSION:
++        case ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION:
++        case ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS:
++        case ZE_RESULT_ERROR_NOT_AVAILABLE:
++        case ZE_RESULT_ERROR_UNINITIALIZED: throw Stop{"UNAVAILABLE"};
++        default: throw Stop{"ERROR"};
++        }
++    }
++}
++template<class H, class F> std::vector<H> handles(const char* name, uint32_t cap, F fn) {
++    uint32_t n = 0;
++    api(name, [&] { return fn(&n, nullptr); });
++    std::cout << "{\"kind\":\"count\",\"api\":" << quoted(name, 128) << ",\"count\":" << n << "}\n";
++    bounded(n <= cap);
++    if (!n) return {};
++    std::vector<H> out(n); uint32_t written = n;
++    api(name, [&] { return fn(&written, out.data()); });
++    bounded(written == n); // No automatic retry or silent topology change.
++    for (auto h : out) bounded(h != nullptr);
++    return out;
++}
++uint32_t total_groups = 0, total_metrics = 0, selected = 0, selected_groups = 0;
++void groups(ze_device_handle_t device, bool target, uint32_t driver, uint32_t root) {
++    const auto gs = handles<zet_metric_group_handle_t>("zetMetricGroupGet", 256,
++        [&](uint32_t* n, zet_metric_group_handle_t* p) { return zetMetricGroupGet(device, n, p); });
++    bounded(gs.size() + total_groups <= 1024);
++    for (size_t g = 0; g < gs.size(); ++g) {
++        ++total_groups;
++        zet_metric_group_properties_t gp{}; gp.stype = ZET_STRUCTURE_TYPE_METRIC_GROUP_PROPERTIES;
++        api("zetMetricGroupGetProperties", [&] { return zetMetricGroupGetProperties(gs[g], &gp); });
++        std::cout << "{\"kind\":\"group\",\"driver\":" << driver << ",\"root\":" << root
++                  << ",\"group\":" << g << ",\"target\":" << (target ? "true" : "false")
++                  << ",\"name\":" << q(gp.name) << ",\"description\":" << q(gp.description)
++                  << ",\"domain\":" << gp.domain << ",\"metric_count\":" << gp.metricCount
++                  << ",\"sampling_flags\":" << gp.samplingType
++                  << ",\"query_event_based\":" << bool(gp.samplingType & ZET_METRIC_GROUP_SAMPLING_TYPE_FLAG_EVENT_BASED)
++                  << ",\"time_based\":" << bool(gp.samplingType & ZET_METRIC_GROUP_SAMPLING_TYPE_FLAG_TIME_BASED)
++                  << ",\"tracer_based\":" << bool(gp.samplingType & ZET_METRIC_GROUP_SAMPLING_TYPE_FLAG_EXP_TRACER_BASED)
++                  << ",\"unknown_sampling_bits\":" << (gp.samplingType & ~uint32_t(7)) << "}\n";
++        uint32_t count = 0;
++        api("zetMetricGet", [&] { return zetMetricGet(gs[g], &count, nullptr); });
++        bounded(count == gp.metricCount);
++        const uint32_t requested = std::min(count, uint32_t(8));
++        std::cout << "{\"kind\":\"metric_scope\",\"available\":" << count << ",\"requested\":"
++                  << requested << ",\"complete_catalog\":" << (count <= 8 ? "true" : "false") << "}\n";
++        if (!requested) continue;
++        bounded(total_metrics + requested <= 4096);
++        std::vector<zet_metric_handle_t> ms(requested); uint32_t got = requested;
++        api("zetMetricGet", [&] { return zetMetricGet(gs[g], &got, ms.data()); });
++        bounded(got == requested);
++        for (uint32_t m = 0; m < got; ++m) {
++            bounded(ms[m] != nullptr); ++total_metrics;
++            zet_metric_properties_t mp{}; mp.stype = ZET_STRUCTURE_TYPE_METRIC_PROPERTIES;
++            api("zetMetricGetProperties", [&] { return zetMetricGetProperties(ms[m], &mp); });
++            std::cout << "{\"kind\":\"metric\",\"driver\":" << driver << ",\"root\":" << root
++                      << ",\"group\":" << g << ",\"metric\":" << m << ",\"name\":" << q(mp.name)
++                      << ",\"description\":" << q(mp.description) << ",\"component\":" << q(mp.component)
++                      << ",\"units\":" << q(mp.resultUnits) << ",\"tier\":" << mp.tierNumber
++                      << ",\"metric_type\":" << uint32_t(mp.metricType) << ",\"metric_type_name\":\"" << metric_type(mp.metricType)
++                      << "\",\"result_type\":" << uint32_t(mp.resultType) << ",\"result_type_name\":\"" << value_type(mp.resultType) << "\"}\n";
++        }
++        if (target) ++selected_groups; // Nonempty group with sampled property calls completed.
++    }
++}
++void enumerate() {
++    const char* enabled = std::getenv("ZET_ENABLE_METRICS");
++    if (!enabled || std::strcmp(enabled, "1")) throw Stop{"ENVIRONMENT_REJECTED"};
++    api("zeInit", [] { return zeInit(0); }); // Raw driver enumeration; no selector assumptions.
++    const auto ds = handles<ze_driver_handle_t>("zeDriverGet", 8,
++        [](uint32_t* n, ze_driver_handle_t* p) { return zeDriverGet(n, p); });
++    if (ds.empty()) throw Stop{"UNAVAILABLE"};
++    for (uint32_t d = 0; d < ds.size(); ++d) {
++        ze_driver_properties_t dp{}; dp.stype = ZE_STRUCTURE_TYPE_DRIVER_PROPERTIES;
++        api("zeDriverGetProperties", [&] { return zeDriverGetProperties(ds[d], &dp); });
++        ze_api_version_t version{};
++        api("zeDriverGetApiVersion", [&] { return zeDriverGetApiVersion(ds[d], &version); });
++        std::cout << "{\"kind\":\"driver\",\"driver\":" << d << ",\"version\":" << dp.driverVersion
++                  << ",\"api_version\":" << uint32_t(version) << ",\"uuid\":\"";
++        for (auto b : dp.uuid.id) std::cout << std::hex << std::setw(2) << std::setfill('0') << unsigned(b);
++        std::cout << std::dec << "\"}\n";
++        // Generic properties list is bounded; unlike handle arrays these are values.
++        uint32_t ec = 0;
++        api("zeDriverGetExtensionProperties", [&] { return zeDriverGetExtensionProperties(ds[d], &ec, nullptr); });
++        bounded(ec <= 512); std::vector<ze_driver_extension_properties_t> ex(ec);
++        uint32_t en = ec;
++        if (ec) api("zeDriverGetExtensionProperties", [&] { return zeDriverGetExtensionProperties(ds[d], &en, ex.data()); });
++        bounded(en == ec); bool pci_supported = false;
++        for (const auto& e : ex) {
++            if (std::strncmp(e.name, ZE_PCI_PROPERTIES_EXT_NAME, sizeof(e.name)) == 0 &&
++                e.version >= ZE_PCI_PROPERTIES_EXT_VERSION_1_0) pci_supported = true;
++        }
++        auto pci = reinterpret_cast<decltype(&zeDevicePciGetPropertiesExt)>(dlsym(RTLD_DEFAULT, "zeDevicePciGetPropertiesExt"));
++        std::cout << "{\"kind\":\"pci_interface\",\"advertised\":" << (pci_supported ? "true" : "false")
++                  << ",\"loader_symbol\":" << (pci ? "true" : "false") << "}\n";
++        const auto roots = handles<ze_device_handle_t>("zeDeviceGet", 32,
++            [&](uint32_t* n, ze_device_handle_t* p) { return zeDeviceGet(ds[d], n, p); });
++        for (uint32_t r = 0; r < roots.size(); ++r) {
++            ze_device_properties_t p{}; p.stype = ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES;
++            api("zeDeviceGetProperties", [&] { return zeDeviceGetProperties(roots[r], &p); });
++            bool target = false;
++            std::cout << "{\"kind\":\"root\",\"driver\":" << d << ",\"root\":" << r
++                      << ",\"name\":" << q(p.name) << ",\"vendor_id\":" << p.vendorId
++                      << ",\"device_id\":" << p.deviceId << ",\"type\":" << uint32_t(p.type)
++                      << ",\"flags\":" << p.flags << ",\"uuid\":\"";
++            for (auto b : p.uuid.id) std::cout << std::hex << std::setw(2) << std::setfill('0') << unsigned(b);
++            std::cout << std::dec << "\"}\n";
++            if (pci_supported && pci) {
++                ze_pci_ext_properties_t b{}; b.stype = ZE_STRUCTURE_TYPE_PCI_EXT_PROPERTIES;
++                api("zeDevicePciGetPropertiesExt", [&] { return pci(roots[r], &b); });
++                std::cout << "{\"kind\":\"pci\",\"domain\":" << b.address.domain << ",\"bus\":" << b.address.bus
++                          << ",\"device\":" << b.address.device << ",\"function\":" << b.address.function << "}\n";
++                target = p.type == ZE_DEVICE_TYPE_GPU && p.vendorId == 0x8086 && p.deviceId == 0xe20c &&
++                    !(p.flags & ZE_DEVICE_PROPERTY_FLAG_SUBDEVICE) && b.address.domain == 0 && b.address.bus == 5 &&
++                    b.address.device == 0 && b.address.function == 0;
++            }
++            if (target) ++selected;
++            groups(roots[r], target, d, r);
++        }
++    }
++    if (selected != 1 || selected_groups == 0) throw Stop{"UNAVAILABLE"};
++}
++}
++int main(int argc, char** argv) {
++    // Main must request a hold, inspect owned PID/start/env/maps, then send exactly X.
++    if (argc != 2 || std::strcmp(argv[1], "--main-owned-hold")) return 64;
++    std::cout << std::boolalpha;
++    const char* status = "ENUMERATION_PASS";
++    try { enumerate(); }
++    catch (const Stop& e) { status = e.status; }
++    catch (const std::exception&) { status = "HOST_ERROR"; }
++    std::cout << "{\"kind\":\"summary\",\"status\":\"" << status << "\",\"selected_roots\":" << selected
++              << ",\"selected_nonempty_groups\":" << selected_groups << ",\"groups\":" << total_groups
++              << ",\"sampled_metrics\":" << total_metrics << ",\"collection_qualified\":false}\n"
++              << "{\"kind\":\"main_snapshot_hold\",\"milliseconds\":15000}\n" << std::flush;
++    pollfd input{STDIN_FILENO, POLLIN, 0};
++    char ack = 0;
++    if (poll(&input, 1, 15000) != 1 || !(input.revents & POLLIN) || read(STDIN_FILENO, &ack, 1) != 1 || ack != 'X') return 65;
++    return std::strcmp(status, "ENUMERATION_PASS") == 0 ? 0 : 2;
++}
+--- /dev/null
++++ b/bench/results/2026-10-15-pr6-recovery-audit/own-metric-enumeration-v1/implementation-report.md
+@@ -0,0 +1,57 @@
++# Source-only Level Zero metric enumeration proposal
++
++This package supplies an independently authored host C++ enumerator and a Main-only build/enumeration controller. It does not establish a result for this host: compilation, tests, native execution, process inspection, device queries and profiling were not performed by this worker. All new files stay in this directory; active source, pins, receipts and status were not modified.
++
++## Files and source identity
++
++- `enumerate.cpp`: direct Level Zero host calls, JSONL API entries/results and properties, bounded enumeration, and a 15-second owned stdin hold.
++- `result_names.inc`: API enum identifier-to-name mapping mechanically transcribed from the pinned header. No algorithm or helper copied from PTI or another engine.
++- `main_controller.py`: separate Main-only build and enumeration modes; pinned `direct_owner.py` import, immutable child environment, exclusive existing measurement lock, ownership/budget and journal/dump closure gates. No automatic build-to-run transition.
++- `manifest-candidate.json`: unsealed original inventory and input pins. It intentionally cannot authorize execution.
++- `source-provenance.json`: full SHA256/size/path identities for the source and receipt inputs, immutable official revisions, license and limitations.
++- `source.patch`: complete additive patch for all deliverable files other than itself and `SHA256SUMS`. No Git operation is needed to read/review it.
++- `SHA256SUMS`: complete final package snapshot excluding itself; Main must independently review all files and record its hash outside the package before any execution.
++
++The installed `ze_api.h` SHA256 is `095a0eb442ae21946f29147c209f270b93dd0eb5b12a2d0c67e5f4138b533712`; `zet_api.h` is `14cd443591c430172aa1cea8e03d31b8049971f08f67b27722b8b99ea3b14b51`. Both byte sequences match official [Level Zero v1.32.0 revision d3b3efbdaa27a0aef9a9812cc8fa4260557c1e7c](https://github.com/oneapi-src/level-zero/tree/d3b3efbdaa27a0aef9a9812cc8fa4260557c1e7c/include), independently compared by SHA256 while reading official source. The helper includes those exact existing installed headers and calls their declared ABI; there are no manually reconstructed FFI layouts. The optional PCI loader symbol uses `decltype(&zeDevicePciGetPropertiesExt)` from the same header and is used only when the driver advertises `ZE_extension_pci_properties` v1.0 or later. The original loader pin remains `/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0`, SHA256 `b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363`.
++
++Official PTI sources/docs inspected match immutable [6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033](https://github.com/intel/pti-gpu/tree/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033): `tools/unitrace/src/levelzero/ze_metrics.h` enumeration lines 104–156 and streamer-failure note around 1313; unitrace README metric-list/query/sampling sections; metrics collection chapter enumeration/configuration sections; MIT license. Their complete local/immutable hashes are in provenance. PTI's enumeration helper skips event-based groups and asserts success; this new source enumerates both event/time flags and records failures explicitly. The older metrics chapter contains obsolete `version`/snake_case structure fields: those examples are not ABI authority. The pinned installed headers provide `stype`, `metricCount`, `resultUnits` and the actual prototypes.
++
++The [official Tools guide](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/tools/PROG.html) states that `ZET_ENABLE_METRICS` enables instrumentation/dependencies during initialization, that metric groups may share names, and that enumeration precedes configuration. Its current live text is a documentation reference, not a substitute for the pinned ABI. No PTI implementation is included or linked. New project source uses the repository MIT `LICENSE`, whose hash is recorded; official header files retain their own MIT provenance. No XeStrata implementation, helper, test or archived proposal was read. The existing historical LLVM install under that pathname is used only as the explicitly allowed toolchain dependency.
++
++## Exact question and limits
++
++The proposed experiment asks whether this non-root current stack returns real metric groups/properties for the Intel GPU matching the receipt's vendor `0x8086`, device `0xe20c`, and PCI `0000:05:00.0`. It calls `zeInit(0)`, `zeDriverGet`, driver properties/API version/extension properties and `zeDeviceGet` root-device properties, then `zetMetricGroupGet`/`zetMetricGroupGetProperties` and bounded `zetMetricGet`/`zetMetricGetProperties`. It records driver/device UUIDs and reported name as well as PCI identity. `ONEAPI_DEVICE_SELECTOR` is not included or assumed to constrain raw `zeDriverGet`. No subdevice traversal is promised.
++
++Bounds are 8 drivers, 32 roots per driver, 512 extension properties per driver, 256 groups per root, 1024 total groups and 4096 total sampled metrics. Each group gets at most its first 8 metric properties, with requested/available counts and an explicit partial-catalog flag; this is not a complete metric-name catalog. Count/list changes, exceeding a cap or invalid/null returned handles produce `INCOMPLETE`, without retry. Group name/description/domain, raw sampling flags, event/query, time and tracer flags, unknown flag bits, metric name/description/component/units/tier and named/numeric type are printed. All actual API results include name, decimal and hexadecimal code, including failures. Provider text is bounded and JSON escaped.
++
++The helper does not create a SYCL runtime, context, queue, command list, event, allocation, streamer, query pool or metric configuration, and submits no authored GPU commands. Driver initialization and metric enumeration are still native driver activity and must be serialized by Main; source inspection cannot establish absence of driver-internal work. It never changes process environment, privileges or system policy, and does not signal processes. The controller signals only owned pidfds through the existing owner implementation when closure requires it. There is no metric activation, collection or automatic alternative path.
++
++`ENUMERATION_PASS` requires one exact target identity and at least one nonempty group with the requested sampled metric-property calls completed, plus all traversed API calls succeeding within caps. Enumeration stops on an API failure, so a failure before later drivers/roots means the topology walk is partial. `DEPENDENCY_UNAVAILABLE`, unsupported, insufficient permission and not-available/uninitialized results map to `UNAVAILABLE`; zero drivers, missing target/PCI identity or no target nonempty groups also cannot pass. Device-lost/reset/unknown errors remain `ERROR`, with fault closure handled separately. Missing optional PCI identity cannot qualify the target. None of these outcomes is evidence of hardware scarcity. Group flags advertise an API capability; enumeration PASS does not qualify collection, per-kernel attribution, specific counters, bandwidth, SLM wait, occupancy or performance.
++
++R748/R875's `/proc/sys/dev/xe/observation_paranoid=1` observation is historical policy evidence, not an executed metric-enumeration result. No current sysctl/permission/group/device read was performed by this worker. PTI's policy hint in `ze_metrics.h` is on streamer-open failure, distinct from enumeration. The historical source `6354f0b4ff3731466795410e11ca9ef785c9d326`/engine `85643f3926bb9d212945659cb7ddb264e101ca9b2d5fa8f19430e945140ad191` profile is kept distinct from source `63326f98c36656cf3a3e1adcc54c3c25a02aa6ee`, build receipt `3fca64de3664a74ac5a376e4e40cb8a3e2910113f29a4597a564c2f903381327` and current tiny fixture binary `d564fc95854988efb24b990ba64bcd5ac092fdfb597c21b0d4a65c4c54e23bef`. `own-vllm-resource-timeline-tiny-v3.json` is pinned and read as existing timing compatibility evidence, not metric enumeration or collection evidence. No inference kernel/resource number is transferred between these sources.
++
++## Main-only review and execution recipe
++
++Do not run during the coordinator's owned39K measurement. Main must first review the entire additive patch/package and record an external SHA256 of `SHA256SUMS`. No offline or synthetic tests were executed, and no tests mirroring this implementation are supplied. Main's review should check declared API signatures against the pinned headers and verify the prohibited call surface is absent before deciding whether compilation is useful.
++
++The original inventory already pins the compiler (`clang++` alias to LLVM `clang-22`), `/usr/bin/ld` alias, Level Zero headers, loader, Intel driver, `libigdmd.so.1.16.188` and `libigdml.so.1.0.231`, plus prior executable dependencies. It does not prove their metrics path works. Complete C++ standard-header, startup-object and host compiler dependency closure is absent; no replacement path is guessed. Main must separately review those candidate dependencies before build. Any additional metric library absent from the original allowlist is also a separately reviewed candidate, never silently added by observing a failed run's live mappings. This worker did not query package availability or inspect library binaries.
++
++Create a new seal outside this source package by copying `manifest-candidate.json` and explicitly setting `status=MAIN_REVIEWED_SEALED`, `mode=build`, a fresh `run_id`, current explicitly selected sameboot `boot_id`, and `reviewed_package_sha256`. Add a separately written dependency-review report path/hash, `approved=true`, and original independently reviewed additional pins, if needed. Preserve `original_file_pins`, `original_elf_pins` and `input_pins` exactly. Do not update an original pin to match current bytes. The controller requires and rechecks the external manifest SHA and complete package hash. A candidate seal alone is not approval.
++
++Main-only command shape, with actual externally reviewed values substituted by Main:
++
++```text
++/usr/bin/python3 -B /home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-enumeration-v1/main_controller.py --mode build --manifest <external-reviewed-build-seal> --manifest-sha256 <external-build-seal-sha256> --reviewed-package-sha256 <external-package-sha256> --run-id <fresh-build-run-id>
++```
++
++The controller's exact compiler path comes from the original inventory's historical LLVM install and links the exact loader filename, without SYCL flags, contexts or device compilation. The source specifies `-std=c++17 -O2 -Wall -Wextra -Werror -fno-sycl`, the existing header directory, `-ldl` and a private output path. Compilation is its own owned run; it cannot launch enumeration. Main must inspect the compiler result/warnings, source/recipe/binary identity and loaded dependency expectations before selecting the binary from the completed build receipt.
++
++For enumeration, create a second distinct external seal with `mode=enumerate`, a new run ID, `binary` copied exactly from the reviewed build receipt's `binary_candidate`, and `build_receipt` pinned by real path/size/SHA. Keep the same reviewed package and original dependency pins. Then use the same command shape with enumeration mode and that second seal. No placeholders are executable instructions for this worker; no command above was executed.
++
++Child enumeration environment is built from scratch: `PATH=/usr/bin:/bin`, `HOME=/home/yayoi`, `LANG=C.UTF-8`, `LC_ALL=C.UTF-8`, `PYTHONDONTWRITEBYTECODE=1`, `ZET_ENABLE_METRICS=1`, `NEOReadDebugKeys=1`, `EnableDirectSubmission=0`. No inherited `LD_PRELOAD`, tracing collector, `SYCL_*`, `UR_*`, `UNITRACE_*`, `XPTI_*`, `ZE_AFFINITY_MASK` or selector is enrolled. This isolates the raw Level Zero enumeration question. Every control is fixed in the native child's environment before exec. API entry/results are self-traced by the helper; no collection/tracing layer is injected. Compile uses its separately recorded immutable host environment and LLVM library directory only.
++
++The existing `owned-v0141-measurement.lock` is acquired nonblocking. Main is responsible for serializing foreign GPU/build/test/cleanup work; this source does not inspect or signal foreign processes. Build whole budget is 240 seconds, child wall 120/CPU 90 seconds; enumeration whole budget 120, child wall 60/CPU 30 seconds. Each owned session has 2 GiB RSS, 32 MiB raw text/file and 128 MiB private-artifact caps; 40 seconds are reserved for closure. `direct_owner.py` adds its existing finite pidfd/session/process-count limits. A budget stop remains incomplete.
++
++During the helper's post-enumeration hold, Main's controller binds owned PID/start/executable/environment and file-backed executable mappings, dev/inode and original allowed ELF hashes before sending `X`. Missing/unknown dependencies fail the mapping gate. Mapping evidence is only a post-enumeration snapshot, not an attestation of already unloaded DSOs or anonymous/JIT code. Native unavailable/error results remain in the raw trace even if mapping/ownership closure subsequently makes the receipt incomplete. Missing driver mapping is allowed only for nonpassing summaries; native binary and loader are always required. The unchanged owner performs all cleanup signaling, limited to its anchored session's pinned identities.
++
++Main must require journal visibility, sameboot before/end cursor and after-cursor rows, the recorded xe/GPU/GuC fault filter with zero fresh matches, exact xe PCI vendor/device identity, no existing/new device dump, normal owned closure, and frozen source/input/dependency identities. These gates are scoped evidence; no broader driver-health claim follows. On success preserve the compact individual API results, identity/mapping/environment, owner/closure, build and fault evidence in Git at Main's work boundary. Keep raw logs only through Main's review, within the budgets above; Main owns any later serialized cleanup and path/hash/reason deletion manifest. This package performs no cleanup, publishing, push or commit.
+--- /dev/null
++++ b/bench/results/2026-10-15-pr6-recovery-audit/own-metric-enumeration-v1/main_controller.py
+@@ -0,0 +1,282 @@
++#!/usr/bin/env python3
++"""Main-only bounded build OR enumeration; never prepares or refreshes its seal.
++Independently authored for Strata, repository LICENSE. SOURCE_ONLY_UNRUN.
++"""
++import argparse
++import datetime
++import fcntl
++import hashlib
++import importlib.util
++import json
++import os
++from pathlib import Path
++import re
++import sys
++import time
++
++sys.dont_write_bytecode = True
++D = Path(__file__).resolve().parent
++P = D.parents[3]
++STATE = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
++BASE = D.parent / 'own-vllm-resource-timeline-v2/manifest.json'
++BASE_SHA = 'fe0bc066c00a8aa9693678ef924060ed6430ad237c77dc1f1b03787a59b6855f'
++OWNER = P / 'bench/results/2026-10-14-niko-main-service-port/direct_owner.py'
++OWNER_SHA = 'a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f'
++DEVICE = Path('/sys/bus/pci/devices/0000:05:00.0')
++LLVM = Path('/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install')
++FAULT = re.compile(r'(?i)(\bxe\b.*(fault|hang|reset|error|wedg|timeout|stuck)|GPU.*(fault|hang|wedg|reset)|GuC.*(fault|hang|reset|error))')
++HOST_ENV = dict(PATH='/usr/bin:/bin', HOME='/home/yayoi', LANG='C.UTF-8', LC_ALL='C.UTF-8', PYTHONDONTWRITEBYTECODE='1')
++RAW, PRIVATE = 32 << 20, 128 << 20
++
++
++def require(ok, why):
++    if not ok:
++        raise RuntimeError(why)
++
++
++def sha(p):
++    with Path(p).open('rb') as f:
++        return hashlib.file_digest(f, 'sha256').hexdigest()
++
++
++def utc():
++    return datetime.datetime.now(datetime.timezone.utc).isoformat()
++
++
++def pin(p, v):
++    p = Path(p).resolve(strict=True)
++    require('prefill-gemm-only-contract-root-v1' not in p.parts, 'protected path')
++    require('XeStrata' not in p.parts or p.is_relative_to(LLVM), 'excluded implementation')
++    require(str(p) == v['realpath'] and p.stat().st_size == v['bytes'] and sha(p) == v['sha256'], 'original pin drift: ' + str(p))
++
++
++def module(p, name):
++    spec = importlib.util.spec_from_file_location(name, p)
++    m = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(m)
++    return m
++
++
++def main():
++    ap = argparse.ArgumentParser(description=__doc__)
++    ap.add_argument('--manifest', required=True)
++    ap.add_argument('--manifest-sha256', required=True)
++    ap.add_argument('--reviewed-package-sha256', required=True)
++    ap.add_argument('--run-id', required=True)
++    ap.add_argument('--mode', choices=('build', 'enumerate'), required=True)
++    args = ap.parse_args()
++    require(re.fullmatch(r'[a-z0-9][a-z0-9-]{7,79}', args.run_id), 'fresh bounded run ID')
++    require(sha(args.manifest) == args.manifest_sha256, 'external Main manifest SHA')
++    require(sha(D / 'SHA256SUMS') == args.reviewed_package_sha256, 'external complete Main source review SHA')
++    names = set()
++    for line in (D / 'SHA256SUMS').read_text().splitlines():
++        digest, name = line.split('  ', 1)
++        require(re.fullmatch('[a-f0-9]{64}', digest) and not Path(name).is_absolute() and '..' not in Path(name).parts and name not in names, 'strict package row')
++        require(sha(D / name) == digest and not (D / name).is_symlink(), 'reviewed package bytes')
++        names.add(name)
++    require(names == {str(p.relative_to(D)) for p in D.rglob('*') if p.is_file() and p.name != 'SHA256SUMS'}, 'complete snapshot')
++    manifest = json.loads(Path(args.manifest).read_text())
++    require(manifest['status'] == 'MAIN_REVIEWED_SEALED' and manifest['reviewed_package_sha256'] == args.reviewed_package_sha256 and
++            manifest['run_id'] == args.run_id and manifest['mode'] == args.mode, 'explicit seal/mode/fresh identity')
++    require(sha(BASE) == BASE_SHA and sha(OWNER) == OWNER_SHA, 'original base and qualified owner')
++    base = json.loads(BASE.read_text())
++    candidate = json.loads((D / 'manifest-candidate.json').read_text())
++    require(manifest['original_file_pins'] == candidate['original_file_pins'] and
++            manifest['original_elf_pins'] == base['elf_pins'] and
++            manifest['input_pins'] == candidate['input_pins'], 'no original inventory rewrite or live re-enrollment')
++    require(manifest['additional_dependency_review']['approved'] is True and
++            manifest['additional_dependency_review']['report_sha256'] and
++            manifest['additional_dependency_review']['report_path'], 'separate Main dependency closure review')
++    require(sha(manifest['additional_dependency_review']['report_path']) == manifest['additional_dependency_review']['report_sha256'], 'dependency review report seal')
++    extra = manifest['additional_dependency_review']['pins']
++    require(not set(extra).intersection(base['elf_pins']), 'additional dependencies cannot replace originals')
++    frozen_pins = dict(manifest['original_file_pins'])
++    for p, v in {**manifest['input_pins'], **extra}.items():
++        require(p not in frozen_pins or frozen_pins[p] == v, 'no conflicting original pins')
++        frozen_pins[p] = v
++    owner_mod = module(OWNER, 'metric_owned_child')
++    root = STATE / ('main-metric-' + args.run_id)
++    require(not root.exists(), 'fresh private output; no overwrite')
++    boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
++    require(boot == manifest['boot_id'], 'explicit sameboot Main selection')
++    started = time.monotonic()
++    deadline = started + (240 if args.mode == 'build' else 120)
++    with (STATE / 'owned-v0141-measurement.lock').open('a') as lock:
++        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
++        os.mkdir(root, 0o700)
++        record = dict(status='INCOMPLETE', passed=False, complete=False, active=False, commands=[],
++            mode=args.mode, run_id=args.run_id, boot_id=boot, started_utc=utc(),
++            manifest_sha256=args.manifest_sha256, reviewed_package_sha256=args.reviewed_package_sha256,
++            execution_kind='HOST_LEVEL_ZERO_ENUMERATION' if args.mode == 'enumerate' else 'HOST_COMPILATION',
++            collection_qualified=False, no_gpu_commands_authored=True, ownership_closed=False,
++            budgets=dict(raw_bytes=RAW, private_bytes=PRIVATE, whole_seconds=deadline-started,
++                child_cpu_seconds=90 if args.mode == 'build' else 30, child_rss_bytes=2 << 30),
++            retention=dict(owner='Main', consumer='one bounded actual metric-enumeration qualification',
++                next_review='After Main verifies compact API/identity/fault evidence; no automatic cleanup'))
++        owner = None
++        settling = False
++        closing = False
++
++        def persist():
++            record['active'] = bool(owner and owner.active is not None)
++            files = [p for p in root.rglob('*') if p.is_file()]
++            exceeded = (sum(p.stat().st_size for p in files) > PRIVATE or
++                sum(p.stat().st_size for p in files if p.suffix in ('.stdout', '.stderr')) > RAW)
++            if exceeded:
++                record.update(budget_error='private/raw byte budget', status='INCOMPLETE', passed=False, complete=False)
++            (root / 'record.json').write_text(json.dumps(record, indent=2) + '\n')
++            if exceeded and not settling:
++                raise RuntimeError('private/raw byte budget')
++
++        owner = owner_mod.Owner(root / 'owned', persist)
++        record['commands'] = owner.commands
++
++        def freeze():
++            require(time.monotonic() < deadline - 40, 'whole deadline with closure reserve')
++            require(Path('/proc/sys/kernel/random/boot_id').read_text().strip() == boot, 'boot drift')
++            require(sha(args.manifest) == args.manifest_sha256 and sha(D / 'SHA256SUMS') == args.reviewed_package_sha256, 'seal drift')
++            for line in (D / 'SHA256SUMS').read_text().splitlines():
++                digest, name = line.split('  ', 1)
++                require(sha(D / name) == digest, 'reviewed source drift')
++            for p, v in frozen_pins.items():
++                pin(p, v)
++                require(time.monotonic() < deadline - 40, 'pinning work deadline')
++
++        def driver():
++            require((DEVICE / 'driver').resolve().name == 'xe', 'exact driver')
++            require((DEVICE / 'vendor').read_text().strip() == '0x8086' and
++                    (DEVICE / 'device').read_text().strip() == '0xe20c', 'exact PCI target')
++            require(not (DEVICE / 'devcoredump').exists() and not list(Path('/sys/class/devcoredump').glob('devcd*')), 'dump exists; no reset/deletion')
++
++        def run(label, argv, env, interaction=None, wall=12, cpu=30):
++            end = deadline if closing else deadline - 40
++            require(time.monotonic() < end, 'work/closure deadline')
++            c, out, err = owner.run(label, argv, env, root, interaction=interaction,
++                wall=min(wall, end-time.monotonic()), cpu=cpu, rss_cap=2 << 30,
++                text_cap=RAW, total_cap=PRIVATE, file_cap=RAW)
++            require(owner_mod.closed(c), 'owned child closure')
++            for old in c['owners'] + [c['direct_identity']]:
++                now = owner_mod.identity(old['pid'])
++                require(now is None or now['start_ticks'] != old['start_ticks'], 'owned PID/start survives')
++            return c, out, err
++
++        def journal(label, argv):
++            c, out, _ = run(label, ['/usr/bin/journalctl', *argv], HOST_ENV)
++            require(c['exit_code'] == 0, 'journal visibility/closure')
++            return out.read_text()
++
++        cursor = None
++        try:
++            freeze(); driver()
++            before = journal('journal-before', ['-k', '-b', '-n', '0', '--show-cursor', '--no-pager'])
++            match = re.search(r'-- cursor: (\S+)', before)
++            require(match, 'journal initial cursor'); cursor = match[1]
++            if args.mode == 'build':
++                compiler = str(LLVM / 'bin/clang++')
++                header = str(STATE / 'main-primary-unitrace-build-root-v1/build/level_zero')
++                binary = root / 'metric-enumeration'
++                argv = [compiler, '-std=c++17', '-O2', '-Wall', '-Wextra', '-Werror', '-fno-sycl',
++                    '-I' + header, str(D / 'enumerate.cpp'), '/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0',
++                    '-ldl', '-o', str(binary)]
++                env = dict(HOST_ENV, TMPDIR=str(root), LD_LIBRARY_PATH=str(LLVM / 'lib'))
++                c, _, _ = run('host-build', argv, env, wall=120, cpu=90)
++                require(c['exit_code'] == 0, 'host build result')
++                record['binary_candidate'] = dict(path=str(binary), realpath=str(binary.resolve()),
++                    bytes=binary.stat().st_size, sha256=sha(binary))
++                record['binary_review_required_before_enumeration'] = True
++                record['candidate_complete'] = True
++            else:
++                binary = manifest['binary']; pin(binary['path'], binary)
++                build = manifest['build_receipt']; pin(build['path'], build)
++                receipt = json.loads(Path(build['path']).read_text())
++                require(receipt['mode'] == 'build' and receipt['passed'] and receipt['complete'] and
++                        receipt['ownership_closed'] and receipt['boot_id'] == boot and
++                        receipt['reviewed_package_sha256'] == args.reviewed_package_sha256 and
++                        receipt['binary_candidate'] == binary and receipt['run_id'] != args.run_id, 'separately reviewed completed build')
++                frozen_pins[binary['path']] = binary
++                frozen_pins[build['path']] = build
++                env = dict(HOST_ENV, ZET_ENABLE_METRICS='1', NEOReadDebugKeys='1', EnableDirectSubmission='0')
++                allowed = {**base['elf_pins'], **extra, binary['realpath']: binary}
++
++                def interact(io, entry):
++                    rows = []
++                    for _ in range(40000):
++                        row = json.loads(io.line(seconds=30)); rows.append(row)
++                        if row.get('kind') == 'main_snapshot_hold':
++                            break
++                    else:
++                        raise RuntimeError('row budget')
++                    summaries = [v for v in rows if v.get('kind') == 'summary']
++                    require(len(summaries) == 1, 'one native summary')
++                    record['enumeration_summary'] = summaries[0]
++                    ident = owner_mod.identity(io.proc.pid)
++                    require(ident and ident['start_ticks'] == entry['direct_identity']['start_ticks'], 'actual PID/start')
++                    proc = Path('/proc', str(io.proc.pid))
++                    require((proc / 'exe').resolve() == Path(binary['realpath']), 'actual native executable')
++                    effective = dict(v.decode().split('=', 1) for v in (proc / 'environ').read_bytes().split(b'\0') if v)
++                    require(effective == env, 'exact child environment before exec')
++                    mappings = []
++                    for line in (proc / 'maps').read_text().splitlines():
++                        f = line.split(None, 5)
++                        if len(f) != 6 or 'x' not in f[1] or not f[5].startswith('/'):
++                            continue
++                        require(not f[5].endswith(' (deleted)'), 'deleted mapping')
++                        p = Path(f[5]).resolve(strict=True)
++                        require(str(p) in allowed, 'unreviewed loaded ELF dependency: ' + str(p))
++                        v = allowed[str(p)]; pin(p, v); st = p.stat()
++                        major, minor = [int(x, 16) for x in f[3].split(':')]
++                        require(st.st_ino == int(f[4]) and os.major(st.st_dev) == major and os.minor(st.st_dev) == minor, 'mapped dev/inode')
++                        mappings.append(dict(mapping=line, pin=v))
++                    required = [binary['realpath'], '/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0']
++                    if summaries[0]['status'] == 'ENUMERATION_PASS':
++                        required.append('/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395')
++                    seen = {v['pin']['realpath'] for v in mappings}
++                    require(all(p in seen for p in required), 'actual binary/loader/driver mappings')
++                    after = owner_mod.identity(io.proc.pid)
++                    require(after and after['start_ticks'] == ident['start_ticks'], 'stable owned mapping snapshot')
++                    record['native_snapshot'] = dict(identity=ident, environment=effective, mappings=mappings,
++                        scope='File-backed executable mappings at post-enumeration hold only; unloaded/anonymous code not attested')
++                    io.send(b'X'); io.exit(seconds=5)
++
++                c, _, _ = run('native-enumeration', [binary['path'], '--main-owned-hold'], env, interact, wall=60)
++                record['native_exit_code'] = c['exit_code']
++                summary = record['enumeration_summary']
++                require(c['exit_code'] in (0, 2), 'normal protocol exit')
++                record['candidate_complete'] = True
++                record['candidate_status'] = summary['status']
++                require((c['exit_code'] == 0) == (summary['status'] == 'ENUMERATION_PASS'), 'status/exit agreement')
++            freeze()
++        except BaseException as error:
++            record['error'] = repr(error)
++        finally:
++            closing = True
++            try:
++                require(owner.active is None, 'ownership closure before journal')
++                require(cursor, 'initial journal boundary required')
++                end = journal('journal-end', ['-k', '-b', '-n', '0', '--show-cursor', '--no-pager'])
++                match = re.search(r'-- cursor: (\S+)', end); require(match, 'final cursor')
++                raw = journal('journal-after', ['-k', '-b', '--after-cursor', cursor, '--no-pager', '-o', 'json'])
++                rows = [json.loads(v) for v in raw.splitlines() if v.strip()]
++                require(all(v.get('_BOOT_ID') == boot.replace('-', '') for v in rows), 'sameboot journal rows')
++                fresh = [v for v in rows if FAULT.search(str(v.get('MESSAGE', '')))]
++                record['fault_window'] = dict(before_cursor=cursor, after_cursor=match[1], boot_id=boot,
++                    row_count=len(rows), fault_filter=FAULT.pattern, fresh_faults=fresh, complete=True)
++                require(not fresh, 'fresh GPU fault'); driver()
++                require(Path('/proc/sys/kernel/random/boot_id').read_text().strip() == boot, 'sameboot closure')
++                record['ownership_closed'] = all(owner_mod.closed(c) and c.get('exit_code') in (0, 2) for c in owner.commands)
++                require(record['ownership_closed'], 'all owned sessions closed')
++                record['complete'] = bool(record.get('candidate_complete') and not record.get('error') and not record.get('budget_error'))
++                record['status'] = record.get('candidate_status', 'BUILD_COMPLETE') if record['complete'] else 'INCOMPLETE'
++                record['passed'] = record['complete'] and record['status'] in ('BUILD_COMPLETE', 'ENUMERATION_PASS')
++            except BaseException as error:
++                record['closure_error'] = repr(error)
++                record.update(status='INCOMPLETE', passed=False, complete=False)
++            record.update(finished_utc=utc(), elapsed_seconds=time.monotonic()-started)
++            settling = True
++            persist()
++        print(json.dumps(dict(receipt=str(root / 'record.json'), sha256=sha(root / 'record.json'), status=record['status'])))
++        return 0 if record['passed'] else 1
++
++
++if __name__ == '__main__':
++    sys.exit(main())
+--- /dev/null
++++ b/bench/results/2026-10-15-pr6-recovery-audit/own-metric-enumeration-v1/manifest-candidate.json
+@@ -0,0 +1,1133 @@
++{
++  "schema": "strata-metric-enumeration-main-v1",
++  "status": "SOURCE_ONLY_UNSEALED",
++  "mode": null,
++  "run_id": null,
++  "reviewed_package_sha256": null,
++  "boot_id": null,
++  "original_file_pins": {
++    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_dft.so.6": {
++      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_dft.so.6",
++      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_dft.so.6",
++      "bytes": 37102056,
++      "sha256": "4cd0c0a1fe556697c90a5264fbe9bf3b74080a1b1ee3817c87be724703a2efd9"
++    },
++    "/usr/lib/x86_64-linux-gnu/libdl.so.2": {
++      "path": "/usr/lib/x86_64-linux-gnu/libdl.so.2",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libdl.so.2",
++      "bytes": 14408,
++      "sha256": "c2994527172cc23b7fb0f7d611b71e00a37da27af12c2e5e9e0dc1a742886c96"
++    },
++    "/usr/lib/x86_64-linux-gnu/libc.so.6": {
++      "path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libc.so.6",
++      "bytes": 2129424,
++      "sha256": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf"
++    },
++    "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": {
++      "path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
++      "realpath": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
++      "bytes": 236616,
++      "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da"
++    },
++    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0": {
++      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
++      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
++      "bytes": 5314304,
++      "sha256": "74243bafb2766fd1a038cf80fd62632b4aad9ecfdc0d3ce8711e4515a93d7008"
++    },
++    "/usr/lib/x86_64-linux-gnu/libm.so.6": {
++      "path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libm.so.6",
++      "bytes": 952616,
++      "sha256": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0"
++    },
++    "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": {
++      "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
++      "bytes": 2592224,
++      "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
++    },
++    "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": {
++      "path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
++      "bytes": 183024,
++      "sha256": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb"
++    },
++    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0": {
++      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
++      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
++      "bytes": 19267664,
++      "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
++    },
++    "/usr/lib/x86_64-linux-gnu/libz.so.1.3": {
++      "path": "/usr/lib/x86_64-linux-gnu/libz.so.1.3",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libz.so.1.3",
++      "bytes": 113000,
++      "sha256": "86200da370f20476a2507e9097a789b5ef97269b4ca8d5e164ad82dab9d99892"
++    },
++    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so.6": {
++      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so.6",
++      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so.6",
++      "bytes": 75459712,
++      "sha256": "51d6c16990701a5aaf9fbbde5d86f5a7197b81357b66b19cbb912206564cf4ee"
++    },
++    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_sparse.so.6": {
++      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_sparse.so.6",
++      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_sparse.so.6",
++      "bytes": 75862784,
++      "sha256": "9290b022cce7e560a5ef0d7448a415f9cafe75e9a6dfb5aea42d6e9e9c3139c3"
++    },
++    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_data_fitting.so.6": {
++      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_data_fitting.so.6",
++      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_data_fitting.so.6",
++      "bytes": 10275048,
++      "sha256": "6229ece57870a65ed57720accc58d53e4e3b4d84747823c166a1168eb5af3ca3"
++    },
++    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_stats.so.6": {
++      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_stats.so.6",
++      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_stats.so.6",
++      "bytes": 18133208,
++      "sha256": "8c9f3fc6452768676b2685531aba0d0abea3cb863d084d702ad1a7e029b9809a"
++    },
++    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_rng.so.6": {
++      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_rng.so.6",
++      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_rng.so.6",
++      "bytes": 83363584,
++      "sha256": "8f7051b4ba81e0821eee1d284c56c5b1e75f77578c20da047b3e3d8fc93fa910"
++    },
++    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_lapack.so.6": {
++      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_lapack.so.6",
++      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_lapack.so.6",
++      "bytes": 34844424,
++      "sha256": "58f4dc8b28e7a7cf9353cc28d6dbc4993c240b4a891e2e5e683264346cb760c0"
++    },
++    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_vm.so.6": {
++      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_vm.so.6",
++      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_vm.so.6",
++      "bytes": 89027872,
++      "sha256": "66a967f2ccd334eddae86b2757435c22333395da9506f4f6727b71f95080ada7"
++    },
++    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libxptifw.so.1.0.1": {
++      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libxptifw.so.1.0.1",
++      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libxptifw.so.1.0.1",
++      "bytes": 140352,
++      "sha256": "e31626a7a4ce9afb038a3bc185329341bc4771f96262ea07b3e5b5fdb65f6ff8"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/libunitrace_tool.so": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/libunitrace_tool.so",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/libunitrace_tool.so",
++      "bytes": 3864048,
++      "sha256": "8a8fe37441606bf66ab42fc39cc447b5257f48d09f04fbcc60703e30826671eb"
++    },
++    "/usr/local/lib/libigdfcl.so.2.41.5+1788943183": {
++      "path": "/usr/local/lib/libigdfcl.so.2.41.5+1788943183",
++      "realpath": "/usr/local/lib/libigdfcl.so.2.41.5+1788943183",
++      "bytes": 2554016,
++      "sha256": "ece8bcd533a44cc1684c1f24eeeca3302e4d19307a806fad5f1b83171f9fc1c3"
++    },
++    "/usr/local/lib/libopencl-clang2.so.22.1": {
++      "path": "/usr/local/lib/libopencl-clang2.so.22.1",
++      "realpath": "/usr/local/lib/libopencl-clang2.so.22.1",
++      "bytes": 158062480,
++      "sha256": "02ba9fb0f16b7f02c012095c46f8053c4bc20f9b5bde3028eedff6dcfed94bfe"
++    },
++    "/usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5": {
++      "path": "/usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5",
++      "bytes": 755864,
++      "sha256": "0a2128bc10841fb29e76d08d945864dfb0b6a66da5df6df5d8299197439e54bb"
++    },
++    "/usr/local/lib/libigc.so.2.41.5+1788943183": {
++      "path": "/usr/local/lib/libigc.so.2.41.5+1788943183",
++      "realpath": "/usr/local/lib/libigc.so.2.41.5+1788943183",
++      "bytes": 104543000,
++      "sha256": "40badd8f1ee80ac844a8947f5e91e5654fbcd851caefe343b0e5ec4ce4d1b123"
++    },
++    "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0": {
++      "path": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
++      "bytes": 777528,
++      "sha256": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363"
++    },
++    "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395": {
++      "path": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
++      "bytes": 61889928,
++      "sha256": "dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c"
++    },
++    "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0": {
++      "path": "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
++      "bytes": 878992,
++      "sha256": "a7904f18d8d59c7128dec4d6f22ae2b2e8a51f91f6946ac4e68b1ec6e0a7a6f3"
++    },
++    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0": {
++      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
++      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
++      "bytes": 2388520,
++      "sha256": "05bcafc4a0d45d33f957f16ffb4ba4776da675e79ade1121b93b94b8549335d8"
++    },
++    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0": {
++      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
++      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
++      "bytes": 306904,
++      "sha256": "ebe65269abd5869010ab256375e8663f7a8f8b5453e0be0c78f615eb71581ab9"
++    },
++    "/usr/lib/x86_64-linux-gnu/libhwloc.so.15.7.0": {
++      "path": "/usr/lib/x86_64-linux-gnu/libhwloc.so.15.7.0",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libhwloc.so.15.7.0",
++      "bytes": 392576,
++      "sha256": "86dff44a023254d997cea910b9a51f35afefe6780f4b5530f974a2009ba47487"
++    },
++    "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8": {
++      "path": "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8",
++      "bytes": 207288,
++      "sha256": "4298228175fa62a36af88b1afd4406cdd8b1bf166621f957d0dbbde45a698fe5"
++    },
++    "/usr/lib/x86_64-linux-gnu/libcap.so.2.66": {
++      "path": "/usr/lib/x86_64-linux-gnu/libcap.so.2.66",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libcap.so.2.66",
++      "bytes": 51536,
++      "sha256": "6ac6abc86ac891c6e13486470e26f1d939f47fda9e6b5d5508a7f5ec881adc84"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/dense_prefill_nll_host_test": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/dense_prefill_nll_host_test",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/dense_prefill_nll_host_test",
++      "bytes": 70848,
++      "sha256": "934c85223fd8f68d0bcbaadce53e4542c92c8b289336cd28dcf560c210c04b0b"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/prefill_layer_major_plan_test": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/prefill_layer_major_plan_test",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/prefill_layer_major_plan_test",
++      "bytes": 22616,
++      "sha256": "8d6102c6dea3e83a9cedf56f755d62a0518685ab4e8aefc5dc61b61b666acab5"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_allocation_teardown_test": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_allocation_teardown_test",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_allocation_teardown_test",
++      "bytes": 146944,
++      "sha256": "018a2daba5f4b76f98260fcd143dfbf1477a42f8c8125db07c88c1827da45afb"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_gemm_test": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_gemm_test",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_gemm_test",
++      "bytes": 11732736,
++      "sha256": "e00f79c41720c16d14a3b5c734f81d0a41b395d71e67d15ab31090b1abe649f3"
++    },
++    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so.3": {
++      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so.3",
++      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so.3",
++      "bytes": 76168096,
++      "sha256": "b4f086651ee5a8471140d53fedfdbbaba606287784763b0739f282872c31aa9b"
++    },
++    "/usr/lib/x86_64-linux-gnu/libpthread.so.0": {
++      "path": "/usr/lib/x86_64-linux-gnu/libpthread.so.0",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libpthread.so.0",
++      "bytes": 14408,
++      "sha256": "90491a21ce44efcf3bd4b65ec82501c091d7ebe7f8d9b341dd01d721001d9ecd"
++    },
++    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so.3": {
++      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so.3",
++      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so.3",
++      "bytes": 25021272,
++      "sha256": "4e7ff529bec90a1b0ce70299258a64a2ebae7a5a6f3ec031306a6ddb39b5a650"
++    },
++    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so.3": {
++      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so.3",
++      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so.3",
++      "bytes": 17488464,
++      "sha256": "ffbbeff402fdf09baa53f8226b86f27046592d984ae2916b1bbc2e59132c7c89"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_compat_test": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_compat_test",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_compat_test",
++      "bytes": 217480,
++      "sha256": "c4628c69eac9a0274cd087cdf1d8b043e154ede8a74d388824d74d4c0a415f99"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_runtime_test": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_runtime_test",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_runtime_test",
++      "bytes": 105744,
++      "sha256": "0cc17bc2fc0821349c76ab712bc682061122045da279645acda7bcdb496807ab"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_native16_paired_gemm_bench": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_native16_paired_gemm_bench",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_native16_paired_gemm_bench",
++      "bytes": 11781048,
++      "sha256": "61eb84834ad25d4fe1a33cc9314c10761003f4443053020145db04d7f06b51a4"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_vllm_native16_test": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_vllm_native16_test",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_vllm_native16_test",
++      "bytes": 385824,
++      "sha256": "7f2b0e917d5294240e357bccbf8320c29f4fa37c12a98f88ee795474106ac3c4"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_prompt_native16_test": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_prompt_native16_test",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_prompt_native16_test",
++      "bytes": 525088,
++      "sha256": "4f4883dfba71fe0a8fffcef167e5da6a0923136e0d5d9d8eca5f94a986620bcd"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_native16_qsa_test": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_native16_qsa_test",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_native16_qsa_test",
++      "bytes": 449976,
++      "sha256": "06300399ccef4887ce3006c0a3bd6f1cad9ba884ab9909717de7fd3cc12c13db"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_native16_prefill_test": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_native16_prefill_test",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_native16_prefill_test",
++      "bytes": 600360,
++      "sha256": "00569178d44ef73d868b95fc3d1c4c94666eaad990a0b7ed98b8ab7260c64b3a"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_gemm16_test": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_gemm16_test",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_gemm16_test",
++      "bytes": 11766688,
++      "sha256": "8e413282328322326529717a577957586ef76bc0da51d4599a9a57a963c1a310"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/strata": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/strata",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/strata",
++      "bytes": 19413880,
++      "sha256": "85643f3926bb9d212945659cb7ddb264e101ca9b2d5fa8f19430e945140ad191"
++    },
++    "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0": {
++      "path": "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
++      "bytes": 846520,
++      "sha256": "db1856f379706d51b6ded84ce028d4aa48740ef63793f60e8a1e027c6db6ffb5"
++    },
++    "/usr/lib/x86_64-linux-gnu/libnl-3.so.200.26.0": {
++      "path": "/usr/lib/x86_64-linux-gnu/libnl-3.so.200.26.0",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libnl-3.so.200.26.0",
++      "bytes": 133944,
++      "sha256": "afcb69e2ef0b46c2ce7b7483848332fa9462776d33163f64209acf01f86eddd7"
++    },
++    "/usr/lib/x86_64-linux-gnu/libnl-genl-3.so.200.26.0": {
++      "path": "/usr/lib/x86_64-linux-gnu/libnl-genl-3.so.200.26.0",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libnl-genl-3.so.200.26.0",
++      "bytes": 27984,
++      "sha256": "0757db7e6c5fbc4d2a8bbedbac7061fbb8ebb6196b4d2954d3a321e9ff76933c"
++    },
++    "/usr/lib/x86_64-linux-gnu/libnl-route-3.so.200.26.0": {
++      "path": "/usr/lib/x86_64-linux-gnu/libnl-route-3.so.200.26.0",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libnl-route-3.so.200.26.0",
++      "bytes": 575344,
++      "sha256": "088b0021d638306f5541e7baab06a0182b07db0a280e19b3b40c746f729b3773"
++    },
++    "/usr/lib/x86_64-linux-gnu/libdrm.so.2.134.0": {
++      "path": "/usr/lib/x86_64-linux-gnu/libdrm.so.2.134.0",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libdrm.so.2.134.0",
++      "bytes": 92768,
++      "sha256": "0603c4dcb88bc9e076e34aedeec3513038e608d6d15d21330e49cb0ea38155e1"
++    },
++    "/usr/lib/x86_64-linux-gnu/libdrm_intel.so.1.134.0": {
++      "path": "/usr/lib/x86_64-linux-gnu/libdrm_intel.so.1.134.0",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libdrm_intel.so.1.134.0",
++      "bytes": 143304,
++      "sha256": "60bf830c0bccba627b582e4c336932f0c391a286edda930e404ae8443ab0b6f1"
++    },
++    "/usr/lib/x86_64-linux-gnu/libigdmd.so.1.16.188": {
++      "path": "/usr/lib/x86_64-linux-gnu/libigdmd.so.1.16.188",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libigdmd.so.1.16.188",
++      "bytes": 34430160,
++      "sha256": "c8908112387576f28023c28cc0be0f456de93af8e99b3bc5259e09e0fa876cd9"
++    },
++    "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.231": {
++      "path": "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.231",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.231",
++      "bytes": 1367248,
++      "sha256": "8f4ffe4a856c441d4c85bd7d7de6ad7672c59812fe4655d2a8843c32eba97075"
++    },
++    "/usr/lib/x86_64-linux-gnu/libigsc.so.1.2.0.0": {
++      "path": "/usr/lib/x86_64-linux-gnu/libigsc.so.1.2.0.0",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libigsc.so.1.2.0.0",
++      "bytes": 186360,
++      "sha256": "dbb8594b6fa0c5bcd0c539ba493653f1311c040eeb36a8702d0537dce43dfa31"
++    },
++    "/usr/lib/x86_64-linux-gnu/libnuma.so.1.0.0": {
++      "path": "/usr/lib/x86_64-linux-gnu/libnuma.so.1.0.0",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libnuma.so.1.0.0",
++      "bytes": 52248,
++      "sha256": "02d7582c5d391e460e56aa67a414360e3183b968206645b9123f9dc7bff5d009"
++    },
++    "/usr/lib/x86_64-linux-gnu/libva.so.2.2400.0": {
++      "path": "/usr/lib/x86_64-linux-gnu/libva.so.2.2400.0",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libva.so.2.2400.0",
++      "bytes": 227408,
++      "sha256": "768f8f120b8388433c77f5c0ef15525678353104898ed573443a9fe72a654d82"
++    },
++    "/usr/lib/x86_64-linux-gnu/libpciaccess.so.0.11.1": {
++      "path": "/usr/lib/x86_64-linux-gnu/libpciaccess.so.0.11.1",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libpciaccess.so.0.11.1",
++      "bytes": 39408,
++      "sha256": "81cd0c59c39cc07b7e1d8c2efaeb10646da73e99786d4ca259765ab662b7a7a3"
++    },
++    "/usr/lib/x86_64-linux-gnu/libmetee.so.6.2.1.0": {
++      "path": "/usr/lib/x86_64-linux-gnu/libmetee.so.6.2.1.0",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libmetee.so.6.2.1.0",
++      "bytes": 38904,
++      "sha256": "fb8e372216571e293362bf3469d13b34afa558395ac06e6fdad73ddb6c860413"
++    },
++    "/usr/lib/x86_64-linux-gnu/libOpenCL.so.1.0.0": {
++      "path": "/usr/lib/x86_64-linux-gnu/libOpenCL.so.1.0.0",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libOpenCL.so.1.0.0",
++      "bytes": 73384,
++      "sha256": "4f604bad7420b753bad559186002c58064d5c97813b107ea11c249fb1820b33a"
++    },
++    "/opt/intel/oneapi/tbb/2023.1/lib/libtbb.so.12.19": {
++      "path": "/opt/intel/oneapi/tbb/2023.1/lib/libtbb.so.12.19",
++      "realpath": "/opt/intel/oneapi/tbb/2023.1/lib/libtbb.so.12.19",
++      "bytes": 4462408,
++      "sha256": "2c1fcbc65a33771a5e02a201734774252528e10f57cef9e2f902fe209c0319e1"
++    },
++    "/opt/intel/oneapi/compiler/2026.1/lib/libsvml.so": {
++      "path": "/opt/intel/oneapi/compiler/2026.1/lib/libsvml.so",
++      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libsvml.so",
++      "bytes": 28103240,
++      "sha256": "a6dbbc425c8270c3485e40ef0924ef38ed89ced4026056fd3f1f529774c4f86c"
++    },
++    "/opt/intel/oneapi/compiler/2026.1/lib/libimf.so": {
++      "path": "/opt/intel/oneapi/compiler/2026.1/lib/libimf.so",
++      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libimf.so",
++      "bytes": 4865192,
++      "sha256": "67a4b6c27002f59f26c411f4ec384300d781365af19d6a2eb9f0dd94d2a0f470"
++    },
++    "/opt/intel/oneapi/compiler/2026.1/lib/libintlc.so.5": {
++      "path": "/opt/intel/oneapi/compiler/2026.1/lib/libintlc.so.5",
++      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libintlc.so.5",
++      "bytes": 415824,
++      "sha256": "612ab119242ccda945de6eb354369b5bee6a158bc9724e4da5e466cb0ad630db"
++    },
++    "/opt/intel/oneapi/tbb/2023.1/lib/libtbbmalloc.so.2.19": {
++      "path": "/opt/intel/oneapi/tbb/2023.1/lib/libtbbmalloc.so.2.19",
++      "realpath": "/opt/intel/oneapi/tbb/2023.1/lib/libtbbmalloc.so.2.19",
++      "bytes": 1184544,
++      "sha256": "74410b8566ecedac338f072662272a970bb0230870c0a6ce964042bf9a26fbbb"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/strata": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/strata",
++      "sha256": "6334491b623ead7b83c7ff5aaee84583294b3ecd4b12c6d06b77d1fe7e7a691d",
++      "bytes": 19790568,
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/strata"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/sycl_prompt_native16_test": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/sycl_prompt_native16_test",
++      "sha256": "d564fc95854988efb24b990ba64bcd5ac092fdfb597c21b0d4a65c4c54e23bef",
++      "bytes": 902000,
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/sycl_prompt_native16_test"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/sycl_prompt_k_cellmajor_test": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/sycl_prompt_k_cellmajor_test",
++      "sha256": "947c12850348ac9fa5a5aa7fb32b9a95045c8a8d55d6ae35784a5bb99642069c",
++      "bytes": 1172768,
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/sycl_prompt_k_cellmajor_test"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/sycl_prompt_attention_test": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/sycl_prompt_attention_test",
++      "sha256": "59d570c152788baad284b9d7987890213c008a0ab7aba9e76cae577045819903",
++      "bytes": 1167488,
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/sycl_prompt_attention_test"
++    },
++    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++": {
++      "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb",
++      "bytes": 158664312,
++      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang-22"
++    },
++    "/usr/bin/ld": {
++      "sha256": "e9ceb054c12207970f2726dfc07e9a66b411602748628baf27399f02a9bbb31b",
++      "bytes": 1359128,
++      "realpath": "/usr/bin/x86_64-linux-gnu-ld.bfd"
++    },
++    "/usr/bin/journalctl": {
++      "sha256": "36ac820bf284c5bbf286432ef32a18eaab12cbbf53be242d2a27aee5684aa0dd",
++      "bytes": 80800,
++      "realpath": "/usr/bin/journalctl"
++    },
++    "/usr/bin/python3": {
++      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
++      "bytes": 8020928,
++      "realpath": "/usr/bin/python3.12"
++    },
++    "/etc/ld.so.cache": {
++      "sha256": "bce62f8c5c0f5969471080646abde986d6442c1a6066cce02c3e9ff7149e189d",
++      "bytes": 115623,
++      "realpath": "/etc/ld.so.cache"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/ze_api.h": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/ze_api.h",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/ze_api.h",
++      "bytes": 1160433,
++      "sha256": "095a0eb442ae21946f29147c209f270b93dd0eb5b12a2d0c67e5f4138b533712"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/zet_api.h": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/zet_api.h",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/zet_api.h",
++      "bytes": 229444,
++      "sha256": "14cd443591c430172aa1cea8e03d31b8049971f08f67b27722b8b99ea3b14b51"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/ze_stypes.h": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/ze_stypes.h",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/ze_stypes.h",
++      "bytes": 5730,
++      "sha256": "32e6ca50ecad5753bcc2ca9d908c192754346712ebee36f42a22e458b9e55a20"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/ze_intel_gpu.h": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/ze_intel_gpu.h",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/ze_intel_gpu.h",
++      "bytes": 38191,
++      "sha256": "0b2c5cc79921f0b754d20f5336423c2e119a41c55c31052a301e0941ba157c69"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/zes_api.h": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/zes_api.h",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/zes_api.h",
++      "bytes": 549893,
++      "sha256": "7c31adb191736ee77fe518de488207c6c34920a22b5cef71320d99cbe9bd4044"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/zer_api.h": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/zer_api.h",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/zer_api.h",
++      "bytes": 6619,
++      "sha256": "5109d95cdf158030df49203278b74dbd7d0f583ddf170d6e2760f969d5b442bf"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/layers/zel_tracing_api.h": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/layers/zel_tracing_api.h",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/layers/zel_tracing_api.h",
++      "bytes": 7485,
++      "sha256": "2e7901c786580268713eead3a80924d907df07776c69230655dbc08419b59e3b"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/layers/zel_tracing_register_cb.h": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/layers/zel_tracing_register_cb.h",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/layers/zel_tracing_register_cb.h",
++      "bytes": 207944,
++      "sha256": "aee2cd264623ab05d58c5cd207db130dd618adc35cb90b38db343a033d4f4fa7"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/driver_experimental/zex_memory.h": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/driver_experimental/zex_memory.h",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/driver_experimental/zex_memory.h",
++      "bytes": 5722,
++      "sha256": "22938f1c24ca7daa3c96546e6e9aa3aa2682f09b56377a8ff9a7a9dade368497"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/driver_experimental/zex_api.h": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/driver_experimental/zex_api.h",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/driver_experimental/zex_api.h",
++      "bytes": 567,
++      "sha256": "b73b4ac75861d6a2f31570c8a893577d7f0d2457c0a72f54c8851018de05ed68"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/driver_experimental/zex_graph.h": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/driver_experimental/zex_graph.h",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/driver_experimental/zex_graph.h",
++      "bytes": 4789,
++      "sha256": "9d6a7d1cbf582341f7157c6669c6bc35c1574f0c708506252da590673f476406"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/driver_experimental/zex_common.h": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/driver_experimental/zex_common.h",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/driver_experimental/zex_common.h",
++      "bytes": 12207,
++      "sha256": "20f2480045d40015706e437e6ab37d5eda3698883abe81a7e17c777885163e65"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/driver_experimental/zex_event.h": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/driver_experimental/zex_event.h",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/driver_experimental/zex_event.h",
++      "bytes": 1457,
++      "sha256": "cfa8bd77af416f1c6a8e4cbe474ee53452a2b5246df10a8cb626c1799a1e5ad2"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/driver_experimental/zex_context.h": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/driver_experimental/zex_context.h",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/driver_experimental/zex_context.h",
++      "bytes": 397,
++      "sha256": "0b6eb65f34eb726dfae54c1a0edb3b662acc01e36712298aa6f34ffc3ad46cfb"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/driver_experimental/zex_module.h": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/driver_experimental/zex_module.h",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/driver_experimental/zex_module.h",
++      "bytes": 1981,
++      "sha256": "a630df4343999dc025a72cd50d16efad44669ccc37c6e26a0d6009216849c253"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/driver_experimental/zex_cmdlist.h": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/driver_experimental/zex_cmdlist.h",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/driver_experimental/zex_cmdlist.h",
++      "bytes": 5130,
++      "sha256": "be8e73eb45bffbd64b3420e1de5bd06cd07f7f0c13047d66ab03d26d43498262"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/driver_experimental/zex_visit.h": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/driver_experimental/zex_visit.h",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/driver_experimental/zex_visit.h",
++      "bytes": 4804,
++      "sha256": "32dae511641d5f03d4139c2ff05e3949dc5d532ac26c794c4492d5a2cf1a962e"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/driver_experimental/zex_driver.h": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/driver_experimental/zex_driver.h",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/driver_experimental/zex_driver.h",
++      "bytes": 1874,
++      "sha256": "18331f6d4257d34641cf22fcc3b11c2272d6b01d1849e905e03c5b7570a1be91"
++    }
++  },
++  "original_elf_pins": {
++    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_dft.so.6": {
++      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_dft.so.6",
++      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_dft.so.6",
++      "bytes": 37102056,
++      "sha256": "4cd0c0a1fe556697c90a5264fbe9bf3b74080a1b1ee3817c87be724703a2efd9"
++    },
++    "/usr/lib/x86_64-linux-gnu/libdl.so.2": {
++      "path": "/usr/lib/x86_64-linux-gnu/libdl.so.2",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libdl.so.2",
++      "bytes": 14408,
++      "sha256": "c2994527172cc23b7fb0f7d611b71e00a37da27af12c2e5e9e0dc1a742886c96"
++    },
++    "/usr/lib/x86_64-linux-gnu/libc.so.6": {
++      "path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libc.so.6",
++      "bytes": 2129424,
++      "sha256": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf"
++    },
++    "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": {
++      "path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
++      "realpath": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
++      "bytes": 236616,
++      "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da"
++    },
++    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0": {
++      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
++      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
++      "bytes": 5314304,
++      "sha256": "74243bafb2766fd1a038cf80fd62632b4aad9ecfdc0d3ce8711e4515a93d7008"
++    },
++    "/usr/lib/x86_64-linux-gnu/libm.so.6": {
++      "path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libm.so.6",
++      "bytes": 952616,
++      "sha256": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0"
++    },
++    "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": {
++      "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
++      "bytes": 2592224,
++      "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
++    },
++    "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": {
++      "path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
++      "bytes": 183024,
++      "sha256": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb"
++    },
++    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0": {
++      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
++      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
++      "bytes": 19267664,
++      "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
++    },
++    "/usr/lib/x86_64-linux-gnu/libz.so.1.3": {
++      "path": "/usr/lib/x86_64-linux-gnu/libz.so.1.3",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libz.so.1.3",
++      "bytes": 113000,
++      "sha256": "86200da370f20476a2507e9097a789b5ef97269b4ca8d5e164ad82dab9d99892"
++    },
++    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so.6": {
++      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so.6",
++      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so.6",
++      "bytes": 75459712,
++      "sha256": "51d6c16990701a5aaf9fbbde5d86f5a7197b81357b66b19cbb912206564cf4ee"
++    },
++    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_sparse.so.6": {
++      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_sparse.so.6",
++      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_sparse.so.6",
++      "bytes": 75862784,
++      "sha256": "9290b022cce7e560a5ef0d7448a415f9cafe75e9a6dfb5aea42d6e9e9c3139c3"
++    },
++    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_data_fitting.so.6": {
++      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_data_fitting.so.6",
++      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_data_fitting.so.6",
++      "bytes": 10275048,
++      "sha256": "6229ece57870a65ed57720accc58d53e4e3b4d84747823c166a1168eb5af3ca3"
++    },
++    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_stats.so.6": {
++      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_stats.so.6",
++      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_stats.so.6",
++      "bytes": 18133208,
++      "sha256": "8c9f3fc6452768676b2685531aba0d0abea3cb863d084d702ad1a7e029b9809a"
++    },
++    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_rng.so.6": {
++      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_rng.so.6",
++      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_rng.so.6",
++      "bytes": 83363584,
++      "sha256": "8f7051b4ba81e0821eee1d284c56c5b1e75f77578c20da047b3e3d8fc93fa910"
++    },
++    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_lapack.so.6": {
++      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_lapack.so.6",
++      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_lapack.so.6",
++      "bytes": 34844424,
++      "sha256": "58f4dc8b28e7a7cf9353cc28d6dbc4993c240b4a891e2e5e683264346cb760c0"
++    },
++    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_vm.so.6": {
++      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_vm.so.6",
++      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_vm.so.6",
++      "bytes": 89027872,
++      "sha256": "66a967f2ccd334eddae86b2757435c22333395da9506f4f6727b71f95080ada7"
++    },
++    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libxptifw.so.1.0.1": {
++      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libxptifw.so.1.0.1",
++      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libxptifw.so.1.0.1",
++      "bytes": 140352,
++      "sha256": "e31626a7a4ce9afb038a3bc185329341bc4771f96262ea07b3e5b5fdb65f6ff8"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/libunitrace_tool.so": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/libunitrace_tool.so",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/libunitrace_tool.so",
++      "bytes": 3864048,
++      "sha256": "8a8fe37441606bf66ab42fc39cc447b5257f48d09f04fbcc60703e30826671eb"
++    },
++    "/usr/local/lib/libigdfcl.so.2.41.5+1788943183": {
++      "path": "/usr/local/lib/libigdfcl.so.2.41.5+1788943183",
++      "realpath": "/usr/local/lib/libigdfcl.so.2.41.5+1788943183",
++      "bytes": 2554016,
++      "sha256": "ece8bcd533a44cc1684c1f24eeeca3302e4d19307a806fad5f1b83171f9fc1c3"
++    },
++    "/usr/local/lib/libopencl-clang2.so.22.1": {
++      "path": "/usr/local/lib/libopencl-clang2.so.22.1",
++      "realpath": "/usr/local/lib/libopencl-clang2.so.22.1",
++      "bytes": 158062480,
++      "sha256": "02ba9fb0f16b7f02c012095c46f8053c4bc20f9b5bde3028eedff6dcfed94bfe"
++    },
++    "/usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5": {
++      "path": "/usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5",
++      "bytes": 755864,
++      "sha256": "0a2128bc10841fb29e76d08d945864dfb0b6a66da5df6df5d8299197439e54bb"
++    },
++    "/usr/local/lib/libigc.so.2.41.5+1788943183": {
++      "path": "/usr/local/lib/libigc.so.2.41.5+1788943183",
++      "realpath": "/usr/local/lib/libigc.so.2.41.5+1788943183",
++      "bytes": 104543000,
++      "sha256": "40badd8f1ee80ac844a8947f5e91e5654fbcd851caefe343b0e5ec4ce4d1b123"
++    },
++    "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0": {
++      "path": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
++      "bytes": 777528,
++      "sha256": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363"
++    },
++    "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395": {
++      "path": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
++      "bytes": 61889928,
++      "sha256": "dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c"
++    },
++    "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0": {
++      "path": "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
++      "bytes": 878992,
++      "sha256": "a7904f18d8d59c7128dec4d6f22ae2b2e8a51f91f6946ac4e68b1ec6e0a7a6f3"
++    },
++    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0": {
++      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
++      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
++      "bytes": 2388520,
++      "sha256": "05bcafc4a0d45d33f957f16ffb4ba4776da675e79ade1121b93b94b8549335d8"
++    },
++    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0": {
++      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
++      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
++      "bytes": 306904,
++      "sha256": "ebe65269abd5869010ab256375e8663f7a8f8b5453e0be0c78f615eb71581ab9"
++    },
++    "/usr/lib/x86_64-linux-gnu/libhwloc.so.15.7.0": {
++      "path": "/usr/lib/x86_64-linux-gnu/libhwloc.so.15.7.0",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libhwloc.so.15.7.0",
++      "bytes": 392576,
++      "sha256": "86dff44a023254d997cea910b9a51f35afefe6780f4b5530f974a2009ba47487"
++    },
++    "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8": {
++      "path": "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8",
++      "bytes": 207288,
++      "sha256": "4298228175fa62a36af88b1afd4406cdd8b1bf166621f957d0dbbde45a698fe5"
++    },
++    "/usr/lib/x86_64-linux-gnu/libcap.so.2.66": {
++      "path": "/usr/lib/x86_64-linux-gnu/libcap.so.2.66",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libcap.so.2.66",
++      "bytes": 51536,
++      "sha256": "6ac6abc86ac891c6e13486470e26f1d939f47fda9e6b5d5508a7f5ec881adc84"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/dense_prefill_nll_host_test": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/dense_prefill_nll_host_test",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/dense_prefill_nll_host_test",
++      "bytes": 70848,
++      "sha256": "934c85223fd8f68d0bcbaadce53e4542c92c8b289336cd28dcf560c210c04b0b"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/prefill_layer_major_plan_test": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/prefill_layer_major_plan_test",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/prefill_layer_major_plan_test",
++      "bytes": 22616,
++      "sha256": "8d6102c6dea3e83a9cedf56f755d62a0518685ab4e8aefc5dc61b61b666acab5"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_allocation_teardown_test": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_allocation_teardown_test",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_allocation_teardown_test",
++      "bytes": 146944,
++      "sha256": "018a2daba5f4b76f98260fcd143dfbf1477a42f8c8125db07c88c1827da45afb"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_gemm_test": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_gemm_test",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_gemm_test",
++      "bytes": 11732736,
++      "sha256": "e00f79c41720c16d14a3b5c734f81d0a41b395d71e67d15ab31090b1abe649f3"
++    },
++    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so.3": {
++      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so.3",
++      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so.3",
++      "bytes": 76168096,
++      "sha256": "b4f086651ee5a8471140d53fedfdbbaba606287784763b0739f282872c31aa9b"
++    },
++    "/usr/lib/x86_64-linux-gnu/libpthread.so.0": {
++      "path": "/usr/lib/x86_64-linux-gnu/libpthread.so.0",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libpthread.so.0",
++      "bytes": 14408,
++      "sha256": "90491a21ce44efcf3bd4b65ec82501c091d7ebe7f8d9b341dd01d721001d9ecd"
++    },
++    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so.3": {
++      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so.3",
++      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so.3",
++      "bytes": 25021272,
++      "sha256": "4e7ff529bec90a1b0ce70299258a64a2ebae7a5a6f3ec031306a6ddb39b5a650"
++    },
++    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so.3": {
++      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so.3",
++      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so.3",
++      "bytes": 17488464,
++      "sha256": "ffbbeff402fdf09baa53f8226b86f27046592d984ae2916b1bbc2e59132c7c89"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_compat_test": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_compat_test",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_compat_test",
++      "bytes": 217480,
++      "sha256": "c4628c69eac9a0274cd087cdf1d8b043e154ede8a74d388824d74d4c0a415f99"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_runtime_test": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_runtime_test",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_runtime_test",
++      "bytes": 105744,
++      "sha256": "0cc17bc2fc0821349c76ab712bc682061122045da279645acda7bcdb496807ab"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_native16_paired_gemm_bench": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_native16_paired_gemm_bench",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_native16_paired_gemm_bench",
++      "bytes": 11781048,
++      "sha256": "61eb84834ad25d4fe1a33cc9314c10761003f4443053020145db04d7f06b51a4"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_vllm_native16_test": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_vllm_native16_test",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_vllm_native16_test",
++      "bytes": 385824,
++      "sha256": "7f2b0e917d5294240e357bccbf8320c29f4fa37c12a98f88ee795474106ac3c4"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_prompt_native16_test": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_prompt_native16_test",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_prompt_native16_test",
++      "bytes": 525088,
++      "sha256": "4f4883dfba71fe0a8fffcef167e5da6a0923136e0d5d9d8eca5f94a986620bcd"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_native16_qsa_test": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_native16_qsa_test",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_native16_qsa_test",
++      "bytes": 449976,
++      "sha256": "06300399ccef4887ce3006c0a3bd6f1cad9ba884ab9909717de7fd3cc12c13db"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_native16_prefill_test": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_native16_prefill_test",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_native16_prefill_test",
++      "bytes": 600360,
++      "sha256": "00569178d44ef73d868b95fc3d1c4c94666eaad990a0b7ed98b8ab7260c64b3a"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_gemm16_test": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_gemm16_test",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_gemm16_test",
++      "bytes": 11766688,
++      "sha256": "8e413282328322326529717a577957586ef76bc0da51d4599a9a57a963c1a310"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/strata": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/strata",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/strata",
++      "bytes": 19413880,
++      "sha256": "85643f3926bb9d212945659cb7ddb264e101ca9b2d5fa8f19430e945140ad191"
++    },
++    "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0": {
++      "path": "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
++      "bytes": 846520,
++      "sha256": "db1856f379706d51b6ded84ce028d4aa48740ef63793f60e8a1e027c6db6ffb5"
++    },
++    "/usr/lib/x86_64-linux-gnu/libnl-3.so.200.26.0": {
++      "path": "/usr/lib/x86_64-linux-gnu/libnl-3.so.200.26.0",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libnl-3.so.200.26.0",
++      "bytes": 133944,
++      "sha256": "afcb69e2ef0b46c2ce7b7483848332fa9462776d33163f64209acf01f86eddd7"
++    },
++    "/usr/lib/x86_64-linux-gnu/libnl-genl-3.so.200.26.0": {
++      "path": "/usr/lib/x86_64-linux-gnu/libnl-genl-3.so.200.26.0",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libnl-genl-3.so.200.26.0",
++      "bytes": 27984,
++      "sha256": "0757db7e6c5fbc4d2a8bbedbac7061fbb8ebb6196b4d2954d3a321e9ff76933c"
++    },
++    "/usr/lib/x86_64-linux-gnu/libnl-route-3.so.200.26.0": {
++      "path": "/usr/lib/x86_64-linux-gnu/libnl-route-3.so.200.26.0",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libnl-route-3.so.200.26.0",
++      "bytes": 575344,
++      "sha256": "088b0021d638306f5541e7baab06a0182b07db0a280e19b3b40c746f729b3773"
++    },
++    "/usr/lib/x86_64-linux-gnu/libdrm.so.2.134.0": {
++      "path": "/usr/lib/x86_64-linux-gnu/libdrm.so.2.134.0",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libdrm.so.2.134.0",
++      "bytes": 92768,
++      "sha256": "0603c4dcb88bc9e076e34aedeec3513038e608d6d15d21330e49cb0ea38155e1"
++    },
++    "/usr/lib/x86_64-linux-gnu/libdrm_intel.so.1.134.0": {
++      "path": "/usr/lib/x86_64-linux-gnu/libdrm_intel.so.1.134.0",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libdrm_intel.so.1.134.0",
++      "bytes": 143304,
++      "sha256": "60bf830c0bccba627b582e4c336932f0c391a286edda930e404ae8443ab0b6f1"
++    },
++    "/usr/lib/x86_64-linux-gnu/libigdmd.so.1.16.188": {
++      "path": "/usr/lib/x86_64-linux-gnu/libigdmd.so.1.16.188",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libigdmd.so.1.16.188",
++      "bytes": 34430160,
++      "sha256": "c8908112387576f28023c28cc0be0f456de93af8e99b3bc5259e09e0fa876cd9"
++    },
++    "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.231": {
++      "path": "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.231",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.231",
++      "bytes": 1367248,
++      "sha256": "8f4ffe4a856c441d4c85bd7d7de6ad7672c59812fe4655d2a8843c32eba97075"
++    },
++    "/usr/lib/x86_64-linux-gnu/libigsc.so.1.2.0.0": {
++      "path": "/usr/lib/x86_64-linux-gnu/libigsc.so.1.2.0.0",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libigsc.so.1.2.0.0",
++      "bytes": 186360,
++      "sha256": "dbb8594b6fa0c5bcd0c539ba493653f1311c040eeb36a8702d0537dce43dfa31"
++    },
++    "/usr/lib/x86_64-linux-gnu/libnuma.so.1.0.0": {
++      "path": "/usr/lib/x86_64-linux-gnu/libnuma.so.1.0.0",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libnuma.so.1.0.0",
++      "bytes": 52248,
++      "sha256": "02d7582c5d391e460e56aa67a414360e3183b968206645b9123f9dc7bff5d009"
++    },
++    "/usr/lib/x86_64-linux-gnu/libva.so.2.2400.0": {
++      "path": "/usr/lib/x86_64-linux-gnu/libva.so.2.2400.0",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libva.so.2.2400.0",
++      "bytes": 227408,
++      "sha256": "768f8f120b8388433c77f5c0ef15525678353104898ed573443a9fe72a654d82"
++    },
++    "/usr/lib/x86_64-linux-gnu/libpciaccess.so.0.11.1": {
++      "path": "/usr/lib/x86_64-linux-gnu/libpciaccess.so.0.11.1",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libpciaccess.so.0.11.1",
++      "bytes": 39408,
++      "sha256": "81cd0c59c39cc07b7e1d8c2efaeb10646da73e99786d4ca259765ab662b7a7a3"
++    },
++    "/usr/lib/x86_64-linux-gnu/libmetee.so.6.2.1.0": {
++      "path": "/usr/lib/x86_64-linux-gnu/libmetee.so.6.2.1.0",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libmetee.so.6.2.1.0",
++      "bytes": 38904,
++      "sha256": "fb8e372216571e293362bf3469d13b34afa558395ac06e6fdad73ddb6c860413"
++    },
++    "/usr/lib/x86_64-linux-gnu/libOpenCL.so.1.0.0": {
++      "path": "/usr/lib/x86_64-linux-gnu/libOpenCL.so.1.0.0",
++      "realpath": "/usr/lib/x86_64-linux-gnu/libOpenCL.so.1.0.0",
++      "bytes": 73384,
++      "sha256": "4f604bad7420b753bad559186002c58064d5c97813b107ea11c249fb1820b33a"
++    },
++    "/opt/intel/oneapi/tbb/2023.1/lib/libtbb.so.12.19": {
++      "path": "/opt/intel/oneapi/tbb/2023.1/lib/libtbb.so.12.19",
++      "realpath": "/opt/intel/oneapi/tbb/2023.1/lib/libtbb.so.12.19",
++      "bytes": 4462408,
++      "sha256": "2c1fcbc65a33771a5e02a201734774252528e10f57cef9e2f902fe209c0319e1"
++    },
++    "/opt/intel/oneapi/compiler/2026.1/lib/libsvml.so": {
++      "path": "/opt/intel/oneapi/compiler/2026.1/lib/libsvml.so",
++      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libsvml.so",
++      "bytes": 28103240,
++      "sha256": "a6dbbc425c8270c3485e40ef0924ef38ed89ced4026056fd3f1f529774c4f86c"
++    },
++    "/opt/intel/oneapi/compiler/2026.1/lib/libimf.so": {
++      "path": "/opt/intel/oneapi/compiler/2026.1/lib/libimf.so",
++      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libimf.so",
++      "bytes": 4865192,
++      "sha256": "67a4b6c27002f59f26c411f4ec384300d781365af19d6a2eb9f0dd94d2a0f470"
++    },
++    "/opt/intel/oneapi/compiler/2026.1/lib/libintlc.so.5": {
++      "path": "/opt/intel/oneapi/compiler/2026.1/lib/libintlc.so.5",
++      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libintlc.so.5",
++      "bytes": 415824,
++      "sha256": "612ab119242ccda945de6eb354369b5bee6a158bc9724e4da5e466cb0ad630db"
++    },
++    "/opt/intel/oneapi/tbb/2023.1/lib/libtbbmalloc.so.2.19": {
++      "path": "/opt/intel/oneapi/tbb/2023.1/lib/libtbbmalloc.so.2.19",
++      "realpath": "/opt/intel/oneapi/tbb/2023.1/lib/libtbbmalloc.so.2.19",
++      "bytes": 1184544,
++      "sha256": "74410b8566ecedac338f072662272a970bb0230870c0a6ce964042bf9a26fbbb"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/strata": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/strata",
++      "sha256": "6334491b623ead7b83c7ff5aaee84583294b3ecd4b12c6d06b77d1fe7e7a691d",
++      "bytes": 19790568,
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/strata"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/sycl_prompt_native16_test": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/sycl_prompt_native16_test",
++      "sha256": "d564fc95854988efb24b990ba64bcd5ac092fdfb597c21b0d4a65c4c54e23bef",
++      "bytes": 902000,
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/sycl_prompt_native16_test"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/sycl_prompt_k_cellmajor_test": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/sycl_prompt_k_cellmajor_test",
++      "sha256": "947c12850348ac9fa5a5aa7fb32b9a95045c8a8d55d6ae35784a5bb99642069c",
++      "bytes": 1172768,
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/sycl_prompt_k_cellmajor_test"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/sycl_prompt_attention_test": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/sycl_prompt_attention_test",
++      "sha256": "59d570c152788baad284b9d7987890213c008a0ab7aba9e76cae577045819903",
++      "bytes": 1167488,
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/sycl_prompt_attention_test"
++    }
++  },
++  "input_pins": {
++    "/home/yayoi/orca/workspaces/Strata/sycl/AGENTS.md": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/AGENTS.md",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/AGENTS.md",
++      "bytes": 12124,
++      "sha256": "7f750320bef4146a2872086922d84fc9fa7a8351ae655b7876c912856e3747fe"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/docs/ARTIFACT_RETENTION.md": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/docs/ARTIFACT_RETENTION.md",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/docs/ARTIFACT_RETENTION.md",
++      "bytes": 8223,
++      "sha256": "fdf86d7ea576d6f0400ec7e643b5ddca5c3c577dd053d66c2fd05220e64b1cc1"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/LICENSE": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/LICENSE",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/LICENSE",
++      "bytes": 1093,
++      "sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-build-v3.json": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-build-v3.json",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-build-v3.json",
++      "bytes": 388024,
++      "sha256": "3fca64de3664a74ac5a376e4e40cb8a3e2910113f29a4597a564c2f903381327"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v2/controller.py": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v2/controller.py",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v2/controller.py",
++      "bytes": 49265,
++      "sha256": "c39dff6fc0ac1dc56f306352d4b5878591112a29aa0fb4cd799bca46aa4c9534"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v2/prepare_manifest.py": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v2/prepare_manifest.py",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v2/prepare_manifest.py",
++      "bytes": 9523,
++      "sha256": "3f10cdb104e3c71852155e13dd12dc63dd93ae5241ba1847e41bbf8e4535c633"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v2/manifest.json": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v2/manifest.json",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v2/manifest.json",
++      "bytes": 356130,
++      "sha256": "fe0bc066c00a8aa9693678ef924060ed6430ad237c77dc1f1b03787a59b6855f"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v2/source-provenance.json": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v2/source-provenance.json",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v2/source-provenance.json",
++      "bytes": 18654,
++      "sha256": "1eb5c8d064e3a01865cb50525fe49b22b65de3f15a1d33888129914a8f1c8701"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-resource-timeline-main-source-review-v2.json": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-resource-timeline-main-source-review-v2.json",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-resource-timeline-main-source-review-v2.json",
++      "bytes": 12449,
++      "sha256": "096410717f287f9650a9d53f867bab96e85cb7d7384eb4bad20d00719916166e"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-tiny-v3.json": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-tiny-v3.json",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-tiny-v3.json",
++      "bytes": 171128,
++      "sha256": "42982996ad4a668de9b2b23eebe53dfa743b061a6e55076f133b284d67af75e3"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-14-niko-main-service-port/direct_owner.py": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-14-niko-main-service-port/direct_owner.py",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-14-niko-main-service-port/direct_owner.py",
++      "bytes": 14781,
++      "sha256": "a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-profile-counters-round748-v1.txt": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-profile-counters-round748-v1.txt",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-profile-counters-round748-v1.txt",
++      "bytes": 8095,
++      "sha256": "ab24673915a52a96de33e2096070e98098c62b207a1ed72faad5122661da2582"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round875-v1.txt": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round875-v1.txt",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round875-v1.txt",
++      "bytes": 11239,
++      "sha256": "6e06a8f71affcb13dc6dd28d1c0f99ec73d730d256d973015898ebd8d2a5795c"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/ze_api.h": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/ze_api.h",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/ze_api.h",
++      "bytes": 1160433,
++      "sha256": "095a0eb442ae21946f29147c209f270b93dd0eb5b12a2d0c67e5f4138b533712"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/zet_api.h": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/zet_api.h",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/zet_api.h",
++      "bytes": 229444,
++      "sha256": "14cd443591c430172aa1cea8e03d31b8049971f08f67b27722b8b99ea3b14b51"
++    },
++    "/home/yayoi/ghq/github.com/intel/pti-gpu/LICENSE": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/LICENSE",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/LICENSE",
++      "bytes": 1069,
++      "sha256": "7d52740ffc5194d8baaa65c30b138a6560e573e6cc87d8d7c1cc655018a1063a"
++    },
++    "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/levelzero/ze_metrics.h": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/levelzero/ze_metrics.h",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/levelzero/ze_metrics.h",
++      "bytes": 54396,
++      "sha256": "5d32b2cd390e0548d73f629c54d031450ed693fc0483d8b9c86ab48651e18d55"
++    },
++    "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/README.md": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/README.md",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/README.md",
++      "bytes": 62549,
++      "sha256": "00eacd9512a5d7141cf606c76061b35e75e9119600e7b020db48516ce3d27649"
++    },
++    "/home/yayoi/ghq/github.com/intel/pti-gpu/chapters/metrics_collection/LevelZero.md": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/chapters/metrics_collection/LevelZero.md",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/chapters/metrics_collection/LevelZero.md",
++      "bytes": 15720,
++      "sha256": "3b297194a9f9a974451bc9cdd21cf922628b7b784d3f250be7ba077676f0dd9c"
++    },
++    "/home/yayoi/ghq/github.com/intel/pti-gpu/cmake/helpers.cmake": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/cmake/helpers.cmake",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/cmake/helpers.cmake",
++      "bytes": 1144,
++      "sha256": "12d0dcffdd3bac3d8d5c9593fc7cf69aef4bec0e033f548a470a0cfe1587a38a"
++    },
++    "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/CMakeLists.txt": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/CMakeLists.txt",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/CMakeLists.txt",
++      "bytes": 18418,
++      "sha256": "b4a13addb3b369dcf94ffbfa2a400237a60887dabde3610a9aad8662065d9b2f"
++    }
++  },
++  "additional_dependency_review": {
++    "approved": false,
++    "report_path": null,
++    "report_sha256": null,
++    "pins": {}
++  },
++  "binary": null,
++  "build_receipt": null
++}
+--- /dev/null
++++ b/bench/results/2026-10-15-pr6-recovery-audit/own-metric-enumeration-v1/result_names.inc
+@@ -0,0 +1,63 @@
++// API enum identifier names from the pinned official header; repository LICENSE applies to this mapping.
++RESULT(ZE_RESULT_SUCCESS)
++RESULT(ZE_RESULT_NOT_READY)
++RESULT(ZE_RESULT_ERROR_DEVICE_LOST)
++RESULT(ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY)
++RESULT(ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY)
++RESULT(ZE_RESULT_ERROR_MODULE_BUILD_FAILURE)
++RESULT(ZE_RESULT_ERROR_MODULE_LINK_FAILURE)
++RESULT(ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET)
++RESULT(ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE)
++RESULT(ZE_RESULT_EXP_ERROR_DEVICE_IS_NOT_VERTEX)
++RESULT(ZE_RESULT_EXP_ERROR_VERTEX_IS_NOT_DEVICE)
++RESULT(ZE_RESULT_EXP_ERROR_REMOTE_DEVICE)
++RESULT(ZE_RESULT_EXP_ERROR_OPERANDS_INCOMPATIBLE)
++RESULT(ZE_RESULT_EXP_RTAS_BUILD_RETRY)
++RESULT(ZE_RESULT_EXP_RTAS_BUILD_DEFERRED)
++RESULT(ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS)
++RESULT(ZE_RESULT_ERROR_NOT_AVAILABLE)
++RESULT(ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE)
++RESULT(ZE_RESULT_WARNING_DROPPED_DATA)
++RESULT(ZE_RESULT_ERROR_UNINITIALIZED)
++RESULT(ZE_RESULT_ERROR_UNSUPPORTED_VERSION)
++RESULT(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE)
++RESULT(ZE_RESULT_ERROR_INVALID_ARGUMENT)
++RESULT(ZE_RESULT_ERROR_INVALID_NULL_HANDLE)
++RESULT(ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE)
++RESULT(ZE_RESULT_ERROR_INVALID_NULL_POINTER)
++RESULT(ZE_RESULT_ERROR_INVALID_SIZE)
++RESULT(ZE_RESULT_ERROR_UNSUPPORTED_SIZE)
++RESULT(ZE_RESULT_ERROR_UNSUPPORTED_ALIGNMENT)
++RESULT(ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT)
++RESULT(ZE_RESULT_ERROR_INVALID_ENUMERATION)
++RESULT(ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION)
++RESULT(ZE_RESULT_ERROR_UNSUPPORTED_IMAGE_FORMAT)
++RESULT(ZE_RESULT_ERROR_INVALID_NATIVE_BINARY)
++RESULT(ZE_RESULT_ERROR_INVALID_GLOBAL_NAME)
++RESULT(ZE_RESULT_ERROR_INVALID_KERNEL_NAME)
++RESULT(ZE_RESULT_ERROR_INVALID_FUNCTION_NAME)
++RESULT(ZE_RESULT_ERROR_INVALID_GROUP_SIZE_DIMENSION)
++RESULT(ZE_RESULT_ERROR_INVALID_GLOBAL_WIDTH_DIMENSION)
++RESULT(ZE_RESULT_ERROR_INVALID_KERNEL_ARGUMENT_INDEX)
++RESULT(ZE_RESULT_ERROR_INVALID_KERNEL_ARGUMENT_SIZE)
++RESULT(ZE_RESULT_ERROR_INVALID_KERNEL_ATTRIBUTE_VALUE)
++RESULT(ZE_RESULT_ERROR_INVALID_MODULE_UNLINKED)
++RESULT(ZE_RESULT_ERROR_INVALID_COMMAND_LIST_TYPE)
++RESULT(ZE_RESULT_ERROR_OVERLAPPING_REGIONS)
++RESULT(ZE_RESULT_WARNING_ACTION_REQUIRED)
++RESULT(ZE_RESULT_ERROR_INVALID_KERNEL_HANDLE)
++RESULT(ZE_RESULT_EXT_RTAS_BUILD_RETRY)
++RESULT(ZE_RESULT_EXT_RTAS_BUILD_DEFERRED)
++RESULT(ZE_RESULT_EXT_ERROR_OPERANDS_INCOMPATIBLE)
++RESULT(ZE_RESULT_ERROR_SURVIVABILITY_MODE_DETECTED)
++RESULT(ZE_RESULT_ERROR_ADDRESS_NOT_FOUND)
++RESULT(ZE_RESULT_QUERY_TRUE)
++RESULT(ZE_RESULT_QUERY_FALSE)
++RESULT(ZE_RESULT_ERROR_INVALID_GRAPH)
++RESULT(ZE_RESULT_ERROR_GRAPH_CAPTURE_UNSUPPORTED)
++RESULT(ZE_RESULT_ERROR_GRAPH_CAPTURE_INVALIDATED)
++RESULT(ZE_RESULT_ERROR_GRAPH_CAPTURE_MERGE_ATTEMPT)
++RESULT(ZE_RESULT_ERROR_COMMAND_LIST_NOT_CAPTURING)
++RESULT(ZE_RESULT_ERROR_GRAPH_UNJOINED_FORKS)
++RESULT(ZE_RESULT_ERROR_GRAPH_INTERNAL_EVENT)
++RESULT(ZE_RESULT_ERROR_UNKNOWN)
+--- /dev/null
++++ b/bench/results/2026-10-15-pr6-recovery-audit/own-metric-enumeration-v1/source-provenance.json
+@@ -0,0 +1,228 @@
++{
++  "schema": "strata-metric-enumeration-source-v1",
++  "status": "SOURCE_ONLY_UNRUN",
++  "license": {
++    "path": "/home/yayoi/orca/workspaces/Strata/sycl/LICENSE",
++    "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/LICENSE",
++    "bytes": 1093,
++    "sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0"
++  },
++  "implementation_origin": "Independently authored C++ and Python for this task; Level Zero API enum identifiers/prototypes referenced from pinned MIT official headers, no PTI implementation copied. Qualified project direct_owner.py reused only by pinned import. No XeStrata implementation/helper/test/archive read; historical LLVM install binary/header dependency path is the only exception.",
++  "base_source_commit": "63326f98c36656cf3a3e1adcc54c3c25a02aa6ee",
++  "official_pti_revision": "6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033",
++  "official_level_zero_revision": "d3b3efbdaa27a0aef9a9812cc8fa4260557c1e7c",
++  "official_sources": {
++    "LICENSE": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/LICENSE",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/LICENSE",
++      "bytes": 1069,
++      "sha256": "7d52740ffc5194d8baaa65c30b138a6560e573e6cc87d8d7c1cc655018a1063a",
++      "url": "https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/LICENSE",
++      "immutable_remote_sha256": "7d52740ffc5194d8baaa65c30b138a6560e573e6cc87d8d7c1cc655018a1063a",
++      "local_matches_immutable_revision": true
++    },
++    "tools/unitrace/src/levelzero/ze_metrics.h": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/levelzero/ze_metrics.h",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/levelzero/ze_metrics.h",
++      "bytes": 54396,
++      "sha256": "5d32b2cd390e0548d73f629c54d031450ed693fc0483d8b9c86ab48651e18d55",
++      "url": "https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/tools/unitrace/src/levelzero/ze_metrics.h",
++      "immutable_remote_sha256": "5d32b2cd390e0548d73f629c54d031450ed693fc0483d8b9c86ab48651e18d55",
++      "local_matches_immutable_revision": true
++    },
++    "tools/unitrace/README.md": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/README.md",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/README.md",
++      "bytes": 62549,
++      "sha256": "00eacd9512a5d7141cf606c76061b35e75e9119600e7b020db48516ce3d27649",
++      "url": "https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/tools/unitrace/README.md",
++      "immutable_remote_sha256": "00eacd9512a5d7141cf606c76061b35e75e9119600e7b020db48516ce3d27649",
++      "local_matches_immutable_revision": true
++    },
++    "chapters/metrics_collection/LevelZero.md": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/chapters/metrics_collection/LevelZero.md",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/chapters/metrics_collection/LevelZero.md",
++      "bytes": 15720,
++      "sha256": "3b297194a9f9a974451bc9cdd21cf922628b7b784d3f250be7ba077676f0dd9c",
++      "url": "https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/chapters/metrics_collection/LevelZero.md",
++      "immutable_remote_sha256": "3b297194a9f9a974451bc9cdd21cf922628b7b784d3f250be7ba077676f0dd9c",
++      "local_matches_immutable_revision": true
++    },
++    "ze_api.h": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/ze_api.h",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/ze_api.h",
++      "bytes": 1160433,
++      "sha256": "095a0eb442ae21946f29147c209f270b93dd0eb5b12a2d0c67e5f4138b533712",
++      "url": "https://github.com/oneapi-src/level-zero/blob/d3b3efbdaa27a0aef9a9812cc8fa4260557c1e7c/include/ze_api.h",
++      "immutable_remote_sha256": "095a0eb442ae21946f29147c209f270b93dd0eb5b12a2d0c67e5f4138b533712",
++      "local_matches_immutable_revision": true
++    },
++    "zet_api.h": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/zet_api.h",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/zet_api.h",
++      "bytes": 229444,
++      "sha256": "14cd443591c430172aa1cea8e03d31b8049971f08f67b27722b8b99ea3b14b51",
++      "url": "https://github.com/oneapi-src/level-zero/blob/d3b3efbdaa27a0aef9a9812cc8fa4260557c1e7c/include/zet_api.h",
++      "immutable_remote_sha256": "14cd443591c430172aa1cea8e03d31b8049971f08f67b27722b8b99ea3b14b51",
++      "local_matches_immutable_revision": true
++    }
++  },
++  "input_pins": {
++    "/home/yayoi/orca/workspaces/Strata/sycl/AGENTS.md": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/AGENTS.md",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/AGENTS.md",
++      "bytes": 12124,
++      "sha256": "7f750320bef4146a2872086922d84fc9fa7a8351ae655b7876c912856e3747fe"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/docs/ARTIFACT_RETENTION.md": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/docs/ARTIFACT_RETENTION.md",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/docs/ARTIFACT_RETENTION.md",
++      "bytes": 8223,
++      "sha256": "fdf86d7ea576d6f0400ec7e643b5ddca5c3c577dd053d66c2fd05220e64b1cc1"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/LICENSE": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/LICENSE",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/LICENSE",
++      "bytes": 1093,
++      "sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-build-v3.json": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-build-v3.json",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-prompt-softmax-build-v3.json",
++      "bytes": 388024,
++      "sha256": "3fca64de3664a74ac5a376e4e40cb8a3e2910113f29a4597a564c2f903381327"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v2/controller.py": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v2/controller.py",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v2/controller.py",
++      "bytes": 49265,
++      "sha256": "c39dff6fc0ac1dc56f306352d4b5878591112a29aa0fb4cd799bca46aa4c9534"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v2/prepare_manifest.py": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v2/prepare_manifest.py",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v2/prepare_manifest.py",
++      "bytes": 9523,
++      "sha256": "3f10cdb104e3c71852155e13dd12dc63dd93ae5241ba1847e41bbf8e4535c633"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v2/manifest.json": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v2/manifest.json",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v2/manifest.json",
++      "bytes": 356130,
++      "sha256": "fe0bc066c00a8aa9693678ef924060ed6430ad237c77dc1f1b03787a59b6855f"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v2/source-provenance.json": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v2/source-provenance.json",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v2/source-provenance.json",
++      "bytes": 18654,
++      "sha256": "1eb5c8d064e3a01865cb50525fe49b22b65de3f15a1d33888129914a8f1c8701"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-resource-timeline-main-source-review-v2.json": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-resource-timeline-main-source-review-v2.json",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-resource-timeline-main-source-review-v2.json",
++      "bytes": 12449,
++      "sha256": "096410717f287f9650a9d53f867bab96e85cb7d7384eb4bad20d00719916166e"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-tiny-v3.json": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-tiny-v3.json",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-tiny-v3.json",
++      "bytes": 171128,
++      "sha256": "42982996ad4a668de9b2b23eebe53dfa743b061a6e55076f133b284d67af75e3"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-14-niko-main-service-port/direct_owner.py": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-14-niko-main-service-port/direct_owner.py",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-14-niko-main-service-port/direct_owner.py",
++      "bytes": 14781,
++      "sha256": "a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-profile-counters-round748-v1.txt": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-profile-counters-round748-v1.txt",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-profile-counters-round748-v1.txt",
++      "bytes": 8095,
++      "sha256": "ab24673915a52a96de33e2096070e98098c62b207a1ed72faad5122661da2582"
++    },
++    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round875-v1.txt": {
++      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round875-v1.txt",
++      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round875-v1.txt",
++      "bytes": 11239,
++      "sha256": "6e06a8f71affcb13dc6dd28d1c0f99ec73d730d256d973015898ebd8d2a5795c"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/ze_api.h": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/ze_api.h",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/ze_api.h",
++      "bytes": 1160433,
++      "sha256": "095a0eb442ae21946f29147c209f270b93dd0eb5b12a2d0c67e5f4138b533712"
++    },
++    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/zet_api.h": {
++      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/zet_api.h",
++      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/zet_api.h",
++      "bytes": 229444,
++      "sha256": "14cd443591c430172aa1cea8e03d31b8049971f08f67b27722b8b99ea3b14b51"
++    },
++    "/home/yayoi/ghq/github.com/intel/pti-gpu/LICENSE": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/LICENSE",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/LICENSE",
++      "bytes": 1069,
++      "sha256": "7d52740ffc5194d8baaa65c30b138a6560e573e6cc87d8d7c1cc655018a1063a"
++    },
++    "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/levelzero/ze_metrics.h": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/levelzero/ze_metrics.h",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/src/levelzero/ze_metrics.h",
++      "bytes": 54396,
++      "sha256": "5d32b2cd390e0548d73f629c54d031450ed693fc0483d8b9c86ab48651e18d55"
++    },
++    "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/README.md": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/README.md",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/README.md",
++      "bytes": 62549,
++      "sha256": "00eacd9512a5d7141cf606c76061b35e75e9119600e7b020db48516ce3d27649"
++    },
++    "/home/yayoi/ghq/github.com/intel/pti-gpu/chapters/metrics_collection/LevelZero.md": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/chapters/metrics_collection/LevelZero.md",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/chapters/metrics_collection/LevelZero.md",
++      "bytes": 15720,
++      "sha256": "3b297194a9f9a974451bc9cdd21cf922628b7b784d3f250be7ba077676f0dd9c"
++    },
++    "/home/yayoi/ghq/github.com/intel/pti-gpu/cmake/helpers.cmake": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/cmake/helpers.cmake",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/cmake/helpers.cmake",
++      "bytes": 1144,
++      "sha256": "12d0dcffdd3bac3d8d5c9593fc7cf69aef4bec0e033f548a470a0cfe1587a38a"
++    },
++    "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/CMakeLists.txt": {
++      "path": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/CMakeLists.txt",
++      "realpath": "/home/yayoi/ghq/github.com/intel/pti-gpu/tools/unitrace/CMakeLists.txt",
++      "bytes": 18418,
++      "sha256": "b4a13addb3b369dcf94ffbfa2a400237a60887dabde3610a9aad8662065d9b2f"
++    }
++  },
++  "prior_source_distinction": {
++    "historical": "6354f0b4ff3731466795410e11ca9ef785c9d326",
++    "current_build": "63326f98c36656cf3a3e1adcc54c3c25a02aa6ee",
++    "note": "Historical R875 source6354 profile and SLM values are not current-build measurements; text-tiny-v3 is separately pinned current source63326 evidence, not metrics enumeration evidence."
++  },
++  "original_inventory": {
++    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v2/manifest.json",
++    "sha256": "fe0bc066c00a8aa9693678ef924060ed6430ad237c77dc1f1b03787a59b6855f",
++    "scope": "ELF and selected build/header pins inherited byte-for-byte; no live ELF enrollment"
++  },
++  "executed": {
++    "compilation": false,
++    "tests": false,
++    "native": false,
++    "device": false,
++    "process_inspection": false,
++    "privilege_queries": false
++  },
++  "references": [
++    {
++      "url": "https://oneapi-src.github.io/level-zero-spec/level-zero/latest/tools/PROG.html",
++      "sections": "Initialization environment; metrics enumeration; sampling types/domains/configuration",
++      "scope": "Official live guide read; local v1.32 headers and immutable sources are authority for ABI; guide not a runtime pin"
++    }
++  ],
++  "unresolved": [
++    "Original manifest has libigdmd/libigdml ELF pins, not a metric enumeration result. Other metric dependencies may be absent from original inventory; unknown mappings must fail closed.",
++    "Complete host C++ standard-header/startup-object/toolchain dependency closure is not recorded in the original inventory. Main must review separately before compilation, without silently enrolling live bytes.",
++    "No first enumeration or collection result exists in this package. observation_paranoid=1 remains historical policy evidence only."
++  ]
++}

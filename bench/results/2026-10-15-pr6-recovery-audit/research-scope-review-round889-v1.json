@@ -1,0 +1,185 @@
+{
+  "review_round": "R889",
+  "review_type": "native Codex scope, depth, novelty, source, and retrieval review",
+  "review_date": "2026-10-16",
+  "reviewer": {
+    "model": "gpt-6-luna",
+    "reasoning_effort": "max"
+  },
+  "assignment": {
+    "requested_reports": ["R885"],
+    "purpose": "Review the completed knowledge collection against its dispatch specification, plan, primary-source evidence, and prior scope metadata. Main must keep the report body held.",
+    "plan_path": "research-scope-plan-round885-v1.json",
+    "plan_sha256": "2380ef94e59c902cd5834314d19d561d8227f814e5f7798bc4e016ea0ce10ba9",
+    "dispatch_spec_path": "orca-research-round885-spec-v1.txt",
+    "dispatch_spec_sha256": "ad77f91912ae37728f91a707b419cb7ec27812fc74f7e0a6d197baace920d608",
+    "report_path": "research-round885-v1.txt",
+    "report_sha256": "53fbaf3c3bac17472a400c690107b9215aa6342c561a014b4a662139639cdd1f",
+    "index_before_path": "research-index.json",
+    "index_before_sha256": "112e7e18e1f5d1ed77be2428b6fa9d779ed4180eecd32390e328d733c9ce02f2",
+    "index_before_report_count": 279,
+    "index_before_highest_report_round": 877,
+    "plan_index_snapshot_sha256": "112e7e18e1f5d1ed77be2428b6fa9d779ed4180eecd32390e328d733c9ce02f2",
+    "dispatch_spec_index_snapshot_sha256": "112e7e18e1f5d1ed77be2428b6fa9d779ed4180eecd32390e328d733c9ce02f2"
+  },
+  "overall": {
+    "result": "accepted_as_knowledge_collection_with_two_source_context_corrections",
+    "correction_ids": ["R885-C1", "R885-C2"],
+    "reviewer_read_report_body": true,
+    "main_body_read": false,
+    "main_retrieval_needed_now": false,
+    "collection_bodies_main_held": ["R885"],
+    "future_scope_recommendations": ["R886 remains an eligible planned knowledge collection after refreshing its shared-index hash and replacing its archived TensorRT 10.x documentation URL with the current official page; no dispatch was performed in this review."],
+    "next_scope_reason": "R885 is finite and distinct from indexed metadata for R779, R786, R873, and R877. No concrete current engine question requires retrieval or another UPMEM survey. R886 is a separate already-planned 2:4 inference scope; prerequisite sources were rechecked without opening unrelated collection bodies."
+  },
+  "report": {
+    "round": "R885",
+    "path": "research-round885-v1.txt",
+    "sha256": "53fbaf3c3bac17472a400c690107b9215aa6342c561a014b4a662139639cdd1f",
+    "classification": "knowledge_collection",
+    "title": "When programmable processing-in-memory wins after the full data path is charged",
+    "budget_assessment": {
+      "all_whitespace_words": 1567,
+      "primary_urls": 3,
+      "comparison_tables": 1,
+      "judgment": "Within the 1,400-1,700-word, six-primary-URL, and one-table budget. It addresses end-to-end timing boundaries with representative wins and losses, separates hardware from simulation, and gives an explicitly labeled transferable checklist."
+    },
+    "scope_and_novelty_assessment": {
+      "judgment": "Finite and substantive; accepted with source-context corrections.",
+      "scope_coverage": "Compares PrIM's measured UPMEM characterization, DIMES's transfer-inclusive extension, and uPIMulator's modeled mechanisms. The report covers transfer/setup boundaries, workload placement and result size, and persistent versus one-off use; it avoids aggregating results across different machines and baselines.",
+      "overlap": "No material overlap with R779's irregular gather/page behavior, R786's destination contention and reduction, R873's dense ASIC dataflow, or R877's geometric neighbor search. Those were used as indexed metadata boundaries only; their held report bodies were not read.",
+      "novel_increment": "A source-bounded comparison of programmable UPMEM-DPU results under kernel-only, transfer-inclusive, and simulation/model boundaries. The checklist is explicitly inference and is not a Strata or Arc recommendation.",
+      "conclusion": "Keep as a held collection; no current retrieval or repeat survey is recommended."
+    },
+    "depth_and_applicability": {
+      "judgment": "Adequate detail and counterevidence for the assigned question.",
+      "strengths": "The table separates measured workloads, dataset/placement notes, baselines, and counted time. It includes an initial HST-S win, a persistent transfer-inclusive HST/TS result, and RED/SCAN/VA/SpMV losses after transfer. It distinguishes configuration costs from plotted transfer-inclusive results and calls out persistence and larger CPU baselines.",
+      "limits": "The numerical results apply to the cited UPMEM hosts, DPUs, SDK releases, and selected dataset sizes. The DIMES PDF's direct browser fetch timed out during review; relevant indexed text from the author-hosted primary PDF and the ACM DOI record were accessible. The report appropriately does not treat PIMulator simulations as hardware measurements or claim transfer to another accelerator.",
+      "provenance_and_adoption": "Research-only; no implementation, product source, local measurement, code adaptation, or adoption decision was proposed or inspected."
+    },
+    "source_accuracy": {
+      "status": "All three assigned primary works and the main quantitative comparisons were checked. One workload scaling label is incorrect; SDK provenance should be made more explicit when reusing the transfer figures.",
+      "verified": [
+        "PrIM arXiv v7: system sizes/clocks, Xeon E3-1225 v6 and Titan V baselines, HST-S 1.89x over Titan V on 640 DPUs, the 1536x1024 6 MB histogram input, 512K-element/2 MB TS input with 256-element queries, and RED/SCAN dataset values.",
+        "PrIM timing boundary: DPU plus inter-DPU synchronization is counted for UPMEM; CPU/GPU comparison uses kernel time, and host-to-GPU transfer is excluded. The 32 MB single-DPU transfer rates and 64-DPU peak parallel transfer rates match the paper.",
+        "DIMES 2023: 2,304 DPUs at 350 MHz with 16 tasklets, a four-thread Xeon Silver 4215 baseline, transfer-inclusive plotted bars, the -O2 CPU arm, and allocation/load measurements kept separate from plotted latency. The paper reports RED/SCAN/SpMV/VA losing after transfers and HST/TS retaining large advantages; its conclusion states 9 of 11 benchmarks favor the server CPU under its resource-aware accounting.",
+        "uPIMulator arXiv v3/HPCA 2024: 710 single-DPU validation points at 98.4% correlation and 12.0% MAE; 387 multi-DPU points at 83.6% correlation and 26.9% MAE; fixed-bandwidth CPU-DPU communication modeling; 14-stage in-order DPU model; and simulated GEMV results of 2.6x and 4.6x for the named design variants."
+      ],
+      "limits": "PrIM explicitly attributes transfer asymmetry to UPMEM SDK 2021.1.1; DIMES cites UPMEM SDK 2023.1.0. These are source-specific references, not a controlled cross-paper SDK comparison. The DIMES PDF text was retrieved through its indexed author-hosted document and cross-checked with the ACM record because direct PDF fetching timed out.",
+      "source_checks": [
+        {
+          "title": "Benchmarking a New Paradigm: An Experimental Analysis of a Real Processing-in-Memory Architecture",
+          "url": "https://arxiv.org/html/2105.03814v7",
+          "source_version": "arXiv v7, 4 May 2022; published in IEEE Access 2022.",
+          "verified": "Title/version, comparison timing boundary, hardware/baselines, HST-S GPU result, dataset table, transfer figures, and SDK 2021.1.1 attribution."
+        },
+        {
+          "title": "A Full-System Perspective on UPMEM Performance",
+          "url": "https://ess.cs.uos.de/static/papers/Friesel-2023-DIMES.pdf",
+          "cross_check_url": "https://doi.org/10.1145/3609308.3625266",
+          "source_version": "Author-hosted DIMES '23 paper; DOI 10.1145/3609308.3625266; published 23 October 2023.",
+          "verified": "Author-hosted primary PDF text (search-indexed) and ACM record: title/abstract, test platform, measurement boundaries, transfer/setup results, optimized CPU comparison, and SDK 2023.1.0 citation. Direct PDF open timed out."
+        },
+        {
+          "title": "Pathfinding Future PIM Architectures by Demystifying a Commercial PIM Technology",
+          "url": "https://arxiv.org/html/2308.00846v3",
+          "source_version": "arXiv v3, 7 March 2024; published at HPCA 2024.",
+          "verified": "Title/version, model validation results, fixed-bandwidth communication abstraction, 14-stage DPU model, and explicitly simulated GEMV design points."
+        }
+      ]
+    },
+    "corrections": [
+      {
+        "id": "R885-C1",
+        "type": "dataset scaling-boundary error",
+        "severity": "material factual correction",
+        "correction": "The report labels RED's 50 MB and SCAN's 30 MB as per-DPU strong-scaling inputs. PrIM Table 3 lists 50/30 MB as the 1-DPU strong-scaling inputs; its 32-rank strong-scaling inputs are 3.1/1.9 GB, while 50/30 MB per DPU appears in the separate weak-scaling column. Replace the label and identify which scale is used for any workload comparison."
+      },
+      {
+        "id": "R885-C2",
+        "type": "source-context omission",
+        "severity": "applicability metadata",
+        "correction": "The report notes that transfer rates depend on host/SDK generation but omits the cited versions. PrIM explicitly attributes the directional transfer asymmetry to UPMEM SDK 2021.1.1; DIMES cites UPMEM SDK 2023.1.0. Preserve the version-specific context when reusing those rates, and do not imply a controlled cross-paper SDK comparison."
+      }
+    ]
+  },
+  "previous_scope_metadata": [
+    {
+      "round": "R779",
+      "report_path": "research-round779-v1.txt",
+      "report_sha256": "32ef750461f2538d75d6cf55ca4b2ff1722558d0487ff0aa34c4697e6550ae30",
+      "use": "Metadata-only exclusion: irregular gather, cache/page behavior, and dependency latency; not a PIM platform comparison."
+    },
+    {
+      "round": "R786",
+      "report_path": "research-round786-v1.txt",
+      "report_sha256": "375aeb85b619b686102cf4d5085d2adb71e54dcdc0ef725224fcabc532f0ec8c",
+      "review_path": "research-scope-review-round788-v1.json",
+      "review_sha256": "2c709a1be87034151326e0916db23dd2be9ed61e0840e941eabd373eb817c31d",
+      "use": "Metadata-only exclusion: duplicate-key destination contention and local combining/segmented reduction."
+    },
+    {
+      "round": "R873",
+      "report_path": "research-round873-v1.txt",
+      "report_sha256": "1ae234df104e5260955c71bb25c22ad26c6f51e3e76186ebf0460266119f755e",
+      "review_path": "research-scope-review-round874-v1.json",
+      "review_sha256": "c43a0a8878bf48f2977451adf04e293485dee34510501212b9ff86d64749e637",
+      "use": "Metadata-only exclusion: dense fully-connected ASIC dataflow, not programmable DRAM-attached DPU offload."
+    },
+    {
+      "round": "R877",
+      "report_path": "research-round877-v1.txt",
+      "report_sha256": "d49f4e2aff95528793519a51676d57857cd6445909c62987f6f0ebd00bf845",
+      "review_path": "research-scope-review-round884-v1.json",
+      "review_sha256": "d800e4a08a9ecebec85c804fd39aa7d23867269323629cbae762eb8bc021e686",
+      "use": "Metadata-only exclusion: geometric particle-neighbor-search crossover."
+    }
+  ],
+  "retrieval": {
+    "needed_now": false,
+    "hold_body": true,
+    "main_body_read": false,
+    "sections": [],
+    "keys": [
+      "UPMEM programmable DPU offload and full-system accounting",
+      "PrIM versus DIMES timing boundaries",
+      "host-DPU transfer direction, granularity, and setup costs",
+      "uPIMulator simulation fidelity and limits"
+    ],
+    "retrieve_when": "A concrete future research or measurement question asks for UPMEM offload accounting, data placement, or transfer/setup comparison; retrieve only the relevant section and apply R885-C1/C2.",
+    "preserve_caveats": [
+      "PrIM CPU/GPU headline comparisons are kernel-only; UPMEM includes DPU plus inter-DPU synchronization but omits host transfer.",
+      "DIMES transfer-inclusive bars do not include the separately measured allocation/program-load costs; its output-aggregation boundary is not fully itemized.",
+      "PrIM transfer figures are host- and SDK-dependent; the cited SDK is 2021.1.1, while DIMES cites 2023.1.0.",
+      "RED/SCAN strong-scaling starting totals must not be labeled as weak-scaling per-DPU input sizes.",
+      "uPIMulator is modeled evidence; its future-architecture speedups are not measured UPMEM results.",
+      "These UPMEM results do not establish performance or adoption for GPUs, Intel Arc, SYCL, or Strata."
+    ]
+  },
+  "next_scope_eligibility": {
+    "round": "R886",
+    "purpose_label": "knowledge collection",
+    "plan_schedulable_now": true,
+    "prerequisite_recheck": {
+      "status": "satisfied_with_source_link_refresh",
+      "shared_index_before_review_sha256": "112e7e18e1f5d1ed77be2428b6fa9d779ed4180eecd32390e328d733c9ce02f2",
+      "index_topic_check": "No UPMEM/PIM, 2:4, structured-sparsity, or Tensor Core topic exists in the current indexed metadata.",
+      "public_sources": [
+        "NVIDIA A100 architecture PDF opened successfully: https://images.nvidia.com/aem-dam/en-zz/Solutions/data-center/nvidia-ampere-architecture-whitepaper.pdf",
+        "Original Sparse Tensor Core paper accessible: https://arxiv.org/abs/2104.08378",
+        "NVIDIA TensorRT 8.0 inference sparsity blog accessible: https://developer.nvidia.com/blog/accelerating-inference-with-sparsity-using-ampere-and-tensorrt",
+        "Current official TensorRT sparsity documentation accessible: https://docs.nvidia.com/deeplearning/tensorrt/latest/inference-library/data-formats-tensors.html"
+      ],
+      "source_link_correction": "The planned TensorRT 10.x.x sparsity URL now displays an archived-reference-only notice. The current official `latest` page is accessible and documents Ampere-or-later structured sparsity, 2:4 eligibility, and dense tactic selection when it is faster. Point any new dispatch metadata to that page and record the retrieved version.",
+      "dispatch_guard": "The R886 plan's shared-index hash is now stale after R885 indexing. Use the final current research-index.json hash and the corrected TensorRT documentation link at dispatch. This review did not dispatch or steer a worker."
+    },
+    "action": "The existing R886 scope is eligible to schedule after those metadata refreshes; no plan rewrite or new scope is recommended."
+  },
+  "handling": {
+    "index_before_modified": false,
+    "previous_collection_report_bodies_read": [],
+    "worker_contact_or_steering": false,
+    "product_source_or_measurement_access": false,
+    "only_authorized_outputs_written": true
+  }
+}

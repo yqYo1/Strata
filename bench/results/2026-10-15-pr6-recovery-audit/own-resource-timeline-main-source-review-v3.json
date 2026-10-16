@@ -1,0 +1,49 @@
+{
+  "schema": "strata-resource-timeline-main-source-review-v3",
+  "reviewer": "Main",
+  "GPU_executed": false,
+  "change": "Omit summary verbose; detailed DeviceTimeline default independently preserved. Exact known suffix normalization for summary counts/sum/min/max; no count/fault/numeric gate relaxed. Native runtime/products unchanged. Full failed previous capture remains FAIL; no complete/per-name reconciliation claim there.",
+  "snapshot_sha256": "e892fc3a453eecbdfb6edda088de7f99e8fa34f367461549d43226c05f4abbcc",
+  "inventory_sha256": "c1d3f88aa16f70b022450b977cef9c74b3af39c8209e3ab14917883ebeef738e",
+  "source_provenance_sha256": "89808afdafc0d63851382dffae3a187238b32f68e036e6ae9509ec1015c2e109",
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v3",
+        "-p",
+        "test_timeline.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "test_exact_summary_reconciliation (test_timeline.TimelineTests.test_exact_summary_reconciliation) ... ok\ntest_full_summary_schema_and_malformed_tail (test_timeline.TimelineTests.test_full_summary_schema_and_malformed_tail) ... ok\ntest_multidevice_rejected_and_window_clipping (test_timeline.TimelineTests.test_multidevice_rejected_and_window_clipping) ... ok\ntest_no_heuristic_dedup (test_timeline.TimelineTests.test_no_heuristic_dedup) ... ok\ntest_nonverbose_summary_joins_shapes_without_dropping_bytes (test_timeline.TimelineTests.test_nonverbose_summary_joins_shapes_without_dropping_bytes) ... ok\ntest_overlaps_payload_unknown_and_samples (test_timeline.TimelineTests.test_overlaps_payload_unknown_and_samples) ... ok\ntest_reject_bad_intervals_and_truncation (test_timeline.TimelineTests.test_reject_bad_intervals_and_truncation) ... ok\ntest_reject_missing_or_unqualified_copy_payload (test_timeline.TimelineTests.test_reject_missing_or_unqualified_copy_payload) ... ok\ntest_shape_sequence_and_no_full_prefill_claim (test_timeline.TimelineTests.test_shape_sequence_and_no_full_prefill_claim) ... ok\ntest_zero_duration_barrier_is_preserved (test_timeline.TimelineTests.test_zero_duration_barrier_is_preserved) ... ok\n\n----------------------------------------------------------------------\nRan 10 tests in 0.006s\n\nOK\n"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v3/prepare_manifest.py",
+        "--reviewed-package-sha256",
+        "e892fc3a453eecbdfb6edda088de7f99e8fa34f367461549d43226c05f4abbcc",
+        "--reviewed-inventory-sha256",
+        "c1d3f88aa16f70b022450b977cef9c74b3af39c8209e3ab14917883ebeef738e",
+        "--reviewed-source-sha256",
+        "89808afdafc0d63851382dffae3a187238b32f68e036e6ae9509ec1015c2e109"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"manifest\": \"/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-v3/manifest.json\", \"sha256\": \"61da9469e3f975c72d770beee77d45118c988eb6d3d82b6dbe1b568cd9ea3f1c\", \"GPU_executed\": false}\n",
+      "stderr": ""
+    }
+  ],
+  "started_utc": "2026-10-16T07:13:20.295054+00:00",
+  "passed": true,
+  "complete": true,
+  "finished_utc": "2026-10-16T07:13:26.480670+00:00",
+  "manifest_sha256": "61da9469e3f975c72d770beee77d45118c988eb6d3d82b6dbe1b568cd9ea3f1c"
+}

@@ -3067,6 +3067,331 @@
         "fully connected",
         "PE utilization"
       ]
+    },
+    {
+      "round": 875,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-round875-v1.txt",
+      "status": "R880-reviewed decision support; accepted with source corrections R875-C1/C2 and scoped retrieval metadata. No current bottleneck, clean-speed, or adoption claim.",
+      "sha256": "6e06a8f71affcb13dc6dd28d1c0f99ec73d730d256d973015898ebd8d2a5795c",
+      "classification": "decision_support",
+      "spec_path": "orca-research-round875-spec-v1.txt",
+      "spec_sha256": "b0b4582b78c0110027f0ca6668f297641c61deecc2dd9ca191d50d1ba0b2aba7",
+      "review_round": "R880",
+      "review_path": "A/research-scope-review-round880-v1.json",
+      "review_sha256": "13a552d3260a0eab335014889ef9bbad15bfee7362cdd609913d75b0f475a3ff",
+      "main_body_read": false,
+      "retrieval": {
+        "needed_now": true,
+        "hold_body": false,
+        "sections": [
+          "13-22: source phase-to-resource map; apply R875-C1/C2.",
+          "26-32: unitrace timeline/counter capabilities and current access limits.",
+          "34-38: service, local-argument, copy, PCIe and memory quantities.",
+          "40-44: minimal timeline plan and evidence decision boundary; use with the in-flight native timeline task."
+        ],
+        "keys": [
+          "QSA phase-to-metric mapping",
+          "copy intervals and exact payload",
+          "PCIe topology versus attained throughput",
+          "timing versus counters and nonexclusive service",
+          "memory/XMX/synchronization evidence ceiling"
+        ],
+        "preserve_caveats": [
+          "R875-C1: V scales are loaded after softmax, separately from K scales.",
+          "R875-C2: phase table omits the K/scale-ready barrier before QK; line 22 total is correct.",
+          "R861 diagnostics are not clean samples; current clean cohort is incomplete.",
+          "Current external PCIe 16 GT/s x4 observation is topology only, not attained payload or utilization.",
+          "No B570 counter availability or bottleneck is established."
+        ]
+      },
+      "correction_ids": [
+        "R875-C1",
+        "R875-C2"
+      ],
+      "tags": [
+        "QSA prompt attention",
+        "unitrace timeline",
+        "PCIe copies",
+        "memory counters",
+        "XMX",
+        "barrier evidence"
+      ]
+    },
+    {
+      "round": 876,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-round876-v1.txt",
+      "status": "R881-reviewed knowledge collection; Main body held; substantial scope overlap with R835; no current retrieval. One source-context correction R876-C1.",
+      "sha256": "8a03aac51233784ff5a5992831254f3ac87e15d71e3a86315398e57f0d82f5ec",
+      "classification": "knowledge_collection",
+      "spec_path": "orca-research-round876-spec-v1.txt",
+      "spec_sha256": "c8f6a6afb6a3d8184ff415e4e575fe88d72eff2e4e8d18a7842509aab3df9815",
+      "plan_path": "research-scope-plan-round875-v1.json",
+      "plan_sha256": "867c3661f1da206594aaa1d32381262df4d8402cb861b1d9181e45e2a837d522",
+      "review_round": "R881",
+      "review_path": "research-scope-review-round881-v1.json",
+      "review_sha256": "3d92ce64beccd7bab11d30507e757b62951097ee0ddafcab021f9aa9083d0d10",
+      "main_body_read": false,
+      "retrieval": {
+        "needed_now": false,
+        "hold_body": true,
+        "sections": [],
+        "keys": [
+          "temporal-depth halo growth and useful-work model",
+          "AN5D resource and depth crossover evidence",
+          "EBISU device synchronization versus overlapped tiling",
+          "precision, boundary, and timing-boundary caveats"
+        ],
+        "preserve_caveats": [
+          "R876-C1: identify source-specific precision and boundary fields; leave fields unspecified where the source does not say.",
+          "The halo and byte expressions are analytical estimates, not timing models or measured traffic.",
+          "EBISU's printed 3D valid-fraction expression does not match its stated percentage.",
+          "The reported device results are CUDA/NVIDIA and do not establish SYCL or Arc performance.",
+          "No implementation adoption or Strata performance result follows from the report."
+        ]
+      },
+      "correction_ids": [
+        "R876-C1"
+      ],
+      "tags": [
+        "iterative GPU stencil",
+        "temporal blocking",
+        "overlapped halo",
+        "time-depth crossover",
+        "CUDA NVIDIA evidence"
+      ]
+    },
+    {
+      "round": 877,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-round877-v1.txt",
+      "status": "R884-reviewed knowledge collection; archive held, no current retrieval; source-context corrections R877-C1/C2 recorded in review metadata.",
+      "sha256": "d49f4e2aff95528793519a51676d57857cd644590c09c62987f6f0ebd00bf845",
+      "classification": "knowledge_collection",
+      "spec_path": "orca-research-round877-spec-v1.txt",
+      "spec_sha256": "cdf8d772c0ce0215b68eef0f2f5ce33ae37010df356ad2e6ae50c670c189b6b8",
+      "plan_path": "research-scope-plan-round875-v1.json",
+      "plan_sha256": "867c3661f1da206594aaa1d32381262df4d8402cb861b1d9181e45e2a837d522",
+      "review_round": "R884",
+      "review_path": "research-scope-review-round884-v1.json",
+      "review_sha256": "d800e4a08a9ecebec85c804fd39aa7d23867269323629cbae762eb8bc021e686",
+      "main_body_read": false,
+      "retrieval": {
+        "needed_now": false,
+        "hold_body": true,
+        "main_body_read": false,
+        "sections": [
+          "20-26: measured comparison and device/timing boundaries",
+          "28-38: geometry, memory, and candidate work",
+          "40-44: Verlet reuse and correctness"
+        ],
+        "keys": [
+          "fixed-radius geometric neighbor search",
+          "cell and stenciled-cell crossover",
+          "linear and quantized BVH build/query costs",
+          "neighbor-list memory and overflow",
+          "Verlet skin and rebuild correctness"
+        ],
+        "retrieve_when": "A concrete future engineering or measurement question asks for fixed-radius particle-neighbor-search tradeoffs; retrieve only the relevant sections.",
+        "preserve_caveats": [
+          "Historical NVIDIA CUDA and HOOMD-blue measurements do not establish SYCL or Arc behavior.",
+          "R877-C1: the 0.9× grid-favoring point is the high-density single-precision Tesla K80 case.",
+          "R877-C2: WCA's overall BVH advantage has a high-density GTX 1080 nuance; occupancy alone does not imply one crossover direction.",
+          "The 2019 sorted-grid baseline was roughly 2× slower than HOOMD-blue's optimized atomic grid in selected tests.",
+          "Direct fused all-pairs crossover is inference; cited papers did not measure it.",
+          "The 2023 GROMACS artifact study is correctness evidence, not a GPU benchmark."
+        ]
+      },
+      "tags": [
+        "GPU geometric neighbor search",
+        "cell lists",
+        "stenciled cells",
+        "linear BVH",
+        "quantized BVH",
+        "Verlet list",
+        "molecular dynamics"
+      ],
+      "correction_ids": [
+        "R877-C1",
+        "R877-C2"
+      ],
+      "reviewer_retrieval_metadata": {
+        "round": 877,
+        "path": "research-round877-v1.txt",
+        "sha256": "d49f4e2aff95528793519a51676d57857cd644590c09c62987f6f0ebd00bf845",
+        "spec_path": "orca-research-round877-spec-v1.txt",
+        "spec_sha256": "cdf8d772c0ce0215b68eef0f2f5ce33ae37010df356ad2e6ae50c670c189b6b8",
+        "plan_path": "research-scope-plan-round875-v1.json",
+        "plan_sha256": "867c3661f1da206594aaa1d32381262df4d8402cb861b1d9181e45e2a837d522",
+        "purpose_class": "knowledge_collection",
+        "review_round": "R884",
+        "review_path": "research-scope-review-round884-v1.json",
+        "review_sha256": "d800e4a08a9ecebec85c804fd39aa7d23867269323629cbae762eb8bc021e686",
+        "main_original_needed_now": false,
+        "retrieval_brief": "Keep body held. Retrieve only geometry/capacity, measured comparison, or Verlet-correctness sections for a concrete future neighbor-search question.",
+        "scope_depth_review": "1,545 words and three primary URLs within budget; substantive phase comparison, counterexamples and limits; no material overlap with adjacent reviewed scopes.",
+        "provenance_limit": "Primary source details checked; historical NVIDIA CUDA/HOOMD-blue evidence and GROMACS correctness evidence do not establish Arc/SYCL performance or adoption.",
+        "source_context_corrections": [
+          "R877-C1",
+          "R877-C2"
+        ],
+        "outcome": "Accepted as a held knowledge collection; no new generic follow-up scope recommended."
+      }
+    },
+    {
+      "round": 885,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-round885-v1.txt",
+      "status": "R889-reviewed knowledge collection; Main body held; source-context corrections R885-C1/C2 recorded in review metadata.",
+      "sha256": "53fbaf3c3bac17472a400c690107b9215aa6342c561a014b4a662139639cdd1f",
+      "classification": "knowledge_collection",
+      "spec_path": "orca-research-round885-spec-v1.txt",
+      "spec_sha256": "ad77f91912ae37728f91a707b419cb7ec27812fc74f7e0a6d197baace920d608",
+      "plan_path": "research-scope-plan-round885-v1.json",
+      "plan_sha256": "2380ef94e59c902cd5834314d19d561d8227f814e5f7798bc4e016ea0ce10ba9",
+      "review_round": "R889",
+      "review_path": "research-scope-review-round889-v1.json",
+      "review_sha256": "38024a64c3de15271f3627e334bd49d6fd80532fd061f95f283d7a5ac9d0dc80",
+      "main_body_read": false,
+      "retrieval": {
+        "needed_now": false,
+        "hold_body": true,
+        "main_body_read": false,
+        "sections": [],
+        "keys": [
+          "UPMEM programmable DPU offload and full-system accounting",
+          "PrIM versus DIMES timing boundaries",
+          "host-DPU transfer direction, granularity, and setup costs",
+          "uPIMulator simulation fidelity and limits"
+        ],
+        "retrieve_when": "A concrete future research or measurement question asks for UPMEM offload accounting, data placement, or transfer/setup comparison; retrieve only the relevant section and apply R885-C1/C2.",
+        "preserve_caveats": [
+          "PrIM CPU/GPU headline comparisons are kernel-only; UPMEM includes DPU plus inter-DPU synchronization but omits host transfer.",
+          "DIMES transfer-inclusive bars do not include separately measured allocation/program-load costs; its output-aggregation boundary is not fully itemized.",
+          "PrIM transfer figures are host- and SDK-dependent; the cited SDK is 2021.1.1, while DIMES cites 2023.1.0.",
+          "RED/SCAN strong-scaling starting totals must not be labeled as weak-scaling per-DPU input sizes.",
+          "uPIMulator is modeled evidence; its future-architecture speedups are not measured UPMEM results.",
+          "These UPMEM results do not establish performance or adoption for GPUs, Intel Arc, SYCL, or Strata."
+        ]
+      },
+      "tags": [
+        "UPMEM programmable DPU",
+        "PIM offload accounting",
+        "full-system latency",
+        "host-DPU transfers",
+        "PrIM",
+        "DIMES",
+        "uPIMulator simulation"
+      ],
+      "correction_ids": [
+        "R885-C1",
+        "R885-C2"
+      ],
+      "reviewer_retrieval_metadata": {
+        "round": 885,
+        "path": "research-round885-v1.txt",
+        "sha256": "53fbaf3c3bac17472a400c690107b9215aa6342c561a014b4a662139639cdd1f",
+        "spec_path": "orca-research-round885-spec-v1.txt",
+        "spec_sha256": "ad77f91912ae37728f91a707b419cb7ec27812fc74f7e0a6d197baace920d608",
+        "plan_path": "research-scope-plan-round885-v1.json",
+        "plan_sha256": "2380ef94e59c902cd5834314d19d561d8227f814e5f7798bc4e016ea0ce10ba9",
+        "purpose_class": "knowledge_collection",
+        "review_round": "R889",
+        "review_path": "research-scope-review-round889-v1.json",
+        "review_sha256": "38024a64c3de15271f3627e334bd49d6fd80532fd061f95f283d7a5ac9d0dc80",
+        "operational_digest_path": "research-scope-review-round889-v1.ja.md",
+        "operational_digest_sha256": "26edca33bb02f24a0cc46f0f7aab9feacfd8e0b2ad68162d6315242350ccb80b",
+        "main_original_needed_now": false,
+        "retrieval_brief": "Keep body held. Retrieve only for a concrete UPMEM offload accounting, placement, transfer, or setup question; apply R885-C1/C2.",
+        "scope_depth_review": "1,567 whitespace-delimited words, three primary URLs, one comparison table, within the assigned budget; substantive boundary comparison, measured counterexamples, and simulation limits.",
+        "provenance_limit": "Primary source details checked. PrIM and DIMES use different hardware/software contexts; uPIMulator future-design results are simulated and do not establish other accelerator performance.",
+        "source_context_corrections": [
+          "R885-C1",
+          "R885-C2"
+        ],
+        "outcome": "Accepted as a held knowledge collection with two source-context corrections; no current retrieval or repeat PIM survey recommended."
+      }
+    },
+    {
+      "round": 886,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-round886-v1.txt",
+      "title": "When hardware-supported 2:4 structured sparsity accelerates matrix inference end to end",
+      "status": "R892-reviewed knowledge collection; Main body held; source/version corrections R886-C1/C2 recorded.",
+      "sha256": "4bb0a2adf1da555ac54b1e6b5f38f4d8c81086ad41cc009f32989f0e2dcf5eaf",
+      "classification": "knowledge_collection",
+      "spec_path": "orca-research-round886-spec-v1.txt",
+      "spec_sha256": "197f06204a0c74d24e63efa6887e06db850d48375bfe3aecc5f9ed5a478b181e",
+      "plan_path": "research-scope-plan-round885-v1.json",
+      "plan_sha256": "2380ef94e59c902cd5834314d19d561d8227f814e5f7798bc4e016ea0ce10ba9",
+      "review_round": "R892",
+      "review_path": "A/research-scope-review-round892-v1.json",
+      "review_sha256": "73508508421fa3a5ba224ba8245cabe8d5168b1dd09e8b45d170ae23935733d9",
+      "main_body_read": false,
+      "retrieval": {
+        "needed_now": false,
+        "hold_body": true,
+        "main_body_read": false,
+        "sections": [
+          "Mechanism and eligibility: 2:4 storage, types, dimensions, and sparse MMA rates.",
+          "GEMM and network evidence: A100 INT8 matrix samples and TensorRT 8.0 ResNeXt chart.",
+          "Accuracy, conversion, and tactic crossover: recovered quality, dense-selected layers, and timing limits."
+        ],
+        "keys": [
+          "Ampere 2:4 sparse Tensor Core eligibility",
+          "A100 INT8 GEMM shape crossover",
+          "TensorRT sparse-versus-dense tactic selection",
+          "pruning and recovered accuracy"
+        ],
+        "retrieve_when": "A concrete later question asks about hardware-enforced 2:4 sparse matrix inference, pruning quality, or a sparse/dense library tactic crossover.",
+        "preserve_caveats": [
+          "R886-C1: repair or replace the stale TensorRT 10.16.1 citation before quoting runtime guidance.",
+          "R886-C2: vendor prose says approaching 20%; chart read-offs are approximate and not raw per-batch measurements.",
+          "NVIDIA results do not establish Intel/Arc/SYCL behavior or adoption."
+        ]
+      },
+      "tags": [
+        "2:4 structured sparsity",
+        "Sparse Tensor Cores",
+        "A100",
+        "TensorRT",
+        "sparse GEMM",
+        "inference tactic selection"
+      ],
+      "correction_ids": [
+        "R886-C1",
+        "R886-C2"
+      ],
+      "reviewer_retrieval_metadata": {
+        "round": 886,
+        "path": "research-round886-v1.txt",
+        "sha256": "4bb0a2adf1da555ac54b1e6b5f38f4d8c81086ad41cc009f32989f0e2dcf5eaf",
+        "spec_path": "orca-research-round886-spec-v1.txt",
+        "spec_sha256": "197f06204a0c74d24e63efa6887e06db850d48375bfe3aecc5f9ed5a478b181e",
+        "plan_path": "research-scope-plan-round885-v1.json",
+        "plan_sha256": "2380ef94e59c902cd5834314d19d561d8227f814e5f7798bc4e016ea0ce10ba9",
+        "purpose_class": "knowledge_collection",
+        "review_round": "R892",
+        "review_path": "A/research-scope-review-round892-v1.json",
+        "review_sha256": "73508508421fa3a5ba224ba8245cabe8d5168b1dd09e8b45d170ae23935733d9",
+        "operational_digest_path": "A/research-scope-review-round892-v1.ja.md",
+        "operational_digest_sha256": "f10de114c5761c98652e6243b1c05cc0bece4982bf3515cc4b8520ceead75c1a",
+        "main_original_needed_now": false,
+        "retrieval_brief": "Keep the report body held. Retrieve only sections needed for a concrete 2:4 inference question and apply R886-C1/C2 first.",
+        "scope_depth_review": "1,546 whitespace-delimited words, four primary URLs and one comparison table within the assignment budget. It covers hardware, GEMM and network evidence, pruning quality, and dense-selected tactics with explicit vendor/chart/source limits.",
+        "provenance_limit": "Primary source details were checked. R1, R2, R3 and current TensorRT 11.4.0 docs support the cited mechanisms and limits. The R4 link/version claim needs R886-C1; the plot-derived per-batch estimates remain approximate under R886-C2. No result transfers to Arc/SYCL or Strata.",
+        "source_context_corrections": [
+          "R886-C1: The report R4 /10.16.1 URL returns 404. Current TensorRT 11.4.0 sparsity documentation is at /latest/inference-library/data-formats-tensors.html; the 10.16.1 material is in the archived /10.x.x/ page.",
+          "R886-C2: R3 prose says performance approaches 20% at larger batches; the report’s 18% upper estimate is an approximate visual read-off, not a raw or stated maximum."
+        ],
+        "outcome": "Accepted as a held knowledge collection with two source-context corrections; no current retrieval or repeat survey recommended."
+      }
     }
   ],
   "main_initial_findings": [
@@ -4682,5 +5007,118 @@
     ],
     "next_scope_recommendations": [],
     "next_scope_reason": "No current long-candidate speed result is available while Main runs the first 39K R861 diagnostic; wait for Main evidence to define the next finite decision question."
+  },
+  "research_review_880": {
+    "path": "A/research-scope-review-round880-v1.json",
+    "sha256": "13a552d3260a0eab335014889ef9bbad15bfee7362cdd609913d75b0f475a3ff",
+    "operational_digest_path": "A/research-scope-review-round880-v1.ja.md",
+    "operational_digest_sha256": "93287cb82aef521baea3114ebc2d11b4d89864a7b28e7250c2cc9fd7ab9d93e9",
+    "index_before_sha256": "49305c5d4903c68d741e2f86065deac4b05befb3977f5fbf7a2ecd9e7f772361",
+    "indexed_report_count_after": 277,
+    "highest_indexed_report_round_after": 875,
+    "collection_bodies_main_read": false,
+    "held_reports": [
+      876,
+      877
+    ],
+    "correction_ids": [
+      "R875-C1",
+      "R875-C2"
+    ],
+    "decision_support_retrieval": {
+      "round": 875,
+      "needed_now": true,
+      "sections": [
+        "13-22",
+        "26-32",
+        "34-38",
+        "40-44"
+      ],
+      "purpose": "Use only for review of the in-flight native unitrace timeline or later resource-measurement interpretation; apply R875-C1/C2 and preserve all measurement caveats."
+    },
+    "next_scope_recommendations": [],
+    "next_scope_reason": "The report adds current-source timeline and measurement boundaries; no additional profiler survey or implementation is recommended. Main already has a separate source-only timeline task in progress. R876/R877 remain unstarted eligible knowledge-collection scopes due capacity; their bodies were not read."
+  },
+  "research_review_881": {
+    "path": "research-scope-review-round881-v1.json",
+    "sha256": "3d92ce64beccd7bab11d30507e757b62951097ee0ddafcab021f9aa9083d0d10",
+    "operational_digest_path": "research-scope-review-round881-v1.ja.md",
+    "operational_digest_sha256": "e6fd31ed4f4794168c657edfb8da01cc5b8d5787a12f0e16774206a073afb1da",
+    "index_before_sha256": "efe5425f61c5fb0415f3ad83a4b2024ac013e311e98243b5d7e955a9734fed27",
+    "indexed_report_count_after": 278,
+    "highest_indexed_report_round_after": 876,
+    "collection_bodies_main_read": false,
+    "held_reports": [
+      876,
+      877
+    ],
+    "correction_ids": [
+      "R876-C1"
+    ],
+    "retrieval": {
+      "round": 876,
+      "needed_now": false,
+      "hold_body": true,
+      "sections": [],
+      "reason": "No concrete Strata stencil-tuning question currently requires the knowledge collection; R835 already covers the broad temporal-halo/resource crossover."
+    },
+    "next_scope_eligibility": {
+      "round": 877,
+      "plan_schedulable_now": true,
+      "action": "No dispatch here. Refresh its shared-index hash and recheck prerequisites and schedulable_now metadata before any future dispatch."
+    }
+  },
+  "research_review_889": {
+    "path": "A/research-scope-review-round889-v1.json",
+    "sha256": "38024a64c3de15271f3627e334bd49d6fd80532fd061f95f283d7a5ac9d0dc80",
+    "operational_digest_path": "A/research-scope-review-round889-v1.ja.md",
+    "operational_digest_sha256": "26edca33bb02f24a0cc46f0f7aab9feacfd8e0b2ad68162d6315242350ccb80b",
+    "index_before_sha256": "112e7e18e1f5d1ed77be2428b6fa9d779ed4180eecd32390e328d733c9ce02f2",
+    "indexed_report_count_after": 280,
+    "highest_indexed_report_round_after": 885,
+    "collection_bodies_main_read": false,
+    "held_reports": [
+      885
+    ],
+    "correction_ids": [
+      "R885-C1",
+      "R885-C2"
+    ],
+    "next_scope_eligibility": {
+      "round": 886,
+      "plan_schedulable_now": true,
+      "prerequisites_rechecked": true,
+      "required_dispatch_metadata_refresh": [
+        "Use final current research-index.json SHA256 in the R886 assignment.",
+        "Replace the archived TensorRT 10.x.x sparsity URL with https://docs.nvidia.com/deeplearning/tensorrt/latest/inference-library/data-formats-tensors.html and record its retrieved version."
+      ],
+      "dispatch_performed": false
+    },
+    "next_scope_reason": "R886 is a distinct already-planned 2:4 sparse inference collection. Public sources and indexed-topic novelty were rechecked; no new plan or dispatch was made."
+  },
+  "research_review_round892": {
+    "path": "A/research-scope-review-round892-v1.json",
+    "sha256": "73508508421fa3a5ba224ba8245cabe8d5168b1dd09e8b45d170ae23935733d9",
+    "operational_digest_path": "A/research-scope-review-round892-v1.ja.md",
+    "operational_digest_sha256": "f10de114c5761c98652e6243b1c05cc0bece4982bf3515cc4b8520ceead75c1a",
+    "index_before_sha256": "08b68574f6a580ee095cf394d364ca2ef914a4cd33b6f09d6a10e2dd55547618",
+    "indexed_report_count_after": 281,
+    "highest_indexed_report_round_after": 886,
+    "collection_bodies_main_read": false,
+    "held_reports": [
+      886
+    ],
+    "correction_ids": [
+      "R886-C1",
+      "R886-C2"
+    ],
+    "next_scope_eligibility": {
+      "recommended_now": false,
+      "schedulable_now": false,
+      "prerequisites_rechecked": false,
+      "dispatch_performed": false,
+      "reason": "No current Strata decision requires more 2:4 source research; retain R886 for concrete retrieval."
+    },
+    "next_scope_reason": "R886 is a complete, bounded knowledge collection. No repeat survey or unrelated replan is recommended."
   }
 }

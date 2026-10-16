@@ -1,0 +1,2791 @@
+{
+  "schema": "strata-hardware-resource-profile-v1",
+  "created_utc": "2026-10-16T07:26:41.772636+00:00",
+  "analysis_source": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/analyze_hardware_resources_v1.py",
+    "bytes": 8787,
+    "sha256": "308018b7517b7d952fa7502414364b18c7b5f76275bcd69b25b9a6c23561e32c"
+  },
+  "invocation": [
+    "python3",
+    "-B",
+    "bench/results/2026-10-15-pr6-recovery-audit/analyze_hardware_resources_v1.py"
+  ],
+  "GPU_executed": false,
+  "capture": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-resource-timeline-model-v4.json",
+    "bytes": 919249,
+    "sha256": "a6e8d8c6f16482b0db8a29012017659746f0f877a7c25c41f4616df5be5bbee2"
+  },
+  "source_commit": "63326f98c36656cf3a3e1adcc54c3c25a02aa6ee",
+  "binary_sha256": "6334491b623ead7b83c7ff5aaee84583294b3ecd4b12c6d06b77d1fe7e7a691d",
+  "collector_library_sha256": "8a8fe37441606bf66ab42fc39cc447b5257f48d09f04fbcc60703e30826671eb",
+  "native_environment": {
+    "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+    "OMP_NUM_THREADS": "1",
+    "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+    "PYTHONUNBUFFERED": "1",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+    "STRATA_SYCL_MMQ_XMX": "1",
+    "STRATA_SYCL_MMQ_XMX_TILE": "8",
+    "STRATA_SYCL_MMQ_XMX_EXACT": "1",
+    "STRATA_SYCL_MMQ_XMX_PACK": "0",
+    "STRATA_SYCL_MMQ_XMX_COMPACT": "1",
+    "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+    "STRATA_PREFILL_RING": "8",
+    "STRATA_PREFILL_MMQ": "0",
+    "STRATA_PREFILL_MOE_COMPACT_FP16": "1",
+    "STRATA_WATCHDOG_S": "480",
+    "STRATA_SYCL_PROMPT_DIRECT": "1",
+    "STRATA_PREFILL_LAYER_MAJOR": "1",
+    "STRATA_PREFILL_LAYER_MAJOR_R_DTYPE": "bf16",
+    "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "auto",
+    "STRATA_PREFILL_RELEASE_MTP_EXPERTS": "1",
+    "STRATA_PREFILL_PHASE_AUDIT": "0",
+    "STRATA_PREFILL_BOUNDARY_AUDIT": "0",
+    "STRATA_SYCL_KV_COPY_GROUPS": "0",
+    "STRATA_IQ_SINGLE_EXACT": "0",
+    "STRATA_SYCL_PARALLEL_IQ_DEQUANT": "1",
+    "STRATA_PREFILL_LAYER_MAJOR_SHAPE_CENSUS": "0",
+    "STRATA_IQ_TIMING_PROGRESS": "0",
+    "STRATA_PREFILL_RELEASE_HEADS": "0",
+    "STRATA_PREFILL_NATIVE_DENSE_BANK": "1",
+    "STRATA_SYCL_PREFILL_SCRATCH_ALIAS": "1",
+    "STRATA_SYCL_QSA_INDEXER_DEVICE_BATCH": "1",
+    "STRATA_GR_UNFUSED": "0",
+    "STRATA_PREFILL_BF16X2": "0",
+    "STRATA_PF_FUSED": "0",
+    "STRATA_PREFILL_CANONICAL_DENSE_BANK": "1",
+    "STRATA_PREFILL_LAYER_MAJOR_PROFILE": "1",
+    "STRATA_PREFILL_LAYER_MAJOR_QSA_PROFILE": "1",
+    "STRATA_SYCL_SELECT_RADIX4": "1",
+    "STRATA_SYCL_SELECT_CYCLIC": "0",
+    "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
+    "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-resource-timeline-model-v4/cache",
+    "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+    "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
+    "STRATA_SYCL_PREFILL_NATIVE16_QSA": "0",
+    "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
+    "STRATA_ROPE_TABLE": "1",
+    "STRATA_SYCL_PROMPT_SOFTMAX_SUBGROUP": "0",
+    "STRATA_TRACE": "1",
+    "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+    "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+    "STRATA_PREFILL_CPU_WAIT_PROFILE": "1",
+    "UNITRACE_HostTiming": "1",
+    "UNITRACE_DeviceTiming": "1",
+    "UNITRACE_DeviceTimeline": "1",
+    "UNITRACE_FollowChildProcess": "1",
+    "UNITRACE_LogToFile": "1",
+    "ZE_ENABLE_TRACING_LAYER": "1",
+    "CUDA_MODULE_LOADING": "EAGER",
+    "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/libunitrace_tool.so",
+    "UNITRACE_LogFilename": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-resource-timeline-model-v4/collector/timing.log"
+  },
+  "native_identity": {
+    "pid": 1110564,
+    "state": "R",
+    "ppid": 1110559,
+    "pgid": 1110542,
+    "sid": 1110542,
+    "start_ticks": 48366287
+  },
+  "captured_case": {
+    "input_tokens": 39262,
+    "batched_tokens": 39261,
+    "chunks": [
+      8192,
+      8192,
+      8192,
+      8192,
+      6493
+    ],
+    "thinking": true,
+    "output_tokens": 24,
+    "residual": "BF16 GPU all rows",
+    "backend": "vllm",
+    "prompt_softmax_subgroup": 0,
+    "QSA_native16": 0
+  },
+  "all_owned_IDs_absent": [
+    {
+      "original": {
+        "pid": 1110539,
+        "start_ticks": 48366206,
+        "sid": 1110539,
+        "pgid": 1110539
+      },
+      "current": null,
+      "original_absent": true
+    },
+    {
+      "original": {
+        "pid": 1110539,
+        "state": "R",
+        "ppid": 1110315,
+        "pgid": 1110539,
+        "sid": 1110539,
+        "start_ticks": 48366206,
+        "rss_bytes": 299008
+      },
+      "current": null,
+      "original_absent": true
+    },
+    {
+      "original": {
+        "pid": 1110542,
+        "start_ticks": 48366217,
+        "sid": 1110542,
+        "pgid": 1110542
+      },
+      "current": null,
+      "original_absent": true
+    },
+    {
+      "original": {
+        "pid": 1110544,
+        "start_ticks": 48366222,
+        "sid": 1110542,
+        "pgid": 1110542
+      },
+      "current": null,
+      "original_absent": true
+    },
+    {
+      "original": {
+        "pid": 1110559,
+        "start_ticks": 48366269,
+        "sid": 1110542,
+        "pgid": 1110542
+      },
+      "current": null,
+      "original_absent": true
+    },
+    {
+      "original": {
+        "pid": 1110564,
+        "start_ticks": 48366287,
+        "sid": 1110542,
+        "pgid": 1110542
+      },
+      "current": null,
+      "original_absent": true
+    },
+    {
+      "original": {
+        "pid": 1112915,
+        "start_ticks": 48371227,
+        "sid": 1110542,
+        "pgid": 1110542
+      },
+      "current": null,
+      "original_absent": true
+    },
+    {
+      "original": {
+        "pid": 1110542,
+        "state": "R",
+        "ppid": 1110315,
+        "pgid": 1110542,
+        "sid": 1110542,
+        "start_ticks": 48366217,
+        "rss_bytes": 466944
+      },
+      "current": null,
+      "original_absent": true
+    },
+    {
+      "original": {
+        "pid": 1124447,
+        "start_ticks": 48390352,
+        "sid": 1124447,
+        "pgid": 1124447
+      },
+      "current": null,
+      "original_absent": true
+    },
+    {
+      "original": {
+        "pid": 1124447,
+        "state": "R",
+        "ppid": 1110315,
+        "pgid": 1124447,
+        "sid": 1124447,
+        "start_ticks": 48390352,
+        "rss_bytes": 606208
+      },
+      "current": null,
+      "original_absent": true
+    },
+    {
+      "original": {
+        "pid": 1124761,
+        "start_ticks": 48390970,
+        "sid": 1124761,
+        "pgid": 1124761
+      },
+      "current": null,
+      "original_absent": true
+    },
+    {
+      "original": {
+        "pid": 1124761,
+        "state": "R",
+        "ppid": 1110315,
+        "pgid": 1124761,
+        "sid": 1124761,
+        "start_ticks": 48390970,
+        "rss_bytes": 630784
+      },
+      "current": null,
+      "original_absent": true
+    },
+    {
+      "original": {
+        "pid": 1124765,
+        "start_ticks": 48390985,
+        "sid": 1124765,
+        "pgid": 1124765
+      },
+      "current": null,
+      "original_absent": true
+    },
+    {
+      "original": {
+        "pid": 1124765,
+        "state": "R",
+        "ppid": 1110315,
+        "pgid": 1124765,
+        "sid": 1124765,
+        "start_ticks": 48390985,
+        "rss_bytes": 458752
+      },
+      "current": null,
+      "original_absent": true
+    }
+  ],
+  "faults": [],
+  "driver_dump_exists": false,
+  "request_journal_verified": {
+    "valid": true,
+    "complete": true,
+    "complete_prefix_rows": 5,
+    "last_sha256": "6202faf4ba896bac1e270440746c29e0282a07fb66e37dc91e0d33e228e49b59",
+    "pending": [],
+    "errors": []
+  },
+  "sample_pin": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-resource-timeline-model-v4/timeline-samples.json",
+    "bytes": 53623555,
+    "sha256": "f0593196a2167882ad15c7fe86a5672d3a808f235a7d5181eddad5aa442dcd23"
+  },
+  "counts": {
+    "copy": 51302,
+    "other": 12519,
+    "compute": 470677
+  },
+  "per_name_count_sum_min_max_reconciliation": {
+    "tolerance_ns": 0,
+    "rationale": "PrintCommandCompleted and CollectKernelCommandTimeStats receive the same uint64 start/end values in one LogCommandCompleted call; no Chrome floating-point conversion. Timer hardware granularity remains unmeasured.",
+    "rows": [
+      {
+        "name": "binary_test",
+        "calls": 1,
+        "time_ns": 3541,
+        "min_ns": 3541,
+        "max_ns": 3541,
+        "difference_ns": 0
+      },
+      {
+        "name": "gemm_bf16bf16f32_nocopy_tn_16x16_1x4x8",
+        "calls": 720,
+        "time_ns": 392686891,
+        "min_ns": 146666,
+        "max_ns": 764166,
+        "difference_ns": 0
+      },
+      {
+        "name": "gemm_bf16bf16f32_nocopy_tn_16x16_4x2x4",
+        "calls": 97,
+        "time_ns": 2919756,
+        "min_ns": 25729,
+        "max_ns": 45312,
+        "difference_ns": 0
+      },
+      {
+        "name": "gemm_bf16bf16f32_nocopy_tn_16x16_4x4x2",
+        "calls": 60,
+        "time_ns": 761536,
+        "min_ns": 10937,
+        "max_ns": 21875,
+        "difference_ns": 0
+      },
+      {
+        "name": "gemm_bf16bf16f32_nocopy_tn_16x32_8x4",
+        "calls": 1,
+        "time_ns": 64375,
+        "min_ns": 64375,
+        "max_ns": 64375,
+        "difference_ns": 0
+      },
+      {
+        "name": "gemm_bf16bf16f32_nocopy_tn_16x8_2x4x4",
+        "calls": 228,
+        "time_ns": 2744169,
+        "min_ns": 5312,
+        "max_ns": 42187,
+        "difference_ns": 0
+      },
+      {
+        "name": "gemm_bf16bf16f32_nocopy_tn_32x32_2x2x8",
+        "calls": 360,
+        "time_ns": 53537865,
+        "min_ns": 118333,
+        "max_ns": 162708,
+        "difference_ns": 0
+      },
+      {
+        "name": "gemm_bf16bf16f32_nocopy_tn_32x32_4x4x2",
+        "calls": 60,
+        "time_ns": 10030285,
+        "min_ns": 131979,
+        "max_ns": 182708,
+        "difference_ns": 0
+      },
+      {
+        "name": "gemm_bf16bf16f32_nocopy_tn_32x48_8x4",
+        "calls": 4,
+        "time_ns": 2692811,
+        "min_ns": 384583,
+        "max_ns": 770000,
+        "difference_ns": 0
+      },
+      {
+        "name": "gemm_bf16bf16f32_nocopy_tn_32x64_8x2x2",
+        "calls": 98,
+        "time_ns": 4310792,
+        "min_ns": 36250,
+        "max_ns": 236041,
+        "difference_ns": 0
+      },
+      {
+        "name": "gemm_bf16bf16f32_nocopy_tn_32x64_8x4",
+        "calls": 72,
+        "time_ns": 37917468,
+        "min_ns": 268645,
+        "max_ns": 2571145,
+        "difference_ns": 0
+      },
+      {
+        "name": "gemm_bf16bf16f32_nocopy_tn_64x40_4x8",
+        "calls": 252,
+        "time_ns": 167192394,
+        "min_ns": 411770,
+        "max_ns": 11037083,
+        "difference_ns": 0
+      },
+      {
+        "name": "gemm_f16f16f32_nocopy_tn_16x16_4x2x4",
+        "calls": 8042,
+        "time_ns": 124244372,
+        "min_ns": 10729,
+        "max_ns": 36458,
+        "difference_ns": 0
+      },
+      {
+        "name": "gemm_f16f16f32_nocopy_tn_16x16_4x4x2",
+        "calls": 170,
+        "time_ns": 3097108,
+        "min_ns": 9270,
+        "max_ns": 43125,
+        "difference_ns": 0
+      },
+      {
+        "name": "gemm_f16f16f32_nocopy_tn_16x16_8x4",
+        "calls": 3922,
+        "time_ns": 32635888,
+        "min_ns": 7083,
+        "max_ns": 22708,
+        "difference_ns": 0
+      },
+      {
+        "name": "gemm_f16f16f32_nocopy_tn_16x1_4x1",
+        "calls": 4170,
+        "time_ns": 17300122,
+        "min_ns": 3125,
+        "max_ns": 16250,
+        "difference_ns": 0
+      },
+      {
+        "name": "gemm_f16f16f32_nocopy_tn_16x32_8x4",
+        "calls": 86,
+        "time_ns": 6723919,
+        "min_ns": 13125,
+        "max_ns": 232395,
+        "difference_ns": 0
+      },
+      {
+        "name": "gemm_f16f16f32_nocopy_tn_32x32_4x2x4",
+        "calls": 2,
+        "time_ns": 74270,
+        "min_ns": 37083,
+        "max_ns": 37187,
+        "difference_ns": 0
+      },
+      {
+        "name": "gemm_f16f16f32_nocopy_tn_32x32_4x4x2",
+        "calls": 48,
+        "time_ns": 11165817,
+        "min_ns": 220208,
+        "max_ns": 365833,
+        "difference_ns": 0
+      },
+      {
+        "name": "gemm_f16f16f32_nocopy_tn_32x64_8x2x2",
+        "calls": 48,
+        "time_ns": 11518209,
+        "min_ns": 207916,
+        "max_ns": 325208,
+        "difference_ns": 0
+      },
+      {
+        "name": "gemm_f16f16f32_nocopy_tn_32x64_8x4",
+        "calls": 228,
+        "time_ns": 1866527404,
+        "min_ns": 388125,
+        "max_ns": 11580208,
+        "difference_ns": 0
+      },
+      {
+        "name": "gemm_f16f16f32_nocopy_tn_64x40_4x8",
+        "calls": 312,
+        "time_ns": 1231234248,
+        "min_ns": 490104,
+        "max_ns": 7000416,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::core::device_code_error[abi:cxx11]()::{lambda()#1}",
+        "calls": 1,
+        "time_ns": 1875,
+        "min_ns": 1875,
+        "max_ns": 1875,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::experimental::vllm_xe2_native16::(anonymous namespace)::DenseKernel<cutlass::bfloat16_t, cutlass::bfloat16_t, (strata::experimental::vllm_xe2_native16::Tile)1>",
+        "calls": 960,
+        "time_ns": 1042491366,
+        "min_ns": 845104,
+        "max_ns": 1216145,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::experimental::vllm_xe2_native16::(anonymous namespace)::DenseKernel<cutlass::half_t, cutlass::bfloat16_t, (strata::experimental::vllm_xe2_native16::Tile)0>",
+        "calls": 90564,
+        "time_ns": 1058781679,
+        "min_ns": 3437,
+        "max_ns": 66458,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::experimental::vllm_xe2_native16::(anonymous namespace)::DenseKernel<cutlass::half_t, cutlass::bfloat16_t, (strata::experimental::vllm_xe2_native16::Tile)1>",
+        "calls": 29660,
+        "time_ns": 4762206662,
+        "min_ns": 11250,
+        "max_ns": 8139479,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::append(sycl::_V1::queue&, float const*, int const*, int, int, float const*, float, strata::kernels::QsaIndexerBuffers, int, strata::kernels::(anonymous namespace)::Angles)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 1296,
+        "time_ns": 4560870,
+        "min_ns": 2187,
+        "max_ns": 15312,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::append<1>(strata::kernels::(anonymous namespace)::Pools, int const*, int const*, long, long, float const*, float const*, strata::kernels::QsaShapes const&, void*, strata::kernels::KvHostPools, strata::kernels::KvHostPools)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 760,
+        "time_ns": 293122435,
+        "min_ns": 7083,
+        "max_ns": 23985520,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::append_completed_blocks(sycl::_V1::queue&, float const*, int, float const*, float, strata::kernels::QsaIndexerBuffers, strata::kernels::detail::QsaIndexerDeviceBatchPlan, strata::kernels::(anonymous namespace)::Angles)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 72,
+        "time_ns": 2566528,
+        "min_ns": 3333,
+        "max_ns": 44687,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::batched_head<4>(unsigned char const*, unsigned char const*, float*, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 204,
+        "time_ns": 18196163,
+        "min_ns": 59895,
+        "max_ns": 181145,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::broadcast(sycl::_V1::queue&, float const*, float const*, float*, int)::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 56,
+        "time_ns": 8054249,
+        "min_ns": 729,
+        "max_ns": 1878645,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::combine(float const*, float const*, float const*, float*, long, long, int, void*, bool)::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 708,
+        "time_ns": 2099046,
+        "min_ns": 2604,
+        "max_ns": 5625,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::conv(float const*, float*, float const*, float const*, float*, int, int, float, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 720,
+        "time_ns": 438246629,
+        "min_ns": 2604,
+        "max_ns": 2756770,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::convolve(sycl::_V1::queue&, float const*, float const*, unsigned short const*, float const*, float const*, float*, float*, int, bool)::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 56,
+        "time_ns": 25582473,
+        "min_ns": 3020,
+        "max_ns": 5348333,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::dequant<unsigned short>(int, void const*, long, unsigned short*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 1518,
+        "time_ns": 1597113824,
+        "min_ns": 94166,
+        "max_ns": 3647187,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::down_esimd(strata::kernels::FusedGrArgs, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 4914,
+        "time_ns": 93922328,
+        "min_ns": 9791,
+        "max_ns": 70729,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::finalize_device_batch(sycl::_V1::queue&, float const*, int, strata::kernels::QsaIndexerBuffers, strata::kernels::detail::QsaIndexerDeviceBatchPlan)::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 72,
+        "time_ns": 145492,
+        "min_ns": 1354,
+        "max_ns": 9583,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::gate(sycl::_V1::queue&, float const*, float const*, float*, int, bool)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 56,
+        "time_ns": 8857260,
+        "min_ns": 1666,
+        "max_ns": 1837291,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::gate<true, float>(float const*, float const*, long, long, float*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 204,
+        "time_ns": 314084,
+        "min_ns": 1250,
+        "max_ns": 2916,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::grouped<18>(bool, strata::kernels::NativeExpertLayout, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, void const*, float*, float*, float*, void*)::{lambda(sycl::_V1::nd_item<2>)#1}",
+        "calls": 68,
+        "time_ns": 274655,
+        "min_ns": 3125,
+        "max_ns": 8958,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::grouped<20>(bool, strata::kernels::NativeExpertLayout, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, void const*, float*, float*, float*, void*)::{lambda(sycl::_V1::nd_item<2>)#1}",
+        "calls": 1092,
+        "time_ns": 26255073,
+        "min_ns": 5520,
+        "max_ns": 134583,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::grouped<21>(bool, strata::kernels::NativeExpertLayout, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, void const*, float*, float*, float*, void*)::{lambda(sycl::_V1::nd_item<2>)#1}",
+        "calls": 40,
+        "time_ns": 133530,
+        "min_ns": 3125,
+        "max_ns": 3854,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::grouped<22>(bool, strata::kernels::NativeExpertLayout, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, void const*, float*, float*, float*, void*)::{lambda(sycl::_V1::nd_item<2>)#1}",
+        "calls": 80,
+        "time_ns": 497882,
+        "min_ns": 3229,
+        "max_ns": 51979,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::grouped<23>(bool, strata::kernels::NativeExpertLayout, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, void const*, float*, float*, float*, void*)::{lambda(sycl::_V1::nd_item<2>)#1}",
+        "calls": 4,
+        "time_ns": 106769,
+        "min_ns": 3229,
+        "max_ns": 57395,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::grouped_projection<strata::kernels::(anonymous namespace)::IQ2STraits, false>(strata::kernels::NativeExpertLayout const&, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, strata::kernels::(anonymous namespace)::Q81Block const*, float*, float*, float*, int, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<2>)#1}",
+        "calls": 480,
+        "time_ns": 24580340,
+        "min_ns": 38125,
+        "max_ns": 181250,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::grouped_projection<strata::kernels::(anonymous namespace)::IQ3STraits, false>(strata::kernels::NativeExpertLayout const&, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, strata::kernels::(anonymous namespace)::Q81Block const*, float*, float*, float*, int, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<2>)#1}",
+        "calls": 240,
+        "time_ns": 10749799,
+        "min_ns": 38125,
+        "max_ns": 104687,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::grouped_projection<strata::kernels::(anonymous namespace)::IQ3XXSTraits, false>(strata::kernels::NativeExpertLayout const&, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, strata::kernels::(anonymous namespace)::Q81Block const*, float*, float*, float*, int, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<2>)#1}",
+        "calls": 408,
+        "time_ns": 19570332,
+        "min_ns": 38020,
+        "max_ns": 111770,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::grouped_projection<strata::kernels::(anonymous namespace)::IQ4XSTraits, false>(strata::kernels::NativeExpertLayout const&, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, strata::kernels::(anonymous namespace)::Q81Block const*, float*, float*, float*, int, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<2>)#1}",
+        "calls": 24,
+        "time_ns": 2725197,
+        "min_ns": 38229,
+        "max_ns": 258229,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::grouped_xmx<10, true>(strata::kernels::NativeExpertLayout const&, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, void const*, float*, float*, float*, void*)::{lambda(sycl::_V1::nd_item<2>)#1}",
+        "calls": 252,
+        "time_ns": 1353328,
+        "min_ns": 937,
+        "max_ns": 44791,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::history_advance(sycl::_V1::queue&, float*, float const*, int)::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 56,
+        "time_ns": 186338,
+        "min_ns": 2604,
+        "max_ns": 6979,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::launch(strata::kernels::FusedGrArgs, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 4914,
+        "time_ns": 16543156,
+        "min_ns": 2187,
+        "max_ns": 7500,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::launch<1, false>(float const*, strata::kernels::QsaAttnPools, int const*, int const*, long, strata::kernels::QsaShapes, float*, float*, long, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 204,
+        "time_ns": 27035645,
+        "min_ns": 52395,
+        "max_ns": 584062,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::launch<1, false>(float const*, strata::kernels::QsaAttnPools, int const*, int const*, long, strata::kernels::QsaShapes, float*, float*, long, void*)::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 204,
+        "time_ns": 10925657,
+        "min_ns": 10937,
+        "max_ns": 318958,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::launch<1, true, false, 0, false>(float const*, strata::kernels::QsaAttnPools, int const*, int const*, long, strata::kernels::QsaShapes, float*, long, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 72,
+        "time_ns": 33965627577,
+        "min_ns": 200729,
+        "max_ns": 619086250,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::launch<false>(float const*, int, int, int const*, int, strata::kernels::SamplerParams, strata::kernels::SamplerParams const*, int const*, int const*, int*, float*, int*, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 50,
+        "time_ns": 11690188,
+        "min_ns": 169062,
+        "max_ns": 405520,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::IQ4XSTraits, 4, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 504,
+        "time_ns": 47960199,
+        "min_ns": 23541,
+        "max_ns": 603958,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::Q5KTraits, 1, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 252,
+        "time_ns": 16688233,
+        "min_ns": 15520,
+        "max_ns": 193541,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::Q6KTraits, 1, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 1842,
+        "time_ns": 703633595,
+        "min_ns": 22500,
+        "max_ns": 11616770,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::IQ4NLBlock, 4>, 4, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 658,
+        "time_ns": 63539629,
+        "min_ns": 43229,
+        "max_ns": 181145,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::Q80Block, 8>, 1, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 346,
+        "time_ns": 41458083,
+        "min_ns": 21875,
+        "max_ns": 485312,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::Q80Block, 8>, 4, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 50,
+        "time_ns": 3659562,
+        "min_ns": 54166,
+        "max_ns": 124270,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::native<1>(float const*, long, unsigned short const*, float*, long, long, long, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 584,
+        "time_ns": 21399241,
+        "min_ns": 2916,
+        "max_ns": 334375,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::native<4>(float const*, long, unsigned short const*, float*, long, long, long, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 1440,
+        "time_ns": 21367203,
+        "min_ns": 6666,
+        "max_ns": 40104,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::norm(float const*, float const*, float*, int, int, float, bool, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 86,
+        "time_ns": 253818,
+        "min_ns": 2291,
+        "max_ns": 3645,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::norm(sycl::_V1::queue&, float const*, float const*, float*, int, bool)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 168,
+        "time_ns": 32628576,
+        "min_ns": 2291,
+        "max_ns": 2471875,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::parallel_iq_launch<20, false>(void const*, void const*, unsigned long, unsigned long, unsigned short*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 55556,
+        "time_ns": 2228962180,
+        "min_ns": 39375,
+        "max_ns": 84166,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::parallel_iq_launch<21, true>(void const*, void const*, unsigned long, unsigned long, unsigned short*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 14212,
+        "time_ns": 1892493161,
+        "min_ns": 130625,
+        "max_ns": 171562,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::parallel_iq_launch<22, true>(void const*, void const*, unsigned long, unsigned long, unsigned short*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 27867,
+        "time_ns": 3581039820,
+        "min_ns": 124270,
+        "max_ns": 305416,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::parallel_iq_launch<23, true>(void const*, void const*, unsigned long, unsigned long, unsigned short*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 740,
+        "time_ns": 99833864,
+        "min_ns": 133333,
+        "max_ns": 137500,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::parallel_iq_launch<42, false>(void const*, void const*, unsigned long, unsigned long, unsigned short*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 12452,
+        "time_ns": 480313620,
+        "min_ns": 37500,
+        "max_ns": 62708,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::projection<false, 8>(strata::kernels::(anonymous namespace)::Meta, unsigned char const*, float const*, float*, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 36,
+        "time_ns": 64270610,
+        "min_ns": 1766666,
+        "max_ns": 1841145,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::projection<true, 8>(strata::kernels::(anonymous namespace)::Meta, unsigned char const*, float const*, float*, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 36,
+        "time_ns": 57198632,
+        "min_ns": 1579479,
+        "max_ns": 1645000,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::prompt_product<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::Q80Block, 8> >(strata::kernels::NativeMmq, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 40,
+        "time_ns": 4175307794,
+        "min_ns": 277604,
+        "max_ns": 488651145,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::recurrence(float*, float const*, float const*, float const*, int, float const*, float const*, float const*, float const*, float, float*, int, int, int, int const*, bool, int, void*, unsigned short*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 1224,
+        "time_ns": 4085466570,
+        "min_ns": 16250,
+        "max_ns": 23708854,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::scalar_gate(sycl::_V1::queue&, float const*, unsigned short const*, unsigned short const*, float*, int, int, bool)::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 708,
+        "time_ns": 376637,
+        "min_ns": 416,
+        "max_ns": 1250,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::scale(sycl::_V1::queue&, float*, float const*, int, int)::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 708,
+        "time_ns": 772968,
+        "min_ns": 729,
+        "max_ns": 1979,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::submit_topk<0>(sycl::_V1::queue&, float const*, int const*, long, long, long, int*, long)::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 180,
+        "time_ns": 15308172,
+        "min_ns": 1770,
+        "max_ns": 328854,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::submit_topk<1>(sycl::_V1::queue&, float const*, int const*, long, long, long, int*, long)::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 1848,
+        "time_ns": 474709541,
+        "min_ns": 2916,
+        "max_ns": 501666,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::swiglu(sycl::_V1::queue&, float*, float const*, unsigned long, bool)::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 708,
+        "time_ns": 599052,
+        "min_ns": 625,
+        "max_ns": 1875,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::(anonymous namespace)::up_esimd(strata::kernels::FusedGrArgs, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 4914,
+        "time_ns": 63265272,
+        "min_ns": 7291,
+        "max_ns": 30937,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::doorbell_ring(unsigned int*, void*)::{lambda()#1}",
+        "calls": 672,
+        "time_ns": 1592979,
+        "min_ns": 2083,
+        "max_ns": 3020,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::gdn_ab_multi(float const*, unsigned short const*, unsigned short const*, float const*, float const*, float*, float*, int, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 504,
+        "time_ns": 16795200,
+        "min_ns": 15312,
+        "max_ns": 63750,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::iq_dequant_gu_f16(int, void const*, void const*, long, long, unsigned short*, void*)::{lambda(sycl::_V1::id<2>)#1}",
+        "calls": 24907,
+        "time_ns": 6145156959,
+        "min_ns": 226041,
+        "max_ns": 534166,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::iq_embed_rows(int, void const*, unsigned long, int const*, long, long, float*, void*)::{lambda(sycl::_V1::id<2>)#1}",
+        "calls": 75,
+        "time_ns": 144645279,
+        "min_ns": 52604,
+        "max_ns": 129436666,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::kv_ring_table(int*, long, long, void*)::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 1,
+        "time_ns": 2916,
+        "min_ns": 2916,
+        "max_ns": 2916,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::moe_group_resident(int const*, int, int, unsigned char const*, long, unsigned long long*, int*, int*, int*, int*, void*)::{lambda()#1}",
+        "calls": 36,
+        "time_ns": 284976,
+        "min_ns": 7812,
+        "max_ns": 8020,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::native_expert_grouped(strata::kernels::NativeExpertLayout const&, unsigned long long const*, int const*, int const*, int const*, int const*, long, long, void const*, void*, float*, void*, long)::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 1344,
+        "time_ns": 1265008,
+        "min_ns": 729,
+        "max_ns": 1875,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::native_iq4_xs_esimd(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 84,
+        "time_ns": 3045382,
+        "min_ns": 8333,
+        "max_ns": 185416,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::native_q4_k_esimd(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 94,
+        "time_ns": 2230690,
+        "min_ns": 6145,
+        "max_ns": 102187,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::native_q4_k_esimd(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::nd_item<2>)#1}",
+        "calls": 564,
+        "time_ns": 35831227,
+        "min_ns": 16562,
+        "max_ns": 261562,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::native_q5_head_esimd(void const*, void const*, float*, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 34,
+        "time_ns": 2061966,
+        "min_ns": 36354,
+        "max_ns": 110208,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::native_qsa_rms_norm_weighted(float const*, float const*, float*, int, int, float, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 714,
+        "time_ns": 1448545,
+        "min_ns": 937,
+        "max_ns": 10000,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::native_quantize_q8_1(float const*, void*, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 5016,
+        "time_ns": 35184521,
+        "min_ns": 1770,
+        "max_ns": 46666,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::native_rope_apply(float const*, float*, int, int, int, strata::kernels::RopeScaling const&, int const*, void*)::{lambda(sycl::_V1::id<2>)#1}",
+        "calls": 618,
+        "time_ns": 1964154,
+        "min_ns": 1458,
+        "max_ns": 7708,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::native_router_top10_multi(float const*, int*, float*, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 996,
+        "time_ns": 30690044,
+        "min_ns": 7708,
+        "max_ns": 107916,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::qsa_block_scores(float const*, float const*, float const*, int const*, long, long, strata::kernels::QsaShapes const&, float*, void*, long)::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 2028,
+        "time_ns": 3407095002,
+        "min_ns": 3333,
+        "max_ns": 3691666,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::kernels::row_top_prob(float const*, int, int, int const*, float*, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 36,
+        "time_ns": 620189,
+        "min_ns": 17083,
+        "max_ns": 17604,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::prefill::(anonymous namespace)::norm<true>(float const*, float const*, float, float*, unsigned short*, long, void*, unsigned short*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 106,
+        "time_ns": 7848498,
+        "min_ns": 12291,
+        "max_ns": 885520,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::prefill::mmq::quantize(float const*, int const*, void*, int, long, long, long, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 40,
+        "time_ns": 134262069,
+        "min_ns": 71250,
+        "max_ns": 10423750,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::prefill::native16::norm(unsigned short const*, float const*, float, float*, unsigned short*, long, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 480,
+        "time_ns": 590202916,
+        "min_ns": 1011458,
+        "max_ns": 1429479,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::prefill::rms_rows(float*, float const*, long, long, long, float, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+        "calls": 246,
+        "time_ns": 135982083,
+        "min_ns": 2812,
+        "max_ns": 1776145,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::prefill::rope(float*, long, long, long, long, long, strata::kernels::RopeScaling const&, void*)::{lambda(sycl::_V1::id<2>)#1}",
+        "calls": 176,
+        "time_ns": 19716595,
+        "min_ns": 1354,
+        "max_ns": 332604,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::kernels::(anonymous namespace)::run(strata::kernels::(anonymous namespace)::Meta, unsigned char const*, float const*, void*, float*, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::(anonymous namespace)::run(strata::kernels::(anonymous namespace)::Meta, unsigned char const*, float const*, void*, float*, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 36,
+        "time_ns": 36020,
+        "min_ns": 937,
+        "max_ns": 1145,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::kernels::add_streams_broadcast(float const*, float const*, float*, long, int, int, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::add_streams_broadcast(float const*, float const*, float*, long, int, int, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 58,
+        "time_ns": 9705492,
+        "min_ns": 937,
+        "max_ns": 1312187,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::kernels::broadcast_streams(float const*, float*, long, int, int, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::broadcast_streams(float const*, float*, long, int, int, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 14,
+        "time_ns": 32080,
+        "min_ns": 1875,
+        "max_ns": 3854,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::kernels::copy_from_mapped(float*, float const*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::copy_from_mapped(float*, float const*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 1756,
+        "time_ns": 5338959,
+        "min_ns": 625,
+        "max_ns": 14479,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::kernels::copy_i32_from_mapped(int*, int const*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::copy_i32_from_mapped(int*, int const*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 1520,
+        "time_ns": 3288813,
+        "min_ns": 520,
+        "max_ns": 19895,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::kernels::copy_indexed(float*, float const*, long, int const*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::copy_indexed(float*, float const*, long, int const*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 14,
+        "time_ns": 65306,
+        "min_ns": 4375,
+        "max_ns": 4895,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::kernels::copy_rows_from_mapped(float*, float const*, long, long, int const*, int const*, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::copy_rows_from_mapped(float*, float const*, long, long, int const*, int const*, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 672,
+        "time_ns": 67800944,
+        "min_ns": 23437,
+        "max_ns": 120312,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::kernels::f32_to_bf16_bulk(float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::f32_to_bf16_bulk(float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 708,
+        "time_ns": 2457991,
+        "min_ns": 1250,
+        "max_ns": 6875,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::kernels::gdn_conv_commit(float*, float const*, int, int const*, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::gdn_conv_commit(float*, float const*, int, int const*, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 504,
+        "time_ns": 1164764,
+        "min_ns": 1770,
+        "max_ns": 2916,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::kernels::map_ids(int*, int const*, int, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::map_ids(int*, int const*, int, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 36,
+        "time_ns": 56128,
+        "min_ns": 1458,
+        "max_ns": 1666,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::kernels::moe_hit_add(float*, float const*, int const*, int const*, long, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::moe_hit_add(float*, float const*, int const*, int const*, long, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 672,
+        "time_ns": 1289172,
+        "min_ns": 937,
+        "max_ns": 16770,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::kernels::mtp_select(float const*, long, int const*, int const*, float*, int*, int*, int, void*, float const*, float*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::mtp_select(float const*, long, int const*, int const*, float*, int*, int*, int, void*, float const*, float*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 48,
+        "time_ns": 83929,
+        "min_ns": 1354,
+        "max_ns": 1979,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::kernels::native_gr_down_silu(float*, int, int, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::native_gr_down_silu(float*, int, int, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 86,
+        "time_ns": 57078,
+        "min_ns": 625,
+        "max_ns": 729,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::kernels::native_gr_post(float const*, float const*, float const*, float*, int, int, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::native_gr_post(float const*, float const*, float const*, float*, int, int, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 136,
+        "time_ns": 188805,
+        "min_ns": 937,
+        "max_ns": 2500,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::kernels::native_gr_pre_gated(float const*, float*, float*, int, int, bool, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::native_gr_pre_gated(float const*, float*, float*, int, int, bool, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 86,
+        "time_ns": 151535,
+        "min_ns": 1458,
+        "max_ns": 2083,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::kernels::quantize_q8_0_scaled(float const*, unsigned char*, float*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::quantize_q8_0_scaled(float const*, unsigned char*, float*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 72,
+        "time_ns": 519038,
+        "min_ns": 6458,
+        "max_ns": 7812,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::kernels::window_ids(int*, int, int, int*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::window_ids(int*, int, int, int*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 36,
+        "time_ns": 13579982,
+        "min_ns": 2604,
+        "max_ns": 751562,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::prefill::(anonymous namespace)::mix<true>(float const*, float const*, float const*, float const*, float*, unsigned short*, long, void*, unsigned short*, unsigned short*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::(anonymous namespace)::mix<true>(float const*, float const*, float const*, float const*, float*, unsigned short*, long, void*, unsigned short*, unsigned short*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 106,
+        "time_ns": 11402875,
+        "min_ns": 12708,
+        "max_ns": 1364166,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::prefill::copy_i32(int*, int const*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::copy_i32(int*, int const*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 720,
+        "time_ns": 47758986,
+        "min_ns": 1250,
+        "max_ns": 101562,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::prefill::gate_attn(float const*, float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::gate_attn(float const*, float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 72,
+        "time_ns": 97596949,
+        "min_ns": 13229,
+        "max_ns": 1706250,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::prefill::gather_rows16(unsigned short const*, int const*, unsigned short*, long, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::gather_rows16(unsigned short const*, int const*, unsigned short*, long, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 67726,
+        "time_ns": 1342830020,
+        "min_ns": 1354,
+        "max_ns": 546666,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::prefill::gdn_conv(float*, float const*, float const*, float*, long, float, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::gdn_conv(float*, float const*, float const*, float*, long, float, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 216,
+        "time_ns": 353835,
+        "min_ns": 1145,
+        "max_ns": 6041,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::prefill::gdn_gates(float const*, float const*, float const*, float*, float*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::gdn_gates(float const*, float const*, float const*, float*, float*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 216,
+        "time_ns": 2488548,
+        "min_ns": 1979,
+        "max_ns": 15104,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::prefill::gr_broadcast(float const*, float*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::gr_broadcast(float const*, float*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 1,
+        "time_ns": 17604,
+        "min_ns": 17604,
+        "max_ns": 17604,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::prefill::gr_silu(float const*, unsigned short*, long, void*, unsigned short*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::gr_silu(float const*, unsigned short*, long, void*, unsigned short*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 106,
+        "time_ns": 389966,
+        "min_ns": 1458,
+        "max_ns": 28125,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::prefill::gr_write(float*, float const*, float const*, long, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::gr_write(float*, float const*, float const*, long, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 96,
+        "time_ns": 1998191,
+        "min_ns": 19270,
+        "max_ns": 39791,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::prefill::mmq::iota(int*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::mmq::iota(int*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 5,
+        "time_ns": 11560,
+        "min_ns": 2083,
+        "max_ns": 2812,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::prefill::moe_combine(float const*, int const*, float const*, float const*, float const*, float*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::moe_combine(float const*, int const*, float const*, float const*, float const*, float*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 48,
+        "time_ns": 2229251,
+        "min_ns": 42395,
+        "max_ns": 51875,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::prefill::native16::broadcast(float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::native16::broadcast(float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 5,
+        "time_ns": 7288019,
+        "min_ns": 1171875,
+        "max_ns": 1675520,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::prefill::native16::combine(unsigned short const*, int const*, float const*, unsigned short const*, float const*, unsigned short*, long, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::native16::combine(unsigned short const*, int const*, float const*, unsigned short const*, float const*, unsigned short*, long, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 240,
+        "time_ns": 636856152,
+        "min_ns": 2148125,
+        "max_ns": 2853750,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::prefill::native16::mix(unsigned short const*, float const*, float const*, unsigned short const*, unsigned short*, unsigned short*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::native16::mix(unsigned short const*, float const*, float const*, unsigned short const*, unsigned short*, unsigned short*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 480,
+        "time_ns": 614644285,
+        "min_ns": 1046666,
+        "max_ns": 1357291,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::prefill::native16::pack(float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::native16::pack(float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 5,
+        "time_ns": 9800103,
+        "min_ns": 1621875,
+        "max_ns": 2045833,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::prefill::native16::restore(unsigned short const*, float*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::native16::restore(unsigned short const*, float*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 10,
+        "time_ns": 15442182,
+        "min_ns": 1245312,
+        "max_ns": 1726145,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::prefill::native16::silu(unsigned short const*, unsigned short*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::native16::silu(unsigned short const*, unsigned short*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 480,
+        "time_ns": 19957607,
+        "min_ns": 30208,
+        "max_ns": 50312,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::prefill::native16::swiglu(unsigned short const*, unsigned short*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::native16::swiglu(unsigned short const*, unsigned short*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 59632,
+        "time_ns": 288386548,
+        "min_ns": 1041,
+        "max_ns": 118958,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::prefill::native16::swiglu_pair(unsigned short const*, unsigned short const*, unsigned short*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::native16::swiglu_pair(unsigned short const*, unsigned short const*, unsigned short*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 240,
+        "time_ns": 26923540,
+        "min_ns": 85000,
+        "max_ns": 119895,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::prefill::native16::write(unsigned short*, unsigned short const*, float const*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::native16::write(unsigned short*, unsigned short const*, float const*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 480,
+        "time_ns": 916536569,
+        "min_ns": 1576562,
+        "max_ns": 1995208,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::prefill::split_q(float const*, float*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::split_q(float const*, float*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 72,
+        "time_ns": 73316423,
+        "min_ns": 8854,
+        "max_ns": 1274791,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::prefill::swiglu_interleaved(float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::swiglu_interleaved(float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 8094,
+        "time_ns": 11849856,
+        "min_ns": 1041,
+        "max_ns": 3854,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::prefill::swiglu_pair(float const*, float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::swiglu_pair(float const*, float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 48,
+        "time_ns": 117581,
+        "min_ns": 2083,
+        "max_ns": 5000,
+        "difference_ns": 0
+      },
+      {
+        "name": "strata::sycl_backend::for_each<strata::prefill::to_bf16(float const*, unsigned short*, long, void*, unsigned short*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::to_bf16(float const*, unsigned short*, long, void*, unsigned short*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+        "calls": 6,
+        "time_ns": 2502082,
+        "min_ns": 3125,
+        "max_ns": 546770,
+        "difference_ns": 0
+      },
+      {
+        "name": "sycl::_V1::detail::RoundedRangeKernel<sycl::_V1::item<1, true>, 1, strata::sycl_backend::for_each<strata::kernels::gather_rows(unsigned char const*, long, int const*, long, unsigned char*, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::gather_rows(unsigned char const*, long, int const*, long, unsigned char*, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}>",
+        "calls": 1,
+        "time_ns": 9506979,
+        "min_ns": 9506979,
+        "max_ns": 9506979,
+        "difference_ns": 0
+      },
+      {
+        "name": "sycl::_V1::detail::RoundedRangeKernel<sycl::_V1::item<1, true>, 1, strata::sycl_backend::for_each<strata::prefill::copy_i32(int*, int const*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::copy_i32(int*, int const*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}>",
+        "calls": 144,
+        "time_ns": 9469211,
+        "min_ns": 46041,
+        "max_ns": 78229,
+        "difference_ns": 0
+      },
+      {
+        "name": "sycl::_V1::detail::RoundedRangeKernel<sycl::_V1::item<1, true>, 1, strata::sycl_backend::for_each<strata::prefill::mmq::iota(int*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::mmq::iota(int*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}>",
+        "calls": 1,
+        "time_ns": 2708,
+        "min_ns": 2708,
+        "max_ns": 2708,
+        "difference_ns": 0
+      },
+      {
+        "name": "sycl::_V1::detail::RoundedRangeKernel<sycl::_V1::item<2, true>, 2, strata::kernels::iq_embed_rows(int, void const*, unsigned long, int const*, long, long, float*, void*)::{lambda(sycl::_V1::id<2>)#1}>",
+        "calls": 3,
+        "time_ns": 7068228,
+        "min_ns": 396250,
+        "max_ns": 6174062,
+        "difference_ns": 0
+      },
+      {
+        "name": "sycl::_V1::detail::RoundedRangeKernel<sycl::_V1::item<2, true>, 2, strata::prefill::rope(float*, long, long, long, long, long, strata::kernels::RopeScaling const&, void*)::{lambda(sycl::_V1::id<2>)#1}>",
+        "calls": 50,
+        "time_ns": 4691230,
+        "min_ns": 5416,
+        "max_ns": 308854,
+        "difference_ns": 0
+      },
+      {
+        "name": "zeCommandListAppendBarrier",
+        "calls": 10867,
+        "time_ns": 1093872,
+        "min_ns": 0,
+        "max_ns": 312,
+        "difference_ns": 0
+      },
+      {
+        "name": "zeCommandListAppendMemoryCopy(D2D)",
+        "calls": 15794,
+        "time_ns": 474925561,
+        "min_ns": 625,
+        "max_ns": 1093437,
+        "difference_ns": 0
+      },
+      {
+        "name": "zeCommandListAppendMemoryCopy(D2M)",
+        "calls": 2,
+        "time_ns": 430312,
+        "min_ns": 3125,
+        "max_ns": 427187,
+        "difference_ns": 0
+      },
+      {
+        "name": "zeCommandListAppendMemoryCopy(H2D)",
+        "calls": 8943,
+        "time_ns": 2935665395,
+        "min_ns": 7083,
+        "max_ns": 13015833,
+        "difference_ns": 0
+      },
+      {
+        "name": "zeCommandListAppendMemoryCopy(M2D)",
+        "calls": 26563,
+        "time_ns": 10321933427,
+        "min_ns": 2187,
+        "max_ns": 353710208,
+        "difference_ns": 0
+      },
+      {
+        "name": "zeCommandListAppendMemoryFill(D)",
+        "calls": 1652,
+        "time_ns": 13401278,
+        "min_ns": 625,
+        "max_ns": 393645,
+        "difference_ns": 0
+      }
+    ],
+    "normalization": "Official nonverbose summary names; full timeline shape/byte names remain in individual rows; exact count/sum/min/max and scalar total required."
+  },
+  "windows": {
+    "whole_native_command_envelope": {
+      "measurement": {
+        "label": "All collected native command envelope, first append through last completed command; includes loading/warmup/generation/teardown commands, excludes unobserved leading/trailing native lifetime",
+        "window_ns": [
+          483659749528387,
+          483850820748983
+        ],
+        "duration_ns": 191071220596,
+        "event_service_sum_ns": 94359037868,
+        "busy_union_ns": 94358942929,
+        "compute_union_ns": 80611509250,
+        "copy_union_ns": 13732947042,
+        "other_union_ns": 14495150,
+        "compute_copy_intersection_ns": 7993,
+        "copy_only_ns": 13732939049,
+        "compute_only_ns": 80611501257,
+        "neither_compute_nor_copy_ns": 96726772297,
+        "no_observed_command_ns": 96712277667,
+        "command_gap_count": 533994,
+        "largest_command_gaps_ns": [
+          [
+            483668823794169,
+            483696424290634
+          ],
+          [
+            483717408966803,
+            483728939968508
+          ],
+          [
+            483696602999647,
+            483707555529690
+          ],
+          [
+            483708700922706,
+            483715046870134
+          ],
+          [
+            483735092131645,
+            483738973912138
+          ],
+          [
+            483744562445734,
+            483748099888449
+          ],
+          [
+            483665745043879,
+            483668588529430
+          ],
+          [
+            483664007968401,
+            483665464766123
+          ],
+          [
+            483660857440045,
+            483662217293202
+          ],
+          [
+            483739117469481,
+            483740285632490
+          ],
+          [
+            483748360001484,
+            483749213992290
+          ],
+          [
+            483707851556905,
+            483708695240627
+          ],
+          [
+            483742540383638,
+            483743049490650
+          ],
+          [
+            483717099302941,
+            483717408959095
+          ],
+          [
+            483749390347080,
+            483749675784252
+          ],
+          [
+            483716680653670,
+            483716935644093
+          ],
+          [
+            483740325035506,
+            483740571748909
+          ],
+          [
+            483707621884728,
+            483707842049926
+          ],
+          [
+            483742292134610,
+            483742503315386
+          ],
+          [
+            483715930840805,
+            483716121067588
+          ],
+          [
+            483848853949601,
+            483849043332634
+          ],
+          [
+            483838784904666,
+            483838962675559
+          ],
+          [
+            483716506342826,
+            483716680648045
+          ],
+          [
+            483743260591477,
+            483743423922823
+          ],
+          [
+            483715176306800,
+            483715334509004
+          ],
+          [
+            483715423053140,
+            483715576640662
+          ],
+          [
+            483848535915333,
+            483848679196929
+          ],
+          [
+            483734945635550,
+            483735082159743
+          ],
+          [
+            483665595372670,
+            483665725985859
+          ],
+          [
+            483780174505257,
+            483780304191291
+          ],
+          [
+            483665464774977,
+            483665582626585
+          ],
+          [
+            483716935955202,
+            483717053718946
+          ]
+        ],
+        "caveat": "No-observed-command gaps are not proof of hardware idle; other includes barriers/fills/unknown commands. Neither may contain other work. Service sums overlap. Window clips service intervals; payload totals are not prorated."
+      },
+      "percent_of_window": {
+        "compute_union_ns": 42.18924702451373,
+        "copy_union_ns": 7.1873445928504704,
+        "compute_copy_intersection_ns": 4.18325688979627e-06,
+        "no_observed_command_ns": 50.61582658305613
+      },
+      "fully_contained_copy": {
+        "counts": {
+          "H2D": 8943,
+          "M2D": 26563,
+          "D2M": 2,
+          "D2D": 15794
+        },
+        "requested_payload_bytes": {
+          "H2D": 18653852160,
+          "M2D": 61821452760,
+          "D2M": 2329604,
+          "D2D": 76947562496
+        },
+        "command_service_ns": {
+          "H2D": 2935665395,
+          "M2D": 10321933427,
+          "D2M": 430312,
+          "D2D": 474925561
+        },
+        "requested_bytes_per_service_GBps": {
+          "H2D": 6.354216046478281,
+          "M2D": 5.989328762602568,
+          "D2M": 5.41375560058748,
+          "D2D": 162.02025920436824
+        }
+      },
+      "boundary_crossing_copy_rows_not_prorated": []
+    },
+    "long_attention_envelope": {
+      "measurement": {
+        "label": "long-input QSA attention envelope: includes intervening commands; NOT full prefill",
+        "window_ns": [
+          483751570581244,
+          483846515334106
+        ],
+        "duration_ns": 94944752862,
+        "event_service_sum_ns": 82051930469,
+        "busy_union_ns": 82051843806,
+        "compute_union_ns": 73402613863,
+        "copy_union_ns": 8648969200,
+        "other_union_ns": 268736,
+        "compute_copy_intersection_ns": 7993,
+        "copy_only_ns": 8648961207,
+        "compute_only_ns": 73402605870,
+        "neither_compute_nor_copy_ns": 12893177792,
+        "no_observed_command_ns": 12892909056,
+        "command_gap_count": 380993,
+        "largest_command_gaps_ns": [
+          [
+            483838784904666,
+            483838962675559
+          ],
+          [
+            483780174505257,
+            483780304191291
+          ],
+          [
+            483827395832248,
+            483827507152645
+          ],
+          [
+            483815349150657,
+            483815456676457
+          ],
+          [
+            483758741161935,
+            483758848314188
+          ],
+          [
+            483804245180070,
+            483804351921471
+          ],
+          [
+            483796237903741,
+            483796343855527
+          ],
+          [
+            483836649233818,
+            483836754247067
+          ],
+          [
+            483835575119681,
+            483835679090328
+          ],
+          [
+            483798686505171,
+            483798789800656
+          ],
+          [
+            483802994958280,
+            483803098189683
+          ],
+          [
+            483829981553685,
+            483830082974983
+          ],
+          [
+            483828619479462,
+            483828720139630
+          ],
+          [
+            483821899502622,
+            483821998772280
+          ],
+          [
+            483820673116203,
+            483820772091615
+          ],
+          [
+            483772781708240,
+            483772880666617
+          ],
+          [
+            483806901437711,
+            483807000222293
+          ],
+          [
+            483831231015869,
+            483831329526991
+          ],
+          [
+            483837716953154,
+            483837814289085
+          ],
+          [
+            483778647706840,
+            483778744256861
+          ],
+          [
+            483812739640584,
+            483812835496888
+          ],
+          [
+            483789481602051,
+            483789577289350
+          ],
+          [
+            483781507790706,
+            483781603175422
+          ],
+          [
+            483795120024168,
+            483795214065253
+          ],
+          [
+            483774254681718,
+            483774346113977
+          ],
+          [
+            483790801073659,
+            483790890574595
+          ],
+          [
+            483764029220643,
+            483764118452553
+          ],
+          [
+            483755349012192,
+            483755437668293
+          ],
+          [
+            483797492661869,
+            483797581134177
+          ],
+          [
+            483811471630491,
+            483811560021961
+          ],
+          [
+            483823230933851,
+            483823319208795
+          ],
+          [
+            483782834227329,
+            483782922240739
+          ]
+        ],
+        "caveat": "No-observed-command gaps are not proof of hardware idle; other includes barriers/fills/unknown commands. Neither may contain other work. Service sums overlap. Window clips service intervals; payload totals are not prorated."
+      },
+      "percent_of_window": {
+        "compute_union_ns": 77.31086937441293,
+        "copy_union_ns": 9.109475710122787,
+        "compute_copy_intersection_ns": 8.418580025815267e-06,
+        "no_observed_command_ns": 13.579380289440055
+      },
+      "fully_contained_copy": {
+        "counts": {
+          "D2D": 451,
+          "M2D": 23657
+        },
+        "requested_payload_bytes": {
+          "D2D": 72472842240,
+          "M2D": 49696639752
+        },
+        "command_service_ns": {
+          "D2D": 434572729,
+          "M2D": 8214404124
+        },
+        "requested_bytes_per_service_GBps": {
+          "D2D": 166.76803997058914,
+          "M2D": 6.049938498496985
+        }
+      },
+      "boundary_crossing_copy_rows_not_prorated": []
+    }
+  },
+  "long_QSA_service_sum_ns": 33962851021,
+  "long_QSA_samples": [
+    {
+      "timeline_line": 119797,
+      "sequence": 12,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 0,
+      "chunk_ordinal": 0,
+      "append_ns": 483751539230307,
+      "submit_ns": 483751539230307,
+      "start_ns": 483751570581244,
+      "end_ns": 483752089619889
+    },
+    {
+      "timeline_line": 121556,
+      "sequence": 13,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 0,
+      "chunk_ordinal": 1,
+      "append_ns": 483752230111446,
+      "submit_ns": 483752230111446,
+      "start_ns": 483752295876862,
+      "end_ns": 483752891016445
+    },
+    {
+      "timeline_line": 122697,
+      "sequence": 14,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 0,
+      "chunk_ordinal": 2,
+      "append_ns": 483752996613155,
+      "submit_ns": 483752996613155,
+      "start_ns": 483753088624300,
+      "end_ns": 483753692795758
+    },
+    {
+      "timeline_line": 123892,
+      "sequence": 15,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 0,
+      "chunk_ordinal": 3,
+      "append_ns": 483753801486924,
+      "submit_ns": 483753801486924,
+      "start_ns": 483753920724736,
+      "end_ns": 483754532087861
+    },
+    {
+      "timeline_line": 125093,
+      "sequence": 16,
+      "queries": 6493,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 0,
+      "chunk_ordinal": 4,
+      "append_ns": 483754641362511,
+      "submit_ns": 483754641362511,
+      "start_ns": 483754755987875,
+      "end_ns": 483755243772250
+    },
+    {
+      "timeline_line": 150437,
+      "sequence": 17,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 1,
+      "chunk_ordinal": 0,
+      "append_ns": 483759062632612,
+      "submit_ns": 483759062632612,
+      "start_ns": 483759101670580,
+      "end_ns": 483759621800788
+    },
+    {
+      "timeline_line": 152544,
+      "sequence": 18,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 1,
+      "chunk_ordinal": 1,
+      "append_ns": 483759818069171,
+      "submit_ns": 483759818069171,
+      "start_ns": 483759884296306,
+      "end_ns": 483760482946931
+    },
+    {
+      "timeline_line": 153649,
+      "sequence": 19,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 1,
+      "chunk_ordinal": 2,
+      "append_ns": 483760611944845,
+      "submit_ns": 483760611944845,
+      "start_ns": 483760704882865,
+      "end_ns": 483761315764010
+    },
+    {
+      "timeline_line": 154796,
+      "sequence": 20,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 1,
+      "chunk_ordinal": 3,
+      "append_ns": 483761442763769,
+      "submit_ns": 483761442763769,
+      "start_ns": 483761563285123,
+      "end_ns": 483762182371373
+    },
+    {
+      "timeline_line": 155925,
+      "sequence": 21,
+      "queries": 6493,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 1,
+      "chunk_ordinal": 4,
+      "append_ns": 483762308668168,
+      "submit_ns": 483762308668168,
+      "start_ns": 483762424463584,
+      "end_ns": 483762917849834
+    },
+    {
+      "timeline_line": 180543,
+      "sequence": 22,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 2,
+      "chunk_ordinal": 0,
+      "append_ns": 483766519493332,
+      "submit_ns": 483766519493332,
+      "start_ns": 483766558142967,
+      "end_ns": 483767078394425
+    },
+    {
+      "timeline_line": 182512,
+      "sequence": 23,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 2,
+      "chunk_ordinal": 1,
+      "append_ns": 483767231122519,
+      "submit_ns": 483767231122519,
+      "start_ns": 483767297288873,
+      "end_ns": 483767894557831
+    },
+    {
+      "timeline_line": 183977,
+      "sequence": 24,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 2,
+      "chunk_ordinal": 2,
+      "append_ns": 483768017248921,
+      "submit_ns": 483768017248921,
+      "start_ns": 483768110441681,
+      "end_ns": 483768718847410
+    },
+    {
+      "timeline_line": 185478,
+      "sequence": 25,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 2,
+      "chunk_ordinal": 3,
+      "append_ns": 483768844057133,
+      "submit_ns": 483768844057133,
+      "start_ns": 483768964564216,
+      "end_ns": 483769579932028
+    },
+    {
+      "timeline_line": 186985,
+      "sequence": 26,
+      "queries": 6493,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 2,
+      "chunk_ordinal": 4,
+      "append_ns": 483769707028792,
+      "submit_ns": 483769707028792,
+      "start_ns": 483769822349052,
+      "end_ns": 483770313549260
+    },
+    {
+      "timeline_line": 216361,
+      "sequence": 27,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 3,
+      "chunk_ordinal": 0,
+      "append_ns": 483774540552532,
+      "submit_ns": 483774540552532,
+      "start_ns": 483774579699615,
+      "end_ns": 483775108121802
+    },
+    {
+      "timeline_line": 218528,
+      "sequence": 28,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 3,
+      "chunk_ordinal": 1,
+      "append_ns": 483775270873883,
+      "submit_ns": 483775270873883,
+      "start_ns": 483775337288362,
+      "end_ns": 483775941788049
+    },
+    {
+      "timeline_line": 220647,
+      "sequence": 29,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 3,
+      "chunk_ordinal": 2,
+      "append_ns": 483776102705034,
+      "submit_ns": 483776102705034,
+      "start_ns": 483776195777117,
+      "end_ns": 483776806230033
+    },
+    {
+      "timeline_line": 222808,
+      "sequence": 30,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 3,
+      "chunk_ordinal": 3,
+      "append_ns": 483776971006379,
+      "submit_ns": 483776971006379,
+      "start_ns": 483777091331535,
+      "end_ns": 483777705795910
+    },
+    {
+      "timeline_line": 225065,
+      "sequence": 31,
+      "queries": 6493,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 3,
+      "chunk_ordinal": 4,
+      "append_ns": 483777877238605,
+      "submit_ns": 483777877238605,
+      "start_ns": 483777993122980,
+      "end_ns": 483778482402355
+    },
+    {
+      "timeline_line": 257435,
+      "sequence": 32,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 4,
+      "chunk_ordinal": 0,
+      "append_ns": 483783116894473,
+      "submit_ns": 483783116894473,
+      "start_ns": 483783156166243,
+      "end_ns": 483783675428222
+    },
+    {
+      "timeline_line": 259542,
+      "sequence": 33,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 4,
+      "chunk_ordinal": 1,
+      "append_ns": 483783835780279,
+      "submit_ns": 483783835780279,
+      "start_ns": 483783902000851,
+      "end_ns": 483784497507830
+    },
+    {
+      "timeline_line": 261253,
+      "sequence": 34,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 4,
+      "chunk_ordinal": 2,
+      "append_ns": 483784633126912,
+      "submit_ns": 483784633126912,
+      "start_ns": 483784725344568,
+      "end_ns": 483785329853422
+    },
+    {
+      "timeline_line": 263024,
+      "sequence": 35,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 4,
+      "chunk_ordinal": 3,
+      "append_ns": 483785469781930,
+      "submit_ns": 483785469781930,
+      "start_ns": 483785589375992,
+      "end_ns": 483786200916304
+    },
+    {
+      "timeline_line": 264789,
+      "sequence": 36,
+      "queries": 6493,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 4,
+      "chunk_ordinal": 4,
+      "append_ns": 483786340962603,
+      "submit_ns": 483786340962603,
+      "start_ns": 483786455768280,
+      "end_ns": 483786944276717
+    },
+    {
+      "timeline_line": 292155,
+      "sequence": 37,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 5,
+      "chunk_ordinal": 0,
+      "append_ns": 483791087524444,
+      "submit_ns": 483791087524444,
+      "start_ns": 483791126815225,
+      "end_ns": 483791646758245
+    },
+    {
+      "timeline_line": 294388,
+      "sequence": 38,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 5,
+      "chunk_ordinal": 1,
+      "append_ns": 483791810245161,
+      "submit_ns": 483791810245161,
+      "start_ns": 483791876723858,
+      "end_ns": 483792473616358
+    },
+    {
+      "timeline_line": 296375,
+      "sequence": 39,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 5,
+      "chunk_ordinal": 2,
+      "append_ns": 483792623955451,
+      "submit_ns": 483792623955451,
+      "start_ns": 483792717315086,
+      "end_ns": 483793324373002
+    },
+    {
+      "timeline_line": 298362,
+      "sequence": 40,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 5,
+      "chunk_ordinal": 3,
+      "append_ns": 483793475007337,
+      "submit_ns": 483793475007337,
+      "start_ns": 483793595796295,
+      "end_ns": 483794209648274
+    },
+    {
+      "timeline_line": 300397,
+      "sequence": 41,
+      "queries": 6493,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 5,
+      "chunk_ordinal": 4,
+      "append_ns": 483794362729791,
+      "submit_ns": 483794362729791,
+      "start_ns": 483794478746041,
+      "end_ns": 483794969814791
+    },
+    {
+      "timeline_line": 329161,
+      "sequence": 42,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 6,
+      "chunk_ordinal": 0,
+      "append_ns": 483799017024343,
+      "submit_ns": 483799017024343,
+      "start_ns": 483799056205540,
+      "end_ns": 483799576492102
+    },
+    {
+      "timeline_line": 331190,
+      "sequence": 43,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 6,
+      "chunk_ordinal": 1,
+      "append_ns": 483799734944768,
+      "submit_ns": 483799734944768,
+      "start_ns": 483799800872424,
+      "end_ns": 483800397553882
+    },
+    {
+      "timeline_line": 332901,
+      "sequence": 44,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 6,
+      "chunk_ordinal": 2,
+      "append_ns": 483800535359184,
+      "submit_ns": 483800535359184,
+      "start_ns": 483800628368506,
+      "end_ns": 483801234103401
+    },
+    {
+      "timeline_line": 334654,
+      "sequence": 45,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 6,
+      "chunk_ordinal": 3,
+      "append_ns": 483801373469651,
+      "submit_ns": 483801373469651,
+      "start_ns": 483801494040848,
+      "end_ns": 483802105990952
+    },
+    {
+      "timeline_line": 336479,
+      "sequence": 46,
+      "queries": 6493,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 6,
+      "chunk_ordinal": 4,
+      "append_ns": 483802250543467,
+      "submit_ns": 483802250543467,
+      "start_ns": 483802366446383,
+      "end_ns": 483802856049716
+    },
+    {
+      "timeline_line": 367493,
+      "sequence": 47,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 7,
+      "chunk_ordinal": 0,
+      "append_ns": 483807215469004,
+      "submit_ns": 483807215469004,
+      "start_ns": 483807256058066,
+      "end_ns": 483807784716191
+    },
+    {
+      "timeline_line": 369630,
+      "sequence": 48,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 7,
+      "chunk_ordinal": 1,
+      "append_ns": 483807984468187,
+      "submit_ns": 483807984468187,
+      "start_ns": 483808052253030,
+      "end_ns": 483808656666780
+    },
+    {
+      "timeline_line": 371539,
+      "sequence": 49,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 7,
+      "chunk_ordinal": 2,
+      "append_ns": 483808839133860,
+      "submit_ns": 483808839133860,
+      "start_ns": 483808933876412,
+      "end_ns": 483809545254224
+    },
+    {
+      "timeline_line": 373598,
+      "sequence": 50,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 7,
+      "chunk_ordinal": 3,
+      "append_ns": 483809738374034,
+      "submit_ns": 483809738374034,
+      "start_ns": 483809860331065,
+      "end_ns": 483810475219398
+    },
+    {
+      "timeline_line": 375711,
+      "sequence": 51,
+      "queries": 6493,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 7,
+      "chunk_ordinal": 4,
+      "append_ns": 483810673910925,
+      "submit_ns": 483810673910925,
+      "start_ns": 483810791194622,
+      "end_ns": 483811282614622
+    },
+    {
+      "timeline_line": 407469,
+      "sequence": 52,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 8,
+      "chunk_ordinal": 0,
+      "append_ns": 483815684509232,
+      "submit_ns": 483815684509232,
+      "start_ns": 483815725179127,
+      "end_ns": 483816244535793
+    },
+    {
+      "timeline_line": 409402,
+      "sequence": 53,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 8,
+      "chunk_ordinal": 1,
+      "append_ns": 483816395921593,
+      "submit_ns": 483816395921593,
+      "start_ns": 483816463667634,
+      "end_ns": 483817058945134
+    },
+    {
+      "timeline_line": 410963,
+      "sequence": 54,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 8,
+      "chunk_ordinal": 2,
+      "append_ns": 483817188110964,
+      "submit_ns": 483817188110964,
+      "start_ns": 483817281685391,
+      "end_ns": 483817883879661
+    },
+    {
+      "timeline_line": 412518,
+      "sequence": 55,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 8,
+      "chunk_ordinal": 3,
+      "append_ns": 483818013848729,
+      "submit_ns": 483818013848729,
+      "start_ns": 483818134836749,
+      "end_ns": 483818742241644
+    },
+    {
+      "timeline_line": 414019,
+      "sequence": 56,
+      "queries": 6493,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 8,
+      "chunk_ordinal": 4,
+      "append_ns": 483818867458502,
+      "submit_ns": 483818867458502,
+      "start_ns": 483818983729595,
+      "end_ns": 483819468929490
+    },
+    {
+      "timeline_line": 439363,
+      "sequence": 57,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 9,
+      "chunk_ordinal": 0,
+      "append_ns": 483823515697748,
+      "submit_ns": 483823515697748,
+      "start_ns": 483823555886445,
+      "end_ns": 483824075930403
+    },
+    {
+      "timeline_line": 441212,
+      "sequence": 58,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 9,
+      "chunk_ordinal": 1,
+      "append_ns": 483824218438217,
+      "submit_ns": 483824218438217,
+      "start_ns": 483824286480977,
+      "end_ns": 483824882754102
+    },
+    {
+      "timeline_line": 442677,
+      "sequence": 59,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 9,
+      "chunk_ordinal": 2,
+      "append_ns": 483825005230427,
+      "submit_ns": 483825005230427,
+      "start_ns": 483825099966312,
+      "end_ns": 483825703180062
+    },
+    {
+      "timeline_line": 444046,
+      "sequence": 60,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 9,
+      "chunk_ordinal": 3,
+      "append_ns": 483825820855147,
+      "submit_ns": 483825820855147,
+      "start_ns": 483825943645719,
+      "end_ns": 483826552307385
+    },
+    {
+      "timeline_line": 445493,
+      "sequence": 61,
+      "queries": 6493,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 9,
+      "chunk_ordinal": 4,
+      "append_ns": 483826673734139,
+      "submit_ns": 483826673734139,
+      "start_ns": 483826791293201,
+      "end_ns": 483827277832992
+    },
+    {
+      "timeline_line": 472175,
+      "sequence": 62,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 10,
+      "chunk_ordinal": 0,
+      "append_ns": 483831545438469,
+      "submit_ns": 483831545438469,
+      "start_ns": 483831585857844,
+      "end_ns": 483832106027114
+    },
+    {
+      "timeline_line": 474024,
+      "sequence": 63,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 10,
+      "chunk_ordinal": 1,
+      "append_ns": 483832283500656,
+      "submit_ns": 483832283500656,
+      "start_ns": 483832351014145,
+      "end_ns": 483832946211853
+    },
+    {
+      "timeline_line": 475513,
+      "sequence": 64,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 10,
+      "chunk_ordinal": 2,
+      "append_ns": 483833096858815,
+      "submit_ns": 483833096858815,
+      "start_ns": 483833191621992,
+      "end_ns": 483833796863242
+    },
+    {
+      "timeline_line": 477044,
+      "sequence": 65,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 10,
+      "chunk_ordinal": 3,
+      "append_ns": 483833951631429,
+      "submit_ns": 483833951631429,
+      "start_ns": 483834074121168,
+      "end_ns": 483834685645855
+    },
+    {
+      "timeline_line": 478449,
+      "sequence": 66,
+      "queries": 6493,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 10,
+      "chunk_ordinal": 4,
+      "append_ns": 483834831361626,
+      "submit_ns": 483834831361626,
+      "start_ns": 483834948872667,
+      "end_ns": 483835437911312
+    },
+    {
+      "timeline_line": 497673,
+      "sequence": 67,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 11,
+      "chunk_ordinal": 0,
+      "append_ns": 483839218432884,
+      "submit_ns": 483839218432884,
+      "start_ns": 483839259063248,
+      "end_ns": 483839787762518
+    },
+    {
+      "timeline_line": 499178,
+      "sequence": 68,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 11,
+      "chunk_ordinal": 1,
+      "append_ns": 483840141623923,
+      "submit_ns": 483840141623923,
+      "start_ns": 483840209659756,
+      "end_ns": 483840814241006
+    },
+    {
+      "timeline_line": 499776,
+      "sequence": 69,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 11,
+      "chunk_ordinal": 2,
+      "append_ns": 483842028941637,
+      "submit_ns": 483842028941637,
+      "start_ns": 483842123594345,
+      "end_ns": 483842735443095
+    },
+    {
+      "timeline_line": 500362,
+      "sequence": 70,
+      "queries": 8192,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 11,
+      "chunk_ordinal": 3,
+      "append_ns": 483843950638833,
+      "submit_ns": 483843950638833,
+      "start_ns": 483844072958624,
+      "end_ns": 483844690791749
+    },
+    {
+      "timeline_line": 500918,
+      "sequence": 71,
+      "queries": 6493,
+      "phase": "long-input",
+      "qsa_layer_ordinal": 11,
+      "chunk_ordinal": 4,
+      "append_ns": 483845905691711,
+      "submit_ns": 483845905691711,
+      "start_ns": 483846023182023,
+      "end_ns": 483846515334106
+    }
+  ],
+  "full_prefill_boundaries_proved": false,
+  "cpu": {
+    "wait": {
+      "version": 3,
+      "available": 1,
+      "complete": 1,
+      "clock_or_accounting_error": 0,
+      "open_waits": 0,
+      "wait_throws": 0,
+      "wall_s": 105.006826228,
+      "main_cpu_s": 98.419531348,
+      "wait_cpu_s": 69.696398627,
+      "wait_wall_s": 70.007022353,
+      "outside_wait_cpu_s": 28.723132721,
+      "wait_count": 5592,
+      "compute_count": 6,
+      "transfer_count": 6,
+      "event_count": 4257,
+      "compat_count": 1323,
+      "direct_count": 0,
+      "compute_cpu_s": 7.886e-06,
+      "transfer_cpu_s": 8.175e-06,
+      "event_cpu_s": 0.044504224,
+      "compat_cpu_s": 69.651878342,
+      "direct_cpu_s": 0.0,
+      "compute_wall_s": 7.784e-06,
+      "transfer_wall_s": 8.024e-06,
+      "event_wall_s": 0.044551997,
+      "compat_wall_s": 69.962454548,
+      "direct_wall_s": 0.0
+    },
+    "host": {
+      "version": 3,
+      "available": 1,
+      "open_regions": 0,
+      "unclassified_cpu_s": 12.32907055,
+      "unclassified_wall_s": 17.991511003,
+      "source_copy_count": 48,
+      "source_copy_throws": 0,
+      "source_copy_cpu_s": 4.845677758,
+      "source_copy_wall_s": 4.851726902,
+      "source_copy_outside_wait_cpu_s": 4.845677758,
+      "source_copy_outside_wait_wall_s": 4.851726902,
+      "host_group_count": 240,
+      "host_group_throws": 0,
+      "host_group_cpu_s": 0.106126545,
+      "host_group_wall_s": 0.108404722,
+      "host_group_outside_wait_cpu_s": 0.106126545,
+      "host_group_outside_wait_wall_s": 0.108404722,
+      "gemm_submit_count": 123192,
+      "gemm_submit_throws": 0,
+      "gemm_submit_cpu_s": 5.64289259,
+      "gemm_submit_wall_s": 6.109505917,
+      "gemm_submit_outside_wait_cpu_s": 5.64289259,
+      "gemm_submit_outside_wait_wall_s": 6.109505917,
+      "route_exchange_count": 240,
+      "route_exchange_throws": 0,
+      "route_exchange_cpu_s": 52.349011741,
+      "route_exchange_wall_s": 52.43338502,
+      "route_exchange_outside_wait_cpu_s": 0.012334749,
+      "route_exchange_outside_wait_wall_s": 0.013341317,
+      "upload_submit_count": 48,
+      "upload_submit_throws": 0,
+      "upload_submit_cpu_s": 5.752926591,
+      "upload_submit_wall_s": 5.889288004,
+      "upload_submit_outside_wait_cpu_s": 5.752926591,
+      "upload_submit_outside_wait_wall_s": 5.889288004,
+      "residual_input_host_count": 0,
+      "residual_input_host_throws": 0,
+      "residual_input_host_cpu_s": 0.0,
+      "residual_input_host_wall_s": 0.0,
+      "residual_input_host_outside_wait_cpu_s": 0.0,
+      "residual_input_host_outside_wait_wall_s": 0.0,
+      "residual_input_device_count": 235,
+      "residual_input_device_throws": 0,
+      "residual_input_device_cpu_s": 0.011625507,
+      "residual_input_device_wall_s": 0.012526872,
+      "residual_input_device_outside_wait_cpu_s": 0.011625507,
+      "residual_input_device_outside_wait_wall_s": 0.012526872,
+      "residual_store_host_count": 0,
+      "residual_store_host_throws": 0,
+      "residual_store_host_cpu_s": 0.0,
+      "residual_store_host_wall_s": 0.0,
+      "residual_store_host_outside_wait_cpu_s": 0.0,
+      "residual_store_host_outside_wait_wall_s": 0.0,
+      "residual_store_device_count": 235,
+      "residual_store_device_throws": 0,
+      "residual_store_device_cpu_s": 0.022478431,
+      "residual_store_device_wall_s": 0.023499137,
+      "residual_store_device_outside_wait_cpu_s": 0.022478431,
+      "residual_store_device_outside_wait_wall_s": 0.023499137
+    }
+  },
+  "cpu_original_lines": [
+    "strata prefill cpu wait: version=3 available=1 complete=1 clock_or_accounting_error=0 open_waits=0 wait_throws=0 wall_s=105.006826228 main_cpu_s=98.419531348 wait_cpu_s=69.696398627 wait_wall_s=70.007022353 outside_wait_cpu_s=28.723132721 wait_count=5592 compute_count=6 transfer_count=6 event_count=4257 compat_count=1323 direct_count=0 compute_cpu_s=0.000007886 transfer_cpu_s=0.000008175 event_cpu_s=0.044504224 compat_cpu_s=69.651878342 direct_cpu_s=0.000000000 compute_wall_s=0.000007784 transfer_wall_s=0.000008024 event_wall_s=0.044551997 compat_wall_s=69.962454548 direct_wall_s=0.000000000",
+    "strata prefill cpu host: version=3 available=1 open_regions=0 unclassified_cpu_s=12.329070550 unclassified_wall_s=17.991511003 source_copy_count=48 source_copy_throws=0 source_copy_cpu_s=4.845677758 source_copy_wall_s=4.851726902 source_copy_outside_wait_cpu_s=4.845677758 source_copy_outside_wait_wall_s=4.851726902 host_group_count=240 host_group_throws=0 host_group_cpu_s=0.106126545 host_group_wall_s=0.108404722 host_group_outside_wait_cpu_s=0.106126545 host_group_outside_wait_wall_s=0.108404722 gemm_submit_count=123192 gemm_submit_throws=0 gemm_submit_cpu_s=5.642892590 gemm_submit_wall_s=6.109505917 gemm_submit_outside_wait_cpu_s=5.642892590 gemm_submit_outside_wait_wall_s=6.109505917 route_exchange_count=240 route_exchange_throws=0 route_exchange_cpu_s=52.349011741 route_exchange_wall_s=52.433385020 route_exchange_outside_wait_cpu_s=0.012334749 route_exchange_outside_wait_wall_s=0.013341317 upload_submit_count=48 upload_submit_throws=0 upload_submit_cpu_s=5.752926591 upload_submit_wall_s=5.889288004 upload_submit_outside_wait_cpu_s=5.752926591 upload_submit_outside_wait_wall_s=5.889288004 residual_input_host_count=0 residual_input_host_throws=0 residual_input_host_cpu_s=0.000000000 residual_input_host_wall_s=0.000000000 residual_input_host_outside_wait_cpu_s=0.000000000 residual_input_host_outside_wait_wall_s=0.000000000 residual_input_device_count=235 residual_input_device_throws=0 residual_input_device_cpu_s=0.011625507 residual_input_device_wall_s=0.012526872 residual_input_device_outside_wait_cpu_s=0.011625507 residual_input_device_outside_wait_wall_s=0.012526872 residual_store_host_count=0 residual_store_host_throws=0 residual_store_host_cpu_s=0.000000000 residual_store_host_wall_s=0.000000000 residual_store_host_outside_wait_cpu_s=0.000000000 residual_store_host_outside_wait_wall_s=0.000000000 residual_store_device_count=235 residual_store_device_throws=0 residual_store_device_cpu_s=0.022478431 residual_store_device_wall_s=0.023499137 residual_store_device_outside_wait_cpu_s=0.022478431 residual_store_device_outside_wait_wall_s=0.023499137"
+  ],
+  "coarse_original_lines": [
+    "strata lm profile: layer=-1 wall_ms=4851.89,5906.98,2946.91,656.47,0,37.5814,0,293.532,0,230.325,9586.47,3185.73 queue_ms=244.252,39714.6,9247.46,22452.9,8512.08,242.557 samples=235,60,180,240,48,235 upload_bytes=50292326400 input_bytes_host_device=0,37791068160 store_bytes_host_device=0,37791068160 input_queue_host_device_ms=0,244.252 store_queue_host_device_ms=0,242.557"
+  ],
+  "requested_copy_payload_bytes": {
+    "H2D": 18653852160,
+    "M2D": 61821452760,
+    "D2M": 2329604,
+    "D2D": 76947562496
+  },
+  "copy_command_service_ns": {
+    "H2D": 2935665395,
+    "M2D": 10321933427,
+    "D2M": 430312,
+    "D2D": 474925561
+  },
+  "copy_requested_bytes_per_service_GBps": {
+    "H2D": 6.354216046478281,
+    "M2D": 5.989328762602568,
+    "D2M": 5.41375560058748,
+    "D2D": 162.02025920436824
+  },
+  "resource_verdicts": {
+    "PCIe": "Host/device copy commands run near prior matched-stack bulk-copy throughput; in the long attention envelope ALL copy union is9.11% and overlap about8microseconds. Transfer matters but this capture does not support PCIe-only dominance. This is an envelope, not full-prefill critical path or physical wire counters.",
+    "GPU_compute": "Compute-command coverage77.31% of long attention envelope, QSA60launch service33.963s. This identifies device compute commands as priority but DOES NOT determine ALU/XMX saturation versus VRAM/cache/SLM/barrier/dependency limits inside kernels.",
+    "CPU": "Main thread98.420CPU s includes69.696CPU s in explicit GPU waits and28.723CPU s outside waits. Host grouping0.106CPU s; GEMM submission123192calls5.643CPU s; upload submission5.753CPU s; source copy4.846CPU s; unclassified12.329CPU s. Polling alone is not CPU latency evidence; launch/packing and gap causality remain candidates.",
+    "RAM": "Host source-copy CPU time measured, physical RAM traffic/bandwidth not measured in this run. Historical36.87GB/s six-core streaming read is operation/stack scoped reference, not current utilization or random-access capacity.",
+    "VRAM": "Whole-command D2D requested payload76.948GB; payload/service about163GB/s (logical read+write about326GB/s). Copy throughput is not kernel DRAM traffic. No per-kernel cache/VRAM bandwidth or occupancy collected.",
+    "scheduling": "Copies and compute almost entirely serialize in the observed safe route. Overlap or fewer host launches may remove exposed time, but9%copy coverage cannot alone establish a600/1000tok/s path. Gaps12.893s of long attention envelope are uncovered commands, not proved hardware idle or CPU causality."
+  },
+  "next_experiments": [
+    "Actual non-root Level Zero metric-group enumeration, then qualify counters only if available; no policy changes inferred.",
+    "Use supported per-kernel counters or controlled component variations to distinguish VRAM/cache, XMX/ALU, SLM/barrier and launch gaps.",
+    "Keep native16 QSA alternatives and restored PR6 source behind numerical/lifetime/fault gates; no unsafe old route execution."
+  ],
+  "no_performance_adoption": true,
+  "clean_speed_reference": {
+    "actual_input_tokens": 39262,
+    "baseline_source": "6354f0b4ff3731466795410e11ca9ef785c9d326",
+    "baseline_binary": "85643f3926bb9d212945659cb7ddb264e101ca9b2d5fa8f19430e945140ad191",
+    "baseline_samples_tok_s": [
+      402.6,
+      403.0,
+      403.4
+    ],
+    "baseline_median_tok_s": 403.0,
+    "current_source": "63326f98c36656cf3a3e1adcc54c3c25a02aa6ee",
+    "current_accepted_OFF_clean_samples_tok_s": [
+      403.4
+    ],
+    "scope": "Prior BF16/vLLM clean reference is a different compiled source. Current source OFF clean cohort remains incomplete after administrative source-pin failure; no adoption. Instrumented capture is not a clean speed comparison."
+  },
+  "limitations": [
+    "No fullprefill clock bridge",
+    "No direct physical bus/RAM/VRAM traffic",
+    "No PMU occupancy/cache/XMX/stall counters",
+    "No causal identification of command gaps",
+    "No new600milestone",
+    "No general-quality/full262144/RESTORE qualification"
+  ],
+  "retention": {
+    "owner": "Main",
+    "canonical_samples_consumer": "Main next GPU-internal counters/component comparison and host-submission-gap diagnosis",
+    "sample_byte_budget": 67108864,
+    "review_deadline_utc": "2026-10-17T03:00:00Z",
+    "raw_retirement": "Main may retire successful raw timeline/protocol after these exact sample/table/hash checks under measurement lock; preserve original receipts and manifest."
+  }
+}

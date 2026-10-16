@@ -1,0 +1,157 @@
+{
+  "review_round": "R881",
+  "review_type": "native Codex scope, depth, novelty, source, and retrieval review",
+  "review_date": "2026-10-16",
+  "reviewer": {
+    "model": "gpt-6-luna",
+    "reasoning_effort": "max"
+  },
+  "assignment": {
+    "requested_reports": ["R876"],
+    "purpose": "Review the completed knowledge collection against its dispatch specification, plan, source evidence, and prior review metadata. Main has not read the report body.",
+    "plan_path": "research-scope-plan-round875-v1.json",
+    "plan_sha256": "867c3661f1da206594aaa1d32381262df4d8402cb861b1d9181e45e2a837d522",
+    "dispatch_spec_path": "orca-research-round876-spec-v1.txt",
+    "dispatch_spec_sha256": "c8f6a6afb6a3d8184ff415e4e575fe88d72eff2e4e8d18a7842509aab3df9815",
+    "report_path": "research-round876-v1.txt",
+    "report_sha256": "8a03aac51233784ff5a5992831254f3ac87e15d71e3a86315398e57f0d82f5ec",
+    "index_before_path": "research-index.json",
+    "index_before_sha256": "efe5425f61c5fb0415f3ad83a4b2024ac013e311e98243b5d7e955a9734fed27",
+    "index_before_report_count": 277,
+    "index_before_highest_report_round": 875,
+    "plan_index_snapshot_sha256": "49305c5d4903c68d741e2f86065deac4b05befb3977f5fbf7a2ecd9e7f772361",
+    "dispatch_spec_index_snapshot_sha256": "efe5425f61c5fb0415f3ad83a4b2024ac013e311e98243b5d7e955a9734fed27",
+    "worker_lifecycle": "R876 task_49070567c71d / ctx_19b03bc15bc8 completed; Main reported it is releasing."
+  },
+  "overall": {
+    "result": "accepted_for_archive_with_material_scope_overlap_and_one_source_context_correction",
+    "correction_ids": ["R876-C1"],
+    "reviewer_read_report_body": true,
+    "main_body_read": false,
+    "main_retrieval_needed_now": false,
+    "collection_bodies_main_held": ["R876", "R877"],
+    "future_scope_recommendations": [],
+    "next_scope_reason": "R876 is knowledge collection and no concrete Strata stencil-tuning question currently needs it. R835 already covered temporal reuse, halo/resource crossover, AN5D and EBISU evidence; retain R876 as a narrower synthesis with a useful source-arithmetic check, but do not retrieve it to Main or schedule another generic halo/time-depth survey. R877 is only an eligibility note below, not a dispatch."
+  },
+  "report": {
+    "round": "R876",
+    "path": "research-round876-v1.txt",
+    "sha256": "8a03aac51233784ff5a5992831254f3ac87e15d71e3a86315398e57f0d82f5ec",
+    "classification": "knowledge_collection",
+    "title": "When temporal blocking helps iterative GPU stencils, and when halo and resource costs erase the gain",
+    "budget_assessment": {
+      "all_whitespace_words": 1640,
+      "primary_urls": 2,
+      "design_tables": 1,
+      "models": 2,
+      "judgment": "Within the 1,300–1,700-word and seven-primary-URL budgets; the report compares alternatives and includes measured wins, counterexamples, applicability limits, and one explicit analytical caution."
+    },
+    "scope_and_novelty_assessment": {
+      "judgment": "Finite and substantively answered, but materially overlaps R835 and its R838 review metadata.",
+      "overlap": "R838 records R835 as a 1,784-word knowledge report centered on successive-time reuse, halo/capacity crossover, and measured win/loss cases. Its source verification already covers the same AN5D v4 and EBISU v1 papers, including their V100/A100 depth and 151-versus-197 GCells/s examples. R876 reuses those primary sources and much of the same crossover evidence, while narrowing the synthesis to iterative stencil time depth and adding a compact useful-work model plus an arithmetic audit of EBISU's printed fraction.",
+      "novel_increment": "The new report makes its compared design choices explicit in one ledger, states a multiplicative halo useful-work estimate and idealized traffic bound, and independently flags a numerical inconsistency in EBISU's stated 3D valid fraction. These additions are useful archive refinements but do not make the broad scope novel against R835.",
+      "conclusion": "Keep as a held knowledge archive. Avoid another generic temporal-blocking or halo-crossover assignment unless a concrete engine question or materially new source set defines it."
+    },
+    "depth_and_applicability": {
+      "judgment": "Substantive and coherent; adequate depth for the requested comparison.",
+      "strengths": "Distinguishes streaming, spatial blocking, N.5D/register or shared-memory blocking, and device-level tiling; separates measured rates from idealized models; explains that overlap, local-memory traffic, synchronization, register/shared-memory demand, occupancy, and independent tile count set crossovers; limits NVIDIA CUDA results to their named hardware and timing boundaries.",
+      "limits": "The report does not explicitly label the AN5D depth sweep as float/radius-one or itemize the boundary policy reported by each paper. EBISU's double-precision discussion is part of its design model; the report does not establish that as the data type of the quoted 151/197 GCells/s measurement. These source details should be stated or left explicitly unspecified before using the numbers in a precision- or boundary-sensitive comparison.",
+      "provenance_and_adoption": "No code, helper, test, local product source, or measurement is proposed or adopted. The report gives no SYCL/Intel/Arc crossover or performance prediction."
+    },
+    "source_accuracy": {
+      "status": "Both exact arXiv versions and titles were checked; the material numerical claims reviewed against the primary paper PDFs are accurate with one missing precision/boundary context note.",
+      "verified": [
+        "AN5D v4 uses 16,384^2 2D and 512^3 3D domains for 1,000 iterations, five post-warm-up repetitions, and reports averages excluding PCIe time. Its V100 radius-one float depth sweep scales to 10 for 2D, 5 for 3D star, and 3 for 3D box; the paper separately gives first-order tuned-depth ranges of 8–15 in 2D and 3–5 in 3D.",
+        "AN5D reports less than half the measured shared-memory bandwidth on P100 versus V100 for identical kernels despite less than 10% difference in measured shared-memory bandwidth; its P100 model can overestimate useful depth. The report preserves this as a target-device-specific result.",
+        "EBISU v1 describes A100-PCIe timing as warm-up followed by ten GPU-event measurements of one kernel, reporting the peak. Its analysis says the 2D device-tiling synchronization example yields about 63% useful time versus about 95% valid work for the depth-seven overlap case; the 3D measured comparison is 151 GCells/s without and 197 GCells/s with device tiling.",
+        "EBISU's printed 3D shared-memory tile fraction (34 - 2*r*t)^2 / 34^2 evaluates to about 68% for r=1,t=3, not the stated 77%; R876 correctly identifies this inconsistency and does not use 77% as exact arithmetic."
+      ],
+      "limits": "These are source-paper results on NVIDIA Tesla P100/V100 and A100-PCIe. The two papers do not prove behavior, support, or performance for SYCL or Intel Arc. The scope review did not inspect local product source or run experiments.",
+      "source_checks": [
+        {
+          "source": "AN5D: Automated Stencil Framework for High-Degree Temporal Blocking on GPUs",
+          "url": "https://arxiv.org/pdf/2001.01473v4",
+          "sha256": "d876bb34f4ca5dd2e29bf156dbaaee7c59dc0f20f515b752d091bc32f6745d17",
+          "verified": "Exact arXiv v4 PDF/title and the domain, repetition, depth-sweep, P100/V100 resource-efficiency, and counterexample claims listed above."
+        },
+        {
+          "source": "Revisiting Temporal Blocking Stencil Optimizations",
+          "url": "https://arxiv.org/pdf/2305.07390v1",
+          "sha256": "7a838ca921a470519ebd8a8397bbf5e83d45920e62d2efabb7db153db93355a8",
+          "verified": "Exact arXiv v1 PDF/title and the A100-PCIe timing boundary, 2D synchronization arithmetic, 3D measured comparison, and printed valid-fraction expression listed above."
+        }
+      ]
+    },
+    "corrections": [
+      {
+        "id": "R876-C1",
+        "type": "source-context omission",
+        "correction": "For precision- and boundary-sensitive reuse, label the AN5D Figure 8 depth sweep as float/radius one, and state the boundary treatment each source actually documents. The R876 text leaves these details implicit. EBISU's paper discusses double-precision operations in its performance model, but the quoted comparison is not explicitly labeled with a run datatype in R876; do not infer its measurement datatype from the model paragraph. If a source does not specify a boundary or run datatype, mark that field unspecified.",
+        "severity": "applicability metadata"
+      }
+    ],
+    "previous_scope_metadata": [
+      {
+        "round": "R835",
+        "report_path": "research-round835-v1.txt",
+        "report_sha256": "d3c1f6ee7c2920807936f0d21e8036441ac494d4978399302fa95be9f2910c2e",
+        "review_path": "research-scope-review-round838-v1.json",
+        "review_sha256": "64885285e1f563774767893888ce4899639bc14c2fb1ec36e2c07530403c0b3e",
+        "use": "Metadata-only overlap basis: the prior reviewer described temporal reuse, halo/capacity crossover and the same AN5D/EBISU source examples; the R835 report body was not read in this review."
+      },
+      {
+        "round": "R839",
+        "report_sha256": "7cdaeca1f0c3d12892c3ee1d77947b2e8e0cef3f0e3390531220cdd89a17331f",
+        "use": "Metadata-only novelty boundary: local-memory bank mapping and tile transforms; no R839 body read."
+      },
+      {
+        "round": "R855",
+        "report_sha256": "e226747e0572d52dbb5f7f151da6d9f111ef1a7ce2c86e1bb84cb5f6efd022a9",
+        "review_path": "research-scope-review-round857-v1.json",
+        "review_sha256": "34202fd6530fbcf5639316f6b78e7c7703ed1c18cdeafb1a96703e59328c65ea",
+        "use": "Metadata-only novelty boundary: convolution mapping, reuse, and workspace; no R855 body read."
+      },
+      {
+        "round": "R870",
+        "review_sha256": "d66fb4ba5a05e7188127f3cbb2acf6eeedfc9f8d9c4591e770ab8aaaafca6a7d",
+        "use": "Metadata-only recent-scope boundary for tile rendering and BFS; no R867–R869 report body read."
+      },
+      {
+        "round": "R880",
+        "review_sha256": "13a552d3260a0eab335014889ef9bbad15bfee7362cdd609913d75b0f475a3ff",
+        "use": "Confirms R876/R877 were held as knowledge collections; the current R876 dispatch uses the refreshed index SHA recorded above."
+      }
+    ],
+    "retrieval": {
+      "needed_now": false,
+      "hold_body": true,
+      "main_body_read": false,
+      "sections": [],
+      "keys": [
+        "temporal-depth halo growth and useful-work model",
+        "AN5D resource and depth crossover evidence",
+        "EBISU device synchronization versus overlapped tiling",
+        "precision, boundary, and timing-boundary caveats"
+      ],
+      "retrieve_when": "A concrete current source or measurement question asks whether to implement or interpret a multi-step stencil/halo schedule, and only the relevant sections are needed.",
+      "preserve_caveats": [
+        "The halo and byte expressions are analytical estimates, not timing models or measured traffic.",
+        "EBISU's printed 3D valid-fraction expression does not match its stated percentage.",
+        "The reported device results are CUDA/NVIDIA and do not establish SYCL or Arc performance.",
+        "No implementation adoption or Strata performance result follows from the report."
+      ]
+    },
+    "next_scope_eligibility": {
+      "round": "R877",
+      "plan_status": "schedulable_now=true in the plan-time entry; public-source-only prerequisites are stated.",
+      "current_action": "Do not dispatch from this review. Refresh the assigned shared-index hash from the current index, then recheck the prerequisites and schedulable_now metadata before any future dispatch."
+    },
+    "handling": {
+      "index_before_modified": false,
+      "previous_collection_report_bodies_read": [],
+      "worker_contact_or_steering": false,
+      "product_source_or_measurement_access": false,
+      "other_files_written": false
+    }
+  }
+}
