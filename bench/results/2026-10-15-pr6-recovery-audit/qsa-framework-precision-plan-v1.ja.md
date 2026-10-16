@@ -54,3 +54,22 @@ SGLangの512 blockを全展開＋causal tailと、Strataのweighted-cell selecti
 境界tie、262144でset/cardinalityを確認する。top-kの出力順はSGLangの契約ではない。
 attentionの精度候補は同一selected IDsで評価できるため、selector変更を混ぜない。
 本番のselectorを変更する前には、モデル仕様とprefill/decode双方のstate整合を別途確認する。
+
+## 同日実装と最初の測定
+
+`qsa_bf16_attention.cpp` と独立host oracleを実装。小規模2case/12 kernel提出と
+境界10case/28 kernel提出は正常終了、新fault無し、所有終了。境界には実体262144-cell
+KV poolを含むが、モデル全体の256K context/RESTORE認定とは区別する。
+明示SLM payloadはflagsを含め **28168B**。この値だけではoccupancyを断定しない。
+
+`qsa-bf16-matched-bench-summary-v1.json` は同一Q/K8V8/scales/IDと確保量で
+8192query/2051selected cellsを各3process×10回測定。process中央値の中央値は
+FP32 **632.1835525ms**、旧typed **679.6906295ms**、新BF16 **627.3464365ms**。
+新BF16は旧typed比7.701%短縮、FP32比0.765%短縮。
+単体改善は小さく、全体PP向上・採用を意味しない。新経路を明示的な手動CMake
+ターゲットから検証できるようにするが、production caller/defaultは切り替えていない。
+
+次はタイル内の同期コストを切り分ける。現実装はK scale異常、live-row、V scale異常の
+workgroup collectiveを各32-cell tileで行う。これらは最終診断にのみ必要なので、
+局所bitを最後に集約する候補で、算術・選択・BF16 roundingを変えず同期頻度を減らせるかを
+調べる。速度は未測定で、source上の頻度だけから支配的資源とは断定しない。
