@@ -12,6 +12,7 @@
 #include <cmath>
 #include <stdexcept>
 #include <type_traits>
+#include <cstddef>
 #include <sycl/ext/oneapi/bfloat16.hpp>
 #include <sycl/ext/oneapi/matrix/matrix.hpp>
 
@@ -25,6 +26,19 @@ template<int Count> struct alignas(4) MatrixTile { BFloat values[Count]; };
 static_assert(std::is_trivially_copyable_v<MatrixTile<16 * Dim>>);
 static_assert(alignof(MatrixTile<16 * Dim>) >= 4);
 static_assert(sizeof(MatrixTile<16 * Dim>) == 16 * Dim * sizeof(BFloat));
+static_assert(sizeof(BFloat) == 2);
+template<int Count> constexpr bool storage_contract() {
+  using Tile = MatrixTile<Count>;
+  static_assert(std::is_standard_layout_v<Tile> && std::is_trivially_copyable_v<Tile>);
+  static_assert(alignof(Tile) >= 4 && offsetof(Tile, values) == 0);
+  static_assert(sizeof(Tile) == Count * sizeof(BFloat));
+  return true;
+}
+static_assert(storage_contract<16 * Dim>());
+static_assert(storage_contract<Cells * Dim>());
+static_assert(storage_contract<16 * Cells>());
+static_assert(16 * sizeof(BFloat) % 8 == 0 && 32 * sizeof(BFloat) % 8 == 0);
+
 template<int ScoreStride> constexpr size_t LocalPayload =
     (16 * Dim + Cells * Dim + 16 * Cells) * 2
     + (16 * ScoreStride + 3 * 16) * 4 + Cells * 8 + 16 * 4;
@@ -32,7 +46,7 @@ static_assert(LocalPayload<Cells> == 28160);
 static_assert(LocalPayload<Cells + 1> == 28224);
 
 bool matrix_available(const sycl::device &device, size_t local_payload) {
-  if (!device.is_gpu() || device.get_info<sycl::info::device::vendor_id>() != 0x8086 ||
+  if (!device.has(sycl::aspect::ext_intel_matrix) || !device.is_gpu() || device.get_info<sycl::info::device::vendor_id>() != 0x8086 ||
       device.get_info<sycl::info::device::max_work_group_size>() < Workgroup ||
       device.get_info<sycl::info::device::max_work_item_sizes<1>>()[0] < Workgroup ||
       device.get_info<sycl::info::device::local_mem_size>() < local_payload + 4096)
@@ -52,7 +66,7 @@ bool matrix_available(const sycl::device &device, size_t local_payload) {
 }
 } // namespace
 
-template<int ScoreStride>
+template<int ScoreStride, bool TilePacked = false>
 static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
                              const int32_t *ids, const int32_t *steps,
                              int64_t cap, const QsaShapes &shape, uint16_t *output,
@@ -152,7 +166,9 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
           // Scale and round before Q.K, matching the configured BF16 contract.
           value = value * 0.0625f;
           value = value * 1.4426950408f;
-          qtile[head * Dim + d] = BFloat(value);
+          if constexpr (TilePacked)
+            qtile[(d / 16) * 256 + head * 16 + d % 16] = BFloat(value);
+          else qtile[head * Dim + d] = BFloat(value);
         }
         bad = sycl::reduce_over_group(sg, bad, sycl::maximum<int>());
         if (!lane) bad_head[head] = bad;
@@ -162,7 +178,7 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
       using Left = mx::joint_matrix<sycl::sub_group, BFloat, mx::use::a, 8, 16,
                                     mx::layout::row_major>;
       using Right = mx::joint_matrix<sycl::sub_group, BFloat, mx::use::b, 16, 16,
-                                     mx::layout::row_major>;
+                                     TilePacked ? mx::layout::ext_intel_packed : mx::layout::row_major>;
       Acc accumulated[4];
       for (int j = 0; j < 4; ++j) mx::joint_matrix_fill(sg, accumulated[j], 0.f);
       const int width = steps[batch * kStepCount + kStepWidth];
@@ -188,7 +204,10 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
           const int cell = i % Cells, d = i / Cells;
           const int64_t row = rows[cell];
           const uint16_t bits = row >= 0 ? packed.k[row * Dim + d] : uint16_t(0);
-          kv[i] = sycl::bit_cast<BFloat>(bits); // Same local K transpose.
+          if constexpr (TilePacked)
+            kv[((d / 16) * 2 + cell / 16) * 256 + (d % 16 / 2) * 32 +
+               (cell % 16) * 2 + d % 2] = sycl::bit_cast<BFloat>(bits);
+          else kv[i] = sycl::bit_cast<BFloat>(bits);
         }
         if (tid < Cells) local_live |= rows[tid] >= 0;
         item.barrier(sycl::access::fence_space::local_space);
@@ -197,8 +216,13 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
           Acc product; Left a; Right b;
           mx::joint_matrix_fill(sg, product, 0.f);
           for (int d = 0; d < Dim; d += 16) {
-            mx::joint_matrix_load(sg, a, qtile + head * Dim + d, Dim);
-            mx::joint_matrix_load(sg, b, kv + d * Cells + cell, Cells);
+            if constexpr (TilePacked) {
+              mx::joint_matrix_load(sg, a, qtile + (d / 16) * 256 + head * 16, 16);
+              mx::joint_matrix_load(sg, b, kv + ((d / 16) * 2 + cell / 16) * 256, 32);
+            } else {
+              mx::joint_matrix_load(sg, a, qtile + head * Dim + d, Dim);
+              mx::joint_matrix_load(sg, b, kv + d * Cells + cell, Cells);
+            }
             mx::joint_matrix_mad(sg, product, a, b, product);
           }
           mi::joint_matrix_apply(sg, product, [=](float &value, size_t r, size_t c) {
@@ -220,7 +244,9 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
             const float p = rows[c] >= 0 && sycl::isfinite(score)
                 ? sycl::exp2(score - m) : 0.f;
             sum += p;
-            probability[tid * Cells + c] = BFloat(p);
+            if constexpr (TilePacked)
+              probability[(c / 16) * 256 + tid * 16 + c % 16] = BFloat(p);
+            else probability[tid * Cells + c] = BFloat(p);
           }
           maximum[tid] = m; alpha[tid] = a;
           normalizer[tid] = sycl::fma(normalizer[tid], a, sum);
@@ -229,7 +255,10 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
           const int cell = i / Dim, d = i % Dim;
           const int64_t row = rows[cell];
           const uint16_t bits = row >= 0 ? packed.v[row * Dim + d] : uint16_t(0);
-          kv[i] = sycl::bit_cast<BFloat>(bits);
+          if constexpr (TilePacked)
+            kv[((cell / 16) * 16 + d / 16) * 256 + (cell % 16 / 2) * 32 +
+               (d % 16) * 2 + cell % 2] = sycl::bit_cast<BFloat>(bits);
+          else kv[i] = sycl::bit_cast<BFloat>(bits);
         }
         item.barrier(sycl::access::fence_space::local_space);
         const int head = (subgroup / 4) * 8, dim_base = (subgroup % 4) * 64;
@@ -239,8 +268,13 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
             v *= alpha[head + r];
           });
           for (int c = 0; c < Cells; c += 16) {
-            mx::joint_matrix_load(sg, a, probability + head * Cells + c, Cells);
-            mx::joint_matrix_load(sg, b, kv + c * Dim + dim_base + j * 16, Dim);
+            if constexpr (TilePacked) {
+              mx::joint_matrix_load(sg, a, probability + (c / 16) * 256 + head * 16, 16);
+              mx::joint_matrix_load(sg, b, kv + ((c / 16) * 16 + dim_base / 16 + j) * 256, 32);
+            } else {
+              mx::joint_matrix_load(sg, a, probability + head * Cells + c, Cells);
+              mx::joint_matrix_load(sg, b, kv + c * Dim + dim_base + j * 16, Dim);
+            }
             mx::joint_matrix_mad(sg, accumulated[j], a, b, accumulated[j]);
           }
         }
@@ -276,6 +310,14 @@ bool qsa_bf16_prefix_optimized_batch(const uint16_t *query, const QsaAttnPools &
     uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
     int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream) {
   return prefix_batch_impl<Cells + 1>(query, pools, ids, steps, cap, shape,
+      output, queries, bounds, live_cells, scratch, stream);
+}
+// Dense16 A tiles and BF16 pair-packed B tiles; same numerical contract.
+bool qsa_bf16_prefix_tilepack_batch(const uint16_t *query, const QsaAttnPools &pools,
+    const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
+    uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
+    int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream) {
+  return prefix_batch_impl<Cells + 1, true>(query, pools, ids, steps, cap, shape,
       output, queries, bounds, live_cells, scratch, stream);
 }
 } // namespace strata::kernels

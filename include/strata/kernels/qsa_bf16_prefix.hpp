@@ -21,5 +21,10 @@ bool qsa_bf16_prefix_optimized_batch(const uint16_t *q, const QsaAttnPools &pool
     const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
     uint16_t *out, int64_t queries, const QsaPromptBf16Bounds &bounds,
     int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream);
+// Same score33 arithmetic/order/payload; dense16 A and BF16 pair-packed B.
+bool qsa_bf16_prefix_tilepack_batch(const uint16_t *q, const QsaAttnPools &pools,
+    const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
+    uint16_t *out, int64_t queries, const QsaPromptBf16Bounds &bounds,
+    int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream);
 } // namespace strata::kernels
 #endif
