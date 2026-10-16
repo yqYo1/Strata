@@ -86,6 +86,6 @@ endif()
 # util.hpp requires memory.hpp's declarations. Load it after the checked device
 # body and before any image.hpp/dpct.hpp relative include can see original util.
 # Its original guard suppresses that original header in all later includes.
-set(pr6_shuffle_suffix "\n// Modified for isolated Strata PR6 LLVM 22 64-bit shuffle compatibility.\n#ifdef __DPCT_UTIL_HPP__\n#error PR6_original_DPCT_util_was_included_before_the_checked_adapter\n#endif\n#include <dpct/memory.hpp>\n${pr6_shuffle_util}")
+set(pr6_shuffle_suffix "\n// Modified for isolated Strata PR6 LLVM 22 64-bit shuffle compatibility.\n#ifdef __DPCT_UTIL_HPP__\n#error PR6_original_DPCT_util_was_included_before_the_checked_adapter\n#endif\n// LLVM22 requires explicit kernel names at namespace scope.\nnamespace dpct { namespace detail { class dpct_memcpy_3d_detail; class dpct_memcpy_3d_detail_usmnone; } }\n#include <dpct/memory.hpp>\n${pr6_shuffle_util}")
 set(pr6_shuffle_proof "{\"schema\":\"strata-pr6-llvm-shuffle64-v1\",\"input_sha256\":\"${pr6_shuffle_input_hash}\",\"original_span_start\":20690,\"original_span_end\":21001,\"original_span_count\":1,\"original_span_sha256\":\"${pr6_shuffle_old_hash}\",\"replacement_sha256\":\"${pr6_shuffle_new_hash}\",\"generated_util_body_sha256\":\"${pr6_shuffle_util_hash}\"}")
 message(STATUS "PR6 private shuffle util body SHA256=${pr6_shuffle_util_hash}")

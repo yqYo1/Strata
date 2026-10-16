@@ -1,0 +1,25 @@
+{
+  "schema": "strata-pr6-private-header-kernel-name-compat-main-v2",
+  "previous_helper_sha256": "44a05ec836e8011fd40ee5c9523e1185cf1bfebc4fc50e8390c347d1bd13a313",
+  "helper_sha256": "b275253f52d1d54b56e00efc2e5f75891cb41b9a15fff16f175875c9eaf0f898",
+  "actual_failure": "Model-free provider buildv1 failed before native execution: DPCT detail/memory_detail.hpp596 local3Dcopy kernel name not namespace-forward-declarable.",
+  "Main_compile_probe": "own-pr6-provider-forward-compile-v1.json PASS, sameproviderTU/generatedflags plus prior namespace declarations and newobject path only. No native/GPU.",
+  "change": "Two namespace-scope forward declarations before memory.hpp in build-private checked header. Same existing helper kernel body and submit parameters; non-template3Dcopy helper name becomes valid namespace type.",
+  "expected_affected_types": [
+    "dpct::detail::dpct_memcpy_3d_detail",
+    "dpct::detail::dpct_memcpy_3d_detail_usmnone"
+  ],
+  "original_vendor_and_historical198_bodies_changed": false,
+  "shader_math_changed": false,
+  "source_only_integration": true,
+  "original_failures_unchanged": true,
+  "private_util_body_hash_unchanged": true,
+  "old_predicted_combined_header_hash_superseded": true,
+  "pending": [
+    "freshgeneratedheaderhash and sourcepins",
+    "fullcompile/link",
+    "Main-owned provider baseline cases",
+    "64bitshuffleoracle",
+    "model/state/quality/physical262144/RESTORE/600"
+  ]
+}
