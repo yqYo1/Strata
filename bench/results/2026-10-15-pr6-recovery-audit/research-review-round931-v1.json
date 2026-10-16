@@ -1,0 +1,294 @@
+{
+  "schema": "strata-research-scope-review-v1",
+  "review_round": "R931",
+  "reviewed_utc": "2026-10-16T12:52:26Z",
+  "reviewer": "native Codex gpt-6-luna max",
+  "report_round": 928,
+  "report_path": "research-round928-v1.txt",
+  "report_sha256": "4b9f2c6f23c4d0802c8a58cc6a526bf1079c1a964d35b0446939d22d0b4f9a96",
+  "purpose_class": "decision_support",
+  "spec_path": "orca-research-round928-spec-v1.txt",
+  "spec_sha256": "2b1c01c9ba78f777589dc3bb88c25d076cbfb9ab69a6605d29dba410b823c603",
+  "main_body_read": false,
+  "reviewer_report_body_read": true,
+  "report_index_snapshot_before_review_sha256": "53778edbe53fb214480a478e95767bf0be1034d55105a2d75fbda615eef9d42d",
+  "indexed_report_count_before": 289,
+  "reviewed_evidence": {
+    "artifact_policy": "AGENTS.md and docs/ARTIFACT_RETENTION.md read. No source edits, builds, tests, GPU work, profiler work, process inspection, or Git mutations were performed.",
+    "index_snapshot": {
+      "path": "research-index.json",
+      "sha256": "53778edbe53fb214480a478e95767bf0be1034d55105a2d75fbda615eef9d42d",
+      "relevant_entries": [
+        "research_scope_plan_928_930",
+        "round 893 and R894 retrieval corrections",
+        "round 732 conditional K-gather status",
+        "numerical_reference_policy_current",
+        "prefill_QSA_subprofile_current",
+        "hardware_resource_followup_8192"
+      ],
+      "report_count_before": 289,
+      "highest_report_round_before": 924
+    },
+    "prior_review_metadata": {
+      "R893/R894": "Historical Strata QSA route and source-versus-profile limits; exact old emitted kernel unverified. It does not trace current SGLang Qwen4-Exp execution.",
+      "R732": "K-only gather remains conditional; prior source load counts do not establish traffic or a device bottleneck.",
+      "R928_930_plan": "R929 covers GDN/HC/PLE and R930 expert execution, so neither duplicates this QSA source comparison. Both remain active; no worker was contacted or steered.",
+      "current numerical policy": "Actual SGLang/vLLM execution contract is the preferred baseline; FP32 references remain diagnostic and are not a stricter adoption gate."
+    },
+    "scope_depth_review": "1,566 whitespace-delimited words across 35 lines, one stage map, and six pinned SGLang file URLs. The finite QSA path question is answered at useful depth and within the requested report budget.",
+    "novelty_and_redundancy": {
+      "novelty": "Adds the current official SGLang Qwen4-Exp QSA call, selector, prefix-pack, and sparse-attention path, including an actual block-versus-cell selection difference. This is distinct from R893's historical Strata CUDA route and R732's conditional K-gather investigation.",
+      "prior_coverage": "Head reuse, online attention, direct page-table reads, and the limit on hardware-saturation claims recur from earlier work. They are useful comparison controls, but not new optimization findings.",
+      "applicability": "High as a source-level algorithm and dtype reference. It does not prove which optional backend or prefix branch ran in an SGLang process, validate numerical parity, or establish a Strata speedup."
+    },
+    "source_repository": {
+      "repository": "https://github.com/sgl-project/sglang",
+      "revision": "877be2974aa151a984e52822c028276c2b1e9303",
+      "head_verified": true,
+      "tracked_worktree_clean": true,
+      "root_license": "Apache-2.0",
+      "root_license_sha256": "1495e1e757ef4d0925a2350563cf5754bb23c51701a8ec4fb3c5cdcbedae6747",
+      "file_level_provenance": "The inspected files have no separate file-level license header; the repository root Apache-2.0 LICENSE is the applicable source provenance observed. No code was copied or adapted."
+    },
+    "source_checks": [
+      {
+        "claim": "Qwen4-Exp computes QSA indices before sparse attention, while the small captured overlap branch requires fewer than 1,024 rows.",
+        "result": "Verified in the model's Qwen4ExpAttentionDecoderLayer.self_attention path. It establishes source dispatch, not execution of a local SGLang runtime.",
+        "file": "python/sglang/srt/models/qwen4_exp.py",
+        "sha256": "9b8c9bc511800bbb53603b37bc3198597f778ba1a2b32a8b40fb5ea0212471e7",
+        "url": "https://github.com/sgl-project/sglang/blob/877be2974aa151a984e52822c028276c2b1e9303/python/sglang/srt/models/qwen4_exp.py"
+      },
+      {
+        "claim": "QSA indexer dispatch can fuse norm/RoPE/cache writes; the CUDA TileLang MQA path is conditional on q.is_cuda and HAS_TILELANG; selection then expands whole compressed IDs and a causal partial tail.",
+        "result": "Verified. The source's `positions.max().item()` in the non-capture RoPE cache-length path is an additional possible host synchronization boundary omitted from R928's ordering summary.",
+        "files": [
+          {
+            "path": "python/sglang/srt/layers/attention/qsa/qsa_indexer.py",
+            "sha256": "b0221ac79b25cd1de519495e947d3e5dcff1ae37c4e1e7bdc8583954bf657c54",
+            "url": "https://github.com/sgl-project/sglang/blob/877be2974aa151a984e52822c028276c2b1e9303/python/sglang/srt/layers/attention/qsa/qsa_indexer.py"
+          },
+          {
+            "path": "python/sglang/srt/layers/attention/qsa/mqa.py",
+            "sha256": "358d4ba68a4b30b3cfe6b60fda261d2e0a11b3e3a44d3b2d8c906ca51733fde1",
+            "url": "https://github.com/sgl-project/sglang/blob/877be2974aa151a984e52822c028276c2b1e9303/python/sglang/srt/layers/attention/qsa/mqa.py"
+          },
+          {
+            "path": "python/sglang/srt/layers/attention/qsa/kernel.py",
+            "sha256": "727ddececa672bcf580128d0d762349577eaf1037436d9152ce5d77af11a0237",
+            "url": "https://github.com/sgl-project/sglang/blob/877be2974aa151a984e52822c028276c2b1e9303/python/sglang/srt/layers/attention/qsa/kernel.py"
+          }
+        ]
+      },
+      {
+        "claim": "Ordinary CUDA prefill uses current K/V directly when there is no prefix, but packs paged prefix K/V for the chunk-prefill branch; the chunk attention interface obtains max_q with .item().",
+        "result": "Verified. The report correctly treats the pack and its host-visible shape synchronization as prefix-conditional. Source contains the separate RoPE .item() path even when this prefix condition is absent.",
+        "files": [
+          {
+            "path": "python/sglang/srt/layers/attention/qwen_sparse_attn_backend.py",
+            "sha256": "d98cca322c28e7eabccb8c96bc8690b0be0a601c47e290d03a758bef08decf8d",
+            "url": "https://github.com/sgl-project/sglang/blob/877be2974aa151a984e52822c028276c2b1e9303/python/sglang/srt/layers/attention/qwen_sparse_attn_backend.py"
+          },
+          {
+            "path": "python/sglang/srt/layers/attention/qsa/sparse_attn.py",
+            "sha256": "4607a09c536dca1439919c526f82f5f42c315cb2b6281b685584054170242516",
+            "url": "https://github.com/sgl-project/sglang/blob/877be2974aa151a984e52822c028276c2b1e9303/python/sglang/srt/layers/attention/qsa/sparse_attn.py"
+          }
+        ]
+      },
+      {
+        "claim": "The 512-block top-k entry is the bundled Triton fast-top-k.",
+        "result": "Correction: qsa_fast_topk calls a JIT-loaded C++ CUDA kernel for k=512. Triton is used for the block-to-token expansion and sparse-attention kernels. The top-k API explicitly leaves row output order unspecified.",
+        "files": [
+          {
+            "path": "python/sglang/kernels/ops/attention/fast_topk.py",
+            "sha256": "65eeb1c14a111e651819bdac3ecca3a796f06feec4fb5c03f2ea08a5a65d29e4",
+            "url": "https://github.com/sgl-project/sglang/blob/877be2974aa151a984e52822c028276c2b1e9303/python/sglang/kernels/ops/attention/fast_topk.py"
+          },
+          {
+            "path": "python/sglang/kernels/jit/csrc/elementwise/fast_topk.cuh",
+            "sha256": "208d95a7b0b070d9dfddf59b0dde9f68bf4b4405e1d4755e6d3172a14f6cc5b5",
+            "url": "https://github.com/sgl-project/sglang/blob/877be2974aa151a984e52822c028276c2b1e9303/python/sglang/kernels/jit/csrc/elementwise/fast_topk.cuh"
+          }
+        ]
+      }
+    ],
+    "strata_source_snapshot": {
+      "repository_revision": "834ad6f6000c7d265ee32924d0c1d550338c72be",
+      "branch": "feature/sycl",
+      "worktree_state": "Existing worktree contains many unrelated untracked artifacts; the inspected source file contents are independently pinned by the SHA256 values below. No untracked source proposal was opened.",
+      "source_url_note": "Commit links below identify the source revision; remote reachability was not checked. Local file SHA256 is authoritative for the inspected content."
+    },
+    "strata_source_pins": [
+      {
+        "path": "src/prefill/prefill.cpp",
+        "sha256": "d01662ae6c46bfdd2556da1345c5f9edb79f91694391eee2b2b0aebfeab831ce",
+        "url": "https://github.com/yqYo1/Strata/blob/834ad6f6000c7d265ee32924d0c1d550338c72be/src/prefill/prefill.cpp"
+      },
+      {
+        "path": "src/prefill/layer_major.inc",
+        "sha256": "e2def3bbd248c06c25ff2fce7ebc0ce49aecfcb0e418115196da8bb4b99960b1",
+        "url": "https://github.com/yqYo1/Strata/blob/834ad6f6000c7d265ee32924d0c1d550338c72be/src/prefill/layer_major.inc"
+      },
+      {
+        "path": "src/kernels/sycl/prompt_attention.cpp",
+        "sha256": "5fa7927e611b8cb746e1d11bd70a8e2aae3c66a48b02a93eb55e86eb9bf0076f",
+        "url": "https://github.com/yqYo1/Strata/blob/834ad6f6000c7d265ee32924d0c1d550338c72be/src/kernels/sycl/prompt_attention.cpp"
+      },
+      {
+        "path": "src/kernels/sycl/qsa_select.cpp",
+        "sha256": "377ad7713ebf9af859cd02614871de705a998af3f5f5cf5f551b881a43d29bfa",
+        "url": "https://github.com/yqYo1/Strata/blob/834ad6f6000c7d265ee32924d0c1d550338c72be/src/kernels/sycl/qsa_select.cpp"
+      },
+      {
+        "path": "include/strata/kernels/qsa.hpp",
+        "sha256": "87c02222284f842fcecb46a422b119af769c72c3914edc8da5b2ee782456dc74",
+        "url": "https://github.com/yqYo1/Strata/blob/834ad6f6000c7d265ee32924d0c1d550338c72be/include/strata/kernels/qsa.hpp"
+      }
+    ],
+    "measurement_evidence": {
+      "profile_v1": {
+        "path": "hardware-resource-profile-v1.json",
+        "sha256": "ae8140e87bd4ebfa059f9864d6fbc7e8c390093adfd9c0de7dcc0295ec36c410",
+        "actual_input_tokens": 39262,
+        "chunk_tokens": 8192,
+        "instrumented_host_prefill_seconds": 105.006826228,
+        "qsa_attention_commands": 60,
+        "qsa_attention_service_seconds": 33.962851021,
+        "attention_envelope_seconds": 94.944752862,
+        "compute_command_coverage_percent_of_envelope": 77.31,
+        "limit": "The profile does not identify arithmetic utilization or an internal attention bottleneck."
+      },
+      "resource_followup_v8": {
+        "path": "hardware-resource-followup-v8.json",
+        "sha256": "8e7bb8e53705d4d66ad73122f40919b8f3d53387b507ee4e5bf0357d27601b3d",
+        "closed_samples": "Nine clean processes / 90 samples / full-frame comparisons PASS.",
+        "working_set_comparison": "128x selected working set was +20.29% time.",
+        "command_grain_comparison": "16 commands of the same work were +4.89% time.",
+        "limit": "Synthetic fixture; no PMU or physical traffic evidence and no model speed conclusion."
+      }
+    },
+    "vllm_scope": "No vLLM source or runtime conclusion is made. R928 correctly avoids turning the local name-search result into an upstream-absence claim."
+  },
+  "source_context_corrections": [
+    {
+      "id": "R928-C1",
+      "report_lines": "17, 21, 25, 29",
+      "correction": "Apply the current numerical-reference policy prospectively. SGLang's reached sparse-attention kernels use Q/K operands in the query dtype (the prefix pack casts K/V to that dtype), maintain FP32 online max, normalizer, and value accumulation, and cast probabilities to the V dtype for the second dot. FP32 online accumulation does not mean FP32 operands. The source path does not require Strata's hi/lo FP16 double products; those are a higher-precision implementation choice relative to this contract, not an adoption gate. Keep the current K8V8 scale handling for that Strata storage format unless a separate storage candidate is validated. The existing native-BF16 QSA path is now a justified Main-owned precision candidate because it matches the newly preferred lower-precision contract direction and the measured QSA attention service is 33.96 s; this is a reason to re-evaluate, not a performance or numerical adoption result.",
+      "evidence": "Pinned SGLang sparse_attn.py implements q_values cast-back after scale, FP32 maxima/normalizer/accumulator, and probabilities.to(values.dtype). Strata prompt_attention.cpp uses Q/P hi+lo in the FP32 route; layer_major.inc exposes a distinct typed BF16 QSA route. AGENTS.md requires native 16-bit producer/consumer work and makes SGLang/vLLM the numerical baseline."
+    },
+    {
+      "id": "R928-C2",
+      "report_lines": "15, 26",
+      "correction": "The block-versus-cell selection difference is real and source-level, not just an unresolved possibility. For n=2052, 2053, and 2054, Strata's active width is 2051 while SGLang can return 2048 plus a 0-, 1-, or 2-token tail; Strata's weighted cell selector can take additional cells from a partial scored block. At n=2055 both width formulas reach 2051, subject to scorer/selection-set differences. The suggested 2048–2052 fixture does not exercise all four live-tail residues while selection is active; cover at least n=2048–2055, ties, and 262144. Compare valid widths and selected-ID sets against the SGLang block-plus-tail rule; ordered IDs are not a stable SGLang contract. Selection score dtype/rounding also differs (SGLang uses BF16 scoring unless both inputs are FP8; Strata source scores in FP32), so exact-ID parity needs to isolate the score inputs/rounding before attributing a mismatch to top-k alone.",
+      "evidence": "Strata qsa_selection_width is min(n,2051); qsa_select.cpp assigns full blocks weight four, tail weight n%4, and emits individual cells. SGLang QSA chooses 512 compressed blocks then expands complete groups and appends the causal tail. fast_topk.py documents unspecified within-row order."
+    },
+    {
+      "id": "R928-C3",
+      "report_lines": "15, 33",
+      "correction": "The k=512 SGLang top-k is a JIT-loaded C++ CUDA kernel (`fast_topk.py` / `fast_topk.cuh`), not Triton. The ID expansion and sparse-attention kernels are Triton. Avoid requiring exact ordered IDs: the top-k API explicitly leaves row order unspecified; compare the valid set/cardinality, and compare attention outputs separately for the numerical effect of different reduction order.",
+      "evidence": "The pinned fast_topk.py builds `FastTopKKernel` through the JIT loader and calls the C++ CUDA source; its docstring states atomic collection order is unspecified."
+    },
+    {
+      "id": "R928-C4",
+      "report_lines": "13, 14, 17",
+      "correction": "Qualify the no-host-sync summary. In non-capture mode, QSAIndexer.project_qk and its RoPE helper may call `positions.max().item()` while ensuring the cosine/sine cache length; the prefix chunk-attention interface separately calls `.item()` for max_q. Same-stream device dependencies need no per-edge synchronization, but these explicit host-visible scalar reads remain possible boundaries. No local SGLang execution established which dtype, TileLang availability, or prefix branch was reached.",
+      "evidence": "qsa_indexer.py has the `.item()` calls in project_qk/apply_rope; sparse_attn.py has max_q `.item()`; qwen_sparse_attn_backend.py selects no-prefix versus prefix execution based on prefix_lens."
+    },
+    {
+      "id": "R928-C5",
+      "report_lines": "21, 25, 27",
+      "correction": "Keep the no-adoption decision, but do not describe high/low arithmetic or the FP32 reference as required numerical gates. Reopen the already-present native-BF16 QSA route under the 2026-10-16 framework baseline and precision work, separating selection-ID compatibility, operand/rounding parity, and speed. Fused indexer preparation remains conditional on a Main-owned profile showing its stage is material; source fusion alone is not evidence.",
+      "evidence": "The current Strata QSA aggregate service is measured, but no projection/norm/RoPE/compression stage timing is provided. The typed BF16 consumer route is present but unmeasured in the supplied profile."
+    },
+    {
+      "id": "R928-C6",
+      "report_lines": "7, 21, 25",
+      "correction": "Add hardware-resource-followup-v8 as current counterevidence to any implicit bandwidth, concurrency, or launch-grain explanation. Its 128x selected working-set arm is 20.29% slower and the 16-command arm is 4.89% slower on the synthetic 8192-query fixture; neither result identifies physical traffic, a scarce unit, or model speed. R928's narrow conclusion that the aggregate attention service merits finer stage evidence remains supported.",
+      "evidence": "Pinned v8 result/report and nine-process, 90-sample, full-frame comparison summary."
+    }
+  ],
+  "correction_ids": [
+    "R928-C1",
+    "R928-C2",
+    "R928-C3",
+    "R928-C4",
+    "R928-C5",
+    "R928-C6"
+  ],
+  "actionable_candidates": [
+    {
+      "rank": 1,
+      "candidate": "Re-evaluate Strata's existing native-BF16 QSA producer/consumer path against the actual SGLang QSA operand and rounding contract.",
+      "reason": "The 39,262-token profile gives QSA attention 33.96 s of service, and the current precision policy calls for native 16-bit producer/consumer kernels using the framework contract. This makes the candidate concrete without promising a speedup.",
+      "constraints": "Hold selection IDs fixed for the first comparison; match the configured query/value dtype and rounding locations; preserve K8V8 decode scales for the existing storage path; retain FP32 only as a diagnostic reference; gate bounds, lifetime, faults, and the physical 262144 endpoint separately.",
+      "counterevidence": "The v8 synthetic resource run does not identify the limiting resource, and the typed BF16 route has no supplied speed or model-quality qualification."
+    },
+    {
+      "rank": 2,
+      "candidate": "Resolve QSA selected-cell width and set semantics before changing selector implementation.",
+      "reason": "Source confirms Strata's weighted-cell selector differs from SGLang's 512 whole-block expansion for active lengths with tail residues 0, 1, or 2.",
+      "constraints": "One Main-owned SYCL-only deterministic fixture should cover n=2048–2055, tied and near-tied cutoff scores, valid widths/sets, page bounds, and the physical 262144 boundary. Keep top-k row ordering out of the set contract; assess output numerics separately.",
+      "counterevidence": "The selector's score values also differ in dtype/rounding, so a top-k-only result must feed identical scores or explicitly model the SGLang rounding first."
+    },
+    {
+      "rank": 3,
+      "candidate": "Consider fusing indexer prep only if per-stage evidence shows it is material.",
+      "reason": "The official path exposes fused Q norm/RoPE/cache and compressed-key operations, while Strata's profile currently reports only aggregate QSA categories.",
+      "constraints": "Measure Strata projection, norm/RoPE, compression, launch, and host-visible sync separately before proposing a port; preserve pending-ring and 262144-context lifetimes.",
+      "counterevidence": "No current stage duration or proof that source fusion is cheaper on B570."
+    }
+  ],
+  "retrieval_metadata": {
+    "needed_now": true,
+    "hold_body": false,
+    "main_body_read": false,
+    "sections": [
+      "13–17: retrieve the Qwen4-Exp call, indexer dtype/host-sync boundaries, block selection, prefix packing, and sparse-attention numerical contract; apply R928-C1–C4.",
+      "21–29: retrieve only the candidate ranking and next evidence; apply R928-C5/C6 and retain all lifetime/context gates."
+    ],
+    "keys": [
+      "SGLang QSA attention uses query-dtype operands and FP32 online accumulation; FP32 accumulation does not require Strata Q/P hi/lo products.",
+      "SGLang selects 512 whole compressed blocks plus causal tail; Strata uses weighted cell top-k and can return different widths at n=2052–2054.",
+      "SGLang k=512 top-k is JIT C++ CUDA with unspecified order; Triton handles expansion and sparse attention.",
+      "QSAIndexer has conditional `.item()` cache-length synchronization; prefix sparse attention has a separate max_q `.item()` boundary.",
+      "Native-BF16 QSA is a justified, unmeasured candidate under current precision policy, with no speed or adoption result."
+    ],
+    "retrieve_when": "For the current Main-owned QSA numerical/selector decision, retrieve these sections only. The Japanese digest is sufficient for the aggregate evidence and eligibility status.",
+    "retrieval_brief": "Do not treat the R928 hi/lo wording or FP32 reference as the acceptance standard. Keep selector differences separate from attention arithmetic and from speed.",
+    "preserve_caveats": [
+      "No local SGLang CUDA runtime or branch instrumentation was run; TileLang and prefix/no-prefix dispatch remain source-conditional.",
+      "No end-to-end SGLang numerical parity, output-quality result, Strata native-BF16 performance result, or adoption decision is present.",
+      "The profile's 77.31% is command coverage of an attention envelope, not arithmetic utilization.",
+      "R928 measured a 39,262-token input, not the physical 262144-context correctness boundary.",
+      "hardware-resource-followup-v8 is synthetic and supplies no PMU or physical traffic attribution.",
+      "vLLM absence is not claimed; no vLLM source check was needed for this Qwen4-Exp comparison."
+    ]
+  },
+  "next_scope_eligibility": {
+    "recommended_now": false,
+    "schedulable_now": false,
+    "prerequisites_rechecked": true,
+    "dispatch_performed": false,
+    "title": "QSA configured-dtype numerical contract and selector-set validation",
+    "finite_question": "With the actual SGLang Qwen4-Exp configuration and reached CUDA branches recorded, determine whether Strata's existing typed BF16 QSA route matches SGLang's Q/K/V storage and rounding contract when selected token sets are held fixed, and separately resolve block-versus-cell selection widths at active tail residues.",
+    "prerequisites": [
+      {
+        "requirement": "A Main-owned receipt records the SGLang model/config dtype, QSA pool dtype, TileLang availability, and prefix/no-prefix path for the intended comparison.",
+        "evidence": "The report and local source provide conditional dispatch only; no SGLang runtime execution was performed."
+      },
+      {
+        "requirement": "A Main-owned SYCL-only selector fixture first records valid width and selected-ID set behavior for n=2048–2055 and at 262144.",
+        "evidence": "R928 identifies a real weighted-cell versus whole-block semantic delta; its proposed 2048–2052 span misses active tail residues 1 and 2."
+      },
+      {
+        "requirement": "A current QSA subprofile decomposes the 33.96 s aggregate service enough to identify whether attention arithmetic or indexer prep is the implementation consumer.",
+        "evidence": "profile-v1 reports 60 QSA attention commands and aggregate service, not internal compute or prep stage durations; v8 does not provide physical resource attribution."
+      }
+    ],
+    "reason": "No additional research session can establish runtime branches or B570 performance without Main-owned execution evidence. R928 answers the source question, R929/R930 cover adjacent active scopes, and a further broad source survey would be redundant. Main can proceed with the bounded component discriminator when serialized resources permit."
+  },
+  "decision": "accepted_with_prospective_policy_and_source_corrections",
+  "status": "Accepted as useful decision support. Retrieve only the indexed sections; apply the framework numerical baseline, selector boundary, top-k provenance/order, and host-sync corrections. No performance adoption is established.",
+  "operational_digest_path": "research-review-round931-v1.ja.md",
+  "operational_digest_sha256": "ac0fe04eebabd3edf3dc0c429932f54e6824759b58e087bc641d23a211b9e42e"
+}

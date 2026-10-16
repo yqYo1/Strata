@@ -4040,6 +4040,79 @@
         ],
         "outcome": "Accepted as a held knowledge collection with explicit overlap boundaries, mutable-source and backend-lowering caveats, and no B570 support/resource/performance claim."
       }
+    },
+    {
+      "round": 928,
+      "model": "Orca gpt-6-luna",
+      "read_only": true,
+      "path": "research-round928-v1.txt",
+      "title": "QSA prefill in SGLang Qwen4-Exp versus Strata",
+      "status": "R931-reviewed decision support; apply current framework precision policy, active selector-width correction, top-k provenance/order correction, and conditional host-sync caveat. No performance adoption.",
+      "sha256": "4b9f2c6f23c4d0802c8a58cc6a526bf1079c1a964d35b0446939d22d0b4f9a96",
+      "classification": "decision_support",
+      "spec_path": "orca-research-round928-spec-v1.txt",
+      "spec_sha256": "2b1c01c9ba78f777589dc3bb88c25d076cbfb9ab69a6605d29dba410b823c603",
+      "review_round": "R931",
+      "review_path": "research-review-round931-v1.json",
+      "review_sha256": "f47a834807bacc2ee12020e3c8e042f194d9f468b83f0aec5f2c637a5c748284",
+      "operational_digest_path": "research-review-round931-v1.ja.md",
+      "operational_digest_sha256": "ac0fe04eebabd3edf3dc0c429932f54e6824759b58e087bc641d23a211b9e42e",
+      "main_body_read": false,
+      "reviewer_report_body_read": true,
+      "retrieval": {
+        "needed_now": true,
+        "hold_body": false,
+        "main_body_read": false,
+        "sections": [
+          "13–17: Qwen4-Exp call, indexer dtype/host-sync, block selection, prefix pack, and sparse-attention numerical contract; apply R928-C1–C4.",
+          "21–29: candidate ranking and next evidence; apply R928-C5/C6 and retain lifetime/context gates."
+        ],
+        "keys": [
+          "SGLang QSA attention uses query-dtype operands and FP32 online accumulation; FP32 accumulation does not require Strata Q/P hi/lo products.",
+          "SGLang selects 512 whole compressed blocks plus causal tail; Strata weighted-cell top-k can return different widths at n=2052–2054.",
+          "The k=512 SGLang top-k is JIT C++ CUDA with unspecified order; Triton handles expansion and sparse attention.",
+          "QSAIndexer has a conditional .item() cache-length synchronization; prefix sparse attention has a separate max_q .item() boundary.",
+          "Native-BF16 QSA is an unmeasured candidate under the current precision policy, with no speed/adoption result."
+        ],
+        "retrieve_when": "For the current Main-owned QSA numerical/selector decision, retrieve only the listed sections.",
+        "retrieval_brief": "Keep selector differences separate from attention arithmetic and speed; use the actual framework numerical contract prospectively.",
+        "preserve_caveats": [
+          "No SGLang runtime branch, configured dtype, or numerical parity was verified.",
+          "No native-BF16 QSA speed or model-quality adoption was established.",
+          "Profile-v1 attention envelope coverage is not arithmetic utilization.",
+          "The input profile is not the physical 262144-context test.",
+          "Hardware-resource-followup-v8 is synthetic and has no PMU/physical-traffic attribution.",
+          "No vLLM absence claim is made."
+        ]
+      },
+      "correction_ids": [
+        "R928-C1",
+        "R928-C2",
+        "R928-C3",
+        "R928-C4",
+        "R928-C5",
+        "R928-C6"
+      ],
+      "reviewer_retrieval_metadata": {
+        "review_round": "R931",
+        "review_path": "research-review-round931-v1.json",
+        "review_sha256": "f47a834807bacc2ee12020e3c8e042f194d9f468b83f0aec5f2c637a5c748284",
+        "operational_digest_path": "research-review-round931-v1.ja.md",
+        "operational_digest_sha256": "ac0fe04eebabd3edf3dc0c429932f54e6824759b58e087bc641d23a211b9e42e",
+        "main_original_needed_now": true,
+        "purpose_class": "decision_support",
+        "scope_depth_review": "1,566 words, 35 lines, one stage map, six SGLang source URLs. Adequate depth for the finite comparison.",
+        "provenance_limit": "Exact official SGLang source revision and file hashes are pinned. CUDA branch availability/prefix path and output parity were not runtime-tested; no speedup is established.",
+        "source_context_corrections": [
+          "R928-C1",
+          "R928-C2",
+          "R928-C3",
+          "R928-C4",
+          "R928-C5",
+          "R928-C6"
+        ],
+        "outcome": "Accepted as decision support with prospective numerical-policy and source-context corrections; only indexed sections are retrievable now."
+      }
     }
   ],
   "main_initial_findings": [
@@ -6150,5 +6223,35 @@
       "path": "prefill-backend-dependency-audit-v1.ja.md",
       "sha256": "e7cd620558bcddaa1827c62a23b16664be1007e3047ebdad3d397641ae69f46c"
     }
+  },
+  "research_review_round931": {
+    "report_round": 928,
+    "report": "research-round928-v1.txt",
+    "report_sha256": "4b9f2c6f23c4d0802c8a58cc6a526bf1079c1a964d35b0446939d22d0b4f9a96",
+    "review": "research-review-round931-v1.json",
+    "review_sha256": "f47a834807bacc2ee12020e3c8e042f194d9f468b83f0aec5f2c637a5c748284",
+    "operational_digest": "research-review-round931-v1.ja.md",
+    "operational_digest_sha256": "ac0fe04eebabd3edf3dc0c429932f54e6824759b58e087bc641d23a211b9e42e",
+    "main_body_read": false,
+    "reviewer_report_body_read": true,
+    "retrieval_sections": [
+      "13–17",
+      "21–29"
+    ],
+    "correction_ids": [
+      "R928-C1",
+      "R928-C2",
+      "R928-C3",
+      "R928-C4",
+      "R928-C5",
+      "R928-C6"
+    ],
+    "next_scope_eligibility": {
+      "recommended_now": false,
+      "schedulable_now": false,
+      "dispatch_performed": false,
+      "reason": "Wait for Main-owned configured-dtype/branch evidence, selector-set fixture, and QSA stage breakdown; another source-only session cannot establish those prerequisites."
+    },
+    "status": "Accepted with prospective reference-policy and source corrections; no performance adoption."
   }
 }
