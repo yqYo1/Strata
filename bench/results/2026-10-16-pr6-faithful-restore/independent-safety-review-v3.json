@@ -1,0 +1,2339 @@
+{
+  "schema_version": 3,
+  "kind": "independent finite read-only source safety review / decision support",
+  "task_id": "task_55d776c1d8e3",
+  "dispatch_id": "ctx_b85237fc1338",
+  "generated_utc": "2026-10-16T08:33:05.065750+00:00",
+  "status": "SOURCE_ONLY_UNSAFE_TO_RUN",
+  "reviewed_base": "185fc2d2642071f8fff43a7b426f936f3a974a09",
+  "reviewed_head": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+  "source_delivery_head": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+  "prior_source_checkpoint": "2776c37b095e2b84a28f575ad43d888c1c42d254",
+  "checkpoint_to_base_changed_paths": [
+    "bench/results/2026-10-16-pr6-faithful-restore/independent-safety-review-v2.json",
+    "bench/results/2026-10-16-pr6-faithful-restore/independent-safety-review-v2.md"
+  ],
+  "no_new_definite_source_bug_in_finite_scope": true,
+  "not_a_safety_build_provider_model_or_performance_certification": true,
+  "execution": {
+    "configure": "NOT_RUN",
+    "preprocessing": "NOT_RUN",
+    "compiler": "NOT_RUN",
+    "syntax_check": "NOT_RUN",
+    "build": "NOT_RUN",
+    "host_fixtures": "NOT_RUN",
+    "tests": "NOT_RUN",
+    "native": "NOT_RUN",
+    "gpu": "NOT_RUN",
+    "device_queries": "NOT_RUN",
+    "process_inspection": "NOT_RUN",
+    "profiler": "NOT_RUN",
+    "service_queries": "NOT_RUN"
+  },
+  "source_edits": false,
+  "git_mutations": false,
+  "nested_agents": false,
+  "new_upstream_check": false,
+  "credential_records_accessed": false,
+  "excluded_engine_sources_helpers_tests_archives_consulted": false,
+  "llvm_implementation_tree_consulted": false,
+  "writes_only": [
+    "bench/results/2026-10-16-pr6-faithful-restore/independent-safety-review-v3.md",
+    "bench/results/2026-10-16-pr6-faithful-restore/independent-safety-review-v3.json"
+  ],
+  "full_reviewed_diff": {
+    "command": [
+      "git",
+      "diff",
+      "--binary",
+      "--full-index",
+      "185fc2d2642071f8fff43a7b426f936f3a974a09",
+      "3da01f7148f5536f444c8f471c65e2d47c58bc41"
+    ],
+    "sha256": "a70258e2887f8fb3d9f2ba2e7fff4afaaa31387918d07bf3cbdbd840548d6248",
+    "bytes": 182917
+  },
+  "source_only_diff": {
+    "command": [
+      "git",
+      "diff",
+      "--binary",
+      "--full-index",
+      "185fc2d2642071f8fff43a7b426f936f3a974a09",
+      "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "--",
+      "validation/pr6-restore"
+    ],
+    "sha256": "5e90c9cf04d87a7b7daecf08b4c0958c882ff786d28eb40039f198df6ab853d6",
+    "bytes": 59318
+  },
+  "stored_patch": {
+    "path": "bench/results/2026-10-16-pr6-faithful-restore/safety-corrections-v3.patch",
+    "sha256": "9bd1300910a1f5eace331eff2c967e89d0f7cbef7ee737787280b8656be48bcf",
+    "bytes": 59318,
+    "documented_tracked_plus_sorted_new_file_reconstruction_matches": true,
+    "application": "NOT_RUN",
+    "different_sorted_git_source_diff_hash_explanation": "same exact file hunks; stored patch appends sorted new files after tracked changes"
+  },
+  "changed_final_file_pins": [
+    {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/safety-corrections-v3.json",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "b91a2223bddcbcf7924ec695b385f52822e019c3",
+      "sha256": "74d0b716f18342ed26aa93a1efe7adb2643d3eb948ace12d5daec638576e39c6",
+      "bytes": 44112,
+      "base": null
+    },
+    {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/safety-corrections-v3.md",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "f3399e30b6a482ce2185bb1de75b425b9dd55fe1",
+      "sha256": "b460211961fc8b3673faa9ad974fc1dee4131990e6dc21a1f0d6f189942f6f31",
+      "bytes": 16760,
+      "base": null
+    },
+    {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/safety-corrections-v3.patch",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "e4bbee995a75fefcf4e29964bb6fb2d0cb3fbc11",
+      "sha256": "9bd1300910a1f5eace331eff2c967e89d0f7cbef7ee737787280b8656be48bcf",
+      "bytes": 59318,
+      "base": null
+    },
+    {
+      "path": "validation/pr6-restore/README.md",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "649c976327f7d2f52bda06549ece5f44e605befa",
+      "sha256": "98e39ac8fbe0430c70683a5de4e72bf1accd6a3c8a068ff262aef25ad34978cb",
+      "bytes": 5395,
+      "base": {
+        "path": "validation/pr6-restore/README.md",
+        "revision": "185fc2d2642071f8fff43a7b426f936f3a974a09",
+        "git_blob": "96aef224d820de0da635e434069e856645c94189",
+        "sha256": "eb0f9d75123a9e58b917a586523911ffe03cd59b59977591ec0cb8989b2a4aef",
+        "bytes": 3432
+      }
+    },
+    {
+      "path": "validation/pr6-restore/fixtures/CMakeLists.txt",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "165ca14582616d1651f1585d676d0f9e25a4ebbc",
+      "sha256": "d726bc46849da25184877d4e18142a652dc5f823dd119cc0c825ff8df1a05c28",
+      "bytes": 1561,
+      "base": {
+        "path": "validation/pr6-restore/fixtures/CMakeLists.txt",
+        "revision": "185fc2d2642071f8fff43a7b426f936f3a974a09",
+        "git_blob": "5aa9ea6cd81827c4d37b58e0a3a76e54737c6f37",
+        "sha256": "4e0879f5dad82e51d77cfdd89ba272c952f74da26048b2945c216a15baf48078",
+        "bytes": 1008
+      }
+    },
+    {
+      "path": "validation/pr6-restore/fixtures/bounded_join.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "2b4a5950837ded999ffd8625f5f4ec78dc73ad61",
+      "sha256": "d4f3138b69f6dd63656913b1bd5e0b0585020bb51bce8eb6a5afe2ff83b49ca1",
+      "bytes": 1644,
+      "base": null
+    },
+    {
+      "path": "validation/pr6-restore/fixtures/validation_control.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "12633c01bb7bf9827cd8b6ca6755be76bc165ff9",
+      "sha256": "fd7baaedaa4a1c9e3714bf2c77bf7b54a1e10d5eff2b8a60c3e495a5dc29f56b",
+      "bytes": 5301,
+      "base": null
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/native_head.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "756a2fb2b578d51ae764131936a237c71ff75197",
+      "sha256": "f24610f43fc4e891d5d96466f19f2de77f3e34a717ae5265e7f50ae614a5d36c",
+      "bytes": 3667,
+      "base": {
+        "path": "validation/pr6-restore/include/strata/core/native_head.hpp",
+        "revision": "185fc2d2642071f8fff43a7b426f936f3a974a09",
+        "git_blob": "097ef5946df4d70ae441d171ea9a3b9ce5011f5a",
+        "sha256": "04e88314b34833b89335973d22ad903764e8e534780cfdaa790f0258eb60ede2",
+        "bytes": 3493
+      }
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/validation_control.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "5c585600be736f5d36fcb23e6015c863e4e2c134",
+      "sha256": "b09ddc148a66cd1423d733f4fa9beb27e5fb8749bb1039d88465da39d12ac2fc",
+      "bytes": 3446,
+      "base": null
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/prefill/retirement.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "cc241b71471686f6999c45ed53a70db7b6589b27",
+      "sha256": "e440caa8186efcbf33c79ed88f97fd3aa127cb48067d6406b8f541c0f46217ef",
+      "bytes": 2344,
+      "base": {
+        "path": "validation/pr6-restore/include/strata/prefill/retirement.hpp",
+        "revision": "185fc2d2642071f8fff43a7b426f936f3a974a09",
+        "git_blob": "04efa6bdb1fc34a5c4661d9e4ae82e96703e9c4a",
+        "sha256": "205798bd97533112c1bbbba7d490b25dcc0a2c88ed39bc9337afc1fdaa81ab41",
+        "bytes": 1954
+      }
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/core/mtp.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "d5ec6f9ee00adc520233d82058fbd8199b19b2df",
+      "sha256": "306c91e43e536cd574476ab5a1302140beb41d2d237ae35e3d2ff4d84b020a0b",
+      "bytes": 11985,
+      "base": {
+        "path": "validation/pr6-restore/sycl/include/strata/core/mtp.hpp",
+        "revision": "185fc2d2642071f8fff43a7b426f936f3a974a09",
+        "git_blob": "1848b322bbcb1c85f66c3025ccc63ea080b6fece",
+        "sha256": "6e948585a01a4bec384af41dacacd1c3531f8bb7ea6b2db9c08bb295afac9971",
+        "bytes": 11751
+      }
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/core/session.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "ffe19bc1d6183b6594f3b6bf3c91ffe785e661fe",
+      "sha256": "ec390ba42eba0694255a07376c0aeff977c42141593339fbd29dcf4fac6af4a9",
+      "bytes": 31475,
+      "base": {
+        "path": "validation/pr6-restore/sycl/include/strata/core/session.hpp",
+        "revision": "185fc2d2642071f8fff43a7b426f936f3a974a09",
+        "git_blob": "3bb6e9d41a2a18befe2b218fc72cc042d17fd21d",
+        "sha256": "3b98234b00a8a7ad568f7d272c07d59609f777376994277505b16f00b208d659",
+        "bytes": 30604
+      }
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/core/verify.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "99d0c411efc6c5a6f3efbe8a16d47ac0863eaff6",
+      "sha256": "2ba290f8cf6d2df41a6b7532fcff457c72e0e51de22c496b58c3ab073dd4a7b2",
+      "bytes": 20288,
+      "base": {
+        "path": "validation/pr6-restore/sycl/include/strata/core/verify.hpp",
+        "revision": "185fc2d2642071f8fff43a7b426f936f3a974a09",
+        "git_blob": "c7c993d3f5ad4e88ed8bc8e536ab4c01b6262b1f",
+        "sha256": "372fb08904aa24f6bf2f055a82e7479785f46a5bf2c57c2a0768415cb0a8de95",
+        "bytes": 20328
+      }
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/sycl_doorbell.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "30651b9cd18677fde0faf0037e0c70a38f5ae43f",
+      "sha256": "6e52f096214b1eba1077f001a812cdba542c709642495d794fc420d12325a522",
+      "bytes": 1962,
+      "base": {
+        "path": "validation/pr6-restore/sycl/include/strata/sycl_doorbell.hpp",
+        "revision": "185fc2d2642071f8fff43a7b426f936f3a974a09",
+        "git_blob": "d801c54e071e8188a66c13ddfed2dbe243c62aa3",
+        "sha256": "887c300d93c423e9fe905dc4f4760e89f9b4dd79c5c8b2e4d0c0b28b9ad53cac",
+        "bytes": 1729
+      }
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/layer.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "f507e037258a5fc5ece3ed1c7baac95a6372382b",
+      "sha256": "44cb1e9f6ff157f453eabaa0c48ff4090df60ce58003a57fc1dd3cbec7192d45",
+      "bytes": 110377,
+      "base": {
+        "path": "validation/pr6-restore/sycl/src/core/layer.cpp",
+        "revision": "185fc2d2642071f8fff43a7b426f936f3a974a09",
+        "git_blob": "82e9f3df42150f81a00fa0f5ca3f6c2c1f8496b7",
+        "sha256": "9af142230c8b28d55731a1e9884e968b4b7f0f2cf5e7de4c689b8e83634b4215",
+        "bytes": 110127
+      }
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/mtp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "f5409df03fc69f208ba5dddfeaa90da75d153c17",
+      "sha256": "d1d66753feb50138d72e3638007625dd01cc6db6c3adf78af278cd837d0617f3",
+      "bytes": 66666,
+      "base": {
+        "path": "validation/pr6-restore/sycl/src/core/mtp.cpp",
+        "revision": "185fc2d2642071f8fff43a7b426f936f3a974a09",
+        "git_blob": "26820845458e381021b5b8ebc57663b5f0ce6747",
+        "sha256": "ac0a15e6e55ef024807810cdc63691002aa9fb5c303b7481767be331a127a0f7",
+        "bytes": 64199
+      }
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/native_head.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "cbe713b7e0e651e4e0ba9d6629277de2367ecbd9",
+      "sha256": "f45d658c199b159b8a43185d5b986f9c74265e52a9adb378e894c5577141fdb7",
+      "bytes": 14892,
+      "base": {
+        "path": "validation/pr6-restore/sycl/src/core/native_head.cpp",
+        "revision": "185fc2d2642071f8fff43a7b426f936f3a974a09",
+        "git_blob": "4d089246f4117ef7c278f790293925ae7988ba58",
+        "sha256": "268c6b120d89726d4c786092d0f5a2c767322eda0b71d0dcabb8ddf3fc944323",
+        "bytes": 14760
+      }
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/session.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "c266403085dffb7fc862889e072e4a349d6cab67",
+      "sha256": "ed15ed6a115165b69c90b630d11d00db478d18241b8a8fd01767e01f6ce44819",
+      "bytes": 67731,
+      "base": {
+        "path": "validation/pr6-restore/sycl/src/core/session.cpp",
+        "revision": "185fc2d2642071f8fff43a7b426f936f3a974a09",
+        "git_blob": "0b4187d6a65cc873c5595829fabfe881e230c2de",
+        "sha256": "d36b94c8855af556955ba7dac38e6c0852e761d7f2a0dd1e4cc8495d2c2930f7",
+        "bytes": 67034
+      }
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/verify.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "f13bc363d74f33567dbf6d7baec8bd9467da4607",
+      "sha256": "4d8e43ad252e90c3404238073cd2d9eb8e1b985f04bc6a68129135855648f881",
+      "bytes": 109629,
+      "base": {
+        "path": "validation/pr6-restore/sycl/src/core/verify.cpp",
+        "revision": "185fc2d2642071f8fff43a7b426f936f3a974a09",
+        "git_blob": "f446a3e3cce15ea601465f42296998b48ee14a14",
+        "sha256": "435a59fe52e0b21c8a7d62752a01d1d62f72dbd0c30c1a94826fd8cd85570d8b",
+        "bytes": 108050
+      }
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/prefill/prefill.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "921fc0425b67206c7d0aafa270489054c2a4543e",
+      "sha256": "334c5ac6f3da31796ff5dcc531d52d8f00eff7e47453735ce68e4a34b6f3063e",
+      "bytes": 255672,
+      "base": {
+        "path": "validation/pr6-restore/sycl/src/prefill/prefill.cpp",
+        "revision": "185fc2d2642071f8fff43a7b426f936f3a974a09",
+        "git_blob": "24a17a0c7f95210405b5753832558c147ef71b7d",
+        "sha256": "74fb232fd2f5e1465303c1c5ebc7a4ba38d8610a8efe8585ad090081e2f93b04",
+        "bytes": 255317
+      }
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/program/generate.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "fa97bfe211365c1a1c857d317ab2f8fa254e2151",
+      "sha256": "2b2462269fc1a3bb3e9dba89b5419ed20538b3ebd726c1c560ffad88fd78d41d",
+      "bytes": 535157,
+      "base": {
+        "path": "validation/pr6-restore/sycl/src/program/generate.cpp",
+        "revision": "185fc2d2642071f8fff43a7b426f936f3a974a09",
+        "git_blob": "58d6370e64c8bf9aab5deb519ce46e87ba938246",
+        "sha256": "8b4738d6a834688645a507a4a2faef21f63df9ac695ecae7f45571064451365b",
+        "bytes": 534399
+      }
+    }
+  ],
+  "complete_validation_source_manifest": [
+    {
+      "path": "validation/pr6-restore/CMakeLists.txt",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "be0ac55e51def99b3114d9abb0b0bf7a23aeb625",
+      "sha256": "b4a912aef2de32a7476da647aec2dab9fedb1a2102bd6369ca1a21903c2a8ad1",
+      "bytes": 5714
+    },
+    {
+      "path": "validation/pr6-restore/LICENSE",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "6687a423dde6b7aff1b748c07f5ee93ff788089c",
+      "sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
+      "bytes": 1093
+    },
+    {
+      "path": "validation/pr6-restore/README.md",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "649c976327f7d2f52bda06549ece5f44e605befa",
+      "sha256": "98e39ac8fbe0430c70683a5de4e72bf1accd6a3c8a068ff262aef25ad34978cb",
+      "bytes": 5395
+    },
+    {
+      "path": "validation/pr6-restore/checked_dpct.cmake",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "a18e322b47b16054b53f04a75019d4e4848b061d",
+      "sha256": "5757b9a1954558257fdc88d031aaeab7cbe7369d75191af21d547a890d2995e8",
+      "bytes": 2521
+    },
+    {
+      "path": "validation/pr6-restore/fixtures/CMakeLists.txt",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "165ca14582616d1651f1585d676d0f9e25a4ebbc",
+      "sha256": "d726bc46849da25184877d4e18142a652dc5f823dd119cc0c825ff8df1a05c28",
+      "bytes": 1561
+    },
+    {
+      "path": "validation/pr6-restore/fixtures/allocated_fields.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "b8ff6ea2651a4efe10e18d1d5199f0ff0229197a",
+      "sha256": "32f96938d53d9b980bbb49f084db10838f54b9a25cde9fe0160e65a7ae1f450f",
+      "bytes": 1680
+    },
+    {
+      "path": "validation/pr6-restore/fixtures/bounded_join.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "2b4a5950837ded999ffd8625f5f4ec78dc73ad61",
+      "sha256": "d4f3138b69f6dd63656913b1bd5e0b0585020bb51bce8eb6a5afe2ff83b49ca1",
+      "bytes": 1644
+    },
+    {
+      "path": "validation/pr6-restore/fixtures/draft_uploads.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "0a3b495097925a780947dc70a70dbae119d9e693",
+      "sha256": "3f225561c83288b078fa0f20880c60d438096ea1ebbf3c27eca0763c092de6ee",
+      "bytes": 4764
+    },
+    {
+      "path": "validation/pr6-restore/fixtures/range_guard.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "294c4e5f0fa70c76b4c5239bec67472660c17812",
+      "sha256": "297bd7e5179df12302f2ff729b54370605231c3d1ba58561b997bb2c77dd0192",
+      "bytes": 1470
+    },
+    {
+      "path": "validation/pr6-restore/fixtures/token_admission.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "ef69899ce50eb841813cc4037cf007edef3402c6",
+      "sha256": "1f8ee5677ea435a6b8ee9d164d25fb0e1ae789b708f0c098ef8946f8b958cabd",
+      "bytes": 1295
+    },
+    {
+      "path": "validation/pr6-restore/fixtures/validation_control.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "12633c01bb7bf9827cd8b6ca6755be76bc165ff9",
+      "sha256": "fd7baaedaa4a1c9e3714bf2c77bf7b54a1e10d5eff2b8a60c3e495a5dc29f56b",
+      "bytes": 5301
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/artifact/dequant.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "d5a314ce2d75940691cef7c1b5c271e82f836570",
+      "sha256": "4cb13d27a80f1c1de3ce73470eebf1cc4d0dba2f981cd69a93cb9bd58ba565af",
+      "bytes": 13592
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/artifact/gguf_reader.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "298dc3bc359e5ede9dc0d0685dea430ee8bedf61",
+      "sha256": "fc8453a95677e797c8fb1198bfb47d715b73a53446d39a29920c372180ca5ee0",
+      "bytes": 21441
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/artifact/gguf_split.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "0f01001fbbc539feb1526a433044bcf03553cd0e",
+      "sha256": "6280aabf7e4b77447caa5d046d7b7389c82af08b2d02c004897d0d4826a09760",
+      "bytes": 2425
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/allocated_fields.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "46ba68c493ba36d3b31290018ad57b27a7e71b69",
+      "sha256": "c97062152c816942c7d13b68b391a704f1e37ef30f34607dcaeb2258fc4b3e72",
+      "bytes": 1152
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/conversation_buffer.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "1cb8af77047f441231dc0ee368215443a0ae27de",
+      "sha256": "12f1abac2ec75cc71e8cf308a5a691923d8b617317560e009a41f713809f49d4",
+      "bytes": 6741
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/conversation_cache.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "b105deb60c6fda6e4ad81f999c73c005ccee160f",
+      "sha256": "c83486e7e0e170b1b4fe8f495651b32b1fe1b5e4af746bb2017f91c805a2dcf6",
+      "bytes": 13243
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/conversation_memory.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "0e908b40c52365ecd3a5ed25b63a66c995987afd",
+      "sha256": "b4c784080bfda39adb7a2fd4c64bac27a77bb7a6f4557b609e08c2afcb7f9954",
+      "bytes": 642
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/conversation_snapshot.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "1a56680df3b104cd5f56fc69711764af805a0f28",
+      "sha256": "becacc377339343eda4e068eca907c8a92c799887cd3befce3aefb4c320e09b7",
+      "bytes": 7178
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/device.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "091dff1c3113b174df7f26454b73cbd055e5d22d",
+      "sha256": "382f04df3a95349bf03dfce47402753aa2ed7e958dc6b12d0830ff1bab40d059",
+      "bytes": 4647
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/emulate.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "6f28b97f723a0112fd19557fdc94d4047f0d104d",
+      "sha256": "eb3df4efe89642f069420e0f68ec526b33d4cc66f9a6b26de0583492b5758a77",
+      "bytes": 1639
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/expert_cache.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "8c031ff307b681437dffeda3369f264800300131",
+      "sha256": "ab5f63364c771fbd94461fbda7d8326c027d4f52ac6d7e04e057c1730cc9d878",
+      "bytes": 16184
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/expert_source.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "8fbc4a58cd237f91f88dc642f6cb8ff04a060c5e",
+      "sha256": "0c3e0826a2c06f98d182c110aaae41b9da8c9dcda84663f2996dac17a03dc439",
+      "bytes": 47388
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/hit_hook.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "8c21035c9d5f5e77513788764a7aeeabcd207fa4",
+      "sha256": "4c006f473d71a79cf03d9ce07cb246dc8b5ec10269fd335960a27733d51bc033",
+      "bytes": 2531
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/layer.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "78f20c91c11183b08cacc75fc633d7bd4bffea5e",
+      "sha256": "4587a24f321d4e0bf5cf76f0355b5b2fcb8ccddd6d9ed7383729483b753c886f",
+      "bytes": 41997
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/layout.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "7b27fec9527b19a7a98f529ab3a81de6a519734a",
+      "sha256": "20afe27849aa28de7ec2f19fbf4be212240504008c643331eadbc10934821c0b",
+      "bytes": 4392
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/native_dense.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "2d3cb94c68cffee83f30b89b6d4caa213e0d4bb7",
+      "sha256": "8a897c58c76f38b622000dda001257e5e7047cf91af92236c737c50f281816e8",
+      "bytes": 2475
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/native_head.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "756a2fb2b578d51ae764131936a237c71ff75197",
+      "sha256": "f24610f43fc4e891d5d96466f19f2de77f3e34a717ae5265e7f50ae614a5d36c",
+      "bytes": 3667
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/pinned.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "28a6f987609a779fb30032be7d46daee86159fa9",
+      "sha256": "c6e74b06aa2a58be294d5f73cbaafdb45859a3d71300151cc7d798e7364ba402",
+      "bytes": 10489
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/progress.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "46c93783cb7b21c90cdacda716caf561a30b0bd6",
+      "sha256": "f72c21548bea3b8a8b07488bcd561d6c16e5960f5dbf78fca642011d3f8ff923",
+      "bytes": 2849
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/token_admission.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "dd07a6de3ec35684b6413af457c18bc5dae029e8",
+      "sha256": "06d69f2cc411a14764609ab1bdc27e652bd10a7b20e834f1ce791c8ffb31d5a7",
+      "bytes": 793
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/validation_control.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "5c585600be736f5d36fcb23e6015c863e4e2c134",
+      "sha256": "b09ddc148a66cd1423d733f4fa9beb27e5fb8749bb1039d88465da39d12ac2fc",
+      "bytes": 3446
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/weights.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "5c6414f8cd1e01ba9ee21494d680479a9f0d1a42",
+      "sha256": "18063071334211c008f5ca17814eda86570f228ab47e916b30f1a9690750956e",
+      "bytes": 7890
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/bf16_gemv.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "e3efe0ff341b5100648eef6fc021082254e3ba21",
+      "sha256": "302384de1e159faafd4c8206cdb6729e8cb9b311bf32c60aba541766b5ce2cda",
+      "bytes": 3833
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/cpu/expert.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "ab05db844cbfb1f3dd13ff6b0b18671be2b02580",
+      "sha256": "ae3e6f4c079a0dcbf300d59c83a1b3b88377abf3115210543161e41ee83df6e0",
+      "bytes": 10923
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/cpu/expert_layout.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "0eff498dd4231dd5627d1fd0f4a04bfc53c9c190",
+      "sha256": "54cae2eee0c5839f1a97b8f7d22eeea1980f4c612b85606db15310e2ae2a68a3",
+      "bytes": 5204
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/cpu/iq_avx2.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "a9628d3d39e0cd4e366e619036b1dcaa1a25df36",
+      "sha256": "aff6543052f5289ee9d60b5a54585489fd25681d8493cf45d7c9751c3d8e656c",
+      "bytes": 1449
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/cpu/iq_avx512.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "a9a71c461a74b5a14ef28addc0bae9e60a585df4",
+      "sha256": "ede01ee7e474f5d816d9bc6ad6b0804cabd924c69b2b3d536d40f2432410841b",
+      "bytes": 876
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/cpu/kq_avx2.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "01b7a63cc9a669938cc5646bb1627c516cf0aa45",
+      "sha256": "c4cd342ba0f2ffd34f6b5ac9c254c59d0a521370de0d7650f0c28e7a390b55dd",
+      "bytes": 1386
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/cpu/native_expert.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "9b807427ae361b9e27ecc6b933411f5e6ae64d97",
+      "sha256": "45ccf6df8b4cc5b468a245a2ddee845e0b10ece14951a5a7ab7b6ffbca087e94",
+      "bytes": 2643
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/cpu/pool.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "662bb03c1779df1d0d4b69f9f9af7a201f137e73",
+      "sha256": "cbc60c0921c6afc7d780f7e0eff7e6e05d00e0905c8f6738ca842ad8749b149c",
+      "bytes": 17057
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/cvec.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "a447eb52851d1df8ee323984a78d05ad3bf07620",
+      "sha256": "34e0a44c41392634451d4d676a0035623b205cf2952685aa1946b4df78dd5a65",
+      "bytes": 3698
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/dequant_bf16.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "5a8ed0881e04eca0e6f15dadb01c7a55b3a454f7",
+      "sha256": "6b49ba8f050e6684caa57879f14657c5453078a3ccb8f963432ea3049a4178ca",
+      "bytes": 1395
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/dequant_s2.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "2603f48d8f3670d4b05ac00293a78847c2d95826",
+      "sha256": "d8f3aa8d610887451f177f05ada1135d52daf21b95a8c2c58686c07403c8013d",
+      "bytes": 937
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/elementwise.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "ae0973c6dcc300d0bba816c6d434541659fcf4fb",
+      "sha256": "e0567d080e801d7b2a1feee3488339f3ca6bcd23093e05ff18130b2629305234",
+      "bytes": 9370
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/fused_gdn.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "0cf7c66c38ed3d8a6b666c75041f0ba6eb0e3907",
+      "sha256": "595205dcf531d8fb758bcd7b2d3ac4e4158bd06f20160199e592824d530e2078",
+      "bytes": 2197
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/fused_gr.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "b5f95fcb94cee78aa8e2e0f4447a8f0af5eae533",
+      "sha256": "34be5fc0e0f10c3f0440b26343cef167bb17be9e49cb639c40e6d7b4817dd069",
+      "bytes": 4327
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/gdn.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "898e2a855d0234d35cddca6f93888423225e6c9d",
+      "sha256": "f44626e3f52813b9be289aee72f708e9ad61aa9b3a0e43037ba5ff8b358fc638",
+      "bytes": 5558
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/gr.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "ce15813a86f8b8d114dfbc1c4be04a006d4d9d69",
+      "sha256": "2a5bbba0ea74752dceba2e14bcf5e7c470dd69dd74e533a3e2e9aa76804ef74e",
+      "bytes": 8014
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/iq_kernels.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "2c38f6f98d6400c865f8b527e98622fb93c8b60a",
+      "sha256": "e3750f39de3957ff8bbd0ecc9d77d0e394f34984935f528c908d107aa62a62b3",
+      "bytes": 5405
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/kv_q4.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "930b628c10fd1a6f2302d1f90ed1792ca1c867aa",
+      "sha256": "c7624d5567d464edd0e5e99951dca08f8a748545af2f0be4f18398a011c8ab89",
+      "bytes": 3416
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/kv_q8.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "a535cc32d8ff446792cef966670cc0586d1fe5ec",
+      "sha256": "8917232c10900e85a6193012d2cc56138c7ab000c01d964bc9d296cf2b2e4bb6",
+      "bytes": 2574
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/kv_stream.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "514474b1137e0d10d24362a0bda00c85a73308cf",
+      "sha256": "f0653aeda98ae00383b1786872a84eb864b3d97d0901736d13701bdd0f8a6cad",
+      "bytes": 6245
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/native_flash_attn.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "b517156e21a636764fcf53f039c35529eb7d16cd",
+      "sha256": "6cc7bb288fc263ee800f5b5329bcc8d139ddde7e31a022364850cf80b1e5f7ff",
+      "bytes": 1990
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/native_gdn.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "feebefe959ca477ef06ea746c9f1359c7f050b41",
+      "sha256": "2b65e1b5b689c06d099bc061d746d606dcc5b974a7bffe0820ce01e7295d1971",
+      "bytes": 1109
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/native_gdn_preprocess.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "58334f4242e04c478a69a8a05831aa4bbc2735b1",
+      "sha256": "7533d8464b6ae8e2800e43ee3036d23f21181c2472c069d19bacf115beeafc69",
+      "bytes": 2004
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/native_gr_norm.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "b8bb4ed1b6ce832c0b2996ad6f79ea7fab7088ff",
+      "sha256": "520230cbf749a13c4f91687da31c0136fdcb2f14d4e4f956c38334d0e2cf742c",
+      "bytes": 1057
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/native_gr_postops.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "790b883c6adb203202aa4df1091e0e0cc81a319c",
+      "sha256": "572867fecf55294f99251e679b934bb6ce63e2162f9c5c0e27bcec167a74d0f6",
+      "bytes": 1501
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/native_moe.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "34760efe64a6f03551007fc5406e7fb5f7c92dc6",
+      "sha256": "b8400379c2f0deea4f440a2aeb343d45377f4a334bf4b1c8eb8aa933eaace51f",
+      "bytes": 1244
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/native_ple_postops.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "97c499034698ea07d9d10c992f60658be51abf16",
+      "sha256": "eeeec9650c6e19402dcec9c4c807ff5a62f0b64b4a3ad86e6a286489ee7af091",
+      "bytes": 2179
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/native_qsa.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "c56eb4d29c369345c74101d3e6bf11b8244b7b29",
+      "sha256": "ef43d79914eb433458e2b212a9733e6a0e15be115aa156675d18a8d012c66387",
+      "bytes": 1620
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/native_qsa_indexer.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "fe66d4b06fed521da51f4b7f1ab0a055d8cdd05e",
+      "sha256": "d040ccbef7943f16c7ce99d8070979b555a8c740950a6f53945b7199226d3fc3",
+      "bytes": 2882
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/native_qsa_score.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "9427a77ede6634a12fa9984240cd07d5815e1a2e",
+      "sha256": "d57ba2509e97093ed2bfa3cbe73886407211a5d476a0b629ed925dd992369354",
+      "bytes": 1648
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/native_rope.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "95511b88c2d68df43cfc959383c08fcc63a4d52e",
+      "sha256": "550e8640263e0fbf2319e0d26426371b917eb34b6a24d3d672d502ff94717040",
+      "bytes": 1076
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/ngram.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "a321ea70f94b520f791cfb2aa096373eb802a921",
+      "sha256": "c29820c46e92f532bf69143d9e4ea1acdfbf5df7d0f29705493fa9350261596b",
+      "bytes": 13328
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/ple.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "76ae78902b36293602cdf9beb4c5a84c69bace8e",
+      "sha256": "bc60680dc29e0c0dfcfc0728d56a29d0afdf14781514865caf031e139708ff1d",
+      "bytes": 7815
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/qsa.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "dc26024ad5931b64046ebeb4ee78ca3fac4ac957",
+      "sha256": "87c02222284f842fcecb46a422b119af769c72c3914edc8da5b2ee782456dc74",
+      "bytes": 25547
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/qsa_decode_attn.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "45c0f301220ed4dd1526c5cf74bf617377d6d715",
+      "sha256": "6fa4b817f835c43783774d5946d14938f2867d7af16abb4db0f4b75d4622a915",
+      "bytes": 2651
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/qsa_prompt_attn.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "2391aaebc34ddece7cacb8b02d0dc259d94c9bbe",
+      "sha256": "a535cf4bf4fd5770e8726327f5dd64145e22478b2d711441d066ad3082f79d55",
+      "bytes": 2226
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/qsa_select.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "315081651108163d95fab91da57e7ffe63dda988",
+      "sha256": "fbd2dea4eebe9c6b1684957f5843abbf7d36630b526c4ecc6f68bb0fbd79d517",
+      "bytes": 4568
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/quantize_act.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "49d858b25e9a3a00246ba6a7206c33b0de285afd",
+      "sha256": "baad6fe6c691f8f5aee2d6dbbb3513eead12c754b485ee41af4618d5035772f7",
+      "bytes": 3813
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/router_top10.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "e10295e1e325d76477bbd0eeb52d71be284f0621",
+      "sha256": "cd0d8e91e702bfa2cfd681d4ccf4f6c4c62af2cd612d2d109e5369845ddf362d",
+      "bytes": 1434
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/s2_expert_grouped.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "af6f52f99d377f5e201bc35d80310dbfc7baf916",
+      "sha256": "74802f312c20daa90b7fbacba4a3357c8e94c7ecdab75f402be507dd303a8193",
+      "bytes": 10871
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/s2_gemv.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "a09b82261bb1c8c155acb1e4b4fafc69b6ee4495",
+      "sha256": "cc146b9c652f1ee0c89be65ce179ea4cb31d4b4d32366c07f06b45644bbb8eb0",
+      "bytes": 1460
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/s2_gemv_q8.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "9c7beb97ed727b4f8111f360b6b9bfb7a57cb975",
+      "sha256": "5c2ccbdc5b3f3a66b9afef5bc799ae2a83bcb2103b258bb84e8d82aad06b4eb1",
+      "bytes": 1059
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/s_gemv.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "340df04e47fc4c3643b228e7ab7bd1936327e935",
+      "sha256": "369ab6cc010b49ac1d82bb680246e93b4c10f4f7081f56a325f6c7138ab1c3fb",
+      "bytes": 9086
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/shared_expert.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "44b37d8220c29bc04832e4930c367679b67d6cae",
+      "sha256": "a78b1af02ee80a6e25a5708a3fef1bfe182cd35b30671d979651dec566cb4884",
+      "bytes": 6682
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/kernels/verify_kernels.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "50d951a69666142b5820d21143232a180b3b522e",
+      "sha256": "54e349fe4ab994f57a15ae8c15f81c3778652aa881ce6d25aa4136670bfa9ba7",
+      "bytes": 7807
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/ngram/ple_reader.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "2884817ef895f19deb7f40b22a20036c9fc0dafe",
+      "sha256": "d19b99a681a533f47144293bb170913c1496b5e0c344aed097ad1418375f7498",
+      "bytes": 5338
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/platform/direct_file.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "c59eb91005f7d2d8f84e9f1769d37a984e35a8ef",
+      "sha256": "ae9a8999aef1769d729e5d6e4058888a14b758cbce3804b291809b1a521a4253",
+      "bytes": 2391
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/platform/memory.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "202a3bf25b258c70c55190726aacc46abe515ee7",
+      "sha256": "4ca677ee94b3b72190b5a827479c37da39426cc8aac8413e4709fa356898237c",
+      "bytes": 2555
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/prefill/draft_uploads.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "717df032d9033cf025b65d998c61d7d2a4b762f3",
+      "sha256": "2d32126e28c67751d14bde6cd46f1db60b92aa3939b17a6f78fd66bc10955908",
+      "bytes": 3218
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/prefill/gemm.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "60d1c717480d5120d3714afbbeb7cde64597ccf5",
+      "sha256": "2f7af7dc424aa8356b5486c06d876af4b57c201d9732945c9ce5d8091d435354",
+      "bytes": 3014
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/prefill/kernels.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "3358bea654c186eb40fc735f183a4227381acde6",
+      "sha256": "213e42313d6ad1074e7c60d7ef7969f3b5816f05db45f347fa53d16386c3291f",
+      "bytes": 7599
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/prefill/moe_fused.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "a18590fe32329479e033b0cc91dcd0f9b3f9037d",
+      "sha256": "2809428405209d177a5ded160f62707f21eb344e85c84de8837b2b86ea938f65",
+      "bytes": 4033
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/prefill/moe_fused_iq.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "7c9e32829e176d5dc86b3597970b7cc2128a406b",
+      "sha256": "84d0c99ace277a53deb5d091b2a0a5137fdc390f834815b43e8a5a910f42b4c8",
+      "bytes": 2457
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/prefill/moe_mmq.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "0859dca35a8e1ae62f3a2c12965772ad36e3a35e",
+      "sha256": "2fcca5cfd1f9c25c35c28a01ae8e4202b203479f8893fe263e7a9b30954a753a",
+      "bytes": 4906
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/prefill/prefill.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "87bc959784b320c1112234e3d8c0ec4e04060d51",
+      "sha256": "0e890e3db621f03d4b8f187661134663449e40121db626750b201170060b733d",
+      "bytes": 11967
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/prefill/range_guard.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "cb28986e92882da6fcc43a59cb3faf9cda4589a5",
+      "sha256": "d3f56e66d62a88d89054376a65ae9df1fa4066ca5c0158d9dcce458149c1683f",
+      "bytes": 883
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/prefill/retirement.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "cc241b71471686f6999c45ed53a70db7b6589b27",
+      "sha256": "e440caa8186efcbf33c79ed88f97fd3aa127cb48067d6406b8f541c0f46217ef",
+      "bytes": 2344
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/program/conv_cache.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "7fe4bfa75fb0cd0c4bacf2721b342ababff738ec",
+      "sha256": "bac12824a15f99197e94305f90953914efd622b0380853675453f841a332eb5b",
+      "bytes": 2701
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/program/logits_selection.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "04462a826da152b812c3dc83bfb6901b443548a9",
+      "sha256": "f023d183fecb0c236dd0941988c672f6096fa92963393d4d879767838313e006",
+      "bytes": 1195
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/spec/controller.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "4864ce93acd70f51996998157166b278be097de0",
+      "sha256": "e1c8400792ec87882646c96b22d768e2f62a5cfebf4b415798ef177ea6e60cce",
+      "bytes": 3446
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/spec/draft_policy.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "c77b869668ea93528f77f8566edbf7b22335289d",
+      "sha256": "d7810bde5ca46b65f41e0eb3351ea86e55ea6a048e18b53a8761f0fc62b63bc5",
+      "bytes": 2670
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/spec/suffix_drafter.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "731bbef1b3bfb0a9a79db7e2a469166304383180",
+      "sha256": "30c7b82d26f013c4029f4db93947dd20060a7163840a5547dbb2513a5ee4844c",
+      "bytes": 2071
+    },
+    {
+      "path": "validation/pr6-restore/src/core/conversation_checked.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "4355dc4e3a8dcd60723d38b7a4b041893a132a19",
+      "sha256": "8fb6f2734b3b96d3590644133ccd07f09befda6ef2243325ef8ea3f1c6a972ad",
+      "bytes": 704
+    },
+    {
+      "path": "validation/pr6-restore/src/core/conversation_memory.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "bd5740f2fce5397feb1014fe6b529658ac5a9c18",
+      "sha256": "2654582ed22f147a3e83073664d74ff67f3f8a550d58c30654a417e8aa5b2b2a",
+      "bytes": 1519
+    },
+    {
+      "path": "validation/pr6-restore/src/core/layout.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "6d1b970bdae0dea5037da806640d2bcb4bea1765",
+      "sha256": "f1e166c91025710fe318c85f7fba27a721291ca2d27ececd797abafa5a5cc7eb",
+      "bytes": 8362
+    },
+    {
+      "path": "validation/pr6-restore/src/kernels/cpu/expert.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "045e3d58aa5dffaccb6ae35d8c94d1ba77dbf897",
+      "sha256": "9bcf5d889818ef3cb9619df6536e8844d151714803ac8930eada115a61b62e48",
+      "bytes": 34941
+    },
+    {
+      "path": "validation/pr6-restore/src/kernels/cpu/expert_layout.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "8b6e3bc2c5bab3b7e43f3183a94b4b30215a3e17",
+      "sha256": "89a60e5c44a3578108c7a35a65003006685992487e6dc6ad7b71b04c4a60211b",
+      "bytes": 13811
+    },
+    {
+      "path": "validation/pr6-restore/src/kernels/cpu/iq_avx2.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "bb8849bb51a10d7851ae300d17a24bc51d7ba78c",
+      "sha256": "16dd52d3b0ee5189a0c5152cd1e565782009902af37b7beaed9167cff9b5538e",
+      "bytes": 28123
+    },
+    {
+      "path": "validation/pr6-restore/src/kernels/cpu/iq_avx512.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "26d2c5a715e32a1129ea623b3b9ab1988d697150",
+      "sha256": "c57d176884fcd34ab730e4684fb560a21aa1ec2a5dde8759a1705c0344658b96",
+      "bytes": 15360
+    },
+    {
+      "path": "validation/pr6-restore/src/kernels/cpu/kq_avx2.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "a34731198c3fb5addde74145e15164fd986d5ae4",
+      "sha256": "9bdade163b90b219ab3be746818cb2e6e9bca93813f69e2cb4e8e448b633c4f1",
+      "bytes": 13259
+    },
+    {
+      "path": "validation/pr6-restore/src/kernels/cpu/native_expert.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "0dc5d3aa84207066677490d19974ce96f520eeba",
+      "sha256": "0a5e6d6bf8137c29adab61342264c25c86459922704634c80f5e8f37887d6526",
+      "bytes": 9109
+    },
+    {
+      "path": "validation/pr6-restore/src/kernels/cpu/pool.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "c64462936ba863686951b5da1f26745d20fe6d0a",
+      "sha256": "41a2be640f1d1823f7ba88107beba4815cb3ad6f7ffc39e6f34575b8b1b1cd32",
+      "bytes": 35875
+    },
+    {
+      "path": "validation/pr6-restore/src/kernels/cpu/pool_affinity_linux.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "0791ac5c7abe670336c602a3846ebd5b4b235e34",
+      "sha256": "931848c9fb4a4bdb1ebbe9db47bff05428595231bcca65b66a5b7ec301f7cae0",
+      "bytes": 2549
+    },
+    {
+      "path": "validation/pr6-restore/src/kernels/cpu/pool_affinity_win.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "6f0e4020227a576269a07d5449cb05f936c020f9",
+      "sha256": "63a3e8d6346d2887b6e139638ad74ab5ce005be20f6c0d4664c16938a84abe6f",
+      "bytes": 2796
+    },
+    {
+      "path": "validation/pr6-restore/src/kernels/cpu/q2_avx2.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "8e276a5ee7511ef1952b558156cf34eac136c302",
+      "sha256": "9d43e6314a75a1095953f935ed95583141afff67ba5e4da96b6e2520c5a95eee",
+      "bytes": 6211
+    },
+    {
+      "path": "validation/pr6-restore/src/kernels/ngram.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "7292dd963bb121c59522de6447a822fb35ccb584",
+      "sha256": "04ca129a5624329edd5b4193e26eb8bfeb249102ef515ee3c7177d8ae1634a0a",
+      "bytes": 23753
+    },
+    {
+      "path": "validation/pr6-restore/src/platform/memory.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "f3b40e8d6efeb1a47cba2c6c7b54cd0724c00b21",
+      "sha256": "51e55255db8d617cf0ec19064eb68ac53187e930cabe69e0e7335c1320721220",
+      "bytes": 5500
+    },
+    {
+      "path": "validation/pr6-restore/src/spec/controller.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "be31270177f26a44ee3626831e831512d03c414c",
+      "sha256": "9ea393b4d369ddce11315032695899a51deeb697e1a7745dc397724f4db7351f",
+      "bytes": 3479
+    },
+    {
+      "path": "validation/pr6-restore/src/spec/draft_policy.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "1ac771985bf6345b6d9ec6649c6aa09a6e828c3f",
+      "sha256": "1668fb1ac1a3e57cb9e7b350a25a86c59ab2b2a4f2517ef213629e82863c03ea",
+      "bytes": 4075
+    },
+    {
+      "path": "validation/pr6-restore/src/spec/suffix_drafter.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "6f04f76d5959751286dbf0ea7bbe47c17eabf514",
+      "sha256": "a3e8b6487d34dcdb8208c482190ad9079e759a40f995167bb33a951f30de19ff",
+      "bytes": 3081
+    },
+    {
+      "path": "validation/pr6-restore/sycl/CMakeLists.txt",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "5c8e6c507f36e420be61d761a0514897781ef2b8",
+      "sha256": "1500925f231c5bd61c5f771e1b8cb3d396c9e6cb14330dda6069dc14e08dfd03",
+      "bytes": 17522
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/core/coupled_draft.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "f7640d57042d59ca335ff0afa7af41b01752637b",
+      "sha256": "242246899693a6bb8058b483976eaf1e680abb275e70d8950d610415050f3e79",
+      "bytes": 5182
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/core/gguf_expert_source.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "678a754ea57c3b0840d219782cf3a91ff0e9c5c9",
+      "sha256": "f8f5c2109400b2fe5980451d05cf86a55b8b05e2e28d5783f22a0cc1d9e6bb4d",
+      "bytes": 4629
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/core/graph.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "4eb7f3b308f7c907596f118e736e9441ad765e95",
+      "sha256": "ebd5556f163b5c31f9a75ecd400cace0786e259d234e1c57358b5a1dec0c506b",
+      "bytes": 5903
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/core/mtp.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "d5ec6f9ee00adc520233d82058fbd8199b19b2df",
+      "sha256": "306c91e43e536cd574476ab5a1302140beb41d2d237ae35e3d2ff4d84b020a0b",
+      "bytes": 11985
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/core/on_device.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "ee2d7b3b38e7d40e3d3a28bda0829764448ba198",
+      "sha256": "f4fc309d6c537bc5c75b2912f13296a2e12740159e40cda2eac72884a61c3810",
+      "bytes": 1406
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/core/peer_experts.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "fd33e6929618ad803dbeed178d4fc57ae024ed7d",
+      "sha256": "24d3947e0d36932ffe7429ddbfd3009c2570dcf65d5f48801d1d69eb404734d5",
+      "bytes": 5992
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/core/remote_experts.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "097d82d996d146582c9a077012bd707ccf408ae4",
+      "sha256": "d2bbfe61dbf1bd81c8ab72db07880d89d1feda527d75c27b5fdbd02e7bc5a2ac",
+      "bytes": 3457
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/core/session.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "ffe19bc1d6183b6594f3b6bf3c91ffe785e661fe",
+      "sha256": "ec390ba42eba0694255a07376c0aeff977c42141593339fbd29dcf4fac6af4a9",
+      "bytes": 31475
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/core/verify.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "99d0c411efc6c5a6f3efbe8a16d47ac0863eaff6",
+      "sha256": "2ba290f8cf6d2df41a6b7532fcff457c72e0e51de22c496b58c3ab073dd4a7b2",
+      "bytes": 20288
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/kernels/bf16_bits.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "84fe011b0bd3e134edb04acb2508dcab01fd4811",
+      "sha256": "1c55a4174f190cd59c8e1baef47e49e91ce88a5b66e0757272169aff2b008dd6",
+      "bytes": 2733
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/kernels/dp4a.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "89f7ba86aae1366f8d238ecbfb8030402e8970fd",
+      "sha256": "b4af6f12a6dd8e63c27ca4e967f569788cacd412c742300d4f92eb30fff42249",
+      "bytes": 2693
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/kernels/f16_bits.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "cd5625f699c7c05a7eeccf216fd0a63f9dca4e44",
+      "sha256": "1afe7e52eb208a21dff18aa5473bf1cbf6becb34f2f9978450b7d3ceb3532ddc",
+      "bytes": 5407
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/kernels/mrope.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "ed27cf80911e92c48c0f019f09ea44ddbb8686ad",
+      "sha256": "55573e42044d18fd6e245f12fc3da1ee79120bfca80b5eb644cbc0515d1c63d5",
+      "bytes": 4475
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/kernels/native_mmvq.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "4b3e82a6f39820906bcc937dedf1fc1f8941661d",
+      "sha256": "3e0bda0c4b9e773e5490fca5ea8c518d0aa0d34439a7761ab40069194c0e0041",
+      "bytes": 6250
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/kernels/native_router.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "4edfea614e8818724a90500cbbee83d686ad8994",
+      "sha256": "d06fac9f23c08a9471f19dab5c9ce08f9288436fa67afcb8506ca12b48a46e5e",
+      "bytes": 1259
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/kernels/q8_1_finite.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "fd9909206a47f04654a79a367013b9d2477f213d",
+      "sha256": "6a3c49cabd87bf2b0b2f163c03986066f13c708c96adc34a83ad0234918e115b",
+      "bytes": 1954
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/kernels/qsa_decode_attn_variant.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "d229b27267fd1bfe9aaf1c949c3865b3c9ad7eb3",
+      "sha256": "1683a9e39447bad7c1f97f4288250ac0093a84c638e766670178700de539527e",
+      "bytes": 780
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/kernels/qsa_prompt_attn_xmx.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "2536387fb961ba8bcb8a6260fa6e8457724603f7",
+      "sha256": "ad500bbc334ddbe20d0cfe545b499f9c12a44e5c738a5cc142ee267b1bd08ef6",
+      "bytes": 710
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/kernels/qsa_select_variant.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "a042ad7bd04afebfbe7c65fb81f06d01d3d805f7",
+      "sha256": "cd856ef2cc9dcfff28b1f2c8fb0cd9a57daeb20fff4c256a06f995682d3b8d9f",
+      "bytes": 632
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/kernels/resident_plan_mirror.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "b28a089a3fc83c4024b6cd42a70259d38516bfa6",
+      "sha256": "02704f127abdea21e2da6fbbbdbc764da940cf390f94874735c5ea72c48d1ecb",
+      "bytes": 726
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/kernels/rope.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "34adf305914d21ac7728d9d11aaf8c3455c89ee5",
+      "sha256": "92fecdfa40f4ce6d9fc99ee762e5e353ee0c37b72b5852371c62e2c06bc64374",
+      "bytes": 3780
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/kernels/rope_scaling.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "5512e59b339d1fcc88f350d78a5b0eb4a0c8b1b6",
+      "sha256": "27587e1e4f00692bd17a92f1c92d7a354af5280a6159eaae458237020e81157a",
+      "bytes": 11852
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/kernels/sampler.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "ed6eae1eb13b3e6bd370e620fab2203677115d45",
+      "sha256": "d4c154af107e8b9b731c957899873175157855e937cee6e3892205cef5258207",
+      "bytes": 5744
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/prefill/gdn_variant.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "78c2e7409eb38fd43de2c3d0af29161de2dbcd3f",
+      "sha256": "25a631792c4ebd969ba23959a07a6e6dcc4fab8dc0bedde46cac20bea0d3a84b",
+      "bytes": 558
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/sycl_async_contract.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "ce8c3835e483b6340aee89afae82fa7af41c1853",
+      "sha256": "14751664b69dac54067a3721d64196c8696c37f5007b01d7530c9ea0c752ab97",
+      "bytes": 1283
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/sycl_doorbell.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "30651b9cd18677fde0faf0037e0c70a38f5ae43f",
+      "sha256": "6e52f096214b1eba1077f001a812cdba542c709642495d794fc420d12325a522",
+      "bytes": 1962
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/sycl_expert_transfer.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "d446242185962763cca4db5558688fa79deecc58",
+      "sha256": "927b422f5226c1625ad09269740a6d899bb588b9bdce1dbade54084ee4838b77",
+      "bytes": 274
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/sycl_math.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "58ccd2caec82a31b51006b7feac90ca03454e49c",
+      "sha256": "500d98c350480077ee8e454503be07e720c35f0f5a9f366b5f6aebdc06a7bf0d",
+      "bytes": 699
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/sycl_queue.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "88d124eb600da37d89c714b1e19db1d36405139c",
+      "sha256": "ed28dbecd3d0fc794c0f744ce131a0476412be5a5ae9dd3a0d88f436ae4aa8d2",
+      "bytes": 805
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/sycl_retirement.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "20dd385f5b245d3fab268710611d4a1b7ca72405",
+      "sha256": "7b73763943e2833d3d126169e91142ceff600e4b08d9ed2692c044da344c24e7",
+      "bytes": 1241
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/conversation_snapshot.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "0bdde1480702e7855ea76e6b871a69ff85862ed0",
+      "sha256": "8dae319082b3a34d51506f93ebc9e56b814f1b14775aa28d69b2032294040ac0",
+      "bytes": 15130
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/conversation_state.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "44be3d4580db767e856fbf9d6802a312dc1aac47",
+      "sha256": "80aea00e2044791359a4aaad093147a375aa27c1c7e1c3bc6d73bd3bcee6f270",
+      "bytes": 17581
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/device.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "c4199d2c4143f46876d84dc4370662fbb3f9b97d",
+      "sha256": "5efd74df905d8893cf83fff402ed9d25b922c7e5c0765b61987da894967ebfe5",
+      "bytes": 16317
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/expert_cache.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "9e2dafb69c1439592b1fcdf59fe76f7da81083a9",
+      "sha256": "48346608bcdabb66050740e2fa76c3d5e53076eb61e7920d1aa16f2254c8e10d",
+      "bytes": 36326
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/expert_source.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "3b1d0fde42418654948454984c26768a1cdd9d71",
+      "sha256": "5a04d7c19b0b305339c592275360f0ed41268ff0af1ce42f79ad7146681edbed",
+      "bytes": 149701
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/gguf_expert_source.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "8c228f3c9291a2e2144cb24c1a5879cd247b43b4",
+      "sha256": "cb37b9457f5d1f065f5ed1d685b9da6c1554ae8ca5055becfbbe72c724bc8da6",
+      "bytes": 8948
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/graph.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "5d4550224c54445eadbbeab6111c837e6b788040",
+      "sha256": "bd46e2868f713f14a02297a87d5486eca751445bcba65f2a941587f8923ac998",
+      "bytes": 9744
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/layer.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "f507e037258a5fc5ece3ed1c7baac95a6372382b",
+      "sha256": "44cb1e9f6ff157f453eabaa0c48ff4090df60ce58003a57fc1dd3cbec7192d45",
+      "bytes": 110377
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/mtp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "f5409df03fc69f208ba5dddfeaa90da75d153c17",
+      "sha256": "d1d66753feb50138d72e3638007625dd01cc6db6c3adf78af278cd837d0617f3",
+      "bytes": 66666
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/native_dense.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "71633b9a60035a97b5fbe5499741c6da7fa62745",
+      "sha256": "a8ce71277511c6eebe47e75d069633ccc39a5e8b1304cba22ce6efa565388b58",
+      "bytes": 12499
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/native_head.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "cbe713b7e0e651e4e0ba9d6629277de2367ecbd9",
+      "sha256": "f45d658c199b159b8a43185d5b986f9c74265e52a9adb378e894c5577141fdb7",
+      "bytes": 14892
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/peer_experts.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "63656fd6866d15670a940a9e25e7750f3b071ebc",
+      "sha256": "5708f78a7571bb8e6ed883f5d582298fe238145d2a1d224939becc0332cf0360",
+      "bytes": 1525
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/pinned.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "0ad50a1f6dec906805428b6833db88f29759ea71",
+      "sha256": "b060a4cba6a96cd9ea4384ce183704d00507364e879f4968fd54a5c31bdb3579",
+      "bytes": 30241
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/remote_experts.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "d1592df9d6842db2de1f84a9cd8e4c9c10b3e8e1",
+      "sha256": "d690dd752ba60040880a40ae87bc625e72ab530a26413f7d204ced14ad2e5f52",
+      "bytes": 21876
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/session.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "c266403085dffb7fc862889e072e4a349d6cab67",
+      "sha256": "ed15ed6a115165b69c90b630d11d00db478d18241b8a8fd01767e01f6ce44819",
+      "bytes": 67731
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/verify.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "f13bc363d74f33567dbf6d7baec8bd9467da4607",
+      "sha256": "4d8e43ad252e90c3404238073cd2d9eb8e1b985f04bc6a68129135855648f881",
+      "bytes": 109629
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/weights.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "8ec6690bdda6688c99d42dd8a7c06331136ccb3c",
+      "sha256": "b2cf2e9f4e55876e2da40f5803fe403c44350225e3fa907fa02bfcdec76aa185",
+      "bytes": 24607
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/bf16_gemv.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "42996b23ff372e795a72e74e0316637ef818cb86",
+      "sha256": "f6a1ecdde48ce4023a91d8723a12f1a006d29a3d4d88bc75c59d6e66c2a0c127",
+      "bytes": 11878
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/cvec.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "00872ed89952d22e18e1f703c95b318beae007dd",
+      "sha256": "4b7c2c6985fc64edb1c363e79aa3a24e70dc1352fe9f34d2e830a05edaa5a4bd",
+      "bytes": 12550
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/dequant_bf16.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "272e9542527670d5bd0877395d039f5b98171493",
+      "sha256": "222c8123ec3242950ae33ffa72c264bde3a9ed6f8b813295202b7493cb78cd0a",
+      "bytes": 15654
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/dequant_s2.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "787a0339b5c40c157662915d0671fa8e33d45e11",
+      "sha256": "6343106ac17205944954968ae35ba0200e3640a89d48b746b0882974648b9727",
+      "bytes": 3154
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/elementwise.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "6f01683237f6c642f24d42cc502a57572fd24054",
+      "sha256": "9127065091922e30990b76eae1490d585954657768af79f59ac0501c2b012748",
+      "bytes": 34704
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/fused_gdn.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "eca2bab0eaa6670fba6cf73ce324e3af7ec60fc6",
+      "sha256": "e15875df661dc90675fba4d14a3922881af854e72f62b63f58b541a205445819",
+      "bytes": 14974
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/fused_gr.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "7fc0e67ee622681101a535e1d5a078934bb3e81a",
+      "sha256": "d52d47802e6073447ce87300776c4a338408b0bd5aabd1388c414cb46218b46f",
+      "bytes": 107140
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/gdn.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "3373560adfdc369deff49a5afc6807ddcb7d37f9",
+      "sha256": "e3c4d51990410a447cde819433dfcba2161af1b5629c0259d442e11c309e2a47",
+      "bytes": 18087
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/gr.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "fd8f809b160de0c388d4301181ca122a9491cd99",
+      "sha256": "efd1d6314c3871f16ca5f13af8fda1cbb773eb7d8c1d2daf2268487d2bae6367",
+      "bytes": 36804
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/iq_kernels.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "cecfcd81fb2957283bfe6d19442663ba67febd22",
+      "sha256": "7d14a2b16c6d081edfcd2943cb044ad4ebe711687971ac4fe53b39c1797d66bd",
+      "bytes": 136240
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/kv_q4.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "630fe2e9f388e1fb34a624d90c27390ad5716c34",
+      "sha256": "fd2ca410f67da27afd22d028607af374a889c1d0c3132c1f349a741177aee0a9",
+      "bytes": 16393
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/kv_q8.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "215ea943f51f794f56bd9f033ce3f81635f14eca",
+      "sha256": "a40e785be2b427311d6255b410fa844362ccb38061cddf67ac51e525b22b58ac",
+      "bytes": 9631
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/kv_stream.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "342dbdafd5a4242bf51ed0ce5df196eb33427b87",
+      "sha256": "4a22dd041b27bccc97baf80a5c3e089c8a895e31c711e46bb1da111f38af13f2",
+      "bytes": 21209
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/native_bf16.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "61f059015593acc1e9516bb2629dc84dfe8898db",
+      "sha256": "f5848ac7e12a630b61a49cb942165f0983ba595cd6339a01e97b31a48a521e94",
+      "bytes": 18086
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/native_flash_attn.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "33e19c8947d8ad1cdcf6b7faa93ff4d043d193c2",
+      "sha256": "f35d581af3124ea55301a2905392a25af23baa64a62cc42cef83ebd97bb8b99e",
+      "bytes": 17876
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/native_gdn.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "4faf25a36d3cd887dae973dcc9ed29551e920fd7",
+      "sha256": "3386b8564345f3514a8585e5864a4e81374e0866f01686aaf73623cddd2ab4ac",
+      "bytes": 7472
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/native_gdn_preprocess.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "5e7d693138d22da406c6ed63c1b9040772b5a435",
+      "sha256": "f618623173b3a6dce49e38ba02df84a2f5efe61455e8e7781d946f95bd1bd3df",
+      "bytes": 15907
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/native_gr_norm.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "63258c375423316093ae7d3748dea9a1d10b5f62",
+      "sha256": "6571837cb1d5ead89883e97a9a3335fcb9d9b2b9e268d813f71b2b7469da5c92",
+      "bytes": 6780
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/native_gr_postops.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "436af20f36c5fa4807534bf8b5ddb0985942426f",
+      "sha256": "7e1e051781ed99d1fc19a91c1d6b2e00770440288c34852121232dad05192b77",
+      "bytes": 10871
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/native_mmvq.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "d44715a62d13113b14498692f6d942e5b6c137c8",
+      "sha256": "f1ed7528db42c95955099b35fba08381b712ec4366344d267edebbf2336dc25f",
+      "bytes": 129652
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/native_moe.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "3212e3ceddde14c1b7b48cee9a16914fc2b06a22",
+      "sha256": "a8a7eaf31878190a8cd227c7d10c303b7dde10d9528b8eab9ddaa5b14700bbe8",
+      "bytes": 7195
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/native_ple_postops.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "a55748bd89b705ae14ade1e1b3e1c15cd43a51a8",
+      "sha256": "e5b568486c577fe8a52b870ab067333b27bab9876fc6ef336cfac628626072d1",
+      "bytes": 23706
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/native_qsa.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "22183145910ed1fa8e99c6be7cffc6351370a8c2",
+      "sha256": "6e3312b767f4828bc3310284cc93cfa92ce18abd28be827b51e83d696ed6d195",
+      "bytes": 9520
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/native_qsa_indexer.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "52f01ccba9cf58ad6d124195e438dc3e3bdec777",
+      "sha256": "92cd45f344b7c8c3522e5ae3b0e5476dc5ed9ec4882058bd79bcc6fa19589a90",
+      "bytes": 27463
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/native_qsa_score.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "fe729bc0ee78a4ef070aa0983a09e687e0e88c53",
+      "sha256": "b86744e4b11f47d064ae7a51925a6ae547cc3622f40e7a911965628f2bd6c1cf",
+      "bytes": 14724
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/native_rope.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "9f67374c5819d8b362410f75e2ad1ca9b92133dc",
+      "sha256": "1098ca79de6df41786194f98a3a4052a411347623a0203bdf8436f274bd1d81c",
+      "bytes": 10231
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/native_router.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "d0d3616247b91303f39e895c22db0841f6094668",
+      "sha256": "8eaf9967e8cf39996d84db4f0610bae7b6f8b09d5751dcd4342caaa091a8d3ee",
+      "bytes": 11108
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/ple.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "1d430071c5cd9f0c36b1239b31a2dee8987c636e",
+      "sha256": "548608cd7398f28e98d5426cf520a54469e400453964694573773cb6e6a089c3",
+      "bytes": 33163
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/qsa.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "a7a1afbac9bb6ac633ce970458a7b3794b357cd6",
+      "sha256": "0687f0bdc76c338842129b64176e6f3c9ab828727db293b539fc5782e9ff4b4b",
+      "bytes": 62703
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/qsa_decode_attn.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "f5852a369c3c30d1e35bc4364ae6fb60ed499282",
+      "sha256": "f81d612175a7a5dab778874c118ae4962afb3a9c0833e2ec4a7517b8abee2e0c",
+      "bytes": 32963
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/qsa_prompt_attn.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "0744998e1f7ef3b99f311d70909e1b1a167b83a8",
+      "sha256": "ddc49440b4ea233076d2e7395c434da8542a891342d4aff54d5da299b56632f6",
+      "bytes": 78393
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/qsa_prompt_attn_xmx.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "15516ee72ddc05e34756423b28a625a34bf53bf7",
+      "sha256": "a80016a36d1d3f13db1b69f2573222c1fc556cf60511b2386178d63b08332dfd",
+      "bytes": 21804
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/qsa_select.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "3458cefa0f45aa526daa86a44363fa13e82d3760",
+      "sha256": "1999b6e9089a0f25060dc30a3668d25862612a1c2440d9d660979c42000f3673",
+      "bytes": 84414
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/quantize_act.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "ac4d0fdb198980353ce19d2db661beb2bd0ef199",
+      "sha256": "faf3e37a4383526c437f21ba080c08e5bc0f7e21695b20cbe2fbd13468e14892",
+      "bytes": 19804
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/rope.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "bfe7ecf97dbb812c4f8ac11e42e2890a731cb224",
+      "sha256": "c5881e7d04c787658443ffa0781f0fa744663d3090a884bc3c1192687a1913ae",
+      "bytes": 8139
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/router_top10.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "1a602e5defd3fcde8c858985bdc844625db5b038",
+      "sha256": "9b344ff0a7b7bed128dbe83134108f502ef8f463c0841884ee957af4ec8766c7",
+      "bytes": 27751
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/s2_expert_grouped.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "19c353378834cf8546ea5a604f45ba027d64225e",
+      "sha256": "e4aaaec3412f7f57d3d4b58f48e608dbd7e5dfeb2f94ba6b7589007a77eda93a",
+      "bytes": 89615
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/s2_gemv.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "d7e2fafd68e4fe354758a08d90cdbd1ecfb0e538",
+      "sha256": "de5640010c025271803b03ad3320f6e492cc22ea51666cb41d777461774aea5b",
+      "bytes": 3363
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/s2_gemv_fast.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "ace12b7038bfd00cae588a6826a3e59457f11838",
+      "sha256": "830d04891f9e5744b083b6b60c142f80a15efce602606fb774a30010c5a3eeae",
+      "bytes": 11575
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/s2_gemv_q8.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "f8cf26fe3385a587f2a3031b674872c53d7f27e1",
+      "sha256": "c3d5eb2bc3d6c56b22a84f8c5d05e41a36381ce15f10300635ec70234f8e6627",
+      "bytes": 6656
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/s2_gemv_quads.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "1e4a5a5d04cb9c9046dd0406eecb54c0e8fb8479",
+      "sha256": "8fc416f044136185eb70b0e85e830bc7e4fd601667d2857bc9c15a92dc498b12",
+      "bytes": 6732
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/s_gemv.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "98b4d00cf0de5c08ff3849f78190d7b86ff97f9b",
+      "sha256": "fd710fcd7cbb9d98353680d860f0841d72d3968864ccbb4d8871ee676a743532",
+      "bytes": 55234
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/sampler.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "6c86dfae816562f9661115635c2fccadd13670c2",
+      "sha256": "7128cc57a06b86103e0615bf4f47a325b162d81fb24911885a443eaf3d0fe138",
+      "bytes": 89730
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/shared_expert.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "654105163f43195bcb28a76df7db927e53dfea92",
+      "sha256": "5d76bef03b142676bb83b4332bd7b93df350da2a225953d0cfc78aef4704ab9c",
+      "bytes": 30182
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/kernels/cuda/verify_kernels.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "f3ca2482a1ff5afa79e6c3b512e94f50d53a9544",
+      "sha256": "9d9de2d984d135c4ad725e7a0377acda88cebd290a8c028b6a59dac8be9bdef0",
+      "bytes": 58084
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/ngram/ple_reader.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "4a9df10e619ac2ecce9f509890981b5b3268cfe4",
+      "sha256": "6805e2491fe7d65bd829d48a1d187ef0cd8796421fe7f62e40ad2a1eacd73863",
+      "bytes": 22561
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/platform/direct_file.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "a1c16f24051ae07bb99c5aa9873db784fdd3b0f6",
+      "sha256": "d0a5b22c99fd09a12acf376ffdf7bfb2d4b439b13841a03b297a66e379a9b3b2",
+      "bytes": 12895
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/prefill/gemm.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "c4069b684abacd0b3d91cea413dd8d53f0e38dc9",
+      "sha256": "312d666717ef6821d0140b24ea7fc360434801bf3db3b9950dc657c38cadb201",
+      "bytes": 21211
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/prefill/kernels.dp.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "64d0e399bf99e2a44060fe11022313900b1739ff",
+      "sha256": "f775038b017344388ec9a3552cb03c68cb2b26fa0544d4e9bba325db874ccea0",
+      "bytes": 99455
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/prefill/moe_fused_stub.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "70f35cb674cdc43d8caab09697f8309077c55dd3",
+      "sha256": "ba8a9e74b8178727eff00ec8119d365664abb242b233f7c80ab5811994b12e8a",
+      "bytes": 1706
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/prefill/prefill.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "921fc0425b67206c7d0aafa270489054c2a4543e",
+      "sha256": "334c5ac6f3da31796ff5dcc531d52d8f00eff7e47453735ce68e4a34b6f3063e",
+      "bytes": 255672
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/program/generate.cpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "fa97bfe211365c1a1c857d317ab2f8fa254e2151",
+      "sha256": "2b2462269fc1a3bb3e9dba89b5419ed20538b3ebd726c1c560ffad88fd78d41d",
+      "bytes": 535157
+    },
+    {
+      "path": "validation/pr6-restore/sycl/tools/fixups.py",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "a5a360b3d733090d570c876b19f310dce5184543",
+      "sha256": "283bf03c633df04939f7d0bce2bbddc103e0c2c50f60a4d9f3ec24339a1fde36",
+      "bytes": 23959
+    },
+    {
+      "path": "validation/pr6-restore/sycl/tools/migrate.sh",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "44994eb860c0ca13b8a839f386cca2c7dfe512f7",
+      "sha256": "8daf4c353f90ed8b3704c7ed4736f5a8240f01e488f663e302d6145ba4a56ba4",
+      "bytes": 3014
+    },
+    {
+      "path": "validation/pr6-restore/sycl/tools/prefill_profile.py",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "bde1ac0120ca61620bf1062bced192bb2cfac5f9",
+      "sha256": "ecd1fb9d4a89942d6f3d80f56264fcb1bd376106168357988f2ae9e847d4c42f",
+      "bytes": 14424
+    }
+  ],
+  "complete_validation_source_manifest_identity": {
+    "entries": 216,
+    "encoding": "SHA256 of json.dumps(manifest,sort_keys=True,separators=(comma,colon)) UTF8 plus LF",
+    "sha256": "fb9412b4a90ba8302ead26167241d2751005be1267c24889cc7fb9872e70f9b1"
+  },
+  "additional_consulted_file_pins": [
+    {
+      "path": "AGENTS.md",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "1448cd1f29540d56ef6132e04a8336b7141d86a1",
+      "sha256": "7f750320bef4146a2872086922d84fc9fa7a8351ae655b7876c912856e3747fe",
+      "bytes": 12124
+    },
+    {
+      "path": "docs/ARTIFACT_RETENTION.md",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "52035fe10972bcb1d649d26080ea2e0a62ffc905",
+      "sha256": "fdf86d7ea576d6f0400ec7e643b5ddca5c3c577dd053d66c2fd05220e64b1cc1",
+      "bytes": 8223
+    },
+    {
+      "path": "LICENSE",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "6687a423dde6b7aff1b748c07f5ee93ff788089c",
+      "sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
+      "bytes": 1093
+    },
+    {
+      "path": "validation/pr6-restore/LICENSE",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "6687a423dde6b7aff1b748c07f5ee93ff788089c",
+      "sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
+      "bytes": 1093
+    },
+    {
+      "path": "validation/pr6-restore/CMakeLists.txt",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "be0ac55e51def99b3114d9abb0b0bf7a23aeb625",
+      "sha256": "b4a912aef2de32a7476da647aec2dab9fedb1a2102bd6369ca1a21903c2a8ad1",
+      "bytes": 5714
+    },
+    {
+      "path": "validation/pr6-restore/checked_dpct.cmake",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "a18e322b47b16054b53f04a75019d4e4848b061d",
+      "sha256": "5757b9a1954558257fdc88d031aaeab7cbe7369d75191af21d547a890d2995e8",
+      "bytes": 2521
+    },
+    {
+      "path": "validation/pr6-restore/sycl/CMakeLists.txt",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "5c8e6c507f36e420be61d761a0514897781ef2b8",
+      "sha256": "1500925f231c5bd61c5f771e1b8cb3d396c9e6cb14330dda6069dc14e08dfd03",
+      "bytes": 17522
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/expert_source.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "8fbc4a58cd237f91f88dc642f6cb8ff04a060c5e",
+      "sha256": "0c3e0826a2c06f98d182c110aaae41b9da8c9dcda84663f2996dac17a03dc439",
+      "bytes": 47388
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/layer.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "78f20c91c11183b08cacc75fc633d7bd4bffea5e",
+      "sha256": "4587a24f321d4e0bf5cf76f0355b5b2fcb8ccddd6d9ed7383729483b753c886f",
+      "bytes": 41997
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/layout.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "7b27fec9527b19a7a98f529ab3a81de6a519734a",
+      "sha256": "20afe27849aa28de7ec2f19fbf4be212240504008c643331eadbc10934821c0b",
+      "bytes": 4392
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/token_admission.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "dd07a6de3ec35684b6413af457c18bc5dae029e8",
+      "sha256": "06d69f2cc411a14764609ab1bdc27e652bd10a7b20e834f1ce791c8ffb31d5a7",
+      "bytes": 793
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/prefill/draft_uploads.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "717df032d9033cf025b65d998c61d7d2a4b762f3",
+      "sha256": "2d32126e28c67751d14bde6cd46f1db60b92aa3939b17a6f78fd66bc10955908",
+      "bytes": 3218
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/prefill/range_guard.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "cb28986e92882da6fcc43a59cb3faf9cda4589a5",
+      "sha256": "d3f56e66d62a88d89054376a65ae9df1fa4066ca5c0158d9dcce458149c1683f",
+      "bytes": 883
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/sycl_async_contract.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "ce8c3835e483b6340aee89afae82fa7af41c1853",
+      "sha256": "14751664b69dac54067a3721d64196c8696c37f5007b01d7530c9ea0c752ab97",
+      "bytes": 1283
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/sycl_queue.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "88d124eb600da37d89c714b1e19db1d36405139c",
+      "sha256": "ed28dbecd3d0fc794c0f744ce131a0476412be5a5ae9dd3a0d88f436ae4aa8d2",
+      "bytes": 805
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/sycl_retirement.hpp",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "20dd385f5b245d3fab268710611d4a1b7ca72405",
+      "sha256": "7b73763943e2833d3d126169e91142ceff600e4b08d9ed2692c044da344c24e7",
+      "bytes": 1241
+    }
+  ],
+  "findings": [
+    {
+      "id": "D3",
+      "rank": 1,
+      "priority": "high_if_enabled",
+      "status": "EXCLUDED_ON_REVIEWED_ENGINE_ROUTES_NOT_PROTOCOL_REPAIR",
+      "source_proved_trigger": "Concurrent mixed volatile-host/device-atomic handshake",
+      "proof": [
+        "validation_control.hpp:10 constexpr false without override",
+        "allocator/moe_route/session capture+loop/token creator+runner refuse",
+        "all verifier initialized/capture/run/commit variants refuse; cs_/copy_ null and owners default-null",
+        "CLI spec/serve/capture/pool modes refuse; direct diagnostic supplies null doorbell"
+      ],
+      "enabled_bypass_found": false,
+      "limits": [
+        "Compiled rejection NOT_RUN",
+        "Raw external graphs/manual populated doorbell/low-level exports not admitted",
+        "Native-pack full-model CLI unavailable, no safe full-decode fallback"
+      ]
+    },
+    {
+      "id": "D1",
+      "rank": 2,
+      "priority": "high_original_trigger",
+      "status": "SOURCE_REPAIRED_ROUTE_EXCLUDED_UNEXECUTED",
+      "source_proved_trigger": "DPCT_CHECK_ERROR discards empty bool and pending becomes graph-finished",
+      "proof": [
+        "Real bool separate from errors; errors consumed before ring acceptance",
+        "Pending continues, completed missing ring retires and fails",
+        "Lease armed before launch; pending20s/query uncertainty exits86; async87 retained",
+        "Final actual compute/copy retirement before success"
+      ],
+      "limits": [
+        "No actual provider progress/errors/partial acceptance receipts",
+        "Held graph routes need renewed whole-route review before future enablement"
+      ]
+    },
+    {
+      "id": "D2",
+      "rank": 3,
+      "priority": "high_invalid_public_input",
+      "status": "NAMED_POSITION_POINTER_CAPACITY_TRIGGERS_SOURCE_REPAIRED_UNEXECUTED",
+      "source_proved_trigger": "INT64 extremes/negative/null residual admitted before addition/capture",
+      "proof": [
+        "position_span subtracts after nonnegative/cap gates, physical262144 and supplied actual minimum",
+        "session_cells checks full-geometry ordinal span and every allocated QSA capacity",
+        "Both MTP prefill branches and alternate draft-KV before upload/addition/capture",
+        "Draft catch-up plus max(1,min(max_t-1,max_drafts)) chain and final verifying token",
+        "Actual draft_first required pointers and private row checks; restore endpoint before rounding",
+        "Held verifier run/logprobs span admission"
+      ],
+      "limits": [
+        "Initialized serialized objects and pointer backing/extent/lifetime required",
+        "Output/probs backing covers max_t-1 clearing, not merely emitted chain",
+        "Draft-KV empty return does not itself recheck vocabulary; MTP empty path does",
+        "No physical256K/indexer/kernel/graph/numerical qualification"
+      ]
+    },
+    {
+      "id": "D4",
+      "rank": 4,
+      "priority": "medium_repeat_load",
+      "status": "SOURCE_REPAIRED_SERIALIZED_OBJECT_UNEXECUTED",
+      "source_proved_trigger": "Good IQ then truncated BF16 reload mutates old row stride",
+      "proof": [
+        "Actual NativeEmbed member OneAttemptLoad begins as first load statement",
+        "Every first failure consumes attempt; no reset/copy; later calls refuse before mutation",
+        "Successful metadata preserved on all later refusal paths; gather/destructor ownership unchanged"
+      ],
+      "limits": [
+        "Fixture exercises gate, not NativeEmbed/parser/allocator/DMA",
+        "No concurrent use/mutation contract"
+      ]
+    },
+    {
+      "id": "D5",
+      "rank": 5,
+      "priority": "medium_deadline_claim",
+      "status": "SOURCE_REPAIRED_JOIN_CALLS_UNEXECUTED",
+      "source_proved_trigger": "Normal issuer join had only enclosing7200s request bound",
+      "proof": [
+        "Normal issuer and unwind joins use production bounded_join watchdog before join",
+        "Stop published on unwind with borrowed owners alive; StagerDone later cleanup",
+        "Stager unlocks+notifies before bounded worker joins under existing total60s deadline"
+      ],
+      "limits": [
+        "No stuck-provider/deadline86 execution",
+        "Watcher shutdown join/other futures/CPU pools not blanket60s",
+        "OS scheduling and external process supervisor assumed"
+      ]
+    }
+  ],
+  "preservation": {
+    "all_v3_changed_source_pin_mismatches": [],
+    "v2_base_pin_mismatches": [],
+    "full_v2_current_inventory_base_hash_mismatches": [],
+    "prior_and_delivery_reports": [
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/current-source-pins.json",
+        "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+        "git_blob": "1aa9c642134380dd742bd4983875fe61832a71a9",
+        "sha256": "19621ea579db53ccf02d9b89e02cd5ecd92e1dc3d533a7a97e8dd9e75fdd8398",
+        "bytes": 52155,
+        "matches_base": true,
+        "matches_delivery_hash": true,
+        "working_matches_final": true
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/fixed-source-pins.json",
+        "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+        "git_blob": "f4939474704d00b84e2f1a60a99f92230168d2d5",
+        "sha256": "9ed5a0761a342a86e36ea4c5a24f4dbac58d23758c0bfce7ca465f00b6aa209d",
+        "bytes": 3639,
+        "matches_base": true,
+        "matches_delivery_hash": true,
+        "working_matches_final": true
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/historical-closure.json",
+        "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+        "git_blob": "81d17eb706935efae326577d75caa7be35fb5f5e",
+        "sha256": "f32257a5005ada8ed1142c4bc6d575d246ac018312764ff2f9ce1203e7d6f3ee",
+        "bytes": 110463,
+        "matches_base": true,
+        "matches_delivery_hash": true,
+        "working_matches_final": true
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/historical-evidence.json",
+        "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+        "git_blob": "1816d533a4ecf3bb3ca31a4db2ef123b43c455e1",
+        "sha256": "f79415a9344545df0f72e47475c81e29fa6d0d14bc20158a960e203cb75e2d3a",
+        "bytes": 29459,
+        "matches_base": true,
+        "matches_delivery_hash": true,
+        "working_matches_final": true
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/independent-safety-review-v1.json",
+        "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+        "git_blob": "ba54e7d3d9d355e3ba5fa7c16b3e12b85faa818a",
+        "sha256": "c3a5079fd174e38904fcd6eb97ca8fa3844d12ba60135568819b581c97c3f325",
+        "bytes": 31317,
+        "matches_base": true,
+        "matches_delivery_hash": true,
+        "working_matches_final": true
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/independent-safety-review-v1.md",
+        "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+        "git_blob": "b3345743258ebbd5ce1995a988c67e952fbf8d0d",
+        "sha256": "8477e7a86161a2fbbe98e8d2093314c1328f2ebef3424e8ff94031e7754ebd6d",
+        "bytes": 15559,
+        "matches_base": true,
+        "matches_delivery_hash": true,
+        "working_matches_final": true
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/independent-safety-review-v2.json",
+        "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+        "git_blob": "e490ab39057728dc2ced134e00803c2fd046d17c",
+        "sha256": "bf7817da1ef440c6ee2e9c0dc0c0255573094d920af72ba27db55b23696dc10a",
+        "bytes": 115560,
+        "matches_base": true,
+        "matches_delivery_hash": true,
+        "working_matches_final": true
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/independent-safety-review-v2.md",
+        "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+        "git_blob": "3fc8b700e69120ae0ac7a76f1adfa0caad1b8971",
+        "sha256": "c1503199f01a4fa17afa8d48a851b3015ead1b77393fe5a8b4bf7ad3b920d94f",
+        "bytes": 23200,
+        "matches_base": true,
+        "matches_delivery_hash": true,
+        "working_matches_final": true
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/manifest.json",
+        "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+        "git_blob": "14aa23732a717a9ac068cb6140c1445515fc36d0",
+        "sha256": "898b95d087f6b01af0bb7c73cd64627813f904b3fee0e92e87fb017e51ae2ec2",
+        "bytes": 4473,
+        "matches_base": true,
+        "matches_delivery_hash": true,
+        "working_matches_final": true
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/report.ja.md",
+        "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+        "git_blob": "0fa9e4820521f3c670f4cf7a6014fb6d98e9060e",
+        "sha256": "046f2cef75796c0f9e6506452e0b57c4d6b27d5214311db7aed9797763dd9e70",
+        "bytes": 35520,
+        "matches_base": true,
+        "matches_delivery_hash": true,
+        "working_matches_final": true
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/safety-corrections-v2.json",
+        "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+        "git_blob": "f6801aeb445660adcff47db317b6784ac8650b94",
+        "sha256": "8b2f84fd70ad85dd0d47d5ea5ee0974abb76b7931bf50a2b0c0cf918e94c31a3",
+        "bytes": 68511,
+        "matches_base": true,
+        "matches_delivery_hash": true,
+        "working_matches_final": true
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/safety-corrections-v2.md",
+        "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+        "git_blob": "cf1ec846c58bff5fd9e938f73e6552a399297ef4",
+        "sha256": "49abc3ac6bb0b9b225d96d6343b665d12f57a0ff4af6aa4b919134045fa045f8",
+        "bytes": 19905,
+        "matches_base": true,
+        "matches_delivery_hash": true,
+        "working_matches_final": true
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/safety-corrections-v2.patch",
+        "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+        "git_blob": "50188039fbc60f67675336995ea77e934145cb35",
+        "sha256": "30de015d8d6678715d272b6c399a1b7455bb07ca94a08b0d6bd66a772717cb72",
+        "bytes": 159295,
+        "matches_base": true,
+        "matches_delivery_hash": true,
+        "working_matches_final": true
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/safety-corrections-v3.md",
+        "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+        "git_blob": "f3399e30b6a482ce2185bb1de75b425b9dd55fe1",
+        "sha256": "b460211961fc8b3673faa9ad974fc1dee4131990e6dc21a1f0d6f189942f6f31",
+        "bytes": 16760,
+        "working_matches_final": true
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/safety-corrections-v3.json",
+        "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+        "git_blob": "b91a2223bddcbcf7924ec695b385f52822e019c3",
+        "sha256": "74d0b716f18342ed26aa93a1efe7adb2643d3eb948ace12d5daec638576e39c6",
+        "bytes": 44112,
+        "working_matches_final": true
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/safety-corrections-v3.patch",
+        "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+        "git_blob": "e4bbee995a75fefcf4e29964bb6fb2d0cb3fbc11",
+        "sha256": "9bd1300910a1f5eace331eff2c967e89d0f7cbef7ee737787280b8656be48bcf",
+        "bytes": 59318,
+        "working_matches_final": true
+      }
+    ],
+    "historical_original_revision": "d0c5dda0dc2e8d82458c4b0ff31c4cef44c40b32",
+    "historical_project_entries": 198,
+    "historical_project_blob_hash_size_mismatches": [],
+    "historical_project_mode_mismatches": [],
+    "historical_vendor_entries": 49,
+    "historical_vendor_blob_hash_size_mismatches": [],
+    "original_inventory_pin": {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/historical-closure.json",
+      "revision": "3da01f7148f5536f444c8f471c65e2d47c58bc41",
+      "git_blob": "81d17eb706935efae326577d75caa7be35fb5f5e",
+      "sha256": "f32257a5005ada8ed1142c4bc6d575d246ac018312764ff2f9ce1203e7d6f3ee",
+      "bytes": 110463
+    },
+    "current_original_sources_identical_claimed": false,
+    "faithful_anchor": "efba8d47817811d493e28f396ebd0e14e161ca75",
+    "faithful_anchor_entries": 197,
+    "completed_original_entries": 198,
+    "historical_tus_native_on": 84,
+    "historical_tus_native_off": 80,
+    "unchanged_validation_files": 198,
+    "unchanged_validation_mismatches": [],
+    "working_validation_vs_frozen_head_mismatches": [],
+    "all_kernel_path_count_including_headers": 115,
+    "changed_kernel_paths": [],
+    "all_changes_outside_validation_are_only_three_v3_delivery_artifacts": [
+      "bench/results/2026-10-16-pr6-faithful-restore/safety-corrections-v3.json",
+      "bench/results/2026-10-16-pr6-faithful-restore/safety-corrections-v3.md",
+      "bench/results/2026-10-16-pr6-faithful-restore/safety-corrections-v3.patch"
+    ],
+    "arithmetic_weights_fp32_residual_layer_chunk_and_kernel_changes": "No new source math/weight/storage/layer-chunk/kernel changes; admission, exclusion and joins only",
+    "numerical_equivalence": "NOT_EXECUTED"
+  },
+  "fixture_scope": {
+    "ordinary_targets": [
+      "pr6_draft_uploads",
+      "pr6_range_guard",
+      "pr6_token_admission",
+      "pr6_allocated_fields",
+      "pr6_validation_control",
+      "pr6_bounded_join"
+    ],
+    "new_ctest_timeout_seconds": 15,
+    "runtime_initialized_by_sources": false,
+    "new_progress_fixture": "Production helper with logical bools/errors, not queue/provider",
+    "new_capacity_fixture": "Production arithmetic helpers without pointer dereference; not SessionState/session_cells or actual callsites",
+    "new_load_fixture": "Actual member gate type only; no NativeEmbed/parser/allocator/DMA",
+    "new_join_fixture": "Actual bounded_join finite real host workers/mutex/unwind, no deadline expiry or stuck provider",
+    "host_receipts_read_or_assumed": false,
+    "test_execution_by_worker": false
+  },
+  "preserved_contracts": [
+    "Hash-pinned private DPCT generation with uniform forced header/profiling and original notices",
+    "Registered selected owning queues and async87",
+    "Borrowed in-order copy=cs and owned-copy-only destruction",
+    "Actual Stager DMA event ready/issued/generation handoffs",
+    "PLE event/future ordering and immutable source upload leases",
+    "Prefill init/relayout ready publication and partial state invalidation",
+    "Uncertain completion/deadline86, allocation cleanup88"
+  ],
+  "unexecuted_proofs_before_model_free_native": [
+    "Exact offline dependency/compiler/runtime/library identity and configure-probe review",
+    "Actual configured target/source/header/compile/link/ODR/ABI proof",
+    "Actual rejection in compiled modes including environment-selected variants",
+    "Reviewed model-free no-doorbell harness with registered owners, no active capture and immutable/live source leases",
+    "Provider pending/complete, event/error/partial accepted submit/publication failure and exit86/87/88",
+    "Borrowed-default/no-init/late-init/relayout/cancel/cleanup and ring-wrap/tail execution receipts"
+  ],
+  "smallest_next_prefill_gate": "Separate reviewed no-doorbell Prefill API harness after build and enabled-path model-free proof; native-pack CLI unavailable; begin tiny/odd-tail/continuation, not full model decode or speed",
+  "hard_native_holds": [
+    "All native runtime execution until Main separately admits exact reviewed finite harness",
+    "D3 mapped doorbell and every verifier/full native-pack CLI route",
+    "Full physical262144 model/kernel/page/indexer/state correctness",
+    "Model numerical/task/quality and both MTP branches/draft-KV/round/step/subset",
+    "Export/exit/fresh RESTORE/rewind/branch and cold/warm/restored full decode",
+    "Any600tok/s or historical645.85 requalification"
+  ],
+  "allowed_next_main_steps": [
+    "Owned finite ordinary host six-helper receipts, independent of this source review",
+    "Dependency/configure-probe review, gated configure/preprocess/compile/link without executing engine",
+    "After exact enabled-path proof, separately supervised model-free checked copy/event child without D3 protocol"
+  ],
+  "performance": {
+    "new_measurement": false,
+    "new600_claim": false,
+    "historical645_requalified": false,
+    "timing_deltas": [
+      "New admission/empty/refusal controls",
+      "Normal bounded join watchdog",
+      "Held query/error/accepted-work retirement controls",
+      "D3 full-model CLI unavailable"
+    ],
+    "math_equivalence": "Unexecuted"
+  },
+  "provenance": {
+    "new_v3_helpers_fixtures": "Independent project code under repository LICENSE as supplied and consistent with inspected additions; no external implementation/template import",
+    "existing_upload_helpers": "Recorded own-fork independent provenance, unedited",
+    "vendor_transform": "Unchanged build-private historical Intel dependency with retained notices",
+    "upstream_check": "Not performed"
+  },
+  "retention": {
+    "owner": "Main",
+    "raw_logs_tensors_binaries_profiler_created": false,
+    "deleted_artifacts": [],
+    "next_review": "Main ordinary host, dependency/build and exact enabled-path model-free harness gates"
+  },
+  "report": {
+    "path": "bench/results/2026-10-16-pr6-faithful-restore/independent-safety-review-v3.md",
+    "sha256": "d1dc64d58ce53d696bea5f9cfd706ec5e32f21904dfa84b6d3f4bfd8e05562ae",
+    "bytes": 22116
+  },
+  "operational_digest": [
+    "No new definite source bug in finite D1-D5/enabled-route review; native hold retained",
+    "D1/D2/D4/D5 named triggers repaired in source; D3 excluded, no full-model CLI fallback",
+    "All18 changed source pins and patch reconstruction match; original/prior reports preserved",
+    "Main host/configure/build next; exact model-free then separate prefill harness required"
+  ]
+}
