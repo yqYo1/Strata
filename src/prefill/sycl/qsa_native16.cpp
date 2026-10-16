@@ -46,6 +46,16 @@ bool requested() {
     }();
     return result;
 }
+AttentionMath attention_math() {
+    static const AttentionMath result = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_QSA_MATH");
+        if (!value || !std::strcmp(value, "existing")) return AttentionMath::existing;
+        if (!std::strcmp(value, "bf16")) return AttentionMath::bf16;
+        if (!std::strcmp(value, "bf16-prefix")) return AttentionMath::bf16_prefix;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_QSA_MATH must be existing, bf16 or bf16-prefix");
+    }();
+    return result;
+}
 void validate_device(void* stream) {
     auto& queue = queue_for(stream);
     const auto device = queue.get_device();

@@ -1,0 +1,44 @@
+{
+  "schema": "strata-numerical-failure-physical-closure-v1",
+  "original_receipt": "bench/results/2026-10-15-pr6-recovery-audit/own-qsa-bf16-packed-bench-base-262144-0-v1.json",
+  "original_sha256": "a5eaec96d9ed77989de5d33a8d8a1b2f312d12dbc92f53cd3fc6923456ed5588",
+  "original_passed": false,
+  "original_complete": false,
+  "original_strict_ownership_closed": false,
+  "classification": "Independent BF16 numerical oracle stopped before timing; normal exit1, not GPU hang.",
+  "physical_closure_verified": true,
+  "identities": [
+    {
+      "pid": 2730646,
+      "old_start_ticks": 50861733,
+      "current_start_ticks": null,
+      "old_identity_absent": true
+    },
+    {
+      "pid": 2730646,
+      "old_start_ticks": 50861733,
+      "current_start_ticks": null,
+      "old_identity_absent": true
+    }
+  ],
+  "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "driver": "xe",
+  "fresh_faults": [],
+  "journal_command": [
+    "/usr/bin/journalctl",
+    "-k",
+    "-b",
+    "--after-cursor",
+    "s=9944479cfd1a45c28a589619cb8f2881;i=c2900d1;b=cfda0b6a7c134fe2bdf58f9202770840;m=7668a9334d;t=65df5b8230afc;x=48cf458d48832e94",
+    "--no-pager",
+    "-o",
+    "json"
+  ],
+  "journal_exit": 0,
+  "journal_stdout_sha256": "d76309649c0fcac2cdf9e62a68ab7f26f87c6520b7f4843b0ed818bfbf91c55c",
+  "native_exit": 1,
+  "cleanup_or_reset_performed": false,
+  "native_stdout": "QSA_BF16_READY before-runtime\ndevice=Intel(R) Arc(TM) B570 Graphics driver=1.17.39395+14\nQSA_BF16_READY runtime-ready\narm=base nq=8192 cap=2051 workgroups=16384 cells=262144 global_selected_cells=262144 selected_set=per_query_rotated_uniform_spread_unique device_bytes=1487176128 packed_scratch_payload_bytes=538968064 pack_cost=NONE warmups=2 repetitions=10 fingerprints=FNV1a64_native_bytes q=11439647903705736170 k=12142529296547611317 v=4808538208514656389 ks=18214038941969068403 vs=14449012454104502671 table=17081160534730886437 ids=10917603666501170263 steps=9859294967982410533\n",
+  "native_stderr": "BF16 operand contract at sampled queries\n",
+  "next": "Use a fresh diagnostic binary/root to record every failed oracle element and inputs without changing the original failed status. No speed samples from this failed run."
+}

@@ -1,0 +1,83 @@
+{
+  "schema": "strata-bf16-prefix-boundary-v1",
+  "updated_utc": "2026-10-16T15:01:44.077589+00:00",
+  "source_commit": "d9f9a395",
+  "arithmetic_reference": "Pinned same-model SGLang BF16 prefill design; vLLM is an alternative contract with post-QK scaling. Not a claim that either CUDA runtime executed on this machine.",
+  "policy": "Intermediate BF16 storage/operands, FP32 matrix accumulation/normalization; no exact FP32/llama.cpp or identical-token adoption gate. Old strict scalar failure remains failed.",
+  "structural_component": {
+    "standalone": "own-qsa-bf16-prefix-component-v1.json",
+    "engine_linked": "own-qsa-bf16-prefix-engine-component-v1.json",
+    "cases": 11,
+    "UR_kernel_submissions": 60,
+    "physical_KV_cells": 262144,
+    "source_suffix_and_padding": "Inf-scale poison; full packed logical rows independently checked",
+    "ownership_closed": true,
+    "fresh_faults": []
+  },
+  "engine_build": "own-qsa-bf16-prefix-engine-build-v1.json",
+  "whole_model_mechanics": {
+    "status": "PASS_SCOPED_MECHANICS",
+    "receipt": "own-qsa-bf16-prefix-model-smoke-v1.json",
+    "arms": [
+      "existing",
+      "bf16",
+      "bf16-prefix"
+    ],
+    "input": "synthetic129/all48, two64-token chunks; no speed claim",
+    "receipt_sha256": "bfac770f9907f37c701216a6c27b22dfa06666f6c7652fb6cde4a506af619fb0",
+    "bf16_vs_prefix": {
+      "all128_target_NLLs_identical": true,
+      "three_full_vocabulary_rows_SHA256_identical": true,
+      "NLL_capture_SHA256_identical": true
+    },
+    "difference_from_existing": {
+      "mean_NLL": {
+        "existing": 7.986197363001745,
+        "bf16": 7.902700662098143,
+        "bf16-prefix": 7.902700662098143
+      },
+      "mean_delta": -0.08349670090360167,
+      "mean_absolute_delta": 0.4281094183334377,
+      "max_absolute_delta": 5.593300522061307,
+      "selected_max_absolute_logit_delta": [
+        0.0,
+        1.7348583340644836,
+        1.153771162033081
+      ],
+      "interpretation": "Synthetic numerical mechanics only; no candidate quality acceptance or output-text equality criterion"
+    },
+    "quality_accepted": false,
+    "ownership_closed": true,
+    "fresh_faults": []
+  },
+  "performance": {
+    "closed_component_32K": "qsa-bf16-packed-32k-summary-v1.json",
+    "baseline_median_ms": 565.1160635,
+    "packed_median_ms": 390.186218,
+    "latency_reduction_percent": 30.9546758,
+    "pack_in_every_timed_call": true,
+    "whole_model_new_path": {
+      "diagnostic": "own-qsa-bf16-prefix-diagnostic-bf16-prefix-r0-v1.json",
+      "actual_prompt_tokens": 39262,
+      "batched_prefill_tokens": 39261,
+      "context_and_resident": 65536,
+      "chunk": 8192,
+      "transient_prefix_bytes": 80726784,
+      "diagnostic_only_prompt_tps": 448.8,
+      "fresh_faults": [],
+      "ownership_closed": true,
+      "clean_repeated_comparison": "ACTIVE: run_qsa_bf16_prefix_clean_cohort_v1.py / qsa-bf16-prefix-clean-cohort-v1.json; independent9processes; not yet qualified or adopted"
+    }
+  },
+  "scope_limits": [
+    "Mode0 resident K8V8/text/owned RoPE only at model entry; Mode1 still explicitly rejected",
+    "No full-model physical256K/RESTORE qualification",
+    "No default inference adoption or quality acceptance"
+  ],
+  "next": [
+    "Finish all48 model mechanics and preserve per-arm NLL/fullvocabulary checks",
+    "Run diagnostic then independent repeated clean official bench.sh actual32K+ comparisons against the current best hidden-BF16 path",
+    "Close per-stage numerical contract on varied bounded inputs before broader adoption",
+    "Expand typed Mode1 append/stage/mirror support and full-context/RESTORE validation when implementing it"
+  ]
+}
