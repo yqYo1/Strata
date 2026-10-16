@@ -43,6 +43,9 @@ namespace strata::prefill {
 
 class Prefill {
 public:
+    // Opaque type name only. The historical compact allocator free functions
+    // name Impl and its member pointers; the definition/owner remain private.
+    struct Impl;
     /// E-9: the draft layer's K/V for prompt cells [cell0, cell0 + n) from their final residual rows `R_rows`
     /// (device) and `next_tokens` (host: the token at cell+1), in batches through this path's GEMMs and its idle
     /// scratch - call it from on_chunk.  false with `err` empty: not applicable here (a ring or hybrid K/V, another
@@ -181,7 +184,6 @@ private:
 
     bool carve(std::size_t T, void* alloc);   // the device buffers of a chunk (prefill.cpp's Alloc)
     void release();                          // the destructor's cleanup (also `reset`'s)
-    struct Impl;
     std::unique_ptr<Impl> impl_;
     PrefillStats stats_;
 };
