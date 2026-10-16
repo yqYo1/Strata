@@ -21,8 +21,8 @@ There are explicit remaining boundaries:
   FP32 interface.
 - The final residual expands once for existing MTP, decode and diagnostic
   callbacks. Intermediate layers use a typed BF16 callback and direct copies.
-- QSA and GDN internal projection/attention tensors still use the existing
-  FP32 kernels. Their replacement is a separate implementation step.
+- GDN internal projection and recurrent tensors use the existing FP32 kernels.
+  QSA internals remain FP32 unless the separate typed-QSA option below is enabled.
 - The existing scratch arena remains reserved to preserve the short-input
   layout. Native views share its unused ranges, including separate BF16
   residual/gated halves of the old FP32 gated range. This does not yet establish
@@ -83,8 +83,10 @@ establish general quality or a permitted degradation. No quality tolerance
 has been accepted. See the
 [quality review](../bench/results/2026-10-15-pr6-recovery-audit/own-native16-natural-quality-review-v1.ja.md).
 
-Broader model quality, improved long-input speed, physical 262144-context and
-RESTORE qualification remain required. Keep the default FP32 route.
+The original joint-matrix backend remains rejected for speed. The later vLLM
+backend below improves measured long-prefill speed. Broader model quality,
+physical 262144-context and RESTORE qualification remain required. Keep the
+default FP32 route while those gates are open.
 
 The architecture references are the
 [vLLM XPU MoE dtype policy](https://github.com/vllm-project/vllm-xpu-kernels/blob/6b30c9b92cc525c32729df988b5f918e7c5661a5/csrc/xpu/grouped_gemm/collective/gemm/moe_dtype_policy.hpp)
@@ -99,6 +101,6 @@ use the repository MIT license. XeStrata is excluded as an implementation source
 
 ## Optional vLLM GEMM and typed QSA
 
-The optional `STRATA_SYCL_VLLM_XE2_NATIVE16` build adds the actual Intel BSD-3 vLLM Xe2 direct16-output core. See [SYCL_VLLM_XE2_NATIVE16.md](SYCL_VLLM_XE2_NATIVE16.md) for its explicit runtime selection, isolated AOT object and stricter shape/lifetime contract. Standalone operator gains are separate from whole-model acceptance.
+The optional `STRATA_SYCL_VLLM_XE2_NATIVE16` build adds the actual Intel BSD-3 vLLM Xe2 direct16-output core. See [SYCL_VLLM_XE2_NATIVE16.md](SYCL_VLLM_XE2_NATIVE16.md) for its explicit runtime selection, isolated AOT object, stricter shape/lifetime contract and repeated integrated measurements. On the B570 at source `6354f0b4`, the matched 39,262-input official workload measured median 394.9 tok/s with vLLM BF16 versus 372.5 FP32 (three independent processes each). The earlier 78K custom-kernel experiment used different context/residency settings and is not the denominator for this gain.
 
 `STRATA_SYCL_PREFILL_NATIVE16_QSA=1` additionally keeps QSA projection/norm/RoPE/append/attention/gate boundaries typed16 for resident unrotated INT8 K/V with session RoPE tables. Indexer/local accumulation and GDN's existing internal FP32 boundaries remain explicit. The shared scratch arena reservation is unchanged. Streaming/host mirrors and rotated/Q4/hybrid KV are currently refused; do not infer full-context adoption from the component tests.
