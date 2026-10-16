@@ -1,0 +1,42 @@
+{
+  "schema": "strata-current-moe-order-audit-v1",
+  "recorded_utc": "2026-10-16T21:08:09.083217+00:00",
+  "source_tree": "2b357a8a14be9e10d5909591cc7f72a15c69046d",
+  "source_pins": {
+    "src/prefill/layer_major.inc": "9fcd5a32752464f488154a2922a33e5ab4cccff7674b3fcae7fa0f2bda12acdb",
+    "src/prefill/prefill.cpp": "d6e466ca3a86f1dd8a1d6b648f3a57d496615b0a108df52d0727fdc9eb4c95e8",
+    "src/prefill/sycl/gemm16.cpp": "d5a0e8f8cdbc14f82edd7a883efc09d68ee92195b8fd51301e538b40cc6ed53c"
+  },
+  "observations": [
+    {
+      "source": "src/prefill/layer_major.inc:480",
+      "fact": "The outer loop copies/uploads all512 expert blobs once for a layer, checks the drain, then publishes the temporary full residency map before run_impl walks that layer in operator chunks.",
+      "consequence": "Increasing a MoE-only window does not itself reduce this path's host-to-device expert-weight byte volume. It must not be credited with the original chunk-major streaming transfer reduction."
+    },
+    {
+      "source": "src/prefill/prefill.cpp:3249",
+      "fact": "The native FP16 expert branch dequantizes GU and down to the two-slot scratch pair inside compute(j,blob,...), then issues GU/activation/down using current expert ne. This occurs again when the next operator chunk reaches the same expert.",
+      "consequence": "A cross-chunk MoE window targets repeated VRAM dequantization, launch count, weight reuse and GEMM row shape; these are different resources from PCIe uploads."
+    },
+    {
+      "source": "src/prefill/prefill.cpp:2874",
+      "fact": "Grouping builds per-chunk offsets and source/slot maps, then expert-ID order; combine consumes BF16 Dm and routing slots before the FFN HC write.",
+      "consequence": "A loop swap must retain inputs/intermediate HC state and defer final callbacks. Keeping current top-k output order can require substantial BF16 Dm storage; an FP32 accumulator changes summation order and needs a prospective numerical contract."
+    },
+    {
+      "source": "src/prefill/sycl/gemm16.cpp:98",
+      "fact": "The current vLLM adapter selects compact16x64 for ne<128 and wide128x128 otherwise.",
+      "consequence": "The pending exact ne census can quantify grid/padding work, but not realized matrix utilization or speed. More rows are not automatically faster."
+    },
+    {
+      "source": "src/prefill/prefill.cpp:1002",
+      "fact": "For T=8192, Dm reserves T*10*2560*4=838860800 payload bytes (800MiB), while the active Dm_b16 alias uses T*10*2560*2=419430400 bytes (400MiB). This is an arena slice, not a separate allocation.",
+      "consequence": "Do not count the unused half as automatically freed VRAM. The shared reservation is currently set by the larger GDN inner set1180698624B, versus the current compactMoE inner set1087671808B. Reducing only Dm leaves that maximum unchanged. Native16 compact storage and phase ownership must be budgeted together."
+    }
+  ],
+  "decision": "R966 investigates a bounded16K MoE window while keeping GDN/QSA causal chunks at8K. No loop reorder, chunk-guard widening or new native/GPU execution was made. Current paired profile and source feasibility must inform the implementation choice.",
+  "separate_pcie_opportunity": "Current all-GPU residual placement can remove host residual payload for the rows moved to VRAM; it is a separate prepared experiment with its own larger-context admission and matched timing gates.",
+  "GPU_executed": false,
+  "native_compiler_executed": false,
+  "performance_adopted": false
+}

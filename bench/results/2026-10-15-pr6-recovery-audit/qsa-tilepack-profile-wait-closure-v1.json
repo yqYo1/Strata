@@ -1,0 +1,68 @@
+{
+  "schema": "strata-foreign-resource-wait-closure-v1",
+  "recorded_utc": "2026-10-16T21:09:48.479581+00:00",
+  "original_result": {
+    "schema": "strata-read-only-foreign-owner-wait-v1",
+    "active": false,
+    "passed": false,
+    "complete": false,
+    "status": "wait_budget_expired",
+    "wait_budget_seconds": 7200,
+    "expected_foreign_identity": {
+      "pid": 3431768,
+      "start_ticks": 52544839
+    },
+    "foreign_process_signals_sent": false,
+    "GPU_executed": false,
+    "active_controller": null,
+    "updated_utc": "2026-10-16T21:08:52.796094+00:00"
+  },
+  "owned_waiter": {
+    "pid": 3474427,
+    "start_ticks": 52649657,
+    "pid_absent_at_closure": true,
+    "exec_session": 99223,
+    "observed_exit_code": 3
+  },
+  "observations": {
+    "count": 241,
+    "first": {
+      "monotonic": 526496.891483215,
+      "same_identity": true,
+      "state": "R"
+    },
+    "last": {
+      "monotonic": 533696.915042775,
+      "same_identity": true,
+      "state": "R"
+    }
+  },
+  "foreign_identity_at_closure": {
+    "pid": 3431768,
+    "start_ticks": 52544839,
+    "state": "R",
+    "cpu_ticks": 3975606
+  },
+  "raw_receipt": {
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-tilepack-profile-wait-v1.json",
+    "bytes": 25113,
+    "sha256": "fc67a349628301e0d51c157c5001d7c70cf85f2a1028969b4faea01d4f117fcd"
+  },
+  "source_pins": {
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/wait_then_run_tilepack_profile_v1.py": "baea63495e1dcc77860fdd342ae25c71befabb514f7dbf8b822afeaf5b7f273a",
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/run_qsa_bf16_prefix_tilepack_profile_pair_v2.py": "7dcc7fac7bedcc26e07b1465f9ad92930ad8c559d6cdf73346e9e4865f3f96d9",
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/run_qsa_bf16_prefix_tilepack_profile_census_v2.py": "595b04c5d4ed1936d4a706fb2b2ced20d76c6c518b7fc19377d6dfce290752c9",
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/profile_sysfs_observation_v1.py": "a6f9e7dfd8d36c8c9a5c7b5f7dbc2092e7045ff74c6d1fe7d263a6191079a758"
+  },
+  "native_measurements_launched": 0,
+  "paired_receipt_present": false,
+  "native_fault_checks_performed": false,
+  "interpretation": "Finite CPU/RAM-isolation wait budget expired while the exact foreign CPU-only benchmark continued. This is not a native GPU failure or a successful profile. Preserve original false/incomplete result.",
+  "next": "Do not launch another duplicate waiter or retry while this exact foreign model remains active. At a later actual exit, revalidate resource/lock/source/runtime/fault gates before the first fresh pair.",
+  "retention": {
+    "consumer": "Compact closure replaces repetitive wait polling for the next tuning decision.",
+    "raw_pending_retirement": true,
+    "raw_byte_budget": 65536,
+    "review_point": "Next serialized artifact retirement after foreign measurement closure; keep original receipt unchanged until its compact replacement is checked."
+  }
+}

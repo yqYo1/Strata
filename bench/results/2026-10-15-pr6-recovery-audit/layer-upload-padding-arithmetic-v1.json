@@ -1,0 +1,42 @@
+{
+  "schema": "strata-layer-upload-padding-arithmetic-v1",
+  "recorded_utc": "2026-10-16T21:16:38.292752+00:00",
+  "passed": true,
+  "complete": true,
+  "inputs": {
+    "bench/results/2026-10-15-pr6-recovery-audit/qsa-bf16-prefix-profile-summary-v1.json": "e87bfdeecdbbb3189ee3480ec97e2c37a1465850ebb93e958b5e7da8881c0d09",
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-bf16-prefix-profile-bf16-prefix-r0-v1.json": "0e489ef53a0c412199401806eeb6ea3254d7a541c32f87b4a2efa7cb70dd7871",
+    "bench/results/2026-10-15-pr6-recovery-audit/own-qsa-bf16-prefix-tilepack-clean-bf16-prefix-optimized-r0-v2.json": "f279fd81aef8cab999a7122a23e5e5bc6cf94b4b088a8bae6afabe2a354361ba",
+    "bench/results/2026-10-15-pr6-recovery-audit/native16-chunk-budget-v1.json": "45446a13ed369a6f22166dee96ffc8d636876e319a4f6c9fe77d7580ce106ef5"
+  },
+  "identity_checks": {
+    "same_model_identity": true,
+    "same_pack_metadata": true,
+    "same_MTP_metadata": true,
+    "closed_old_and_current_observations": true
+  },
+  "old_profile_binary_sha256": "efd0647307c63d393c71c6126a6196737efbb4e40f5a55d80251376d00005332",
+  "current_binary_sha256": "af043aad32981c58a9191efb55e5ed09d85970924b4f09a5a830da39151da352",
+  "old_profile_is_not_current_tilepack_profile": true,
+  "layers": 48,
+  "experts_per_layer": 512,
+  "uniform_cache_bytes": 1363148800,
+  "hypothetical_full_stride_requested_upload_bytes": 65431142400,
+  "hypothetical_padding_bytes": 15138816000,
+  "hypothetical_payload_growth_percent": 30.10164190774043,
+  "existing_host_copy_calls_source_derived": 24576,
+  "hypothetical_bulk_calls_if_single_contiguous_copy_per_layer": 48,
+  "native_command_reduction_measured": false,
+  "old_profile_upload_queue_ms": 8405.17,
+  "old_profile_upload_submission_cpu_seconds": 4.923023994,
+  "decision": "Do not adopt whole-stride bulk copies solely to reduce API count: same-model arithmetic adds about30.1percent requested H2D payload. Existing cudaMemcpy2DAsync also loops over row memcpy and is not a true bulk backend. Prefer establishing an exact-width/stride rectangle or exact contiguous range case before a Main-owned component screen. Preserve one post-upload checked drain and publish residency only after it.",
+  "limits": [
+    "Byte counts are requested payload arithmetic, not physical PCIe counters.",
+    "Old diagnostic upload queue and issuer CPU intervals overlap and cannot be added or subtracted to predict gain.",
+    "Current tilepack paired profile is still unexecuted. No rectangle fast path, allocation lifetime, numerical or speed qualification is established by this arithmetic."
+  ],
+  "GPU_executed": false,
+  "native_compiler_executed": false,
+  "performance_adopted": false,
+  "old_profile_exact_requested_upload_bytes": 50292326400
+}
