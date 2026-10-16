@@ -6866,7 +6866,7 @@
     "recorded_utc": "2026-10-16T21:09:48.479581+00:00",
     "goal": "Dedicated long prefill repeated >600 then1000tok/s; eventual decode70tok/s. Not achieved.",
     "current_model_comparison": "Score33 optimized median459.1 versus packed459.3tok/s, six processes, final pair overlap qualification retained; no packed speed adoption. Earlier uncontaminated score33 cohort median464.1tok/s remains recorded.",
-    "changes": "R965 capacity arithmetic reviewed and merged through PR28. Current MoE source order distinguishes once-per-layer PCIe uploads from repeated per-chunk GPU dequantization/GEMMs. R966 is source-only, no inference change or new speed result.",
+    "changes": "R965 capacity review merged through PR28. Main source resource audit and same-model upload arithmetic distinguish GPU dequant/GEMM work from PCIe uploads. Source-only active metadata census found only layer47 with bytes==stride; padding a full batch grows requested bytes30.10164percent. R966 completed through Orca and awaits R968 native review; R967 targeted archive retrieval completed. No inference source or new speed result.",
     "next": "Await R966 source feasibility and native Luna max review without steering. Paired profile is prepared but not running: the finite foreign-owner waiter exited3. After actual foreign exit, revalidate before launching it once.",
     "compile_or_GPU_work_this_boundary": false,
     "source_inspection_command": "Source owner/arithmetic review only; current closed observation and seven content hashes verified. No compiler/native/GPU execution.",
@@ -7319,5 +7319,23 @@
       "For narrow rows, prove the actual rectangle accepts this new[] source and device slots in-context without changing ownership; else omit it."
     ],
     "separate_Main_arithmetic": "layer-upload-padding-arithmetic-v1.json"
+  },
+  "layer_upload_width_census_current": {
+    "report": "layer-upload-width-census-v1.json",
+    "report_sha256": "d5e8b7decf84c49a6245893ffa73111e194c0df27f5d862b243cc68cd75042d6",
+    "recipe": "calculate_layer_upload_widths_v1.py",
+    "recipe_sha256": "96700be8c598c9b54e90419fd723d674603901271274c21e1580a2620696ab7c",
+    "status": "Executed metadata/source-only census of the current pinned v3 table. All48 layer offsets and total bytes conserved; stride agrees with current closed cache observation; total agrees with old closed profile. No model tensor or engine/native/GPU process was run.",
+    "equal_width_layers": [
+      47
+    ],
+    "copy_call_reduction_if_equal_width_only": 511,
+    "existing_copy_calls": 24576,
+    "exact_total_payload_bytes": 50292326400,
+    "full_stride_payload_bytes": 65431142400,
+    "review967_prerequisite_resolved": "The active width table is now recorded. R967 remains immutable; native command count and actual-pointer rectangle eligibility are still unqualified.",
+    "new_research_needed": false,
+    "runtime_screen_schedulable_now": false,
+    "next": "After foreign model exit and the current profile, use exact widths to choose a bounded equal-payload copy screen. Only one layer supports a direct same-payload bulk path; do not credit its511call saving to all48 layers."
   }
 }
