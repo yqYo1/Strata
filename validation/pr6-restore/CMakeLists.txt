@@ -63,7 +63,17 @@ set(STRATA_SYCL_PARITY OFF CACHE BOOL "Historical parity suite is outside this e
 if(STRATA_SYCL_PARITY)
   message(FATAL_ERROR "This closure restores target strata only; historical parity targets were not copied")
 endif()
+option(PR6_OPEN_SOURCE_LLVM_ONEMKL "Validation-only adapter for the pinned LLVM 22 compiler and installed oneMKL" OFF)
+if(PR6_OPEN_SOURCE_LLVM_ONEMKL)
+  include("${CMAKE_CURRENT_LIST_DIR}/llvm_onemkl.cmake")
+  pr6_llvm_onemkl_prepare()
+endif()
 add_subdirectory(sycl)
+if(PR6_OPEN_SOURCE_LLVM_ONEMKL)
+  # Adapt already-created target options, including those inherited by ggml.
+  # Do this before the sibling harness copies strata_prefill's options below.
+  pr6_llvm_onemkl_adapt()
+endif()
 # Target propagation covers every engine TU, without editing/building a shared
 # vendor installation or injecting project code into the external ggml target.
 target_compile_options(strata_includes INTERFACE
