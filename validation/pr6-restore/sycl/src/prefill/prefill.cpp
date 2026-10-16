@@ -526,8 +526,9 @@ struct Prefill::Impl {
     int64_t residual_gpu_tokens = 0;
     int64_t T = 0, T_max = 0;
     bool borrowed = false, compact = false, compact_hc = false;
-    dpct::queue_ptr cs = &dpct::get_in_order_queue(),
-                    copy = &dpct::get_in_order_queue();
+    // cs is borrowed. copy is null until assigned, and is destroyed only if owned.
+    dpct::queue_ptr cs = nullptr, copy = nullptr;
+    bool copy_owned = false;
     Gemm gemm;
     std::vector<void*> owned;
     // chunk buffers
@@ -673,7 +674,10 @@ void Prefill::release() {
         if (impl_->ple_emb_host[b] && impl_->ple_pageable[b].empty())
             sycl::free(impl_->ple_emb_host[b], dpct::get_in_order_queue());
     }
-    if (impl_->copy) dpct::get_current_device().destroy_queue(impl_->copy);
+    if (impl_->copy_owned && impl_->copy)
+        dpct::get_current_device().destroy_queue(impl_->copy);
+    impl_->copy = nullptr;
+    impl_->copy_owned = false;
     if (impl_->grp_host)
         sycl::free(impl_->grp_host, dpct::get_in_order_queue());
     for (void *p : impl_->owned)
@@ -943,6 +947,7 @@ bool Prefill::init(const core::WeightTable &wt, const core::ModelGeometry &g,
             m.copy = dpct::get_current_device().create_queue(true)) != 0) {
         err = "prefill: copy stream"; return false;
     }
+    m.copy_owned = true;
     const size_t T = (size_t) chunk;
     m.T_max = chunk;
     m.borrowed = borrow != nullptr;
