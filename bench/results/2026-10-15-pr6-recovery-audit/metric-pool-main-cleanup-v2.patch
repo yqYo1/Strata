@@ -1,0 +1,39 @@
+--- own-metric-pool-diagnostic-v1/metric_pool.cpp
++++ Main-private-v2/metric_pool.cpp
+@@ -240,10 +240,32 @@
+ }
+ bool cleanup() {
+     bool ok = true;
+-    if (pool_owned) ok &= tracked(pool_destroy, "zetMetricQueryPoolDestroy", [] { return zetMetricQueryPoolDestroy(pool); }, state_data) == ZE_RESULT_SUCCESS;
+-    if (active) ok &= tracked(deactivation, "zetContextActivateMetricGroups", [] { return zetContextActivateMetricGroups(context, device, 0, nullptr); },
+-        [] { return text("{\"context\":", ptr(context), ",\"device\":", ptr(device), ",\"count\":0,\"groups_ptr\":0}"); }) == ZE_RESULT_SUCCESS;
+-    if (context_owned) ok &= tracked(context_destroy, "zeContextDestroy", [] { return zeContextDestroy(context); }, state_data) == ZE_RESULT_SUCCESS;
++    // Main correction: unknown outputs/completion cannot authorize owner teardown.
++    for (const char* state : {context_state, activation_state, pool_state, pool_destroy, deactivation, context_destroy})
++        if (!std::strcmp(state, "pending")) unknown = true;
++    if (unknown) {
++        row("{\"kind\":\"cleanup\",\"status\":\"BLOCKED\",\"reason\":\"unknown_completion_or_output\"}");
++        return false;
++    }
++    if (pool_owned) {
++        if (tracked(pool_destroy, "zetMetricQueryPoolDestroy", [] { return zetMetricQueryPoolDestroy(pool); }, state_data) != ZE_RESULT_SUCCESS) {
++            row("{\"kind\":\"cleanup\",\"status\":\"ERROR\",\"reason\":\"pool_destroy_failed_parent_retained\"}");
++            return false;
++        }
++        pool_owned = false;
++    }
++    if (active) {
++        if (tracked(deactivation, "zetContextActivateMetricGroups", [] { return zetContextActivateMetricGroups(context, device, 0, nullptr); },
++            [] { return text("{\"context\":", ptr(context), ",\"device\":", ptr(device), ",\"count\":0,\"groups_ptr\":0}"); }) != ZE_RESULT_SUCCESS) {
++            row("{\"kind\":\"cleanup\",\"status\":\"ERROR\",\"reason\":\"deactivation_failed_context_retained\"}");
++            return false;
++        }
++        active = false;
++    }
++    if (context_owned) {
++        ok = tracked(context_destroy, "zeContextDestroy", [] { return zeContextDestroy(context); }, state_data) == ZE_RESULT_SUCCESS;
++        if (ok) context_owned = false;
++    }
+     for (const char* state : {context_state, activation_state, pool_state, pool_destroy, deactivation, context_destroy})
+         if (!std::strcmp(state, "pending")) unknown = true;
+     row(text("{\"kind\":\"lifecycle\",\"context_create\":", quoted(context_state, 32), ",\"activate\":", quoted(activation_state, 32),

@@ -1,0 +1,106 @@
+--- run_metric_pool_diagnostic_v2.py
++++ run_metric_pool_trace_v3.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Main one-attempt API-only metric-pool diagnostic, with fixed private logging.
++"""Main one-attempt syscall-traced API-only metric-pool diagnostic.
+ No kernels, query begin, command queues/lists, permissions or driver changes.
+ """
+ import fcntl
+@@ -36,7 +36,7 @@
+ 
+ 
+ def main():
+-    root=B/'main-metric-pool-diagnostic-v2';target=A/'own-metric-pool-diagnostic-v2.json'
++    root=B/'main-metric-pool-diagnostic-trace-v3';target=A/'own-metric-pool-diagnostic-trace-v3.json'
+     assert not root.exists() and not target.exists()
+     owner_source=A.parents[2]/'bench/results/2026-10-14-niko-main-service-port/direct_owner.py'
+     assert sha(owner_source)=='a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f'
+@@ -54,6 +54,10 @@
+     allowed[review['realpath']]={k:review[k] for k in ('path','realpath','bytes','sha256')}
+     allowed[binary['realpath']]=binary
+     frozen={**allowed}
++    tracer=pin('/usr/bin/strace');frozen[tracer['realpath']]=tracer
++    prior=A/'own-metric-pool-diagnostic-v2.json'
++    assert sha(prior)=='d7edc7e04c2a6c09cdcedd267db2be90a3087efca27851b3f0d656a9b1e68991'
++    frozen[str(prior.resolve())]=pin(prior)
+     for v in [build['actual_source'],build['config'],build['result_names'],build['main_patch'],*build['inputs'],*build['source_package'].values(),pin(review_path),pin(build_path),pin(Path(__file__))]:
+         if v['realpath'] in frozen:
+             old=frozen[v['realpath']]
+@@ -63,10 +67,12 @@
+     m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+     with (B/'owned-v0141-measurement.lock').open('a') as lock:
+         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);root.mkdir(mode=0o700)
+-        record=dict(schema='strata-metric-pool-api-diagnostic-v2',passed=False,complete=False,
++        record=dict(schema='strata-metric-pool-api-diagnostic-trace-v3',passed=False,complete=False,
+             active=False,commands=[],boot_id=BOOT,native_executed=False,GPU_commands_authored=False,
+             collection_qualified=False,numerical_result=False,build=pin(build_path),
+             validation_layer_review=pin(review_path),source=build['actual_source'],binary=binary,
++            syscall_tracer=tracer,prior_diagnostic=pin(prior),
++            diagnostic_question='Identify exact metric-set open path/errno and OA ioctls behind Cannot get kernel metric set; paranoid warning alone returns success in source, so it is not causal proof.',
+             config=build['config'],runtime_elf_pins=allowed,native_rows=[],library_stdout=[],snapshots=[],
+             budgets=dict(native_wall_seconds=90,whole_child_cpu_seconds=120,raw_text_bytes=64<<20,private_bytes=128<<20),
+             retention=dict(owner='Main',consumer='Distinguish pool/API rejection and MetricsLibrary logs',
+@@ -75,6 +81,8 @@
+         def persist():
+             record['active']=bool(owner and owner.active is not None)
+             (root/'record.json').write_text(json.dumps(record,indent=2)+'\n')
++            raw_bytes=sum(p.stat().st_size for p in root.rglob('*') if p.is_file() and (p.suffix in ('.stdout','.stderr','.strace')))
++            if record['active'] and raw_bytes>64<<20:raise RuntimeError('all raw text including syscall trace exceeds64MiB')
+         owner=m.Owner(root/'owned',persist);record['commands']=owner.commands
+         def run(label,argv,env=HOST,interaction=None,wall=30):
+             c,so,se=owner.run(label,argv,env,A.parents[2],interaction=interaction,wall=wall,cpu=120,
+@@ -94,8 +102,25 @@
+             'ZE_ENABLE_VALIDATION_LAYER':'1','NEOReadDebugKeys':'1','EnableDirectSubmission':'0'}
+         record['native_environment']=native_env
+         def snapshot(io,entry,phase):
+-            ident=m.identity(io.proc.pid);assert ident and ident['start_ticks']==entry['direct_identity']['start_ticks']
+-            proc=Path('/proc')/str(io.proc.pid)
++            # The direct owned leader is strace; select only its observed owned
++            # native child, never an unrelated process with the same executable.
++            import time
++            deadline=time.monotonic()+2
++            candidates=[]
++            while time.monotonic()<deadline:
++                io.poll();candidates=[]
++                for old in entry['owners']:
++                    ident_now=m.identity(old['pid'])
++                    if not ident_now or ident_now['start_ticks']!=old['start_ticks']:continue
++                    try:exe_now=str((Path('/proc')/str(old['pid'])/'exe').resolve(strict=True))
++                    except (FileNotFoundError,ProcessLookupError):continue
++                    if exe_now==binary['realpath']:candidates.append(ident_now)
++                if candidates:break
++                time.sleep(.01)
++            assert len(candidates)==1
++            ident=candidates[0];native_pid=ident['pid']
++            assert native_pid!=entry['direct_identity']['pid']
++            proc=Path('/proc')/str(native_pid)
+             assert str(proc.joinpath('exe').resolve())==binary['realpath']
+             effective=dict(v.decode().split('=',1) for v in proc.joinpath('environ').read_bytes().split(b'\0') if v)
+             assert effective==native_env
+@@ -115,7 +140,7 @@
+             status={}
+             for line in proc.joinpath('status').read_text().splitlines():
+                 if line.split(':',1)[0] in ('Uid','Gid','Groups','CapEff','CapBnd','NoNewPrivs'):status[line.split(':',1)[0]]=line.split(':',1)[1].strip()
+-            after=m.identity(io.proc.pid);assert after and after['start_ticks']==ident['start_ticks']
++            after=m.identity(native_pid);assert after and after['start_ticks']==ident['start_ticks']
+             check_pin(build['config']['path'],build['config'])
+             record['snapshots'].append(dict(phase=phase,identity=ident,effective_environment=effective,mappings=maps,process_identity=status,
+                 scope='File-backed executable mappings at this hold; unloaded or anonymous code not attested'))
+@@ -150,7 +175,7 @@
+             before=journal('journal-before',['-k','-b','-n','0','--show-cursor','--no-pager'])
+             match=re.search(r'-- cursor: (\S+)',before);assert match;cursor=match[1];record['journal_before_cursor']=cursor
+             record['native_executed']=True
+-            c,so,se=run('native-pool-probe',[binary['path'],'--main-owned-hold'],native_env,interaction,wall=90)
++            c,so,se=run('native-pool-probe',['/usr/bin/strace','--kill-on-exit','-f','-qq','-yy','-s','256','-e','trace=openat,ioctl,access,newfstatat,statx','-o',str(root/'pool.strace'),binary['path'],'--main-owned-hold'],native_env,interaction,wall=90)
+             record['native_exit_code']=c['exit_code'];record['library_stderr']=se.read_text()
+             summary=record['process_summary'];assert c['exit_code']==summary['exit_code']
+             assert c['exit_code'] in (0,125) and summary['pre_init_hold_status']=='ACK' and summary['post_probe_hold_status']=='ACK'
+@@ -182,6 +207,7 @@
+                 record['complete']=bool(record.get('diagnostic_completed') and record['ownership_closed'] and
+                     record['boot_unchanged'] and not record['driver_dump_entries'] and 'fresh_faults' in record and not record['fresh_faults'] and not record.get('error'))
+             except BaseException as error:record['closure_error']=repr(error)
++            if (root/'pool.strace').exists():record['syscall_trace']=pin(root/'pool.strace')
+             persist();target.write_bytes((root/'record.json').read_bytes())
+         print(json.dumps(dict(receipt=pin(target),status=record.get('status'),complete=record['complete'],
+             passed=record['passed'],exit_code=record.get('native_exit_code'),faults=len(record.get('fresh_faults',[])),

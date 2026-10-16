@@ -1,0 +1,68 @@
+# Round 905 — Metric query pool creation failure
+
+**Classification:** decision support  
+**Scope:** read-only audit of the exact recorded zetMetricQueryPoolCreate failure, installed version alignment, context use, plausible OA dependencies, and one bounded next diagnostic. No build, test, GPU job, process inspection, permission change, or package change was run.
+
+## Finding
+
+The failure is specifically the first performance-query-pool creation: zetMetricQueryPoolCreate returns 0x78000004 (ZE_RESULT_ERROR_INVALID_ARGUMENT) after the ComputeBasic event group has enumerated and metric-group activation has returned success. The call’s logged arguments are non-null handles, type=0 (performance), and count=64; the group reports event-based sampling and 83 metrics. The run exits 125 before a query begins or any kernel result is completed. Its status remains failed and unqualified; it is not evidence of a GPU hang, permission fault, bad model kernel, or performance-counter sample.
+
+The installed runtime and loader versions align with their exact local upstream tags. The sharper compatibility concern is below that layer: the compute-runtime 26.31.39395.14 manifest pins Metrics Discovery 1.16.192 and Metrics Library 1.0.234, while the recorded process loaded Metrics Discovery soname 1.16.188 and Metrics Library 1.0.231. Package metadata identifies them as intel-metrics-discovery 1.14.188 and intel-metrics-library 1.0.231. That is a real revision skew to investigate, but neither the manifest nor the failure record proves that it caused this result.
+
+## Evidence and source pins
+
+The sealed post-reboot receipt is main-metric-query-tiny-v4-v2/record.json, SHA256 67439ca02a41c220f10f4291db5b309ef4bfedd42649ba453d88cc1c98b4220a. It records kernel 7.0.0-38-generic, PCI ID 8086:e20c, process exit 125, ownership closed, no fresh driver faults, and no driver dump. The compact API record is own-metric-query-pool-failure-v1.json, SHA256 581a11dc4ed8a6fcf85dd0066383464a2d1f56fb5432e29864504c119bd9321f; the retained 20-record stderr is metric-query-pool-failure-v1.stderr, SHA256 71c59fd9e0cef82b244afd3d1d5f0899d5e2414babd77f5c8296f6528c1e34d9.
+
+The process map in the sealed receipt identifies libze_intel_gpu.so.1.17.39395 (SHA256 dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c), libze_loader.so.1.32.0 (b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363), libigdmd.so.1.16.188 (c8908112387576f28023c28cc0be0f456de93af8e99b3bc5259e09e0fa876cd9), and libigdml.so.1.0.231 (8f4ffe4a856c441d4c85bd7d7de6ad7672c59812fe4655d2a8843c32eba97075). Read-only package metadata reports libze-intel-gpu1 26.31.39395.14, libze1/libze-dev 1.32.0, discovery 1.14.188, and library 1.0.231, all from the local 24.04 PPA channel.
+
+For provenance, the installed compute-runtime package source version matches upstream tag 26.31.39395.14, commit 050536ff3b6f830199ec99cff8ffcac3d804c40a. The local compute-runtime branch tip is still at 22.43; analysis used the exact 26.31.39395.14 tag, not that older tip. Its metric_oa_query_imp.cpp content hash is 24a54ec8ea0694725a9237e36a186b26fe518c54245b2f38a8979bd6913d0a80; its manifests/manifest.yml hash is 98e7c042fe0508e136a46ecb2a2d90d2277f5251555529e8d4a667984482a360. The manifest pins Level Zero v1.32.0, Metrics Discovery 1.16.192, and Metrics Library 1.0.234.
+
+The installed Level Zero package version matches tag v1.32.0, commit d3b3efbdaa27a0aef9a9812cc8fa4260557c1e7c. The tagged include/zet_api.h hash is 14cd443591c430172aa1cea8e03d31b8049971f08f67b27722b8b99ea3b14b51; it defines performance as enum value 0 and describes count as the number of internal slots. PTI source was read at exact commit 6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033; its ze_collector.h hash is 6ee0130e2b03918a5e4bb5d310dacb94e5ba06bf67c21a23d3134dc406aa9122. The shared research-index snapshot read for this task hashes to 186f4051912372231e884d88b2acafbfa7ec7fa93e0a264d1233833d3f2987e8.
+
+## What can produce this exact result
+
+In the exact compute-runtime tag, the exported entry point forwards the arguments into the Level Zero tools implementation. For the observed performance type, OaMetricGroupImp forwards the context and group to OaMetricQueryPoolImp::metricQueryPoolCreate. That function derives the OA metric source from the device. If a streamer is already active it returns ZE_RESULT_ERROR_NOT_AVAILABLE, which is not the observed code.
+
+Several separate false-return paths are collapsed into ZE_RESULT_ERROR_INVALID_ARGUMENT:
+
+1. createMetricQueryPool() rejects a group unless its sampling type is event based. The captured group has event-based flag 1, so this specific gate appears satisfied.
+2. On the normal non-implicit-scaling path, any metricPoolImp->create() failure becomes INVALID_ARGUMENT. For performance pools, this can be an unsupported descriptor type, the event-based group check above, or MetricsLibrary::createMetricQuery() returning false. In the latter, the source returns false when the Metrics Library is uninitialized or its api.QueryCreate() call does not return success. It does not preserve that lower-level status in the Level Zero result.
+3. If the Metrics Library query object succeeds, allocateGpuMemory() asks the library for the GPU report size and multiplies it by the pool count. A failed/unavailable parameter query, uninitialized library, or zero report size produces allocation size zero, which returns false and is also mapped to INVALID_ARGUMENT. A null graphics allocation follows an unrecoverable path rather than this normal return.
+4. If implicit scaling is active, failure to create any per-subdevice pool is separately mapped to INVALID_ARGUMENT. The record does not establish whether that branch applies to this device.
+
+The count=64 value is not inherently malformed: the exact PTI source initializes performance pool descriptors with the same count of 64, and the Level Zero header describes it as internal slots, not a metric count. However, the exact Metrics Library call receives Slots=64, and the report allocation is multiplied by 64; the record cannot show whether either provider operation accepts that count with the installed library revision.
+
+## Context difference
+
+The receipt logs activation on context 762431288 and pool creation on context 765965576. This matches the pattern in PTI commit 6c0d6b0: unitrace creates a private metrics context, activates the metric group on its device descriptor, then obtains query pools with the context stored against the application command list.
+
+In the exact compute-runtime 26.31.39395.14 OA pool-creation implementation, hContext is forwarded but is not read in OaMetricQueryPoolImp::metricQueryPoolCreate; that method selects the metric source from hDevice. Thus this context split is real, but the reviewed implementation does not use the pool call’s context to create the OA query object. It is not enough to label context mismatch as the cause of this INVALID_ARGUMENT. This source conclusion is version-pinned to 26.31.39395.14 and does not cover behavior after pool creation or downstream kernel/query use.
+
+## Version, OA, and permission dependencies
+
+The runtime/loader pair is consistent with the compute-runtime tag’s Level Zero 1.32.0 dependency. The Metrics Discovery and Metrics Library revisions seen by the process are older than the revisions in that exact runtime tag’s build manifest. Since MetricsLibrary::createMetricQuery() discards the internal QueryCreate status, that skew could match the observed error. It remains a candidate rather than a proven incompatibility; the checked sources do not state a minimum runtime-compatible version range for these independently versioned packages.
+
+Intel’s current Metrics Discovery documentation lists Battlemage support and a Linux 6.11 minimum kernel plus Mesa 24.2 for Xe2-HPG event-based measurements. The receipt’s 7.0.0-38 kernel exceeds that kernel floor, but the Mesa version is not in the receipt. Enumeration and activation succeeded, which shows that this run got through those stages; it does not prove Metrics Library query creation, report sizing, or OA data collection is healthy.
+
+Permissions remain unresolved. Level Zero can report a dedicated insufficient-permissions result, but this driver path can hide a Metrics Library query failure behind INVALID_ARGUMENT. A PTI B580 issue documents the i915/perf_stream_paranoid and xe/observation_paranoid checks and reports a different error, ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE; it is a relevant example, not evidence that permissions caused this run. The captured record contains no OA policy value or effective-credential snapshot. Both Metrics Discovery and Metrics Library were mapped into the process, so missing-package-at-load is not a fit for this receipt.
+
+## Smallest useful next diagnostic
+
+Use the existing tiny owned API harness for one bounded, unprivileged reproduction with the same event group and descriptor. Add local diagnostic logging around the exact Metrics Library boundaries: initialization state, GetParameter(QueryHwCountersReportGpuSize) status and returned size, QueryCreate status and slot count, then report whether allocation sizing passed. These are the hidden branch points that the current Level Zero result collapses. If QueryCreate alone fails with 64 slots, repeat once with count 1; keep all other inputs and the process environment unchanged. The result separates a count-sensitive provider rejection from library initialization/report-size failure without running a model or kernel workload.
+
+Alongside it, record the already-installed package versions and read the applicable xe observation policy and effective user identity without changing them. Do not elevate privileges, alter observation_paranoid, grant capabilities, restart services, or reset the device. A nonzero policy value or denied access would make the OA permission route more plausible; an allowed value does not rule out the version-skew or provider-configuration paths.
+
+PTI’s documented time-based metric sampling mode (-k/--metric-sampling) is an alternative collection route to event-based query pools (-q/--metric-query). It is a source-supported fallback to try only in a bounded smoke run after the direct cause is clearer. It uses the same driver, Metrics Discovery/Library stack, and OA access, so it does not bypass a dependency mismatch or permission restriction and is not yet qualified here.
+
+## Source register
+
+Six source families were used, with primary sources only:
+
+1. Exact Level Zero v1.32.0 header: [zet_api.h](https://github.com/oneapi-src/level-zero/blob/v1.32.0/include/zet_api.h).
+2. Exact compute-runtime tag 26.31.39395.14, commit 050536ff3b6f830199ec99cff8ffcac3d804c40a: [OA query implementation](https://github.com/intel/compute-runtime/blob/26.31.39395.14/level_zero/tools/source/metrics/metric_oa_query_imp.cpp) and its manifests/manifest.yml dependency revisions.
+3. PTI source pinned to 6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033: [ze_collector.h](https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/tools/unitrace/src/levelzero/ze_collector.h).
+4. Intel [Metrics Discovery README](https://github.com/intel/metrics-discovery/blob/master/README.md), current upstream support floor retrieved 2026-10-16.
+5. Intel PTI’s [B580 metric-query issue #83](https://github.com/intel/pti-gpu/issues/83), used only as permission/dependency counterevidence.
+6. Intel PTI [unitrace README](https://github.com/intel/pti-gpu/blob/master/tools/unitrace/README.md), for the documented time-based alternative.
+
+**Decision boundary:** the next action should be a tiny status-instrumented query-pool reproduction. No counter collection, GPU-health, performance, or model-quality result follows from this failed pool-create call.

@@ -1,0 +1,38 @@
+{
+  "id": "f84fad56-6eb7-4939-9a96-baaf090e1ca4",
+  "ok": true,
+  "result": {
+    "runId": "run_c8f478972ec8",
+    "deliveryId": "delivery_a34375156b9a",
+    "messages": [
+      {
+        "id": "msg_4305ebf17487",
+        "run_id": "run_c8f478972ec8",
+        "delivery_contract": "current_delivery",
+        "from_handle": "term_f85e5d93-0c0a-4fca-8caa-38b3b145b832",
+        "to_handle": "run:run_c8f478972ec8",
+        "subject": "Round 911 source trace complete",
+        "body": "Traced the new diagnostic through pinned compute-runtime, Metrics Library, Metrics Discovery, and Xe OA source, and wrote the decision-support report at bench/results/2026-10-15-pr6-recovery-audit/research-round911-v1.txt (SHA256 bd247af566482d82bbcd09df74eb2628f057ed56a406114c512fee1933081af2). The source sequence points to Metrics Library TBS/context initialization failing before QueryCreate; deferred metric-group activation and an observation_paranoid=1 permission denial are consistent, but no ioctl errno was captured. One bounded syscall trace of the fixed GUID file and ADD_CONFIG/STREAM_OPEN results remains the discriminating next step; no runtime or device work was run.",
+        "type": "worker_done",
+        "priority": "normal",
+        "thread_id": null,
+        "payload": "{\"taskId\":\"task_76702660f9da\",\"dispatchId\":\"ctx_683d36f954b7\",\"outcome\":\"succeeded\",\"filesModified\":[\"bench/results/2026-10-15-pr6-recovery-audit/research-round911-v1.txt\"],\"reportPath\":\"bench/results/2026-10-15-pr6-recovery-audit/research-round911-v1.txt\"}",
+        "created_at": "2026-10-16T09:59:59Z",
+        "delivered_at": null
+      }
+    ],
+    "count": 1,
+    "replayed": false,
+    "acknowledged": null,
+    "timedOut": false,
+    "cancelled": false,
+    "connectionLost": false,
+    "mutation": {
+      "requestId": "193585ed-9e59-47cf-a597-8b76e2c49d4d",
+      "replayed": false
+    }
+  },
+  "_meta": {
+    "runtimeId": "e9030fc3-f028-4352-a34d-eb9385c8d79e"
+  }
+}

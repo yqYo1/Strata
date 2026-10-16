@@ -29,6 +29,13 @@ competing explanations: lower bytes, better overlap, fewer submissions or better
 arithmetic should predict a measured dependency-path change. Record uncertainty;
 "GPU compute commands dominate" does not identify the resource inside kernels.
 
+Recheck capacity when an unchanged binary becomes slower. Keep allocation type,
+sizes, repetitions, CPU affinity and effective environment explicit, and compare
+with the telemetry observer disabled. A difference across measurement dates is
+not a source regression by itself. Read PCIe link metadata during the relevant
+work, but reconcile it with attained copy bytes/time; a contradictory sysfs field
+is not a usable performance ceiling. Keep the contradictory observations.
+
 Do not declare counters unavailable solely from a policy file. Test bounded
 capability enumeration without changing permissions, then separately qualify
 activation/collection and interpretation. Conversely, enumeration does not prove
