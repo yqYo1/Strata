@@ -1,0 +1,338 @@
+{
+  "review_id": "R865",
+  "reviewed_on": "2026-10-16 JST",
+  "reviewer": {
+    "provider": "native Codex",
+    "model": "gpt-6-luna",
+    "reasoning_effort": "max"
+  },
+  "purpose": "Read-only scope, source, depth, novelty, applicability, retrieval and lifecycle review of R863; append reviewed catalog records for R854/R855 using R857 metadata only. Main-facing knowledge bodies remain held. No code, Git, builds, tests, GPU/profiler jobs, process inspection, cleanup, implementation or worker contact.",
+  "inputs": {
+    "R862_plan": {
+      "path": "research-scope-plan-round862-v1.json",
+      "sha256": "d699d713964a146c0a330ab9842a6d3863be0f39b3b40753399a614074f98114"
+    },
+    "R857_review": {
+      "path": "research-scope-review-round857-v1.json",
+      "sha256": "34202fd6530fbcf5639316f6b78e7c7703ed1c18cdeafb1a96703e59328c65ea",
+      "use": "Source-checked R854/R855 review and retrieval metadata; their report bodies were not reopened for this review."
+    },
+    "research_index_before": {
+      "path": "research-index.json",
+      "sha256": "0133571758a99f6f1c018895c842eb22d14baffcbef1e1a51341635646ea1ca4",
+      "indexed_report_count": 267,
+      "highest_indexed_round": 851,
+      "R854_R855_R863_present": false
+    },
+    "prior_review_refs": [
+      {
+        "round": "R851",
+        "path": "research-scope-review-round851-v1.json",
+        "sha256": "c74a29d3b7324e610c81eaa0e4787303c91b171339cbd1ff87c61de2d7231aff",
+        "use": "Current dense-NLL/source and phase-dependent hold boundary."
+      },
+      {
+        "round": "R857",
+        "path": "research-scope-review-round857-v1.json",
+        "sha256": "34202fd6530fbcf5639316f6b78e7c7703ed1c18cdeafb1a96703e59328c65ea",
+        "use": "R854/R855 source corrections and held-body retrieval pointers."
+      },
+      {
+        "round": "R834",
+        "path": "A/research-scope-review-round834-v1.json",
+        "sha256": "1ab0a14e569ea7382af305da3fdea4d2ef3bf596b8040b4997021c95bdfec983"
+      },
+      {
+        "round": "R838",
+        "path": "research-scope-review-round838-v1.json",
+        "sha256": "64885285e1f563774767893888ce4899639bc14c2fb1ec36e2c07530403c0b3e"
+      },
+      {
+        "round": "R841",
+        "path": "A/research-scope-review-round841-v1.json",
+        "sha256": "50e03ef297c9b6a1b2c76a28d0223ab9507fee1b08cbef505afa0dea5c0d3843"
+      },
+      {
+        "round": "R845",
+        "path": "A/research-scope-review-round845-v1.json",
+        "sha256": "c01dcd8ab808fcf180761de991c50e1da53e635c6eba9c9ea7b86c2409e3519d"
+      },
+      {
+        "round": "R848",
+        "path": "research-scope-review-round848-v1.json",
+        "sha256": "86f8987c1b153bf7119fd13408f854270502400d591548eff6b76621723d6b57"
+      }
+    ]
+  },
+  "report_reviews": {
+    "R854": {
+      "classification": "knowledge_collection",
+      "report_path": "research-round854-v1.txt",
+      "report_sha256": "04ed3fd7d27faa43fe45a222e22725fb4a3941b71f9c4753c247a8eb0d1ae0a2",
+      "spec_path": "orca-research-round854-spec-v1.txt",
+      "spec_sha256": "c0bdd72f0264efde4172adceeffcd4f2510e8252049832e6faae63cc8eb926ed",
+      "review_source": "R857 metadata; report body not reread",
+      "scope_depth": "Strong, within requested 1,200–1,800 substantive-word/seven-URL budget: 1,741 whitespace words and six URLs. Fixed-CSR scheduling comparison, cost model, counterevidence and future experiment meet the assignment.",
+      "novelty": "Distinct from prior sparse-format, gather/TLB, graph aggregation, grouped-expert, residency and bank-layout scopes, based on R853 and prior review metadata.",
+      "source_accuracy": "R857 checked NVIDIA cuSPARSE stages and opaque descriptors, rocSPARSE API stages, the Liu and Zhang papers, and preprocessing break-even evidence. Four corrections are retained: R854-C1 split the platform coverage for 5.98x and 4.83x means; R854-C2 do not apply SpSM's nnz workspace statement to SpSV; R854-C3 state total queue metadata as 4z+8n+4+4Q (Q<=n), plus controls/partials; R854-C4 pin mutable rocSPARSE docs/license references when retrieved.",
+      "evidence_limits": [
+        "Ready-frontier is a proposed cost-model arm, not a measured result.",
+        "Paper hardware, formats, and CPU/GPU timing are not directly comparable.",
+        "No Arc/Strata inference."
+      ],
+      "main_retrieval": {
+        "needed_now": false,
+        "hold_body": true,
+        "sections": [
+          "13-25",
+          "27-39",
+          "41-47"
+        ],
+        "keys": [
+          "SpTRSV dependency DAG",
+          "level-set vs counters",
+          "ready frontier vs polling",
+          "row granularity",
+          "publication visibility",
+          "preprocessing amortization",
+          "queue storage"
+        ],
+        "preserve_caveats": [
+          "No measured ready-queue win.",
+          "Liu's 85% is CPU data; GPU comparison is Titan X/cuSPARSE 7.5.",
+          "No Strata/Arc transfer."
+        ]
+      },
+      "correction_ids": [
+        "R854-C1",
+        "R854-C2",
+        "R854-C3",
+        "R854-C4"
+      ],
+      "review_ref": {
+        "path": "research-scope-review-round857-v1.json",
+        "sha256": "34202fd6530fbcf5639316f6b78e7c7703ed1c18cdeafb1a96703e59328c65ea"
+      }
+    },
+    "R855": {
+      "classification": "knowledge_collection",
+      "report_path": "research-round855-v1.txt",
+      "report_sha256": "e226747e0572d52dbb5f7f151da6d9f111ef1a7ce2c86e1bb84cb5f6efd022a9",
+      "spec_path": "orca-research-round855-spec-v1.txt",
+      "spec_sha256": "ee3d5a4c18052181818786bc5c5f585c04f86b202b8e5a615eb74b4853491b9f",
+      "review_source": "R857 metadata; report body not reread",
+      "scope_depth": "Strong and within the 1,200–1,800 word/seven-URL budget, near the upper boundary: 1,798 whitespace words and six URLs. Mapping comparisons, distinct source environments, scratch model, counterexamples and bounded future experiment fit the assignment.",
+      "novelty": "Distinct from prior GEMM tile geometry, operand layout, descriptors, grouped experts, generic pipelines, stencil halos and bank layout, based on R853 and prior review metadata.",
+      "source_accuracy": "R857 verified the cuConv V100 FP32 cases, Zhou et al.'s separate batch-64 FP16 aggregate, oneDNN's restricted CPU Winograd path and CUTLASS implementation-specific layout constraints. Preserve R855-C1's version-pin/live-guide notes and R855-C2's CPU-only oneDNN applicability limit.",
+      "evidence_limits": [
+        "cuConv is one two-stage partial-product direct method, not every direct kernel.",
+        "Do not combine the cuConv shape timings with the separate network aggregate.",
+        "TPUv2 results are a simulator/design study, not a measured three-way comparison.",
+        "No Arc/Strata inference."
+      ],
+      "main_retrieval": {
+        "needed_now": false,
+        "hold_body": true,
+        "sections": [
+          "5-20",
+          "22-41",
+          "43-49"
+        ],
+        "keys": [
+          "explicit im2col workspace",
+          "implicit GEMM address work",
+          "direct spatial reuse",
+          "V100 crossover",
+          "TPUv2 simulator",
+          "Winograd accuracy"
+        ],
+        "preserve_caveats": [
+          "Keep FP32/NCHW CUDA 9.2 cases separate from FP16/batch-64 aggregates.",
+          "cuConv materializes partial output then reduces it.",
+          "No Strata/Arc transfer."
+        ]
+      },
+      "correction_ids": [
+        "R855-C1",
+        "R855-C2"
+      ],
+      "review_ref": {
+        "path": "research-scope-review-round857-v1.json",
+        "sha256": "34202fd6530fbcf5639316f6b78e7c7703ed1c18cdeafb1a96703e59328c65ea"
+      }
+    },
+    "R863": {
+      "classification": "knowledge_collection",
+      "report_path": "research-round863-v1.txt",
+      "report_sha256": "23ac4a3f11a41c5aa602fc58733d4e8fa725eb383ac1562adceadf8c429fce5b",
+      "report_bytes": 10070,
+      "whitespace_words": 1424,
+      "unique_urls": 5,
+      "spec_path": "orca-research-round863-spec-v1.txt",
+      "spec_sha256": "45d3843e58db5f9b97e22d3bb70465cffcf81716a87f4be5e35fe2523cb11cb1",
+      "scope_alignment": "Strong fit to the finite R862 assignment: compares workgroup-local fusion, multi-pass Stockham, and four-/six-step/transpose dataflows, separates traffic estimates from published measurements, includes 1-D/2-D cases, library contracts, counterexamples, and an unrun experiment design.",
+      "depth_and_novelty": "1,424 whitespace words meets the 1,300–1,700 budget; five primary URLs are under the seven-URL cap. Novel relative to R854 sparse dependency readiness and R855 convolution materialization, and to prior event timing, bank mapping, and producer-consumer pipeline scopes. Most quantitative crossovers are power-of-two; smooth-composite support is primarily API-level, without a matched published crossover table.",
+      "source_verification": [
+        {
+          "url": "https://arxiv.org/html/2603.27569v1",
+          "verified": "The paper reports the M1 N=4096, batch-256 radix-8/radix-4/vDSP timings, batch crossover, and measured local-resource effects. It also describes an 8192-point FP32 register-resident extension, so the separate implementation's four-step choice at 8192/16384 is not a universal 32-KiB algorithmic limit."
+        },
+        {
+          "url": "https://www.microsoft.com/en-us/research/wp-content/uploads/2008/01/FftGpuSC08.pdf",
+          "verified": "The primary paper supports the stated GTX280/8800-era timing boundary, fixed-total-element batch setups, and historical hierarchy/global-memory crossovers; its era and library-version limits are appropriately stated."
+        },
+        {
+          "url": "https://docs.nvidia.com/cuda/cufft/index.html",
+          "verified": "Current cuFFT documentation covers batched/layout plans, work-area queries and multiple internal kernels; its transform definition supports the stated C2C scaling convention."
+        },
+        {
+          "url": "https://rocm.docs.amd.com/projects/rocFFT/en/docs-10.1.0/how-to/working-with-rocfft.html",
+          "verified": "Release-pinned ROCm 10.1 docs document plan parameters and work-buffer behavior consistent with the report's rocFFT 1.0.40 contract summary."
+        },
+        {
+          "url": "https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-c/2026-0/dfti-forward-domain.html",
+          "verified": "Intel's 2026.0 DFTI reference specifies the real forward domain's conjugate-even output and compact storage convention described in the report."
+        }
+      ],
+      "corrections": [
+        {
+          "id": "R863-C1",
+          "severity": "clarification",
+          "location": "line 29",
+          "issue": "'N=8192 and 16384 require four-step decomposition ... because they exceed the 32 KiB local limit' reads as a universal algorithmic requirement. The paper's implementation selected four-step for those sizes, but also describes a register-resident 8192 FP32 extension.",
+          "action": "Say the reported M1 implementation selected four-step at those sizes; do not derive a universal transform-size limit from 32 KiB alone.",
+          "source": "https://arxiv.org/html/2603.27569v1"
+        },
+        {
+          "id": "R863-C2",
+          "severity": "provenance",
+          "location": "reference 4",
+          "issue": "The 1.0.40 label links to mutable /latest/ docs (which currently resolve to the matching release).",
+          "action": "Use the ROCm 10.1 release-pinned how-to URL when preserving exact release provenance.",
+          "source": "https://rocm.docs.amd.com/projects/rocFFT/en/docs-10.1.0/how-to/working-with-rocfft.html"
+        },
+        {
+          "id": "R863-C3",
+          "severity": "provenance",
+          "location": "reference 1",
+          "issue": "The Microsoft Research publication landing page is less stable as a precise paper artifact than its direct PDF.",
+          "action": "Prefer the primary PDF URL for an immutable artifact link.",
+          "source": "https://www.microsoft.com/en-us/research/wp-content/uploads/2008/01/FftGpuSC08.pdf"
+        }
+      ],
+      "source_applicability": "Numerical claims are tied to M1 and GTX280/8800-era experiments with distinct measurement boundaries; API documentation establishes contract, not algorithm selection or Arc performance. Report's inverse scaling and data-order cautions are appropriate.",
+      "main_retrieval": {
+        "needed_now": false,
+        "hold_body": true,
+        "sections": [
+          "lines 7-25",
+          "lines 29-45",
+          "lines 47-49 only if a future experiment is being designed"
+        ],
+        "keys": [
+          "workgroup-local vs multi-pass vs transpose dataflows",
+          "batch and resource crossovers",
+          "historical GPU evidence and timing limits",
+          "library plan/work-buffer/ordering contracts"
+        ],
+        "preserve_caveats": [
+          "R863-C1: four-step is the paper implementation's choice, not a universal 32-KiB necessity.",
+          "Mostly power-of-two measured crossovers; no Arc performance inference.",
+          "Pin rocFFT release documentation and link direct source PDF if reused."
+        ]
+      },
+      "correction_ids": [
+        "R863-C1",
+        "R863-C2",
+        "R863-C3"
+      ],
+      "review_ref": {
+        "path": "research-scope-review-round865-v1.json",
+        "note": "self-reference; authoritative checksum is in research-index.json"
+      }
+    }
+  },
+  "lifecycle_R863": {
+    "launch_path": "orca-research-round863-launch-v1.json",
+    "launch_sha256": "f22f26ce8488f3afa1a5247e5fbd164744feb39186e2cfa7e34c0b00fbad7755",
+    "launch": {
+      "exit_code": 0,
+      "requested_model": "gpt-6-luna",
+      "state": "input accepted; terminal initially not discoverable"
+    },
+    "settlement_path": "orca-round863-settlement-v1.json",
+    "settlement_sha256": "76de6be2e4491e4efa2ba747f0662cca513890ab06860a2ce33a23ac5a43f79e",
+    "settlement": "worker succeeded and dispatch completed/settled; no failed retry reported",
+    "release_path": "orca-round863-release-v1.json",
+    "release_sha256": "65fae48bcf32acdd4779a495ba2a680dbb90e8399c0ee2627a4551b21986917f",
+    "release": "released; terminal closed; transcript captured",
+    "report_identity": "sha256: 23ac4a3f11a41c5aa602fc58733d4e8fa725eb383ac1562adceadf8c429fce5b"
+  },
+  "cross_report_assessment": {
+    "classification": "All three are knowledge collections, not implementation proposals.",
+    "novelty": "R854 SpTRSV readiness, R855 convolution mapping and R863 FFT decomposition are distinct subjects based on R857 and R862 scope boundaries; FFT-based convolution was explicitly excluded from R863.",
+    "index_action": "Append the missing R854/R855/R863 records with their report and spec hashes, classifications, review references, held-body state and concise retrieval metadata. Add R862 plan and R857/R865 review pointers. Preserve every pre-existing index field and record.",
+    "body_handling": "Main has not read the R854/R855/R863 collection bodies; keep all three held. The reviewer read R863 and used only R857's review metadata for R854/R855."
+  },
+  "main_retrieval": {
+    "needed_now": false,
+    "held_reports": [
+      854,
+      855,
+      863
+    ],
+    "reason": "None of the three subjects is tied to an immediate implementation decision; current attention timing is unqualified, the profile CLI has a provider-init-following SetEnv source blocker, R864's collector controller remains source-only/in flight, R860 was closed without execution, and the R861 subgroup-softmax patch remains unapplied.",
+    "body_sections_if_later": {
+      "R854": [
+        "13-25",
+        "27-39",
+        "41-47"
+      ],
+      "R855": [
+        "5-20",
+        "22-41",
+        "43-49"
+      ],
+      "R863": [
+        "7-25",
+        "29-45",
+        "47-49 only for a future experiment design"
+      ]
+    }
+  },
+  "next_scope_recommendation": {
+    "selected_proposal": null,
+    "profile_dependent_scope": {
+      "schedulable_now": false,
+      "prerequisite_evidence": "The source-profile/collector path is not qualified for local device timing: Main reports a provider-init-following SetEnv source blocker, R864 remains source-only/in flight, and current attention timing is nonexclusive rather than actual GPU device time."
+    },
+    "public_source_only_collection": {
+      "schedulable_without_local_profile": true,
+      "proposal_now": null,
+      "reason": "No concrete nonduplicate question has been selected in this review; retain eligibility for a separately bounded public-source collection without converting unresolved local measurement state into a research prerequisite."
+    }
+  },
+  "index_integration": {
+    "pre_update_sha256": "0133571758a99f6f1c018895c842eb22d14baffcbef1e1a51341635646ea1ca4",
+    "pre_update_report_count": 267,
+    "appended_rounds": [
+      854,
+      855,
+      863
+    ],
+    "post_update_report_count": 270,
+    "existing_report_records_preserved": true,
+    "duplicate_rounds_after_update": [],
+    "index_output_sha256_recorded_in": "operational_digest_ja_400_chars",
+    "sha256_self_reference_note": "The index embeds this review's SHA256; to avoid a circular hash, the final index digest is recorded in the companion Japanese digest, not inside this JSON."
+  },
+  "handling": {
+    "no_gpu_or_profiler": true,
+    "no_build_or_test": true,
+    "no_process_inspection": true,
+    "no_git_or_cleanup": true,
+    "no_worker_contact_or_steering": true,
+    "knowledge_collection_bodies_main_read": false
+  },
+  "operational_digest_ja_400_chars": "R854・R855はR857のメタデータだけで登録。R863は本文をレビューし、一次資料の確認とR863-C1～C3を記録。3件とも知識収集資料で、Main向け本文は保留し、今読む節はなし。R854/R855/R863を含む指数を270件に更新。ローカル計測依存の次スコープは、provider初期化後SetEnvのソース阻害要因とR864未完了のため実行可能でない。独立した公開資料収集は選定後に計画可能。"
+}

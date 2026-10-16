@@ -2591,6 +2591,170 @@
       "model": "gpt-6-luna",
       "read_only": true,
       "status": "nativeLuna-max scope review"
+    },
+    {
+      "round": 854,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-round854-v1.txt",
+      "status": "R857-reviewed knowledge collection; Main body held; not needed now; corrections R854-C1 through R854-C4 recorded in review metadata.",
+      "sha256": "04ed3fd7d27faa43fe45a222e22725fb4a3941b71f9c4753c247a8eb0d1ae0a2",
+      "classification": "knowledge_collection",
+      "spec_path": "orca-research-round854-spec-v1.txt",
+      "spec_sha256": "c0bdd72f0264efde4172adceeffcd4f2510e8252049832e6faae63cc8eb926ed",
+      "review_round": "R857",
+      "review_path": "research-scope-review-round857-v1.json",
+      "review_sha256": "34202fd6530fbcf5639316f6b78e7c7703ed1c18cdeafb1a96703e59328c65ea",
+      "main_body_read": false,
+      "retrieval": {
+        "needed_now": false,
+        "hold_body": true,
+        "sections": [
+          "13-25",
+          "27-39",
+          "41-47"
+        ],
+        "keys": [
+          "SpTRSV dependency DAG",
+          "level-set vs counters",
+          "ready frontier vs polling",
+          "row granularity",
+          "publication visibility",
+          "preprocessing amortization",
+          "queue storage"
+        ],
+        "preserve_caveats": [
+          "No measured ready-queue win.",
+          "Liu's 85% is CPU data; GPU comparison is Titan X/cuSPARSE 7.5.",
+          "No Strata/Arc transfer."
+        ]
+      },
+      "tags": [
+        "SpTRSV",
+        "DAG scheduling",
+        "level-set",
+        "counters",
+        "ready frontier",
+        "CSR",
+        "row granularity",
+        "preprocessing amortization"
+      ],
+      "correction_ids": [
+        "R854-C1",
+        "R854-C2",
+        "R854-C3",
+        "R854-C4"
+      ]
+    },
+    {
+      "round": 855,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-round855-v1.txt",
+      "status": "R857-reviewed knowledge collection; Main body held; not needed now; doc-pinning and applicability notes R855-C1/C2 recorded in review metadata.",
+      "sha256": "e226747e0572d52dbb5f7f151da6d9f111ef1a7ce2c86e1bb84cb5f6efd022a9",
+      "classification": "knowledge_collection",
+      "spec_path": "orca-research-round855-spec-v1.txt",
+      "spec_sha256": "ee3d5a4c18052181818786bc5c5f585c04f86b202b8e5a615eb74b4853491b9f",
+      "review_round": "R857",
+      "review_path": "research-scope-review-round857-v1.json",
+      "review_sha256": "34202fd6530fbcf5639316f6b78e7c7703ed1c18cdeafb1a96703e59328c65ea",
+      "main_body_read": false,
+      "retrieval": {
+        "needed_now": false,
+        "hold_body": true,
+        "sections": [
+          "5-20",
+          "22-41",
+          "43-49"
+        ],
+        "keys": [
+          "explicit im2col workspace",
+          "implicit GEMM address work",
+          "direct spatial reuse",
+          "V100 crossover",
+          "TPUv2 simulator",
+          "Winograd accuracy"
+        ],
+        "preserve_caveats": [
+          "Keep FP32/NCHW CUDA 9.2 cases separate from FP16/batch-64 aggregates.",
+          "cuConv materializes partial output then reduces it.",
+          "No Strata/Arc transfer."
+        ]
+      },
+      "tags": [
+        "2D CNN convolution",
+        "explicit im2col",
+        "implicit GEMM",
+        "direct spatial",
+        "workspace",
+        "input reuse",
+        "Winograd",
+        "TPUv2"
+      ],
+      "correction_ids": [
+        "R855-C1",
+        "R855-C2"
+      ]
+    },
+    {
+      "round": 863,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-round863-v1.txt",
+      "status": "R865-reviewed knowledge collection; Main body held; not needed now; source corrections R863-C1/C2/C3 recorded in review metadata.",
+      "sha256": "23ac4a3f11a41c5aa602fc58733d4e8fa725eb383ac1562adceadf8c429fce5b",
+      "classification": "knowledge_collection",
+      "spec_path": "orca-research-round863-spec-v1.txt",
+      "spec_sha256": "45d3843e58db5f9b97e22d3bb70465cffcf81716a87f4be5e35fe2523cb11cb1",
+      "review_round": "R865",
+      "review_path": "research-scope-review-round865-v1.json",
+      "review_sha256": "9b78ea8a3d7777957b1fb6323ff88e7a92b67c1329ccc08d1a8806738c7ef69f",
+      "main_body_read": false,
+      "retrieval": {
+        "needed_now": false,
+        "hold_body": true,
+        "sections": [
+          "lines 7-25",
+          "lines 29-45",
+          "lines 47-49 only if a future experiment is being designed"
+        ],
+        "keys": [
+          "workgroup-local vs multi-pass vs transpose dataflows",
+          "batch and resource crossovers",
+          "historical GPU evidence and timing limits",
+          "library plan/work-buffer/ordering contracts"
+        ],
+        "preserve_caveats": [
+          "R863-C1: four-step is the paper implementation's choice, not a universal 32-KiB necessity.",
+          "Mostly power-of-two measured crossovers; no Arc performance inference.",
+          "Pin rocFFT release documentation and link direct source PDF if reused."
+        ]
+      },
+      "tags": [
+        "GPU FFT",
+        "Stockham",
+        "four-step",
+        "six-step",
+        "transpose",
+        "workgroup-local",
+        "batch crossover",
+        "plan workspace"
+      ],
+      "correction_ids": [
+        "R863-C1",
+        "R863-C2",
+        "R863-C3"
+      ],
+      "lifecycle": {
+        "launch_path": "orca-research-round863-launch-v1.json",
+        "launch_sha256": "f22f26ce8488f3afa1a5247e5fbd164744feb39186e2cfa7e34c0b00fbad7755",
+        "settlement_path": "orca-round863-settlement-v1.json",
+        "settlement_sha256": "76de6be2e4491e4efa2ba747f0662cca513890ab06860a2ce33a23ac5a43f79e",
+        "release_path": "orca-round863-release-v1.json",
+        "release_sha256": "65fae48bcf32acdd4779a495ba2a680dbb90e8399c0ee2627a4551b21986917f",
+        "state": "worker succeeded/settled; released; transcript captured"
+      }
     }
   ],
   "main_initial_findings": [
@@ -4139,5 +4303,23 @@
     "next_conditional": "ReviewerJITperformancescopehelduntilscreen/measurement; alreadylaunchedR849independentactualJITmetadata/diagnosticrecipepublicsourcequestion. No runningworkersteering."
   },
   "research_review_851": "research-scope-review-round851-v1.json; Main-read only operating retrieval metadata and specified R850 decision sections; R849 bodyheld.",
-  "research_scope_plan_853": "research-scope-plan-round853-v1.json; nativeLuna-max planning, two independent substantial knowledge scopes, no phase prerequisites."
+  "research_scope_plan_853": "research-scope-plan-round853-v1.json; nativeLuna-max planning, two independent substantial knowledge scopes, no phase prerequisites.",
+  "research_scope_plan_862": {
+    "path": "research-scope-plan-round862-v1.json",
+    "sha256": "d699d713964a146c0a330ab9842a6d3863be0f39b3b40753399a614074f98114"
+  },
+  "research_review_857": {
+    "path": "research-scope-review-round857-v1.json",
+    "sha256": "34202fd6530fbcf5639316f6b78e7c7703ed1c18cdeafb1a96703e59328c65ea"
+  },
+  "research_review_865": {
+    "path": "research-scope-review-round865-v1.json",
+    "sha256": "9b78ea8a3d7777957b1fb6323ff88e7a92b67c1329ccc08d1a8806738c7ef69f",
+    "collection_bodies_main_read": false,
+    "held_reports": [
+      854,
+      855,
+      863
+    ]
+  }
 }
