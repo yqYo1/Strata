@@ -6844,15 +6844,15 @@
     "main_reconciliation": "research-review-round953-main-reconciliation-v1.json"
   },
   "current_main_boundary": {
-    "recorded_utc": "2026-10-16T20:36:01.900398+00:00",
+    "recorded_utc": "2026-10-16T20:37:45.471616+00:00",
     "goal": "Dedicated long prefill repeated >600 then1000tok/s; eventual decode70tok/s. Not achieved.",
     "current_model_comparison": "Score33 optimized median459.1 versus packed459.3tok/s, six processes, final pair overlap qualification retained; no packed speed adoption. Earlier uncontaminated score33 cohort median464.1tok/s remains recorded.",
-    "changes": "Prepared private GDN v2 build and Main-owned traced smoke/component controllers after R964 source review. Exact profile/analysis precedence, expected8/18 launch totals, same-binary smoke gate and fault/lifetime guards encoded. Source unchanged; no new compiler/native/performance run.",
+    "changes": "Prepared Main-owned private GDN v2 build/smoke/component controllers with profile precedence, fixed private index and UR count gates. Pure-host module-load and optimized-Python early-refusal checks passed for both controllers. No native compiler/GPU run or production source change.",
     "next": "Existing exact PID/start waiter alone observes the foreign CPU benchmark. After paired profile closes, run its analyzer and use evidence to choose QSA/placement/MoE/GDN. GDN controllers are ready but have not executed.",
     "compile_or_GPU_work_this_boundary": false,
     "source_inspection_command": "Isolated Git index patch validation and immutable source/fixture hashes; no native execution.",
     "full_physical262144_model_consume_RESTORE": "Unqualified; component coverage is insufficient.",
-    "default_sync_PR": null
+    "default_sync_PR": "https://github.com/yqYo1/Strata/pull/27"
   },
   "research_review_round955": {
     "review_path": "research-review-round955-v1.json",
@@ -7168,7 +7168,14 @@
       "build_gdn_output16_only_v2.py",
       "run_gdn_output16_only_v2.py"
     ],
-    "controller_status": "Main-reviewed and Python syntax-parsed only; compiler/native NOT_RUN. Enforces current profile+analysis precedence, fixed private index/source pins, exact expected8/18 UR kernel totals, ownership/runtime/fault checks and no -O."
+    "controller_status": "Main-reviewed and Python syntax-parsed only; compiler/native NOT_RUN. Enforces current profile+analysis precedence, fixed private index/source pins, exact expected8/18 UR kernel totals, ownership/runtime/fault checks and no -O.",
+    "host_controller_guard_check": {
+      "path": "gdn-output16-controller-host-guards-v1.json",
+      "sha256": "74f164a3aef28c898cae84459c14655e8c5e6efc2e3a3cbdbefe3647d7d89736",
+      "passed": true,
+      "scope": "Pure-host module loading and Python -O early refusal only; all four checks passed, no controller main/compiler/GPU execution.",
+      "observed_process_exit_code": 0
+    }
   },
   "research_review_round963": {
     "review_path": "research-review-round963-v1.json",

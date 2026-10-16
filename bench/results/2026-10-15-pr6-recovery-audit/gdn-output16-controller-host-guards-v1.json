@@ -1,0 +1,62 @@
+{
+  "schema": "strata-gdn-controller-host-guards-v1",
+  "recorded_utc": "2026-10-16T20:37:25.561694+00:00",
+  "passed": true,
+  "complete": true,
+  "scope": "Pure-host module-load/optimization guard only. Execute top-level source under a non-main name; optimized source must refuse before defining main. No controller main, helper load, compiler, native child, runtime or model execution. Does not qualify GDN runtime behavior.",
+  "cases": [
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/build_gdn_output16_only_v2.py",
+      "sha256": "51662a451502e9a396a7057ddb54052667aacba5ce24b360c41ea889b93819f6",
+      "cases": [
+        {
+          "optimization": 0,
+          "main_defined": true,
+          "main_called": false,
+          "error": null,
+          "passed": true
+        },
+        {
+          "optimization": 1,
+          "main_defined": false,
+          "main_called": false,
+          "error": "Run without -O: the qualification guards must remain enabled",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/run_gdn_output16_only_v2.py",
+      "sha256": "89469e30b4b77e43007d066b3308a91d043ff15dc876d431f66d6a57a329f0c6",
+      "cases": [
+        {
+          "optimization": 0,
+          "main_defined": true,
+          "main_called": false,
+          "error": null,
+          "passed": true
+        },
+        {
+          "optimization": 1,
+          "main_defined": false,
+          "main_called": false,
+          "error": "Run without -O: the qualification guards must remain enabled",
+          "passed": true
+        }
+      ]
+    }
+  ],
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "elapsed_seconds": 0.013223745045252144,
+  "owned_process": {
+    "pid": 3680517,
+    "start_ticks": 53180938
+  },
+  "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "measurement_lock_held": true,
+  "foreign_process_modified": false,
+  "controller_main_executed": false,
+  "native_compiler_executed": false,
+  "GPU_executed": false,
+  "performance_measured": false
+}
