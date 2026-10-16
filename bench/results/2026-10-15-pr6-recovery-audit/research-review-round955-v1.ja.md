@@ -1,0 +1,7 @@
+R954（`research-round954-v1.txt`、SHA256 `cf3d39c909004e954035648ceb9a2dd9854bd537182566de34eb4ebabeea5ca4`）は、1,462語・11,149 bytesで指定範囲内。ソース契約とSIMD16内の行所有案を説明するdecision supportとして受理する。実装・速度・モデル採用の証拠ではない。
+
+R934の分割状態／グローバルmerge調査とは問いが異なる。R954は既存score barrier後の32値softmaxを、8 subgroup上の二行waveまたは二つの8-lane領域に割り当てる案を比較する。既存の確率exp分散は加算順を保って2 barrierを加えた別実験であり、score33単独より遅かった組合せも別結果。tilepack測定はsoftmaxを変えていないので、どれもR954案の速度を示さない。
+
+SGLangの固定commitから通常CUDA extendのno-prefix/prefix呼び出しとBF16条件付きのdtype境界を確認した。これは非CP・非speculativeのソース経路で、実行時のmodel選択やTritonのlane mapping／FMA loweringを証明しない。SYCL collectiveは全lane参加が必要。Intelのcoordinate callback例から物理lane ownershipや安全な全行reduceを推定しない。R954にはIntel仕様の短いコード例が一行引用されているため、仕様とApache-2.0-with-LLVM-exceptionsのprovenanceを維持する。
+
+Mainは現在のengine build v2を完了し、tilepackの実行資格を先に確定する。softmax ownershipの計測・実装はMain専管。現在の記録ではsoftmax bottleneckが示されていないため、追加researchは `schedulable_now=false`。具体的なMain測定か新しいAPI/compiler疑問が生じた場合に限り、R954の15–26行（候補）と27–34行（制約）を取得する。

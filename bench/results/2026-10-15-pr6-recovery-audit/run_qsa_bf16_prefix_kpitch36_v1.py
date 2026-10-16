@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+if __name__ == '__main__': raise SystemExit('Superseded before GPU execution: use the corresponding v2 controller with distinct SYCL kernel identifiers.')
 """Main-owned traced first/component checks; no model or speed adoption."""
 import fcntl,hashlib,importlib.util,json,os,re,sys
 from pathlib import Path

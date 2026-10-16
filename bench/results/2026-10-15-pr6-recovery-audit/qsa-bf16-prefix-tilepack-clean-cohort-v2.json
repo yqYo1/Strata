@@ -1,0 +1,120 @@
+{
+  "schema": "strata-bf16-prefix-clean-cohort-v1",
+  "passed": true,
+  "complete": true,
+  "source": "bdc0b5f9788e4da43c8aa631b4fb2d0ceb4d7c992b1511960c7f8becb33a4627",
+  "child": "385bcba4eed4922903b99ec10634a3b45a1cb71827f558c02a8f657b23e8b777",
+  "order": [
+    [
+      "bf16-prefix-optimized",
+      0
+    ],
+    [
+      "bf16-prefix-tilepack",
+      0
+    ],
+    [
+      "bf16-prefix-tilepack",
+      1
+    ],
+    [
+      "bf16-prefix-optimized",
+      1
+    ],
+    [
+      "bf16-prefix-optimized",
+      2
+    ],
+    [
+      "bf16-prefix-tilepack",
+      2
+    ]
+  ],
+  "completed": [
+    {
+      "arm": "bf16-prefix-optimized",
+      "repetition": 0,
+      "controller_exit": 0,
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-bf16-prefix-tilepack-clean-bf16-prefix-optimized-r0-v2.json",
+      "sha256": "f279fd81aef8cab999a7122a23e5e5bc6cf94b4b088a8bae6afabe2a354361ba",
+      "prompt_tps": {
+        "median": 459.1,
+        "min": 459.1,
+        "max": 459.1,
+        "n": 1
+      }
+    },
+    {
+      "arm": "bf16-prefix-tilepack",
+      "repetition": 0,
+      "controller_exit": 0,
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-bf16-prefix-tilepack-clean-bf16-prefix-tilepack-r0-v2.json",
+      "sha256": "ef30e3346cf3cc72f5ea7d89289071002030cbd47ca466f74e46bae6a208d3e9",
+      "prompt_tps": {
+        "median": 459.3,
+        "min": 459.3,
+        "max": 459.3,
+        "n": 1
+      }
+    },
+    {
+      "arm": "bf16-prefix-tilepack",
+      "repetition": 1,
+      "controller_exit": 0,
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-bf16-prefix-tilepack-clean-bf16-prefix-tilepack-r1-v2.json",
+      "sha256": "9bfa9b78d47828ed0b78623fb1a5f30f2a65b73e95822cea8a4fda19ed37bb4e",
+      "prompt_tps": {
+        "median": 469.4,
+        "min": 469.4,
+        "max": 469.4,
+        "n": 1
+      }
+    },
+    {
+      "arm": "bf16-prefix-optimized",
+      "repetition": 1,
+      "controller_exit": 0,
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-bf16-prefix-tilepack-clean-bf16-prefix-optimized-r1-v2.json",
+      "sha256": "1658f5d32aa6fe554762f03bc22b9fe21ab0284c3c9f1a993ec2d548d0878937",
+      "prompt_tps": {
+        "median": 463.5,
+        "min": 463.5,
+        "max": 463.5,
+        "n": 1
+      }
+    },
+    {
+      "arm": "bf16-prefix-optimized",
+      "repetition": 2,
+      "controller_exit": 0,
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-bf16-prefix-tilepack-clean-bf16-prefix-optimized-r2-v2.json",
+      "sha256": "d1f4b9c9922125d2c5c02dff96ed2ee7992a0d4f829968efa226ae510c4c27de",
+      "prompt_tps": {
+        "median": 450.8,
+        "min": 450.8,
+        "max": 450.8,
+        "n": 1
+      }
+    },
+    {
+      "arm": "bf16-prefix-tilepack",
+      "repetition": 2,
+      "controller_exit": 0,
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-bf16-prefix-tilepack-clean-bf16-prefix-tilepack-r2-v2.json",
+      "sha256": "dedbe07aabd26df592d0ff1c0c584cd53bc634acac8deaeb7dfcdcece1d35372",
+      "prompt_tps": {
+        "median": 402.0,
+        "min": 402.0,
+        "max": 402.0,
+        "n": 1
+      }
+    }
+  ],
+  "active_controller": null,
+  "performance_adopted": false,
+  "quality_accepted": false,
+  "physical256K_model_qualified": false,
+  "RESTORE_qualified": false,
+  "scope": "Separate native processes, official bench.sh actual32K+ input, thinking ON/24 output cap; score33 row-major versus dense16/VNNI operands, same BF16 boundaries and4byte-aligned matrix arrays. Six individual samples retained. No parallel test/build/cleanup, no retry or failed sample substitution.",
+  "finished_utc": "2026-10-16T18:51:27.903127+00:00"
+}
