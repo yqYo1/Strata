@@ -54,7 +54,8 @@ void attention(const float *q, const QsaAttnPools &p, const int32_t *ids,
                         &runtime->compute());
 #endif
 }
-void run(int format, int page_size, bool masked, bool scaled = false) {
+void run(int format, int page_size, bool masked, bool scaled = false,
+         bool one_valid = false) {
   constexpr int cells = 2113, cap = 2051, heads = 24, kvheads = 2,
                 dim = 256;
   const int nq = benchmark_nq ? benchmark_nq : 3;
@@ -119,6 +120,13 @@ void run(int format, int page_size, bool masked, bool scaled = false) {
       ids[b * cap + i] = (i * 17 + b * 3) % cells;
     if (scaled)
       ids[b * cap + 5] = -1;
+  }
+  if (one_valid) {
+    // One logical resident cell per query. Queries alternate: empty tiles before
+    // the only mass, or empty tiles after it. The FP64 oracle below is unchanged.
+    std::fill(ids.begin(), ids.end(), -1);
+    for (int b = 0; b < nq; ++b)
+      ids[b * cap + (b % 2 ? 0 : counts[b] - 1)] = page_size;
   }
   Buffer<uint16_t> dk16(k16.size()), dv16(v16.size()), dks(ks.size()),
       dvs(vs.size());
@@ -256,7 +264,7 @@ void run(int format, int page_size, bool masked, bool scaled = false) {
     check(work[i] == 1234.f, "scratch guard");
   if (benchmark_nq) {
     std::cout << "benchmark oracle=FP64_queries_0_1_2_last max_abs=" << worst
-              << " full_finite=PASS tail_canaries=PASS cross_arm_exact=EXTERNAL_REQUIRED\n";
+              << " full_finite=PASS tail_canaries=PASS cross_arm_numerical=EXTERNAL_REQUIRED\n";
     return;
   }
   // Reuse the same buffers with all pages missing, then with zero widths.
@@ -279,7 +287,8 @@ void run(int format, int page_size, bool masked, bool scaled = false) {
     check(out.get() == zero, "invalid selected-cell width");
   }
   std::cout << "split format=" << format << " page=" << page_size
-            << " masked=" << masked << " max_abs=" << worst << "\n";
+            << " masked=" << masked << " one_valid=" << one_valid
+            << " max_abs=" << worst << "\n";
 }
 } // namespace
 // Independent logical-tile proof: each map must write every [dim,slot] once.
@@ -339,7 +348,7 @@ void logical_tile() {
 int main(int argc, char **argv) {
   try {
     // No process-environment writes, including before/after runtime creation.
-    // Optional output dump is compared byte-for-byte across separate arms.
+    // Optional dumps support numerical comparison across softmax routes.
     const bool bench = argc == 6 && std::string(argv[1]) == "--bench";
     check(argc == 1 || argc == 3 || bench,
           "usage: fixture [--dump PATH] | --bench 128|256 repeats1..20 --dump PATH");
@@ -374,6 +383,8 @@ int main(int argc, char **argv) {
           run(fmt, page, page != 1);
       for (int fmt = 0; fmt < 4; ++fmt)
         run(fmt, 16, true, true);
+      for (int fmt = 0; fmt < 4; ++fmt)
+        run(fmt, 4, true, true, true);
     }
     auto s = qsa_real_shapes();
     auto reject = [](auto f) {

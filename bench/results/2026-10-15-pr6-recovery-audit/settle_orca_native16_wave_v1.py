@@ -11,7 +11,7 @@ HANDLE = 'term_6fbfd718-e3a2-46d8-ab62-73c36d2851a6'
 
 
 def call(args):
-    p = subprocess.run(['orca', 'orchestration', *args, '--json'],
+    p = subprocess.run(['/home/yayoi/.nix-profile/bin/orca', 'orchestration', *args, '--json'],
                        capture_output=True, text=True, timeout=30)
     r = json.loads(p.stdout)
     assert p.returncode == 0 and r['ok'], (p.returncode, p.stderr)
@@ -73,7 +73,10 @@ def main():
              860: 'orca-implement-current-unitrace-round860-launch-v1.json',
              861: 'orca-implement-prompt-softmax-subgroups-round861-launch-v1.json',
              863: 'orca-research-round863-launch-v1.json',
-             864: 'orca-implement-unitrace-direct-collector-round864-launch-v1.json'}
+             864: 'orca-implement-unitrace-direct-collector-round864-launch-v1.json',
+             867: 'orca-research-round867-launch-v1.json',
+             868: 'orca-research-round868-launch-v1.json',
+             869: 'orca-research-round869-launch-v1.json'}
     known = {}
     for n, name in names.items():
         v = json.loads((A / name).read_text())['receipt']['result']

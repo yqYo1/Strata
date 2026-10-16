@@ -1,0 +1,110 @@
+Knowledge collection; report body stays held unread by Main.
+Target: Direction-optimized single-GPU BFS frontier representation and switching costs
+Ownership: write ONLY /home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round869-v1.txt; do not edit source, index, reports by others, or Git. Use this existing worktree; no branches. No build, test, GPU, profiler, process/device inspection, local benchmarking, or workers. Do not read XeStrata implementation/proposals/tests. Public source research only.
+Change and observable acceptance: produce a substantive bounded report answering this single coherent question and comparisons, with primary source links, exact source contexts, counterevidence, applicability boundaries, novelty and remaining uncertainties. Do not propose this as implemented or validated Strata optimization.
+Assignment metadata (the full concrete scope and prior-report locations):
+{
+  "proposed_assignment_round": "R869",
+  "purpose_label": "knowledge collection",
+  "title": "Direction-optimized single-GPU BFS frontier representation and switching costs",
+  "report_output": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round869-v1.txt",
+  "spec_output_if_dispatched": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/orca-research-round869-spec-v1.txt",
+  "schedulable_now": true,
+  "finite_question": "For single-GPU unweighted breadth-first search, compare top-down push over the active frontier, bottom-up pull over unvisited vertices with frontier-membership tests, and direction-optimized switching between them. How do frontier density, degree distribution, CSR/CSC or transpose availability, queue-versus-bitmap membership, duplicate discovery, and per-level conversion/compaction cost set the switch point?",
+  "breadth_and_counterevidence": "Use original BFS/graph-processing papers and primary GPU framework papers. Compare three traversal strategies in one table; record graph family/scale, directed-edge convention, GPU, representation, preprocessing, frontier format, and whether throughput includes conversion/setup. Separate analytical edge-visit/storage estimates from measured TEPS. Include a sparse-frontier case where pull scans inactive vertices and dense-frontier/hub-heavy cases where top-down inspects many redundant edges but bottom-up may stop after finding one active neighbor; identify graph structures where switching does not pay. Treat duplicate-claim atomics only as a boundary condition, not an aggregation study. This is discovery/frontier direction, not sparse triangular dependency scheduling or destination reduction.",
+  "novelty_guard": "Review/index metadata contains R786 graph destination fan-in/reduction, R854 SpTRSV dependency-ready scheduling, R778 sparse format conversion, R779 irregular gather/cache/TLB, and R759/R763 general work distribution, but no BFS push/pull frontier-switching study. Exclude multi-GPU partitioning, graph aggregation, SpTRSV counters/ready queues, SpMV/SpMM conversion, PageRank, generic scan/compaction algorithm surveys, and Strata implementation advice.",
+  "report_budget": "1,300–1,700 substantive words; at most 7 primary URLs; one frontier strategy/crossover table; graph/hardware measurement boundaries and counterevidence.",
+  "prerequisites": [
+    "Public access to original graph-processing and GPU framework papers.",
+    "No local graph dataset, GPU, driver, profile, build, benchmark, or process state is required."
+  ],
+  "prerequisite_evidence": "Public primary sources include Beamer et al., Direction-Optimizing BFS (https://doi.org/10.3233/SPR-130370); Merrill et al., Scalable GPU Graph Traversal (https://research.nvidia.com/sites/default/files/pubs/2012-02_Scalable-GPU-Graph/ppo213s-merrill.pdf); Gunrock (https://escholarship.org/uc/item/6xz7z9k0); GraphBLAST (https://arxiv.org/abs/1908.01407v1); and TurboBFS (https://pmc.ncbi.nlm.nih.gov/articles/PMC9007172/). The source set provides traversal alternatives without any local prerequisite.",
+  "starting_primary_sources": [
+    {
+      "kind": "original direction-optimizing BFS paper",
+      "title": "Direction-Optimizing Breadth-First Search",
+      "url": "https://doi.org/10.3233/SPR-130370",
+      "version_or_limit": "Its principal benchmark results are shared-memory CPU; keep CPU/GPU evidence separate."
+    },
+    {
+      "kind": "original GPU graph traversal paper",
+      "title": "Scalable GPU Graph Traversal",
+      "url": "https://research.nvidia.com/sites/default/files/pubs/2012-02_Scalable-GPU-Graph/ppo213s-merrill.pdf",
+      "version_or_limit": "Historical NVIDIA results; record graph format, device, preprocessing."
+    },
+    {
+      "kind": "original GPU framework paper",
+      "title": "Gunrock: A High-Performance Graph Processing Library on the GPU",
+      "url": "https://escholarship.org/uc/item/6xz7z9k0",
+      "version_or_limit": "Separate framework-level results from a specific BFS kernel."
+    },
+    {
+      "kind": "original GPU GraphBLAS paper",
+      "title": "GraphBLAST: A High-Performance Linear Algebra-based Graph Framework on the GPU",
+      "url": "https://arxiv.org/abs/1908.01407v1",
+      "version_or_limit": "Pin arXiv v1 and use only frontier/input-sparsity claims relevant to BFS."
+    },
+    {
+      "kind": "original GPU BFS paper",
+      "title": "TurboBFS: GPU Based Breadth-First Search Algorithms in the Language of Linear Algebra",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9007172/",
+      "version_or_limit": "IEEE IPDPSW 2021; preserve graph-set and formulation boundaries."
+    }
+  ],
+  "shared_assignment_inputs": [
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+      "sha256": "40e0c42af082876d385220522f43df698e5db542b65873ebd1ce24cf29352e1c",
+      "use": "Complete current catalog, 270 records; use metadata to avoid duplication without opening held collection bodies."
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round865-v1.json",
+      "sha256": "9b78ea8a3d7777957b1fb6323ff88e7a92b67c1329ccc08d1a8806738c7ef69f",
+      "use": "Latest scope and prerequisite-eligibility metadata."
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round857-v1.json",
+      "sha256": "34202fd6530fbcf5639316f6b78e7c7703ed1c18cdeafb1a96703e59328c65ea",
+      "use": "R854/R855 scope, source correction, and retrieval metadata."
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round788-v1.json",
+      "sha256": "2c709a1be87034151326e0916db23dd2be9ed61e0840e941eabd373eb817c31d",
+      "use": "Metadata for R786 graph fan-in/reduction; exclude aggregation semantics."
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-nonllm-gpu-round759-v1.txt",
+      "sha256": "4c81d833c2a690e9b3f5fb54d579288acc949790e30ab15457f24d65cc0aad5f",
+      "use": "General GPU work partition boundary."
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round778-v1.txt",
+      "sha256": "21b4de9846f73f882671dbefb8353d730f75284435a179c48531abfd30da5102",
+      "use": "Sparse-format conversion and SpMV/SpMM boundary."
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round779-v1.txt",
+      "sha256": "32ef750461f2538d75d6cf55ca4b2ff1722558d0487ff0aa34c4697e6550ae30",
+      "use": "Irregular gather/cache/page-translation boundary."
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round786-v1.txt",
+      "sha256": "375aeb85b619b686102cf4d5085d2adb71e54dcdc0ef725224fcabc532f0ec8c",
+      "use": "Graph destination contention/reduction boundary."
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round854-v1.txt",
+      "sha256": "04ed3fd7d27faa43fe45a222e22725fb4a3941b71f9c4753c247a8eb0d1ae0a2",
+      "use": "SpTRSV dependency-ready scheduling/counter boundary."
+    }
+  ],
+  "prior_overlap": "R786 is graph destination fan-in/floating-point aggregation; R854 is SpTRSV dependency readiness; R778 is sparse-matrix conversion; R779 is irregular gather/cache/page translation. R867/R868 are separate query-pipeline and graphics-attachment topics. The BFS traversal frontier question is distinct; do not repeat adjacent mechanisms.",
+  "main_body_handling": "Knowledge collection. Main keeps the report body unread and consumes only reviewer digest/retrieval metadata until an independent graph-traversal question exists.",
+  "worker_constraints": [
+    "Write only the named output report.",
+    "Use original papers/framework sources; record graph family, device, representation and timing boundary.",
+    "No code copying, local graph run, GPU/profile/build/test/process inspection, Git, or product edits.",
+    "Do not infer Intel Arc/SYCL performance or Strata adoption."
+  ]
+}
+Do not contact other workers. Do not require a local measurement not part of this scope. If a source is inaccessible, use another primary source and state limits. Main owns implementation/testing. On completion use the injected Orca worker_done lifecycle; final response <=5 operational lines with output path/hash, without technical report body.

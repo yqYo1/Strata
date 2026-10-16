@@ -1,0 +1,115 @@
+Knowledge collection; report body stays held unread by Main.
+Target: Fusion and materialization boundaries in GPU analytical query pipelines
+Ownership: write ONLY /home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round867-v1.txt; do not edit source, index, reports by others, or Git. Use this existing worktree; no branches. No build, test, GPU, profiler, process/device inspection, local benchmarking, or workers. Do not read XeStrata implementation/proposals/tests. Public source research only.
+Change and observable acceptance: produce a substantive bounded report answering this single coherent question and comparisons, with primary source links, exact source contexts, counterevidence, applicability boundaries, novelty and remaining uncertainties. Do not propose this as implemented or validated Strata optimization.
+Assignment metadata (the full concrete scope and prior-report locations):
+{
+  "proposed_assignment_round": "R867",
+  "purpose_label": "knowledge collection",
+  "title": "Fusion and materialization boundaries in GPU analytical query pipelines",
+  "report_output": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round867-v1.txt",
+  "spec_output_if_dispatched": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/orca-research-round867-spec-v1.txt",
+  "schedulable_now": true,
+  "finite_question": "For single-GPU analytical queries over columnar relations, compare operator-at-a-time kernels that materialize each result, a fully fused selection/filter/projection-to-aggregate pipeline, and relaxed or staged fusion with materialization at selected pipeline breakers. How do selectivity, projected width, intermediate reuse/fan-out, launch cost, live state/register pressure, and parallelism move the boundary? Keep hash-join and aggregate internals as examples of boundaries, not separate algorithm surveys.",
+  "breadth_and_counterevidence": "Use original GPU database papers and a few query-engine/compiler papers. Compare all three execution styles in one table; separate published timings from byte/launch models. Record GPU, query/workload, layout, cardinality/selectivity, fusion unit, compile/setup treatment, and timing boundary. Do not compare headline speedups from unlike experiments. Include cases where fusion removes large intermediates/launches and counterexamples where full fusion loses through register/resource pressure, low occupancy, compile cost, fan-out/reuse, pipeline breakers, or reduced parallelism. Treat selection/compaction costs explicitly. No Arc/Strata claim.",
+  "novelty_guard": "No indexed/reviewed report covers relational query pipeline materialization/fusion. R759/R763 are general GPU work partition/residency; R786 is graph fan-in/reduction; R855 is convolution mapping; R829 is tensor compression. Limit this to relational selection/projection/lightweight aggregation and pipeline boundaries. Exclude convolution, generic tensor fusion, IO/decompression fusion, hash-join algorithm design, graph aggregation internals, CUDA Graph/replay, and product changes.",
+  "report_budget": "1,300–1,700 substantive words; no more than 7 primary URLs; one three-strategy table, a bounded byte/launch model, at least one win and two counterexamples, source environments and evidence limits.",
+  "prerequisites": [
+    "Public access to primary papers/docs only.",
+    "No local GPU, profile, driver, process, build, test, or Strata result is required."
+  ],
+  "prerequisite_evidence": "Public primary sources are available: the 2026 Data Path Fusion preprint (https://arxiv.org/abs/2605.10511v1), the VLDB GPU database characterization paper (https://www.vldb.org/pvldb/vol17/p441-cao.pdf), the Red Fox GPU relational-query paper (https://doi.org/10.1145/2544137.2544166), GPUQP (https://cse.hkust.edu.hk/catalac/papers/gpuqp_tods09.pdf), and the PVLDB relaxed-operator-fusion paper (https://www.vldb.org/pvldb/vol11/p1-menon.pdf). These sources suffice for a literature comparison without local measurements.",
+  "starting_primary_sources": [
+    {
+      "kind": "original GPU data-path paper",
+      "title": "Data Path Fusion in GPU for Analytical Query Processing",
+      "url": "https://arxiv.org/abs/2605.10511v1",
+      "version_or_limit": "Pin arXiv v1; keep its prototype/workload configuration source-specific."
+    },
+    {
+      "kind": "original GPU database systems paper",
+      "title": "GPU Database Systems Characterization and Optimization",
+      "url": "https://www.vldb.org/pvldb/vol17/p441-cao.pdf",
+      "version_or_limit": "PVLDB 17(3), 2023; separate systems, devices, and workloads."
+    },
+    {
+      "kind": "original GPU query system paper",
+      "title": "Red Fox: An Execution Environment for Relational Query Processing on GPUs",
+      "url": "https://doi.org/10.1145/2544137.2544166",
+      "version_or_limit": "CGO 2014; use its own measurement boundary."
+    },
+    {
+      "kind": "original GPU query paper",
+      "title": "Relational Query Co-Processing on Graphics",
+      "url": "https://cse.hkust.edu.hk/catalac/papers/gpuqp_tods09.pdf",
+      "version_or_limit": "Historical GPUQP; label era/hardware."
+    },
+    {
+      "kind": "original query compiler/fusion paper",
+      "title": "Relaxed Operator Fusion for In-Memory Databases",
+      "url": "https://www.vldb.org/pvldb/vol11/p1-menon.pdf",
+      "version_or_limit": "CPU/in-memory design reference, not GPU performance evidence."
+    }
+  ],
+  "shared_assignment_inputs": [
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+      "sha256": "40e0c42af082876d385220522f43df698e5db542b65873ebd1ce24cf29352e1c",
+      "use": "Complete current catalog, 270 records; use metadata to avoid duplication without opening held collection bodies."
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round865-v1.json",
+      "sha256": "9b78ea8a3d7777957b1fb6323ff88e7a92b67c1329ccc08d1a8806738c7ef69f",
+      "use": "Latest scope and prerequisite-eligibility metadata."
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round857-v1.json",
+      "sha256": "34202fd6530fbcf5639316f6b78e7c7703ed1c18cdeafb1a96703e59328c65ea",
+      "use": "R854/R855 scope, source correction, and retrieval metadata."
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round788-v1.json",
+      "sha256": "2c709a1be87034151326e0916db23dd2be9ed61e0840e941eabd373eb817c31d",
+      "use": "Metadata for R786 graph aggregation; avoid fan-in/reduction overlap."
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round830-v1.json",
+      "sha256": "13e63236d25cea96734ba7abbd36e82bf767130d208e6c117a73cfa70ff09fb9",
+      "use": "Metadata for R828/R829 precision and compression; keep codec design out."
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-nonllm-gpu-round759-v1.txt",
+      "sha256": "4c81d833c2a690e9b3f5fb54d579288acc949790e30ab15457f24d65cc0aad5f",
+      "use": "General GPU work partition boundary."
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-nonllm-pipeline-residency-round763-v1.txt",
+      "sha256": "593e7cc4e9232ec3854ee79dc2ac2eae30b2cced1759732946bc0003cd9dc219",
+      "use": "General GPU pipeline/residency boundary."
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round786-v1.txt",
+      "sha256": "375aeb85b619b686102cf4d5085d2adb71e54dcdc0ef725224fcabc532f0ec8c",
+      "use": "Graph destination fan-in/reduction boundary."
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round829-v1.txt",
+      "sha256": "c09cd41be9857e2a2ae252705bfc48bb17d692cf1fc4b4b1275aa19f1930f8a0",
+      "use": "Lossless float/tensor compression boundary."
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round855-v1.txt",
+      "sha256": "e226747e0572d52dbb5f7f151da6d9f111ef1a7ce2c86e1bb84cb5f6efd022a9",
+      "use": "Convolution mapping/materialization boundary."
+    }
+  ],
+  "prior_overlap": "R759/R763 provide generic scheduling/residency background, R786 graph fan-in, R855 convolution, R829 compression. The question is new and specific to relational pipeline boundaries; use adjacent reports only as scope boundaries and do not import their measurements.",
+  "main_body_handling": "Knowledge collection. Main keeps the report body unread and consumes only a native reviewer digest/retrieval metadata unless a concrete query-execution design question arises.",
+  "worker_constraints": [
+    "Write only the named output report.",
+    "Cite primary sources; record exact paper/version, hardware, workload, and timing boundary.",
+    "No code copying, implementation proposal, builds, tests, GPU/profiler/process inspection, Git, or product edits.",
+    "Do not infer Intel Arc/SYCL performance or Strata adoption from CUDA systems."
+  ]
+}
+Do not contact other workers. Do not require a local measurement not part of this scope. If a source is inaccessible, use another primary source and state limits. Main owns implementation/testing. On completion use the injected Orca worker_done lifecycle; final response <=5 operational lines with output path/hash, without technical report body.

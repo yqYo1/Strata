@@ -42,7 +42,9 @@ struct QsaPromptBf16Bounds {
     int64_t physical_pages = 0;
 };
 
-/// Explicit native-16 candidate, independent of all prompt environment flags.
+/// Explicit native-16 candidate, independent of the legacy prompt flags.
+/// STRATA_SYCL_PROMPT_SOFTMAX_SUBGROUP=1 opts into cooperative softmax only;
+/// set it before exec and keep the process environment immutable.
 /// q/attn are BF16 bit patterns [n_q,24,256]; INT8 K/V and FP16 scales only.
 /// BF16 -> one scaled FP16 Q part, one FP16 probability part, FP32 scores,
 /// normalizers and matrix accumulators, then BF16 round-to-nearest-even output.

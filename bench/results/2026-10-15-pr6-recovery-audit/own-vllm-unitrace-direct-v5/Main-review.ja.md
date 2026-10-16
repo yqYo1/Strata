@@ -1,0 +1,1 @@
+Main v5: v4 tinyはPASS。長大modelのoneMKLが追加ロードし得るOpenCL/TBB/Intel mathの6ライブラリはfile_pinsで既に凍結されているがactual-map用elf_pins集合に無かったため、同じ既存pinを追加した。元v4のPASSを保持し、全候補を事前hash検査する。controllerの変更はcanonical v5 pathの1箇所のみ。parser/環境/所有退役/未知map拒否/モデルsource/buildは変更なし。静的候補は実ロード証拠とは呼ばない。新tiny v5のPASSを確認してから別コマンドでmodel v5を実行する。

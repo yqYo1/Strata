@@ -4,7 +4,15 @@
 
 修正後は既存の`auto`を使用する。これは勝手に上限を緩和した実装変更ではなく、既存plannerの予算内選択である。new private root/resultを使い、元の異常設定・閉鎖・新規faultなしを明示的に検査してから試行する。実ログに全39261行GPU/residual_host0が必要であり、部分配置へbackoffした結果を全GPUと呼ばない。
 
-1試行目 `own-vllm-resident39k-bf16-r0-v2.json`（SHA52ad808586e347fa4c79346688a70971817ff06531c58454885bb84590f1f5b5）は **PASS/complete**、正常native/server終了、所有閉鎖、fault0/dumpなし。39261行、GPU804065280B、host0、staging0を確認し、**402.6tok/s**だった。旧固定32768行配置はGPU671088640B/host132976640Bで、clean3試行394.8/394.9/395.2、中央値394.9tok/s。現在の1試行対旧中央値は+1.95%だが、旧/新を交互に測った比較ではなく、一般的な改善率や最終採用は主張しない。新設定の独立3試行を完了してばらつきを確認する。
+新設定の3試行はすべて **PASS/complete**、正常native/server終了、所有閉鎖、fault0/dumpなし。各試行で39261行、GPU804065280B、host0、staging0を確認した。
+
+| repetition | tok/s | receipt SHA256 |
+| --- | ---: | --- |
+| 0 | 402.6 | 52ad808586e347fa4c79346688a70971817ff06531c58454885bb84590f1f5b5 |
+| 1 | 403.0 | d0069e123479de4646a8884993df770b3880480634ed4f90bedd269bc3e3477f |
+| 2 | 403.4 | f633c18b93945d54e866a7a45a71dd2a09f0447ddc0be953ab6bbd28ff554aef |
+
+中央値403.0、sample standard deviation0.4tok/s。旧固定32768行配置はGPU671088640B/host132976640Bで、clean3試行394.8/394.9/395.2、中央値394.9tok/sだった。中央値比は+2.05%、同じworkloadのFP32中央値372.5に対しては+8.19%。個別sampleとscopeは`own-resident39k-summary-v1.json`にまとめた。旧/新を交互に測った比較ではなく、thermal/clock driftを分離した結果ではないため、一般的な改善率や最終採用は主張しない。
 
 容量差は132976640Bであり、旧coarse profileで記録したhost residual requested bytesは各方向6249902080B（47境界×132976640）、往復計12499804160Bだった。全GPU配置はこの保存residualのhost往復をなくす。expert重み約50.3GBのuploadや小さなMoE route交換まで消えるという意味ではない。新設定の実PCIeカウンタ/全kernel serviceを測った結果でもない。
 

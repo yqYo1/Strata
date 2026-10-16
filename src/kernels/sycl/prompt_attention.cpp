@@ -19,6 +19,65 @@ using namespace sycl_backend;
 namespace mx = sycl::ext::oneapi::experimental::matrix;
 namespace mi = sycl::ext::intel::experimental::matrix;
 constexpr int HD = 256, HEADS = 12, CH = 32, WG = 128;
+// Set by the owning process before exec; only the exact value "1" opts in.
+bool prompt_softmax_subgroup_enabled() {
+  const char *value = std::getenv("STRATA_SYCL_PROMPT_SOFTMAX_SUBGROUP");
+  return value && value[0] == '1' && value[1] == '\0';
+}
+// One subgroup owns one head row at a time: lane c covers cells c and c+16.
+// Every lane must call this helper, including padded heads and missing rows.
+// Bf16 retains the typed route's infinity rules and score-NaN diagnostic.
+template <bool Bf16>
+int prompt_softmax_row(sycl::sub_group sg, int head,
+                       sycl::local_accessor<float, 1> scores,
+                       sycl::local_accessor<float, 1> maxima,
+                       sycl::local_accessor<float, 1> sums,
+                       sycl::local_accessor<float, 1> alpha,
+                       sycl::local_accessor<int64_t, 1> rows) {
+  static_assert(CH == 32 && WG == 8 * 16);
+  const int c = sg.get_local_linear_id();
+  const bool valid0 = rows[c] >= 0, valid1 = rows[c + 16] >= 0;
+  const float score0 = scores[head * CH + c],
+              score1 = scores[head * CH + c + 16];
+  const float old_max = maxima[head];
+  // fmax with the old maximum also suppresses NaNs exactly as the old scan.
+  // Thus maximum<float> never receives a NaN from a score.
+  float m = sycl::fmax(old_max, valid0 ? score0 : -INFINITY);
+  m = sycl::fmax(m, valid1 ? score1 : -INFINITY);
+  m = sycl::reduce_over_group(sg, m, sycl::maximum<float>());
+  int bad = 0;
+  if constexpr (Bf16) {
+    bad = (valid0 && sycl::isnan(score0)) || (valid1 && sycl::isnan(score1));
+    bad = sycl::reduce_over_group(sg, bad, sycl::maximum<int>());
+  }
+  const auto probability = [=](float score, bool valid) {
+    // Test validity before exp: first-tile all-missing must not evaluate -inf-(-inf).
+    if (!valid) return 0.f;
+    if constexpr (Bf16)
+      return sycl::isinf(m) ? (score == m ? 1.f : 0.f) : sycl::exp(score - m);
+    else
+      return sycl::exp(score - m);
+  };
+  const float p0 = probability(score0, valid0), p1 = probability(score1, valid1);
+  // A 16-lane reduction of pair sums changes only the FP32 summation order.
+  const float total = sycl::reduce_over_group(sg, p0 + p1, sycl::plus<float>());
+  scores[head * CH + c] = p0;
+  scores[head * CH + c + 16] = p1;
+  if (c == 0) {
+    const float old_sum = sums[head];
+    float a;
+    if constexpr (Bf16)
+      a = old_sum > 0.f
+          ? (old_max == m ? 1.f : (m == INFINITY ? 0.f : sycl::exp(old_max - m)))
+          : 0.f;
+    else
+      a = old_max == -INFINITY ? 0.f : sycl::exp(old_max - m);
+    maxima[head] = m;
+    sums[head] = sycl::fma(old_sum, a, total);
+    alpha[head] = a;
+  }
+  return bad;
+}
 template <int Mode, bool Value> constexpr int scale_groups() {
   if constexpr (Mode == 0)
     return 1;
@@ -72,7 +131,8 @@ struct alignas(4) PaddedK {
 static_assert(alignof(PaddedK) >= 4 && sizeof(PaddedK) == HD * 40 * sizeof(sycl::half));
 static_assert(std::is_standard_layout_v<PaddedK> && std::is_trivially_copyable_v<PaddedK>);
 static_assert(sycl::is_device_copyable_v<PaddedK>);
-template <int Mode, bool Direct, bool Native = false, int KMapping = 0>
+template <int Mode, bool Direct, bool Native = false, int KMapping = 0,
+          bool SubgroupSoftmax = false>
 void launch(const float *query, QsaAttnPools pools, const int32_t *ids,
             const int32_t *steps, int64_t cap, QsaShapes shapes, float *output,
             int64_t queries, void *stream) {
@@ -215,7 +275,12 @@ void launch(const float *query, QsaAttnPools pools, const int32_t *ids,
               }
             }
             it.barrier(sycl::access::fence_space::local_space);
-            if (tid < 16) {
+            if constexpr (SubgroupSoftmax) {
+              for (int pass = 0; pass < 2; ++pass)
+                (void)prompt_softmax_row<false>(
+                    sg, sg.get_group_linear_id() + pass * 8,
+                    scores, maxima, sums, alpha, rows);
+            } else if (tid < 16) {
               float m = maxima[tid];
               for (int c = 0; c < CH; ++c)
                 if (rows[c] >= 0)
@@ -322,10 +387,10 @@ void launch(const float *query, QsaAttnPools pools, const int32_t *ids,
   finish(stream, event);
 }
 // Select distinct kernels so the existing output path has no device branch.
-template <int Mode>
-void dispatch(const float *q, QsaAttnPools p, const int32_t *ids,
-              const int32_t *steps, int64_t cap, QsaShapes s, float *out,
-              int64_t nq, void *stream) {
+template <int Mode, bool SubgroupSoftmax>
+void dispatch_softmax(const float *q, QsaAttnPools p, const int32_t *ids,
+                      const int32_t *steps, int64_t cap, QsaShapes s, float *out,
+                      int64_t nq, void *stream) {
   const char *direct = std::getenv("STRATA_SYCL_PROMPT_DIRECT");
   if (direct && direct[0] == '1') {
     if constexpr (Mode == 1) {
@@ -336,11 +401,13 @@ void dispatch(const float *q, QsaAttnPools p, const int32_t *ids,
         if (queue_for(stream).get_device().get_info<sycl::info::device::local_mem_size>() <
             size_t(60880 + 4096))
           throw std::runtime_error("prompt K pitch40 requires local memory >=64976 bytes");
-        launch<1, true, false, 2>(q, p, ids, steps, cap, s, out, nq, stream);
+        launch<1, true, false, 2, SubgroupSoftmax>(
+            q, p, ids, steps, cap, s, out, nq, stream);
         return;
       }
       if (cell_major && cell_major[0] == '1' && cell_major[1] == '\0') {
-        launch<1, true, false, 1>(q, p, ids, steps, cap, s, out, nq, stream);
+        launch<1, true, false, 1, SubgroupSoftmax>(
+            q, p, ids, steps, cap, s, out, nq, stream);
         return;
       }
     }
@@ -349,13 +416,25 @@ void dispatch(const float *q, QsaAttnPools p, const int32_t *ids,
       char *end = nullptr;
       const long long minimum = native ? std::strtoll(native, &end, 10) : 0;
       if (minimum > 0 && end != native && *end == '\0' && nq >= minimum) {
-        launch<Mode, true, true>(q, p, ids, steps, cap, s, out, nq, stream);
+        launch<Mode, true, true, 0, SubgroupSoftmax>(
+            q, p, ids, steps, cap, s, out, nq, stream);
         return;
       }
     }
-    launch<Mode, true>(q, p, ids, steps, cap, s, out, nq, stream);
+    launch<Mode, true, false, 0, SubgroupSoftmax>(
+        q, p, ids, steps, cap, s, out, nq, stream);
   } else
-    launch<Mode, false>(q, p, ids, steps, cap, s, out, nq, stream);
+    launch<Mode, false, false, 0, SubgroupSoftmax>(
+        q, p, ids, steps, cap, s, out, nq, stream);
+}
+template <int Mode>
+void dispatch(const float *q, QsaAttnPools p, const int32_t *ids,
+              const int32_t *steps, int64_t cap, QsaShapes s, float *out,
+              int64_t nq, void *stream) {
+  if (prompt_softmax_subgroup_enabled())
+    dispatch_softmax<Mode, true>(q, p, ids, steps, cap, s, out, nq, stream);
+  else
+    dispatch_softmax<Mode, false>(q, p, ids, steps, cap, s, out, nq, stream);
 }
 bool matrix_available(const sycl::device &device, int mode) {
   const auto subgroups = device.get_info<sycl::info::device::sub_group_sizes>();
@@ -451,7 +530,7 @@ bool qsa_prompt_attn_batch(const float *q, const QsaAttnPools &p,
 } // namespace strata::kernels
 
 // Native BF16 I/O candidate. Own MIT implementation built on this file's
-// existing head12+4 / WG128 Mapping0 algorithm; FP32 entry above is unchanged.
+// existing head12+4 / WG128 Mapping0 algorithm; softmax opt-in is shared.
 namespace strata::kernels {
 namespace {
 float prompt_bf16_float(uint16_t bits) {
@@ -500,6 +579,7 @@ void prompt_bf16_registered(sycl::queue &queue, Span span) {
   // The caller still supplies true suballocation capacities from the owners.
   validate_device_span(span.pointer, span.bytes, queue);
 }
+template <bool SubgroupSoftmax>
 void launch_prompt_bf16(const uint16_t *query, QsaAttnPools pools,
                        const int32_t *ids, const int32_t *steps, int64_t cap,
                        QsaShapes shapes, uint16_t *output, int64_t queries,
@@ -618,7 +698,14 @@ void launch_prompt_bf16(const uint16_t *query, QsaAttnPools pools,
               }
             }
             it.barrier(sycl::access::fence_space::local_space);
-            if (tid < 16) {
+            if constexpr (SubgroupSoftmax) {
+              for (int pass = 0; pass < 2; ++pass) {
+                const int head = subgroup + pass * 8;
+                const int score_bad = prompt_softmax_row<true>(
+                    sg, head, scores, maxima, sums, alpha, rows);
+                if (lane == 0) query_bad[head] |= score_bad;
+              }
+            } else if (tid < 16) {
               const float old_max = maxima[tid];
               float m = old_max;
               for (int c = 0; c < CH; ++c)
@@ -749,7 +836,12 @@ bool qsa_prompt_attn_bf16_batch(const uint16_t *q, const QsaAttnPools &p,
                                 void *stream) {
   if (!qsa_prompt_attn_bf16_validate(q, p, ids, steps, cap, s, out, nq, bounds, stream))
     return false;
-  if (nq != 0) launch_prompt_bf16(q, p, ids, steps, cap, s, out, nq, bounds, stream);
+  if (nq != 0) {
+    if (prompt_softmax_subgroup_enabled())
+      launch_prompt_bf16<true>(q, p, ids, steps, cap, s, out, nq, bounds, stream);
+    else
+      launch_prompt_bf16<false>(q, p, ids, steps, cap, s, out, nq, bounds, stream);
+  }
   return true;
 }
 } // namespace strata::kernels

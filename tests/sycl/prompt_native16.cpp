@@ -145,6 +145,13 @@ void run(int page_size, bool masked, int nq, int width, const std::string &profi
     }
     ids[b*cap+5] = -1;
   }
+  if (profile == "one_valid") {
+    // Late-only mass crosses all-invalid initial tiles; early-only mass must
+    // survive later missing tiles. A partial tile can select its second half.
+    std::fill(ids.begin(), ids.end(), -1);
+    for (int b = 0; b < nq; ++b)
+      ids[b*cap+(b%2 ? 0 : width-1)] = page_size;
+  }
   const uint16_t guard = bf16(1234.f);
   const std::vector<uint16_t> sentinel(query.size()+32,guard);
   Buffer<uint16_t> dks(ks.size()), dvs(vs.size()), q(query.size()),
@@ -413,6 +420,7 @@ int main(int argc,char **argv) {
       run(4,false,3,33,"regular",true);
       for (const char *profile : {"range","zero","smallp","positive_infinity_score","negative_infinity_score"})
         for (int page : {1,4,16}) run(page,false,3,2051,profile);
+      for (int width : {17,33,49,65}) run(4,true,3,width,"one_valid");
     }
     runtime->wait();
     if (dump.is_open()) { dump.flush(); check(bool(dump),"dump flush"); dump.close(); check(!dump.fail(),"dump close"); }

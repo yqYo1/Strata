@@ -1,0 +1,243 @@
+{
+  "schema": "strata-unitrace-direct-provenance-v1",
+  "status": "SOURCE_ONLY_UNRUN",
+  "created_utc": "2026-10-16T04:33:20.021912+00:00",
+  "implementation": {
+    "origin": "New R864 code using committed personal-fork Main scaffolding; no product file edits",
+    "license": "/home/yayoi/orca/workspaces/Strata/sycl/LICENSE",
+    "license_sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
+    "base_commit": "6354f0b4ff3731466795410e11ca9ef785c9d326",
+    "base_method": "Product432 SHA256 snapshot from exact build receipt; source/hash reads validated all pins",
+    "XeStrata": "Excluded. Only historical .tools/intel-llvm-v711/install official compiler/runtime binaries are read, never engine/helper/test source."
+  },
+  "specification": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/orca-implement-unitrace-direct-collector-round864-spec-v1.txt",
+    "sha256": "24109d3b50267d2bc7ef8597f1a25cf28412d2c2eb5bf68e199185356f6f4057"
+  },
+  "scaffold_sources": [
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/run_owned_vllm_coarse_profile_v1.py",
+      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/run_owned_vllm_coarse_profile_v1.py",
+      "bytes": 19526,
+      "sha256": "095781df59f78c11aa2939086b03ef42df17661a9571110c21675cc52f3937cd"
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/run_owned_vllm_long_v1.py",
+      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/run_owned_vllm_long_v1.py",
+      "bytes": 17930,
+      "sha256": "69912742971b226e260f5f995d352b062c27bafb7e83845a975053fed8255bcf"
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/qsa-device-batch-model-wrapper-v1/engine_wrapper.py",
+      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/qsa-device-batch-model-wrapper-v1/engine_wrapper.py",
+      "bytes": 2154,
+      "sha256": "0aeac5b77cca9875e14ccce37866378bab78a70d51ed54eba4363b1763492ee0"
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-selected-quality-v2/run_screen.py",
+      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-selected-quality-v2/run_screen.py",
+      "bytes": 40442,
+      "sha256": "ac068a99edfd235030c2c43644b4346731212fa76320dd63890dd71c01c548cc"
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-14-long-generation-benchmark/run_server_job.py",
+      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-14-long-generation-benchmark/run_server_job.py",
+      "bytes": 9803,
+      "sha256": "af67ae2da5e9d6543224b0fd13ea50b000435db3e014f9a2742c6210d03061ff"
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-14-niko-main-service-port/direct_owner.py",
+      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-14-niko-main-service-port/direct_owner.py",
+      "bytes": 14781,
+      "sha256": "a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f"
+    }
+  ],
+  "collector": {
+    "project": "intel/pti-gpu",
+    "license": "Existing MIT external tool; no copied header/template or license added to new project code",
+    "commit": "6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033",
+    "source_read_method": "GitHub tree at exact commit; local source Git blob SHA1 matches tree. Immutable URLs and SHA256 for94 files in manifest. No Git commands.",
+    "build_receipt": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/record.json",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/record.json",
+      "bytes": 108083,
+      "sha256": "692da9f9d706fea659e78378a397c71d86b08cb9fba0c994e390de29b6a20647"
+    },
+    "library": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/libunitrace_tool.so",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/libunitrace_tool.so",
+      "bytes": 3864048,
+      "sha256": "8a8fe37441606bf66ab42fc39cc447b5257f48d09f04fbcc60703e30826671eb"
+    },
+    "CLI": "PROVENANCE_ONLY_NEVER_EXEC",
+    "historical_cli_sha256": "66a828c49488052487815224ad6fdb36dfe0f53b0d64b5b906cde5d113e7c2c0",
+    "historical_version_stdout": "2.4.0 ()\n",
+    "historical_version_scope": "Build receipt observation only, no new version/tool execution",
+    "actual_compile_entries": [
+      {
+        "directory": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build",
+        "command": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++ -DBUILD_WITH_ITT=0 -DBUILD_WITH_L0=1 -DBUILD_WITH_OMP=0 -DBUILD_WITH_OPENCL=0 -DBUILD_WITH_PERFETTO=0 -DBUILD_WITH_XPTI=1 -DPTI_LEVEL_ZERO=1 -Dunitrace_tool_EXPORTS -I/home/yayoi/ghq/github.com/intel/pti-gpu/.worktree/tools-strata-unitrace-20261014/tools/unitrace -I/home/yayoi/ghq/github.com/intel/pti-gpu/.worktree/tools-strata-unitrace-20261014/tools/unitrace/src -I/home/yayoi/ghq/github.com/intel/pti-gpu/.worktree/tools-strata-unitrace-20261014/tools/unitrace/src/utils -I/home/yayoi/ghq/github.com/intel/pti-gpu/.worktree/tools-strata-unitrace-20261014/tools/unitrace/../utils -I/home/yayoi/ghq/github.com/intel/pti-gpu/.worktree/tools-strata-unitrace-20261014/tools/unitrace/../../utils -I/home/yayoi/ghq/github.com/intel/pti-gpu/.worktree/tools-strata-unitrace-20261014/tools/unitrace/src/opencl -I/home/yayoi/ghq/github.com/intel/pti-gpu/.worktree/tools-strata-unitrace-20261014/tools/unitrace/src/levelzero -I/home/yayoi/ghq/github.com/intel/pti-gpu/.worktree/tools-strata-unitrace-20261014/tools/unitrace/src/xpti -I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build   -fvisibility=hidden -DPTI_VERSION=1.0.0 -std=c++17 -fvisibility=default -O3 -DNDEBUG -fPIC -o CMakeFiles/unitrace_tool.dir/src/tracer.cc.o -c /home/yayoi/ghq/github.com/intel/pti-gpu/.worktree/tools-strata-unitrace-20261014/tools/unitrace/src/tracer.cc",
+        "file": "/home/yayoi/ghq/github.com/intel/pti-gpu/.worktree/tools-strata-unitrace-20261014/tools/unitrace/src/tracer.cc",
+        "output": "CMakeFiles/unitrace_tool.dir/src/tracer.cc.o"
+      },
+      {
+        "directory": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build",
+        "command": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++ -DBUILD_WITH_ITT=0 -DBUILD_WITH_L0=1 -DBUILD_WITH_OMP=0 -DBUILD_WITH_OPENCL=0 -DBUILD_WITH_PERFETTO=0 -DBUILD_WITH_XPTI=1 -DPTI_LEVEL_ZERO=1 -Dunitrace_tool_EXPORTS -I/home/yayoi/ghq/github.com/intel/pti-gpu/.worktree/tools-strata-unitrace-20261014/tools/unitrace -I/home/yayoi/ghq/github.com/intel/pti-gpu/.worktree/tools-strata-unitrace-20261014/tools/unitrace/src -I/home/yayoi/ghq/github.com/intel/pti-gpu/.worktree/tools-strata-unitrace-20261014/tools/unitrace/src/utils -I/home/yayoi/ghq/github.com/intel/pti-gpu/.worktree/tools-strata-unitrace-20261014/tools/unitrace/../utils -I/home/yayoi/ghq/github.com/intel/pti-gpu/.worktree/tools-strata-unitrace-20261014/tools/unitrace/../../utils -I/home/yayoi/ghq/github.com/intel/pti-gpu/.worktree/tools-strata-unitrace-20261014/tools/unitrace/src/opencl -I/home/yayoi/ghq/github.com/intel/pti-gpu/.worktree/tools-strata-unitrace-20261014/tools/unitrace/src/levelzero -I/home/yayoi/ghq/github.com/intel/pti-gpu/.worktree/tools-strata-unitrace-20261014/tools/unitrace/src/xpti -I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build   -fvisibility=hidden -DPTI_VERSION=1.0.0 -std=c++17 -fvisibility=default -O3 -DNDEBUG -fPIC -o CMakeFiles/unitrace_tool.dir/src/utils/logger_factory.cc.o -c /home/yayoi/ghq/github.com/intel/pti-gpu/.worktree/tools-strata-unitrace-20261014/tools/unitrace/src/utils/logger_factory.cc",
+        "file": "/home/yayoi/ghq/github.com/intel/pti-gpu/.worktree/tools-strata-unitrace-20261014/tools/unitrace/src/utils/logger_factory.cc",
+        "output": "CMakeFiles/unitrace_tool.dir/src/utils/logger_factory.cc.o"
+      }
+    ],
+    "compile_flags": {
+      "BUILD_WITH_L0": 1,
+      "BUILD_WITH_XPTI": 1,
+      "BUILD_WITH_ITT": 0,
+      "BUILD_WITH_OPENCL": 0,
+      "BUILD_WITH_OMP": 0,
+      "BUILD_WITH_PERFETTO": 0
+    },
+    "XPTI_provider_pins": {
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libxptifw.so.1.0.1": "e31626a7a4ce9afb038a3bc185329341bc4771f96262ea07b3e5b5fdb65f6ff8",
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/xpti/xpti_trace_framework.h": "bd60ef720459eba0c30fec499c178accd3e731dd4aea6cea6d002bfa532a6d09"
+    },
+    "XPTI_note": "Collector DT_NEEDED consumes libxptifw.so.1 even with tracing off. Seal it before/after; actual native executable maps must prove load identity.",
+    "generated_header_pins": {
+      "level_zero/ze_api.h": "095a0eb442ae21946f29147c209f270b93dd0eb5b12a2d0c67e5f4138b533712",
+      "level_zero/zet_api.h": "14cd443591c430172aa1cea8e03d31b8049971f08f67b27722b8b99ea3b14b51",
+      "level_zero/ze_stypes.h": "32e6ca50ecad5753bcc2ca9d908c192754346712ebee36f42a22e458b9e55a20",
+      "level_zero/ze_intel_gpu.h": "0b2c5cc79921f0b754d20f5336423c2e119a41c55c31052a301e0941ba157c69",
+      "level_zero/zes_api.h": "7c31adb191736ee77fe518de488207c6c34920a22b5cef71320d99cbe9bd4044",
+      "level_zero/zer_api.h": "5109d95cdf158030df49203278b74dbd7d0f583ddf170d6e2760f969d5b442bf",
+      "level_zero/layers/zel_tracing_api.h": "2e7901c786580268713eead3a80924d907df07776c69230655dbc08419b59e3b",
+      "level_zero/layers/zel_tracing_register_cb.h": "aee2cd264623ab05d58c5cd207db130dd618adc35cb90b38db343a033d4f4fa7",
+      "level_zero/driver_experimental/zex_memory.h": "22938f1c24ca7daa3c96546e6e9aa3aa2682f09b56377a8ff9a7a9dade368497",
+      "level_zero/driver_experimental/zex_api.h": "b73b4ac75861d6a2f31570c8a893577d7f0d2457c0a72f54c8851018de05ed68",
+      "level_zero/driver_experimental/zex_graph.h": "9d6a7d1cbf582341f7157c6669c6bc35c1574f0c708506252da590673f476406",
+      "level_zero/driver_experimental/zex_common.h": "20f2480045d40015706e437e6ab37d5eda3698883abe81a7e17c777885163e65",
+      "level_zero/driver_experimental/zex_event.h": "cfa8bd77af416f1c6a8e4cbe474ee53452a2b5246df10a8cb626c1799a1e5ad2",
+      "level_zero/driver_experimental/zex_context.h": "0b6eb65f34eb726dfae54c1a0edb3b662acc01e36712298aa6f34ffc3ad46cfb",
+      "level_zero/driver_experimental/zex_module.h": "a630df4343999dc025a72cd50d16efad44669ccc37c6e26a0d6009216849c253",
+      "level_zero/driver_experimental/zex_cmdlist.h": "be8e73eb45bffbd64b3420e1de5bd06cd07f7f0c13047d66ab03d26d43498262",
+      "level_zero/driver_experimental/zex_visit.h": "32dae511641d5f03d4139c2ff05e3949dc5d532ac26c794c4492d5a2cf1a962e",
+      "level_zero/driver_experimental/zex_driver.h": "18331f6d4257d34641cf22fcc3b11c2272d6b01d1849e905e03c5b7570a1be91",
+      "CL/cl_ext_private.h": "b536d1644d3f81f69117ffe801f0ed252c448758a2987fef98119223a6316a07",
+      "CL/tracing_types.h": "62c412e31d639e204460eaaf6cef9f816b2a4e5b9a4261a8909da4604da8b2fa",
+      "CL/tracing_api.h": "506273476b4f9e898a8e69fc9c455e19c23ce8ad1060de0d6de7ae0019211432"
+    },
+    "generated_source_limit": "Historical worktree-generated .gen files are absent from current root. Reviewed pinned official generator templates and present generated Level Zero/header pins; immutable qualified library/build receipt remains authority. No invented generated-source hashes or regeneration.",
+    "initialization_audit": [
+      {
+        "path": "tools/unitrace/src/tracer.cc",
+        "lines": "28-176,277-356",
+        "finding": "ReadArgs maps HostTiming/DeviceTiming/LogToFile. Session/StartPaused callbacks absent. Linux Init env mutation at343-355 only under FollowChildProcess==0, excluded by preexec1."
+      },
+      {
+        "path": "tools/unitrace/src/tracer.h",
+        "lines": "48-183,283-294,427-529,604-649",
+        "finding": "InitializeL0 before setup. Host/device options derive API/kernel tracing. Chrome flags absent, no ChromeLogger or XptiCollector creation. ITT/OpenCL/OMP compiled0. Destructor disables tracing then Flush emits tables before finalization. No env-write site."
+      },
+      {
+        "path": "tools/unitrace/src/utils/utils_ze.h",
+        "lines": "26-42",
+        "finding": "InitializeL0 calls dynamically loaded zeInit GPU_ONLY, without env writes. ZE_ENABLE_TRACING_LAYER1 supplied before any native constructor."
+      },
+      {
+        "path": "tools/unitrace/src/levelzero/ze_loader.h",
+        "lines": "36-64",
+        "finding": "LibraryLoader dlopen libze_loader.so.1 plus generated symbol resolver. No env writes. Loader/common helpers and official generator sources pinned."
+      },
+      {
+        "path": "tools/unitrace/src/levelzero/ze_collector.h",
+        "lines": "1335-1399,1846-1940",
+        "finding": "Create reads version/rank/device/absent filters/metrics controls; timing event cache, device enumeration, callbacks and tracing. Metric-query context branch excluded. No env-write site in whole collector source."
+      },
+      {
+        "path": "tools/unitrace/src/unicontrol.h",
+        "lines": "326-426,526-536",
+        "finding": "StartPaused absent means conditionalfalse; Session absent. IttPause/Resume/Stop have PTI_ENABLE_COLLECTION SetEnv, but ITT compiled0 and selected engine/fixture have no ITT control calls. No exception for another recipe."
+      },
+      {
+        "path": "tools/unitrace/src/unitimer.h",
+        "lines": "16-75",
+        "finding": "Clock offset computation/GetEnv SystemTime only; no env writes."
+      },
+      {
+        "path": "tools/unitrace/src/utils/logger_factory.cc",
+        "lines": "57-79,153-205,257-267",
+        "finding": "LogToFile1 and absolute LogFilename select shared timing log; native getpid inserted before extension. No CLI config log. All side files in private native cwd counted; only timing.nativePID.log accepted."
+      },
+      {
+        "path": "tools/unitrace/src/xpti/xpti_collector.h",
+        "lines": "29-118",
+        "finding": "XPTI linked; ChromeSyclRuntimeLogging/ChromeUrLogging and XPTI env absent. No subscriber setup or env writes in header."
+      },
+      {
+        "path": "tools/unitrace/scripts/gen_l0_loader.py;gen_tracing_callbacks.py;gen_tracing_common_header.py;parse_l0_headers.py",
+        "lines": "source templates",
+        "finding": "Reviewed generated resolver/callback initialization templates for env-write emissions, pinned at official commit; no collector-side env-write path for exact options. No generators executed."
+      },
+      {
+        "path": "tools/unitrace/src/unitrace.cc",
+        "lines": "excluded CLI",
+        "finding": "Never launch unitrace CLI/CreateConfigLog/NormalizeOptions; their env writes are excluded, with no immutability exception."
+      }
+    ],
+    "audit_limit": "Exact compile flags/direct preexec recipe only. Not a universal claim that every transitive provider binary can never change environment.",
+    "LevelZero_tracing_layer_pin": {
+      "path": "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+      "bytes": 846520,
+      "sha256": "db1856f379706d51b6ded84ce028d4aa48740ef63793f60e8a1e027c6db6ffb5"
+    },
+    "LevelZero_tracing_layer_note": "Explicit loader dlopen candidate for ZE_ENABLE_TRACING_LAYER1; pin before/after and require actual native executable map. DT_NEEDED scan alone would miss this layer."
+  },
+  "product_audit": {
+    "resolver": "Frozen cmake/sycl_backend.cmake and build compile receipt select src/program/generate.cpp/SYCL backend and tests/sycl/prompt_native16.cpp. No root CUDA/HIP generator adoption.",
+    "generate": "main1443; guard1451; CUDA_MODULE_LOADING EAGER supplied before exec excludes setenv1455 after preload constructor.",
+    "tiny": "main374; smoke379/414; unchanged FP64_full oracle and fixturePASS; no setenv/unsetenv around runtime_for.",
+    "mutation_scan": "src/include setters examined; other parity fixture setters belong to separate executables. Chosen source432/products13 unchanged. No project ITT pause/resume/detach call found."
+  },
+  "execution": {
+    "controller": "UNRUN",
+    "syntax": "UNRUN",
+    "host_tests": "UNRUN",
+    "build": "UNRUN",
+    "tiny": "UNRUN",
+    "GPU": "UNRUN",
+    "model": "UNRUN",
+    "profiler": "UNRUN"
+  },
+  "worker_constraints": {
+    "process_inspection": "NOT_PERFORMED",
+    "Git": "NOT_INVOKED",
+    "protected_record": "NOT_READ",
+    "cleanup": "NONE",
+    "unfinished_R860_package": "NOT_READ",
+    "agents": "NONE"
+  },
+  "safety": {
+    "ownership": "Existing pinned Direct Owner a29d...; shared lock; native and parent deadlines; pidfd/PID/start/session/normal reap. Own tracked permission failures never waived.",
+    "health": "Main explicitly supplies latest sameboot closed PASS+SHA. No discovery, substitution, retry or failure waiver; model separately requires same-package tinyPASS+SHA.",
+    "visibility": "Same-UID cmdline plus accessible exe scan; protected services recorded as visibility limits. No clearance claim for all hidden/foreign GPU owners.",
+    "environment": "Controller/server/wrapper never preload collector. Native Popen env final before exec; no os.environ mutation or runtime phase controls.",
+    "retention": "All collector sides included in62MiB native/controller raw cap under64MiB Owner aggregate,1GiB private root,45s+2MiB closure reserve. Unexpected/partial/truncated collection FAIL. No tensors/timeline/cleanup."
+  },
+  "budgets": {
+    "tiny_whole_s": 300,
+    "tiny_native_s": 90,
+    "model_whole_s": 1200,
+    "model_outer_job_s": 900,
+    "model_inner_wrapper_s": 890,
+    "official_bench_timeout_s": 720,
+    "closure_reserve_s": 45,
+    "raw_bytes": 65011712,
+    "closure_raw_bytes": 2097152,
+    "private_bytes": 1073741824
+  },
+  "interpretation": "Kernel/command sums nonexclusive; host API elapsed includes waits/polling. Existing coarse/QSA/issuing-thread CPU-wait evidence retained separately. Wrapper wall includes collection and map hashing. No clean speed/busy union/critical path/occupancy/quality/default/full262144/RESTORE adoption.",
+  "limits": [
+    "Main reviews whole controller before tiny; no compatibility/timing claim in source delivery.",
+    "Static ELF dependency candidates are not actual execution identity; unknown actual executable maps fail. Polling cannot observe a library loaded and unloaded entirely between samples.",
+    "libxptifw and provider binaries are pinned, not a universal source proof of transitive behavior.",
+    "Expected24-token generation finish_reasonlength/truncatedtrue is an output cap, distinct from incomplete/truncated collector data."
+  ]
+}
