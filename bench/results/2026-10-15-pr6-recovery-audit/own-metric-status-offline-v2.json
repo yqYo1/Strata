@@ -1,0 +1,80 @@
+{
+  "schema": "strata-metric-status-offline-v2",
+  "status": "OFFLINE_TESTS_PASS_COLLECTION_HELD",
+  "passed": true,
+  "active": false,
+  "commands": [
+    {
+      "label": "offline-source-status-tests",
+      "argv": [
+        "/usr/bin/python3",
+        "-I",
+        "-B",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-query-tiny-v2/test_offline.py",
+        "-v"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-16T08:18:09.552638+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1295578,
+          "start_ticks": 48745367,
+          "sid": 1295578,
+          "pgid": 1295578
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 487453.674139305,
+      "pid": 1295578,
+      "spawn_return_monotonic": 487453.675438591,
+      "direct_identity": {
+        "pid": 1295578,
+        "state": "R",
+        "ppid": 1295541,
+        "pgid": 1295578,
+        "sid": 1295578,
+        "start_ticks": 48745367,
+        "rss_bytes": 466944
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 13246464,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T08:18:09.754315+00:00",
+      "elapsed_seconds": 0.20145087700802833,
+      "logs": {
+        "offline-source-status-tests.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "offline-source-status-tests.stderr": {
+          "bytes": 1499,
+          "sha256": "2b14ee960462cc244a1af634ac8a8172135973d55ef9dd1736bff73ed178bce9"
+        }
+      }
+    }
+  ],
+  "GPU_executed": false,
+  "collector_built": false,
+  "collection_qualified": false,
+  "source_package_sha256": "959340640f7704acce3c052ed1e12f888639133e141f8712188023d6e3426651",
+  "source_review": "Main read complete C++ audit/header/diff, controller base+delta, status parser, offline fixtures and tests. Catalog identity and report-validity defects separately recorded; v3 source correction dispatched.",
+  "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "complete": true,
+  "ownership_closed": true,
+  "stdout": "",
+  "stderr": "test_exact_patch_and_every_selected_metric_call_wrapped (__main__.Source.test_exact_patch_and_every_selected_metric_call_wrapped) ... ok\ntest_no_environment_write_in_new_collector_header (__main__.Source.test_no_environment_write_in_new_collector_header) ... ok\ntest_standalone_imports_do_not_launch_or_import_device_packages (__main__.Source.test_standalone_imports_do_not_launch_or_import_device_packages) ... ok\ntest_exact_symbolic_numeric_agreement (__main__.Status.test_exact_symbolic_numeric_agreement) ... ok\ntest_failure_with_exit_zero_and_csv_still_holds (__main__.Status.test_failure_with_exit_zero_and_csv_still_holds) ... ok\ntest_interleaved_status (__main__.Status.test_interleaved_status) ... ok\ntest_missing_close (__main__.Status.test_missing_close) ... ok\ntest_missing_result_even_with_complete_csv (__main__.Status.test_missing_result_even_with_complete_csv) ... ok\ntest_missing_sample (__main__.Status.test_missing_sample) ... ok\ntest_missing_whole_calculation_with_repaired_sequences (__main__.Status.test_missing_whole_calculation_with_repaired_sequences) ... ok\ntest_partial_multisample_calculation (__main__.Status.test_partial_multisample_calculation) ... ok\ntest_truncated_line (__main__.Status.test_truncated_line) ... ok\ntest_valid_exact_reconciliation (__main__.Status.test_valid_exact_reconciliation) ... ok\ntest_wrong_catalog (__main__.Status.test_wrong_catalog) ... ok\n\n----------------------------------------------------------------------\nRan 14 tests in 0.067s\n\nOK\n"
+}

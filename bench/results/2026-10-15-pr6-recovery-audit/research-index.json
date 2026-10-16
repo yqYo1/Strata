@@ -3392,6 +3392,152 @@
         ],
         "outcome": "Accepted as a held knowledge collection with two source-context corrections; no current retrieval or repeat survey recommended."
       }
+    },
+    {
+      "round": 893,
+      "model": "Orca gpt-6-luna",
+      "read_only": true,
+      "path": "research-round893-v1.txt",
+      "title": "Reconstructing the historical QSA attention route",
+      "status": "R894-reviewed decision support; source route inferred but historical binary unverified (R893-C1); FP64 edge-oracle and SYCL-only qualification boundary corrected (R893-C2); native-KV minimum is irrelevant to Mode1 (R893-C3); no hardware saturation claim.",
+      "sha256": "b038433940012d7bbb215ed30540069e64dce5aefcfb64f9a7367390d7ed98ae",
+      "classification": "decision_support",
+      "spec_path": "orca-research-round893-spec-v1.txt",
+      "spec_sha256": "5d16a51a5275f9cc756ee89239c4b9e4c4bac27b5870ff4b834432548e5d81b0",
+      "review_round": "R894",
+      "review_path": "A/research-scope-review-round894-v1.json",
+      "review_sha256": "a3d524a1af1256b02f1151ba34e6ea89151b54d0a0e965e27ffd3a20cc1690ae",
+      "operational_digest_path": "A/research-scope-review-round894-v1.ja.md",
+      "operational_digest_sha256": "05e59217b737d54ee79e730e64b864e1ebecb5f190eb8769dd70278c648b21a9",
+      "main_body_read": false,
+      "retrieval": {
+        "needed_now": true,
+        "hold_body": false,
+        "sections": [
+          "7–16: historical environment-to-dispatch reconstruction; apply R893-C1 and keep the exact-binary/JIT limitation.",
+          "21–27: current-versus-historical source and trace comparison; do not infer saturation from source arithmetic.",
+          "31–35: numerical hazards and candidate plan; apply R893-C2 and use a SYCL-only edge oracle/harness.",
+          "39: current profile/source pins; apply R893-C3 because native-KV minimum is irrelevant to Mode1."
+        ],
+        "keys": [
+          "reported PR6 env to QSA variant-4 fallback",
+          "current direct matrix QSA source versus trace",
+          "hardware-resource inference ceiling",
+          "historical page guards and FP64 edge-case validation"
+        ],
+        "preserve_caveats": [
+          "R893-C1: variant 4 is source-derived from the reported environment and pinned reconstruction; the exact historical emitted kernel is unverified.",
+          "R893-C2: the existing host FP64 reference does not support zero-width or invalid/missing-page cases as-is; do not run its CUDA/HIP test executable for this SYCL task.",
+          "Current profile records command service/envelope, not occupancy, ALU/XMX, memory activity, cache behavior, or barrier-stall counters.",
+          "Declared source-local storage figures are not measured allocation or hardware utilization.",
+          "R893-C3: native-KV minimum only affects Mode0; it does not explain the captured INT8 Mode1 launch.",
+          "Source-level repeated scale lookups are not compiled instruction counts or DRAM transactions."
+        ]
+      },
+      "correction_ids": [
+        "R893-C1",
+        "R893-C2",
+        "R893-C3"
+      ],
+      "reviewer_retrieval_metadata": {
+        "report_sha256": "b038433940012d7bbb215ed30540069e64dce5aefcfb64f9a7367390d7ed98ae",
+        "spec_sha256": "5d16a51a5275f9cc756ee89239c4b9e4c4bac27b5870ff4b834432548e5d81b0",
+        "review_sha256": "a3d524a1af1256b02f1151ba34e6ea89151b54d0a0e965e27ffd3a20cc1690ae",
+        "operational_digest_sha256": "05e59217b737d54ee79e730e64b864e1ebecb5f190eb8769dd70278c648b21a9",
+        "purpose_class": "decision_support",
+        "main_original_needed_now": true,
+        "retrieval_brief": "Read only the listed route, comparison, qualification, and evidence-limit sections; retain both corrections.",
+        "scope_depth_review": "1,581 words, one comparison table, zero primary URLs; within the report and URL budget.",
+        "provenance_limit": "The historical route is a source inference from a reported environment and restored source; current service/envelope timing has no kernel-internal counters. No hardware saturation or adoption result.",
+        "outcome": "Accepted with R893-C1/C2/C3."
+      },
+      "outcome": "succeeded_with_qualification_corrections",
+      "main_scoped_retrieval": {
+        "receipt": "main-research-retrieval-round893-v1.json",
+        "sha256": "2da39b749236ccc0857b454a1697131a51444da623adc6efa524fe7df0590485",
+        "scope": "Only reviewed decision-support sections retrieved; no unrelated knowledge archive bodies read"
+      }
+    },
+    {
+      "round": 896,
+      "model": "Orca gpt-6-luna",
+      "read_only": true,
+      "path": "research-round896-v1.txt",
+      "title": "B570 ComputeBasic counters for QSA diagnosis",
+      "status": "R898-reviewed decision support; apply retrieval caveats R896-C1/C2/C3; actual counter collection remains UNRUN.",
+      "sha256": "cb52bbf2e4c33f6eef340f33cc2575b0771c6cde1defbdfbfe98a1cf98a450b6",
+      "classification": "decision_support",
+      "spec_path": "orca-research-round896-spec-v1.txt",
+      "spec_sha256": "150b5ba70fedeaa58d8f48f65fb2b622a00dedab1aee026a3f0de16cc57195f2",
+      "review_round": "R898",
+      "review_path": "research-scope-review-round898-v1.json",
+      "review_sha256": "2292aa054e7f97bc5177a60405113055721852a44cab08540e46f14c58412b39",
+      "operational_digest_path": "research-scope-review-round898-v1.ja.md",
+      "operational_digest_sha256": "2b4b79204ce3cc4142433c4c0e816dcbb3f1e6b0188c8871e30b337dc31488eb",
+      "main_body_read": false,
+      "retrieval": {
+        "needed_now": true,
+        "hold_body": false,
+        "main_body_read": false,
+        "sections": [
+          "7-12: catalog boundary and context; keep enumeration-only and non-saturation limits.",
+          "15-24: counter map and validity rows; apply R896-C1/C2/C3.",
+          "26-35: denominators, bytes/rates, timestamps, vector activity and instruction-count limits.",
+          "36-44: collection gate, report validity, shared scope and Main-owned follow-up."
+        ],
+        "keys": [
+          "B570 ComputeBasic EVENT_BASED 83-property schema",
+          "distinct event, duration and occupancy meanings",
+          "unvalidated local-memory GBpS denominator",
+          "no ALU-to-XMX or instruction-slot-to-FLOP inference",
+          "SLM-conflict cost denominator absent",
+          "error/loss flags versus split/frequency metadata",
+          "collection UNRUN"
+        ],
+        "preserve_caveats": [
+          "R896-C1: GPU_BUSY covers all GPU engines; it is not QSA-only throughput.",
+          "R896-C2: attribute MemoryProfile transaction/LSC fields and DeviceCacheProfile L3 fields to their actual groups.",
+          "R896-C3: XVE_STALL is a duration percentage, not an event count; do not assume its denominator.",
+          "Enumeration does not prove activation or a valid query report.",
+          "No XMX use, FLOP/s, bottleneck, hardware idle, clean-speed, adoption or GPU-health result follows."
+        ]
+      },
+      "correction_ids": [
+        "R896-C1",
+        "R896-C2",
+        "R896-C3"
+      ],
+      "tags": [
+        "Intel Arc B570",
+        "Level Zero metrics",
+        "ComputeBasic",
+        "QSA",
+        "counter validity",
+        "UNMEASURED_RESEARCH"
+      ],
+      "reviewer_retrieval_metadata": {
+        "report_sha256": "cb52bbf2e4c33f6eef340f33cc2575b0771c6cde1defbdfbfe98a1cf98a450b6",
+        "spec_sha256": "150b5ba70fedeaa58d8f48f65fb2b622a00dedab1aee026a3f0de16cc57195f2",
+        "review_sha256": "2292aa054e7f97bc5177a60405113055721852a44cab08540e46f14c58412b39",
+        "operational_digest_sha256": "2b4b79204ce3cc4142433c4c0e816dcbb3f1e6b0188c8871e30b337dc31488eb",
+        "purpose_class": "decision_support",
+        "review_round": "R898",
+        "main_original_needed_now": true,
+        "retrieval_brief": "Main may read only lines 7-12, 15-24, 26-35, and 36-44, applying R896-C1/C2/C3; actual collection remains UNRUN.",
+        "scope_depth_review": "1,703 words, one mapping/validity table and five primary URLs; within assigned budget and focused on the exact enumerated B570 schema.",
+        "provenance_limit": "Exact B570 meanings come from the hashed local catalog; Intel public docs establish product/project applicability and terminology only. Enumeration is not collection.",
+        "source_context_corrections": [
+          "R896-C1",
+          "R896-C2",
+          "R896-C3"
+        ],
+        "outcome": "Accepted as decision support with retrieval caveats; no counter result or performance/adoption claim."
+      },
+      "main_scoped_retrieval": {
+        "receipt": "main-research-retrieval-round896-v1.json",
+        "sha256": "98eb4237257fc7caf4d4b2c5e3d227e8857dd677ee0182dc0b2062b2b9655940",
+        "scope": "Only reviewed decision-support sections retrieved; no unrelated knowledge archive bodies read"
+      }
     }
   ],
   "main_initial_findings": [
@@ -5120,5 +5266,73 @@
       "reason": "No current Strata decision requires more 2:4 source research; retain R886 for concrete retrieval."
     },
     "next_scope_reason": "R886 is a complete, bounded knowledge collection. No repeat survey or unrelated replan is recommended."
+  },
+  "research_review_round894": {
+    "path": "A/research-scope-review-round894-v1.json",
+    "sha256": "a3d524a1af1256b02f1151ba34e6ea89151b54d0a0e965e27ffd3a20cc1690ae",
+    "operational_digest_path": "A/research-scope-review-round894-v1.ja.md",
+    "operational_digest_sha256": "05e59217b737d54ee79e730e64b864e1ebecb5f190eb8769dd70278c648b21a9",
+    "index_before_sha256": "4968ca6300df526c9306db0b025a74c7ab59b70eb83bf1071c1c5c3107e80690",
+    "indexed_report_count_after": 282,
+    "highest_indexed_report_round_after": 893,
+    "decision_support_bodies_main_read": false,
+    "held_reports": [],
+    "correction_ids": [
+      "R893-C1",
+      "R893-C2",
+      "R893-C3"
+    ],
+    "next_scope_eligibility": {
+      "recommended_now": false,
+      "schedulable_now": false,
+      "prerequisites_rechecked": true,
+      "dispatch_performed": false,
+      "reason": "Remaining qualification requires Main-owned SYCL implementation and measurement; no fresh research scope is justified yet."
+    },
+    "next_scope_reason": "R893 answers a bounded route-attribution question. Revisit research only if owned qualification or a new trace produces a specific unresolved source question."
+  },
+  "research_review_round898": {
+    "path": "research-scope-review-round898-v1.json",
+    "sha256": "2292aa054e7f97bc5177a60405113055721852a44cab08540e46f14c58412b39",
+    "operational_digest_path": "research-scope-review-round898-v1.ja.md",
+    "operational_digest_sha256": "2b4b79204ce3cc4142433c4c0e816dcbb3f1e6b0188c8871e30b337dc31488eb",
+    "index_before_sha256": "8914affbd66661183fe89aed790d4eaeb6548c0e2274a1468c12f05c9cd77e4d",
+    "indexed_report_count_after": 283,
+    "highest_indexed_report_round_after": 896,
+    "decision_support_bodies_main_read": false,
+    "held_reports": [],
+    "correction_ids": [
+      "R896-C1",
+      "R896-C2",
+      "R896-C3"
+    ],
+    "decision_support_retrieval": {
+      "round": 896,
+      "needed_now": true,
+      "hold_body": false,
+      "sections": [
+        "7-12",
+        "15-24",
+        "26-35",
+        "36-44"
+      ],
+      "keys": [
+        "B570 ComputeBasic EVENT_BASED schema",
+        "query validity fields and denominators",
+        "GPU_BUSY all-engine scope",
+        "QSA counter collection remains UNRUN"
+      ],
+      "preserve_caveats": [
+        "Apply R896-C1/C2/C3.",
+        "No counter collection, clean-speed, saturation, adoption or GPU-health claim."
+      ]
+    },
+    "next_scope_eligibility": {
+      "recommended_now": false,
+      "schedulable_now": false,
+      "prerequisites_rechecked": true,
+      "dispatch_performed": false,
+      "reason": "The local catalog still has collection_qualified=false and the separate status-loss gate remains unresolved; wait for Main-owned valid collection and a concrete open interpretation."
+    }
   }
 }

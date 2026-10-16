@@ -1,0 +1,97 @@
+{
+  "schema": "strata-metric-query-reader-offline-review-v1",
+  "status": "OFFLINE_FORMAT_CHECKS_PASS_COLLECTION_HELD",
+  "GPU_executed": false,
+  "tests": [
+    {
+      "case": "valid_exact83columns_with_embedded_quote_and_comma",
+      "expected_decode": true,
+      "observed_decode": true
+    },
+    {
+      "case": "missing_final_newline",
+      "expected_decode": false,
+      "observed_decode": false
+    },
+    {
+      "case": "unknown_header_column",
+      "expected_decode": false,
+      "observed_decode": false
+    },
+    {
+      "case": "extra_column",
+      "expected_decode": false,
+      "observed_decode": false
+    },
+    {
+      "case": "missing_query_sample",
+      "expected_decode": false,
+      "observed_decode": false
+    },
+    {
+      "case": "duplicate_global_instance",
+      "expected_decode": false,
+      "observed_decode": false
+    },
+    {
+      "case": "different_subdevice_sample",
+      "expected_decode": false,
+      "observed_decode": false
+    },
+    {
+      "case": "unknown_extra_device_section",
+      "expected_decode": false,
+      "observed_decode": false
+    },
+    {
+      "case": "missing_expected_dispatch",
+      "expected_decode": false,
+      "observed_decode": false
+    },
+    {
+      "case": "integer_overflow",
+      "expected_decode": false,
+      "observed_decode": false
+    },
+    {
+      "case": "invalid_boolean_encoding",
+      "expected_decode": false,
+      "observed_decode": false
+    },
+    {
+      "case": "nonfinite_float_encoding",
+      "expected_decode": false,
+      "observed_decode": false
+    },
+    {
+      "case": "known_limit_ReportError_true_still_format_decodes",
+      "expected_decode": true,
+      "observed_decode": true
+    }
+  ],
+  "source_sha256": "ce978565e9cdd786f4269dbacb5a8e3542e17bd7dca90e85a6ce77486b73f3df",
+  "syntax_checked_files": [
+    "main_controller.py",
+    "metrics.py",
+    "summary.py"
+  ],
+  "catalog_sha256": "13c6d9ed53259ad2dfd686a2fd0ffcf8b27b7852614e6671d0fe1c269fd4569a",
+  "source_contract_findings": [
+    {
+      "id": "MQ1",
+      "finding": "v1 controller binds catalog build reviewed_package_sha256 to query package SHA. Actual separately reviewed enum package1c856787 differs despite compiling exactly the pinned full source path. New explicit catalog-source/package binding is needed; do not forge the original build receipt."
+    },
+    {
+      "id": "MQ2",
+      "finding": "v1 checks types/finite values/counts, but it decodes ReportError=true. Diagnostic-only HOLD is correct; actual report-validity policy must be reviewed before qualification."
+    },
+    {
+      "id": "MQ3",
+      "finding": "Pinned collector internal metric API statuses are incomplete; this is source-proved, not an observed API failure."
+    }
+  ],
+  "v1_native_execution": "UNRUN",
+  "collection_qualified": false,
+  "originals_unchanged": true,
+  "scope": "Synthetic offline format/error checks only, no physical counters, arithmetic/utilization/performance result."
+}
