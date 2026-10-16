@@ -113,6 +113,12 @@ function(pr6_llvm_onemkl_adapt)
       endif()
     endforeach()
   endforeach()
+  # These targets contain only host CPU sources in the pinned closure. Override
+  # inherited -fsycl late, without rewriting its list or any source ISA options.
+  # PRIVATE keeps GPU consumers' compile and final SYCL link modes unchanged.
+  foreach(target strata_kernels_cpu ggml ggml-base ggml-cpu)
+    target_compile_options(${target} PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:-fno-sycl>")
+  endforeach()
   # PUBLIC is essential: final executables and the sibling harness need the
   # domain's include options, SYCL device-image link flags and CPU MKL closure.
   target_link_libraries(strata_prefill PUBLIC MKL::MKL_SYCL::BLAS)
