@@ -1,0 +1,1458 @@
+{
+  "schema": "strata-qsa-bf16-operand-native-v1",
+  "mode": "smoke",
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "GPU_executed": true,
+  "commands": [
+    {
+      "label": "journal-before",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-b",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-16T13:40:37.398894+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2656582,
+          "start_ticks": 50680152,
+          "sid": 2656582,
+          "pgid": 2656582
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 506801.520660262,
+      "pid": 2656582,
+      "spawn_return_monotonic": 506801.522255285,
+      "direct_identity": {
+        "pid": 2656582,
+        "state": "R",
+        "ppid": 2656256,
+        "pgid": 2656582,
+        "sid": 2656582,
+        "start_ticks": 50680152,
+        "rss_bytes": 491520
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T13:40:37.496102+00:00",
+      "elapsed_seconds": 0.0967114269733429,
+      "logs": {
+        "journal-before.stdout": {
+          "bytes": 156,
+          "sha256": "391e759e1d5c903796a6d83e6cc1218a75c8c6fa2d997750b447837e8f5ae3db"
+        },
+        "journal-before.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "qsa-bf16",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-bf16-late-flags-fixture-build-v1/sycl_qsa_bf16_late_flags",
+        "--smoke"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-bf16-late-flags-smoke-v1/cache",
+        "STRATA_TEST_MAIN_GATES": "1",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+      },
+      "started_utc": "2026-10-16T13:40:37.496799+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2656585,
+          "start_ticks": 50680161,
+          "sid": 2656585,
+          "pgid": 2656585
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 506801.618458675,
+      "pid": 2656585,
+      "spawn_return_monotonic": 506801.620475442,
+      "direct_identity": {
+        "pid": 2656585,
+        "state": "D",
+        "ppid": 2656256,
+        "pgid": 2656585,
+        "sid": 2656585,
+        "start_ticks": 50680161,
+        "rss_bytes": 151552
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 149954560,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T13:40:43.253080+00:00",
+      "elapsed_seconds": 5.755881386983674,
+      "logs": {
+        "qsa-bf16.stdout": {
+          "bytes": 584,
+          "sha256": "7b5a83965063c4c225703cb8feb29d9091dc35515356e33ab3d3d4a11115a23b"
+        },
+        "qsa-bf16.stderr": {
+          "bytes": 219022,
+          "sha256": "f69bd2e5fcebdc732e016521263f367bf07498ccf78fd182690b2c171eac62db"
+        }
+      }
+    },
+    {
+      "label": "journal-end",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-b",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-16T13:40:47.796193+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2657149,
+          "start_ticks": 50681191,
+          "sid": 2657149,
+          "pgid": 2657149
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 506811.918375875,
+      "pid": 2657149,
+      "spawn_return_monotonic": 506811.919951261,
+      "direct_identity": {
+        "pid": 2657149,
+        "state": "R",
+        "ppid": 2656256,
+        "pgid": 2657149,
+        "sid": 2657149,
+        "start_ticks": 50681191,
+        "rss_bytes": 442368
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T13:40:47.896439+00:00",
+      "elapsed_seconds": 0.0993351669749245,
+      "logs": {
+        "journal-end.stdout": {
+          "bytes": 156,
+          "sha256": "391e759e1d5c903796a6d83e6cc1218a75c8c6fa2d997750b447837e8f5ae3db"
+        },
+        "journal-end.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "journal-final",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-b",
+        "--after-cursor",
+        "s=9944479cfd1a45c28a589619cb8f2881;i=c28e964;b=cfda0b6a7c134fe2bdf58f9202770840;m=75fe81d436;t=65df54dfbabe4;x=858fa48eefc5d091",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-16T13:40:47.897512+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2657152,
+          "start_ticks": 50681202,
+          "sid": 2657152,
+          "pgid": 2657152
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 506812.019660633,
+      "pid": 2657152,
+      "spawn_return_monotonic": 506812.021301922,
+      "direct_identity": {
+        "pid": 2657152,
+        "state": "R",
+        "ppid": 2656256,
+        "pgid": 2657152,
+        "sid": 2657152,
+        "start_ticks": 50681202,
+        "rss_bytes": 483328
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T13:40:47.995203+00:00",
+      "elapsed_seconds": 0.0968446689657867,
+      "logs": {
+        "journal-final.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "journal-final.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "snapshots": [
+    {
+      "phase": "before-runtime",
+      "identity": {
+        "pid": 2656585,
+        "state": "S",
+        "ppid": 2656256,
+        "pgid": 2656585,
+        "sid": 2656585,
+        "start_ticks": 50680161,
+        "rss_bytes": 6393856
+      },
+      "initial_exec_environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-bf16-late-flags-smoke-v1/cache",
+        "STRATA_TEST_MAIN_GATES": "1",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+      },
+      "mappings": [
+        {
+          "mapping": "00404000-00445000 r-xp 00004000 00:28 2839712                            /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-bf16-late-flags-fixture-build-v1/sycl_qsa_bf16_late_flags",
+          "pin": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-bf16-late-flags-fixture-build-v1/sycl_qsa_bf16_late_flags",
+            "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-bf16-late-flags-fixture-build-v1/sycl_qsa_bf16_late_flags",
+            "bytes": 923848,
+            "sha256": "ec8df6fdc11ad4f429f9ca71f1fdd993781a9ddc1d5ddbd763835d6e448d277e"
+          }
+        },
+        {
+          "mapping": "7d68e4c91000-7d68e4ca3000 r-xp 00002000 00:1d 4904958                    /usr/lib/x86_64-linux-gnu/libz.so.1.3",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libz.so.1.3",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libz.so.1.3",
+            "bytes": 113000,
+            "sha256": "86200da370f20476a2507e9097a789b5ef97269b4ca8d5e164ad82dab9d99892"
+          }
+        },
+        {
+          "mapping": "7d68e5016000-7d68e5c01000 r-xp 0036a000 00:28 7458158                    /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "pin": {
+            "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "bytes": 19267664,
+            "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+          }
+        },
+        {
+          "mapping": "7d68e5c6c000-7d68e5df5000 r-xp 00028000 00:1d 4897558                    /usr/lib/x86_64-linux-gnu/libc.so.6",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+            "bytes": 2129424,
+            "sha256": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf"
+          }
+        },
+        {
+          "mapping": "7d68e5f58000-7d68e625e000 r-xp 00100000 00:28 7459622                    /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+          "pin": {
+            "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+            "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+            "bytes": 5314304,
+            "sha256": "74243bafb2766fd1a038cf80fd62632b4aad9ecfdc0d3ce8711e4515a93d7008"
+          }
+        },
+        {
+          "mapping": "7d68e626b000-7d68e628f000 r-xp 00004000 00:1d 180160                     /usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+            "bytes": 183024,
+            "sha256": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb"
+          }
+        },
+        {
+          "mapping": "7d68e62a5000-7d68e6324000 r-xp 00010000 00:1d 4898954                    /usr/lib/x86_64-linux-gnu/libm.so.6",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+            "bytes": 952616,
+            "sha256": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0"
+          }
+        },
+        {
+          "mapping": "7d68e641b000-7d68e6563000 r-xp 0009d000 00:1d 180746                     /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+            "bytes": 2592224,
+            "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
+          }
+        },
+        {
+          "mapping": "7d68e6624000-7d68e664f000 r-xp 00001000 00:1d 4897554                    /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+            "realpath": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+            "bytes": 236616,
+            "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da"
+          }
+        }
+      ]
+    },
+    {
+      "phase": "runtime-ready",
+      "identity": {
+        "pid": 2656585,
+        "state": "S",
+        "ppid": 2656256,
+        "pgid": 2656585,
+        "sid": 2656585,
+        "start_ticks": 50680161,
+        "rss_bytes": 58908672
+      },
+      "initial_exec_environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-bf16-late-flags-smoke-v1/cache",
+        "STRATA_TEST_MAIN_GATES": "1",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+      },
+      "mappings": [
+        {
+          "mapping": "00404000-00445000 r-xp 00004000 00:28 2839712                            /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-bf16-late-flags-fixture-build-v1/sycl_qsa_bf16_late_flags",
+          "pin": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-bf16-late-flags-fixture-build-v1/sycl_qsa_bf16_late_flags",
+            "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-bf16-late-flags-fixture-build-v1/sycl_qsa_bf16_late_flags",
+            "bytes": 923848,
+            "sha256": "ec8df6fdc11ad4f429f9ca71f1fdd993781a9ddc1d5ddbd763835d6e448d277e"
+          }
+        },
+        {
+          "mapping": "7d68d06a9000-7d68d06b8000 r-xp 00008000 00:1d 1175754                    /usr/lib/x86_64-linux-gnu/libnl-3.so.200.26.0",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libnl-3.so.200.26.0",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libnl-3.so.200.26.0",
+            "bytes": 133944,
+            "sha256": "afcb69e2ef0b46c2ce7b7483848332fa9462776d33163f64209acf01f86eddd7"
+          }
+        },
+        {
+          "mapping": "7d68d08a5000-7d68d08b1000 r-xp 00005000 00:1d 768538                     /usr/lib/x86_64-linux-gnu/libdrm.so.2.134.0",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libdrm.so.2.134.0",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libdrm.so.2.134.0",
+            "bytes": 92768,
+            "sha256": "0603c4dcb88bc9e076e34aedeec3513038e608d6d15d21330e49cb0ea38155e1"
+          }
+        },
+        {
+          "mapping": "7d68d08d0000-7d68d09cc000 r-xp 00019000 00:1d 131106                     /usr/lib/x86_64-linux-gnu/libigdml.so.1.0.231",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.231",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.231",
+            "bytes": 1367248,
+            "sha256": "8f4ffe4a856c441d4c85bd7d7de6ad7672c59812fe4655d2a8843c32eba97075"
+          }
+        },
+        {
+          "mapping": "7d68d1a83000-7d68d544a000 r-xp 0105f000 00:2a 224                        /usr/local/lib/libigc.so.2.41.5+1788943183",
+          "pin": {
+            "path": "/usr/local/lib/libigc.so.2.41.5+1788943183",
+            "realpath": "/usr/local/lib/libigc.so.2.41.5+1788943183",
+            "bytes": 104543000,
+            "sha256": "40badd8f1ee80ac844a8947f5e91e5654fbcd851caefe343b0e5ec4ce4d1b123"
+          }
+        },
+        {
+          "mapping": "7d68d6fad000-7d68d7054000 r-xp 00004000 00:1d 810994                     /usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5",
+            "bytes": 755864,
+            "sha256": "0a2128bc10841fb29e76d08d945864dfb0b6a66da5df6df5d8299197439e54bb"
+          }
+        },
+        {
+          "mapping": "7d68d74fb000-7d68dc245000 r-xp 00498000 00:2a 522                        /usr/local/lib/libopencl-clang2.so.22.1",
+          "pin": {
+            "path": "/usr/local/lib/libopencl-clang2.so.22.1",
+            "realpath": "/usr/local/lib/libopencl-clang2.so.22.1",
+            "bytes": 158062480,
+            "sha256": "02ba9fb0f16b7f02c012095c46f8053c4bc20f9b5bde3028eedff6dcfed94bfe"
+          }
+        },
+        {
+          "mapping": "7d68e0851000-7d68e09cc000 r-xp 000a9000 00:2a 520                        /usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+          "pin": {
+            "path": "/usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+            "realpath": "/usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+            "bytes": 2554016,
+            "sha256": "ece8bcd533a44cc1684c1f24eeeca3302e4d19307a806fad5f1b83171f9fc1c3"
+          }
+        },
+        {
+          "mapping": "7d68e0b40000-7d68e0bf2000 r-xp 00008000 00:1d 7539068                    /usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+            "bytes": 846520,
+            "sha256": "db1856f379706d51b6ded84ce028d4aa48740ef63793f60e8a1e027c6db6ffb5"
+          }
+        },
+        {
+          "mapping": "7d68e0c10000-7d68e0cd4000 r-xp 00008000 00:1d 7537116                    /usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+            "bytes": 878992,
+            "sha256": "a7904f18d8d59c7128dec4d6f22ae2b2e8a51f91f6946ac4e68b1ec6e0a7a6f3"
+          }
+        },
+        {
+          "mapping": "7d68e0cdf000-7d68e183e000 r-xp 00000000 00:1d 7539850                    /usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+            "bytes": 61889928,
+            "sha256": "dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c"
+          }
+        },
+        {
+          "mapping": "7d68e48e2000-7d68e4968000 r-xp 00018000 00:1d 7539712                    /usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+            "bytes": 777528,
+            "sha256": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363"
+          }
+        },
+        {
+          "mapping": "7d68e49b4000-7d68e49ba000 r-xp 00003000 00:1d 2712796                    /usr/lib/x86_64-linux-gnu/libcap.so.2.66",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libcap.so.2.66",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libcap.so.2.66",
+            "bytes": 51536,
+            "sha256": "6ac6abc86ac891c6e13486470e26f1d939f47fda9e6b5d5508a7f5ec881adc84"
+          }
+        },
+        {
+          "mapping": "7d68e49c3000-7d68e49e5000 r-xp 00005000 00:1d 758184                     /usr/lib/x86_64-linux-gnu/libudev.so.1.7.8",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8",
+            "bytes": 207288,
+            "sha256": "4298228175fa62a36af88b1afd4406cdd8b1bf166621f957d0dbbde45a698fe5"
+          }
+        },
+        {
+          "mapping": "7d68e49f7000-7d68e4a3e000 r-xp 00006000 00:1d 131606                     /usr/lib/x86_64-linux-gnu/libhwloc.so.15.7.0",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libhwloc.so.15.7.0",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libhwloc.so.15.7.0",
+            "bytes": 392576,
+            "sha256": "86dff44a023254d997cea910b9a51f35afefe6780f4b5530f974a2009ba47487"
+          }
+        },
+        {
+          "mapping": "7d68e4a6a000-7d68e4a8e000 r-xp 00017000 00:28 7460428                    /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+          "pin": {
+            "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+            "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+            "bytes": 306904,
+            "sha256": "ebe65269abd5869010ab256375e8663f7a8f8b5453e0be0c78f615eb71581ab9"
+          }
+        },
+        {
+          "mapping": "7d68e4af9000-7d68e4c84000 r-xp 00057000 00:28 7454856                    /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+          "pin": {
+            "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+            "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+            "bytes": 2388520,
+            "sha256": "05bcafc4a0d45d33f957f16ffb4ba4776da675e79ade1121b93b94b8549335d8"
+          }
+        },
+        {
+          "mapping": "7d68e4c91000-7d68e4ca3000 r-xp 00002000 00:1d 4904958                    /usr/lib/x86_64-linux-gnu/libz.so.1.3",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libz.so.1.3",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libz.so.1.3",
+            "bytes": 113000,
+            "sha256": "86200da370f20476a2507e9097a789b5ef97269b4ca8d5e164ad82dab9d99892"
+          }
+        },
+        {
+          "mapping": "7d68e5016000-7d68e5c01000 r-xp 0036a000 00:28 7458158                    /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "pin": {
+            "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "bytes": 19267664,
+            "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+          }
+        },
+        {
+          "mapping": "7d68e5c6c000-7d68e5df5000 r-xp 00028000 00:1d 4897558                    /usr/lib/x86_64-linux-gnu/libc.so.6",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+            "bytes": 2129424,
+            "sha256": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf"
+          }
+        },
+        {
+          "mapping": "7d68e5f58000-7d68e625e000 r-xp 00100000 00:28 7459622                    /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+          "pin": {
+            "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+            "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+            "bytes": 5314304,
+            "sha256": "74243bafb2766fd1a038cf80fd62632b4aad9ecfdc0d3ce8711e4515a93d7008"
+          }
+        },
+        {
+          "mapping": "7d68e626b000-7d68e628f000 r-xp 00004000 00:1d 180160                     /usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+            "bytes": 183024,
+            "sha256": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb"
+          }
+        },
+        {
+          "mapping": "7d68e62a5000-7d68e6324000 r-xp 00010000 00:1d 4898954                    /usr/lib/x86_64-linux-gnu/libm.so.6",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+            "bytes": 952616,
+            "sha256": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0"
+          }
+        },
+        {
+          "mapping": "7d68e641b000-7d68e6563000 r-xp 0009d000 00:1d 180746                     /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+            "bytes": 2592224,
+            "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
+          }
+        },
+        {
+          "mapping": "7d68e65ff000-7d68e6602000 r-xp 00002000 00:1d 1175738                    /usr/lib/x86_64-linux-gnu/libnl-genl-3.so.200.26.0",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libnl-genl-3.so.200.26.0",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libnl-genl-3.so.200.26.0",
+            "bytes": 27984,
+            "sha256": "0757db7e6c5fbc4d2a8bbedbac7061fbb8ebb6196b4d2954d3a321e9ff76933c"
+          }
+        },
+        {
+          "mapping": "7d68e6624000-7d68e664f000 r-xp 00001000 00:1d 4897554                    /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+            "realpath": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+            "bytes": 236616,
+            "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da"
+          }
+        }
+      ]
+    },
+    {
+      "phase": "after-cleanup",
+      "identity": {
+        "pid": 2656585,
+        "state": "S",
+        "ppid": 2656256,
+        "pgid": 2656585,
+        "sid": 2656585,
+        "start_ticks": 50680161,
+        "rss_bytes": 149954560
+      },
+      "initial_exec_environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-bf16-late-flags-smoke-v1/cache",
+        "STRATA_TEST_MAIN_GATES": "1",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+      },
+      "mappings": [
+        {
+          "mapping": "00404000-00445000 r-xp 00004000 00:28 2839712                            /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-bf16-late-flags-fixture-build-v1/sycl_qsa_bf16_late_flags",
+          "pin": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-bf16-late-flags-fixture-build-v1/sycl_qsa_bf16_late_flags",
+            "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-bf16-late-flags-fixture-build-v1/sycl_qsa_bf16_late_flags",
+            "bytes": 923848,
+            "sha256": "ec8df6fdc11ad4f429f9ca71f1fdd993781a9ddc1d5ddbd763835d6e448d277e"
+          }
+        },
+        {
+          "mapping": "7d68d06a9000-7d68d06b8000 r-xp 00008000 00:1d 1175754                    /usr/lib/x86_64-linux-gnu/libnl-3.so.200.26.0",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libnl-3.so.200.26.0",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libnl-3.so.200.26.0",
+            "bytes": 133944,
+            "sha256": "afcb69e2ef0b46c2ce7b7483848332fa9462776d33163f64209acf01f86eddd7"
+          }
+        },
+        {
+          "mapping": "7d68d08a5000-7d68d08b1000 r-xp 00005000 00:1d 768538                     /usr/lib/x86_64-linux-gnu/libdrm.so.2.134.0",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libdrm.so.2.134.0",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libdrm.so.2.134.0",
+            "bytes": 92768,
+            "sha256": "0603c4dcb88bc9e076e34aedeec3513038e608d6d15d21330e49cb0ea38155e1"
+          }
+        },
+        {
+          "mapping": "7d68d08d0000-7d68d09cc000 r-xp 00019000 00:1d 131106                     /usr/lib/x86_64-linux-gnu/libigdml.so.1.0.231",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.231",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.231",
+            "bytes": 1367248,
+            "sha256": "8f4ffe4a856c441d4c85bd7d7de6ad7672c59812fe4655d2a8843c32eba97075"
+          }
+        },
+        {
+          "mapping": "7d68d1a83000-7d68d544a000 r-xp 0105f000 00:2a 224                        /usr/local/lib/libigc.so.2.41.5+1788943183",
+          "pin": {
+            "path": "/usr/local/lib/libigc.so.2.41.5+1788943183",
+            "realpath": "/usr/local/lib/libigc.so.2.41.5+1788943183",
+            "bytes": 104543000,
+            "sha256": "40badd8f1ee80ac844a8947f5e91e5654fbcd851caefe343b0e5ec4ce4d1b123"
+          }
+        },
+        {
+          "mapping": "7d68d6fad000-7d68d7054000 r-xp 00004000 00:1d 810994                     /usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5",
+            "bytes": 755864,
+            "sha256": "0a2128bc10841fb29e76d08d945864dfb0b6a66da5df6df5d8299197439e54bb"
+          }
+        },
+        {
+          "mapping": "7d68d74fb000-7d68dc245000 r-xp 00498000 00:2a 522                        /usr/local/lib/libopencl-clang2.so.22.1",
+          "pin": {
+            "path": "/usr/local/lib/libopencl-clang2.so.22.1",
+            "realpath": "/usr/local/lib/libopencl-clang2.so.22.1",
+            "bytes": 158062480,
+            "sha256": "02ba9fb0f16b7f02c012095c46f8053c4bc20f9b5bde3028eedff6dcfed94bfe"
+          }
+        },
+        {
+          "mapping": "7d68e0851000-7d68e09cc000 r-xp 000a9000 00:2a 520                        /usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+          "pin": {
+            "path": "/usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+            "realpath": "/usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+            "bytes": 2554016,
+            "sha256": "ece8bcd533a44cc1684c1f24eeeca3302e4d19307a806fad5f1b83171f9fc1c3"
+          }
+        },
+        {
+          "mapping": "7d68e0b40000-7d68e0bf2000 r-xp 00008000 00:1d 7539068                    /usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+            "bytes": 846520,
+            "sha256": "db1856f379706d51b6ded84ce028d4aa48740ef63793f60e8a1e027c6db6ffb5"
+          }
+        },
+        {
+          "mapping": "7d68e0c10000-7d68e0cd4000 r-xp 00008000 00:1d 7537116                    /usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+            "bytes": 878992,
+            "sha256": "a7904f18d8d59c7128dec4d6f22ae2b2e8a51f91f6946ac4e68b1ec6e0a7a6f3"
+          }
+        },
+        {
+          "mapping": "7d68e0cdf000-7d68e183e000 r-xp 00000000 00:1d 7539850                    /usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+            "bytes": 61889928,
+            "sha256": "dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c"
+          }
+        },
+        {
+          "mapping": "7d68e48e2000-7d68e4968000 r-xp 00018000 00:1d 7539712                    /usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+            "bytes": 777528,
+            "sha256": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363"
+          }
+        },
+        {
+          "mapping": "7d68e49b4000-7d68e49ba000 r-xp 00003000 00:1d 2712796                    /usr/lib/x86_64-linux-gnu/libcap.so.2.66",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libcap.so.2.66",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libcap.so.2.66",
+            "bytes": 51536,
+            "sha256": "6ac6abc86ac891c6e13486470e26f1d939f47fda9e6b5d5508a7f5ec881adc84"
+          }
+        },
+        {
+          "mapping": "7d68e49c3000-7d68e49e5000 r-xp 00005000 00:1d 758184                     /usr/lib/x86_64-linux-gnu/libudev.so.1.7.8",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8",
+            "bytes": 207288,
+            "sha256": "4298228175fa62a36af88b1afd4406cdd8b1bf166621f957d0dbbde45a698fe5"
+          }
+        },
+        {
+          "mapping": "7d68e49f7000-7d68e4a3e000 r-xp 00006000 00:1d 131606                     /usr/lib/x86_64-linux-gnu/libhwloc.so.15.7.0",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libhwloc.so.15.7.0",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libhwloc.so.15.7.0",
+            "bytes": 392576,
+            "sha256": "86dff44a023254d997cea910b9a51f35afefe6780f4b5530f974a2009ba47487"
+          }
+        },
+        {
+          "mapping": "7d68e4a6a000-7d68e4a8e000 r-xp 00017000 00:28 7460428                    /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+          "pin": {
+            "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+            "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+            "bytes": 306904,
+            "sha256": "ebe65269abd5869010ab256375e8663f7a8f8b5453e0be0c78f615eb71581ab9"
+          }
+        },
+        {
+          "mapping": "7d68e4af9000-7d68e4c84000 r-xp 00057000 00:28 7454856                    /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+          "pin": {
+            "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+            "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+            "bytes": 2388520,
+            "sha256": "05bcafc4a0d45d33f957f16ffb4ba4776da675e79ade1121b93b94b8549335d8"
+          }
+        },
+        {
+          "mapping": "7d68e4c91000-7d68e4ca3000 r-xp 00002000 00:1d 4904958                    /usr/lib/x86_64-linux-gnu/libz.so.1.3",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libz.so.1.3",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libz.so.1.3",
+            "bytes": 113000,
+            "sha256": "86200da370f20476a2507e9097a789b5ef97269b4ca8d5e164ad82dab9d99892"
+          }
+        },
+        {
+          "mapping": "7d68e5016000-7d68e5c01000 r-xp 0036a000 00:28 7458158                    /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "pin": {
+            "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "bytes": 19267664,
+            "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+          }
+        },
+        {
+          "mapping": "7d68e5c6c000-7d68e5df5000 r-xp 00028000 00:1d 4897558                    /usr/lib/x86_64-linux-gnu/libc.so.6",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+            "bytes": 2129424,
+            "sha256": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf"
+          }
+        },
+        {
+          "mapping": "7d68e5f58000-7d68e625e000 r-xp 00100000 00:28 7459622                    /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+          "pin": {
+            "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+            "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+            "bytes": 5314304,
+            "sha256": "74243bafb2766fd1a038cf80fd62632b4aad9ecfdc0d3ce8711e4515a93d7008"
+          }
+        },
+        {
+          "mapping": "7d68e626b000-7d68e628f000 r-xp 00004000 00:1d 180160                     /usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+            "bytes": 183024,
+            "sha256": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb"
+          }
+        },
+        {
+          "mapping": "7d68e62a5000-7d68e6324000 r-xp 00010000 00:1d 4898954                    /usr/lib/x86_64-linux-gnu/libm.so.6",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+            "bytes": 952616,
+            "sha256": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0"
+          }
+        },
+        {
+          "mapping": "7d68e641b000-7d68e6563000 r-xp 0009d000 00:1d 180746                     /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+            "bytes": 2592224,
+            "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
+          }
+        },
+        {
+          "mapping": "7d68e65ff000-7d68e6602000 r-xp 00002000 00:1d 1175738                    /usr/lib/x86_64-linux-gnu/libnl-genl-3.so.200.26.0",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/libnl-genl-3.so.200.26.0",
+            "realpath": "/usr/lib/x86_64-linux-gnu/libnl-genl-3.so.200.26.0",
+            "bytes": 27984,
+            "sha256": "0757db7e6c5fbc4d2a8bbedbac7061fbb8ebb6196b4d2954d3a321e9ff76933c"
+          }
+        },
+        {
+          "mapping": "7d68e6624000-7d68e664f000 r-xp 00001000 00:1d 4897554                    /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+          "pin": {
+            "path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+            "realpath": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+            "bytes": 236616,
+            "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da"
+          }
+        }
+      ]
+    }
+  ],
+  "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-bf16-late-flags-fixture-build-v1/sycl_qsa_bf16_late_flags",
+    "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-bf16-late-flags-fixture-build-v1/sycl_qsa_bf16_late_flags",
+    "bytes": 923848,
+    "sha256": "ec8df6fdc11ad4f429f9ca71f1fdd993781a9ddc1d5ddbd763835d6e448d277e"
+  },
+  "build": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-bf16-late-flags-fixture-build-v1.json",
+    "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-bf16-late-flags-fixture-build-v1.json",
+    "bytes": 146844,
+    "sha256": "985a1da0c50d37fd4bd90f147587acd544e0c7da568a53fd7e7bb28b7289436b"
+  },
+  "runtime_elf_pins": {
+    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_dft.so.6": {
+      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_dft.so.6",
+      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_dft.so.6",
+      "bytes": 37102056,
+      "sha256": "4cd0c0a1fe556697c90a5264fbe9bf3b74080a1b1ee3817c87be724703a2efd9"
+    },
+    "/usr/lib/x86_64-linux-gnu/libdl.so.2": {
+      "path": "/usr/lib/x86_64-linux-gnu/libdl.so.2",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libdl.so.2",
+      "bytes": 14408,
+      "sha256": "c2994527172cc23b7fb0f7d611b71e00a37da27af12c2e5e9e0dc1a742886c96"
+    },
+    "/usr/lib/x86_64-linux-gnu/libc.so.6": {
+      "path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+      "bytes": 2129424,
+      "sha256": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf"
+    },
+    "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": {
+      "path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+      "realpath": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+      "bytes": 236616,
+      "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+      "bytes": 5314304,
+      "sha256": "74243bafb2766fd1a038cf80fd62632b4aad9ecfdc0d3ce8711e4515a93d7008"
+    },
+    "/usr/lib/x86_64-linux-gnu/libm.so.6": {
+      "path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+      "bytes": 952616,
+      "sha256": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0"
+    },
+    "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": {
+      "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+      "bytes": 2592224,
+      "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
+    },
+    "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": {
+      "path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+      "bytes": 183024,
+      "sha256": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+      "bytes": 19267664,
+      "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+    },
+    "/usr/lib/x86_64-linux-gnu/libz.so.1.3": {
+      "path": "/usr/lib/x86_64-linux-gnu/libz.so.1.3",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libz.so.1.3",
+      "bytes": 113000,
+      "sha256": "86200da370f20476a2507e9097a789b5ef97269b4ca8d5e164ad82dab9d99892"
+    },
+    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so.6": {
+      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so.6",
+      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so.6",
+      "bytes": 75459712,
+      "sha256": "51d6c16990701a5aaf9fbbde5d86f5a7197b81357b66b19cbb912206564cf4ee"
+    },
+    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_sparse.so.6": {
+      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_sparse.so.6",
+      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_sparse.so.6",
+      "bytes": 75862784,
+      "sha256": "9290b022cce7e560a5ef0d7448a415f9cafe75e9a6dfb5aea42d6e9e9c3139c3"
+    },
+    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_data_fitting.so.6": {
+      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_data_fitting.so.6",
+      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_data_fitting.so.6",
+      "bytes": 10275048,
+      "sha256": "6229ece57870a65ed57720accc58d53e4e3b4d84747823c166a1168eb5af3ca3"
+    },
+    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_stats.so.6": {
+      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_stats.so.6",
+      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_stats.so.6",
+      "bytes": 18133208,
+      "sha256": "8c9f3fc6452768676b2685531aba0d0abea3cb863d084d702ad1a7e029b9809a"
+    },
+    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_rng.so.6": {
+      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_rng.so.6",
+      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_rng.so.6",
+      "bytes": 83363584,
+      "sha256": "8f7051b4ba81e0821eee1d284c56c5b1e75f77578c20da047b3e3d8fc93fa910"
+    },
+    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_lapack.so.6": {
+      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_lapack.so.6",
+      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_lapack.so.6",
+      "bytes": 34844424,
+      "sha256": "58f4dc8b28e7a7cf9353cc28d6dbc4993c240b4a891e2e5e683264346cb760c0"
+    },
+    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_vm.so.6": {
+      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_vm.so.6",
+      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_vm.so.6",
+      "bytes": 89027872,
+      "sha256": "66a967f2ccd334eddae86b2757435c22333395da9506f4f6727b71f95080ada7"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libxptifw.so.1.0.1": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libxptifw.so.1.0.1",
+      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libxptifw.so.1.0.1",
+      "bytes": 140352,
+      "sha256": "e31626a7a4ce9afb038a3bc185329341bc4771f96262ea07b3e5b5fdb65f6ff8"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/libunitrace_tool.so": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/libunitrace_tool.so",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/libunitrace_tool.so",
+      "bytes": 3864048,
+      "sha256": "8a8fe37441606bf66ab42fc39cc447b5257f48d09f04fbcc60703e30826671eb"
+    },
+    "/usr/local/lib/libigdfcl.so.2.41.5+1788943183": {
+      "path": "/usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+      "realpath": "/usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+      "bytes": 2554016,
+      "sha256": "ece8bcd533a44cc1684c1f24eeeca3302e4d19307a806fad5f1b83171f9fc1c3"
+    },
+    "/usr/local/lib/libopencl-clang2.so.22.1": {
+      "path": "/usr/local/lib/libopencl-clang2.so.22.1",
+      "realpath": "/usr/local/lib/libopencl-clang2.so.22.1",
+      "bytes": 158062480,
+      "sha256": "02ba9fb0f16b7f02c012095c46f8053c4bc20f9b5bde3028eedff6dcfed94bfe"
+    },
+    "/usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5": {
+      "path": "/usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5",
+      "bytes": 755864,
+      "sha256": "0a2128bc10841fb29e76d08d945864dfb0b6a66da5df6df5d8299197439e54bb"
+    },
+    "/usr/local/lib/libigc.so.2.41.5+1788943183": {
+      "path": "/usr/local/lib/libigc.so.2.41.5+1788943183",
+      "realpath": "/usr/local/lib/libigc.so.2.41.5+1788943183",
+      "bytes": 104543000,
+      "sha256": "40badd8f1ee80ac844a8947f5e91e5654fbcd851caefe343b0e5ec4ce4d1b123"
+    },
+    "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0": {
+      "path": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+      "bytes": 777528,
+      "sha256": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363"
+    },
+    "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395": {
+      "path": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+      "bytes": 61889928,
+      "sha256": "dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c"
+    },
+    "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0": {
+      "path": "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+      "bytes": 878992,
+      "sha256": "a7904f18d8d59c7128dec4d6f22ae2b2e8a51f91f6946ac4e68b1ec6e0a7a6f3"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "bytes": 2388520,
+      "sha256": "05bcafc4a0d45d33f957f16ffb4ba4776da675e79ade1121b93b94b8549335d8"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+      "bytes": 306904,
+      "sha256": "ebe65269abd5869010ab256375e8663f7a8f8b5453e0be0c78f615eb71581ab9"
+    },
+    "/usr/lib/x86_64-linux-gnu/libhwloc.so.15.7.0": {
+      "path": "/usr/lib/x86_64-linux-gnu/libhwloc.so.15.7.0",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libhwloc.so.15.7.0",
+      "bytes": 392576,
+      "sha256": "86dff44a023254d997cea910b9a51f35afefe6780f4b5530f974a2009ba47487"
+    },
+    "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8": {
+      "path": "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8",
+      "bytes": 207288,
+      "sha256": "4298228175fa62a36af88b1afd4406cdd8b1bf166621f957d0dbbde45a698fe5"
+    },
+    "/usr/lib/x86_64-linux-gnu/libcap.so.2.66": {
+      "path": "/usr/lib/x86_64-linux-gnu/libcap.so.2.66",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libcap.so.2.66",
+      "bytes": 51536,
+      "sha256": "6ac6abc86ac891c6e13486470e26f1d939f47fda9e6b5d5508a7f5ec881adc84"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/dense_prefill_nll_host_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/dense_prefill_nll_host_test",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/dense_prefill_nll_host_test",
+      "bytes": 70848,
+      "sha256": "934c85223fd8f68d0bcbaadce53e4542c92c8b289336cd28dcf560c210c04b0b"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/prefill_layer_major_plan_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/prefill_layer_major_plan_test",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/prefill_layer_major_plan_test",
+      "bytes": 22616,
+      "sha256": "8d6102c6dea3e83a9cedf56f755d62a0518685ab4e8aefc5dc61b61b666acab5"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_allocation_teardown_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_allocation_teardown_test",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_allocation_teardown_test",
+      "bytes": 146944,
+      "sha256": "018a2daba5f4b76f98260fcd143dfbf1477a42f8c8125db07c88c1827da45afb"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_gemm_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_gemm_test",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_gemm_test",
+      "bytes": 11732736,
+      "sha256": "e00f79c41720c16d14a3b5c734f81d0a41b395d71e67d15ab31090b1abe649f3"
+    },
+    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so.3": {
+      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so.3",
+      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so.3",
+      "bytes": 76168096,
+      "sha256": "b4f086651ee5a8471140d53fedfdbbaba606287784763b0739f282872c31aa9b"
+    },
+    "/usr/lib/x86_64-linux-gnu/libpthread.so.0": {
+      "path": "/usr/lib/x86_64-linux-gnu/libpthread.so.0",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libpthread.so.0",
+      "bytes": 14408,
+      "sha256": "90491a21ce44efcf3bd4b65ec82501c091d7ebe7f8d9b341dd01d721001d9ecd"
+    },
+    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so.3": {
+      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so.3",
+      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so.3",
+      "bytes": 25021272,
+      "sha256": "4e7ff529bec90a1b0ce70299258a64a2ebae7a5a6f3ec031306a6ddb39b5a650"
+    },
+    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so.3": {
+      "path": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so.3",
+      "realpath": "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so.3",
+      "bytes": 17488464,
+      "sha256": "ffbbeff402fdf09baa53f8226b86f27046592d984ae2916b1bbc2e59132c7c89"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_compat_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_compat_test",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_compat_test",
+      "bytes": 217480,
+      "sha256": "c4628c69eac9a0274cd087cdf1d8b043e154ede8a74d388824d74d4c0a415f99"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_runtime_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_runtime_test",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_runtime_test",
+      "bytes": 105744,
+      "sha256": "0cc17bc2fc0821349c76ab712bc682061122045da279645acda7bcdb496807ab"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_native16_paired_gemm_bench": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_native16_paired_gemm_bench",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_native16_paired_gemm_bench",
+      "bytes": 11781048,
+      "sha256": "61eb84834ad25d4fe1a33cc9314c10761003f4443053020145db04d7f06b51a4"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_vllm_native16_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_vllm_native16_test",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_vllm_native16_test",
+      "bytes": 385824,
+      "sha256": "7f2b0e917d5294240e357bccbf8320c29f4fa37c12a98f88ee795474106ac3c4"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_prompt_native16_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_prompt_native16_test",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_prompt_native16_test",
+      "bytes": 525088,
+      "sha256": "4f4883dfba71fe0a8fffcef167e5da6a0923136e0d5d9d8eca5f94a986620bcd"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_native16_qsa_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_native16_qsa_test",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_native16_qsa_test",
+      "bytes": 449976,
+      "sha256": "06300399ccef4887ce3006c0a3bd6f1cad9ba884ab9909717de7fd3cc12c13db"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_native16_prefill_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_native16_prefill_test",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_native16_prefill_test",
+      "bytes": 600360,
+      "sha256": "00569178d44ef73d868b95fc3d1c4c94666eaad990a0b7ed98b8ab7260c64b3a"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_gemm16_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_gemm16_test",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/sycl_gemm16_test",
+      "bytes": 11766688,
+      "sha256": "8e413282328322326529717a577957586ef76bc0da51d4599a9a57a963c1a310"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/strata": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/strata",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-prefill-build-v1/build/strata",
+      "bytes": 19413880,
+      "sha256": "85643f3926bb9d212945659cb7ddb264e101ca9b2d5fa8f19430e945140ad191"
+    },
+    "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0": {
+      "path": "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+      "bytes": 846520,
+      "sha256": "db1856f379706d51b6ded84ce028d4aa48740ef63793f60e8a1e027c6db6ffb5"
+    },
+    "/usr/lib/x86_64-linux-gnu/libnl-3.so.200.26.0": {
+      "path": "/usr/lib/x86_64-linux-gnu/libnl-3.so.200.26.0",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libnl-3.so.200.26.0",
+      "bytes": 133944,
+      "sha256": "afcb69e2ef0b46c2ce7b7483848332fa9462776d33163f64209acf01f86eddd7"
+    },
+    "/usr/lib/x86_64-linux-gnu/libnl-genl-3.so.200.26.0": {
+      "path": "/usr/lib/x86_64-linux-gnu/libnl-genl-3.so.200.26.0",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libnl-genl-3.so.200.26.0",
+      "bytes": 27984,
+      "sha256": "0757db7e6c5fbc4d2a8bbedbac7061fbb8ebb6196b4d2954d3a321e9ff76933c"
+    },
+    "/usr/lib/x86_64-linux-gnu/libnl-route-3.so.200.26.0": {
+      "path": "/usr/lib/x86_64-linux-gnu/libnl-route-3.so.200.26.0",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libnl-route-3.so.200.26.0",
+      "bytes": 575344,
+      "sha256": "088b0021d638306f5541e7baab06a0182b07db0a280e19b3b40c746f729b3773"
+    },
+    "/usr/lib/x86_64-linux-gnu/libdrm.so.2.134.0": {
+      "path": "/usr/lib/x86_64-linux-gnu/libdrm.so.2.134.0",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libdrm.so.2.134.0",
+      "bytes": 92768,
+      "sha256": "0603c4dcb88bc9e076e34aedeec3513038e608d6d15d21330e49cb0ea38155e1"
+    },
+    "/usr/lib/x86_64-linux-gnu/libdrm_intel.so.1.134.0": {
+      "path": "/usr/lib/x86_64-linux-gnu/libdrm_intel.so.1.134.0",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libdrm_intel.so.1.134.0",
+      "bytes": 143304,
+      "sha256": "60bf830c0bccba627b582e4c336932f0c391a286edda930e404ae8443ab0b6f1"
+    },
+    "/usr/lib/x86_64-linux-gnu/libigdmd.so.1.16.188": {
+      "path": "/usr/lib/x86_64-linux-gnu/libigdmd.so.1.16.188",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libigdmd.so.1.16.188",
+      "bytes": 34430160,
+      "sha256": "c8908112387576f28023c28cc0be0f456de93af8e99b3bc5259e09e0fa876cd9"
+    },
+    "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.231": {
+      "path": "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.231",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.231",
+      "bytes": 1367248,
+      "sha256": "8f4ffe4a856c441d4c85bd7d7de6ad7672c59812fe4655d2a8843c32eba97075"
+    },
+    "/usr/lib/x86_64-linux-gnu/libigsc.so.1.2.0.0": {
+      "path": "/usr/lib/x86_64-linux-gnu/libigsc.so.1.2.0.0",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libigsc.so.1.2.0.0",
+      "bytes": 186360,
+      "sha256": "dbb8594b6fa0c5bcd0c539ba493653f1311c040eeb36a8702d0537dce43dfa31"
+    },
+    "/usr/lib/x86_64-linux-gnu/libnuma.so.1.0.0": {
+      "path": "/usr/lib/x86_64-linux-gnu/libnuma.so.1.0.0",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libnuma.so.1.0.0",
+      "bytes": 52248,
+      "sha256": "02d7582c5d391e460e56aa67a414360e3183b968206645b9123f9dc7bff5d009"
+    },
+    "/usr/lib/x86_64-linux-gnu/libva.so.2.2400.0": {
+      "path": "/usr/lib/x86_64-linux-gnu/libva.so.2.2400.0",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libva.so.2.2400.0",
+      "bytes": 227408,
+      "sha256": "768f8f120b8388433c77f5c0ef15525678353104898ed573443a9fe72a654d82"
+    },
+    "/usr/lib/x86_64-linux-gnu/libpciaccess.so.0.11.1": {
+      "path": "/usr/lib/x86_64-linux-gnu/libpciaccess.so.0.11.1",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libpciaccess.so.0.11.1",
+      "bytes": 39408,
+      "sha256": "81cd0c59c39cc07b7e1d8c2efaeb10646da73e99786d4ca259765ab662b7a7a3"
+    },
+    "/usr/lib/x86_64-linux-gnu/libmetee.so.6.2.1.0": {
+      "path": "/usr/lib/x86_64-linux-gnu/libmetee.so.6.2.1.0",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libmetee.so.6.2.1.0",
+      "bytes": 38904,
+      "sha256": "fb8e372216571e293362bf3469d13b34afa558395ac06e6fdad73ddb6c860413"
+    },
+    "/usr/lib/x86_64-linux-gnu/libOpenCL.so.1.0.0": {
+      "path": "/usr/lib/x86_64-linux-gnu/libOpenCL.so.1.0.0",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libOpenCL.so.1.0.0",
+      "bytes": 73384,
+      "sha256": "4f604bad7420b753bad559186002c58064d5c97813b107ea11c249fb1820b33a"
+    },
+    "/opt/intel/oneapi/tbb/2023.1/lib/libtbb.so.12.19": {
+      "path": "/opt/intel/oneapi/tbb/2023.1/lib/libtbb.so.12.19",
+      "realpath": "/opt/intel/oneapi/tbb/2023.1/lib/libtbb.so.12.19",
+      "bytes": 4462408,
+      "sha256": "2c1fcbc65a33771a5e02a201734774252528e10f57cef9e2f902fe209c0319e1"
+    },
+    "/opt/intel/oneapi/compiler/2026.1/lib/libsvml.so": {
+      "path": "/opt/intel/oneapi/compiler/2026.1/lib/libsvml.so",
+      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libsvml.so",
+      "bytes": 28103240,
+      "sha256": "a6dbbc425c8270c3485e40ef0924ef38ed89ced4026056fd3f1f529774c4f86c"
+    },
+    "/opt/intel/oneapi/compiler/2026.1/lib/libimf.so": {
+      "path": "/opt/intel/oneapi/compiler/2026.1/lib/libimf.so",
+      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libimf.so",
+      "bytes": 4865192,
+      "sha256": "67a4b6c27002f59f26c411f4ec384300d781365af19d6a2eb9f0dd94d2a0f470"
+    },
+    "/opt/intel/oneapi/compiler/2026.1/lib/libintlc.so.5": {
+      "path": "/opt/intel/oneapi/compiler/2026.1/lib/libintlc.so.5",
+      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libintlc.so.5",
+      "bytes": 415824,
+      "sha256": "612ab119242ccda945de6eb354369b5bee6a158bc9724e4da5e466cb0ad630db"
+    },
+    "/opt/intel/oneapi/tbb/2023.1/lib/libtbbmalloc.so.2.19": {
+      "path": "/opt/intel/oneapi/tbb/2023.1/lib/libtbbmalloc.so.2.19",
+      "realpath": "/opt/intel/oneapi/tbb/2023.1/lib/libtbbmalloc.so.2.19",
+      "bytes": 1184544,
+      "sha256": "74410b8566ecedac338f072662272a970bb0230870c0a6ce964042bf9a26fbbb"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/strata": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/strata",
+      "sha256": "6334491b623ead7b83c7ff5aaee84583294b3ecd4b12c6d06b77d1fe7e7a691d",
+      "bytes": 19790568,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/strata"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/sycl_prompt_native16_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/sycl_prompt_native16_test",
+      "sha256": "d564fc95854988efb24b990ba64bcd5ac092fdfb597c21b0d4a65c4c54e23bef",
+      "bytes": 902000,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/sycl_prompt_native16_test"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/sycl_prompt_k_cellmajor_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/sycl_prompt_k_cellmajor_test",
+      "sha256": "947c12850348ac9fa5a5aa7fb32b9a95045c8a8d55d6ae35784a5bb99642069c",
+      "bytes": 1172768,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/sycl_prompt_k_cellmajor_test"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/sycl_prompt_attention_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/sycl_prompt_attention_test",
+      "sha256": "59d570c152788baad284b9d7987890213c008a0ab7aba9e76cae577045819903",
+      "bytes": 1167488,
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v1/build/sycl_prompt_attention_test"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-bf16-late-flags-fixture-build-v1/sycl_qsa_bf16_late_flags": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-bf16-late-flags-fixture-build-v1/sycl_qsa_bf16_late_flags",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-bf16-late-flags-fixture-build-v1/sycl_qsa_bf16_late_flags",
+      "bytes": 923848,
+      "sha256": "ec8df6fdc11ad4f429f9ca71f1fdd993781a9ddc1d5ddbd763835d6e448d277e"
+    }
+  },
+  "native_environment": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+    "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "ZES_ENABLE_SYSMAN": "0",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-bf16-late-flags-smoke-v1/cache",
+    "STRATA_TEST_MAIN_GATES": "1",
+    "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+    "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+    "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+  },
+  "source": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/run_qsa_bf16_late_flags_v1.py",
+    "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/run_qsa_bf16_late_flags_v1.py",
+    "bytes": 9817,
+    "sha256": "24ee531081e13a1b117d34cd282fdfc88d97e5c7bc11bd6f2de5081ef3f9f039"
+  },
+  "scope": "Actual late-flags entry; unchanged independent BF16 operand oracle test selected by recorded compile-time substitution. All extended diagnostics/boundaries/input/output checks retained. Not model quality or speed.",
+  "production_selected": false,
+  "model_execution": false,
+  "model_PP_measured": false,
+  "physical262144_model_qualified": false,
+  "RESTORE_qualified": false,
+  "budget": {
+    "native_wall_seconds": 180,
+    "child_CPU_seconds": 300,
+    "session_RSS_bytes": 4294967296,
+    "raw_text_bytes": 67108864
+  },
+  "retention": "Keep compact oracle/runtime/ownership/fault facts. Retire successful fullAPI logs once committed and no current consumer.",
+  "journal_before_cursor": "s=9944479cfd1a45c28a589619cb8f2881;i=c28e964;b=cfda0b6a7c134fe2bdf58f9202770840;m=75fe81d436;t=65df54dfbabe4;x=858fa48eefc5d091",
+  "native_exit_code": 0,
+  "stdout": "QSA_BF16_READY before-runtime\ndevice=Intel(R) Arc(TM) B570 Graphics driver=1.17.39395+14\nQSA_BF16_READY runtime-ready\ncase cells=97 cap=33 queries=1 masked=0 compared=6144 max_abs=6.103515625e-05 max_budget_ratio=0.9682716738 oracle=BF16_operands_FP32_online guards=PASS inputs=PASS status=PASS\ncase cells=97 cap=33 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online guards=PASS inputs=PASS status=PASS\nQSA_BF16_READY after-cleanup\nfixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED\n",
+  "stderr_sha256": "f69bd2e5fcebdc732e016521263f367bf07498ccf78fd182690b2c171eac62db",
+  "progress": [
+    "QSA_BF16_READY before-runtime",
+    "device=Intel(R) Arc(TM) B570 Graphics driver=1.17.39395+14",
+    "QSA_BF16_READY runtime-ready",
+    "case cells=97 cap=33 queries=1 masked=0 compared=6144 max_abs=6.103515625e-05 max_budget_ratio=0.9682716738 oracle=BF16_operands_FP32_online guards=PASS inputs=PASS status=PASS",
+    "case cells=97 cap=33 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online guards=PASS inputs=PASS status=PASS",
+    "QSA_BF16_READY after-cleanup",
+    "fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED"
+  ],
+  "UR_kernel_submissions": 12,
+  "expected_kernel_submissions": 12,
+  "cases": [
+    "case cells=97 cap=33 queries=1 masked=0 compared=6144 max_abs=6.103515625e-05 max_budget_ratio=0.9682716738 oracle=BF16_operands_FP32_online guards=PASS inputs=PASS status=PASS",
+    "case cells=97 cap=33 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online guards=PASS inputs=PASS status=PASS"
+  ],
+  "journal_after_cursor": "s=9944479cfd1a45c28a589619cb8f2881;i=c28e964;b=cfda0b6a7c134fe2bdf58f9202770840;m=75fe81d436;t=65df54dfbabe4;x=858fa48eefc5d091",
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_dump_entries": [],
+  "ownership_closed": true
+}

@@ -4198,6 +4198,85 @@
         "R930-C3"
       ],
       "status": "R932 content review accepted with prospective corrections; report SHA verified; no implementation/performance/adoption qualification."
+    },
+    {
+      "round": 934,
+      "path": "research-round934-v1.txt",
+      "sha256": "221e946b5cffb271a04e5eb0164308a59cd97937a12c860e90842181c5476442",
+      "classification": "knowledge_collection",
+      "title": "Mergeable stable reductions across GPU and accelerator dataflows",
+      "review_status": "accepted_for_indexing",
+      "review_corrections": [
+        "R936-C3"
+      ],
+      "main_body_read": false,
+      "reviewer_body_read": true,
+      "reviewer_report": "research-review-round936-v1.json",
+      "operational_digest": "research-review-round936-v1.ja.md",
+      "retrieval": {
+        "needed_now": false,
+        "hold_body": true,
+        "sections": [
+          "1-2: retrieve for a concrete question about state representations or partition/merge alternatives",
+          "3-4: retrieve for a concrete precision, boundary, scratch, synchronization, or crossover question",
+          "5-6: retrieve for conditional applicability or the report's source/evidence limits"
+        ],
+        "keys": [
+          "mergeable stable normalized reductions",
+          "online softmax and log-sum-exp partial states",
+          "weighted-average tree reductions",
+          "rounding and empty/tail/tie behavior",
+          "scratch, launch and synchronization crossovers"
+        ],
+        "retrieve_when": "Only for a concrete Main-owned design or measurement question about splitting a stable selected-cell reduction, after phase/scheduling evidence makes that question relevant.",
+        "preserve_caveats": [
+          "No Strata speedup, B570 support, current bottleneck, or device-utilization result.",
+          "The 2a5ba71b context pin was not verified by the report's worker.",
+          "The GPU Gems figure is whole-application historical evidence, not a reduction-only result."
+        ]
+      },
+      "review_sha256": "f6b8c925961e41a4b84e193493a433c39ff402e18937ad8c1d76c643cde6dc02"
+    },
+    {
+      "round": 935,
+      "path": "research-round935-v1.txt",
+      "sha256": "6dcb5d041d5afb02dcde36c81871fae1f32f82116411e1ff7385491e47f8883f",
+      "classification": "decision_support",
+      "title": "BF16 QSA operand candidate after the matched full component cohort",
+      "review_status": "accepted_with_corrections",
+      "review_corrections": [
+        "R936-C1",
+        "R936-C2"
+      ],
+      "main_body_read": false,
+      "reviewer_body_read": true,
+      "reviewer_report": "research-review-round936-v1.json",
+      "operational_digest": "research-review-round936-v1.ja.md",
+      "retrieval": {
+        "needed_now": false,
+        "hold_body": true,
+        "sections": [
+          "What the closed cohort establishes",
+          "What the oracle proves and leaves open",
+          "Contract comparison and provenance",
+          "First Main-owned experiment and gates"
+        ],
+        "keys": [
+          "8192-query QSA component cohort",
+          "BF16 operand/FP32 online oracle scope",
+          "source-level SGLang numerical contract",
+          "conditional full-prefill candidate gate",
+          "unqualified model, quality, RESTORE and physical-context gates"
+        ],
+        "retrieve_when": "After Main closes the matched same-BF16-arithmetic late-flags receipt, if deciding whether the candidate still merits a full long-prefill gate. Read only the sections needed for that decision.",
+        "preserve_caveats": [
+          "The component timing does not establish device service, model tok/s, model quality, RESTORE, production selection, or full-model physical 262144-context correctness.",
+          "The SGLang source branch and dtype were not demonstrated in a local runtime.",
+          "No exact FP32/llama.cpp parity adoption gate.",
+          "The ongoing late-flags control has no timing result in this report."
+        ]
+      },
+      "review_sha256": "f6b8c925961e41a4b84e193493a433c39ff402e18937ad8c1d76c643cde6dc02"
     }
   ],
   "main_initial_findings": [
@@ -6378,9 +6457,12 @@
         "task": "task_07428d9ffccd",
         "dispatch": "ctx_e4e7b1f391da",
         "main_body_read": false,
-        "status": "Dispatched; no steering; Main continues tuning",
+        "status": "Accepted succeeded settlement, released, content accepted with R936 corrections. Main body not read.",
         "schedulable_now_at_dispatch": true,
-        "eligibility": "R933-KC1 no measurement prerequisite"
+        "eligibility": "R933-KC1 no measurement prerequisite",
+        "report": "research-round934-v1.txt",
+        "report_sha256": "221e946b5cffb271a04e5eb0164308a59cd97937a12c860e90842181c5476442",
+        "release": "orca-research-round934-release-v1.json"
       },
       {
         "round": 935,
@@ -6396,9 +6478,12 @@
         "task": "task_f3bfd0264a7a",
         "dispatch": "ctx_70419ba7ab85",
         "main_body_read": false,
-        "status": "Dispatched; no steering; Main continues tuning",
+        "status": "Accepted succeeded settlement, released, content accepted with R936 corrections. Main body not read.",
         "schedulable_now_at_dispatch": true,
-        "eligibility": "Nine closed clean receipts and qsa-bf16-matched-bench-summary-v1.json; stable component signal and full-model next-gate decision remains."
+        "eligibility": "Nine closed clean receipts and qsa-bf16-matched-bench-summary-v1.json; stable component signal and full-model next-gate decision remains.",
+        "report": "research-round935-v1.txt",
+        "report_sha256": "6dcb5d041d5afb02dcde36c81871fae1f32f82116411e1ff7385491e47f8883f",
+        "release": "orca-research-round935-release-v1.json"
       }
     ]
   },
@@ -6407,7 +6492,22 @@
     "component_qualified": true,
     "production_selected": false,
     "model_PP_measured": false,
-    "next": "Main tests late diagnostic aggregation to reduce workgroup collectives without changing arithmetic; research supports later full-model gate and holds collection body."
+    "next": "Main: discriminate per-query KV decode/local transpose from one-time GPU BF16 pack, charging pack/extra memory. Source control NATIVE_KV_MIN only affects Mode0, so it cannot answer the current Mode1 question. Original physical262144 model/RESTORE and official bench.sh long32K+ gates remain pending.",
+    "late_flags_summary": "qsa-bf16-late-flags-summary-v1.json",
+    "late_flags_process_median_ms": 617.088252,
+    "matched_base_process_median_ms": 627.4446720000001,
+    "latency_reduction_percent": 1.6505710323411749,
+    "late_flags_component_qualified": true
   },
-  "retention_qsa_bf16_v1": "qsa-bf16-success-raw-retirement-v1.json; 139 closed successful raw log/duplicate files, 2644910 logical bytes retired; original receipts unchanged."
+  "retention_qsa_bf16_v1": "qsa-bf16-success-raw-retirement-v1.json; 139 closed successful raw log/duplicate files, 2644910 logical bytes retired; original receipts unchanged.",
+  "retention_qsa_bf16_late_flags_v1": "qsa-bf16-late-flags-raw-retirement-v1.json; 103 closed successful raw/duplicate files, 2216120 logical bytes retired; original receipts unchanged.",
+  "research_review_round936": {
+    "path": "research-review-round936-v1.json",
+    "sha256": "f6b8c925961e41a4b84e193493a433c39ff402e18937ad8c1d76c643cde6dc02",
+    "operational_digest": "research-review-round936-v1.ja.md",
+    "operational_digest_sha256": "212963df5cf37e06ce7b6333c4ce291da20a8c250579d0894fc4f7f088282c42",
+    "Main_read": "Only short operational digest and indexing metadata. Neither R934 nor R935 body read.",
+    "temporal_note": "R936 correctly withheld timing conclusions at its supplied boundary. Main later closed six late-flags timing receipts and qsa-bf16-late-flags-summary-v1.json; do not reinterpret R936 as a review of those later measurements.",
+    "next_research": "No source-only filler. Next Main-owned packing/resource discrimination supplies a new concrete decision before dispatching another relevant review; collection R934 remains indexed/held."
+  }
 }
