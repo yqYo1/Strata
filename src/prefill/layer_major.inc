@@ -44,6 +44,11 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     auto& ss = *m.ss;
     const bool native16_on = native16::requested();
     const bool qsa16_on = native16::qsa::requested();
+    const auto qsa_math = native16::qsa::attention_math();
+    if (qsa_math != native16::qsa::AttentionMath::existing && !qsa16_on) {
+        err = "prefill BF16 QSA math requires STRATA_SYCL_PREFILL_NATIVE16_QSA=1"; return false;
+    }
+    const bool qsa_prefix_on = qsa_math == native16::qsa::AttentionMath::bf16_prefix;
     if (qsa16_on && !native16_on) {
         err = "prefill QSA16: requires STRATA_SYCL_PREFILL_NATIVE16=bf16"; return false;
     }
@@ -209,16 +214,28 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     const uint64_t stride = detail::layer_major_add(layout.max_blob, 255) / 256 * 256;
     const uint64_t cache_bytes = detail::layer_major_mul(NE, stride);
     const uint64_t map_bytes = detail::layer_major_mul(detail::layer_major_mul(g.n_layers, NE), sizeof(int32_t));
+    // Exact transient live-prefix storage: two BF16 tensors plus one INT32
+    // diagnostic per [logical cell,KV head]. Reserve cumulatively with the
+    // expert cache and residual plan before submitting this request's work.
+    const auto qsa_page = strata::kernels::qsa_real_shapes().page_size;
+    const uint64_t prefix_cells = detail::layer_major_mul(
+        (pos0 + n + qsa_page - 1) / qsa_page, qsa_page);
+    const uint64_t prefix_tensor_bytes = qsa_prefix_on ?
+        detail::layer_major_mul(detail::layer_major_mul(prefix_cells, 2 * 256), 2) : 0;
+    const uint64_t prefix_flag_bytes = qsa_prefix_on ? detail::layer_major_mul(prefix_cells, 2 * 4) : 0;
+    const uint64_t prefix_bytes = detail::layer_major_add(
+        detail::layer_major_mul(prefix_tensor_bytes, 2), prefix_flag_bytes);
+    const uint64_t gpu_reserved = detail::layer_major_add(cache_bytes, prefix_bytes);
     size_t free_gpu = 0, total_gpu = 0;
     const cudaError_t memory_status = cudaMemGetInfo(&free_gpu, &total_gpu);
     if (memory_status != cudaSuccess || free_gpu > total_gpu ||
-        free_gpu < detail::layer_major_add(cache_bytes, gpu_headroom)) {
+        free_gpu < detail::layer_major_add(gpu_reserved, gpu_headroom)) {
         err = "prefill layer-major: extra expert cache (" + std::to_string(cache_bytes) +
-              " bytes) plus 512 MiB headroom exceeds known free VRAM (" + std::to_string(free_gpu) + ")";
+              " bytes), BF16 prefix (" + std::to_string(prefix_bytes) + " bytes) plus 512 MiB headroom exceeds known free VRAM (" + std::to_string(free_gpu) + ")";
         return false;
     }
     const auto plan = detail::LayerMajorResidualPlan::make(n, m.T, D,
-        free_gpu - cache_bytes - gpu_headroom,
+        free_gpu - gpu_reserved - gpu_headroom,
         detail::layer_major_requested_rows(std::getenv("STRATA_PREFILL_LAYER_MAJOR_R_GPU")), residual_dtype);
     // One owned host upload slab removes every source pointer lease before DMA.
     // Also count the cache's small blocking staging allocation and two maps.
@@ -236,6 +253,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     std::vector<int32_t> residency(size_t(g.n_layers * NE), -1);
     auto free_device = [](uint8_t* p) { if (p) (void) cudaFree(p); };
     std::unique_ptr<uint8_t, decltype(free_device)> device_rows(nullptr, free_device);
+    std::unique_ptr<uint8_t, decltype(free_device)> prefix_storage(nullptr, free_device);
     // Allocated only for an FP16 host tail. One in-order queue serializes
     // H2D -> unpack -> model -> pack -> D2H, and the outer lease owns it all.
     std::unique_ptr<uint8_t, decltype(free_device)> fp16_stage(nullptr, free_device);
@@ -326,6 +344,10 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     bool stage_delivered = false;
     detail::LayerMajorChunkCursor cursor{n, m.T};
 
+    struct PrefixBorrow {
+        Impl& m; strata::kernels::QsaBf16PackedScratch previous;
+        ~PrefixBorrow() noexcept { m.qsa_prefix = previous; }
+    } prefix_borrow{m, m.qsa_prefix};
     // Destruction order: checked drain -> field/callback restoration -> owners.
     // A failed drain aborts here, with all captures/storage still alive. Session
     // tensors are NOT rolled back by restoring these borrowed C++ fields.
@@ -387,6 +409,21 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     // Allocation-only cache opening is essential: no memset may fail and free
     // its allocation before the outer checked lease has retired its readers.
     if (!layer_cache.open_uninitialized(NE, 1, NE, int64_t(stride), err)) return false;
+    if (prefix_bytes) {
+        uint8_t* storage = nullptr;
+        if (cudaMalloc(reinterpret_cast<void**>(&storage), size_t(prefix_bytes)) != cudaSuccess) {
+            err = "prefill BF16 QSA prefix allocation failed before model work"; return false;
+        }
+        prefix_storage.reset(storage);
+        m.qsa_prefix = {reinterpret_cast<uint16_t*>(storage),
+                        reinterpret_cast<uint16_t*>(storage + prefix_tensor_bytes),
+                        reinterpret_cast<int32_t*>(storage + 2 * prefix_tensor_bytes)};
+    }
+    if (qsa_math != native16::qsa::AttentionMath::existing)
+        std::fprintf(stderr, "strata prefill: QSA BF16 operands, FP32 online state/accumulation; "
+                     "KV=%s transient_bytes=%llu; source=resident-Mode0\n",
+                     qsa_prefix_on ? "active-logical-prefix" : "on-the-fly",
+                     (unsigned long long) prefix_bytes);
     if (plan.gpu_bytes) {
         uint8_t* p = nullptr;
         if (cudaMalloc(reinterpret_cast<void**>(&p), size_t(plan.gpu_bytes)) != cudaSuccess) {

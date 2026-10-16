@@ -1,0 +1,20 @@
+// Authored for Strata; repository LICENSE (MIT) applies.
+#pragma once
+#include "strata/kernels/qsa_bf16_packed.hpp"
+#if defined(STRATA_ENABLE_SYCL)
+namespace strata::kernels {
+// Transient BF16 storage uses logical [ceil(live/page_size),2,page_size,256].
+// Only live logical cells with valid page mappings are loaded from the input.
+// Unmapped pages and final-page padding are written as zero. Original input
+// pools need initialization ONLY at valid mapped cells in [0, live_cells).
+// Scratch is refreshed every call, on the same in-order GPU queue as attention;
+// no persistent-cache invalidation, host tensor math, allocation or host wait.
+// Selected cells outside [0, live_cells) are missing, as are unmapped pages.
+// Caller owns all spans through completion. Admission rejects invalid live
+// extent and all scratch/input/output aliases before either GPU submission.
+bool qsa_bf16_prefix_batch(const uint16_t *q, const QsaAttnPools &pools,
+    const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
+    uint16_t *out, int64_t queries, const QsaPromptBf16Bounds &bounds,
+    int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream);
+} // namespace strata::kernels
+#endif

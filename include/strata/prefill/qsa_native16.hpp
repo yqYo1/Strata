@@ -16,6 +16,11 @@ struct Q8WritePools {
 };
 // Startup-only opt-in. A short request does not activate this route.
 bool requested();
+// Startup-only arithmetic selector. Default preserves the qualified typed path.
+// BF16 operands follow the pinned same-model SGLang prefill design; prefix
+// packing is transient and belongs to the dedicated long-prefill lease.
+enum class AttentionMath { existing, bf16, bf16_prefix };
+AttentionMath attention_math();
 // No submit. Required before enabling this path for any layer.
 void validate_device(void* stream);
 // BF16 input/output; local FP32 RMS and rotation, first 64 dimensions rotary.

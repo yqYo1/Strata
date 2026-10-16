@@ -40,6 +40,8 @@
 #include "strata/sycl/cpu_wait_profile.hpp"
 #include "strata/prefill/native16.hpp"
 #include "strata/prefill/qsa_native16.hpp"
+#include "strata/kernels/qsa_bf16_attention_late_flags.hpp"
+#include "strata/kernels/qsa_bf16_prefix.hpp"
 #include "strata/kernels/mrope.hpp"
 #endif
 #include "strata/core/conversation_memory.hpp"
@@ -481,6 +483,7 @@ struct Prefill::Impl {
     detail::LayerMajorResidualPlan layer_major_residual;
 #if defined(STRATA_ENABLE_SYCL)
     bool native16_active = false;
+    strata::kernels::QsaBf16PackedScratch qsa_prefix; // borrowed only during the long-prefill lease
     // Disjoint typed subviews of existing QSA reservations; no new allocation.
     uint16_t *qsa_Kraw16 = nullptr, *qsa_Krope16 = nullptr, *qsa_V16 = nullptr,
              *qsa_Qfull16 = nullptr, *qsa_q16 = nullptr, *qsa_attn16 = nullptr;
@@ -945,6 +948,7 @@ bool Prefill::carve(size_t T, void* alloc) {
     // R16 and gated_b16 occupy disjoint halves of the old gated allocation.
     (void)native16::requested(); // validate the immutable startup setting
     (void)native16::qsa::requested();
+    (void)native16::qsa::attention_math(); // immutable startup selector
     m.R16 = reinterpret_cast<uint16_t*>(m.gated);
     m.gated_b16 = m.R16 + T * D;
     m.lo_b16 = reinterpret_cast<uint16_t*>(m.lo);
@@ -2593,9 +2597,19 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     bool matrix_used = false;
 #if defined(STRATA_ENABLE_SYCL)
                     if (typed_qsa) {
-                        matrix_used = strata::kernels::qsa_prompt_attn_bf16_batch(
-                            m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                            {st.n_pages, st.n_slots}, m.cs);
+                        const auto arithmetic = native16::qsa::attention_math();
+                        if (arithmetic == native16::qsa::AttentionMath::bf16_prefix)
+                            matrix_used = strata::kernels::qsa_bf16_prefix_batch(
+                                m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
+                                {st.n_pages, st.n_slots}, p0 + T, m.qsa_prefix, m.cs);
+                        else if (arithmetic == native16::qsa::AttentionMath::bf16)
+                            matrix_used = strata::kernels::qsa_bf16_attention_late_flags_batch(
+                                m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
+                                {st.n_pages, st.n_slots}, m.cs);
+                        else
+                            matrix_used = strata::kernels::qsa_prompt_attn_bf16_batch(
+                                m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
+                                {st.n_pages, st.n_slots}, m.cs);
                         if (!matrix_used) {
                             err = "prefill QSA16: unsupported typed attention; no fallback submitted"; return false;
                         }
