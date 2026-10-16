@@ -591,7 +591,7 @@ def main():
                                 io.read(); io.pending.clear()
 
                 c, out, err = owner.run('native-smoke', [exe['path'], '--smoke'], native_env, root / 'collector', interaction=smoke_io,
-                    wall=remaining(native_wall), cpu=180, rss_cap=8 << 30, text_cap=RAW_CAP, total_cap=DISK_CAP, file_cap=RAW_CAP)
+                    wall=remaining(native_wall), cpu=180, rss_cap=8 << 30, text_cap=min(RAW_CAP, 64 << 20), total_cap=DISK_CAP, file_cap=RAW_CAP)
                 require(module.closed(c) and c.get('exit_code') == 0, 'normal tiny owned native closure')
                 absence([c]); record['actual_native'] = proof
                 require(proof and proof['native']['pid'] == c['pid'] and proof['native']['start_ticks'] == c['direct_identity']['start_ticks'], 'actual tiny PID/start/library capture')
@@ -629,7 +629,7 @@ def main():
                 record.update(config=config, plan=plan, wrapper=artifact(wrapper), native_spec=artifact(spec_path),
                     generated_inputs=[artifact(root / n) for n in ('engine-wrapper.py','native-spec.json','config.json','plan.json')])
                 c, out, err = owner.run('official-bench', [PY, str(RUNNER), str(root), 'extended-bench'], base_env, P,
-                    wall=remaining(native_wall), cpu=21600, rss_cap=88 << 30, text_cap=RAW_CAP, total_cap=DISK_CAP, file_cap=RAW_CAP)
+                    wall=remaining(native_wall), cpu=21600, rss_cap=88 << 30, text_cap=min(RAW_CAP, 64 << 20), total_cap=DISK_CAP, file_cap=RAW_CAP)
                 record['GPU_executed'] = (root / 'engine-start.json').exists()
                 require(module.closed(c) and c.get('exit_code') == 0, 'normal official bench owned session')
                 absence([c])
