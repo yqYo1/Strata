@@ -1,0 +1,584 @@
+--- a/tools/unitrace/src/levelzero/ze_collector.h
++++ b/tools/unitrace/src/levelzero/ze_collector.h
+@@ -42,6 +42,7 @@
+ #include "ze_loader.h"
+ #include "common_header.gen"
+ #include "logger_factory.h"
++#include "metric_query_audit.h"
+ 
+ struct ZeMetricQueryPoolKey {
+   ze_context_handle_t context_;
+@@ -92,7 +93,8 @@
+ 
+     const std::lock_guard<std::mutex> lock(query_pool_mutex_);
+     for (auto it = query_pool_map_.begin(); it != query_pool_map_.end(); it++) {
+-      status = ZE_FUNC(zetMetricQueryDestroy)(it->first);
++      OwnMetricAudit::safe_query(OwnMetricAudit::id(it->first));
++      status = OwnMetricAudit::call("query-destroy", "zetMetricQueryDestroy", ZE_FUNC(zetMetricQueryDestroy), OwnMetricAudit::field("query", OwnMetricAudit::id(it->first)), [&] { return std::string(); }, it->first);
+       if (status != ZE_RESULT_SUCCESS) {
+         std::cerr << "[WARNING] Failed to destroy metric query (status = 0x" << std::hex << status << std::dec << ")" << std::endl;
+       }
+@@ -100,7 +102,7 @@
+     query_pool_map_.clear();
+ 
+     for (auto it = pools_.begin(); it != pools_.end(); it++) {
+-      status = ZE_FUNC(zetMetricQueryPoolDestroy)(*it);
++      status = OwnMetricAudit::call("pool-destroy", "zetMetricQueryPoolDestroy", ZE_FUNC(zetMetricQueryPoolDestroy), OwnMetricAudit::field("pool", OwnMetricAudit::id(*it)), [&] { return std::string(); }, *it);
+       if (status != ZE_RESULT_SUCCESS) {
+         std::cerr << "[WARNING] Failed to destroy metric query pool (status = 0x" << std::hex << status << std::dec << ")" << std::endl;
+       }
+@@ -109,6 +111,7 @@
+     pools_.clear();
+ 
+     free_pool_.clear();
++    OwnMetricAudit::close();
+ #endif /* _WIN32 */
+   }
+ 
+@@ -125,7 +128,7 @@
+       zet_metric_query_pool_desc_t desc = {ZET_STRUCTURE_TYPE_METRIC_QUERY_POOL_DESC, nullptr, ZET_METRIC_QUERY_POOL_TYPE_PERFORMANCE, pool_size_};
+       zet_metric_query_pool_handle_t pool;
+ 
+-      status = ZE_FUNC(zetMetricQueryPoolCreate)(context, device, group, &desc, &pool);
++      status = OwnMetricAudit::call("pool-create", "zetMetricQueryPoolCreate", ZE_FUNC(zetMetricQueryPoolCreate), OwnMetricAudit::field("context", OwnMetricAudit::id(context)) + OwnMetricAudit::field("device", OwnMetricAudit::id(device)) + OwnMetricAudit::field("group", OwnMetricAudit::id(group)) + OwnMetricAudit::field("count", desc.count) + OwnMetricAudit::field("type", desc.type), [&] { return OwnMetricAudit::field("pool", OwnMetricAudit::id(pool)); }, context, device, group, &desc, &pool);
+       if (status != ZE_RESULT_SUCCESS) {
+         std::cerr << "[ERROR] Failed to create metric query pool (status = 0x" << std::hex << status << std::dec << ")" << std::endl;
+         _Exit(-1);  // immediately exit
+@@ -134,7 +137,7 @@
+ 
+       std::vector<zet_metric_query_handle_t> queries;
+       for (uint32_t i = 0; i < pool_size_ - 1; i++) {
+-        status = ZE_FUNC(zetMetricQueryCreate)(pool, i, &query);
++        status = OwnMetricAudit::call("query-create", "zetMetricQueryCreate", ZE_FUNC(zetMetricQueryCreate), OwnMetricAudit::field("pool", OwnMetricAudit::id(pool)) + OwnMetricAudit::field("index", i), [&] { return OwnMetricAudit::field("query", OwnMetricAudit::id(query)); }, pool, i, &query);
+         if (status != ZE_RESULT_SUCCESS) {
+           std::cerr << "[ERROR] Failed to create metric query (status = 0x" << std::hex << status << std::dec << ")" << std::endl;
+           _Exit(-1);  // exit immediately
+@@ -142,7 +145,7 @@
+         queries.push_back(query);
+         query_pool_map_.insert({query, {context, device, group}});
+       }
+-      status = ZE_FUNC(zetMetricQueryCreate)(pool, pool_size_ - 1, &query);
++      status = OwnMetricAudit::call("query-create", "zetMetricQueryCreate", ZE_FUNC(zetMetricQueryCreate), OwnMetricAudit::field("pool", OwnMetricAudit::id(pool)) + OwnMetricAudit::field("index", pool_size_ - 1), [&] { return OwnMetricAudit::field("query", OwnMetricAudit::id(query)); }, pool, pool_size_ - 1, &query);
+       if (status != ZE_RESULT_SUCCESS) {
+         std::cerr << "[ERROR] Failed to create metric query (status = 0x" << std::hex << status << std::dec << ")" << std::endl;
+         _Exit(-1);  // exit immediately
+@@ -158,7 +161,7 @@
+         zet_metric_query_pool_desc_t desc = {ZET_STRUCTURE_TYPE_METRIC_QUERY_POOL_DESC, nullptr, ZET_METRIC_QUERY_POOL_TYPE_PERFORMANCE, pool_size_};
+         zet_metric_query_pool_handle_t pool;
+ 
+-        status = ZE_FUNC(zetMetricQueryPoolCreate)(context, device, group, &desc, &pool);
++        status = OwnMetricAudit::call("pool-create", "zetMetricQueryPoolCreate", ZE_FUNC(zetMetricQueryPoolCreate), OwnMetricAudit::field("context", OwnMetricAudit::id(context)) + OwnMetricAudit::field("device", OwnMetricAudit::id(device)) + OwnMetricAudit::field("group", OwnMetricAudit::id(group)) + OwnMetricAudit::field("count", desc.count) + OwnMetricAudit::field("type", desc.type), [&] { return OwnMetricAudit::field("pool", OwnMetricAudit::id(pool)); }, context, device, group, &desc, &pool);
+         if (status != ZE_RESULT_SUCCESS) {
+           std::cerr << "[ERROR] Failed to create metric query pool (status = 0x" << std::hex << status << std::dec << ")" << std::endl;
+           _Exit(-1);  // immediately exit
+@@ -166,7 +169,7 @@
+         pools_.push_back(pool);
+ 
+         for (uint32_t i = 0; i < pool_size_ - 1; i++) {
+-          status = ZE_FUNC(zetMetricQueryCreate)(pool, i, &query);
++          status = OwnMetricAudit::call("query-create", "zetMetricQueryCreate", ZE_FUNC(zetMetricQueryCreate), OwnMetricAudit::field("pool", OwnMetricAudit::id(pool)) + OwnMetricAudit::field("index", i), [&] { return OwnMetricAudit::field("query", OwnMetricAudit::id(query)); }, pool, i, &query);
+           if (status != ZE_RESULT_SUCCESS) {
+             std::cerr << "[ERROR] Failed to create metric query (status = 0x" << std::hex << status << std::dec << ")" << std::endl;
+             _Exit(-1);  // exit immediately
+@@ -174,7 +177,7 @@
+           it->second.push_back(query);
+           query_pool_map_.insert({query, {context, device, group}});
+         }
+-        status = ZE_FUNC(zetMetricQueryCreate)(pool, pool_size_ - 1, &query);
++        status = OwnMetricAudit::call("query-create", "zetMetricQueryCreate", ZE_FUNC(zetMetricQueryCreate), OwnMetricAudit::field("pool", OwnMetricAudit::id(pool)) + OwnMetricAudit::field("index", pool_size_ - 1), [&] { return OwnMetricAudit::field("query", OwnMetricAudit::id(query)); }, pool, pool_size_ - 1, &query);
+         if (status != ZE_RESULT_SUCCESS) {
+           std::cerr << "[ERROR] Failed to create metric query (status = 0x" << std::hex << status << std::dec << ")" << std::endl;
+           _Exit(-1);  // exit immediately
+@@ -196,6 +199,7 @@
+       return;
+     }
+ 
++    OwnMetricAudit::safe_query(OwnMetricAudit::id(query));
+     const std::lock_guard<std::mutex> lock(query_pool_mutex_);
+     auto it = query_pool_map_.find(query);
+     if (it == query_pool_map_.end()) {
+@@ -212,7 +216,7 @@
+     if (query_pool_map_.find(query) == query_pool_map_.end()) {
+       return;
+     }
+-    ze_result_t status = ZE_FUNC(zetMetricQueryReset)(query);
++    ze_result_t status = OwnMetricAudit::call("query-reset", "zetMetricQueryReset", ZE_FUNC(zetMetricQueryReset), OwnMetricAudit::field("query", OwnMetricAudit::id(query)), [&] { return std::string(); }, query);
+     if (status != ZE_RESULT_SUCCESS) {
+       std::cerr << "[ERROR] Failed to reset metric query (status = 0x" << std::hex << status << std::dec << ")" << std::endl;
+       _Exit(-1);  // exit immediately
+@@ -883,6 +887,7 @@
+ 
+   inline void SubmitCommandMetricQuery(ZeCommandMetricQuery *query) {
+     if (!IsFinalized()) {
++      OwnMetricAudit::submitted(OwnMetricAudit::id(query->metric_query_), query->instance_id_);
+       metric_queries_submitted_.push_back(query);
+     }
+     else {
+@@ -1439,8 +1444,9 @@
+     SetGlobalZeCollector(nullptr);
+ 
+     if (options_.metric_query) {
++      OwnMetricAudit::safe_finalize();
+       for (auto it = metric_activations_.begin(); it != metric_activations_.end(); it++) {
+-        auto status = ZE_FUNC(zetContextActivateMetricGroups)(it->first, it->second, 0, nullptr);
++        auto status = OwnMetricAudit::call("deactivate", "zetContextActivateMetricGroups", ZE_FUNC(zetContextActivateMetricGroups), OwnMetricAudit::field("context", OwnMetricAudit::id(it->first)) + OwnMetricAudit::field("device", OwnMetricAudit::id(it->second)) + OwnMetricAudit::field("count", 0), [&] { return std::string(); }, it->first, it->second, 0, nullptr);
+         if (status != ZE_RESULT_SUCCESS) {
+ #ifndef _WIN32
+           // on Windows, it is very possible that L0 has been unloaded or is being unloaded at this point and L0 calls may fail safely
+@@ -1451,7 +1457,7 @@
+       }
+       metric_activations_.clear();
+       for (auto& context : metric_contexts_) {
+-        auto status = ZE_FUNC(zeContextDestroy)(context);
++        auto status = OwnMetricAudit::call("context-destroy", "zeContextDestroy", ZE_FUNC(zeContextDestroy), OwnMetricAudit::field("context", OwnMetricAudit::id(context)), [&] { return std::string(); }, context);
+         if (status != ZE_RESULT_SUCCESS) {
+ #ifndef _WIN32
+           // on Windows, it is very possible that L0 has been unloaded or is being unloaded at this point and L0 calls may fail safely
+@@ -1860,6 +1866,8 @@
+         event_cache_(ZE_EVENT_POOL_FLAG_KERNEL_TIMESTAMP),
+         include_kernels_(include_kernels),
+         exclude_kernels_(exclude_kernels) {
++    OwnMetricAudit::enable(options_.metric_query && !options_.metric_stream && !options_.stall_sampling &&
++        utils::GetEnv("UNITRACE_MetricGroup") == "ComputeBasic");
+     data_dir_name_ = data_dir_name;
+     // Create loggers using the factory
+     if (options_.call_logging) {
+@@ -1937,7 +1945,7 @@
+         if (options_.metric_query) {
+           ze_context_desc_t cdesc = {ZE_STRUCTURE_TYPE_CONTEXT_DESC, nullptr, 0};
+ 
+-          status = ZE_FUNC(zeContextCreate)(driver, &cdesc, &context);
++          status = OwnMetricAudit::call("context-create", "zeContextCreate", ZE_FUNC(zeContextCreate), std::string(), [&] { return OwnMetricAudit::field("context", OwnMetricAudit::id(context)); }, driver, &cdesc, &context);
+           if (status != ZE_RESULT_SUCCESS) {
+             std::cerr << "[ERROR] Unable to create context for metrics" << std::endl;
+             exit(-1);
+@@ -2001,34 +2009,39 @@
+             if (options_.metric_query) {
+               uint32_t num_groups = 0;
+               zet_metric_group_handle_t group = nullptr;
+-              status = ZE_FUNC(zetMetricGroupGet)(device, &num_groups, nullptr);
++              status = OwnMetricAudit::call("group-count", "zetMetricGroupGet", ZE_FUNC(zetMetricGroupGet), OwnMetricAudit::field("device", OwnMetricAudit::id(device)) + OwnMetricAudit::field("count", num_groups), [&] { return OwnMetricAudit::field("count", num_groups); }, device, &num_groups, nullptr);
+               if (status != ZE_RESULT_SUCCESS) {
+                 std::cerr << "[ERROR] Unable to get metric group" << std::endl;
+                 exit(-1);
+               }
++              OwnMetricAudit::require(num_groups > 0 && num_groups <= 256, "group_count_outside_tiny_scope");
+               if (num_groups > 0) {
++                const uint32_t original_groups = num_groups;
+                 std::vector<zet_metric_group_handle_t> groups(num_groups, nullptr);
+-                status = ZE_FUNC(zetMetricGroupGet)(device, &num_groups, groups.data());
++                status = OwnMetricAudit::call("group-list", "zetMetricGroupGet", ZE_FUNC(zetMetricGroupGet), OwnMetricAudit::field("device", OwnMetricAudit::id(device)) + OwnMetricAudit::field("count", num_groups), [&] { return OwnMetricAudit::field("count", num_groups); }, device, &num_groups, groups.data());
+                 if (status != ZE_RESULT_SUCCESS) {
+                   std::cerr << "[ERROR] Unable to get metric group" << std::endl;
+                   exit(-1);
+                 }
+ 
++                OwnMetricAudit::require(num_groups == original_groups, "changed_group_list_size");
+                 for (uint32_t k = 0; k < num_groups; ++k) {
+                   zet_metric_group_properties_t group_props{};
+                   group_props.stype = ZET_STRUCTURE_TYPE_METRIC_GROUP_PROPERTIES;
+-                  status = ZE_FUNC(zetMetricGroupGetProperties)(groups[k], &group_props);
++                  status = OwnMetricAudit::call("group-properties", "zetMetricGroupGetProperties", ZE_FUNC(zetMetricGroupGetProperties), OwnMetricAudit::field("group", OwnMetricAudit::id(groups[k])) + OwnMetricAudit::field("index", k), [&] { return OwnMetricAudit::field("count", group_props.metricCount) + OwnMetricAudit::field("flags", group_props.samplingType) + OwnMetricAudit::field("domain", group_props.domain) + OwnMetricAudit::array_text("group_name", group_props.name); }, groups[k], &group_props);
+                   if (status != ZE_RESULT_SUCCESS) {
+                     std::cerr << "[ERROR] Unable to get metric group properties" << std::endl;
+                     exit(-1);
+                   }
+ 
+                   if ((strcmp(group_props.name, utils::GetEnv("UNITRACE_MetricGroup").c_str()) == 0) && (group_props.samplingType & ZET_METRIC_GROUP_SAMPLING_TYPE_FLAG_EVENT_BASED)) {
++                    OwnMetricAudit::require(group_props.samplingType == 1 && group_props.metricCount == 83, "selected_group_schema_outside_tiny_scope");
+                     group = groups[k];
+                     break;
+                   }
+                 }
+ 
++                OwnMetricAudit::require(group != nullptr, "requested_event_group_unavailable");
+                 if (group == nullptr) {
+                   std::cerr << "[ERROR] Unable to get metric group " << utils::GetEnv("UNITRACE_MetricGroup") << ". Please make sure the metric group is valid and supported" << std::endl;
+                   exit(-1);
+@@ -2039,7 +2052,7 @@
+                 exit(-1);
+               }
+ 
+-              status = ZE_FUNC(zetContextActivateMetricGroups)(context, device, 1, &group);
++              status = OwnMetricAudit::call("activate", "zetContextActivateMetricGroups", ZE_FUNC(zetContextActivateMetricGroups), OwnMetricAudit::field("context", OwnMetricAudit::id(context)) + OwnMetricAudit::field("device", OwnMetricAudit::id(device)) + OwnMetricAudit::field("group", OwnMetricAudit::id(group)) + OwnMetricAudit::field("count", 1), [&] { return std::string(); }, context, device, 1, &group);
+               if (status != ZE_RESULT_SUCCESS) {
+                 std::cerr << "[ERROR] Unable to activate metric groups" << std::endl;
+                 exit(-1);
+@@ -2233,12 +2246,13 @@
+ 
+     zet_metric_group_properties_t group_props{};
+     group_props.stype = ZET_STRUCTURE_TYPE_METRIC_GROUP_PROPERTIES;
+-    ze_result_t status = ZE_FUNC(zetMetricGroupGetProperties)(group, &group_props);
++    ze_result_t status = OwnMetricAudit::call("schema-group", "zetMetricGroupGetProperties", ZE_FUNC(zetMetricGroupGetProperties), OwnMetricAudit::field("group", OwnMetricAudit::id(group)), [&] { return OwnMetricAudit::field("count", group_props.metricCount) + OwnMetricAudit::field("flags", group_props.samplingType) + OwnMetricAudit::field("domain", group_props.domain) + OwnMetricAudit::array_text("group_name", group_props.name); }, group, &group_props);
+     if (status != ZE_RESULT_SUCCESS) {
+       std::cerr << "[ERROR] Failed to get metric group properties (status = 0x" << std::hex << status << std::dec << ")." << std::endl;
+       exit(-1);
+     }
+ 
++    OwnMetricAudit::require(group_props.metricCount == 83, "schema_count_outside_tiny_scope");
+     return group_props.metricCount;
+   }
+ 
+@@ -2249,15 +2263,16 @@
+     PTI_ASSERT(metric_count > 0);
+ 
+     std::vector<zet_metric_handle_t> metrics(metric_count);
+-    ze_result_t status = ZE_FUNC(zetMetricGet)(group, &metric_count, metrics.data());
++    ze_result_t status = OwnMetricAudit::call("schema-list", "zetMetricGet", ZE_FUNC(zetMetricGet), OwnMetricAudit::field("group", OwnMetricAudit::id(group)) + OwnMetricAudit::field("count", metric_count), [&] { return OwnMetricAudit::field("count", metric_count); }, group, &metric_count, metrics.data());
+     PTI_ASSERT(status == ZE_RESULT_SUCCESS);
++    OwnMetricAudit::require(metric_count == metrics.size(), "changed_schema_list_size");
+     PTI_ASSERT(metric_count == metrics.size());
+ 
+     std::vector<std::string> names;
+     for (auto metric : metrics) {
+       zet_metric_properties_t metric_props{
+           ZET_STRUCTURE_TYPE_METRIC_PROPERTIES, };
+-      status = ZE_FUNC(zetMetricGetProperties)(metric, &metric_props);
++      status = OwnMetricAudit::call("schema-metric", "zetMetricGetProperties", ZE_FUNC(zetMetricGetProperties), OwnMetricAudit::field("metric", OwnMetricAudit::id(metric)), [&] { return OwnMetricAudit::array_text("metric_name", metric_props.name) + OwnMetricAudit::array_text("units", metric_props.resultUnits) + OwnMetricAudit::field("result_type", metric_props.resultType); }, metric, &metric_props);
+       PTI_ASSERT(status == ZE_RESULT_SUCCESS);
+ 
+       std::string units = GetMetricUnits(metric_props.resultUnits);
+@@ -2274,19 +2289,22 @@
+   bool QueryKernelCommandMetrics(ZeDeviceSubmissions& submissions, ZeCommandMetricQuery *command_metric_query, bool collect_data) {
+ 
+     ze_result_t status;
+-    if ((status = ZE_FUNC(zeEventQueryStatus)(command_metric_query->metric_query_event_)) == ZE_RESULT_SUCCESS) {
++    if ((status = OwnMetricAudit::call("query-ready", "zeEventQueryStatus", ZE_FUNC(zeEventQueryStatus), OwnMetricAudit::field("query", OwnMetricAudit::id(command_metric_query->metric_query_)) + OwnMetricAudit::field("instance", command_metric_query->instance_id_) + OwnMetricAudit::field("event", OwnMetricAudit::id(command_metric_query->metric_query_event_)), [&] { return std::string(); }, command_metric_query->metric_query_event_)) == ZE_RESULT_SUCCESS) {
+ 
+       auto it = submissions.kernel_profiles_.find(command_metric_query->instance_id_);
+       if (it != submissions.kernel_profiles_.end()) {
++        OwnMetricAudit::require(collect_data, "query_collection_disabled");
+         if (collect_data) {
+           size_t size = 0;
+-          status = ZE_FUNC(zetMetricQueryGetData)(command_metric_query->metric_query_, &size, nullptr);
++          status = OwnMetricAudit::call("data-size", "zetMetricQueryGetData", ZE_FUNC(zetMetricQueryGetData), OwnMetricAudit::field("query", OwnMetricAudit::id(command_metric_query->metric_query_)) + OwnMetricAudit::field("instance", command_metric_query->instance_id_) + OwnMetricAudit::field("size", size), [&] { return OwnMetricAudit::field("size", size); }, command_metric_query->metric_query_, &size, nullptr);
++          OwnMetricAudit::require(size > 0 && size <= (62u << 20), "empty_or_oversized_query_data");
+           if ((status == ZE_RESULT_SUCCESS) && (size > 0)) {
+ 
+             std::vector<uint8_t> *kmetrics = new std::vector<uint8_t>(size);
+             UniMemory::ExitIfOutOfMemory((void *)(kmetrics));
+             size_t size2 = size;
+-            status = ZE_FUNC(zetMetricQueryGetData)(command_metric_query->metric_query_, &size2, kmetrics->data());
++            status = OwnMetricAudit::call("data-read", "zetMetricQueryGetData", ZE_FUNC(zetMetricQueryGetData), OwnMetricAudit::field("query", OwnMetricAudit::id(command_metric_query->metric_query_)) + OwnMetricAudit::field("instance", command_metric_query->instance_id_) + OwnMetricAudit::field("size", size2), [&] { return OwnMetricAudit::field("size", size2); }, command_metric_query->metric_query_, &size2, kmetrics->data());
++            OwnMetricAudit::require(size2 == size, "changed_query_data_size");
+             if (size2 == size) {
+               it->second.metrics_ = kmetrics;
+             }
+@@ -2300,6 +2318,7 @@
+       }
+       event_cache_.ResetEvent(command_metric_query->metric_query_event_);
+       query_pools_.ResetQuery(command_metric_query->metric_query_);
++      OwnMetricAudit::completed(OwnMetricAudit::id(command_metric_query->metric_query_), command_metric_query->instance_id_);
+       if (command_metric_query->immediate_) {
+         event_cache_.ReleaseEvent(command_metric_query->metric_query_event_);
+         query_pools_.PutQuery(command_metric_query->metric_query_);
+@@ -2589,20 +2608,22 @@
+         std::string kname = GetZeKernelCommandName(it->second.kernel_command_id_, it->second.group_count_, it->second.mem_size_);
+         uint32_t num_samples = 0;
+         uint32_t num_metrics = 0;
+-        ze_result_t status = ZE_FUNC(zetMetricGroupCalculateMultipleMetricValuesExp)(
++        ze_result_t status = OwnMetricAudit::call("calculate-size", "zetMetricGroupCalculateMultipleMetricValuesExp", ZE_FUNC(zetMetricGroupCalculateMultipleMetricValuesExp), OwnMetricAudit::field("group", OwnMetricAudit::id(group)) + OwnMetricAudit::field("instance", it->second.instance_id_) + OwnMetricAudit::field("size", it->second.metrics_->size()) + OwnMetricAudit::field("samples", num_samples) + OwnMetricAudit::field("values", num_metrics), [&] { return OwnMetricAudit::field("samples", num_samples) + OwnMetricAudit::field("values", num_metrics); }, 
+           group, ZET_METRIC_GROUP_CALCULATION_TYPE_METRIC_VALUES,
+           it->second.metrics_->size(), it->second.metrics_->data(), &num_samples, &num_metrics,
+           nullptr, nullptr);
+ 
++        OwnMetricAudit::require(num_samples == 1 && num_metrics == 83, "calculation_size_outside_tiny_scope");
+         if ((status == ZE_RESULT_SUCCESS) && (num_samples > 0) && (num_metrics > 0)) {
+           std::vector<uint32_t> samples(num_samples);
+           std::vector<zet_typed_value_t> metrics(num_metrics);
+ 
+-          status = ZE_FUNC(zetMetricGroupCalculateMultipleMetricValuesExp)(
++          status = OwnMetricAudit::call("calculate-read", "zetMetricGroupCalculateMultipleMetricValuesExp", ZE_FUNC(zetMetricGroupCalculateMultipleMetricValuesExp), OwnMetricAudit::field("group", OwnMetricAudit::id(group)) + OwnMetricAudit::field("instance", it->second.instance_id_) + OwnMetricAudit::field("size", it->second.metrics_->size()) + OwnMetricAudit::field("samples", num_samples) + OwnMetricAudit::field("values", num_metrics), [&] { return OwnMetricAudit::field("samples", num_samples) + OwnMetricAudit::field("values", num_metrics) + OwnMetricAudit::field("sample0", samples.empty() ? 0 : samples[0]); }, 
+             group, ZET_METRIC_GROUP_CALCULATION_TYPE_METRIC_VALUES,
+             it->second.metrics_->size(), it->second.metrics_->data(), &num_samples, &num_metrics,
+             samples.data(), metrics.data());
+ 
++          OwnMetricAudit::require(num_samples == 1 && num_metrics == 83 && samples[0] == 83, "changed_calculation_shape");
+           if (status == ZE_RESULT_SUCCESS) {
+             std::string str;
+             for (uint32_t i = 0; i < num_samples; ++i) {
+@@ -3593,7 +3614,8 @@
+ 
+       devices_mutex_.unlock_shared();
+ 
+-      status = ZE_FUNC(zetCommandListAppendMetricQueryBegin)(command_list, ze_instance_data.query_);
++      OwnMetricAudit::begin(OwnMetricAudit::id(ze_instance_data.query_));
++      status = OwnMetricAudit::call("query-begin", "zetCommandListAppendMetricQueryBegin", ZE_FUNC(zetCommandListAppendMetricQueryBegin), OwnMetricAudit::field("list", OwnMetricAudit::id(command_list)) + OwnMetricAudit::field("query", OwnMetricAudit::id(ze_instance_data.query_)), [&] { return std::string(); }, command_list, ze_instance_data.query_);
+       PTI_ASSERT(status == ZE_RESULT_SUCCESS);
+     }
+ 
+@@ -3703,7 +3725,7 @@
+         desc_query = local_device_submissions_.GetCommandMetricQuery();
+ 
+         ze_event_handle_t metric_query_event = event_cache_.GetEvent(context);
+-        ze_result_t status = ZE_FUNC(zetCommandListAppendMetricQueryEnd)(command_list, query, metric_query_event, 0, nullptr);
++        ze_result_t status = OwnMetricAudit::call("query-end", "zetCommandListAppendMetricQueryEnd", ZE_FUNC(zetCommandListAppendMetricQueryEnd), OwnMetricAudit::field("list", OwnMetricAudit::id(command_list)) + OwnMetricAudit::field("query", OwnMetricAudit::id(query)) + OwnMetricAudit::field("event", OwnMetricAudit::id(metric_query_event)), [&] { return std::string(); }, command_list, query, metric_query_event, 0, nullptr);
+         PTI_ASSERT(status == ZE_RESULT_SUCCESS);
+         desc_query->metric_query_event_ = metric_query_event;
+         desc_query->metric_query_ = query;
+@@ -3853,7 +3875,7 @@
+         desc_query = local_device_submissions_.GetCommandMetricQuery();
+ 
+         ze_event_handle_t metric_query_event = event_cache_.GetEvent(context);
+-        ze_result_t status = ZE_FUNC(zetCommandListAppendMetricQueryEnd)(command_list, query, metric_query_event, 0, nullptr);
++        ze_result_t status = OwnMetricAudit::call("query-end", "zetCommandListAppendMetricQueryEnd", ZE_FUNC(zetCommandListAppendMetricQueryEnd), OwnMetricAudit::field("list", OwnMetricAudit::id(command_list)) + OwnMetricAudit::field("query", OwnMetricAudit::id(query)) + OwnMetricAudit::field("event", OwnMetricAudit::id(metric_query_event)), [&] { return std::string(); }, command_list, query, metric_query_event, 0, nullptr);
+         PTI_ASSERT(status == ZE_RESULT_SUCCESS);
+         desc_query->metric_query_event_ = metric_query_event;
+         desc_query->metric_query_ = query;
+@@ -3988,7 +4010,7 @@
+         desc_query = local_device_submissions_.GetCommandMetricQuery();
+ 
+         ze_event_handle_t metric_query_event = event_cache_.GetEvent(context);
+-        ze_result_t status = ZE_FUNC(zetCommandListAppendMetricQueryEnd)(command_list, query, metric_query_event, 0, nullptr);
++        ze_result_t status = OwnMetricAudit::call("query-end", "zetCommandListAppendMetricQueryEnd", ZE_FUNC(zetCommandListAppendMetricQueryEnd), OwnMetricAudit::field("list", OwnMetricAudit::id(command_list)) + OwnMetricAudit::field("query", OwnMetricAudit::id(query)) + OwnMetricAudit::field("event", OwnMetricAudit::id(metric_query_event)), [&] { return std::string(); }, command_list, query, metric_query_event, 0, nullptr);
+         PTI_ASSERT(status == ZE_RESULT_SUCCESS);
+         desc_query->metric_query_ = query;
+         desc_query->metric_query_event_ = metric_query_event;
+@@ -4125,7 +4147,7 @@
+         desc_query = local_device_submissions_.GetCommandMetricQuery();
+ 
+         ze_event_handle_t metric_query_event = event_cache_.GetEvent(context);
+-        ze_result_t status = ZE_FUNC(zetCommandListAppendMetricQueryEnd)(command_list, query, metric_query_event, 0, nullptr);
++        ze_result_t status = OwnMetricAudit::call("query-end", "zetCommandListAppendMetricQueryEnd", ZE_FUNC(zetCommandListAppendMetricQueryEnd), OwnMetricAudit::field("list", OwnMetricAudit::id(command_list)) + OwnMetricAudit::field("query", OwnMetricAudit::id(query)) + OwnMetricAudit::field("event", OwnMetricAudit::id(metric_query_event)), [&] { return std::string(); }, command_list, query, metric_query_event, 0, nullptr);
+         PTI_ASSERT(status == ZE_RESULT_SUCCESS);
+         desc_query->metric_query_ = query;
+         desc_query->metric_query_event_ = metric_query_event;
+@@ -4250,7 +4272,7 @@
+         ze_event_handle_t metric_query_event = event_cache_.GetEvent(context);
+         desc_query->metric_query_ = query;
+         desc_query->metric_query_event_ = metric_query_event;
+-        ze_result_t status = ZE_FUNC(zetCommandListAppendMetricQueryEnd)(command_list, query, metric_query_event, 0, nullptr);
++        ze_result_t status = OwnMetricAudit::call("query-end", "zetCommandListAppendMetricQueryEnd", ZE_FUNC(zetCommandListAppendMetricQueryEnd), OwnMetricAudit::field("list", OwnMetricAudit::id(command_list)) + OwnMetricAudit::field("query", OwnMetricAudit::id(query)) + OwnMetricAudit::field("event", OwnMetricAudit::id(metric_query_event)), [&] { return std::string(); }, command_list, query, metric_query_event, 0, nullptr);
+         PTI_ASSERT(status == ZE_RESULT_SUCCESS);
+       }
+ 
+--- /dev/null
++++ b/tools/unitrace/src/levelzero/metric_query_audit.h
+@@ -0,0 +1,160 @@
++// Independently authored Strata diagnostic addition; repository LICENSE applies.
++// Applied to official Intel PTI (MIT); preserve PTI's LICENSE and notices.
++#ifndef STRATA_METRIC_QUERY_AUDIT_H
++#define STRATA_METRIC_QUERY_AUDIT_H
++#if defined(_WIN32) || !defined(__linux__)
++#error "This separately built tiny query audit collector supports Linux only"
++#endif
++#include <cerrno>
++#include <cstdint>
++#include <cstdlib>
++#include <map>
++#include <mutex>
++#include <sstream>
++#include <string>
++#include <unistd.h>
++#include <level_zero/ze_api.h>
++
++namespace OwnMetricAudit {
++struct State {
++  std::mutex mutex;
++  bool enabled = false;
++  bool closed = false;
++  uint64_t sequence = 0;
++  uint64_t calls = 0;
++  std::map<uint64_t, uint64_t> pending; // query -> instance, zero before submission
++};
++// Intentionally process-lifetime: no destructor ordering against provider threads.
++inline State& state() { static State* value = new State; return *value; }
++inline std::string quote(const char* p, size_t cap = 4096) {
++  std::string out = "\"";
++  const char* digits = "0123456789abcdef";
++  size_t i = 0;
++  for (; i < cap && p[i]; ++i) {
++    const unsigned char c = p[i];
++    if (c == '"' || c == '\\') { out += '\\'; out += char(c); }
++    else if (c < 32 || c >= 127) { out += "\\u00"; out += digits[c >> 4]; out += digits[c & 15]; }
++    else out += char(c);
++  }
++  if (i == cap) std::_Exit(125);
++  return out + '"';
++}
++template<class T> inline uint64_t id(T* p) { return reinterpret_cast<uintptr_t>(p); }
++template<class T> inline std::string field(const char* key, T n) {
++  return "," + quote(key) + ":" + std::to_string(uint64_t(n));
++}
++inline std::string text(const char* key, const char* value) { return "," + quote(key) + ":" + quote(value); }
++template<size_t N> inline std::string array_text(const char* key, const char (&value)[N]) {
++  return "," + quote(key) + ":" + quote(value, N);
++}
++inline const char* result_name(ze_result_t result) {
++  switch (result) {
++#define OWN_RESULT(name) case name: return #name;
++#include "metric_query_result_names.inc"
++#undef OWN_RESULT
++  default: return "ZE_RESULT_UNRECOGNIZED";
++  }
++}
++// Caller holds the audit mutex. One <= PIPE_BUF write, no buffered stream or retry.
++inline void emit(const std::string& body) {
++  auto& s = state();
++  std::string line = "OWN_METRIC_V2 {\"schema\":2,\"pid\":" + std::to_string(getpid()) +
++      field("seq", ++s.sequence) + body + "}\n";
++  if (line.size() > 4096 || write(STDERR_FILENO, line.data(), line.size()) != ssize_t(line.size()))
++    std::_Exit(125); // No stack unwind, freeing, retry or continued qualification.
++}
++[[noreturn]] inline void stop(const char* reason) {
++  auto& s = state();
++  std::lock_guard<std::mutex> lock(s.mutex);
++  emit(",\"phase\":\"reject\"" + text("reason", reason));
++  std::_Exit(125);
++}
++inline void require(bool condition, const char* reason) {
++  if (state().enabled && !condition) stop(reason);
++}
++inline void enable(bool selected) {
++  if (!selected) return;
++  auto& s = state();
++  std::lock_guard<std::mutex> lock(s.mutex);
++  if (s.enabled) std::_Exit(125);
++  s.enabled = true;
++  emit(",\"phase\":\"open\",\"route\":\"Linux_EVENT_BASED_ComputeBasic\"");
++}
++// A missing function has no API result. Record it as unavailable; never invent one.
++// Entry inputs are captured before invocation. Output data is read only on success.
++template<class F, class Post, class... Args>
++inline ze_result_t call(const char* site, const char* api, F fn,
++                       const std::string& inputs, Post post, Args... args) {
++  auto& s = state();
++  if (!s.enabled) return fn(args...);
++  uint64_t call_id;
++  try {
++    {
++      std::lock_guard<std::mutex> lock(s.mutex);
++      if (s.closed) std::_Exit(125);
++      call_id = ++s.calls;
++      emit(",\"phase\":\"entry\"" + field("call", call_id) + text("site", site) + text("api", api) +
++           ",\"data\":{\"present\":true" + inputs + "}");
++      if (!fn) {
++        emit(",\"phase\":\"unavailable\"" + field("call", call_id) + text("site", site) + text("api", api) +
++             ",\"reason\":\"missing_loader_symbol\"");
++        std::_Exit(125);
++      }
++    }
++    const ze_result_t result = fn(args...); // Original call, arguments and return on success.
++    {
++      std::lock_guard<std::mutex> lock(s.mutex);
++      std::ostringstream hex; hex << "0x" << std::hex << uint32_t(result);
++      emit(",\"phase\":\"result\"" + field("call", call_id) + text("site", site) + text("api", api) +
++           field("code", uint32_t(result)) + text("hex", hex.str().c_str()) + text("name", result_name(result)) +
++           ",\"data\":" + (result == ZE_RESULT_SUCCESS ? "{\"present\":true" + post() + "}" : "null"));
++    }
++    // NOT_READY is an explicitly recorded poll outcome, never a completed sample.
++    if (result != ZE_RESULT_SUCCESS && !(std::string(site) == "query-ready" && result == ZE_RESULT_NOT_READY))
++      stop("metric_api_non_success");
++    return result;
++  } catch (...) { std::_Exit(125); }
++}
++inline void begin(uint64_t query) {
++  auto& s = state(); if (!s.enabled) return;
++  std::lock_guard<std::mutex> lock(s.mutex);
++  if (!query || s.pending.count(query)) { emit(",\"phase\":\"reject\",\"reason\":\"query_busy_at_begin\""); std::_Exit(125); }
++  s.pending[query] = 0;
++}
++inline void submitted(uint64_t query, uint64_t instance) {
++  auto& s = state(); if (!s.enabled) return;
++  std::lock_guard<std::mutex> lock(s.mutex);
++  if (!query || !instance || (s.pending.count(query) && s.pending[query] != 0)) {
++    emit(",\"phase\":\"reject\",\"reason\":\"overlapping_query_submission\""); std::_Exit(125);
++  }
++  s.pending[query] = instance;
++  emit(",\"phase\":\"submit\"" + field("query", query) + field("instance", instance));
++}
++inline void completed(uint64_t query, uint64_t instance) {
++  auto& s = state(); if (!s.enabled) return;
++  std::lock_guard<std::mutex> lock(s.mutex);
++  if (!s.pending.count(query) || s.pending[query] != instance || !instance) {
++    emit(",\"phase\":\"reject\",\"reason\":\"unmatched_query_completion\""); std::_Exit(125);
++  }
++  s.pending.erase(query);
++  emit(",\"phase\":\"collected\"" + field("query", query) + field("instance", instance));
++}
++inline void safe_query(uint64_t query) {
++  auto& s = state(); if (!s.enabled) return;
++  std::lock_guard<std::mutex> lock(s.mutex);
++  if (s.pending.count(query)) { emit(",\"phase\":\"reject\",\"reason\":\"uncertain_query_owner\""); std::_Exit(125); }
++}
++inline void safe_finalize() {
++  auto& s = state(); if (!s.enabled) return;
++  std::lock_guard<std::mutex> lock(s.mutex);
++  if (!s.pending.empty()) { emit(",\"phase\":\"reject\",\"reason\":\"pending_queries_at_finalize\""); std::_Exit(125); }
++}
++inline void close() {
++  auto& s = state(); if (!s.enabled) return;
++  std::lock_guard<std::mutex> lock(s.mutex);
++  if (s.closed || !s.pending.empty()) std::_Exit(125);
++  emit(",\"phase\":\"close\"" + field("calls", s.calls));
++  s.closed = true;
++}
++} // namespace OwnMetricAudit
++#endif
+--- /dev/null
++++ b/tools/unitrace/src/levelzero/metric_query_result_names.inc
+@@ -0,0 +1,64 @@
++// Official Level Zero enum identifiers; repository LICENSE. See provenance.
++OWN_RESULT(ZE_RESULT_SUCCESS)
++OWN_RESULT(ZE_RESULT_NOT_READY)
++OWN_RESULT(ZE_RESULT_ERROR_DEVICE_LOST)
++OWN_RESULT(ZE_RESULT_ERROR_OUT_OF_HOST_MEMORY)
++OWN_RESULT(ZE_RESULT_ERROR_OUT_OF_DEVICE_MEMORY)
++OWN_RESULT(ZE_RESULT_ERROR_MODULE_BUILD_FAILURE)
++OWN_RESULT(ZE_RESULT_ERROR_MODULE_LINK_FAILURE)
++OWN_RESULT(ZE_RESULT_ERROR_DEVICE_REQUIRES_RESET)
++OWN_RESULT(ZE_RESULT_ERROR_DEVICE_IN_LOW_POWER_STATE)
++OWN_RESULT(ZE_RESULT_EXP_ERROR_DEVICE_IS_NOT_VERTEX)
++OWN_RESULT(ZE_RESULT_EXP_ERROR_VERTEX_IS_NOT_DEVICE)
++OWN_RESULT(ZE_RESULT_EXP_ERROR_REMOTE_DEVICE)
++OWN_RESULT(ZE_RESULT_EXP_ERROR_OPERANDS_INCOMPATIBLE)
++OWN_RESULT(ZE_RESULT_EXP_RTAS_BUILD_RETRY)
++OWN_RESULT(ZE_RESULT_EXP_RTAS_BUILD_DEFERRED)
++OWN_RESULT(ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS)
++OWN_RESULT(ZE_RESULT_ERROR_NOT_AVAILABLE)
++OWN_RESULT(ZE_RESULT_ERROR_DEPENDENCY_UNAVAILABLE)
++OWN_RESULT(ZE_RESULT_WARNING_DROPPED_DATA)
++OWN_RESULT(ZE_RESULT_ERROR_UNINITIALIZED)
++OWN_RESULT(ZE_RESULT_ERROR_UNSUPPORTED_VERSION)
++OWN_RESULT(ZE_RESULT_ERROR_UNSUPPORTED_FEATURE)
++OWN_RESULT(ZE_RESULT_ERROR_INVALID_ARGUMENT)
++OWN_RESULT(ZE_RESULT_ERROR_INVALID_NULL_HANDLE)
++OWN_RESULT(ZE_RESULT_ERROR_HANDLE_OBJECT_IN_USE)
++OWN_RESULT(ZE_RESULT_ERROR_INVALID_NULL_POINTER)
++OWN_RESULT(ZE_RESULT_ERROR_INVALID_SIZE)
++OWN_RESULT(ZE_RESULT_ERROR_UNSUPPORTED_SIZE)
++OWN_RESULT(ZE_RESULT_ERROR_UNSUPPORTED_ALIGNMENT)
++OWN_RESULT(ZE_RESULT_ERROR_INVALID_SYNCHRONIZATION_OBJECT)
++OWN_RESULT(ZE_RESULT_ERROR_INVALID_ENUMERATION)
++OWN_RESULT(ZE_RESULT_ERROR_UNSUPPORTED_ENUMERATION)
++OWN_RESULT(ZE_RESULT_ERROR_UNSUPPORTED_IMAGE_FORMAT)
++OWN_RESULT(ZE_RESULT_ERROR_INVALID_NATIVE_BINARY)
++OWN_RESULT(ZE_RESULT_ERROR_INVALID_GLOBAL_NAME)
++OWN_RESULT(ZE_RESULT_ERROR_INVALID_KERNEL_NAME)
++OWN_RESULT(ZE_RESULT_ERROR_INVALID_FUNCTION_NAME)
++OWN_RESULT(ZE_RESULT_ERROR_INVALID_GROUP_SIZE_DIMENSION)
++OWN_RESULT(ZE_RESULT_ERROR_INVALID_GLOBAL_WIDTH_DIMENSION)
++OWN_RESULT(ZE_RESULT_ERROR_INVALID_KERNEL_ARGUMENT_INDEX)
++OWN_RESULT(ZE_RESULT_ERROR_INVALID_KERNEL_ARGUMENT_SIZE)
++OWN_RESULT(ZE_RESULT_ERROR_INVALID_KERNEL_ATTRIBUTE_VALUE)
++OWN_RESULT(ZE_RESULT_ERROR_INVALID_MODULE_UNLINKED)
++OWN_RESULT(ZE_RESULT_ERROR_INVALID_COMMAND_LIST_TYPE)
++OWN_RESULT(ZE_RESULT_ERROR_OVERLAPPING_REGIONS)
++OWN_RESULT(ZE_RESULT_WARNING_ACTION_REQUIRED)
++OWN_RESULT(ZE_RESULT_ERROR_INVALID_KERNEL_HANDLE)
++OWN_RESULT(ZE_RESULT_EXT_RTAS_BUILD_RETRY)
++OWN_RESULT(ZE_RESULT_EXT_RTAS_BUILD_DEFERRED)
++OWN_RESULT(ZE_RESULT_EXT_ERROR_OPERANDS_INCOMPATIBLE)
++OWN_RESULT(ZE_RESULT_ERROR_SURVIVABILITY_MODE_DETECTED)
++OWN_RESULT(ZE_RESULT_ERROR_ADDRESS_NOT_FOUND)
++OWN_RESULT(ZE_RESULT_QUERY_TRUE)
++OWN_RESULT(ZE_RESULT_QUERY_FALSE)
++OWN_RESULT(ZE_RESULT_ERROR_INVALID_GRAPH)
++OWN_RESULT(ZE_RESULT_ERROR_GRAPH_CAPTURE_UNSUPPORTED)
++OWN_RESULT(ZE_RESULT_ERROR_GRAPH_CAPTURE_INVALIDATED)
++OWN_RESULT(ZE_RESULT_ERROR_GRAPH_CAPTURE_MERGE_ATTEMPT)
++OWN_RESULT(ZE_RESULT_ERROR_COMMAND_LIST_NOT_CAPTURING)
++OWN_RESULT(ZE_RESULT_ERROR_GRAPH_UNJOINED_FORKS)
++OWN_RESULT(ZE_RESULT_ERROR_GRAPH_INTERNAL_EVENT)
++OWN_RESULT(ZE_RESULT_ERROR_UNKNOWN)
++OWN_RESULT(ZE_RESULT_FORCE_UINT32)

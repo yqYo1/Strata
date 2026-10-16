@@ -1,0 +1,367 @@
+{
+  "schema": "strata-host-collector-inspection-v1",
+  "passed": false,
+  "complete": false,
+  "active": false,
+  "GPU_executed": false,
+  "library_loaded": false,
+  "commands": [
+    {
+      "label": "ninja-dependencies",
+      "argv": [
+        "/usr/bin/ninja",
+        "-C",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-build-v4/build",
+        "-t",
+        "deps"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-build-v4"
+      },
+      "started_utc": "2026-10-16T08:46:00.267418+00:00",
+      "wall_seconds": 45,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1367405,
+          "start_ticks": 48912438,
+          "sid": 1367405,
+          "pgid": 1367405
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 489124.388910688,
+      "pid": 1367405,
+      "spawn_return_monotonic": 489124.390261161,
+      "direct_identity": {
+        "pid": 1367405,
+        "state": "R",
+        "ppid": 1367368,
+        "pgid": 1367405,
+        "sid": 1367405,
+        "start_ticks": 48912438,
+        "rss_bytes": 438272
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 3788800,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T08:46:00.363282+00:00",
+      "elapsed_seconds": 0.0956394910463132,
+      "logs": {
+        "ninja-dependencies.stdout": {
+          "bytes": 79324,
+          "sha256": "e60f03c5d5fcd5f7a94effb51e466603b4b81a0cf41d5e902736c57d2edaf55f"
+        },
+        "ninja-dependencies.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "ninja-commands",
+      "argv": [
+        "/usr/bin/ninja",
+        "-C",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-build-v4/build",
+        "-t",
+        "commands"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-build-v4"
+      },
+      "started_utc": "2026-10-16T08:46:00.363781+00:00",
+      "wall_seconds": 45,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1367409,
+          "start_ticks": 48912448,
+          "sid": 1367409,
+          "pgid": 1367409
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 489124.485248744,
+      "pid": 1367409,
+      "spawn_return_monotonic": 489124.486800847,
+      "direct_identity": {
+        "pid": 1367409,
+        "state": "R",
+        "ppid": 1367368,
+        "pgid": 1367409,
+        "sid": 1367409,
+        "start_ticks": 48912448,
+        "rss_bytes": 270336
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T08:46:00.455817+00:00",
+      "elapsed_seconds": 0.09185331099433824,
+      "logs": {
+        "ninja-commands.stdout": {
+          "bytes": 12386,
+          "sha256": "bd302eac7eac6603adc5e401e6573195cd40e21a6656c8d84b6b7aab30b970e2"
+        },
+        "ninja-commands.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "collector-dynamic",
+      "argv": [
+        "/usr/bin/readelf",
+        "-d",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-build-v4/build/libunitrace_tool.so"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-build-v4"
+      },
+      "started_utc": "2026-10-16T08:46:00.456257+00:00",
+      "wall_seconds": 45,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1367411,
+          "start_ticks": 48912457,
+          "sid": 1367411,
+          "pgid": 1367411
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 489124.577721492,
+      "pid": 1367411,
+      "spawn_return_monotonic": 489124.579159169,
+      "direct_identity": {
+        "pid": 1367411,
+        "state": "R",
+        "ppid": 1367368,
+        "pgid": 1367411,
+        "sid": 1367411,
+        "start_ticks": 48912457,
+        "rss_bytes": 274432
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T08:46:00.548524+00:00",
+      "elapsed_seconds": 0.09206582099432126,
+      "logs": {
+        "collector-dynamic.stdout": {
+          "bytes": 1769,
+          "sha256": "64f94532851a067789ea56cbc9352511b4d3daa7a5a54790c23b68cda1bd4487"
+        },
+        "collector-dynamic.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "collector-strings",
+      "argv": [
+        "/usr/bin/strings",
+        "-a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-build-v4/build/libunitrace_tool.so"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-build-v4"
+      },
+      "started_utc": "2026-10-16T08:46:00.549007+00:00",
+      "wall_seconds": 45,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1367414,
+          "start_ticks": 48912467,
+          "sid": 1367414,
+          "pgid": 1367414
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 489124.670511717,
+      "pid": 1367414,
+      "spawn_return_monotonic": 489124.671985382,
+      "direct_identity": {
+        "pid": 1367414,
+        "state": "R",
+        "ppid": 1367368,
+        "pgid": 1367414,
+        "sid": 1367414,
+        "start_ticks": 48912467,
+        "rss_bytes": 282624
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 2195456,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T08:46:00.732582+00:00",
+      "elapsed_seconds": 0.18333670496940613,
+      "logs": {
+        "collector-strings.stdout": {
+          "bytes": 803979,
+          "sha256": "aff67f961094249c8f1c182eb01c5bf419aea1e50d5c8c0d430c0efb23a07b48"
+        },
+        "collector-strings.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "all-headers-0",
+      "argv": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-DBUILD_WITH_ITT=0",
+        "-DBUILD_WITH_L0=1",
+        "-DBUILD_WITH_OMP=0",
+        "-DBUILD_WITH_OPENCL=0",
+        "-DBUILD_WITH_PERFETTO=0",
+        "-DBUILD_WITH_XPTI=1",
+        "-DPTI_LEVEL_ZERO=1",
+        "-Dunitrace_tool_EXPORTS",
+        "-I/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-source-v1/src/tools/unitrace",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-source-v1/src/tools/unitrace/src",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-source-v1/src/tools/unitrace/src/utils",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-source-v1/src/tools/unitrace/../utils",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-source-v1/src/tools/unitrace/../../utils",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-source-v1/src/tools/unitrace/src/opencl",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-source-v1/src/tools/unitrace/src/levelzero",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-source-v1/src/tools/unitrace/src/xpti",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-build-v4/build",
+        "-fvisibility=hidden",
+        "-DPTI_VERSION=1.0.0",
+        "-std=c++17",
+        "-fvisibility=default",
+        "-O3",
+        "-DNDEBUG",
+        "-fPIC",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-source-v1/src/tools/unitrace/src/tracer.cc",
+        "-M",
+        "-MT",
+        "collector"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-build-v4"
+      },
+      "started_utc": "2026-10-16T08:46:00.735163+00:00",
+      "wall_seconds": 45,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1367424,
+          "start_ticks": 48912485,
+          "sid": 1367424,
+          "pgid": 1367424
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 489124.856726122,
+      "pid": 1367424,
+      "spawn_return_monotonic": 489124.858345722,
+      "direct_identity": {
+        "pid": 1367424,
+        "state": "R",
+        "ppid": 1367368,
+        "pgid": 1367424,
+        "sid": 1367424,
+        "start_ticks": 48912485,
+        "rss_bytes": 446464
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 36122624,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-16T08:46:00.933691+00:00",
+      "elapsed_seconds": 0.19823202601401135,
+      "logs": {
+        "all-headers-0.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "all-headers-0.stderr": {
+          "bytes": 1009,
+          "sha256": "dabb30b416ea6196acebeb9edbc973feca3a6097e9a12daffef674672727d634"
+        }
+      }
+    }
+  ],
+  "build_candidate": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-collector-build-candidate-v4.json",
+    "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-collector-build-candidate-v4.json",
+    "bytes": 44802,
+    "sha256": "51da7297780813e89ab94abd11d3cb10ba99cc9d700d791bc5e0ea0b23085341"
+  },
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-build-v4/build/libunitrace_tool.so",
+    "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-query-collector-build-v4/build/libunitrace_tool.so",
+    "bytes": 4238768,
+    "sha256": "2917f64d36239474264a38cc003357b95afb74860ff70d6a77029fb8a66600e4"
+  },
+  "findings": {},
+  "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "error": "AssertionError()",
+  "ownership_closed": true
+}

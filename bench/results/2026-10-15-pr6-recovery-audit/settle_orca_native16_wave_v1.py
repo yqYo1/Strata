@@ -96,7 +96,11 @@ def main():
              895: 'orca-metric-status-sol-launch-v2.json',
              896: 'orca-research-round896-launch-v1.json',
              897: 'orca-pr6-residual-fixes-sol-launch-v3.json',
-             899: 'orca-metric-contract-sol-launch-v3.json'}
+             899: 'orca-metric-contract-sol-launch-v3.json',
+             900: 'orca-pr6-independent-safety-review-sol-launch-v3.json',
+             902: 'orca-research-round902-launch-v1.json',
+             904: 'orca-pr6-prefill-api-harness-sol-launch-v1.json',
+             905: 'orca-research-round905-launch-v1.json'}
     known = {}
     for n, name in names.items():
         receipt = json.loads((A / name).read_text())
@@ -152,7 +156,7 @@ def main():
             assert m['type'] == 'worker_done' and p['outcome'] in ('succeeded', 'failed')
             path = Path(p['reportPath'])
             workspace = (Path('/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore')
-                         if n in (879, 883, 888, 890, 897) else A.parents[2])
+                         if n in (879, 883, 888, 890, 897, 900, 904) else A.parents[2])
             if not path.is_absolute():
                 path = workspace / path
             if n == 879:
@@ -165,6 +169,10 @@ def main():
                 assert path == workspace / 'bench/results/2026-10-16-pr6-faithful-restore/independent-safety-review-v2.md'
             elif n == 897:
                 assert path == workspace / 'bench/results/2026-10-16-pr6-faithful-restore/safety-corrections-v3.md'
+            elif n == 900:
+                assert path == workspace / 'bench/results/2026-10-16-pr6-faithful-restore/independent-safety-review-v3.md'
+            elif n == 904:
+                assert path == workspace / 'bench/results/2026-10-16-pr6-faithful-restore/prefill-api-harness-v1.md'
             else:
                 assert path.is_relative_to(A)
             assert path.exists()
@@ -179,7 +187,7 @@ def main():
             release = A / f'orca-round{n}-release-v1.json'
             if not release.exists():
                 release.write_text(json.dumps(call(['worker-release', '--dispatch', p['dispatchId']]), indent=2) + '\n')
-            state['completed'][str(n)] = dict(path=str(path if n in (879, 883, 888, 890, 897) else path.relative_to(A)), outcome=p['outcome'],
+            state['completed'][str(n)] = dict(path=str(path if n in (879, 883, 888, 890, 897, 900, 904) else path.relative_to(A)), outcome=p['outcome'],
                 sha256=hashlib.sha256(path.read_bytes()).hexdigest() if path.is_file() else None)
             state['processed'].append(m['id'])
             statefile.write_text(json.dumps(state, indent=2) + '\n')
