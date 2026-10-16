@@ -1,0 +1,149 @@
+{
+  "schema": "strata-pr6-provider-forward-compile-v1",
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "GPU_executed": false,
+  "commands": [
+    {
+      "label": "compile-provider-forward",
+      "argv": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/../include",
+        "-isystem",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-historical-dependencies-v1/vendor/sycl/include",
+        "-isystem",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-historical-dependencies-v1/vendor/third_party/ggml",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-fsycl-default-sub-group-size=32",
+        "-fsycl-device-code-split=per_kernel",
+        "-ffp-model=precise",
+        "-Wno-unused-parameter",
+        "-Wno-unused-variable",
+        "-Wno-deprecated-declarations",
+        "-Wall",
+        "-Wextra",
+        "-include",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-provider-forward-compile-v1/kernel-forward.hpp",
+        "-include",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-harness-configure-v4/build/pr6-checked-dpct.hpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-provider-forward-compile-v1/provider-forward.o",
+        "-c",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/harness/provider_probe.cpp"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+        "GIT_TERMINAL_PROMPT": "0",
+        "GIT_SSH_COMMAND": "ssh -oBatchMode=yes"
+      },
+      "started_utc": "2026-10-16T10:46:37.788144+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1715770,
+          "start_ticks": 49636191,
+          "sid": 1715770,
+          "pgid": 1715770
+        },
+        {
+          "pid": 1715790,
+          "start_ticks": 49636191,
+          "sid": 1715770,
+          "pgid": 1715770
+        },
+        {
+          "pid": 1715950,
+          "start_ticks": 49636602,
+          "sid": 1715770,
+          "pgid": 1715770
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 496361.909718819,
+      "pid": 1715770,
+      "spawn_return_monotonic": 496361.911540847,
+      "direct_identity": {
+        "pid": 1715770,
+        "state": "R",
+        "ppid": 1715327,
+        "pgid": 1715770,
+        "sid": 1715770,
+        "start_ticks": 49636191,
+        "rss_bytes": 266240
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 411516928,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T10:46:46.472542+00:00",
+      "elapsed_seconds": 8.684078802994918,
+      "logs": {
+        "compile-provider-forward.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile-provider-forward.stderr": {
+          "bytes": 6927,
+          "sha256": "f1a22399f0d26ac3cd95d13c6345ebe033a63144e961af217d5c1103269ece55"
+        }
+      }
+    }
+  ],
+  "added_header_source": "// Independent project compatibility declarations, repository LICENSE.\nnamespace dpct { namespace detail { class dpct_memcpy_3d_detail; class dpct_memcpy_3d_detail_usmnone; } }\n",
+  "added_header_sha256": "39f44b8f8eb7f6f001eddca9369513a61f2b8c297a7027977c0c5af20b8a63e4",
+  "configuration_sha256": "111d8c1728c4ab78d975272b68202bb5a53eec0eaf39c0218673e32c69b708fb",
+  "actual_compile_argv": [
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+    "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/include",
+    "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/sycl/../include",
+    "-isystem",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-historical-dependencies-v1/vendor/sycl/include",
+    "-isystem",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-historical-dependencies-v1/vendor/third_party/ggml",
+    "-O3",
+    "-DNDEBUG",
+    "-std=c++20",
+    "-fsycl",
+    "-fsycl-default-sub-group-size=32",
+    "-fsycl-device-code-split=per_kernel",
+    "-ffp-model=precise",
+    "-Wno-unused-parameter",
+    "-Wno-unused-variable",
+    "-Wno-deprecated-declarations",
+    "-Wall",
+    "-Wextra",
+    "-include",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-provider-forward-compile-v1/kernel-forward.hpp",
+    "-include",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-harness-configure-v4/build/pr6-checked-dpct.hpp",
+    "-o",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-provider-forward-compile-v1/provider-forward.o",
+    "-c",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore/validation/pr6-restore/harness/provider_probe.cpp"
+  ],
+  "scope": "Same provider TU and flags; only prior namespace-scope name declarations and newobjectoutput. Compile only, no link/runtime.",
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "In file included from <built-in>:2:\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-harness-configure-v4/build/pr6-checked-dpct.hpp:1479:38: warning: unused parameter 'member_mask' [-Wunused-parameter]\n 1479 | T select_from_sub_group(unsigned int member_mask,\n      |                                      ^\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-harness-configure-v4/build/pr6-checked-dpct.hpp:1537:37: warning: unused parameter 'member_mask' [-Wunused-parameter]\n 1537 | T shift_sub_group_left(unsigned int member_mask,\n      |                                     ^\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-harness-configure-v4/build/pr6-checked-dpct.hpp:1581:38: warning: unused parameter 'member_mask' [-Wunused-parameter]\n 1581 | T shift_sub_group_right(unsigned int member_mask,\n      |                                      ^\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-harness-configure-v4/build/pr6-checked-dpct.hpp:1701:41: warning: unused parameter 'member_mask' [-Wunused-parameter]\n 1701 | T permute_sub_group_by_xor(unsigned int member_mask,\n      |                                         ^\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-harness-configure-v4/build/pr6-checked-dpct.hpp:1710:47: warning: comparison of integers of different signs: 'unsigned int' and 'int' [-Wsign-compare]\n 1710 |   unsigned logical_remote_id = (target_offset < logical_sub_group_size) ? start_index + target_offset : id;\n      |                                 ~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-harness-configure-v4/build/pr6-checked-dpct.hpp:1989:15: warning: comparison of integers of different signs: 'int' and 'size_t' (aka 'unsigned long') [-Wsign-compare]\n 1989 |   if (wg_size > max_wg_size) {\n      |       ~~~~~~~ ^ ~~~~~~~~~~~\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-harness-configure-v4/build/pr6-checked-dpct.hpp:2051:35: warning: comparison of integers of different signs: 'int' and 'size_t' (aka 'unsigned long') [-Wsign-compare]\n 2051 |       max_ws_size_for_device_code >= max_wg_size)\n      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-harness-configure-v4/build/pr6-checked-dpct.hpp:2321:17: warning: '&' within '|' [-Wbitwise-op-parentheses]\n 2321 |     result = (a & b | c) ^ a;\n      |               ~~^~~ ~\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-harness-configure-v4/build/pr6-checked-dpct.hpp:2321:17: note: place parentheses around the '&' expression to silence this warning\n 2321 |     result = (a & b | c) ^ a;\n      |                 ^\n      |               (    )\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-harness-configure-v4/build/pr6-checked-dpct.hpp:2345:16: warning: '&' within '|' [-Wbitwise-op-parentheses]\n 2345 |     result = a & (b | c) | (b & c);\n      |              ~~^~~~~~~~~ ~\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-harness-configure-v4/build/pr6-checked-dpct.hpp:2345:16: note: place parentheses around the '&' expression to silence this warning\n 2345 |     result = a & (b | c) | (b & c);\n      |                ^\n      |              (          )\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-harness-configure-v4/build/pr6-checked-dpct.hpp:2348:16: warning: '&' within '|' [-Wbitwise-op-parentheses]\n 2348 |     result = a & b | c;\n      |              ~~^~~ ~\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-harness-configure-v4/build/pr6-checked-dpct.hpp:2348:16: note: place parentheses around the '&' expression to silence this warning\n 2348 |     result = a & b | c;\n      |                ^\n      |              (    )\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-harness-configure-v4/build/pr6-checked-dpct.hpp:90:13: warning: unused function 'destroy_event' [-Wunused-function]\n   90 | static void destroy_event(event_ptr event) {\n      |             ^~~~~~~~~~~~~\n11 warnings generated.\nIn file included from <built-in>:2:\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-harness-configure-v4/build/pr6-checked-dpct.hpp:1989:15: warning: comparison of integers of different signs: 'int' and 'size_t' (aka 'unsigned long') [-Wsign-compare]\n 1989 |   if (wg_size > max_wg_size) {\n      |       ~~~~~~~ ^ ~~~~~~~~~~~\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-harness-configure-v4/build/pr6-checked-dpct.hpp:2051:35: warning: comparison of integers of different signs: 'int' and 'size_t' (aka 'unsigned long') [-Wsign-compare]\n 2051 |       max_ws_size_for_device_code >= max_wg_size)\n      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-harness-configure-v4/build/pr6-checked-dpct.hpp:2321:17: warning: '&' within '|' [-Wbitwise-op-parentheses]\n 2321 |     result = (a & b | c) ^ a;\n      |               ~~^~~ ~\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-harness-configure-v4/build/pr6-checked-dpct.hpp:2321:17: note: place parentheses around the '&' expression to silence this warning\n 2321 |     result = (a & b | c) ^ a;\n      |                 ^\n      |               (    )\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-harness-configure-v4/build/pr6-checked-dpct.hpp:2345:16: warning: '&' within '|' [-Wbitwise-op-parentheses]\n 2345 |     result = a & (b | c) | (b & c);\n      |              ~~^~~~~~~~~ ~\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-harness-configure-v4/build/pr6-checked-dpct.hpp:2345:16: note: place parentheses around the '&' expression to silence this warning\n 2345 |     result = a & (b | c) | (b & c);\n      |                ^\n      |              (          )\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-harness-configure-v4/build/pr6-checked-dpct.hpp:2348:16: warning: '&' within '|' [-Wbitwise-op-parentheses]\n 2348 |     result = a & b | c;\n      |              ~~^~~ ~\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-harness-configure-v4/build/pr6-checked-dpct.hpp:2348:16: note: place parentheses around the '&' expression to silence this warning\n 2348 |     result = a & b | c;\n      |                ^\n      |              (    )\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-pr6-harness-configure-v4/build/pr6-checked-dpct.hpp:90:13: warning: unused function 'destroy_event' [-Wunused-function]\n   90 | static void destroy_event(event_ptr event) {\n      |             ^~~~~~~~~~~~~\n6 warnings generated.\n",
+  "object_sha256": "9a110b9573ddc95e60e9769bea423c9b00efbd69090a7384e88fd243ee41bb9c",
+  "ownership_closed": true
+}

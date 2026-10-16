@@ -1,0 +1,56 @@
+--- configure_pr6_harness_v2.py
++++ configure_pr6_harness_v3.py
+@@ -22,7 +22,7 @@
+ 
+ 
+ def main():
+-    root=B/'main-pr6-harness-configure-v2';target=A/'own-pr6-harness-configure-v2.json'
++    root=B/'main-pr6-harness-configure-v3';target=A/'own-pr6-harness-configure-v3.json'
+     assert not root.exists() and not target.exists()
+     dependency=A/'own-pr6-dependency-preparation-v1.json'
+     assert pin(dependency)['sha256']=='9709a3168804ef812073d71b75bdcb35af6a3b7cbe6e604061a2770812152fdd'
+@@ -32,7 +32,7 @@
+     spec=importlib.util.spec_from_file_location('pr6_configure_owner',owner_path)
+     m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+     head=subprocess.check_output(['/usr/bin/git','-C',str(C),'rev-parse','HEAD'],text=True,timeout=10).strip()
+-    assert head.startswith('322e1fd8')
++    assert head == '570887980c4df90ace950d7ffc1120e99dc6807a'
+     assert not subprocess.check_output(['/usr/bin/git','-C',str(C),'diff','--','validation/pr6-restore'],timeout=10)
+     names=subprocess.check_output(['/usr/bin/git','-C',str(C),'ls-files','-z','validation/pr6-restore'],timeout=10).split(b'\0')
+     source_pins={str(p):pin(C/p.decode()) for p in names if p}
+@@ -42,7 +42,7 @@
+             assert actual['bytes']==v['bytes'] and actual['sha256']==v['sha256']
+     with (B/'owned-v0141-measurement.lock').open('a') as lock:
+         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);root.mkdir(mode=0o700)
+-        record=dict(schema='strata-pr6-harness-configure-v2',passed=False,complete=False,active=False,
++        record=dict(schema='strata-pr6-harness-configure-v3',passed=False,complete=False,active=False,
+             commands=[],GPU_executed=False,legacy_engine_built=False,source_commit=head,source_pins=source_pins,
+             dependency_preparation=pin(dependency),compilers=[pin(L/'bin/clang'),pin(L/'bin/clang++')],
+             oneMKL_config=pin('/opt/intel/oneapi/mkl/2026.1/lib/cmake/mkl/MKLConfig.cmake'),
+@@ -59,7 +59,7 @@
+         try:
+             build=root/'build'
+             argv=['/usr/bin/cmake','-S',str(C/'validation/pr6-restore'),'-B',str(build),'-G','Ninja',
+-                '-DPR6_MAIN_REVIEWED_BUILD=ON','-DPR6_BUILD_PREFILL_API_HARNESS=ON','-DPR6_OPEN_SOURCE_LLVM_ONEMKL=ON',
++                '-DPR6_MAIN_REVIEWED_BUILD=ON','-DPR6_BUILD_PREFILL_API_HARNESS=ON','-DPR6_BUILD_PROVIDER_CONTRACT_PROBE=ON','-DPR6_LLVM_SHUFFLE64_COMPAT=ON','-DPR6_OPEN_SOURCE_LLVM_ONEMKL=ON',
+                 '-DPR6_VENDOR_ROOT='+dep['vendor_root'],'-DSTRATA_GGML_DIR='+dep['llama_snapshot'],
+                 '-DCMAKE_C_COMPILER='+str(L/'bin/clang'),'-DCMAKE_CXX_COMPILER='+str(L/'bin/clang++'),
+                 '-DCMAKE_BUILD_TYPE=Release','-DCMAKE_EXPORT_COMPILE_COMMANDS=ON',
+@@ -70,7 +70,7 @@
+             record.update(exit_code=c['exit_code'],stdout=out.read_text(),stderr=err.read_text(),build_path=str(build))
+             assert m.closed(c) and c['exit_code']==0,(c['exit_code'],err.read_text()[-4096:])
+             for v in source_pins.values():assert pin(v['path'])==v
+-            record['generated_inputs']=[pin(build/name) for name in ('CMakeCache.txt','compile_commands.json','build.ninja','pr6-checked-dpct.hpp','pr6-checked-dpct.sha256')]
++            record['generated_inputs']=[pin(build/name) for name in ('CMakeCache.txt','compile_commands.json','build.ninja','pr6-checked-dpct.hpp','pr6-checked-dpct.sha256','pr6-llvm-shuffle64-proof.json')]
+             record.update(passed=True,complete=True,compile_and_link_command_review_pending=True)
+         except BaseException as e:
+             import traceback
+@@ -81,7 +81,7 @@
+                 for old in c['owners']+[c['direct_identity']]:
+                     now=m.identity(old['pid']);assert now is None or now['start_ticks']!=old['start_ticks']
+             persist();target.write_bytes((root/'record.json').read_bytes())
+-        print(json.dumps(dict(receipt=pin(target),passed=record['passed'],exit_code=record.get('exit_code'),GPU_executed=False,error=record.get('error'))))
++        print(json.dumps(dict(receipt=pin(target),passed=record['passed'],exit_code=record.get('exit_code'),GPU_executed=False,error_type=(record.get('error') or '')[:240])))
+         return 0 if record['passed'] and record['ownership_closed'] else 1
+ 
+ 
