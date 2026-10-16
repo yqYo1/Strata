@@ -35,6 +35,10 @@ with the telemetry observer disabled. A difference across measurement dates is
 not a source regression by itself. Read PCIe link metadata during the relevant
 work, but reconcile it with attained copy bytes/time; a contradictory sysfs field
 is not a usable performance ceiling. Keep the contradictory observations.
+Capture the endpoint and every parent bridge, with PCI addresses, rather than
+reading only the endpoint's link fields. Keep idle topology snapshots separate
+from link samples taken during copies. An encoding-adjusted estimate from an
+upstream link is still a theoretical link estimate, not a measured payload roof.
 
 Do not declare counters unavailable solely from a policy file. Test bounded
 capability enumeration without changing permissions, then separately qualify

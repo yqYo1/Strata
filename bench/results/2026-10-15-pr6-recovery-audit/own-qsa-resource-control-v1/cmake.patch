@@ -1,0 +1,17 @@
+diff --git a/cmake/sycl_backend.cmake b/cmake/sycl_backend.cmake
+--- a/cmake/sycl_backend.cmake
++++ b/cmake/sycl_backend.cmake
+@@ -402,8 +402,13 @@
+   # Manual exact selector experiment; use separate immutable-environment processes.
+   add_executable(sycl_qsa_select_radix_test EXCLUDE_FROM_ALL tests/sycl/qsa_select_radix.cpp)
+   target_link_libraries(sycl_qsa_select_radix_test PRIVATE strata_kernels)
+   target_compile_options(sycl_qsa_select_radix_test PRIVATE -fno-fast-math -ffp-contract=off)
++  # Manual opt-in resource discrimination; Main owns serialized qualification.
++  add_executable(sycl_qsa_resource_control EXCLUDE_FROM_ALL tests/sycl/qsa_resource_control.cpp)
++  target_link_libraries(sycl_qsa_resource_control PRIVATE strata_kernels)
++  target_compile_features(sycl_qsa_resource_control PRIVATE cxx_std_20)
++  target_compile_options(sycl_qsa_resource_control PRIVATE -fno-fast-math -ffp-contract=off)
+   # Manual source-only K mapping candidate; Main serializes all GPU runs.
+   add_executable(sycl_prompt_k_cellmajor_test EXCLUDE_FROM_ALL tests/sycl/prompt_k_cellmajor.cpp)
+   target_link_libraries(sycl_prompt_k_cellmajor_test PRIVATE strata_kernels)
+   target_compile_definitions(sycl_prompt_k_cellmajor_test PRIVATE STRATA_TEST_PROMPT_MATRIX=1)

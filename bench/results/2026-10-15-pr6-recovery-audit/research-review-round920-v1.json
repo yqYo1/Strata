@@ -1,0 +1,176 @@
+{
+  "schema": "strata-research-scope-review-v1",
+  "review_round": "R920",
+  "reviewed_utc": "2026-10-16T10:56:51Z",
+  "reviewer": "native Codex gpt-6-luna max",
+  "report_round": 918,
+  "report_path": "research-round918-v1.txt",
+  "report_sha256": "00159acdbfe68af2e690aadb3e49e0540a266a7f5683274e6993f078ff01348d",
+  "purpose_class": "knowledge_collection",
+  "spec_path": "orca-research-round918-spec-v1.txt",
+  "spec_sha256": "e59f8927b84a06b5f3568a6fcbd6fa85823fc7a6b6251fd0f2384d621f8cb643",
+  "eligibility_path": "research-round918-eligibility-v1.json",
+  "eligibility_sha256": "d00b301f6dac3b6325d7fb38d394ebcca58601c3ca1f934864b60144d1f45909",
+  "settlement_path": "orca-round918-settlement-v1.json",
+  "settlement_sha256": "3c22d62183dd8333aea7b659925132fd599de4f00379acf626fbadbcd462bce4",
+  "release_path": "orca-round918-release-v1.json",
+  "release_sha256": "874ba468db3845d7fb7d7501ae3ab85c0e9c704246e72114f0d87a88bdd650c8",
+  "main_body_read": false,
+  "reviewer_report_body_read": true,
+  "report_index_snapshot_before_review_sha256": "890becc3c675c51dd81880fcadac5b1749fa396fa7dfad84e02d239324e0ba1d",
+  "indexed_report_count_before": 287,
+  "reviewed_evidence": {
+    "artifact_policy": "AGENTS.md parallel-research requirements and docs/ARTIFACT_RETENTION.md read; docs/RESOURCE_PROFILING.md used as the measurement-claim boundary.",
+    "index_snapshot": {
+      "path": "research-index.json",
+      "sha256": "890becc3c675c51dd81880fcadac5b1749fa396fa7dfad84e02d239324e0ba1d",
+      "relevant_entries": [
+        "research_review_round912",
+        "research_review_round916",
+        "round 875",
+        "round 911",
+        "round 914"
+      ],
+      "report_count_before": 287,
+      "highest_report_round_before": 914
+    },
+    "prior_review_metadata": {
+      "R875": "Broader phase/resource and profiler limits plus topology versus traffic; no B570 counter availability.",
+      "R911": "Stopped OA metric-pool failure only; does not establish Sysman behavior or universal counter unavailability.",
+      "R914/R916": "Controlled no-OA component comparisons and idle PCIe hierarchy corrections; transfer-rate drift remains unexplained."
+    },
+    "primary_source_checks": "Official Level Zero release v1.32.0 and Sysman spec v1.17.24 checked; official Linux Xe and Intel XPU-SMI/XPUM docs checked for source semantics and product scope. No native execution or device support check.",
+    "secondary_application_source": "The linked ScienceDirect stencil paper returned HTTP 403 in browser review; used only as an illustrative non-LLM workload example, not telemetry evidence."
+  },
+  "scope_depth_review": "1,890 whitespace-delimited words across 49 lines. It compares Sysman PCI/memory snapshots, Linux Xe interfaces, and Intel public monitoring tools, then applies attribution and observer limits to one prefill example. Counter semantics, timestamp/wrap behavior, error distinctions, support boundaries and a non-LLM transfer example fit the 2-4 page budget.",
+  "novelty_and_redundancy": {
+    "novelty": "Adds OA-independent Sysman PCI/memory snapshot semantics and Xe GT SVM migration/copy stats as source-supported possibilities, especially the unresolved memory counter unit contract and endpoint-versus-memory attribution boundary.",
+    "prior_coverage": "R875 covers broad phase/resource and telemetry limits; R911 covers the stopped OA registration path; R914/R916 covers controlled component experiments and corrects idle topology interpretation. R779 concerns resident-gather/TLB behavior. R918 does not repeat those questions.",
+    "applicability": "Source capability only. No B570 query/capability flags, per-memory sample, installed-kernel Xe debugfs verification, or observer-cost measurement."
+  },
+  "primary_reference_review": [
+    {
+      "source": "oneAPI Level Zero Loader v1.32.0 release",
+      "url": "https://github.com/oneapi-src/level-zero/releases/tag/v1.32.0",
+      "supports": "States API headers are based on Level Zero spec v1.17.24.",
+      "limit": "Pins header specification generation, not installed GPU driver build or B570 support."
+    },
+    {
+      "source": "oneAPI Level Zero Sysman API spec v1.17.24",
+      "url": "https://oneapi-src.github.io/level-zero-spec/level-zero/1.17.24/sysman/api.html",
+      "supports": "PCI snapshot API, valid flags, lane-summed monotonic RX/TX, TX replay inclusion, timestamp rules, memory locations/handles, bandwidth fields and valid-bit extension.",
+      "limit": "Semantics do not prove runtime availability. The memory bandwidth struct has the contradictory bytes versus 32-byte-transaction wording."
+    },
+    {
+      "source": "Linux kernel Xe GT statistics docs",
+      "url": "https://docs.kernel.org/next/gpu/xe/xe_gt_stats.html",
+      "supports": "Debugfs interface, SVM migration/copy counts and times, aggregation, reset behavior and CONFIG_DEBUG_FS condition.",
+      "limit": "/next docs do not prove the installed kernel exposes this interface; fields are not generic PCIe traffic or kernel attribution."
+    },
+    {
+      "source": "Linux kernel Xe DRM client usage stats",
+      "url": "https://docs.kernel.org/gpu/xe/xe-drm-usage-stats.html",
+      "supports": "Per-DRM-client engine-cycle and memory-region fields.",
+      "limit": "Does not report per-client PCIe bytes or general VRAM bandwidth."
+    },
+    {
+      "source": "Intel XPU-SMI 2.0 / XPUM official docs",
+      "url": "https://intel.github.io/xpumanager/2.0/xpu-smi/stats.html ; https://github.com/intel/xpumanager/blob/main/xpumd/receiver/intelxpu/sysman/documentation.md",
+      "supports": "Public device/tile and PCI telemetry fields, sample cadence, device identification and metric dimensions.",
+      "limit": "Does not prove B570 support or a sampled counter on this host; XPUM main link is mutable."
+    },
+    {
+      "source": "Linux PCI sysfs documentation",
+      "url": "https://docs.kernel.org/PCI/sysfs-pci.html",
+      "supports": "PCI resource/sysfs metadata context.",
+      "limit": "A documentation survey cannot prove no platform-specific traffic counter exists; report names no actual host PMU event."
+    }
+  ],
+  "source_context_corrections": [
+    {
+      "id": "R918-C1",
+      "report_lines": "9, 11-14",
+      "correction": "Anchor API semantics to the installed header specification version. The report identifies Level Zero loader 1.32.0 and headers/spec v1.17.24; its 1.16.24/1.19.12 links are API references, not proof of the installed driver build. The official 1.32.0 release pins its headers to spec v1.17.24, whose Sysman page confirms the cited PCI and memory APIs and field semantics. No device result follows.",
+      "evidence": "https://github.com/oneapi-src/level-zero/releases/tag/v1.32.0 ; https://oneapi-src.github.io/level-zero-spec/level-zero/1.17.24/sysman/api.html"
+    },
+    {
+      "id": "R918-C2",
+      "report_lines": "21-23",
+      "correction": "Retain the memory-counter unit contradiction as unresolved. The official v1.17.24 spec labels readCounter/writeCounter as total bytes, while the same struct says a counter is a 32-byte transaction count and multiplies deltas by 32, with rollover at 2^32. The 128 GiB wrap interval is a derivation, not measured behavior; do not encode a conversion or assume at-most-one wrap until exact driver behavior and valid bits are qualified.",
+      "evidence": "Official v1.17.24 Sysman API zes_mem_bandwidth_t and zes_mem_bandwidth_counter_bits_exp_properties_t.validBitsCount: https://oneapi-src.github.io/level-zero-spec/level-zero/1.17.24/sysman/api.html"
+    },
+    {
+      "id": "R918-C3",
+      "report_lines": "25-28, 39-41",
+      "correction": "Keep Xe GT stats source support separate from host support. The cited /next documentation describes aggregate per-GT debugfs SVM migration/copy counts and times, requires CONFIG_DEBUG_FS, and warns about resetting during active work. It does not establish that the installed kernel exposes the interface or that the counters cover ordinary copy commands, all PCIe traffic, or VRAM bandwidth.",
+      "evidence": "https://docs.kernel.org/next/gpu/xe/xe_gt_stats.html ; https://docs.kernel.org/gpu/xe/xe-drm-usage-stats.html"
+    },
+    {
+      "id": "R918-C4",
+      "report_lines": "13, 29-31, 41",
+      "correction": "Treat the host root-port/system PMU mention as a generic possible class, not an identified counter on this PC; no platform PMU source is named. XPU-SMI 2.0 documents device/tile telemetry and Arc Pro support; XPUM materials also describe Data Center products. Neither proves consumer Arc B570 support. The report correctly stops short of a B570 support claim.",
+      "evidence": "https://intel.github.io/xpumanager/2.0/xpu-smi/overview.html ; https://intel.github.io/xpumanager/2.0/xpu-smi/stats.html ; https://github.com/intel/xpumanager/blob/main/xpumd/receiver/intelxpu/sysman/documentation.md"
+    }
+  ],
+  "correction_ids": [
+    "R918-C1",
+    "R918-C2",
+    "R918-C3",
+    "R918-C4"
+  ],
+  "retrieval_metadata": {
+    "needed_now": false,
+    "hold_body": true,
+    "main_body_read": false,
+    "sections": [
+      "9-14: retrieve only for a concrete Sysman API/counter scope or unit question.",
+      "17-31: retrieve only for a concrete timestamp, rollover, error, Xe, or XPU-SMI interpretation question.",
+      "37-41: retrieve only for a Main-authorized, evidence-backed prefill traffic observation design."
+    ],
+    "keys": [
+      "OA-independent Sysman snapshots remain source-supported possibilities only.",
+      "PCI endpoint totals and memory-handle traffic have distinct scopes and no per-kernel join.",
+      "Memory bandwidth counter units remain unresolved until actual driver behavior and valid bits are qualified.",
+      "Xe GT SVM stats are migration-specific and upstream-doc-only for this host.",
+      "XPU-SMI/XPUM documentation does not qualify Arc B570 runtime support."
+    ],
+    "retrieve_when": "Only after a Main-owned receipt identifies exact BDF and driver/runtime/kernel versions plus Sysman capability/error flags, and an existing measured transfer question remains; or for a concrete authorized telemetry implementation question.",
+    "retrieval_brief": "Main can use the Japanese digest without opening the body. No source lookup, native query, permission change, OA retry, or counter-plumbing task is recommended now.",
+    "preserve_caveats": [
+      "No B570 Sysman result or actual telemetry sample was produced.",
+      "The 320 MiB copy-rate drift and idle PCIe hierarchy remain unexplained; requested bytes and topology are not wire traffic.",
+      "Memory conversion and multiple-wrap risk are not resolved by documentation alone.",
+      "Do not attribute aggregate device/link telemetry to an application, queue, kernel, or allocation.",
+      "Treat Xe next and XPUM main pages as upstream docs, not installed-host capability proof."
+    ]
+  },
+  "next_scope_eligibility": {
+    "recommended_now": false,
+    "schedulable_now": false,
+    "prerequisites_rechecked": true,
+    "dispatch_performed": false,
+    "prerequisites": [
+      {
+        "requirement": "A concrete unresolved transfer/counter question remains after the current serialized Main work boundary.",
+        "evidence": "R875/R916 metadata and hardware followups record topology/copy observations but no cause for drift; no exact utilization measurement is recorded."
+      },
+      {
+        "requirement": "An existing Main-owned capability receipt identifies exact BDF and Level Zero, compute-runtime, kernel versions and Sysman result/capability flags under current access.",
+        "evidence": "R918 is source/documentation review only and explicitly records no B570 query or device support test."
+      },
+      {
+        "requirement": "Memory counter units/valid bits and observer cost are qualified before any memory-rate interpretation or prefill sample.",
+        "evidence": "Official v1.17.24 spec exposes validBitsCount but has contradictory counter-unit wording; no driver response or observer-on/off measurement is present."
+      },
+      {
+        "requirement": "A non-Sysman alternate names and source-pins the platform counter and its attribution scope.",
+        "evidence": "Report mentions generic root-port PMU possibility but identifies no event supported by this PC."
+      }
+    ],
+    "reason": "No new scope is schedulable now. Existing evidence justified source research, but no B570 support result was added. R875 and R914/R916 already bound current measurement questions; R911 is an OA-specific stopped route. Another generic counter survey or native counter task would have no qualified present consumer. Reconsider only if existing Main evidence supplies the prerequisites and a specific unresolved question."
+  },
+  "decision": "accepted_with_caveats",
+  "status": "Accepted as a held knowledge collection with source-version, memory-unit, upstream-kernel, and product-support boundaries. It provides no counter availability, observer impact, bottleneck, performance, or adoption result.",
+  "operational_digest_path": "research-review-round920-v1.ja.md",
+  "operational_digest_sha256": "0c5f3c453294842ba86184f0e36f89e94c7b62e4917c7231b5799449d5751d65"
+}
