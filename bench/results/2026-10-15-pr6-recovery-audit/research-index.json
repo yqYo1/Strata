@@ -4112,7 +4112,92 @@
           "R928-C6"
         ],
         "outcome": "Accepted as decision support with prospective numerical-policy and source-context corrections; only indexed sections are retrievable now."
-      }
+      },
+      "main_selective_sections_read": [
+        "13-17",
+        "21-29"
+      ],
+      "main_full_body_read": false
+    },
+    {
+      "round": 929,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-round929-v1.txt",
+      "sha256": "2ee52e869c739c9e968f7740bcf6a252ac25e79275298475156ae5cb30c6fc0b",
+      "classification": "decision_support",
+      "spec_path": "orca-research-round929-spec-v1.txt",
+      "spec_sha256": "9e8d502c86e0b284c2ac599e134606f348a37ebdb196c13402a85f1654bd84ab",
+      "review_round": 932,
+      "review_path": "research-review-round932-v1.json",
+      "main_body_read": false,
+      "retrieval": {
+        "needed_now": true,
+        "hold_body": false,
+        "sections": [
+          "7–9",
+          "13–16",
+          "20–26",
+          "28–33"
+        ],
+        "keys": [
+          "exact Qwen4-Exp GDN/HC/PLE order",
+          "related-model vLLM GDN analogy",
+          "FP32 state/reduction vs 16-bit tensor storage",
+          "HC store/norm and PLE restore/pack candidates"
+        ],
+        "preserve_caveats": [
+          "R585 is a divergence audit, not a GDN geometry study; R592 is an older unqualified candidate.",
+          "Exact FP32 scales are a same-operation diagnostic only when reduction order is preserved; adoption uses the validated SGLang/vLLM contract.",
+          "No component timing, speed, quality or physical-context qualification."
+        ]
+      },
+      "correction_ids": [
+        "R929-C1",
+        "R929-C2",
+        "R929-C3"
+      ],
+      "status": "R932 content review accepted with prospective corrections; report SHA verified. Lifecycle caveat: worker_done rejected, Dispatch abandoned, user-owned terminal not closed; no accepted worker success/process closure claim."
+    },
+    {
+      "round": 930,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-round930-v1.txt",
+      "sha256": "e3f13bcd7808cb19ee97df33c9650d8ef91878da2d24d7d50ec050c85a81b4fc",
+      "classification": "decision_support",
+      "spec_path": "orca-research-round930-spec-v1.txt",
+      "spec_sha256": "66dd5b1f880c5f442e3ef7b15940390fcaac226ef5634c184310685ed645f415",
+      "review_round": 932,
+      "review_path": "research-review-round932-v1.json",
+      "main_body_read": false,
+      "retrieval": {
+        "needed_now": true,
+        "hold_body": false,
+        "sections": [
+          "7–11",
+          "15–17",
+          "23–27",
+          "29–38"
+        ],
+        "keys": [
+          "device route metadata and queue-retirement limit",
+          "direct current vLLM Qwen4-Exp inheritance path",
+          "actual Strata IQ/MoE stage mapping",
+          "grouping discriminator and evidence limits"
+        ],
+        "preserve_caveats": [
+          "Request input count is 39,262; batched count is 39,261 = four full chunks plus a 6,493-row tail.",
+          "The Qwen4-Exp compute-bound prefill comment is QSA-specific, not shared-expert MoE evidence.",
+          "Route-exchange wall time includes queue retirement; no MoE GEMM attribution or 262,144-context result."
+        ]
+      },
+      "correction_ids": [
+        "R930-C1",
+        "R930-C2",
+        "R930-C3"
+      ],
+      "status": "R932 content review accepted with prospective corrections; report SHA verified; no implementation/performance/adoption qualification."
     }
   ],
   "main_initial_findings": [
@@ -6160,7 +6245,7 @@
           "path": "orca-research-round928-launch-v1.json",
           "sha256": "73025a5510b2731f860384de269ecea321ec8d469f1e34515b888b82cccec5d0"
         },
-        "status": "Settled/released, SHA verified; native Luna-max review pending"
+        "status": "Native Luna-max R931 reviewed; settled/released; Main retrieved only decision sections 13-17/21-29 plus official source. New BF16 candidate component checks passed."
       },
       {
         "round": 929,
@@ -6172,7 +6257,7 @@
           "path": "orca-research-round929-launch-v1.json",
           "sha256": "4dae9c1c2b1c3cfdaafc43a852fbe9beeb7334934b1c6c90e58ea14096633289"
         },
-        "status": "Dispatched; completion pending"
+        "status": "Native Luna-max R932 content review accepted with corrections. worker_done rejected; dispatch abandoned/fenced; user-owned terminal not closed. See recovery-v1."
       },
       {
         "round": 930,
@@ -6184,7 +6269,7 @@
           "path": "orca-research-round930-launch-v1.json",
           "sha256": "4a7175a6669e057e62060bca489bc3b547f1ac52ffd3b116b0a5885ea7949416"
         },
-        "status": "Dispatched; completion pending"
+        "status": "Native Luna-max R932 reviewed with corrections; settled/released. Main report body held until concrete retrieval question."
       }
     ]
   },
@@ -6253,5 +6338,20 @@
       "reason": "Wait for Main-owned configured-dtype/branch evidence, selector-set fixture, and QSA stage breakdown; another source-only session cannot establish those prerequisites."
     },
     "status": "Accepted with prospective reference-policy and source corrections; no performance adoption."
+  },
+  "research_review_round932": {
+    "review_round": 932,
+    "reviewer": "native Codex gpt-6-luna max",
+    "path": "research-review-round932-v1.json",
+    "operational_digest_path": "research-review-round932-v1.ja.md",
+    "operational_digest_sha256": "39473236ca5a0d8b3d310fbda8179c136674ed5480fc8a141b123d412fe927d2",
+    "report_rounds": [
+      929,
+      930
+    ],
+    "main_body_read": false,
+    "reviewer_report_bodies_read": true,
+    "status": "Accepted with source/count/reference-policy corrections; no new research scope schedulable.",
+    "sha256": "8293e5e42f07f4c4d02bb44b86fda01612564257a0ea9c4f31a7e9cfef671ba9"
   }
 }
