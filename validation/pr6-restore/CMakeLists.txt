@@ -107,3 +107,23 @@ list(SORT pr6_actual_sources)
 if(NOT pr6_actual_sources STREQUAL pr6_normal_expected)
   message(FATAL_ERROR "Actual historical target sources differ from full resolver closure")
 endif()
+
+# Independent validation entrypoint. This stays outside the byte-pinned 84-TU
+# historical target inventory above and never changes its source resolver.
+option(PR6_BUILD_PREFILL_API_HARNESS "Build source-only, separately reviewed no-doorbell prefill harness" OFF)
+if(PR6_BUILD_PREFILL_API_HARNESS)
+  if(NOT CMAKE_SYSTEM_NAME STREQUAL "Linux" OR NOT STRATA_NATIVE_EXPERTS)
+    message(FATAL_ERROR "pr6_prefill_api requires Linux and STRATA_NATIVE_EXPERTS=ON")
+  endif()
+  add_executable(pr6_prefill_api EXCLUDE_FROM_ALL harness/prefill_api.cpp)
+  target_link_libraries(pr6_prefill_api PRIVATE strata_prefill)
+  # The historical SYCL directory's flags are directory-scoped. Propagate its
+  # actual target options to this sibling; plain host compilation is invalid.
+  get_target_property(pr6_prefill_compile_options strata_prefill COMPILE_OPTIONS)
+  get_target_property(pr6_prefill_link_options strata_prefill LINK_OPTIONS)
+  if(NOT pr6_prefill_compile_options OR NOT pr6_prefill_link_options)
+    message(FATAL_ERROR "Historical SYCL compile/link options are unavailable")
+  endif()
+  set_property(TARGET pr6_prefill_api PROPERTY COMPILE_OPTIONS "${pr6_prefill_compile_options}")
+  set_property(TARGET pr6_prefill_api PROPERTY LINK_OPTIONS "${pr6_prefill_link_options}")
+endif()
