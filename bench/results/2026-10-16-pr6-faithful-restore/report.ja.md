@@ -44,3 +44,17 @@ signal commandの受理後にだけwantをpublishするよう順を変えた。�
 測定ではない。Mainはring2等の小規模fixtureでDMA受理後/signal enqueue失敗と
 早期cancelを注入し、worker終了・コピー元不変・owner存続を別途検証する。未実行。
 DPCTの非同期error握り潰し、無期限のdevice wait/pollは残る制約。
+
+## 修正C: MTP fallbackのrecord upload早期解放
+
+歴史 `MtpDrafter::prefill` の非per-group-sync経路はlocal `rec` を非同期uploadし、
+後続のcapture/copy/graph submissionがfalseになればfinal waitを通らずreturnする。
+`rec` はそのreturnで破棄されるがMTPの別queueは未完了の可能性があり、
+Prefillのcompute/copy drainはこのqueueをretireしない。drafter destructorのwaitは遅すぎる。
+
+現行63326f98 `src/core/mtp.cpp:1212-1253` の独立したrecord lease修正の意味を
+歴史SYCL APIに適合し、修正Aのguardを `rec` の後に作った。upload前にarmし、
+正常時は既存final waitでretireする。early return/throw時だけ先にMTP queueをdrain、
+完了が不明ならowner存続中にfail-stopする。E-4のgroup順、固定graph引数、精度、
+通常時のwait回数、`pf_dev_` 再利用方針は変えない。主経路の `draft_kv` が断る
+構成でもこのfallbackは使われるため、修正Aとは別の必須修正。未実行。

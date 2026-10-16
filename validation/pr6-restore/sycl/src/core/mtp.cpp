@@ -2,6 +2,7 @@
 #include <sycl/sycl.hpp>
 #include <dpct/dpct.hpp>
 #include "strata/core/mtp.hpp"
+#include "strata/prefill/draft_uploads.hpp"
 #include "strata/core/coupled_draft.hpp"
 #include "strata/core/on_device.hpp"
 
@@ -920,6 +921,15 @@ bool MtpDrafter::prefill(const float *R_rows, const int32_t *next_tokens,
             pf_cap_ = n * per_row;
         }
         std::vector<int32_t> rec((size_t) (n * per_row));
+        // Explicit port of the fork's independent fallback-upload lease fix.
+        // A capture/submission failure below must retire rec before it dies.
+        strata::prefill::detail::DraftUploadGuard record_lease(
+            [&] { cs_->wait_and_throw(); return true; },
+            [] {
+                std::fputs("mtp prefill: record upload failed to retire; exiting with source live\n", stderr);
+                std::fflush(stderr);
+                std::_Exit(1);
+            });
         int32_t* tk = rec.data();
         int32_t* stp = tk + n;
         int32_t* ps = stp + 4 * n;
@@ -938,6 +948,7 @@ bool MtpDrafter::prefill(const float *R_rows, const int32_t *next_tokens,
         operand memory, so you may need to call wait() on event return by memcpy
         API to ensure synchronization behavior.
         */
+        record_lease.arm();
         if (DPCT_CHECK_ERROR(cs_->memcpy(pf_dev_, rec.data(),
                                          rec.size() * sizeof(int32_t))) != 0) {
             err = "mtp prefill: the input records upload failed";
@@ -1001,7 +1012,7 @@ bool MtpDrafter::prefill(const float *R_rows, const int32_t *next_tokens,
                 return false;
             }
         }
-        if (DPCT_CHECK_ERROR(cs_->wait()) != 0) {
+        if (DPCT_CHECK_ERROR(cs_->wait_and_throw()) != 0) {
             /*
             DPCT1009: SYCL reports errors using exceptions and does not use
             error codes. Please replace the "get_error_string_dummy(...)" with a
@@ -1016,6 +1027,7 @@ bool MtpDrafter::prefill(const float *R_rows, const int32_t *next_tokens,
                 std::string("mtp prefill: ") + dpct::get_error_string_dummy(0);
             return false;
         }
+        record_lease.retire();
         ms_prefill += ms_since(t0);
         return true;
     }
