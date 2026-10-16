@@ -48,7 +48,8 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     if (qsa_math != native16::qsa::AttentionMath::existing && !qsa16_on) {
         err = "prefill BF16 QSA math requires STRATA_SYCL_PREFILL_NATIVE16_QSA=1"; return false;
     }
-    const bool qsa_prefix_on = qsa_math == native16::qsa::AttentionMath::bf16_prefix;
+    const bool qsa_prefix_on = qsa_math == native16::qsa::AttentionMath::bf16_prefix ||
+        qsa_math == native16::qsa::AttentionMath::bf16_prefix_optimized;
     if (qsa16_on && !native16_on) {
         err = "prefill QSA16: requires STRATA_SYCL_PREFILL_NATIVE16=bf16"; return false;
     }
@@ -421,9 +422,10 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     }
     if (qsa_math != native16::qsa::AttentionMath::existing)
         std::fprintf(stderr, "strata prefill: QSA BF16 operands, FP32 online state/accumulation; "
-                     "KV=%s transient_bytes=%llu; source=resident-Mode0\n",
+                     "KV=%s transient_bytes=%llu; source=resident-Mode0 score_pitch=%d\n",
                      qsa_prefix_on ? "active-logical-prefix" : "on-the-fly",
-                     (unsigned long long) prefix_bytes);
+                     (unsigned long long) prefix_bytes,
+                     qsa_math == native16::qsa::AttentionMath::bf16_prefix_optimized ? 33 : 32);
     if (plan.gpu_bytes) {
         uint8_t* p = nullptr;
         if (cudaMalloc(reinterpret_cast<void**>(&p), size_t(plan.gpu_bytes)) != cudaSuccess) {
@@ -462,7 +464,8 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     if (native16_on)
         std::fprintf(stderr, "strata prefill: native16 BF16 HC residual/projection IO and MoE outputs; "
                              "FP32 local accumulations/router/recurrent state; PLE and final callbacks bridge FP32; "
-                             "QSA/GDN internal tensors remain FP32; reserved scratch arena unchanged; unqualified\n");
+                             "QSA tensor IO=%s, indexer/GDN internals FP32; reserved scratch arena unchanged; unqualified\n",
+                     qsa16_on ? "BF16" : "FP32");
     for (; layer < g.n_layers; ++layer) {
         if (profile) profile->layer = int(layer);
         if (qsa_profile) qsa_profile->layer = int(layer);

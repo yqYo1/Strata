@@ -444,6 +444,13 @@ if(STRATA_SYCL_TESTS)
   target_link_libraries(sycl_qsa_bf16_prefix_test PRIVATE strata_kernels)
   target_compile_features(sycl_qsa_bf16_prefix_test PRIVATE cxx_std_20)
   target_compile_options(sycl_qsa_bf16_prefix_test PRIVATE -fno-fast-math -ffp-contract=off)
+  # Same structural/numerical fixture, actual optimized production export.
+  add_executable(sycl_qsa_bf16_prefix_optimized_test EXCLUDE_FROM_ALL tests/sycl/qsa_bf16_prefix.cpp)
+  target_link_libraries(sycl_qsa_bf16_prefix_optimized_test PRIVATE strata_kernels)
+  target_compile_features(sycl_qsa_bf16_prefix_optimized_test PRIVATE cxx_std_20)
+  target_compile_options(sycl_qsa_bf16_prefix_optimized_test PRIVATE -fno-fast-math -ffp-contract=off)
+  target_compile_definitions(sycl_qsa_bf16_prefix_optimized_test PRIVATE
+    qsa_bf16_prefix_batch=qsa_bf16_prefix_optimized_batch)
   # Same oracle/timing sources, selecting the actual diagnostic-scheduling entry.
   add_executable(sycl_qsa_bf16_late_flags_test EXCLUDE_FROM_ALL tests/sycl/qsa_bf16_attention.cpp)
   target_link_libraries(sycl_qsa_bf16_late_flags_test PRIVATE strata_kernels)
