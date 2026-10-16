@@ -66,7 +66,13 @@ def main():
         h=importlib.util.module_from_spec(spec);spec.loader.exec_module(h)
         prior,prior_gate=h.receipt_gate(module,opts.prior,opts.prior_sha256,boot_id(),qualification=True)
         if position==0:
-            require(prior['schema']=='strata-qsa-bf16-prefix-optimized-model-smoke-v1' and prior['binary_sha256']==build['binary_sha256'],'first model gate')
+            require(prior['schema']=='strata-qsa-bf16-prefix-optimized-long-v1' and prior['phase']=='clean' and prior['binary_sha256']==build['binary_sha256'],'completed32K model comparison gate')
+        cohort_path=A/'qsa-bf16-prefix-optimized-clean-cohort-v1.json'
+        cohort=json.loads(cohort_path.read_text())
+        require(cohort['passed'] and cohort['complete'] and cohort['active_controller'] is None and len(cohort['completed'])==6, 'complete32K paired comparison before64K')
+        for item in cohort['completed']:
+            require(sha(Path(item['path']))==item['sha256'], '32K sample immutable')
+            closed(json.loads(Path(item['path']).read_text()))
         for phase,a,n in order[:position]:
             closed(json.loads((A/f'own-qsa-bf16-prefix-64k-{phase}-{a}-r{n}-v1.json').read_text()))
         require(all(sha(P / n) == h for n, h in build['source_pins'].items()), 'entire source freeze')
@@ -154,7 +160,7 @@ def main():
             model_identity=old['model_identity'], pack_metadata_sha256=old['pack_metadata_sha256'],
             MTP_metadata_sha256=old['MTP_metadata_sha256'], external_profile_sha256=sha(profile),
             local_profile_initial_sha256=sha(local), boot_id=boot_id(),
-            prior_gate=prior_gate,performance_qualified=False,quality_qualified=False,physical_262144_qualified=False,
+            prior_gate=prior_gate,matched32K_cohort_sha256=sha(cohort_path),performance_qualified=False,quality_qualified=False,physical_262144_qualified=False,
             retention=dict(owner='Main',consumer='matched BF16 QSA arithmetic officialbench comparison',raw_byte_budget=1<<30,review='at paired closure; retain individual samples and compact results, retire successful full protocol'),
             scope='Official bench.sh actual64K+ fresh input, thinking ON/24outputcap/chunk8192/context+resident131072. Same binary/optimized attention, compare GPU32768+hostremaining versus allGPU residuals; cumulative cache/prefix/512MiB headroom admission required before model work. All arms use vLLM BF16 hidden/projections. 64K input, score-pitch33 attention in both arms; independent placement experiment; extra transient allocation can affect residual admission and is recorded. Diagnostic is parameter-validation/trace, clean processes contain no profiler/validation/capture. No quality/full256K/RESTORE/sustained decode adoption.')
         def persist():
@@ -203,7 +209,7 @@ def main():
             require('[native16-route] engine=bf16 backend=vllm' in native,'actual backend')
             arithmetic_lines=[l for l in native.splitlines() if l.startswith('strata prefill: QSA BF16 operands,')]
             require(len(arithmetic_lines)==(0 if arm=='current' else 1),'actual QSA arithmetic path')
-            if arm!='current':require(('KV=active-logical-prefix' if arm.startswith('bf16-prefix') else 'KV=on-the-fly') in arithmetic_lines[0],'actual BF16 KV path')
+            require('KV=active-logical-prefix' in arithmetic_lines[0], 'actual BF16 KV path')
             require(f'score_pitch={33}' in arithmetic_lines[0], 'actual score stride')
             record['QSA_arithmetic_lines']=arithmetic_lines
             record['placement_lines'] = placement
