@@ -96,6 +96,16 @@ def main():
     host_check=A/'transient-artifact-owner-check-v1.json'
     host=json.loads(host_check.read_text());assert host['passed'] and host['complete'] and host['helper_sha256']==pin(owner_path)['sha256']
     frozen[str(host_check)]=pin(host_check)
+    # The lock serializes Main's jobs. A user-owned CPU or GPU benchmark need
+    # not share that lock, so also apply the qualified read-only owner guard.
+    package=A/'own-vllm-xe2-qualification-v1'
+    metadata=package/'manifest.json'
+    assert pin(metadata)['sha256']=='7027faaa150d65f8581aebef1e731afe858288792dcedf8fb4409991806e1b58'
+    meta=json.loads(metadata.read_text());helper=package/'main_controller.py'
+    assert pin(helper)['sha256']==meta['package_files']['main_controller.py']['sha256']
+    spec=importlib.util.spec_from_file_location('subgroup_resource_guards',helper)
+    guards=importlib.util.module_from_spec(spec);spec.loader.exec_module(guards)
+    frozen[str(metadata)]=pin(metadata);frozen[str(helper)]=pin(helper)
 
     patch = ''.join(difflib.unified_diff(original.splitlines(True), changed.splitlines(True),
                     fromfile='a/private/qsa_bf16_prefix_tilepack.cpp', tofile='b/private/qsa_bf16_prefix_subgroup.cpp'))
@@ -112,6 +122,7 @@ def main():
             for old_id in c['owners'] + [c['direct_identity']]:
                 now = m.identity(old_id['pid'])
                 assert now is None or now['start_ticks'] != old_id['start_ticks']
+        resource_guard=guards.no_model_owners(meta['known_model_files'])
         root.mkdir(mode=0o700)
         (root/'tmp').mkdir()
         (root/'cache').mkdir()
@@ -125,6 +136,7 @@ def main():
                    candidate_source=pin(candidate), source_commit=subprocess.check_output(
                        ['git', 'rev-parse', 'HEAD'], cwd=P, text=True).strip(),
                    library_inputs=library_pins,
+                   resource_guard=resource_guard,
                    library_pin_scope='Freshly observed outputs under the completed current engine build; first hashed here as inputs, not claimed to be prior build-receipt output hashes.',
                    provenance='Main-authored row-owned subgroup FP32 max/sum on independently authored packed BF16 Strata kernel. SGLang source supplies numerical design contract and SYCL spec supplies collective API requirements, no copied implementation/sample code. R954 targeted15–34 used as reviewed decision support. Excluded-project path compiler dependency only.',
                    production_selected=False, performance_adopted=False,
