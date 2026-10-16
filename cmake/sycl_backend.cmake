@@ -95,7 +95,9 @@ target_link_libraries(strata_kernels PUBLIC strata_core strata_artifact)
 target_sources(strata_kernels PRIVATE src/kernels/sycl/native_iq_esimd.cpp)
 target_sources(strata_kernels PRIVATE src/kernels/sycl/native_mmq_xmx.cpp)
 target_sources(strata_kernels PRIVATE src/kernels/sycl/qsa_bf16_attention.cpp)
-set_source_files_properties(src/kernels/sycl/qsa_bf16_attention.cpp PROPERTIES
+target_sources(strata_kernels PRIVATE src/kernels/sycl/qsa_bf16_attention_late_flags.cpp)
+set_source_files_properties(src/kernels/sycl/qsa_bf16_attention.cpp
+  src/kernels/sycl/qsa_bf16_attention_late_flags.cpp PROPERTIES
   COMPILE_OPTIONS "-fno-fast-math;-ffp-contract=off")
 set_source_files_properties(src/kernels/sycl/native_mmq_xmx.cpp PROPERTIES COMPILE_OPTIONS "-fno-fast-math")
 set_source_files_properties(src/kernels/sycl/native_iq_esimd.cpp PROPERTIES COMPILE_OPTIONS "-fno-fast-math")
@@ -432,6 +434,19 @@ if(STRATA_SYCL_TESTS)
   target_link_libraries(sycl_qsa_bf16_bench PRIVATE strata_kernels)
   target_compile_features(sycl_qsa_bf16_bench PRIVATE cxx_std_20)
   target_compile_options(sycl_qsa_bf16_bench PRIVATE -fno-fast-math -ffp-contract=off)
+  # Same oracle/timing sources, selecting the actual diagnostic-scheduling entry.
+  add_executable(sycl_qsa_bf16_late_flags_test EXCLUDE_FROM_ALL tests/sycl/qsa_bf16_attention.cpp)
+  target_link_libraries(sycl_qsa_bf16_late_flags_test PRIVATE strata_kernels)
+  target_compile_features(sycl_qsa_bf16_late_flags_test PRIVATE cxx_std_20)
+  target_compile_definitions(sycl_qsa_bf16_late_flags_test PRIVATE
+    qsa_bf16_attention_batch=qsa_bf16_attention_late_flags_batch)
+  target_compile_options(sycl_qsa_bf16_late_flags_test PRIVATE -fno-fast-math -ffp-contract=off)
+  add_executable(sycl_qsa_bf16_late_flags_bench EXCLUDE_FROM_ALL tests/sycl/qsa_bf16_bench.cpp)
+  target_link_libraries(sycl_qsa_bf16_late_flags_bench PRIVATE strata_kernels)
+  target_compile_features(sycl_qsa_bf16_late_flags_bench PRIVATE cxx_std_20)
+  target_compile_definitions(sycl_qsa_bf16_late_flags_bench PRIVATE
+    qsa_bf16_attention_batch=qsa_bf16_attention_late_flags_batch)
+  target_compile_options(sycl_qsa_bf16_late_flags_bench PRIVATE -fno-fast-math -ffp-contract=off)
   add_executable(sycl_prompt_attention_test tests/sycl/decode_attention.cpp)
   target_link_libraries(sycl_prompt_attention_test PRIVATE strata_kernels)
   target_compile_definitions(sycl_prompt_attention_test PRIVATE STRATA_TEST_PROMPT_MATRIX=1)
