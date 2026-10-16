@@ -292,12 +292,15 @@ void NativeEmbed::gather_dev(const int32_t* tokens, int64_t n_tok, float* out, v
     if (n_tok == 0) return;
     if (!dev_ || !tokens || !out || n_tok < 0 || n_tok > 262144)
         throw std::invalid_argument("native embedding: invalid direct gather arguments");
+    auto* queue = strata::q_of(stream);
+    if (!queue->is_in_order())
+        throw std::invalid_argument("native embedding: direct ID admission requires an in-order queue");
     std::vector<int32_t> ids((size_t) n_tok);
     // IDs originate on the device here: a checked D2H transfer is required to
     // inspect them. No embedding kernel is submitted before admission succeeds.
     try {
         strata::prefill::detail::RetirementDeadline deadline;
-        strata::retire_event(strata::q_of(stream)->memcpy(ids.data(), tokens, ids.size() * sizeof(int32_t)));
+        strata::retire_event(queue->memcpy(ids.data(), tokens, ids.size() * sizeof(int32_t)));
     } catch (...) {
         strata::prefill::detail::retirement_fail_stop("direct embedding ID download submission failed");
     }

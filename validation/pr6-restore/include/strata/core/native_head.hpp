@@ -51,6 +51,8 @@ public:
     bool load(const std::vector<std::string>& shards, int64_t n_embd, int64_t n_vocab, std::string& err);
     /// Direct device entrypoint: downloads/checks IDs before submitting a gather.
     /// Graph callers below use a private path after their own host admission.
+    /// Caller owns an immutable ID range through gather completion; its producers
+    /// and this call must use the same in-order queue.
     void gather_dev(const int32_t* tokens, int64_t n_tok, float* out, void* stream) const;
     /// One row for a host token id.
     void gather_one(int64_t token, float* out, void* stream) const;
