@@ -272,7 +272,9 @@ void run_component(){
   };
   sample(0,-1);sample(1,-1);
   const auto original_state=state.get();const auto original_output=out.get();
-  sample(2,-1);need(state.get()==original_state && out.get()==original_output,"inverse packing changes values");
+  sample(2,-1);const auto packed_state=state.get();
+  need(std::memcmp(packed_state.data(),original_state.data(),packed_state.size()*sizeof(float))==0 &&
+       out.get()==original_output,"inverse packing changes bits");
   for(int i=0;i<5;++i)for(int j=0;j<3;++j)sample((i+j)%3,i);
   const auto a=state.get(),b=old_state.get();const auto x=out.get(),y=old_out.get();
   double se=0.,ss=0.,oe=0.,os=0.,max_s=0.,max_o=0.;
