@@ -23,6 +23,9 @@ Apply the retention rules below to existing artifacts as well as newly generated
 ones. At a work boundary, reconcile new user instructions with this file and the
 relevant maintained policy document. Keep durable rules here and per-run state
 in compact committed results; do not turn this file into a chronological log.
+Later user instructions supersede older rules; update the affected policy rather
+than keeping contradictory versions. Do not infer that an unfinished experiment,
+unverified feature or research proposal became adopted during a context change.
 
 This is a personal fork based on **Niko1221/Strata**, optimized for this PC's
 Intel GPU, CPU and RAM. Niko1221/Strata is the only upstream. Because of the
@@ -44,9 +47,10 @@ are outside this work's scope.
 - The primary branch is **`feature/sycl`**. Use its existing worktree. Create a
   child from its current commit only when isolation is needed; read-only research
   needs no branch.
-- Current tuning priority (2026-10-15): concentrate on the dedicated long-input
-  prefill path until repeated long-input measurements exceed **600 tok/s**;
-  continue toward **1000 tok/s**. The longer-term decode target is **70 tok/s**;
+- Concentrate current tuning on the dedicated long-input prefill path toward
+  **1000 tok/s**, with repeated long-input results above **600 tok/s** as the
+  first milestone. Record milestone evidence in results, not as changing state
+  in this policy. The longer-term decode target is **70 tok/s**;
   neither target is achieved by a component microbenchmark. Keep short-input
   prefill through the decode weight/cache layout available. Defer its dispatch
   threshold and new decode
@@ -58,13 +62,18 @@ are outside this work's scope.
   dependency path. FP16 and BF16 storage both use two bytes; select format from
   range, numerical/task evidence and actual performance rather than assuming
   FP16 is universally better. Preserve the existing FP32 reference.
-- Current precision work (2026-10-16): implement native 16-bit hidden-state
+- Plan long-prefill VRAM separately from decode placement. Account for the
+  largest resident layer and kernel workspace before budgeting KV and hidden
+  states. Compare releasing decode-only weights/cache, partial retention and
+  rebuilding from RAM by their total transfer, synchronization and reconstruction
+  cost; do not assume keeping decode allocations resident is always cheaper.
+- Implement native 16-bit hidden-state
   producer/consumer kernels using checked SGLang/vLLM/Intel design references.
   Converting saved residuals to 16-bit and restoring FP32 before each operator
   alone does not satisfy this work. Keep necessary local FP32 accumulation,
   reductions, router decisions and recurrent state distinct from tensor storage;
   record remaining FP32 boundaries, provenance and numerical/performance gates.
-- Numerical reference policy (2026-10-16): prioritize the actual SGLang/vLLM
+- Prioritize the actual SGLang/vLLM
   execution path for this model when selecting long-prefill algorithms and
   precision. Compare storage, accumulation, reductions, rounding locations,
   normalization constants, routing and persistent state. A matching validated
@@ -101,7 +110,8 @@ are outside this work's scope.
   before deletion. Keep unfinished children only with a concrete task and review point.
 - History preservation is not code integration or inference adoption. Record
   candidate origin, actual implementation, measurements and per-component decisions.
-- Import Niko's non-inference functions as requested. Choose inference changes
+- Import all Niko non-inference functions, including server, API, CLI, web UI,
+  settings and setup. Track any unfinished port explicitly. Choose inference changes
   per component, including prefill and decode separately; retain the faster
   existing fork implementation. Measure unmodified upstream without local
   patches, including a configuration tuned for this hardware; default settings
@@ -152,6 +162,11 @@ are outside this work's scope.
   processes with finite time/output budgets. A tool observation timeout does
   not establish that its process stopped: inspect the existing handle and
   ownership evidence before retrying. Do not launch a duplicate experiment.
+- Freeze the source, executable, helpers, fixtures, generated workloads and
+  configuration pinned by an active measurement or A/B plan. Review planned
+  edits against those inputs first; documentation outside the pinned inputs may
+  proceed. If an input must change, close the existing run honestly and commit
+  a new plan before using it. Never update hashes to disguise a changed arm.
 - Before rerunning code implicated in a GPU hang, audit its bounds, USM/context
   lifetime, queue/event dependencies, collective participation and graph replay
   assumptions against the actual SYCL/Level Zero contract. Correct or isolate
@@ -161,6 +176,12 @@ are outside this work's scope.
   insufficient. Record fresh driver faults and process closure. Keep recovery
   actions separate from inference tests and consider other GPU clients before
   any reset/unbind; a headless process is not proof that it is independent.
+  Once the trigger is sufficiently understood and a verified avoidance path
+  allows safe execution, return to tuning rather than extending the incident
+  investigation without a concrete unresolved question. Keep the separate Orca
+  hang investigation outside the inference investigation.
+- The user intentionally stopped `llama-server-qwen3embed.service`; leave it
+  stopped. Do not restore it as measurement cleanup.
 
 ### Parallel research
 

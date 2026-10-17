@@ -183,5 +183,17 @@
       "candidate": "Fixed score33,Cells32,WG128,SG16; K36/V260 shared tile needs9216 BF16 values,30272B requested local payload,34368B admission minimum. No hardware occupancy/bank map or performance result.",
       "do_not_repeat": "Old global K span256 schedule regressed10.35–29.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
     }
+  },
+  "gdn_runtime_contract_review": {
+    "framework_revision": "877be2974aa151a984e52822c028276c2b1e9303",
+    "report_sha256": "9a61a3d7c0d077d0b4f7cd67a8a2e316737ef34644fc77304c134fdbd1763305",
+    "review_sha256": "90b200f89dcad9f52f09f7196a7b35f79494981eae0ac96bbcb1ec2adccbd747",
+    "source_defaults": "XPU Triton/FLA, chunk64 with16-token inverse intermediate rounding; FP32 temporal-state default and BF16 conv-state default with distinct overrides. Strata keeps shared FP32 conv history and a different full64 inverse schedule.",
+    "runtime_observed": false,
+    "model_quality_qualified": false,
+    "new_GDN_research_schedulable_now": false,
+    "required_next_evidence": "A concrete adoption question, captured actual backend/activation/pool overrides and same-input comparison. Current0.07% model PP difference supplies no performance adoption case.",
+    "review_scope_correction": "The reviewer did not locate the current index; Main verified and updated this actual file. Do not propagate that as an index-absence claim.",
+    "retention": "Original report/review bodies have completed their compact-contract consumer. Retire them at the next idle cleanup boundary; no automatic full-report promotion."
   }
 }
