@@ -1,0 +1,143 @@
+{
+  "schema": "strata-moe-expert-major-arena-census-v1",
+  "created_utc": "2026-10-17T10:48:04.883869+00:00",
+  "author": "Main",
+  "classification": "source+closed diagnostic allocation evidence; prospective candidate unimplemented/uncompiled/unrun",
+  "source_pins": {
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window/src/prefill/prefill.cpp": "93b47712123c152f0d6643ab689e9b33dbd113d46868558643b990834de62654",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window/src/prefill/moe_window.inc": "9ffec0edda5f8ee3219a64873eca3dba92a3fe47fac84fbd0ee5f2dfe95bb827",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window/src/prefill/sycl/native16.cpp": "d953ae8dcb69be601c57ddf62bbd85ad054c3e7c0a90806461b49f96d18da891",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window/include/strata/prefill/moe_window_routes.hpp": "29ca1c2adc9bfe241aca0e18fb188567b07839a16a2ccec4dbc6630f139bbd93"
+  },
+  "closed_model_native_log": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-residual64k-placement-diagnostic-gpuall-r0-v1/owned/engine.stderr",
+    "sha256": "67612731808a37dc14ba2de0e05be7491619af69d8746364f4fd633e3695198d",
+    "retained_extracted_line": "strata prefill: FP16 MoE compact requested=1 effective=1, chunk=8192, scratch rows=8192, accounted=2311569920, shared region=1180698624 bytes"
+  },
+  "observed_current_region_bytes": 1180698624,
+  "minimum_old_window_region_bytes": 998443520,
+  "observed_prefill_accounted_bytes": 2311569920,
+  "correction_to_Main_hypothesis": "Current MoeWindowRoutes constructor already checks duplicate expert pertoken and rejects it before publication. Prior Mainhypothesis claiming existing concentratedfixtures repeat an expert within token was wrong. The hotfixture chooses a sharedSET of10uniqueexperts. Originalhypothesisretainedunchanged. Public accumulation helper must not bypass routeplan proof.",
+  "source_findings": [
+    "take_scratch_prefix reserves p.R as T*D FLOAT separately from p.gated (which contains native R16/gated_b16); p.R is not aliased to gated. At T8192 p.R is335544320bytes.",
+    "p.emb is T*N FLOAT=83886080bytes, separately allocated; scratch_alias makes mixed/bo/PLE aliases of emb, requiring last-reader proof. Native16window preparation already reads attentionbank directly and never needs legacy FP32R; finalcallback expands to m.R only after checked MoE drain.",
+    "The current configured allocation has region1180698624bytes, not merely the998443520minimum required by the old16kMoEcarve.",
+    "Current combine performs route-slot-order FP32fma fromzero THEN adds BF16shared*sigmoid and roundsBF16. A candidate can also addsharedlast but changes expert accumulationorder; this needs prospective numericalcontract/tests."
+  ],
+  "prospective_allocation": {
+    "max_window_rows": 81920,
+    "mixed_primary": "Borrow dead legacy FP32 m.R as BF16:65536rows*2560*2=335544320B",
+    "mixed_tail": "Borrow m.emb as BF16:16384rows*2560*2=83886080B; attention/PLE readers must already be retired. Separate2bankgather needed.",
+    "region_layout": {
+      "accumulator": {
+        "offset": 0,
+        "payload": 838860800,
+        "reserved": 838861056
+      },
+      "weights": {
+        "offset": 838861056,
+        "payload": 3276800,
+        "reserved": 3277056
+      },
+      "slots": {
+        "offset": 842138112,
+        "payload": 3276800,
+        "reserved": 3277056
+      },
+      "source": {
+        "offset": 845415168,
+        "payload": 3276800,
+        "reserved": 3277056
+      },
+      "job_weights": {
+        "offset": 848692224,
+        "payload": 3276800,
+        "reserved": 3277056
+      },
+      "injection": {
+        "offset": 851969280,
+        "payload": 1310720,
+        "reserved": 1310976
+      },
+      "gathered": {
+        "offset": 853280256,
+        "payload": 41943040,
+        "reserved": 41943296
+      },
+      "gu": {
+        "offset": 895223552,
+        "payload": 20971520,
+        "reserved": 20971776
+      },
+      "hidden": {
+        "offset": 916195328,
+        "payload": 10485760,
+        "reserved": 10486016
+      },
+      "down_job": {
+        "offset": 926681344,
+        "payload": 41943040,
+        "reserved": 41943296
+      },
+      "shared_chunk": {
+        "offset": 968624640,
+        "payload": 41943040,
+        "reserved": 41943296
+      },
+      "shared_gate_chunk": {
+        "offset": 1010567936,
+        "payload": 32768,
+        "reserved": 33024
+      },
+      "logits_chunk": {
+        "offset": 1010600960,
+        "payload": 16777216,
+        "reserved": 16777472
+      },
+      "sgate_chunk": {
+        "offset": 1027378432,
+        "payload": 10485760,
+        "reserved": 10486016
+      },
+      "sup_chunk": {
+        "offset": 1037864448,
+        "payload": 10485760,
+        "reserved": 10486016
+      },
+      "sh_chunk": {
+        "offset": 1048350464,
+        "payload": 10485760,
+        "reserved": 10486016
+      }
+    },
+    "region_required_bytes": 1058836480,
+    "region_margin_bytes": 121862144,
+    "additional_device_allocation_bytes": 0,
+    "extra_512MiB_headroom_spent": 0,
+    "notes": "Conservative disjointregionviews, including separatejobgather/GU/hidden/Down AND separate8Ksharedbranch/logits scratch. No intra-region temporaryoverlap needed. Existing dq_gu/dq_d/nativeGEMMscratch staytheirpreviousallocations; notcountedtwice. Every projection/GEMMjob still<=8192. BOcanuse existing m.mixed_bf8Kchunk afterlastinputread."
+  },
+  "prospective_schedule": [
+    "Attention/PLE per8Kchunk storesall admittedwindowrows in BF16residualbank; checkedretirement beforebankedmixedreuse.",
+    "HCnorm/mix/injection androuterper8K; preserve BF16mixed in m.R/m.emb banks; build immutablevalidatedrouteowner; uploadslot/source; GPUinvert originalrouteweights intojobweights.",
+    "ZeroFP32accumulator, expert-ID-orderedjobs: dequantonceperexpert, gather2mixedbanks, GU/SwiGLU/Down into fixedjobbuffers, deterministicFP32fma scatter intoaccum. Uniqueinputtoken/expert fromvalidatedplan plusinorderqueue preventsconcurrentwrites; mustprovealllogicalbounds.",
+    "Afterall experts: sharedbranch/scalargateper8K frombankedmixed; BF16finish(accum+shared*sigmoid) andHCwrite toresidualbank using savedinjection; checkeddrain beforefinalcallback/ownerrelease.",
+    "n262144 usesboundedwindow<=81920within admittedGPUresidualprefix; remaininghosttail continuesexistingfallback. No claim all262144statefitsVRAM."
+  ],
+  "unproven": [
+    "Fullcallgraph last-read/alias proof for legacyR andemb duringnewwindow, includem.GEMMprivatebuffers/PLE/MTP/finalcallbacks/error/cancel/RESTORE.",
+    "Extendedrouteplan maxrows andboundedjobproof; gather2bank anddeterministicaccumulator components; arithmetic/precisionreference.",
+    "Exactslot/jobweightinverse andguardedGPUfixtures beforemodelcheck; wholedependencytime andnoGPUfault."
+  ],
+  "next_consumer": "Main implementation aftercurrentserializedcleancomparisoncloses, source review andprospectivecomponent gates. No productionadoption or speedclaim.",
+  "smallest_first_engine_candidate": {
+    "window_rows": 65536,
+    "mixed_storage": "Existing dedicated legacyFP32 m.R335544320bytes reinterpreted asBF16; no m.emb borrow or two-bank gather needed at<=65536.",
+    "actual78452_schedule": [
+      65536,
+      12916
+    ],
+    "operator_max_rows": 8192,
+    "not_implemented": true,
+    "reason": "Establish last-reader/callback proof for oneexistingbuffer and simplercontiguousgather first; keep81920two-bank plan for a laterseparate test. Required component tests precede new source engine run."
+  }
+}

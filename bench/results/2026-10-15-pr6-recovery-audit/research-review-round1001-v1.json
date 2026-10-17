@@ -1,0 +1,168 @@
+{
+  "schema": "strata-research-review-round1001-v1",
+  "created_utc": "2026-10-17",
+  "review_role": "native Codex research report review",
+  "status": "reviewed_with_material_correction_to_round998",
+  "scope": "Review only: completed reports for scope, depth, novelty, source quality, correctness, provenance, indexing and retrieval eligibility. No source/product edit, build, test, GPU/profiler/process/service/Git operation, cleanup, or index mutation was performed.",
+  "index_snapshot": {
+    "path": "research-index.json",
+    "bytes": 477463,
+    "sha256": "744b6f99f76d3f95ba9ee1a4056016a5cbc5cd58e4d5caa96051542dc404dc02"
+  },
+  "prior_review_metadata": [
+    {"path": "research-review-round991-v1.json", "bytes": 22941, "sha256": "961bdd5cb05b72fbd803357b18d504b8b7b440dcb9638b8889cddaf170a576c6", "relevance": "R989 sparse-QSA INT8 collection remains held; use for novelty comparison only."},
+    {"path": "research-review-round995-v1.json", "bytes": 15475, "sha256": "dc76b7afbf9d09bc8af7f5e2085cb5486f78e9fcd2568eec0206ef1374cefda", "relevance": "Registered R999 route-consumer decision-support scope and R993 expert staging collection."},
+    {"path": "research-review-round997-v1.json", "bytes": 14016, "sha256": "dbdbf86971a12fdf8fb165534d1a6c898fd7ca877ee32f9433eb4ab83f8761a7", "relevance": "Latest profile and MoE evidence limits; the 508/532 profile and hardware_busy=UNMEASURED caveats remain applicable."}
+  ],
+  "completion_evidence": {
+    "manifest": {"path": "orca-research-wave998-1000-completion-v1.json", "bytes": 1616, "sha256": "20f2167a997394598afd1dda242a8f4773cc13059f840bd655914a07a44cd516", "all_released": true, "all_deliveries_acknowledged": true, "actual_provider": "gpt-6-luna"},
+    "reports": [
+      {"round": 998, "path": "research-round998-v1.txt", "bytes": 17435, "sha256": "5cc01e0fefb99433e6d47b9e265427b69ed69e2d1851473ca619f99555d875c1", "classification": "decision_support"},
+      {"round": 999, "path": "research-round999-v1.txt", "bytes": 17480, "sha256": "3a83e5b3e0442f526e898a6754d262102863b1957dd6e6f55429919069c83100", "classification": "decision_support"},
+      {"round": 1000, "path": "research-round1000-v1.txt", "bytes": 17787, "sha256": "ba0d563021cdaffce41f289b7a45d6f66c4ff6fb58b7bdb08bc60cb421f21c3d", "classification": "knowledge_collection"}
+    ],
+    "specs": [
+      {"path": "orca-research-round998-spec-v1.txt", "bytes": 3075, "sha256": "0d4025792f95db17474d8aa5e2a210eebe611baf08a549232cca5a73c80b0341"},
+      {"path": "orca-research-round999-spec-v1.txt", "bytes": 2726, "sha256": "86fd8551a1e978898d93f83ac1294d18642d589bc5f5d95c713329877aeaa4be"},
+      {"path": "orca-research-round1000-spec-v1.txt", "bytes": 2951, "sha256": "5db4d524f17f29e7516df0ab290cabacba1ce1367a5b99c94211dce1224290d3"}
+    ],
+    "live_receipts": [
+      {"path": "orca-research-round998-live-v1.json", "bytes": 6882, "sha256": "baee68cade4e4a023fc7fe0ad6ca1256d1213dec1d364d368a6ac22a7530176e"},
+      {"path": "orca-research-round999-live-v1.json", "bytes": 6832, "sha256": "baecc6c725c2c1b164adf9435e46f8279ca01f579bd2582a68dee37b53b731cb"},
+      {"path": "orca-research-round1000-live-v1.json", "bytes": 6798, "sha256": "414bda8eced37f478fa28b187f6b2af2e2fe17aa36e900db60be86a546a500b8"}
+    ],
+    "note": "The live receipts are dispatch/provider snapshots; the completion manifest records the later release and acknowledgement state for all three reports."
+  },
+  "evidence_pins": {
+    "round998": {
+      "model_capture": {"path": "command-service-model-diagnostic-on-r0-v2.json", "bytes": 164756, "sha256": "eeadcf5d75d39c3676d7f89393f3e6b62d529e8e2ed57ae3defc965c8dcab67a"},
+      "age_baseline": {"path": "event-service-clock-age-baseline-v1.json", "bytes": 114361, "sha256": "ffc677623f2386d632e945f62d333eed55b8d198b82f07c040cf3b1b857af0eb"},
+      "age_20s": {"path": "event-service-clock-age-aged-v2.json", "bytes": 112198, "sha256": "64ec90ee95ce1f049743b4d8c6091da51f3bb82d29059520fa3c94ce8cca55ce"},
+      "age_comparison": {"path": "event-service-clock-age-comparison-v1.json", "bytes": 5233, "sha256": "c495e83e18088a527def47c2deb86daa5a82a9a1a0fa8982e4cba8f1208ea1fe"},
+      "collector_build": {"path": "command-service-collector-engine-build-v2.json", "bytes": 554991, "sha256": "13bba2552e92891357b3ef016c877aeb029e474a70a137ca85046e4da024e9f3"}
+    },
+    "round999_source_snapshot": {
+      "source_commit_from_build_receipt": "af99f2943b2c782d6691d5500ea852e2169dd02f",
+      "worktree": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window",
+      "hashes_rechecked_against_files_and_build_source_pins": {
+        "src/prefill/moe_window.inc": "9ffec0edda5f8ee3219a64873eca3dba92a3fe47fac84fbd0ee5f2dfe95bb827",
+        "include/strata/prefill/moe_window_routes.hpp": "29ca1c2adc9bfe241aca0e18fb188567b07839a16a2ccec4dbc6630f139bbd93",
+        "src/prefill/sycl/gemm16.cpp": "d5a0e8f8cdbc14f82edd7a883efc09d68ee92195b8fd51301e538b40cc6ed53c",
+        "src/prefill/sycl/vllm_xe2/native16.cpp": "d8b361cabea29344b48aff5a9db41303f3ea715de47f27bc57f29f85c5f3aa2d"
+      },
+      "limit": "File hashes and build source_commit match the assignment; Git object identity/ancestry was not independently checked."
+    }
+  },
+  "reviews": [
+    {
+      "round": 998,
+      "classification": "decision_support",
+      "report": {"path": "research-round998-v1.txt", "bytes": 17435, "sha256": "5cc01e0fefb99433e6d47b9e265427b69ed69e2d1851473ca619f99555d875c1"},
+      "status": "material_receipt_count_correction_required",
+      "scope_depth_novelty": "A coherent and substantive comparison of timestamp clock-source, unit, wrap, reuse and age hypotheses with a bounded discriminator. Its source-comparator versus installed-provider boundary and unchanged full-triple gate are well handled. The incorrect aged count reverses the report's rare-event framing, so Main must use the correction below rather than its current executive summary.",
+      "corrections": [
+        {
+          "severity": "material",
+          "claim_in_report": "The 20-second aged run had 140/141 valid full triples and one start-before-submit failure.",
+          "pinned_receipt": "event-service-clock-age-aged-v2.json records invalid_timestamps=140, timestamp_qualified=false; its 141 samples contain 140 submit_order=0 and one submit_order=1.",
+          "corrected_fact": "The aged run had 140/141 start-before-submit failures and 1/141 full-triple pass. All 141 end-start deltas pass the receipt's positive-service and 52 ns granularity predicates; observed minimum delta is 937 ns.",
+          "impact": "This is a widespread ordering failure in this one aged cohort, not a rare isolated event. It strengthens the association with the 20-second wait in this paired run but does not establish wait causality, NTP/system-clock cause, or a general production-profile failure rate. Preserve the failed aged status and full-triple acceptance unchanged."
+        },
+        {
+          "severity": "measurement_description",
+          "claim_in_report": "The model receipt is described as a 32,768-token prefill run.",
+          "pinned_receipt": "The bench option requests a 32,768-token minimum, while benchmark_result.results.prompts['32768-minimum'] reports actual_prompt_tokens=39262 and actual_read_tokens=39262; the engine placement line reports tokens=39261, context=65536, chunk=8192.",
+          "corrected_fact": "Describe this as a 32,768-token minimum-request run with an actual 39,262-token prompt (39,261 engine placement rows), at 65,536 context and 8,192 chunking."
+        },
+        {
+          "severity": "pin_scope",
+          "claim_in_report": "The receipt discussion can be read as if the model diagnostic itself pins every loaded runtime/driver ELF.",
+          "pinned_receipt": "The event-service baseline/aged receipts contain runtime-ready executed_ELF_sha256 maps for SYCL, UR adapter/loader, Level Zero loader/driver, IGC and compiler ELF. The model diagnostic pins its engine binary and environment/adapter path but does not carry that loaded-ELF map.",
+          "corrected_fact": "Attribute loaded ELF hashes to the separate clock-age microtests; do not claim they are independently proven for the model diagnostic process. The model capture still records the selected UR adapter path and exact engine binary."
+        }
+      ],
+      "corrected_operational_read": "Model profile: 508 accepted records plus 24 rejected records among 532 captured numeric events; all 24 rejects are start<submit. Baseline clock microtest passes 141/141; its 20-second aged arm fails start<submit for 140/141 while all 141 durations remain positive and above the recorded 52 ns granularity. The wait relationship is a diagnostic association only; exact installed UR source mapping, raw clock cause and performance conclusions remain absent.",
+      "source_quality_provenance": "Uses Khronos SYCL 2020 R12 and versioned Level Zero 1.19.12 documents plus immutable Intel LLVM snapshot afcca05be916a6ba0b925a4e088d76c160442be2 as a comparator. The report correctly refuses to infer installed source identity from clang 22.1 or an upstream v2 snapshot. The cited Intel source has Apache-2.0 WITH LLVM-exception; no prohibited implementation source was used."
+    },
+    {
+      "round": 999,
+      "classification": "decision_support",
+      "report": {"path": "research-round999-v1.txt", "bytes": 17480, "sha256": "3a83e5b3e0442f526e898a6754d262102863b1957dd6e6f55429919069c83100"},
+      "status": "accepted_source_contract_only",
+      "scope_depth_novelty": "Strong source-level audit of the exact custom native16/TLA adapter and its route-map producer, job scalars, queue sequencing, checked host readback, ownership and combine contract. It corrects the earlier R994 generic oneMKL attribution and makes the all-GPU residual versus host route-map tail distinction explicit. It is distinct from R993 expert-weight staging and R995's previously eligible question; no route performance conclusion is supported.",
+      "source_quality_provenance": "Four source hashes were rechecked against the assigned worktree and command-service build-v2 source_pins; the build receipt records source_commit af99f2943b2c782d6691d5500ea852e2169dd02f. The report correctly says Git identity/ancestry was not verified. Target source is repository MIT; the public SYCL specification is a semantics reference only. No XeStrata implementation code/design was consulted or adopted.",
+      "corrections": [],
+      "scope_limit": "The report is a completed source-contract investigation, not a measured CPU bottleneck, dispatch proposal, speed estimate, quality result or adoption decision. The prior R997 profile gaps remain open."
+    },
+    {
+      "round": 1000,
+      "classification": "knowledge_collection",
+      "report": {"path": "research-round1000-v1.txt", "bytes": 17787, "sha256": "ba0d563021cdaffce41f289b7a45d6f66c4ff6fb58b7bdb08bc60cb421f21c3d"},
+      "status": "accepted_as_held_retrieval_material",
+      "scope_depth_novelty": "Substantive within budget. It distinguishes gathered expert A and SwiGLU A2 operand lifetimes, scale and rounding boundaries, target consumer tuple limits, quantization costs, and a concrete BF16 fused SwiGLU-to-down-GEMM alternative. There is moderate overlap with R989 on Xe2 INT8 matrix availability and R993 on MoE expert staging; the new activation-only constraint (current FP16/BF16 weight operand does not form the documented INT8 pair) and fusion alternative give it a distinct retrieval value.",
+      "source_quality_provenance": "Uses pinned vLLM commit 2b85d9cb65c1f56c347cb7f56f1596a6b8b28373 and SGLang commit eb5739b30e7e5cb2d7833a8952a24e4e470718f8 as backend-specific numerical/design examples; Intel SYCL matrix-extension commit 4a08d0453c6b37a6e1eb5f52933f79c734b1149c and versioned VTune docs for advertised formats; OCP MX v1.0 for scale format. The oneAPI tuple is optional and not an installed-device/runtime proof; no speed, quality or support result is claimed. No code was copied and XeStrata remains excluded.",
+      "corrections": [],
+      "main_body_read": false,
+      "retrieval_metadata": {
+        "hold_body_for_main": true,
+        "tags": ["Xe2/BMG-G21", "MoE gathered activation A", "SwiGLU intermediate A2", "FP8/INT8 XMX consumer", "per-row and per-K-group scale", "activation-only quantization versus mixed weight formats", "BF16 fused SwiGLU-to-down-GEMM alternative"],
+        "retrieve_when": "Only when a Main-owned source-pinned receipt both attributes material traffic or time to these exact MoE BF16 operands/materialization and records the configured target consumer's actual INT8/FP8 feature or lowering result; otherwise retain metadata only.",
+        "evidence_now": "No per-operator MoE activation operand traffic/latency attribution or target INT8/FP8 consumer proof is present. The current command-profile receipt is incomplete/unqualified and hardware_busy is UNMEASURED.",
+        "schedulable_now": false
+      }
+    }
+  ],
+  "next_scopes": [
+    {
+      "scope_id": "installed-ur-v2-source-map-and-submit-clock-audit",
+      "classification": "decision_support",
+      "schedulable_now": false,
+      "prerequisite_evidence": [
+        {"requirement": "Map the exact loaded UR v2 adapter and SYCL ELF hashes to an immutable approved source commit/package manifest or source map.", "evidence_now": "Clock-age receipts pin loaded ELF hashes; no exact installed source commit mapping is recorded."},
+        {"requirement": "Identify the installed submit timestamp acquisition path and Level Zero property structure/units used for conversion.", "evidence_now": "The model receipt records the adapter path and the Intel LLVM v2 source is only a comparator; source-to-binary identity is unresolved."}
+      ],
+      "next_action": "Keep the upstream v2 source as a comparator. After exact source mapping exists, compare the actual submit and kernel timestamp conversion path; do not claim an installed-provider defect before then."
+    },
+    {
+      "scope_id": "raw-clock-fields-for-one-rejected-and-one-accepted-event",
+      "classification": "Main-owned bounded diagnostic, not a researcher dispatch",
+      "schedulable_now": false,
+      "prerequisite_evidence": [
+        {"requirement": "The current serialized 64K residual-placement measurement closes and the GPU slot is free.", "evidence_now": "Main reports that this measurement is currently running; no process inspection was done."},
+        {"requirement": "Before launch, the exact binary/source and a bounded capture of status, converted timestamps, raw host/device clock pairs, raw event ticks, property units/valid bits and event generation are pinned.", "evidence_now": "Current receipts retain converted values and prove 140/141 aged start-submit violations but contain no raw tick cross-check."},
+        {"requirement": "Keep the original full-triple predicate, owner/fault checks and failed statuses unchanged.", "evidence_now": "Existing model and aged captures retain their failed profile/timestamp status."
+        }
+      ],
+      "next_action": "Main may prepare the bounded diagnostic after its active measurement closes; no environment switching after runtime initialization and no acceptance relaxation."
+    },
+    {
+      "scope_id": "moe-route-control-performance-attribution",
+      "classification": "decision support with performance/adoption gate",
+      "schedulable_now": false,
+      "prerequisite_evidence": [
+        {"requirement": "A terminal command profile with all required events qualified or a separately qualified replacement.", "evidence_now": "Model v2 profile is unqualified: 508/532 records, 24 invalid timestamps; hardware_busy=UNMEASURED."},
+        {"requirement": "Exact per-window job/M/type census and separate host compute, submission and GPU-wait attribution.", "evidence_now": "Not provided by the four-window command sample."},
+        {"requirement": "Whole dependency-path timing plus route/numerical/fault/context gates.", "evidence_now": "No route-control performance adoption evidence is present; Main's separate placement run is not a route attribution result."
+        }
+      ],
+      "next_action": "Do not schedule a performance survey or infer host latency from queue waits until each named prerequisite is recorded."
+    },
+    {
+      "scope_id": "native16-moe-sub16-activation-consumer",
+      "classification": "knowledge collection retrieval / conditional decision support",
+      "schedulable_now": false,
+      "prerequisite_evidence": [
+        {"requirement": "Current path evidence shows the exact gathered-A or SwiGLU-A2 BF16 traffic/materialization is material.", "evidence_now": "No per-operator timing or memory attribution."},
+        {"requirement": "Installed compiler/runtime/device feature query or executed target kernel proves the selected low-bit XMX tuple and accumulation form.", "evidence_now": "Only optional public API tables and cross-backend source designs are available."},
+        {"requirement": "Name the actual SGLang/vLLM model branch and its rounding/accumulation contract.", "evidence_now": "The report provides design examples but no selected model-level precision result."
+        }
+      ],
+      "next_action": "Keep round1000's body indexed and held; retrieve only the needed sections after all relevant prerequisites are met."
+    }
+  ],
+  "indexing_guidance": {
+    "main_read_boundary": "Main may read this short digest and the correction/retrieval metadata; round1000's original knowledge-collection body remains held.",
+    "recommended_index_action": "At the next integration boundary, add the three report hashes, round998's corrected age count and actual prompt size, round999 source-contract status, and round1000 held tags/retrieval trigger plus schedulable_now=false.",
+    "preservation": "Leave all original report, source, build and measurement receipts byte-identical; correction is review metadata only."
+  }
+}

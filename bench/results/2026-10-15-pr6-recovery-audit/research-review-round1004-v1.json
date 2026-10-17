@@ -1,0 +1,176 @@
+{
+  "schema": "strata-research-review-round1004-v1",
+  "created_date": "2026-10-17",
+  "review_role": "native Codex completed-report review",
+  "scope": "Review R1002 in full; inspect only R1003 retrieval metadata and the pinned local GDN source because R1003 is held knowledge. Check report/spec hashes, completion receipts, provenance, eligibility/index metadata and the new Main-authored source-only MoE window hypothesis. No implementation, build, test, GPU/profiler/process/service/Git operation, cleanup, or shared-index edit.",
+  "completion_and_pins": {
+    "source_worktree": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window",
+    "source_commit_from_build_receipt": "af99f2943b2c782d6691d5500ea852e2169dd02f",
+    "build_source_receipt": {
+      "path": "command-service-collector-engine-build-v2.json",
+      "sha256": "13bba2552e92891357b3ef016c877aeb029e474a70a137ca85046e4da024e9f3",
+      "gpu_executed": false,
+      "source_commit": "af99f2943b2c782d6691d5500ea852e2169dd02f"
+    },
+    "recomputed_source_hashes_match_receipt": {
+      "src/prefill/prefill.cpp": "93b47712123c152f0d6643ab689e9b33dbd113d46868558643b990834de62654",
+      "src/prefill/moe_window.inc": "9ffec0edda5f8ee3219a64873eca3dba92a3fe47fac84fbd0ee5f2dfe95bb827",
+      "include/strata/prefill/moe_window_routes.hpp": "29ca1c2adc9bfe241aca0e18fb188567b07839a16a2ccec4dbc6630f139bbd93",
+      "src/prefill/sycl/native16.cpp": "d953ae8dcb69be601c57ddf62bbd85ad054c3e7c0a90806461b49f96d18da891",
+      "src/prefill/sycl/gemm16.cpp": "d5a0e8f8cdbc14f82edd7a883efc09d68ee92195b8fd51301e538b40cc6ed53c",
+      "src/prefill/sycl/vllm_xe2/native16.cpp": "d8b361cabea29344b48aff5a9db41303f3ea715de47f27bc57f29f85c5f3aa2d",
+      "src/kernels/sycl/fused_gdn.cpp": "70abf4fd1359477a2e170b54f2172ba148a2ae21306e8145e070ebd0db7d995f",
+      "src/kernels/sycl/gdn.cpp": "3de5ac1aa35184534834e8fd0957068509a0ecf5080a666354a98cd134d56117",
+      "src/prefill/layer_major.inc": "7d3c17421a6f5124c87052a1e2c0589c9fbb7e833f70215d36fff448240f1bef"
+    },
+    "scope_limit": "Wave eligibility records Main's validation of all 743 source pins and the closed 78K diagnostics. This review independently rehashed the nine source files above; Git object ancestry was not checked."
+  },
+  "research_wave": {
+    "manifest": {
+      "path": "orca-research-wave1002-1003-completion-v1.json",
+      "bytes": 1128,
+      "sha256": "8edc69b7e6058af93678f0240dc5d0b5e3f1649a829b6f48352eb0e99c082876",
+      "all_released": true,
+      "delivery_acknowledged": true,
+      "actual_model": "gpt-6-luna per live provider"
+    },
+    "worker_delivery_and_ack": {
+      "delivery_receipt": "orca-research-wave1002-1003-check1-v1.json",
+      "delivery_sha256": "32fa4b589a199bc3b713c90bffce8286dd5758b400482ad9a352090f60f92f15",
+      "ack_receipt": "orca-research-wave1002-1003-ack1-v1.json",
+      "ack_sha256": "6e1c2f6ed3cba16aab5d33911b7e77f3dc28543a6e29ef4b57082d1f9e88acda",
+      "acknowledged_delivery_id": "delivery_8ca230e330b3",
+      "worker_done_messages": [
+        {"round": 1002, "task": "task_09787e4915c4", "dispatch": "ctx_b4fa1c6d05e0", "report_sha256": "f2e7c8acb9e2891b69b725178b5bfbf68ac33981637f5f6b1c4ee001c4d3b397"},
+        {"round": 1003, "task": "task_d591fe8588ac", "dispatch": "ctx_40da6233137a", "report_sha256": "0dfbb8c78161caabb6c9ae675c7b7806f9682b3cebfb57ef8fa2edc10e7d096b"}
+      ]
+    },
+    "live_receipt_reconciliation": {
+      "round1002": {"path": "orca-research-round1002-live-v1.json", "sha256": "14ab3c7dc2cf124b2977d541579728f76848a5a2f7a87cb23baa8e21cfa12ff8", "provider_model": "gpt-6-luna", "snapshot_state": "succeeded/completed", "release": "released; transcript captured"},
+      "round1003": {"path": "orca-research-round1003-live-v1.json", "sha256": "113b0241dc32dcf3ee7467511580a628b35ecf9e1df5c7503ba714f2b91de546", "provider_model": "gpt-6-luna", "snapshot_state": "in_progress at snapshot time", "resolution": "Later worker_done message, delivery acknowledgement, completion manifest, and released/captured terminal confirm completion."}
+    },
+    "dispatch_eligibility_at_launch": {
+      "path": "orca-research-wave1002-1003-v1.json",
+      "sha256": "fdf65d1d21dac9334b06e22e4352aa9871a949b9cae3b2f14134467b221a0fce",
+      "round1002_schedulable_now": true,
+      "round1003_schedulable_now": true,
+      "prerequisites_recorded": "Exact source pins and both closed/fault-free/owner-closed 78K diagnostic arms were recorded; the new tasks were source-only and asserted no performance/adoption gate. They are distinct from R1001's blocked conditional performance follow-ups."
+    },
+    "specs": {
+      "round1002": {"path": "orca-research-round1002-spec-v1.txt", "bytes": 3775, "sha256": "c32f36eb83c1511ba05dd23422555af582b0a1c1138140df4306b8800a061502", "classification": "decision support"},
+      "round1003": {"path": "orca-research-round1003-spec-v1.txt", "bytes": 2892, "sha256": "691e6f293f2cd1feb363bad1ed28cd46aa414ba9b4d611247582d873bd938840", "classification": "knowledge collection"}
+    }
+  },
+  "reports": {
+    "round1002": {
+      "path": "research-round1002-v1.txt",
+      "bytes": 13221,
+      "sha256": "f2e7c8acb9e2891b69b725178b5bfbf68ac33981637f5f6b1c4ee001c4d3b397",
+      "body_reviewed": true,
+      "assessment": "Substantive, bounded and novel: distinguishes expert-major all-token accumulation from the existing 16K/two-piece window, gives full-context lower bounds, identifies shared and route scratch, callback/lease obligations, and route-slot versus expert-ID numerical order. Its generic vLLM/SGLang descriptions support grouped expert dispatch/workspaces only; the report correctly declines to infer this model branch's algorithm, numerical match, speed or adoption.",
+      "provenance_and_license": {
+        "Strata": "Pinned local source is under repository MIT license. No XeStrata source, code, helper or proposal was used or reviewed.",
+        "vllm_reference": {"commit": "c67fe497a25d5af10a6ca0be9d18bcdd42cac4f1", "path": "docs/design/fused_moe_modular_kernel.md", "license": "Apache-2.0", "scope": "Official design documentation: grouped/batched expert inputs, workspace shapes, and flexible placement of TopK weight/reduction."},
+        "sglang_reference": {"commit": "a9c97c9f6973c03e778d1fe1e63a6b9f58a55012", "path": "docs/docs/advanced_features/expert_parallelism.mdx", "license": "Apache-2.0", "scope": "Official design documentation: dispatch, permutation, grouped GEMM, combine and multi-round long-sequence dispatch."},
+        "evidence_limit": "Immutable docs and repository LICENSE files were checked; these references are not evidence that the exact Qwen3.8-Flash-Next model branch uses this schedule or arithmetic, and no implementation code was copied."
+      },
+      "material_corrections": [
+        "The report's table labels n*N*2 as existing BF16 residual-bank bytes, but the pinned model residual width is D=HC*N=10,240. Correct bank sizes are 1,606,696,960 B at 78,452 rows and 5,368,709,120 B at 262,144; n*N*2 is only one N-wide plane. This matches the supplied all-GPU residual-bank receipt.",
+        "The report's all-token HC injection row uses n*5,120*4. Pinned source defines HC=4 and writes injection + row*HC, so the actual float injection view is n*HC*4: 1,255,232 B at 78,452 and 4,194,304 B at 262,144. This error overstates that view by 1,280x; it does not change the mixed-plus-accumulator lower bound.",
+        "998,443,520 B is the fixed custom-window view reservation/check in moe_window.inc, not the size of the allocator's m.region. Under the required T=8192, compact-MoE, MMQ=0 layer-major gates, legacy moe_set_bytes alone reserves at least 1,087,671,808 B including Alloc guards; m.region is max(GDN,QSA,MoE), so its actual bytes are at least that and may be larger. This allocation is already reserved scratch, not extra free VRAM or permission to consume the 512 MiB headroom."
+      ],
+      "main_hypothesis_source_review": {
+        "path": "moe-expert-major-window-source-hypothesis-v1.json",
+        "sha256": "a8f77a69e1dda64a4f9a8d54da98717a34754a0a881f7cbaa776ad0738d39ce3",
+        "conclusion": "A phased 49,152-row layout is source-capacity plausible inside the already allocated region, conditional on replacing the current 16,384-row helper and proving phase-specific aliases. The source-only arithmetic does not require the full 78,452- or 262,144-row planes and does not add a GPU allocation.",
+        "region_and_working_set_bytes": {
+          "current_region_guaranteed_lower_bound": 1087671808,
+          "rows_32768_mixed_bf16_plus_fp32_accumulator": 503316480,
+          "rows_49152_mixed_bf16_plus_fp32_accumulator": 754974720,
+          "rows_49152_phase_a_peak": 854002944,
+          "rows_49152_phase_b_peak": 878184960,
+          "rows_49152_remaining_vs_region_lower_bound": 209486848,
+          "rows_78452_mixed_bf16_plus_fp32_accumulator": 1205022720,
+          "rows_78452_pair_exceeds_region_lower_bound_by": 117350912,
+          "rows_262144_mixed_bf16_plus_fp32_accumulator": 4026531840,
+          "rows_262144_pair_exceeds_region_lower_bound_by": 2938860032,
+          "calculation": "Phase A counts full mixed+accumulator, four W*K route planes (IDs/weights/source/group-slot), full HC injection and scalar-gate planes, plus 8,192-row logits, shared gate/up/hidden and shared-output tiles. Phase B counts full mixed+accumulator, the same route planes, and 8,192-row gather/GU/hidden/BF16-down-output tiles. Each view includes the source allocator's 256-byte alignment/guard reservation. The larger phase peak is below the guaranteed region lower bound. Existing DQ weight buffers and 64 MiB GEMM scratch remain in their pre-existing outer arena; they were not counted as region space or newly freed memory."
+        },
+        "live_views_and_contract": [
+          "m.region is explicitly shared by attention and MoE; each buffered attention piece is written to the residual bank and drained before the FFN-only helper. The candidate may overlay that region after those readers retire, but must prove every view/address and phase lifetime in the replacement carve.",
+          "m.emb is only T*N FP32 (83,886,080 B at T=8192), enough for 16,384 BF16 mixed rows. It cannot hold 32,768/49,152 rows; the full BF16 mixed plane must live in m.region while m.emb/m.mixed_bf and m.xn16/lo/gated/injection scratch serve the existing per-chunk producer path.",
+          "Current helper keeps expert operators at J=8192: gather, BF16 GU, SwiGLU hidden and BF16 down-output tiles. DQ GU/down weights live in m.dq_gu/m.dq_d outside m.region; the same in-order m.cs queue orders dequantization and GEMM readers. GEMM scratch is also outside m.region. Reuse/overwrite still requires the actual queue and reader lifetimes to be retained.",
+          "The current entry and route planner reject windows above 2*T=16,384. Supporting 32,768/49,152 needs a wider controller window and route planner; a bounded source map, slot map, injection, callback/MTP handoff, cancellation, checked lease and final drain must remain intact.",
+          "Pinned route() selects top-k without replacement, and MoeWindowRoutes rejects same-token duplicate IDs before upload. Main notes existing hot fixtures may contain repeated experts per token; preserve an explicit duplicate preflight rejection or provide deterministic duplicate-safe accumulation. Unconstrained FP32 atomics can race and reorder sums.",
+          "Current native16::combine accumulates routed BF16 outputs with FP32 FMA in original slot order, then adds BF16 shared output times sigmoid(FP32 gate), then BF16-stores. Expert-ID order with shared-first initialization changes both summation order and shared-term position; exact SGLang/vLLM branch precision and output comparison remain required."
+        ],
+        "limits": "These are source-derived capacity calculations, not an implemented allocator proof, correctness result, clean performance result, or adoption. The 512 MiB reserve remains untouched. Full 78,452/262,144 pair-only planes do not fit the current region; external allocation would be a separate memory-admission decision."
+      },
+      "measurement_boundary": "The closed traced diagnostic has one sample per 78,453-token prompt: 492.5 tok/s at GPU residual rows 32,768 and 574.8 tok/s at all-GPU placement. The cohort records performance_adopted=false, general_quality_qualified=false, and physical262144_RESTORE_qualified=false. These traced values do not establish route or GDN bottlenecks or clean performance; Main's clean serialized cohort is pending."
+    },
+    "round1003": {
+      "path": "research-round1003-v1.txt",
+      "bytes": 17986,
+      "sha256": "0dfbb8c78161caabb6c9ae675c7b7806f9682b3cebfb57ef8fa2edc10e7d096b",
+      "classification": "knowledge collection",
+      "body_reviewed": false,
+      "metadata_only_review": "Read the spec and first six retrieval/source-boundary lines only. The topic is one coherent, transferable GDN prefill algorithm and Xe2/SYCL mapping survey; it is distinct from R964's output16-only GDN source candidate. The 17,986-byte report fits its 18,000-byte budget. Findings, citation depth and source/license details inside the body were not audited and remain held.",
+      "retrieval_metadata": {
+        "topic": "Chunk-parallel gated DeltaNet prefill algorithms and Xe2 mapping",
+        "hold_body_for_main": true,
+        "retrieval_trigger": "A concrete measured GDN question after separate GDN phase attribution distinguishes GPU work from submission gaps/waits; then retrieve only relevant sections.",
+        "schedulable_now_for_retrieval": false,
+        "current_source_context": "Pinned Strata path calls GDN gates, convolution and recurrence per 8,192-row chunk with FP32 recurrent state; native16 path metadata says GDN internals remain FP32. This local source does not show that an external chunk-WY/scan algorithm implements this model branch.",
+        "provenance_limit": "No R1003 body or external source was inspected for this review. Verify exact upstream commits/licenses if retrieval is triggered; XeStrata remains excluded."
+      }
+    }
+  },
+  "prior_index_and_reviews": {
+    "research_index": {"path": "research-index.json", "bytes": 478765, "sha256": "e6e52288cc1ca759cce42c51bb4b2ff0ffb7c17ce87414186a501da86c8d51e8", "contains_round1002": false, "contains_round1003": false, "edited": false},
+    "round1001_review": {"path": "research-review-round1001-v1.json", "bytes": 17965, "sha256": "dc2ecfbfd9b6105dd05c66ae8d7a0231bdeb8a8d3680251987a79c3e6310ce80", "relevant_metadata": "R1000 body remains held. R1001 corrected R998's aged receipt to 140/141 start<submit failures and retained unqualified timestamp/performance limits; its conditional performance follow-ups were schedulable_now=false. R1002/R1003 were separately scoped source-only tasks with explicit true eligibility and completed diagnostics."},
+    "round964_review": {"path": "research-review-round964-v1.json", "bytes": 8168, "sha256": "13eae04202e264e96723bf5b654e110426906b8d529d50cf92c5146ad28d84e7", "relevant_metadata": "GDN output16-only v2 passed source review for gated staged qualification, but was not compiled/run/adopted and claims no arena saving. This is distinct from R1003's held algorithm collection."},
+    "gdn_output16_only_candidate": {"applied": false, "compiled": false, "gpu_executed": false, "performance_adopted": false, "physical262144_qualified": false, "source_review_disposition": "source_corrected_accept_for_staged_qualification_with_gates"}
+  },
+  "indexing_guidance": {
+    "no_index_edit_performed": true,
+    "recommended_entry": "At the next integration boundary, pin R1002 report/spec hashes, source corrections, bounded-window source-capacity conclusion and Main-owned next gate; pin R1003 report/spec hashes plus knowledge tags/retrieval trigger and schedulable_now=false. Preserve body_read=false for R1003 until a concrete measured GDN question exists.",
+    "main_read_boundary": "Main may use this review's short operational conclusion and corrections. Keep R1003's collection body held."
+  },
+  "next_scopes": [
+    {
+      "scope_id": "moe-32k-49k-window-exact-carve-and-route-contract",
+      "classification": "Main-owned source/component gate; no researcher dispatch",
+      "schedulable_now": false,
+      "prerequisites": [
+        {"requirement": "Pinned source and 78K diagnostic provenance", "state": "met", "evidence": "Build v2 source commit/hash manifest; both diagnostic arms closed, fault-free and owner-closed."},
+        {"requirement": "Serialized clean measurement cohort closes before component execution", "state": "missing", "evidence": "Main reports six clean GPU benchmarks are still running; no process inspection was performed."},
+        {"requirement": "Prove concrete 32K/49K region offsets, 256-byte guards, alias intervals, duplicate route handling, cancellation and callback/MTP behavior", "state": "missing", "evidence": "Only this source-level phased byte bound exists; current route helper remains capped at 16,384 rows."}
+      ],
+      "finite_question": "Can the <=8,192-row operator pipeline use a 32,768- or 49,152-row expert-major window inside the existing m.region while retaining every current queue/lease/callback and route duplicate contract?",
+      "next_action": "After the clean cohort closes, Main owns the exact source carve and smallest component correctness test. Do not allocate from the 512 MiB reserve or call this performance adoption."
+    },
+    {
+      "scope_id": "exact-qwen38-sglang-vllm-moe-numerical-path",
+      "classification": "decision support",
+      "schedulable_now": false,
+      "prerequisites": [
+        {"requirement": "Identify and pin the actual SGLang/vLLM model branch, quantization and routed combine implementation matching this GGUF", "state": "missing", "evidence": "R1002's official design docs are generic and its public SGLang model reference is not an immutable verified matching branch."},
+        {"requirement": "Capture candidate router IDs/weights, per-expert BF16 outputs and current/candidate combine boundaries", "state": "missing", "evidence": "No new component comparison has run; Main owns implementation/testing."}
+      ],
+      "finite_question": "Does expert-major accumulation match the pinned model execution path at router, BF16 output, combine and final HC residual boundaries?",
+      "report_budget_bytes": 12000,
+      "next_action": "Keep as conditional decision support until both prerequisites are pinned; do not reject solely for differing from FP32/ggml."
+    },
+    {
+      "scope_id": "gdn-prefill-algorithm-retrieval-from-round1003",
+      "classification": "knowledge retrieval; existing collection, not a new session",
+      "schedulable_now": false,
+      "prerequisites": [
+        {"requirement": "Source-qualified GDN phase evidence separates device work from host submission and completion polling", "state": "missing", "evidence": "Current traced/coarse profiles and timestamp records do not qualify a GDN bottleneck."},
+        {"requirement": "A concrete algorithm or mapping question identifies the selected layer shapes and FP32 recurrent-state contract", "state": "missing", "evidence": "Only the current source path is known; no measured GDN-bound decision is established."}
+      ],
+      "finite_question": "Which held R1003 sections answer the measured, model-specific GDN prefill question after source and phase attribution are pinned?",
+      "next_action": "Keep report body held; inspect only matching sections when both prerequisites are recorded."
+    }
+  ]
+}

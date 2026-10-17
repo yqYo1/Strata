@@ -1,0 +1,6 @@
+R998は技術比較と原因候補が充実していますが、aged-v2の件数を逆に読んでいます。実際は141件中140件でstart<submit、全141件のend-startは52 ns以上です。モデル診断の依頼下限32768に対し実promptは39262 tokens（engine配置39261行）でした。
+この結果は20秒待機条件との関連を強めますが、原因やNTP、性能は示しません。元の失敗と全triples条件はそのまま保持してください。
+R999はsource-contract調査として採用可能です。4つの対象source hashは指定worktreeとbuild-v2のpinに一致し、現行adapterにはhost既知のjob scalarが必要です。性能主張はありません。
+R1000は内容・出典とも十分で、R989/R993との重複を超えるactivation-only制約とBF16融合案があります。knowledge collectionとして本文を保留し、条件を満たす時だけ検索してください。
+次のresearchはすべて schedulable_now=false です。raw clock captureはMain所有で、現在の直列64K測定が閉じてから準備します。
+wave completion receiptは3件すべてのreleaseとacknowledgementを確認しています。reviewerはindex、元reports、測定receiptを変更していません。
