@@ -45,6 +45,10 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     const bool native16_on = native16::requested();
     const bool window_requested = moe_window_requested();
     const bool window_on = window_requested && !requires_prefix_checkpoints;
+    const bool command_profile_on = sycl_backend::command_profile::requested();
+    if (command_profile_on && (!window_on || g.n_layers != 48)) {
+        err = "prefill command profile requires window2 and48 layers"; return false;
+    }
     if (window_on && (!native16_on || m.T != 8192 || !m.scratch_alias)) {
         err = "prefill MoE window: requires native16 BF16, chunk8192 and scratch alias"; return false;
     }
@@ -361,6 +365,8 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
 
     std::unique_ptr<MoeWindowContext> window_context;
     if (window_on) window_context.reset(new MoeWindowContext);
+    if (command_profile_on)
+        window_context->command_trace.reset(new sycl_backend::command_profile::Trace(m.cs));
     struct PrefixBorrow {
         Impl& m; strata::kernels::QsaBf16PackedScratch previous;
         ~PrefixBorrow() noexcept { m.qsa_prefix = previous; }

@@ -41,6 +41,7 @@
 #include "strata/prefill/native16.hpp"
 #include "strata/prefill/moe_window_routes.hpp"
 #include "strata/prefill/qsa_native16.hpp"
+#include "strata/sycl/command_profile.hpp"
 #include "strata/kernels/qsa_bf16_attention_late_flags.hpp"
 #include "strata/kernels/qsa_bf16_prefix.hpp"
 #include "strata/kernels/mrope.hpp"
@@ -443,6 +444,7 @@ struct MoeWindowContext {
     std::shared_ptr<const detail::MoeWindowRoutes> routes;
     std::function<bool(int64_t, int64_t, std::string&)> complete_piece;
     uint64_t windows = 0, dequants = 0, jobs = 0, source_bytes = 0;
+    std::unique_ptr<sycl_backend::command_profile::Trace> command_trace;
 };
 bool moe_window_requested() {
     static const bool enabled = [] {

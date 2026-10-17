@@ -110,9 +110,17 @@ bool Prefill::run_moe_window(int64_t layer, int64_t first_row, int64_t rows, std
     }
     // Both source uploads own a full W*K plane, validated above. All maps are
     // immutable and retained until the final checked write drain below.
-    if (cudaMemcpyAsync(ids_slots, owner.routes->slot_map().data(), size_t(rows * K * 4), cudaMemcpyHostToDevice, m.cs) != cudaSuccess ||
-        cudaMemcpyAsync(source, owner.routes->source_rows().data(), size_t(rows * K * 4), cudaMemcpyHostToDevice, m.cs) != cudaSuccess) {
-        err = "prefill MoE window: full route map upload"; return false;
+    namespace cp = sycl_backend::command_profile;
+    auto command_trace = owner.command_trace ? owner.command_trace->begin(layer, first_row) : cp::Frame{};
+    if (command_trace)
+        for (const auto& job : owner.routes->jobs())
+            command_trace.consider(job.expert, job.global_row, job.rows);
+    {
+        auto tag = command_trace.tag(cp::Kind::upload, -1, 0, rows, K, 4);
+        if (cudaMemcpyAsync(ids_slots, owner.routes->slot_map().data(), size_t(rows * K * 4), cudaMemcpyHostToDevice, m.cs) != cudaSuccess ||
+            cudaMemcpyAsync(source, owner.routes->source_rows().data(), size_t(rows * K * 4), cudaMemcpyHostToDevice, m.cs) != cudaSuccess) {
+            err = "prefill MoE window: full route map upload"; return false;
+        }
     }
     const auto& layout = strata::kernels::cpu::expert_layout();
     const auto& format = layout.fmt[size_t(layer)];
@@ -126,10 +134,18 @@ bool Prefill::run_moe_window(int64_t layer, int64_t first_row, int64_t rows, std
             sycl_backend::validate_device_span(blob, size_t(layout.blob_bytes(layer)), queue);
             sycl_backend::validate_device_span(m.dq_gu[0], size_t(2 * FF * N * 2), queue);
             sycl_backend::validate_device_span(m.dq_d[0], size_t(N * FF * 2), queue);
-            strata::kernels::iq_dequant_gu_f16(format.gu_type, blob, blob + format.up_off,
-                format.n_ff, format.n_embd, m.dq_gu[0], m.cs);
-            strata::kernels::iq_dequant_f16(format.d_type, blob + format.down_off,
-                format.n_embd * format.n_ff, m.dq_d[0], m.cs);
+            {
+                auto tag = command_trace.tag(cp::Kind::dequant_gu, job.expert, job.global_row, job.rows,
+                    2 * format.n_ff, format.n_embd, format.gu_type);
+                strata::kernels::iq_dequant_gu_f16(format.gu_type, blob, blob + format.up_off,
+                    format.n_ff, format.n_embd, m.dq_gu[0], m.cs);
+            }
+            {
+                auto tag = command_trace.tag(cp::Kind::dequant_down, job.expert, job.global_row, job.rows,
+                    format.n_embd, format.n_ff, format.d_type);
+                strata::kernels::iq_dequant_f16(format.d_type, blob + format.down_off,
+                    format.n_embd * format.n_ff, m.dq_d[0], m.cs);
+            }
             loaded = job.expert; ++owner.dequants; ++stats_.experts_resident;
         }
         if (job.rows < 1 || job.rows > int64_t(J) || job.global_row < 0 ||
@@ -140,19 +156,37 @@ bool Prefill::run_moe_window(int64_t layer, int64_t first_row, int64_t rows, std
         sycl_backend::validate_device_span(mixed, size_t(rows * N * 2), queue);
         sycl_backend::validate_device_span(source + job.global_row, size_t(job.rows * 4), queue);
         sycl_backend::validate_device_span(down + int64_t(job.global_row) * N, size_t(job.rows * N * 2), queue);
-        gather_rows16(mixed, source + job.global_row, gathered, job.rows, N, m.cs);
-        m.gemm.f16_out16(gathered, m.dq_gu[0], gu, job.rows, 2 * FF, N, true);
-        native16::swiglu(gu, hidden, job.rows, m.cs);
-        m.gemm.f16_out16(hidden, m.dq_d[0], down + int64_t(job.global_row) * N, job.rows, N, FF, true);
+        {
+            auto tag = command_trace.tag(cp::Kind::gather, job.expert, job.global_row, job.rows, N);
+            gather_rows16(mixed, source + job.global_row, gathered, job.rows, N, m.cs);
+        }
+        {
+            auto tag = command_trace.tag(cp::Kind::gu, job.expert, job.global_row, job.rows, 2 * FF, N, format.gu_type);
+            m.gemm.f16_out16(gathered, m.dq_gu[0], gu, job.rows, 2 * FF, N, true);
+        }
+        {
+            auto tag = command_trace.tag(cp::Kind::swiglu, job.expert, job.global_row, job.rows, FF);
+            native16::swiglu(gu, hidden, job.rows, m.cs);
+        }
+        {
+            auto tag = command_trace.tag(cp::Kind::down, job.expert, job.global_row, job.rows, N, FF, format.d_type);
+            m.gemm.f16_out16(hidden, m.dq_d[0], down + int64_t(job.global_row) * N, job.rows, N, FF, true);
+        }
         ++owner.jobs;
     }
-    native16::combine(down, ids_slots, weights, shared, shared_gate, bo, rows, rows * K, m.cs);
-    for (int64_t at = 0; at < rows; at += m.T)
+    {
+        auto tag = command_trace.tag(cp::Kind::combine, -1, 0, rows, N, K);
+        native16::combine(down, ids_slots, weights, shared, shared_gate, bo, rows, rows * K, m.cs);
+    }
+    for (int64_t at = 0; at < rows; at += m.T) {
+        auto tag = command_trace.tag(cp::Kind::write, -1, at, std::min(m.T, rows - at), D);
         native16::write(residual + at * D, bo + at * N, injection + at * HC, std::min(m.T, rows - at), m.cs);
+    }
     if (m.layer_major_profile) m.layer_major_profile->end(detail::LayerMajorCoarseProfile::moe, m.cs);
     if (cudaStreamSynchronize(m.cs) != cudaSuccess) {
         err = "prefill MoE window: both HC writes drain"; return false;
     }
+    command_trace.after_checked_drain();
     ++owner.windows; owner.source_bytes += uint64_t(rows * K * 4);
     owner.routes.reset(); // DMA AND all kernel readers are retired; callback/MTP can reuse arenas
     return true;

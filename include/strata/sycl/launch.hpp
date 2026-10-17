@@ -1,6 +1,7 @@
 #pragma once
 
 #include "strata/sycl/runtime.hpp"
+#include "strata/sycl/command_profile_hook.hpp"
 #include <initializer_list>
 #include <limits>
 #include <stdexcept>
@@ -58,6 +59,7 @@ inline sycl::queue &queue_for(void *stream) {
 }
 
 inline void finish(void *stream, sycl::event event) {
+  command_profile::observe(stream, event);
   if (!stream)
     runtime_for()->wait(event);
 }
