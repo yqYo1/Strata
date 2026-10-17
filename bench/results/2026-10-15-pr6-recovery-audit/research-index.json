@@ -5,13 +5,6 @@
   "archive_lookup": "Read the pinned historical index and git grep that revision before repeating research. Retrieve selected old report sections only when their question is relevant; do not restore whole directories.",
   "main_reads_collection_bodies_on_arrival": false,
   "active_reports": [],
-  "current_decision_review": {
-    "path": "research-round1059-review-v1.txt",
-    "sha256": "9a3acaa8be75326506ca08e4a48fb510c9689e470de7ee671f64ee435fa346bb",
-    "consumer": "Current independently authored GDN chunk64 numerical/provenance contract; review when this implementation decision closes."
-  },
-  "current_implementation": "../../../src/prefill/sycl/gdn_chunk64.cpp",
-  "current_contract": "../../sycl/gdn_chunk64/README.md",
   "conditional_scope": {
     "schedulable_now": false,
     "question": "Localize one measured general GDN mismatch to one pinned framework rounding boundary.",
@@ -104,7 +97,6 @@
       "active_body": false
     }
   ],
-  "current_fixture": "../../sycl/gdn_chunk64",
   "current_attention_decision": {
     "report_sha256": "4e4e89f035e9f3c8cd3767af59caf5517df5da5799c094c6890ee6dc5f71a4b1",
     "review_sha256": "9f787293e3c498e0cc8a195eab97585967027201ca8ac177f5f0c981ef087a2a",
@@ -237,7 +229,8 @@
       "schedulable_now": true,
       "prerequisite": "QSA comparison closed; current-path profile and exact planned-job census are next, with source/config frozen before build/run.",
       "observer": "Use existing coarse/QSA/CPU-wait profiles. New per-window host metadata census adds no tensor readback or GPU work and reconciles planned jobs with final retired totals.",
-      "limitations": "Diagnostic timing and requested DMA bytes, not clean speed, physical bandwidth/saturation or an additive critical-path partition."
+      "limitations": "Diagnostic timing and requested DMA bytes, not clean speed, physical bandwidth/saturation or an additive critical-path partition.",
+      "state": "Prepared committed official64K-minimum/actual78K diagnostic, source51a6f70a, running with owned finite budgets; inspect the existing handle/receipt, do not launch another."
     },
     "grouped_candidate": {
       "schedulable_now": false,
@@ -247,6 +240,16 @@
         "Full262144-context memory accounting before any added residency."
       ]
     },
-    "retention": "Keep report/review pair only through this census and ensuing grouping decision; no further generic grouped-GEMM survey."
+    "retention": "Keep report/review pair only through this census and ensuing grouping decision; no further generic grouped-GEMM survey.",
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/moe-grouped-native16-feasibility.md",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/moe-grouped-native16-feasibility-review.json",
+    "retained_report_bytes": 19397
+  },
+  "closed_gdn_decision": {
+    "implementation": "../../../src/prefill/sycl/gdn_chunk64.cpp",
+    "contract": "../../sycl/gdn_chunk64/README.md",
+    "fixture": "../../sycl/gdn_chunk64",
+    "result": "native-gdn-model-current.json",
+    "decision": "No material model gain: existing GDN retained. New GDN research remains conditional on a concrete adoption/mismatch question and actual framework runtime evidence."
   }
 }
