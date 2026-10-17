@@ -218,8 +218,9 @@ def main():
                                                      text_cap=32 << 20, total_cap=1 << 30)
                 text = stdout.read_text(errors='replace')
                 phase['case_results'] = [line for line in text.splitlines()
-                                         if line.startswith(('case T=', 'fixture_status='))]
-                if any(line.startswith('case T=') for line in phase['case_results']):
+                                         if line.startswith(('case T=', 'fixture_status=',
+                                                             'dyadic_diagnostic', 'output_difference'))]
+                if any(line.startswith(('case T=', 'dyadic_diagnostic')) for line in phase['case_results']):
                     phase['GPU_executed'] = True
                 phase['complete'] = owner_tools.closed(command)
                 phase['exit_code'] = command.get('exit_code')
@@ -238,6 +239,8 @@ def main():
         except BaseException as error:
             phase['error'] = repr(error)
         finally:
+            record['processes_closed'] = owner.active is None and all(
+                c.get('direct_child_reaped') and c.get('session_empty') for c in owner.commands)
             record['ownership_closed'] = owner.active is None and all(owner_tools.closed(c) for c in owner.commands)
             if not record['ownership_closed']:
                 phase['passed'] = False

@@ -1,5 +1,5 @@
 {
-  "source_commit": "42a664413a30a81fd2f9b56a533f60e025dee762",
+  "source_commit": "e4f64761c0f19681909f9ed5b6f343020c4eaad8",
   "runtime_archive": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-score-gemm-entry-engine-build-v2/build/libstrata_sycl_runtime.a",
     "sha256": "ba34c7d19cf30499c215e86289a921461b9ac426df6f73f61c6769b65d8ee573",
@@ -43,7 +43,7 @@
     "-o",
     "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current/sycl_gdn_chunk64"
   ],
-  "binary_sha256": "995b753adee1df2730cc16e45eaa68dd43d3de61fcec87b1391a3068418c4adf",
+  "binary_sha256": "511b5b9ac18d89bb71edbc5614b532c791259ce895b15be39ff414b1fa3b9720",
   "ownership_closed": false,
   "smoke": {
     "passed": false,
@@ -56,9 +56,15 @@
     "exit_code": 1,
     "fresh_faults": [],
     "boot_unchanged": true,
-    "error_excerpt": "fixture_status=FAIL exact FP16 oracle mismatch",
-    "failure_mechanism": "Device FP32 carry passed exact dyadic oracle; final FP16 output differed. Counts, raw BF16 and normalization-localized diagnostics required before changing criteria.",
-    "carry_exact_passed_before_output_failure": true
+    "error_excerpt": "fixture_status=FAIL exact BF16 raw mismatch",
+    "diagnostic_lines": [
+      "output_difference i=95 actual_bits=32768 scalar_FP32_bits=0 FP64_norm_bits=0",
+      "output_difference i=191 actual_bits=32768 scalar_FP32_bits=0 FP64_norm_bits=0",
+      "output_difference i=287 actual_bits=32768 scalar_FP32_bits=0 FP64_norm_bits=0",
+      "output_difference i=632 actual_bits=32768 scalar_FP32_bits=0 FP64_norm_bits=0",
+      "dyadic_diagnostic T=1 carry_exact=PASS raw_BF16_unequal=81 output_unequal=41 output_max_ULP=1 output_max_abs=0 FP64_norm_unequal=41"
+    ],
+    "failure_mechanism": "Strict bit equality rejected final FP16 signed zero: 41 differences, max absolute error 0, max ordered ULP 1. Raw BF16 has 81 bit differences; numerical raw equality still needs measurement."
   },
   "smoke_command": [
     "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current/sycl_gdn_chunk64",
@@ -72,44 +78,5 @@
   "command": [
     "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current/sycl_gdn_chunk64",
     "--smoke"
-  ],
-  "retirement": {
-    "state": "retired",
-    "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current",
-    "source_commit": "42a664413a30a81fd2f9b56a533f60e025dee762",
-    "verified_project_inputs": 151,
-    "files": [
-      {
-        "path": "owned/build.stderr",
-        "bytes": 0,
-        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-      },
-      {
-        "path": "owned/build.stdout",
-        "bytes": 0,
-        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-      },
-      {
-        "path": "owned/smoke.stderr",
-        "bytes": 86924,
-        "sha256": "d3b3fc2de5889364b7caa087471151bb0c33c96587de5951f91341081fbdd5c2"
-      },
-      {
-        "path": "owned/smoke.stdout",
-        "bytes": 124,
-        "sha256": "643cc00bffcc0f4950aa0bc5fdbb0ee3ef0f583103b1c84d86fe4175a90d1efc"
-      },
-      {
-        "path": "record.json",
-        "bytes": 32199,
-        "sha256": "b143e594ea6cdeddc708b022b60c56549b98899b2aebd8fbb6a6aae3fb17cae1"
-      },
-      {
-        "path": "sycl_gdn_chunk64",
-        "bytes": 243896,
-        "sha256": "995b753adee1df2730cc16e45eaa68dd43d3de61fcec87b1391a3068418c4adf"
-      }
-    ],
-    "reason": "Closed superseded qualification; source/recipe recovered from Git."
-  }
+  ]
 }

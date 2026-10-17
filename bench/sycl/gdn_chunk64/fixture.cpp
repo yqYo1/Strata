@@ -19,6 +19,9 @@ namespace sb=strata::sycl_backend;
 namespace k=strata::kernels;
 std::shared_ptr<sb::Runtime> rt;
 void need(bool ok,const char *message) { if(!ok) throw std::runtime_error(message); }
+// The readout's RMS normalization/sigmoid contract does not distinguish signed
+// zero. Keep exact bits for every nonzero BF16/FP16 value; use no error tolerance.
+bool same_value(uint16_t a,uint16_t b){return a==b || ((a|b)&0x7fff)==0;}
 void drain() noexcept { sb::checked_cleanup([]{if(rt)rt->wait();},[]{},"GDN chunk64 fixture drain"); }
 struct Drain {~Drain() noexcept {drain();}};
 template<class T> struct Buffer {
@@ -87,12 +90,16 @@ void run(int T){
   const auto actual=state.get();const auto result=out.get();
   need(actual==expected,"exact FP32 carry mismatch");
   const auto raw=scratch.raw.get();
-  size_t raw_unequal=0,double_unequal=0,unequal=0;float max_abs=0.f;
+  size_t raw_unequal=0,raw_value_unequal=0,double_unequal=0,unequal=0,value_unequal=0;float max_abs=0.f,raw_max_abs=0.f;
   unsigned max_ulp=0;
   for(size_t i=0;i<expected_output.size();++i){
     const int t=i/(HV*D),head=(i/D)%HV,d=i%D;
-    raw_unequal+=uint16_t(sycl::bit_cast<uint16_t>(raw[((size_t(t/64)*HV+head)*64+t%64)*D+d]))!=expected_raw[i];
+    const uint16_t raw_bits=sycl::bit_cast<uint16_t>(raw[((size_t(t/64)*HV+head)*64+t%64)*D+d]);
+    raw_unequal+=raw_bits!=expected_raw[i];
+    raw_value_unequal+=!same_value(raw_bits,expected_raw[i]);
+    raw_max_abs=std::max(raw_max_abs,std::abs(k::f32_from_bf16(raw_bits)-k::f32_from_bf16(expected_raw[i])));
     unequal+=result[Pad+i]!=expected_output[i];
+    value_unequal+=!same_value(result[Pad+i],expected_output[i]);
     auto ordered=[](uint16_t x){return (x&0x8000)?unsigned(0xffffu-x):unsigned(x+0x8000u);};
     const unsigned a=ordered(result[Pad+i]),b=ordered(expected_output[i]);
     max_ulp=std::max(max_ulp,a>b?a-b:b-a);
@@ -106,10 +113,12 @@ void run(int T){
       std::cout<<"output_difference i="<<i<<" actual_bits="<<result[Pad+i]<<" scalar_FP32_bits="<<expected_output[i]<<" FP64_norm_bits="<<exact<<std::endl;
   }
   std::cout<<"dyadic_diagnostic T="<<T<<" carry_exact=PASS raw_BF16_unequal="<<raw_unequal
+    <<" raw_value_unequal="<<raw_value_unequal<<" raw_max_abs="<<raw_max_abs
     <<" output_unequal="<<unequal<<" output_max_ULP="<<max_ulp<<" output_max_abs="<<max_abs
+    <<" output_value_unequal="<<value_unequal
     <<" FP64_norm_unequal="<<double_unequal<<std::endl;
-  need(raw_unequal==0,"exact BF16 raw mismatch");
-  need(unequal==0,"exact FP16 oracle mismatch");
+  need(raw_value_unequal==0,"exact BF16 nonzero value mismatch");
+  need(value_unequal==0,"exact FP16 nonzero value mismatch");
   for(int i=0;i<Pad;++i)need(result[i]==0x5500 && result[result.size()-Pad+i]==0x5500,"output guards");
   need(H.get()==h && Z.get()==z && G.get()==g && B.get()==beta && N.get()==gamma,"input mutation");
   auto reject=[&](auto action){bool refused=false;try{action();}catch(const std::invalid_argument&){refused=true;}need(refused,"invalid call admitted");};
@@ -127,7 +136,7 @@ void run(int T){
   invoke(state.data()+Pad,out.data()+Pad,T,scratch.view(),&rt->compute());rt->wait();
   need(state.get()==actual && out.get()==result,"repeat differs");
   std::cout<<"case T="<<T<<" heads=48 key_groups=16 state_width=128 oracle=exact_dyadic_orthogonal"
-    <<" carry=PASS output_FP16=PASS unequal="<<unequal<<" max_abs="<<max_abs
+    <<" carry=PASS raw_BF16=PASS output_FP16=PASS zero_sign_ignored=true unequal="<<unequal<<" max_abs="<<max_abs
     <<" guards=PASS inputs=PASS rejection=PASS repeat=PASS status=PASS"<<std::endl;
 }
 int main(int argc,char **argv){

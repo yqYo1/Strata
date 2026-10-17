@@ -12,6 +12,11 @@ drain. An unused BF16 V copy was removed, saving 96 MiB of scratch at 8192 token
 (workspace now 1,024,983,040 bytes). No GPU test, general numerical qualification,
 speed, model quality, full262144 or RESTORE result exists yet. Run the bounded
 dyadic smoke before general chunk-boundary and framework-contract comparisons.
+The first device run passed exact FP32 carry, but strict FP16 bit equality
+rejected signed zeros (41 differences with zero absolute error at T=1).
+Prospective smoke criteria now ignore only the sign of zero for BF16 readout
+and FP16 output, requiring exact bits for every nonzero value. This is not a
+general numerical tolerance, and original failed outcomes remain in Git.
 The earlier raw-pointer matrix API error is fixed by explicit local/global
 multi_ptr arguments. Superseded private source copies and build transcripts are
 not required to continue this implementation.
