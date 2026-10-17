@@ -25,6 +25,17 @@ rounded once to a BF16 inverse. Its output is genuine FP16 for the existing
 ssm_out projection, not BF16 bits reinterpreted as FP16. This schedule is not
 qualified as the SGLang XPU block16 numerical contract.
 
+The source audit at SGLang `877be297` traces the default XPU route to its
+Triton/FLA implementation:64-token chunks store BF16 inverse intermediates in
+16-token tiles. Temporal state defaults to FP32 with overrides; convolution
+state defaults to BF16 with a separate override. Strata intentionally retains
+its shared FP32 conv history for existing phase interoperability. No SGLang
+runtime was executed, so the target's actual activation/backend/pool settings
+and same-input numerical agreement remain unknown. Source defaults do not
+qualify this candidate. Further GDN research needs a concrete adoption question
+and captured runtime settings; the current speed result supplies no adoption
+case.
+
 The arena planner is shared by Prefill and the fixture. QKV storage is reused
 only after convolution/history update for lower-KKT and a disjoint inverse.
 Normalized input is dead before the carry history overwrites its storage;
