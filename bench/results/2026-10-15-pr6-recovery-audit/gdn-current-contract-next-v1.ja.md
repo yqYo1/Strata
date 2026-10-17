@@ -77,3 +77,15 @@ FP16出力が全トークンでビット一致した。候補と現行FP32との
 一般数値の認定・実モデルの速度/品質・物理262144・RESTOREは未完了。
 短い直交入力だけで一般入力を認定しない。
 R1059の[修正事項](research-round1059-review-v1.txt)を適用して検証を進める。
+
+数値差の大きさを評価する補助資料として、固定SGLang
+`877be2974aa151a984e52822c028276c2b1e9303`の
+[登録済みchunkテスト](https://github.com/sgl-project/sglang/blob/877be2974aa151a984e52822c028276c2b1e9303/test/registered/attention/test_chunk_gated_delta_rule.py)
+をローカルのghq cloneから確認した（15528 bytes、SHA256
+`61ee983ed4d441e6403d995456ac64a0df121e29817c617456c4474d902bb31a`）。
+BF16 Q/K/VとFP32の初期state poolを使い、chunkと逐次GPU基準の正規化前出力・
+終了stateを`atol=2e-2, rtol=1e-2`で比較する。これは同一ビットを要求する基準ではない。
+今回の小さい合成入力のraw/state絶対誤差はこの絶対許容値より小さいが、入力分布・
+gate/betaのdtypeや丸めの位置は同一ではなく、そのSGLangテストを実行した証拠でもない。
+RMSNorm後のFP16出力やモデル能力の合格へこの許容値を流用しない。
+現環境の既定Pythonにはtorch/triton/numpy/sglangがなく、SGLang実経路の比較は未実行。
