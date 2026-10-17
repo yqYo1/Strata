@@ -59,7 +59,8 @@ prefill／decode／warmupの内訳と全体への効果は新しい測定で確�
 Mainは元のR1052レポート本文を自動読み込みせず、レビューと必要なソースから
 この境界を選定した。
 
-現在の未完成ソースは`bench/sycl/gdn_chunk64`。full64 FP32 solveを一度
+現在の未完成カーネルは`src/prefill/sycl/gdn_chunk64.cpp`、fixtureは
+`bench/sycl/gdn_chunk64`。full64 FP32 solveを一度
 BF16へ丸める独立スケジュールで、XPUのblock16 BF16 scratchやCUDAの
 4-block配置との厳密な同一性はない。FP16 consumer変換前のBF16段階も
 比較する。runtime.hpp include、ホストDMAバッファ寿命、実行管理を修正した。

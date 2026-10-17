@@ -1,6 +1,8 @@
 # Private GDN chunk64 candidate
 
-Current unfinished Main implementation; repository MIT license applies. This
+Current unfinished Main implementation in `src/prefill/sycl/gdn_chunk64.cpp`
+and `include/strata/prefill/gdn_chunk64.hpp`; this directory owns the fixture.
+Repository MIT license applies. This
 is independently authored SYCL code, not an external kernel port or adoption.
 It preserves the loaded16/48head order, uses BF16 activation/scratch, FP32 carry,
 a full64 FP32 inverse rounded once and genuine FP16 output for the existing
@@ -41,6 +43,8 @@ python3 bench/sycl/gdn_chunk64/qualify.py build
 python3 bench/sycl/gdn_chunk64/qualify.py smoke
 python3 bench/sycl/gdn_chunk64/qualify.py boundaries
 python3 bench/sycl/gdn_chunk64/qualify.py general
+python3 bench/sycl/gdn_chunk64/qualify.py producer-smoke
+python3 bench/sycl/gdn_chunk64/qualify.py producer
 python3 bench/sycl/gdn_chunk64/qualify.py component-check
 python3 bench/sycl/gdn_chunk64/qualify.py component
 ```
@@ -50,6 +54,17 @@ immutable validation/tracing environment and qualified runtime ELF identities.
 It refuses to overwrite a previous candidate or reuse a changed source tree.
 Current compact evidence goes to `bench/results/2026-10-15-pr6-recovery-audit/`
 as `gdn-chunk64-current.json`; temporary full logs stay outside Git.
+
+The native producer is currently unqualified. It reads BF16 projected QKV,
+retains existing FP32 conv history, accumulates conv/SiLU locally in FP32,
+rounds the activation to BF16, then normalizes Q/K with FP32 local reductions
+and writes BF16 directly. It never materializes a full FP32 activation tensor.
+The producer fixture checks a separate CPU formula (two BF16 ULP or absolute
+1e-7 for its bounded synthetic inputs), exact history updates and split-call
+invariance, and direct BF16 recurrence with aligned conv/carry handoff. This
+diagnostic bound is not a general framework/model-quality tolerance. Projection
+GEMM rounding, full-model dispatch, memory budgeting and quality remain separate
+integration gates. CMake compiles the module but the model does not dispatch it.
 
 On B570, the resident8192 comparison uses identical decoded input values,
 one warmup and five rotating samples per arm. Clean processes omit tracing and

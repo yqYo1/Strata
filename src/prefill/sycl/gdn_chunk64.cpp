@@ -1,7 +1,7 @@
 // Main-authored independent chunk64 GDN implementation; repository LICENSE.
 // Numerical boundaries and references: gdn-current-contract-next-v1.ja.md.
 // No external kernel source copied. Private proposal, not product adoption.
-#include "candidate.hpp"
+#include "strata/prefill/gdn_chunk64.hpp"
 #include "strata/kernels/bf16_bits.hpp"
 #include "strata/kernels/f16_bits.hpp"
 #include "strata/sycl/launch.hpp"
@@ -73,6 +73,65 @@ Sizes sizes(int tokens) {
   const size_t chunks=(tokens+BT-1)/BT, padded=chunks*BT;
   return {padded*HK*D,padded*HV*D,padded*HV*BT,
           chunks*HV*D*D,padded*HV,padded*HV*BT};
+}
+void conv_bf16(float *history,const uint16_t *qkv,const float *weights,
+               uint16_t *normalized,int tokens,float eps,void *stream,
+               ConvEvents *events) {
+  require(tokens>0 && tokens<=8192 && stream && std::isfinite(eps) && eps>=0.f);
+  auto &queue=queue_for(stream);
+  const auto device=queue.get_device();
+  require(device.is_gpu() && device.get_info<sycl::info::device::vendor_id>()==0x8086 &&
+          device.get_info<sycl::info::device::max_work_group_size>()>=128 &&
+          device.get_info<sycl::info::device::max_work_item_sizes<1>>()[0]>=128 &&
+          device.get_info<sycl::info::device::local_mem_size>()>=4*sizeof(float));
+  const auto groups=device.get_info<sycl::info::device::sub_group_sizes>();
+  require(std::find(groups.begin(),groups.end(),32)!=groups.end());
+  const size_t elements=size_t(tokens)*C;
+  validate_spans({{history,size_t(C)*3*4},{normalized,elements*2}},
+                 {{qkv,elements*2},{weights,size_t(C)*4*4}},4);
+  for(auto span:{Span{history,size_t(C)*3*4},Span{normalized,elements*2},
+                 Span{qkv,elements*2},Span{weights,size_t(C)*4*4}})
+    validate_device_span(span.pointer,span.bytes,queue);
+  auto event=queue.submit([&](sycl::handler &handler) {
+    sycl::local_accessor<float,1> partial(4,handler);
+    handler.parallel_for(sycl::nd_range<1>(elements,D),
+      [=](sycl::nd_item<1> item) [[sycl::reqd_sub_group_size(32)]] {
+        const int d=item.get_local_linear_id(),cell=item.get_group_linear_id();
+        const int token=cell/(C/D),head=cell%(C/D),channel=head*D+d;
+        float value=0.f;
+        for(int j=0;j<4;++j) {
+          const int source=token-3+j;
+          const float x=source<0?history[channel*3+source+3]:
+            kernels::f32_from_bf16(qkv[size_t(source)*C+channel]);
+          value=j==0?x*weights[channel*4]:sycl::fma(x,weights[channel*4+j],value);
+        }
+        // Keep the framework activation storage rounding before Q/K L2 math,
+        // while fusing the producer/normalizer without a full FP32 tensor.
+        value=kernels::f32_from_bf16(kernels::bf16_from_f32(value/(1.f+sycl::exp(-value))));
+        if(head<2*HK) {
+          float sum=value*value;
+          for(int off=16;off;off>>=1)sum+=sycl::permute_group_by_xor(item.get_sub_group(),sum,off);
+          if(d%32==0)partial[d/32]=sum;
+          item.barrier(sycl::access::fence_space::local_space);
+          value*=sycl::rsqrt(((partial[0]+partial[1])+partial[2])+partial[3]+eps);
+        }
+        normalized[size_t(token)*C+channel]=kernels::bf16_from_f32(value);
+      });
+  });
+  finish(stream,event);
+  if(events)events->convolution=event;
+  event=queue.parallel_for(sycl::range<1>(C),[=](sycl::id<1> id) {
+    const size_t channel=id[0];
+    float tail[3];
+    for(int j=0;j<3;++j) {
+      const int token=tokens-3+j;
+      tail[j]=token<0?history[channel*3+size_t(token+3)]:
+        kernels::f32_from_bf16(qkv[size_t(token)*C+channel]);
+    }
+    for(int j=0;j<3;++j)history[channel*3+j]=tail[j];
+  });
+  finish(stream,event);
+  if(events)events->history=event;
 }
 void run(float *state,const uint16_t *h,const float *gate,const float *beta,
          const uint16_t *z,const float *gamma,float eps,uint16_t *output,

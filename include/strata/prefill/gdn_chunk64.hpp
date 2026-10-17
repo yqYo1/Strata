@@ -15,6 +15,14 @@ struct Workspace {
 struct Sizes { size_t qk, values, inverse, history, gates, lower; };
 Sizes sizes(int tokens);
 struct Events {sycl::event gates,pack,kkt,inverse,wu,carry,readout,norm;};
+struct ConvEvents {sycl::event convolution,history;};
+// BF16 projection -> FP32 conv/SiLU -> BF16 -> FP32 Q/K L2 -> BF16.
+// The existing FP32 history is consumed unchanged. Final history keeps
+// decoded projection values in FP32, in the existing [10240,3] decode layout.
+// All old history reads complete before a separate ordered update kernel.
+void conv_bf16(float *history,const uint16_t *qkv,const float *weights,
+               uint16_t *normalized,int tokens,float eps,void *stream,
+               ConvEvents *events=nullptr);
 // h is existing tiled [T,10240] Q16/K16/V48 order, z [T,48,128].
 // BF16 activation producer contract; FP32 gate/beta/gamma and persistent carry.
 // State remains [128,48,128]; output is genuine FP16 for the existing consumer.
