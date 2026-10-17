@@ -1,0 +1,38 @@
+{
+  "id": "673da989-507c-471e-9474-e5522bd78004",
+  "ok": true,
+  "result": {
+    "runId": "run_c8f478972ec8",
+    "deliveryId": "delivery_2c82bf2d071f",
+    "messages": [
+      {
+        "id": "msg_ef253b5a6463",
+        "run_id": "run_c8f478972ec8",
+        "delivery_contract": "current_delivery",
+        "from_handle": "term_486e2be5-86ac-40a6-9e53-12c1e4b15053",
+        "to_handle": "run:run_c8f478972ec8",
+        "subject": "R1022 QSA native16 XMX feasibility report complete",
+        "body": "I traced the current long-prefill QSA caller, FP32 query/key producers, inactive SYCL tensor-core hook, and the native16 GEMM shape/output/ownership constraints, then compared packed-GEMM and fused joint-matrix alternatives. The report finds neither candidate currently justified: BF16 score inputs are an approximation pending exact SGLang/vLLM contract validation, and the 15.8 s interval does not isolate scoring from top-k or establish device utilization. Main should first split score-only and top-k timing after its active cohorts; the named report records bounded candidate gates, sources, and evidence limits.",
+        "type": "worker_done",
+        "priority": "normal",
+        "thread_id": null,
+        "payload": "{\"taskId\":\"task_640fe321f009\",\"dispatchId\":\"ctx_abfa5f64f592\",\"outcome\":\"succeeded\",\"filesModified\":[\"/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round1022-v1.txt\"],\"reportPath\":\"/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round1022-v1.txt\"}",
+        "created_at": "2026-10-17T13:43:10Z",
+        "delivered_at": null
+      }
+    ],
+    "count": 1,
+    "replayed": true,
+    "acknowledged": null,
+    "timedOut": false,
+    "cancelled": false,
+    "connectionLost": false,
+    "mutation": {
+      "requestId": "967b1b7f-361d-4b6c-bfcd-e8b605fea594",
+      "replayed": false
+    }
+  },
+  "_meta": {
+    "runtimeId": "e9030fc3-f028-4352-a34d-eb9385c8d79e"
+  }
+}

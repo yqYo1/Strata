@@ -1,5 +1,5 @@
 // Authored for Strata; repository LICENSE (MIT) applies.
-// Independent host tensor oracle for the 64-cell BF16-operand/FP32-state
+// Independent host tensor oracle for the 16-cell BF16-operand/FP32-state
 // online attention contract. It does not reproduce subgroup/SLM indexing.
 #include "strata/kernels/qsa_bf16_prefix.hpp"
 #include "strata/sycl/runtime.hpp"
@@ -109,7 +109,7 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
   auto attention=[&](const uint16_t *qin,const QsaAttnPools &p,const int32_t *ii,const int32_t *ss,
                      int64_t c,const QsaShapes &sh,uint16_t *o,int64_t nq,
                      const QsaPromptBf16Bounds &b,void *stream) {
-    return qsa_bf16_prefix64_batch(qin,p,ii,ss,c,sh,o,nq,b,live_cells,scratch,stream);
+    return qsa_bf16_prefix16_batch(qin,p,ii,ss,c,sh,o,nq,b,live_cells,scratch,stream);
   };
   auto packed_guards=[&] {
     auto a=packed_k.get(),b=packed_v.get();auto bad=packed_bad.get();
@@ -172,8 +172,8 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
     float m=-INFINITY,norm=0;
     // Probability rounding is a part of the reference's online numerical
     // contract. This host loop has no device addressing or matrix fragments.
-    for (int first=0;first<cap;first+=64) {
-      const int last=std::min(cap,first+64);float next=m;
+    for (int first=0;first<cap;first+=16) {
+      const int last=std::min(cap,first+16);float next=m;
       for (int c=first;c<last;++c) next=std::fmax(next,scores[c]);
       const float alpha=norm>0 ? std::exp2(m-next) : 0.f;float sum=0;
       std::vector<float> probability(size_t(last-first));
@@ -233,7 +233,7 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
       if (variant==2) bad.bad_rows=reinterpret_cast<int32_t *>(bad.k);
       if (variant==3) bad.bad_rows=table.data(); // Host memory is not a device allocation.
       bool refused=false;
-      try { (void)qsa_bf16_prefix64_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
+      try { (void)qsa_bf16_prefix16_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
           out.data()+16,queries,{pages,pages},live_cells,bad,&rt->compute()); }
       catch (const std::invalid_argument &) { refused=true; }
       require(refused,"scratch overlap/domain rejected before either kernel");
@@ -241,16 +241,16 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
     }
     { Buffer<uint16_t> tiny(1); Drain pending_tiny;auto bad=scratch;bad.k=tiny.data();
       bool refused=false;
-      try { (void)qsa_bf16_prefix64_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
+      try { (void)qsa_bf16_prefix16_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
           out.data()+16,queries,{pages,pages},live_cells,bad,&rt->compute()); }
       catch (const std::invalid_argument &) { refused=true; }
       require(refused,"complete scratch extent rejected before either kernel");
       require(guarded()==y,"short scratch rejection preserves output");
     }
-    require(qsa_bf16_prefix64_batch(nullptr,{},nullptr,nullptr,0,{},nullptr,0,{}, 0,{},&rt->compute()),"zero-query no-op");
+    require(qsa_bf16_prefix16_batch(nullptr,{},nullptr,nullptr,0,{},nullptr,0,{}, 0,{},&rt->compute()),"zero-query no-op");
     for (int64_t bad_live : {int64_t(0),int64_t(-1),int64_t(pages*Page+1)}) {
       bool refused=false;
-      try { (void)qsa_bf16_prefix64_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
+      try { (void)qsa_bf16_prefix16_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
           out.data()+16,queries,{pages,pages},bad_live,scratch,&rt->compute()); }
       catch (const std::invalid_argument &) { refused=true; }
       require(refused,"invalid live prefix rejected before either submission");
@@ -260,7 +260,7 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
   }
   std::cout<<"case cells="<<cells<<" live_cells="<<live_cells<<" active_rows="<<active_rows<<" cap="<<cap<<" queries="<<queries<<" masked="<<masked
            <<" compared="<<compared<<" max_abs="<<std::setprecision(10)<<max_error
-           <<" max_budget_ratio="<<max_budget_ratio<<" oracle=BF16_operands_FP32_online64"
+           <<" max_budget_ratio="<<max_budget_ratio<<" oracle=BF16_operands_FP32_online16"
            <<" packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS\n";
 }
 } // namespace
@@ -276,7 +276,7 @@ int main(int argc,char **argv) {
     gate(gates,"runtime-ready");
     run(97,33,1,false,true,49);run(97,33,3,true,false,71);
     if (std::string(argv[1])=="--component") {
-      for (int width : {1,17,31,32,33,63,64,65,127,128,129,2051}) run(2113,width,3,true,false);
+      for (int width : {1,15,16,17,31,32,33,63,64,65,127,128,129,2051}) run(2113,width,3,true,false);
       run(262144,2051,1,false,false);run(262144,33,1,false,false,13);
     }
     rt->wait();rt.reset();gate(gates,"after-cleanup");

@@ -45,6 +45,7 @@ template<int Cells, int ScoreStride> constexpr size_t LocalPayload =
 static_assert(LocalPayload<32, 32> == 28160);
 static_assert(LocalPayload<32, 33> == 28224);
 static_assert(LocalPayload<64, 65> == 47936);
+static_assert(LocalPayload<16, 17> == 18368);
 static_assert(storage_contract<64 * Dim>() && storage_contract<16 * 64>());
 
 bool matrix_available(const sycl::device &device, size_t local_payload) {
@@ -75,7 +76,7 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
                              int64_t queries, const QsaPromptBf16Bounds &bounds,
                              int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream) {
   static_assert(!SubgroupSoftmax || !TilePacked);
-  static_assert(Cells == 32 || (Cells == 64 && !TilePacked && !SubgroupSoftmax));
+  static_assert(Cells == 32 || ((Cells == 16 || Cells == 64) && !TilePacked && !SubgroupSoftmax));
   static_assert(Cells * sizeof(BFloat) % 8 == 0);
   // Reuse the qualified admission contract; it never enqueues or waits.
   if (!qsa_prompt_attn_bf16_validate(query, pools, ids, steps, cap, shape,
@@ -373,6 +374,16 @@ bool qsa_bf16_prefix64_batch(const uint16_t *query, const QsaAttnPools &pools,
     uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
     int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream) {
   return prefix_batch_impl<64, 65>(query, pools, ids, steps, cap, shape,
+      output, queries, bounds, live_cells, scratch, stream);
+}
+// Experimental lower-SLM 16-cell path: same query ownership and types,
+// probability rounding now uses each 16-cell tile maximum. Not bit-identical
+// to 32/64 grouping. More barriers may offset lower SLM and less padding.
+bool qsa_bf16_prefix16_batch(const uint16_t *query, const QsaAttnPools &pools,
+    const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
+    uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
+    int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream) {
+  return prefix_batch_impl<16, 17>(query, pools, ids, steps, cap, shape,
       output, queries, bounds, live_cells, scratch, stream);
 }
 } // namespace strata::kernels

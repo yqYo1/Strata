@@ -39,5 +39,11 @@ bool qsa_bf16_prefix64_batch(const uint16_t *q, const QsaAttnPools &pools,
     const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
     uint16_t *out, int64_t queries, const QsaPromptBf16Bounds &bounds,
     int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream);
+// Experimental 16-cell/score17 lower-SLM variant. Same public bounds/lifetime
+// rules; tile-dependent BF16 probability rounding and FP32 online updates.
+bool qsa_bf16_prefix16_batch(const uint16_t *q, const QsaAttnPools &pools,
+    const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
+    uint16_t *out, int64_t queries, const QsaPromptBf16Bounds &bounds,
+    int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream);
 } // namespace strata::kernels
 #endif

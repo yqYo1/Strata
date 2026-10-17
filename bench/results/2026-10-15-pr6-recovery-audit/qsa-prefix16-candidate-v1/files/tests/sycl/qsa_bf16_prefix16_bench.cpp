@@ -20,10 +20,10 @@
 using namespace strata;
 using namespace strata::kernels;
 #ifndef STRATA_QSA_PREFIX_CANDIDATE
-#define STRATA_QSA_PREFIX_CANDIDATE qsa_bf16_prefix64_batch
+#define STRATA_QSA_PREFIX_CANDIDATE qsa_bf16_prefix16_batch
 #endif
 #ifndef STRATA_QSA_PREFIX_CANDIDATE_NAME
-#define STRATA_QSA_PREFIX_CANDIDATE_NAME "tile64"
+#define STRATA_QSA_PREFIX_CANDIDATE_NAME "tile16"
 #endif
 namespace strata::kernels {
 // A separately compiled candidate with the same public signature.
@@ -176,7 +176,7 @@ void run(const std::string &arm,int nq,int repetitions,int Cells) {
         score[c]=float(dot);
       }
       float maximum=-INFINITY,norm=0;
-      const int tile_cells = arm=="base" ? 32 : 64;
+      const int tile_cells = arm=="base" ? 32 : 16;
       for (int first=0;first<Cap;first+=tile_cells) {
         const int last=std::min(Cap,first+tile_cells);float next=maximum,sum=0;
         for (int c=first;c<last;++c) next=std::max(next,score[c]);
