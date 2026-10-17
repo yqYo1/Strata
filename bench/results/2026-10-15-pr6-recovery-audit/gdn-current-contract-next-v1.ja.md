@@ -59,7 +59,8 @@ prefill／decode／warmupの内訳と全体への効果は新しい測定で確�
 Mainは元のR1052レポート本文を自動読み込みせず、レビューと必要なソースから
 この境界を選定した。
 
-現在の未完成ソースは`bench/sycl/gdn_chunk64`。full64 FP32 solveを一度
+現在の未完成カーネルは`src/prefill/sycl/gdn_chunk64.cpp`、fixtureは
+`bench/sycl/gdn_chunk64`。full64 FP32 solveを一度
 BF16へ丸める独立スケジュールで、XPUのblock16 BF16 scratchやCUDAの
 4-block配置との厳密な同一性はない。FP16 consumer変換前のBF16段階も
 比較する。runtime.hpp include、ホストDMAバッファ寿命、実行管理を修正した。
@@ -89,3 +90,11 @@ BF16 Q/K/VとFP32の初期state poolを使い、chunkと逐次GPU基準の正規
 gate/betaのdtypeや丸めの位置は同一ではなく、そのSGLangテストを実行した証拠でもない。
 RMSNorm後のFP16出力やモデル能力の合格へこの許容値を流用しない。
 現環境の既定Pythonにはtorch/triton/numpy/sglangがなく、SGLang実経路の比較は未実行。
+
+native producerはBF16 projection出力からconv/SiLUを局所FP32で計算し、
+BF16へ丸めてからQ/Kを正規化し、BF16のままrecurrenceへ渡す。
+共有conv historyは従来のFP32・[10240,3]を維持し、過去値を一括量子化しない。
+`f31cdbd786e3d65c76045f6282a207a55fd9f8a4`で1/3と境界6長さの
+CPU数式との差0、history、split、64境界のconv/carry引き継ぎを確認した。
+既存smoke／境界／一般診断も通過し、新しいGPU障害はない。
+実モデルのprojection出力、8192のarena配置・実行、品質・全contextは未認定。

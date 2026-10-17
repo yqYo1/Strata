@@ -16,9 +16,13 @@ offers the same steps as tools.
 
 At session start, resume and after context compaction, reread this file and the
 current committed decisions relevant to the task before launching work. Check
-the actual branch, worktree and pending changes; do not rely on conversational
-memory or create a separate resume checkpoint. Apply the retention rules below
-to existing artifacts as well as newly generated ones.
+the actual branch, worktree, pending changes and owned in-flight jobs; do not
+rely on conversational memory or create a separate resume checkpoint. Check the
+existing job's receipt before resuming a measurement or starting another one.
+Apply the retention rules below to existing artifacts as well as newly generated
+ones. At a work boundary, reconcile new user instructions with this file and the
+relevant maintained policy document. Keep durable rules here and per-run state
+in compact committed results; do not turn this file into a chronological log.
 
 This is a personal fork based on **Niko1221/Strata**, optimized for this PC's
 Intel GPU, CPU and RAM. Niko1221/Strata is the only upstream. Because of the
@@ -42,8 +46,10 @@ are outside this work's scope.
   needs no branch.
 - Current tuning priority (2026-10-15): concentrate on the dedicated long-input
   prefill path until repeated long-input measurements exceed **600 tok/s**;
-  continue toward **1000 tok/s**. Keep short-input prefill through the decode
-  weight/cache layout available. Defer its dispatch threshold and new decode
+  continue toward **1000 tok/s**. The longer-term decode target is **70 tok/s**;
+  neither target is achieved by a component microbenchmark. Keep short-input
+  prefill through the decode weight/cache layout available. Defer its dispatch
+  threshold and new decode
   optimization until the prefill milestone; this does not defer long-prefill
   chunk-size, placement or scheduling tuning. Preserve shared state and the
   physical 262144-context correctness requirements.
@@ -97,12 +103,64 @@ are outside this work's scope.
   candidate origin, actual implementation, measurements and per-component decisions.
 - Import Niko's non-inference functions as requested. Choose inference changes
   per component, including prefill and decode separately; retain the faster
-  existing fork implementation. XeStrata remains excluded from implementation
-  adoption even if its measurements are faster.
+  existing fork implementation. Measure unmodified upstream without local
+  patches, including a configuration tuned for this hardware; default settings
+  alone are insufficient. A prefill gain does not justify a decode regression.
+  XeStrata remains excluded from implementation adoption even if its
+  measurements are faster.
 - Trace the configured SYCL build's actual source resolver and entrypoint.
   A feature in the upstream root CUDA generator does not establish that its
   Arc engine implements it. Record existing Arc capabilities and the remaining
   shared CLI/API port obligations separately; neither requires a CUDA/HIP engine import.
+
+### Measurement and GPU execution
+
+- Identify the limiting hardware resource before choosing an optimization.
+  Relate stage timings to actual PCIe bytes/bandwidth and overlap, VRAM traffic
+  and bandwidth, GPU arithmetic/occupancy, CPU work and RAM bandwidth as relevant.
+  Use measured hardware ceilings and compatible shapes/precision to estimate
+  the possible gain; record an unmeasured ceiling as unknown. Kernel service
+  time, GPU utilization and critical-path wall time are different quantities.
+  Use a profiler when attribution is unclear, then collect clean speed samples
+  separately. A stage percentage alone does not establish hardware saturation.
+- Follow [docs/BENCHMARKS.md](docs/BENCHMARKS.md). Use the pinned upstream
+  `bench.sh` for standard comparisons and the same maintained extension on both
+  engines for added workloads. Adoption evidence includes the long-input and
+  agent-session benchmarks, plus long generation with thinking enabled. Prefill
+  comparisons need at least **32K actual input tokens**; **64K or longer** is
+  acceptable for the 1000 tok/s target. Short inputs and component fixtures are
+  useful diagnostics but do not replace long-input model measurements.
+- Keep thinking enabled and provide context/output room for thought and an
+  actual answer. Long-generation evidence needs at least about **1K generated
+  tokens**, including thinking. Include both MTP-friendly and MTP-weak workloads;
+  confirm their classification from observed draft acceptance rather than their
+  names. A short prefill-only output does not qualify decode performance.
+- Compare matched configurations and workloads, recording actual read/reused
+  tokens, placement, chunk size, cache state and MTP behavior. Separate first-use
+  cost from subsequent requests and independent process repetitions. Repeat
+  comparisons when variability prevents a decision, including decode alone when
+  needed. Keep individual samples and spread; do not dismiss a slower result as
+  noise without repeated evidence. Check past verified best results and their
+  source/configuration when investigating a regression.
+- Qualify the advertised **262144-token physical context**, including filling
+  it completely, tail/boundary cases, prefill-to-decode state and RESTORE paths.
+  No output room at a completely full context is expected; crashes, invalid
+  accesses and corrupted state are not. A smaller configured context or a
+  successful component test does not establish this qualification. Generated
+  text need not be identical; use the numerical/task policy above.
+- Main serializes builds, tests, GPU jobs, profiling and cleanup. Launch owned
+  processes with finite time/output budgets. A tool observation timeout does
+  not establish that its process stopped: inspect the existing handle and
+  ownership evidence before retrying. Do not launch a duplicate experiment.
+- Before rerunning code implicated in a GPU hang, audit its bounds, USM/context
+  lifetime, queue/event dependencies, collective participation and graph replay
+  assumptions against the actual SYCL/Level Zero contract. Correct or isolate
+  the suspected trigger first, then use a bounded small traced/validated check
+  before a long model run, as specified in the retention document. Distinguish
+  a host-process stall from a device fault; absence from `xpu-smi ps` alone is
+  insufficient. Record fresh driver faults and process closure. Keep recovery
+  actions separate from inference tests and consider other GPU clients before
+  any reset/unbind; a headless process is not proof that it is independent.
 
 ### Parallel research
 
@@ -200,8 +258,9 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   one build for each closed experiment.
   Retire the extra generation when its comparison ends; creating a new build
   must not silently extend the lifetime of every previous experiment's binary.
-- Before measuring, commit the exact source, local changes, generated inputs
-  and build recipe/options; pin compiler/dependency versions and environment.
+- Before building a measurement executable or running a fixture, commit the
+  exact source, local changes, generated inputs and build recipe/options; pin
+  compiler/dependency versions and environment.
   Verify those committed inputs match the ones used for the measured executable.
   Record the source revision and binary hash with the result. A nearby commit,
   source path or binary hash alone does not establish recoverability.

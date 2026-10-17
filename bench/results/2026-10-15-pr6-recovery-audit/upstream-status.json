@@ -38,5 +38,160 @@
   "current_engine_changed_by_check": false,
   "next_check_utc": "2026-10-19T21:18:59.594534+00:00",
   "pending": "Close the current independent GDN qualification, then evaluate the unchanged upstream target with tuned settings and official bench.sh; enumerate mandatory non-inference/CLI functions and select inference changes per component. Previous296b59d2 obligations remain pending; fetch/history retention is not integration.",
-  "legacy_upstream_clone_root": "Divergent checkout left untouched; fetch updates origin/main only. No root checkout, reset, commit or pull performed."
+  "legacy_upstream_clone_root": "Divergent checkout left untouched; fetch updates origin/main only. No root checkout, reset, commit or pull performed.",
+  "function_review": {
+    "fork_revision": "21ad950a4cde54f57ab5f78d9318cca57631df91",
+    "target": "477ac13cbe8e582c20484871ce459d20d82df09d",
+    "interval_start": "296b59d2f73c8f04a805df29c2fa97655adace78",
+    "scope": "Partial decision map from selected functional paths; not the complete267-path ledger and not the full7695859..477ac13c obligation set.",
+    "fork_source_sha256": {
+      "CMakeLists.txt": "03993aa5162ed3bf3f638c2755b5d44358c74945ea84b0862d0e76ab52eab4f1",
+      "cmake/sycl_backend.cmake": "a438f801ef6d2c4991129c79bda93804e4790bf0bfe81af030924529646909a0",
+      "src/program/generate.cpp": "a6938dccf1ae127b0751e8e6b89f720e1e5d75e9d6d70ff937e99841f338daec",
+      "serve/server.py": "b90e873308e5b5be74aecd2032e71dd4db1c83d0895d83a77e1c1d9d9c704dfc",
+      "serve/frontend.py": "1eaedd0f69cb59366060bff7fb782b64bcbc1d3721705be4013249730c1644e9",
+      "serve/runconfig.py": "08c5ee5af5b599d11c25778725613948b8f6b8b74432aa6b645845e6d145bf31",
+      "serve/web/app.js": "ac0ba371ba8a6fcf9c03713a867f1d1885a65def85b9601560b9170697c1d80f",
+      "tools/strata_tokenizer.py": "37d33503b3d3fc794b2de829744685db3444a6f75c7780457553d36f5eb40611",
+      "tools/setup_intel.py": "11f839909bb18c03d2525662a01f4e79b82dfbcf0b7d29d7f800f265d90bd1c9",
+      "setup.py": "7050915f772678c82b6532727a731f5867b259cf73948523d66abb0b6380e075",
+      "include/strata/core/conversation_cache.hpp": "94a84eace5d0ece1a2ba0a0a18994181d6c23121f279fbe95e283ad8b519ff45",
+      "include/strata/core/conversation_snapshot.hpp": "078b537fc2a526f27727f9cd81bd0ac37fed9bc3fd4f64a1509d131fd77f414b",
+      "include/strata/artifact/gguf_reader.hpp": "fc8453a95677e797c8fb1198bfb47d715b73a53446d39a29920c372180ca5ee0"
+    },
+    "actual_arc_resolver": {
+      "configure": "STRATA_ENABLE_SYCL=ON",
+      "cmake": "CMakeLists.txt includes cmake/sycl_backend.cmake",
+      "entrypoint": "src/program/generate.cpp",
+      "evidence": "Native comparison build compile database confirms this root generator. The upstream sycl/ generator is not this fork entrypoint."
+    },
+    "capability_limits": "No BGEN string found in reviewed native generator; Python protocol and setup guard exist. No native parallel-slot runtime/model or Qwen3.6 proof was collected.",
+    "required_features": [
+      {
+        "feature": "sampling_precedence",
+        "status": "required_pending",
+        "meaning": "Model defaults, explicit zero/config/request precedence and /props. Numbers describe upstream implementation, not independently checked model-card recommendations.",
+        "target_tests": [
+          "serve/test_model_card_sampling.py",
+          "serve/test_web_sampling.py"
+        ]
+      },
+      {
+        "feature": "web_sampling_migration",
+        "status": "required_pending",
+        "meaning": "Untouched UI omits sampling overrides; migrate only untouched legacy defaults and preserve explicit choices.",
+        "target_tests": [
+          "serve/test_web_sampling.py"
+        ]
+      },
+      {
+        "feature": "thinking_budget_answer_room",
+        "status": "required_partial",
+        "meaning": "Fork has budget loop; Anthropic budget mapping, automatic answer room and explicit false/missing effort semantics need ports.",
+        "target_tests": [
+          "serve/test_effort_paths.py",
+          "serve/test_server.py"
+        ]
+      },
+      {
+        "feature": "incremental_tokenization",
+        "status": "required_pending",
+        "meaning": "Exact special-token/plain-span prefix reuse; counts and refused prompts do not mutate cache.",
+        "target_tests": [
+          "serve/test_prompt_encoder.py",
+          "serve/test_server.py"
+        ]
+      },
+      {
+        "feature": "stream_parser_scan",
+        "status": "required_pending",
+        "meaning": "Reduce repeated suffix/tool-call scans while preserving streamed event meaning.",
+        "target_tests": [
+          "serve/test_parser_hold.py",
+          "serve/test_parser_call_scan.py"
+        ]
+      },
+      {
+        "feature": "config_args_json_help",
+        "status": "required_pending",
+        "meaning": "Joined args, BOM and JSON line/column diagnostics; preserve correct arrays and update help.",
+        "target_tests": [
+          "serve/test_server.py"
+        ]
+      },
+      {
+        "feature": "batch_admission_affinity",
+        "status": "required_dependency_pending",
+        "meaning": "Python has batch protocol; native handler/slot runtime unqualified. Port aging fairness and turn/checkpoint slot identity with native protocol.",
+        "target_tests": [
+          "serve/test_admit_order.py",
+          "serve/test_parallel.py",
+          "serve/test_slot_alloc.py"
+        ]
+      },
+      {
+        "feature": "conversation_borrow_identity",
+        "status": "required_pending",
+        "meaning": "Donor guard/serial identity, index shifts, pin and budget pressure require focused host/session tests.",
+        "target_tests": [
+          "src/core/conversation_cache_test.cpp"
+        ]
+      },
+      {
+        "feature": "checkpoint_copy_prefix_restore",
+        "status": "required_dependency_pending",
+        "meaning": "Native session/pool/streamed-KV bounds and lifetime before enabling dependent cache/batch functions. CUDA implementation is not SYCL runtime evidence.",
+        "target_tests": []
+      },
+      {
+        "feature": "cache_cli_policies_prefill_pipe",
+        "status": "required_interface_review_pending",
+        "meaning": "Do not waive shared CLI/config behavior because its engine scheduling optimization is optional. Adapt semantics and assess inference parts independently.",
+        "target_tests": []
+      },
+      {
+        "feature": "qwen36_setup_vision_parallel",
+        "status": "required_dependency_pending",
+        "meaning": "Gate model metadata/slots/images on real native architecture, vision and BGEN capability; source-string checks alone do not prove runtime support.",
+        "target_tests": [
+          "serve/test_q36_config.py"
+        ]
+      },
+      {
+        "feature": "setup_vision_encoder_choice",
+        "status": "required_partial",
+        "meaning": "Preserve explicit CPU/GPU image choice through setup/migration; distinguish Arc capabilities from CUDA defaults.",
+        "target_tests": []
+      },
+      {
+        "feature": "gguf_layer_split_placeholder",
+        "status": "required_compatibility_review_pending",
+        "meaning": "Confirm native loader semantics and handle all-zero metadata safely; test nonzero/malformed cases independently.",
+        "target_tests": []
+      },
+      {
+        "feature": "prometheus_rates_and_telemetry",
+        "status": "required_scope_review_pending",
+        "meaning": "Scrape rates depend on the exporter missing from sampled fork paths; earlier obligations stay open. Classify host-specific telemetry without treating CUDA/HIP exclusion as a shared-function waiver.",
+        "target_tests": []
+      },
+      {
+        "feature": "logit_bias_api_cache",
+        "status": "required_dependency_pending",
+        "meaning": "Bias API predates this interval; bounded normalization cache does not replace the missing functional path.",
+        "target_tests": [
+          "serve/test_logit_bias.py"
+        ]
+      }
+    ],
+    "port_order": [
+      "Shared sampling/UI/budget/config/parser/tokenizer behavior, with focused tests.",
+      "Real native protocol/model/vision capabilities before exposing dependent setup and parallel features.",
+      "Borrow identity and native checkpoint safety before retention/copy/scheduling policy."
+    ],
+    "reviewed_report_sha256": "494223e9b41466d40abb6d4d7b95e30622d3a00990eb6efe70b2256334b0bb5f",
+    "review_sha256": "1ae88128853722c1d9f69c7ed4be97e716ee35bd1e99afa2d0c4105b6947bd83",
+    "no_ports_or_gpu_tests_performed_by_review": true,
+    "whole_function_ledger_complete": false
+  }
 }

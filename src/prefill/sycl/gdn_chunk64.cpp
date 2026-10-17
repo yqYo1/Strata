@@ -1,12 +1,14 @@
 // Main-authored independent chunk64 GDN implementation; repository LICENSE.
 // Numerical boundaries and references: gdn-current-contract-next-v1.ja.md.
 // No external kernel source copied. Private proposal, not product adoption.
-#include "candidate.hpp"
+#include "strata/prefill/gdn_chunk64.hpp"
 #include "strata/kernels/bf16_bits.hpp"
 #include "strata/kernels/f16_bits.hpp"
 #include "strata/sycl/launch.hpp"
 #include <algorithm>
 #include <cmath>
+#include <cstdlib>
+#include <cstring>
 #include <stdexcept>
 #include <type_traits>
 #include <sycl/ext/oneapi/matrix/matrix.hpp>
@@ -74,9 +76,122 @@ Sizes sizes(int tokens) {
   return {padded*HK*D,padded*HV*D,padded*HV*BT,
           chunks*HV*D*D,padded*HV,padded*HV*BT};
 }
-void run(float *state,const uint16_t *h,const float *gate,const float *beta,
+namespace {
+struct ArenaPlan {
+  unsigned char *base=nullptr;size_t used=0;
+  template<class T>T *take(size_t count) {
+    const size_t offset=(used+255)&~size_t(255);
+    used=offset+count*sizeof(T)+256;
+    return base?reinterpret_cast<T*>(base+offset):nullptr;
+  }
+};
+Arena plan_arena(ArenaPlan &plan,int tokens) {
+  const auto n=sizes(tokens);const size_t T=size_t(tokens);
+  Arena b;
+  const size_t inverse_offset=(n.lower*4+255)&~size_t(255);
+  auto *reuse=plan.take<unsigned char>(std::max(T*C*2,inverse_offset+n.inverse*2));
+  b.qkv=reinterpret_cast<uint16_t*>(reuse);b.workspace.lower=reinterpret_cast<float*>(reuse);
+  b.workspace.inverse=reuse?reinterpret_cast<BF*>(reuse+inverse_offset):nullptr;
+  auto *history=plan.take<unsigned char>(std::max(T*C*2,n.history*2));
+  b.normalized=reinterpret_cast<uint16_t*>(history);b.workspace.history=reinterpret_cast<BF*>(history);
+  b.z=plan.take<uint16_t>(T*HV*D);b.ab=plan.take<float>(T*HV*2);
+  b.gate=plan.take<float>(T*HV);b.beta=plan.take<float>(T*HV);
+  auto& w=b.workspace;
+  w.q=plan.take<BF>(n.qk);w.k=plan.take<BF>(n.qk);
+  w.kb=plan.take<BF>(n.values);w.vb=plan.take<BF>(n.values);
+  b.output=reinterpret_cast<uint16_t*>(w.vb);
+  w.w=plan.take<BF>(n.values);w.u=plan.take<BF>(n.values);
+  w.delta=plan.take<BF>(n.values);
+  w.raw=plan.take<BF>(n.values);w.g=plan.take<float>(n.gates);
+  return b;
+}
+}
+size_t arena_bytes(int tokens) {
+  ArenaPlan plan; (void)plan_arena(plan,tokens);return plan.used;
+}
+Arena bind_arena(void *base,size_t bytes,int tokens) {
+  require(base && reinterpret_cast<uintptr_t>(base)%4==0 && bytes>=arena_bytes(tokens));
+  ArenaPlan plan{static_cast<unsigned char*>(base),0};return plan_arena(plan,tokens);
+}
+bool requested() {
+  static const bool enabled=[] {
+    const char *value=std::getenv("STRATA_SYCL_PREFILL_GDN_CHUNK64");
+    if(!value || std::strcmp(value,"0")==0)return false;
+    if(std::strcmp(value,"1")==0)return true;
+    throw std::invalid_argument("STRATA_SYCL_PREFILL_GDN_CHUNK64 must be0 or1");
+  }();
+  return enabled;
+}
+void validate_device(void *stream) {
+  require(stream);
+  auto &queue=queue_for(stream);
+  require(queue.get_backend()==sycl::backend::ext_oneapi_level_zero);
+  matrix_check(queue.get_device());
+  const auto groups=queue.get_device().get_info<sycl::info::device::sub_group_sizes>();
+  require(std::find(groups.begin(),groups.end(),32)!=groups.end());
+}
+void conv_bf16(float *history,const uint16_t *qkv,const float *weights,
+               uint16_t *normalized,int tokens,float eps,void *stream,
+               ConvEvents *events) {
+  require(tokens>0 && tokens<=8192 && stream && std::isfinite(eps) && eps>=0.f);
+  auto &queue=queue_for(stream);
+  const auto device=queue.get_device();
+  require(device.is_gpu() && device.get_info<sycl::info::device::vendor_id>()==0x8086 &&
+          device.get_info<sycl::info::device::max_work_group_size>()>=128 &&
+          device.get_info<sycl::info::device::max_work_item_sizes<1>>()[0]>=128 &&
+          device.get_info<sycl::info::device::local_mem_size>()>=4*sizeof(float));
+  const auto groups=device.get_info<sycl::info::device::sub_group_sizes>();
+  require(std::find(groups.begin(),groups.end(),32)!=groups.end());
+  const size_t elements=size_t(tokens)*C;
+  validate_spans({{history,size_t(C)*3*4},{normalized,elements*2}},
+                 {{qkv,elements*2},{weights,size_t(C)*4*4}},4);
+  for(auto span:{Span{history,size_t(C)*3*4},Span{normalized,elements*2},
+                 Span{qkv,elements*2},Span{weights,size_t(C)*4*4}})
+    validate_device_span(span.pointer,span.bytes,queue);
+  auto event=queue.submit([&](sycl::handler &handler) {
+    sycl::local_accessor<float,1> partial(4,handler);
+    handler.parallel_for(sycl::nd_range<1>(elements,D),
+      [=](sycl::nd_item<1> item) [[sycl::reqd_sub_group_size(32)]] {
+        const int d=item.get_local_linear_id(),cell=item.get_group_linear_id();
+        const int token=cell/(C/D),head=cell%(C/D),channel=head*D+d;
+        float value=0.f;
+        for(int j=0;j<4;++j) {
+          const int source=token-3+j;
+          const float x=source<0?history[channel*3+source+3]:
+            kernels::f32_from_bf16(qkv[size_t(source)*C+channel]);
+          value=j==0?x*weights[channel*4]:sycl::fma(x,weights[channel*4+j],value);
+        }
+        // Keep the framework activation storage rounding before Q/K L2 math,
+        // while fusing the producer/normalizer without a full FP32 tensor.
+        value=kernels::f32_from_bf16(kernels::bf16_from_f32(value/(1.f+sycl::exp(-value))));
+        if(head<2*HK) {
+          float sum=value*value;
+          for(int off=16;off;off>>=1)sum+=sycl::permute_group_by_xor(item.get_sub_group(),sum,off);
+          if(d%32==0)partial[d/32]=sum;
+          item.barrier(sycl::access::fence_space::local_space);
+          value*=sycl::rsqrt(((partial[0]+partial[1])+partial[2])+partial[3]+eps);
+        }
+        normalized[size_t(token)*C+channel]=kernels::bf16_from_f32(value);
+      });
+  });
+  finish(stream,event);
+  if(events)events->convolution=event;
+  event=queue.parallel_for(sycl::range<1>(C),[=](sycl::id<1> id) {
+    const size_t channel=id[0];
+    float tail[3];
+    for(int j=0;j<3;++j) {
+      const int token=tokens-3+j;
+      tail[j]=token<0?history[channel*3+size_t(token+3)]:
+        kernels::f32_from_bf16(qkv[size_t(token)*C+channel]);
+    }
+    for(int j=0;j<3;++j)history[channel*3+j]=tail[j];
+  });
+  finish(stream,event);
+  if(events)events->history=event;
+}
+void validate_run(float *state,const uint16_t *h,const float *gate,const float *beta,
          const uint16_t *z,const float *gamma,float eps,uint16_t *output,
-         int tokens,Workspace ws,void *stream,Events *events,bool packed_inverse,bool narrow_carry) {
+         int tokens,Workspace ws,void *stream) {
   const Sizes n=sizes(tokens);
   require(stream && std::isfinite(eps) && eps>=0.f);
   auto &queue=queue_for(stream);
@@ -90,9 +205,37 @@ void run(float *state,const uint16_t *h,const float *gate,const float *beta,
   const std::initializer_list<Span> inputs={
     {h,size_t(tokens)*C*2},{gate,size_t(tokens)*HV*4},
     {beta,size_t(tokens)*HV*4},{z,size_t(tokens)*HV*D*2},{gamma,D*4}};
-  validate_spans(outputs,inputs,4);
+  // Stage lifetimes permit exactly two same-base aliases: h is consumed by
+  // pack before carry writes history; vb is consumed by W/U before norm writes
+  // output. All other overlaps, including partial aliases, remain forbidden.
+  validate_spans({{state,size_t(HV)*D*D*4},{ws.q,n.qk*2},{ws.k,n.qk*2},
+    {ws.kb,n.values*2},{ws.vb,n.values*2},{ws.inverse,n.inverse*2},
+    {ws.w,n.values*2},{ws.u,n.values*2},{ws.history,n.history*2},
+    {ws.delta,n.values*2},{ws.raw,n.values*2},{ws.g,n.gates*4},{ws.lower,n.lower*4}},
+    {{gate,size_t(tokens)*HV*4},{beta,size_t(tokens)*HV*4},
+     {z,size_t(tokens)*HV*D*2},{gamma,D*4}},4);
+  const Span hs{h,size_t(tokens)*C*2},os{output,size_t(tokens)*HV*D*2};
+  validate_spans({hs},{{state,size_t(HV)*D*D*4},os,{ws.q,n.qk*2},{ws.k,n.qk*2},
+    {ws.kb,n.values*2},{ws.vb,n.values*2},{ws.inverse,n.inverse*2},
+    {ws.w,n.values*2},{ws.u,n.values*2},{ws.delta,n.values*2},
+    {ws.raw,n.values*2},{ws.g,n.gates*4},{ws.lower,n.lower*4}},4);
+  if(h!=reinterpret_cast<const uint16_t*>(ws.history))
+    validate_spans({hs},{{ws.history,n.history*2}},4);
+  validate_spans({os},{{state,size_t(HV)*D*D*4},hs,{gate,size_t(tokens)*HV*4},
+    {beta,size_t(tokens)*HV*4},{z,size_t(tokens)*HV*D*2},{gamma,D*4},
+    {ws.q,n.qk*2},{ws.k,n.qk*2},{ws.kb,n.values*2},{ws.inverse,n.inverse*2},
+    {ws.w,n.values*2},{ws.u,n.values*2},{ws.history,n.history*2},
+    {ws.delta,n.values*2},{ws.raw,n.values*2},{ws.g,n.gates*4},{ws.lower,n.lower*4}},4);
+  if(output!=reinterpret_cast<uint16_t*>(ws.vb))
+    validate_spans({os},{{ws.vb,n.values*2}},4);
   for(auto span:outputs) validate_device_span(span.pointer,span.bytes,queue);
   for(auto span:inputs) validate_device_span(span.pointer,span.bytes,queue);
+}
+void run(float *state,const uint16_t *h,const float *gate,const float *beta,
+         const uint16_t *z,const float *gamma,float eps,uint16_t *output,
+         int tokens,Workspace ws,void *stream,Events *events,bool packed_inverse,bool narrow_carry) {
+  validate_run(state,h,gate,beta,z,gamma,eps,output,tokens,ws,stream);
+  const Sizes n=sizes(tokens);auto &queue=queue_for(stream);
   const int chunks=(tokens+BT-1)/BT;
   auto event=queue.parallel_for(sycl::range<1>(size_t(chunks)*HV),[=](sycl::id<1> id) {
     const int chunk=int(id[0])/HV, head=int(id[0])%HV;

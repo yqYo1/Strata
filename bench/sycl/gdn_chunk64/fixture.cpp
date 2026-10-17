@@ -1,6 +1,6 @@
 // Main-authored Strata fixture. Repository LICENSE applies.
 // First qualification: exact dyadic, orthogonal-key cases only, not model quality.
-#include "candidate.hpp"
+#include "strata/prefill/gdn_chunk64.hpp"
 #include "strata/kernels/bf16_bits.hpp"
 #include "strata/kernels/f16_bits.hpp"
 #include "strata/prefill/kernels.hpp"
@@ -32,7 +32,9 @@ template<class T> struct Buffer {
   explicit Buffer(size_t n):storage(rt,n*sizeof(T),sb::MemoryKind::Device),count(n){}
   T *data(){return storage.as<T>();}
   void put(const std::vector<T>& v){need(v.size()==count,"upload extent");rt->wait();upload=v;rt->wait(rt->compute().memcpy(data(),upload.data(),count*sizeof(T)));}
-  std::vector<T> get(){rt->wait();download.resize(count);rt->wait(rt->compute().memcpy(download.data(),data(),count*sizeof(T)));return download;}
+  std::vector<T> get_range(size_t begin,size_t n){need(begin<=count && n<=count-begin,"download extent");
+    rt->wait();download.resize(n);rt->wait(rt->compute().memcpy(download.data(),data()+begin,n*sizeof(T)));return download;}
+  std::vector<T> get(){return get_range(0,count);}
 };
 struct Scratch {
   Buffer<gc::BF> q,k,kb,vb,inverse,w,u,history,delta,raw;
@@ -230,6 +232,144 @@ void run_general(int T){
     <<" finite=PASS guards=PASS inputs=PASS repeat=PASS aligned_handoff="<<(T>64?"PASS":"NA")
     <<" status=SAFETY_PASS"<<std::endl;
 }
+// Native producer check: distinct BF16 conv and normalized storage boundaries,
+// non-BF16 old FP32 history, tails shorter than the history and split calls.
+// The CPU formula is a diagnostic numerical oracle; this is not model quality.
+void run_producer(int T){
+  constexpr int C=10240,HV=48,D=128,Pad=16;
+  constexpr float Eps=1e-6f,Sentinel=1234.f;
+  GeneralInputs input(T);
+  auto projection=input.h;
+  for(int t=0;t<T;++t)for(int c=0;c<C;++c)
+    projection[size_t(t)*C+c]=k::bf16_from_f32(float((t*37+c*13)%101-50)/39.f);
+  std::vector<float> weights(size_t(C)*4),initial(size_t(C)*3+2*Pad,Sentinel);
+  for(int c=0;c<C;++c){
+    for(int j=0;j<4;++j)weights[c*4+j]=float((c*7+j*11)%19-9)/31.f;
+    for(int j=0;j<3;++j)initial[Pad+c*3+j]=float((c*17+j*29)%113-56)/103.f;
+  }
+  auto expected_history=initial;
+  for(int c=0;c<C;++c)for(int j=0;j<3;++j){
+    const int t=T-3+j;
+    expected_history[Pad+c*3+j]=t<0?initial[Pad+c*3+t+3]:k::f32_from_bf16(projection[size_t(t)*C+c]);
+  }
+  std::vector<uint16_t> expected(projection.size());
+  for(int t=0;t<T;++t)for(int head=0;head<C/D;++head){
+    float activated[D];double sumsq=0.;
+    for(int d=0;d<D;++d){
+      const int c=head*D+d;float value=0.f;
+      for(int j=0;j<4;++j){const int source=t-3+j;
+        const float x=source<0?initial[Pad+c*3+source+3]:k::f32_from_bf16(projection[size_t(source)*C+c]);
+        value=j==0?x*weights[c*4]:std::fma(x,weights[c*4+j],value);}
+      activated[d]=k::f32_from_bf16(k::bf16_from_f32(value/(1.f+std::exp(-value))));
+      sumsq+=double(activated[d])*activated[d];
+    }
+    for(int d=0;d<D;++d)expected[size_t(t)*C+head*D+d]=k::bf16_from_f32(head<32?
+      float(double(activated[d])/std::sqrt(sumsq+double(Eps))):activated[d]);
+  }
+  Buffer<uint16_t> X(projection.size()),H(projection.size()+2*Pad);
+  Buffer<float> W(weights.size()),history(initial.size());Drain pending;
+  X.put(projection);W.put(weights);history.put(initial);
+  const std::vector<uint16_t> blank(H.count,0x5500);H.put(blank);
+  auto invoke=[&](int begin,int count){gc::conv_bf16(history.data()+Pad,X.data()+size_t(begin)*C,W.data(),
+    H.data()+Pad+size_t(begin)*C,count,Eps,&rt->compute());};
+  invoke(0,T);rt->wait();const auto actual=H.get();const auto actual_history=history.get();
+  need(actual_history==expected_history,"native conv history/guards");
+  unsigned max_ulp=0;float max_abs=0.f;
+  auto ordered=[](uint16_t x){return (x&0x8000)?unsigned(0xffffu-x):unsigned(x+0x8000u);};
+  for(size_t i=0;i<expected.size();++i){
+    const float a=k::f32_from_bf16(actual[Pad+i]),b=k::f32_from_bf16(expected[i]);
+    need(std::isfinite(a),"native conv finite");
+    const auto x=ordered(actual[Pad+i]),y=ordered(expected[i]);const auto ulp=x>y?x-y:y-x;
+    max_ulp=std::max(max_ulp,ulp);max_abs=std::max(max_abs,std::abs(a-b));
+    need(ulp<=2 || std::abs(a-b)<=1e-7f,"native conv CPU numerical diagnostic bound");
+  }
+  for(int i=0;i<Pad;++i)need(actual[i]==0x5500 && actual[actual.size()-Pad+i]==0x5500,"native conv output guards");
+  need(X.get()==projection && W.get()==weights,"native conv input mutation");
+  history.put(initial);H.put(blank);invoke(0,T);rt->wait();
+  need(history.get()==actual_history && H.get()==actual,"native conv repeat differs");
+  if(T>1){history.put(initial);H.put(blank);invoke(0,T/2);invoke(T/2,T-T/2);rt->wait();
+    need(history.get()==actual_history && H.get()==actual,"native conv split handoff differs");}
+  auto reject=[&](auto action){bool refused=false;try{action();}catch(const std::invalid_argument&){refused=true;}
+    need(refused,"invalid native conv call admitted");};
+  auto invalid=[&](float *s,const uint16_t *x,const float *w,uint16_t *h,int count,float eps,void *queue){
+    gc::conv_bf16(s,x,w,h,count,eps,queue);};
+  reject([&]{invalid(history.data()+Pad,X.data(),W.data(),H.data()+Pad,0,Eps,&rt->compute());});
+  reject([&]{invalid(history.data()+Pad,X.data(),W.data(),H.data()+Pad,8193,Eps,&rt->compute());});
+  reject([&]{invalid(history.data()+Pad,X.data(),W.data(),X.data(),T,Eps,&rt->compute());});
+  reject([&]{invalid(history.data()+Pad,projection.data(),W.data(),H.data()+Pad,T,Eps,&rt->compute());});
+  reject([&]{invalid(history.data()+Pad,X.data(),W.data(),H.data()+Pad,T,Eps,nullptr);});
+  reject([&]{invalid(history.data()+Pad,X.data(),W.data(),H.data()+Pad,T,-1.f,&rt->compute());});
+  {Buffer<float> short_w(1);Drain more;
+    reject([&]{invalid(history.data()+Pad,X.data(),short_w.data(),H.data()+Pad,T,Eps,&rt->compute());});}
+  // Exercise the actual producer/consumer pair without materializing FP32 h.
+  Buffer<uint16_t> Z(input.z.size()),out(input.z.size()+2*Pad);
+  Buffer<float> G(input.gates.size()),B(input.beta.size()),N(D),state(input.initial.size());
+  Scratch scratch(gc::sizes(T));Drain pair_pending;
+  Z.put(input.z);G.put(input.gates);B.put(input.beta);N.put(input.gamma);state.put(input.initial);
+  const std::vector<uint16_t> out_blank(out.count,0x5500);out.put(out_blank);history.put(initial);
+  auto pair=[&](int begin,int count){
+    gc::validate_run(state.data()+Pad,H.data()+Pad+size_t(begin)*C,
+      G.data()+size_t(begin)*HV,B.data()+size_t(begin)*HV,Z.data()+size_t(begin)*HV*D,N.data(),Eps,
+      out.data()+Pad+size_t(begin)*HV*D,count,scratch.view(),&rt->compute());
+    invoke(begin,count);gc::run(state.data()+Pad,H.data()+Pad+size_t(begin)*C,
+    G.data()+size_t(begin)*HV,B.data()+size_t(begin)*HV,Z.data()+size_t(begin)*HV*D,N.data(),Eps,
+    out.data()+Pad+size_t(begin)*HV*D,count,scratch.view(),&rt->compute());};
+  pair(0,T);rt->wait();const auto pair_state=state.get();const auto pair_out=out.get();
+  for(int i=0;i<HV*D*D;++i)need(std::isfinite(pair_state[Pad+i]),"native pair carry finite");
+  for(size_t i=0;i<input.z.size();++i)need(std::isfinite(k::f32_from_f16(pair_out[Pad+i])),"native pair output finite");
+  for(int i=0;i<Pad;++i)need(pair_state[i]==Sentinel && pair_state[pair_state.size()-Pad+i]==Sentinel &&
+    pair_out[i]==0x5500 && pair_out[pair_out.size()-Pad+i]==0x5500,"native pair guards");
+  if(T>64){state.put(input.initial);out.put(out_blank);history.put(initial);pair(0,64);pair(64,T-64);rt->wait();
+    need(state.get()==pair_state && out.get()==pair_out && history.get()==actual_history,
+      "native pair aligned conv/carry handoff differs");}
+  need(X.get()==projection && W.get()==weights && Z.get()==input.z && G.get()==input.gates &&
+    B.get()==input.beta && N.get()==input.gamma,"native pair input mutation");
+  // Use the identical planner and transient QKV/lower-KKT reuse as Prefill.
+  // Rebind partial chunks in the same allocation, after the preceding output
+  // copy, exactly as a shared arena must be reused on one in-order stream.
+  constexpr size_t Guard=256;const size_t bytes=gc::arena_bytes(T);
+  if(T==8192)need(bytes<=1180698624ULL,"native arena exceeds existing8192 legacy GDN reservation");
+  Buffer<uint8_t> arena(bytes+2*Guard);Drain arena_pending;
+  rt->wait(rt->compute().memset(arena.data(),0xa5,arena.count));
+  reject([&]{(void)gc::bind_arena(arena.data()+Guard,bytes-1,T);});
+  reject([&]{(void)gc::bind_arena(arena.data()+Guard+1,bytes,T);});
+  auto arena_pair=[&](int begin,int count){
+    auto b=gc::bind_arena(arena.data()+Guard,bytes,count);
+    need(reinterpret_cast<void*>(b.qkv)==reinterpret_cast<void*>(b.workspace.lower),"arena reuse absent");
+    auto& queue=rt->compute();
+    queue.memcpy(b.qkv,X.data()+size_t(begin)*C,size_t(count)*C*2);
+    queue.memcpy(b.z,Z.data()+size_t(begin)*HV*D,size_t(count)*HV*D*2);
+    queue.memcpy(b.gate,G.data()+size_t(begin)*HV,size_t(count)*HV*4);
+    queue.memcpy(b.beta,B.data()+size_t(begin)*HV,size_t(count)*HV*4);
+    gc::validate_run(state.data()+Pad,b.normalized,b.gate,b.beta,b.z,N.data(),Eps,b.output,count,b.workspace,&queue);
+    gc::conv_bf16(history.data()+Pad,b.qkv,W.data(),b.normalized,count,Eps,&queue);
+    gc::run(state.data()+Pad,b.normalized,b.gate,b.beta,b.z,N.data(),Eps,
+            b.output,count,b.workspace,&queue);
+    queue.memcpy(out.data()+Pad+size_t(begin)*HV*D,b.output,size_t(count)*HV*D*2);
+  };
+  state.put(input.initial);out.put(out_blank);history.put(initial);arena_pair(0,T);rt->wait();
+  need(state.get()==pair_state && out.get()==pair_out && history.get()==actual_history,"shared arena pair differs");
+  if(T>64){state.put(input.initial);out.put(out_blank);history.put(initial);arena_pair(0,64);arena_pair(64,T-64);rt->wait();
+    need(state.get()==pair_state && out.get()==pair_out && history.get()==actual_history,"shared arena relayout differs");}
+  const std::vector<uint8_t> guard(Guard,0xa5);
+  need(arena.get_range(0,Guard)==guard && arena.get_range(Guard+bytes,Guard)==guard,"shared arena guards");
+  auto bound=gc::bind_arena(arena.data()+Guard,bytes,T);
+  reject([&]{gc::validate_run(state.data()+Pad,bound.normalized+2,bound.gate,bound.beta,
+    bound.z,N.data(),Eps,bound.output,T,bound.workspace,&rt->compute());});
+  reject([&]{gc::validate_run(state.data()+Pad,bound.normalized,bound.gate,bound.beta,
+    bound.z,N.data(),Eps,bound.output+2,T,bound.workspace,&rt->compute());});
+  {Buffer<float> short_state(1);Drain more;const auto before=history.get();
+    reject([&]{gc::validate_run(short_state.data(),bound.normalized,bound.gate,bound.beta,
+      bound.z,N.data(),Eps,bound.output,T,bound.workspace,&rt->compute());
+      gc::conv_bf16(history.data()+Pad,bound.qkv,W.data(),bound.normalized,T,Eps,&rt->compute());});
+    need(history.get()==before,"invalid recurrence changed conv history");}
+  std::cout<<"case T="<<T<<" producer=BF16_projection_conv_L2 oracle=independent_CPU_formula max_BF16_ulp="<<max_ulp
+    <<" max_abs="<<max_abs<<" old_FP32_history=PASS final_FP32_history=PASS guards=PASS inputs=PASS"
+    <<" rejection=PASS repeat=PASS conv_split="<<(T>1?"PASS":"NA")
+    <<" direct_BF16_consumer=PASS arena_bytes="<<bytes<<" shared_arena_reuse=PASS arena_relayout="<<(T>64?"PASS":"NA")
+    <<" aligned_pair_handoff="<<(T>64?"PASS":"NA")<<" preconv_rejection=PASS partial_alias_rejection=PASS"
+    <<" model_quality=UNRUN status=SAFETY_PASS"<<std::endl;
+}
 void run_component(){
   constexpr int T=8192,HV=48,D=128,Pad=16,State=HV*D*D;
   GeneralInputs input(T);
@@ -295,12 +435,15 @@ void run_component(){
 }
 int main(int argc,char **argv){
   try{
-    need(argc==2 && (std::string(argv[1])=="--smoke" || std::string(argv[1])=="--boundaries" || std::string(argv[1])=="--general" || std::string(argv[1])=="--component"),"expected smoke, boundaries, general or component");
+    need(argc==2 && (std::string(argv[1])=="--smoke" || std::string(argv[1])=="--boundaries" || std::string(argv[1])=="--general" || std::string(argv[1])=="--producer-smoke" || std::string(argv[1])=="--producer" || std::string(argv[1])=="--producer-large" || std::string(argv[1])=="--component"),"expected smoke, boundaries, general, producer or component");
     gate("before-runtime");rt=sb::runtime_for();
     std::cout<<"device="<<rt->device().get_info<sycl::info::device::name>()
       <<" driver="<<rt->device().get_info<sycl::info::device::driver_version>()<<std::endl;
     gate("runtime-ready");
     if(std::string(argv[1])=="--smoke"){run(1);run(3);}
+    else if(std::string(argv[1])=="--producer-smoke"){run_producer(1);run_producer(3);}
+    else if(std::string(argv[1])=="--producer")for(int T:{63,64,65,127,128,129})run_producer(T);
+    else if(std::string(argv[1])=="--producer-large")run_producer(8192);
     else if(std::string(argv[1])=="--component")run_component();
     else if(std::string(argv[1])=="--general")for(int T:{63,64,65,127,128,129})run_general(T);
     else for(int T:{63,64,65,127,128,129})run(T);

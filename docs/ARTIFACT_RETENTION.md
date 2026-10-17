@@ -59,10 +59,11 @@ experiment is not a retention policy. This applies to project executables,
 static libraries, object files, JIT/native dumps and their disposable build trees;
 installed toolchains, runtime dependencies and model weights are separate assets.
 
-**Commit the measured code before treating a binary as disposable.** Before a
-measurement, pin a reachable source commit, all local changes and generated
-source inputs, compiler/dependency versions, build command/options and relevant
-environment. Check that the committed inputs actually match those used to build
+**Commit the measured code before treating a binary as disposable.** Before
+building a measurement executable or running a fixture, pin a reachable source
+commit, all local changes and generated source inputs, compiler/dependency
+versions, build command/options and relevant environment. Check that the
+committed inputs actually match those used to build
 the measured executable, and record its hash. A nearby commit or a source path
 alone is insufficient. If a measurement used an uncommitted snapshot, reconcile
 and commit its necessary original inputs before deleting its last build/source

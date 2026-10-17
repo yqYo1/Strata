@@ -122,7 +122,7 @@ target_link_libraries(strata_engine PUBLIC strata_core strata_kernels strata_ker
 set(MKL_LINK dynamic)
 set(MKL_THREADING sequential)
 find_package(MKL CONFIG REQUIRED)
-add_library(strata_prefill STATIC src/prefill/prefill.cpp src/prefill/sycl/gemm.cpp src/prefill/sycl/qsa_score_gemm.cpp src/prefill/sycl/gemm16.cpp src/prefill/sycl/native16.cpp src/prefill/sycl/qsa_native16.cpp src/prefill/sycl/postops.cpp src/prefill/sycl/blob.cpp src/prefill/sycl/moe_mmq.cpp src/prefill/sycl/moe_fused.cpp)
+add_library(strata_prefill STATIC src/prefill/prefill.cpp src/prefill/sycl/gemm.cpp src/prefill/sycl/qsa_score_gemm.cpp src/prefill/sycl/gemm16.cpp src/prefill/sycl/native16.cpp src/prefill/sycl/qsa_native16.cpp src/prefill/sycl/gdn_chunk64.cpp src/prefill/sycl/postops.cpp src/prefill/sycl/blob.cpp src/prefill/sycl/moe_mmq.cpp src/prefill/sycl/moe_fused.cpp)
 target_link_libraries(strata_prefill PUBLIC strata_engine MKL::MKL_SYCL::BLAS)
 target_compile_definitions(strata_prefill PRIVATE STRATA_PREFILL_MMQ=1 STRATA_PREFILL_FUSED=1)
 target_compile_options(strata_prefill PRIVATE -fno-fast-math -ffp-contract=off)
