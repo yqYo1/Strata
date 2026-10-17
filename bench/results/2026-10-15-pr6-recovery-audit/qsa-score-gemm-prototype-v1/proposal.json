@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "recorded_at": "2026-10-17T16:13:14.203333+00:00",
+  "provenance": "Main independently authored during serialized actual-model comparison, using only this fork original QSA contract and existing Gemm::f16 GPU-queue API. No XeStrata code/helper/proposal or held research body used.",
+  "base_source_commit": "e3323ed07a95df3e0d42432579a1a8285722f80f",
+  "compiled": false,
+  "GPU_executed": false,
+  "production_selected": false,
+  "performance_measured": false,
+  "quality_qualified": false,
+  "scope": "Private prototype: GPU FP32-to-FP16 operand pack; existing GEMM with F32 output; GPU ReLU/headsum; dead row retains original strict FP32 tree. Panel scratch bounds do not grow with context except packed pooled rows.",
+  "numerical_change": "Completed-block inputs round to FP16 and GEMM can sum differently. This is deliberately not bit-parity qualified; do not adopt based on synthetic overlap alone. Status nonzero invalidates results.",
+  "ownership": "Caller-owned registered allocations, explicit existing in-order stream shared by Gemm, no wrapper allocation or tensor readback, checked completion before owner retirement. oneMKL internal allocation and hardware lowering remain unmeasured; scratch figures count only declared wrapper buffers. Private active bound positive only.",
+  "resource_sizes": [
+    {
+      "context": 32768,
+      "active": 8193,
+      "padded_blocks": 8256,
+      "query_count": 256,
+      "tile_blocks": 8192,
+      "packed_pool_bytes": 2113536,
+      "packed_query_bytes": 262144,
+      "FP32_head_panel_bytes": 33554432,
+      "status_bytes": 4,
+      "extra_scratch_bytes": 35930116,
+      "untiled_FP32_head_output_bytes": 33816576
+    },
+    {
+      "context": 78453,
+      "active": 19614,
+      "padded_blocks": 19648,
+      "query_count": 256,
+      "tile_blocks": 8192,
+      "packed_pool_bytes": 5029888,
+      "packed_query_bytes": 262144,
+      "FP32_head_panel_bytes": 33554432,
+      "status_bytes": 4,
+      "extra_scratch_bytes": 38846468,
+      "untiled_FP32_head_output_bytes": 80478208
+    },
+    {
+      "context": 262144,
+      "active": 65537,
+      "padded_blocks": 65600,
+      "query_count": 256,
+      "tile_blocks": 8192,
+      "packed_pool_bytes": 16793600,
+      "packed_query_bytes": 262144,
+      "FP32_head_panel_bytes": 33554432,
+      "status_bytes": 4,
+      "extra_scratch_bytes": 50610180,
+      "untiled_FP32_head_output_bytes": 268697600
+    }
+  ],
+  "next_gates": [
+    "Review worker R1033 and native review for current API/precision applicability before building.",
+    "Pin first executable recipe, compiler/runtime/ELF and all scratch/input ownership; no concurrent builds/GPU.",
+    "Small traced f16/F32 GEMM probe and whole-reference/signed-tail/guard/status tests, ensuring actual GPU execution and no CPU library fallback.",
+    "Compare against FP16-rounded operand scalar oracle with prospective error bound; separately report loss against original FP32 scores and selected sets.",
+    "Shape-faithful long component timing with pack/GEMM/post/dead costs included; then model quality and performance only if justified.",
+    "All physical262144/padded panel tails and invalid numeric status must be covered before production use."
+  ],
+  "files": {
+    "qsa_score_gemm.hpp": "84514284cd332e428b613a757a800480019b777b5e51637ff092cede0dd9cb81",
+    "qsa_score_gemm.cpp": "e2d4e24125d91590d0efd75a35f6633fdd8b12cec8473b0cd44ad1980c534a2f"
+  }
+}
