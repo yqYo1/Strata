@@ -177,9 +177,9 @@ int main(int argc,char** argv) {
         gate("runtime-ready");
         if (mode=="short-weights" || mode=="short-down" || mode=="legacy-plan") refused(mode);
         else {
-            need(mode=="smoke" || mode=="numeric" || mode=="hot65536" || mode=="balanced65536" || mode=="negative-source" || mode=="negative-slot" || mode=="unwind","unsupported case");
-            const int rows=mode=="smoke"?3:mode=="numeric"?37:(mode=="hot65536" || mode=="balanced65536")?65536:17;
-            try { run(rows,mode=="hot65536",mode=="numeric",mode=="negative-source"?1:mode=="negative-slot"?2:0,mode=="unwind"); }
+            need(mode=="smoke" || mode=="numeric" || mode=="hot65536" || mode=="balanced65536" || mode=="hot81920" || mode=="balanced81920" || mode=="partial78452" || mode=="negative-source" || mode=="negative-slot" || mode=="unwind","unsupported case");
+            const int rows=mode=="smoke"?3:mode=="numeric"?37:(mode=="hot65536" || mode=="balanced65536")?65536:(mode=="hot81920" || mode=="balanced81920")?81920:mode=="partial78452"?78452:17;
+            try { run(rows,mode=="hot65536" || mode=="hot81920",mode=="numeric",mode=="negative-source"?1:mode=="negative-slot"?2:0,mode=="unwind"); }
             catch (const Stop&) { need(mode=="unwind","unexpected stop");std::cout<<"unwind=PASS numeric=UNRUN expected_kernels=3\n"; }
         }
         runtime->wait();runtime.reset();gate("after-cleanup");std::cout<<"fixture_status=PASS model_PP=UNRUN\n";return 0;
