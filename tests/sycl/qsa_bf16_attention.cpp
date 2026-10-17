@@ -26,15 +26,18 @@ void drain() noexcept {
 struct Drain { ~Drain() noexcept { drain(); } };
 template <class T> struct Buffer {
   sycl_backend::Allocation memory;
+  // DMA spans must outlive a throwing wait and the outer checked drain.
+  std::vector<T> upload, download;
   explicit Buffer(size_t n) : memory(rt,n*sizeof(T),sycl_backend::MemoryKind::Device) {}
   T *data() { return memory.as<T>(); }
   void put(const std::vector<T> &v) {
     require(memory.size()==v.size()*sizeof(T),"upload extent");
-    rt->wait(rt->compute().memcpy(data(),v.data(),memory.size()));
+    rt->wait(); upload=v;
+    rt->wait(rt->compute().memcpy(data(),upload.data(),memory.size()));
   }
   std::vector<T> get() {
-    std::vector<T> v(memory.size()/sizeof(T));
-    rt->wait(rt->compute().memcpy(v.data(),data(),memory.size())); return v;
+    rt->wait(); download.resize(memory.size()/sizeof(T));
+    rt->wait(rt->compute().memcpy(download.data(),data(),memory.size())); return download;
   }
 };
 uint16_t round_bf16(float x) {
@@ -59,7 +62,8 @@ void run(int cells,int cap,int queries,bool masked,bool extended) {
   constexpr int Heads=24,KV=2,Dim=256,Page=16;
   const int pages=(cells+Page-1)/Page, rows=pages*KV*Page;
   std::vector<int32_t> table(pages),ids(size_t(queries)*cap),steps(size_t(queries)*kStepCount);
-  for (int p=0;p<pages;++p) table[p]=masked && p%7==2 ? -1 : pages-1-p;
+  for (int p=0;p<pages;++p)
+    table[p]=masked && p%7==2 ? -1 : masked && p%7==3 ? pages+9 : pages-1-p;
   std::vector<int8_t> k(size_t(rows)*Dim),v(k.size());
   for (size_t i=0;i<k.size();++i) { k[i]=int8_t(int((i*7+3)%15)-7); v[i]=int8_t(int((i*11+5)%31)-15); }
   std::vector<uint16_t> ks(size_t(rows)*4),vs(ks.size()),q(size_t(queries)*Heads*Dim);

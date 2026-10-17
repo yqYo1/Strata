@@ -9,6 +9,8 @@
 #include "strata/sycl/launch.hpp"
 #include <algorithm>
 #include <cmath>
+#include <cstddef>
+#include <type_traits>
 #include <sycl/ext/oneapi/bfloat16.hpp>
 #include <sycl/ext/oneapi/matrix/matrix.hpp>
 
@@ -18,12 +20,26 @@ namespace mx = sycl::ext::oneapi::experimental::matrix;
 namespace mi = sycl::ext::intel::experimental::matrix;
 using BFloat = sycl::ext::oneapi::bfloat16;
 constexpr int Dim = 256, Heads = 12, Cells = 32, Workgroup = 128;
+// Intel joint_matrix loads require a four-byte base. BFloat's own alignment
+// does not express that requirement. Keep each complete operand in one array.
+template<int Count> struct alignas(4) MatrixTile { BFloat values[Count]; };
+template<int Count> constexpr bool storage_contract() {
+  using Tile = MatrixTile<Count>;
+  static_assert(std::is_standard_layout_v<Tile> && std::is_trivially_copyable_v<Tile>);
+  static_assert(alignof(Tile) >= 4 && offsetof(Tile, values) == 0);
+  static_assert(sizeof(Tile) == Count * sizeof(BFloat));
+  return true;
+}
+static_assert(sizeof(BFloat) == 2 && storage_contract<16 * Dim>() &&
+              storage_contract<Cells * Dim>() && storage_contract<16 * Cells>());
+static_assert(Dim * sizeof(BFloat) % 8 == 0 && Cells * sizeof(BFloat) % 8 == 0);
 constexpr size_t LocalPayload = (16 * Dim + Cells * Dim + 16 * Cells) * 2
     + (16 * Cells + 3 * 16) * 4 + Cells * 8 + 16 * 4;
 static_assert(LocalPayload == 28160);
 
 bool matrix_available(const sycl::device &device) {
-  if (!device.is_gpu() || device.get_info<sycl::info::device::vendor_id>() != 0x8086 ||
+  if (!device.has(sycl::aspect::ext_intel_matrix) || !device.is_gpu() ||
+      device.get_info<sycl::info::device::vendor_id>() != 0x8086 ||
       device.get_info<sycl::info::device::max_work_group_size>() < Workgroup ||
       device.get_info<sycl::info::device::max_work_item_sizes<1>>()[0] < Workgroup ||
       device.get_info<sycl::info::device::local_mem_size>() < LocalPayload + 4096)
@@ -55,14 +71,21 @@ bool qsa_bf16_attention_late_flags_batch(const uint16_t *query, const QsaAttnPoo
   auto &queue = sycl_backend::queue_for(stream);
   if (!matrix_available(queue.get_device())) return false;
   auto event = queue.submit([&](sycl::handler &handler) {
-    sycl::local_accessor<BFloat, 1> qtile(16 * Dim, handler), kv(Cells * Dim, handler),
-                                   probability(16 * Cells, handler);
+    sycl::local_accessor<MatrixTile<16 * Dim>, 1> qstorage(1, handler);
+    sycl::local_accessor<MatrixTile<Cells * Dim>, 1> kvstorage(1, handler);
+    sycl::local_accessor<MatrixTile<16 * Cells>, 1> pstorage(1, handler);
     sycl::local_accessor<float, 1> scores(16 * Cells, handler), maximum(16, handler),
                                   normalizer(16, handler), alpha(16, handler);
     sycl::local_accessor<int64_t, 1> rows(Cells, handler);
     sycl::local_accessor<int, 1> bad_head(16, handler);
     handler.parallel_for(sycl::nd_range<1>(size_t(queries) * 2 * Workgroup, Workgroup),
         [=](sycl::nd_item<1> item) [[sycl::reqd_sub_group_size(16)]] {
+      auto qtile = sycl::address_space_cast<sycl::access::address_space::local_space,
+          sycl::access::decorated::no>(qstorage[0].values);
+      auto kv = sycl::address_space_cast<sycl::access::address_space::local_space,
+          sycl::access::decorated::no>(kvstorage[0].values);
+      auto probability = sycl::address_space_cast<sycl::access::address_space::local_space,
+          sycl::access::decorated::no>(pstorage[0].values);
       const int tid = item.get_local_linear_id();
       const auto sg = item.get_sub_group();
       const int subgroup = sg.get_group_linear_id(), lane = sg.get_local_linear_id();
@@ -130,10 +153,8 @@ bool qsa_bf16_attention_late_flags_batch(const uint16_t *query, const QsaAttnPoo
           Acc product; Left a; Right b;
           mx::joint_matrix_fill(sg, product, 0.f);
           for (int d = 0; d < Dim; d += 16) {
-            mx::joint_matrix_load(sg, a, qtile.template get_multi_ptr<
-                sycl::access::decorated::no>() + head * Dim + d, Dim);
-            mx::joint_matrix_load(sg, b, kv.template get_multi_ptr<
-                sycl::access::decorated::no>() + d * Cells + cell, Cells);
+            mx::joint_matrix_load(sg, a, qtile + head * Dim + d, Dim);
+            mx::joint_matrix_load(sg, b, kv + d * Cells + cell, Cells);
             mx::joint_matrix_mad(sg, product, a, b, product);
           }
           mi::joint_matrix_apply(sg, product, [=](float &value, size_t r, size_t c) {
@@ -181,10 +202,8 @@ bool qsa_bf16_attention_late_flags_batch(const uint16_t *query, const QsaAttnPoo
             v *= alpha[head + r];
           });
           for (int c = 0; c < Cells; c += 16) {
-            mx::joint_matrix_load(sg, a, probability.template get_multi_ptr<
-                sycl::access::decorated::no>() + head * Cells + c, Cells);
-            mx::joint_matrix_load(sg, b, kv.template get_multi_ptr<
-                sycl::access::decorated::no>() + c * Dim + dim_base + j * 16, Dim);
+            mx::joint_matrix_load(sg, a, probability + head * Cells + c, Cells);
+            mx::joint_matrix_load(sg, b, kv + c * Dim + dim_base + j * 16, Dim);
             mx::joint_matrix_mad(sg, accumulated[j], a, b, accumulated[j]);
           }
         }

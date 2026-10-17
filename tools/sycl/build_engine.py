@@ -70,8 +70,13 @@ def pin(root, prefixes):
 
 
 def main():
-    guards.require(len(sys.argv) == 1 or sys.argv[1:] == ['rebuild'], 'use build_engine.py [rebuild]')
-    rebuild = sys.argv[1:] == ['rebuild']
+    guards.require(len(sys.argv) == 1 or sys.argv[1:] in (['rebuild'], ['rebuild-attention']),
+                   'use build_engine.py [rebuild|rebuild-attention]')
+    rebuild = len(sys.argv) == 2
+    attention = sys.argv[1:] == ['rebuild-attention']
+    targets = ['strata']
+    if attention:
+        targets += ['sycl_qsa_bf16_late_flags_test', 'sycl_qsa_bf16_prefix_optimized_test']
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
@@ -94,6 +99,7 @@ def main():
                                    'Reuse its cache for the immediate corrected build, not a retained old generation.')
         project = pin(P, ['CMakeLists.txt', 'cmake', 'include', 'src', 'tests',
                           'tools/sycl/build_engine.py', 'tools/sycl/measurement_owner.py',
+                          'tools/sycl/check_attention.py',
                           'tools/sycl/measurement_guards.py', str(SETTINGS.relative_to(P)),
                           str(BASELINE.relative_to(P))])
         baseline = json.loads(BASELINE.read_text())
@@ -119,7 +125,8 @@ def main():
                       recipe_reference=dict(path=str(BASELINE.relative_to(P)), sha256=digest(BASELINE)),
                       complete=False, passed=False, active=False, GPU_executed=False,
                       production_selected=False, model_quality_qualified=False, replaces=previous,
-                      retention_consumer='Imminent native GDN opt-in model correctness/performance A/B; retire after comparison.')
+                      targets=targets,
+                      retention_consumer='Current long-prefill comparison and its attention fixtures; retire when comparison closes.')
         owner = None
 
         def persist():
@@ -132,7 +139,7 @@ def main():
         persist()
         try:
             for label, command in [('configure', argv), ('compile-link',
-                    ['/usr/bin/cmake', '--build', str(ROOT / 'build'), '--target', 'strata', '-j', '4'])]:
+                    ['/usr/bin/cmake', '--build', str(ROOT / 'build'), '--target', *targets, '-j', '4'])]:
                 entry, out, err = owner.run(label, command, env, P, wall=1800, cpu=7200,
                     rss_cap=12 << 30, file_cap=256 << 20, text_cap=64 << 20, total_cap=4 << 30)
                 guards.require(supervision.closed(entry) and entry.get('exit_code') == 0,
@@ -155,6 +162,9 @@ def main():
             record.update(binary=dict(path=str(binary), bytes=binary.stat().st_size, sha256=digest(binary)),
                           compile_database_sha256=digest(database), configured_compile_entries=len(entries),
                           complete=True, passed=True)
+            record['fixtures'] = {
+                name: dict(path=str(ROOT / 'build' / name), sha256=digest(ROOT / 'build' / name))
+                for name in targets if name != 'strata'}
         except BaseException as error:
             record['error'] = str(error)
         finally:

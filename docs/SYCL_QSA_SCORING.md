@@ -126,3 +126,32 @@ checked lease, drains and checks the status. A nonzero status rejects the
 prefill result before decode. Status remains outside the arena subsequently
 reused by gate, MoE and GDN. Borrow restoration and all temporary-owner release
 follow checked retirement; unproven retirement aborts with owners still live.
+
+## Current attention comparison
+
+The long-prefill native16 attention selector is
+`STRATA_SYCL_PREFILL_QSA_MATH`. `bf16` decodes selected resident INT8 K/V rows
+inside the attention kernel; `bf16-prefix-optimized` first decodes the live
+prefix into transient BF16 storage and uses score pitch33. Both keep local
+FP32 online state and matrix accumulators. This comparison changes the attention
+operand supply, not the score-GEMM selector above. Existing GDN stays selected
+after its matched78K comparison established no material gain from chunk64.
+
+Before another direct-Q8 model run, its operand arrays explicitly enforce the
+four-byte matrix-load base required by the
+[Intel matrix specification](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_matrix/sycl_ext_oneapi_matrix.asciidoc).
+This closes a source-level alignment guarantee; it does not identify the cause
+of an earlier GPU hang. The existing independent CPU-oracle fixture retains
+DMA spans through checked drain and includes unmapped and out-of-range pages.
+
+Commit the exact sources, then use `tools/sycl/build_engine.py rebuild-attention`
+to build the engine and the two current fixtures. Commit the build identity,
+run `tools/sycl/check_attention.py smoke`, commit that result, then run
+`tools/sycl/check_attention.py component`. The prefix target is specifically
+`sycl_qsa_bf16_prefix_optimized_test`: its CMake definition maps the fixture to
+the production pitch33 function. The default prefix fixture instead tests
+pitch32. This distinction was checked against the actual build configuration;
+the report review's default-fixture observation does not cover both targets.
+First checks use tracing/validation; full component checks use parameter
+validation. The shared lock and owned process budgets serialize every run.
+These component tests do not establish full-model context, quality or speed.
