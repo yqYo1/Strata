@@ -173,12 +173,87 @@
   },
   "config_sha256": "2227609994c80aa1b7ded9d0c72209ce8f156506256d7db4edd99025f35074a6",
   "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
-  "complete": false,
+  "complete": true,
   "passed": false,
   "active": false,
   "model_quality_qualified": false,
   "physical262144_RESTORE_qualified": false,
   "performance_adopted": false,
   "source_count": 99,
-  "source_aggregate_sha256": "8ae280c8fa794adfb44e6fb78048aa874584a95460d93b1fa18d60b104ea4c22"
+  "source_aggregate_sha256": "8ae280c8fa794adfb44e6fb78048aa874584a95460d93b1fa18d60b104ea4c22",
+  "exit_code": 1,
+  "requests": [
+    {
+      "run": 0,
+      "ok": false,
+      "eligible": false,
+      "actual_prompt_tokens": null,
+      "actual_read_tokens": null,
+      "actual_reused_tokens": null,
+      "generated_tokens": 0,
+      "thinking_requested": true,
+      "reasoning_observed": false,
+      "stream_complete": false,
+      "request_sha256": "1fd63b8c67a1888e443800b5c6d339ca116df2cb91941e6f332b6adf74275b3a",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasoning_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ttft_s": null,
+      "total_s": 1.199,
+      "prompt_tps": null,
+      "prompt_ms": null,
+      "decode_tps": null,
+      "decode_ms": null,
+      "prompt_tps_source": null,
+      "decode_tps_source": null,
+      "drafts_offered": null,
+      "drafts_accepted": null,
+      "finish_reason": null,
+      "err": "{'type': 'server_error', 'message': 'prefill MoE window: requires native16 BF16, chunk8192 and scratch alias'}; usage.prompt_tokens must report >= 32768, got None; timings.prompt_n must report >= 32768, got None; every reported reuse count must be zero, got []; completion usage outside 1..24; actual prompt lacks verified context/output headroom; missing finite positive engine prompt_per_second",
+      "eligibility_errors": [
+        "{'type': 'server_error', 'message': 'prefill MoE window: requires native16 BF16, chunk8192 and scratch alias'}",
+        "usage.prompt_tokens must report >= 32768, got None",
+        "timings.prompt_n must report >= 32768, got None",
+        "every reported reuse count must be zero, got []",
+        "completion usage outside 1..24",
+        "actual prompt lacks verified context/output headroom",
+        "missing finite positive engine prompt_per_second"
+      ]
+    }
+  ],
+  "engine_exit_code": 1,
+  "native_identity": {
+    "pid": 3045756,
+    "start_ticks": 62405075,
+    "sid": 3045734
+  },
+  "route_selection": [],
+  "error": "native engine exit",
+  "error_excerpt": "strata serve: a 8192-token chunk's prompt buffers need 2485 MiB on CUDA0, 2984 MiB free: 6144-token chunks\nstrata prefill: FP16 MoE compact requested=1 effective=1, chunk=6144, scratch rows=6144, accounted=1975799040, shared region=1100616448 bytes\nstrata serve: prefill MoE window: requires native16 BF16, chunk8192 and scratch alias",
+  "ownership_closed": true,
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  },
+  "diagnosis": {
+    "mechanism": "Capacity-driven chunk downshift before new long-prefill GDN execution; MoE window rejects6144.",
+    "requested_chunk": 8192,
+    "actual_chunk": 6144,
+    "prompt8192_MiB": 2485,
+    "setup_free_MiB": 2984,
+    "reserve_MiB": 700,
+    "long_GDN_executed": false,
+    "short_warmup_used_prior_path": true,
+    "next": "Reuse normalized/history and output/vb only across nonoverlapping stages; pack lower/inverse into dead QKV. Requalify actual arena, then rerun a new owned check."
+  },
+  "capacity_evidence": [
+    "strata serve: a 8192-token chunk's prompt buffers need 2485 MiB on CUDA0, 2984 MiB free: 6144-token chunks",
+    "strata prefill: FP16 MoE compact requested=1 effective=1, chunk=6144, scratch rows=6144, accounted=1975799040, shared region=1100616448 bytes",
+    "strata serve: prefill MoE window: requires native16 BF16, chunk8192 and scratch alias"
+  ]
 }
