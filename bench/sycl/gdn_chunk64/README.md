@@ -55,7 +55,12 @@ It refuses to overwrite a previous candidate or reuse a changed source tree.
 Current compact evidence goes to `bench/results/2026-10-15-pr6-recovery-audit/`
 as `gdn-chunk64-current.json`; temporary full logs stay outside Git.
 
-The native producer is currently unqualified. It reads BF16 projected QKV,
+The native producer passed the 1/3 and 63/64/65/127/128/129 synthetic cases
+on B570 at source `f31cdbd786e3d65c76045f6282a207a55fd9f8a4` without new GPU
+faults. Conv output differences against the CPU formula were zero; history,
+guards, inputs, rejection, repeat, split conv and aligned conv/carry handoff
+passed. This is component safety evidence, not framework/model qualification.
+It reads BF16 projected QKV,
 retains existing FP32 conv history, accumulates conv/SiLU locally in FP32,
 rounds the activation to BF16, then normalizes Q/K with FP32 local reductions
 and writes BF16 directly. It never materializes a full FP32 activation tensor.
