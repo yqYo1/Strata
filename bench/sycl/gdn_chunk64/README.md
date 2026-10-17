@@ -60,7 +60,9 @@ The native producer passed the 1/3 and 63/64/65/127/128/129 synthetic cases
 on B570 at source `f31cdbd786e3d65c76045f6282a207a55fd9f8a4` without new GPU
 faults. Conv output differences against the CPU formula were zero; history,
 guards, inputs, rejection, repeat, split conv and aligned conv/carry handoff
-passed. This is component safety evidence, not framework/model qualification.
+passed. At source `68e58db6`, those cases plus 8192 also passed the shared arena
+reuse and partial-call relayout, with zero conv CPU-formula differences and no
+new faults. This is component safety evidence, not framework/model qualification.
 It reads BF16 projected QKV,
 retains existing FP32 conv history, accumulates conv/SiLU locally in FP32,
 rounds the activation to BF16, then normalizes Q/K with FP32 local reductions
@@ -79,9 +81,15 @@ The shared arena planner is used by Prefill's size accounting/carving and the
 fixture. Projection QKV dies after conv/history update and is reused by FP32
 lower-KKT scratch. Every live recurrence input remains separate from scratch.
 The new fixture checks this reuse and partial-chunk rebinding against disjoint
-buffers, with exact state/output/history and outer guards; the new arena tests
-and 8192 producer case have not yet run. These synthetic copies are test setup,
+buffers, with exact state/output/history and outer guards. The 8192 arena is
+1,467,486,720 bytes, excluding external state/history, weights, KV, residuals and
+GEMM scratch. These synthetic copies are test setup,
 not transfers or host arithmetic in the inference path.
+
+`python3 tools/sycl/build_engine.py` builds the current comparison engine after
+verifying committed project/dependency inputs, using the known-good engine's
+configure recipe. Main owns build/model runs; the build helper never runs the
+model. Keep that engine only for the imminent native-GDN comparison.
 
 On B570, the resident8192 comparison uses identical decoded input values,
 one warmup and five rotating samples per arm. Clean processes omit tracing and
