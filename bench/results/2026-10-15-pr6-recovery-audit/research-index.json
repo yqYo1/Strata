@@ -5447,6 +5447,63 @@
         }
       ],
       "main_body_read_on_arrival": false
+    },
+    {
+      "round": 1043,
+      "model": "gpt-6-luna",
+      "classification": "knowledge_collection",
+      "read_only": true,
+      "path": "research-round1043-v1.txt",
+      "bytes": 10634,
+      "sha256": "efee673aac1dd3030d5a7da0dd24a6da5abf00dd60f3d90526cd93d39426c4ee",
+      "review_path": "research-round1044-review-v1.txt",
+      "review_sha256": "35242306534169406bbbcf4c4e990fd9c093158542a6381dcf2d4273e4a7a99e",
+      "index_proposal_path": "research-round1044-index-proposal-v1.json",
+      "status": {
+        "decision": "accepted_with_current_state_corrections",
+        "scope_depth": "Source-backed schedule trade-offs and numerical/ownership constraints are adequate for retrieval. Report substantially overlaps R1013's accepted QSA ownership/SLM/barrier accounting; its C16/C64 hypotheses are superseded by later Main component results.",
+        "main_read_policy": "Keep the full knowledge-collection body held. Main needs only this short operational review and relevant index metadata unless a concrete QSA schedule decision arises.",
+        "current_path": "qsa_bf16_prefix_optimized_batch calls prefix_batch_impl<Cells + 1> with default false,false; source is Cells=32, score stride33, workgroup128, subgroup16.",
+        "static_payload_bytes": {
+          "score_stride_equal_cells": {
+            "cells16": 18304,
+            "cells32": 28160,
+            "cells64": 47872
+          },
+          "score_stride_cells_plus_one": {
+            "cells16": 18368,
+            "cells32": 28224,
+            "cells64": 47936
+          },
+          "limit": "Source payload arithmetic only; compiler padding/hidden allocation and physical residency are unmeasured. matrix_available checks payload plus4096B against device local_mem_size, not occupancy."
+        },
+        "corrections": [
+          "Source has one explicit pre-loop item.barrier after query/state initialization at qsa_bf16_prefix.cpp:188; the five per-chunk barriers are correctly counted. No explicit post-loop group barrier appears.",
+          "R954/R955 are held design support, not a qualified implementation or measured run; the current subgroup-softmax candidate remains compile/smoke/component NOT_RUN.",
+          "Later Main component results supersede the report's unmeasured C16/C64 hypotheses; neither result identifies an occupancy/SLM/DRAM cause."
+        ],
+        "status_boundaries": [
+          "No proof of generated XMX instructions, actual occupancy, register/spill pressure, cache traffic, or DRAM bandwidth follows from source accounting or general Intel documentation.",
+          "The strict physical262144 numerical-reference failure remains unresolved; a one-query component case does not qualify full-context model completion or RESTORE."
+        ]
+      },
+      "retrieval_tags": [
+        "qsa-bf16-prefix-workgroup-schedule",
+        "qsa-prefix-selected-id-attention",
+        "qsa-static-slm-payload-accounting",
+        "qsa-chunk-size-barrier-tradeoffs",
+        "qsa-64-workitem-accumulator-register-risk",
+        "qsa-kv-double-buffer-barrier-lifetime",
+        "qsa-subgroup-softmax-held-design-support",
+        "qsa-tilepack-not-adopted",
+        "qsa64-component-regression",
+        "qsa16-mixed-component-result",
+        "qsa-physical262144-numerical-failure-unresolved",
+        "no-occupancy-or-dram-attribution-from-source",
+        "intel-sycl-tla-87f6850-bsd3-documentation-only",
+        "no-xestrata-source-used"
+      ],
+      "main_body_read_on_arrival": false
     }
   ],
   "main_initial_findings": [
@@ -10088,7 +10145,7 @@
       "bytes": 3416,
       "sha256": "05740ed61ee9857c4503ffb85b846bd0fbc23f3d903bcc1cc55a46fad310d537"
     },
-    "next": "Long-prefill-only opt-in integration borrows future attn_h output, preserves live Qf, independently owns sticky status and validates device before model state updates. Actual API then model quality/performance gates; default remains off."
+    "next": "Actual API/arena/status and same-binary78K performance comparison closed PASS,679.4->725.2tok/s. Capture current device service/resource attribution next, then prepared actual row-major serial/subgroup correctness fixture and worthwhile complete-path experiments. Long generation/quality and physical262144/RESTORE pending; no global default adoption."
   },
   "research_review_round1040": {
     "review": {
@@ -10118,5 +10175,40 @@
       "sha256": "d4a2116cc45377410d3c610b8e903d5a632e88fc0a899e18b9131cde98b10520"
     },
     "main_decision": "Main exact local Git object independently confirms BSD3; prior engine docs and preserved core notice already identify BSD3. Incorrect MIT task description corrected in supplemental record, original spec preserved. No code adopted from this research. Further survey not scheduled; existing GEMM integration and model measurements first."
+  },
+  "research_review_round1044": {
+    "review": {
+      "path": "research-round1044-review-v1.txt",
+      "sha256": "35242306534169406bbbcf4c4e990fd9c093158542a6381dcf2d4273e4a7a99e"
+    },
+    "index_proposal": {
+      "path": "research-round1044-index-proposal-v1.json",
+      "sha256": "180c461d78c3e5426568f4ce9a9c16349b92d3c326d1033128b7fc7301ef44c6"
+    },
+    "main_read_policy": "Short operational digest and relevant index metadata only; original knowledge report held.",
+    "main_action": "Do not repeat C16/C64 or old packed candidate. Prepared same-binary dispatcher over actual current row-major optimized/subgroup APIs and host-DMA-owner fix in a private unchanged-oracle fixture. Build/GPU not run while score comparison active; existing public subgroup source and private packed experiment are distinct. Current same-path resource capture and correctness precede any scheduling adoption."
+  },
+  "qsa_score_gemm_entry_model_current": {
+    "path": "qsa-score-gemm-entry-model-comparison-v1.json",
+    "sha256": "e352ca2034514c1e1da47c7a4c3c8fc81aa7589d4a7b6da25866885eec962ab6",
+    "actual_input_tokens": 78453,
+    "FP32_headparallel_subsequent_median_PP": 679.4,
+    "GEMM_subsequent_median_PP": 725.2,
+    "improvement_percent": 6.741242272593473,
+    "qualification": "Each arm one fresh process with first+3subsequent requests. Normal exits/fault0; model quality, sustained decode, physical262144/RESTORE unqualified; default flag0."
+  },
+  "qsa_softmax_actual_entry_next": {
+    "manifest": "own-qsa-softmax-actual-entry-v1/manifest.json",
+    "manifest_sha256": "87610756139bfe569fe6f031419d63f02f36cecd6f032735a558e2a765c945a0",
+    "build_recipe": "build_qsa_softmax_actual_entry_v1.py",
+    "run_recipe": "run_qsa_softmax_actual_entry_v1.py",
+    "status": "PREPARED_ONLY; not compiled or GPU-tested. Uses current qualified full-build archives, actual row-major APIs and a test-only immutable dispatcher; numerical oracle/cases unchanged, host DMA backing retained through checked drain. No old packed source used.",
+    "review_reference": "research-round1044-index-proposal-v1.json",
+    "performance_prerequisite": "Current same-path resource evidence must select worthwhile QSA work; no C16/C64 resurvey or old packed retry."
+  },
+  "qsa_score_gemm_entry_retention": {
+    "component": "qsa-score-gemm-entry-retention-v1.json",
+    "model_and_superseded_first_build": "qsa-score-gemm-entry-model-retention-v1.json",
+    "canonical_status": "All source/outcomes/sample receipts remain unchanged; qualified v2 build retained. Superseded unexecuted v1 build tree retired."
   }
 }
