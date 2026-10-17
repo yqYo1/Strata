@@ -43,6 +43,21 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     const auto& g = *m.g;
     auto& ss = *m.ss;
     const bool native16_on = native16::requested();
+    const bool window_requested = moe_window_requested();
+    const bool window_on = window_requested && !requires_prefix_checkpoints;
+    const bool command_profile_on = sycl_backend::command_profile::requested();
+    if (command_profile_on && (!window_on || g.n_layers != 48)) {
+        err = "prefill command profile requires window2 and48 layers"; return false;
+    }
+    if (window_on && (!native16_on || m.T != 8192 || !m.scratch_alias)) {
+        err = "prefill MoE window: requires native16 BF16, chunk8192 and scratch alias"; return false;
+    }
+    if (window_requested && requires_prefix_checkpoints)
+        std::fprintf(stderr, "strata prefill: MoE window disabled for prefix-checkpoint consumer; existing route retained\n");
+    const char* window_census_switch = std::getenv("STRATA_PREFILL_LAYER_MAJOR_SHAPE_CENSUS");
+    if (window_on && window_census_switch && std::strcmp(window_census_switch, "1") == 0) {
+        err = "prefill MoE window: old chunk census does not describe window GEMM jobs"; return false;
+    }
     const bool qsa16_on = native16::qsa::requested();
     const auto qsa_math = native16::qsa::attention_math();
     if (qsa_math != native16::qsa::AttentionMath::existing && !qsa16_on) {
@@ -50,6 +65,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     }
     const bool qsa_prefix_on = qsa_math == native16::qsa::AttentionMath::bf16_prefix ||
         qsa_math == native16::qsa::AttentionMath::bf16_prefix_optimized ||
+        qsa_math == native16::qsa::AttentionMath::bf16_prefix_subgroup ||
         qsa_math == native16::qsa::AttentionMath::bf16_prefix_tilepack;
     if (qsa16_on && !native16_on) {
         err = "prefill QSA16: requires STRATA_SYCL_PREFILL_NATIVE16=bf16"; return false;
@@ -244,6 +260,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     uint64_t host_need = detail::layer_major_add(plan.host_bytes, cache_bytes);
     host_need = detail::layer_major_add(host_need, stride);
     host_need = detail::layer_major_add(host_need, detail::layer_major_mul(2, map_bytes));
+    if (window_on) host_need = detail::layer_major_add(host_need, 2ull << 20); // IDs, immutable routes/jobs
     if (!core::conversation_memory_admit(core::conversation_available_memory(), host_need, host_headroom)) {
         err = "prefill layer-major: residual/upload storage exceeds known available RAM minus 8 GiB headroom";
         return false;
@@ -346,6 +363,10 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     bool stage_delivered = false;
     detail::LayerMajorChunkCursor cursor{n, m.T};
 
+    std::unique_ptr<MoeWindowContext> window_context;
+    if (window_on) window_context.reset(new MoeWindowContext);
+    if (command_profile_on)
+        window_context->command_trace.reset(new sycl_backend::command_profile::Trace(m.cs));
     struct PrefixBorrow {
         Impl& m; strata::kernels::QsaBf16PackedScratch previous;
         ~PrefixBorrow() noexcept { m.qsa_prefix = previous; }
@@ -364,7 +385,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         bool active; const void* gpu_input; const void* host_input; uint16_t* fp16_stage;
         detail::LayerMajorResidualPlan plan;
         decltype(on_chunk) chunk; decltype(on_stage_chunk) stage;
-        bool native16_on; decltype(m.on_chunk16) chunk16;
+        bool native16_on; decltype(m.on_chunk16) chunk16; MoeWindowContext* window;
         ~Restore() noexcept {
             m.native_dense_overlay = overlay;
             p.stage_lb_ = lb; p.stage_le_ = le; p.hand_in_ = input;
@@ -374,13 +395,13 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             m.layer_major_gpu_input = gpu_input; m.layer_major_host_input = host_input;
             m.layer_major_fp16_stage = fp16_stage; m.layer_major_residual = plan;
             p.on_chunk = std::move(chunk); p.on_stage_chunk = std::move(stage);
-            m.native16_active = native16_on; m.on_chunk16 = std::move(chunk16);
+            m.native16_active = native16_on; m.on_chunk16 = std::move(chunk16); m.moe_window = window;
         }
     } restore{*this, m, m.native_dense_overlay, stage_lb_, stage_le_, hand_in_, m.cache, m.host_res,
               m.layer26_phase_audit, m.layer_major_audit, m.layer_major_audit_copy,
               m.layer_major_active, m.layer_major_gpu_input, m.layer_major_host_input,
               m.layer_major_fp16_stage, m.layer_major_residual, on_chunk, on_stage_chunk,
-              m.native16_active, m.on_chunk16};
+              m.native16_active, m.on_chunk16, m.moe_window};
     cudaError_t compute_drain = cudaSuccess, copy_drain = cudaSuccess;
     auto drain = [&]() noexcept {
         const auto profile_drain_start = profile ? LmProfile::Clock::now() : LmProfile::Clock::time_point{};
@@ -423,12 +444,14 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     }
     if (qsa_math != native16::qsa::AttentionMath::existing)
         std::fprintf(stderr, "strata prefill: QSA BF16 operands, FP32 online state/accumulation; "
-                     "KV=%s transient_bytes=%llu; source=resident-Mode0 score_pitch=%d operand_layout=%s\n",
+                     "KV=%s transient_bytes=%llu; source=resident-Mode0 score_pitch=%d operand_layout=%s softmax=%s\n",
                      qsa_prefix_on ? "active-logical-prefix" : "on-the-fly",
                      (unsigned long long) prefix_bytes,
                      (qsa_math == native16::qsa::AttentionMath::bf16_prefix_optimized ||
+                      qsa_math == native16::qsa::AttentionMath::bf16_prefix_subgroup ||
                       qsa_math == native16::qsa::AttentionMath::bf16_prefix_tilepack) ? 33 : 32,
-                     qsa_math == native16::qsa::AttentionMath::bf16_prefix_tilepack ? "dense16-vnni" : "row-major");
+                     qsa_math == native16::qsa::AttentionMath::bf16_prefix_tilepack ? "dense16-vnni" : "row-major",
+                     qsa_math == native16::qsa::AttentionMath::bf16_prefix_subgroup ? "subgroup" : "serial");
     if (plan.gpu_bytes) {
         uint8_t* p = nullptr;
         if (cudaMalloc(reinterpret_cast<void**>(&p), size_t(plan.gpu_bytes)) != cudaSuccess) {
@@ -447,6 +470,11 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     m.layer_major_active = true;
     m.native16_active = native16_on;
     m.layer_major_residual = plan;
+    if (window_context) {
+        window_context->bank = reinterpret_cast<uint16_t*>(device_rows.get());
+        window_context->bank_bytes = plan.gpu_bytes;
+        m.moe_window = window_context.get();
+    }
     m.cache = &layer_cache;
     m.host_res = residency.data();
     std::fprintf(stderr, "strata prefill: layer-major candidate, tokens=%lld chunk=%lld residual_dtype=%s "
@@ -540,6 +568,21 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         m.layer_major_gpu_input = layer == 0 ? nullptr : device_rows.get();
         ss.ple_prev[0] = initial_prev[0]; ss.ple_prev[1] = initial_prev[1];
         cursor = {n, m.T};
+        if (window_context) window_context->complete_piece = [&](int64_t row, int64_t count, std::string& error) {
+            cursor.accept(row, count);
+            if (layer + 1 != g.n_layers) return true; // bank already written; no self-copy
+            const auto span = plan.span(row, count);
+            if (!span.device || span.offset_bytes > window_context->bank_bytes ||
+                span.bytes > window_context->bank_bytes - span.offset_bytes) {
+                error = "prefill MoE window: final bank callback span"; return false;
+            }
+            const auto* packed = reinterpret_cast<const uint16_t*>(
+                reinterpret_cast<const uint8_t*>(window_context->bank) + span.offset_bytes);
+            native16::restore(packed, m.R, count * D, m.cs);
+            if (!drain()) { error = "prefill MoE window: final callback bridge drain"; return false; }
+            ++logical_chunks;
+            return !restore.chunk || restore.chunk(m.R, count, pos0 + row, error);
+        };
         on_stage_chunk = [&](int64_t done, std::string& error) {
             if (layer + 1 != g.n_layers || done != pos0 + n) return true;
             if (stage_delivered || cursor.next != final_chunk_row) {
@@ -657,6 +700,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         // No callback retains the per-pass cursor/layer references past this
         // checked boundary. Owners and saved caller callbacks remain leased.
         on_chunk = {}; on_stage_chunk = {}; m.on_chunk16 = {};
+        if (window_context) window_context->complete_piece = {};
     }
     if (!stage_delivered || logical_chunks != 1 + (n - 1) / m.T) {
         err = "prefill layer-major: incomplete final callback sequence"; return false;
@@ -666,6 +710,10 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     stats_.tokens = old_stats.tokens + n;
     stats_.chunks = old_stats.chunks + logical_chunks;
     stats_.ms_total = old_stats.ms_total + ms_since(started);
+    if (window_context)
+        std::fprintf(stderr, "strata MoE window: windows=%llu dequants=%llu jobs=%llu source_H2D_bytes=%llu GPU_resident_pairs_only=1 operator_max=8192 source_uploads_per_window=1\n",
+            (unsigned long long)window_context->windows, (unsigned long long)window_context->dequants,
+            (unsigned long long)window_context->jobs, (unsigned long long)window_context->source_bytes);
     // Field/callback restore and then cache/residual release follow this proof.
     if (audit) audit->complete();
     if (phase_audit) phase_audit->complete();

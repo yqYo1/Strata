@@ -32,6 +32,11 @@ void inspect(int64_t rows) {
         previous_end = span.offset + span.reserved;
     }
     need(previous_end == plan.region_bytes);
+    // Independent consumer extents: scalar gates are produced once per window
+    // row from mixed_bf16, before its 8K preparation buffer is reused.
+    need(plan.span(Plan::Plane::shared_gate).bytes >= uint64_t(rows) * sizeof(float));
+    need(plan.span(Plan::Plane::injection).bytes >= uint64_t(rows) * 4 * sizeof(float));
+    need(plan.span(Plan::Plane::status).bytes >= sizeof(uint32_t));
     uint64_t primary_end = 0, tail_end = 0;
     for (int64_t first = 0; first < rows; first += Plan::chunk) {
         const auto count = std::min(Plan::chunk, rows - first);
@@ -59,7 +64,7 @@ int main() {
         rejects([] { (void)Plan::make(81920, Legacy - 1, Embedding, Region); });
         rejects([] { (void)Plan::make(81920, Legacy, Embedding - 1, Region); });
         const auto largest = Plan::make(81920, Legacy, Embedding, Region);
-        need(largest.region_bytes == 1058836480);
+        need(largest.region_bytes == 1059131904);
         need(largest.primary_rows == 65536 && largest.tail_rows == 16384);
         // The 256K request is NOT silently admitted as one GPU window. Its
         // scheduler must retain bounded windows and the existing host tail.

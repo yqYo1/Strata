@@ -1,0 +1,137 @@
+{
+  "schema": "strata-moe-window-fixture-syntax-v2",
+  "passed": true,
+  "complete": true,
+  "GPU_executed": false,
+  "code_generation": false,
+  "sources": {
+    "tests/sycl/moe_window.cpp": "d61b65241be64b2e6fa1d7ce4e0e7591189f0d8abd7b0217a25535b62f57569e",
+    "cmake/sycl_backend.cmake": "9ee526564fc150a14d14c33b18487f4c0d3b7af4d1a4e1721dab8d2854fb7184",
+    "include/strata/prefill/moe_window_routes.hpp": "29ca1c2adc9bfe241aca0e18fb188567b07839a16a2ccec4dbc6630f139bbd93",
+    "include/strata/prefill/native16.hpp": "6c58224919bb999d73d2720d4be6f0779418d39e2181a4cc1c627239710dc46a",
+    "include/strata/prefill/draft_uploads.hpp": "2d32126e28c67751d14bde6cd46f1db60b92aa3939b17a6f78fd66bc10955908",
+    "include/strata/sycl/launch.hpp": "9c5aaf14e4b92232d4dcd4e2e68071201d436d287a9615088a9428d88f53b1ce",
+    "include/strata/sycl/runtime.hpp": "a0e0687886e09c50922d01f7023ba3b51e8ac2dbe43f461a798ba82438b2a074",
+    "src/prefill/sycl/native16.cpp": "d953ae8dcb69be601c57ddf62bbd85ad054c3e7c0a90806461b49f96d18da891",
+    "src/prefill/sycl/postops.cpp": "f048a75d8c18dad5981a93206dcff107085714741326adc6d4cfd77c6927a78f",
+    "bench/results/2026-10-15-pr6-recovery-audit/run_moe_window_fixture_syntax_v2.py": "dc284bbba4f5a11ed5a055f04717d864c776463f8f58821489773d2663755fb8"
+  },
+  "owner_sha256": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+  "database_sha256": "f4bf6452ebf3d509f7468f0501bb10b75faf1e6dd5989c9f4aef5c363b8f06d7",
+  "compiler": {
+    "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+    "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
+  },
+  "limits": {
+    "priority": 19,
+    "wall_seconds": 45,
+    "CPU_seconds_per_process": 20,
+    "session_RSS_bytes": 2147483648,
+    "artifact_bytes": 8388608
+  },
+  "scope": "SYCL syntax only. CMake configure/link and every GPU fixture case remain unexecuted.",
+  "retention": {
+    "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-syntax-v2",
+    "budget_bytes": 8388608,
+    "consumer": "Main MoE window fixture syntax diagnostics",
+    "review_point": "After actual fixture build or correction of distinct syntax failure."
+  },
+  "commands": [
+    {
+      "label": "moe_window_fixture",
+      "argv": [
+        "/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin/nice",
+        "-n",
+        "19",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-DSTRATA_ENABLE_SYCL=1",
+        "-DSTRATA_NATIVE_EXPERTS=1",
+        "-DSTRATA_VERSION=\"0.1.38\"",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window/include",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window/include/strata/sycl/compat",
+        "-I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include",
+        "-isystem",
+        "/opt/intel/oneapi/mkl/2026.1/include",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fsycl",
+        "-fsycl-id-queries-range=size_t",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-DMKL_ILP64",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window/tests/sycl/moe_window.cpp",
+        "-O0",
+        "-fsyntax-only"
+      ],
+      "environment": {
+        "PATH": "/usr/local/cuda/bin:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/yayoi/.codex/tmp/arg0/codex-arg0xudpVA:/home/yayoi/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/yayoi/.local/bin:/usr/local/cuda/bin:/home/yayoi/.config/orca/linux-orca-cli-shim:/nix/store/dcfq48bhf63aib71vlwyxnkk24m2h4a7-getopt-1.1.6/bin:/nix/store/iw8dx6lhrkdc5wzszjzqzl677y68y88r-xvfb-21.1.24/bin:/nix/store/bym5vygd4dz2xz8ymp658rdk0fdbsi4k-xauth-1.1.5/bin:/nix/store/mdwxdimw26b72k7wign651n8clh4jzii-which-2.25/bin:/nix/store/vhz3kzcdznprs2wflg44szkbrfji9z3v-util-linux-2.42.3-bin/bin:/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1/bin:/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin:/usr/local/bin:/usr/bin:/bin:/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin:/nix/store/b7fwsbih3gqz84abg1h9k48zm9j00n7k-xclip-0.13/bin:/nix/store/2ims5ws8n37x3zkml086jydis7f5ikxa-xdg-utils-1.2.1/bin:/nix/store/hb8zd1rp98jychmdvl7iinr76mkdbsis-xdotool-4.20260303.1/bin:/nix/store/icmd843yc2wk908cmy5g610qdnsh8vc7-xvfb-run-1+g87f6705/bin:/home/yayoi/.config/zsh/plugins/fast-syntax-highlighting:/home/yayoi/.config/zsh/plugins/powerlevel10k:/home/yayoi/.config/zsh/plugins/powerlevel10k-config:/home/yayoi/.config/zsh/plugins/zsh-autocomplete:/home/yayoi/.volta/bin:/home/yayoi/.asdf/shims:/home/yayoi/.fnm/aliases/default/bin:/home/yayoi/.local/share/mise/shims:/home/yayoi/.local/share/pnpm:/home/yayoi/.yarn/bin:/home/yayoi/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:/snap/bin:/home/linuxbrew/.linuxbrew/bin:/home/yayoi/bin:/home/yayoi/.opencode/bin:/home/yayoi/.vite-plus/bin",
+        "LD_LIBRARY_PATH": "/usr/local/cuda/lib64:/usr/local/cuda/lib64:/nix/store/mj9klbkhzal0vc1aazsajrydkimhc0h2-libglvnd-1.7.0/lib",
+        "LANG": "C",
+        "LC_ALL": "C",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-syntax-v2/tmp"
+      },
+      "started_utc": "2026-10-16T22:50:47.792740+00:00",
+      "wall_seconds": 45,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3991162,
+          "start_ticks": 53981191,
+          "sid": 3991162,
+          "pgid": 3991162
+        },
+        {
+          "pid": 3991163,
+          "start_ticks": 53981192,
+          "sid": 3991162,
+          "pgid": 3991162
+        },
+        {
+          "pid": 3991311,
+          "start_ticks": 53981711,
+          "sid": 3991162,
+          "pgid": 3991162
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 539811.914357036,
+      "pid": 3991162,
+      "spawn_return_monotonic": 539811.916573004,
+      "direct_identity": {
+        "pid": 3991162,
+        "state": "R",
+        "ppid": 3991096,
+        "pgid": 3991162,
+        "sid": 3991162,
+        "start_ticks": 53981191,
+        "rss_bytes": 331776
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 341450752,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T22:50:57.971971+00:00",
+      "elapsed_seconds": 10.178925025975332,
+      "logs": {
+        "moe_window_fixture.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "moe_window_fixture.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "ownership_closed": true,
+  "finished_utc": "2026-10-16T22:50:58.044532+00:00"
+}

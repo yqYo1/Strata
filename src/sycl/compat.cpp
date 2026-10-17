@@ -256,8 +256,10 @@ cudaError_t cudaMemcpyAsync(void *dst, const void *src, size_t bytes,
                             cudaMemcpyKind, cudaStream_t st) {
   return attempt([&] {
     require(!bytes || (dst && src), "null copy pointer");
-    if (bytes)
-      queue(st).memcpy(dst, src, bytes);
+    if (bytes) {
+      auto event = queue(st).memcpy(dst, src, bytes);
+      strata::sycl_backend::command_profile::observe(st, event);
+    }
   });
 }
 cudaError_t cudaMemcpy(void *dst, const void *src, size_t bytes,
