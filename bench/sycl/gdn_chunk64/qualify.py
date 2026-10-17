@@ -81,8 +81,8 @@ def retire():
 
 
 def main():
-    guards.require(__debug__ and len(sys.argv) == 2 and sys.argv[1] in ('build', 'smoke', 'boundaries', 'retire'),
-                   'use qualify.py build, smoke, boundaries or retire')
+    guards.require(__debug__ and len(sys.argv) == 2 and sys.argv[1] in ('build', 'smoke', 'boundaries', 'general', 'retire'),
+                   'use qualify.py build, smoke, boundaries, general or retire')
     action = sys.argv[1]
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -117,8 +117,10 @@ def main():
                            'rebuild after source changes')
             guards.require(record.get('build', {}).get('passed') and action not in record,
                            'a successful build and a fresh test are required')
-            if action == 'boundaries':
+            if action in ('boundaries', 'general'):
                 guards.require(record.get('smoke', {}).get('passed'), 'small smoke must pass first')
+            if action == 'general':
+                guards.require(record.get('boundaries', {}).get('passed'), 'dyadic boundaries must pass first')
             guards.require(digest(binary) == record['binary_sha256'] and
                            digest(library) == record['runtime_archive']['sha256'], 'binary/runtime changed')
         owner = None
@@ -131,6 +133,9 @@ def main():
 
         owner = owner_tools.Owner(ROOT / 'owned', persist)
         phase = dict(passed=False, complete=False, GPU_executed=False)
+        if action == 'general':
+            phase.update(scope='Finite/bounds/input/repeat/aligned-handoff safety; FP64 mathematical errors are diagnostic only.',
+                         framework_numerics_qualified=False)
         record[action] = phase
         persist()
         try:

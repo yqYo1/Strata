@@ -139,17 +139,99 @@ void run(int T){
     <<" carry=PASS raw_BF16=PASS output_FP16=PASS zero_sign_ignored=true unequal="<<unequal<<" max_abs="<<max_abs
     <<" guards=PASS inputs=PASS rejection=PASS repeat=PASS status=PASS"<<std::endl;
 }
+// Independent sequential mathematical reference. It does not reproduce the
+// candidate's full64 inverse or BF16 intermediates. Errors are diagnostic;
+// framework-contract and model-quality acceptance remain separate gates.
+void run_general(int T){
+  constexpr int C=10240,HV=48,D=128,Pad=16,State=HV*D*D;
+  constexpr float Sentinel=1234.f,Eps=1e-6f;
+  std::vector<uint16_t> h(size_t(T)*C),z(size_t(T)*HV*D);
+  std::vector<float> gates(size_t(T)*HV),beta(gates.size()),gamma(D),initial(State+2*Pad,Sentinel);
+  uint32_t random=0x8badf00du;
+  auto sample=[&](){random^=random<<13;random^=random>>17;random^=random<<5;return float(int(random%1025)-512)/512.f;};
+  for(int i=0;i<State;++i)initial[Pad+i]=sample()/32.f;
+  for(int d=0;d<D;++d)gamma[d]=.875f+float(d%17)/64.f;
+  for(int t=0;t<T;++t){
+    for(int kind=0;kind<2;++kind)for(int head=0;head<16;++head){
+      float row[D];double ss=0.;
+      for(float &v:row){v=sample();ss+=double(v)*v;}
+      for(int d=0;d<D;++d)h[size_t(t)*C+(kind*16+head)*D+d]=k::bf16_from_f32(float(double(row[d])/std::sqrt(ss)));
+    }
+    for(int head=0;head<HV;++head){
+      gates[size_t(t)*HV+head]=(t==2 && head%7==0)?-16.f:-float((t+head)%5)/64.f;
+      beta[size_t(t)*HV+head]=float((t*3+head)%8)/8.f;
+      for(int d=0;d<D;++d){h[size_t(t)*C+32*D+head*D+d]=k::bf16_from_f32(sample()/2.f);
+        z[(size_t(t)*HV+head)*D+d]=k::bf16_from_f32(sample());}
+    }
+  }
+  std::vector<double> reference(State);
+  for(int i=0;i<State;++i)reference[i]=initial[Pad+i];
+  std::vector<uint16_t> reference_raw(size_t(T)*HV*D),reference_out(reference_raw.size());
+  for(int t=0;t<T;++t)for(int head=0;head<HV;++head){
+    const double decay=std::exp(double(gates[size_t(t)*HV+head]));
+    double projection[D]={},delta[D],readout[D]={};
+    for(int r=0;r<D;++r){
+      const double key=k::f32_from_bf16(h[size_t(t)*C+16*D+(head%16)*D+r]);
+      for(int d=0;d<D;++d)projection[d]+=reference[(size_t(r)*HV+head)*D+d]*key;
+    }
+    for(int d=0;d<D;++d)delta[d]=(double(k::f32_from_bf16(h[size_t(t)*C+32*D+head*D+d]))-decay*projection[d])*beta[size_t(t)*HV+head];
+    for(int r=0;r<D;++r){
+      const double key=k::f32_from_bf16(h[size_t(t)*C+16*D+(head%16)*D+r]);
+      const double query=k::f32_from_bf16(h[size_t(t)*C+(head%16)*D+r]);
+      for(int d=0;d<D;++d){double &value=reference[(size_t(r)*HV+head)*D+d];
+        value=value*decay+key*delta[d];readout[d]+=value*query;}
+    }
+    double ss=0.;
+    for(int d=0;d<D;++d){const size_t i=(size_t(t)*HV+head)*D+d;
+      reference_raw[i]=k::bf16_from_f32(float(readout[d]/std::sqrt(128.)));
+      readout[d]=k::f32_from_bf16(reference_raw[i]);ss+=readout[d]*readout[d];}
+    for(int d=0;d<D;++d){const size_t i=(size_t(t)*HV+head)*D+d;
+      reference_out[i]=k::f16_from_f32(float((readout[d]/std::sqrt(ss/128.+double(Eps)))*gamma[d]/(1.+std::exp(-double(k::f32_from_bf16(z[i]))))));}
+  }
+  Buffer<uint16_t> H(h.size()),Z(z.size()),out(reference_out.size()+2*Pad);
+  Buffer<float> G(gates.size()),B(beta.size()),N(D),state(initial.size());
+  Scratch scratch(gc::sizes(T));Drain pending;
+  H.put(h);Z.put(z);G.put(gates);B.put(beta);N.put(gamma);state.put(initial);
+  std::vector<uint16_t> blank(out.count,0x5500);out.put(blank);
+  auto invoke=[&](int begin,int count){gc::run(state.data()+Pad,H.data()+size_t(begin)*C,
+    G.data()+size_t(begin)*HV,B.data()+size_t(begin)*HV,Z.data()+size_t(begin)*HV*D,N.data(),Eps,
+    out.data()+Pad+size_t(begin)*HV*D,count,scratch.view(),&rt->compute());};
+  invoke(0,T);rt->wait();const auto actual=state.get();const auto result=out.get();const auto raw=scratch.raw.get();
+  struct Error {double squared=0.,reference_squared=0.,maximum=0.;
+    void add(double x,double y){need(std::isfinite(x)&&std::isfinite(y),"nonfinite general value");
+      const double e=x-y;squared+=e*e;reference_squared+=y*y;maximum=std::max(maximum,std::abs(e));}
+    double relative()const{return std::sqrt(squared/std::max(reference_squared,1e-300));}} carry_error,raw_error,output_error;
+  for(int i=0;i<State;++i)carry_error.add(actual[Pad+i],reference[i]);
+  for(size_t i=0;i<reference_out.size();++i){const int t=i/(HV*D),head=(i/D)%HV,d=i%D;
+    raw_error.add(float(raw[((size_t(t/64)*HV+head)*64+t%64)*D+d]),k::f32_from_bf16(reference_raw[i]));
+    output_error.add(k::f32_from_f16(result[Pad+i]),k::f32_from_f16(reference_out[i]));}
+  for(int i=0;i<Pad;++i)need(actual[i]==Sentinel && actual[actual.size()-Pad+i]==Sentinel &&
+    result[i]==0x5500 && result[result.size()-Pad+i]==0x5500,"general guards");
+  need(H.get()==h && Z.get()==z && G.get()==gates && B.get()==beta && N.get()==gamma,"general input mutation");
+  state.put(initial);out.put(blank);invoke(0,T);rt->wait();
+  need(state.get()==actual && out.get()==result,"general repeat differs");
+  if(T>64){state.put(initial);out.put(blank);invoke(0,64);invoke(64,T-64);rt->wait();
+    need(state.get()==actual && out.get()==result,"aligned-call carry handoff differs");}
+  std::cout<<"case T="<<T<<" oracle=sequential_FP64_math accuracy=DIAGNOSTIC_ONLY"
+    <<" carry_rel_L2="<<carry_error.relative()<<" carry_max_abs="<<carry_error.maximum
+    <<" raw_rel_L2="<<raw_error.relative()<<" raw_max_abs="<<raw_error.maximum
+    <<" output_rel_L2="<<output_error.relative()<<" output_max_abs="<<output_error.maximum
+    <<" finite=PASS guards=PASS inputs=PASS repeat=PASS aligned_handoff="<<(T>64?"PASS":"NA")
+    <<" status=SAFETY_PASS"<<std::endl;
+}
 int main(int argc,char **argv){
   try{
-    need(argc==2 && (std::string(argv[1])=="--smoke" || std::string(argv[1])=="--boundaries"),"expected smoke or boundaries");
+    need(argc==2 && (std::string(argv[1])=="--smoke" || std::string(argv[1])=="--boundaries" || std::string(argv[1])=="--general"),"expected smoke, boundaries or general");
     gate("before-runtime");rt=sb::runtime_for();
     std::cout<<"device="<<rt->device().get_info<sycl::info::device::name>()
       <<" driver="<<rt->device().get_info<sycl::info::device::driver_version>()<<std::endl;
     gate("runtime-ready");
     if(std::string(argv[1])=="--smoke"){run(1);run(3);}
+    else if(std::string(argv[1])=="--general")for(int T:{63,64,65,127,128,129})run_general(T);
     else for(int T:{63,64,65,127,128,129})run(T);
     rt->wait();rt.reset();gate("after-cleanup");
-    std::cout<<"fixture_status=PASS general_numerics=UNRUN long_component=UNRUN model_PP=UNRUN physical262144_model=UNRUN RESTORE=UNRUN faults=EXTERNAL_REQUIRED"<<std::endl;
+    std::cout<<"fixture_status=PASS general_numerics="<<(std::string(argv[1])=="--general"?"DIAGNOSTIC_ONLY":"UNRUN")
+      <<" long_component=UNRUN model_PP=UNRUN physical262144_model=UNRUN RESTORE=UNRUN faults=EXTERNAL_REQUIRED"<<std::endl;
     return 0;
   }catch(const std::exception &error){drain();std::cerr<<"fixture_status=FAIL "<<error.what()<<std::endl;return 1;}
 }

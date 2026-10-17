@@ -9,9 +9,13 @@ consumer. The schedule is not the SGLang block16/XPU numerical contract.
 The previous compile stopped because fixture.cpp lacked the runtime.hpp include;
 that include is now explicit. Host DMA buffers remain owned through failure-path
 drain. An unused BF16 V copy was removed, saving 96 MiB of scratch at 8192 tokens
-(workspace now 1,024,983,040 bytes). No successful smoke, general numerical qualification,
-speed, model quality, full262144 or RESTORE result exists yet. Run the bounded
-dyadic smoke before general chunk-boundary and framework-contract comparisons.
+(workspace now 1,024,983,040 bytes). Exact dyadic T=1/3 and
+63/64/65/127/128/129 checks passed on B570 with no bit differences, including
+FP32 carry, BF16 readout, FP16 output, guards, inputs, rejection and repeat.
+No general numerical qualification, speed, model quality, full262144 or RESTORE
+result exists yet. General cases compare against an independent sequential
+FP64 mathematical reference and test aligned-call carry handoff; their error
+metrics are diagnostic, not framework-contract or model-quality acceptance.
 The first device run passed exact FP32 carry, but strict FP16 bit equality
 rejected signed zeros (41 differences with zero absolute error at T=1).
 Prospective smoke criteria now ignore only the sign of zero for BF16 readout
@@ -35,6 +39,8 @@ Commit the exact sources first, then run these separately under Main ownership:
 ```sh
 python3 bench/sycl/gdn_chunk64/qualify.py build
 python3 bench/sycl/gdn_chunk64/qualify.py smoke
+python3 bench/sycl/gdn_chunk64/qualify.py boundaries
+python3 bench/sycl/gdn_chunk64/qualify.py general
 ```
 
 The helper uses the shared measurement lock, bounded process supervision,
