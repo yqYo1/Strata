@@ -1,0 +1,54 @@
+# R1034 — native review of R1033 QSA score precision report
+
+2026-10-17 UTC. Read-only review of R1033, its pinned Strata source contract, prior R589/R940/R941 records, and Main's independently authored private prototype. No Git, process inspection, build, test, GPU work, or profiler was run; the active Main comparison was left untouched. The prototype remains uncompiled and unmeasured.
+
+## Decision
+
+Accept R1033 as decision support with one retrieval correction: label the MiniMax M3 example explicitly as a CUDA/Triton dtype-and-algorithm precedent, with an optional SM100 path, and not as B570/XMX evidence. R1033 already rejects transfer as a quality or adoption argument. Its central conclusion is sound: flattening `[nq,4,128]` into `[4*nq,128]` fits the existing row-major `Gemm::f16`/`bf16` interface with FP32 C and removes R589's fixed-input-stride obstacle by packing. R940/R941 address BF16 QSA attention probability boundaries, not the separate block-index score calculation; their midpoint observation is not evidence for this scorer.
+
+No confirmed correctness bug was found in the Main prototype by source inspection. It can proceed to a small, owned, traced compile/runtime probe after the live GPU comparison closes. That probe must establish actual device execution/provider behavior and compare both against an FP16-rounded-input reference and against the existing FP32 scorer. This is a private experiment decision only; it does not qualify precision, performance, or production adoption.
+
+## Report quality and prior-art boundary
+
+R589 already described FP16/BF16 QSA-score GEMM feasibility, dead-key replacement, tails, and the old `lda=512` query-stride problem. R1033 adds the concrete current API solution (pack four heads, then use `T=4*nq`), pins the current wrapper/native16 sources, explains why FP32-C is distinct from `*_out16()` rounding, and turns the remaining question into separated path, exact-ID, task-quality, and integrated-prefill gates. This is meaningful implementation-facing novelty rather than a duplicate survey.
+
+R940's BF16 attention comparison is a different operator with different Q/K/V formats and probability rounding. R941 retained its synthetic failure and corrected its score-print/runtime caveats. R1033 appropriately does not transfer that midpoint receipt to index scores. The vLLM MiniMax M3 source is useful only as a precedent that one indexer stores BF16/FP8 keys and declares FP32 dot output. Its multi-head/block-max semantics differ from Strata's four 128-wide heads, ReLU sum, four-token block, and per-query dead key; its CUDA/Triton and optional SM100 routing does not establish Arc B570 XMX selection, lowering, speed, or Qwen3.8-Flash-Next selection quality. R1033's explicit “no model-specific quality result” and no-adoption position are correct.
+
+## Source-only API and prototype audit
+
+All seven files in the R1033 source pin match their declared SHA-256 values in the current worktree. `Gemm::f16` and `bf16` pass row-major `[T,K] * [N,K]^T` to oneMKL with `lda=ldb=K`, an FP32 C pointer, caller `ld`, beta, and synchronous `finish`. The wrapper has no explicit CPU/software fallback branch, but this source inspection cannot prove the selected oneMKL provider, actual device execution, or accumulation lowering. The native `*_out16()` implementation is a separate kernel that accumulates in FP32 and rounds the output before its consumer; it is not the FP32-C path used by this prototype.
+
+The prototype's contiguous query pack correctly makes `T=4*nq` possible. The panel buffer is `[4*nq,tile_blocks]`; passing `ld=tile_blocks` remains valid when the final `columns` is shorter. `padded` and `tile_blocks` are multiples of 64, so the panel loop covers the packed rows without a partial row tail. The post-kernel writes only `b<nb`, preserving future masking; the separate dead-key kernel retains the original FP32 four-term lane sum, XOR reduction order, head order, and partial-block `+1e9f`. It also marks FP16 input range and nonfinite outputs invalid through device status, whose caller must check before consuming output. These are source findings, not compiled behavior.
+
+The Level Zero/GPU/FP16 checks exclude an obvious host or non-Level-Zero queue, but do not prove the oneMKL internal route or B570 matrix-unit use. The probe should retain caller ownership through completion, check status after drain, trace the provider/device execution, and include guards and a quantized-input reference. Compare score deltas and exact selected-ID flips separately from task-quality and performance receipts. The proposal's declared 32 MiB FP32 panel is only wrapper scratch; oneMKL internal allocations remain unmeasured as stated.
+
+## Bounded next step
+
+After the current Main GPU comparison closes, Main may run one small isolated, traced probe to establish compile/API compatibility, output layout, device/provider execution, guards/status, and the FP16-rounded-input score reference. Keep the baseline FP32 scorer as the separate routing/quality reference. Do not infer score accumulation or XMX use from the queue or output type. If that receipt leaves a finite framework/source question, review the exact selected Qwen3.8-Flash-Next SGLang/vLLM scorer path then; there is no reason to dispatch a general survey now. No production integration or precision adoption is recommended by this review.
+
+## Hash pins
+
+Reports and review artifacts:
+
+- R589 `research-prefill-qsa-xmx-scores-round589-v1.txt`: `c5c8e03069b54e5010649f57033ab8dae699546b393e51c33f51ca8ea31548d9`
+- R940 `research-round940-v1.txt`: `54d799f75be704c859a41d504d8150021b0428435a5cc7df7324cc40fe806a1d`
+- R941 review JSON: `c3d77c73a3fcede1360231d5ef21c35c97e31650878950aa9dbfc2ad8a7a8e3a`
+- R941 digest `research-review-round941-v1.ja.md`: `91b814b6ab05cf9640415866c130fdd4a4273bf1d8be81741ec40d3f22dd1dc8`
+- R1033 `research-round1033-v1.txt`: `ea88f9bfb14e51da88e6ae389b65279afc784c1f500fc99e0d72f8a28af2b1a0`
+- R1033 source pin JSON: `ed2220ae0f9c16fa9cad9b5d87afe24194917da59da8d74db397d0942ebc992a`
+
+Pinned Strata sources (also match the R1033 manifest):
+
+- `include/strata/prefill/gemm.hpp`: `091984410aacd56f33748c4ef9c730405f2862f9a32d6de6c59fa74063a5fc43`
+- `src/prefill/sycl/gemm.cpp`: `023bc6c5633b7ae58636dc1ba732d7db77514cca98925100e031c0e0d3c7bcd9`
+- `src/prefill/sycl/gemm16.cpp`: `d5a0e8f8cdbc14f82edd7a883efc09d68ee92195b8fd51301e538b40cc6ed53c`
+- `src/prefill/sycl/vllm_xe2/native16.hpp`: `eec1581b369759e4fd6c8ea7f2012cf9518bd4341c01e19362cc10b3553b066b`
+- `src/prefill/sycl/vllm_xe2/native16.cpp`: `d8b361cabea29344b48aff5a9db41303f3ea715de47f27bc57f29f85c5f3aa2d`
+- `src/kernels/sycl/qsa_select.cpp`: `463a9ec02ed28125a5cd38b7b5d28784b849a4fbb199cb017042cd99078efee1`
+- `include/strata/kernels/qsa_select.hpp`: `043ec673be1b02f215aa77f6295968adb3f1d5b70d22f57341425336b709835e`
+
+Main prototype (hashes verified before reading; not edited):
+
+- `qsa-score-gemm-prototype-v1/proposal.json`: `885a5596c90623e71d34ed7cb2959138211968a5623eb7a277130e0b759de4fa`
+- `qsa-score-gemm-prototype-v1/qsa_score_gemm.hpp`: `84514284cd332e428b613a757a800480019b777b5e51637ff092cede0dd9cb81`
+- `qsa-score-gemm-prototype-v1/qsa_score_gemm.cpp`: `e2d4e24125d91590d0efd75a35f6633fdd8b12cec8473b0cd44ad1980c534a2f`

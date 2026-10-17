@@ -1,0 +1,25 @@
+{
+  "schema": 2,
+  "created_utc": "2026-10-17T16:45:22.619503+00:00",
+  "provenance": "Main-authored revision of own v1 fixture; same independently authored prototype and engine APIs. No XeStrata code/helper/proposal.",
+  "base_fixture": {
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-prototype-v1/fixture.cpp",
+    "sha256": "0bb9ef5b01e91d6f089a57bf3974b934a6e82a80f0e2fa0199858a8567d67467"
+  },
+  "fixture": {
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-fixture-v2/fixture.cpp",
+    "sha256": "80df2943dbce5dfa2810909f1109eb2b333d58ee9c0deefa8cad70d1d31b7a83"
+  },
+  "changes": [
+    "Check only globally unused per-row head-buffer suffix [min(padded,8192),8192), preserving legitimate prior full-panel contents.",
+    "Separate completed-block quantized-oracle error/budget from original FP32 dead-key +1e9 bonus error.",
+    "Same binary has private GEMM and actual public prefill query8/head-parallel FP32 control, selected by fixed CLI and preexec environment; enforce exact FP32 control parity, never-used GEMM scratch and unchanged data/resource ownership."
+  ],
+  "review_basis": {
+    "R1036": "research-round1036-index-proposal-v1.json",
+    "new_scope": "Main applies reviewed bounded canary correction and same-binary control; no further survey needed."
+  },
+  "compiled_at_creation": false,
+  "gpu_executed_at_creation": false,
+  "precision_policy": "FP16-rounded operands with FP32 gamma128 bound for GEMM; original FP32 tree for dead-key and control. Original selected-ID changes observed separately, not model-quality approval."
+}

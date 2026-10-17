@@ -5255,6 +5255,94 @@
       "index_proposal_path": "research-round1031-index-proposal-v1.json",
       "source_commit_label": "7d9a853e354be43bbe0b1322cd633196e94fd898",
       "status": "No confirmed mapping, subgroup convergence, or in-range address defect. The exact-root/FP32 claim is sound under strict same-environment operation ordering; synthetic finite input parity is evidence, not model quality. Positive active/full-prefix initialization and actual caller integration remain explicit contracts."
+    },
+    {
+      "round": 1033,
+      "model": "gpt-6-luna",
+      "classification": "decision_support",
+      "read_only": true,
+      "path": "research-round1033-v1.txt",
+      "bytes": 10222,
+      "sha256": "ea88f9bfb14e51da88e6ae389b65279afc784c1f500fc99e0d72f8a28af2b1a0",
+      "review_path": "research-round1034-review-v1.txt",
+      "review_sha256": "ceba17ba3b1fdab1fdbb1341b1144ca99f17b1727ce6cdb95252ae3ed166099b",
+      "index_proposal_path": "research-round1034-index-proposal-v1.json",
+      "status": {
+        "decision": "accepted_with_retrieval_correction",
+        "report_scope_and_novelty": "adequate; R1033 resolves R589's packed-query stride issue and adds current API contracts and explicit precision/quality gates",
+        "prototype_source_sanity": "no_confirmed_bug; source-only, uncompiled, unmeasured",
+        "prototype_next_step": "eligible for a small owned traced probe after the active Main GPU comparison closes",
+        "production_adoption": "not qualified or recommended"
+      },
+      "retrieval_tags": [
+        "qsa-block-index-score",
+        "gemm-f16-input-fp32-output",
+        "fp16-operand-rounding",
+        "fp32-accumulator-lowering-unverified",
+        "dead-key-fp32-tail-semantics",
+        "oneapi-mkl-provider-device-execution-unverified",
+        "vllm-minimax-m3-analog-only",
+        "arc-b570-xmx-unqualified",
+        "score-id-quality-gates"
+      ],
+      "corrections": [
+        {
+          "id": "R1033-C1",
+          "kind": "retrieval_correction",
+          "finding": "The MiniMax M3 vLLM indexer is a CUDA/Triton dtype and algorithm precedent, with an optional SM100 MSA route. It provides no Arc B570/XMX lowering, performance, or target-model quality evidence.",
+          "evidence": "Pinned vLLM source commit 2d8efee9a73366d6b4e753780af32443d2fef91a declares BF16/FP8 index-cache paths and tl.dot(..., out_dtype=tl.float32); implementation selection tests CUDA and optionally SM100. R1033 already limits transfer and denies model-specific quality evidence.",
+          "action": "Preserve this architecture boundary in the index/retrieval summary; do not use M3 format support as Qwen3.8-Flash-Next precision approval. No report-body rewrite is required."
+        }
+      ]
+    },
+    {
+      "round": 1035,
+      "model": "gpt-6-luna",
+      "classification": "decision_support",
+      "read_only": true,
+      "path": "research-round1035-v1.txt",
+      "bytes": 4414,
+      "sha256": "25e234c9ebd25e68dbecf713c324d22a5139f15a979fd45dd96b13944db9a581",
+      "review_path": "research-round1036-review-v1.txt",
+      "review_sha256": "b0f0106bc6be75f666f21e9c2772b2bb1b6c67f1b9e51d835198d14a0afc00d1",
+      "index_proposal_path": "research-round1036-index-proposal-v1.json",
+      "status": {
+        "decision": "accepted_with_correction",
+        "report_scope_and_depth": "adequate; bounded fixture review with distinct value beyond R1034",
+        "numerical_claims": "acceptable as prospective and conditional; provider and whole-row behavior remain unverified",
+        "canary_claim": "corrected; globally unused suffix only, with repeated-tile reuse accounted for",
+        "prototype_source_sanity": "no other confirmed defect; uncompiled and unmeasured",
+        "production_adoption": "not qualified or recommended"
+      },
+      "retrieval_tags": [
+        "qsa-block-index-score",
+        "gemm-f16-input-fp32-output",
+        "fp16-operand-rounding",
+        "fp32-accumulator-lowering-unverified",
+        "dead-key-fp32-tail-semantics",
+        "oneapi-mkl-provider-device-execution-unverified",
+        "score-id-quality-gates",
+        "head-scratch-row-stride",
+        "scratch-canary-reuse",
+        "source-only-fixture-review"
+      ],
+      "corrections": [
+        {
+          "id": "R1035-C1",
+          "kind": "source_review_correction",
+          "finding": "The report identifies a real gap in globally unused head-scratch canary coverage, but its general [padded,panel) range ignores the 8192 row stride and buffer reuse across tiles.",
+          "evidence": "Each tile writes [0,min(8192,padded-first)) in the same [queries*4,8192] head buffer. The union written in each row is [0,min(padded,8192)); after multiple tiles the last-tile suffix can contain valid earlier-tile values.",
+          "action": "If adding a post-run canary check, check only [min(padded,8192),8192) per row. This is empty for padded>=8192. Never expect last-tile suffix cells already used by a prior tile to remain canaries. Rename the existing output to head_scratch_outer_guards=PASS unless a valid unused-suffix check is added.",
+          "severity": "low; fixture observability only, no observed scorer overwrite"
+        },
+        {
+          "id": "R1035-C2",
+          "kind": "retrieval_correction",
+          "finding": "The sampled FP16-rounded-input oracle and gamma bound are prospective and conditional on FP32 accumulation; they do not verify provider lowering or unsampled score cells.",
+          "evidence": "The pinned report states these limits, and the source samples 67 score positions per query while the oneMKL route remains unverified.",
+          "action": "Retain the prospective/conditional precision tags and use the Main-owned probe for provider, device, and measured score evidence."
+        }
+      ]
     }
   ],
   "main_initial_findings": [
@@ -9832,5 +9920,38 @@
       }
     ]
   },
-  "retention_qsa_headparallel_v1": "qsa-score-headparallel-retention-v1.json;329closedraw/duplicates retired,7400911logicalbytes; allcanonicaloutcomes unchanged."
+  "retention_qsa_headparallel_v1": "qsa-score-headparallel-retention-v1.json;329closedraw/duplicates retired,7400911logicalbytes; allcanonicaloutcomes unchanged.",
+  "research_review_round1034": {
+    "review": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round1034-review-v1.txt",
+      "bytes": 7273,
+      "sha256": "ceba17ba3b1fdab1fdbb1341b1144ca99f17b1727ce6cdb95252ae3ed166099b"
+    },
+    "index_proposal": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round1034-index-proposal-v1.json",
+      "bytes": 5998,
+      "sha256": "b84efa988d4d3910787def0e9750a23b45b610a93051b6e63be277478a12d6a4"
+    },
+    "main_read_policy": "Only short operational digest and retrieval metadata; original report body not loaded automatically.",
+    "next_action": "Small Main-owned traced probe; actual model comparison is now closed. No duplicate source survey."
+  },
+  "qsa_score_headparallel_model_current": {
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-headparallel-model-comparison-v1.json",
+    "bytes": 2796,
+    "sha256": "10d9479424fef0984ad911ae7c5ad0cb57d2aa4d92c693c85135cae58e702822"
+  },
+  "research_review_round1036": {
+    "review": {
+      "path": "research-round1036-review-v1.txt",
+      "bytes": 3011,
+      "sha256": "b0f0106bc6be75f666f21e9c2772b2bb1b6c67f1b9e51d835198d14a0afc00d1"
+    },
+    "index_proposal": {
+      "path": "research-round1036-index-proposal-v1.json",
+      "bytes": 5885,
+      "sha256": "059a657d5e47d843a9030e3ae9f397529b1f8fb85a1fb000f5caf2d73433ebaf"
+    },
+    "main_read_policy": "Short operational digest and index proposal only; original report body not loaded automatically.",
+    "main_action": "Bounded global-unused row-suffix correction applied to immutable private v2 fixture; v1 receipts preserved unchanged. Same-binary FP32 control added."
+  }
 }

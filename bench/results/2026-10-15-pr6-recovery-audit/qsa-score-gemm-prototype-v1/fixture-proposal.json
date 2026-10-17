@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "created_utc": "2026-10-17T16:37:09.931418+00:00",
+  "provenance": "Main-authored adaptation of own tests/sycl/qsa_score_prefill.cpp and private Main QSA GEMM prototype; no XeStrata source/helper/proposal used.",
+  "fixture": {
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-prototype-v1/fixture.cpp",
+    "sha256": "0bb9ef5b01e91d6f089a57bf3974b934a6e82a80f0e2fa0199858a8567d67467"
+  },
+  "base_fixture": {
+    "path": "tests/sycl/qsa_score_prefill.cpp",
+    "sha256": "99db7c19aa8680f660e13353a9cc99176350cab6571b12307658461907ec106f"
+  },
+  "correctness": "FP16-rounded input CPU double oracle with prospective gamma128 FP32 error bound; all-query exact original dead-key bits; full-row independent top-k; complete packing; all input/output/scratch guards and immutability, nonzero status always invalid; repeat bit stability. Original FP32 completed-score and selection differences are observations, not an equality gate or task-quality approval.",
+  "scope": "Private component diagnostic only; no product adoption; first Main-owned small traced probe before long-context component tests.",
+  "compiled_at_creation": false,
+  "gpu_executed_at_creation": false,
+  "resource_scope": "Explicit wrapper scratch only; no claim of library allocation, physical traffic, XMX use or occupancy.",
+  "trace_boundary": "First private score-only submit+drain bracketed in stderr, before status readback and top-k; original reference outside bracket."
+}
