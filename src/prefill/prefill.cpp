@@ -43,6 +43,7 @@
 #include "strata/prefill/moe_accum_plan.hpp"
 #include "strata/prefill/qsa_native16.hpp"
 #include "strata/prefill/qsa_score_gemm.hpp"
+#include "strata/prefill/gdn_chunk64.hpp"
 #include "strata/sycl/command_profile.hpp"
 #include "strata/kernels/qsa_bf16_attention_late_flags.hpp"
 #include "strata/kernels/qsa_bf16_prefix.hpp"
@@ -225,6 +226,17 @@ struct Alloc {
         return (T*) p;
     }
 };
+
+#if defined(STRATA_ENABLE_SYCL)
+using GdnChunkBuffers=strata::gdn_chunk64::Arena;
+GdnChunkBuffers take_gdn_chunk(Alloc& a,size_t T,bool& ok) {
+    namespace gc=strata::gdn_chunk64;
+    if(T==0 || T>8192)throw std::invalid_argument("prefill chunk64 GDN chunk capacity");
+    const size_t bytes=gc::arena_bytes(int(T));
+    auto *base=a.take<uint8_t>(bytes,ok);
+    return base?gc::bind_arena(base,bytes,int(T)):GdnChunkBuffers{};
+}
+#endif
 
 }  // namespace
 
@@ -518,6 +530,7 @@ struct Prefill::Impl {
 #if defined(STRATA_ENABLE_SYCL)
     MoeWindowContext* moe_window = nullptr; // borrowed through checked layer-major lease
     bool native16_active = false;
+    GdnChunkBuffers gdn_chunk;
     strata::kernels::QsaBf16PackedScratch qsa_prefix; // borrowed only during the long-prefill lease
     qsa_score_gemm::Scratch score_gemm; // attn_h arena + independent sticky status, long lease only
     // Disjoint typed subviews of existing QSA reservations; no new allocation.
@@ -665,6 +678,13 @@ uint64_t gdn_set_bytes(size_t T) {
     Alloc a; a.count_only = true; bool ok = true;
     a.take<float>(T * C, ok); a.take<float>(T * ZV, ok); a.take<float>(T * 2 * HV, ok); a.take<float>(T * HV, ok);
     a.take<float>(T * HV, ok); a.take<float>(T * C, ok); a.take<float>(T * ZV, ok); a.take<uint16_t>(T * ZV, ok);
+#if defined(STRATA_ENABLE_SYCL)
+    if(strata::gdn_chunk64::requested()) {
+        Alloc native;native.count_only=true;
+        (void)take_gdn_chunk(native,T,ok);
+        return std::max(a.used,native.used);
+    }
+#endif
     return a.used;
 }
 uint64_t qsa_set_bytes(size_t T, int64_t cap, int64_t max_blocks, int64_t sel_batch, int64_t attn_batch,
@@ -1010,6 +1030,12 @@ bool Prefill::carve(size_t T, void* alloc) {
         m.qkv = a.take<float>(T * C, ok); m.z = a.take<float>(T * ZV, ok); m.ab = a.take<float>(T * 2 * HV, ok);
         m.gate = a.take<float>(T * HV, ok); m.beta = a.take<float>(T * HV, ok); m.hbuf = a.take<float>(T * C, ok);
         m.y = a.take<float>(T * ZV, ok); m.y_h = a.take<uint16_t>(T * ZV, ok);
+#if defined(STRATA_ENABLE_SYCL)
+        if(strata::gdn_chunk64::requested()) {
+            Alloc native;native.base=base;native.cap=region;native.owned=&m.owned;
+            m.gdn_chunk=take_gdn_chunk(native,T,ok);
+        }
+#endif
         Alloc b;
         b.base = base; b.cap = region; b.owned = &m.owned;
         m.Kc = b.take<float>(T * 512, ok); m.Vc = b.take<float>(T * 512, ok); m.Qf = b.take<float>(T * 12288, ok);
@@ -2376,6 +2402,25 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     pt.mark(kPfGdn, cs);
                     float* state = ss.gdn_state + (size_t) (gdn_index - ss.gdn_ord0) * gdn_floats;
                     float* conv = state + (uint64_t) g.ssm_state_size * g.ssm_v_heads * g.ssm_state_size;
+#if defined(STRATA_ENABLE_SYCL)
+                    if(m.layer_major_active && m.native16_active && strata::gdn_chunk64::requested()) {
+                        auto& b=m.gdn_chunk;
+                        if(!native_proj16(m.gemm,wqkv,m.mixed_h,b.qkv,T,v.name("attn_qkv.weight"),err) ||
+                           !native_proj16(m.gemm,wg,m.mixed_h,b.z,T,v.name("attn_gate.weight"),err))return false;
+                        if(!bf16_proj(m.gemm,wa,m.mixed_bf,b.ab,T,v.name("ssm_alpha.weight"),err,2*HV) ||
+                           !bf16_proj(m.gemm,wb,m.mixed_bf,b.ab+HV,T,v.name("ssm_beta.weight"),err,2*HV))return false;
+                        pt.mark(kPfGdnConv,cs);
+                        gdn_gates(b.ab,static_cast<const float*>(wdt->data),static_cast<const float*>(wsa->data),
+                                  b.gate,b.beta,T,m.cs);
+                        strata::gdn_chunk64::conv_bf16(conv,b.qkv,static_cast<const float*>(wc->data),
+                                                      b.normalized,int(T),EPS,m.cs);
+                        pt.mark(kPfGdnRec,cs);
+                        strata::gdn_chunk64::run(state,b.normalized,b.gate,b.beta,b.z,
+                            static_cast<const float*>(wnm->data),EPS,b.output,int(T),b.workspace,m.cs);
+                        pt.mark(kPfGdnOut,cs);
+                        if(!native_proj16(m.gemm,wo,b.output,m.bo_b16,T,v.name("ssm_out.weight"),err))return false;
+                    } else {
+#endif
                     if (!native_proj(m.gemm, wqkv, m.mixed_h, m.qkv, T, v.name("attn_qkv.weight"), err)) return false;
                     if (!native_proj(m.gemm, wg, m.mixed_h, m.z, T, v.name("attn_gate.weight"), err)) return false;
                     if (!bf16_proj(m.gemm, wa, m.mixed_bf, m.ab, T, v.name("ssm_alpha.weight"), err, 2 * HV, m.mixed_bf_lo)) return false;
@@ -2392,6 +2437,9 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     } else
 #endif
                         if (!native_proj(m.gemm, wo, m.y_h, m.bo, T, v.name("ssm_out.weight"), err)) return false;
+#if defined(STRATA_ENABLE_SYCL)
+                    }
+#endif
                     if (m.layer_major_profile) m.layer_major_profile->end(detail::LayerMajorCoarseProfile::gdn, m.cs);
                     if (m.layer26_phase_audit && !m.layer26_phase_audit->capture(
                             detail::Layer26PhaseAudit::gdn_out, l, c0, T, m.bo, m.layer_major_audit_copy)) {

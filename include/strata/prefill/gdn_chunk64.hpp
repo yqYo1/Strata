@@ -14,6 +14,19 @@ struct Workspace {
 };
 struct Sizes { size_t qk, values, inverse, history, gates, lower; };
 Sizes sizes(int tokens);
+struct Arena {
+  uint16_t *qkv=nullptr,*z=nullptr,*normalized=nullptr,*output=nullptr;
+  float *ab=nullptr,*gate=nullptr,*beta=nullptr;
+  Workspace workspace{};
+};
+// Shared by Prefill sizing, actual carving and the device fixture. QKV storage
+// is reused by lower KKT only after conv/history completion on the same queue.
+size_t arena_bytes(int tokens);
+Arena bind_arena(void *base,size_t bytes,int tokens);
+// Immutable opt-in; the normal/short-input path remains the existing route.
+bool requested();
+// Admission only: reject an unsupported queue/device before model mutation.
+void validate_device(void *stream);
 struct Events {sycl::event gates,pack,kkt,inverse,wu,carry,readout,norm;};
 struct ConvEvents {sycl::event convolution,history;};
 // BF16 projection -> FP32 conv/SiLU -> BF16 -> FP32 Q/K L2 -> BF16.

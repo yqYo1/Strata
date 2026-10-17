@@ -45,6 +45,7 @@ python3 bench/sycl/gdn_chunk64/qualify.py boundaries
 python3 bench/sycl/gdn_chunk64/qualify.py general
 python3 bench/sycl/gdn_chunk64/qualify.py producer-smoke
 python3 bench/sycl/gdn_chunk64/qualify.py producer
+python3 bench/sycl/gdn_chunk64/qualify.py producer-large
 python3 bench/sycl/gdn_chunk64/qualify.py component-check
 python3 bench/sycl/gdn_chunk64/qualify.py component
 ```
@@ -68,8 +69,19 @@ The producer fixture checks a separate CPU formula (two BF16 ULP or absolute
 1e-7 for its bounded synthetic inputs), exact history updates and split-call
 invariance, and direct BF16 recurrence with aligned conv/carry handoff. This
 diagnostic bound is not a general framework/model-quality tolerance. Projection
-GEMM rounding, full-model dispatch, memory budgeting and quality remain separate
-integration gates. CMake compiles the module but the model does not dispatch it.
+GEMM rounding, full-model execution, memory budgeting and quality remain separate
+integration gates. Source now includes an unqualified opt-in long-prefill dispatch
+with `STRATA_SYCL_PREFILL_GDN_CHUNK64=1`, requiring native16 BF16 and the existing
+layer-major admission. The default and short-input/decode paths retain the prior
+implementation. No model benchmark or production adoption of this path exists.
+
+The shared arena planner is used by Prefill's size accounting/carving and the
+fixture. Projection QKV dies after conv/history update and is reused by FP32
+lower-KKT scratch. Every live recurrence input remains separate from scratch.
+The new fixture checks this reuse and partial-chunk rebinding against disjoint
+buffers, with exact state/output/history and outer guards; the new arena tests
+and 8192 producer case have not yet run. These synthetic copies are test setup,
+not transfers or host arithmetic in the inference path.
 
 On B570, the resident8192 comparison uses identical decoded input values,
 one warmup and five rotating samples per arm. Clean processes omit tracing and

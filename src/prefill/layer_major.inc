@@ -43,6 +43,11 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     const auto& g = *m.g;
     auto& ss = *m.ss;
     const bool native16_on = native16::requested();
+    const bool gdn_chunk_on=strata::gdn_chunk64::requested();
+    if(gdn_chunk_on && !native16_on) {
+        err="prefill chunk64 GDN requires native16 BF16";return false;
+    }
+    if(gdn_chunk_on)strata::gdn_chunk64::validate_device(m.cs);
     const int window_requested = moe_window_requested();
     const bool window_on = window_requested && !requires_prefix_checkpoints;
     const bool command_profile_on = sycl_backend::command_profile::requested();
@@ -140,6 +145,9 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         if (tokens[t] < 0 || tokens[t] > std::numeric_limits<int32_t>::max()) {
             err = "prefill layer-major: token id is outside the native int32 input range"; return false;
         }
+    if(gdn_chunk_on)
+        std::fprintf(stderr,"[gdn-chunk64] long-prefill-only=1 chunk=%lld arena=%zu BF16_projection_conv=1 FP32_history_state=1 experimental=1\n",
+                     (long long)m.T,strata::gdn_chunk64::arena_bytes(int(m.T)));
     // Existing observers assume one full-model call. Refuse ambiguous reports
     // rather than emitting 48 apparent full-prompt measurements/checkpoints.
     for (const char* name : {"STRATA_PREFILL_ROUTED_FP16_OBSERVE", "STRATA_PREFILL_TIMING",

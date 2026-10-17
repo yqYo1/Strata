@@ -7,6 +7,8 @@
 #include "strata/sycl/launch.hpp"
 #include <algorithm>
 #include <cmath>
+#include <cstdlib>
+#include <cstring>
 #include <stdexcept>
 #include <type_traits>
 #include <sycl/ext/oneapi/matrix/matrix.hpp>
@@ -73,6 +75,56 @@ Sizes sizes(int tokens) {
   const size_t chunks=(tokens+BT-1)/BT, padded=chunks*BT;
   return {padded*HK*D,padded*HV*D,padded*HV*BT,
           chunks*HV*D*D,padded*HV,padded*HV*BT};
+}
+namespace {
+struct ArenaPlan {
+  unsigned char *base=nullptr;size_t used=0;
+  template<class T>T *take(size_t count) {
+    const size_t offset=(used+255)&~size_t(255);
+    used=offset+count*sizeof(T)+256;
+    return base?reinterpret_cast<T*>(base+offset):nullptr;
+  }
+};
+Arena plan_arena(ArenaPlan &plan,int tokens) {
+  const auto n=sizes(tokens);const size_t T=size_t(tokens);
+  Arena b;
+  auto *reuse=plan.take<unsigned char>(std::max(T*C*2,n.lower*4));
+  b.qkv=reinterpret_cast<uint16_t*>(reuse);b.workspace.lower=reinterpret_cast<float*>(reuse);
+  b.z=plan.take<uint16_t>(T*HV*D);b.normalized=plan.take<uint16_t>(T*C);
+  b.output=plan.take<uint16_t>(T*HV*D);b.ab=plan.take<float>(T*HV*2);
+  b.gate=plan.take<float>(T*HV);b.beta=plan.take<float>(T*HV);
+  auto& w=b.workspace;
+  w.q=plan.take<BF>(n.qk);w.k=plan.take<BF>(n.qk);
+  w.kb=plan.take<BF>(n.values);w.vb=plan.take<BF>(n.values);
+  w.inverse=plan.take<BF>(n.inverse);w.w=plan.take<BF>(n.values);w.u=plan.take<BF>(n.values);
+  w.history=plan.take<BF>(n.history);w.delta=plan.take<BF>(n.values);
+  w.raw=plan.take<BF>(n.values);w.g=plan.take<float>(n.gates);
+  return b;
+}
+}
+size_t arena_bytes(int tokens) {
+  ArenaPlan plan; (void)plan_arena(plan,tokens);return plan.used;
+}
+Arena bind_arena(void *base,size_t bytes,int tokens) {
+  require(base && reinterpret_cast<uintptr_t>(base)%4==0 && bytes>=arena_bytes(tokens));
+  ArenaPlan plan{static_cast<unsigned char*>(base),0};return plan_arena(plan,tokens);
+}
+bool requested() {
+  static const bool enabled=[] {
+    const char *value=std::getenv("STRATA_SYCL_PREFILL_GDN_CHUNK64");
+    if(!value || std::strcmp(value,"0")==0)return false;
+    if(std::strcmp(value,"1")==0)return true;
+    throw std::invalid_argument("STRATA_SYCL_PREFILL_GDN_CHUNK64 must be0 or1");
+  }();
+  return enabled;
+}
+void validate_device(void *stream) {
+  require(stream);
+  auto &queue=queue_for(stream);
+  require(queue.get_backend()==sycl::backend::ext_oneapi_level_zero);
+  matrix_check(queue.get_device());
+  const auto groups=queue.get_device().get_info<sycl::info::device::sub_group_sizes>();
+  require(std::find(groups.begin(),groups.end(),32)!=groups.end());
 }
 void conv_bf16(float *history,const uint16_t *qkv,const float *weights,
                uint16_t *normalized,int tokens,float eps,void *stream,

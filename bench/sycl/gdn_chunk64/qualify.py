@@ -83,8 +83,8 @@ def retire():
 
 
 def main():
-    guards.require(__debug__ and len(sys.argv) == 2 and sys.argv[1] in ('build', 'smoke', 'boundaries', 'general', 'producer-smoke', 'producer', 'component-check', 'component', 'retire'),
-                   'use qualify.py build, smoke, boundaries, general, producer-smoke, producer, component-check, component or retire')
+    guards.require(__debug__ and len(sys.argv) == 2 and sys.argv[1] in ('build', 'smoke', 'boundaries', 'general', 'producer-smoke', 'producer', 'producer-large', 'component-check', 'component', 'retire'),
+                   'use qualify.py build, smoke, boundaries, general, producer-smoke, producer, producer-large, component-check, component or retire')
     action = sys.argv[1]
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -120,12 +120,14 @@ def main():
                            'rebuild after source changes')
             guards.require(record.get('build', {}).get('passed') and action not in record,
                            'a successful build and a fresh test are required')
-            if action in ('boundaries', 'general', 'producer-smoke', 'producer', 'component-check', 'component'):
+            if action in ('boundaries', 'general', 'producer-smoke', 'producer', 'producer-large', 'component-check', 'component'):
                 guards.require(record.get('smoke', {}).get('passed'), 'small smoke must pass first')
             if action == 'general':
                 guards.require(record.get('boundaries', {}).get('passed'), 'dyadic boundaries must pass first')
             if action == 'producer':
                 guards.require(record.get('producer-smoke', {}).get('passed'), 'small producer pair must pass first')
+            if action == 'producer-large':
+                guards.require(record.get('producer', {}).get('passed'), 'producer boundaries must pass first')
             if action in ('component-check', 'component'):
                 guards.require(record.get('general', {}).get('passed'), 'general safety diagnostic must pass first')
             if action == 'component':
@@ -242,8 +244,8 @@ def main():
                 record[action + '_command'] = [str(binary), '--' + mode]
                 phase['launch_attempted'] = True
                 command, stdout, stderr = owner.run(action, [str(binary), '--' + mode], env, P,
-                                                     interaction=interaction, wall=180, cpu=180,
-                                                     rss_cap=(6 if mode == 'component' else 2) << 30, file_cap=32 << 20,
+                                                     interaction=interaction, wall=300 if mode == 'producer-large' else 180, cpu=300,
+                                                     rss_cap=(6 if mode in ('component', 'producer-large') else 2) << 30, file_cap=32 << 20,
                                                      text_cap=32 << 20, total_cap=1 << 30)
                 text = stdout.read_text(errors='replace')
                 phase['case_results'] = [line for line in text.splitlines()
@@ -261,7 +263,8 @@ def main():
                 guards.driver_guard()
                 enough = (len([line for line in phase['case_results'] if line.startswith('component_sample')]) == 20 and
                           any(line.startswith('component_comparison') for line in phase['case_results'])) if mode == 'component' else (
-                          len([line for line in phase['case_results'] if line.startswith('case T=')]) == (2 if action in ('smoke', 'producer-smoke') else 6))
+                          len([line for line in phase['case_results'] if line.startswith('case T=')]) ==
+                          (1 if action == 'producer-large' else 2 if action in ('smoke', 'producer-smoke') else 6))
                 phase['passed'] = (phase['complete'] and phase['exit_code'] == 0 and enough
                                    and 'fixture_status=PASS' in text and phase['boot_unchanged']
                                    and not phase['fresh_faults'])

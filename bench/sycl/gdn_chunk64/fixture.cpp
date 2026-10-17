@@ -32,7 +32,9 @@ template<class T> struct Buffer {
   explicit Buffer(size_t n):storage(rt,n*sizeof(T),sb::MemoryKind::Device),count(n){}
   T *data(){return storage.as<T>();}
   void put(const std::vector<T>& v){need(v.size()==count,"upload extent");rt->wait();upload=v;rt->wait(rt->compute().memcpy(data(),upload.data(),count*sizeof(T)));}
-  std::vector<T> get(){rt->wait();download.resize(count);rt->wait(rt->compute().memcpy(download.data(),data(),count*sizeof(T)));return download;}
+  std::vector<T> get_range(size_t begin,size_t n){need(begin<=count && n<=count-begin,"download extent");
+    rt->wait();download.resize(n);rt->wait(rt->compute().memcpy(download.data(),data()+begin,n*sizeof(T)));return download;}
+  std::vector<T> get(){return get_range(0,count);}
 };
 struct Scratch {
   Buffer<gc::BF> q,k,kb,vb,inverse,w,u,history,delta,raw;
@@ -318,10 +320,38 @@ void run_producer(int T){
       "native pair aligned conv/carry handoff differs");}
   need(X.get()==projection && W.get()==weights && Z.get()==input.z && G.get()==input.gates &&
     B.get()==input.beta && N.get()==input.gamma,"native pair input mutation");
+  // Use the identical planner and transient QKV/lower-KKT reuse as Prefill.
+  // Rebind partial chunks in the same allocation, after the preceding output
+  // copy, exactly as a shared arena must be reused on one in-order stream.
+  constexpr size_t Guard=256;const size_t bytes=gc::arena_bytes(T);
+  Buffer<uint8_t> arena(bytes+2*Guard);Drain arena_pending;
+  rt->wait(rt->compute().memset(arena.data(),0xa5,arena.count));
+  reject([&]{(void)gc::bind_arena(arena.data()+Guard,bytes-1,T);});
+  reject([&]{(void)gc::bind_arena(arena.data()+Guard+1,bytes,T);});
+  auto arena_pair=[&](int begin,int count){
+    auto b=gc::bind_arena(arena.data()+Guard,bytes,count);
+    need(reinterpret_cast<void*>(b.qkv)==reinterpret_cast<void*>(b.workspace.lower),"arena reuse absent");
+    auto& queue=rt->compute();
+    queue.memcpy(b.qkv,X.data()+size_t(begin)*C,size_t(count)*C*2);
+    queue.memcpy(b.z,Z.data()+size_t(begin)*HV*D,size_t(count)*HV*D*2);
+    queue.memcpy(b.gate,G.data()+size_t(begin)*HV,size_t(count)*HV*4);
+    queue.memcpy(b.beta,B.data()+size_t(begin)*HV,size_t(count)*HV*4);
+    gc::conv_bf16(history.data()+Pad,b.qkv,W.data(),b.normalized,count,Eps,&queue);
+    gc::run(state.data()+Pad,b.normalized,b.gate,b.beta,b.z,N.data(),Eps,
+            b.output,count,b.workspace,&queue);
+    queue.memcpy(out.data()+Pad+size_t(begin)*HV*D,b.output,size_t(count)*HV*D*2);
+  };
+  state.put(input.initial);out.put(out_blank);history.put(initial);arena_pair(0,T);rt->wait();
+  need(state.get()==pair_state && out.get()==pair_out && history.get()==actual_history,"shared arena pair differs");
+  if(T>64){state.put(input.initial);out.put(out_blank);history.put(initial);arena_pair(0,64);arena_pair(64,T-64);rt->wait();
+    need(state.get()==pair_state && out.get()==pair_out && history.get()==actual_history,"shared arena relayout differs");}
+  const std::vector<uint8_t> guard(Guard,0xa5);
+  need(arena.get_range(0,Guard)==guard && arena.get_range(Guard+bytes,Guard)==guard,"shared arena guards");
   std::cout<<"case T="<<T<<" producer=BF16_projection_conv_L2 oracle=independent_CPU_formula max_BF16_ulp="<<max_ulp
     <<" max_abs="<<max_abs<<" old_FP32_history=PASS final_FP32_history=PASS guards=PASS inputs=PASS"
     <<" rejection=PASS repeat=PASS conv_split="<<(T>1?"PASS":"NA")
-    <<" direct_BF16_consumer=PASS aligned_pair_handoff="<<(T>64?"PASS":"NA")
+    <<" direct_BF16_consumer=PASS arena_bytes="<<bytes<<" shared_arena_reuse=PASS arena_relayout="<<(T>64?"PASS":"NA")
+    <<" aligned_pair_handoff="<<(T>64?"PASS":"NA")
     <<" model_quality=UNRUN status=SAFETY_PASS"<<std::endl;
 }
 void run_component(){
@@ -389,7 +419,7 @@ void run_component(){
 }
 int main(int argc,char **argv){
   try{
-    need(argc==2 && (std::string(argv[1])=="--smoke" || std::string(argv[1])=="--boundaries" || std::string(argv[1])=="--general" || std::string(argv[1])=="--producer-smoke" || std::string(argv[1])=="--producer" || std::string(argv[1])=="--component"),"expected smoke, boundaries, general, producer or component");
+    need(argc==2 && (std::string(argv[1])=="--smoke" || std::string(argv[1])=="--boundaries" || std::string(argv[1])=="--general" || std::string(argv[1])=="--producer-smoke" || std::string(argv[1])=="--producer" || std::string(argv[1])=="--producer-large" || std::string(argv[1])=="--component"),"expected smoke, boundaries, general, producer or component");
     gate("before-runtime");rt=sb::runtime_for();
     std::cout<<"device="<<rt->device().get_info<sycl::info::device::name>()
       <<" driver="<<rt->device().get_info<sycl::info::device::driver_version>()<<std::endl;
@@ -397,6 +427,7 @@ int main(int argc,char **argv){
     if(std::string(argv[1])=="--smoke"){run(1);run(3);}
     else if(std::string(argv[1])=="--producer-smoke"){run_producer(1);run_producer(3);}
     else if(std::string(argv[1])=="--producer")for(int T:{63,64,65,127,128,129})run_producer(T);
+    else if(std::string(argv[1])=="--producer-large")run_producer(8192);
     else if(std::string(argv[1])=="--component")run_component();
     else if(std::string(argv[1])=="--general")for(int T:{63,64,65,127,128,129})run_general(T);
     else for(int T:{63,64,65,127,128,129})run(T);
