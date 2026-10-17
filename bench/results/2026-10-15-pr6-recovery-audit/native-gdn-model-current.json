@@ -1,6 +1,6 @@
 {
-  "mode": "check",
-  "source_commit": "7740f981fa8974253518748540268a780291d00f",
+  "mode": "base",
+  "source_commit": "774b50937110fa4b216643db923481f4c6c36b38",
   "build_source_commit": "5c59fdd4b2437c6897cb6f81f7826f3d560060f3",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
@@ -61,7 +61,7 @@
     "STRATA_SYCL_SELECT_CYCLIC": "0",
     "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
     "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-gdn-model-check-v2/cache",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-gdn-model-base-v2/cache",
     "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
     "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-optimized",
     "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
@@ -74,16 +74,10 @@
     "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
     "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
     "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
-    "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
-    "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
-    "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
-    "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-    "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
-    "STRATA_TRACE": "1",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-gdn-model-check-v2/tmp",
-    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-gdn-model-check-v2",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-gdn-model-base-v2/tmp",
+    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-gdn-model-base-v2",
     "ZES_ENABLE_SYSMAN": "0",
-    "STRATA_SYCL_PREFILL_GDN_CHUNK64": "1"
+    "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0"
   },
   "config": {
     "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
@@ -101,7 +95,7 @@
       "--expert-cache",
       "128",
       "--expert-profile",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-gdn-model-check-v2/expert-profile.bin",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-gdn-model-base-v2/expert-profile.bin",
       "--expert-cache-per-layer",
       "--pool-workers",
       "5",
@@ -140,7 +134,7 @@
       "strata"
     ],
     "host": "127.0.0.1",
-    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-gdn-model-check-v2/engine.stderr",
+    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-gdn-model-base-v2/engine.stderr",
     "engine_silence_s": 480,
     "parallel": 1,
     "open_browser": false,
@@ -150,14 +144,14 @@
     "/bin/sh",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
     "--config",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-gdn-model-check-v2/config.json",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-gdn-model-base-v2/config.json",
     "--port",
-    "51817",
+    "35539",
     "--runs",
-    "1",
+    "4",
     "--prefill-only",
     "--prefill-tokens",
-    "32768",
+    "65536",
     "--workload-id",
     "native_gdn_20261018",
     "--think",
@@ -165,71 +159,20 @@
     "--ready-timeout",
     "600",
     "--out",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-gdn-model-check-v2/bench"
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-gdn-model-base-v2/bench"
   ],
   "reference": {
     "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-softmax-measurement-inputs-v1.json",
     "sha256": "3792c36462e333816ce5d5d9ac39f3dcc13809939d8d3133c570d8945257d1dd"
   },
-  "config_sha256": "91cf0d8e7187b5804967b8de071868bcb0c9f244d6c24f1474050889d24f0ee6",
+  "config_sha256": "34544ee2b4cba4b0a44d47196bedbe41b22f48b2a554885fdb531772eca0c5ef",
   "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
-  "complete": true,
-  "passed": true,
+  "complete": false,
+  "passed": false,
   "active": false,
   "model_quality_qualified": false,
   "physical262144_RESTORE_qualified": false,
   "performance_adopted": false,
   "source_count": 99,
-  "source_aggregate_sha256": "2c13a28fc3aaa8ca4a48bdee2efc2381eebb51e196afdb215bff184e84ff608c",
-  "exit_code": 0,
-  "requests": [
-    {
-      "run": 0,
-      "ok": true,
-      "eligible": true,
-      "actual_prompt_tokens": 39260,
-      "actual_read_tokens": 39260,
-      "actual_reused_tokens": 0,
-      "generated_tokens": 24,
-      "thinking_requested": true,
-      "reasoning_observed": true,
-      "stream_complete": true,
-      "request_sha256": "1fd63b8c67a1888e443800b5c6d339ca116df2cb91941e6f332b6adf74275b3a",
-      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
-      "ttft_s": 72.171,
-      "total_s": 73.773,
-      "prompt_tps": 546.2,
-      "prompt_ms": 71878.9,
-      "decode_tps": 14.1,
-      "decode_ms": 1696.7,
-      "prompt_tps_source": "engine",
-      "decode_tps_source": "engine",
-      "drafts_offered": 21,
-      "drafts_accepted": 16,
-      "finish_reason": "length",
-      "err": null,
-      "eligibility_errors": []
-    }
-  ],
-  "engine_exit_code": 0,
-  "native_identity": {
-    "pid": 3066209,
-    "start_ticks": 62459881,
-    "sid": 3066182
-  },
-  "route_selection": [
-    "[gdn-chunk64] long-prefill-only=1 chunk=8192 arena=1148718848 BF16_projection_conv=1 FP32_history_state=1 experimental=1"
-  ],
-  "ownership_closed": true,
-  "fresh_faults": [],
-  "boot_unchanged": true,
-  "driver_after": {
-    "pci": "/sys/bus/pci/devices/0000:05:00.0",
-    "driver": "xe",
-    "vendor": "0x8086",
-    "device": "0xe20c",
-    "kernel": "7.0.0-38-generic",
-    "devcoredump": false
-  }
+  "source_aggregate_sha256": "a886fac285bca64a2047fd999e3f9cdf9de41a79ee2bb4aaa0dee911ab36fd23"
 }
