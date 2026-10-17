@@ -21,5 +21,6 @@ struct Events {sycl::event gates,pack,kkt,inverse,wu,carry,readout,norm;};
 // No allocations, environment mutation, host tensor math, or implicit waits.
 void run(float *state, const uint16_t *h, const float *gate, const float *beta,
          const uint16_t *z, const float *gamma, float eps, uint16_t *output,
-         int tokens, Workspace workspace, void *stream, Events *events=nullptr);
+         int tokens, Workspace workspace, void *stream, Events *events=nullptr,
+         bool packed_inverse=true);
 }

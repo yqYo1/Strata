@@ -76,7 +76,7 @@ Sizes sizes(int tokens) {
 }
 void run(float *state,const uint16_t *h,const float *gate,const float *beta,
          const uint16_t *z,const float *gamma,float eps,uint16_t *output,
-         int tokens,Workspace ws,void *stream,Events *events) {
+         int tokens,Workspace ws,void *stream,Events *events,bool packed_inverse) {
   const Sizes n=sizes(tokens);
   require(stream && std::isfinite(eps) && eps>=0.f);
   auto &queue=queue_for(stream);
@@ -148,22 +148,33 @@ void run(float *state,const uint16_t *h,const float *gate,const float *beta,
   // FP32 forward substitution, then one BF16 inverse storage boundary.
   // This deliberately states the full64 solve contract; it is not asserted
   // identical to SGLang's block16/XPU intermediate rounding.
-  event=queue.submit([&](sycl::handler &handler) {
+  auto invert=[&]<bool Packed>(){return queue.submit([&](sycl::handler &handler) {
     sycl::local_accessor<float,1> inverse(BT*BT,handler);
     handler.parallel_for(sycl::nd_range<1>(size_t(chunks)*HV*64,64),
       [=](sycl::nd_item<1> item) [[sycl::reqd_sub_group_size(16)]] {
         const int matrix=item.get_group_linear_id(), col=item.get_local_linear_id();
+        // The solved inverse occupies the lower triangle; retain the original
+        // coefficients in its otherwise-unused upper triangle. XOR the column
+        // by row so transpose stores do not share a constant low address.
+        auto index=[](int r,int c){return r*BT+(Packed?(c^r):c);};
+        if constexpr(Packed){
+          for(int i=col;i<BT*BT;i+=64){const int r=i/BT,c=i%BT;
+            if(r>c)inverse[index(c,r)]=ws.lower[size_t(matrix)*BT*BT+i];}
+          item.barrier(sycl::access::fence_space::local_space);
+        }
         for(int row=0;row<BT;++row) {
           float value=row==col?1.f:0.f;
           if(col<row) for(int p=col;p<row;++p)
-            value-=ws.lower[(size_t(matrix)*BT+row)*BT+p]*inverse[p*BT+col];
-          inverse[row*BT+col]=value;
+            value-=(Packed?inverse[index(p,row)]:ws.lower[(size_t(matrix)*BT+row)*BT+p])*inverse[index(p,col)];
+          if constexpr(Packed){if(col<=row)inverse[index(row,col)]=value;}
+          else inverse[index(row,col)]=value;
           item.barrier(sycl::access::fence_space::local_space);
         }
         for(int row=0;row<BT;++row)
-          ws.inverse[(size_t(matrix)*BT+row)*BT+col]=BF(inverse[row*BT+col]);
+          ws.inverse[(size_t(matrix)*BT+row)*BT+col]=BF(Packed && col>row?0.f:inverse[index(row,col)]);
       });
-  });
+  });};
+  event=packed_inverse?invert.template operator()<true>():invert.template operator()<false>();
   finish(stream,event);
   if(events)events->inverse=event;
   // W/U use native BF16 operands and FP32 matrix accumulation.

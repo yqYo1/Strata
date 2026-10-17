@@ -143,7 +143,7 @@ def main():
             phase.update(scope='Finite/bounds/input/repeat/aligned-handoff safety; FP64 mathematical errors are diagnostic only.',
                          framework_numerics_qualified=False)
         if action in ('component-check', 'component'):
-            phase.update(scope='Resident same-input GDN8192 component; 1 warmup and 5 alternating samples per arm; no transfers timed.',
+            phase.update(scope='Resident same-input GDN8192 component; FP32/original/packed, 1 warmup and 5 rotating samples per arm; no transfers timed.',
                          clean_environment=action == 'component', framework_numerics_qualified=False,
                          hardware_busy_measured=False, physical_PCIe_traffic_measured=False)
         record[action] = phase
@@ -256,7 +256,7 @@ def main():
                     r'(?i)(gpu.*(?:hang|fault|reset|wedg)|xe.*(?:error|fault|reset|timeout)|page fault)', line)]
                 phase['boot_unchanged'] = boot == Path('/proc/sys/kernel/random/boot_id').read_text().strip()
                 guards.driver_guard()
-                enough = (len([line for line in phase['case_results'] if line.startswith('component_sample')]) == 10 and
+                enough = (len([line for line in phase['case_results'] if line.startswith('component_sample')]) == 15 and
                           any(line.startswith('component_comparison') for line in phase['case_results'])) if mode == 'component' else (
                           len([line for line in phase['case_results'] if line.startswith('case T=')]) == (2 if action == 'smoke' else 6))
                 phase['passed'] = (phase['complete'] and phase['exit_code'] == 0 and enough

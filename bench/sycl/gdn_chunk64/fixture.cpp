@@ -243,12 +243,13 @@ void run_component(){
   H.put(input.h);Z.put(input.z);HF.put(hf);ZF.put(zf);G.put(input.gates);B.put(input.beta);N.put(input.gamma);
   const std::vector<uint16_t> blank(out.count,0x5500);
   auto marker=[&](){return rt->compute().single_task([]{});};
-  auto sample=[&](bool candidate,int index){
+  auto sample=[&](int arm,int index){
+    const bool candidate=arm!=0;
     auto &s=candidate?state:old_state;auto &o=candidate?out:old_out;
     s.put(input.initial);o.put(blank);gc::Events events;
     const auto start=marker();const auto begin=std::chrono::steady_clock::now();
     if(candidate)gc::run(s.data()+Pad,H.data(),G.data(),B.data(),Z.data(),N.data(),1e-6f,
-                         o.data()+Pad,T,scratch.view(),&rt->compute(),&events);
+                         o.data()+Pad,T,scratch.view(),&rt->compute(),&events,arm==2);
     else strata::prefill::gdn_recurrence(s.data()+Pad,HF.data(),G.data(),B.data(),ZF.data(),N.data(),1e-6f,
                                         old_y.data(),o.data()+Pad,T,&rt->compute());
     const auto stop=marker();rt->wait();
@@ -257,7 +258,7 @@ void run_component(){
     const auto last=stop.get_profiling_info<sycl::info::event_profiling::command_start>();
     need(last>=first,"component marker order");
     if(index<0)return;
-    std::cout<<"component_sample n="<<index<<" arm="<<(candidate?"chunk64":"current_FP32")
+    std::cout<<"component_sample n="<<index<<" arm="<<(candidate?(arm==2?"chunk64_packed":"chunk64_original"):"current_FP32")
       <<" tokens="<<T<<" queue_interval_ns="<<(last-first)<<" host_wall_ms="<<wall;
     if(candidate){
       const std::array<std::pair<const char*,sycl::event>,8> stages={{{"gates",events.gates},{"pack",events.pack},
@@ -269,8 +270,10 @@ void run_component(){
     }
     std::cout<<std::endl;
   };
-  sample(false,-1);sample(true,-1);
-  for(int i=0;i<5;++i){sample(i%2==0,i);sample(i%2!=0,i);}
+  sample(0,-1);sample(1,-1);
+  const auto original_state=state.get();const auto original_output=out.get();
+  sample(2,-1);need(state.get()==original_state && out.get()==original_output,"inverse packing changes values");
+  for(int i=0;i<5;++i)for(int j=0;j<3;++j)sample((i+j)%3,i);
   const auto a=state.get(),b=old_state.get();const auto x=out.get(),y=old_out.get();
   double se=0.,ss=0.,oe=0.,os=0.,max_s=0.,max_o=0.;
   for(int i=0;i<State;++i){need(std::isfinite(a[Pad+i])&&std::isfinite(b[Pad+i]),"component carry finite");
@@ -283,7 +286,7 @@ void run_component(){
     G.get()==input.gates && B.get()==input.beta && N.get()==input.gamma,"component input mutation");
   std::cout<<"component_comparison tokens="<<T<<" same_input_values=true carry_rel_L2="<<std::sqrt(se/std::max(ss,1e-300))
     <<" carry_max_abs="<<max_s<<" output_rel_L2="<<std::sqrt(oe/std::max(os,1e-300))<<" output_max_abs="<<max_o
-    <<" accuracy=DIAGNOSTIC_ONLY hardware_busy=UNMEASURED PCIe_wire_bytes=UNMEASURED status=SAFETY_PASS"<<std::endl;
+    <<" inverse_packing_parity=PASS accuracy=DIAGNOSTIC_ONLY hardware_busy=UNMEASURED PCIe_wire_bytes=UNMEASURED status=SAFETY_PASS"<<std::endl;
 }
 int main(int argc,char **argv){
   try{
