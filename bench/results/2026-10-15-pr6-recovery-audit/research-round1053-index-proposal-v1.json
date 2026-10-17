@@ -1,0 +1,242 @@
+{
+  "schema": 1,
+  "review_record": {
+    "round": 1053,
+    "reviewer_model": "gpt-6-luna",
+    "reasoning_effort": "max",
+    "classification": "native decision-support report review",
+    "report_path": "research-round1052-v1.txt",
+    "report_bytes": 9181,
+    "report_sha256": "9153c76395640fe544435b79f0d9312f02a739480ff3faed01d1b63864b8294d",
+    "spec_path": "orca-research-round1052-spec-v1.txt",
+    "spec_bytes": 2751,
+    "spec_sha256": "8787bef537c9d0f655329ed9ec3318984eebacfc82407188a49b153ff5cfa162",
+    "eligibility_path": "orca-research-round1052-eligibility-v1.json",
+    "eligibility_bytes": 3241,
+    "eligibility_sha256": "ce1c7bade96257541a6835fd1c472d24b017eda0bde07e0e3f3e80a38ddf899a",
+    "review_path": "A/research-round1053-review-v1.txt",
+    "review_bytes": 6714,
+    "review_sha256": "e2545aa97ccd87e24940d8b4370dfe632df11174634ce4335d71e238c03252b8",
+    "status": "accepted_with_focused_corrections; decision support only; no implementation, numeric adoption, runtime, performance or artifact-layout qualification",
+    "correction_ids": [
+      "R1053-C1",
+      "R1053-C2",
+      "R1053-C3"
+    ],
+    "reviewer_report_body_read": true,
+    "main_body_read": false,
+    "source_license_note": "No code copied. SGLang chunk files identify FLA-derived material; check nested FLA provenance/license before any future code reuse."
+  },
+  "reviewed_context": {
+    "metadata_path": "gdn-target-gguf-metadata-v1.json",
+    "metadata_bytes": 6170,
+    "metadata_sha256": "c991c03ea0bc59641ad19f2b07abde6c88a9bf0d4d8d4a64052808378740237c",
+    "research_index_path": "research-index.json",
+    "research_index_bytes": 605300,
+    "research_index_sha256": "ded3f7b9864a97b21d6a2fa4a7ebdd97b5b7dc84adf551ea3f9cfb454d21b818",
+    "prior_review_path": "research-round1049-review-v1.txt",
+    "prior_review_bytes": 4243,
+    "prior_review_sha256": "f1364f7f7e59d994920abc330d6925581e492f844b1a648fe3df617bd112bfe6",
+    "prior_index_proposal_path": "research-round1049-index-proposal-v1.json",
+    "prior_index_proposal_bytes": 3553,
+    "prior_index_proposal_sha256": "e8e63add3d892872f356d1b7e011c34beaa82dc37ad50f842ebe1e8458c4c608",
+    "source_revisions": {
+      "Strata": "044798d32ee0d72e453b98db4a3e92fda92c620f",
+      "llama.cpp": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+      "SGLang": "877be2974aa151a984e52822c028276c2b1e9303",
+      "Qwen_config": "de4b8e4d43b917e7706784d8bb445c9af86a3540"
+    },
+    "shared_index_retrieval": [
+      {
+        "round": 929,
+        "sha256": "2ee52e869c739c9e968f7740bcf6a252ac25e79275298475156ae5cb30c6fc0b",
+        "use": "Qwen4Exp order and GDN boundary context"
+      },
+      {
+        "round": 943,
+        "sha256": "cb69c0466c2d034da2d7dcf2cd99290e0b2218637a74ff99b10ced10470d4515",
+        "use": "only the prior report's indexed GDN precision/chunk lessons; no broad survey repeated"
+      },
+      {
+        "round": 1048,
+        "sha256": "773f9f44b5ea752b07e5b898ee2fd451de7d6ee165d29623597a71a0101c6c9a",
+        "use": "grouped-vs-tiled layout question; corrected by R1049 and extended here"
+      },
+      {
+        "round": 1049,
+        "sha256": "f1364f7f7e59d994920abc330d6925581e492f844b1a648fe3df617bd112bfe6",
+        "use": "state transpose and storage/rounding corrections; carried forward"
+      }
+    ]
+  },
+  "source_pins": [
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/gdn-target-gguf-metadata-v1.json",
+      "bytes": 6170,
+      "sha256": "c991c03ea0bc59641ad19f2b07abde6c88a9bf0d4d8d4a64052808378740237c",
+      "role": "actual loaded GGUF header only; no tensor payload"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/conversion/qwen4exp.py",
+      "bytes": 8477,
+      "sha256": "12a0a5aea7877fbb8fe35af041a9c34f8b57b05278871b22c24c650b9760dfc3",
+      "role": "Qwen4Exp converter inheritance"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/conversion/qwen.py",
+      "bytes": 40770,
+      "sha256": "b783f53598e1a65cb0ef7fbe0d0f52da472e2784f63acf13a5aea00f623cfaa6",
+      "role": "V grouping transform and affected logical weight axes"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/src/models/qwen4exp.cpp",
+      "bytes": 60259,
+      "sha256": "863b5df1a53dd132ff994f1b44dcd1c88a2eecd4ad4e031817104c67c03139ac",
+      "role": "GGUF architecture tensor geometry"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/LICENSE",
+      "bytes": 1078,
+      "sha256": "94f29bbed6a22c35b992c5c6ebf0e7c92f13b836b90f36f461c9cf2f0f1d010d",
+      "role": "MIT provenance pin; source reference only"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/sgl-project/sglang/python/sglang/srt/models/qwen4_exp.py",
+      "bytes": 105162,
+      "sha256": "9b8c9bc511800bbb53603b37bc3198597f778ba1a2b32a8b40fb5ea0212471e7",
+      "role": "Qwen4Exp linear layer inheritance and weight loader convention"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/sgl-project/sglang/python/sglang/srt/models/qwen3_5.py",
+      "bytes": 121318,
+      "sha256": "ea8d9aa210d4a3f746e247f2d6e877fe312c3bb31b26c68cd560dfb3a74a0786",
+      "role": "GDN config, projection split, output gate and norm"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/sgl-project/sglang/python/sglang/srt/models/qwen3_next.py",
+      "bytes": 46686,
+      "sha256": "1e160562800a308c0409cf4b0633b107689b90e1c360c4b0a8eedbd0aab3515a",
+      "role": "generic config default context"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/sgl-project/sglang/LICENSE",
+      "bytes": 11346,
+      "sha256": "1495e1e757ef4d0925a2350563cf5754bb23c51701a8ec4fb3c5cdcbedae6747",
+      "role": "Apache-2.0 project license; nested FLA license must be checked before reuse"
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/fused_gdn.cpp",
+      "bytes": 12960,
+      "sha256": "70abf4fd1359477a2e170b54f2172ba148a2ae21306e8145e070ebd0db7d995f",
+      "role": "current FP32 state/math and FP16 output copy"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/sgl-project/sglang/python/sglang/srt/layers/attention/linear/gdn_backend.py",
+      "bytes": 63109,
+      "sha256": "cbed4b7dc995bb7d4ca26381c1b707749a1eb3cf77983576c436723a31fb7ffb",
+      "role": "source-selected GDN chunk extend path"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/sgl-project/sglang/python/sglang/srt/layers/attention/linear/kernels/gdn_triton.py",
+      "bytes": 9035,
+      "sha256": "daf5237f552241331f865f211d115cf62ea5d922727b0a183facd544ed8660e0",
+      "role": "SGLang Triton GDN dispatch to chunk operator"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/sgl-project/sglang/python/sglang/kernels/ops/attention/fla/chunk.py",
+      "bytes": 9663,
+      "sha256": "0fa7c1a0c1b9a9f1b5548dfeed58181df88ded8e4bbb36e27ce63e16c3d7fd85",
+      "role": "CHUNK_SIZE=64, Q/K normalization and output dtype boundary; FLA-derived"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/sgl-project/sglang/python/sglang/kernels/ops/attention/fla/chunk_delta_h.py",
+      "bytes": 16571,
+      "sha256": "e37fa6885dd50e945fb470ef3b858573f812c2d7590ed8decc627f15f4bea1c2",
+      "role": "FP32 live accumulator, activation-dtype h scratch, final state store; FLA-derived"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/sgl-project/sglang/python/sglang/kernels/ops/attention/fla/chunk_fwd.py",
+      "bytes": 15962,
+      "sha256": "5a9df341c9c3365f9c8e05114b031f264203bc097190de641ed8284e125014ba",
+      "role": "intra-chunk accumulation/storage boundaries; FLA-derived"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/sgl-project/sglang/python/sglang/kernels/ops/attention/fla/cumsum.py",
+      "bytes": 8527,
+      "sha256": "d9b413e672d445f36b7ef60087e0a93f83748eeb7c49f7f06c78127c8f8fed45",
+      "role": "default FP32 cumulative gate; FLA-derived"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/sgl-project/sglang/python/sglang/kernels/ops/attention/fla/fused_gdn_gating.py",
+      "bytes": 2147,
+      "sha256": "c7736d1e506fb2c3e5c0496a2ed8c23347c2507ebe73c08bc6745517495d0957",
+      "role": "FP32 gate/beta output"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/sgl-project/sglang/python/sglang/kernels/ops/attention/fla/layernorm_gated.py",
+      "bytes": 17630,
+      "sha256": "031b8c4fe8b710acdfb6737e2d5dff60ec1f95c1f8d37a9e7d3c954a866280ea",
+      "role": "RMSNormGated activation default and output cast path"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/sgl-project/sglang/python/sglang/srt/configs/mamba_utils.py",
+      "bytes": 14158,
+      "sha256": "659d941b57b6960f1144e7c6a6e0449ea630b273ea69cb4f89312c10e0a8ff11",
+      "role": "convolution/temporal state dtype defaults and overrides"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/sgl-project/sglang/python/sglang/srt/mem_cache/memory_pool.py",
+      "bytes": 253454,
+      "sha256": "8251fab74646427510d9dc2a358668816c26c35d928c6817bf31fd6d7c8ed92c",
+      "role": "actual state-pool dtypes and shape"
+    },
+    {
+      "path": "https://huggingface.co/Qwen/Qwen3.8-Flash-Next/blob/de4b8e4d43b917e7706784d8bb445c9af86a3540/config.json",
+      "sha256": "889658f2508e8c61d409b02e70e0d78d8d4452ec65aaafbe129805d213d2e74b",
+      "role": "immutable author config; sigmoid/BF16/FP32 temporal-state expected contract"
+    }
+  ],
+  "review_findings": {
+    "layout": "Confirmed source convention: l=16*(s mod 3)+floor(s/3), inverse s=3*(l mod 16)+floor(l/16). R1053-C1 clarifies 2D dt_proj's last-axis branch and target vector params. Loaded IQ3_S metadata proves geometry only, not converter transform.",
+    "state": "Retain R1049-C1 transpose: SGLang[s,v,r]=Strata[r,l,v] with conditional head gather.",
+    "activation": "Qwen config at immutable revision expects sigmoid; generic SGLang RMSNormGated defaults swish when output_gate_type is absent. Exact GGUF config/converter identity remains unavailable.",
+    "precision": "R1053-C2 records BF16 activations with FP32 gates/carry in source-selected SGLang path and current Strata FP32 operands/state plus FP16 output copy. Runtime environment may override SGLang state dtypes.",
+    "decision": "No runtime, inference, model-quality, speed, artifact layout, converter provenance or physical-context adoption claim. No full-model exact-token gate."
+  },
+  "retrieval": {
+    "needed_now": true,
+    "main_body_read": false,
+    "sections": [
+      "Findings and corrections",
+      "Actionable same-input route"
+    ],
+    "keys": [
+      "16/48 grouped-to-tiled mapping and all logical axes",
+      "FP32 carry/BF16 chunk scratch rounding distinctions",
+      "sigmoid-vs-default-swish conditions",
+      "same post-convolution operands for local baseline/candidate and SGLang chunk reference"
+    ],
+    "preserve_caveats": [
+      "The Qwen converter is a format convention only; exact IQ3_S converter history is unresolved.",
+      "Recurrence math validation does not prove loaded weight/head association; layout changes need a separate tagged loader fixture.",
+      "SGLang runtime backend must be recorded; source path alone does not prove deployment selection.",
+      "Full physical-context, history/state lifetime, fault and RESTORE gates remain separate."
+    ]
+  },
+  "main_action": {
+    "next_step": "Main-owned bounded same-input recurrence fixture using post-convolution Q/K/V, g, beta, z, gamma and nonzero FP32 state; compare candidate and current local kernel against the pinned SGLang Qwen4Exp chunk path with the immutable sigmoid config and explicit dtype/transposition boundaries.",
+    "provenance_dependency": "Do not block recurrence optimization on historical GGUF conversion provenance if candidate preserves the current loaded input order. Resolve that provenance separately before changing V-weight/head layout.",
+    "fixture_outline": "Define deterministic source-grouped SGLang arrays; derive the Strata tiled view with l=16*j+k for V/Z/g/beta/state, leave Q/K/gamma unchanged, and transpose state as S[s,v,r]=L[r,l,v]. Use BF16 Q/K/V, FP32 gate/beta/state, sigmoid; test T=63,64,65,127,128,129 plus candidate C boundaries. Replay one bounded live Strata recurrence-boundary capture through local baseline/candidate.",
+    "next_research": {
+      "schedulable_now": false,
+      "dispatch_performed": false,
+      "reason": "The current gap is a Main-owned fixture and implementation decision; source research cannot recover the missing artifact converter receipt or replace same-input execution."
+    }
+  },
+  "provenance": {
+    "no_xestrata_sources": true,
+    "no_code_copied": true,
+    "future_reuse_gate": "Check the nested FLA origin/license before any port or copied helper; the current report recommends only a source-pinned comparison operator.",
+    "artifact_policy": "No model tensor payload read or new measurement/diagnostic capture created. Reviewer wrote only the named review and index proposal."
+  }
+}

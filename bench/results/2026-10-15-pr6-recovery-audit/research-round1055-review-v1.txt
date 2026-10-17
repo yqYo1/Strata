@@ -1,0 +1,31 @@
+# R1055 — QSA BF16 local row-pitch source review
+
+Recorded 2026-10-18. Verdict: the proposed pitch variants pass the source-level stride, alignment, extent, producer/consumer, reuse, and payload arithmetic audit. Main can take the pinned candidate to its own compile, fault, full-bit, and performance gates. This is not a compiled or hardware result, nor a speed/adoption recommendation.
+
+## Contract and exact extents
+
+The live source still matches SHA-256 `fa505d02e2b24f7cb6948033921fa697c8aeb58e6f4df6d873f13e5a7918e36b`. The independent `candidate.cpp` differs from it only by pitch-templating the shared K/V tile size, local payload check, K/V producer destinations and matrix-load strides/pointers, plus a fixture entry point selecting the five variants. The existing thread ownership, BF16 payload bits, matrix dimensions/operations, FP32 online-softmax state and arithmetic, and barriers remain unchanged. The candidate’s static assertions establish `sizeof(BFloat)==2`, a standard-layout/trivially-copyable `MatrixTile<N>` with `alignas(4)`, values at offset zero, and exact `2*N` byte size.
+
+The pinned Intel experimental `joint_matrix_load` API defines stride in elements between row-major rows. For BF16 on its BMG restrictions, each stride in bytes must be a multiple of 8 and no more than `2^24`; each direct base pointer must be four-byte aligned. Every proposed pitch is a multiple of four BF16 elements, and every actual pointer offset is even BF16 elements, so the aligned tile base makes every K/PV load pointer four-byte aligned. This uses the direct-pointer overload, so the separate offset-overload `row_index` rule does not apply.
+
+For QK, each subgroup load is 16x16 from `kv + d0*KPitch + c0`, with `d0=0,16,...,240`, `c0=0 or 16`, stride `KPitch`. The K producer writes every logical coordinate `[d][cell]` to `kv[d*KPitch+cell]`, `d<256`, `cell<32`; it writes zero for missing/invalid rows. For PV, each load is 16x16 from `kv + c0*VPitch + dim0`, with `c0=0 or 16`, `dim0=(subgroup%4)*64+16*j`, `j=0..3`, stride `VPitch`. The V producer writes every logical `[cell][d]` to `kv[cell*VPitch+d]`, `cell<32`, `d<256`, again zero-filling invalid rows. Thus one typed tile is reused; it is not two simultaneous K/V allocations.
+
+| K/V pitch | K/V row bytes | Required `MatrixTile` elements | Max K/V index (last used) | `LocalPayload<33>` / admission minimum |
+| --- | ---: | ---: | ---: | ---: |
+| 32/256 | 64/512 | 8,192 | 8,191 / 8,191 | 28,224 / 32,320 B |
+| 36/256 | 72/512 | 9,216 | 9,211 / 8,191 | 30,272 / 34,368 B |
+| 32/260 | 64/520 | 8,320 | 8,191 / 8,315 | 28,480 / 32,576 B |
+| 36/260 | 72/520 | 9,216 | 9,211 / 8,315 | 30,272 / 34,368 B |
+| 40/264 | 80/528 | 10,240 | 10,231 / 8,439 | 32,320 / 36,416 B |
+
+The max-index values are inclusive; each value fits within the listed single-object extent. Row padding is outside the logical 16x16 loads and no producer/consumer indexes it. No padding initialization is required by the matrix API’s logical load contract; physical transaction width is not established here. Barriers still publish rows, K, QK scores, V, and PV in order, and the final PV barrier protects the next tile’s K overwrite. The existing `local_mem_size >= LocalPayload + 4096` admission therefore evaluates to the table’s threshold for score stride 33 (and 34,304 B for pitch 36/260 with score stride 32). It is a source-side fit guard, not proof of compiler allocation, residency, or occupancy.
+
+## Evidence limits, next gate, provenance
+
+The current service binding attributes 120 attention calls / 37.077867 seconds to the 78K prefill but leaves cache, SLM banks, barriers, and occupancy unresolved. The closed K-staging component run compared global K producer schedules, not local pitch: span-256 regressed 10.35–29.48%, while span-4 was mixed; its 50,331,648 output bits matched. Neither result predicts the SLM-pitch result. Changed row-start modulus may affect lowering or SLM conflicts; the extra 2 KiB for 36/260 may also add address work or reduce residency at a resource threshold. No B570 bank map, physical transaction behavior, generated load sequence, or pitch speed is measured. The 40/264 alternative adds more local storage and should be considered only after the 36/260 correctness/admission gate.
+
+Main’s smallest useful sequence is a fixed `<33,false,false>` baseline against one immutable pitch selector under the same build/runtime/inputs; first validate duplicate, invalid/tail, empty/partial, K-to-V reuse, bounds/fault behavior, then compare all output bits on the 8,192-query component with six rotated samples per shape and both clustered/scattered rows. Only a repeatable component win warrants paired real-model long-prefill samples. Preserve physical-262144, RESTORE, and quality gates. The old packed candidate remains closed.
+
+Hash pins, complete reviewed artifact list, and retrieval metadata are in `research-round1055-index-proposal-v1.json`. R1054’s report, spec, eligibility, current source and candidate package hashes match their recorded pins; the relevant R1051 review and current index/result evidence were also checked. The official oneAPI and Intel matrix docs are pinned to Intel LLVM `fbccb466cc122c294a6c746dcf0d37e45ff70f3c`; the local text hashes match R1054. Installed headers under the named `.tools/intel-llvm-v711` path were consulted only as compiler assets, with their hashes recorded in the index. No XeStrata implementation, helper, test, proposal, or code was used. The candidate’s new entry point is manually declared in its fixture dispatcher/perf source, not added to the public header; keep that as an explicit wiring task if the fixture is integrated.
+
+Review boundary: source/document/artifact inspection only; no Git, build, tests, GPU execution, profiler, process inspection, cleanup, product edits, or index edits were performed.
