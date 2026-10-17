@@ -1,42 +1,89 @@
-# Private GDN chunk64 candidate
+# GDN chunk64 fixture and experimental long-prefill route
 
-Current unfinished Main implementation in `src/prefill/sycl/gdn_chunk64.cpp`
-and `include/strata/prefill/gdn_chunk64.hpp`; this directory owns the fixture.
-Repository MIT license applies. This
-is independently authored SYCL code, not an external kernel port or adoption.
-It preserves the loaded16/48head order, uses BF16 activation/scratch, FP32 carry,
-a full64 FP32 inverse rounded once and genuine FP16 output for the existing
-consumer. The schedule is not the SGLang block16/XPU numerical contract.
+The independently authored MIT implementation is in
+`src/prefill/sycl/gdn_chunk64.cpp` and
+`include/strata/prefill/gdn_chunk64.hpp`. This directory owns its maintained
+fixture. `STRATA_SYCL_PREFILL_GDN_CHUNK64=1` enables it only inside native BF16
+long layer-major prefill; the default, short-input and decode paths keep the
+existing GDN implementation. The current model comparison establishes no
+material speed gain, so leave the flag off for performance work.
 
-The previous compile stopped because fixture.cpp lacked the runtime.hpp include;
-that include is now explicit. Host DMA buffers remain owned through failure-path
-drain. An unused BF16 V copy was removed, saving 96 MiB of scratch at 8192 tokens
-(workspace now 1,024,983,040 bytes). Exact dyadic T=1/3 and
-63/64/65/127/128/129 checks passed on B570 with no bit differences, including
-FP32 carry, BF16 readout, FP16 output, guards, inputs, rejection and repeat.
-No framework numerical qualification, model speed/quality, full262144 or RESTORE
-result exists yet. General cases compare against an independent sequential
-FP64 mathematical reference and test aligned-call carry handoff; their error
-metrics are diagnostic, not framework-contract or model-quality acceptance.
-The first device run passed exact FP32 carry, but strict FP16 bit equality
-rejected signed zeros (41 differences with zero absolute error at T=1).
-Prospective smoke criteria now ignore only the sign of zero for BF16 readout
-and FP16 output, requiring exact bits for every nonzero value. This is not a
-general numerical tolerance, and original failed outcomes remain in Git.
-The next diagnostic isolated a separate BF16 raw mismatch (maximum absolute
-error 9.31323e-10): scaling the two cancelling FP32 readout terms separately
-introduced residuals near zero. The candidate now adds before applying the
-common scale, saving one multiply and avoiding that cancellation error.
-The earlier raw-pointer matrix API error is fixed by explicit local/global
-multi_ptr arguments. Superseded private source copies and build transcripts are
-not required to continue this implementation.
+## Storage and state contract
 
-Use the maintained measurement owner/guards in tools/sycl and set the shared
-first-check environment before exec. Main serializes all builds/tests/GPU jobs.
-See the retained GDN contract and current tuning documentation for the next
-comparison; do not infer persistent framework pool dtype from track_state.
+The loaded model has16 key groups,48 value heads, dimension128, conv4 and up to
+8192 tokens per call. Preserve its existing tiled head order `head %16` and
+FP32 state layout `[r,head,c]`. A source-grouped head `s=3*k+j` would map to
+`l=16*j+k`, or `l=16*(s%3)+s/3`; this relation alone does not prove a converter's
+weight-axis history. No weight/head permutation is performed here.
 
-Commit the exact sources first, then run these separately under Main ownership:
+BF16 projection QKV goes through local FP32 convolution/SiLU, a BF16 round,
+local FP32 Q/K normalization and direct BF16 storage. BF16 z feeds the final
+gate. Gates/beta and persistent carry stay FP32. Shared conv history remains
+FP32 `[10240,3]`, including the existing history supplied by short/decode work.
+The recurrence uses BF16 activation/scratch and a full64 FP32 triangular solve
+rounded once to a BF16 inverse. Its output is genuine FP16 for the existing
+ssm_out projection, not BF16 bits reinterpreted as FP16. This schedule is not
+qualified as the SGLang XPU block16 numerical contract.
+
+The arena planner is shared by Prefill and the fixture. QKV storage is reused
+only after convolution/history update for lower-KKT and a disjoint inverse.
+Normalized input is dead before the carry history overwrites its storage;
+W/U consumes vb before FP16 output overwrites vb. Only those two exact same-base
+recurrence aliases are allowed. Partial/other aliases are rejected, and complete
+preflight precedes any conv-history mutation. All lifetimes use one in-order
+queue; allocations and DMA spans remain owned through checked retirement.
+
+At8192, the shared arena uses1,148,718,848 bytes, fitting the existing
+1,180,698,624-byte GDN reservation. It does not reduce that reserved model region.
+The previous disjoint1,467,486,720-byte layout shrank the model chunk to6144 and
+failed MoE-window admission; the original failed result remains in Git at
+`305dcc0a`. These numbers exclude external state/history, weights, KV, residuals
+and GEMM scratch.
+
+## Verification and current decision
+
+At `ed1a9693`, the producer/smoke/boundary/general checks passed for1/3,
+63/64/65/127/128/129 and8192, including independent CPU conv formulas, guards,
+input immutability, nonzero history, repeated and split calls, shared-versus-
+disjoint equality and rejection before mutation. Conv formula differences were
+zero on the bounded synthetic inputs. The dyadic fixture ignores only the sign
+of zero in BF16 readout/FP16 output; every nonzero value still needs exact bits.
+General FP64-formula errors remain diagnostics, not model-quality tolerances.
+The full physical262144 model and RESTORE paths are unqualified.
+
+The earlier8192 resident component used one warmup and five rotating samples per
+arm. Median queue intervals were23.428125ms for the existing FP32 recurrence,
+21.436146ms for the initial chunk64 schedule,21.097604ms with retained inverse
+coefficients and18.266458ms with16-column carry slices. The last change requests
+14 rather than28KiB carry SLM and holds16 rather than32 state values per workitem.
+Its22.0% component reduction does not establish occupancy or whole-model gain.
+The measured source `af6f7eda` and individual samples remain reachable through
+result commit `ec97c3d3`.
+
+A diagnostic39,260-input official bench.sh check at engine source `5c59fdd4`
+completed with8192 chunks and no new fault. PP546.2/decode14.1 tok/s used tracing
+and validation and is not a clean performance denominator. The subsequent clean
+matched same-binary comparison used four78,451-input requests per process,
+no prefix reuse, thinking on and24 generated tokens:
+
+| Route | First PP, tok/s | Next three PP, tok/s | Median of next three |
+| --- | ---: | --- | ---: |
+| Existing GDN | 682.9 | 725.9,719.5,725.3 | 725.3 |
+| Chunk64 | 677.4 | 726.8,719.6,725.8 | 725.8 |
+
+The0.07% median difference is smaller than the observed request spread. Both
+processes closed normally without fresh GPU faults. Short-output decode medians
+were14.1 tok/s for both; this does not qualify sustained decode. The compact
+`native-gdn-model-current.json` records every candidate sample and the pinned
+Git baseline. Quality/framework equivalence, agent sessions, sustained thinking
+output, full context/RESTORE and default adoption remain open.
+
+## Rebuild and repeat
+
+Commit exact source and recipes before building. Main serializes builds, tests,
+model jobs, profiling and artifact retirement under the shared measurement lock.
+The maintained owner/guards enforce finite budgets, immutable first-check
+tracing/validation settings, runtime identities and checked process closure.
 
 ```sh
 python3 bench/sycl/gdn_chunk64/qualify.py build
@@ -50,95 +97,14 @@ python3 bench/sycl/gdn_chunk64/qualify.py component-check
 python3 bench/sycl/gdn_chunk64/qualify.py component
 ```
 
-The helper uses the shared measurement lock, bounded process supervision,
-immutable validation/tracing environment and qualified runtime ELF identities.
-It refuses to overwrite a previous candidate or reuse a changed source tree.
-Current compact evidence goes to `bench/results/2026-10-15-pr6-recovery-audit/`
-as `gdn-chunk64-current.json`; temporary full logs stay outside Git.
+The helper refuses changed inputs or an existing generation; retire a closed,
+superseded private build through its two-stage `retire` operation after verifying
+its original source/recipe from Git. Current compact fixture evidence is
+`gdn-chunk64-current.json`. Do not keep successful full traces/build transcripts.
 
-The native producer passed the 1/3 and 63/64/65/127/128/129 synthetic cases
-on B570 at source `f31cdbd786e3d65c76045f6282a207a55fd9f8a4` without new GPU
-faults. Conv output differences against the CPU formula were zero; history,
-guards, inputs, rejection, repeat, split conv and aligned conv/carry handoff
-passed. At source `68e58db6`, those cases plus 8192 also passed the shared arena
-reuse and partial-call relayout, with zero conv CPU-formula differences and no
-new faults. The lifetime-sharing layout at `ed1a9693` also passed all these cases,
-including the exact disjoint/aliased pair comparison, partial-alias rejection and
-rejection before conv history mutation. This is component safety evidence, not
-framework/model qualification.
-It reads BF16 projected QKV,
-retains existing FP32 conv history, accumulates conv/SiLU locally in FP32,
-rounds the activation to BF16, then normalizes Q/K with FP32 local reductions
-and writes BF16 directly. It never materializes a full FP32 activation tensor.
-The producer fixture checks a separate CPU formula (two BF16 ULP or absolute
-1e-7 for its bounded synthetic inputs), exact history updates and split-call
-invariance, and direct BF16 recurrence with aligned conv/carry handoff. This
-diagnostic bound is not a general framework/model-quality tolerance. Projection
-GEMM rounding, full-model execution, memory budgeting and quality remain separate
-integration gates. Source now includes an unqualified opt-in long-prefill dispatch
-with `STRATA_SYCL_PREFILL_GDN_CHUNK64=1`, requiring native16 BF16 and the existing
-layer-major admission. The default and short-input/decode paths retain the prior
-implementation. The second diagnostic model run completed a 39,260-token
-official bench.sh request, thinking on, with8192 chunks and no new GPU faults.
-It measured546.2 PP and14.1 decode tok/s with parameter-validation/trace logging;
-this cold single sample is not a clean speed comparison or quality qualification.
-Clean matched long-input timing and production adoption remain pending.
-
-The shared arena planner is used by Prefill's size accounting/carving and the
-fixture. Projection QKV dies after conv/history update and is reused by FP32
-lower-KKT and the disjoint inverse. Normalized input dies after pack and shares
-history storage; vb dies after W/U and shares FP16 output storage. Only those
-two exact same-base recurrence aliases are admitted; partial aliases and other
-overlaps are rejected. Preflight occurs before conv history changes.
-The new fixture checks this reuse and partial-chunk rebinding against disjoint
-buffers, with exact state/output/history and outer guards. The 8192 arena is
-1,467,486,720 bytes for the original disjoint layout, excluding external
-state/history, weights, KV, residuals and GEMM scratch. That layout made model
-setup shrink chunk8192 to6144 and fail the existing MoE-window admission, with
-no GPU fault. The lifetime-sharing layout passed requalification at
-1,148,718,848 bytes (about1.070 GiB), fitting the existing
-1,180,698,624-byte legacy GDN reservation at8192. These synthetic copies are test setup,
-not transfers or host arithmetic in the inference path.
-
-`python3 tools/sycl/build_engine.py` builds the current comparison engine after
-verifying committed project/dependency inputs, using the known-good engine's
-configure recipe. Main owns build/model runs; the build helper never runs the
-model. Keep that engine only for the imminent native-GDN comparison.
-
-For model checks, Main prepares exact committed inputs using
-`python3 tools/sycl/bench_engine.py prepare check`, commits the generated compact
-plan, then uses `run check`. After that check passes, the `base` and `candidate`
-modes use the same engine/config/workload, changing only the GDN startup flag.
-Each clean process runs four fresh >=64K prompts (first plus three subsequent),
-thinking on with24 generated tokens. That cap qualifies only prefill mechanics
-and timing; agent-session, sustained generation, quality and full-context/RESTORE
-checks remain separate gates.
-
-On B570, the resident8192 comparison uses identical decoded input values,
-one warmup and five rotating samples per arm. Clean processes omit tracing and
-validation layers. Queue intervals include submission gaps; individual stage
-events measure device service. Uploads, resets and readbacks are outside them.
-
-| Schedule | Median queue interval, ms |
-| --- | ---: |
-| Current FP32 recurrence | 23.428125 |
-| Independent chunk64, original schedule | 21.436146 |
-| Coefficients retained in unused inverse SLM | 21.097604 |
-| Packed inverse, 16-column carry slices | 18.266458 |
-
-The last schedule reduces this component's interval by 22.0%. Packed inversion
-retains FP32 coefficients in the unused upper triangle with an XOR address
-permutation, adding no SLM. Narrow carry slices request 14 KiB instead of 28 KiB
-SLM and hold 16 instead of 32 FP32 state elements per workitem, doubling the
-workgroup count. Carry service fell from 7.35 to 4.53 ms. Additional W/K reads are
-a tradeoff; actual occupancy, physical traffic and hardware utilization were
-not measured. These results establish a device-local resource/schedule gain,
-not an end-to-end prefill speedup or a PCIe bandwidth result.
-
-Both optimizations preserve the original candidate's complete 8192-token FP32
-state and FP16 output bits. All dyadic/general safety checks passed without new
-driver faults. Against the current FP32 recurrence, the candidate's 8192-token
-relative L2 errors are 0.2954% for carry and 0.3751% for output; these are diagnostics,
-not accepted model-quality limits. The full64 solve and rounding contract still
-differ from SGLang's XPU block16 path. Native BF16 conv production, model
-integration and framework/quality/physical-context/RESTORE gates remain open.
+`python3 tools/sycl/build_engine.py` builds the comparison engine after checking
+committed project/dependency inputs. For a model check, use
+`python3 tools/sycl/bench_engine.py prepare check`, commit the compact plan, then
+`run check`; clean `base`/`candidate` modes follow the same sequence. Existing
+run roots are never overwritten. The24-token cap is a prefill screen; use
+[the full benchmark contract](../../../docs/BENCHMARKS.md) for adoption.
