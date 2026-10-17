@@ -1,0 +1,1330 @@
+{
+  "schema": "strata-qsa-native-bound-evidence-v1",
+  "inputs": [
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-native-zebin-serial-smoke-v1.json",
+      "bytes": 86411,
+      "sha256": "8405d680425692de4bcbd26345dcd3bac42cf8cb6046a9484afa2f97dff0deb5"
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/qsa-native-disasm-v1.json",
+      "bytes": 32431,
+      "sha256": "07fe7d596b6da947e58a1f6b0ba57f1812b9766b512ca2e664e036b2788e112f"
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_bf16_prefix.cpp",
+      "bytes": 20646,
+      "sha256": "fa505d02e2b24f7cb6948033921fa697c8aeb58e6f4df6d873f13e5a7918e36b"
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/extract_qsa_native_evidence_v1.py",
+      "bytes": 8843,
+      "sha256": "9015d3ac28cd6ef5b21ad748b77879db53c7f3ca4dafce24ab960e2ebdde4396"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-zebin-serial-smoke-v1/owned/qsa-bf16.stderr",
+      "bytes": 399133,
+      "sha256": "e7f216ad7bf57746d1142f7bed8d2d80dc3e8d44e18763f788303f0bf9a2dd8e"
+    }
+  ],
+  "target_native_module": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-zebin-serial-smoke-v1/native/dumped_zebin_module_2.elf",
+    "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-zebin-serial-smoke-v1/native/dumped_zebin_module_2.elf",
+    "bytes": 306232,
+    "sha256": "049221cb25a6c6e9c36f9e96a7cdee08d4309e857c21aa14e468beec9d8ab896",
+    "e_machine": 205,
+    "e_type": 1
+  },
+  "target_assembly": {
+    "file": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.text._ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_.asm",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.text._ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_.asm",
+      "bytes": 494418,
+      "sha256": "ae394e11751addce5cd0e3730f1884685ba2ba77553e1302ad0fd708300a3aaf"
+    },
+    "dpas_lines": [
+      "        dpas.8x8 (16|M0)         r10:f         r10:f             r18:bf            r53.0:bf         {Compacted,$6}",
+      "        dpas.8x8 (16|M0)         r10:f         r10:f             r18:bf            r53.0:bf         {Compacted,$10}",
+      "        dpas.8x8 (16|M0)         r10:f         r10:f             r18:bf            r53.0:bf         {Compacted,$13}",
+      "        dpas.8x8 (16|M0)         r10:f         r10:f             r18:bf            r53.0:bf         {Compacted,$7}",
+      "        dpas.8x8 (16|M0)         r10:f         r10:f             r18:bf            r53.0:bf         {Compacted,$12}",
+      "        dpas.8x8 (16|M0)         r10:f         r10:f             r18:bf            r53.0:bf         {Compacted,$6}",
+      "        dpas.8x8 (16|M0)         r10:f         r10:f             r18:bf            r53.0:bf         {Compacted,$10}",
+      "        dpas.8x8 (16|M0)         r10:f         r10:f             r18:bf            r53.0:bf         {Compacted,$14}",
+      "        dpas.8x8 (16|M0)         r28:f         r28:f             r10:bf            r53.0:bf         {Compacted,$7}",
+      "        dpas.8x8 (16|M0)         r28:f         r28:f             r10:bf            r19.0:bf         {Compacted,$3}",
+      "        dpas.8x8 (16|M0)         r36:f         r36:f             r10:bf            r53.0:bf         {Compacted,$7}",
+      "        dpas.8x8 (16|M0)         r36:f         r36:f             r10:bf            r19.0:bf         {Compacted,$2}",
+      "        dpas.8x8 (16|M0)         r44:f         r44:f             r10:bf            r53.0:bf         {Compacted,$6}",
+      "        dpas.8x8 (16|M0)         r44:f         r44:f             r10:bf            r19.0:bf         {Compacted,$5}",
+      "        dpas.8x8 (16|M0)         r60:f         r60:f             r10:bf            r53.0:bf         {Compacted,$14}",
+      "        dpas.8x8 (16|M0)         r60:f         r60:f             r10:bf            r19.0:bf         {Compacted,$4}"
+    ],
+    "send_line_count": 734,
+    "dpas_static_instruction_count": 16
+  },
+  "target_ze_info": "  - name:            _ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_\n    user_attributes:\n      intel_reqd_sub_group_size: 16\n      intel_reqd_workgroup_walk_order: [ 0, 1, 2 ]\n    execution_env:\n      barrier_count:   1\n      grf_count:       128\n      has_4gb_buffers: true\n      has_dpas:        true\n      has_no_stateless_write: true\n      require_disable_eufusion: true\n      indirect_stateless_count: 4\n      inline_data_payload_size: 32\n      offset_to_skip_per_thread_data_load: 192\n      simd_size:       16\n      slm_size:        32\n      subgroup_independent_forward_progress: true\n      eu_thread_count: 8\n    payload_arguments:\n      - arg_type:        arg_bypointer\n        offset:          0\n        size:            8\n        arg_index:       0\n        addrmode:        slm\n        addrspace:       local\n        access_type:     readwrite\n        slm_alignment:   4\n      - arg_type:        arg_bypointer\n        offset:          8\n        size:            8\n        arg_index:       1\n        addrmode:        slm\n        addrspace:       local\n        access_type:     readwrite\n        slm_alignment:   4\n      - arg_type:        arg_bypointer\n        offset:          16\n        size:            8\n        arg_index:       2\n        addrmode:        slm\n        addrspace:       local\n        access_type:     readwrite\n        slm_alignment:   4\n      - arg_type:        arg_bypointer\n        offset:          24\n        size:            8\n        arg_index:       4\n        addrmode:        slm\n        addrspace:       local\n        access_type:     readwrite\n        slm_alignment:   4\n      - arg_type:        arg_bypointer\n        offset:          32\n        size:            8\n        arg_index:       5\n        addrmode:        slm\n        addrspace:       local\n        access_type:     readwrite\n        slm_alignment:   4\n      - arg_type:        arg_bypointer\n        offset:          40\n        size:            8\n        arg_index:       6\n        addrmode:        slm\n        addrspace:       local\n        access_type:     readwrite\n        slm_alignment:   4\n      - arg_type:        arg_bypointer\n        offset:          48\n        size:            8\n        arg_index:       14\n        addrmode:        slm\n        addrspace:       local\n        access_type:     readwrite\n        slm_alignment:   8\n      - arg_type:        arg_bypointer\n        offset:          56\n        size:            8\n        arg_index:       16\n        addrmode:        slm\n        addrspace:       local\n        access_type:     readwrite\n        slm_alignment:   4\n      - arg_type:        arg_bypointer\n        offset:          64\n        size:            8\n        arg_index:       17\n        addrmode:        slm\n        addrspace:       local\n        access_type:     readwrite\n        slm_alignment:   4\n      - arg_type:        arg_bypointer\n        offset:          72\n        size:            8\n        arg_index:       3\n        addrmode:        stateless\n        addrspace:       global\n        access_type:     readwrite\n      - arg_type:        arg_bypointer\n        offset:          80\n        size:            8\n        arg_index:       7\n        addrmode:        stateless\n        addrspace:       global\n        access_type:     readwrite\n      - arg_type:        arg_bypointer\n        offset:          88\n        size:            8\n        arg_index:       9\n        addrmode:        stateless\n        addrspace:       global\n        access_type:     readwrite\n      - arg_type:        arg_bypointer\n        offset:          96\n        size:            8\n        arg_index:       18\n        addrmode:        stateless\n        addrspace:       global\n        access_type:     readwrite\n      - arg_type:        arg_byvalue\n        offset:          104\n        size:            8\n        arg_index:       8\n      - arg_type:        arg_byvalue\n        offset:          112\n        size:            8\n        arg_index:       13\n      - arg_type:        arg_byvalue\n        offset:          120\n        size:            72\n        arg_index:       10\n        source_offset:   0\n      - arg_type:        arg_byvalue\n        offset:          192\n        size:            16\n        arg_index:       11\n        source_offset:   0\n      - arg_type:        arg_byvalue\n        offset:          208\n        size:            64\n        arg_index:       12\n        source_offset:   0\n      - arg_type:        arg_byvalue\n        offset:          272\n        size:            8\n        arg_index:       12\n        source_offset:   64\n        is_ptr:          true\n      - arg_type:        arg_byvalue\n        offset:          280\n        size:            8\n        arg_index:       15\n        source_offset:   0\n        is_ptr:          true\n      - arg_type:        arg_byvalue\n        offset:          288\n        size:            8\n        arg_index:       15\n        source_offset:   8\n        is_ptr:          true\n      - arg_type:        arg_byvalue\n        offset:          296\n        size:            8\n        arg_index:       15\n        source_offset:   16\n        is_ptr:          true\n      - arg_type:        local_size\n        offset:          304\n        size:            12\n    per_thread_payload_arguments:\n      - arg_type:        local_id\n        offset:          0\n        size:            192",
+  "runtime_kernel_create": "   <--- urKernelCreate(.hProgram = 0x1550d0f0, .pKernelName = 0x451b22 (_ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_), .phKernel = 0x7ffddf660090 (0x15621d40)) -> UR_RESULT_SUCCESS;",
+  "representative_launch": "   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0x15414240, .hKernel = 0x15621d40, .workDim = 1, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7ffddf6610c0 (256), .pLocalWorkSize = 0x7ffddf6610d8 (128), .numArgs = 19, .pArgs = 0x1596d0c0 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 0, .size = 8192, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 1, .size = 16384, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 2, .size = 1024, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 3, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff600000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 4, .size = 64, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 5, .size = 64, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 6, .size = 64, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 7, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff650400}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 8, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.value = 0x1595d918}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 9, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff650200}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 10, .size = 72, .value = (union ur_exp_kernel_arg_value_t){.value = 0x1595d928}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 11, .size = 16, .value = (union ur_exp_kernel_arg_value_t){.value = 0x1595d970}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 12, .size = 72, .value = (union ur_exp_kernel_arg_value_t){.value = 0x1595d980}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 13, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.value = 0x1595d9c8}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 14, .size = 256, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 15, .size = 24, .value = (union ur_exp_kernel_arg_value_t){.value = 0x1595d9f0}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 16, .size = 2112, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 17, .size = 64, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 18, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff620020}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7ffddf6602f0 (0x15489330)) -> UR_RESULT_SUCCESS;",
+  "all_target_launches": [
+    {
+      "line_sha256": "4e725ec14f7e4a8d324c96afdff1efe584076abcab4dfa4fabd863234e092e08",
+      "global_work_size": 256,
+      "local_work_size": 128,
+      "arguments": [
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 0,
+          "bytes": 8192
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 1,
+          "bytes": 16384
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 2,
+          "bytes": 1024
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 3,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 4,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 5,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 6,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 7,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 8,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 9,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 10,
+          "bytes": 72
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 11,
+          "bytes": 16
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 12,
+          "bytes": 72
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 13,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 14,
+          "bytes": 256
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 15,
+          "bytes": 24
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 16,
+          "bytes": 2112
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 17,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 18,
+          "bytes": 8
+        }
+      ],
+      "local_argument_bytes": 28224,
+      "result": "UR_RESULT_SUCCESS"
+    },
+    {
+      "line_sha256": "409c26e9fc07f729d2a44cce8bfca47cf1af88990056168ff5dfbb36f5b785e9",
+      "global_work_size": 256,
+      "local_work_size": 128,
+      "arguments": [
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 0,
+          "bytes": 8192
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 1,
+          "bytes": 16384
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 2,
+          "bytes": 1024
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 3,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 4,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 5,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 6,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 7,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 8,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 9,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 10,
+          "bytes": 72
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 11,
+          "bytes": 16
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 12,
+          "bytes": 72
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 13,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 14,
+          "bytes": 256
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 15,
+          "bytes": 24
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 16,
+          "bytes": 2112
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 17,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 18,
+          "bytes": 8
+        }
+      ],
+      "local_argument_bytes": 28224,
+      "result": "UR_RESULT_SUCCESS"
+    },
+    {
+      "line_sha256": "409c26e9fc07f729d2a44cce8bfca47cf1af88990056168ff5dfbb36f5b785e9",
+      "global_work_size": 256,
+      "local_work_size": 128,
+      "arguments": [
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 0,
+          "bytes": 8192
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 1,
+          "bytes": 16384
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 2,
+          "bytes": 1024
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 3,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 4,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 5,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 6,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 7,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 8,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 9,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 10,
+          "bytes": 72
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 11,
+          "bytes": 16
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 12,
+          "bytes": 72
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 13,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 14,
+          "bytes": 256
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 15,
+          "bytes": 24
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 16,
+          "bytes": 2112
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 17,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 18,
+          "bytes": 8
+        }
+      ],
+      "local_argument_bytes": 28224,
+      "result": "UR_RESULT_SUCCESS"
+    },
+    {
+      "line_sha256": "409c26e9fc07f729d2a44cce8bfca47cf1af88990056168ff5dfbb36f5b785e9",
+      "global_work_size": 256,
+      "local_work_size": 128,
+      "arguments": [
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 0,
+          "bytes": 8192
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 1,
+          "bytes": 16384
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 2,
+          "bytes": 1024
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 3,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 4,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 5,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 6,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 7,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 8,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 9,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 10,
+          "bytes": 72
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 11,
+          "bytes": 16
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 12,
+          "bytes": 72
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 13,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 14,
+          "bytes": 256
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 15,
+          "bytes": 24
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 16,
+          "bytes": 2112
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 17,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 18,
+          "bytes": 8
+        }
+      ],
+      "local_argument_bytes": 28224,
+      "result": "UR_RESULT_SUCCESS"
+    },
+    {
+      "line_sha256": "409c26e9fc07f729d2a44cce8bfca47cf1af88990056168ff5dfbb36f5b785e9",
+      "global_work_size": 256,
+      "local_work_size": 128,
+      "arguments": [
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 0,
+          "bytes": 8192
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 1,
+          "bytes": 16384
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 2,
+          "bytes": 1024
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 3,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 4,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 5,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 6,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 7,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 8,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 9,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 10,
+          "bytes": 72
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 11,
+          "bytes": 16
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 12,
+          "bytes": 72
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 13,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 14,
+          "bytes": 256
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 15,
+          "bytes": 24
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 16,
+          "bytes": 2112
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 17,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 18,
+          "bytes": 8
+        }
+      ],
+      "local_argument_bytes": 28224,
+      "result": "UR_RESULT_SUCCESS"
+    },
+    {
+      "line_sha256": "409c26e9fc07f729d2a44cce8bfca47cf1af88990056168ff5dfbb36f5b785e9",
+      "global_work_size": 256,
+      "local_work_size": 128,
+      "arguments": [
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 0,
+          "bytes": 8192
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 1,
+          "bytes": 16384
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 2,
+          "bytes": 1024
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 3,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 4,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 5,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 6,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 7,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 8,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 9,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 10,
+          "bytes": 72
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 11,
+          "bytes": 16
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 12,
+          "bytes": 72
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 13,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 14,
+          "bytes": 256
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 15,
+          "bytes": 24
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 16,
+          "bytes": 2112
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 17,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 18,
+          "bytes": 8
+        }
+      ],
+      "local_argument_bytes": 28224,
+      "result": "UR_RESULT_SUCCESS"
+    },
+    {
+      "line_sha256": "409c26e9fc07f729d2a44cce8bfca47cf1af88990056168ff5dfbb36f5b785e9",
+      "global_work_size": 256,
+      "local_work_size": 128,
+      "arguments": [
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 0,
+          "bytes": 8192
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 1,
+          "bytes": 16384
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 2,
+          "bytes": 1024
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 3,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 4,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 5,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 6,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 7,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 8,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 9,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 10,
+          "bytes": 72
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 11,
+          "bytes": 16
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 12,
+          "bytes": 72
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 13,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 14,
+          "bytes": 256
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 15,
+          "bytes": 24
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 16,
+          "bytes": 2112
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 17,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 18,
+          "bytes": 8
+        }
+      ],
+      "local_argument_bytes": 28224,
+      "result": "UR_RESULT_SUCCESS"
+    },
+    {
+      "line_sha256": "409c26e9fc07f729d2a44cce8bfca47cf1af88990056168ff5dfbb36f5b785e9",
+      "global_work_size": 256,
+      "local_work_size": 128,
+      "arguments": [
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 0,
+          "bytes": 8192
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 1,
+          "bytes": 16384
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 2,
+          "bytes": 1024
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 3,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 4,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 5,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 6,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 7,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 8,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 9,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 10,
+          "bytes": 72
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 11,
+          "bytes": 16
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 12,
+          "bytes": 72
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 13,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 14,
+          "bytes": 256
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 15,
+          "bytes": 24
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 16,
+          "bytes": 2112
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 17,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 18,
+          "bytes": 8
+        }
+      ],
+      "local_argument_bytes": 28224,
+      "result": "UR_RESULT_SUCCESS"
+    },
+    {
+      "line_sha256": "409c26e9fc07f729d2a44cce8bfca47cf1af88990056168ff5dfbb36f5b785e9",
+      "global_work_size": 256,
+      "local_work_size": 128,
+      "arguments": [
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 0,
+          "bytes": 8192
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 1,
+          "bytes": 16384
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 2,
+          "bytes": 1024
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 3,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 4,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 5,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 6,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 7,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 8,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 9,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 10,
+          "bytes": 72
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 11,
+          "bytes": 16
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 12,
+          "bytes": 72
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 13,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 14,
+          "bytes": 256
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 15,
+          "bytes": 24
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 16,
+          "bytes": 2112
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 17,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 18,
+          "bytes": 8
+        }
+      ],
+      "local_argument_bytes": 28224,
+      "result": "UR_RESULT_SUCCESS"
+    },
+    {
+      "line_sha256": "409c26e9fc07f729d2a44cce8bfca47cf1af88990056168ff5dfbb36f5b785e9",
+      "global_work_size": 256,
+      "local_work_size": 128,
+      "arguments": [
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 0,
+          "bytes": 8192
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 1,
+          "bytes": 16384
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 2,
+          "bytes": 1024
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 3,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 4,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 5,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 6,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 7,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 8,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 9,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 10,
+          "bytes": 72
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 11,
+          "bytes": 16
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 12,
+          "bytes": 72
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 13,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 14,
+          "bytes": 256
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 15,
+          "bytes": 24
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 16,
+          "bytes": 2112
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 17,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 18,
+          "bytes": 8
+        }
+      ],
+      "local_argument_bytes": 28224,
+      "result": "UR_RESULT_SUCCESS"
+    },
+    {
+      "line_sha256": "f749a0cc4d8c61ab21fba0f0d5584b916fa9850b3c6f30ada070d1d6c5841edf",
+      "global_work_size": 768,
+      "local_work_size": 128,
+      "arguments": [
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 0,
+          "bytes": 8192
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 1,
+          "bytes": 16384
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 2,
+          "bytes": 1024
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 3,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 4,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 5,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 6,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 7,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 8,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 9,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 10,
+          "bytes": 72
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 11,
+          "bytes": 16
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 12,
+          "bytes": 72
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 13,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 14,
+          "bytes": 256
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 15,
+          "bytes": 24
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 16,
+          "bytes": 2112
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 17,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 18,
+          "bytes": 8
+        }
+      ],
+      "local_argument_bytes": 28224,
+      "result": "UR_RESULT_SUCCESS"
+    },
+    {
+      "line_sha256": "f749a0cc4d8c61ab21fba0f0d5584b916fa9850b3c6f30ada070d1d6c5841edf",
+      "global_work_size": 768,
+      "local_work_size": 128,
+      "arguments": [
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 0,
+          "bytes": 8192
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 1,
+          "bytes": 16384
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 2,
+          "bytes": 1024
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 3,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 4,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 5,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 6,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 7,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 8,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 9,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 10,
+          "bytes": 72
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 11,
+          "bytes": 16
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 12,
+          "bytes": 72
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 13,
+          "bytes": 8
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 14,
+          "bytes": 256
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_VALUE",
+          "index": 15,
+          "bytes": 24
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 16,
+          "bytes": 2112
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_LOCAL",
+          "index": 17,
+          "bytes": 64
+        },
+        {
+          "kind": "UR_EXP_KERNEL_ARG_TYPE_POINTER",
+          "index": 18,
+          "bytes": 8
+        }
+      ],
+      "local_argument_bytes": 28224,
+      "result": "UR_RESULT_SUCCESS"
+    }
+  ],
+  "local_argument_bytes": 28224,
+  "static_descriptor_SLM_bytes": 32,
+  "grf_count": 128,
+  "simd_size": 16,
+  "limitations": [
+    "ISA captured from qualified same-archive numerical fixture, not a fresh native dump of the full-model process.",
+    "16 DPAS is a static instruction count; it is not dynamic work, XMX utilization or a hardware saturation measurement.",
+    "Nine local argument requests total28224 bytes. Descriptor32 excludes these; neither value proves encoded/rounded SLM, occupancy or bank conflicts.",
+    "No new spill/resource measurement of a pitch variant, no new PP measurement, no default adoption.",
+    "Physical262144 full-model, RESTORE and sustained-generation qualification remain pending."
+  ]
+}
