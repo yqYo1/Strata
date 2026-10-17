@@ -5255,6 +5255,130 @@
       "index_proposal_path": "research-round1031-index-proposal-v1.json",
       "source_commit_label": "7d9a853e354be43bbe0b1322cd633196e94fd898",
       "status": "No confirmed mapping, subgroup convergence, or in-range address defect. The exact-root/FP32 claim is sound under strict same-environment operation ordering; synthetic finite input parity is evidence, not model quality. Positive active/full-prefix initialization and actual caller integration remain explicit contracts."
+    },
+    {
+      "round": 1033,
+      "model": "gpt-6-luna",
+      "classification": "decision_support",
+      "read_only": true,
+      "path": "research-round1033-v1.txt",
+      "bytes": 10222,
+      "sha256": "ea88f9bfb14e51da88e6ae389b65279afc784c1f500fc99e0d72f8a28af2b1a0",
+      "review_path": "research-round1034-review-v1.txt",
+      "review_sha256": "ceba17ba3b1fdab1fdbb1341b1144ca99f17b1727ce6cdb95252ae3ed166099b",
+      "index_proposal_path": "research-round1034-index-proposal-v1.json",
+      "status": {
+        "decision": "accepted_with_retrieval_correction",
+        "report_scope_and_novelty": "adequate; R1033 resolves R589's packed-query stride issue and adds current API contracts and explicit precision/quality gates",
+        "prototype_source_sanity": "no_confirmed_bug; source-only, uncompiled, unmeasured",
+        "prototype_next_step": "eligible for a small owned traced probe after the active Main GPU comparison closes",
+        "production_adoption": "not qualified or recommended"
+      },
+      "retrieval_tags": [
+        "qsa-block-index-score",
+        "gemm-f16-input-fp32-output",
+        "fp16-operand-rounding",
+        "fp32-accumulator-lowering-unverified",
+        "dead-key-fp32-tail-semantics",
+        "oneapi-mkl-provider-device-execution-unverified",
+        "vllm-minimax-m3-analog-only",
+        "arc-b570-xmx-unqualified",
+        "score-id-quality-gates"
+      ],
+      "corrections": [
+        {
+          "id": "R1033-C1",
+          "kind": "retrieval_correction",
+          "finding": "The MiniMax M3 vLLM indexer is a CUDA/Triton dtype and algorithm precedent, with an optional SM100 MSA route. It provides no Arc B570/XMX lowering, performance, or target-model quality evidence.",
+          "evidence": "Pinned vLLM source commit 2d8efee9a73366d6b4e753780af32443d2fef91a declares BF16/FP8 index-cache paths and tl.dot(..., out_dtype=tl.float32); implementation selection tests CUDA and optionally SM100. R1033 already limits transfer and denies model-specific quality evidence.",
+          "action": "Preserve this architecture boundary in the index/retrieval summary; do not use M3 format support as Qwen3.8-Flash-Next precision approval. No report-body rewrite is required."
+        }
+      ]
+    },
+    {
+      "round": 1035,
+      "model": "gpt-6-luna",
+      "classification": "decision_support",
+      "read_only": true,
+      "path": "research-round1035-v1.txt",
+      "bytes": 4414,
+      "sha256": "25e234c9ebd25e68dbecf713c324d22a5139f15a979fd45dd96b13944db9a581",
+      "review_path": "research-round1036-review-v1.txt",
+      "review_sha256": "b0f0106bc6be75f666f21e9c2772b2bb1b6c67f1b9e51d835198d14a0afc00d1",
+      "index_proposal_path": "research-round1036-index-proposal-v1.json",
+      "status": {
+        "decision": "accepted_with_correction",
+        "report_scope_and_depth": "adequate; bounded fixture review with distinct value beyond R1034",
+        "numerical_claims": "acceptable as prospective and conditional; provider and whole-row behavior remain unverified",
+        "canary_claim": "corrected; globally unused suffix only, with repeated-tile reuse accounted for",
+        "prototype_source_sanity": "no other confirmed defect; uncompiled and unmeasured",
+        "production_adoption": "not qualified or recommended"
+      },
+      "retrieval_tags": [
+        "qsa-block-index-score",
+        "gemm-f16-input-fp32-output",
+        "fp16-operand-rounding",
+        "fp32-accumulator-lowering-unverified",
+        "dead-key-fp32-tail-semantics",
+        "oneapi-mkl-provider-device-execution-unverified",
+        "score-id-quality-gates",
+        "head-scratch-row-stride",
+        "scratch-canary-reuse",
+        "source-only-fixture-review"
+      ],
+      "corrections": [
+        {
+          "id": "R1035-C1",
+          "kind": "source_review_correction",
+          "finding": "The report identifies a real gap in globally unused head-scratch canary coverage, but its general [padded,panel) range ignores the 8192 row stride and buffer reuse across tiles.",
+          "evidence": "Each tile writes [0,min(8192,padded-first)) in the same [queries*4,8192] head buffer. The union written in each row is [0,min(padded,8192)); after multiple tiles the last-tile suffix can contain valid earlier-tile values.",
+          "action": "If adding a post-run canary check, check only [min(padded,8192),8192) per row. This is empty for padded>=8192. Never expect last-tile suffix cells already used by a prior tile to remain canaries. Rename the existing output to head_scratch_outer_guards=PASS unless a valid unused-suffix check is added.",
+          "severity": "low; fixture observability only, no observed scorer overwrite"
+        },
+        {
+          "id": "R1035-C2",
+          "kind": "retrieval_correction",
+          "finding": "The sampled FP16-rounded-input oracle and gamma bound are prospective and conditional on FP32 accumulation; they do not verify provider lowering or unsampled score cells.",
+          "evidence": "The pinned report states these limits, and the source samples 67 score positions per query while the oneMKL route remains unverified.",
+          "action": "Retain the prospective/conditional precision tags and use the Main-owned probe for provider, device, and measured score evidence."
+        }
+      ]
+    },
+    {
+      "round": 1037,
+      "model": "gpt-6-luna",
+      "classification": "decision_support",
+      "read_only": true,
+      "path": "research-round1037-v1.txt",
+      "bytes": 10870,
+      "sha256": "9c8f9b88827d3b3c5c6a199afd9cee6250a58a95929388d9b3075af8ffe1fcb3",
+      "review_path": "research-round1038-review-v1.txt",
+      "review_sha256": "65d82e013fa1faeb9ef151e083e3952bc2e42cf889678922199d814c7728a1c9",
+      "index_proposal_path": "research-round1038-index-proposal-v1.json",
+      "status": {
+        "decision": "accepted_with_source_correction",
+        "report_scope_and_depth": "adequate; bounded source question resolved against exact immutable public dependency revision",
+        "d32_source_support": "confirmed for typed float D through the pinned helper and XE_STORE_2D<32> source path",
+        "geometry_and_api_guidance": "sound; preserve existing 16-bit APIs and recalculate float output byte/surface bounds",
+        "runtime_and_adoption": "unqualified; no build, GPU, fault, numerical, or performance evidence",
+        "production_adoption": "not qualified or recommended"
+      },
+      "corrections": [
+        {
+          "id": "R1037-C1",
+          "kind": "source_review_correction",
+          "finding": "The report says the pinned TLA public material does not prove that get_block_2d_copy_D accepts a 32-bit destination or emits d32. Exact pinned headers prove source-level support: float destination and ValTypeD=float select XE_STORE_2D<32,...>, whose typed store emits the block-2D d32 form.",
+          "evidence": "Revision 87f6850680a580654b9ea2c80dbc01aeb36ad231; hashes and line references recorded under source_facts and in research-round1038-review-v1.txt.",
+          "action": "Remove the d32 helper-support uncertainty from retrieval metadata. Retain compile/AOT/ISA/runtime qualification and typed float rectangle safety gates."
+        },
+        {
+          "id": "R1037-C2",
+          "kind": "fallback_correction",
+          "finding": "A compiler or device qualification failure for block-2D does not imply an all-or-nothing blocker; ordinary typed SYCL scalar stores can be an explicit FP32 epilogue, with vectorization evaluated after lane ownership and bounds are correct.",
+          "evidence": "SYCL typed pointer stores are an available kernel mechanism; this is a fallback design candidate, not a measured or implemented route.",
+          "action": "Keep the typed block-2D route first. If its target qualification fails, evaluate a bounded scalar epilogue before considering the extra conversion pass."
+        }
+      ]
     }
   ],
   "main_initial_findings": [
@@ -9832,5 +9956,70 @@
       }
     ]
   },
-  "retention_qsa_headparallel_v1": "qsa-score-headparallel-retention-v1.json;329closedraw/duplicates retired,7400911logicalbytes; allcanonicaloutcomes unchanged."
+  "retention_qsa_headparallel_v1": "qsa-score-headparallel-retention-v1.json;329closedraw/duplicates retired,7400911logicalbytes; allcanonicaloutcomes unchanged.",
+  "research_review_round1034": {
+    "review": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round1034-review-v1.txt",
+      "bytes": 7273,
+      "sha256": "ceba17ba3b1fdab1fdbb1341b1144ca99f17b1727ce6cdb95252ae3ed166099b"
+    },
+    "index_proposal": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round1034-index-proposal-v1.json",
+      "bytes": 5998,
+      "sha256": "b84efa988d4d3910787def0e9750a23b45b610a93051b6e63be277478a12d6a4"
+    },
+    "main_read_policy": "Only short operational digest and retrieval metadata; original report body not loaded automatically.",
+    "next_action": "Small Main-owned traced probe; actual model comparison is now closed. No duplicate source survey."
+  },
+  "qsa_score_headparallel_model_current": {
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-headparallel-model-comparison-v1.json",
+    "bytes": 2796,
+    "sha256": "10d9479424fef0984ad911ae7c5ad0cb57d2aa4d92c693c85135cae58e702822"
+  },
+  "research_review_round1036": {
+    "review": {
+      "path": "research-round1036-review-v1.txt",
+      "bytes": 3011,
+      "sha256": "b0f0106bc6be75f666f21e9c2772b2bb1b6c67f1b9e51d835198d14a0afc00d1"
+    },
+    "index_proposal": {
+      "path": "research-round1036-index-proposal-v1.json",
+      "bytes": 5885,
+      "sha256": "059a657d5e47d843a9030e3ae9f397529b1f8fb85a1fb000f5caf2d73433ebaf"
+    },
+    "main_read_policy": "Short operational digest and index proposal only; original report body not loaded automatically.",
+    "main_action": "Bounded global-unused row-suffix correction applied to immutable private v2 fixture; v1 receipts preserved unchanged. Same-binary FP32 control added."
+  },
+  "research_review_round1038": {
+    "review": {
+      "path": "research-round1038-review-v1.txt",
+      "bytes": 5279,
+      "sha256": "65d82e013fa1faeb9ef151e083e3952bc2e42cf889678922199d814c7728a1c9"
+    },
+    "index_proposal": {
+      "path": "research-round1038-index-proposal-v1.json",
+      "bytes": 8060,
+      "sha256": "e2a5a60ec8362ee33776f62adbb38f7d40b3654f42d0465a1fed9a793b29005d"
+    },
+    "main_read_policy": "Only short operational digest and relevant index metadata; no automatic report-body read.",
+    "priority_decision": "Source-level F32 d32 store support established. First integrate the already-fast existing-Gemm scorer; observed 4-byte oneMKL control transfers did not recur per call in the15-call traced process, so removing them is not the immediate warm-performance target. Direct/fused native epilogue remains a future component candidate."
+  },
+  "qsa_score_gemm_current": {
+    "component_result": {
+      "path": "qsa-score-gemm-results-v2.json",
+      "bytes": 23387,
+      "sha256": "eef8ecb7f5ddf72418af95e0c9ad6eb6ac7b41ef7c063894811d0e6e13bbdf88"
+    },
+    "cohort": {
+      "path": "qsa-score-gemm-cohort-v2.json",
+      "bytes": 199800,
+      "sha256": "c3cc9ba17013ed3cc3e9c6ce136432efd370ec0a4e30477fbea7ae56cdb21da0"
+    },
+    "resource_result": {
+      "path": "qsa-score-gemm-resource-results-v1.json",
+      "bytes": 3416,
+      "sha256": "05740ed61ee9857c4503ffb85b846bd0fbc23f3d903bcc1cc55a46fad310d537"
+    },
+    "next": "Long-prefill-only opt-in integration with Qf dead-region reuse, separately owned sticky status, checked lease retirement, invalid-status injection then actual-model quality/performance gates. No production default adoption yet."
+  }
 }

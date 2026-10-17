@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "classification": "decision_support",
+  "schedulable_now": true,
+  "question": "Can the existing BSD/TLA-derived Xe2 GPU GEMM safely expose FP32 output for QSA scores, with no oneMKL internal scalar round trips? Source architecture and acceptance, no implementation.",
+  "prerequisites": [
+    {
+      "source_receipt": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-probe-small-r0-v1.json",
+      "source_receipt_sha256": "5057845a6aabf9f23aeb4a31617bcb97b98703c338a804cdd656c079cd7f09ba",
+      "passed": true,
+      "trace_first_score_bytes": 40302,
+      "trace_first_score_sha256": "997d7cb5f53c65cf5ed9564f5229fe0e559b1e0719d0fd9f70fce4e84287b3be",
+      "observed": "6 GPU kernel submissions; 0 urEnqueueUSMMemcpy, plus one 4-byte urEnqueueMemBufferWrite and one 4-byte urEnqueueMemBufferRead; two native BLAS handles. No inference of why those control transfers exist, no XMX ISA proof. The 78K numeric probe also passed; still no model quality approval."
+    },
+    "Existing source-only R1033/R1034 says public native16 adapter only exposes 16-bit output; no F32-output policy audit was done.",
+    "Main v1 small/suite/78K probes closed; current v2 suite is independent and exclusively Main-owned."
+  ],
+  "prior_index": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+  "prior_metadata": [
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round1034-index-proposal-v1.json",
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round1036-index-proposal-v1.json"
+  ]
+}

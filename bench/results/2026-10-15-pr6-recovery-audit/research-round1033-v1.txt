@@ -1,0 +1,70 @@
+# R1033 — QSA score-only 16-bit inputs: current API and precision audit
+
+**Class:** decision support. **Question:** can current Strata SYCL GEMM use 16-bit QSA score inputs and retain FP32 per-head values through ReLU/head-sum, dead-key replacement and top-k? Source-only; Main owns the FP32 build and tests.
+
+## Decision digest (7 lines)
+
+- R589's stride blocker is gone: flatten Q; existing FP32-C `f16()`/`bf16()` APIs fit.
+- Keep each head dot FP32 through per-head ReLU and ordered head sum; `*_out16()` rounds each head before this epilogue and is not equivalent.
+- Append a converted dead-key row and gather it to each query's own `n_bid`, or compute a separate dead dot/query. Preserve partial-tail `+1e9f`, future masking and top-k semantics.
+- The oneMKL wrapper has no explicit CPU fallback, but source does not prove provider, accumulation lowering or GPU/XMX execution.
+- vLLM MiniMax M3 is a low-precision indexer precedent (BF16/FP8 stored operands, FP32 MMA/score), not Qwen3.8-Flash-Next quality evidence.
+- First close Main's FP32 baseline, then measure one isolated 16-bit-input/FP32-output arm on the same inputs, with IDs, task quality, live bytes and full prefill.
+- Keep production FP32 pending receipts; output epsilon does not excuse changed IDs.
+
+## Scope and local evidence
+
+Audited only immutable snapshot `research-qsa-score-xmx-current-round1033-v1` at source commit `e3323ed07a95df3e0d42432579a1a8285722f80f`; manifest SHA-256 `ed2220ae0f9c16fa9cad9b5d87afe24194917da59da8d74db397d0942ebc992a`. Checked R589, R940/R941, R1025 and R1031 metadata for overlap. R589 covers score-GEMM feasibility; R1025/R1031 are FP32 scorer mapping; R940/R941 concerns BF16 attention probabilities, not indexer scores.
+
+Only current measurement references used: `qsa-score-headparallel-cohort-v1.json` SHA-256 `7c0c662bb6464a7f8f882d6f5bd2a212e4f44dacdae16b8be4212a925d7a659f` (completed/passed FP32 component cohort, not XMX or actual-engine qualification) and `qsa-score-prefill-model-comparison-v1.json` SHA-256 `668d5be0933326e8b7fa0a59c5b655a92f335f2291ad396a0a1a9bc061aade6e` (`score_math: FP32`; 78,453-token prompt, reported 616.2 tok/s first request/650.3 repeat for one arm). Neither measures low-precision QSA. Target: B570 10 GiB, Ryzen 5600X/128 GiB RAM, xe/driver 1.17.39395+14, pinned Intel LLVM v711. Main must establish the actual configured provider and runtime path.
+
+## Layout and API fit
+
+The scorer uses contiguous `q_idx[nq,4,128]` FP32, `idx_pooled[max_blocks,128]` FP32 and one 128-float FP32 `idx_dead`. Per query, complete blocks use pooled rows; `n_bid=n/4` uses dead. Four independent 128-element dots are ReLUed per head and summed in FP32 head order; only a partial dead/tail score gets `+1e9f`. Existing top-k consumes query-major scores; future blocks remain invisible.
+
+Use `X[4*nq,128] * W[N,128]^T -> C[4*nq,N]`. Flattening heads is contiguous, so no 512-element input stride is needed. FP32 epilogue reads rows `4*q+h`, preserves head order, and writes the final query/block score. Dead differs per query: append dead as an additional W row then gather that column into each query's own `n_bid`, or compute one dead dot/query. Never replace the shared pool row globally. At physical 262144 tokens/block size four, `n_bid` reaches 65536; qualify last physical query/block. If pool capacity is 65,538, padded/appended GEMM rows are not selector IDs.
+
+| API | Source contract and fit |
+|---|---|
+| `Gemm::f16()` / `bf16()` | 16-bit row-major X/W, FP32 Y, K strides for X/W, explicit output `ld`, beta supported, positive dims and `ld>=N`. Fits packed Q/K and FP32 C; no N multiple restriction in wrapper. |
+| Own `*_out16()` | FP32 matrix accumulator/beta epilogue, then 16-bit Y; N,K multiples of 16; registered spans, in-order stream, native BMG matrix support; no fallback. Not equivalent because per-head Y rounds before ReLU/sum. |
+| Isolated vLLM `beta0()` | FP16/BF16 input and FP32 MMA accumulator, but 16-bit Y and beta=0. BMG G21/G31 Level Zero Runtime queue; N%64, K%32, `ldy%8`, 64-byte bases and full rectangles. Returns event; adapter borrows Runtime/queue/owners. Wrapper waits. Not equivalent for the same early-rounding reason. |
+
+At `nq=256`, N=65,539 (65,538 pool plus dead), per-head FP32 C is 256 MiB; padding N to 65,552 is ~256.05 MiB. Converted pooled+dead keys require 16,777,984 bytes; Q pack 262,144 bytes. Existing final score storage (64 MiB) cannot hold four-head C. Logical sizes only; separate dead dot avoids the appended row. Count scratch, arena peak and cache reserve.
+
+`multiply()` validates spans, resolves `queue_for(stream)`, calls oneMKL row-major GEMM (`lda=ldb=K`, `ldc=ld`, alpha=1), then `finish(stream,event)`. It stores but does not pass `workspace_`. This wrapper is synchronous; owners live through completion and same-Gemm calls need serialized ownership. There is no explicit CPU/software fallback branch here, but queue/API names alone do not prove selected provider, FP32 accumulation lowering or XMX. Record actual device/backend, provider/version and device-execution evidence. Own native16 checks matrix support; vLLM requires BMG/Level Zero and live event owners.
+
+## Primary framework references and limits
+
+| Pinned primary source | Observed precision | Transfer limit |
+|---|---|---|
+| vLLM commit `2d8efee9a73366d6b4e753780af32443d2fef91a`, MiniMax M3 [`index_topk.py`](https://github.com/vllm-project/vllm/blob/2d8efee9a73366d6b4e753780af32443d2fef91a/vllm/models/minimax_m3/common/ops/index_topk.py) / [`indexer.py`](https://github.com/vllm-project/vllm/blob/2d8efee9a73366d6b4e753780af32443d2fef91a/vllm/models/minimax_m3/common/indexer.py) | Index cache paths include BF16, FP8/e4m3; Triton scorer loads stored-dtype operands, states MMA accumulates FP32 and returns FP32 block scores before top-k. | Closest low-precision indexer precedent, but M3 uses multi-index-head scores and max over 128-token blocks. Strata uses four 128-dim heads, ReLU-sum and per-query dead key. It does not prove Qwen3.8 score/ID or task quality. |
+| SGLang Qwen3.5 [`model source`](https://github.com/sgl-project/sglang/blob/main/python/sglang/srt/models/qwen3_5.py) (`main`); SGLang QSA attention at `877be2974aa151a984e52822c028276c2b1e9303` ([kernel](https://github.com/sgl-project/sglang/blob/877be2974aa151a984e52822c028276c2b1e9303/python/sglang/srt/layers/attention/qsa/sparse_attn.py)); vLLM Qwen4Exp QSA `v0.30.0` [`kernel`](https://github.com/vllm-project/vllm/blob/v0.30.0/vllm/models/qwen4_exp/nvidia/ops/qsa.py) | Inspected Qwen3.5 hybrid model source has no matching four-head block-index score found. R940's distinct QSA-attention comparison has BF16 operands, FP32 state, BF16 probability storage and differing scale/rounding placement across implementations. | QSA attention is not indexer scoring; Qwen3.5/Qwen4Exp is not this target's measured route. R940's BF16 midpoint event was another operator and synthetic receipt. SGLang `main` is moving and only supports the no-match observation. |
+
+No model-specific published accuracy result was found isolating FP16/BF16 q/k dot-input rounding for this scorer. Other models' BF16/FP8 support does not establish matching formula, cache representation, selection sensitivity or quality. Keep precision boundaries distinct: (1) converting FP32 q/k to FP16/BF16 changes input operands; (2) oneMKL exposes FP32 C, but actual accumulation lowering needs evidence (native16 source explicitly declares FP32 matrix accumulation); (3) FP32 C preserves per-head results, while `*_out16()` rounds before ReLU/sum. FP32 accumulation is not equivalent to FP32-input scoring.
+
+## Options and minimum Main gates
+
+1. **Existing oneMKL FP32-C GEMM:** pack Q/K to FP16 or BF16, flatten heads, then FP32 dead gather and epilogue. Least API work; conversion, C and epilogue may erase gains; dispatch/lowering are unproven.
+2. **Strata 16-bit-input / FP32-output scorer:** fuse dot and FP32 ReLU/head-sum/dead/tail, avoiding full C. New kernel/schedule and codegen/resource evidence required; current `*_out16` is not this contract.
+3. **Keep FP32 production; measure 16-bit GEMM privately.** Preserves current behavior but offers no adopted speed benefit absent a passing receipt.
+
+After the FP32 baseline closes:
+
+- **Path/cost:** pin binary/toolchain, actual queue/device/provider and GPU execution; verify ownership/synchronization. Count packs, C, epilogue, score buffer, arena peak/cache reserve. Separate host pack/submit/wait from device interval.
+- **Math/routing:** same-quantized-input reference for FP32 per-head outputs isolates GEMM/epilogue; separately compare quantized-input scores and exact IDs with current FP32 scorer. Cover nq=1, partial and 256; N=1/nonmultiple/max; varying `n_bid`, partial/nonpartial tails, last physical block, ties/near-top-k, negative/zero dots, future columns, nonfinite policy, guards and lifetime. Preserve historical statuses.
+- **Quality/speed:** paired same-model/config/input runs changing only score-input precision; record per-layer/query ID flips and teacher-forced logprob/NLL or task deltas against baseline repeatability. Time conversion+GEMM+dead/tail+top-k and repeated integrated prefill; separate warmup, device, host wait and full result. Adoption also requires long-prefill, RESTORE, task-quality and physical-context gates.
+
+## Local source hashes
+
+Manifest SHA-256 `ed2220ae0f9c16fa9cad9b5d87afe24194917da59da8d74db397d0942ebc992a`:
+
+- `include/strata/prefill/gemm.hpp` — `091984410aacd56f33748c4ef9c730405f2862f9a32d6de6c59fa74063a5fc43`
+- `src/prefill/sycl/gemm.cpp` — `023bc6c5633b7ae58636dc1ba732d7db77514cca98925100e031c0e0d3c7bcd9`
+- `src/prefill/sycl/gemm16.cpp` — `d5a0e8f8cdbc14f82edd7a883efc09d68ee92195b8fd51301e538b40cc6ed53c`
+- `src/prefill/sycl/vllm_xe2/native16.hpp` — `eec1581b369759e4fd6c8ea7f2012cf9518bd4341c01e19362cc10b3553b066b`
+- `src/prefill/sycl/vllm_xe2/native16.cpp` — `d8b361cabea29344b48aff5a9db41303f3ea715de47f27bc57f29f85c5f3aa2d`
+- `src/kernels/sycl/qsa_select.cpp` — `463a9ec02ed28125a5cd38b7b5d28784b849a4fbb199cb017042cd99078efee1`
+- `include/strata/kernels/qsa_select.hpp` — `043ec673be1b02f215aa77f6295968adb3f1d5b70d22f57341425336b709835e`
+
+No XeStrata material used.
