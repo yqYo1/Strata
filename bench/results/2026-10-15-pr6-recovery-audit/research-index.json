@@ -221,5 +221,32 @@
       }
     ],
     "decision": "No remaining named near-term consumer; verified exact Git blobs before tracked deletion. Keep compact query-state review for the selected row-publication experiment. Main did not read collection bodies."
+  },
+  "moe_grouped_decision": {
+    "report_sha256": "b950cb6a6f31935cef0f279d109a5bd6785f5646935e42fceed2b7c428bdc5a4",
+    "review_sha256": "b4fdc287bede7c68615c04b27994741bf6b3ffea4c920f1d8adc9b5b199e09c2",
+    "reviewed_source_commit": "4f648279eb0e73f072ddf53550deb8426cc86e99",
+    "source_pins_recovered_verified": true,
+    "corrections": [
+      "Mode10 means up to ten8192-row chunks, not ten experts.",
+      "Two dequant pairs already allocated; current window uses one. Pair9.375MiB; four-expert residency adds18.75MiB for two more pairs, plus activations/outputs/workspace.",
+      "GU/down stores are BF16, SwiGLU hidden is FP16, accumulation is FP32 in the existing expert/job order.",
+      "Fixed residency was a bounded research question, not a user prohibition on memory/performance tradeoffs."
+    ],
+    "main_census": {
+      "schedulable_now": true,
+      "prerequisite": "QSA comparison closed; current-path profile and exact planned-job census are next, with source/config frozen before build/run.",
+      "observer": "Use existing coarse/QSA/CPU-wait profiles. New per-window host metadata census adds no tensor readback or GPU work and reconciles planned jobs with final retired totals.",
+      "limitations": "Diagnostic timing and requested DMA bytes, not clean speed, physical bandwidth/saturation or an additive critical-path partition."
+    },
+    "grouped_candidate": {
+      "schedulable_now": false,
+      "prerequisites": [
+        "Current measured jobs/expert and rows/job, submit/wait CPU versus device/wall attribution.",
+        "Prove pair1 and activation/output lifetime in grouped path; exact BF16/FP16 and FP32-order gates.",
+        "Full262144-context memory accounting before any added residency."
+      ]
+    },
+    "retention": "Keep report/review pair only through this census and ensuing grouping decision; no further generic grouped-GEMM survey."
   }
 }

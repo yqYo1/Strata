@@ -125,7 +125,7 @@ clustered). These mixed subpercent results do not justify selection. Source
 and individual samples remain at commit`ee14c50d`; the experimental pitch code
 is retired from the active implementation.
 
-The next independent `qsa_bf16_prefix_rows_batch` experiment retains score33,
+The independent `qsa_bf16_prefix_rows_batch` experiment retains score33,
 K32/V256 and28224 requested local bytes. It publishes first IDs with Q/state
 initialization, and next IDs during PV, using the existing final PV barrier.
 All current row readers finish before V/probability publication; PV reads no
@@ -138,6 +138,21 @@ The oracle fixture compares all output bits with prefix33, including diagnostics
 and physical262144 component extent. The timing fixture rotates six samples
 per arm on three8192-query shapes, outside uploads/readbacks. These checks
 do not qualify full-model context, RESTORE, quality or model throughput.
+
+This schedule passed all those correctness checks, including explicit duplicate
+IDs, aliased physical pages and first-/later-tile K/V diagnostics. Six rotated
+samples per arm changed median latency by-0.60%,+0.10%,+0.24% for the same three
+shapes above. It is not selected. At cap2051, baseline gathered versus clustered
+reads took419.8 versus299.4ms with the same matrix work. This is locality
+sensitivity, not a physical-bandwidth or saturation measurement.
+
+For the next current-path MoE census, Main uses `python3 tools/sycl/bench_engine.py
+prepare qsa-census`, commits its plan, then uses `run qsa-census`. This runs one
+official78K request with parameter validation, trace and existing coarse/QSA/CPU
+observers. The optional profile records exact planned job-size and jobs/expert
+histograms from already available host routes; final issuer totals must match.
+It adds no tensor readback or GPU submission. Requested DMA bytes and diagnostic
+timings must stay distinct from physical traffic and clean speed.
 
 ## Optional GDN chunk64
 

@@ -99,6 +99,29 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
         sycl_backend::cpu_wait_profile::Host group(sycl_backend::cpu_wait_profile::host_group);
         owner.routes = detail::MoeWindowRoutes::build_accum(rows, owner.ids.data(), owner.ids.size());
     }
+    if (m.layer_major_profile) {
+        // Metadata already owned on the host after the existing router drain.
+        // No additional tensor readback, GPU submission or inference mutation.
+        // This is a planned-job census; only final request/issuer totals prove
+        // that all jobs completed. The old chunk census refuses window mode.
+        std::array<uint32_t, 8193> job_rows{};
+        std::array<uint32_t, 11> jobs_per_expert{};
+        for (const auto& job : owner.routes->jobs()) ++job_rows[size_t(job.rows)];
+        for (int32_t count : owner.routes->counts())
+            ++jobs_per_expert[size_t((count + 8191) / 8192)];
+        std::fprintf(stderr, "strata MoE planned job census: {\"version\":1,\"layer\":%lld,\"first_row\":%lld,\"rows\":%lld,\"jobs\":%zu,\"gu_nk\":[1280,2560],\"down_nk\":[2560,640],\"gu_down_storage\":\"bf16\",\"hidden_storage\":\"fp16\",\"allocated_weight_pairs\":2,\"used_weight_pairs\":1,\"weight_pair_bytes\":9830400,\"requested_router_D2H_bytes\":%llu,\"requested_map_H2D_bytes\":%llu,\"job_rows_histogram\":[",
+            (long long)layer, (long long)first_row, (long long)rows, owner.routes->jobs().size(),
+            (unsigned long long)(rows*K*4), (unsigned long long)(rows*K*8));
+        bool comma=false;
+        for (size_t count=1;count<job_rows.size();++count) if (job_rows[count]) {
+            std::fprintf(stderr,"%s[%zu,%u]",comma?",":"",count,job_rows[count]);comma=true;
+        }
+        std::fputs("],\"jobs_per_expert_histogram\":[",stderr);comma=false;
+        for (size_t count=0;count<jobs_per_expert.size();++count) if (jobs_per_expert[count]) {
+            std::fprintf(stderr,"%s[%zu,%u]",comma?",":"",count,jobs_per_expert[count]);comma=true;
+        }
+        std::fputs("]}\n",stderr);
+    }
     if (cudaMemcpyAsync(inverse, owner.routes->original_slots().data(), size_t(rows * K * 4), cudaMemcpyHostToDevice, m.cs) != cudaSuccess ||
         cudaMemcpyAsync(source, owner.routes->source_rows().data(), size_t(rows * K * 4), cudaMemcpyHostToDevice, m.cs) != cudaSuccess) {
         err = "prefill MoE accumulator: immutable maps upload"; return false;
