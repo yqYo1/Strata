@@ -7050,35 +7050,16 @@
     "main_reconciliation": "research-review-round953-main-reconciliation-v1.json"
   },
   "current_main_boundary": {
-    "recorded_utc": "2026-10-16T22:26:59.478497+00:00",
-    "goal": "Dedicated long prefill repeated >600 then1000tok/s; eventual decode70tok/s. Not achieved.",
-    "current_model_comparison": "Score33 optimized median459.1 versus packed459.3tok/s, six processes, final pair overlap qualification retained; no packed speed adoption. Earlier uncontaminated score33 cohort median464.1tok/s remains recorded.",
-    "changes": "Real engine MoE window candidate implemented in verify/moe-window; Intel SYCL prefill.cpp/generate.cpp syntax checks PASS, codegen/GPU not run. Primary source freeze preserved.",
-    "next": "Revalidate foreign benchmark; complete frozen current profile, then full build and first traced candidate GPU diagnostics. Keep source2b4399a0 as-is until actual trace; no code adoption yet.",
-    "compile_or_GPU_work_this_boundary": "Bounded nice19 real SYCL TU syntax only, no codegen/GPU.",
-    "source_inspection_command": "Current production sources unchanged; pending pair remains frozen.",
-    "full_physical262144_model_consume_RESTORE": "Unqualified; component coverage is insufficient.",
-    "default_sync_PR": "https://github.com/yqYo1/Strata/pull/31",
-    "independent_reviews_completed": [
-      965,
-      967,
-      968,
-      969,
-      970,
-      973
-    ],
-    "previous_goal_turn": "Progress: immutable C++ host route component and PR30 default synchronization.",
-    "this_goal_turn": "Progress: actual engine candidate commit2b4399a0, two real SYCL syntax checks, independent Orca source investigations and reviewed/corrected cost evidence.",
-    "resource_observation": {
-      "observed_utc": "2026-10-16T22:27:07.491603+00:00",
-      "foreign_PID": 3431768,
-      "start_ticks": 52544839,
-      "state": "R",
-      "CPU_ticks": 7400724,
-      "classification": "CPU-only foreign llama-bench, same identity and increasing CPU ticks; no signal/configuration change. No GPU hang inferred.",
-      "current_profile_pair_launched": false,
-      "expired_waiter_restarted": false
-    }
+    "recorded_utc": "2026-10-17T08:24:52.594273+00:00",
+    "goal": "Dedicated long prefill repeated>600 then1000tok/s; eventual decode70. Not achieved.",
+    "current_model_comparison": "Actual39K clean six-process MoE baseline452.0/464.1/464.1 vs window2 candidate491.7/491.8/490.8; candidate median491.7tok/s. 24 output tokens are not sustained decode evidence.",
+    "current_component_comparison": "QSA subgroup same-binary synthetic8192query/2051selected/physical32768: median333.3182415->322.3369095ms across3 fresh processes per arm, 3.29455% latency reduction. All60 samples and fault/numerical gates preserved.",
+    "changes": "Actual opt-in QSA source f685b16a on existing child, fresh127-step engine build and actual CMake GPU smoke/11-case qualification PASS; real39K diagnostic launched.",
+    "next": "Complete fresh build, traced actual CMake fixture, actual model diagnostic, then six-process clean model comparison.",
+    "previous_goal_turn": "Progress: actual matched MoE model cohort and private QSA build/GPU qualification.",
+    "this_goal_turn": "Progress: executed/closed6QSAprocesses; selected candidate and implemented actual engine path; fresh build active; R980-982 indexed after nativeR983, fresh Orca research984-986 actual input accepted.",
+    "default_sync_PR": "https://github.com/yqYo1/Strata/pull/36",
+    "full_physical262144_model_consume_RESTORE": "Unqualified. Component physical262144 fixture coverage does not prove model completion or RESTORE."
   },
   "research_review_round955": {
     "review_path": "research-review-round955-v1.json",
@@ -7806,10 +7787,10 @@
     "fixture_recipe": "run_qsa_rowmajor_subgroup_v1.py",
     "source_review": "qsa-rowmajor-subgroup-source-review-v1.json",
     "source_review_sha256": "1abfe92a253bc53885d670e29467cc095a79df7ee53f6546d37c3aaa5b54b17e",
-    "status": "Actual six-process untraced component cohort PASS; median latency333.3182415 to322.3369095ms,3.29455% reduction. Model speed/adoption unproven.",
+    "status": "Actual fresh127-step engine build, CMake subgroup smoke and11-case component allPASS; actual39K model diagnostic is running. No model speed/adoption claim.",
     "schedulable_now": false,
     "next_owner": "Main",
-    "next_action": "Main integrates opt-in subgroup path into existing verification engine, builds and qualifies first GPU/model invocation.",
+    "next_action": "Close actual39K model diagnostic, native review of research984-986, then matched clean model cohort.",
     "build_receipt": {
       "path": "qsa-rowmajor-subgroup-build-v1.json",
       "sha256": "d2c01366531c0c8908483d9a713cf74c45df6d1ff0fa4b64ced3f44b4797ec7a",
@@ -7829,7 +7810,12 @@
       "path": "qsa-rowmajor-subgroup-component-cohort-v1.json",
       "sha256": "174badb5f383126405aa06c451ccc07b26aecc172d88af187548ba2f9907ba45"
     },
-    "latency_ratio": 0.967054512376575
+    "latency_ratio": 0.967054512376575,
+    "candidate_commit": "f685b16a",
+    "source_worktree": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window",
+    "engine_build_receipt": "qsa-rowmajor-subgroup-engine-build-v1.json",
+    "engine_binary_sha256": "24ea1edf88570c456df2364594662c1f77e8b7bae0db8c17e981cfffe0bfbad9",
+    "engine_component_receipt": "own-qsa-rowmajor-subgroup-engine-component-v1.json"
   },
   "research_review_round983": {
     "path": "research-review-round983-v1.json",
@@ -7888,5 +7874,32 @@
     ],
     "provider_attestation": "Main compact observation records live codex/gpt-6-luna before release; released null projection is a separate state.",
     "new_research_recommended": false
+  },
+  "research_wave984_986_current": {
+    "metadata": "orca-subgroup-followup-wave984-986-v1.json",
+    "live_provider_observation": "orca-subgroup-followup-wave984-986-live-v1.json",
+    "status": "Three actual codex/gpt-6-luna workers input-accepted and working; source-only, no steering.",
+    "reports_held_by_main": true,
+    "native_review_required_after_completion": true,
+    "workers": [
+      {
+        "round": 984,
+        "task_id": "task_43d205751d14",
+        "dispatch_id": "ctx_a501a129cf72",
+        "terminal": "term_f9a22093-a4a5-4e71-8e7c-3fa43e2dc89f"
+      },
+      {
+        "round": 985,
+        "task_id": "task_6ae256c4ba02",
+        "dispatch_id": "ctx_91b1c00f26d7",
+        "terminal": "term_dd6d106d-96f0-4885-a621-f729f37ccdb8"
+      },
+      {
+        "round": 986,
+        "task_id": "task_e49ff48a6e23",
+        "dispatch_id": "ctx_cb5632367b9e",
+        "terminal": "term_28cf8851-cf2d-48f3-8374-d58af028ab97"
+      }
+    ]
   }
 }
