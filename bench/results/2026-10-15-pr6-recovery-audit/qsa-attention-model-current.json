@@ -173,12 +173,64 @@
   },
   "config_sha256": "7b658da2091683f2dc97fd8f0d2db909c66faddc68574af2066488dd713bd485",
   "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
-  "complete": false,
-  "passed": false,
+  "complete": true,
+  "passed": true,
   "active": false,
   "model_quality_qualified": false,
   "physical262144_RESTORE_qualified": false,
   "performance_adopted": false,
   "source_count": 100,
-  "source_aggregate_sha256": "1f3b14d0230ae3cf2cd7ca8b4b7db63052517cfe61ad1f70f2fefcdd3f252145"
+  "source_aggregate_sha256": "1f3b14d0230ae3cf2cd7ca8b4b7db63052517cfe61ad1f70f2fefcdd3f252145",
+  "exit_code": 0,
+  "requests": [
+    {
+      "run": 0,
+      "ok": true,
+      "eligible": true,
+      "actual_prompt_tokens": 39260,
+      "actual_read_tokens": 39260,
+      "actual_reused_tokens": 0,
+      "generated_tokens": 24,
+      "thinking_requested": true,
+      "reasoning_observed": true,
+      "stream_complete": true,
+      "request_sha256": "1fd63b8c67a1888e443800b5c6d339ca116df2cb91941e6f332b6adf74275b3a",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
+      "ttft_s": 83.575,
+      "total_s": 85.178,
+      "prompt_tps": 471.4,
+      "prompt_ms": 83284.8,
+      "decode_tps": 14.1,
+      "decode_ms": 1697.0,
+      "prompt_tps_source": "engine",
+      "decode_tps_source": "engine",
+      "drafts_offered": 21,
+      "drafts_accepted": 16,
+      "finish_reason": "length",
+      "err": null,
+      "eligibility_errors": []
+    }
+  ],
+  "engine_exit_code": 0,
+  "native_identity": {
+    "pid": 3167217,
+    "start_ticks": 62682701,
+    "sid": 3167195
+  },
+  "route_selection": [],
+  "qsa_route": [
+    "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=on-the-fly transient_bytes=0; source=resident-Mode0 score_pitch=32 operand_layout=row-major softmax=serial"
+  ],
+  "ownership_closed": true,
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  }
 }
