@@ -1,5 +1,5 @@
 {
-  "source_commit": "d72c8ac3b5d9d7d29f7b813e1cd4134fe359b59b",
+  "source_commit": "c002f62f0fe0740a4da4580c7e9034d540576d0c",
   "fixtures": {
     "sycl_qsa_bf16_late_flags_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_late_flags_test",
@@ -7,7 +7,15 @@
     },
     "sycl_qsa_bf16_prefix_optimized_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_optimized_test",
-      "sha256": "0e31ae73b855ab31232b78d814bf30ac587d7464100c347f8b664ad0f30d6acd"
+      "sha256": "6bca83d598d132583da9769d51a5217cef7460865576a93da5fbef8b26520f28"
+    },
+    "sycl_qsa_bf16_prefix_padded_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_padded_test",
+      "sha256": "ac31b750671bfd725cf7ee539ea507e5cacf2fd46bb2e25bd03f00b9164369cc"
+    },
+    "sycl_qsa_bf16_prefix_padded_bench": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_padded_bench",
+      "sha256": "7fa77bb3fbd3c2f65b858aedcbbdab8ea0b9f2ea9a34220554f2ed6f4d592847"
     }
   },
   "checks": [
@@ -26,7 +34,8 @@
         "case cells=97 cap=33 queries=1 masked=0 compared=6144 max_abs=6.103515625e-05 max_budget_ratio=0.9682716738 oracle=BF16_operands_FP32_online guards=PASS inputs=PASS status=PASS",
         "case cells=97 cap=33 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online guards=PASS inputs=PASS status=PASS",
         "fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED"
-      ]
+      ],
+      "samples": []
     },
     {
       "mode": "smoke",
@@ -35,7 +44,7 @@
         "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_optimized_test",
         "--smoke"
       ],
-      "binary_sha256": "0e31ae73b855ab31232b78d814bf30ac587d7464100c347f8b664ad0f30d6acd",
+      "binary_sha256": "6bca83d598d132583da9769d51a5217cef7460865576a93da5fbef8b26520f28",
       "passed": true,
       "exit_code": 0,
       "ownership_closed": true,
@@ -43,57 +52,213 @@
         "case cells=97 live_cells=49 active_rows=128 cap=33 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
         "case cells=97 live_cells=71 active_rows=160 cap=33 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
         "fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED"
-      ]
+      ],
+      "samples": []
     },
     {
-      "mode": "component",
-      "target": "sycl_qsa_bf16_late_flags_test",
+      "mode": "smoke",
+      "target": "sycl_qsa_bf16_prefix_padded_test",
       "command": [
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_late_flags_test",
-        "--component"
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_padded_test",
+        "--smoke"
       ],
-      "binary_sha256": "70c62cb9d4f5da0f22d4bca3f32f4622ef1a48e266ad48b21a5d12e3de5875de",
-      "passed": true,
-      "exit_code": 0,
-      "ownership_closed": true,
-      "cases": [
-        "case cells=97 cap=33 queries=1 masked=0 compared=6144 max_abs=6.103515625e-05 max_budget_ratio=0.9682716738 oracle=BF16_operands_FP32_online guards=PASS inputs=PASS status=PASS",
-        "case cells=97 cap=33 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online guards=PASS inputs=PASS status=PASS",
-        "case cells=2113 cap=1 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online guards=PASS inputs=PASS status=PASS",
-        "case cells=2113 cap=17 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online guards=PASS inputs=PASS status=PASS",
-        "case cells=2113 cap=31 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online guards=PASS inputs=PASS status=PASS",
-        "case cells=2113 cap=32 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online guards=PASS inputs=PASS status=PASS",
-        "case cells=2113 cap=63 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online guards=PASS inputs=PASS status=PASS",
-        "case cells=2113 cap=65 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online guards=PASS inputs=PASS status=PASS",
-        "case cells=2113 cap=2051 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online guards=PASS inputs=PASS status=PASS",
-        "case cells=262144 cap=2051 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online guards=PASS inputs=PASS status=PASS",
-        "fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED"
-      ]
-    },
-    {
-      "mode": "component",
-      "target": "sycl_qsa_bf16_prefix_optimized_test",
-      "command": [
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_optimized_test",
-        "--component"
-      ],
-      "binary_sha256": "0e31ae73b855ab31232b78d814bf30ac587d7464100c347f8b664ad0f30d6acd",
+      "binary_sha256": "ac31b750671bfd725cf7ee539ea507e5cacf2fd46bb2e25bd03f00b9164369cc",
       "passed": true,
       "exit_code": 0,
       "ownership_closed": true,
       "cases": [
         "case cells=97 live_cells=49 active_rows=128 cap=33 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case exact_prefix33_bits=PASS cells=97 cap=33 queries=1",
         "case cells=97 live_cells=71 active_rows=160 cap=33 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
-        "case cells=2113 live_cells=2113 active_rows=4256 cap=1 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
-        "case cells=2113 live_cells=2113 active_rows=4256 cap=17 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
-        "case cells=2113 live_cells=2113 active_rows=4256 cap=31 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
-        "case cells=2113 live_cells=2113 active_rows=4256 cap=32 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
-        "case cells=2113 live_cells=2113 active_rows=4256 cap=63 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
-        "case cells=2113 live_cells=2113 active_rows=4256 cap=65 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
-        "case cells=2113 live_cells=2113 active_rows=4256 cap=2051 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
-        "case cells=262144 live_cells=262144 active_rows=524288 cap=2051 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
-        "case cells=262144 live_cells=13 active_rows=32 cap=33 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case exact_prefix33_bits=PASS cells=97 cap=33 queries=3",
         "fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED"
+      ],
+      "samples": []
+    },
+    {
+      "mode": "smoke",
+      "target": "sycl_qsa_bf16_prefix_padded_bench",
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_padded_bench",
+        "--smoke"
+      ],
+      "binary_sha256": "7fa77bb3fbd3c2f65b858aedcbbdab8ea0b9f2ea9a34220554f2ed6f4d592847",
+      "passed": true,
+      "exit_code": 0,
+      "ownership_closed": true,
+      "cases": [
+        "case cells=97 queries=3 cap=33 pattern=gather samples=12 full_bits=PASS guards=PASS inputs=PASS status=PASS",
+        "fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED"
+      ],
+      "samples": [
+        {
+          "cells": "97",
+          "queries": "3",
+          "cap": "33",
+          "pattern": "gather",
+          "round": "0",
+          "order": "0",
+          "variant": "0",
+          "milliseconds": "0.452012",
+          "compared": "18432",
+          "exact_bits": "PASS",
+          "guards": "PASS",
+          "status": "PASS"
+        },
+        {
+          "cells": "97",
+          "queries": "3",
+          "cap": "33",
+          "pattern": "gather",
+          "round": "0",
+          "order": "1",
+          "variant": "1",
+          "milliseconds": "0.463443",
+          "compared": "18432",
+          "exact_bits": "PASS",
+          "guards": "PASS",
+          "status": "PASS"
+        },
+        {
+          "cells": "97",
+          "queries": "3",
+          "cap": "33",
+          "pattern": "gather",
+          "round": "1",
+          "order": "0",
+          "variant": "1",
+          "milliseconds": "0.447033",
+          "compared": "18432",
+          "exact_bits": "PASS",
+          "guards": "PASS",
+          "status": "PASS"
+        },
+        {
+          "cells": "97",
+          "queries": "3",
+          "cap": "33",
+          "pattern": "gather",
+          "round": "1",
+          "order": "1",
+          "variant": "0",
+          "milliseconds": "0.451741",
+          "compared": "18432",
+          "exact_bits": "PASS",
+          "guards": "PASS",
+          "status": "PASS"
+        },
+        {
+          "cells": "97",
+          "queries": "3",
+          "cap": "33",
+          "pattern": "gather",
+          "round": "2",
+          "order": "0",
+          "variant": "0",
+          "milliseconds": "0.436212",
+          "compared": "18432",
+          "exact_bits": "PASS",
+          "guards": "PASS",
+          "status": "PASS"
+        },
+        {
+          "cells": "97",
+          "queries": "3",
+          "cap": "33",
+          "pattern": "gather",
+          "round": "2",
+          "order": "1",
+          "variant": "1",
+          "milliseconds": "0.436763",
+          "compared": "18432",
+          "exact_bits": "PASS",
+          "guards": "PASS",
+          "status": "PASS"
+        },
+        {
+          "cells": "97",
+          "queries": "3",
+          "cap": "33",
+          "pattern": "gather",
+          "round": "3",
+          "order": "0",
+          "variant": "1",
+          "milliseconds": "0.437935",
+          "compared": "18432",
+          "exact_bits": "PASS",
+          "guards": "PASS",
+          "status": "PASS"
+        },
+        {
+          "cells": "97",
+          "queries": "3",
+          "cap": "33",
+          "pattern": "gather",
+          "round": "3",
+          "order": "1",
+          "variant": "0",
+          "milliseconds": "0.441883",
+          "compared": "18432",
+          "exact_bits": "PASS",
+          "guards": "PASS",
+          "status": "PASS"
+        },
+        {
+          "cells": "97",
+          "queries": "3",
+          "cap": "33",
+          "pattern": "gather",
+          "round": "4",
+          "order": "0",
+          "variant": "0",
+          "milliseconds": "0.446582",
+          "compared": "18432",
+          "exact_bits": "PASS",
+          "guards": "PASS",
+          "status": "PASS"
+        },
+        {
+          "cells": "97",
+          "queries": "3",
+          "cap": "33",
+          "pattern": "gather",
+          "round": "4",
+          "order": "1",
+          "variant": "1",
+          "milliseconds": "0.437584",
+          "compared": "18432",
+          "exact_bits": "PASS",
+          "guards": "PASS",
+          "status": "PASS"
+        },
+        {
+          "cells": "97",
+          "queries": "3",
+          "cap": "33",
+          "pattern": "gather",
+          "round": "5",
+          "order": "0",
+          "variant": "1",
+          "milliseconds": "0.437665",
+          "compared": "18432",
+          "exact_bits": "PASS",
+          "guards": "PASS",
+          "status": "PASS"
+        },
+        {
+          "cells": "97",
+          "queries": "3",
+          "cap": "33",
+          "pattern": "gather",
+          "round": "5",
+          "order": "1",
+          "variant": "0",
+          "milliseconds": "0.436974",
+          "compared": "18432",
+          "exact_bits": "PASS",
+          "guards": "PASS",
+          "status": "PASS"
+        }
       ]
     }
   ],
@@ -103,8 +268,8 @@
   "model_performance_measured": false,
   "model_quality_qualified": false,
   "physical262144_model_RESTORE_qualified": false,
-  "consumer": "Immediate direct-Q8 versus score33-prefix model comparison; retire raw checks afterward.",
-  "mode": "component",
+  "consumer": "Immediate prefix33 versus K36/V260 same-binary component comparison; retire raw checks afterward.",
+  "mode": "smoke",
   "environment": {
     "PATH": "/usr/bin:/bin",
     "HOME": "/home/yayoi",
@@ -121,7 +286,8 @@
     "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
     "SYCL_CACHE_PERSISTENT": "0",
     "ZES_ENABLE_SYSMAN": "0",
-    "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+    "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+    "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
     "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
     "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
     "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
