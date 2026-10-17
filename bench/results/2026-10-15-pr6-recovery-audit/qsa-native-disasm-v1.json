@@ -1,0 +1,441 @@
+{
+  "schema": "strata-qsa-native-offline-disasm-v1",
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "GPU_executed": false,
+  "capture": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-native-zebin-serial-smoke-v1.json",
+    "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-native-zebin-serial-smoke-v1.json",
+    "bytes": 86411,
+    "sha256": "8405d680425692de4bcbd26345dcd3bac42cf8cb6046a9484afa2f97dff0deb5"
+  },
+  "module": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-zebin-serial-smoke-v1/native/dumped_zebin_module_2.elf",
+    "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-zebin-serial-smoke-v1/native/dumped_zebin_module_2.elf",
+    "bytes": 306232,
+    "sha256": "049221cb25a6c6e9c36f9e96a7cdee08d4309e857c21aa14e468beec9d8ab896",
+    "e_machine": 205,
+    "e_type": 1
+  },
+  "frozen_files": [
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/run_qsa_native_disasm_v1.py",
+      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/run_qsa_native_disasm_v1.py",
+      "bytes": 7656,
+      "sha256": "b360f1a9e47825bec36ddfc1e643ba12080355f3cf3428a3912eae8165106a3e"
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/direct_owner_transient_artifacts_v1.py",
+      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/direct_owner_transient_artifacts_v1.py",
+      "bytes": 15590,
+      "sha256": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a"
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-native-zebin-serial-smoke-v1.json",
+      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-native-zebin-serial-smoke-v1.json",
+      "bytes": 86411,
+      "sha256": "8405d680425692de4bcbd26345dcd3bac42cf8cb6046a9484afa2f97dff0deb5"
+    },
+    {
+      "path": "/usr/bin/ocloc",
+      "realpath": "/usr/bin/ocloc-26.31.1",
+      "bytes": 6424,
+      "sha256": "76593e79a6a24277305ef6f2ad9fb042028205a0b028cd2beddd98a9681ce9b1"
+    },
+    {
+      "path": "/usr/lib/x86_64-linux-gnu/libocloc.so",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libocloc.so",
+      "bytes": 1686224,
+      "sha256": "9246708b246b00f4f8f7748c319e6bca66ea5545360c3a64db08433f86334aed"
+    },
+    {
+      "path": "/usr/lib/x86_64-linux-gnu/libiga64.so.2",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libiga64.so.2.40.13+0",
+      "bytes": 3629928,
+      "sha256": "bfe0e2055b9dd1a64fdb59f70a2f1381fb44a8477d3ae1e054a327e7ec5fa665"
+    },
+    {
+      "path": "/usr/lib/x86_64-linux-gnu/libigc.so.2",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libigc.so.2.40.13+0",
+      "bytes": 94674776,
+      "sha256": "695dd19f5bef315da20ca791851472c1df897aafa43d6fd99af67ae57a54c073"
+    },
+    {
+      "path": "/usr/lib/x86_64-linux-gnu/libigdfcl.so.2",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libigdfcl.so.2.40.13+0",
+      "bytes": 2346440,
+      "sha256": "b2d2eb8a1c7d92f5d39d093615ff3f9571c809ddef4aa436cb5ead0b3ee4edaa"
+    }
+  ],
+  "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "source_revision": "896299c37162c458139aa4c5ea9f5678c856eb22",
+  "scope": "Decode current original full-engine-archive native prefix module. Static ISA counts and binary metadata only; dynamic instruction counts, runtime SLM allocations, occupancy and hardware saturation remain unproved.",
+  "budget": {
+    "wall_seconds_per_command": 60,
+    "child_CPU_seconds": 120,
+    "session_RSS_bytes": 4294967296,
+    "total_artifact_bytes": 31457280,
+    "raw_text_bytes": 8388608
+  },
+  "retention": "Main owns decoded files for current QSA DPAS/GRF/SLM question; review after compact source-bound summary and follow-up pitch comparison. Keep hashes and relevant metadata; retire redundant successful logs.",
+  "commands": [
+    {
+      "label": "ocloc-disasm",
+      "argv": [
+        "/usr/bin/ocloc",
+        "disasm",
+        "-file",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-zebin-serial-smoke-v1/native/dumped_zebin_module_2.elf",
+        "-dump",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-17T19:49:30.116594+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2569514,
+          "start_ticks": 61533423,
+          "sid": 2569514,
+          "pgid": 2569514
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 615334.23812471,
+      "pid": 2569514,
+      "spawn_return_monotonic": 615334.239665069,
+      "direct_identity": {
+        "pid": 2569514,
+        "state": "R",
+        "ppid": 2569467,
+        "pgid": 2569514,
+        "sid": 2569514,
+        "start_ticks": 61533423,
+        "rss_bytes": 421888
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 6520832,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T19:49:30.298618+00:00",
+      "elapsed_seconds": 0.18174441100563854,
+      "logs": {
+        "ocloc-disasm.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "ocloc-disasm.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "native_sections": [
+    {
+      "name": "",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": ".text._ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb1EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_",
+      "bytes": 60224,
+      "sha256": "95dc63a4159e4291c92ae370ee32ce0fa3f2b04882878b72f0b559d1136e9969"
+    },
+    {
+      "name": ".text._ZTSZZN6strata7kernelsL17prefix_batch_implILi32ELb0ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_",
+      "bytes": 75904,
+      "sha256": "79080c1fc7965aae3fc0184f1c49321036bb7253b83205036fcb901355480498"
+    },
+    {
+      "name": ".text._ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_",
+      "bytes": 72704,
+      "sha256": "0321ee1a8ed96c426ff565598507920e827d9657928fd6fe140d0fc14e5220a7"
+    },
+    {
+      "name": ".text._ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_",
+      "bytes": 56576,
+      "sha256": "39bf3cbee0a9e2b34b0f95df3aa213c5185f45181beee5cd356b542febb66364"
+    },
+    {
+      "name": ".symtab",
+      "bytes": 240,
+      "sha256": "1ee7830480a6b3291e6f94f73fa22994734d64bca34ca4c5ae218ae430ee9769"
+    },
+    {
+      "name": ".misc.buildOptions",
+      "bytes": 34,
+      "sha256": "83321af30308b75b5c3d799c1b2b199125d95c8458035b8edfd2798f807208b2"
+    },
+    {
+      "name": ".note.intelgt.metrics",
+      "bytes": 3,
+      "sha256": "709e80c88487a2411e1ee4dfb9f22a861492d20c4765150c0c794abd70f8147c"
+    },
+    {
+      "name": ".rel.text._ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb1EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_",
+      "bytes": 32,
+      "sha256": "41a94d3275c1e224e406f695cbd853256dd4fc19733a7a37760129c7a10a65e6"
+    },
+    {
+      "name": ".rel.text._ZTSZZN6strata7kernelsL17prefix_batch_implILi32ELb0ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_",
+      "bytes": 32,
+      "sha256": "41a94d3275c1e224e406f695cbd853256dd4fc19733a7a37760129c7a10a65e6"
+    },
+    {
+      "name": ".rel.text._ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_",
+      "bytes": 32,
+      "sha256": "41a94d3275c1e224e406f695cbd853256dd4fc19733a7a37760129c7a10a65e6"
+    },
+    {
+      "name": ".rel.text._ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_",
+      "bytes": 32,
+      "sha256": "41a94d3275c1e224e406f695cbd853256dd4fc19733a7a37760129c7a10a65e6"
+    },
+    {
+      "name": ".ze_info",
+      "bytes": 36201,
+      "sha256": "96c523e2a2d7c3ad908826b1dc5253181191ef6299f6a48b88f8b5986e198ca6"
+    },
+    {
+      "name": ".note.intelgt.compat",
+      "bytes": 172,
+      "sha256": "27b041e4558fa1ea0c0df77ee78ffd453f87733204846a0aa91c93f0791d6fd9"
+    },
+    {
+      "name": ".strtab",
+      "bytes": 2936,
+      "sha256": "3041eede98664e64fc5d024048905d503196effc1e37c20375a3c5d425fc8c13"
+    }
+  ],
+  "ze_info": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/native-ze-info.yaml",
+    "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/native-ze-info.yaml",
+    "bytes": 36201,
+    "sha256": "96c523e2a2d7c3ad908826b1dc5253181191ef6299f6a48b88f8b5986e198ca6"
+  },
+  "stdout": "",
+  "stderr": "",
+  "decoded_files": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.misc.buildOptions",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.misc.buildOptions",
+      "bytes": 34,
+      "sha256": "83321af30308b75b5c3d799c1b2b199125d95c8458035b8edfd2798f807208b2"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.note.intelgt.compat",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.note.intelgt.compat",
+      "bytes": 172,
+      "sha256": "27b041e4558fa1ea0c0df77ee78ffd453f87733204846a0aa91c93f0791d6fd9"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.note.intelgt.metrics",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.note.intelgt.metrics",
+      "bytes": 3,
+      "sha256": "709e80c88487a2411e1ee4dfb9f22a861492d20c4765150c0c794abd70f8147c"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.rel.text._ZTSZZN6strata7kernelsL17prefix_batch_implILi32ELb0ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.rel.text._ZTSZZN6strata7kernelsL17prefix_batch_implILi32ELb0ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_",
+      "bytes": 43,
+      "sha256": "83feefb3e44f66640a5627ef529f12648f14a0b37712191c7398969ba710fad6"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.rel.text._ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.rel.text._ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_",
+      "bytes": 43,
+      "sha256": "83feefb3e44f66640a5627ef529f12648f14a0b37712191c7398969ba710fad6"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.rel.text._ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb1EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.rel.text._ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb1EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_",
+      "bytes": 43,
+      "sha256": "83feefb3e44f66640a5627ef529f12648f14a0b37712191c7398969ba710fad6"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.rel.text._ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.rel.text._ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_",
+      "bytes": 43,
+      "sha256": "83feefb3e44f66640a5627ef529f12648f14a0b37712191c7398969ba710fad6"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.symtab",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.symtab",
+      "bytes": 3091,
+      "sha256": "917242d557f93bf0ce958c302e009e40e85aa5fe3758cd0168f971ea07804daa"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.text._ZTSZZN6strata7kernelsL17prefix_batch_implILi32ELb0ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_.asm",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.text._ZTSZZN6strata7kernelsL17prefix_batch_implILi32ELb0ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_.asm",
+      "bytes": 536154,
+      "sha256": "da9a96ea9c099f02221c2583f943063423324f2f043ccd8d972abaebed1e7c0a"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.text._ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_.asm",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.text._ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_.asm",
+      "bytes": 494418,
+      "sha256": "ae394e11751addce5cd0e3730f1884685ba2ba77553e1302ad0fd708300a3aaf"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.text._ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb1EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_.asm",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.text._ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb1EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_.asm",
+      "bytes": 408736,
+      "sha256": "60e8c0e7aa8a6670413d311914620d41b2b42d160a14ccdf6f29b012f7ee62f2"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.text._ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_.asm",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.text._ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_.asm",
+      "bytes": 380003,
+      "sha256": "0d080d6ad101da6d8028d62f9f4848f5ce64d05b77f3d1e36c4e3661500979ef"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.ze_info",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.ze_info",
+      "bytes": 36201,
+      "sha256": "96c523e2a2d7c3ad908826b1dc5253181191ef6299f6a48b88f8b5986e198ca6"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/sections.txt",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/sections.txt",
+      "bytes": 2063,
+      "sha256": "240aa38662b0696aaf74c85e2fdb952417dac460affa83fbfd2eb9ac37f80b53"
+    }
+  ],
+  "assembly": [
+    {
+      "file": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.text._ZTSZZN6strata7kernelsL17prefix_batch_implILi32ELb0ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_.asm",
+        "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.text._ZTSZZN6strata7kernelsL17prefix_batch_implILi32ELb0ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_.asm",
+        "bytes": 536154,
+        "sha256": "da9a96ea9c099f02221c2583f943063423324f2f043ccd8d972abaebed1e7c0a"
+      },
+      "dpas_lines": [
+        "        dpas.8x8 (16|M0)         r10:f         r10:f             r18:bf            r52.0:bf         {Compacted,$3}",
+        "        dpas.8x8 (16|M0)         r10:f         r10:f             r18:bf            r52.0:bf         {Compacted,$3}",
+        "        dpas.8x8 (16|M0)         r10:f         r10:f             r18:bf            r52.0:bf         {Compacted,$3}",
+        "        dpas.8x8 (16|M0)         r10:f         r10:f             r18:bf            r52.0:bf         {Compacted,$3}",
+        "        dpas.8x8 (16|M0)         r10:f         r10:f             r18:bf            r52.0:bf         {Compacted,$3}",
+        "        dpas.8x8 (16|M0)         r10:f         r10:f             r18:bf            r52.0:bf         {Compacted,$3}",
+        "        dpas.8x8 (16|M0)         r10:f         r10:f             r18:bf            r52.0:bf         {Compacted,$3}",
+        "        dpas.8x8 (16|M0)         r10:f         r10:f             r18:bf            r52.0:bf         {Compacted,$2}",
+        "        dpas.8x8 (16|M0)         r28:f         r28:f             r10:bf            r22.0:bf         {Compacted,$2}",
+        "        dpas.8x8 (16|M0)         r28:f         r28:f             r10:bf            r18.0:bf         {Compacted,$6}",
+        "        dpas.8x8 (16|M0)         r36:f         r36:f             r10:bf            r22.0:bf         {Compacted,$3}",
+        "        dpas.8x8 (16|M0)         r36:f         r36:f             r10:bf            r18.0:bf         {Compacted,$4}",
+        "        dpas.8x8 (16|M0)         r44:f         r44:f             r10:bf            r22.0:bf         {Compacted,$2}",
+        "        dpas.8x8 (16|M0)         r44:f         r44:f             r10:bf            r18.0:bf         {Compacted,$14}",
+        "        dpas.8x8 (16|M0)         r56:f         r56:f             r10:bf            r22.0:bf         {Compacted,$1}",
+        "        dpas.8x8 (16|M0)         r56:f         r56:f             r10:bf            r18.0:bf         {Compacted,$8}"
+      ],
+      "send_line_count": 808,
+      "dpas_static_instruction_count": 16
+    },
+    {
+      "file": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.text._ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_.asm",
+        "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.text._ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_.asm",
+        "bytes": 494418,
+        "sha256": "ae394e11751addce5cd0e3730f1884685ba2ba77553e1302ad0fd708300a3aaf"
+      },
+      "dpas_lines": [
+        "        dpas.8x8 (16|M0)         r10:f         r10:f             r18:bf            r53.0:bf         {Compacted,$6}",
+        "        dpas.8x8 (16|M0)         r10:f         r10:f             r18:bf            r53.0:bf         {Compacted,$10}",
+        "        dpas.8x8 (16|M0)         r10:f         r10:f             r18:bf            r53.0:bf         {Compacted,$13}",
+        "        dpas.8x8 (16|M0)         r10:f         r10:f             r18:bf            r53.0:bf         {Compacted,$7}",
+        "        dpas.8x8 (16|M0)         r10:f         r10:f             r18:bf            r53.0:bf         {Compacted,$12}",
+        "        dpas.8x8 (16|M0)         r10:f         r10:f             r18:bf            r53.0:bf         {Compacted,$6}",
+        "        dpas.8x8 (16|M0)         r10:f         r10:f             r18:bf            r53.0:bf         {Compacted,$10}",
+        "        dpas.8x8 (16|M0)         r10:f         r10:f             r18:bf            r53.0:bf         {Compacted,$14}",
+        "        dpas.8x8 (16|M0)         r28:f         r28:f             r10:bf            r53.0:bf         {Compacted,$7}",
+        "        dpas.8x8 (16|M0)         r28:f         r28:f             r10:bf            r19.0:bf         {Compacted,$3}",
+        "        dpas.8x8 (16|M0)         r36:f         r36:f             r10:bf            r53.0:bf         {Compacted,$7}",
+        "        dpas.8x8 (16|M0)         r36:f         r36:f             r10:bf            r19.0:bf         {Compacted,$2}",
+        "        dpas.8x8 (16|M0)         r44:f         r44:f             r10:bf            r53.0:bf         {Compacted,$6}",
+        "        dpas.8x8 (16|M0)         r44:f         r44:f             r10:bf            r19.0:bf         {Compacted,$5}",
+        "        dpas.8x8 (16|M0)         r60:f         r60:f             r10:bf            r53.0:bf         {Compacted,$14}",
+        "        dpas.8x8 (16|M0)         r60:f         r60:f             r10:bf            r19.0:bf         {Compacted,$4}"
+      ],
+      "send_line_count": 734,
+      "dpas_static_instruction_count": 16
+    },
+    {
+      "file": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.text._ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb1EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_.asm",
+        "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.text._ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb1EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_.asm",
+        "bytes": 408736,
+        "sha256": "60e8c0e7aa8a6670413d311914620d41b2b42d160a14ccdf6f29b012f7ee62f2"
+      },
+      "dpas_lines": [
+        "        dpas.8x8 (16|M0)         r26:f         r26:f             r34:bf            r61.0:bf         {Compacted,$13}",
+        "        dpas.8x8 (16|M0)         r26:f         r26:f             r34:bf            r61.0:bf         {Compacted,$9}",
+        "        dpas.8x8 (16|M0)         r26:f         r26:f             r34:bf            r61.0:bf         {Compacted,$12}",
+        "        dpas.8x8 (16|M0)         r26:f         r26:f             r34:bf            r61.0:bf         {Compacted,$4}",
+        "        dpas.8x8 (16|M0)         r26:f         r26:f             r34:bf            r61.0:bf         {Compacted,$11}",
+        "        dpas.8x8 (16|M0)         r26:f         r26:f             r34:bf            r61.0:bf         {Compacted,$14}",
+        "        dpas.8x8 (16|M0)         r26:f         r26:f             r34:bf            r61.0:bf         {Compacted,$10}",
+        "        dpas.8x8 (16|M0)         r26:f         r26:f             r34:bf            r61.0:bf         {Compacted,$8}",
+        "        dpas.8x8 (16|M0)         r10:f         r10:f             r28:bf            r63.0:bf         {Compacted,$4}",
+        "        dpas.8x8 (16|M0)         r10:f         r10:f             r28:bf            r37.0:bf         {Compacted,$15}",
+        "        dpas.8x8 (16|M0)         r18:f         r18:f             r26:bf            r63.0:bf         {Compacted,$14}",
+        "        dpas.8x8 (16|M0)         r18:f         r18:f             r26:bf            r37.0:bf         {Compacted,$3}",
+        "        dpas.8x8 (16|M0)         r44:f         r44:f             r26:bf            r63.0:bf         {Compacted,$4}",
+        "        dpas.8x8 (16|M0)         r44:f         r44:f             r26:bf            r37.0:bf         {Compacted,$2}",
+        "        dpas.8x8 (16|M0)         r52:f         r52:f             r26:bf            r63.0:bf         {Compacted,$5}",
+        "        dpas.8x8 (16|M0)         r52:f         r52:f             r26:bf            r37.0:bf         {Compacted,$0}"
+      ],
+      "send_line_count": 530,
+      "dpas_static_instruction_count": 16
+    },
+    {
+      "file": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.text._ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_.asm",
+        "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-native-disasm-v1/decoded/.text._ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_.asm",
+        "bytes": 380003,
+        "sha256": "0d080d6ad101da6d8028d62f9f4848f5ce64d05b77f3d1e36c4e3661500979ef"
+      },
+      "dpas_lines": [
+        "        dpas.8x8 (16|M0)         r18:f         null:f            r60:bf            r18.0:bf         {$7}",
+        "        dpas.8x8 (16|M0)         r18:f         r18:f             r52:bf            r61.0:bf         {$11}",
+        "        dpas.8x8 (16|M0)         r18:f         r18:f             r105:bf           r65.0:bf         {Compacted,$14}",
+        "        dpas.8x8 (16|M0)         r18:f         r18:f             r52:bf            r105.0:bf        {$1}",
+        "        dpas.8x8 (16|M0)         r18:f         r18:f             r105:bf           r61.0:bf         {Compacted,$6}",
+        "        dpas.8x8 (16|M0)         r18:f         r18:f             r52:bf            r65.0:bf         {Compacted,$12}",
+        "        dpas.8x8 (16|M0)         r18:f         r18:f             r109:bf           r105.0:bf        {Compacted,$5}",
+        "        dpas.8x8 (16|M0)         r18:f         r18:f             r52:bf            r61.0:bf         {$0}",
+        "        dpas.8x8 (16|M0)         r18:f         r18:f             r105:bf           r65.0:bf         {Compacted,$9}",
+        "        dpas.8x8 (16|M0)         r18:f         r18:f             r60:bf            r105.0:bf        {Compacted,$4}",
+        "        dpas.8x8 (16|M0)         r18:f         r18:f             r52:bf            r61.0:bf         {$1}",
+        "        dpas.8x8 (16|M0)         r18:f         r18:f             r105:bf           r65.0:bf         {Compacted,$7}",
+        "        dpas.8x8 (16|M0)         r18:f         r18:f             r52:bf            r105.0:bf        {Compacted,$13}",
+        "        dpas.8x8 (16|M0)         r18:f         r18:f             r105:bf           r61.0:bf         {Compacted,$14}",
+        "        dpas.8x8 (16|M0)         r18:f         r18:f             r52:bf            r65.0:bf         {Compacted,$10}",
+        "        dpas.8x8 (16|M0)         r18:f         r18:f             r109:bf           r105.0:bf        {$9}",
+        "        dpas.8x8 (16|M0)         r10:f         r10:f             r61:bf            r57.0:bf         {Compacted,$12}",
+        "        dpas.8x8 (16|M0)         r26:f         r26:f             r108:bf           r57.0:bf         {Compacted,$1}",
+        "        dpas.8x8 (16|M0)         r10:f         r10:f             r18:bf            r53.0:bf         {Compacted,$15}",
+        "        dpas.8x8 (16|M0)         r26:f         r26:f             r61:bf            r53.0:bf         {Compacted,$8}",
+        "        dpas.8x8 (16|M0)         r34:f         r34:f             r18:bf            r57.0:bf         {Compacted,$2}",
+        "        dpas.8x8 (16|M0)         r42:f         r42:f             r61:bf            r57.0:bf         {Atomic,Compacted,$0.dst}",
+        "        dpas.8x8 (16|M0)         r34:f         r34:f             r105:bf           r53.0:bf         {Compacted,$0}",
+        "        dpas.8x8 (16|M0)         r42:f         r42:f             r18:bf            r53.0:bf         {Compacted,$11}"
+      ],
+      "send_line_count": 464,
+      "dpas_static_instruction_count": 24
+    }
+  ],
+  "ownership_closed": true
+}
