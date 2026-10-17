@@ -173,12 +173,63 @@
   },
   "config_sha256": "91cf0d8e7187b5804967b8de071868bcb0c9f244d6c24f1474050889d24f0ee6",
   "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
-  "complete": false,
-  "passed": false,
+  "complete": true,
+  "passed": true,
   "active": false,
   "model_quality_qualified": false,
   "physical262144_RESTORE_qualified": false,
   "performance_adopted": false,
   "source_count": 99,
-  "source_aggregate_sha256": "2c13a28fc3aaa8ca4a48bdee2efc2381eebb51e196afdb215bff184e84ff608c"
+  "source_aggregate_sha256": "2c13a28fc3aaa8ca4a48bdee2efc2381eebb51e196afdb215bff184e84ff608c",
+  "exit_code": 0,
+  "requests": [
+    {
+      "run": 0,
+      "ok": true,
+      "eligible": true,
+      "actual_prompt_tokens": 39260,
+      "actual_read_tokens": 39260,
+      "actual_reused_tokens": 0,
+      "generated_tokens": 24,
+      "thinking_requested": true,
+      "reasoning_observed": true,
+      "stream_complete": true,
+      "request_sha256": "1fd63b8c67a1888e443800b5c6d339ca116df2cb91941e6f332b6adf74275b3a",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
+      "ttft_s": 72.171,
+      "total_s": 73.773,
+      "prompt_tps": 546.2,
+      "prompt_ms": 71878.9,
+      "decode_tps": 14.1,
+      "decode_ms": 1696.7,
+      "prompt_tps_source": "engine",
+      "decode_tps_source": "engine",
+      "drafts_offered": 21,
+      "drafts_accepted": 16,
+      "finish_reason": "length",
+      "err": null,
+      "eligibility_errors": []
+    }
+  ],
+  "engine_exit_code": 0,
+  "native_identity": {
+    "pid": 3066209,
+    "start_ticks": 62459881,
+    "sid": 3066182
+  },
+  "route_selection": [
+    "[gdn-chunk64] long-prefill-only=1 chunk=8192 arena=1148718848 BF16_projection_conv=1 FP32_history_state=1 experimental=1"
+  ],
+  "ownership_closed": true,
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  }
 }

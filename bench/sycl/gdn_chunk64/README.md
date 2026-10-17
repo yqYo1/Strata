@@ -78,7 +78,11 @@ GEMM rounding, full-model execution, memory budgeting and quality remain separat
 integration gates. Source now includes an unqualified opt-in long-prefill dispatch
 with `STRATA_SYCL_PREFILL_GDN_CHUNK64=1`, requiring native16 BF16 and the existing
 layer-major admission. The default and short-input/decode paths retain the prior
-implementation. No model benchmark or production adoption of this path exists.
+implementation. The second diagnostic model run completed a 39,260-token
+official bench.sh request, thinking on, with8192 chunks and no new GPU faults.
+It measured546.2 PP and14.1 decode tok/s with parameter-validation/trace logging;
+this cold single sample is not a clean speed comparison or quality qualification.
+Clean matched long-input timing and production adoption remain pending.
 
 The shared arena planner is used by Prefill's size accounting/carving and the
 fixture. Projection QKV dies after conv/history update and is reused by FP32
@@ -100,6 +104,15 @@ not transfers or host arithmetic in the inference path.
 verifying committed project/dependency inputs, using the known-good engine's
 configure recipe. Main owns build/model runs; the build helper never runs the
 model. Keep that engine only for the imminent native-GDN comparison.
+
+For model checks, Main prepares exact committed inputs using
+`python3 tools/sycl/bench_engine.py prepare check`, commits the generated compact
+plan, then uses `run check`. After that check passes, the `base` and `candidate`
+modes use the same engine/config/workload, changing only the GDN startup flag.
+Each clean process runs four fresh >=64K prompts (first plus three subsequent),
+thinking on with24 generated tokens. That cap qualifies only prefill mechanics
+and timing; agent-session, sustained generation, quality and full-context/RESTORE
+checks remain separate gates.
 
 On B570, the resident8192 comparison uses identical decoded input values,
 one warmup and five rotating samples per arm. Clean processes omit tracing and

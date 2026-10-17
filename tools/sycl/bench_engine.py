@@ -77,7 +77,7 @@ def main():
             config_path = root / 'config.json'
             config_path.write_text(json.dumps(config, indent=2) + '\n')
             command = ['/bin/sh', str(P / 'bench.sh'), '--config', str(config_path), '--port', str(port),
-                       '--runs', '1' if mode == 'check' else '3', '--prefill-only', '--prefill-tokens',
+                       '--runs', '1' if mode == 'check' else '4', '--prefill-only', '--prefill-tokens',
                        '32768' if mode == 'check' else '65536', '--workload-id', 'native_gdn_20261018',
                        '--think', '--fail-fast-engine-error', '--ready-timeout', '600', '--out', str(root / 'bench')]
             revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=P, text=True).strip()
@@ -157,7 +157,7 @@ def main():
             record['native_identity'] = end['native']
             record['route_selection'] = [x for x in log.splitlines() if x.startswith('[gdn-chunk64]')]
             guards.require(end['binary'] == plan['binary'] and end['exit_code'] == 0, 'native engine exit')
-            guards.require(len(requests) == (1 if mode == 'check' else 3) and suite['complete'] and
+            guards.require(len(requests) == (1 if mode == 'check' else 4) and suite['complete'] and
                            not suite['results']['failures'], 'incomplete suite')
             guards.require(all(q['ok'] and q['eligible'] and q['stream_complete'] and q['thinking_requested'] and
                                q['actual_reused_tokens'] == 0 for q in requests), 'ineligible samples')

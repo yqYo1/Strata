@@ -21,7 +21,8 @@ There are explicit remaining boundaries:
   FP32 interface.
 - The final residual expands once for existing MTP, decode and diagnostic
   callbacks. Intermediate layers use a typed BF16 callback and direct copies.
-- GDN internal projection and recurrent tensors use the existing FP32 kernels.
+- GDN internal projection and recurrent tensors use the existing FP32 kernels
+  unless the separate experimental chunk64 route described below is enabled.
   QSA internals remain FP32 unless the separate typed-QSA option below is enabled.
 - The existing scratch arena remains reserved to preserve the short-input
   layout. Native views share its unused ranges, including separate BF16
