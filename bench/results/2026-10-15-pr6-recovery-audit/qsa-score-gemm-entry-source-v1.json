@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "created_utc": "2026-10-17T17:21:43.727384+00:00",
+  "provenance": "Main implementation from own qualified private qsa-score-gemm-prototype-v1, actual v2 fixture, existing current ownfork APIs and lifecycle. No XeStrata source/helpers/proposals, and no unrelated research report body used.",
+  "source_pins": {
+    "include/strata/prefill/qsa_score_gemm.hpp": "548940877548bf19d84d9cdc7259559e277a7d0a2083363b89b6c56a316cb17b",
+    "src/prefill/sycl/qsa_score_gemm.cpp": "dde497261fbc986788a72fae2ddb9520344f281129175a8504b2783cf3308284",
+    "src/prefill/prefill.cpp": "c64cfeeb826606100b00f154c59c2af32beb5f125fce46d955cad8243a4a2eed",
+    "src/prefill/layer_major.inc": "aa597f7c2bd4ffda0bbdba63b02f6dd0ec5f7ccf2804bb0f9730e5f8c12d9bfe",
+    "cmake/sycl_backend.cmake": "77cdc9d57997447ba1082fbda8812dfa152573b00158364d2fb782be8dd29456",
+    "tests/sycl/qsa_score_gemm.cpp": "fa96b018b8e19290136a9aa895d0d37c03fa5447fd2594fec574f4ea421e6de3"
+  },
+  "previous_goal_turn_classification": "progress: closed same-binary 3process-per-arm/context score cohort,49cases and traced resource comparison; committed through PR52.",
+  "scope": "Opt-in long layer-major FP16 operands/F32 output. Short/decode and flag0 retain original score paths. Global defaults unchanged.",
+  "source_order_correction": "Previous tentative Qf alias plan is rejected: Qf/qsa_Qfull16 remains a gate input at the later attention output projection. attn_h is the future gate output and may instead be borrowed during selection only; exact lifetime audit R1039 pending.",
+  "memory": {
+    "attn_h_declared_bytes_at_chunk8192": 100663296,
+    "maximum_arena_workspace_bytes": 50611200,
+    "independent_status_allocation_bytes": 256,
+    "new_panel_allocation_bytes": 0,
+    "status_host_lifetime": "Host uint32 and device owner declared before Restore/lease; all work drained before borrowed fields and owners retire.",
+    "status_rule": "Zero once per scope, atomic OR persists across every call, checked after each QSA pass; invalid output is rejected before decode.",
+    "actual_topology_preflight": "Validate full attn_h/status disjointness from Qf/q/q_idx/attn/score/IDs/steps and every state pooled/dead span before model work."
+  },
+  "validation_planned": [
+    "Actual API/carve all arena guards and plane guards; short/over-limit/misaligned/overlapping carve rejects.",
+    "Prospective rounded-input CPU numeric bound plus exact original dead-key bits and independent full-row top-k, physical262144 and255-query tail.",
+    "Finite >FP16 range, Inf and NaN injected as separate scopes; healthy subsequent calls cannot erase nonzero status; restores finite result but scope stays invalid.",
+    "Fresh full engine build; first owned traced actual-API check before other GPU jobs; no fault/reset/service changes.",
+    "Actual-model quality and bench.sh comparisons only after ownership/alias/status gates."
+  ],
+  "compiled_at_creation": false,
+  "GPU_executed_at_creation": false,
+  "production_default_adopted": false,
+  "model_quality_qualified": false
+}

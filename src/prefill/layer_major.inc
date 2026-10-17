@@ -58,6 +58,22 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     if (window_on && window_census_switch && std::strcmp(window_census_switch, "1") == 0) {
         err = "prefill MoE window: old chunk census does not describe window GEMM jobs"; return false;
     }
+    const bool score_gemm_on = qsa_score_gemm::requested();
+    // This explicit opt-in is fail-closed at admission. Do not discover an
+    // unsupported device after projections/KV/indexer have updated state.
+    if (score_gemm_on) qsa_score_gemm::validate_device(m.cs);
+    if (score_gemm_on && (m.T != 8192 || m.sel_batch <= 0 || m.sel_batch > 256 ||
+                         m.max_blocks != ss.max_cells / 4 + 2 ||
+                         std::getenv("STRATA_SELECT_OLD"))) {
+        err = "prefill score GEMM: requires chunk8192, at most256 queries, owning session bounds and no SELECT_OLD";
+        return false;
+    }
+    const uint64_t score_arena_bytes = detail::layer_major_mul(uint64_t(m.T), 6144 * 2);
+    const uint64_t score_workspace_bytes = score_gemm_on ?
+        qsa_score_gemm::workspace_bytes(m.sel_batch, m.max_blocks) : 0;
+    if (score_workspace_bytes > score_arena_bytes) {
+        err = "prefill score GEMM: workspace exceeds the real attn_h reservation"; return false;
+    }
     const bool qsa16_on = native16::qsa::requested();
     const auto qsa_math = native16::qsa::attention_math();
     if (qsa_math != native16::qsa::AttentionMath::existing && !qsa16_on) {
@@ -243,13 +259,18 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     const uint64_t prefix_flag_bytes = qsa_prefix_on ? detail::layer_major_mul(prefix_cells, 2 * 4) : 0;
     const uint64_t prefix_bytes = detail::layer_major_add(
         detail::layer_major_mul(prefix_tensor_bytes, 2), prefix_flag_bytes);
-    const uint64_t gpu_reserved = detail::layer_major_add(cache_bytes, prefix_bytes);
+    // Half/head scratch borrows attn_h only BEFORE gate overwrites it. Qf is
+    // still a gate INPUT and must not be reused. Only sticky status is additional.
+    const uint64_t score_status_bytes = score_gemm_on ? 256 : 0;
+    const uint64_t gpu_reserved = detail::layer_major_add(
+        detail::layer_major_add(cache_bytes, prefix_bytes), score_status_bytes);
     size_t free_gpu = 0, total_gpu = 0;
     const cudaError_t memory_status = cudaMemGetInfo(&free_gpu, &total_gpu);
     if (memory_status != cudaSuccess || free_gpu > total_gpu ||
         free_gpu < detail::layer_major_add(gpu_reserved, gpu_headroom)) {
         err = "prefill layer-major: extra expert cache (" + std::to_string(cache_bytes) +
-              " bytes), BF16 prefix (" + std::to_string(prefix_bytes) + " bytes) plus 512 MiB headroom exceeds known free VRAM (" + std::to_string(free_gpu) + ")";
+              " bytes), BF16 prefix (" + std::to_string(prefix_bytes) + " bytes), score status (" +
+              std::to_string(score_status_bytes) + " bytes) plus 512 MiB headroom exceeds known free VRAM (" + std::to_string(free_gpu) + ")";
         return false;
     }
     const auto plan = detail::LayerMajorResidualPlan::make(n, m.T, D,
@@ -295,6 +316,10 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     std::unique_ptr<uint8_t, decltype(free_device)> device_rows(nullptr, free_device);
     std::unique_ptr<uint8_t, decltype(free_device)> prefix_storage(nullptr, free_device);
     std::unique_ptr<uint8_t, decltype(free_device)> mixed_storage(nullptr, free_device);
+    std::unique_ptr<uint8_t, decltype(free_device)> score_status_storage(nullptr, free_device);
+    // DMA destination precedes the checked lease: even a failed copy/drain
+    // cannot end its lifetime before the lease's fail-stop retirement.
+    uint32_t score_status_observed = 0;
     // Allocated only for an FP16 host tail. One in-order queue serializes
     // H2D -> unpack -> model -> pack -> D2H, and the outer lease owns it all.
     std::unique_ptr<uint8_t, decltype(free_device)> fp16_stage(nullptr, free_device);
@@ -393,6 +418,10 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         Impl& m; strata::kernels::QsaBf16PackedScratch previous;
         ~PrefixBorrow() noexcept { m.qsa_prefix = previous; }
     } prefix_borrow{m, m.qsa_prefix};
+    struct ScoreBorrow {
+        Impl& m; qsa_score_gemm::Scratch previous;
+        ~ScoreBorrow() noexcept { m.score_gemm = previous; }
+    } score_borrow{m, m.score_gemm};
     // Destruction order: checked drain -> field/callback restoration -> owners.
     // A failed drain aborts here, with all captures/storage still alive. Session
     // tensors are NOT rolled back by restoring these borrowed C++ fields.
@@ -454,6 +483,43 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     // Allocation-only cache opening is essential: no memset may fail and free
     // its allocation before the outer checked lease has retired its readers.
     if (!layer_cache.open_uninitialized(NE, 1, NE, int64_t(stride), err)) return false;
+    if (score_gemm_on) {
+        uint8_t* storage = nullptr;
+        if (cudaMalloc(reinterpret_cast<void**>(&storage), size_t(score_status_bytes)) != cudaSuccess) {
+            err = "prefill score GEMM: status allocation failed before model work"; return false;
+        }
+        score_status_storage.reset(storage);
+        auto& queue = sycl_backend::queue_for(m.cs);
+        sycl_backend::validate_device_span(m.attn_h, size_t(score_arena_bytes), queue);
+        sycl_backend::validate_device_span(storage, size_t(score_status_bytes), queue);
+        // Check the actual carved topology, including still-live gate inputs.
+        // attn_h is future output; Qf, q and q_idx remain independent inputs.
+        sycl_backend::validate_spans({{m.attn_h, size_t(score_arena_bytes)},
+                                     {storage, size_t(score_status_bytes)}},
+            {{m.Qf, size_t(m.T) * 12288 * sizeof(float)},
+             {m.q, size_t(m.T) * 6144 * sizeof(float)},
+             {m.q_idx, size_t(m.T) * 512 * sizeof(float)},
+             {m.attn, size_t(m.T) * 6144 * sizeof(float)},
+             {m.sel_scores, size_t(m.sel_batch) * size_t(m.max_blocks) * sizeof(float)},
+             {m.sel_ids, size_t(m.T) * size_t(m.cap) * sizeof(int32_t)},
+             {m.steps_dev, size_t(m.T) * strata::kernels::kStepCount * sizeof(int32_t)}});
+        for (int64_t i = 0; i < ss.qsa_alloc; ++i) {
+            const auto& state = ss.qsa_states[i];
+            sycl_backend::validate_spans({{m.attn_h, size_t(score_arena_bytes)},
+                                         {storage, size_t(score_status_bytes)}},
+                {{state.idx_pooled, size_t(state.idx_pooled_rows) * 128 * sizeof(float)},
+                 {state.idx_dead, 128 * sizeof(float)}});
+        }
+        m.score_gemm = qsa_score_gemm::carve(m.attn_h, size_t(score_arena_bytes),
+            reinterpret_cast<uint32_t*>(storage), m.sel_batch, m.max_blocks);
+        // No score invocation resets this sticky word. It is outside the arena
+        // reused by gate, MoE and GDN after score readers have retired in order.
+        if (cudaMemsetAsync(storage, 0, 4, m.cs) != cudaSuccess) {
+            err = "prefill score GEMM: status initialization failed"; return false;
+        }
+        std::fprintf(stderr, "strata QSA score prefill: gemm_fp16=1 arena=attn_h workspace_bytes=%llu independent_status_bytes=%llu sticky_status=1\n",
+            (unsigned long long)score_workspace_bytes, (unsigned long long)score_status_bytes);
+    }
     if (prefix_bytes) {
         uint8_t* storage = nullptr;
         if (cudaMalloc(reinterpret_cast<void**>(&storage), size_t(prefix_bytes)) != cudaSuccess) {
@@ -725,6 +791,18 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         };
         if (!run_impl(tokens, n, pos0, err)) return false;
         if (!drain()) { err = "prefill layer-major: pass drain failed"; return false; }
+        if (score_gemm_on && core::is_qsa_layer(g, layer)) {
+            const auto copied = cudaMemcpyAsync(&score_status_observed, m.score_gemm.status,
+                sizeof(score_status_observed), cudaMemcpyDeviceToHost, m.cs);
+            const bool retired = drain(); // retire even if enqueue reported an error
+            if (copied != cudaSuccess || !retired) {
+                err = "prefill score GEMM: status copy/drain failed"; return false;
+            }
+            if (score_status_observed) {
+                err = "prefill score GEMM: invalid arithmetic status=" + std::to_string(score_status_observed);
+                return false;
+            }
+        }
         m.native_dense_overlay = nullptr; // checked pass drain completed
         if (!cursor.complete()) { err = "prefill layer-major: incomplete layer callbacks"; return false; }
         if (census) census->end(layer);

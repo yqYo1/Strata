@@ -42,6 +42,7 @@
 #include "strata/prefill/moe_window_routes.hpp"
 #include "strata/prefill/moe_accum_plan.hpp"
 #include "strata/prefill/qsa_native16.hpp"
+#include "strata/prefill/qsa_score_gemm.hpp"
 #include "strata/sycl/command_profile.hpp"
 #include "strata/kernels/qsa_bf16_attention_late_flags.hpp"
 #include "strata/kernels/qsa_bf16_prefix.hpp"
@@ -518,6 +519,7 @@ struct Prefill::Impl {
     MoeWindowContext* moe_window = nullptr; // borrowed through checked layer-major lease
     bool native16_active = false;
     strata::kernels::QsaBf16PackedScratch qsa_prefix; // borrowed only during the long-prefill lease
+    qsa_score_gemm::Scratch score_gemm; // attn_h arena + independent sticky status, long lease only
     // Disjoint typed subviews of existing QSA reservations; no new allocation.
     uint16_t *qsa_Kraw16 = nullptr, *qsa_Krope16 = nullptr, *qsa_V16 = nullptr,
              *qsa_Qfull16 = nullptr, *qsa_q16 = nullptr, *qsa_attn16 = nullptr;
@@ -2536,6 +2538,13 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                                                                                 strata::kernels::kStepNBid)] + 1;
                         // the scores on tensor cores (3xTF32: FP32-level, not bitwise); STRATA_SELECT_OLD=1: the warp kernel
                         static const bool old_sel = std::getenv("STRATA_SELECT_OLD") != nullptr;
+#if defined(STRATA_ENABLE_SYCL)
+                        if (m.layer_major_active && m.score_gemm.status)
+                            qsa_score_gemm::scores(m.gemm, st.idx_pooled, st.idx_dead,
+                                m.q_idx + t0 * 512, steps0, nb, m.max_blocks, s,
+                                m.sel_scores, m.score_gemm, m.cs, active);
+                        else
+#endif
                         if (old_sel || !strata::kernels::qsa_block_scores_tc(st.idx_pooled, st.idx_dead, m.q_idx + t0 * 512,
                                                                              steps0, nb, m.max_blocks, s, m.sel_scores,
                                                                              m.cs, active)) {

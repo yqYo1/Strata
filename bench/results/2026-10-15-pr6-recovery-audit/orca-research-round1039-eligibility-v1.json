@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "schedulable_now": true,
+  "classification": "decision_support",
+  "question": "Audit exact attn_h lifetime for reusing score GEMM scratch in long layer-major prefill; Qf reuse was rejected because gate still reads it.",
+  "prerequisites": [
+    "Main previous 29process private-GEMM probes and resource trace closed with no GPU faults.",
+    "Current source snapshot is fully hashed and the exact proposed borrowing interval and dimensions are specified.",
+    "No prior report examined the live gate consumer/attn_h producer ordering; R1035/1036 concerned private fixture guards only."
+  ]
+}

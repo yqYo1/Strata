@@ -86,3 +86,43 @@ and physical KV extent 262144 with 256 and 255 queries. Those component checks
 are separate from full-model context, RESTORE, quality and throughput evidence.
 See `bench/results/2026-10-15-pr6-recovery-audit/qsa-score-prefill-entry-results-v1.ja.md`
 and the individually pinned results for their exact scope.
+
+
+## Experimental FP16 score GEMM in long prefill
+
+`STRATA_SYCL_PREFILL_SCORE_GEMM=1` selects the FP16-input, FP32-output GEMM
+scorer only inside the long layer-major lease. Default0 retains the existing
+scorer. Chunk8192, at most256 selection queries and the owning session's block
+capacity are required; `STRATA_SELECT_OLD` must be absent. The dedicated short
+prefill and decode routes do not allocate or use this workspace.
+The explicit opt-in rejects unsupported Level Zero/FP16/SG32 devices, geometry
+or arena topology before this request starts model work. It does not silently
+switch arithmetic after KV/indexer state has been updated; leave the flag at0
+to select the existing path. The direct API repeats its device check before
+submitting its own work.
+
+This changes completed-block operand rounding. The dead-key FP32 tree and
+partial-tail bonus remain unchanged. The private component experiment passed
+its documented rounded-input numerical, guard and physical-context component
+checks; those measurements are in
+[the result report](../bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-results-v2.ja.md).
+They do not establish this integrated path's model quality or throughput.
+
+The scorer borrows the existing `attn_h` reservation during selection. At
+chunk8192 the reservation is100663296bytes; the maximum workspace including
+alignment/guard padding is50611200bytes. All preceding readers and following
+writers use the same in-order queue. Attention writes `attn`/`qsa_attn16`, then
+gate overwrites `attn_h` before output projection consumes it. `Qf` and
+`qsa_Qfull16` remain live gate inputs and are never reused by the scorer.
+The carve rejects insufficient/misaligned spans or a status word inside the
+arena; the engine validates registered device spans before model work.
+
+Only a separate256-byte status allocation is additional, included in the VRAM
+admission budget before residual/MoE placement. It is zeroed once per long
+request. Every scorer invocation atomically accumulates invalid-input and
+nonfinite-arithmetic bits without clearing earlier failures. After each QSA
+pass, the engine copies four bytes into a host owner declared before the
+checked lease, drains and checks the status. A nonzero status rejects the
+prefill result before decode. Status remains outside the arena subsequently
+reused by gate, MoE and GDN. Borrow restoration and all temporary-owner release
+follow checked retirement; unproven retirement aborts with owners still live.

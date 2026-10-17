@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "classification": "knowledge_collection",
+  "schedulable_now": true,
+  "source_pins": {
+    "src/kernels/sycl/qsa_bf16_prefix.cpp": "fa505d02e2b24f7cb6948033921fa697c8aeb58e6f4df6d873f13e5a7918e36b",
+    "include/strata/kernels/qsa_bf16_prefix.hpp": "b114a31b5422fb4ca00eb217a57954188fa4c6b42221876d4fff1144c8494d05"
+  },
+  "prerequisite_evidence": [
+    "qsa-score-gemm-entry-cohort-v1.json closed PASS; no research owns GPU",
+    "own-current-device-profile-summary-v1.ja.md identifies actual device attention service (older kernel/configuration)",
+    "optimized-profile-hardware-findings-v1.ja.md distinguishes newer BF16 optimized queue intervals from utilization",
+    "hardware-resource-followup-v8.ja.md gives independent fixed-allocation working-set/command-granularity sensitivity; do not generalize FP32 fixture timings to current BF16 engine"
+  ],
+  "question": "Current BF16 prefix attention tile/workgroup schedule: compare occupancy/barrier/SLM and matrix-participation alternatives with safe explicit source contracts; avoid repeating the already tried subgroup-softmax or stalled tilepack candidate."
+}

@@ -1,0 +1,21 @@
+# Round 1040 — QSA score arena implementation review
+
+Classification: native Codex decision-support review. Read the bounded R1039 decision report, its frozen source snapshot and the current pinned entry/source files. Source review only: no build, test, GPU/runtime/process inspection, Git operation, external research, or product edit.
+
+## Conclusion
+
+R1039's `attn_h` lifetime and `Qf` alias findings hold for the current implementation. Selection starts after indexer append and ends before attention and gate. The scorer uses `m.attn_h` only as temporary scratch; typed attention writes `m.qsa_attn16`/`m.attn`, and the later gate reads live `m.Qf`/`m.qsa_Qfull16` while writing `m.attn_h`. The new preflight checks the full scratch and independent status spans against `Qf`, `q`, `q_idx`, `attn`, scores, IDs, steps, and every QSA pool/dead-key span. I found no source-level overlap or borrow-destruction defect in the reviewed paths.
+
+At chunk 8192, the real `attn_h` payload is 100,663,296 bytes. The current carve reserves 50,610,176 bytes for data plus 1,024 bytes of alignment/guard space, or 50,611,200 bytes total. It fits inside the actual payload by 50,052,096 bytes; no allocator guard or adjacent reservation is needed. The status word has a separate 256-byte device owner. The status is zeroed once, ORed atomically by calls, copied after the layer's checked drain, then read only after a second checked drain. The host scalar and device owner precede the checked lease; the lease retires before `Restore` and the score-field borrow restore. Work, scorer, and readback use the same admitted in-order `m.cs` queue. Existing window/callback work follows this selection/attention interval.
+
+The tests' source-level owner ordering is sound: host upload/download vectors belong to `Buffer`s declared before `Drain`, and `Drain` therefore retires queued copies before those vectors or allocations are destroyed. Guard carving stays in the layout gaps. The negative scopes check invalid FP16-input status and verify that later healthy calls cannot clear it. The intended numerical gate is also scoped correctly: the FP16 GEMM may differ from FP32; exact parity is required for the FP32 control and dead-key/tail score, while GEMM scores use a rounded-input/F32-accumulation bound and independent full-row top-k oracle. None of these tests has been run in this review.
+
+## Source/contract issue for Main
+
+The score-specific Level Zero plus FP16 support check is inside `qsa_score_gemm::scores`, after that QSA layer has already projected Q/K/V, appended KV and appended indexer state. `Gemm::init_external` does not provide that preflight for the own backend. If the runtime lacks the scorer capability, it throws and the layer-major call returns failure after persistent state writes. The opt-in branch also has no fallback to the existing scorer. Separately, invalid sizing/geometry guards return failure instead of retaining the old scoring path. This conflicts with R1039's explicit recommendation to retain the old path when exact sizing/capability admission fails. Resolve that policy before the owned run: preflight capability before model work and use the existing scorer when a safe opt-in gate fails, or record an intentional fail-closed contract that fails before any state mutation. Do not treat source checks as runtime qualification.
+
+Status is inspected after `run_impl` finishes the QSA layer, so its score/top-k output has already passed through that layer's attention and gate. The call returns failure before prefill succeeds or exposes a result to decode. This matches R1039's conditional retirement guidance if whole-layer rejection is the contract; a requirement to stop before attention/gate still needs a checked status readback at that boundary.
+
+## Evidence still required
+
+The reviewed source does not establish successful compilation, actual oneMKL FP16/F32 lowering or accumulation, device atomic behavior, host D2H copy behavior, complete 262144-context/tail/fault execution, model-quality effects, or performance. Main owns the fresh engine build and the first controlled actual-API run, followed by model-quality and performance comparisons only after ownership and status gates pass. No new research scope is eligible until a concrete build/runtime result identifies a question that external evidence can resolve.

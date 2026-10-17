@@ -1,0 +1,100 @@
+{
+  "schema": 1,
+  "round": 1040,
+  "classification": "native Codex decision-support source review",
+  "created_date": "2026-10-18",
+  "review_report": {
+    "path": "research-round1040-review-v1.txt",
+    "sha256": "2f07ad5175e47e1963c8810cd1c2fbc482f9a7fdc88da3319285a820a6d5083e",
+    "bytes": 4358
+  },
+  "review_inputs": {
+    "decision_report": {
+      "path": "research-round1039-v1.txt",
+      "sha256": "268376db423b7c53ccc0863807d5bf39f4fe94866db4da0ffca57304aff43f2b",
+      "bytes": 8279,
+      "classification": "decision support"
+    },
+    "source_pin": {
+      "path": "research-qsa-score-arena-lifetime-round1039-source-pin-v1.json",
+      "sha256": "f0378f4152f9ce1968362f973db6fe166b483b09fe128f7c6a2fc4b2b7e80cbb",
+      "bytes": 1410
+    },
+    "entry_source_manifest": {
+      "path": "qsa-score-gemm-entry-source-v1.json",
+      "sha256": "00a80ca4b6ed5cbbf75274038d74d43aceb95d530934b1b7e6318a0a1e17f95f",
+      "bytes": 3060,
+      "source_pin_note": "Manifest was updated during review to the current layer_major.inc hash; the current content was reread and audited."
+    },
+    "frozen_snapshot": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-qsa-score-arena-lifetime-round1039-v1",
+      "manifest_sha256": "476a8d7c1c2e2cee975e26da87ea7cd3112e1cfb61704fea8d512d3c201fd090",
+      "files": [
+        {"path": "src/prefill/prefill.cpp", "sha256": "4750fc7d7e3ea5ca55302e00d12b72fed456cffe09da0ca77305749331633242", "bytes": 229847},
+        {"path": "src/prefill/layer_major.inc", "sha256": "d909480f6b7542afc0498d9b8c1e41a1b381a80a94790e87f392d5e2d8687168", "bytes": 49622},
+        {"path": "include/strata/prefill/draft_uploads.hpp", "sha256": "2d32126e28c67751d14bde6cd46f1db60b92aa3939b17a6f78fd66bc10955908", "bytes": 3218},
+        {"path": "include/strata/prefill/qsa_native16.hpp", "sha256": "2af9638897ba07b3ed1232bdb5782fa8218fcb4881f190f0dba9eedf8cdfb65f", "bytes": 2935},
+        {"path": "src/prefill/sycl/qsa_native16.cpp", "sha256": "a29b0c59324a2a5975fe10c6c815e0c2d28557906e57d1034bdcfb241bdbb82f", "bytes": 11279},
+        {"path": "include/strata/sycl/launch.hpp", "sha256": "4eb1888057ef6ae34f2bbb9d2545321061ee116659e54907047732544d589d95", "bytes": 2851},
+        {"path": "include/strata/sycl/runtime.hpp", "sha256": "a0e0687886e09c50922d01f7023ba3b51e8ac2dbe43f461a798ba82438b2a074", "bytes": 3295}
+      ]
+    }
+  },
+  "current_reviewed_sources": [
+    {"path": "include/strata/prefill/qsa_score_gemm.hpp", "sha256": "548940877548bf19d84d9cdc7259559e277a7d0a2083363b89b6c56a316cb17b", "bytes": 2471},
+    {"path": "src/prefill/sycl/qsa_score_gemm.cpp", "sha256": "dde497261fbc986788a72fae2ddb9520344f281129175a8504b2783cf3308284", "bytes": 7609},
+    {"path": "src/prefill/prefill.cpp", "sha256": "c64cfeeb826606100b00f154c59c2af32beb5f125fce46d955cad8243a4a2eed", "bytes": 230377},
+    {"path": "src/prefill/layer_major.inc", "sha256": "aa597f7c2bd4ffda0bbdba63b02f6dd0ec5f7ccf2804bb0f9730e5f8c12d9bfe", "bytes": 54411},
+    {"path": "tests/sycl/qsa_score_gemm.cpp", "sha256": "fa96b018b8e19290136a9aa895d0d37c03fa5447fd2594fec574f4ea421e6de3", "bytes": 27256},
+    {"path": "include/strata/prefill/gemm.hpp", "sha256": "091984410aacd56f33748c4ef9c730405f2862f9a32d6de6c59fa74063a5fc43", "bytes": 4600},
+    {"path": "src/prefill/sycl/gemm.cpp", "sha256": "023bc6c5633b7ae58636dc1ba732d7db77514cca98925100e031c0e0d3c7bcd9", "bytes": 5119},
+    {"path": "src/prefill/sycl/gemm16.cpp", "sha256": "d5a0e8f8cdbc14f82edd7a883efc09d68ee92195b8fd51301e538b40cc6ed53c", "bytes": 14701},
+    {"path": "include/strata/kernels/qsa_select.hpp", "sha256": "043ec673be1b02f215aa77f6295968adb3f1d5b70d22f57341425336b709835e", "bytes": 6617},
+    {"path": "src/kernels/sycl/qsa_select.cpp", "sha256": "463a9ec02ed28125a5cd38b7b5d28784b849a4fbb199cb017042cd99078efee1", "bytes": 16871},
+    {"path": "include/strata/sycl/launch.hpp", "sha256": "4eb1888057ef6ae34f2bbb9d2545321061ee116659e54907047732544d589d95", "bytes": 2851},
+    {"path": "include/strata/sycl/runtime.hpp", "sha256": "a0e0687886e09c50922d01f7023ba3b51e8ac2dbe43f461a798ba82438b2a074", "bytes": 3295},
+    {"path": "src/sycl/runtime.cpp", "sha256": "e6c20e148bc7ceec250ad9a58ddfc851c1476aaab3d68982d2aee2897e572b83", "bytes": 9241},
+    {"path": "src/sycl/compat.cpp", "sha256": "bd5a664f9a0bd91b0e8e2e59f67d0a2c38c81599613831abbd6e16ad98c01689", "bytes": 21210},
+    {"path": "include/strata/prefill/draft_uploads.hpp", "sha256": "2d32126e28c67751d14bde6cd46f1db60b92aa3939b17a6f78fd66bc10955908", "bytes": 3218}
+  ],
+  "corrections_and_retrieval": [
+    {
+      "id": "R1040-C1",
+      "correction": "R1039's source lifetime conclusion is confirmed for the current branch. Current workspace total is 50,611,200 bytes: 50,610,176 payload plus 1,024 bytes of layout guards/alignment. It fits in the actual 100,663,296-byte attn_h payload by 50,052,096 bytes.",
+      "retrieval_tags": ["QSA", "attn_h", "scratch-alias", "lifetime", "workspace-bounds"]
+    },
+    {
+      "id": "R1040-C2",
+      "correction": "Current preflight covers the live gate input Qf and other stated input/output spans. Keep Qf/qsa_Qfull16 untouched; the gate reads it after selection and writes attn_h.",
+      "retrieval_tags": ["Qf", "QSA-gate", "alias-check", "topology"]
+    },
+    {
+      "id": "R1040-C3",
+      "correction": "Capability validation is late and the opt-in branch does not fall back to the existing scorer. Unsupported Level Zero/FP16 can throw after KV/indexer state writes; current fail-closed behavior also conflicts with R1039's retain-old-path-on-guard-failure recommendation.",
+      "retrieval_tags": ["QSA-score-GEMM", "Level-Zero", "FP16", "fallback", "partial-state"]
+    },
+    {
+      "id": "R1040-C4",
+      "correction": "Status is read after a checked whole-layer drain, following use by that layer's top-k/attention/gate. The call returns failure before successful prefill/decode exposure. Add an earlier checked boundary only if immediate pre-attention rejection is required.",
+      "retrieval_tags": ["sticky-status", "checked-drain", "QSA-attention", "failure-semantics"]
+    },
+    {
+      "id": "R1040-C5",
+      "correction": "The test source has correct Buffer/Drain host DMA lifetime and canary layout; its source does not qualify actual runtime behavior. FP16 GEMM scores may differ from FP32; only the control and dead-key score require exact score bits.",
+      "retrieval_tags": ["test-lifetime", "canaries", "numerics", "model-quality"]
+    }
+  ],
+  "next_scope_eligibility": [
+    {
+      "label": "decision support",
+      "question": "If the owned actual-API fixture fails, determine whether the observed Level Zero/oneMKL F16-input/F32-output behavior violates the scorer's documented rounded-input, accumulation, status, or copy contract; compare only the failing behavior and viable same-source alternatives.",
+      "report_budget_bytes": 6500,
+      "prerequisites": ["fresh build receipt", "same-binary actual-API failure with exact case, device/runtime identity, and relevant status/output evidence"],
+      "prerequisite_evidence_recorded": false,
+      "schedulable_now": false,
+      "retrieval_tags": ["oneMKL", "SYCL", "Level-Zero", "FP16", "numerical-contract", "status-atomic", "D2H-copy"],
+      "reason": "No build or runtime case has run; research now would only restate unknowns."
+    }
+  ],
+  "next_main_action": "Resolve the late-capability/no-fallback contract before the owned run. Preflight Level Zero/FP16 before model state writes and either retain the existing scorer on safe admission failure or explicitly record a fail-closed pre-model-work contract. Then build and run the planned guarded actual-API fixture; keep model-quality and performance unqualified until it passes."
+}

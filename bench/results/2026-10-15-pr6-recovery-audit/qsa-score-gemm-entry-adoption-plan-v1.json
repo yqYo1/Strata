@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "created_utc": "2026-10-17T17:35:24.347344+00:00",
+  "prior_actual_PP_reference": {
+    "artifact": "qsa-score-headparallel-model-comparison-v1.json",
+    "input_actual_tokens": 78453,
+    "FP32_headparallel_subsequent_samples": [
+      680.7,
+      676.9,
+      680.4
+    ],
+    "subsequent_median_tps": 680.4,
+    "scope": "Three requests in one process; distinct-process variability not yet characterized."
+  },
+  "admission_and_memory": "Explicit flag0/1. GPU/LevelZero/FP16/SG32 checked before model writes. Same existing attn_h gate-output reservation, live Qf unchanged. Independent256B status changes reserved memory by256B; record actual placement rather than assume unchanged. Zero once per request, sticky status rejection after checked layer pass. Short/decode stay on existing route.",
+  "component_gates": [
+    "Fresh full-build source/binary/compiler/runtime/compile-flag pinning and normal closed ownership",
+    "First actual-API traced small probe, then actual head-parallel control and query/selection-boundary suites",
+    "Separate invalid-range, Inf and NaN scopes; nonzero status survives subsequent healthy calls",
+    "Full262144 declared extent256/255 query tails and full-row independent selection oracle, input/arena/padding canaries, exact original dead-tree bits",
+    "Rounded-input numerical bound prospectively retained; completed-score/selected-ID differences from originalFP32 are recorded, not automatically failures"
+  ],
+  "actual_model_comparison": {
+    "script": "bench.sh",
+    "minimum_requested_input_tokens": 65536,
+    "expected_actual_input_tokens": 78453,
+    "context": 131072,
+    "chunk": 8192,
+    "think": true,
+    "runs_each_process": 4,
+    "baseline": "same binary, score_gemm0, query8/head-parallel1",
+    "candidate": "same binary, score_gemm1",
+    "other_settings": "MoEwindow10, BF16 native16, residentINT8KV, all-GPU residual placement, no trace/profilers",
+    "compare": [
+      "All individual first and subsequent samples; input hashes/read tokens/reuse and effective native env",
+      "Record allocation/admission/placement and model output differences",
+      "Require completed streams, nonzero generated outputs and reasoning, normal engine/server exit, no new driver faults or coredump",
+      "24token output in this probe is performance/state evidence only; no sustained decode or task-quality qualification"
+    ]
+  },
+  "quality_and_context_pending": [
+    "Before changing default, model-level task/output-quality comparison with thinking enabled and sufficiently long generation (>=1K), not token-identical-output requirement",
+    "Physical model262144 context consumption and RESTORE/shared-state checks remain separate; component geometry does not qualify them",
+    "Old strict256K BF16 attention reference failure remains a recorded unresolved numerical gate; this scorer experiment does not change that status"
+  ],
+  "adoption": "Default stays off until required model-level evidence. A component speedup is not end-to-end PP1000 or TG70 achievement."
+}
