@@ -4575,6 +4575,116 @@
           "Qualification before interpretation"
         ]
       }
+    },
+    {
+      "round": 980,
+      "path": "research-round980-v1.txt",
+      "sha256": "1b3e6d04d20ef3e6dab269d700caa65fbd6e2be642b895af50dcd9fceb7cbfb2",
+      "bytes": 12932,
+      "classification": "decision_support",
+      "retrieval": {
+        "hold_body_for_Main": true,
+        "retrieve_when": "If the clean component timing selects further QSA follow-through or a numerical/source issue needs the detailed ownership walk.",
+        "sections": [
+          "Exact candidate versus baseline",
+          "Collective convergence, mapping, and addresses",
+          "Persistent state, invalid data, and barriers",
+          "Numerical contract",
+          "Current fixture and remaining gates"
+        ],
+        "tags": [
+          "QSA",
+          "score33 row-major",
+          "SYCL subgroup reduction",
+          "FP32 sum association",
+          "SGLang contract",
+          "barriers",
+          "262144 component fixture"
+        ]
+      },
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "status": "Native R983 reviewed; original body held by Main.",
+      "review_path": "research-review-round983-v1.json",
+      "correction_ids": [
+        "R980-C1",
+        "R980-C2"
+      ]
+    },
+    {
+      "round": 981,
+      "path": "research-round981-v1.txt",
+      "sha256": "a02711e9df855870ca00dff0de758abc783a8f7c24d35d72737f3be98889be2e",
+      "bytes": 15581,
+      "classification": "decision_support",
+      "retrieval": {
+        "hold_body_for_Main": true,
+        "retrieve_when": "After the QSA cohort closes, only if Main selects upload as the next measured prefill question.",
+        "sections": [
+          "Decision",
+          "Current path and copy semantics",
+          "Comparison by arm",
+          "Smallest decision-quality physical measurement"
+        ],
+        "tags": [
+          "host-USM",
+          "pageable H2D",
+          "48-layer upload",
+          "source-copy CPU",
+          "exact-width payload",
+          "copy lifetime",
+          "double-buffer hypothesis"
+        ]
+      },
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "status": "Native R983 reviewed; original body held by Main.",
+      "review_path": "research-review-round983-v1.json",
+      "correction_ids": [
+        "R981-C1",
+        "R981-C2"
+      ]
+    },
+    {
+      "round": 982,
+      "path": "research-round982-v1.txt",
+      "sha256": "5592d70e58a9f041bdbde81656ab4fbbca1973b60707c550cbfc591f03fd1686",
+      "bytes": 16953,
+      "classification": "knowledge_collection",
+      "retrieval": {
+        "hold_body_for_Main": true,
+        "schedulable_now": false,
+        "retrieve_when": "A Main-owned receipt establishes a concrete hardware-bound question for the actual QSA or small-M shape, and same-process identity/topology is available when that is the issue.",
+        "sections": [
+          "max_compute_units and enabled topology",
+          "Arithmetic ceilings",
+          "SLM, reductions, caches, and DRAM",
+          "PCIe payload versus wire rate",
+          "Bounded calibration choices"
+        ],
+        "tags": [
+          "Intel Arc B570",
+          "Xe2-HPG",
+          "max_compute_units",
+          "enabled topology",
+          "XMX",
+          "SIMD/SFU",
+          "SLM/reduction",
+          "cache roofline",
+          "random gather",
+          "PCIe payload",
+          "small-M",
+          "sparse attention"
+        ]
+      },
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "status": "Native R983 reviewed; original body held by Main.",
+      "review_path": "research-review-round983-v1.json",
+      "correction_ids": [
+        "R982-C1",
+        "R982-C2"
+      ]
     }
   ],
   "main_initial_findings": [
@@ -7696,9 +7806,87 @@
     "fixture_recipe": "run_qsa_rowmajor_subgroup_v1.py",
     "source_review": "qsa-rowmajor-subgroup-source-review-v1.json",
     "source_review_sha256": "1abfe92a253bc53885d670e29467cc095a79df7ee53f6546d37c3aaa5b54b17e",
-    "status": "Current optimized row-major score33 variant, Main-generated diff reviewed/Python parsed. Actual compile/GPU pending; clean MoE cohort prerequisite now passed.",
+    "status": "Actual six-process untraced component cohort PASS; median latency333.3182415 to322.3369095ms,3.29455% reduction. Model speed/adoption unproven.",
     "schedulable_now": false,
     "next_owner": "Main",
-    "next_action": "Serialized build, traced smoke, component, then matched unprofiled component timing. No production source edit yet."
+    "next_action": "Main integrates opt-in subgroup path into existing verification engine, builds and qualifies first GPU/model invocation.",
+    "build_receipt": {
+      "path": "qsa-rowmajor-subgroup-build-v1.json",
+      "sha256": "d2c01366531c0c8908483d9a713cf74c45df6d1ff0fa4b64ced3f44b4797ec7a",
+      "bytes": 361030
+    },
+    "component_receipt": {
+      "path": "own-qsa-rowmajor-subgroup-component-v1.json",
+      "sha256": "5da80cd4182e20580e545617773db0d79b227b3d76f4cc73b3ae2b5d13d273a1",
+      "bytes": 90246
+    },
+    "review": {
+      "path": "research-review-round983-v1.json",
+      "sha256": "c2b0595cf0a6c18f80f96c99f574df443752bee6f29d31187bb58adfd7e646bb",
+      "bytes": 24702
+    },
+    "component_cohort": {
+      "path": "qsa-rowmajor-subgroup-component-cohort-v1.json",
+      "sha256": "174badb5f383126405aa06c451ccc07b26aecc172d88af187548ba2f9907ba45"
+    },
+    "latency_ratio": 0.967054512376575
+  },
+  "research_review_round983": {
+    "path": "research-review-round983-v1.json",
+    "sha256": "c2b0595cf0a6c18f80f96c99f574df443752bee6f29d31187bb58adfd7e646bb",
+    "bytes": 24702,
+    "digest": {
+      "path": "research-review-round983-v1.ja.md",
+      "sha256": "d4e3a8bd38cdb03ecee7ac46b3cd51467056de062225f306abe4c8d91dae425e",
+      "bytes": 1154
+    },
+    "status": "accepted_with_scoped_corrections",
+    "main_original_report_bodies_read": false,
+    "main_read": "Short operational digest and selected review metadata only.",
+    "conditional_scopes": [
+      {
+        "scope": "Current score33 row-major versus subgroup QSA component cohort",
+        "classification": "Main-owned serialized GPU measurement; not research dispatch",
+        "schedulable_now": true,
+        "prerequisites": [
+          {
+            "requirement": "Build/source input pinned",
+            "evidence": "Build/source and generated candidate hashes match R980 review."
+          },
+          {
+            "requirement": "Smoke/component/fault gates closed",
+            "evidence": "Smokes and all 11 component cases passed, owner-closed, with no fresh faults."
+          },
+          {
+            "requirement": "Untraced matched timing recipe",
+            "evidence": "Pinned six-process script is prepared with same binary/inputs and retained validation."
+          }
+        ],
+        "next_action": "Run the prepared six-process cohort serially and retain all per-process samples, oracle outcomes and fault/owner closures."
+      },
+      {
+        "scope": "Host-USM upload comparison (R981)",
+        "classification": "Main-owned implementation/measurement",
+        "schedulable_now": false,
+        "prerequisite": "Finish the QSA cohort, then decide from its result and the existing profile whether upload is still a concrete prefill bottleneck.",
+        "evidence_state": "Current CPU terms are instrumented diagnostics and do not establish staging or end-to-end opportunity. Pin exact source/build/runtime before a later comparison."
+      },
+      {
+        "scope": "B570 resource-ceiling calibration (R982)",
+        "classification": "Held knowledge collection; later Main-owned capture",
+        "schedulable_now": false,
+        "prerequisite": "A closed component/model receipt identifies a specific resource bound that could alter a design decision; acquire same-process identity/topology before interpreting the supplied 160 value.",
+        "evidence_state": "No B570 achieved resource ceiling is measured in the report or current handoff."
+      },
+      {
+        "scope": "Small-M direct-decode component screen (R977/R979)",
+        "classification": "Main-owned component experiment",
+        "schedulable_now": false,
+        "prerequisite": "Close the QSA cohort first and then select small-M as the next implementation question.",
+        "evidence_state": "The earlier six-sample window comparison is now closed; the immediate serialized QSA screen comes first. R979's digest and selected R977 sections suffice if Main later selects this screen."
+      }
+    ],
+    "provider_attestation": "Main compact observation records live codex/gpt-6-luna before release; released null projection is a separate state.",
+    "new_research_recommended": false
   }
 }
