@@ -1,5 +1,5 @@
 {
-  "source_commit": "41f88e0e5f24d9abc01369a2656fd9764503456f",
+  "source_commit": "af6f7eda97d35ea0173fa9aeb2985a5a355c9003",
   "runtime_archive": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-score-gemm-entry-engine-build-v2/build/libstrata_sycl_runtime.a",
     "sha256": "ba34c7d19cf30499c215e86289a921461b9ac426df6f73f61c6769b65d8ee573",
@@ -45,7 +45,7 @@
     "-o",
     "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current/sycl_gdn_chunk64"
   ],
-  "binary_sha256": "6384c25e0fa7644b09976f14a912585b2e05578c612631030828d92de608b0f8",
+  "binary_sha256": "c43bff1281554e0e0af98344a023cf626354534cda16066fd026a510c78151b0",
   "processes_closed": true,
   "ownership_closed": true,
   "smoke": {
@@ -130,7 +130,7 @@
     "passed": true,
     "complete": true,
     "GPU_executed": true,
-    "scope": "Resident same-input GDN8192 component; FP32/original/packed, 1 warmup and 5 rotating samples per arm; no transfers timed.",
+    "scope": "Resident same-input GDN8192 component; FP32/original/packed/V16, 1 warmup and 5 rotating samples per arm; no transfers timed.",
     "clean_environment": false,
     "framework_numerics_qualified": false,
     "hardware_busy_measured": false,
@@ -139,22 +139,27 @@
     "observed_runtime_elf_count": 26,
     "GPU_work_admitted": true,
     "case_results": [
-      "component_sample n=0 arm=current_FP32 tokens=8192 queue_interval_ns=23453645 host_wall_ms=23.4987",
-      "component_sample n=0 arm=chunk64_original tokens=8192 queue_interval_ns=21615625 host_wall_ms=21.6634 gates_ns=43334 pack_ns=2211354 kkt_ns=544063 inverse_ns=4143333 wu_ns=1776563 carry_ns=7376146 readout_ns=2204271 norm_ns=3115313",
-      "component_sample n=0 arm=chunk64_packed tokens=8192 queue_interval_ns=21238021 host_wall_ms=21.2878 gates_ns=43437 pack_ns=2211354 kkt_ns=545209 inverse_ns=3805520 wu_ns=1778542 carry_ns=7326459 readout_ns=2206042 norm_ns=3115312",
-      "component_sample n=1 arm=chunk64_original tokens=8192 queue_interval_ns=21620209 host_wall_ms=21.6693 gates_ns=42917 pack_ns=2214687 kkt_ns=542812 inverse_ns=4149687 wu_ns=1776250 carry_ns=7358958 readout_ns=2215000 norm_ns=3114896",
-      "component_sample n=1 arm=chunk64_packed tokens=8192 queue_interval_ns=21209167 host_wall_ms=21.2535 gates_ns=42813 pack_ns=2214375 kkt_ns=541875 inverse_ns=3808125 wu_ns=1780104 carry_ns=7300312 readout_ns=2193125 norm_ns=3115521",
-      "component_sample n=1 arm=current_FP32 tokens=8192 queue_interval_ns=23466355 host_wall_ms=23.5196",
-      "component_sample n=2 arm=chunk64_packed tokens=8192 queue_interval_ns=21290937 host_wall_ms=21.3373 gates_ns=42292 pack_ns=2216563 kkt_ns=544167 inverse_ns=3810312 wu_ns=1776875 carry_ns=7363646 readout_ns=2221041 norm_ns=3115417",
-      "component_sample n=2 arm=current_FP32 tokens=8192 queue_interval_ns=23450520 host_wall_ms=23.4969",
-      "component_sample n=2 arm=chunk64_original tokens=8192 queue_interval_ns=21637708 host_wall_ms=21.6871 gates_ns=42916 pack_ns=2211459 kkt_ns=543438 inverse_ns=4144063 wu_ns=1776563 carry_ns=7363230 readout_ns=2219896 norm_ns=3116250",
-      "component_sample n=3 arm=current_FP32 tokens=8192 queue_interval_ns=23443646 host_wall_ms=23.4907",
-      "component_sample n=3 arm=chunk64_original tokens=8192 queue_interval_ns=21572916 host_wall_ms=21.6276 gates_ns=42813 pack_ns=2209062 kkt_ns=543958 inverse_ns=4143958 wu_ns=1777292 carry_ns=7349792 readout_ns=2183958 norm_ns=3115104",
-      "component_sample n=3 arm=chunk64_packed tokens=8192 queue_interval_ns=21221771 host_wall_ms=21.267 gates_ns=43437 pack_ns=2210625 kkt_ns=542813 inverse_ns=3812604 wu_ns=1775937 carry_ns=7333437 readout_ns=2185312 norm_ns=3115417",
-      "component_sample n=4 arm=chunk64_original tokens=8192 queue_interval_ns=21582500 host_wall_ms=21.636 gates_ns=43438 pack_ns=2211458 kkt_ns=544583 inverse_ns=4148854 wu_ns=1775417 carry_ns=7360833 readout_ns=2188958 norm_ns=3114896",
-      "component_sample n=4 arm=chunk64_packed tokens=8192 queue_interval_ns=21268854 host_wall_ms=21.3118 gates_ns=43230 pack_ns=2213437 kkt_ns=544688 inverse_ns=3818021 wu_ns=1776771 carry_ns=7324063 readout_ns=2196563 norm_ns=3115730",
-      "component_sample n=4 arm=current_FP32 tokens=8192 queue_interval_ns=23459687 host_wall_ms=23.5051",
-      "component_comparison tokens=8192 same_input_values=true carry_rel_L2=0.00295438 carry_max_abs=0.000850588 output_rel_L2=0.00375053 output_max_abs=0.0175781 inverse_packing_parity=PASS accuracy=DIAGNOSTIC_ONLY hardware_busy=UNMEASURED PCIe_wire_bytes=UNMEASURED status=SAFETY_PASS",
+      "component_sample n=0 arm=current_FP32 tokens=8192 queue_interval_ns=23453125 host_wall_ms=23.5026",
+      "component_sample n=0 arm=chunk64_original tokens=8192 queue_interval_ns=21542708 host_wall_ms=21.6079 gates_ns=43437 pack_ns=2207396 kkt_ns=542604 inverse_ns=4143855 wu_ns=1777188 carry_ns=7297396 readout_ns=2201979 norm_ns=3114792",
+      "component_sample n=0 arm=chunk64_packed tokens=8192 queue_interval_ns=21301980 host_wall_ms=21.3694 gates_ns=43750 pack_ns=2212187 kkt_ns=543125 inverse_ns=3811146 wu_ns=1778334 carry_ns=7361563 readout_ns=2205937 norm_ns=3115833",
+      "component_sample n=0 arm=chunk64_packed_V16 tokens=8192 queue_interval_ns=18478438 host_wall_ms=18.5437 gates_ns=42291 pack_ns=2209479 kkt_ns=544583 inverse_ns=3808021 wu_ns=1775312 carry_ns=4554167 readout_ns=2206250 norm_ns=3115625",
+      "component_sample n=1 arm=chunk64_original tokens=8192 queue_interval_ns=21655000 host_wall_ms=21.7066 gates_ns=43229 pack_ns=2212813 kkt_ns=544375 inverse_ns=4145625 wu_ns=1776146 carry_ns=7368333 readout_ns=2225521 norm_ns=3115625",
+      "component_sample n=1 arm=chunk64_packed tokens=8192 queue_interval_ns=21322708 host_wall_ms=21.377 gates_ns=43020 pack_ns=2210521 kkt_ns=544375 inverse_ns=3807916 wu_ns=1775625 carry_ns=7385729 readout_ns=2205417 norm_ns=3116042",
+      "component_sample n=1 arm=chunk64_packed_V16 tokens=8192 queue_interval_ns=18496458 host_wall_ms=18.5519 gates_ns=42292 pack_ns=2214271 kkt_ns=545000 inverse_ns=3814583 wu_ns=1777187 carry_ns=4544479 readout_ns=2212500 norm_ns=3133854",
+      "component_sample n=1 arm=current_FP32 tokens=8192 queue_interval_ns=23493021 host_wall_ms=23.5579",
+      "component_sample n=2 arm=chunk64_packed tokens=8192 queue_interval_ns=21229375 host_wall_ms=21.282 gates_ns=42917 pack_ns=2210625 kkt_ns=543958 inverse_ns=3798542 wu_ns=1775833 carry_ns=7320208 readout_ns=2200520 norm_ns=3116562",
+      "component_sample n=2 arm=chunk64_packed_V16 tokens=8192 queue_interval_ns=18421250 host_wall_ms=18.492 gates_ns=43021 pack_ns=2214375 kkt_ns=542708 inverse_ns=3810729 wu_ns=1795000 carry_ns=4476667 readout_ns=2193854 norm_ns=3116146",
+      "component_sample n=2 arm=current_FP32 tokens=8192 queue_interval_ns=23500729 host_wall_ms=23.549",
+      "component_sample n=2 arm=chunk64_original tokens=8192 queue_interval_ns=21611354 host_wall_ms=21.6599 gates_ns=43229 pack_ns=2210833 kkt_ns=543437 inverse_ns=4147812 wu_ns=1776771 carry_ns=7344271 readout_ns=2195416 norm_ns=3115416",
+      "component_sample n=3 arm=chunk64_packed_V16 tokens=8192 queue_interval_ns=18376459 host_wall_ms=18.4218 gates_ns=42812 pack_ns=2211980 kkt_ns=543542 inverse_ns=3815104 wu_ns=1777292 carry_ns=4471458 readout_ns=2207084 norm_ns=3115417",
+      "component_sample n=3 arm=current_FP32 tokens=8192 queue_interval_ns=23440729 host_wall_ms=23.4868",
+      "component_sample n=3 arm=chunk64_original tokens=8192 queue_interval_ns=21566979 host_wall_ms=21.6122 gates_ns=43542 pack_ns=2214687 kkt_ns=543437 inverse_ns=4142812 wu_ns=1777291 carry_ns=7332604 readout_ns=2203959 norm_ns=3115834",
+      "component_sample n=3 arm=chunk64_packed tokens=8192 queue_interval_ns=21349479 host_wall_ms=21.3959 gates_ns=42708 pack_ns=2209479 kkt_ns=544375 inverse_ns=3810208 wu_ns=1778229 carry_ns=7410834 readout_ns=2223021 norm_ns=3115521",
+      "component_sample n=4 arm=current_FP32 tokens=8192 queue_interval_ns=23460937 host_wall_ms=23.5069",
+      "component_sample n=4 arm=chunk64_original tokens=8192 queue_interval_ns=21557083 host_wall_ms=21.6029 gates_ns=43438 pack_ns=2209687 kkt_ns=542291 inverse_ns=4147188 wu_ns=1776771 carry_ns=7320000 readout_ns=2199479 norm_ns=3116250",
+      "component_sample n=4 arm=chunk64_packed tokens=8192 queue_interval_ns=21207187 host_wall_ms=21.2553 gates_ns=42916 pack_ns=2217500 kkt_ns=544063 inverse_ns=3810834 wu_ns=1778021 carry_ns=7296354 readout_ns=2197396 norm_ns=3115625",
+      "component_sample n=4 arm=chunk64_packed_V16 tokens=8192 queue_interval_ns=18408959 host_wall_ms=18.4593 gates_ns=43438 pack_ns=2210521 kkt_ns=544062 inverse_ns=3811354 wu_ns=1777396 carry_ns=4470521 readout_ns=2202604 norm_ns=3115938",
+      "component_comparison tokens=8192 same_input_values=true carry_rel_L2=0.00295438 carry_max_abs=0.000850588 output_rel_L2=0.00375053 output_max_abs=0.0175781 inverse_packing_parity=PASS carry_slicing_parity=PASS accuracy=DIAGNOSTIC_ONLY hardware_busy=UNMEASURED PCIe_wire_bytes=UNMEASURED status=SAFETY_PASS",
       "fixture_status=PASS general_numerics=UNRUN long_component=UNRUN model_PP=UNRUN physical262144_model=UNRUN RESTORE=UNRUN faults=EXTERNAL_REQUIRED"
     ],
     "exit_code": 0,
@@ -169,7 +174,7 @@
     "passed": true,
     "complete": true,
     "GPU_executed": true,
-    "scope": "Resident same-input GDN8192 component; FP32/original/packed, 1 warmup and 5 rotating samples per arm; no transfers timed.",
+    "scope": "Resident same-input GDN8192 component; FP32/original/packed/V16, 1 warmup and 5 rotating samples per arm; no transfers timed.",
     "clean_environment": true,
     "framework_numerics_qualified": false,
     "hardware_busy_measured": false,
@@ -185,22 +190,27 @@
     "observed_runtime_elf_count": 26,
     "GPU_work_admitted": true,
     "case_results": [
-      "component_sample n=0 arm=current_FP32 tokens=8192 queue_interval_ns=23424270 host_wall_ms=23.4608",
-      "component_sample n=0 arm=chunk64_original tokens=8192 queue_interval_ns=21388125 host_wall_ms=21.4255 gates_ns=43646 pack_ns=2210937 kkt_ns=542916 inverse_ns=4150313 wu_ns=1776875 carry_ns=7308229 readout_ns=2195625 norm_ns=3114792",
-      "component_sample n=0 arm=chunk64_packed tokens=8192 queue_interval_ns=21115625 host_wall_ms=21.1488 gates_ns=42813 pack_ns=2212396 kkt_ns=542187 inverse_ns=3809687 wu_ns=1776562 carry_ns=7347604 readout_ns=2211770 norm_ns=3115104",
-      "component_sample n=1 arm=chunk64_original tokens=8192 queue_interval_ns=21423230 host_wall_ms=21.4607 gates_ns=43437 pack_ns=2214167 kkt_ns=543334 inverse_ns=4145833 wu_ns=1774896 carry_ns=7337187 readout_ns=2205104 norm_ns=3114687",
-      "component_sample n=1 arm=chunk64_packed tokens=8192 queue_interval_ns=21067708 host_wall_ms=21.1006 gates_ns=43646 pack_ns=2213437 kkt_ns=543437 inverse_ns=3805833 wu_ns=1778333 carry_ns=7331458 readout_ns=2193750 norm_ns=3114792",
-      "component_sample n=1 arm=current_FP32 tokens=8192 queue_interval_ns=23430938 host_wall_ms=23.4653",
-      "component_sample n=2 arm=chunk64_packed tokens=8192 queue_interval_ns=21081563 host_wall_ms=21.1164 gates_ns=42917 pack_ns=2209167 kkt_ns=542604 inverse_ns=3815416 wu_ns=1777187 carry_ns=7333646 readout_ns=2201875 norm_ns=3115312",
-      "component_sample n=2 arm=current_FP32 tokens=8192 queue_interval_ns=23432709 host_wall_ms=23.4693",
-      "component_sample n=2 arm=chunk64_original tokens=8192 queue_interval_ns=21393959 host_wall_ms=21.428 gates_ns=43020 pack_ns=2211041 kkt_ns=543958 inverse_ns=4151354 wu_ns=1775833 carry_ns=7328333 readout_ns=2180312 norm_ns=3115104",
-      "component_sample n=3 arm=current_FP32 tokens=8192 queue_interval_ns=23425729 host_wall_ms=23.4627",
-      "component_sample n=3 arm=chunk64_original tokens=8192 queue_interval_ns=21415730 host_wall_ms=21.4521 gates_ns=42917 pack_ns=2213854 kkt_ns=541562 inverse_ns=4153333 wu_ns=1776979 carry_ns=7336041 readout_ns=2192396 norm_ns=3114896",
-      "component_sample n=3 arm=chunk64_packed tokens=8192 queue_interval_ns=21116875 host_wall_ms=21.1537 gates_ns=43438 pack_ns=2211250 kkt_ns=543438 inverse_ns=3806980 wu_ns=1776042 carry_ns=7357188 readout_ns=2209583 norm_ns=3115938",
-      "component_sample n=4 arm=chunk64_original tokens=8192 queue_interval_ns=21412709 host_wall_ms=21.4476 gates_ns=43125 pack_ns=2211667 kkt_ns=544271 inverse_ns=4148542 wu_ns=1777916 carry_ns=7320104 readout_ns=2208750 norm_ns=3114479",
-      "component_sample n=4 arm=chunk64_packed tokens=8192 queue_interval_ns=21109062 host_wall_ms=21.1426 gates_ns=43230 pack_ns=2208750 kkt_ns=544166 inverse_ns=3806979 wu_ns=1794167 carry_ns=7336667 readout_ns=2202916 norm_ns=3114271",
-      "component_sample n=4 arm=current_FP32 tokens=8192 queue_interval_ns=23423229 host_wall_ms=23.459",
-      "component_comparison tokens=8192 same_input_values=true carry_rel_L2=0.00295438 carry_max_abs=0.000850588 output_rel_L2=0.00375053 output_max_abs=0.0175781 inverse_packing_parity=PASS accuracy=DIAGNOSTIC_ONLY hardware_busy=UNMEASURED PCIe_wire_bytes=UNMEASURED status=SAFETY_PASS",
+      "component_sample n=0 arm=current_FP32 tokens=8192 queue_interval_ns=23421770 host_wall_ms=23.4545",
+      "component_sample n=0 arm=chunk64_original tokens=8192 queue_interval_ns=21440104 host_wall_ms=21.4726 gates_ns=43333 pack_ns=2211146 kkt_ns=542917 inverse_ns=4154896 wu_ns=1776041 carry_ns=7347917 readout_ns=2189167 norm_ns=3115834",
+      "component_sample n=0 arm=chunk64_packed tokens=8192 queue_interval_ns=21097604 host_wall_ms=21.1319 gates_ns=43125 pack_ns=2211458 kkt_ns=544896 inverse_ns=3809375 wu_ns=1776562 carry_ns=7349896 readout_ns=2204271 norm_ns=3114896",
+      "component_sample n=0 arm=chunk64_packed_V16 tokens=8192 queue_interval_ns=18276875 host_wall_ms=18.3108 gates_ns=42916 pack_ns=2209479 kkt_ns=543229 inverse_ns=3804167 wu_ns=1779479 carry_ns=4535937 readout_ns=2201667 norm_ns=3115625",
+      "component_sample n=1 arm=chunk64_original tokens=8192 queue_interval_ns=21365521 host_wall_ms=21.3976 gates_ns=43125 pack_ns=2211146 kkt_ns=543646 inverse_ns=4141562 wu_ns=1776354 carry_ns=7289375 readout_ns=2195625 norm_ns=3115416",
+      "component_sample n=1 arm=chunk64_packed tokens=8192 queue_interval_ns=21048333 host_wall_ms=21.0828 gates_ns=43541 pack_ns=2211042 kkt_ns=543854 inverse_ns=3805000 wu_ns=1777292 carry_ns=7298125 readout_ns=2205937 norm_ns=3115000",
+      "component_sample n=1 arm=chunk64_packed_V16 tokens=8192 queue_interval_ns=18256562 host_wall_ms=18.2905 gates_ns=42708 pack_ns=2207083 kkt_ns=542813 inverse_ns=3819063 wu_ns=1776563 carry_ns=4500625 readout_ns=2202812 norm_ns=3115417",
+      "component_sample n=1 arm=current_FP32 tokens=8192 queue_interval_ns=23435625 host_wall_ms=23.4671",
+      "component_sample n=2 arm=chunk64_packed tokens=8192 queue_interval_ns=21097604 host_wall_ms=21.1328 gates_ns=42813 pack_ns=2210938 kkt_ns=541666 inverse_ns=3801146 wu_ns=1777084 carry_ns=7342500 readout_ns=2220937 norm_ns=3116458",
+      "component_sample n=2 arm=chunk64_packed_V16 tokens=8192 queue_interval_ns=18266458 host_wall_ms=18.2993 gates_ns=43125 pack_ns=2210625 kkt_ns=544792 inverse_ns=3809063 wu_ns=1776250 carry_ns=4530208 readout_ns=2192604 norm_ns=3115313",
+      "component_sample n=2 arm=current_FP32 tokens=8192 queue_interval_ns=23448333 host_wall_ms=23.4806",
+      "component_sample n=2 arm=chunk64_original tokens=8192 queue_interval_ns=21436146 host_wall_ms=21.4688 gates_ns=42292 pack_ns=2209688 kkt_ns=543021 inverse_ns=4148229 wu_ns=1776875 carry_ns=7351771 readout_ns=2204063 norm_ns=3116146",
+      "component_sample n=3 arm=chunk64_packed_V16 tokens=8192 queue_interval_ns=18240208 host_wall_ms=18.2754 gates_ns=42604 pack_ns=2209375 kkt_ns=543438 inverse_ns=3809270 wu_ns=1776042 carry_ns=4510104 readout_ns=2181562 norm_ns=3116563",
+      "component_sample n=3 arm=current_FP32 tokens=8192 queue_interval_ns=23428125 host_wall_ms=23.462",
+      "component_sample n=3 arm=chunk64_original tokens=8192 queue_interval_ns=21467083 host_wall_ms=21.4998 gates_ns=43854 pack_ns=2207187 kkt_ns=543750 inverse_ns=4144375 wu_ns=1777396 carry_ns=7392291 readout_ns=2200000 norm_ns=3115209",
+      "component_sample n=3 arm=chunk64_packed tokens=8192 queue_interval_ns=21027083 host_wall_ms=21.0628 gates_ns=43854 pack_ns=2210625 kkt_ns=544167 inverse_ns=3819375 wu_ns=1775312 carry_ns=7270833 readout_ns=2197812 norm_ns=3115104",
+      "component_sample n=4 arm=current_FP32 tokens=8192 queue_interval_ns=23425312 host_wall_ms=23.4584",
+      "component_sample n=4 arm=chunk64_original tokens=8192 queue_interval_ns=21412292 host_wall_ms=21.4453 gates_ns=43229 pack_ns=2211354 kkt_ns=543333 inverse_ns=4143750 wu_ns=1776770 carry_ns=7338958 readout_ns=2194583 norm_ns=3116041",
+      "component_sample n=4 arm=chunk64_packed tokens=8192 queue_interval_ns=21137500 host_wall_ms=21.173 gates_ns=42396 pack_ns=2210521 kkt_ns=543541 inverse_ns=3807292 wu_ns=1777292 carry_ns=7399896 readout_ns=2189688 norm_ns=3116146",
+      "component_sample n=4 arm=chunk64_packed_V16 tokens=8192 queue_interval_ns=18309167 host_wall_ms=18.3429 gates_ns=43438 pack_ns=2209063 kkt_ns=544688 inverse_ns=3800416 wu_ns=1775625 carry_ns=4543854 readout_ns=2227292 norm_ns=3115729",
+      "component_comparison tokens=8192 same_input_values=true carry_rel_L2=0.00295438 carry_max_abs=0.000850588 output_rel_L2=0.00375053 output_max_abs=0.0175781 inverse_packing_parity=PASS carry_slicing_parity=PASS accuracy=DIAGNOSTIC_ONLY hardware_busy=UNMEASURED PCIe_wire_bytes=UNMEASURED status=SAFETY_PASS",
       "fixture_status=PASS general_numerics=UNRUN long_component=UNRUN model_PP=UNRUN physical262144_model=UNRUN RESTORE=UNRUN faults=EXTERNAL_REQUIRED"
     ],
     "exit_code": 0,
@@ -220,113 +230,23 @@
     "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current/sycl_gdn_chunk64",
     "--component"
   ],
-  "retirement": {
-    "state": "retired",
-    "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current",
-    "source_commit": "41f88e0e5f24d9abc01369a2656fd9764503456f",
-    "verified_project_inputs": 152,
-    "files": [
-      {
-        "path": "cache/component/neo_compiler_cache/7/c/7cff8fa7191b6478.l0_cache",
-        "bytes": 68872,
-        "sha256": "2a63a223982e2ec9793ce289e85061d8142daed2f45a293300f966e2e706455e"
-      },
-      {
-        "path": "cache/component/neo_compiler_cache/config.file",
-        "bytes": 8,
-        "sha256": "6b6cfe46c6fdb3e010bcbb5e0d0301001c7a50c8e92c1fca72b7fb7b7e30c479"
-      },
-      {
-        "path": "cache/component/neo_compiler_cache/e/2/e2aa70981baf4bad.l0_cache",
-        "bytes": 2368,
-        "sha256": "96ca882778aecc5818db1f47caea7aa35ed6f67e8616e0f2016e6a00df5137e3"
-      },
-      {
-        "path": "cache/component-check/neo_compiler_cache/7/c/7cff8fa7191b6478.l0_cache",
-        "bytes": 68872,
-        "sha256": "2a63a223982e2ec9793ce289e85061d8142daed2f45a293300f966e2e706455e"
-      },
-      {
-        "path": "cache/component-check/neo_compiler_cache/config.file",
-        "bytes": 8,
-        "sha256": "6b6cfe46c6fdb3e010bcbb5e0d0301001c7a50c8e92c1fca72b7fb7b7e30c479"
-      },
-      {
-        "path": "cache/component-check/neo_compiler_cache/e/2/e2aa70981baf4bad.l0_cache",
-        "bytes": 2368,
-        "sha256": "96ca882778aecc5818db1f47caea7aa35ed6f67e8616e0f2016e6a00df5137e3"
-      },
-      {
-        "path": "owned/boundaries.stderr",
-        "bytes": 463072,
-        "sha256": "558d9e25adf9f4b9f2c1e7bfd0d78cab4a15bdd048444bc22ac0cedf2d8ddb09"
-      },
-      {
-        "path": "owned/boundaries.stdout",
-        "bytes": 2797,
-        "sha256": "55aef5981331899b2b359756b7b0754e6826eaf02cbfeb2556f47d2adba2ca38"
-      },
-      {
-        "path": "owned/build.stderr",
-        "bytes": 0,
-        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-      },
-      {
-        "path": "owned/build.stdout",
-        "bytes": 0,
-        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-      },
-      {
-        "path": "owned/component-check.stderr",
-        "bytes": 443746,
-        "sha256": "b240ef368b8b91b316f75fbd31bbf88dca7d5aa47ed121098de56b95c5ec0a7a"
-      },
-      {
-        "path": "owned/component-check.stdout",
-        "bytes": 3379,
-        "sha256": "ff09f56fe4b4597b8a949631a162715b4e578cc46cdc55268c67ef77cf65f0de"
-      },
-      {
-        "path": "owned/component.stderr",
-        "bytes": 0,
-        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-      },
-      {
-        "path": "owned/component.stdout",
-        "bytes": 3379,
-        "sha256": "38159b473fc690e71dd79f9763384394e6a6c463c39acc48518bb62687d036e1"
-      },
-      {
-        "path": "owned/general.stderr",
-        "bytes": 557371,
-        "sha256": "5ae0a6c0e2c932adffb8ccc0d68ded0e442d543525bc6d07235e8e8e96849e8c"
-      },
-      {
-        "path": "owned/general.stdout",
-        "bytes": 2083,
-        "sha256": "f245ea894f0dcf4d5a65d0930d86bf0b6ec790da4a13b2a62e4b37eff5743cfd"
-      },
-      {
-        "path": "owned/smoke.stderr",
-        "bytes": 186123,
-        "sha256": "5aa8fa5c9f510457530a7feb2365f4416dbbb5734090eeed5ce33c3547c687eb"
-      },
-      {
-        "path": "owned/smoke.stdout",
-        "bytes": 1127,
-        "sha256": "9b1e5a3bd2ce184b1b1476bfae96006d0a1e40486d8100815c9d2ee89bffe1cf"
-      },
-      {
-        "path": "record.json",
-        "bytes": 38164,
-        "sha256": "8b3a5c30ccaf43f514175eaaed85d2980fe222a0088d5b50799962ec9f3160e1"
-      },
-      {
-        "path": "sycl_gdn_chunk64",
-        "bytes": 374552,
-        "sha256": "6384c25e0fa7644b09976f14a912585b2e05578c612631030828d92de608b0f8"
-      }
-    ],
-    "reason": "Closed superseded qualification; source/recipe recovered from Git."
+  "component_decision": {
+    "status": "component_only; not model adoption",
+    "workload": "Deterministic normalized synthetic post-convolution BF16 Q16/K16/V48,8192tokens; same decoded values for current FP32 baseline.",
+    "median_queue_interval_ms": {
+      "chunk64_original": 21.436146,
+      "chunk64_packed": 21.097604,
+      "chunk64_packed_V16": 18.266458,
+      "current_FP32": 23.428125
+    },
+    "selected_private_schedule": {
+      "packed_inverse": true,
+      "carry_value_columns_per_workgroup": 16
+    },
+    "time_reduction_vs_current_FP32": 0.22031925303454725,
+    "new_optimizations_state_and_output_bits_equal_to_original_candidate": true,
+    "device_resource_change": "Carry requested SLM28672->14336B per workgroup, saved FP32 elements32->16 per workitem, workgroups192->384. Arithmetic unchanged; extra W/K tile reads may trade against parallelism.",
+    "hardware_interpretation": "Resident inputs and resets/transfers excluded from intervals. Improvement establishes a device-local scheduling/resource opportunity; no occupancy, physical bandwidth or utilization counter was measured.",
+    "next_gate": "Compare framework rounding/persistent-state contract, add native BF16 conv producer and integrate only into dedicated long-prefill path, then actual-model correctness/quality/speed plus physical262144/RESTORE qualification."
   }
 }

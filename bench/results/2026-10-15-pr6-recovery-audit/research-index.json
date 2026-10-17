@@ -20,6 +20,17 @@
       "why_active_now": "The index records a targeted retrieval for an intra-work-group FP32 sum-order/crossover question after the packed-layout component/codegen boundary. Keep while that selected-cell reduction question remains open.",
       "retrieval_trigger": "Read only the indexed relevant sections if a measured Main-owned reduction split or reassociation is selected; remove from active checkout once that question closes.",
       "carry_forward_caveats": "No Strata speedup, B570 support, current bottleneck, or utilization result. The worker did not verify the dispatch-supplied 2a5ba71b source-context pin. Keep that caveat in active metadata."
+    },
+    {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-matrix-register-reuse-20261018.md",
+      "sha256": "747e2627239edefb7280283f82158535765996b444b8a57c860708e82b4d69eb",
+      "classification": "knowledge_collection",
+      "information_value": "Source-backed joint_matrix operand views, state ownership, SLM/register tradeoffs and persistent-versus-split schedules; no measured Strata/B570 gain claimed by the survey.",
+      "why_active_now": "Resident GDN8192 timing exposed carry and reduction/resource costs. Current V16 carry reduced requested SLM and per-workitem state; next concrete question is GDN readout/RMS reduction ownership and reuse.",
+      "retrieval_trigger": "Retrieve only selected sections for the measured GDN state/SLM/reduction schedule decision.",
+      "review_point": "Next GDN resident scheduling comparison or closure of the readout/reduction decision; remove if superseded.",
+      "review_sha256": "e436ff6c7a571b693bd9b447ed5243f7efa24684175cb2a0be9b8e347fae9bfa",
+      "carry_forward_caveats": "Survey sources do not establish B570 runtime support, occupancy, spills, physical bandwidth, numerical equivalence or performance. Use Main-owned device/contract evidence; no XeStrata source adoption."
     }
   ],
   "current_decision_review": {
@@ -37,7 +48,7 @@
       "Actual persistent state dtype/config is recorded.",
       "A material stage-localized mismatch exists."
     ],
-    "status": "Not established; source survey alone cannot supply execution evidence."
+    "status": "General non-orthogonal BF16 cases with FP32 fixture carry have run; actual framework pool dtype and a material framework-stage-localized mismatch are not established. Scope remains unschedulable."
   },
   "archived_topic_hints": [
     {

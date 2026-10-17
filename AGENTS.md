@@ -77,6 +77,9 @@ are outside this work's scope.
 - Integrate completed child source, tests, skills and reports into the actual
   `feature/sycl` tree, then push. Update the fork's remote default through a PR
   at each completed boundary; the ghq root remains the default mirror and only pulls.
+  Use a merge commit for PRs containing original source revisions referenced by
+  measurements, and verify those revisions remain reachable from the retained
+  default branch before retiring their branches.
 - Pin delegated source proposals to an immutable commit or a fully hashed source
   snapshot. Generate the patch against that same base, even if the main worktree
   changes during implementation. Review the complete patch and preservation of
