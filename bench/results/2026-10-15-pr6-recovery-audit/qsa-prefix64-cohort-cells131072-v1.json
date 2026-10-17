@@ -1,0 +1,398 @@
+{
+  "schema": "strata-qsa-prefix64-cohort-v1",
+  "passed": true,
+  "complete": true,
+  "active_sample": null,
+  "completed": [
+    {
+      "arm": "base",
+      "repetition": 0,
+      "receipt": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/qsa-prefix64-bench-base-131072-0-v1.json",
+      "receipt_sha256": "11a41081b18261b31412818bf0cc134afde18c9d892f136baa5ca8fa8d863cc7",
+      "command": [
+        "/usr/bin/python3",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/run_qsa_prefix64_bench_v1.py",
+        "base-131072-0"
+      ],
+      "sample_wall_ms": [
+        444.643603,
+        443.286938,
+        445.533089,
+        444.674411,
+        443.673867,
+        444.808464,
+        443.270787,
+        445.034559,
+        443.712108,
+        445.347038
+      ],
+      "median_wall_ms": 444.659007,
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-prefix64-build-v1/sycl_qsa_prefix64_timing",
+        "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-prefix64-build-v1/sycl_qsa_prefix64_timing",
+        "bytes": 1132000,
+        "sha256": "178975f66bfca2bda12415d422fccb27ed5cf9fdfb9703b92e6029764add200b"
+      },
+      "frame": {
+        "arm": "base",
+        "nq": "8192",
+        "cap": "2051",
+        "workgroups": "16384",
+        "cells": "131072",
+        "global_selected_cells": "131072",
+        "selected_set": "per_query_rotated_uniform_spread_unique",
+        "device_bytes": "1079247296",
+        "packed_scratch_payload_bytes": "269484032",
+        "pack_cost": "IN_TIMED_CALL",
+        "warmups": "2",
+        "repetitions": "10",
+        "fingerprints": "FNV1a64_native_bytes",
+        "q": "11439647903705736170",
+        "k": "15619872356097671629",
+        "v": "16237679602670317813",
+        "ks": "13316312864390083098",
+        "vs": "3009537043191427103",
+        "table": "6582289258935580965",
+        "ids": "3894147128697085375",
+        "steps": "1653334389473275685"
+      },
+      "cases": [
+        "case status=PASS guards=PASS inputs=PASS full_finite=PASS repeat_bits=PASS oracle=BF16_operands_FP32_online_queries_0_1_2_last compared=24576 max_abs=3.0517578125e-05 max_budget_ratio=0.938494804493 output_FNV1a64=15616686985254651297 per_repeat_numerical=FINAL_FRAME_ONLY model_PP=UNRUN physical_traffic=UNMEASURED utilization=UNMEASURED"
+      ]
+    },
+    {
+      "arm": "tile64",
+      "repetition": 0,
+      "receipt": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/qsa-prefix64-bench-tile64-131072-0-v1.json",
+      "receipt_sha256": "50db97e8e98e8769bf49c958e1cd7981c0b07b83f29232ab2cc73fab4a525b4b",
+      "command": [
+        "/usr/bin/python3",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/run_qsa_prefix64_bench_v1.py",
+        "tile64-131072-0"
+      ],
+      "sample_wall_ms": [
+        667.425797,
+        668.2182,
+        669.425784,
+        669.644957,
+        667.837623,
+        668.420119,
+        668.052827,
+        666.404654,
+        667.423412,
+        668.119112
+      ],
+      "median_wall_ms": 668.0859694999999,
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-prefix64-build-v1/sycl_qsa_prefix64_timing",
+        "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-prefix64-build-v1/sycl_qsa_prefix64_timing",
+        "bytes": 1132000,
+        "sha256": "178975f66bfca2bda12415d422fccb27ed5cf9fdfb9703b92e6029764add200b"
+      },
+      "frame": {
+        "arm": "tile64",
+        "nq": "8192",
+        "cap": "2051",
+        "workgroups": "16384",
+        "cells": "131072",
+        "global_selected_cells": "131072",
+        "selected_set": "per_query_rotated_uniform_spread_unique",
+        "device_bytes": "1079247296",
+        "packed_scratch_payload_bytes": "269484032",
+        "pack_cost": "IN_TIMED_CALL",
+        "warmups": "2",
+        "repetitions": "10",
+        "fingerprints": "FNV1a64_native_bytes",
+        "q": "11439647903705736170",
+        "k": "15619872356097671629",
+        "v": "16237679602670317813",
+        "ks": "13316312864390083098",
+        "vs": "3009537043191427103",
+        "table": "6582289258935580965",
+        "ids": "3894147128697085375",
+        "steps": "1653334389473275685"
+      },
+      "cases": [
+        "case status=PASS guards=PASS inputs=PASS full_finite=PASS repeat_bits=PASS oracle=BF16_operands_FP32_online_queries_0_1_2_last compared=24576 max_abs=3.0517578125e-05 max_budget_ratio=0.938494804493 output_FNV1a64=11324158633871457176 per_repeat_numerical=FINAL_FRAME_ONLY model_PP=UNRUN physical_traffic=UNMEASURED utilization=UNMEASURED"
+      ]
+    },
+    {
+      "arm": "tile64",
+      "repetition": 1,
+      "receipt": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/qsa-prefix64-bench-tile64-131072-1-v1.json",
+      "receipt_sha256": "1ef1965c3cfb0cfc52ac11d6257da4cb19c2cb98bd35c769027ad22c57db4054",
+      "command": [
+        "/usr/bin/python3",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/run_qsa_prefix64_bench_v1.py",
+        "tile64-131072-1"
+      ],
+      "sample_wall_ms": [
+        667.327608,
+        668.405688,
+        667.966029,
+        667.865811,
+        668.308174,
+        668.872837,
+        668.426356,
+        667.650414,
+        668.200079,
+        668.084311
+      ],
+      "median_wall_ms": 668.1421949999999,
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-prefix64-build-v1/sycl_qsa_prefix64_timing",
+        "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-prefix64-build-v1/sycl_qsa_prefix64_timing",
+        "bytes": 1132000,
+        "sha256": "178975f66bfca2bda12415d422fccb27ed5cf9fdfb9703b92e6029764add200b"
+      },
+      "frame": {
+        "arm": "tile64",
+        "nq": "8192",
+        "cap": "2051",
+        "workgroups": "16384",
+        "cells": "131072",
+        "global_selected_cells": "131072",
+        "selected_set": "per_query_rotated_uniform_spread_unique",
+        "device_bytes": "1079247296",
+        "packed_scratch_payload_bytes": "269484032",
+        "pack_cost": "IN_TIMED_CALL",
+        "warmups": "2",
+        "repetitions": "10",
+        "fingerprints": "FNV1a64_native_bytes",
+        "q": "11439647903705736170",
+        "k": "15619872356097671629",
+        "v": "16237679602670317813",
+        "ks": "13316312864390083098",
+        "vs": "3009537043191427103",
+        "table": "6582289258935580965",
+        "ids": "3894147128697085375",
+        "steps": "1653334389473275685"
+      },
+      "cases": [
+        "case status=PASS guards=PASS inputs=PASS full_finite=PASS repeat_bits=PASS oracle=BF16_operands_FP32_online_queries_0_1_2_last compared=24576 max_abs=3.0517578125e-05 max_budget_ratio=0.938494804493 output_FNV1a64=11324158633871457176 per_repeat_numerical=FINAL_FRAME_ONLY model_PP=UNRUN physical_traffic=UNMEASURED utilization=UNMEASURED"
+      ]
+    },
+    {
+      "arm": "base",
+      "repetition": 1,
+      "receipt": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/qsa-prefix64-bench-base-131072-1-v1.json",
+      "receipt_sha256": "cf0a51de630822ca15dcbaea5bc0eb7d9dc38e5ee926cbd25ec1c20be9175e49",
+      "command": [
+        "/usr/bin/python3",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/run_qsa_prefix64_bench_v1.py",
+        "base-131072-1"
+      ],
+      "sample_wall_ms": [
+        446.120651,
+        444.957336,
+        445.369883,
+        444.497036,
+        443.479868,
+        442.498683,
+        443.754901,
+        443.71573,
+        445.563629,
+        444.767987
+      ],
+      "median_wall_ms": 444.63251149999996,
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-prefix64-build-v1/sycl_qsa_prefix64_timing",
+        "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-prefix64-build-v1/sycl_qsa_prefix64_timing",
+        "bytes": 1132000,
+        "sha256": "178975f66bfca2bda12415d422fccb27ed5cf9fdfb9703b92e6029764add200b"
+      },
+      "frame": {
+        "arm": "base",
+        "nq": "8192",
+        "cap": "2051",
+        "workgroups": "16384",
+        "cells": "131072",
+        "global_selected_cells": "131072",
+        "selected_set": "per_query_rotated_uniform_spread_unique",
+        "device_bytes": "1079247296",
+        "packed_scratch_payload_bytes": "269484032",
+        "pack_cost": "IN_TIMED_CALL",
+        "warmups": "2",
+        "repetitions": "10",
+        "fingerprints": "FNV1a64_native_bytes",
+        "q": "11439647903705736170",
+        "k": "15619872356097671629",
+        "v": "16237679602670317813",
+        "ks": "13316312864390083098",
+        "vs": "3009537043191427103",
+        "table": "6582289258935580965",
+        "ids": "3894147128697085375",
+        "steps": "1653334389473275685"
+      },
+      "cases": [
+        "case status=PASS guards=PASS inputs=PASS full_finite=PASS repeat_bits=PASS oracle=BF16_operands_FP32_online_queries_0_1_2_last compared=24576 max_abs=3.0517578125e-05 max_budget_ratio=0.938494804493 output_FNV1a64=15616686985254651297 per_repeat_numerical=FINAL_FRAME_ONLY model_PP=UNRUN physical_traffic=UNMEASURED utilization=UNMEASURED"
+      ]
+    },
+    {
+      "arm": "base",
+      "repetition": 2,
+      "receipt": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/qsa-prefix64-bench-base-131072-2-v1.json",
+      "receipt_sha256": "2063feb20d8229f146edf39f4ce991206c2d6e3d692cb8868e08c9d9258fe045",
+      "command": [
+        "/usr/bin/python3",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/run_qsa_prefix64_bench_v1.py",
+        "base-131072-2"
+      ],
+      "sample_wall_ms": [
+        442.120067,
+        445.135203,
+        445.484159,
+        443.560335,
+        442.706392,
+        443.812337,
+        445.178455,
+        444.445788,
+        444.615113,
+        444.485095
+      ],
+      "median_wall_ms": 444.4654415,
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-prefix64-build-v1/sycl_qsa_prefix64_timing",
+        "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-prefix64-build-v1/sycl_qsa_prefix64_timing",
+        "bytes": 1132000,
+        "sha256": "178975f66bfca2bda12415d422fccb27ed5cf9fdfb9703b92e6029764add200b"
+      },
+      "frame": {
+        "arm": "base",
+        "nq": "8192",
+        "cap": "2051",
+        "workgroups": "16384",
+        "cells": "131072",
+        "global_selected_cells": "131072",
+        "selected_set": "per_query_rotated_uniform_spread_unique",
+        "device_bytes": "1079247296",
+        "packed_scratch_payload_bytes": "269484032",
+        "pack_cost": "IN_TIMED_CALL",
+        "warmups": "2",
+        "repetitions": "10",
+        "fingerprints": "FNV1a64_native_bytes",
+        "q": "11439647903705736170",
+        "k": "15619872356097671629",
+        "v": "16237679602670317813",
+        "ks": "13316312864390083098",
+        "vs": "3009537043191427103",
+        "table": "6582289258935580965",
+        "ids": "3894147128697085375",
+        "steps": "1653334389473275685"
+      },
+      "cases": [
+        "case status=PASS guards=PASS inputs=PASS full_finite=PASS repeat_bits=PASS oracle=BF16_operands_FP32_online_queries_0_1_2_last compared=24576 max_abs=3.0517578125e-05 max_budget_ratio=0.938494804493 output_FNV1a64=15616686985254651297 per_repeat_numerical=FINAL_FRAME_ONLY model_PP=UNRUN physical_traffic=UNMEASURED utilization=UNMEASURED"
+      ]
+    },
+    {
+      "arm": "tile64",
+      "repetition": 2,
+      "receipt": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/qsa-prefix64-bench-tile64-131072-2-v1.json",
+      "receipt_sha256": "362f2f0d260db0e50f58881542725ce9ee71eea09321f7a1762e36cd0bbe3762",
+      "command": [
+        "/usr/bin/python3",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/run_qsa_prefix64_bench_v1.py",
+        "tile64-131072-2"
+      ],
+      "sample_wall_ms": [
+        668.040791,
+        669.486652,
+        668.847873,
+        666.558021,
+        667.02523,
+        667.975439,
+        668.249702,
+        667.916916,
+        668.770472,
+        667.622482
+      ],
+      "median_wall_ms": 668.0081150000001,
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-prefix64-build-v1/sycl_qsa_prefix64_timing",
+        "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-prefix64-build-v1/sycl_qsa_prefix64_timing",
+        "bytes": 1132000,
+        "sha256": "178975f66bfca2bda12415d422fccb27ed5cf9fdfb9703b92e6029764add200b"
+      },
+      "frame": {
+        "arm": "tile64",
+        "nq": "8192",
+        "cap": "2051",
+        "workgroups": "16384",
+        "cells": "131072",
+        "global_selected_cells": "131072",
+        "selected_set": "per_query_rotated_uniform_spread_unique",
+        "device_bytes": "1079247296",
+        "packed_scratch_payload_bytes": "269484032",
+        "pack_cost": "IN_TIMED_CALL",
+        "warmups": "2",
+        "repetitions": "10",
+        "fingerprints": "FNV1a64_native_bytes",
+        "q": "11439647903705736170",
+        "k": "15619872356097671629",
+        "v": "16237679602670317813",
+        "ks": "13316312864390083098",
+        "vs": "3009537043191427103",
+        "table": "6582289258935580965",
+        "ids": "3894147128697085375",
+        "steps": "1653334389473275685"
+      },
+      "cases": [
+        "case status=PASS guards=PASS inputs=PASS full_finite=PASS repeat_bits=PASS oracle=BF16_operands_FP32_online_queries_0_1_2_last compared=24576 max_abs=3.0517578125e-05 max_budget_ratio=0.938494804493 output_FNV1a64=11324158633871457176 per_repeat_numerical=FINAL_FRAME_ONLY model_PP=UNRUN physical_traffic=UNMEASURED utilization=UNMEASURED"
+      ]
+    }
+  ],
+  "cells": 131072,
+  "order": [
+    [
+      "base",
+      0
+    ],
+    [
+      "tile64",
+      0
+    ],
+    [
+      "tile64",
+      1
+    ],
+    [
+      "base",
+      1
+    ],
+    [
+      "base",
+      2
+    ],
+    [
+      "tile64",
+      2
+    ]
+  ],
+  "recipe": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/run_qsa_prefix64_bench_v1.py",
+    "sha256": "9011ad896d6c22b056917ece2d422bfa2389d3e0e505fa92b9add64f5e281f47"
+  },
+  "scope": "8192 queries,2051 selectedcells/query, bothKVheads and12real/16paddedQheads perKVhead. Pack included; same binary/inputs and2 explicit warmups plus an initial oracle call. Three fresh processes per arm with10timings each. Different32/64-cell probability rounding has contract-specific oracle. No model PP, physicaltraffic, hardwarebusy or quality/RESTORE qualification.",
+  "base": {
+    "process_medians_ms": [
+      444.659007,
+      444.63251149999996,
+      444.4654415
+    ],
+    "median_of_process_medians_ms": 444.63251149999996,
+    "mean": 444.5856533333333,
+    "stdev": 0.10494601724258094
+  },
+  "tile64": {
+    "process_medians_ms": [
+      668.0859694999999,
+      668.1421949999999,
+      668.0081150000001
+    ],
+    "median_of_process_medians_ms": 668.0859694999999,
+    "mean": 668.0787598333333,
+    "stdev": 0.06733012750671293
+  },
+  "latency_reduction_percent": -50.25576228021733,
+  "finished_utc": "2026-10-17T13:55:01.205711+00:00"
+}

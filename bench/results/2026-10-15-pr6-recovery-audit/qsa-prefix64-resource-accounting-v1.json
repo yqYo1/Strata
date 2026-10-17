@@ -1,0 +1,94 @@
+{
+  "schema": "strata-qsa-prefix64-static-resource-accounting-v1",
+  "recorded_utc": "2026-10-17T13:47:17.571421+00:00",
+  "source": {
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-prefix64-candidate-v1/files/src/kernels/sycl/qsa_bf16_prefix.cpp",
+    "sha256": "1aa87c98a4d0f5c706ae88cf438c51a39d0aefa93410e66eded02a073401c64a"
+  },
+  "fixture": {
+    "queries": 8192,
+    "KVheads": 2,
+    "Qheads_per_KVhead_real": 12,
+    "Qheads_per_KVhead_matrix_padded": 16,
+    "head_dim": 256,
+    "selected_cells": 2051,
+    "storage_bytes": 2
+  },
+  "arms": [
+    {
+      "tile_cells": 32,
+      "selected_width": 2051,
+      "iterations": 65,
+      "padded_selected_cells": 2080,
+      "QK_joint_MAD_calls_per_KVhead_tile": 64,
+      "PV_joint_MAD_calls_per_KVhead_tile": 64,
+      "joint_MAD_calls_per_query_both_KVheads": 16640,
+      "FP32_accumulator_MAC_per_query": 34078720,
+      "matrix_FLOP_per_8192queries": 558345748480,
+      "SLM_declared_bytes": 28224,
+      "explicit_barriers_per_query_KVhead": 326
+    },
+    {
+      "tile_cells": 64,
+      "selected_width": 2051,
+      "iterations": 33,
+      "padded_selected_cells": 2112,
+      "QK_joint_MAD_calls_per_KVhead_tile": 128,
+      "PV_joint_MAD_calls_per_KVhead_tile": 128,
+      "joint_MAD_calls_per_query_both_KVheads": 16896,
+      "FP32_accumulator_MAC_per_query": 34603008,
+      "matrix_FLOP_per_8192queries": 566935683072,
+      "SLM_declared_bytes": 47936,
+      "explicit_barriers_per_query_KVhead": 166
+    }
+  ],
+  "matrix_extra_padding_64_vs32_percent": 1.538461538461533,
+  "logical_selected_KV_load_bytes_per_call": 34410070016,
+  "logical_Q_read_bytes_per_call": 100663296,
+  "logical_output_write_bytes_per_call": 100663296,
+  "prefix_working_sets": [
+    {
+      "logical_cells": 2113,
+      "packed_KV_tensor_bytes": 4358144,
+      "packed_bad_flags_bytes": 17024,
+      "physical_quantized_KV_code_bytes": 2179072,
+      "physical_KV_scale_bytes": 68096,
+      "page_size": 16,
+      "padded_cells": 2128
+    },
+    {
+      "logical_cells": 32768,
+      "packed_KV_tensor_bytes": 67108864,
+      "packed_bad_flags_bytes": 262144,
+      "physical_quantized_KV_code_bytes": 33554432,
+      "physical_KV_scale_bytes": 1048576,
+      "page_size": 16,
+      "padded_cells": 32768
+    },
+    {
+      "logical_cells": 131072,
+      "packed_KV_tensor_bytes": 268435456,
+      "packed_bad_flags_bytes": 1048576,
+      "physical_quantized_KV_code_bytes": 134217728,
+      "physical_KV_scale_bytes": 4194304,
+      "page_size": 16,
+      "padded_cells": 131072
+    },
+    {
+      "logical_cells": 262144,
+      "packed_KV_tensor_bytes": 536870912,
+      "packed_bad_flags_bytes": 2097152,
+      "physical_quantized_KV_code_bytes": 268435456,
+      "physical_KV_scale_bytes": 8388608,
+      "page_size": 16,
+      "padded_cells": 262144
+    }
+  ],
+  "limits": [
+    "Joint-MAD calls are source API calls, not emitted ISA instructions or occupancy.",
+    "K/V byte count is logical selected BF16 operand reads, not measured device-memory or PCIe bytes; cache hits and reuse can reduce physicaltraffic.",
+    "The64cell path has1.538percent more paddedmatrix MAC at width2051, while halving tile/barrier iterations. Equal arithmetic applies only when width is a multiple of64.",
+    "SLM47936/28224=1.6984, not twice. Device residency/occupancy/spills need measurements.",
+    "No model PP, GPU utilization, hardwarebusy, service-time or bandwidth-limit inference from static counts. Prefix bytes include page16 padding; allocation guards are additional."
+  ]
+}

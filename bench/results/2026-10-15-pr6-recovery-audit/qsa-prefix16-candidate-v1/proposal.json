@@ -1,0 +1,37 @@
+{
+  "schema": "strata-qsa-prefix16-proposal-v1",
+  "created_utc": "2026-10-17T13:54:44.575101+00:00",
+  "base_commit": "f40a0914bb5bb50fdce898f126f0023a03c5157a",
+  "base_source_hashes": {
+    "src/kernels/sycl/qsa_bf16_prefix.cpp": "fa505d02e2b24f7cb6948033921fa697c8aeb58e6f4df6d873f13e5a7918e36b",
+    "include/strata/kernels/qsa_bf16_prefix.hpp": "b114a31b5422fb4ca00eb217a57954188fa4c6b42221876d4fff1144c8494d05"
+  },
+  "candidate_hashes": {
+    "src/kernels/sycl/qsa_bf16_prefix.cpp": "015cc63909f695c7e2c14c394ff8e520fe4500137adae9735b2c6c07a0a6308e",
+    "include/strata/kernels/qsa_bf16_prefix.hpp": "feb215d6b6c95fe66a59b71f7c0af48480d7737db887d3d26cd473eea988f6bd",
+    "tests/sycl/qsa_bf16_prefix16.cpp": "586a46d86b029589b7b11627272c3bac66be7274cf57dba9952e0e204987c9f9",
+    "tests/sycl/qsa_bf16_prefix16_bench.cpp": "c9cb269f5fbe4b152102ca01a42424a271ace6c577dc7b35acdb02c4123b5a51"
+  },
+  "patch_sha256": "9b5b3d008e87082757b4c76da67463edf92f3cdf7928f04fa19cdd89cfc5ae2c",
+  "provenance": "Main independent parameterization of existing Strata MIT attention. Retains32/64controls in private object, adds16-cell entry and contract-specific oracle. No XeStrata implementation/reference used.",
+  "status": {
+    "applied": false,
+    "compiled": false,
+    "GPU_executed": false,
+    "quality_qualified": false
+  },
+  "design": {
+    "cells": 16,
+    "score_stride": 17,
+    "SLM_declared_bytes": 18368,
+    "WG": 128,
+    "SG": 16,
+    "QK_active_subgroups": 2,
+    "PV_active_subgroups": 8,
+    "at_width2051_padded_cells": 2064,
+    "explicit_barriers_per_KVhead_query": 646
+  },
+  "hypothesis": "Test lower local-storage pressure after64-cell measured ~64%slower at32K working set. More barriers may lose; no occupancy or speed claim. Same logical KVbytes, operator math types and perquery selector;16-cell BF16 probability rounding has independent oracle.",
+  "archival_whitespace_exception": "Unified diff requires single-space context lines; source files have no trailing whitespace.",
+  "retention": "Current private inputs to prospective16cell build/component/performance comparison; retire mirrors at experiment closure with Git restoration map."
+}

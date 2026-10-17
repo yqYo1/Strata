@@ -1,0 +1,77 @@
+{
+  "id": "e19c9903-d87a-4e53-85a4-8dc23f2e8ef9",
+  "ok": true,
+  "result": {
+    "runId": "run_c8f478972ec8",
+    "taskId": "task_640fe321f009",
+    "dispatchId": "ctx_96b90c2027d4",
+    "state": "failed",
+    "stage": "agent_readiness",
+    "failedStage": "agent_readiness",
+    "lastError": "Agent startup blocked: agent-update-prompt",
+    "setup": {
+      "requested": "not_applicable",
+      "effective": "not_applicable",
+      "source": "existing_worktree",
+      "hookFound": false,
+      "startupPolicy": "start-immediately",
+      "state": "not_applicable"
+    },
+    "launch": {
+      "requested": {
+        "agent": "codex",
+        "model": "gpt-6-luna",
+        "effort": "high"
+      },
+      "effective": {
+        "agent": "codex",
+        "model": "gpt-6-luna",
+        "effort": "high"
+      }
+    },
+    "mode": {
+      "mode": "terminal",
+      "preferred": "terminal",
+      "reason": "user_default",
+      "detail": "Started a terminal agent worker, the default for new agent tabs in your settings."
+    },
+    "effects": [
+      {
+        "kind": "worktree",
+        "action": "reused",
+        "id": "5fe4e8ac-0321-449b-b256-ff777e405f1b::/home/yayoi/orca/workspaces/Strata/sycl"
+      },
+      {
+        "kind": "setup",
+        "action": "not_applicable",
+        "state": "not_applicable"
+      },
+      {
+        "kind": "terminal",
+        "role": "agent",
+        "action": "created",
+        "id": "term_486e2be5-86ac-40a6-9e53-12c1e4b15053",
+        "surface": "background",
+        "warning": "Terminal term_486e2be5-86ac-40a6-9e53-12c1e4b15053 is running, but Orca could not make it discoverable. Run `orca terminal focus --terminal term_486e2be5-86ac-40a6-9e53-12c1e4b15053` to reveal and focus it."
+      }
+    ],
+    "residualResources": [
+      {
+        "kind": "terminal",
+        "role": "agent",
+        "action": "created",
+        "id": "term_486e2be5-86ac-40a6-9e53-12c1e4b15053",
+        "surface": "background",
+        "warning": "Terminal term_486e2be5-86ac-40a6-9e53-12c1e4b15053 is running, but Orca could not make it discoverable. Run `orca terminal focus --terminal term_486e2be5-86ac-40a6-9e53-12c1e4b15053` to reveal and focus it."
+      }
+    ],
+    "recovery": "This start created a terminal that never ran the Task. Close it with: orca orchestration worker-release --dispatch ctx_96b90c2027d4",
+    "mutation": {
+      "requestId": "91118fe4-5f93-4ddd-9bdb-395b51c3432a",
+      "replayed": false
+    }
+  },
+  "_meta": {
+    "runtimeId": "e9030fc3-f028-4352-a34d-eb9385c8d79e"
+  }
+}

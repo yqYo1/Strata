@@ -1,0 +1,104 @@
+{
+  "recorded_utc": "2026-10-17T14:15:21.545631+00:00",
+  "complete": true,
+  "cohorts": [
+    {
+      "cells": 32768,
+      "receipt": "bench/results/2026-10-15-pr6-recovery-audit/qsa-prefix16-cohort-cells32768-v1.json",
+      "sha256": "decc3be93ef8e0f9f4e4d4b9ed2df4c6152d039018d21e42cf9225a31a6c26e1",
+      "base": {
+        "process_medians_ms": [
+          333.25440649999996,
+          333.196392,
+          333.33925250000004
+        ],
+        "median_of_process_medians_ms": 333.25440649999996,
+        "mean": 333.26335033333334,
+        "stdev": 0.0718489716773092
+      },
+      "tile16": {
+        "process_medians_ms": [
+          360.3278575,
+          360.32815700000003,
+          360.376122
+        ],
+        "median_of_process_medians_ms": 360.32815700000003,
+        "mean": 360.3440455,
+        "stdev": 0.027779467493994334
+      },
+      "latency_reduction_percent": -8.12404876632893
+    },
+    {
+      "cells": 131072,
+      "receipt": "bench/results/2026-10-15-pr6-recovery-audit/qsa-prefix16-cohort-cells131072-v1.json",
+      "sha256": "98bd6ac86d37827502fa1eaa72c7579c2b776ce37f81520cd7011261dfe185cc",
+      "base": {
+        "process_medians_ms": [
+          444.70833300000004,
+          443.8453015,
+          444.515318
+        ],
+        "median_of_process_medians_ms": 444.515318,
+        "mean": 444.3563175,
+        "stdev": 0.4529533218205357
+      },
+      "tile16": {
+        "process_medians_ms": [
+          437.2648615,
+          440.049961,
+          437.850455
+        ],
+        "median_of_process_medians_ms": 437.850455,
+        "mean": 438.3884258333333,
+        "stdev": 1.4684189692874023
+      },
+      "latency_reduction_percent": 1.4993550795925459
+    }
+  ],
+  "decision": "Keep production32cell path.16cell privatecandidate regresses8.12percent at32Kprefix but improves1.50percent at128Kprefix; retain as conditional large-prefix candidate, not globaladoption or1000PPclaim.",
+  "GPU_faults": [],
+  "262144_speed_qualified": false,
+  "model_quality_qualified": false,
+  "model_physical262144_RESTORE_qualified": false,
+  "numerical_failure": {
+    "source": "Existing32cell baseline; candidate16notexecuted",
+    "original_receipt": "qsa-prefix16-bench-base-262144-0-v1.json",
+    "original_status": "FAIL_UNCHANGED",
+    "physical_closure": "qsa-prefix16-262144-failure-closure-v1.json",
+    "observer_receipt": "bench/results/2026-10-15-pr6-recovery-audit/qsa16-oracle-observer-base-262144-0-v1.json",
+    "observer_sha256": "39126f6143ad9352bcaa8156409cb095e99f306887b87fdc067df32cb9f60e52",
+    "divergence": {
+      "query": "2",
+      "head": "13",
+      "dimension": "31",
+      "GPU_value": "-0.000736236572265625",
+      "CPU_reference_BF16": "-0.000728607177734375",
+      "abs_error": "7.62939453125e-06",
+      "budget": "5.8146972656249995e-06",
+      "error_budget_ratio": "1.312088004366629",
+      "CPU_pre_round_acc": "-1.1614251136779785",
+      "CPU_normalizer": "1591.96337890625",
+      "CPU_maximum": "0.38350483775138855",
+      "GPU_float_bits": "3124822016",
+      "CPU_reference_float_bits": "3124690944"
+    },
+    "matches_prior_input_fingerprints": [
+      "q",
+      "k",
+      "v",
+      "ks",
+      "vs",
+      "table",
+      "ids",
+      "steps"
+    ],
+    "matches_prior_first_failure_coordinate_value": true,
+    "prior_diagnostic": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/own-qsa-bf16-packed-diagnostic-packed-v1.json",
+      "sha256": "3cafd58abb7e61db8a347089143deb20c119795530b77ac0917db86fc70ea89e"
+    },
+    "prior_explanation": "qsa-bf16-256k-numerical-attribution-v1.json: FP32matrixQK versusFP64CPUdot changes maximum2.98e-8 and flips2BF16 probabilities; old full256dimension replay explains10failures. Current firstmismatch reproduces exactoldvalue/input. Currentfulloutput identity or newcoefficient replay wasnotcollected; do not claim complete newlyproven attribution.",
+    "observer_metadata_correction": "traced=false was inherited from the speed mode flag. Actual immutable environment and three proc snapshots have UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION; exactly2URkernels are recorded. Interpret as traceddiagnostic, not cleanmeasurement."
+  },
+  "next": "Split actualFP32QSA score and topk stage timings on the currentproductionroute before choosing further matrix/selector work. Numerical FP64-oracle identity remains diagnostic; adopt prospective framework/arithmetic stage criteria with originalfailure preserved, without arbitrary epsilon changes."
+}

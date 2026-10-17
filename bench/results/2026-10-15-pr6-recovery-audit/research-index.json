@@ -5190,6 +5190,18 @@
         "R1020-C2"
       ],
       "retrieval_trigger": "No retrieval or new research recommended under the current queue/callback ordering. Reopen only if a source change creates a concrete pending GPU tail or an explicit source concurrency/lifetime capability question."
+    },
+    {
+      "round": 1022,
+      "model": "gpt-6-luna",
+      "classification": "decision_support",
+      "read_only": true,
+      "path": "research-round1022-v1.txt",
+      "bytes": 14183,
+      "sha256": "3c17c0b9825fa2ec23cc88f52aa1bfb4d271642a0b643bd424ad3e5a06d9da5a",
+      "review_path": "research-round1023-review-v1.txt",
+      "review_sha256": "dcea71c4dcdaf15adef33b8a0290b90325584999e250dec30dae9410c2687f9d",
+      "status": "Source-grounded comparison accepted with applicability and source-pin clarifications; no implementation, measurement, numerical-contract match, or adoption qualification."
     }
   ],
   "main_initial_findings": [
@@ -9193,5 +9205,144 @@
     "child_retired": "moe-window-child-retirement-v1.json",
     "retention": "moe-window10-model-retention-v1.json",
     "next": "PreparedQSA64private component build, Main exclusive GPU/test ownership."
+  },
+  "research_review_round1023": {
+    "report_record": {
+      "round": 1022,
+      "model": "gpt-6-luna",
+      "classification": "decision_support",
+      "read_only": true,
+      "path": "research-round1022-v1.txt",
+      "bytes": 14183,
+      "sha256": "3c17c0b9825fa2ec23cc88f52aa1bfb4d271642a0b643bd424ad3e5a06d9da5a",
+      "review_path": "research-round1023-review-v1.txt",
+      "review_sha256": "dcea71c4dcdaf15adef33b8a0290b90325584999e250dec30dae9410c2687f9d",
+      "status": "Source-grounded comparison accepted with applicability and source-pin clarifications; no implementation, measurement, numerical-contract match, or adoption qualification."
+    },
+    "corrections": [
+      {
+        "id": "R1023-C1",
+        "detail": "Record the prefill.cpp current-tree parser-only delta; do not claim the full current file is byte-identical to the immutable dispatch snapshot."
+      },
+      {
+        "id": "R1023-C2",
+        "detail": "Separate default own out16 geometry (N,K multiples of 16) from the optional vLLM adapter constraints (N%64, K%32, ldy%8, 64-byte bases, beta=0). The adapter accepts G21/G31, but the current Gemm vLLM entry guard is G21-only. The wrapper synchronizes before return although the direct adapter returns an event."
+      },
+      {
+        "id": "R1023-C3",
+        "detail": "Explicitly preserve the per-query dead-tail rule: a common W needs a separate dead-key row and per-query gather/scatter at n_bid (or a per-query dot), then the partial-tail bonus. The report flags dead/tail handling but this mapping must be concrete before implementation."
+      },
+      {
+        "id": "R1023-C4",
+        "detail": "Out16 Y rounds each per-head dot before the FP32 ReLU/sum epilogue. This is specific to *_out16; existing Gemm bf16()/f16() FP32-output calls are the already-indexed R589-style library route, not proof that no FP32 output API exists."
+      },
+      {
+        "id": "R1023-C5",
+        "detail": "Keep the 15.8 s QSA selection interval combined and nonexclusive. It brackets score plus top-k and does not prove score share, GPU busy, or utilization."
+      },
+      {
+        "id": "R1023-C6",
+        "detail": "Treat SGLang/vLLM Qwen3.5 main sources as mutable family references only. Current pages contain no indexer match and do not establish the local Qwen3.8-Flash-Next runtime, selected kernel, or dtype/rounding contract."
+      }
+    ],
+    "retrieval": {
+      "hold_original_report_body_for_main": true,
+      "main_consumption": "Review digest and eligibility metadata only; original R1022 body is not needed now.",
+      "retrieve_when": "Main has a pinned exact checkpoint/reference-framework receipt and needs the numerical-contract sections, or measured score share makes an implementation choice concrete.",
+      "sections": [
+        "R1022: current execution and interval limitations",
+        "R1022: packed native16 GEMM constraints",
+        "R1022: fused joint_matrix hypothesis",
+        "R1022: precision contract and gates"
+      ],
+      "tags": [
+        "QSA block scoring",
+        "native16 GEMM",
+        "BMG XMX",
+        "joint_matrix",
+        "BF16 scoring",
+        "score versus top-k timing",
+        "dead tail semantics",
+        "physical 262144 context"
+      ]
+    },
+    "next_scope_eligibility": [
+      {
+        "scope_id": "main-qsa-score-topk-interval-split-after-qsa64-v1",
+        "classification": "Main-owned component measurement, not research dispatch",
+        "schedulable_now": false,
+        "prerequisites": [
+          {
+            "requirement": "Close the pending QSA64 small-GPU component arm and retain its correctness/fault/ownership receipt before another GPU task.",
+            "evidence_now": "Main reports clean mode-8 and mode-10 four-request cohorts completed without faults; the QSA64 small-GPU component arm is next."
+          },
+          {
+            "requirement": "Instrument same-source score-only and top-k-only device intervals, then record submit CPU, wait-thread CPU, and wall separately.",
+            "evidence_now": "Current source/profile brackets both kernels; the historical 15.8 s queue interval is nonexclusive and combined."
+          }
+        ],
+        "recommendation": "Do not dispatch research or infer a bottleneck now. Use the split measurement after the current QSA64 arm closes; only evaluate matrix work if scoring owns a material part of selection cost.",
+        "expected_outputs": [
+          "Per-kernel and combined timing with repeated samples",
+          "Host submission CPU, wait-thread CPU, and wall attribution",
+          "Exact shape/context and unchanged FP32 route/correctness receipt"
+        ]
+      },
+      {
+        "scope_id": "qwen38-reference-qsa-numerical-contract-audit-v1",
+        "classification": "Conditional decision-support source study",
+        "schedulable_now": false,
+        "prerequisites": [
+          {
+            "requirement": "Pin the local Qwen3.8-Flash-Next checkpoint/model configuration and expose the indexer/QSA architecture fields.",
+            "evidence_now": "Current SGLang/vLLM sources are Qwen3.5 family files and contain no indexer symbol; no exact local reference receipt was supplied."
+          },
+          {
+            "requirement": "Identify and pin the actual SGLang/vLLM framework build, selected kernel route, activation dtype, accumulation, reductions, and rounding locations from an owned reference execution.",
+            "evidence_now": "R1022 explicitly reports no framework revision, runtime selection, or executed-kernel trace."
+          }
+        ],
+        "recommendation": "Keep conditional. Do not start a research session until both prerequisites exist; then compare the actual target contract against the proposed BF16 score input without imposing FP32/llama bit identity."
+      }
+    ],
+    "Main_original_body_read": false,
+    "Main_decision": "FinishQSA64 measurements; split score/topk component wall/submission/wait CPU before choosing XMX score implementation. Reference-runtime absence limits equivalence claims, not all future experimental implementation; if no exact reference is obtainable, user allows direct quality evaluation. No new research until a concrete new question/prerequisite.",
+    "archival_whitespace_exception": "Original hashed R1022 report uses two-space Markdown hard breaks on lines3/4. Preserve original bytes/reviewer hashes. Valid unified-diff context spaces in16cell candidate.patch are also intentional; executable/source files pass whitespace checks."
+  },
+  "qsa64_experiment_current": {
+    "decision": "qsa-prefix64-decision-v1.json",
+    "component": "qsa-prefix64-component-main-v1.json",
+    "cohorts": [
+      "qsa-prefix64-cohort-cells32768-v1.json",
+      "qsa-prefix64-cohort-cells131072-v1.json"
+    ],
+    "numerical_and_fault_passed": true,
+    "performance_rejected": true,
+    "latency_increase_percent_32K": 64.04889226117622,
+    "latency_increase_percent_128K": 50.25576228021733,
+    "production_QSA_unchanged": "32cell score33",
+    "retention": "qsa-prefix64-retention-v1.json",
+    "next": "qsa-prefix16-candidate-v1/proposal.json: private lowerSLM18368B candidate, notcompiled/executed atcreation; Main owns gates. Score/topk timing split remains nextindependentbottleneck question.",
+    "fork_default_synced_through_PR46": "777f9d51a47bf557e8c96b9d255785d7b49353ba"
+  },
+  "qsa16_experiment_current": {
+    "decision": "qsa-prefix16-decision-v1.json",
+    "report": "qsa-prefix16-results-v1.ja.md",
+    "component_cases": 18,
+    "numerical_component_status": "PASS;1query at262144 included",
+    "working_set32K_latency_reduction_percent": -8.12404876632893,
+    "working_set128K_latency_reduction_percent": 1.4993550795925459,
+    "production_QSA": "32cell score33 unchanged",
+    "adoption": false,
+    "conditional_candidate": "16cell atlargeprefix, needswholemodel/numericalcontract validation",
+    "failed262144speed_original": "qsa-prefix16-bench-base-262144-0-v1.json",
+    "failure_actual_closure": "qsa-prefix16-262144-failure-closure-v1.json",
+    "observer": "qsa16-oracle-observer-base-262144-0-v1.json",
+    "observer_result": "Diagnosticcomplete/physicalclosurePASS, numericalFAIL preserved. Sameinputfingerprints/firstcoordinate/value as prior256K precisionboundary; no newGPUfault.",
+    "observer_correction": "traced=false metadata inherited; actualpreexec/procenv+UR2calls provetracingon. Not a clean speed sample.",
+    "retention": "qsa-prefix16-retention-v1.json",
+    "current_fixture_consumer": "Prospective arithmetic stage-contract/numericalcomparison; retain16cell+observer source/object/binaries, review afterscore/topk measurement.",
+    "next_Main_action": "Create private typed/guarded FP32 QSA score/topk stage timing fixture from actualcaller shapes sel_batch256. Current source src/kernels/qsa_select_bench.cpp already has per-stage concept but rawcuda API/nullstream wait and noMaingates; adapt through qualified Runtime+checkedcleanup, actualqsa_block_topk_prefillmapping and CPUsubmit/wait timing. Avoid inference-math changes until stage share measured.",
+    "research_GEMM_source_followup": "qsa-score-GEMM-source-followup-v1.json"
   }
 }
