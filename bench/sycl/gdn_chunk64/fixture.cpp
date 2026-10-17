@@ -61,7 +61,7 @@ void run(int T){
   // Independent exact arithmetic for orthogonal, dyadic one-hot keys.
   // No inverse or matrix helper is shared with the candidate.
   auto expected=initial;
-  std::vector<uint16_t> expected_output(size_t(T)*HV*D);
+  std::vector<uint16_t> expected_output(size_t(T)*HV*D),expected_raw(expected_output.size());
   for(int t=0;t<T;++t)for(int head=0;head<HV;++head){
     const int r=((head%16)*5+t)%D;
     float raw[D],ss=0.f;
@@ -69,6 +69,7 @@ void run(int T){
       const size_t index=Pad+(r*HV+head)*D+d;
       expected[index]=.5f*expected[index]+.5f*hf[size_t(t)*C+32*D+head*D+d];
       raw[d]=k::f32_from_bf16(k::bf16_from_f32(expected[index]/std::sqrt(128.f)));
+      expected_raw[(size_t(t)*HV+head)*D+d]=k::bf16_from_f32(raw[d]);
       ss+=raw[d]*raw[d];
     }
     for(int d=0;d<D;++d)
@@ -85,12 +86,29 @@ void run(int T){
   invoke(state.data()+Pad,out.data()+Pad,T,scratch.view(),&rt->compute());rt->wait();
   const auto actual=state.get();const auto result=out.get();
   need(actual==expected,"exact FP32 carry mismatch");
-  size_t unequal=0;float max_abs=0.f;
+  const auto raw=scratch.raw.get();
+  size_t raw_unequal=0,double_unequal=0,unequal=0;float max_abs=0.f;
+  unsigned max_ulp=0;
   for(size_t i=0;i<expected_output.size();++i){
+    const int t=i/(HV*D),head=(i/D)%HV,d=i%D;
+    raw_unequal+=uint16_t(sycl::bit_cast<uint16_t>(raw[((size_t(t/64)*HV+head)*64+t%64)*D+d]))!=expected_raw[i];
     unequal+=result[Pad+i]!=expected_output[i];
+    auto ordered=[](uint16_t x){return (x&0x8000)?unsigned(0xffffu-x):unsigned(x+0x8000u);};
+    const unsigned a=ordered(result[Pad+i]),b=ordered(expected_output[i]);
+    max_ulp=std::max(max_ulp,a>b?a-b:b-a);
     max_abs=std::max(max_abs,std::abs(k::f32_from_f16(result[Pad+i])-k::f32_from_f16(expected_output[i])));
     need(std::isfinite(k::f32_from_f16(result[Pad+i])),"nonfinite dyadic output");
+    double ss=0.;
+    for(int col=0;col<D;++col){double x=k::f32_from_bf16(expected_raw[(i/D)*D+col]);ss+=x*x;}
+    const uint16_t exact=k::f16_from_f32(float(double(k::f32_from_bf16(expected_raw[i]))/std::sqrt(ss/128.+double(1e-6f))*.5));
+    double_unequal+=result[Pad+i]!=exact;
+    if(result[Pad+i]!=expected_output[i] && unequal<=4)
+      std::cout<<"output_difference i="<<i<<" actual_bits="<<result[Pad+i]<<" scalar_FP32_bits="<<expected_output[i]<<" FP64_norm_bits="<<exact<<std::endl;
   }
+  std::cout<<"dyadic_diagnostic T="<<T<<" carry_exact=PASS raw_BF16_unequal="<<raw_unequal
+    <<" output_unequal="<<unequal<<" output_max_ULP="<<max_ulp<<" output_max_abs="<<max_abs
+    <<" FP64_norm_unequal="<<double_unequal<<std::endl;
+  need(raw_unequal==0,"exact BF16 raw mismatch");
   need(unequal==0,"exact FP16 oracle mismatch");
   for(int i=0;i<Pad;++i)need(result[i]==0x5500 && result[result.size()-Pad+i]==0x5500,"output guards");
   need(H.get()==h && Z.get()==z && G.get()==g && B.get()==beta && N.get()==gamma,"input mutation");
