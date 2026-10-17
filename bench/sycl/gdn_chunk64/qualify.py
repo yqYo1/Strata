@@ -32,7 +32,8 @@ def digest(path):
 def source_identity():
     commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=P, text=True).strip()
     paths = [*PACKAGE.glob('*.cpp'), *PACKAGE.glob('*.hpp'), Path(__file__),
-             P / 'tools/sycl/measurement_owner.py', P / 'tools/sycl/measurement_guards.py', ENVIRONMENT]
+             P / 'tools/sycl/measurement_owner.py', P / 'tools/sycl/measurement_guards.py', ENVIRONMENT,
+             P / 'src/kernels/sycl/fused_gdn.cpp']
     # All project headers must be tracked and match this revision, including
     # transitive inputs not mentioned individually by the recipe.
     paths += list((P / 'include').rglob('*.hpp')) + list((P / 'include').rglob('*.h'))
@@ -81,8 +82,8 @@ def retire():
 
 
 def main():
-    guards.require(__debug__ and len(sys.argv) == 2 and sys.argv[1] in ('build', 'smoke', 'boundaries', 'general', 'retire'),
-                   'use qualify.py build, smoke, boundaries, general or retire')
+    guards.require(__debug__ and len(sys.argv) == 2 and sys.argv[1] in ('build', 'smoke', 'boundaries', 'general', 'component-check', 'component', 'retire'),
+                   'use qualify.py build, smoke, boundaries, general, component-check, component or retire')
     action = sys.argv[1]
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -110,17 +111,22 @@ def main():
                                                build_receipt_sha256=digest(ENGINE)),
                           compiler=dict(path=str(compiler), sha256=digest(compiler)),
                           model_quality_qualified=False, physical262144_RESTORE_qualified=False,
-                          production_selected=False, performance_measured=False)
+                          production_selected=False, model_performance_measured=False,
+                          retention_consumer='Current GDN8192 component/contract comparison; retire when superseded or closed.')
         else:
             record = json.loads((ROOT / 'record.json').read_text())
             guards.require(record['source_commit'] == commit and record['project_input_sha256'] == pins,
                            'rebuild after source changes')
             guards.require(record.get('build', {}).get('passed') and action not in record,
                            'a successful build and a fresh test are required')
-            if action in ('boundaries', 'general'):
+            if action in ('boundaries', 'general', 'component-check', 'component'):
                 guards.require(record.get('smoke', {}).get('passed'), 'small smoke must pass first')
             if action == 'general':
                 guards.require(record.get('boundaries', {}).get('passed'), 'dyadic boundaries must pass first')
+            if action in ('component-check', 'component'):
+                guards.require(record.get('general', {}).get('passed'), 'general safety diagnostic must pass first')
+            if action == 'component':
+                guards.require(record.get('component-check', {}).get('passed'), 'traced8192 component must pass first')
             guards.require(digest(binary) == record['binary_sha256'] and
                            digest(library) == record['runtime_archive']['sha256'], 'binary/runtime changed')
         owner = None
@@ -136,6 +142,10 @@ def main():
         if action == 'general':
             phase.update(scope='Finite/bounds/input/repeat/aligned-handoff safety; FP64 mathematical errors are diagnostic only.',
                          framework_numerics_qualified=False)
+        if action in ('component-check', 'component'):
+            phase.update(scope='Resident same-input GDN8192 component; 1 warmup and 5 alternating samples per arm; no transfers timed.',
+                         clean_environment=action == 'component', framework_numerics_qualified=False,
+                         hardware_busy_measured=False, physical_PCIe_traffic_measured=False)
         record[action] = phase
         persist()
         try:
@@ -149,6 +159,7 @@ def main():
                         '-fno-fast-math', '-ffp-contract=off', '-fsycl',
                         '-fsycl-id-queries-range=size_t', '-Wall', '-Wextra', '-Werror',
                         str(PACKAGE / 'candidate.cpp'), str(PACKAGE / 'fixture.cpp'),
+                        str(P / 'src/kernels/sycl/fused_gdn.cpp'),
                         str(library), '-o', str(binary)]
                 record['build_command'] = argv
                 command, stdout, stderr = owner.run('build', argv, env, P, wall=300, cpu=900,
@@ -161,7 +172,14 @@ def main():
                 else:
                     phase['error_excerpt'] = stderr.read_text(errors='replace')[-8192:]
             else:
-                env = dict(base_env, XDG_CACHE_HOME=str(ROOT / 'cache'), TMPDIR=str(ROOT / 'tmp'))
+                cache, tmp = ROOT / 'cache' / action, ROOT / 'tmp' / action
+                cache.mkdir(); tmp.mkdir()
+                env = dict(base_env, XDG_CACHE_HOME=str(cache), TMPDIR=str(tmp))
+                if action == 'component':
+                    removed = ['UR_ENABLE_LAYERS', 'UR_LOG_TRACING', 'UR_LOG_VALIDATION', 'UR_LOG_LOADER', 'UR_LOG_LEVEL_ZERO']
+                    for key in removed:
+                        env.pop(key, None)
+                    phase['environment_removed_keys'] = removed
                 boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
                 journal_env = dict(PATH='/usr/bin:/bin', LANG='C.UTF-8', LC_ALL='C.UTF-8')
                 journal = subprocess.check_output(['journalctl', '-k', '-b', '-n', '0',
@@ -217,17 +235,18 @@ def main():
                     guards.require(status.startswith('fixture_status=PASS '), 'missing final fixture status')
                     child.exit(20)
 
-                record[action + '_command'] = [str(binary), '--' + action]
+                mode = 'component' if action == 'component-check' else action
+                record[action + '_command'] = [str(binary), '--' + mode]
                 phase['launch_attempted'] = True
-                command, stdout, stderr = owner.run(action, [str(binary), '--' + action], env, P,
+                command, stdout, stderr = owner.run(action, [str(binary), '--' + mode], env, P,
                                                      interaction=interaction, wall=180, cpu=180,
-                                                     rss_cap=2 << 30, file_cap=32 << 20,
+                                                     rss_cap=(6 if mode == 'component' else 2) << 30, file_cap=32 << 20,
                                                      text_cap=32 << 20, total_cap=1 << 30)
                 text = stdout.read_text(errors='replace')
                 phase['case_results'] = [line for line in text.splitlines()
                                          if line.startswith(('case T=', 'fixture_status=',
-                                                             'dyadic_diagnostic', 'output_difference'))]
-                if any(line.startswith(('case T=', 'dyadic_diagnostic')) for line in phase['case_results']):
+                                                             'dyadic_diagnostic', 'output_difference', 'component_sample', 'component_comparison'))]
+                if any(line.startswith(('case T=', 'dyadic_diagnostic', 'component_sample')) for line in phase['case_results']):
                     phase['GPU_executed'] = True
                 phase['complete'] = owner_tools.closed(command)
                 phase['exit_code'] = command.get('exit_code')
@@ -237,8 +256,10 @@ def main():
                     r'(?i)(gpu.*(?:hang|fault|reset|wedg)|xe.*(?:error|fault|reset|timeout)|page fault)', line)]
                 phase['boot_unchanged'] = boot == Path('/proc/sys/kernel/random/boot_id').read_text().strip()
                 guards.driver_guard()
-                phase['passed'] = (phase['complete'] and phase['exit_code'] == 0 and
-                                   len([line for line in phase['case_results'] if line.startswith('case T=')]) == (2 if action == 'smoke' else 6)
+                enough = (len([line for line in phase['case_results'] if line.startswith('component_sample')]) == 10 and
+                          any(line.startswith('component_comparison') for line in phase['case_results'])) if mode == 'component' else (
+                          len([line for line in phase['case_results'] if line.startswith('case T=')]) == (2 if action == 'smoke' else 6))
+                phase['passed'] = (phase['complete'] and phase['exit_code'] == 0 and enough
                                    and 'fixture_status=PASS' in text and phase['boot_unchanged']
                                    and not phase['fresh_faults'])
                 if not phase['passed']:

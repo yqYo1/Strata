@@ -7,6 +7,8 @@
 #include "strata/sycl/checked_cleanup.hpp"
 #include "strata/sycl/runtime.hpp"
 #include <algorithm>
+#include <array>
+#include <chrono>
 #include <memory>
 #include <string>
 #include <cmath>
@@ -142,11 +144,12 @@ void run(int T){
 // Independent sequential mathematical reference. It does not reproduce the
 // candidate's full64 inverse or BF16 intermediates. Errors are diagnostic;
 // framework-contract and model-quality acceptance remain separate gates.
-void run_general(int T){
-  constexpr int C=10240,HV=48,D=128,Pad=16,State=HV*D*D;
-  constexpr float Sentinel=1234.f,Eps=1e-6f;
-  std::vector<uint16_t> h(size_t(T)*C),z(size_t(T)*HV*D);
-  std::vector<float> gates(size_t(T)*HV),beta(gates.size()),gamma(D),initial(State+2*Pad,Sentinel);
+struct GeneralInputs {
+  static constexpr int C=10240,HV=48,D=128,Pad=16,State=HV*D*D;
+  std::vector<uint16_t> h,z;
+  std::vector<float> gates,beta,gamma,initial;
+  explicit GeneralInputs(int T):h(size_t(T)*C),z(size_t(T)*HV*D),gates(size_t(T)*HV),
+    beta(gates.size()),gamma(D),initial(State+2*Pad,1234.f){
   uint32_t random=0x8badf00du;
   auto sample=[&](){random^=random<<13;random^=random>>17;random^=random<<5;return float(int(random%1025)-512)/512.f;};
   for(int i=0;i<State;++i)initial[Pad+i]=sample()/32.f;
@@ -164,6 +167,14 @@ void run_general(int T){
         z[(size_t(t)*HV+head)*D+d]=k::bf16_from_f32(sample());}
     }
   }
+  }
+};
+void run_general(int T){
+  constexpr int C=10240,HV=48,D=128,Pad=16,State=HV*D*D;
+  constexpr float Sentinel=1234.f,Eps=1e-6f;
+  GeneralInputs input(T);
+  const auto &h=input.h,&z=input.z;
+  const auto &gates=input.gates,&beta=input.beta,&gamma=input.gamma,&initial=input.initial;
   std::vector<double> reference(State);
   for(int i=0;i<State;++i)reference[i]=initial[Pad+i];
   std::vector<uint16_t> reference_raw(size_t(T)*HV*D),reference_out(reference_raw.size());
@@ -219,14 +230,70 @@ void run_general(int T){
     <<" finite=PASS guards=PASS inputs=PASS repeat=PASS aligned_handoff="<<(T>64?"PASS":"NA")
     <<" status=SAFETY_PASS"<<std::endl;
 }
+void run_component(){
+  constexpr int T=8192,C=10240,HV=48,D=128,Pad=16,State=HV*D*D;
+  GeneralInputs input(T);
+  std::vector<float> hf(input.h.size()),zf(input.z.size());
+  for(size_t i=0;i<hf.size();++i)hf[i]=k::f32_from_bf16(input.h[i]);
+  for(size_t i=0;i<zf.size();++i)zf[i]=k::f32_from_bf16(input.z[i]);
+  Buffer<uint16_t> H(input.h.size()),Z(input.z.size()),out(input.z.size()+2*Pad),old_out(out.count);
+  Buffer<float> HF(hf.size()),ZF(zf.size()),G(input.gates.size()),B(input.beta.size()),N(D),
+    state(input.initial.size()),old_state(input.initial.size()),old_y(input.z.size());
+  Scratch scratch(gc::sizes(T));Drain pending;
+  H.put(input.h);Z.put(input.z);HF.put(hf);ZF.put(zf);G.put(input.gates);B.put(input.beta);N.put(input.gamma);
+  const std::vector<uint16_t> blank(out.count,0x5500);
+  auto marker=[&](){return rt->compute().single_task([]{});};
+  auto sample=[&](bool candidate,int index){
+    auto &s=candidate?state:old_state;auto &o=candidate?out:old_out;
+    s.put(input.initial);o.put(blank);gc::Events events;
+    const auto start=marker();const auto begin=std::chrono::steady_clock::now();
+    if(candidate)gc::run(s.data()+Pad,H.data(),G.data(),B.data(),Z.data(),N.data(),1e-6f,
+                         o.data()+Pad,T,scratch.view(),&rt->compute(),&events);
+    else strata::prefill::gdn_recurrence(s.data()+Pad,HF.data(),G.data(),B.data(),ZF.data(),N.data(),1e-6f,
+                                        old_y.data(),o.data()+Pad,T,&rt->compute());
+    const auto stop=marker();rt->wait();
+    const double wall=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-begin).count();
+    const auto first=start.get_profiling_info<sycl::info::event_profiling::command_end>();
+    const auto last=stop.get_profiling_info<sycl::info::event_profiling::command_start>();
+    need(last>=first,"component marker order");
+    if(index<0)return;
+    std::cout<<"component_sample n="<<index<<" arm="<<(candidate?"chunk64":"current_FP32")
+      <<" tokens="<<T<<" queue_interval_ns="<<(last-first)<<" host_wall_ms="<<wall;
+    if(candidate){
+      const std::array<std::pair<const char*,sycl::event>,8> stages={{{"gates",events.gates},{"pack",events.pack},
+        {"kkt",events.kkt},{"inverse",events.inverse},{"wu",events.wu},{"carry",events.carry},
+        {"readout",events.readout},{"norm",events.norm}}};
+      for(const auto &stage:stages){const auto a=stage.second.get_profiling_info<sycl::info::event_profiling::command_start>();
+        const auto b=stage.second.get_profiling_info<sycl::info::event_profiling::command_end>();
+        need(b>=a,"component stage order");std::cout<<" "<<stage.first<<"_ns="<<(b-a);}
+    }
+    std::cout<<std::endl;
+  };
+  sample(false,-1);sample(true,-1);
+  for(int i=0;i<5;++i){sample(i%2==0,i);sample(i%2!=0,i);}
+  const auto a=state.get(),b=old_state.get();const auto x=out.get(),y=old_out.get();
+  double se=0.,ss=0.,oe=0.,os=0.,max_s=0.,max_o=0.;
+  for(int i=0;i<State;++i){need(std::isfinite(a[Pad+i])&&std::isfinite(b[Pad+i]),"component carry finite");
+    const double d=double(a[Pad+i])-b[Pad+i];se+=d*d;ss+=double(b[Pad+i])*b[Pad+i];max_s=std::max(max_s,std::abs(d));}
+  for(size_t i=0;i<input.z.size();++i){const double c=k::f32_from_f16(x[Pad+i]),d=k::f32_from_f16(y[Pad+i]);
+    need(std::isfinite(c)&&std::isfinite(d),"component output finite");oe+=(c-d)*(c-d);os+=d*d;max_o=std::max(max_o,std::abs(c-d));}
+  for(int i=0;i<Pad;++i)need(a[i]==1234.f && a[a.size()-Pad+i]==1234.f && b[i]==1234.f && b[b.size()-Pad+i]==1234.f &&
+    x[i]==0x5500 && x[x.size()-Pad+i]==0x5500 && y[i]==0x5500 && y[y.size()-Pad+i]==0x5500,"component guards");
+  need(H.get()==input.h && Z.get()==input.z && HF.get()==hf && ZF.get()==zf &&
+    G.get()==input.gates && B.get()==input.beta && N.get()==input.gamma,"component input mutation");
+  std::cout<<"component_comparison tokens="<<T<<" same_input_values=true carry_rel_L2="<<std::sqrt(se/std::max(ss,1e-300))
+    <<" carry_max_abs="<<max_s<<" output_rel_L2="<<std::sqrt(oe/std::max(os,1e-300))<<" output_max_abs="<<max_o
+    <<" accuracy=DIAGNOSTIC_ONLY hardware_busy=UNMEASURED PCIe_wire_bytes=UNMEASURED status=SAFETY_PASS"<<std::endl;
+}
 int main(int argc,char **argv){
   try{
-    need(argc==2 && (std::string(argv[1])=="--smoke" || std::string(argv[1])=="--boundaries" || std::string(argv[1])=="--general"),"expected smoke, boundaries or general");
+    need(argc==2 && (std::string(argv[1])=="--smoke" || std::string(argv[1])=="--boundaries" || std::string(argv[1])=="--general" || std::string(argv[1])=="--component"),"expected smoke, boundaries, general or component");
     gate("before-runtime");rt=sb::runtime_for();
     std::cout<<"device="<<rt->device().get_info<sycl::info::device::name>()
       <<" driver="<<rt->device().get_info<sycl::info::device::driver_version>()<<std::endl;
     gate("runtime-ready");
     if(std::string(argv[1])=="--smoke"){run(1);run(3);}
+    else if(std::string(argv[1])=="--component")run_component();
     else if(std::string(argv[1])=="--general")for(int T:{63,64,65,127,128,129})run_general(T);
     else for(int T:{63,64,65,127,128,129})run(T);
     rt->wait();rt.reset();gate("after-cleanup");

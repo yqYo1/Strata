@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <sycl/ext/oneapi/bfloat16.hpp>
+#include <sycl/event.hpp>
 namespace strata::gdn_chunk64 {
 using BF = sycl::ext::oneapi::bfloat16;
 // Real typed BF16 storage. Every pointer is a distinct registered Device span.
@@ -13,11 +14,12 @@ struct Workspace {
 };
 struct Sizes { size_t qk, values, inverse, history, gates, lower; };
 Sizes sizes(int tokens);
+struct Events {sycl::event gates,pack,kkt,inverse,wu,carry,readout,norm;};
 // h is existing tiled [T,10240] Q16/K16/V48 order, z [T,48,128].
 // BF16 activation producer contract; FP32 gate/beta/gamma and persistent carry.
 // State remains [128,48,128]; output is genuine FP16 for the existing consumer.
 // No allocations, environment mutation, host tensor math, or implicit waits.
 void run(float *state, const uint16_t *h, const float *gate, const float *beta,
          const uint16_t *z, const float *gamma, float eps, uint16_t *output,
-         int tokens, Workspace workspace, void *stream);
+         int tokens, Workspace workspace, void *stream, Events *events=nullptr);
 }

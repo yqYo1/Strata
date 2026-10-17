@@ -76,7 +76,7 @@ Sizes sizes(int tokens) {
 }
 void run(float *state,const uint16_t *h,const float *gate,const float *beta,
          const uint16_t *z,const float *gamma,float eps,uint16_t *output,
-         int tokens,Workspace ws,void *stream) {
+         int tokens,Workspace ws,void *stream,Events *events) {
   const Sizes n=sizes(tokens);
   require(stream && std::isfinite(eps) && eps>=0.f);
   auto &queue=queue_for(stream);
@@ -104,6 +104,7 @@ void run(float *state,const uint16_t *h,const float *gate,const float *beta,
     }
   });
   finish(stream,event);
+  if(events)events->gates=event;
   event=queue.parallel_for(sycl::range<1>(n.values),[=](sycl::id<1> id) {
     size_t x=id[0]; const int d=x%D; x/=D;
     const int t=x%BT; x/=BT;
@@ -122,6 +123,7 @@ void run(float *state,const uint16_t *h,const float *gate,const float *beta,
     }
   });
   finish(stream,event);
+  if(events)events->pack=event;
   // KKT and gate/beta scaling. Four workgroups cover one64x64 matrix.
   event=queue.parallel_for(sycl::nd_range<1>(size_t(chunks)*HV*4*WG,WG),
     [=](sycl::nd_item<1> item) [[sycl::reqd_sub_group_size(16)]] {
@@ -142,6 +144,7 @@ void run(float *state,const uint16_t *h,const float *gate,const float *beta,
       });
     });
   finish(stream,event);
+  if(events)events->kkt=event;
   // FP32 forward substitution, then one BF16 inverse storage boundary.
   // This deliberately states the full64 solve contract; it is not asserted
   // identical to SGLang's block16/XPU intermediate rounding.
@@ -162,6 +165,7 @@ void run(float *state,const uint16_t *h,const float *gate,const float *beta,
       });
   });
   finish(stream,event);
+  if(events)events->inverse=event;
   // W/U use native BF16 operands and FP32 matrix accumulation.
   event=queue.parallel_for(sycl::nd_range<1>(size_t(chunks)*HV*8*WG,WG),
     [=](sycl::nd_item<1> item) [[sycl::reqd_sub_group_size(16)]] {
@@ -180,6 +184,7 @@ void run(float *state,const uint16_t *h,const float *gate,const float *beta,
       });
     });
   finish(stream,event);
+  if(events)events->wu=event;
   // Persistent carry: one32-value-column slice per workgroup. Only chunk order
   // is serial; each64-token update uses DPAS and keeps the FP32 carry in registers.
   event=queue.submit([&](sycl::handler &handler) {
@@ -233,6 +238,7 @@ void run(float *state,const uint16_t *h,const float *gate,const float *beta,
       });
   });
   finish(stream,event);
+  if(events)events->carry=event;
   // Separate parallel output path; BF16 raw readout precedes normalization.
   event=queue.submit([&](sycl::handler &handler) {
     sycl::local_accessor<Tile<BT*BT>,1> scores(1,handler);
@@ -272,6 +278,7 @@ void run(float *state,const uint16_t *h,const float *gate,const float *beta,
       });
   });
   finish(stream,event);
+  if(events)events->readout=event;
   event=queue.parallel_for(sycl::nd_range<1>(size_t(tokens)*HV*D,D),
     [=](sycl::nd_item<1> item) [[sycl::reqd_sub_group_size(16)]] {
       const int cell=item.get_group_linear_id(),d=item.get_local_linear_id();
@@ -282,5 +289,6 @@ void run(float *state,const uint16_t *h,const float *gate,const float *beta,
       output[size_t(cell)*D+d]=kernels::f16_from_f32(((x*sycl::rsqrt(sum/128.f+eps))*gamma[d])*sigmoid);
     });
   finish(stream,event);
+  if(events)events->norm=event;
 }
 }

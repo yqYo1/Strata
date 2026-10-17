@@ -1,5 +1,5 @@
 {
-  "source_commit": "85464bcd97198032b076f383193987a0a4cf4fb8",
+  "source_commit": "0f22a5f8e31b77c38b5cb18e6c7cb35f6bd783e7",
   "runtime_archive": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-score-gemm-entry-engine-build-v2/build/libstrata_sycl_runtime.a",
     "sha256": "ba34c7d19cf30499c215e86289a921461b9ac426df6f73f61c6769b65d8ee573",
@@ -43,7 +43,7 @@
     "-o",
     "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current/sycl_gdn_chunk64"
   ],
-  "binary_sha256": "a6ffb129dc42ffb16f511bacec5350567853f48dbac99a9c0e682b89d8eb8cbd",
+  "binary_sha256": "70d76c80afd64f3e205c4ecddafe1cb92031d4082bb5f3f92a314893674dc41a",
   "processes_closed": true,
   "ownership_closed": true,
   "smoke": {
@@ -98,6 +98,32 @@
     "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current/sycl_gdn_chunk64",
     "--boundaries"
   ],
+  "general": {
+    "passed": true,
+    "complete": true,
+    "GPU_executed": true,
+    "scope": "Finite/bounds/input/repeat/aligned-handoff safety; FP64 mathematical errors are diagnostic only.",
+    "framework_numerics_qualified": false,
+    "launch_attempted": true,
+    "observed_runtime_elf_count": 26,
+    "GPU_work_admitted": true,
+    "case_results": [
+      "case T=63 oracle=sequential_FP64_math accuracy=DIAGNOSTIC_ONLY carry_rel_L2=0.00296291 carry_max_abs=0.00107428 raw_rel_L2=0.00399581 raw_max_abs=0.00012207 output_rel_L2=0.00387046 output_max_abs=0.0175781 finite=PASS guards=PASS inputs=PASS repeat=PASS aligned_handoff=NA status=SAFETY_PASS",
+      "case T=64 oracle=sequential_FP64_math accuracy=DIAGNOSTIC_ONLY carry_rel_L2=0.00296746 carry_max_abs=0.00100361 raw_rel_L2=0.00399808 raw_max_abs=0.00012207 output_rel_L2=0.00387335 output_max_abs=0.0175781 finite=PASS guards=PASS inputs=PASS repeat=PASS aligned_handoff=NA status=SAFETY_PASS",
+      "case T=65 oracle=sequential_FP64_math accuracy=DIAGNOSTIC_ONLY carry_rel_L2=0.00293508 carry_max_abs=0.000997506 raw_rel_L2=0.00400035 raw_max_abs=0.00012207 output_rel_L2=0.00387778 output_max_abs=0.0175781 finite=PASS guards=PASS inputs=PASS repeat=PASS aligned_handoff=PASS status=SAFETY_PASS",
+      "case T=127 oracle=sequential_FP64_math accuracy=DIAGNOSTIC_ONLY carry_rel_L2=0.00296182 carry_max_abs=0.000863754 raw_rel_L2=0.00403412 raw_max_abs=0.00012207 output_rel_L2=0.0039529 output_max_abs=0.0175781 finite=PASS guards=PASS inputs=PASS repeat=PASS aligned_handoff=PASS status=SAFETY_PASS",
+      "case T=128 oracle=sequential_FP64_math accuracy=DIAGNOSTIC_ONLY carry_rel_L2=0.00296859 carry_max_abs=0.000901355 raw_rel_L2=0.00403342 raw_max_abs=0.00012207 output_rel_L2=0.00395296 output_max_abs=0.0175781 finite=PASS guards=PASS inputs=PASS repeat=PASS aligned_handoff=PASS status=SAFETY_PASS",
+      "case T=129 oracle=sequential_FP64_math accuracy=DIAGNOSTIC_ONLY carry_rel_L2=0.00293524 carry_max_abs=0.000863353 raw_rel_L2=0.00403367 raw_max_abs=0.00012207 output_rel_L2=0.00395415 output_max_abs=0.0175781 finite=PASS guards=PASS inputs=PASS repeat=PASS aligned_handoff=PASS status=SAFETY_PASS",
+      "fixture_status=PASS general_numerics=DIAGNOSTIC_ONLY long_component=UNRUN model_PP=UNRUN physical262144_model=UNRUN RESTORE=UNRUN faults=EXTERNAL_REQUIRED"
+    ],
+    "exit_code": 0,
+    "fresh_faults": [],
+    "boot_unchanged": true
+  },
+  "general_command": [
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current/sycl_gdn_chunk64",
+    "--general"
+  ],
   "project_input_count": 151,
   "environment_reference": {
     "path": "tools/sycl/measurement_environment.json",
@@ -105,55 +131,6 @@
   },
   "command": [
     "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current/sycl_gdn_chunk64",
-    "--boundaries"
-  ],
-  "retirement": {
-    "state": "retired",
-    "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current",
-    "source_commit": "85464bcd97198032b076f383193987a0a4cf4fb8",
-    "verified_project_inputs": 151,
-    "files": [
-      {
-        "path": "owned/boundaries.stderr",
-        "bytes": 462936,
-        "sha256": "624b5b3833ba83c9ebc50a300dbea6b337c6d1d6ea68d250d4cf370d7b2e1faa"
-      },
-      {
-        "path": "owned/boundaries.stdout",
-        "bytes": 2797,
-        "sha256": "55aef5981331899b2b359756b7b0754e6826eaf02cbfeb2556f47d2adba2ca38"
-      },
-      {
-        "path": "owned/build.stderr",
-        "bytes": 0,
-        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-      },
-      {
-        "path": "owned/build.stdout",
-        "bytes": 0,
-        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-      },
-      {
-        "path": "owned/smoke.stderr",
-        "bytes": 184815,
-        "sha256": "46f5fbf147abbc861640af47cb22a14b083909fd87eba9bbd6f4eb620dcee9a0"
-      },
-      {
-        "path": "owned/smoke.stdout",
-        "bytes": 1127,
-        "sha256": "9b1e5a3bd2ce184b1b1476bfae96006d0a1e40486d8100815c9d2ee89bffe1cf"
-      },
-      {
-        "path": "record.json",
-        "bytes": 27221,
-        "sha256": "f1ecdb91a499775829584e9b551256f7b20677c97e09830b02582a75831ac55e"
-      },
-      {
-        "path": "sycl_gdn_chunk64",
-        "bytes": 248312,
-        "sha256": "a6ffb129dc42ffb16f511bacec5350567853f48dbac99a9c0e682b89d8eb8cbd"
-      }
-    ],
-    "reason": "Closed superseded qualification; source/recipe recovered from Git."
-  }
+    "--general"
+  ]
 }
