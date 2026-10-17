@@ -26,15 +26,20 @@ void drain() noexcept {
 struct Drain { ~Drain() noexcept { drain(); } };
 template <class T> struct Buffer {
   sycl_backend::Allocation memory;
+  // Keep host DMA spans inside the owner. If wait throws, a caller temporary
+  // or local result must not disappear before the outer checked Drain retires
+  // work (or aborts with these owners still alive).
+  std::vector<T> upload, download;
   explicit Buffer(size_t n) : memory(rt,n*sizeof(T),sycl_backend::MemoryKind::Device) {}
   T *data() { return memory.as<T>(); }
   void put(const std::vector<T> &v) {
     require(memory.size()==v.size()*sizeof(T),"upload extent");
-    rt->wait(rt->compute().memcpy(data(),v.data(),memory.size()));
+    rt->wait(); upload=v;
+    rt->wait(rt->compute().memcpy(data(),upload.data(),memory.size()));
   }
   std::vector<T> get() {
-    std::vector<T> v(memory.size()/sizeof(T));
-    rt->wait(rt->compute().memcpy(v.data(),data(),memory.size())); return v;
+    rt->wait(); download.resize(memory.size()/sizeof(T));
+    rt->wait(rt->compute().memcpy(download.data(),data(),memory.size())); return download;
   }
 };
 uint16_t round_bf16(float x) {

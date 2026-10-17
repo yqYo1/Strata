@@ -126,7 +126,7 @@ PYTHONPATH=tools ~/.local/share/strata-sycl/venv/bin/python -m serve.server \
 The OpenAI base URL is `http://127.0.0.1:18085/v1`. To run the saved Q2_0 preset,
 use its config path in the same command. The measured context remains 512.
 Reviewed results and validation scope are in
-[`bench/results/2026-10-03-sycl-iq3s/run.json`](../bench/results/2026-10-03-sycl-iq3s/run.json).
+[`bench/results/2026-10-03-sycl-iq3s/run.json`](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-03-sycl-iq3s/run.json).
 Raw logs, generated trial files, binary dumps, model files and workstation
 configs remain outside Git. Local raw captures are preserved under
 `~/.local/state/strata-sycl/measurement-archive/2026-10-03-iq3_s/`.
@@ -272,7 +272,7 @@ above. Those checks used context 512; the subsequent work adds vision and
 larger-context validation.
 
 Reviewed post-rebase evidence is in
-[`bench/results/2026-10-03-sycl-upstream-rebase/run.json`](../bench/results/2026-10-03-sycl-upstream-rebase/run.json).
+[`bench/results/2026-10-03-sycl-upstream-rebase/run.json`](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-03-sycl-upstream-rebase/run.json).
 Raw logs, float dumps, per-request outputs and temporary configs remain outside
 Git under `~/.local/state/strata-sycl/measurement-archive/2026-10-03-upstream-rebase/`.
 
@@ -343,7 +343,7 @@ CUDA/SYCL performance. The historical decode medians above have not been
 remeasured for the newly changed prompt paths.
 
 Reviewed evidence is in
-[`bench/results/2026-10-04-sycl-functional-parity/run.json`](../bench/results/2026-10-04-sycl-functional-parity/run.json).
+[`bench/results/2026-10-04-sycl-functional-parity/run.json`](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-functional-parity/run.json).
 Raw logs, per-request outputs, float dumps and unsuccessful development/harness
 attempts remain outside Git at
 `~/.local/state/strata-sycl/measurement-archive/2026-10-04-functional-parity/`.

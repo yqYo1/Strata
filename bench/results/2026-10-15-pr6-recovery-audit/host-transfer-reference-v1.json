@@ -1,0 +1,3119 @@
+{
+  "passed": true,
+  "complete": true,
+  "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "source_base_commit": "57477f26",
+  "matrix": {
+    "bytes": [
+      2097152,
+      335544320
+    ],
+    "order": [
+      "ordinary",
+      "usm",
+      "usm",
+      "ordinary",
+      "ordinary",
+      "usm"
+    ],
+    "independent_processes_per_arm": 3,
+    "measured_repetitions_per_process": 3,
+    "warmup_repetitions_per_process": 1
+  },
+  "allocation_scope": "Both arms align protected host regions to4096 with body offset128; ordinarynew[] versus HostUSM. Setup/pretouch outside copy timing. Verification uses a separate HostUSM buffer.",
+  "binary": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-canonical-bank-profile-build-root-v1/build/sycl_host_transfer_probe",
+  "binary_sha256": "2fccadda6686349ad4dbc081511d99f4f6cb85683055797cc21bb28e15f9894c",
+  "compiler": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+  "compiler_sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb",
+  "build_environment": {
+    "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+    "OMP_NUM_THREADS": "1",
+    "GIT_TERMINAL_PROMPT": "0",
+    "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+    "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+    "PYTHONPATH": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/niko-service-test-deps-v1:/home/yayoi/orca/workspaces/Strata/sycl/tools:/home/yayoi/orca/workspaces/Strata/sycl",
+    "PIP_CONFIG_FILE": "/dev/null"
+  },
+  "environment": {
+    "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+    "OMP_NUM_THREADS": "1",
+    "GIT_TERMINAL_PROMPT": "0",
+    "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+    "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+    "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0",
+    "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+    "PYTHONPATH": "/home/yayoi/orca/workspaces/Strata/sycl/tools:/home/yayoi/orca/workspaces/Strata/sycl",
+    "PIP_CONFIG_FILE": "/dev/null",
+    "PYTHONUNBUFFERED": "1",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-host-transfer-component-root-v1/cache",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+    "STRATA_SYCL_MMQ_XMX": "1",
+    "STRATA_SYCL_MMQ_XMX_TILE": "8",
+    "STRATA_SYCL_MMQ_XMX_EXACT": "1",
+    "STRATA_SYCL_MMQ_XMX_PACK": "0",
+    "STRATA_SYCL_MMQ_XMX_COMPACT": "1",
+    "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+    "STRATA_PREFILL_RING": "8",
+    "STRATA_PREFILL_MMQ": "0",
+    "STRATA_PREFILL_MOE_COMPACT_FP16": "1",
+    "STRATA_WATCHDOG_S": "480",
+    "STRATA_SYCL_PROMPT_DIRECT": "1",
+    "STRATA_PREFILL_LAYER_MAJOR": "1",
+    "STRATA_PREFILL_LAYER_MAJOR_R_DTYPE": "fp32",
+    "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "32768",
+    "STRATA_PREFILL_RELEASE_MTP_EXPERTS": "1",
+    "STRATA_PREFILL_PHASE_AUDIT": "0",
+    "STRATA_PREFILL_BOUNDARY_AUDIT": "0",
+    "STRATA_SYCL_KV_COPY_GROUPS": "0",
+    "STRATA_IQ_SINGLE_EXACT": "0",
+    "STRATA_SYCL_PARALLEL_IQ_DEQUANT": "1",
+    "STRATA_PREFILL_LAYER_MAJOR_SHAPE_CENSUS": "0",
+    "STRATA_IQ_TIMING_PROGRESS": "0",
+    "STRATA_MEASUREMENT_ENGINE_START": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-selector-clean-0-r0-root-v1/engine-start.json",
+    "STRATA_MEASUREMENT_ENGINE_EXIT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-selector-clean-0-r0-root-v1/engine-exit.json",
+    "STRATA_PREFILL_RELEASE_HEADS": "0",
+    "STRATA_PREFILL_NATIVE_DENSE_BANK": "1",
+    "STRATA_SYCL_PREFILL_SCRATCH_ALIAS": "1",
+    "STRATA_SYCL_QSA_INDEXER_DEVICE_BATCH": "1",
+    "STRATA_GR_UNFUSED": "0",
+    "STRATA_PREFILL_BF16X2": "0",
+    "STRATA_PF_FUSED": "0",
+    "STRATA_PREFILL_CANONICAL_DENSE_BANK": "1",
+    "STRATA_PREFILL_LAYER_MAJOR_PROFILE": "0",
+    "STRATA_PREFILL_LAYER_MAJOR_QSA_PROFILE": "0",
+    "STRATA_SYCL_SELECT_RADIX4": "0",
+    "STRATA_SYCL_SELECT_CYCLIC": "0",
+    "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
+    "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0"
+  },
+  "summary": {
+    "2097152": {
+      "ordinary": {
+        "process_medians": [
+          {
+            "H2D": {
+              "submit_cpu_s": 8.2324e-05,
+              "submit_wall_s": 8.523e-05,
+              "wait_cpu_s": 0.000393438,
+              "wait_wall_s": 0.000393613,
+              "total_cpu_s": 0.000475762,
+              "total_wall_s": 0.000478843,
+              "total_GBps": 4.379623437
+            },
+            "D2H": {
+              "submit_cpu_s": 0.000535093,
+              "submit_wall_s": 0.000537684,
+              "wait_cpu_s": 2.875e-06,
+              "wait_wall_s": 3.116e-06,
+              "total_cpu_s": 0.000537968,
+              "total_wall_s": 0.0005408,
+              "total_GBps": 3.877869929
+            }
+          },
+          {
+            "H2D": {
+              "submit_cpu_s": 8.7515e-05,
+              "submit_wall_s": 9.036e-05,
+              "wait_cpu_s": 0.000395762,
+              "wait_wall_s": 0.000397911,
+              "total_cpu_s": 0.000481684,
+              "total_wall_s": 0.000484714,
+              "total_GBps": 4.326575622
+            },
+            "D2H": {
+              "submit_cpu_s": 0.000541005,
+              "submit_wall_s": 0.000544847,
+              "wait_cpu_s": 2.826e-06,
+              "wait_wall_s": 3.026e-06,
+              "total_cpu_s": 0.000543831,
+              "total_wall_s": 0.000547873,
+              "total_GBps": 3.827806593
+            }
+          },
+          {
+            "H2D": {
+              "submit_cpu_s": 8.0561e-05,
+              "submit_wall_s": 8.4309e-05,
+              "wait_cpu_s": 0.000397636,
+              "wait_wall_s": 0.000397781,
+              "total_cpu_s": 0.000486592,
+              "total_wall_s": 0.000490506,
+              "total_GBps": 4.275486902
+            },
+            "D2H": {
+              "submit_cpu_s": 0.000535995,
+              "submit_wall_s": 0.000539798,
+              "wait_cpu_s": 2.795e-06,
+              "wait_wall_s": 3.016e-06,
+              "total_cpu_s": 0.00053872,
+              "total_wall_s": 0.000542814,
+              "total_GBps": 3.863481579
+            }
+          }
+        ],
+        "median": {
+          "H2D": {
+            "submit_cpu_s": 8.2324e-05,
+            "submit_wall_s": 8.523e-05,
+            "wait_cpu_s": 0.000395762,
+            "wait_wall_s": 0.000397781,
+            "total_cpu_s": 0.000481684,
+            "total_wall_s": 0.000484714,
+            "total_GBps": 4.326575622
+          },
+          "D2H": {
+            "submit_cpu_s": 0.000535995,
+            "submit_wall_s": 0.000539798,
+            "wait_cpu_s": 2.826e-06,
+            "wait_wall_s": 3.026e-06,
+            "total_cpu_s": 0.00053872,
+            "total_wall_s": 0.000542814,
+            "total_GBps": 3.863481579
+          }
+        }
+      },
+      "usm": {
+        "process_medians": [
+          {
+            "H2D": {
+              "submit_cpu_s": 2.5167e-05,
+              "submit_wall_s": 2.7922e-05,
+              "wait_cpu_s": 0.000461145,
+              "wait_wall_s": 0.000463014,
+              "total_cpu_s": 0.000486553,
+              "total_wall_s": 0.000491407,
+              "total_GBps": 4.267647783
+            },
+            "D2H": {
+              "submit_cpu_s": 2.4266e-05,
+              "submit_wall_s": 2.7001e-05,
+              "wait_cpu_s": 0.000457048,
+              "wait_wall_s": 0.000458906,
+              "total_cpu_s": 0.000482465,
+              "total_wall_s": 0.00048755,
+              "total_GBps": 4.3014092
+            }
+          },
+          {
+            "H2D": {
+              "submit_cpu_s": 2.3523e-05,
+              "submit_wall_s": 2.7162e-05,
+              "wait_cpu_s": 0.000461426,
+              "wait_wall_s": 0.000463976,
+              "total_cpu_s": 0.000483948,
+              "total_wall_s": 0.000487711,
+              "total_GBps": 4.299989225
+            },
+            "D2H": {
+              "submit_cpu_s": 2.3723e-05,
+              "submit_wall_s": 2.7341e-05,
+              "wait_cpu_s": 0.000451798,
+              "wait_wall_s": 0.000453836,
+              "total_cpu_s": 0.000475372,
+              "total_wall_s": 0.000481168,
+              "total_GBps": 4.358460707
+            }
+          },
+          {
+            "H2D": {
+              "submit_cpu_s": 2.3595e-05,
+              "submit_wall_s": 2.7412e-05,
+              "wait_cpu_s": 0.000460895,
+              "wait_wall_s": 0.000463594,
+              "total_cpu_s": 0.00048449,
+              "total_wall_s": 0.000491006,
+              "total_GBps": 4.271133573
+            },
+            "D2H": {
+              "submit_cpu_s": 2.3384e-05,
+              "submit_wall_s": 2.7092e-05,
+              "wait_cpu_s": 0.000451336,
+              "wait_wall_s": 0.000453956,
+              "total_cpu_s": 0.000474921,
+              "total_wall_s": 0.000481048,
+              "total_GBps": 4.359548167
+            }
+          }
+        ],
+        "median": {
+          "H2D": {
+            "submit_cpu_s": 2.3595e-05,
+            "submit_wall_s": 2.7412e-05,
+            "wait_cpu_s": 0.000461145,
+            "wait_wall_s": 0.000463594,
+            "total_cpu_s": 0.00048449,
+            "total_wall_s": 0.000491006,
+            "total_GBps": 4.271133573
+          },
+          "D2H": {
+            "submit_cpu_s": 2.3723e-05,
+            "submit_wall_s": 2.7092e-05,
+            "wait_cpu_s": 0.000451798,
+            "wait_wall_s": 0.000453956,
+            "total_cpu_s": 0.000475372,
+            "total_wall_s": 0.000481168,
+            "total_GBps": 4.358460707
+          }
+        }
+      }
+    },
+    "335544320": {
+      "ordinary": {
+        "process_medians": [
+          {
+            "H2D": {
+              "submit_cpu_s": 0.033288885,
+              "submit_wall_s": 0.033632528,
+              "wait_cpu_s": 0.021764109,
+              "wait_wall_s": 0.022092587,
+              "total_cpu_s": 0.055409185,
+              "total_wall_s": 0.055869638,
+              "total_GBps": 6.005843813
+            },
+            "D2H": {
+              "submit_cpu_s": 0.060160825,
+              "submit_wall_s": 0.060512918,
+              "wait_cpu_s": 1.2934e-05,
+              "wait_wall_s": 1.4017e-05,
+              "total_cpu_s": 0.06017443,
+              "total_wall_s": 0.060526935,
+              "total_GBps": 5.543719004
+            }
+          },
+          {
+            "H2D": {
+              "submit_cpu_s": 0.033171655,
+              "submit_wall_s": 0.033521128,
+              "wait_cpu_s": 0.022249882,
+              "wait_wall_s": 0.022263259,
+              "total_cpu_s": 0.055421537,
+              "total_wall_s": 0.055784387,
+              "total_GBps": 6.01502209
+            },
+            "D2H": {
+              "submit_cpu_s": 0.060182604,
+              "submit_wall_s": 0.060602796,
+              "wait_cpu_s": 1.3655e-05,
+              "wait_wall_s": 1.4608e-05,
+              "total_cpu_s": 0.060196259,
+              "total_wall_s": 0.060617404,
+              "total_GBps": 5.535445233
+            }
+          },
+          {
+            "H2D": {
+              "submit_cpu_s": 0.033401282,
+              "submit_wall_s": 0.033743597,
+              "wait_cpu_s": 0.022056059,
+              "wait_wall_s": 0.02205697,
+              "total_cpu_s": 0.055153703,
+              "total_wall_s": 0.055628733,
+              "total_GBps": 6.031852639
+            },
+            "D2H": {
+              "submit_cpu_s": 0.060202571,
+              "submit_wall_s": 0.060556018,
+              "wait_cpu_s": 1.2573e-05,
+              "wait_wall_s": 1.3545e-05,
+              "total_cpu_s": 0.060215144,
+              "total_wall_s": 0.060569935,
+              "total_GBps": 5.539783397
+            }
+          }
+        ],
+        "median": {
+          "H2D": {
+            "submit_cpu_s": 0.033288885,
+            "submit_wall_s": 0.033632528,
+            "wait_cpu_s": 0.022056059,
+            "wait_wall_s": 0.022092587,
+            "total_cpu_s": 0.055409185,
+            "total_wall_s": 0.055784387,
+            "total_GBps": 6.01502209
+          },
+          "D2H": {
+            "submit_cpu_s": 0.060182604,
+            "submit_wall_s": 0.060556018,
+            "wait_cpu_s": 1.2934e-05,
+            "wait_wall_s": 1.4017e-05,
+            "total_cpu_s": 0.060196259,
+            "total_wall_s": 0.060569935,
+            "total_GBps": 5.539783397
+          }
+        }
+      },
+      "usm": {
+        "process_medians": [
+          {
+            "H2D": {
+              "submit_cpu_s": 7.0833e-05,
+              "submit_wall_s": 7.5753e-05,
+              "wait_cpu_s": 0.065696501,
+              "wait_wall_s": 0.065706074,
+              "total_cpu_s": 0.065767334,
+              "total_wall_s": 0.065781827,
+              "total_GBps": 5.100866538
+            },
+            "D2H": {
+              "submit_cpu_s": 7.0211e-05,
+              "submit_wall_s": 7.5191e-05,
+              "wait_cpu_s": 0.059311056,
+              "wait_wall_s": 0.059346517,
+              "total_cpu_s": 0.059379204,
+              "total_wall_s": 0.059422941,
+              "total_GBps": 5.646713446
+            }
+          },
+          {
+            "H2D": {
+              "submit_cpu_s": 7.2666e-05,
+              "submit_wall_s": 7.7226e-05,
+              "wait_cpu_s": 0.065775196,
+              "wait_wall_s": 0.06578346,
+              "total_cpu_s": 0.065850728,
+              "total_wall_s": 0.065865044,
+              "total_GBps": 5.094421864
+            },
+            "D2H": {
+              "submit_cpu_s": 6.7567e-05,
+              "submit_wall_s": 7.1796e-05,
+              "wait_cpu_s": 0.05930203,
+              "wait_wall_s": 0.059369601,
+              "total_cpu_s": 0.059369597,
+              "total_wall_s": 0.059441196,
+              "total_GBps": 5.64497928
+            }
+          },
+          {
+            "H2D": {
+              "submit_cpu_s": 7.3639e-05,
+              "submit_wall_s": 7.8558e-05,
+              "wait_cpu_s": 0.065604297,
+              "wait_wall_s": 0.065784301,
+              "total_cpu_s": 0.065672906,
+              "total_wall_s": 0.065862859,
+              "total_GBps": 5.094590871
+            },
+            "D2H": {
+              "submit_cpu_s": 7.2105e-05,
+              "submit_wall_s": 7.7016e-05,
+              "wait_cpu_s": 0.05931266,
+              "wait_wall_s": 0.059341607,
+              "total_cpu_s": 0.059390166,
+              "total_wall_s": 0.059421327,
+              "total_GBps": 5.646866826
+            }
+          }
+        ],
+        "median": {
+          "H2D": {
+            "submit_cpu_s": 7.2666e-05,
+            "submit_wall_s": 7.7226e-05,
+            "wait_cpu_s": 0.065696501,
+            "wait_wall_s": 0.06578346,
+            "total_cpu_s": 0.065767334,
+            "total_wall_s": 0.065862859,
+            "total_GBps": 5.094590871
+          },
+          "D2H": {
+            "submit_cpu_s": 7.0211e-05,
+            "submit_wall_s": 7.5191e-05,
+            "wait_cpu_s": 0.059311056,
+            "wait_wall_s": 0.059346517,
+            "total_cpu_s": 0.059379204,
+            "total_wall_s": 0.059422941,
+            "total_GBps": 5.646713446
+          }
+        }
+      }
+    }
+  },
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_dump_exists": false,
+  "finished_utc": "2026-10-15T19:31:29.223523+00:00",
+  "schema": "strata-host-transfer-reference-samples-v1",
+  "archive_commit": "8063aacc6749d18089f7a53db5d3e47b745f348c",
+  "original_path": "bench/results/2026-10-15-pr6-recovery-audit/own-host-transfer-component-v1.json",
+  "original_sha256": "d853e07eeae7ca24fdd4d20b7a42552152c532c8dadcd85c2f9d62bf67444b01",
+  "source_pins_archive": "Source pins, exact recipe and original command receipts are recoverable in original_path at archive_commit.",
+  "consumer": "Main hardware roofline/transfer-versus-compute budgeting; review after a hardware/runtime/link change.",
+  "cases": {
+    "smoke-ordinary": {
+      "host": "ordinary",
+      "bytes": 4194304,
+      "trace": true,
+      "setup": {
+        "host": "ordinary",
+        "bytes": "4194304",
+        "host_allocation_bytes": "4198656",
+        "device_bytes": "4194560",
+        "verification_allocation_bytes": "4198656",
+        "body_alignment_mod4096": "128",
+        "allocation_cpu_s": "0.000015980",
+        "allocation_wall_s": "0.000016972",
+        "pretouch_cpu_s": "0.002174147",
+        "pretouch_wall_s": "0.002174342"
+      },
+      "samples": [
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "4194304",
+          "submit_cpu_s": "0.000189716",
+          "submit_wall_s": "0.000194647",
+          "wait_cpu_s": "0.000643306",
+          "wait_wall_s": "0.000643414",
+          "total_cpu_s": "0.000833022",
+          "total_wall_s": "0.000838061",
+          "total_GBps": "5.004771850",
+          "numeric": {
+            "submit_cpu_s": 0.000189716,
+            "submit_wall_s": 0.000194647,
+            "wait_cpu_s": 0.000643306,
+            "wait_wall_s": 0.000643414,
+            "total_cpu_s": 0.000833022,
+            "total_wall_s": 0.000838061,
+            "total_GBps": 5.00477185
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "4194304",
+          "submit_cpu_s": "0.000956975",
+          "submit_wall_s": "0.000961494",
+          "wait_cpu_s": "0.000015238",
+          "wait_wall_s": "0.000015429",
+          "total_cpu_s": "0.000972213",
+          "total_wall_s": "0.000976923",
+          "total_GBps": "4.293382473",
+          "numeric": {
+            "submit_cpu_s": 0.000956975,
+            "submit_wall_s": 0.000961494,
+            "wait_cpu_s": 1.5238e-05,
+            "wait_wall_s": 1.5429e-05,
+            "total_cpu_s": 0.000972213,
+            "total_wall_s": 0.000976923,
+            "total_GBps": 4.293382473
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "4194304",
+          "submit_cpu_s": "0.000171621",
+          "submit_wall_s": "0.000176263",
+          "wait_cpu_s": "0.000657403",
+          "wait_wall_s": "0.000657430",
+          "total_cpu_s": "0.000829024",
+          "total_wall_s": "0.000833693",
+          "total_GBps": "5.030993662",
+          "numeric": {
+            "submit_cpu_s": 0.000171621,
+            "submit_wall_s": 0.000176263,
+            "wait_cpu_s": 0.000657403,
+            "wait_wall_s": 0.00065743,
+            "total_cpu_s": 0.000829024,
+            "total_wall_s": 0.000833693,
+            "total_GBps": 5.030993662
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "4194304",
+          "submit_cpu_s": "0.000956865",
+          "submit_wall_s": "0.000961373",
+          "wait_cpu_s": "0.000015398",
+          "wait_wall_s": "0.000015610",
+          "total_cpu_s": "0.000972263",
+          "total_wall_s": "0.000976983",
+          "total_GBps": "4.293118748",
+          "numeric": {
+            "submit_cpu_s": 0.000956865,
+            "submit_wall_s": 0.000961373,
+            "wait_cpu_s": 1.5398e-05,
+            "wait_wall_s": 1.561e-05,
+            "total_cpu_s": 0.000972263,
+            "total_wall_s": 0.000976983,
+            "total_GBps": 4.293118748
+          }
+        }
+      ]
+    },
+    "smoke-usm": {
+      "host": "usm",
+      "bytes": 4194304,
+      "trace": true,
+      "setup": {
+        "host": "usm",
+        "bytes": "4194304",
+        "host_allocation_bytes": "4198656",
+        "device_bytes": "4194560",
+        "verification_allocation_bytes": "4198656",
+        "body_alignment_mod4096": "128",
+        "allocation_cpu_s": "0.000421972",
+        "allocation_wall_s": "0.000426414",
+        "pretouch_cpu_s": "0.001052584",
+        "pretouch_wall_s": "0.001052506"
+      },
+      "samples": [
+        {
+          "host": "usm",
+          "direction": "H2D",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "4194304",
+          "submit_cpu_s": "0.000065713",
+          "submit_wall_s": "0.000068620",
+          "wait_cpu_s": "0.000839574",
+          "wait_wall_s": "0.000842008",
+          "total_cpu_s": "0.000905287",
+          "total_wall_s": "0.000910628",
+          "total_GBps": "4.605946640",
+          "numeric": {
+            "submit_cpu_s": 6.5713e-05,
+            "submit_wall_s": 6.862e-05,
+            "wait_cpu_s": 0.000839574,
+            "wait_wall_s": 0.000842008,
+            "total_cpu_s": 0.000905287,
+            "total_wall_s": 0.000910628,
+            "total_GBps": 4.60594664
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "D2H",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "4194304",
+          "submit_cpu_s": "0.000066195",
+          "submit_wall_s": "0.000068970",
+          "wait_cpu_s": "0.000799078",
+          "wait_wall_s": "0.000801242",
+          "total_cpu_s": "0.000865273",
+          "total_wall_s": "0.000870212",
+          "total_GBps": "4.819864366",
+          "numeric": {
+            "submit_cpu_s": 6.6195e-05,
+            "submit_wall_s": 6.897e-05,
+            "wait_cpu_s": 0.000799078,
+            "wait_wall_s": 0.000801242,
+            "total_cpu_s": 0.000865273,
+            "total_wall_s": 0.000870212,
+            "total_GBps": 4.819864366
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "H2D",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "4194304",
+          "submit_cpu_s": "0.000061936",
+          "submit_wall_s": "0.000064772",
+          "wait_cpu_s": "0.000865523",
+          "wait_wall_s": "0.000871735",
+          "total_cpu_s": "0.000927459",
+          "total_wall_s": "0.000936507",
+          "total_GBps": "4.478668002",
+          "numeric": {
+            "submit_cpu_s": 6.1936e-05,
+            "submit_wall_s": 6.4772e-05,
+            "wait_cpu_s": 0.000865523,
+            "wait_wall_s": 0.000871735,
+            "total_cpu_s": 0.000927459,
+            "total_wall_s": 0.000936507,
+            "total_GBps": 4.478668002
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "D2H",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "4194304",
+          "submit_cpu_s": "0.000065453",
+          "submit_wall_s": "0.000068299",
+          "wait_cpu_s": "0.000800351",
+          "wait_wall_s": "0.000802624",
+          "total_cpu_s": "0.000865804",
+          "total_wall_s": "0.000870923",
+          "total_GBps": "4.815929834",
+          "numeric": {
+            "submit_cpu_s": 6.5453e-05,
+            "submit_wall_s": 6.8299e-05,
+            "wait_cpu_s": 0.000800351,
+            "wait_wall_s": 0.000802624,
+            "total_cpu_s": 0.000865804,
+            "total_wall_s": 0.000870923,
+            "total_GBps": 4.815929834
+          }
+        }
+      ]
+    },
+    "clean-2097152-0-ordinary": {
+      "host": "ordinary",
+      "bytes": 2097152,
+      "trace": false,
+      "setup": {
+        "host": "ordinary",
+        "bytes": "2097152",
+        "host_allocation_bytes": "2101504",
+        "device_bytes": "2097408",
+        "verification_allocation_bytes": "2101504",
+        "body_alignment_mod4096": "128",
+        "allocation_cpu_s": "0.000012223",
+        "allocation_wall_s": "0.000013465",
+        "pretouch_cpu_s": "0.001353528",
+        "pretouch_wall_s": "0.001353854"
+      },
+      "samples": [
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000079659",
+          "submit_wall_s": "0.000082876",
+          "wait_cpu_s": "0.000379823",
+          "wait_wall_s": "0.000379707",
+          "total_cpu_s": "0.000459482",
+          "total_wall_s": "0.000462583",
+          "total_GBps": "4.533569354",
+          "numeric": {
+            "submit_cpu_s": 7.9659e-05,
+            "submit_wall_s": 8.2876e-05,
+            "wait_cpu_s": 0.000379823,
+            "wait_wall_s": 0.000379707,
+            "total_cpu_s": 0.000459482,
+            "total_wall_s": 0.000462583,
+            "total_GBps": 4.533569354
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.002855134",
+          "submit_wall_s": "0.002857952",
+          "wait_cpu_s": "0.000003025",
+          "wait_wall_s": "0.000003236",
+          "total_cpu_s": "0.002858159",
+          "total_wall_s": "0.002861188",
+          "total_GBps": "0.732965476",
+          "numeric": {
+            "submit_cpu_s": 0.002855134,
+            "submit_wall_s": 0.002857952,
+            "wait_cpu_s": 3.025e-06,
+            "wait_wall_s": 3.236e-06,
+            "total_cpu_s": 0.002858159,
+            "total_wall_s": 0.002861188,
+            "total_GBps": 0.732965476
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000082324",
+          "submit_wall_s": "0.000085230",
+          "wait_cpu_s": "0.000393438",
+          "wait_wall_s": "0.000393613",
+          "total_cpu_s": "0.000475762",
+          "total_wall_s": "0.000478843",
+          "total_GBps": "4.379623437",
+          "numeric": {
+            "submit_cpu_s": 8.2324e-05,
+            "submit_wall_s": 8.523e-05,
+            "wait_cpu_s": 0.000393438,
+            "wait_wall_s": 0.000393613,
+            "total_cpu_s": 0.000475762,
+            "total_wall_s": 0.000478843,
+            "total_GBps": 4.379623437
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000547858",
+          "submit_wall_s": "0.000551520",
+          "wait_cpu_s": "0.000003076",
+          "wait_wall_s": "0.000003347",
+          "total_cpu_s": "0.000550934",
+          "total_wall_s": "0.000554867",
+          "total_GBps": "3.779557776",
+          "numeric": {
+            "submit_cpu_s": 0.000547858,
+            "submit_wall_s": 0.00055152,
+            "wait_cpu_s": 3.076e-06,
+            "wait_wall_s": 3.347e-06,
+            "total_cpu_s": 0.000550934,
+            "total_wall_s": 0.000554867,
+            "total_GBps": 3.779557776
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "1",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000078147",
+          "submit_wall_s": "0.000080842",
+          "wait_cpu_s": "0.000391304",
+          "wait_wall_s": "0.000391499",
+          "total_cpu_s": "0.000469451",
+          "total_wall_s": "0.000472341",
+          "total_GBps": "4.439910772",
+          "numeric": {
+            "submit_cpu_s": 7.8147e-05,
+            "submit_wall_s": 8.0842e-05,
+            "wait_cpu_s": 0.000391304,
+            "wait_wall_s": 0.000391499,
+            "total_cpu_s": 0.000469451,
+            "total_wall_s": 0.000472341,
+            "total_GBps": 4.439910772
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "1",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000535093",
+          "submit_wall_s": "0.000537684",
+          "wait_cpu_s": "0.000002875",
+          "wait_wall_s": "0.000003116",
+          "total_cpu_s": "0.000537968",
+          "total_wall_s": "0.000540800",
+          "total_GBps": "3.877869929",
+          "numeric": {
+            "submit_cpu_s": 0.000535093,
+            "submit_wall_s": 0.000537684,
+            "wait_cpu_s": 2.875e-06,
+            "wait_wall_s": 3.116e-06,
+            "total_cpu_s": 0.000537968,
+            "total_wall_s": 0.0005408,
+            "total_GBps": 3.877869929
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "2",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000086503",
+          "submit_wall_s": "0.000089339",
+          "wait_cpu_s": "0.000397345",
+          "wait_wall_s": "0.000397479",
+          "total_cpu_s": "0.000483848",
+          "total_wall_s": "0.000486818",
+          "total_GBps": "4.307877152",
+          "numeric": {
+            "submit_cpu_s": 8.6503e-05,
+            "submit_wall_s": 8.9339e-05,
+            "wait_cpu_s": 0.000397345,
+            "wait_wall_s": 0.000397479,
+            "total_cpu_s": 0.000483848,
+            "total_wall_s": 0.000486818,
+            "total_GBps": 4.307877152
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "2",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000530495",
+          "submit_wall_s": "0.000533186",
+          "wait_cpu_s": "0.000002755",
+          "wait_wall_s": "0.000002936",
+          "total_cpu_s": "0.000533250",
+          "total_wall_s": "0.000536122",
+          "total_GBps": "3.911706590",
+          "numeric": {
+            "submit_cpu_s": 0.000530495,
+            "submit_wall_s": 0.000533186,
+            "wait_cpu_s": 2.755e-06,
+            "wait_wall_s": 2.936e-06,
+            "total_cpu_s": 0.00053325,
+            "total_wall_s": 0.000536122,
+            "total_GBps": 3.91170659
+          }
+        }
+      ]
+    },
+    "clean-2097152-1-usm": {
+      "host": "usm",
+      "bytes": 2097152,
+      "trace": false,
+      "setup": {
+        "host": "usm",
+        "bytes": "2097152",
+        "host_allocation_bytes": "2101504",
+        "device_bytes": "2097408",
+        "verification_allocation_bytes": "2101504",
+        "body_alignment_mod4096": "128",
+        "allocation_cpu_s": "0.000283823",
+        "allocation_wall_s": "0.000288274",
+        "pretouch_cpu_s": "0.000573505",
+        "pretouch_wall_s": "0.000573412"
+      },
+      "samples": [
+        {
+          "host": "usm",
+          "direction": "H2D",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000025768",
+          "submit_wall_s": "0.000026109",
+          "wait_cpu_s": "0.000481874",
+          "wait_wall_s": "0.000481979",
+          "total_cpu_s": "0.000507642",
+          "total_wall_s": "0.000508088",
+          "total_GBps": "4.127537139",
+          "numeric": {
+            "submit_cpu_s": 2.5768e-05,
+            "submit_wall_s": 2.6109e-05,
+            "wait_cpu_s": 0.000481874,
+            "wait_wall_s": 0.000481979,
+            "total_cpu_s": 0.000507642,
+            "total_wall_s": 0.000508088,
+            "total_GBps": 4.127537139
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "D2H",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000018585",
+          "submit_wall_s": "0.000018876",
+          "wait_cpu_s": "0.000462156",
+          "wait_wall_s": "0.000462312",
+          "total_cpu_s": "0.000480741",
+          "total_wall_s": "0.000481188",
+          "total_GBps": "4.358279867",
+          "numeric": {
+            "submit_cpu_s": 1.8585e-05,
+            "submit_wall_s": 1.8876e-05,
+            "wait_cpu_s": 0.000462156,
+            "wait_wall_s": 0.000462312,
+            "total_cpu_s": 0.000480741,
+            "total_wall_s": 0.000481188,
+            "total_GBps": 4.358279867
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "H2D",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000018965",
+          "submit_wall_s": "0.000019176",
+          "wait_cpu_s": "0.000470594",
+          "wait_wall_s": "0.000474866",
+          "total_cpu_s": "0.000489559",
+          "total_wall_s": "0.000494042",
+          "total_GBps": "4.244886528",
+          "numeric": {
+            "submit_cpu_s": 1.8965e-05,
+            "submit_wall_s": 1.9176e-05,
+            "wait_cpu_s": 0.000470594,
+            "wait_wall_s": 0.000474866,
+            "total_cpu_s": 0.000489559,
+            "total_wall_s": 0.000494042,
+            "total_GBps": 4.244886528
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "D2H",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000026050",
+          "submit_wall_s": "0.000029196",
+          "wait_cpu_s": "0.000456415",
+          "wait_wall_s": "0.000458354",
+          "total_cpu_s": "0.000482465",
+          "total_wall_s": "0.000487550",
+          "total_GBps": "4.301409200",
+          "numeric": {
+            "submit_cpu_s": 2.605e-05,
+            "submit_wall_s": 2.9196e-05,
+            "wait_cpu_s": 0.000456415,
+            "wait_wall_s": 0.000458354,
+            "total_cpu_s": 0.000482465,
+            "total_wall_s": 0.00048755,
+            "total_GBps": 4.3014092
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "H2D",
+          "repetition": "1",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000025167",
+          "submit_wall_s": "0.000027922",
+          "wait_cpu_s": "0.000461094",
+          "wait_wall_s": "0.000463014",
+          "total_cpu_s": "0.000486261",
+          "total_wall_s": "0.000490936",
+          "total_GBps": "4.271741766",
+          "numeric": {
+            "submit_cpu_s": 2.5167e-05,
+            "submit_wall_s": 2.7922e-05,
+            "wait_cpu_s": 0.000461094,
+            "wait_wall_s": 0.000463014,
+            "total_cpu_s": 0.000486261,
+            "total_wall_s": 0.000490936,
+            "total_GBps": 4.271741766
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "D2H",
+          "repetition": "1",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000023173",
+          "submit_wall_s": "0.000026029",
+          "wait_cpu_s": "0.000457048",
+          "wait_wall_s": "0.000458906",
+          "total_cpu_s": "0.000480221",
+          "total_wall_s": "0.000484935",
+          "total_GBps": "4.324604257",
+          "numeric": {
+            "submit_cpu_s": 2.3173e-05,
+            "submit_wall_s": 2.6029e-05,
+            "wait_cpu_s": 0.000457048,
+            "wait_wall_s": 0.000458906,
+            "total_cpu_s": 0.000480221,
+            "total_wall_s": 0.000484935,
+            "total_GBps": 4.324604257
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "H2D",
+          "repetition": "2",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000025408",
+          "submit_wall_s": "0.000028434",
+          "wait_cpu_s": "0.000461145",
+          "wait_wall_s": "0.000462973",
+          "total_cpu_s": "0.000486553",
+          "total_wall_s": "0.000491407",
+          "total_GBps": "4.267647783",
+          "numeric": {
+            "submit_cpu_s": 2.5408e-05,
+            "submit_wall_s": 2.8434e-05,
+            "wait_cpu_s": 0.000461145,
+            "wait_wall_s": 0.000462973,
+            "total_cpu_s": 0.000486553,
+            "total_wall_s": 0.000491407,
+            "total_GBps": 4.267647783
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "D2H",
+          "repetition": "2",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000024266",
+          "submit_wall_s": "0.000027001",
+          "wait_cpu_s": "0.000459992",
+          "wait_wall_s": "0.000461901",
+          "total_cpu_s": "0.000484258",
+          "total_wall_s": "0.000488902",
+          "total_GBps": "4.289513749",
+          "numeric": {
+            "submit_cpu_s": 2.4266e-05,
+            "submit_wall_s": 2.7001e-05,
+            "wait_cpu_s": 0.000459992,
+            "wait_wall_s": 0.000461901,
+            "total_cpu_s": 0.000484258,
+            "total_wall_s": 0.000488902,
+            "total_GBps": 4.289513749
+          }
+        }
+      ]
+    },
+    "clean-2097152-2-usm": {
+      "host": "usm",
+      "bytes": 2097152,
+      "trace": false,
+      "setup": {
+        "host": "usm",
+        "bytes": "2097152",
+        "host_allocation_bytes": "2101504",
+        "device_bytes": "2097408",
+        "verification_allocation_bytes": "2101504",
+        "body_alignment_mod4096": "128",
+        "allocation_cpu_s": "0.000264927",
+        "allocation_wall_s": "0.000268507",
+        "pretouch_cpu_s": "0.000523932",
+        "pretouch_wall_s": "0.000524028"
+      },
+      "samples": [
+        {
+          "host": "usm",
+          "direction": "H2D",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000024886",
+          "submit_wall_s": "0.000025148",
+          "wait_cpu_s": "0.000499086",
+          "wait_wall_s": "0.000499281",
+          "total_cpu_s": "0.000523972",
+          "total_wall_s": "0.000524429",
+          "total_GBps": "3.998924374",
+          "numeric": {
+            "submit_cpu_s": 2.4886e-05,
+            "submit_wall_s": 2.5148e-05,
+            "wait_cpu_s": 0.000499086,
+            "wait_wall_s": 0.000499281,
+            "total_cpu_s": 0.000523972,
+            "total_wall_s": 0.000524429,
+            "total_GBps": 3.998924374
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "D2H",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000019937",
+          "submit_wall_s": "0.000020178",
+          "wait_cpu_s": "0.000460474",
+          "wait_wall_s": "0.000460599",
+          "total_cpu_s": "0.000480411",
+          "total_wall_s": "0.000480777",
+          "total_GBps": "4.362005652",
+          "numeric": {
+            "submit_cpu_s": 1.9937e-05,
+            "submit_wall_s": 2.0178e-05,
+            "wait_cpu_s": 0.000460474,
+            "wait_wall_s": 0.000460599,
+            "total_cpu_s": 0.000480411,
+            "total_wall_s": 0.000480777,
+            "total_GBps": 4.362005652
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "H2D",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000018334",
+          "submit_wall_s": "0.000018596",
+          "wait_cpu_s": "0.000465614",
+          "wait_wall_s": "0.000469115",
+          "total_cpu_s": "0.000483948",
+          "total_wall_s": "0.000487711",
+          "total_GBps": "4.299989225",
+          "numeric": {
+            "submit_cpu_s": 1.8334e-05,
+            "submit_wall_s": 1.8596e-05,
+            "wait_cpu_s": 0.000465614,
+            "wait_wall_s": 0.000469115,
+            "total_cpu_s": 0.000483948,
+            "total_wall_s": 0.000487711,
+            "total_GBps": 4.299989225
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "D2H",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000024285",
+          "submit_wall_s": "0.000028173",
+          "wait_cpu_s": "0.000440636",
+          "wait_wall_s": "0.000443136",
+          "total_cpu_s": "0.000464921",
+          "total_wall_s": "0.000471309",
+          "total_GBps": "4.449632812",
+          "numeric": {
+            "submit_cpu_s": 2.4285e-05,
+            "submit_wall_s": 2.8173e-05,
+            "wait_cpu_s": 0.000440636,
+            "wait_wall_s": 0.000443136,
+            "total_cpu_s": 0.000464921,
+            "total_wall_s": 0.000471309,
+            "total_GBps": 4.449632812
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "H2D",
+          "repetition": "1",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000023523",
+          "submit_wall_s": "0.000027162",
+          "wait_cpu_s": "0.000450806",
+          "wait_wall_s": "0.000452964",
+          "total_cpu_s": "0.000474329",
+          "total_wall_s": "0.000480126",
+          "total_GBps": "4.367920020",
+          "numeric": {
+            "submit_cpu_s": 2.3523e-05,
+            "submit_wall_s": 2.7162e-05,
+            "wait_cpu_s": 0.000450806,
+            "wait_wall_s": 0.000452964,
+            "total_cpu_s": 0.000474329,
+            "total_wall_s": 0.000480126,
+            "total_GBps": 4.36792002
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "D2H",
+          "repetition": "1",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000023574",
+          "submit_wall_s": "0.000027332",
+          "wait_cpu_s": "0.000451798",
+          "wait_wall_s": "0.000453836",
+          "total_cpu_s": "0.000475372",
+          "total_wall_s": "0.000481168",
+          "total_GBps": "4.358460707",
+          "numeric": {
+            "submit_cpu_s": 2.3574e-05,
+            "submit_wall_s": 2.7332e-05,
+            "wait_cpu_s": 0.000451798,
+            "wait_wall_s": 0.000453836,
+            "total_cpu_s": 0.000475372,
+            "total_wall_s": 0.000481168,
+            "total_GBps": 4.358460707
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "H2D",
+          "repetition": "2",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000024085",
+          "submit_wall_s": "0.000027692",
+          "wait_cpu_s": "0.000461426",
+          "wait_wall_s": "0.000463976",
+          "total_cpu_s": "0.000485511",
+          "total_wall_s": "0.000491668",
+          "total_GBps": "4.265382292",
+          "numeric": {
+            "submit_cpu_s": 2.4085e-05,
+            "submit_wall_s": 2.7692e-05,
+            "wait_cpu_s": 0.000461426,
+            "wait_wall_s": 0.000463976,
+            "total_cpu_s": 0.000485511,
+            "total_wall_s": 0.000491668,
+            "total_GBps": 4.265382292
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "D2H",
+          "repetition": "2",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000023723",
+          "submit_wall_s": "0.000027341",
+          "wait_cpu_s": "0.000461696",
+          "wait_wall_s": "0.000463986",
+          "total_cpu_s": "0.000485419",
+          "total_wall_s": "0.000491327",
+          "total_GBps": "4.268342463",
+          "numeric": {
+            "submit_cpu_s": 2.3723e-05,
+            "submit_wall_s": 2.7341e-05,
+            "wait_cpu_s": 0.000461696,
+            "wait_wall_s": 0.000463986,
+            "total_cpu_s": 0.000485419,
+            "total_wall_s": 0.000491327,
+            "total_GBps": 4.268342463
+          }
+        }
+      ]
+    },
+    "clean-2097152-3-ordinary": {
+      "host": "ordinary",
+      "bytes": 2097152,
+      "trace": false,
+      "setup": {
+        "host": "ordinary",
+        "bytes": "2097152",
+        "host_allocation_bytes": "2101504",
+        "device_bytes": "2097408",
+        "verification_allocation_bytes": "2101504",
+        "body_alignment_mod4096": "128",
+        "allocation_cpu_s": "0.000010399",
+        "allocation_wall_s": "0.000011452",
+        "pretouch_cpu_s": "0.001165987",
+        "pretouch_wall_s": "0.001166059"
+      },
+      "samples": [
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000090630",
+          "submit_wall_s": "0.000093957",
+          "wait_cpu_s": "0.000384491",
+          "wait_wall_s": "0.000384626",
+          "total_cpu_s": "0.000475121",
+          "total_wall_s": "0.000478583",
+          "total_GBps": "4.382002882",
+          "numeric": {
+            "submit_cpu_s": 9.063e-05,
+            "submit_wall_s": 9.3957e-05,
+            "wait_cpu_s": 0.000384491,
+            "wait_wall_s": 0.000384626,
+            "total_cpu_s": 0.000475121,
+            "total_wall_s": 0.000478583,
+            "total_GBps": 4.382002882
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.002840826",
+          "submit_wall_s": "0.002845708",
+          "wait_cpu_s": "0.000003176",
+          "wait_wall_s": "0.000003386",
+          "total_cpu_s": "0.002844002",
+          "total_wall_s": "0.002849094",
+          "total_GBps": "0.736076790",
+          "numeric": {
+            "submit_cpu_s": 0.002840826,
+            "submit_wall_s": 0.002845708,
+            "wait_cpu_s": 3.176e-06,
+            "wait_wall_s": 3.386e-06,
+            "total_cpu_s": 0.002844002,
+            "total_wall_s": 0.002849094,
+            "total_GBps": 0.73607679
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000087515",
+          "submit_wall_s": "0.000090360",
+          "wait_cpu_s": "0.000394169",
+          "wait_wall_s": "0.000394354",
+          "total_cpu_s": "0.000481684",
+          "total_wall_s": "0.000484714",
+          "total_GBps": "4.326575622",
+          "numeric": {
+            "submit_cpu_s": 8.7515e-05,
+            "submit_wall_s": 9.036e-05,
+            "wait_cpu_s": 0.000394169,
+            "wait_wall_s": 0.000394354,
+            "total_cpu_s": 0.000481684,
+            "total_wall_s": 0.000484714,
+            "total_GBps": 4.326575622
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000534372",
+          "submit_wall_s": "0.000538356",
+          "wait_cpu_s": "0.000002865",
+          "wait_wall_s": "0.000003096",
+          "total_cpu_s": "0.000537237",
+          "total_wall_s": "0.000541452",
+          "total_GBps": "3.873200014",
+          "numeric": {
+            "submit_cpu_s": 0.000534372,
+            "submit_wall_s": 0.000538356,
+            "wait_cpu_s": 2.865e-06,
+            "wait_wall_s": 3.096e-06,
+            "total_cpu_s": 0.000537237,
+            "total_wall_s": 0.000541452,
+            "total_GBps": 3.873200014
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "1",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000090539",
+          "submit_wall_s": "0.000094047",
+          "wait_cpu_s": "0.000398447",
+          "wait_wall_s": "0.000398732",
+          "total_cpu_s": "0.000488986",
+          "total_wall_s": "0.000492779",
+          "total_GBps": "4.255765647",
+          "numeric": {
+            "submit_cpu_s": 9.0539e-05,
+            "submit_wall_s": 9.4047e-05,
+            "wait_cpu_s": 0.000398447,
+            "wait_wall_s": 0.000398732,
+            "total_cpu_s": 0.000488986,
+            "total_wall_s": 0.000492779,
+            "total_GBps": 4.255765647
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "1",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000541476",
+          "submit_wall_s": "0.000545339",
+          "wait_cpu_s": "0.000002766",
+          "wait_wall_s": "0.000002966",
+          "total_cpu_s": "0.000544242",
+          "total_wall_s": "0.000548305",
+          "total_GBps": "3.824791017",
+          "numeric": {
+            "submit_cpu_s": 0.000541476,
+            "submit_wall_s": 0.000545339,
+            "wait_cpu_s": 2.766e-06,
+            "wait_wall_s": 2.966e-06,
+            "total_cpu_s": 0.000544242,
+            "total_wall_s": 0.000548305,
+            "total_GBps": 3.824791017
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "2",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000084599",
+          "submit_wall_s": "0.000086203",
+          "wait_cpu_s": "0.000395762",
+          "wait_wall_s": "0.000397911",
+          "total_cpu_s": "0.000480361",
+          "total_wall_s": "0.000484114",
+          "total_GBps": "4.331938444",
+          "numeric": {
+            "submit_cpu_s": 8.4599e-05,
+            "submit_wall_s": 8.6203e-05,
+            "wait_cpu_s": 0.000395762,
+            "wait_wall_s": 0.000397911,
+            "total_cpu_s": 0.000480361,
+            "total_wall_s": 0.000484114,
+            "total_GBps": 4.331938444
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "2",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000541005",
+          "submit_wall_s": "0.000544847",
+          "wait_cpu_s": "0.000002826",
+          "wait_wall_s": "0.000003026",
+          "total_cpu_s": "0.000543831",
+          "total_wall_s": "0.000547873",
+          "total_GBps": "3.827806593",
+          "numeric": {
+            "submit_cpu_s": 0.000541005,
+            "submit_wall_s": 0.000544847,
+            "wait_cpu_s": 2.826e-06,
+            "wait_wall_s": 3.026e-06,
+            "total_cpu_s": 0.000543831,
+            "total_wall_s": 0.000547873,
+            "total_GBps": 3.827806593
+          }
+        }
+      ]
+    },
+    "clean-2097152-4-ordinary": {
+      "host": "ordinary",
+      "bytes": 2097152,
+      "trace": false,
+      "setup": {
+        "host": "ordinary",
+        "bytes": "2097152",
+        "host_allocation_bytes": "2101504",
+        "device_bytes": "2097408",
+        "verification_allocation_bytes": "2101504",
+        "body_alignment_mod4096": "128",
+        "allocation_cpu_s": "0.000010239",
+        "allocation_wall_s": "0.000011371",
+        "pretouch_cpu_s": "0.001291933",
+        "pretouch_wall_s": "0.001292028"
+      },
+      "samples": [
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000076234",
+          "submit_wall_s": "0.000078758",
+          "wait_cpu_s": "0.000375233",
+          "wait_wall_s": "0.000375398",
+          "total_cpu_s": "0.000451467",
+          "total_wall_s": "0.000454156",
+          "total_GBps": "4.617690642",
+          "numeric": {
+            "submit_cpu_s": 7.6234e-05,
+            "submit_wall_s": 7.8758e-05,
+            "wait_cpu_s": 0.000375233,
+            "wait_wall_s": 0.000375398,
+            "total_cpu_s": 0.000451467,
+            "total_wall_s": 0.000454156,
+            "total_GBps": 4.617690642
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.002833503",
+          "submit_wall_s": "0.002837463",
+          "wait_cpu_s": "0.000002876",
+          "wait_wall_s": "0.000003076",
+          "total_cpu_s": "0.002836379",
+          "total_wall_s": "0.002840539",
+          "total_GBps": "0.738293690",
+          "numeric": {
+            "submit_cpu_s": 0.002833503,
+            "submit_wall_s": 0.002837463,
+            "wait_cpu_s": 2.876e-06,
+            "wait_wall_s": 3.076e-06,
+            "total_cpu_s": 0.002836379,
+            "total_wall_s": 0.002840539,
+            "total_GBps": 0.73829369
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000096841",
+          "submit_wall_s": "0.000098306",
+          "wait_cpu_s": "0.000389751",
+          "wait_wall_s": "0.000392200",
+          "total_cpu_s": "0.000486592",
+          "total_wall_s": "0.000490506",
+          "total_GBps": "4.275486902",
+          "numeric": {
+            "submit_cpu_s": 9.6841e-05,
+            "submit_wall_s": 9.8306e-05,
+            "wait_cpu_s": 0.000389751,
+            "wait_wall_s": 0.0003922,
+            "total_cpu_s": 0.000486592,
+            "total_wall_s": 0.000490506,
+            "total_GBps": 4.275486902
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000539403",
+          "submit_wall_s": "0.000543195",
+          "wait_cpu_s": "0.000002895",
+          "wait_wall_s": "0.000003095",
+          "total_cpu_s": "0.000542298",
+          "total_wall_s": "0.000546290",
+          "total_GBps": "3.838899055",
+          "numeric": {
+            "submit_cpu_s": 0.000539403,
+            "submit_wall_s": 0.000543195,
+            "wait_cpu_s": 2.895e-06,
+            "wait_wall_s": 3.095e-06,
+            "total_cpu_s": 0.000542298,
+            "total_wall_s": 0.00054629,
+            "total_GBps": 3.838899055
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "1",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000080482",
+          "submit_wall_s": "0.000084219",
+          "wait_cpu_s": "0.000397636",
+          "wait_wall_s": "0.000397781",
+          "total_cpu_s": "0.000478118",
+          "total_wall_s": "0.000482000",
+          "total_GBps": "4.350937731",
+          "numeric": {
+            "submit_cpu_s": 8.0482e-05,
+            "submit_wall_s": 8.4219e-05,
+            "wait_cpu_s": 0.000397636,
+            "wait_wall_s": 0.000397781,
+            "total_cpu_s": 0.000478118,
+            "total_wall_s": 0.000482,
+            "total_GBps": 4.350937731
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "1",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000535995",
+          "submit_wall_s": "0.000539788",
+          "wait_cpu_s": "0.000002725",
+          "wait_wall_s": "0.000002946",
+          "total_cpu_s": "0.000538720",
+          "total_wall_s": "0.000542734",
+          "total_GBps": "3.864051317",
+          "numeric": {
+            "submit_cpu_s": 0.000535995,
+            "submit_wall_s": 0.000539788,
+            "wait_cpu_s": 2.725e-06,
+            "wait_wall_s": 2.946e-06,
+            "total_cpu_s": 0.00053872,
+            "total_wall_s": 0.000542734,
+            "total_GBps": 3.864051317
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "2",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000080561",
+          "submit_wall_s": "0.000084309",
+          "wait_cpu_s": "0.000406923",
+          "wait_wall_s": "0.000407148",
+          "total_cpu_s": "0.000487484",
+          "total_wall_s": "0.000491457",
+          "total_GBps": "4.267213596",
+          "numeric": {
+            "submit_cpu_s": 8.0561e-05,
+            "submit_wall_s": 8.4309e-05,
+            "wait_cpu_s": 0.000406923,
+            "wait_wall_s": 0.000407148,
+            "total_cpu_s": 0.000487484,
+            "total_wall_s": 0.000491457,
+            "total_GBps": 4.267213596
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "2",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000535925",
+          "submit_wall_s": "0.000539798",
+          "wait_cpu_s": "0.000002795",
+          "wait_wall_s": "0.000003016",
+          "total_cpu_s": "0.000538720",
+          "total_wall_s": "0.000542814",
+          "total_GBps": "3.863481579",
+          "numeric": {
+            "submit_cpu_s": 0.000535925,
+            "submit_wall_s": 0.000539798,
+            "wait_cpu_s": 2.795e-06,
+            "wait_wall_s": 3.016e-06,
+            "total_cpu_s": 0.00053872,
+            "total_wall_s": 0.000542814,
+            "total_GBps": 3.863481579
+          }
+        }
+      ]
+    },
+    "clean-2097152-5-usm": {
+      "host": "usm",
+      "bytes": 2097152,
+      "trace": false,
+      "setup": {
+        "host": "usm",
+        "bytes": "2097152",
+        "host_allocation_bytes": "2101504",
+        "device_bytes": "2097408",
+        "verification_allocation_bytes": "2101504",
+        "body_alignment_mod4096": "128",
+        "allocation_cpu_s": "0.000273783",
+        "allocation_wall_s": "0.000274728",
+        "pretouch_cpu_s": "0.000606066",
+        "pretouch_wall_s": "0.000606003"
+      },
+      "samples": [
+        {
+          "host": "usm",
+          "direction": "H2D",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000020739",
+          "submit_wall_s": "0.000020999",
+          "wait_cpu_s": "0.000527058",
+          "wait_wall_s": "0.000527145",
+          "total_cpu_s": "0.000547797",
+          "total_wall_s": "0.000548144",
+          "total_GBps": "3.825914445",
+          "numeric": {
+            "submit_cpu_s": 2.0739e-05,
+            "submit_wall_s": 2.0999e-05,
+            "wait_cpu_s": 0.000527058,
+            "wait_wall_s": 0.000527145,
+            "total_cpu_s": 0.000547797,
+            "total_wall_s": 0.000548144,
+            "total_GBps": 3.825914445
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "D2H",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000018915",
+          "submit_wall_s": "0.000019166",
+          "wait_cpu_s": "0.000472707",
+          "wait_wall_s": "0.000472692",
+          "total_cpu_s": "0.000491622",
+          "total_wall_s": "0.000491858",
+          "total_GBps": "4.263734704",
+          "numeric": {
+            "submit_cpu_s": 1.8915e-05,
+            "submit_wall_s": 1.9166e-05,
+            "wait_cpu_s": 0.000472707,
+            "wait_wall_s": 0.000472692,
+            "total_cpu_s": 0.000491622,
+            "total_wall_s": 0.000491858,
+            "total_GBps": 4.263734704
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "H2D",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000023454",
+          "submit_wall_s": "0.000027341",
+          "wait_cpu_s": "0.000473268",
+          "wait_wall_s": "0.000476058",
+          "total_cpu_s": "0.000496722",
+          "total_wall_s": "0.000503399",
+          "total_GBps": "4.165983627",
+          "numeric": {
+            "submit_cpu_s": 2.3454e-05,
+            "submit_wall_s": 2.7341e-05,
+            "wait_cpu_s": 0.000473268,
+            "wait_wall_s": 0.000476058,
+            "total_cpu_s": 0.000496722,
+            "total_wall_s": 0.000503399,
+            "total_GBps": 4.165983627
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "D2H",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000023153",
+          "submit_wall_s": "0.000027001",
+          "wait_cpu_s": "0.000452599",
+          "wait_wall_s": "0.000455399",
+          "total_cpu_s": "0.000475752",
+          "total_wall_s": "0.000482400",
+          "total_GBps": "4.347329961",
+          "numeric": {
+            "submit_cpu_s": 2.3153e-05,
+            "submit_wall_s": 2.7001e-05,
+            "wait_cpu_s": 0.000452599,
+            "wait_wall_s": 0.000455399,
+            "total_cpu_s": 0.000475752,
+            "total_wall_s": 0.0004824,
+            "total_GBps": 4.347329961
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "H2D",
+          "repetition": "1",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000024105",
+          "submit_wall_s": "0.000028003",
+          "wait_cpu_s": "0.000448651",
+          "wait_wall_s": "0.000451362",
+          "total_cpu_s": "0.000472756",
+          "total_wall_s": "0.000479365",
+          "total_GBps": "4.374854230",
+          "numeric": {
+            "submit_cpu_s": 2.4105e-05,
+            "submit_wall_s": 2.8003e-05,
+            "wait_cpu_s": 0.000448651,
+            "wait_wall_s": 0.000451362,
+            "total_cpu_s": 0.000472756,
+            "total_wall_s": 0.000479365,
+            "total_GBps": 4.37485423
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "D2H",
+          "repetition": "1",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000023384",
+          "submit_wall_s": "0.000027251",
+          "wait_cpu_s": "0.000448341",
+          "wait_wall_s": "0.000451151",
+          "total_cpu_s": "0.000471725",
+          "total_wall_s": "0.000478402",
+          "total_GBps": "4.383660485",
+          "numeric": {
+            "submit_cpu_s": 2.3384e-05,
+            "submit_wall_s": 2.7251e-05,
+            "wait_cpu_s": 0.000448341,
+            "wait_wall_s": 0.000451151,
+            "total_cpu_s": 0.000471725,
+            "total_wall_s": 0.000478402,
+            "total_GBps": 4.383660485
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "H2D",
+          "repetition": "2",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000023595",
+          "submit_wall_s": "0.000027412",
+          "wait_cpu_s": "0.000460895",
+          "wait_wall_s": "0.000463594",
+          "total_cpu_s": "0.000484490",
+          "total_wall_s": "0.000491006",
+          "total_GBps": "4.271133573",
+          "numeric": {
+            "submit_cpu_s": 2.3595e-05,
+            "submit_wall_s": 2.7412e-05,
+            "wait_cpu_s": 0.000460895,
+            "wait_wall_s": 0.000463594,
+            "total_cpu_s": 0.00048449,
+            "total_wall_s": 0.000491006,
+            "total_GBps": 4.271133573
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "D2H",
+          "repetition": "2",
+          "warmup": "0",
+          "bytes": "2097152",
+          "submit_cpu_s": "0.000023585",
+          "submit_wall_s": "0.000027092",
+          "wait_cpu_s": "0.000451336",
+          "wait_wall_s": "0.000453956",
+          "total_cpu_s": "0.000474921",
+          "total_wall_s": "0.000481048",
+          "total_GBps": "4.359548167",
+          "numeric": {
+            "submit_cpu_s": 2.3585e-05,
+            "submit_wall_s": 2.7092e-05,
+            "wait_cpu_s": 0.000451336,
+            "wait_wall_s": 0.000453956,
+            "total_cpu_s": 0.000474921,
+            "total_wall_s": 0.000481048,
+            "total_GBps": 4.359548167
+          }
+        }
+      ]
+    },
+    "clean-335544320-0-ordinary": {
+      "host": "ordinary",
+      "bytes": 335544320,
+      "trace": false,
+      "setup": {
+        "host": "ordinary",
+        "bytes": "335544320",
+        "host_allocation_bytes": "335548672",
+        "device_bytes": "335544576",
+        "verification_allocation_bytes": "335548672",
+        "body_alignment_mod4096": "128",
+        "allocation_cpu_s": "0.000011983",
+        "allocation_wall_s": "0.000013405",
+        "pretouch_cpu_s": "0.176919418",
+        "pretouch_wall_s": "0.176995343"
+      },
+      "samples": [
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.038817419",
+          "submit_wall_s": "0.039519304",
+          "wait_cpu_s": "0.015440663",
+          "wait_wall_s": "0.015441500",
+          "total_cpu_s": "0.054258082",
+          "total_wall_s": "0.054960804",
+          "total_GBps": "6.105156686",
+          "numeric": {
+            "submit_cpu_s": 0.038817419,
+            "submit_wall_s": 0.039519304,
+            "wait_cpu_s": 0.015440663,
+            "wait_wall_s": 0.0154415,
+            "total_cpu_s": 0.054258082,
+            "total_wall_s": 0.054960804,
+            "total_GBps": 6.105156686
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.060134814",
+          "submit_wall_s": "0.060484003",
+          "wait_cpu_s": "0.000012023",
+          "wait_wall_s": "0.000013024",
+          "total_cpu_s": "0.060146837",
+          "total_wall_s": "0.060497027",
+          "total_GBps": "5.546459663",
+          "numeric": {
+            "submit_cpu_s": 0.060134814,
+            "submit_wall_s": 0.060484003,
+            "wait_cpu_s": 1.2023e-05,
+            "wait_wall_s": 1.3024e-05,
+            "total_cpu_s": 0.060146837,
+            "total_wall_s": 0.060497027,
+            "total_GBps": 5.546459663
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.035618194",
+          "submit_wall_s": "0.036077731",
+          "wait_cpu_s": "0.019790991",
+          "wait_wall_s": "0.019791907",
+          "total_cpu_s": "0.055409185",
+          "total_wall_s": "0.055869638",
+          "total_GBps": "6.005843813",
+          "numeric": {
+            "submit_cpu_s": 0.035618194,
+            "submit_wall_s": 0.036077731,
+            "wait_cpu_s": 0.019790991,
+            "wait_wall_s": 0.019791907,
+            "total_cpu_s": 0.055409185,
+            "total_wall_s": 0.055869638,
+            "total_GBps": 6.005843813
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.060172821",
+          "submit_wall_s": "0.060512918",
+          "wait_cpu_s": "0.000012934",
+          "wait_wall_s": "0.000014017",
+          "total_cpu_s": "0.060185755",
+          "total_wall_s": "0.060526935",
+          "total_GBps": "5.543719004",
+          "numeric": {
+            "submit_cpu_s": 0.060172821,
+            "submit_wall_s": 0.060512918,
+            "wait_cpu_s": 1.2934e-05,
+            "wait_wall_s": 1.4017e-05,
+            "total_cpu_s": 0.060185755,
+            "total_wall_s": 0.060526935,
+            "total_GBps": 5.543719004
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "1",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.033288885",
+          "submit_wall_s": "0.033632528",
+          "wait_cpu_s": "0.021764109",
+          "wait_wall_s": "0.022092587",
+          "total_cpu_s": "0.055052994",
+          "total_wall_s": "0.055725115",
+          "total_GBps": "6.021419965",
+          "numeric": {
+            "submit_cpu_s": 0.033288885,
+            "submit_wall_s": 0.033632528,
+            "wait_cpu_s": 0.021764109,
+            "wait_wall_s": 0.022092587,
+            "total_cpu_s": 0.055052994,
+            "total_wall_s": 0.055725115,
+            "total_GBps": 6.021419965
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "1",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.060160825",
+          "submit_wall_s": "0.060554687",
+          "wait_cpu_s": "0.000013605",
+          "wait_wall_s": "0.000014748",
+          "total_cpu_s": "0.060174430",
+          "total_wall_s": "0.060569435",
+          "total_GBps": "5.539829123",
+          "numeric": {
+            "submit_cpu_s": 0.060160825,
+            "submit_wall_s": 0.060554687,
+            "wait_cpu_s": 1.3605e-05,
+            "wait_wall_s": 1.4748e-05,
+            "total_cpu_s": 0.06017443,
+            "total_wall_s": 0.060569435,
+            "total_GBps": 5.539829123
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "2",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.032904126",
+          "submit_wall_s": "0.033253353",
+          "wait_cpu_s": "0.022749970",
+          "wait_wall_s": "0.022751029",
+          "total_cpu_s": "0.055654096",
+          "total_wall_s": "0.056004382",
+          "total_GBps": "5.991394027",
+          "numeric": {
+            "submit_cpu_s": 0.032904126,
+            "submit_wall_s": 0.033253353,
+            "wait_cpu_s": 0.02274997,
+            "wait_wall_s": 0.022751029,
+            "total_cpu_s": 0.055654096,
+            "total_wall_s": 0.056004382,
+            "total_GBps": 5.991394027
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "2",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.060107175",
+          "submit_wall_s": "0.060479796",
+          "wait_cpu_s": "0.000012303",
+          "wait_wall_s": "0.000013576",
+          "total_cpu_s": "0.060119478",
+          "total_wall_s": "0.060493372",
+          "total_GBps": "5.546794782",
+          "numeric": {
+            "submit_cpu_s": 0.060107175,
+            "submit_wall_s": 0.060479796,
+            "wait_cpu_s": 1.2303e-05,
+            "wait_wall_s": 1.3576e-05,
+            "total_cpu_s": 0.060119478,
+            "total_wall_s": 0.060493372,
+            "total_GBps": 5.546794782
+          }
+        }
+      ]
+    },
+    "clean-335544320-1-usm": {
+      "host": "usm",
+      "bytes": 335544320,
+      "trace": false,
+      "setup": {
+        "host": "usm",
+        "bytes": "335544320",
+        "host_allocation_bytes": "335548672",
+        "device_bytes": "335544576",
+        "verification_allocation_bytes": "335548672",
+        "body_alignment_mod4096": "128",
+        "allocation_cpu_s": "0.019809466",
+        "allocation_wall_s": "0.019843034",
+        "pretouch_cpu_s": "0.086283253",
+        "pretouch_wall_s": "0.086290417"
+      },
+      "samples": [
+        {
+          "host": "usm",
+          "direction": "H2D",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.000057618",
+          "submit_wall_s": "0.000061506",
+          "wait_cpu_s": "0.065810854",
+          "wait_wall_s": "0.065813287",
+          "total_cpu_s": "0.065868472",
+          "total_wall_s": "0.065874793",
+          "total_GBps": "5.093667924",
+          "numeric": {
+            "submit_cpu_s": 5.7618e-05,
+            "submit_wall_s": 6.1506e-05,
+            "wait_cpu_s": 0.065810854,
+            "wait_wall_s": 0.065813287,
+            "total_cpu_s": 0.065868472,
+            "total_wall_s": 0.065874793,
+            "total_GBps": 5.093667924
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "D2H",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.000069320",
+          "submit_wall_s": "0.000073879",
+          "wait_cpu_s": "0.059358384",
+          "wait_wall_s": "0.059370122",
+          "total_cpu_s": "0.059427704",
+          "total_wall_s": "0.059444001",
+          "total_GBps": "5.644712912",
+          "numeric": {
+            "submit_cpu_s": 6.932e-05,
+            "submit_wall_s": 7.3879e-05,
+            "wait_cpu_s": 0.059358384,
+            "wait_wall_s": 0.059370122,
+            "total_cpu_s": 0.059427704,
+            "total_wall_s": 0.059444001,
+            "total_GBps": 5.644712912
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "H2D",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.000072045",
+          "submit_wall_s": "0.000077035",
+          "wait_cpu_s": "0.065761010",
+          "wait_wall_s": "0.065792889",
+          "total_cpu_s": "0.065833055",
+          "total_wall_s": "0.065869924",
+          "total_GBps": "5.094044436",
+          "numeric": {
+            "submit_cpu_s": 7.2045e-05,
+            "submit_wall_s": 7.7035e-05,
+            "wait_cpu_s": 0.06576101,
+            "wait_wall_s": 0.065792889,
+            "total_cpu_s": 0.065833055,
+            "total_wall_s": 0.065869924,
+            "total_GBps": 5.094044436
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "D2H",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.000071665",
+          "submit_wall_s": "0.000076424",
+          "wait_cpu_s": "0.059132591",
+          "wait_wall_s": "0.059346517",
+          "total_cpu_s": "0.059204256",
+          "total_wall_s": "0.059422941",
+          "total_GBps": "5.646713446",
+          "numeric": {
+            "submit_cpu_s": 7.1665e-05,
+            "submit_wall_s": 7.6424e-05,
+            "wait_cpu_s": 0.059132591,
+            "wait_wall_s": 0.059346517,
+            "total_cpu_s": 0.059204256,
+            "total_wall_s": 0.059422941,
+            "total_GBps": 5.646713446
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "H2D",
+          "repetition": "1",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.000066614",
+          "submit_wall_s": "0.000071114",
+          "wait_cpu_s": "0.065459847",
+          "wait_wall_s": "0.065694654",
+          "total_cpu_s": "0.065526461",
+          "total_wall_s": "0.065765768",
+          "total_GBps": "5.102112090",
+          "numeric": {
+            "submit_cpu_s": 6.6614e-05,
+            "submit_wall_s": 7.1114e-05,
+            "wait_cpu_s": 0.065459847,
+            "wait_wall_s": 0.065694654,
+            "total_cpu_s": 0.065526461,
+            "total_wall_s": 0.065765768,
+            "total_GBps": 5.10211209
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "D2H",
+          "repetition": "1",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.000070211",
+          "submit_wall_s": "0.000075191",
+          "wait_cpu_s": "0.059328628",
+          "wait_wall_s": "0.059350245",
+          "total_cpu_s": "0.059398839",
+          "total_wall_s": "0.059425436",
+          "total_GBps": "5.646476366",
+          "numeric": {
+            "submit_cpu_s": 7.0211e-05,
+            "submit_wall_s": 7.5191e-05,
+            "wait_cpu_s": 0.059328628,
+            "wait_wall_s": 0.059350245,
+            "total_cpu_s": 0.059398839,
+            "total_wall_s": 0.059425436,
+            "total_GBps": 5.646476366
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "H2D",
+          "repetition": "2",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.000070833",
+          "submit_wall_s": "0.000075753",
+          "wait_cpu_s": "0.065696501",
+          "wait_wall_s": "0.065706074",
+          "total_cpu_s": "0.065767334",
+          "total_wall_s": "0.065781827",
+          "total_GBps": "5.100866538",
+          "numeric": {
+            "submit_cpu_s": 7.0833e-05,
+            "submit_wall_s": 7.5753e-05,
+            "wait_cpu_s": 0.065696501,
+            "wait_wall_s": 0.065706074,
+            "total_cpu_s": 0.065767334,
+            "total_wall_s": 0.065781827,
+            "total_GBps": 5.100866538
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "D2H",
+          "repetition": "2",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.000068148",
+          "submit_wall_s": "0.000072397",
+          "wait_cpu_s": "0.059311056",
+          "wait_wall_s": "0.059323984",
+          "total_cpu_s": "0.059379204",
+          "total_wall_s": "0.059396381",
+          "total_GBps": "5.649238464",
+          "numeric": {
+            "submit_cpu_s": 6.8148e-05,
+            "submit_wall_s": 7.2397e-05,
+            "wait_cpu_s": 0.059311056,
+            "wait_wall_s": 0.059323984,
+            "total_cpu_s": 0.059379204,
+            "total_wall_s": 0.059396381,
+            "total_GBps": 5.649238464
+          }
+        }
+      ]
+    },
+    "clean-335544320-2-usm": {
+      "host": "usm",
+      "bytes": 335544320,
+      "trace": false,
+      "setup": {
+        "host": "usm",
+        "bytes": "335544320",
+        "host_allocation_bytes": "335548672",
+        "device_bytes": "335544576",
+        "verification_allocation_bytes": "335548672",
+        "body_alignment_mod4096": "128",
+        "allocation_cpu_s": "0.019302986",
+        "allocation_wall_s": "0.019303686",
+        "pretouch_cpu_s": "0.087133056",
+        "pretouch_wall_s": "0.087629353"
+      },
+      "samples": [
+        {
+          "host": "usm",
+          "direction": "H2D",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.000079148",
+          "submit_wall_s": "0.000085591",
+          "wait_cpu_s": "0.065958962",
+          "wait_wall_s": "0.065975623",
+          "total_cpu_s": "0.066038110",
+          "total_wall_s": "0.066061214",
+          "total_GBps": "5.079293879",
+          "numeric": {
+            "submit_cpu_s": 7.9148e-05,
+            "submit_wall_s": 8.5591e-05,
+            "wait_cpu_s": 0.065958962,
+            "wait_wall_s": 0.065975623,
+            "total_cpu_s": 0.06603811,
+            "total_wall_s": 0.066061214,
+            "total_GBps": 5.079293879
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "D2H",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.000068288",
+          "submit_wall_s": "0.000073058",
+          "wait_cpu_s": "0.059352685",
+          "wait_wall_s": "0.059367056",
+          "total_cpu_s": "0.059420973",
+          "total_wall_s": "0.059440114",
+          "total_GBps": "5.645082039",
+          "numeric": {
+            "submit_cpu_s": 6.8288e-05,
+            "submit_wall_s": 7.3058e-05,
+            "wait_cpu_s": 0.059352685,
+            "wait_wall_s": 0.059367056,
+            "total_cpu_s": 0.059420973,
+            "total_wall_s": 0.059440114,
+            "total_GBps": 5.645082039
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "H2D",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.000072666",
+          "submit_wall_s": "0.000077226",
+          "wait_cpu_s": "0.065779616",
+          "wait_wall_s": "0.065792938",
+          "total_cpu_s": "0.065852282",
+          "total_wall_s": "0.065870164",
+          "total_GBps": "5.094025876",
+          "numeric": {
+            "submit_cpu_s": 7.2666e-05,
+            "submit_wall_s": 7.7226e-05,
+            "wait_cpu_s": 0.065779616,
+            "wait_wall_s": 0.065792938,
+            "total_cpu_s": 0.065852282,
+            "total_wall_s": 0.065870164,
+            "total_GBps": 5.094025876
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "D2H",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.000066384",
+          "submit_wall_s": "0.000071595",
+          "wait_cpu_s": "0.059358094",
+          "wait_wall_s": "0.059369601",
+          "total_cpu_s": "0.059424478",
+          "total_wall_s": "0.059441196",
+          "total_GBps": "5.644979280",
+          "numeric": {
+            "submit_cpu_s": 6.6384e-05,
+            "submit_wall_s": 7.1595e-05,
+            "wait_cpu_s": 0.059358094,
+            "wait_wall_s": 0.059369601,
+            "total_cpu_s": 0.059424478,
+            "total_wall_s": 0.059441196,
+            "total_GBps": 5.64497928
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "H2D",
+          "repetition": "1",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.000066995",
+          "submit_wall_s": "0.000072386",
+          "wait_cpu_s": "0.065674610",
+          "wait_wall_s": "0.065732645",
+          "total_cpu_s": "0.065741605",
+          "total_wall_s": "0.065805031",
+          "total_GBps": "5.099067882",
+          "numeric": {
+            "submit_cpu_s": 6.6995e-05,
+            "submit_wall_s": 7.2386e-05,
+            "wait_cpu_s": 0.06567461,
+            "wait_wall_s": 0.065732645,
+            "total_cpu_s": 0.065741605,
+            "total_wall_s": 0.065805031,
+            "total_GBps": 5.099067882
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "D2H",
+          "repetition": "1",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.000070473",
+          "submit_wall_s": "0.000075232",
+          "wait_cpu_s": "0.058784931",
+          "wait_wall_s": "0.059369941",
+          "total_cpu_s": "0.058855404",
+          "total_wall_s": "0.059445173",
+          "total_GBps": "5.644601622",
+          "numeric": {
+            "submit_cpu_s": 7.0473e-05,
+            "submit_wall_s": 7.5232e-05,
+            "wait_cpu_s": 0.058784931,
+            "wait_wall_s": 0.059369941,
+            "total_cpu_s": 0.058855404,
+            "total_wall_s": 0.059445173,
+            "total_GBps": 5.644601622
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "H2D",
+          "repetition": "2",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.000075532",
+          "submit_wall_s": "0.000081584",
+          "wait_cpu_s": "0.065775196",
+          "wait_wall_s": "0.065783460",
+          "total_cpu_s": "0.065850728",
+          "total_wall_s": "0.065865044",
+          "total_GBps": "5.094421864",
+          "numeric": {
+            "submit_cpu_s": 7.5532e-05,
+            "submit_wall_s": 8.1584e-05,
+            "wait_cpu_s": 0.065775196,
+            "wait_wall_s": 0.06578346,
+            "total_cpu_s": 0.065850728,
+            "total_wall_s": 0.065865044,
+            "total_GBps": 5.094421864
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "D2H",
+          "repetition": "2",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.000067567",
+          "submit_wall_s": "0.000071796",
+          "wait_cpu_s": "0.059302030",
+          "wait_wall_s": "0.059324846",
+          "total_cpu_s": "0.059369597",
+          "total_wall_s": "0.059396642",
+          "total_GBps": "5.649213635",
+          "numeric": {
+            "submit_cpu_s": 6.7567e-05,
+            "submit_wall_s": 7.1796e-05,
+            "wait_cpu_s": 0.05930203,
+            "wait_wall_s": 0.059324846,
+            "total_cpu_s": 0.059369597,
+            "total_wall_s": 0.059396642,
+            "total_GBps": 5.649213635
+          }
+        }
+      ]
+    },
+    "clean-335544320-3-ordinary": {
+      "host": "ordinary",
+      "bytes": 335544320,
+      "trace": false,
+      "setup": {
+        "host": "ordinary",
+        "bytes": "335544320",
+        "host_allocation_bytes": "335548672",
+        "device_bytes": "335544576",
+        "verification_allocation_bytes": "335548672",
+        "body_alignment_mod4096": "128",
+        "allocation_cpu_s": "0.000008897",
+        "allocation_wall_s": "0.000010079",
+        "pretouch_cpu_s": "0.174803329",
+        "pretouch_wall_s": "0.174921489"
+      },
+      "samples": [
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.039131656",
+          "submit_wall_s": "0.039590999",
+          "wait_cpu_s": "0.015265625",
+          "wait_wall_s": "0.015473390",
+          "total_cpu_s": "0.054397281",
+          "total_wall_s": "0.055064389",
+          "total_GBps": "6.093671906",
+          "numeric": {
+            "submit_cpu_s": 0.039131656,
+            "submit_wall_s": 0.039590999,
+            "wait_cpu_s": 0.015265625,
+            "wait_wall_s": 0.01547339,
+            "total_cpu_s": 0.054397281,
+            "total_wall_s": 0.055064389,
+            "total_GBps": 6.093671906
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.060130338",
+          "submit_wall_s": "0.060504641",
+          "wait_cpu_s": "0.000013395",
+          "wait_wall_s": "0.000014448",
+          "total_cpu_s": "0.060143733",
+          "total_wall_s": "0.060519089",
+          "total_GBps": "5.544437724",
+          "numeric": {
+            "submit_cpu_s": 0.060130338,
+            "submit_wall_s": 0.060504641,
+            "wait_cpu_s": 1.3395e-05,
+            "wait_wall_s": 1.4448e-05,
+            "total_cpu_s": 0.060143733,
+            "total_wall_s": 0.060519089,
+            "total_GBps": 5.544437724
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.035033288",
+          "submit_wall_s": "0.035685310",
+          "wait_cpu_s": "0.019913350",
+          "wait_wall_s": "0.019914368",
+          "total_cpu_s": "0.054946638",
+          "total_wall_s": "0.055599678",
+          "total_GBps": "6.035004733",
+          "numeric": {
+            "submit_cpu_s": 0.035033288,
+            "submit_wall_s": 0.03568531,
+            "wait_cpu_s": 0.01991335,
+            "wait_wall_s": 0.019914368,
+            "total_cpu_s": 0.054946638,
+            "total_wall_s": 0.055599678,
+            "total_GBps": 6.035004733
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.060149609",
+          "submit_wall_s": "0.060485706",
+          "wait_cpu_s": "0.000012463",
+          "wait_wall_s": "0.000013335",
+          "total_cpu_s": "0.060162072",
+          "total_wall_s": "0.060499041",
+          "total_GBps": "5.546275024",
+          "numeric": {
+            "submit_cpu_s": 0.060149609,
+            "submit_wall_s": 0.060485706,
+            "wait_cpu_s": 1.2463e-05,
+            "wait_wall_s": 1.3335e-05,
+            "total_cpu_s": 0.060162072,
+            "total_wall_s": 0.060499041,
+            "total_GBps": 5.546275024
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "1",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.033171655",
+          "submit_wall_s": "0.033521128",
+          "wait_cpu_s": "0.022249882",
+          "wait_wall_s": "0.022263259",
+          "total_cpu_s": "0.055421537",
+          "total_wall_s": "0.055784387",
+          "total_GBps": "6.015022090",
+          "numeric": {
+            "submit_cpu_s": 0.033171655,
+            "submit_wall_s": 0.033521128,
+            "wait_cpu_s": 0.022249882,
+            "wait_wall_s": 0.022263259,
+            "total_cpu_s": 0.055421537,
+            "total_wall_s": 0.055784387,
+            "total_GBps": 6.01502209
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "1",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.060182604",
+          "submit_wall_s": "0.060602796",
+          "wait_cpu_s": "0.000013655",
+          "wait_wall_s": "0.000014608",
+          "total_cpu_s": "0.060196259",
+          "total_wall_s": "0.060617404",
+          "total_GBps": "5.535445233",
+          "numeric": {
+            "submit_cpu_s": 0.060182604,
+            "submit_wall_s": 0.060602796,
+            "wait_cpu_s": 1.3655e-05,
+            "wait_wall_s": 1.4608e-05,
+            "total_cpu_s": 0.060196259,
+            "total_wall_s": 0.060617404,
+            "total_GBps": 5.535445233
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "2",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.032507276",
+          "submit_wall_s": "0.032874307",
+          "wait_cpu_s": "0.023017081",
+          "wait_wall_s": "0.023021400",
+          "total_cpu_s": "0.055524357",
+          "total_wall_s": "0.055895707",
+          "total_GBps": "6.003042775",
+          "numeric": {
+            "submit_cpu_s": 0.032507276,
+            "submit_wall_s": 0.032874307,
+            "wait_cpu_s": 0.023017081,
+            "wait_wall_s": 0.0230214,
+            "total_cpu_s": 0.055524357,
+            "total_wall_s": 0.055895707,
+            "total_GBps": 6.003042775
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "2",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.060330664",
+          "submit_wall_s": "0.060699208",
+          "wait_cpu_s": "0.000013836",
+          "wait_wall_s": "0.000015179",
+          "total_cpu_s": "0.060344500",
+          "total_wall_s": "0.060714387",
+          "total_GBps": "5.526603106",
+          "numeric": {
+            "submit_cpu_s": 0.060330664,
+            "submit_wall_s": 0.060699208,
+            "wait_cpu_s": 1.3836e-05,
+            "wait_wall_s": 1.5179e-05,
+            "total_cpu_s": 0.0603445,
+            "total_wall_s": 0.060714387,
+            "total_GBps": 5.526603106
+          }
+        }
+      ]
+    },
+    "clean-335544320-4-ordinary": {
+      "host": "ordinary",
+      "bytes": 335544320,
+      "trace": false,
+      "setup": {
+        "host": "ordinary",
+        "bytes": "335544320",
+        "host_allocation_bytes": "335548672",
+        "device_bytes": "335544576",
+        "verification_allocation_bytes": "335548672",
+        "body_alignment_mod4096": "128",
+        "allocation_cpu_s": "0.000006652",
+        "allocation_wall_s": "0.000007715",
+        "pretouch_cpu_s": "0.175165859",
+        "pretouch_wall_s": "0.175223347"
+      },
+      "samples": [
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.039325098",
+          "submit_wall_s": "0.039867810",
+          "wait_cpu_s": "0.015179222",
+          "wait_wall_s": "0.015262493",
+          "total_cpu_s": "0.054504320",
+          "total_wall_s": "0.055130303",
+          "total_GBps": "6.086386281",
+          "numeric": {
+            "submit_cpu_s": 0.039325098,
+            "submit_wall_s": 0.03986781,
+            "wait_cpu_s": 0.015179222,
+            "wait_wall_s": 0.015262493,
+            "total_cpu_s": 0.05450432,
+            "total_wall_s": 0.055130303,
+            "total_GBps": 6.086386281
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.060186123",
+          "submit_wall_s": "0.060525902",
+          "wait_cpu_s": "0.000013094",
+          "wait_wall_s": "0.000014066",
+          "total_cpu_s": "0.060199217",
+          "total_wall_s": "0.060539968",
+          "total_GBps": "5.542525563",
+          "numeric": {
+            "submit_cpu_s": 0.060186123,
+            "submit_wall_s": 0.060525902,
+            "wait_cpu_s": 1.3094e-05,
+            "wait_wall_s": 1.4066e-05,
+            "total_cpu_s": 0.060199217,
+            "total_wall_s": 0.060539968,
+            "total_GBps": 5.542525563
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.035204086",
+          "submit_wall_s": "0.035593106",
+          "wait_cpu_s": "0.019949617",
+          "wait_wall_s": "0.020035627",
+          "total_cpu_s": "0.055153703",
+          "total_wall_s": "0.055628733",
+          "total_GBps": "6.031852639",
+          "numeric": {
+            "submit_cpu_s": 0.035204086,
+            "submit_wall_s": 0.035593106,
+            "wait_cpu_s": 0.019949617,
+            "wait_wall_s": 0.020035627,
+            "total_cpu_s": 0.055153703,
+            "total_wall_s": 0.055628733,
+            "total_GBps": 6.031852639
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.060202571",
+          "submit_wall_s": "0.060547663",
+          "wait_cpu_s": "0.000012573",
+          "wait_wall_s": "0.000013545",
+          "total_cpu_s": "0.060215144",
+          "total_wall_s": "0.060561208",
+          "total_GBps": "5.540581688",
+          "numeric": {
+            "submit_cpu_s": 0.060202571,
+            "submit_wall_s": 0.060547663,
+            "wait_cpu_s": 1.2573e-05,
+            "wait_wall_s": 1.3545e-05,
+            "total_cpu_s": 0.060215144,
+            "total_wall_s": 0.060561208,
+            "total_GBps": 5.540581688
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "1",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.032963462",
+          "submit_wall_s": "0.033507632",
+          "wait_cpu_s": "0.022113285",
+          "wait_wall_s": "0.022118706",
+          "total_cpu_s": "0.055076747",
+          "total_wall_s": "0.055626338",
+          "total_GBps": "6.032112342",
+          "numeric": {
+            "submit_cpu_s": 0.032963462,
+            "submit_wall_s": 0.033507632,
+            "wait_cpu_s": 0.022113285,
+            "wait_wall_s": 0.022118706,
+            "total_cpu_s": 0.055076747,
+            "total_wall_s": 0.055626338,
+            "total_GBps": 6.032112342
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "1",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.060169202",
+          "submit_wall_s": "0.060556018",
+          "wait_cpu_s": "0.000012994",
+          "wait_wall_s": "0.000013917",
+          "total_cpu_s": "0.060182196",
+          "total_wall_s": "0.060569935",
+          "total_GBps": "5.539783397",
+          "numeric": {
+            "submit_cpu_s": 0.060169202,
+            "submit_wall_s": 0.060556018,
+            "wait_cpu_s": 1.2994e-05,
+            "wait_wall_s": 1.3917e-05,
+            "total_cpu_s": 0.060182196,
+            "total_wall_s": 0.060569935,
+            "total_GBps": 5.539783397
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "2",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.033401282",
+          "submit_wall_s": "0.033743597",
+          "wait_cpu_s": "0.022056059",
+          "wait_wall_s": "0.022056970",
+          "total_cpu_s": "0.055457341",
+          "total_wall_s": "0.055800567",
+          "total_GBps": "6.013277968",
+          "numeric": {
+            "submit_cpu_s": 0.033401282,
+            "submit_wall_s": 0.033743597,
+            "wait_cpu_s": 0.022056059,
+            "wait_wall_s": 0.02205697,
+            "total_cpu_s": 0.055457341,
+            "total_wall_s": 0.055800567,
+            "total_GBps": 6.013277968
+          }
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "2",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.060318801",
+          "submit_wall_s": "0.060650727",
+          "wait_cpu_s": "0.000012132",
+          "wait_wall_s": "0.000013335",
+          "total_cpu_s": "0.060330933",
+          "total_wall_s": "0.060664062",
+          "total_GBps": "5.531187808",
+          "numeric": {
+            "submit_cpu_s": 0.060318801,
+            "submit_wall_s": 0.060650727,
+            "wait_cpu_s": 1.2132e-05,
+            "wait_wall_s": 1.3335e-05,
+            "total_cpu_s": 0.060330933,
+            "total_wall_s": 0.060664062,
+            "total_GBps": 5.531187808
+          }
+        }
+      ]
+    },
+    "clean-335544320-5-usm": {
+      "host": "usm",
+      "bytes": 335544320,
+      "trace": false,
+      "setup": {
+        "host": "usm",
+        "bytes": "335544320",
+        "host_allocation_bytes": "335548672",
+        "device_bytes": "335544576",
+        "verification_allocation_bytes": "335548672",
+        "body_alignment_mod4096": "128",
+        "allocation_cpu_s": "0.018512524",
+        "allocation_wall_s": "0.018513486",
+        "pretouch_cpu_s": "0.086287542",
+        "pretouch_wall_s": "0.086303730"
+      },
+      "samples": [
+        {
+          "host": "usm",
+          "direction": "H2D",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.000081643",
+          "submit_wall_s": "0.000087094",
+          "wait_cpu_s": "0.065699375",
+          "wait_wall_s": "0.065711444",
+          "total_cpu_s": "0.065781018",
+          "total_wall_s": "0.065798538",
+          "total_GBps": "5.099571059",
+          "numeric": {
+            "submit_cpu_s": 8.1643e-05,
+            "submit_wall_s": 8.7094e-05,
+            "wait_cpu_s": 0.065699375,
+            "wait_wall_s": 0.065711444,
+            "total_cpu_s": 0.065781018,
+            "total_wall_s": 0.065798538,
+            "total_GBps": 5.099571059
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "D2H",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.000089918",
+          "submit_wall_s": "0.000096341",
+          "wait_cpu_s": "0.059276801",
+          "wait_wall_s": "0.059336648",
+          "total_cpu_s": "0.059366719",
+          "total_wall_s": "0.059432989",
+          "total_GBps": "5.645758790",
+          "numeric": {
+            "submit_cpu_s": 8.9918e-05,
+            "submit_wall_s": 9.6341e-05,
+            "wait_cpu_s": 0.059276801,
+            "wait_wall_s": 0.059336648,
+            "total_cpu_s": 0.059366719,
+            "total_wall_s": 0.059432989,
+            "total_GBps": 5.64575879
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "H2D",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.000083677",
+          "submit_wall_s": "0.000089448",
+          "wait_cpu_s": "0.065292042",
+          "wait_wall_s": "0.065960393",
+          "total_cpu_s": "0.065375719",
+          "total_wall_s": "0.066049841",
+          "total_GBps": "5.080168475",
+          "numeric": {
+            "submit_cpu_s": 8.3677e-05,
+            "submit_wall_s": 8.9448e-05,
+            "wait_cpu_s": 0.065292042,
+            "wait_wall_s": 0.065960393,
+            "total_cpu_s": 0.065375719,
+            "total_wall_s": 0.066049841,
+            "total_GBps": 5.080168475
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "D2H",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.000077506",
+          "submit_wall_s": "0.000082225",
+          "wait_cpu_s": "0.059312660",
+          "wait_wall_s": "0.059341607",
+          "total_cpu_s": "0.059390166",
+          "total_wall_s": "0.059423832",
+          "total_GBps": "5.646628781",
+          "numeric": {
+            "submit_cpu_s": 7.7506e-05,
+            "submit_wall_s": 8.2225e-05,
+            "wait_cpu_s": 0.05931266,
+            "wait_wall_s": 0.059341607,
+            "total_cpu_s": 0.059390166,
+            "total_wall_s": 0.059423832,
+            "total_GBps": 5.646628781
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "H2D",
+          "repetition": "1",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.000073639",
+          "submit_wall_s": "0.000078558",
+          "wait_cpu_s": "0.065777992",
+          "wait_wall_s": "0.065784301",
+          "total_cpu_s": "0.065851631",
+          "total_wall_s": "0.065862859",
+          "total_GBps": "5.094590871",
+          "numeric": {
+            "submit_cpu_s": 7.3639e-05,
+            "submit_wall_s": 7.8558e-05,
+            "wait_cpu_s": 0.065777992,
+            "wait_wall_s": 0.065784301,
+            "total_cpu_s": 0.065851631,
+            "total_wall_s": 0.065862859,
+            "total_GBps": 5.094590871
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "D2H",
+          "repetition": "1",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.000072105",
+          "submit_wall_s": "0.000077016",
+          "wait_cpu_s": "0.059111082",
+          "wait_wall_s": "0.059324925",
+          "total_cpu_s": "0.059183187",
+          "total_wall_s": "0.059401941",
+          "total_GBps": "5.648709693",
+          "numeric": {
+            "submit_cpu_s": 7.2105e-05,
+            "submit_wall_s": 7.7016e-05,
+            "wait_cpu_s": 0.059111082,
+            "wait_wall_s": 0.059324925,
+            "total_cpu_s": 0.059183187,
+            "total_wall_s": 0.059401941,
+            "total_GBps": 5.648709693
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "H2D",
+          "repetition": "2",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.000068609",
+          "submit_wall_s": "0.000073428",
+          "wait_cpu_s": "0.065604297",
+          "wait_wall_s": "0.065620703",
+          "total_cpu_s": "0.065672906",
+          "total_wall_s": "0.065694131",
+          "total_GBps": "5.107675756",
+          "numeric": {
+            "submit_cpu_s": 6.8609e-05,
+            "submit_wall_s": 7.3428e-05,
+            "wait_cpu_s": 0.065604297,
+            "wait_wall_s": 0.065620703,
+            "total_cpu_s": 0.065672906,
+            "total_wall_s": 0.065694131,
+            "total_GBps": 5.107675756
+          }
+        },
+        {
+          "host": "usm",
+          "direction": "D2H",
+          "repetition": "2",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": "0.000068809",
+          "submit_wall_s": "0.000073959",
+          "wait_cpu_s": "0.059335562",
+          "wait_wall_s": "0.059347368",
+          "total_cpu_s": "0.059404371",
+          "total_wall_s": "0.059421327",
+          "total_GBps": "5.646866826",
+          "numeric": {
+            "submit_cpu_s": 6.8809e-05,
+            "submit_wall_s": 7.3959e-05,
+            "wait_cpu_s": 0.059335562,
+            "wait_wall_s": 0.059347368,
+            "total_cpu_s": 0.059404371,
+            "total_wall_s": 0.059421327,
+            "total_GBps": 5.646866826
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,9 +1,0 @@
-# Main: R846 public Gemm qualification controller review
-
-Mainがcontroller.py全体を読み、Main向けメモ、manifestの実compile/link argv・immutable環境・input/header/link/modelpins・case censusを確認した。source432/buildfile314の組は現build-v2receiptと一致、package code/reviewとR833fixture SHAも照合。現qualified libraries/nativeprelinkimage+hostsliceに新fixtureだけを私有compile/linkし、元buildのPASS object/binaryを上書きしない。数学oracle/許容値/原sourceは変更しない。
-
-rootと結果のfresh/canonical制約、全工程measurementlock、whole900s/work855s/45s閉鎖、compile/link180sと各native120s、RSS8/4GiB、text64MiB/private512MiB、OwnerによるPID/start/session・deadline・normalreap・empty session、各操作前後のsource/headers/libraries凍結とfresh journal fault累積、失敗原status保存を確認した。4つの別native processでcompact/wideそれぞれsmoke/fullを実行し、全4dtype/strictedge/guards/chain/cancellation、positive48/52・publiccall52/56・reject160とGemm実destructor後のmarkerが必要。
-
-最新healthy GPU priorはMainがactivequalityjobの閉鎖後に指定する。新fourarmscreenのbinding.binaryと従来binary_sha256の両schemaを扱うが、失敗screenのoverrideはない。現在の四arm自然32Kscreenと並行実行しない。firsttinytraceはUR tracing+paramvalidation、以後warningvalidation。性能・品質・physical256K/RESTOREをこのfixtureから採用しない。
-
-Main review終了、実行はUNRUN。元worker manifestはそのまま保持し、delivery SHAをCLIに明示する。Main実行後に別receiptが原PASS/FAILを保存する。

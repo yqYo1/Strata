@@ -32,7 +32,7 @@ add_library(strata_sycl_runtime STATIC src/sycl/runtime.cpp src/sycl/compat.cpp 
 add_executable(sycl_host_transfer_probe EXCLUDE_FROM_ALL tools/sycl/host_transfer_probe.cpp)
 target_link_libraries(sycl_host_transfer_probe PRIVATE strata_sycl_runtime)
 add_executable(sycl_transfer_ceiling EXCLUDE_FROM_ALL
-  ${PROJECT_SOURCE_DIR}/bench/results/2026-10-14-primary-transfer-ceiling/transfer_ceiling.cpp)
+  ${PROJECT_SOURCE_DIR}/bench/sycl/transfer_ceiling.cpp)
 target_link_libraries(sycl_transfer_ceiling PRIVATE strata_sycl_runtime)
 target_compile_features(sycl_transfer_ceiling PRIVATE cxx_std_17)
 

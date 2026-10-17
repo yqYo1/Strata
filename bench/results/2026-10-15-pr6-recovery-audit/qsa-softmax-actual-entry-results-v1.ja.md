@@ -21,8 +21,8 @@ subgroup版ではmax／sumの結合順序が変わる。独立oracle、既存の
 個々のoracle結果・環境・ELF mapping・終了・fault windowは
 `own-qsa-softmax-actual-entry-{serial,subgroup}-{smoke,component}-v1.json`、
 ビルドは `own-qsa-softmax-actual-entry-build-v1.json` に保存した。
-[元の実装・fixtureの由来](own-qsa-softmax-actual-entry-v1/manifest.json)と、
-[次のclean model比較の全差分](qsa-softmax-actual-model-provenance-v1.json)も保存した。
+[元の実装・fixtureの由来](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-softmax-actual-entry-v1/manifest.json)と、
+[次のclean model比較の全差分](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-15-pr6-recovery-audit/qsa-softmax-actual-model-provenance-v1.json)も保存した。
 
 次のコマンドは順に別のengine processを起動し、公式bench.shで実入力約78K、
 thinking ON、24 token probe、最初1回と後続3回を測る。
@@ -34,7 +34,7 @@ python3 bench/results/2026-10-15-pr6-recovery-audit/run_qsa_softmax_actual_model
 python3 bench/results/2026-10-15-pr6-recovery-audit/run_qsa_softmax_actual_model_v1.py subgroup
 ```
 
-[削除記録](qsa-resource-softmax-retention-v1.json)で、閉じた成功実行のraw／重複
+[削除記録](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-15-pr6-recovery-audit/qsa-resource-softmax-retention-v1.json)で、閉じた成功実行のraw／重複
 79ファイル、5,043,425 logical bytesを退役した。canonical receiptは変更せず、
 現行engine・archive・actual-entry fixture ELFはこの比較のconsumer用に保持している。
 通常のprefill中央値725.2 tok/sは前の測定値のまま。候補の速度はまだ未測定。

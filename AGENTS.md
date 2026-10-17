@@ -134,8 +134,12 @@ are outside this work's scope.
   Require `schedulable_now=true` and recorded evidence for its prerequisites.
   Keep conditional scopes with missing prerequisites in the index for later;
   do not start a session that can only report that its prerequisite is absent.
-- Keep findings in files and commit reviewed reports. Research is not
-  implementation adoption. Main implements and exclusively manages testing and
+- Keep findings in files for review; commit only substantive reusable findings
+  or information supporting a current decision. Do not commit every completed
+  report or its dispatch/spec/review paperwork automatically. Normal Git history
+  is the archive for closed work; prune the active library and index rather than
+  retaining stale reference chains. Research is not implementation adoption.
+  Main implements and exclusively manages testing and
   GPU work. Following the user's 2026-10-16 resource-limit instruction, do not
   launch new **gpt-6.1-sol** workers through Orca or native Codex. Already running
   workers may finish without intervention. Continue the specified **gpt-6-luna**
@@ -166,8 +170,25 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   Review legacy fixtures that switch variables before reusing them. Floating-point
   state operations such as `std::fesetenv` are separate from process environment variables.
 
-- Commit source, commands, environment, individual measurement samples, correctness/fault results and
-  decisions at each work boundary. Resume from committed reports, without separate progress backups.
+- Commit maintained source and compact decisions with the configuration,
+  individual samples and correctness/fault evidence actually needed to assess
+  them. Do not commit every debug output, build receipt or process lifecycle.
+  Retire superseded active files to reachable Git history. Resume from current
+  documentation and committed decisions, without separate progress backups.
+- Keep the latest known-good engine build, plus only named imminent comparison
+  generations (normally one build, at most two for A/B). Record the comparison
+  consumer and retirement point. Do not keep one build for each closed experiment.
+- Before measuring, commit the exact source, local changes, generated inputs
+  and build recipe/options; pin compiler/dependency versions and environment.
+  Verify those committed inputs match the ones used for the measured executable.
+  Record the source revision and binary hash with the result. A nearby commit,
+  source path or binary hash alone does not establish recoverability.
+- Before retiring an old executable, library, object/native dump or build tree,
+  retrieve and verify its required source/recipe from reachable Git history.
+  Reconcile any uncommitted measured inputs first; do not delete their last copy
+  while claiming Git can restore them. Remove comparison generations when the
+  comparison closes. Installed toolchains/runtime dependencies and model weights
+  are separate assets, outside this old-build cleanup rule.
 - After a run closes, delete successful full API traces, repeated polling/synchronization logs, raw
   profiler timelines and duplicate kernel windows once their useful evidence is recorded and verified.
 - Keep one representative diagnostic per distinct unresolved failure mechanism, with the relevant
@@ -178,5 +199,8 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
 - Keep raw tensor/session files only for an explicitly named current comparison/RESTORE consumer or
   unresolved numerical failure. Retire superseded captures after recording comparisons and hashes.
 - Cleanup must not change original result status, weaken validation, touch an active run or remove the
-  last required fixture. Keep a path/hash/reason deletion manifest; serialize cleanup with tests/builds/GPU
-  work. Store compact evidence in Git, and large necessary captures outside Git.
+  last currently required fixture. For tracked deletions record the reachable
+  source commit and selection reasons; use Git's diff for paths/blob hashes
+  instead of duplicating the file list. Record explicit path/hash/reason for
+  untracked/external deletions. Serialize cleanup with tests/builds/GPU work.
+  Store compact useful evidence in Git, and necessary large captures outside Git.

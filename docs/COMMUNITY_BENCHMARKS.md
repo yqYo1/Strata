@@ -5,14 +5,14 @@ might run on a similar machine. This guide suggests a report format and a pull
 request workflow; a single model, GPU, or context length is enough to contribute.
 
 Existing [benchmark reports](../bench/results/) provide examples. The
-[engine 0.1.26 speed report](../bench/results/2026-09-29-speed-0126/README.md)
+[engine 0.1.26 speed report](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-09-29-speed-0126/README.md)
 includes hardware, settings, and per-run JSON. The
 [technical details](DETAILS.md#speed-measured) explain the published measurements
 and their limits. Report what you actually measured and label estimates separately.
 
 ## Community reports
 
-- [2026-09-30: RTX 5090, Core Ultra 9 285K, 64 GB RAM](../bench/results/2026-09-30-community-rtx-5090/README.md):
+- [2026-09-30: RTX 5090, Core Ultra 9 285K, 64 GB RAM](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-09-30-community-rtx-5090/README.md):
   Strata 0.1.29, original Flash-Next IQ2_XS, 131,072-token context; three runs
   each at 4,096, 32,768, and 128,000 prompt tokens, plus six recall checks.
 

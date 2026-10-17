@@ -8,6 +8,17 @@ bench/micro/*.obj
 bench/micro/*.bin
 bench/micro/*.dll
 bench/micro/*.txt
+
+# Transient benchmark/research transport and duplicate source backups.
+# Retain substantive compact decisions, not every debugging step.
+/bench/results/**/orca-*
+/bench/results/**/research-*-index-proposal-*.json
+/bench/results/**/*.gz
+/bench/results/**/*.patch
+/bench/results/**/*.diff
+/bench/results/**/run_*.py
+/bench/results/**/build_*.py
+/bench/results/**/compare_*.py
 *.log
 # SYCL measurement captures stay local. Commit curated run summaries and
 # verification sources; do not force-add logs under a different extension.

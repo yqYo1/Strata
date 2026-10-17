@@ -1,116 +1,128 @@
 # Measurement and diagnostic artifact retention
 
-These rules apply to Strata development measurements, correctness checks and
-failure investigations, including files outside the checkout. Review retention
-when a run closes, when a failure is resolved, before changing the reference
-version, and at each experiment boundary. A file needs a current purpose;
-neither a successful run nor a failed run justifies keeping every log.
+Keep information because a named consumer is likely to use it. A completed
+debugging step, a successful command, a report review, or an unresolved question
+alone does not justify another permanent file. Apply this policy to Git, the
+working tree and local state directories at each experiment boundary.
 
-## Evidence to keep
+## Active files and Git history
 
-Commit a compact report and its structured results in `bench/results/`. Preserve
-the original results for each independent measurement, including rejected and
-failed samples. Averages alone cannot support a variance comparison. Record:
+The working tree is for maintained code, current decisions and reusable
+references. **Normal Git history is the archive for completed work.** Once a
+report, rejected patch or old fixture is superseded, remove it from the active
+tree if restoring its original commit is sufficient. Do not retain a second
+source snapshot, progress backup, compressed copy, archive directory or bundle.
+Another obsolete file linking to it is not a current consumer.
 
-- Source revision/diff, binary hash, compiler/runtime/driver versions, hardware,
-  command, effective environment, input identity/hash and actual context/chunk sizes.
-- Individual prefill, cold decode and restored decode samples, measurement order,
-  elapsed time and the settings that distinguish each arm. Keep phases separate.
-- Correctness checks and their scope, output/token/logprob or tensor fingerprints,
-  observed differences, fault checks and the final decision with its limitations.
-- For a supervised process: boot ID, owned PID/start time, deadlines, normal or
-  abnormal exit, cleanup outcome, and kernel-journal boundaries/fault findings.
-- Reproduction commands, research references, open questions and the next step.
+Before retaining a file, identify the decision, regression test, fault mechanism
+or concrete upcoming comparison that will use its information, and when to
+review that need again. Remove an obsolete index row instead of preserving an
+entire chain of stale references. Link historical evidence to a pinned Git
+revision. Keep the archive commit reachable; do not rewrite shared history.
 
-Do not rewrite a failed result into a pass during cleanup. A lost or retired
-capture is not a new correctness result. Keep the original structured receipt
-byte-identical when other records pin its hash; a separate manifest records which
-historical paths have been retired. Do not weaken a test to accommodate deletion.
+Useful active content is normally:
 
-| File type | Keep | Retire after review |
-| --- | --- | --- |
-| Measurement results | All individual samples and correctness/fault outcomes used by the comparison | Duplicate copies of the same committed report; terminal console output already represented exactly in the result |
-| Normal model stderr/protocol | Required progress/completion, validation and exact comparison evidence, until extracted and verified | Full successful API calls, every polling/sync iteration, duplicated output/token lists |
-| Failure logs | The error and relevant progress/API window for one representative of each distinct unresolved mechanism | Repeated instances with the same cause and no new evidence; unrelated head/tail output |
-| Debugger/driver captures | Relevant stacks, registers, instructions, driver dump and kernel fault entries with timestamps/boot/cursors | Duplicate captures that add no changed stop location, source/configuration or causal evidence |
-| GPU health probe | Exact PASS/failure, binary/device/runtime/environment, exit/cleanup and fresh fault-check receipt | Every successful API call from every repeated healthy probe |
-| Kernel journal | Per-run boundaries, command status, complete fault-relevant entries and filter definition/counts; a representative full timeline where needed | Repeated cumulative windows containing the same events or unrelated firewall/service messages |
-| Profiler | Useful kernel/phase/transfer summaries, collection settings and interpretation limits | Raw event timelines after the summary is verified, unless a named open question still consumes them |
-| Build output | Source/binary/toolchain/recipe identity, actual compile/flag proof and relevant warnings/errors | Repeated successful command listings once the recipe and proof are preserved |
-| Tensor/session files | Current comparison fixtures and actual RESTORE inputs; the first useful divergent capture for an unresolved numerical failure | Superseded versions, redundant successful candidate captures, repeated known failure tensors |
-| Resume notes | The current state and next actions in a committed report | External progress checkpoints and copies of already committed reports |
+- The current comparison's individual samples, including rejected/failed speed
+  samples, exact configuration, source/binary identity and decision limits.
+  One compact result is sufficient; the original per-process receipts need not
+  also remain checked out when Git holds them.
+- Maintained benchmark/test source used by current build targets or an explicit
+  near-term implementation. Put it in `bench/sycl`, `tests` or `tools`, rather
+  than keeping duplicate proposals under dated results directories.
+- The smallest useful reproducer and diagnostic for each **current** unresolved
+  failure. Retain a tensor/session capture only if a named current consumer
+  needs those actual bytes. Retire superseded-version captures when that
+  consumer ends; an old failure remains a failure after its payload is retired.
+- A research reference with substantive, nonduplicated findings and a realistic
+  retrieval use. Keep essential source/license corrections and a short topic
+  index. Completed specs, dispatch/ready/heartbeat/ack/retry/release records and
+  full review append proposals are transaction history, not a reference library.
 
-Same signal names, such as SIGABRT, do not prove the same cause. Compare the
-stack, driver finding, source/configuration and reproduction before grouping
-failures. Preserve counts and changed conditions in structured results even when
-the corresponding verbose logs are discarded. A new stop location, driver
-signature, rare numerical difference or changed lifecycle may warrant another
-representative. Do not keep every repeat by default.
+Record enough provenance to assess the result: source, command, effective
+environment, hardware/runtime, actual workload, individual measurements,
+correctness/fault outcome and limitations. Refer to shared maintained setup
+instead of embedding the same full environment, loaded-library maps, compiler
+headers and process bookkeeping in every result. Do not commit every successful
+health probe, build transcript or debugging output. Worthless transient output
+does not need to be committed merely so it can subsequently be deleted.
 
-## Bound collection before launch
+Keep current state in maintained documentation and committed decisions. Resume
+from those and Git; do not create external resume checkpoints.
 
-Use a private output directory, finite process deadline and a supervised log
-budget. The default total raw text-log budget is **64 MiB per diagnostic job**.
-If a job needs more, record the reason and finite replacement budget before
-launch. Record a budget-triggered stop as an incomplete diagnostic, not a pass;
-do not silently discard required history while continuing to claim a complete
-trace. Do not run cleanup, compression, builds or other tests concurrently with
-a GPU measurement.
+## Rebuildable binaries
 
-For small first checks, capture flushed UR/Level Zero API entries/results. For a long model check, prefer parameter validation,
-warning/error logging and `STRATA_TRACE=1` without the additional UR tracing
-layer. Save the exact effective environment. Detailed logging and validation
-affect timing; obtain speed samples from separate clean processes.
+Keep one current known-good engine build by default. Retain an additional
+baseline/candidate generation only for a named, imminent comparison; normally
+this means at most two generations. Record their consumer and remove the extra
+build when the comparison closes. A separate latest build for every old
+experiment is not a retention policy. This applies to project executables,
+static libraries, object files, JIT/native dumps and their disposable build trees;
+installed toolchains, runtime dependencies and model weights are separate assets.
 
-For a small traced first check, use the qualified combined layer configuration:
+**Commit the measured code before treating a binary as disposable.** Before a
+measurement, pin a reachable source commit, all local changes and generated
+source inputs, compiler/dependency versions, build command/options and relevant
+environment. Check that the committed inputs actually match those used to build
+the measured executable, and record its hash. A nearby commit or a source path
+alone is insufficient. If a measurement used an uncommitted snapshot, reconcile
+and commit its necessary original inputs before deleting its last build/source
+copy. Do not claim reproducibility from a binary hash alone.
+
+Before removing an old build, verify that its measured source and recipe can be
+retrieved from the recorded commits and that no current comparison needs the
+executable. Preserve original evidence and source provenance without retaining
+duplicate source snapshots. Build reproducibility means recovering the correct
+inputs and recipe; byte-identical binaries may additionally require the original
+toolchain. Do not retain an unusable orphan binary as a substitute for source.
+
+## Temporary diagnostic collection
+
+Before launch, use a private output directory, finite process deadline and a
+supervised size budget. The default total raw text budget is **64 MiB per job**;
+record any finite replacement and the question requiring it before launch.
+A budget-triggered stop is incomplete. Keep all speed samples used by a
+comparison, but extract them from routine logs and discard the logs after
+verification. A different extension does not make generated output source.
+
+Set SYCL, Level Zero, driver, profiler and experiment variables before native
+`exec`. Keep them immutable after runtime initialization. For a small first
+check use the qualified tracing and validation settings:
 
 ```sh
 UR_ENABLE_LAYERS=UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION
 UR_LOG_TRACING='level:info;flush:info;output:stderr'
 ```
 
-Layer names use commas, as specified by the
-[UR loader documentation](https://oneapi-src.github.io/unified-runtime/core/INTRO.html#ur-enable-layers).
-Keep this separate from the semicolon-separated logger options. Pin the exact
-effective values before exec, preferably from an already qualified recipe.
+The layer list uses commas; logger options use semicolons. For a long model
+check prefer parameter validation, warning/error logging and `STRATA_TRACE=1`
+without the full API trace. Obtain speed samples from separate clean processes.
 
-Retained failure excerpts normally fit within **256 KiB per distinct case**.
-Select the relevant error/progress window; do not preserve a large arbitrary
-tail of repeated `NOT_READY` polling. If the complete allocation/command history
-is necessary, keep one complete trace as an explicit exception. Record in the
-experiment's retention manifest:
+After closure, retire successful API/synchronization logs, repeated profiler
+windows, raw timelines, duplicate kernel dumps and normal build output once
+their relevant evidence is verified. Keep a complete trace only for a named
+question requiring its history, with an owner, finite byte budget and next
+review point. Failure excerpts normally fit within **256 KiB per distinct
+mechanism**. The same signal name alone does not establish the same cause.
 
-- The concrete unresolved question and why a smaller excerpt is insufficient.
-- The responsible experiment, exact consumer, path, size/hash and byte budget.
-- The next review point, such as completion of allocation-lifetime analysis or
-  replacement by a minimal reproducer. Remove the trace once that purpose ends.
+## Cleanup and deletion records
 
-Compression alone is not a reason to retain an unnecessary log. For a needed
-large trace, prefer one lossless compressed copy. Verify the decoded byte count
-and SHA256 against the original before removing the raw file. Keep raw and
-archive hashes in the manifest. Do not put giant traces, tensor/session captures
-or driver binaries into Git.
+Main serializes cleanup with builds, tests, GPU work and profiling. Do not touch
+an active run or remove a current consumer's last required fixture. Preserve
+original success/failure status and numerical criteria. Retirement is not a
+new validation result.
 
-## Current fixtures and cleanup
+For tracked files, record the original reachable commit, selection/reason rules,
+exceptions and counts/bytes. **Git's deletion diff already records each path and
+blob hash; do not duplicate thousands of those rows in another permanent
+manifest.** Restore a particular file with
+`git show <original-commit>:<path>`. Never rewrite a pinned historical receipt
+into a success or silently replace its contents.
 
-Each retained large capture must name the controller/comparator or unresolved
-failure that consumes it. Keep one canonical reference set for the currently
-tested version, including the full physical context boundary when required.
-An inference session file is a test input, not a progress checkpoint. After
-updating consumers and verifying replacement fixtures, retire the superseded
-set. A filename containing `baseline`, `failure` or `full256k` is insufficient
-evidence of a current purpose.
+For untracked files or large external captures, record explicit paths, hashes
+and reasons before deletion because Git cannot recover them. Verify no active
+consumer needs them. Keep only the compact deletion decision in Git; retire
+the audit's temporary inventories and verbose review output after reconciliation.
 
-Before deleting a file, confirm that its run is closed and its owned processes
-are absent, that useful evidence is safely recorded, and that no current check
-requires it. Use the experiment's exclusive measurement lock. Verify file
-identity/hash and retained evidence before unlinking. Record the path, original
-size/hash, retained replacement and reason. Never alter source, models, service
-state or GPU state as part of log cleanup. Do not destroy home-wide snapshots
-or rewrite shared Git history merely to reclaim project-file space.
-
-Commit and push the policy, reports and deletion manifest at natural work
-boundaries. Git is the durable resume record; avoid a second tree of progress
-backups. A current working copy needed by a running controller may stay, but it
-is not an independent archival copy. Report removed logical/file allocation
-separately from actual available space, since snapshots can retain old extents.
+The benchmark results directory must remain browsable. A directory approaching
+GitHub's listing limit is a review alarm, not a reason to split or bundle the
+same unnecessary information into more directories or larger files.

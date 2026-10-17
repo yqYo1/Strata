@@ -1,5 +1,0 @@
-R952は知識収集として受理し、保留します。報告は指定hashと一致（12,253 bytes、1,550語）。SyclKittensのPVC実測をB570へ外挿せず、selected-K gatherや小規模MoE expertでの改善も主張しません。L1協調prefetch、SIMD16/XMX operand layout、PVC固有のSLM制約を整理しています。SYCL-TLA/vLLMのBMG参照も設計上の比較材料であり、B570の測定ではありません。
-
-修正点: 論文の単GPU MHA/GQAはN≤8192ですが、別のmulti-GPU context-parallel評価は最大256Kです。これをB570の単GPU適用根拠と混同しないよう対象を限定します。XeTLAの公開docsはversion表記が不一致で、今後ソースを使うならtag/commitを固定します。GitHubのcommitページでは署名検証表示を独立確認できませんでした。
-
-Main提供の最新状況ではpitch36はcomponentで19.58%遅く不採用済み（333.3657→398.6459 ms）。R952の「component testing中」は執筆時点の記述として扱います。IGC dumpの原因をこの論文から推定しません。worker_doneは成功、settlementのackはnull、releaseはexternal terminal保持/processActionなし。次の研究は、MainのB570 codegenとcomponent profileが具体的な未解決選択を示すまでschedulable_now=falseです。

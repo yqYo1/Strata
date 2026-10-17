@@ -52,7 +52,7 @@ into a pass. This experimental production route requires the qualified single
 queue. The timeout mechanism remains unresolved, with no fresh kernel GPU fault
 or driver dump. See the
 [diagnostic](../bench/results/2026-10-15-pr6-recovery-audit/own-native16-separate-queue-timeout-v2.ja.md)
-and [paired model receipt](../bench/results/2026-10-15-pr6-recovery-audit/own-native16-model-smoke-v2.json).
+and [paired model receipt](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-15-pr6-recovery-audit/own-native16-model-smoke-v2.json).
 An earlier new allocation-registry destruction-order error was reproduced and
 fixed separately; the fixed model processes exit normally.
 
@@ -62,7 +62,7 @@ FP32 measured 346.5 tok/s; BF16 measured 123.8 tok/s (one process per arm).
 The BF16 GPU residual fell from 1,280 to 640 MiB, but this implementation's
 throughput fell 64.3%. It is rejected for default/performance adoption pending
 kernel improvement. See the
-[individual-sample comparison](../bench/results/2026-10-15-pr6-recovery-audit/own-native16-first-long-comparison-v1.json).
+[individual-sample comparison](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-15-pr6-recovery-audit/own-native16-first-long-comparison-v1.json).
 This is a first screening pair, not a repeated variance study or evidence that
 the datatype alone caused the slowdown.
 
@@ -72,7 +72,7 @@ three model geometries, FP16 or BF16 inputs with native BF16 output took
 geometry/format used one process and three timed submits per route after
 warmup, with complete output checks outside timing. This does not identify
 the instruction/layout cause or establish a datatype disadvantage. See the
-[operator samples](../bench/results/2026-10-15-pr6-recovery-audit/own-native16-paired-gemm-summary-v1.json).
+[operator samples](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-15-pr6-recovery-audit/own-native16-paired-gemm-summary-v1.json).
 
 A natural 32,863-token diagnostic completed FP32 twice and BF16 once. At 64
 stratified positions, every full-vocabulary logit row was finite; the two FP32
@@ -81,7 +81,7 @@ mean absolute target-NLL difference 0.556. Its sampled mean NLL was lower
 (5.05747 to 4.88628), but a sparse sample from one document corpus does not
 establish general quality or a permitted degradation. No quality tolerance
 has been accepted. See the
-[quality review](../bench/results/2026-10-15-pr6-recovery-audit/own-native16-natural-quality-review-v1.ja.md).
+[quality review](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-15-pr6-recovery-audit/own-native16-natural-quality-review-v1.ja.md).
 
 The original joint-matrix backend remains rejected for speed. The later vLLM
 backend below improves measured long-prefill speed. Broader model quality,

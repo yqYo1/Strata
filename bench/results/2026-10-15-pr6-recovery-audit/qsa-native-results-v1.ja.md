@@ -42,13 +42,16 @@ chunk8192、thinking有効の後続3回でserial中央値725.7 token/s、subgrou
 `extract_qsa_native_evidence_v1.py`が元ログのハッシュ、選択kernelの全起動、
 生成命令とmetadataを照合し、compact evidenceに保存した。
 
-- [照合済みの証拠](qsa-native-bound-evidence-v1.json)
-- [GPU取得レシート](own-qsa-native-zebin-serial-smoke-v1.json)
-- [CPU逆アセンブルレシート](qsa-native-disasm-v1.json)
-- [削除記録](qsa-native-retention-v1.json)
+- [照合済みの証拠](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-15-pr6-recovery-audit/qsa-native-bound-evidence-v1.json)
+- [GPU取得レシート](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-native-zebin-serial-smoke-v1.json)
+- [CPU逆アセンブルレシート](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-15-pr6-recovery-audit/qsa-native-disasm-v1.json)
+- [削除記録](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-15-pr6-recovery-audit/qsa-native-retention-v1.json)
 
 正常時の全APIログ、非対象module、重複metadata等31ファイル、2097466 bytesを
-検証後に退役した。選択したnative ELFとassemblyは、Mainが命令配置と
-pitch候補のresource差を比較する用途に限定して保持し、その比較後に再点検する。
+検証後に退役した。選択したnative ELFとassemblyの保持用途だったpitch比較は直近の作業から
+外れた。再生成可能な旧バイナリとして退役対象に変更した。必要時は固定
+コミットのソース・取得手順から新規に生成し、元の測定と区別する。
+対象ELFのSHA256は
+`049221cb25a6c6e9c36f9e96a7cdee08d4309e857c21aa14e468beec9d8ab896`。
 Orca R1056のsource調査とnative Luna max R1057のレビューはこの実行と別の
 証拠であり、調査報告だけでdriver上の動作確認を済ませた扱いにはしない。

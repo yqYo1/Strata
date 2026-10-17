@@ -1,1 +1,0 @@
-R807は1,329語で範囲内。最有力はvLLM Xe2のMoE::xe_gemm（XE_DPAS_TT<8,float,ElementA>、FP32蓄積）だが、既存の単体dense APIではなく、public dispatchは混合FP16→BF16未対応。Mainは「What the kernel actually does」「Smallest viable standalone adaptation」の2節のみ参照。toolchain/dependency、queueとdevice0、beta/ld/tail/alignment、mixed-output roundingのcompile/correctness gatesが残る。性能優位は未実証。現時点で追加調査は不要。

@@ -1,7 +1,0 @@
-# Main: postfault独立64B probeの事前レビュー
-
-controller SHA 05acc6c79fec5356a627bb4a8f96d3d57bf951b8b01de6184de6568cf10df2a4。Mainが全source、既存Ownerのpidfd/session/normalreap/deadline契約、R816helperのdriver/fault/identity/pin契約、実tests/sycl/allocation_teardown.cppとcompat/runtimeのalloc・memset・wait・freeを確認。新規source変更やmodel/NativeHead/GEMM/NLL反復を含まない。既存qualified6354 allocation fixture --earlyで64Bだけを扱い、明示markerと正常process終了・実UR allocate/fill/free呼出しが必要。
-
-新私有rootとGit receiptはfresh限定、同shared lock、native45秒/whole180秒、RSS2GiB/text8MiB/private16MiB、full UR trace+paramvalidation、forcedsamequeue/URv2/copyoffload1/directsubmission0/cacheoff。original失敗receipt SHA・boot一致、全旧PID/start不在・directreap/sessionempty確認を要求し、formal observation_complete=falseは書き換えず、旧healthy receiptを指定しない。既存source432/buildpins314/products13/runtime37は前後照合、fresh journal cursor以降fault累積とdump確認を要求。
-
-この新probeのPASSがあっても停止原因解決/元長文NLL経路の安全性/モデル品質を意味しない。長文denseNLLはquarantineを続ける。これは別のごく小さい経路の現在health観測で、失敗経路の自動retryやgate差し替えではない。reset/unbind/reboot/service/ptrace設定の変更なし。Main単独実行、他workerはsource-only。成功APItraceはcompact proof確認後48h以内にretention再検討する。

@@ -1,9 +1,0 @@
-# Main review of R831
-
-R831はMainが依頼した局所の正当性調査のため全文を読んだ。一般知識収集レポートの自動読込ではない。原報告は変更しない。
-
-重大指摘1「native16_activeに代入がなく経路が無効」は誤り。src/prefill/prefill.cppが取り込むlayer_major.inc:353,406がnative16::requested()から設定しており、inc:45-46で設定値を検証する。workerがtranslation-unitのincを検索対象にしなかった。旧v2実モデルのnative16経路完了記録とも整合する。新統合binaryの実行経路はこのsource確認だけでは合格にせず、今回のmodel gateで確認する。
-
-native_proj16の将来のsplitに関する指摘2は条件付きで有効。scratch/kが64の倍数でない場合、countおよびoffsetがvLLM契約に合わずpre-submit rejectionになる。現在モデルのprojectionがsplitを実際に使う証拠はなく、既存own16もcount%16を要求する。現在のmodel gateで実際のshapeと完了を確認し、splitを利用する変更の前にblockの整列とfull strided span契約を解決する。未確認の範囲を勝手にfallbackさせない。
-
-Runtime強参照にAllocationへの逆参照がなくcycleは見つからない、compat実streamはcompute()と別in-order queueでcallerのchecked drainが必要、というlifetime traceはMainもsourceで照合した。Prefill::releaseの既存status無視や独立Runtime/context混在は条件付きの未解決事項で、今回観測された故障や証明済み安全性とは数えない。通常のsamequeue完了・static teardown・actualpublic model gateを直列実施する。

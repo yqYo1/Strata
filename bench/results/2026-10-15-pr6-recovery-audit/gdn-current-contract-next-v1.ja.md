@@ -28,6 +28,9 @@ loader fixtureで検証する。
 数値基準は、固定したSGLang Qwen4Expの実際のchunk経路とする。
 BF16のQ/K/V、FP32 gate/beta/carry、chunk内scratchのBF16丸めを区別する。
 FP32のローカル累算があることから、すべての中間状態がFP32だと仮定しない。
+`track_state`のFP32 assertだけではpersistent poolのdtypeは証明できない。
+渡された`initial_state`／`ssm_states`の実dtypeと
+`SGLANG_MAMBA_SSM_DTYPE`等の実設定を別途確認する。
 固定されたauthor configはsigmoidを指定するが、configのない一般的な
 SGLang RMSNormGatedの既定swishとは区別する。
 既存のFP32実装は診断に残し、丸め差だけでSGLang契約の候補を拒否しない。
@@ -50,8 +53,15 @@ prefill／decode／warmupの内訳と全体への効果は新しい測定で確�
 この計画は独立実装・比較契約の選定で、外部コードの移植ではない。
 
 根拠は[実GGUFメタデータ](gdn-target-gguf-metadata-v1.json)、
-[R1053 index proposal](research-round1053-index-proposal-v1.json)、
+[R1053 index proposal](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-15-pr6-recovery-audit/research-round1053-index-proposal-v1.json)、
 `src/kernels/sycl/fused_gdn.cpp` SHA256
 `70abf4fd1359477a2e170b54f2172ba148a2ae21306e8145e070ebd0db7d995f`。
 Mainは元のR1052レポート本文を自動読み込みせず、レビューと必要なソースから
 この境界を選定した。
+
+現在の未完成ソースは`bench/sycl/gdn_chunk64`。full64 FP32 solveを一度
+BF16へ丸める独立スケジュールで、XPUのblock16 BF16 scratchやCUDAの
+4-block配置との厳密な同一性はない。FP16 consumer変換前のBF16段階も
+比較する。最新ビルドはfixtureのruntime.hpp include不足で停止し、GPU実行・
+一般数値・速度の検証はない。短い直交入力だけで一般入力を認定しない。
+R1059の[修正事項](research-round1059-review-v1.txt)を適用して検証を進める。
