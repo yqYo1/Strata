@@ -7588,7 +7588,7 @@
     "candidate_commit": "2b4399a00c54eb84609edfe9a6b876f27e3c8fd0",
     "branch": "verify/moe-window",
     "worktree": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window",
-    "status": "Actual full build, 11 GPU route cases and matched 39K optimized-QSA window0/2 diagnostics PASS; clean six-process cohort next, no quality/full-context/RESTORE or speed adoption.",
+    "status": "Complete build,11GPU route cases,two actual39K diagnostics and six fresh-process clean samples PASS. Median464.1->491.7tok/s (+5.95%). Quality/state/fullcontext/RESTORE/cancel reuse pending; draft PR32, no inference adoption.",
     "GPU_executed": true,
     "performance_adopted": false,
     "next_owner": "Main",
@@ -7668,5 +7668,37 @@
     "next_owner": "Main",
     "schedulable_now": false,
     "next_measurement": "Six separate native bench.sh processes: window0,2,2,0,0,2."
+  },
+  "moe_window_clean_current": {
+    "path": "moe-window-clean-comparison-v1.json",
+    "sha256": "ce6f4bca9fc85014a275324de751b3a7f9a81503ccd08e3ac8ad8c3cfe879d88",
+    "cohort": "moe-window-clean-cohort-v3.json",
+    "cohort_sha256": "d86000743a5b5d8863a602330509fa13f79a1eb31640172c539fdc9c960a257d",
+    "samples_baseline": [
+      452.0,
+      464.1,
+      464.1
+    ],
+    "samples_candidate": [
+      491.7,
+      491.8,
+      490.8
+    ],
+    "median_rate_gain_fraction": 0.05946994182288301,
+    "status": "Six separate processes PASS; matched 39K speed evidence only. No quality/physical262144/RESTORE or inference adoption.",
+    "GPU_executed": true,
+    "performance_adopted": false,
+    "next_owner": "Main",
+    "schedulable_now": false
+  },
+  "qsa_rowmajor_subgroup_candidate": {
+    "build_recipe": "build_qsa_rowmajor_subgroup_v1.py",
+    "fixture_recipe": "run_qsa_rowmajor_subgroup_v1.py",
+    "source_review": "qsa-rowmajor-subgroup-source-review-v1.json",
+    "source_review_sha256": "1abfe92a253bc53885d670e29467cc095a79df7ee53f6546d37c3aaa5b54b17e",
+    "status": "Current optimized row-major score33 variant, Main-generated diff reviewed/Python parsed. Actual compile/GPU pending; clean MoE cohort prerequisite now passed.",
+    "schedulable_now": false,
+    "next_owner": "Main",
+    "next_action": "Serialized build, traced smoke, component, then matched unprofiled component timing. No production source edit yet."
   }
 }
