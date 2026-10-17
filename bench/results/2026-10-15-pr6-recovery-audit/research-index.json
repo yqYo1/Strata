@@ -5343,6 +5343,42 @@
           "action": "Retain the prospective/conditional precision tags and use the Main-owned probe for provider, device, and measured score evidence."
         }
       ]
+    },
+    {
+      "round": 1037,
+      "model": "gpt-6-luna",
+      "classification": "decision_support",
+      "read_only": true,
+      "path": "research-round1037-v1.txt",
+      "bytes": 10870,
+      "sha256": "9c8f9b88827d3b3c5c6a199afd9cee6250a58a95929388d9b3075af8ffe1fcb3",
+      "review_path": "research-round1038-review-v1.txt",
+      "review_sha256": "65d82e013fa1faeb9ef151e083e3952bc2e42cf889678922199d814c7728a1c9",
+      "index_proposal_path": "research-round1038-index-proposal-v1.json",
+      "status": {
+        "decision": "accepted_with_source_correction",
+        "report_scope_and_depth": "adequate; bounded source question resolved against exact immutable public dependency revision",
+        "d32_source_support": "confirmed for typed float D through the pinned helper and XE_STORE_2D<32> source path",
+        "geometry_and_api_guidance": "sound; preserve existing 16-bit APIs and recalculate float output byte/surface bounds",
+        "runtime_and_adoption": "unqualified; no build, GPU, fault, numerical, or performance evidence",
+        "production_adoption": "not qualified or recommended"
+      },
+      "corrections": [
+        {
+          "id": "R1037-C1",
+          "kind": "source_review_correction",
+          "finding": "The report says the pinned TLA public material does not prove that get_block_2d_copy_D accepts a 32-bit destination or emits d32. Exact pinned headers prove source-level support: float destination and ValTypeD=float select XE_STORE_2D<32,...>, whose typed store emits the block-2D d32 form.",
+          "evidence": "Revision 87f6850680a580654b9ea2c80dbc01aeb36ad231; hashes and line references recorded under source_facts and in research-round1038-review-v1.txt.",
+          "action": "Remove the d32 helper-support uncertainty from retrieval metadata. Retain compile/AOT/ISA/runtime qualification and typed float rectangle safety gates."
+        },
+        {
+          "id": "R1037-C2",
+          "kind": "fallback_correction",
+          "finding": "A compiler or device qualification failure for block-2D does not imply an all-or-nothing blocker; ordinary typed SYCL scalar stores can be an explicit FP32 epilogue, with vectorization evaluated after lane ownership and bounds are correct.",
+          "evidence": "SYCL typed pointer stores are an available kernel mechanism; this is a fallback design candidate, not a measured or implemented route.",
+          "action": "Keep the typed block-2D route first. If its target qualification fails, evaluate a bounded scalar epilogue before considering the extra conversion pass."
+        }
+      ]
     }
   ],
   "main_initial_findings": [
@@ -9953,5 +9989,37 @@
     },
     "main_read_policy": "Short operational digest and index proposal only; original report body not loaded automatically.",
     "main_action": "Bounded global-unused row-suffix correction applied to immutable private v2 fixture; v1 receipts preserved unchanged. Same-binary FP32 control added."
+  },
+  "research_review_round1038": {
+    "review": {
+      "path": "research-round1038-review-v1.txt",
+      "bytes": 5279,
+      "sha256": "65d82e013fa1faeb9ef151e083e3952bc2e42cf889678922199d814c7728a1c9"
+    },
+    "index_proposal": {
+      "path": "research-round1038-index-proposal-v1.json",
+      "bytes": 8060,
+      "sha256": "e2a5a60ec8362ee33776f62adbb38f7d40b3654f42d0465a1fed9a793b29005d"
+    },
+    "main_read_policy": "Only short operational digest and relevant index metadata; no automatic report-body read.",
+    "priority_decision": "Source-level F32 d32 store support established. First integrate the already-fast existing-Gemm scorer; observed 4-byte oneMKL control transfers did not recur per call in the15-call traced process, so removing them is not the immediate warm-performance target. Direct/fused native epilogue remains a future component candidate."
+  },
+  "qsa_score_gemm_current": {
+    "component_result": {
+      "path": "qsa-score-gemm-results-v2.json",
+      "bytes": 23387,
+      "sha256": "eef8ecb7f5ddf72418af95e0c9ad6eb6ac7b41ef7c063894811d0e6e13bbdf88"
+    },
+    "cohort": {
+      "path": "qsa-score-gemm-cohort-v2.json",
+      "bytes": 199800,
+      "sha256": "c3cc9ba17013ed3cc3e9c6ce136432efd370ec0a4e30477fbea7ae56cdb21da0"
+    },
+    "resource_result": {
+      "path": "qsa-score-gemm-resource-results-v1.json",
+      "bytes": 3416,
+      "sha256": "05740ed61ee9857c4503ffb85b846bd0fbc23f3d903bcc1cc55a46fad310d537"
+    },
+    "next": "Long-prefill-only opt-in integration with Qf dead-region reuse, separately owned sticky status, checked lease retirement, invalid-status injection then actual-model quality/performance gates. No production default adoption yet."
   }
 }

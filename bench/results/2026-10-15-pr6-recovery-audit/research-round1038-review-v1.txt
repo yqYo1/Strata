@@ -1,0 +1,27 @@
+# R1038 review — R1037 native Xe2 FP32-output GEMM
+
+Recorded 2026-10-17 16:56:22 UTC. Classification: decision support.
+
+## Decision
+
+Accept the separate typed FP32-output API proposal with one source correction. R1037 is right to preserve the current FP16/BF16 output API and to account for four-byte output extents, alignment, row pitch, and the isolated AOT image. Its stated source gap is too strong: the exact pinned public SYCL-TLA headers show that `get_block_2d_copy_D` accepts a float destination and selects an `XE_STORE_2D<32,...>` operation for the existing FP32 D accumulator. This removes the source-level d32-store blocker; it does not qualify the compiler, BMG runtime, emitted image, tail safety, numerical result, or performance.
+
+## Pins and provenance
+
+The reviewed R1037 report SHA-256 is `9c8f9b88827d3b3c5c6a199afd9cee6250a58a95929388d9b3075af8ffe1fcb3`; its source-pin JSON is `4f99ce62f01c638df678e4e64fb4afc6063c673f2b1b5b56ee07e2330f47bd7e`. The frozen snapshot manifest SHA-256 is `bde32f00203a0c3e975cc7345582be0cc241f02a8eaebd4f12e3f52ad7db5e6b`; all nine listed payload byte counts and hashes were independently verified, and the pinned adapter/docs still match the live files.
+
+The repository header index SHA-256 is `4cc45b942c61468b7d80842e0cdb9d6790c6d76ca0aa90be523171f17b56517a`; it pins Intel `sycl-tla` revision `87f6850680a580654b9ea2c80dbc01aeb36ad231`. The exact public headers were fetched from that immutable revision and matched the index: `include/cute/atom/copy_traits_xe_2d.hpp` `240a052619e659bc3d694ed37c5be821534ca16a5011f65856b0f3318862d4c1` and `include/cute/arch/copy_xe_2d.hpp` `83abda61c5407213dc6d7232203699223c29b9544e9391adeb483200b8ad0b27`. No XeStrata material was consulted.
+
+## Source correction and consequence
+
+In the pinned `copy_traits_xe_2d.hpp`, `get_block_2d_copy_D` delegates to `make_block_2d_copy_D` when its operation parameter is `void` (1823–1830). The global-tensor overload takes `ValType` from the destination engine (1116–1123), and the D helper pairs it with `TiledMMA::ValTypeD` before calling `block_2d_selector<ValType, MMAType, true>` (1152–1163). Strata's kernel already asserts `ValTypeD == float`. With a typed `float*` tensor, both memory and register element sizes are 32 bits. The selector sets `CopyBits` to 32 and returns `XE_STORE_2D<32,height,width>` for a D store (827–886). The store traits keep a 32-bit fragment/layout and update the D surface payload (500–543). The pinned `copy_xe_2d.hpp` accepts 8/16/32/64-bit atoms, caps block width at 512 bits, limits store height to eight, and emits `lsc_store_block2d ... d%2 ...` with the selected bit width (54–68, 979–1025). Thus this exact helper path has source-level d32 support; `float*` is a coherent typed output representation.
+
+The pinned header also computes surface width and pitch in bytes from the destination element size, carries the logical height, and documents 64-byte base, four-byte width/pitch, and 2^24-byte surface limits behind its optional assertions (copy traits 110–128; exact-revision `media/docs/cpp/xe_rearchitecture.md` 244–264). QSA's `N<=8192`, `M<=1024`, and physical `ldy=8192` produce width at most 32768 bytes, pitch 32768 bytes, and height at most 1024. A float output rectangle is `M*ldy*4` bytes, at most 32 MiB, within the adapter's signed-int rectangle cap. Keep checked multiplication, complete-span/device-USM validation, 64-byte base alignment, input/output disjointness, and lifetime rules; update output-specific byte and surface checks rather than reusing the current two-byte output formulas. The TLA architecture documentation describes automatic bounds checking for block-2D messages. QSA's ragged M and tile tails still need output canaries and fault checks against the compiled adapter.
+
+The R1037 fallback discussion remains useful if target compilation or qualification rejects this block-2D path: a separate epilogue can issue ordinary typed SYCL scalar stores (or a proven vector store) from the FP32 fragment to `float*`, with explicit lane-to-coordinate ownership and bounds predicates. That is an available design route, not an established optimized implementation. The conversion-kernel fallback remains possible as well. Neither is a reason to treat d32 as unsupported at source level.
+
+## Runtime unknowns and next action
+
+Source establishes type selection and instruction template only. Main still needs compile/AOT/link evidence for both FP16 and BF16 inputs, final entry/image attribution, and ISA confirming FP32 accumulation plus d32 output. Runtime must check guards and tails at QSA M/N boundaries, invalid-span rejection before enqueue, numerical score and selected-ID changes, and whole-path performance. Keep the new `float*` entry in the existing isolated native16 component/image/host-extraction path; keep the existing 16-bit methods and decode dispatch unchanged.
+
+The active serialized Main score cohort is still a prerequisite according to the assignment. `schedulable_now=false`; this review ran no build, test, GPU job, profiler, or process inspection. After the cohort closes, Main can implement the distinct typed output entry and run the finite compile/AOT/runtime gates. No additional source survey is needed for the d32 question.
