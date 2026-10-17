@@ -22,5 +22,5 @@ struct Events {sycl::event gates,pack,kkt,inverse,wu,carry,readout,norm;};
 void run(float *state, const uint16_t *h, const float *gate, const float *beta,
          const uint16_t *z, const float *gamma, float eps, uint16_t *output,
          int tokens, Workspace workspace, void *stream, Events *events=nullptr,
-         bool packed_inverse=true);
+         bool packed_inverse=true, bool narrow_carry=true);
 }

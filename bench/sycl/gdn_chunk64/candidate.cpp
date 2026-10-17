@@ -76,7 +76,7 @@ Sizes sizes(int tokens) {
 }
 void run(float *state,const uint16_t *h,const float *gate,const float *beta,
          const uint16_t *z,const float *gamma,float eps,uint16_t *output,
-         int tokens,Workspace ws,void *stream,Events *events,bool packed_inverse) {
+         int tokens,Workspace ws,void *stream,Events *events,bool packed_inverse,bool narrow_carry) {
   const Sizes n=sizes(tokens);
   require(stream && std::isfinite(eps) && eps>=0.f);
   auto &queue=queue_for(stream);
@@ -196,58 +196,59 @@ void run(float *state,const uint16_t *h,const float *gate,const float *beta,
     });
   finish(stream,event);
   if(events)events->wu=event;
-  // Persistent carry: one32-value-column slice per workgroup. Only chunk order
+  // Persistent carry: one16/32-value-column slice per workgroup. Only chunk order
   // is serial; each64-token update uses DPAS and keeps the FP32 carry in registers.
-  event=queue.submit([&](sycl::handler &handler) {
-    sycl::local_accessor<Tile<D*32>,1> hs(1,handler);
-    sycl::local_accessor<Tile<BT*32>,1> weighted(1,handler);
-    sycl::local_accessor<float,1> scratch(D*32,handler);
-    handler.parallel_for(sycl::nd_range<1>(HV*4*WG,WG),
+  auto carry=[&]<int V>(){return queue.submit([&](sycl::handler &handler) {
+    sycl::local_accessor<Tile<D*V>,1> hs(1,handler);
+    sycl::local_accessor<Tile<BT*V>,1> weighted(1,handler);
+    sycl::local_accessor<float,1> scratch(D*V,handler);
+    handler.parallel_for(sycl::nd_range<1>(HV*(D/V)*WG,WG),
       [=](sycl::nd_item<1> item) [[sycl::reqd_sub_group_size(16)]] {
-        const int head=item.get_group_linear_id()/4,vblock=item.get_group_linear_id()%4;
-        const int tid=item.get_local_linear_id(),rg=tid/32,col=tid%32;
+        const int head=item.get_group_linear_id()/(D/V),vblock=item.get_group_linear_id()%(D/V);
+        const int tid=item.get_local_linear_id(),rg=tid/V,col=tid%V;
         auto sg=item.get_sub_group();const int subgroup=sg.get_group_linear_id();
         BF *local_h=hs[0].values,*local_v=weighted[0].values;
         float *temp=scratch.template get_multi_ptr<sycl::access::decorated::no>().get();
-        float saved[32];
-        for(int r=0;r<32;++r) saved[r]=state[(size_t(rg*32+r)*HV+head)*D+vblock*32+col];
+        float saved[V];
+        for(int r=0;r<V;++r) saved[r]=state[(size_t(rg*V+r)*HV+head)*D+vblock*V+col];
         for(int chunk=0;chunk<chunks;++chunk) {
           const size_t matrix=size_t(chunk)*HV+head;
           const int live=sycl::min(BT,tokens-chunk*BT);
-          for(int r=0;r<32;++r) {
-            const int row=rg*32+r;
-            local_h[row*32+col]=BF(saved[r]);
-            ws.history[(matrix*D+row)*D+vblock*32+col]=BF(saved[r]);
+          for(int r=0;r<V;++r) {
+            const int row=rg*V+r;
+            local_h[row*V+col]=BF(saved[r]);
+            ws.history[(matrix*D+row)*D+vblock*V+col]=BF(saved[r]);
           }
           item.barrier(sycl::access::fence_space::local_space);
-          for(int c=0;c<32;c+=16) {
+          for(int c=0;c<V;c+=16) {
             Acc acc;
-            product<false,false,false,true>(sg,acc,ws.w+matrix*BT*D+subgroup*8*D,D,local_h+c,32,D);
-            mx::joint_matrix_store(sg,acc,scratch.template get_multi_ptr<sycl::access::decorated::no>()+subgroup*8*32+c,32,mx::layout::row_major);
+            product<false,false,false,true>(sg,acc,ws.w+matrix*BT*D+subgroup*8*D,D,local_h+c,V,D);
+            mx::joint_matrix_store(sg,acc,scratch.template get_multi_ptr<sycl::access::decorated::no>()+subgroup*8*V+c,V,mx::layout::row_major);
           }
           item.barrier(sycl::access::fence_space::local_space);
           const float last=ws.g[matrix*BT+live-1];
-          for(int i=tid;i<BT*32;i+=WG) {
-            const int t=i/32,c=i%32;
-            const float delta=t<live?float(ws.u[(matrix*BT+t)*D+vblock*32+c])-temp[i]:0.f;
-            ws.delta[(matrix*BT+t)*D+vblock*32+c]=BF(delta);
+          for(int i=tid;i<BT*V;i+=WG) {
+            const int t=i/V,c=i%V;
+            const float delta=t<live?float(ws.u[(matrix*BT+t)*D+vblock*V+c])-temp[i]:0.f;
+            ws.delta[(matrix*BT+t)*D+vblock*V+c]=BF(delta);
             local_v[i]=BF(delta*sycl::exp(last-ws.g[matrix*BT+t]));
           }
           item.barrier(sycl::access::fence_space::local_space);
-          for(int r=0;r<16;r+=8) for(int c=0;c<32;c+=16) {
+          for(int r=0;r<16;r+=8) for(int c=0;c<V;c+=16) {
             Acc acc;const int row=subgroup*16+r;
             product<false,true,false,true>(sg,acc,ws.k+(size_t(chunk)*HK+head%HK)*BT*D+row,D,
-                          local_v+c,32,BT);
-            mx::joint_matrix_store(sg,acc,scratch.template get_multi_ptr<sycl::access::decorated::no>()+row*32+c,32,mx::layout::row_major);
+                          local_v+c,V,BT);
+            mx::joint_matrix_store(sg,acc,scratch.template get_multi_ptr<sycl::access::decorated::no>()+row*V+c,V,mx::layout::row_major);
           }
           item.barrier(sycl::access::fence_space::local_space);
           const float decay=sycl::exp(last);
-          for(int r=0;r<32;++r) saved[r]=saved[r]*decay+temp[(rg*32+r)*32+col];
+          for(int r=0;r<V;++r) saved[r]=saved[r]*decay+temp[(rg*V+r)*V+col];
           item.barrier(sycl::access::fence_space::local_space);
         }
-        for(int r=0;r<32;++r) state[(size_t(rg*32+r)*HV+head)*D+vblock*32+col]=saved[r];
+        for(int r=0;r<V;++r) state[(size_t(rg*V+r)*HV+head)*D+vblock*V+col]=saved[r];
       });
-  });
+  });};
+  event=narrow_carry?carry.template operator()<16>():carry.template operator()<32>();
   finish(stream,event);
   if(events)events->carry=event;
   // Separate parallel output path; BF16 raw readout precedes normalization.

@@ -1,5 +1,5 @@
 {
-  "source_commit": "b4d43baf1792d6e045b29f177396fe77edcd6330",
+  "source_commit": "41f88e0e5f24d9abc01369a2656fd9764503456f",
   "runtime_archive": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-score-gemm-entry-engine-build-v2/build/libstrata_sycl_runtime.a",
     "sha256": "ba34c7d19cf30499c215e86289a921461b9ac426df6f73f61c6769b65d8ee573",
@@ -45,7 +45,7 @@
     "-o",
     "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current/sycl_gdn_chunk64"
   ],
-  "binary_sha256": "16af499089efdde057abae51719ce3dd856019a564bad08fab999912573f30cf",
+  "binary_sha256": "6384c25e0fa7644b09976f14a912585b2e05578c612631030828d92de608b0f8",
   "processes_closed": true,
   "ownership_closed": true,
   "smoke": {
@@ -130,7 +130,7 @@
     "passed": true,
     "complete": true,
     "GPU_executed": true,
-    "scope": "Resident same-input GDN8192 component; 1 warmup and 5 alternating samples per arm; no transfers timed.",
+    "scope": "Resident same-input GDN8192 component; FP32/original/packed, 1 warmup and 5 rotating samples per arm; no transfers timed.",
     "clean_environment": false,
     "framework_numerics_qualified": false,
     "hardware_busy_measured": false,
@@ -139,17 +139,22 @@
     "observed_runtime_elf_count": 26,
     "GPU_work_admitted": true,
     "case_results": [
-      "component_sample n=0 arm=chunk64 tokens=8192 queue_interval_ns=21643230 host_wall_ms=21.6813 gates_ns=43020 pack_ns=2208437 kkt_ns=543854 inverse_ns=4152396 wu_ns=1775729 carry_ns=7377188 readout_ns=2189480 norm_ns=3114271",
-      "component_sample n=0 arm=current_FP32 tokens=8192 queue_interval_ns=23455208 host_wall_ms=23.4944",
-      "component_sample n=1 arm=current_FP32 tokens=8192 queue_interval_ns=23441979 host_wall_ms=23.4924",
-      "component_sample n=1 arm=chunk64 tokens=8192 queue_interval_ns=21657396 host_wall_ms=21.7101 gates_ns=43333 pack_ns=2211042 kkt_ns=542500 inverse_ns=4141771 wu_ns=1775833 carry_ns=7349584 readout_ns=2202500 norm_ns=3115625",
-      "component_sample n=2 arm=chunk64 tokens=8192 queue_interval_ns=21605521 host_wall_ms=21.6516 gates_ns=42917 pack_ns=2210937 kkt_ns=543959 inverse_ns=4143959 wu_ns=1777396 carry_ns=7377500 readout_ns=2194167 norm_ns=3115209",
-      "component_sample n=2 arm=current_FP32 tokens=8192 queue_interval_ns=23441042 host_wall_ms=23.492",
-      "component_sample n=3 arm=current_FP32 tokens=8192 queue_interval_ns=23481667 host_wall_ms=23.5269",
-      "component_sample n=3 arm=chunk64 tokens=8192 queue_interval_ns=21567709 host_wall_ms=21.6125 gates_ns=43645 pack_ns=2208645 kkt_ns=542813 inverse_ns=4148646 wu_ns=1778125 carry_ns=7331042 readout_ns=2199792 norm_ns=3115417",
-      "component_sample n=4 arm=chunk64 tokens=8192 queue_interval_ns=21590312 host_wall_ms=21.6355 gates_ns=42812 pack_ns=2213125 kkt_ns=544896 inverse_ns=4153229 wu_ns=1776459 carry_ns=7346354 readout_ns=2207500 norm_ns=3114792",
-      "component_sample n=4 arm=current_FP32 tokens=8192 queue_interval_ns=23447395 host_wall_ms=23.4928",
-      "component_comparison tokens=8192 same_input_values=true carry_rel_L2=0.00295438 carry_max_abs=0.000850588 output_rel_L2=0.00375053 output_max_abs=0.0175781 accuracy=DIAGNOSTIC_ONLY hardware_busy=UNMEASURED PCIe_wire_bytes=UNMEASURED status=SAFETY_PASS",
+      "component_sample n=0 arm=current_FP32 tokens=8192 queue_interval_ns=23453645 host_wall_ms=23.4987",
+      "component_sample n=0 arm=chunk64_original tokens=8192 queue_interval_ns=21615625 host_wall_ms=21.6634 gates_ns=43334 pack_ns=2211354 kkt_ns=544063 inverse_ns=4143333 wu_ns=1776563 carry_ns=7376146 readout_ns=2204271 norm_ns=3115313",
+      "component_sample n=0 arm=chunk64_packed tokens=8192 queue_interval_ns=21238021 host_wall_ms=21.2878 gates_ns=43437 pack_ns=2211354 kkt_ns=545209 inverse_ns=3805520 wu_ns=1778542 carry_ns=7326459 readout_ns=2206042 norm_ns=3115312",
+      "component_sample n=1 arm=chunk64_original tokens=8192 queue_interval_ns=21620209 host_wall_ms=21.6693 gates_ns=42917 pack_ns=2214687 kkt_ns=542812 inverse_ns=4149687 wu_ns=1776250 carry_ns=7358958 readout_ns=2215000 norm_ns=3114896",
+      "component_sample n=1 arm=chunk64_packed tokens=8192 queue_interval_ns=21209167 host_wall_ms=21.2535 gates_ns=42813 pack_ns=2214375 kkt_ns=541875 inverse_ns=3808125 wu_ns=1780104 carry_ns=7300312 readout_ns=2193125 norm_ns=3115521",
+      "component_sample n=1 arm=current_FP32 tokens=8192 queue_interval_ns=23466355 host_wall_ms=23.5196",
+      "component_sample n=2 arm=chunk64_packed tokens=8192 queue_interval_ns=21290937 host_wall_ms=21.3373 gates_ns=42292 pack_ns=2216563 kkt_ns=544167 inverse_ns=3810312 wu_ns=1776875 carry_ns=7363646 readout_ns=2221041 norm_ns=3115417",
+      "component_sample n=2 arm=current_FP32 tokens=8192 queue_interval_ns=23450520 host_wall_ms=23.4969",
+      "component_sample n=2 arm=chunk64_original tokens=8192 queue_interval_ns=21637708 host_wall_ms=21.6871 gates_ns=42916 pack_ns=2211459 kkt_ns=543438 inverse_ns=4144063 wu_ns=1776563 carry_ns=7363230 readout_ns=2219896 norm_ns=3116250",
+      "component_sample n=3 arm=current_FP32 tokens=8192 queue_interval_ns=23443646 host_wall_ms=23.4907",
+      "component_sample n=3 arm=chunk64_original tokens=8192 queue_interval_ns=21572916 host_wall_ms=21.6276 gates_ns=42813 pack_ns=2209062 kkt_ns=543958 inverse_ns=4143958 wu_ns=1777292 carry_ns=7349792 readout_ns=2183958 norm_ns=3115104",
+      "component_sample n=3 arm=chunk64_packed tokens=8192 queue_interval_ns=21221771 host_wall_ms=21.267 gates_ns=43437 pack_ns=2210625 kkt_ns=542813 inverse_ns=3812604 wu_ns=1775937 carry_ns=7333437 readout_ns=2185312 norm_ns=3115417",
+      "component_sample n=4 arm=chunk64_original tokens=8192 queue_interval_ns=21582500 host_wall_ms=21.636 gates_ns=43438 pack_ns=2211458 kkt_ns=544583 inverse_ns=4148854 wu_ns=1775417 carry_ns=7360833 readout_ns=2188958 norm_ns=3114896",
+      "component_sample n=4 arm=chunk64_packed tokens=8192 queue_interval_ns=21268854 host_wall_ms=21.3118 gates_ns=43230 pack_ns=2213437 kkt_ns=544688 inverse_ns=3818021 wu_ns=1776771 carry_ns=7324063 readout_ns=2196563 norm_ns=3115730",
+      "component_sample n=4 arm=current_FP32 tokens=8192 queue_interval_ns=23459687 host_wall_ms=23.5051",
+      "component_comparison tokens=8192 same_input_values=true carry_rel_L2=0.00295438 carry_max_abs=0.000850588 output_rel_L2=0.00375053 output_max_abs=0.0175781 inverse_packing_parity=PASS accuracy=DIAGNOSTIC_ONLY hardware_busy=UNMEASURED PCIe_wire_bytes=UNMEASURED status=SAFETY_PASS",
       "fixture_status=PASS general_numerics=UNRUN long_component=UNRUN model_PP=UNRUN physical262144_model=UNRUN RESTORE=UNRUN faults=EXTERNAL_REQUIRED"
     ],
     "exit_code": 0,
@@ -164,7 +169,7 @@
     "passed": true,
     "complete": true,
     "GPU_executed": true,
-    "scope": "Resident same-input GDN8192 component; 1 warmup and 5 alternating samples per arm; no transfers timed.",
+    "scope": "Resident same-input GDN8192 component; FP32/original/packed, 1 warmup and 5 rotating samples per arm; no transfers timed.",
     "clean_environment": true,
     "framework_numerics_qualified": false,
     "hardware_busy_measured": false,
@@ -180,17 +185,22 @@
     "observed_runtime_elf_count": 26,
     "GPU_work_admitted": true,
     "case_results": [
-      "component_sample n=0 arm=chunk64 tokens=8192 queue_interval_ns=21426563 host_wall_ms=21.4626 gates_ns=42916 pack_ns=2210521 kkt_ns=544375 inverse_ns=4155208 wu_ns=1777708 carry_ns=7345208 readout_ns=2191979 norm_ns=3114479",
-      "component_sample n=0 arm=current_FP32 tokens=8192 queue_interval_ns=23430417 host_wall_ms=23.4652",
-      "component_sample n=1 arm=current_FP32 tokens=8192 queue_interval_ns=23426667 host_wall_ms=23.4596",
-      "component_sample n=1 arm=chunk64 tokens=8192 queue_interval_ns=21408229 host_wall_ms=21.4425 gates_ns=42500 pack_ns=2209583 kkt_ns=544896 inverse_ns=4147604 wu_ns=1776875 carry_ns=7309791 readout_ns=2218541 norm_ns=3114896",
-      "component_sample n=2 arm=chunk64 tokens=8192 queue_interval_ns=21474063 host_wall_ms=21.5071 gates_ns=42500 pack_ns=2210833 kkt_ns=543021 inverse_ns=4146770 wu_ns=1776354 carry_ns=7361041 readout_ns=2211354 norm_ns=3132396",
-      "component_sample n=2 arm=current_FP32 tokens=8192 queue_interval_ns=23445416 host_wall_ms=23.4773",
-      "component_sample n=3 arm=current_FP32 tokens=8192 queue_interval_ns=23427917 host_wall_ms=23.4564",
-      "component_sample n=3 arm=chunk64 tokens=8192 queue_interval_ns=21393125 host_wall_ms=21.4273 gates_ns=42604 pack_ns=2210625 kkt_ns=543125 inverse_ns=4144687 wu_ns=1777812 carry_ns=7294687 readout_ns=2220208 norm_ns=3115104",
-      "component_sample n=4 arm=chunk64 tokens=8192 queue_interval_ns=21442083 host_wall_ms=21.476 gates_ns=42604 pack_ns=2209270 kkt_ns=541771 inverse_ns=4144688 wu_ns=1776355 carry_ns=7354584 readout_ns=2208542 norm_ns=3115000",
-      "component_sample n=4 arm=current_FP32 tokens=8192 queue_interval_ns=23419271 host_wall_ms=23.4573",
-      "component_comparison tokens=8192 same_input_values=true carry_rel_L2=0.00295438 carry_max_abs=0.000850588 output_rel_L2=0.00375053 output_max_abs=0.0175781 accuracy=DIAGNOSTIC_ONLY hardware_busy=UNMEASURED PCIe_wire_bytes=UNMEASURED status=SAFETY_PASS",
+      "component_sample n=0 arm=current_FP32 tokens=8192 queue_interval_ns=23424270 host_wall_ms=23.4608",
+      "component_sample n=0 arm=chunk64_original tokens=8192 queue_interval_ns=21388125 host_wall_ms=21.4255 gates_ns=43646 pack_ns=2210937 kkt_ns=542916 inverse_ns=4150313 wu_ns=1776875 carry_ns=7308229 readout_ns=2195625 norm_ns=3114792",
+      "component_sample n=0 arm=chunk64_packed tokens=8192 queue_interval_ns=21115625 host_wall_ms=21.1488 gates_ns=42813 pack_ns=2212396 kkt_ns=542187 inverse_ns=3809687 wu_ns=1776562 carry_ns=7347604 readout_ns=2211770 norm_ns=3115104",
+      "component_sample n=1 arm=chunk64_original tokens=8192 queue_interval_ns=21423230 host_wall_ms=21.4607 gates_ns=43437 pack_ns=2214167 kkt_ns=543334 inverse_ns=4145833 wu_ns=1774896 carry_ns=7337187 readout_ns=2205104 norm_ns=3114687",
+      "component_sample n=1 arm=chunk64_packed tokens=8192 queue_interval_ns=21067708 host_wall_ms=21.1006 gates_ns=43646 pack_ns=2213437 kkt_ns=543437 inverse_ns=3805833 wu_ns=1778333 carry_ns=7331458 readout_ns=2193750 norm_ns=3114792",
+      "component_sample n=1 arm=current_FP32 tokens=8192 queue_interval_ns=23430938 host_wall_ms=23.4653",
+      "component_sample n=2 arm=chunk64_packed tokens=8192 queue_interval_ns=21081563 host_wall_ms=21.1164 gates_ns=42917 pack_ns=2209167 kkt_ns=542604 inverse_ns=3815416 wu_ns=1777187 carry_ns=7333646 readout_ns=2201875 norm_ns=3115312",
+      "component_sample n=2 arm=current_FP32 tokens=8192 queue_interval_ns=23432709 host_wall_ms=23.4693",
+      "component_sample n=2 arm=chunk64_original tokens=8192 queue_interval_ns=21393959 host_wall_ms=21.428 gates_ns=43020 pack_ns=2211041 kkt_ns=543958 inverse_ns=4151354 wu_ns=1775833 carry_ns=7328333 readout_ns=2180312 norm_ns=3115104",
+      "component_sample n=3 arm=current_FP32 tokens=8192 queue_interval_ns=23425729 host_wall_ms=23.4627",
+      "component_sample n=3 arm=chunk64_original tokens=8192 queue_interval_ns=21415730 host_wall_ms=21.4521 gates_ns=42917 pack_ns=2213854 kkt_ns=541562 inverse_ns=4153333 wu_ns=1776979 carry_ns=7336041 readout_ns=2192396 norm_ns=3114896",
+      "component_sample n=3 arm=chunk64_packed tokens=8192 queue_interval_ns=21116875 host_wall_ms=21.1537 gates_ns=43438 pack_ns=2211250 kkt_ns=543438 inverse_ns=3806980 wu_ns=1776042 carry_ns=7357188 readout_ns=2209583 norm_ns=3115938",
+      "component_sample n=4 arm=chunk64_original tokens=8192 queue_interval_ns=21412709 host_wall_ms=21.4476 gates_ns=43125 pack_ns=2211667 kkt_ns=544271 inverse_ns=4148542 wu_ns=1777916 carry_ns=7320104 readout_ns=2208750 norm_ns=3114479",
+      "component_sample n=4 arm=chunk64_packed tokens=8192 queue_interval_ns=21109062 host_wall_ms=21.1426 gates_ns=43230 pack_ns=2208750 kkt_ns=544166 inverse_ns=3806979 wu_ns=1794167 carry_ns=7336667 readout_ns=2202916 norm_ns=3114271",
+      "component_sample n=4 arm=current_FP32 tokens=8192 queue_interval_ns=23423229 host_wall_ms=23.459",
+      "component_comparison tokens=8192 same_input_values=true carry_rel_L2=0.00295438 carry_max_abs=0.000850588 output_rel_L2=0.00375053 output_max_abs=0.0175781 inverse_packing_parity=PASS accuracy=DIAGNOSTIC_ONLY hardware_busy=UNMEASURED PCIe_wire_bytes=UNMEASURED status=SAFETY_PASS",
       "fixture_status=PASS general_numerics=UNRUN long_component=UNRUN model_PP=UNRUN physical262144_model=UNRUN RESTORE=UNRUN faults=EXTERNAL_REQUIRED"
     ],
     "exit_code": 0,
@@ -209,114 +219,5 @@
   "command": [
     "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current/sycl_gdn_chunk64",
     "--component"
-  ],
-  "retirement": {
-    "state": "retired",
-    "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current",
-    "source_commit": "b4d43baf1792d6e045b29f177396fe77edcd6330",
-    "verified_project_inputs": 152,
-    "files": [
-      {
-        "path": "cache/component/neo_compiler_cache/7/c/7cff8fa7191b6478.l0_cache",
-        "bytes": 68872,
-        "sha256": "2a63a223982e2ec9793ce289e85061d8142daed2f45a293300f966e2e706455e"
-      },
-      {
-        "path": "cache/component/neo_compiler_cache/config.file",
-        "bytes": 8,
-        "sha256": "6b6cfe46c6fdb3e010bcbb5e0d0301001c7a50c8e92c1fca72b7fb7b7e30c479"
-      },
-      {
-        "path": "cache/component/neo_compiler_cache/e/2/e2aa70981baf4bad.l0_cache",
-        "bytes": 2368,
-        "sha256": "96ca882778aecc5818db1f47caea7aa35ed6f67e8616e0f2016e6a00df5137e3"
-      },
-      {
-        "path": "cache/component-check/neo_compiler_cache/7/c/7cff8fa7191b6478.l0_cache",
-        "bytes": 68872,
-        "sha256": "2a63a223982e2ec9793ce289e85061d8142daed2f45a293300f966e2e706455e"
-      },
-      {
-        "path": "cache/component-check/neo_compiler_cache/config.file",
-        "bytes": 8,
-        "sha256": "6b6cfe46c6fdb3e010bcbb5e0d0301001c7a50c8e92c1fca72b7fb7b7e30c479"
-      },
-      {
-        "path": "cache/component-check/neo_compiler_cache/e/2/e2aa70981baf4bad.l0_cache",
-        "bytes": 2368,
-        "sha256": "96ca882778aecc5818db1f47caea7aa35ed6f67e8616e0f2016e6a00df5137e3"
-      },
-      {
-        "path": "owned/boundaries.stderr",
-        "bytes": 463040,
-        "sha256": "6723614c6f097a7b8ee3c30900edf3cb1a4d00a70501103add43bf93c4d50640"
-      },
-      {
-        "path": "owned/boundaries.stdout",
-        "bytes": 2797,
-        "sha256": "55aef5981331899b2b359756b7b0754e6826eaf02cbfeb2556f47d2adba2ca38"
-      },
-      {
-        "path": "owned/build.stderr",
-        "bytes": 0,
-        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-      },
-      {
-        "path": "owned/build.stdout",
-        "bytes": 0,
-        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-      },
-      {
-        "path": "owned/component-check.stderr",
-        "bytes": 294852,
-        "sha256": "04a174ed529abc0a41a92ac222a0d7b89a86d0967c70cf70411a653ec3509748"
-      },
-      {
-        "path": "owned/component-check.stdout",
-        "bytes": 2157,
-        "sha256": "f97811b2d3fe665a74210afb4d49c41cb5e30f62db8230c22d6b65c5038eca8d"
-      },
-      {
-        "path": "owned/component.stderr",
-        "bytes": 0,
-        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-      },
-      {
-        "path": "owned/component.stdout",
-        "bytes": 2157,
-        "sha256": "19ff80a0b1c49aff7a5092559cb41b477b0fee1f8caff7ababadb776ee680cea"
-      },
-      {
-        "path": "owned/general.stderr",
-        "bytes": 557339,
-        "sha256": "aae1933429f93e508ccbac97b4f1172e11c7e83a180cacb9a96b96cef6e3e529"
-      },
-      {
-        "path": "owned/general.stdout",
-        "bytes": 2083,
-        "sha256": "f245ea894f0dcf4d5a65d0930d86bf0b6ec790da4a13b2a62e4b37eff5743cfd"
-      },
-      {
-        "path": "owned/smoke.stderr",
-        "bytes": 186091,
-        "sha256": "0969b8a217f41d62f4f9b500d2ba93cf1b782e9f3083aab67225ea23cc7eaafb"
-      },
-      {
-        "path": "owned/smoke.stdout",
-        "bytes": 1127,
-        "sha256": "9b1e5a3bd2ce184b1b1476bfae96006d0a1e40486d8100815c9d2ee89bffe1cf"
-      },
-      {
-        "path": "record.json",
-        "bytes": 35591,
-        "sha256": "817d429aa57a4a3d21fb459aba9c8db743939e2d3e3849bf98895451d7445475"
-      },
-      {
-        "path": "sycl_gdn_chunk64",
-        "bytes": 363312,
-        "sha256": "16af499089efdde057abae51719ce3dd856019a564bad08fab999912573f30cf"
-      }
-    ],
-    "reason": "Closed superseded qualification; source/recipe recovered from Git."
-  }
+  ]
 }
