@@ -1,11 +1,11 @@
 {
   "mode": "check",
-  "source_commit": "de655d229b87d447ca25f912dc5a445392076cae",
-  "build_source_commit": "6ed1c62cb5d39a6576e21abce990b3f118b821d3",
+  "source_commit": "7740f981fa8974253518748540268a780291d00f",
+  "build_source_commit": "5c59fdd4b2437c6897cb6f81f7826f3d560060f3",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
     "bytes": 20369304,
-    "sha256": "129b2b9c6d722a8bfcf606957796c9b7ad33b6544447b422fc58076d63bf25bc"
+    "sha256": "04de5fc84130c27e47acdbbefcc096311f1c5aa35dc45292c12c2aa069329736"
   },
   "environment": {
     "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
@@ -61,7 +61,7 @@
     "STRATA_SYCL_SELECT_CYCLIC": "0",
     "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
     "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-gdn-model-check/cache",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-gdn-model-check-v2/cache",
     "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
     "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-optimized",
     "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
@@ -80,8 +80,8 @@
     "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
     "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
     "STRATA_TRACE": "1",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-gdn-model-check/tmp",
-    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-gdn-model-check",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-gdn-model-check-v2/tmp",
+    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-gdn-model-check-v2",
     "ZES_ENABLE_SYSMAN": "0",
     "STRATA_SYCL_PREFILL_GDN_CHUNK64": "1"
   },
@@ -101,7 +101,7 @@
       "--expert-cache",
       "128",
       "--expert-profile",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-gdn-model-check/expert-profile.bin",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-gdn-model-check-v2/expert-profile.bin",
       "--expert-cache-per-layer",
       "--pool-workers",
       "5",
@@ -140,7 +140,7 @@
       "strata"
     ],
     "host": "127.0.0.1",
-    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-gdn-model-check/engine.stderr",
+    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-gdn-model-check-v2/engine.stderr",
     "engine_silence_s": 480,
     "parallel": 1,
     "open_browser": false,
@@ -150,9 +150,9 @@
     "/bin/sh",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
     "--config",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-gdn-model-check/config.json",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-gdn-model-check-v2/config.json",
     "--port",
-    "33515",
+    "51817",
     "--runs",
     "1",
     "--prefill-only",
@@ -165,95 +165,20 @@
     "--ready-timeout",
     "600",
     "--out",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-gdn-model-check/bench"
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-gdn-model-check-v2/bench"
   ],
   "reference": {
     "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-softmax-measurement-inputs-v1.json",
     "sha256": "3792c36462e333816ce5d5d9ac39f3dcc13809939d8d3133c570d8945257d1dd"
   },
-  "config_sha256": "2227609994c80aa1b7ded9d0c72209ce8f156506256d7db4edd99025f35074a6",
+  "config_sha256": "91cf0d8e7187b5804967b8de071868bcb0c9f244d6c24f1474050889d24f0ee6",
   "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
-  "complete": true,
+  "complete": false,
   "passed": false,
   "active": false,
   "model_quality_qualified": false,
   "physical262144_RESTORE_qualified": false,
   "performance_adopted": false,
   "source_count": 99,
-  "source_aggregate_sha256": "8ae280c8fa794adfb44e6fb78048aa874584a95460d93b1fa18d60b104ea4c22",
-  "exit_code": 1,
-  "requests": [
-    {
-      "run": 0,
-      "ok": false,
-      "eligible": false,
-      "actual_prompt_tokens": null,
-      "actual_read_tokens": null,
-      "actual_reused_tokens": null,
-      "generated_tokens": 0,
-      "thinking_requested": true,
-      "reasoning_observed": false,
-      "stream_complete": false,
-      "request_sha256": "1fd63b8c67a1888e443800b5c6d339ca116df2cb91941e6f332b6adf74275b3a",
-      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "reasoning_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "ttft_s": null,
-      "total_s": 1.199,
-      "prompt_tps": null,
-      "prompt_ms": null,
-      "decode_tps": null,
-      "decode_ms": null,
-      "prompt_tps_source": null,
-      "decode_tps_source": null,
-      "drafts_offered": null,
-      "drafts_accepted": null,
-      "finish_reason": null,
-      "err": "{'type': 'server_error', 'message': 'prefill MoE window: requires native16 BF16, chunk8192 and scratch alias'}; usage.prompt_tokens must report >= 32768, got None; timings.prompt_n must report >= 32768, got None; every reported reuse count must be zero, got []; completion usage outside 1..24; actual prompt lacks verified context/output headroom; missing finite positive engine prompt_per_second",
-      "eligibility_errors": [
-        "{'type': 'server_error', 'message': 'prefill MoE window: requires native16 BF16, chunk8192 and scratch alias'}",
-        "usage.prompt_tokens must report >= 32768, got None",
-        "timings.prompt_n must report >= 32768, got None",
-        "every reported reuse count must be zero, got []",
-        "completion usage outside 1..24",
-        "actual prompt lacks verified context/output headroom",
-        "missing finite positive engine prompt_per_second"
-      ]
-    }
-  ],
-  "engine_exit_code": 1,
-  "native_identity": {
-    "pid": 3045756,
-    "start_ticks": 62405075,
-    "sid": 3045734
-  },
-  "route_selection": [],
-  "error": "native engine exit",
-  "error_excerpt": "strata serve: a 8192-token chunk's prompt buffers need 2485 MiB on CUDA0, 2984 MiB free: 6144-token chunks\nstrata prefill: FP16 MoE compact requested=1 effective=1, chunk=6144, scratch rows=6144, accounted=1975799040, shared region=1100616448 bytes\nstrata serve: prefill MoE window: requires native16 BF16, chunk8192 and scratch alias",
-  "ownership_closed": true,
-  "fresh_faults": [],
-  "boot_unchanged": true,
-  "driver_after": {
-    "pci": "/sys/bus/pci/devices/0000:05:00.0",
-    "driver": "xe",
-    "vendor": "0x8086",
-    "device": "0xe20c",
-    "kernel": "7.0.0-38-generic",
-    "devcoredump": false
-  },
-  "diagnosis": {
-    "mechanism": "Capacity-driven chunk downshift before new long-prefill GDN execution; MoE window rejects6144.",
-    "requested_chunk": 8192,
-    "actual_chunk": 6144,
-    "prompt8192_MiB": 2485,
-    "setup_free_MiB": 2984,
-    "reserve_MiB": 700,
-    "long_GDN_executed": false,
-    "short_warmup_used_prior_path": true,
-    "next": "Reuse normalized/history and output/vb only across nonoverlapping stages; pack lower/inverse into dead QKV. Requalify actual arena, then rerun a new owned check."
-  },
-  "capacity_evidence": [
-    "strata serve: a 8192-token chunk's prompt buffers need 2485 MiB on CUDA0, 2984 MiB free: 6144-token chunks",
-    "strata prefill: FP16 MoE compact requested=1 effective=1, chunk=6144, scratch rows=6144, accounted=1975799040, shared region=1100616448 bytes",
-    "strata serve: prefill MoE window: requires native16 BF16, chunk8192 and scratch alias"
-  ]
+  "source_aggregate_sha256": "2c13a28fc3aaa8ca4a48bdee2efc2381eebb51e196afdb215bff184e84ff608c"
 }
