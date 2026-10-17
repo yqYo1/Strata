@@ -39,7 +39,7 @@
     "consumer": "Current independently authored GDN chunk64 numerical/provenance contract; review when this implementation decision closes."
   },
   "current_implementation": "../../../src/prefill/sycl/gdn_chunk64.cpp",
-  "current_contract": "gdn-current-contract-next-v1.ja.md",
+  "current_contract": "../../sycl/gdn_chunk64/README.md",
   "conditional_scope": {
     "schedulable_now": false,
     "question": "Localize one measured general GDN mismatch to one pinned framework rounding boundary.",
@@ -132,5 +132,56 @@
       "active_body": false
     }
   ],
-  "current_fixture": "../../sycl/gdn_chunk64"
+  "current_fixture": "../../sycl/gdn_chunk64",
+  "current_attention_decision": {
+    "report_sha256": "4e4e89f035e9f3c8cd3767af59caf5517df5da5799c094c6890ee6dc5f71a4b1",
+    "review_sha256": "9f787293e3c498e0cc8a195eab97585967027201ca8ac177f5f0c981ef087a2a",
+    "source": "src/kernels/sycl/qsa_bf16_prefix.cpp",
+    "source_sha256": "fa505d02e2b24f7cb6948033921fa697c8aeb58e6f4df6d873f13e5a7918e36b",
+    "current_main_work": "Same-binary official model comparison of existing direct INT8 and prefix BF16 attention. Direct pitch32 versus optimized-prefix pitch33 is a coupled difference; do not attribute the result to physical traffic alone.",
+    "production_fixture_correction": "CMake already defines sycl_qsa_bf16_prefix_optimized_test, mapping the default fixture function to the actual pitch33 function. At build source d72c8ac3, Main ran this exact target and directQ8 through traced smoke and component tests, including physical262144 component extent. This corrects the review default-target observation, not full-model qualification.",
+    "resource_limits": "37.078s is prior device service, not utilization/critical-path proof. Requested SLM payload28224B; padding/residency/GRF/spills need device/compiler evidence.",
+    "next_implementation": [
+      {
+        "question": "Compile and measure the already audited fixed-score33 K36/V260 local-pitch candidate.",
+        "schedulable_now": false,
+        "prerequisites": [
+          "Close current Main-owned GPU comparison before builds or further GPU work.",
+          "Recheck archived independent provenance and exact live-source match; integrate maintained API/fixture wiring.",
+          "Compile/JIT and exact full-output bits, tail/invalid/alias/reuse/fault gates before rotated component/model timings."
+        ]
+      },
+      {
+        "question": "Coalesce next row-ID publication with the existing end-of-tile barrier if prefix remains selected.",
+        "schedulable_now": false,
+        "prerequisites": [
+          "Complete the current direct-versus-prefix model comparison.",
+          "Preserve the barrier before K overwrites V and prove no remaining current-tile row-ID reader."
+        ]
+      },
+      {
+        "question": "Preload16 Q joint_matrix fragments per QK subgroup and reuse the Q/KV SLM arena.",
+        "schedulable_now": false,
+        "prerequisites": [
+          "Establish prefix as a useful model route.",
+          "Same BF16 slices, uniform subgroup participation and a workgroup barrier before K overwrite.",
+          "Compile/JIT support and exact production-instance correctness; joint_matrix objects are noncopyable on this compiler.",
+          "Measure actual GRF/spill/SLM metadata and model timing;28224->20032B is requested memory only."
+        ]
+      }
+    ],
+    "research_dispatch": "No repeated generic QSA research while these Main-owned measurements/prerequisites remain pending.",
+    "relevant_archive_retrieval": {
+      "revision": "8063aacc6749d18089f7a53db5d3e47b745f348c",
+      "review_path": "bench/results/2026-10-15-pr6-recovery-audit/research-round1055-review-v1.txt",
+      "review_sha256": "2415364017b5043a9ef153817e670f175f5b039d378d93d3d80ae102b1172e8e",
+      "reason": "Concrete Main question: preserve coalescing, shared K/V producer-consumer strides, matrix alignment and local extents while changing SLM pitch.",
+      "source_still_matches_review": true,
+      "candidate_base_revision": "7b32ae610192c1109defd2532c956e277f17406b",
+      "candidate_path": "bench/results/2026-10-15-pr6-recovery-audit/own-qsa-kpitch-v1",
+      "decision": "Reuse the existing source-audited pitch proposal after the current comparison; no new duplicate survey. Recheck immutable source/provenance and wire maintained API/tests before compiling.",
+      "candidate": "Fixed score33,Cells32,WG128,SG16; K36/V260 shared tile needs9216 BF16 values,30272B requested local payload,34368B admission minimum. No hardware occupancy/bank map or performance result.",
+      "do_not_repeat": "Old global K span256 schedule regressed10.35–29.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
+    }
+  }
 }

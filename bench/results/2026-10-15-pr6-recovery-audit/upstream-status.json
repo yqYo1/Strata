@@ -90,8 +90,12 @@
         "meaning": "Fork has budget loop; Anthropic budget mapping, automatic answer room and explicit false/missing effort semantics need ports.",
         "target_tests": [
           "serve/test_effort_paths.py",
-          "serve/test_server.py"
-        ]
+          "serve/test_server.py",
+          "serve/test_server.py::ThinkingBudget",
+          "serve/test_reasoning_loop_recovery.py::ReasoningLoopRecovery"
+        ],
+        "complement": "Amend the existing partial row with the target auto-answer-room limit/config/disabled-thinking acceptance tests. Keep reasoning-loop recovery cases explicitly answer_room=false so they continue testing loop guards at the cap. Add a streaming OpenAI or Anthropic test for the automatic branch: upstream's cited streaming test covers explicit reasoning budget, while automatic answer room is exercised only through non-streaming OpenAI chat.",
+        "complement_source": "serve/server.py::Service.run, config application, and serve/test_reasoning_loop_recovery.py::ReasoningLoopRecovery, diff around lines 8960-8973, 9092-9097, and 9998-10058"
       },
       {
         "feature": "incremental_tokenization",
@@ -99,8 +103,14 @@
         "meaning": "Exact special-token/plain-span prefix reuse; counts and refused prompts do not mutate cache.",
         "target_tests": [
           "serve/test_prompt_encoder.py",
-          "serve/test_server.py"
-        ]
+          "serve/test_server.py",
+          "serve/test_server.py::IncrementalPrompts.test_the_kept_prompts_follow_the_engines_conversation_slots",
+          "serve/test_server.py::IncrementalPrompts.test_a_lazy_engine_keeps_the_prompts_its_arguments_ask_for",
+          "serve/test_server.py::IncrementalPrompts.test_the_slot_argument_wins_over_the_info_line_and_a_bad_one_falls_back",
+          "serve/test_server.py::IncrementalPrompts.test_without_a_slot_setting_four_prompts_are_kept"
+        ],
+        "complement": "Amend the existing row: PromptEncoder.keep follows positive --conversation-cache-slots from spawn args before lazy startup, otherwise INFO; unknown/invalid values retain the encoder default. This prevents early prefix eviction when native cache slots exceed four.",
+        "complement_source": "serve/server.py::conversation_slots and Service initialization, diff around lines 8592-8600 and 8803-8810"
       },
       {
         "feature": "stream_parser_scan",
@@ -147,7 +157,20 @@
         "feature": "cache_cli_policies_prefill_pipe",
         "status": "required_interface_review_pending",
         "meaning": "Do not waive shared CLI/config behavior because its engine scheduling optimization is optional. Adapt semantics and assess inference parts independently.",
-        "target_tests": []
+        "target_tests": [
+          "serve/test_server.py::CancelledRead.test_parse_done_chunk_fields",
+          "serve/test_server.py::CancelledRead.test_request_stats_chunk_fields"
+        ],
+        "complement": "Amend the existing row with shared DONE accounting: accept optional chunk= and experts_streamed= fields after positional fields, preserve old lines, use the first segment's chunk, and sum streamed experts across continuations. Attach target parser/aggregation tests rather than making a duplicate row.",
+        "complement_source": "serve/server.py::_parse_done and request_stats, diff around lines 10306-10332",
+        "conditional_tooling_addition": "Add tools/calibrate.py::measure_pipe and its paired confirmation/stage-count tests as a conditional extension of this row, not as proof of Arc support. It is useful only after the active Arc entrypoint accepts --prefill-pipe and reports a real multi-stage prefill path; current src/program/generate.cpp contains neither the option nor prefill_stages. The target helper itself requires a split and only uses 2048/8192-token diagnostics.",
+        "upstream_calibration_tests": [
+          "tools/test_calibrate.py::Calibrate.test_prefill_pipe_on_a_layer_split",
+          "tools/test_calibrate.py::Calibrate.test_prefill_pipe_noise_stays_off",
+          "tools/test_calibrate.py::Calibrate.test_prefill_pipe_must_win_every_round",
+          "tools/test_calibrate.py::Calibrate.test_prefill_pipe_only_on_a_layer_split",
+          "tools/test_calibrate.py::Calibrate.test_prefill_pipe_follows_the_engines_stage_count"
+        ]
       },
       {
         "feature": "qwen36_setup_vision_parallel",
@@ -155,7 +178,8 @@
         "meaning": "Gate model metadata/slots/images on real native architecture, vision and BGEN capability; source-string checks alone do not prove runtime support.",
         "target_tests": [
           "serve/test_q36_config.py"
-        ]
+        ],
+        "complement": "Target setup MIN_ENGINE=0.1.45 and CUDA/HIP build flags do not prove Arc model/image/recurrent-state/BGEN support. Keep setup choices capability-gated until the actual Arc runtime supports them."
       },
       {
         "feature": "setup_vision_encoder_choice",
@@ -182,6 +206,26 @@
         "target_tests": [
           "serve/test_logit_bias.py"
         ]
+      },
+      {
+        "feature": "metadata_only_gguf_shard_preflight",
+        "status": "required_pending",
+        "meaning": "Add one new required setup compatibility row. Current setup.py::check_shards computes data_start + 0 for a valid empty-tensor shard and can reject it when header alignment lies past EOF. The upstream exception caps the required end at file size only when there are no tensors; preserve strict tensor extent checks.",
+        "target_tests": [
+          "tools/test_setup_shard_check.py::ShardCheck.test_metadata_only_shard_without_padding_is_whole",
+          "tools/test_setup_shard_check.py::ShardCheck.test_truncated_tensor_data_is_still_refused"
+        ],
+        "complement_source": "setup.py::check_shards at diff lines 10735-10745"
+      },
+      {
+        "feature": "benchmark_readiness_configured_host",
+        "status": "required_pending",
+        "meaning": "Add one new shared tooling row, only once despite appearing in both reports. Local readiness polling must use the configured bind host, map wildcard binds to loopback, bracket IPv6 literals, and leave explicit --url to its caller.",
+        "target_tests": [
+          "tools/test_bench_host.py::ServerBase"
+        ],
+        "complement_source": "tools/strata_bench.py::server_base and local readiness call, diff around lines 40456-40471",
+        "claim_limit": "Unit coverage validates URL construction, not whether a running server is reachable."
       }
     ],
     "port_order": [
@@ -192,6 +236,16 @@
     "reviewed_report_sha256": "494223e9b41466d40abb6d4d7b95e30622d3a00990eb6efe70b2256334b0bb5f",
     "review_sha256": "1ae88128853722c1d9f69c7ed4be97e716ee35bd1e99afa2d0c4105b6947bd83",
     "no_ports_or_gpu_tests_performed_by_review": true,
-    "whole_function_ledger_complete": false
+    "whole_function_ledger_complete": false,
+    "complement_review": {
+      "review_sha256": "e5792d5e19f50f1963cbf35034ef8b5196712f11dc0f23a86dddffb5f6902f58",
+      "report_sha256": [
+        "f7351f1d8a92627d93f7ee4c425a74e6cccb13da03b9e62330114ebe24bd674a",
+        "8f0a4f4d7c65d703a854663e5425fed874dccf1e446ed32682c51b7673993eb6"
+      ],
+      "scope": "Two deduplicated shared-function additions and corrections to existing rows from the fetched296..477 interval. No new remote check, source port, test execution, vanilla performance evaluation or whole-interval completion.",
+      "optional_inference": "CPU pool affinity and prefill-pipe scheduling require separate component measurements and native capability; short2048/8192 calibration reads do not qualify long-input adoption.",
+      "license_gate": "Niko-only source evidence; check applicable per-file licensing before copying source/tests. No XeStrata source."
+    }
   }
 }

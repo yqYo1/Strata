@@ -105,3 +105,22 @@ use the repository MIT license. XeStrata is excluded as an implementation source
 The optional `STRATA_SYCL_VLLM_XE2_NATIVE16` build adds the actual Intel BSD-3 vLLM Xe2 direct16-output core. See [SYCL_VLLM_XE2_NATIVE16.md](SYCL_VLLM_XE2_NATIVE16.md) for its explicit runtime selection, isolated AOT object, stricter shape/lifetime contract and repeated integrated measurements. On the B570 at source `6354f0b4`, the matched 39,262-input official workload measured median 394.9 tok/s with vLLM BF16 versus 372.5 FP32 (three independent processes each). The earlier 78K custom-kernel experiment used different context/residency settings and is not the denominator for this gain.
 
 `STRATA_SYCL_PREFILL_NATIVE16_QSA=1` additionally keeps QSA projection/norm/RoPE/append/attention/gate boundaries typed16 for resident unrotated INT8 K/V with session RoPE tables. Indexer/local accumulation and GDN's existing internal FP32 boundaries remain explicit. The shared scratch arena reservation is unchanged. Streaming/host mirrors and rotated/Q4/hybrid KV are currently refused; do not infer full-context adoption from the component tests.
+
+
+## Optional GDN chunk64
+
+`STRATA_SYCL_PREFILL_GDN_CHUNK64=1` adds a separate experimental long-prefill
+route with native BF16 projection/conv/recurrence activations, FP32 gate/beta,
+carry and shared convolution history, and a genuine FP16 projection consumer.
+It retains the loaded16/48 head order. The lifetime-shared8192 arena fits the
+existing GDN reservation, preserving the MoE-window8192 admission. See the
+[maintained contract and fixture](../bench/sycl/gdn_chunk64/README.md).
+
+The same-binary clean official benchmark read78,451 fresh tokens per request,
+thinking on, four requests per process. Existing versus chunk64 first PP was
+682.9 versus677.4 tok/s; subsequent medians were725.3 versus725.8 tok/s. This
+0.07% difference establishes no material model speed gain despite the earlier
+22% resident component gain. Both processes exited without fresh GPU faults.
+Keep the existing GDN selected for performance. The new route remains opt-in;
+its full64 solve differs from the SGLang XPU block16 contract, and numerical/task
+quality, sustained generation, physical262144 and RESTORE are still unqualified.
