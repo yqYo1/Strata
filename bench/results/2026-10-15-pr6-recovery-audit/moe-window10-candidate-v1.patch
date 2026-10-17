@@ -1,0 +1,111 @@
+--- a/include/strata/prefill/moe_window_routes.hpp
++++ b/include/strata/prefill/moe_window_routes.hpp
+@@ -18,7 +18,7 @@
+     static constexpr int32_t experts = 512;
+     static constexpr int32_t top_k = 10;
+     static constexpr int32_t max_rows = 16384;
+-    static constexpr int32_t max_accum_rows = 65536;
++    static constexpr int32_t max_accum_rows = 81920;
+     static constexpr int32_t max_job_rows = 8192;
+ 
+     struct Job {
+@@ -46,7 +46,7 @@
+     static std::shared_ptr<const MoeWindowRoutes> build_accum(
+             int64_t rows, const int32_t* ids, size_t id_count) {
+         if (rows < 1 || rows > max_accum_rows)
+-            throw std::invalid_argument("MoE accumulator rows outside [1,65536]");
++            throw std::invalid_argument("MoE accumulator rows outside [1,81920]");
+         const size_t routes = size_t(rows) * top_k;
+         if (!ids || id_count != routes)
+             throw std::invalid_argument("MoE accumulator ID span mismatch");
+--- a/src/prefill/prefill.cpp
++++ b/src/prefill/prefill.cpp
+@@ -458,7 +458,8 @@
+         if (!v || std::strcmp(v, "0") == 0) return 0;
+         if (std::strcmp(v, "2") == 0) return 2;
+         if (std::strcmp(v, "8") == 0) return 8;
+-        throw std::invalid_argument("STRATA_SYCL_PREFILL_MOE_WINDOW must be 0, 2 or 8");
++        if (std::strcmp(v, "10") == 0) return 10;
++        throw std::invalid_argument("STRATA_SYCL_PREFILL_MOE_WINDOW must be 0, 2, 8 or 10");
+     }();
+     return enabled;
+ }
+--- a/src/prefill/layer_major.inc
++++ b/src/prefill/layer_major.inc
+@@ -259,18 +259,22 @@
+     // FP16 mixed bank only from the remaining budget, retaining 512 MiB.
+     int64_t accumulation_rows = 0;
+     uint64_t accumulation_bytes = 0;
+-    if (window_on && window_requested == 8 && plan.gpu_rows > m.T) {
+-        const int64_t count = std::min<int64_t>(65536, plan.gpu_rows);
++    if (window_on && window_requested >= 8 && plan.gpu_rows > m.T) {
++        const int64_t count = std::min<int64_t>(int64_t(window_requested) * m.T, plan.gpu_rows);
+         const uint64_t bytes = detail::layer_major_mul(uint64_t(count), N * 2);
+         const uint64_t fixed = detail::layer_major_add(gpu_reserved,
+             detail::layer_major_add(plan.gpu_bytes, detail::layer_major_add(plan.staging_bytes, gpu_headroom)));
++        std::fprintf(stderr, "strata MoE accumulator admission: requested_mode=%d rows=%lld gpu_prefix_rows=%lld shared_arena_bytes=%llu free_gpu_bytes=%llu fixed_including_headroom_bytes=%llu mixed_fp16_bytes=%llu\n",
++            window_requested, (long long)count, (long long)plan.gpu_rows,
++            (unsigned long long)m.region_bytes, (unsigned long long)free_gpu,
++            (unsigned long long)fixed, (unsigned long long)bytes);
+         if (fixed <= free_gpu && bytes <= free_gpu - fixed) {
+             (void)detail::MoeAccumPlan::make_contiguous(count, bytes, m.region_bytes);
+             accumulation_rows = count; accumulation_bytes = bytes;
+         }
+     }
+-    if (window_on && window_requested == 8 && !accumulation_rows)
+-        std::fprintf(stderr, "strata prefill: MoE window8 not admitted by remaining VRAM/GPU-prefix budget; effective_mode=2\n");
++    if (window_on && window_requested >= 8 && !accumulation_rows)
++        std::fprintf(stderr, "strata prefill: MoE window%d not admitted by remaining VRAM/GPU-prefix budget; effective_mode=2\n", window_requested);
+     // One owned host upload slab removes every source pointer lease before DMA.
+     // Also count the cache's small blocking staging allocation and two maps.
+     uint64_t host_need = detail::layer_major_add(plan.host_bytes, cache_bytes);
+@@ -504,7 +508,7 @@
+         if (accumulation_rows) window_context->maximum_rows = accumulation_rows;
+         m.moe_window = window_context.get();
+         std::fprintf(stderr, "strata MoE window configuration: requested_mode=%d effective_mode=%d maximum_rows=%lld mixed_fp16_bytes=%llu\n",
+-            window_requested, accumulation_rows ? 8 : 2, (long long)window_context->maximum_rows,
++            window_requested, accumulation_rows ? window_requested : 2, (long long)window_context->maximum_rows,
+             (unsigned long long)accumulation_bytes);
+     }
+     m.cache = &layer_cache;
+--- a/src/prefill/moe_window.inc
++++ b/src/prefill/moe_window.inc
+@@ -6,7 +6,7 @@
+     if (!m.moe_window || !m.moe_window->accumulation || !m.native16_active ||
+         !m.layer_major_active || m.T != 8192 || m.copy != m.cs || !m.scratch_alias ||
+         !m.cache || !m.host_res || layer < 0 || layer >= m.g->n_layers ||
+-        rows <= m.T || rows > m.moe_window->maximum_rows || rows > 65536 || first_row < 0) {
++        rows <= m.T || rows > m.moe_window->maximum_rows || rows > detail::MoeAccumPlan::maximum_rows || first_row < 0) {
+         err = "prefill MoE accumulator: unsupported entry"; return false;
+     }
+     auto& owner = *m.moe_window;
+--- a/tests/moe_accum_routes.cpp
++++ b/tests/moe_accum_routes.cpp
+@@ -58,10 +58,10 @@
+ }
+ int main() {
+     try {
+-        for (int32_t rows : {1, 8192, 8193, 16384, 32768, 65536}) {
++        for (int32_t rows : {1, 8192, 8193, 16384, 32768, 65536, 65537, 78452, 81920}) {
+             test(rows, false); test(rows, true);
+         }
+-        refuses([] { (void)Routes::build_accum(65537, nullptr, 0); });
++        refuses([] { (void)Routes::build_accum(Routes::max_accum_rows + 1, nullptr, 0); });
+         refuses([] { (void)Routes::build_accum(0, nullptr, 0); });
+         std::puts("moe_accum_routes PASS GPU=UNRUN");
+         return 0;
+--- a/tests/sycl/moe_accum.cpp
++++ b/tests/sycl/moe_accum.cpp
+@@ -177,9 +177,9 @@
+         gate("runtime-ready");
+         if (mode=="short-weights" || mode=="short-down" || mode=="legacy-plan") refused(mode);
+         else {
+-            need(mode=="smoke" || mode=="numeric" || mode=="hot65536" || mode=="balanced65536" || mode=="negative-source" || mode=="negative-slot" || mode=="unwind","unsupported case");
+-            const int rows=mode=="smoke"?3:mode=="numeric"?37:(mode=="hot65536" || mode=="balanced65536")?65536:17;
+-            try { run(rows,mode=="hot65536",mode=="numeric",mode=="negative-source"?1:mode=="negative-slot"?2:0,mode=="unwind"); }
++            need(mode=="smoke" || mode=="numeric" || mode=="hot65536" || mode=="balanced65536" || mode=="hot81920" || mode=="balanced81920" || mode=="partial78452" || mode=="negative-source" || mode=="negative-slot" || mode=="unwind","unsupported case");
++            const int rows=mode=="smoke"?3:mode=="numeric"?37:(mode=="hot65536" || mode=="balanced65536")?65536:(mode=="hot81920" || mode=="balanced81920")?81920:mode=="partial78452"?78452:17;
++            try { run(rows,mode=="hot65536" || mode=="hot81920",mode=="numeric",mode=="negative-source"?1:mode=="negative-slot"?2:0,mode=="unwind"); }
+             catch (const Stop&) { need(mode=="unwind","unexpected stop");std::cout<<"unwind=PASS numeric=UNRUN expected_kernels=3\n"; }
+         }
+         runtime->wait();runtime.reset();gate("after-cleanup");std::cout<<"fixture_status=PASS model_PP=UNRUN\n";return 0;

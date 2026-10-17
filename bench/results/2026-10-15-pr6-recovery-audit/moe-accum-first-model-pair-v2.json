@@ -1,0 +1,137 @@
+{
+  "status": "PASS diagnostic mechanics",
+  "scope": "Matched thinking-enabled24-token completion probes, context131072; one traced/profiled process per mode, not clean performance or general-quality/physical262144/RESTORE adoption.",
+  "cases": [
+    {
+      "mode": 2,
+      "receipt": "bench/results/2026-10-15-pr6-recovery-audit/moe-accum-model-profile-window2-tokens32768-v2.json",
+      "receipt_sha256": "668929394765423edbfdb7e4016069b69ae182ff608899c14b7a0bea39aaad6d",
+      "request": {
+        "ok": true,
+        "err": null,
+        "ttft_s": 78.532,
+        "total_s": 80.127,
+        "prompt_tokens": 39262,
+        "reused_tokens": 0,
+        "read_tokens": 39262,
+        "generated_tokens": 24,
+        "prompt_tps": 501.8,
+        "prompt_tps_source": "engine",
+        "decode_tps": 14.2,
+        "decode_tps_source": "engine",
+        "prompt_ms": 78245.4,
+        "decode_ms": 1689.5,
+        "drafts_offered": 21,
+        "drafts_accepted": 16,
+        "finish_reason": "length",
+        "request_sha256": "29b01aab07f2462abc11c3efedaf421000c80e362a0e80ef1b9c08b91227a334",
+        "stream_complete": true,
+        "truncated": true,
+        "generated_tokens_source": "usage",
+        "output_chars": 0,
+        "reasoning_chars": 121,
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
+        "eligible": true,
+        "eligibility_errors": [],
+        "requested_min_tokens": 32768,
+        "actual_prompt_tokens": 39262,
+        "actual_read_tokens": 39262,
+        "actual_reused_tokens": 0,
+        "prompt_count_source": "usage.prompt_tokens",
+        "read_count_source": "timings.prompt_n",
+        "reuse_counts_reported": {
+          "usage": 0,
+          "timings": 0
+        },
+        "thinking_requested": true,
+        "reasoning_observed": true,
+        "reasoning_tokens_reported": null,
+        "run": 0
+      },
+      "configuration": [
+        "strata MoE window configuration: requested_mode=2 effective_mode=2 maximum_rows=16384 mixed_fp16_bytes=0"
+      ],
+      "window_counters": [
+        "strata MoE window: windows=96 dequants=27679 jobs=28196 source_H2D_bytes=62914560 GPU_resident_pairs_only=1 operator_max=8192 source_uploads_per_window=1"
+      ],
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-engine-build-v1/build/strata",
+        "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-engine-build-v1/build/strata",
+        "bytes": 20102424,
+        "sha256": "0b53e588c8de8d4863cd4016e4ff05bda0c73487e7397e62c21f348c2b20d2f5"
+      },
+      "fresh_faults": [],
+      "owner_closed": true
+    },
+    {
+      "mode": 8,
+      "receipt": "bench/results/2026-10-15-pr6-recovery-audit/moe-accum-model-profile-window8-tokens32768-v2.json",
+      "receipt_sha256": "bc58247da70f775cfb06d8247e0b55aec9a063543494fcdcf25945f3cf941511",
+      "request": {
+        "ok": true,
+        "err": null,
+        "ttft_s": 74.049,
+        "total_s": 75.654,
+        "prompt_tokens": 39262,
+        "reused_tokens": 0,
+        "read_tokens": 39262,
+        "generated_tokens": 24,
+        "prompt_tps": 532.3,
+        "prompt_tps_source": "engine",
+        "decode_tps": 14.1,
+        "decode_tps_source": "engine",
+        "prompt_ms": 73760.6,
+        "decode_ms": 1698.1,
+        "drafts_offered": 21,
+        "drafts_accepted": 16,
+        "finish_reason": "length",
+        "request_sha256": "29b01aab07f2462abc11c3efedaf421000c80e362a0e80ef1b9c08b91227a334",
+        "stream_complete": true,
+        "truncated": true,
+        "generated_tokens_source": "usage",
+        "output_chars": 0,
+        "reasoning_chars": 121,
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
+        "eligible": true,
+        "eligibility_errors": [],
+        "requested_min_tokens": 32768,
+        "actual_prompt_tokens": 39262,
+        "actual_read_tokens": 39262,
+        "actual_reused_tokens": 0,
+        "prompt_count_source": "usage.prompt_tokens",
+        "read_count_source": "timings.prompt_n",
+        "reuse_counts_reported": {
+          "usage": 0,
+          "timings": 0
+        },
+        "thinking_requested": true,
+        "reasoning_observed": true,
+        "reasoning_tokens_reported": null,
+        "run": 0
+      },
+      "configuration": [
+        "strata MoE window configuration: requested_mode=8 effective_mode=8 maximum_rows=39261 mixed_fp16_bytes=201016320"
+      ],
+      "window_counters": [
+        "strata MoE accumulator window: windows=48 dequants=17544 jobs=18748 source_H2D_bytes=75381120 GPU_resident_windows_only=1 operator_max=8192 maximum_rows=39261"
+      ],
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-engine-build-v1/build/strata",
+        "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-engine-build-v1/build/strata",
+        "bytes": 20102424,
+        "sha256": "0b53e588c8de8d4863cd4016e4ff05bda0c73487e7397e62c21f348c2b20d2f5"
+      },
+      "fresh_faults": [],
+      "owner_closed": true
+    }
+  ],
+  "diagnostic_ratio": 1.0607811877241928,
+  "reasoning_hash_equal": true,
+  "performance_adopted": false,
+  "general_quality_qualified": false,
+  "physical262144_RESTORE_qualified": false,
+  "source_audit": "research-round1012-review-v1.txt; Main inspected missing outer lease definition in moe-accum-engine-lease-main-review-v1.json",
+  "failed_first_controller": "moe-accum-model-profile-window2-tokens8192-v1.json remains failed; unsupported bench argument before prefill, native setup/shutdown succeeded."
+}

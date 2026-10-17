@@ -1,0 +1,49 @@
+# Native review of R1011
+
+Classification: decision-support review; 2026-10-17. Finite question: does R1011 expose a concrete source blocker to the first GPU model execution of mode 8, or a mode 0/2 regression?
+
+## Pinned inputs
+
+| Input | SHA-256 |
+|---|---|
+| `research-round1011-v1.txt` | `b04cb51468b3437528cf1ecc9da70eb206b9270afc58fae08dd7e322a153eeb1` |
+| `orca-research-round1011-spec-v1.txt` | `02df66e4fefd3b3a8a1659c6d39dd223b33de28b06e911758162aeee86286d6` |
+| `orca-research-round1011-eligibility-v1.json` | `1fceb404d4552e86f47bf5560c434a3b651f6c924b78a0bb2fbe7975b72dd456` |
+| `research-index.json` | `fabd1274292e89308f3b65088d58d4116a47d20cd85a50fb9b72569c851c4457` |
+
+Reviewed only immutable snapshot `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-moe-accum-engine-source-c05-v1`. Independently recomputed all twelve source hashes from eligibility; every hash matched:
+
+```text
+src/prefill/prefill.cpp dd9b4006c66d37cac67990319619092c7e324d700dcfb15329c0ec5c27f80726
+src/prefill/layer_major.inc 10ab4b8783b19d2cf2b713b25668446c63dbe228aef901e43855b2f8555b5f37
+src/prefill/moe_window.inc f5890674d872daa6a485e4cc42afe98ed5ab3bd577ed6720b4df34b8a2974f1f
+include/strata/prefill/prefill.hpp d6beba959c31eaf31177898128f7fedddaa77dd7a8e349e96099822dcfb76059
+include/strata/prefill/moe_accum_plan.hpp 96e976e24225e5929e20e69995d22e5d603b10fa565147bebadf2e830a00dd7d
+include/strata/prefill/moe_window_routes.hpp 62abedecd553ababefcdabc4c549d75844f848027516293ed028a46fce617379
+include/strata/prefill/layer_major_plan.hpp 67bc25500ae777bfb387944a2415325868602b9da82aa945464b64b0a2b8b9fd
+include/strata/prefill/native16.hpp 59f7c17ff2a6a0779d8060505d20ad2cb0efa9c28d40c41e17a48db90b07edd8
+src/prefill/sycl/native16.cpp 7567f607b4b564c21c8fc4ee21ed41ae7f419a3f0a23a866836f1a85e658627c
+src/prefill/sycl/gemm16.cpp d5a0e8f8cdbc14f82edd7a883efc09d68ee92195b8fd51301e538b40cc6ed53c
+include/strata/sycl/launch.hpp 4eb1888057ef6ae34f2bbb9d2545321061ee116659e54907047732544d589d95
+src/sycl/runtime.cpp e6c20e148bc7ceec250ad9a58ddfc851c1476aaab3d68982d2aee2897e572b83
+```
+
+## Review result and corrections
+
+No concrete bounds, route-uniqueness, partial-window, callback-order, or mode-0/2 regression was found in the pinned candidate. This is source review only. Main's build and ten primitive results are provided context, not independently verified here; no full-model, physical-262144, RESTORE, numerical-quality, runtime-dispatch, or adoption claim follows.
+
+The active mode-8 cap is **65,536 rows**: admission sets `count=min(65536,gpu_rows)` and stores it as the context maximum (`layer_major.inc:260-270,498-508`); the helper rejects above 65,536 (`moe_window.inc:4-10`); the accumulator route factory and kernels also cap at 65,536 (`moe_window_routes.hpp:20-22,45-55`; `native16.cpp:170-175`). The plan's generic `maximum_rows=81920` (`moe_accum_plan.hpp:16-18,41-44`) does not make 81,920 rows reachable in this mode. Mode 2 retains the 16,384-row route-factory/context cap; mode 0 remains the default (`prefill.cpp:441-461`).
+
+For the admitted window, the checked arena plan reserves `rows*4` bytes for shared gates; the 65,536-row case is 262,144 bytes. The separately allocated mixed FP16 slab, shared `m.region` arena, persistent residual bank and `m.emb` BO chunk have distinct extents; the helper validates each device span and checks writable/input overlap (`moe_accum_plan.hpp:59-79`; `moe_window.inc:20-56`; `launch.hpp:15-43`). `min(T, rows-at)` covers partial last chunks in preparation, shared epilogue and HC writes (`moe_window.inc:77-91,143-151`).
+
+Scheduler bounds are consistent in source: a window opens only with two device spans; its end is capped at request end, device-prefix end and configured maximum (`prefill.cpp:1883-1900`). Residual spans reject crossing from device prefix into host tail (`layer_major_plan.hpp:123-135`), so host-tail chunks use the ordinary path. The layer loop performs attention/PLE before storing each piece; the window helper performs FFN only; after its checked HC-write drain, stage callbacks and per-piece completion run (`prefill.cpp:2321-2326,3510-3545`; `moe_window.inc:143-160`). On the final layer the existing ordered cursor restores BF16 bank pieces to the FP32 callback interface (`layer_major.inc:603-625,683-695,737-743`). This is a source bound/schedule, not physical-context execution evidence.
+
+Route construction validates IDs in `[0,511]`, rejects repeated experts per token, creates stable per-expert row segments of at most 8,192, and the update kernel checks inverse slot/source consistency. The kernel requires an in-order queue; jobs are submitted serially on `m.cs` (`moe_window_routes.hpp:75-112`; `native16.cpp:170-218`; `moe_window.inc:109-134`). The status destination is a `MoeWindowContext` member initialized to all ones and read only after successful D2H plus stream synchronization (`prefill.cpp:441-453`; `moe_window.inc:136-142`). The route owner is reset after the checked HC write drain and before callbacks (`moe_window.inc:154-157`). These establish source sequencing, not async runtime/fault behavior.
+
+R1011's fallback caveat is accurate and should remain explicit. Only failure of the VRAM/headroom admission leaves accumulation disabled and reports effective mode 2 (`layer_major.inc:262-273,498-508`). The shared-region plan preflight throws after the mode-8 decision (`:268`); mixed-slab `cudaMalloc` failure returns an error before model work (`:487-493`). Neither retries mode 2. This is not a false broad-fallback claim in R1011, and is not evidence the fixed arena will fail.
+
+One source-pin limit: the snapshot shows `DraftUploadGuard` construction, drain callback, `arm()` and explicit `retire()`, but omits the guard's implementation. The status member's success-path lifetime/read is clear; the exact early-return/destructor retirement guarantee cannot be independently confirmed from this pin. Treat it as an existing source-proof gap, not an observed UAF or scheduler defect. If failure-path assurance is needed before interpreting a failed first run, retrieve the guard definition and its failure-injection evidence; runtime async behavior remains unqualified.
+
+## Operational digest
+
+Proceeding to a first mode-8 model run has no source blocker identified by R1011. Keep the run as an unqualified runtime/numerical observation. Do not claim transparent fallback after region-plan or mixed-allocation failure. If Main needs only one retrieval, inspect the `DraftUploadGuard` definition/failure-path receipt; no broader R1011 reread is needed.

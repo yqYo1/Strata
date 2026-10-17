@@ -43,10 +43,10 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     const auto& g = *m.g;
     auto& ss = *m.ss;
     const bool native16_on = native16::requested();
-    const bool window_requested = moe_window_requested();
+    const int window_requested = moe_window_requested();
     const bool window_on = window_requested && !requires_prefix_checkpoints;
     const bool command_profile_on = sycl_backend::command_profile::requested();
-    if (command_profile_on && (!window_on || g.n_layers != 48)) {
+    if (command_profile_on && (!window_on || window_requested != 2 || g.n_layers != 48)) {
         err = "prefill command profile requires window2 and48 layers"; return false;
     }
     if (window_on && (!native16_on || m.T != 8192 || !m.scratch_alias)) {
@@ -255,12 +255,29 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     const auto plan = detail::LayerMajorResidualPlan::make(n, m.T, D,
         free_gpu - gpu_reserved - gpu_headroom,
         detail::layer_major_requested_rows(std::getenv("STRATA_PREFILL_LAYER_MAJOR_R_GPU")), residual_dtype);
+    // Keep residual placement fixed for the first comparison. Admit an owned
+    // FP16 mixed bank only from the remaining budget, retaining 512 MiB.
+    int64_t accumulation_rows = 0;
+    uint64_t accumulation_bytes = 0;
+    if (window_on && window_requested == 8 && plan.gpu_rows > m.T) {
+        const int64_t count = std::min<int64_t>(65536, plan.gpu_rows);
+        const uint64_t bytes = detail::layer_major_mul(uint64_t(count), N * 2);
+        const uint64_t fixed = detail::layer_major_add(gpu_reserved,
+            detail::layer_major_add(plan.gpu_bytes, detail::layer_major_add(plan.staging_bytes, gpu_headroom)));
+        if (fixed <= free_gpu && bytes <= free_gpu - fixed) {
+            (void)detail::MoeAccumPlan::make_contiguous(count, bytes, m.region_bytes);
+            accumulation_rows = count; accumulation_bytes = bytes;
+        }
+    }
+    if (window_on && window_requested == 8 && !accumulation_rows)
+        std::fprintf(stderr, "strata prefill: MoE window8 not admitted by remaining VRAM/GPU-prefix budget; effective_mode=2\n");
     // One owned host upload slab removes every source pointer lease before DMA.
     // Also count the cache's small blocking staging allocation and two maps.
     uint64_t host_need = detail::layer_major_add(plan.host_bytes, cache_bytes);
     host_need = detail::layer_major_add(host_need, stride);
     host_need = detail::layer_major_add(host_need, detail::layer_major_mul(2, map_bytes));
-    if (window_on) host_need = detail::layer_major_add(host_need, 2ull << 20); // IDs, immutable routes/jobs
+    if (window_on) host_need = detail::layer_major_add(host_need,
+        accumulation_rows ? 16ull << 20 : 2ull << 20); // IDs, immutable routes/jobs/inverse
     if (!core::conversation_memory_admit(core::conversation_available_memory(), host_need, host_headroom)) {
         err = "prefill layer-major: residual/upload storage exceeds known available RAM minus 8 GiB headroom";
         return false;
@@ -273,6 +290,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     auto free_device = [](uint8_t* p) { if (p) (void) cudaFree(p); };
     std::unique_ptr<uint8_t, decltype(free_device)> device_rows(nullptr, free_device);
     std::unique_ptr<uint8_t, decltype(free_device)> prefix_storage(nullptr, free_device);
+    std::unique_ptr<uint8_t, decltype(free_device)> mixed_storage(nullptr, free_device);
     // Allocated only for an FP16 host tail. One in-order queue serializes
     // H2D -> unpack -> model -> pack -> D2H, and the outer lease owns it all.
     std::unique_ptr<uint8_t, decltype(free_device)> fp16_stage(nullptr, free_device);
@@ -466,6 +484,13 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         }
         fp16_stage.reset(p);
     }
+    if (accumulation_bytes) {
+        uint8_t* p = nullptr;
+        if (cudaMalloc(reinterpret_cast<void**>(&p), size_t(accumulation_bytes)) != cudaSuccess) {
+            err = "prefill MoE accumulator: mixed allocation failed before model work"; return false;
+        }
+        mixed_storage.reset(p);
+    }
     m.layer_major_fp16_stage = reinterpret_cast<uint16_t*>(fp16_stage.get());
     m.layer_major_active = true;
     m.native16_active = native16_on;
@@ -473,7 +498,14 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     if (window_context) {
         window_context->bank = reinterpret_cast<uint16_t*>(device_rows.get());
         window_context->bank_bytes = plan.gpu_bytes;
+        window_context->mixed = reinterpret_cast<uint16_t*>(mixed_storage.get());
+        window_context->mixed_bytes = accumulation_bytes;
+        window_context->accumulation = accumulation_rows != 0;
+        if (accumulation_rows) window_context->maximum_rows = accumulation_rows;
         m.moe_window = window_context.get();
+        std::fprintf(stderr, "strata MoE window configuration: requested_mode=%d effective_mode=%d maximum_rows=%lld mixed_fp16_bytes=%llu\n",
+            window_requested, accumulation_rows ? 8 : 2, (long long)window_context->maximum_rows,
+            (unsigned long long)accumulation_bytes);
     }
     m.cache = &layer_cache;
     m.host_res = residency.data();
@@ -710,7 +742,12 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     stats_.tokens = old_stats.tokens + n;
     stats_.chunks = old_stats.chunks + logical_chunks;
     stats_.ms_total = old_stats.ms_total + ms_since(started);
-    if (window_context)
+    if (window_context && window_context->accumulation)
+        std::fprintf(stderr, "strata MoE accumulator window: windows=%llu dequants=%llu jobs=%llu source_H2D_bytes=%llu GPU_resident_windows_only=1 operator_max=8192 maximum_rows=%lld\n",
+            (unsigned long long)window_context->windows, (unsigned long long)window_context->dequants,
+            (unsigned long long)window_context->jobs, (unsigned long long)window_context->source_bytes,
+            (long long)window_context->maximum_rows);
+    else if (window_context)
         std::fprintf(stderr, "strata MoE window: windows=%llu dequants=%llu jobs=%llu source_H2D_bytes=%llu GPU_resident_pairs_only=1 operator_max=8192 source_uploads_per_window=1\n",
             (unsigned long long)window_context->windows, (unsigned long long)window_context->dequants,
             (unsigned long long)window_context->jobs, (unsigned long long)window_context->source_bytes);

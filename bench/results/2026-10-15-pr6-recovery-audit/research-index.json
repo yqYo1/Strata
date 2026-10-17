@@ -4901,6 +4901,197 @@
       "model": "gpt-6-luna",
       "read_only": true,
       "review_path": "research-round1010-review-v1.txt"
+    },
+    {
+      "round": 1011,
+      "path": "research-round1011-v1.txt",
+      "sha256": "b04cb51468b3437528cf1ecc9da70eb206b9270afc58fae08dd7e322a153eeb1",
+      "bytes": 9591,
+      "spec": {
+        "path": "orca-research-round1011-spec-v1.txt",
+        "sha256": "02df66e4fefd3b3a8a1659c6d39dd223b33de28b06e911758162aeee86286d6"
+      },
+      "eligibility": {
+        "path": "orca-research-round1011-eligibility-v1.json",
+        "sha256": "1fceb404d4552e86f47bf5560c434a3b651f6c924b78a0bb2fbe7975b72dd456"
+      },
+      "classification": "decision_support",
+      "review_status": "native_review_complete_no_source_blocker_identified",
+      "append_ready_status": "No concrete bounds, route, partial-window, callback-order, or mode-0/2 regression found; full-model/runtime/numerical qualification remains open.",
+      "corrections": [
+        "The active mode-8 limit is 65,536 rows despite MoeAccumPlan's generic 81,920 maximum: admission, context, route factory and operator guard cap reachability at 65,536.",
+        "R1011's fallback caveat is accurate: only VRAM/headroom admission selects mode 2. Shared-region plan and mixed-slab allocation failures return errors before model work; neither retries mode 2.",
+        "The status destination's successful read is context-owned and synchronized. The pinned source set omits DraftUploadGuard's implementation, so outer-lease retirement on early failure is not independently proven by this snapshot."
+      ],
+      "source_pin": {
+        "snapshot": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-moe-accum-engine-source-c05-v1",
+        "commit_reported_by_spec": "c05c2545d90fb3bedcfff51400919977b6c276ca",
+        "hashes_recomputed": true,
+        "git_commit_or_ancestry_verified": false,
+        "files": {
+          "src/prefill/prefill.cpp": "dd9b4006c66d37cac67990319619092c7e324d700dcfb15329c0ec5c27f80726",
+          "src/prefill/layer_major.inc": "10ab4b8783b19d2cf2b713b25668446c63dbe228aef901e43855b2f8555b5f37",
+          "src/prefill/moe_window.inc": "f5890674d872daa6a485e4cc42afe98ed5ab3bd577ed6720b4df34b8a2974f1f",
+          "include/strata/prefill/prefill.hpp": "d6beba959c31eaf31177898128f7fedddaa77dd7a8e349e96099822dcfb76059",
+          "include/strata/prefill/moe_accum_plan.hpp": "96e976e24225e5929e20e69995d22e5d603b10fa565147bebadf2e830a00dd7d",
+          "include/strata/prefill/moe_window_routes.hpp": "62abedecd553ababefcdabc4c549d75844f848027516293ed028a46fce617379",
+          "include/strata/prefill/layer_major_plan.hpp": "67bc25500ae777bfb387944a2415325868602b9da82aa945464b64b0a2b8b9fd",
+          "include/strata/prefill/native16.hpp": "59f7c17ff2a6a0779d8060505d20ad2cb0efa9c28d40c41e17a48db90b07edd8",
+          "src/prefill/sycl/native16.cpp": "7567f607b4b564c21c8fc4ee21ed41ae7f419a3f0a23a866836f1a85e658627c",
+          "src/prefill/sycl/gemm16.cpp": "d5a0e8f8cdbc14f82edd7a883efc09d68ee92195b8fd51301e538b40cc6ed53c",
+          "include/strata/sycl/launch.hpp": "4eb1888057ef6ae34f2bbb9d2545321061ee116659e54907047732544d589d95",
+          "src/sycl/runtime.cpp": "e6c20e148bc7ceec250ad9a58ddfc851c1476aaab3d68982d2aee2897e572b83"
+        }
+      },
+      "limits": [
+        "Reviewer did not run builds, tests, GPU/model work, profilers, process inspection or Git commands.",
+        "Parent-reported strict engine build and ten primitive GPU results were not independently verified.",
+        "No physical-262144 execution, RESTORE, runtime dispatch, async fault behavior, numerical quality or adoption was qualified."
+      ],
+      "retrieval": {
+        "hold_body_for_Main": false,
+        "operational_digest_max_words": 200,
+        "sections": [
+          "Review result and corrections",
+          "Fallback and mode-0/2 compatibility",
+          "Source-pin limit"
+        ],
+        "retrieve_guard_definition_when": "Main requires proof of early-return/destructor retirement after an async route/status copy or queue failure; the R1011 pin lacks DraftUploadGuard's implementation."
+      },
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "review_path": "research-round1012-review-v1.txt"
+    },
+    {
+      "round": 1013,
+      "classification": "decision_support",
+      "title": "QSA BF16 prefix workgroup ownership, SLM and matrix-work accounting",
+      "path": "research-round1013-v1.txt",
+      "sha256": "acc8fd532a8ac68a5d513b95591630425a5900b0e04f6178d9b562660b0ef3d2",
+      "bytes": 14597,
+      "spec_path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round1013-spec-v1.txt",
+      "spec_sha256": "6a1c55c65be1db27160f7165462fb55399fbafe1e343c08eeb49b6484c4b4e15",
+      "review_status": "accepted_with_scope_caveats",
+      "correction_ids": [],
+      "scope_depth_review": "Substantive source-specific workgroup, SLM, barrier and matrix-operation accounting; compares current row-major path with already existing subgroup and tile-packed paths, and bounds claims with prior comparison and profile gates. Does not claim implementation or device utilization.",
+      "redundancy_review": "Updates R568 (5201cc7899477d1f57793678f4033bc23180aedd94d5f0f2badab9ce3cb02358), R605 (a86280b15503eedcac57fb52ae08a93d596a52e8875e0f191d8fbc10c6487be2), and R954/R955 subgroup review (R954 cf3d39c909004e954035648ceb9a2dd9854bd537182566de34eb4ebabeea5ca4; R955 c181db87527a7509be605c3b505bc311d0995722edb34a1cfc487d196e06c93a). Novel value is exact mapping/footprint accounting; no new candidate should be treated as accepted.",
+      "retrieval": {
+        "hold_body_for_main": true,
+        "retrieve_when": "A new source/build receipt identifies the active selector and a current same-path profile makes QSA ownership, matrix lowering, SLM, softmax or barriers a concrete decision.",
+        "sections": [
+          "active selector and workgroup mapping",
+          "SLM/barrier accounting",
+          "candidate comparison",
+          "profile and correctness gates"
+        ],
+        "adoption_prerequisites": [
+          "source/build/runtime selector identity",
+          "component and whole-dependency path attribution",
+          "numerical and malformed-ID checks",
+          "padded-head and physical-262144-context gates",
+          "fresh repeated measurement"
+        ]
+      },
+      "spec": {
+        "path": "orca-research-round1013-spec-v1.txt",
+        "sha256": "6a1c55c65be1db27160f7165462fb55399fbafe1e343c08eeb49b6484c4b4e15"
+      },
+      "source_pin_manifest": "orca-research-wave1013-1015-v1.json",
+      "corrections": [
+        "Main correction: PV has64 joint-MAD calls per KV/query tile (128 across bothKV), not1024/2048; R1013 erroneously added a nonexistent16-iteration d-loop. See qsa-prefix-matrix-accounting-correction-v1.json. Original hashes retained."
+      ]
+    },
+    {
+      "round": 1014,
+      "classification": "decision_support",
+      "title": "Expert-major MoE window capacity and 81,920-row reachability",
+      "path": "research-round1014-v1.txt",
+      "sha256": "c957490474d92d95afa3c7ff19a7503ded3cbc2c1f291da917dc9e4239749b4c",
+      "bytes": 15916,
+      "spec_path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round1014-spec-v1.txt",
+      "spec_sha256": "6793398ed05538485d2a2b66151a296502ff33537caac88c64aa180c0ba2d1fa",
+      "review_status": "accepted_with_corrections",
+      "correction_ids": [
+        "R1014-C1",
+        "R1014-C2",
+        "R1014-C3",
+        "R1014-C4",
+        "R1014-C5"
+      ],
+      "corrections": [
+        "R1014-C1: Spec's 401,674,240-byte full-cap mixed-bank arithmetic is actually 78,452 rows; full 81,920 is 419,430,400 bytes. Report corrected this and preserves the 78,453 actual versus 78,452 batched distinction.",
+        "R1014-C2: A capacity-derived maximum must not be rounded down to a full 8,192 multiple if one window must cover 78,452 device rows; distinguish maximum cap, actual rows and final partial piece.",
+        "R1014-C3: Recompute each partial-window arena using every plane's round_up(payload,256)+256 reservation. Formula gives 1,022,996,480 bytes at 78,452 rows, 1,023,006,720 at 78,453, and 1,059,131,904 at 81,920; none proves physical fit.",
+        "R1014-C4: R1012 review correction applies: current mode-2 fallback is for VRAM/headroom admission rejection only. Shared-region planning or later mixed allocation errors fail; they do not retry mode 2.",
+        "R1014-C5: Full 400 MiB reservation is a policy choice, not implied by an 81,920 maximum; current admission sizes count=min(cap,gpu_rows). State the bank reservation policy explicitly."
+      ],
+      "scope_depth_review": "Strong source reachability audit across admission, route factory, operator entrypoint, plan/views, host metadata, async lifetime, callbacks and physical-context tail; supplies an implementation checklist without claiming fit or speed.",
+      "redundancy_review": "Updates the indexed 65,536-row expert-major/accumulator hypothesis and window-route work, including R1011 (b04cb51468b3437528cf1ecc9da70eb206b9270afc58fae08dd7e322a153eeb1) and its R1012 review (f36ded666245ae7c245c4694474e46009248301979bdf69313ecf04d07c6c2be). It adds independent row ceilings and later callback/tail obligations.",
+      "retrieval": {
+        "hold_body_for_main": true,
+        "retrieve_when": "Main selects a cap/admission change and has actual m.region_bytes, post-reservation free VRAM/headroom, mixed-bank reservation policy and GPU-resident row count; retrieve physical-context sections for a window/callback/tail change.",
+        "sections": [
+          "admission and row ceilings",
+          "partial-window capacity arithmetic",
+          "route/status/lease boundaries",
+          "cross-chunk callback and physical-context tail"
+        ],
+        "adoption_prerequisites": [
+          "closed individual-sample comparison",
+          "actual arena and free-VRAM evidence",
+          "explicit fallback/reservation policy",
+          "bounds/status/lease/fault coverage",
+          "physical-262144 and RESTORE correctness",
+          "selected serving-path numerical contract",
+          "repeated clean end-to-end comparison"
+        ]
+      },
+      "spec": {
+        "path": "orca-research-round1014-spec-v1.txt",
+        "sha256": "6793398ed05538485d2a2b66151a296502ff33537caac88c64aa180c0ba2d1fa"
+      },
+      "source_pin_manifest": "orca-research-wave1013-1015-v1.json"
+    },
+    {
+      "round": 1015,
+      "classification": "knowledge_collection",
+      "title": "Reusing sparse K/V operands across query rows and GQA heads",
+      "path": "research-round1015-v1.txt",
+      "sha256": "439ff93e31a8b9ff97a89e5f83620959228c7507d8fd5b1781de8b53e24d1bb6",
+      "bytes": 14632,
+      "spec_path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round1015-spec-v1.txt",
+      "spec_sha256": "2e2ad73c3e2b656da1074436cc9360fe760930f56f31767ada8ab89099816414",
+      "review_status": "accepted_as_held_knowledge_collection_with_scope_correction",
+      "correction_ids": [
+        "R1015-C1"
+      ],
+      "corrections": [
+        "R1015-C1: R986 (SHA 3297d8282dbd91d13005f84f9f2b0bdf73de4b03c45888fb9bf435fe9c280db3) is the closest indexed predecessor, on cross-query selected-KV reuse with the same missing overlap/SLM/query-group evidence and retrieval condition. Record substantial overlap; R1015 is a more concrete source-pinned retrieval entry, not a separate unrelated topic. Do not schedule another broad survey."
+      ],
+      "scope_depth_review": "Substantive bounded literature collection with counterexamples and quantitative illustrations; makes no local overlap, B570 performance or adoption claim. Exact claims are source/version bounded in the report.",
+      "redundancy_review": "Substantially overlaps held R986 on cross-query selected-KV reuse. R1015 adds a pinned current-source mapping and a fuller set of retrieval-oriented design comparisons. It also touches R568 GQA/KV staging, R934 stable reductions, and R1009 grouped scheduling, but should not replace their distinct triggers. R778's separate citation-gap caveat remains.",
+      "retrieval": {
+        "hold_body_for_main": true,
+        "retrieve_when": "A Main-owned same-source census records per-query list lengths and exact selector intersections/union density, and current profiling makes QSA K/V reuse or query-group scheduling a real choice.",
+        "sections": [
+          "same-row GQA operand reuse",
+          "cross-row selector grouping",
+          "split-state reduction",
+          "block/persistent scheduling",
+          "counterexamples and evidence limits"
+        ],
+        "preserve_caveats": [
+          "No target-device overlap or timing was measured.",
+          "Union reuse must preserve per-query selector and causal masks.",
+          "Reduction reassociation needs the selected serving numerical contract.",
+          "R986 remains held and its body is not required unless a specific gap remains."
+        ]
+      },
+      "spec": {
+        "path": "orca-research-round1015-spec-v1.txt",
+        "sha256": "2e2ad73c3e2b656da1074436cc9360fe760930f56f31767ada8ab89099816414"
+      },
+      "source_pin_manifest": "orca-research-wave1013-1015-v1.json"
     }
   ],
   "main_initial_findings": [
@@ -8676,5 +8867,70 @@
       "operational_digest_max_words": 140,
       "index_mutation_performed": false
     }
+  },
+  "research_review_round1012": {
+    "review": {
+      "path": "research-round1012-review-v1.txt",
+      "sha256": "f36ded666245ae7c245c4694474e46009248301979bdf69313ecf04d07c6c2be",
+      "bytes": 6586
+    },
+    "proposal": "research-round1012-index-proposal-v1.json",
+    "Main_reads": "Short reviewer digest and metadata; Main directly inspected the missing DraftUploadGuard definition and current callback ordering.",
+    "guard_definition_followup": "moe-accum-engine-lease-main-review-v1.json"
+  },
+  "research_review_round1016": {
+    "review": {
+      "path": "research-round1016-review-v1.txt",
+      "sha256": "51c2fd1771ebd5f48903403444a0f71ed40cff49c4f0c98d3ea783d950924ac0"
+    },
+    "proposal": "research-round1016-index-proposal-v1.json",
+    "reviewed_rounds": [
+      1013,
+      1014,
+      1015
+    ],
+    "Main_reads": "Short operational digest and targeted metadata/corrections only; original bodies held, R1015 collection body not read.",
+    "next_scope_eligibility": [
+      {
+        "scope_id": "r1014_main_owned_cap_decision_after_active_pair_v1",
+        "classification": "Main-owned implementation/measurement; not research dispatch",
+        "schedulable_now": false,
+        "prerequisites": [
+          {
+            "requirement": "Close the active clean window2/8 cohort with individual samples and correctness/fault outcomes.",
+            "evidence_now": "Parent reports the six-sample comparison is active; reviewer did not inspect its process or files."
+          },
+          {
+            "requirement": "Record actual GPU-resident MoE row count, m.region_bytes, post-reservation free VRAM/headroom and mixed-bank reservation policy.",
+            "evidence_now": "The pinned source supplies arithmetic only; no current runtime fit receipt was reviewed."
+          },
+          {
+            "requirement": "Select explicit cap, partial-tail and failure/fallback semantics before editing.",
+            "evidence_now": "R1014's fixed/adaptive policy comparison is source analysis; current fallback is narrower per R1012 review."
+          }
+        ],
+        "recommendation": "After prerequisites close, retrieve R1014 for Main's cap change; do not create a report that only repeats missing capacity facts."
+      },
+      {
+        "scope_id": "r1015_selector_overlap_retrieval_v1",
+        "classification": "Knowledge-collection retrieval; no new research dispatch",
+        "schedulable_now": false,
+        "prerequisites": [
+          {
+            "requirement": "A pinned-engine census measures per-row selected-list length and exact query-row ID overlap/union density.",
+            "evidence_now": "R986 index metadata records no Strata learned-ID overlap, SLM/sector result or query-group timing; R1015 adds no measurement."
+          },
+          {
+            "requirement": "A current source/build profile establishes a material QSA consumer and identifies the scheduling question.",
+            "evidence_now": "The current active window2/8 timing is not evidence of QSA query-group opportunity."
+          }
+        ],
+        "recommendation": "When eligible, retrieve the matching R1015 sections first and consult R986 only for a specific unanswered gap; do not dispatch a duplicate broad survey."
+      }
+    ],
+    "scope_correction": "R1015 substantially overlaps R986; no new broad sparse-attention-reuse survey. Main must supply selector overlap census for retrieval.",
+    "dispatch_recommendation": "No new research scope is recommended now. Main owns the active serialized measurement and any source change.",
+    "Main_correction": "qsa-prefix-matrix-accounting-correction-v1.json",
+    "targeted_decision_report_retrieval": "Main read R1013 ownership/storage/candidate excerpts for concrete64celltile question; R1015 knowledge-collection body remains held."
   }
 }
