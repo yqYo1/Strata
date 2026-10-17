@@ -1,0 +1,251 @@
+{
+  "schema": 1,
+  "round": 1029,
+  "reviewer": "native Codex; requested gpt-6-luna max review",
+  "review_status": "accepted with eager-read, test-coverage, and entry-vs-dispatch corrections; decision support only",
+  "report_record": {
+    "round": 1026,
+    "model": "gpt-6-luna",
+    "classification": "decision_support",
+    "read_only": true,
+    "path": "research-round1026-v1.txt",
+    "bytes": 9199,
+    "sha256": "515baef6ea180c0b28bcfa68d848e5328e35a8e5774263a9e481c469035398a8",
+    "review_path": "research-round1029-review-v1.txt",
+    "review_bytes": 10220,
+    "review_sha256": "ded69bdd49b0371cd0492bf3c29e1d11855c929eaebb5b43893e043aa54d3948",
+    "index_proposal_path": "research-round1029-index-proposal-v1.json",
+    "source_commit_label": "31415b3bfc7fc6d4ec5fa42cbcf47276ce271811",
+    "status": "No confirmed source bounds, SG-convergence, FP32-order, parser or routing defect. Actual-engine eager-read initialization is proven by owner source/receipt; generic direct-entry full-span initialization/immutability remains undocumented. Actual-entry qualification supersedes the report's 262144 test-gap recommendation; model dispatch/performance is still separate."
+  },
+  "inputs": {
+    "report": {
+      "path": "research-round1026-v1.txt",
+      "bytes": 9199,
+      "sha256": "515baef6ea180c0b28bcfa68d848e5328e35a8e5774263a9e481c469035398a8"
+    },
+    "spec": {
+      "path": "orca-research-round1026-spec-v1.txt",
+      "bytes": 3294,
+      "sha256": "880aea35fd3cbf716a057b956385e26a410a7a9c45693513d5eb5d68bb63270f"
+    },
+    "eligibility": {
+      "path": "orca-research-round1026-eligibility-v1.json",
+      "bytes": 802,
+      "sha256": "e844e96d002c7a99235694dbeea544e0dd262900c395f5e73fc26ad626e7ccdd",
+      "dispatch_time_schedulable_now": true,
+      "dispatch_time_evidence": "Closed register-only tile8 cohort and new actual-entry/caller integration at source commit 31415b3bfc7fc6d4ec5fa42cbcf47276ce271811."
+    },
+    "research_index": {
+      "path": "research-index.json",
+      "bytes": 546464,
+      "sha256": "eadb32e8b1bb97893531636f82568bd70c64d98f89aa989b01892ae475fd70ec"
+    },
+    "source_snapshot": {
+      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-qsa-prefill-safety-round1026-v1/manifest.json",
+      "manifest_bytes": 1615,
+      "manifest_sha256": "545bd2b74bd4253532caef6843dd5d4e1a7e939beb56f2c2c60b70ccfd74b093",
+      "commit_label": "31415b3bfc7fc6d4ec5fa42cbcf47276ce271811",
+      "manifest_file_hashes_match": true,
+      "files": [
+        {
+          "path": "src/kernels/sycl/qsa_select.cpp",
+          "bytes": 13589,
+          "sha256": "239891f0a6165c1e9bc139de8446d9d49a0bcd41b5ed5c8f19b43e53fb4602ab"
+        },
+        {
+          "path": "include/strata/kernels/qsa_select.hpp",
+          "bytes": 6109,
+          "sha256": "6ec13005a715579c118de78a22b3379f4b6279e8882db61671c92d0138e0986d"
+        },
+        {
+          "path": "src/prefill/prefill.cpp",
+          "bytes": 229847,
+          "sha256": "4750fc7d7e3ea5ca55302e00d12b72fed456cffe09da0ca77305749331633242"
+        },
+        {
+          "path": "tests/sycl/qsa_score_prefill.cpp",
+          "bytes": 13885,
+          "sha256": "88b6d04aecbb7f186d4861d34975a1ae88e2b3f31982c7c1a14cc667923ccf0e"
+        },
+        {
+          "path": "cmake/sycl_backend.cmake",
+          "bytes": 37307,
+          "sha256": "250a9876f8c80f6053e6c0e0db29fe7964b158cc98f80049c8f2e2ed770f1adf"
+        }
+      ]
+    },
+    "owner_contract": {
+      "path": "qsa-score-prefill-owner-contract-v1.json",
+      "bytes": 1816,
+      "sha256": "c7573459895bed959edca9ffc880bd13db60bebe0cb1b575bb600b76a860796b",
+      "build_receipt": {
+        "path": "qsa-score-prefill-engine-build-v1.json",
+        "bytes": 520619,
+        "sha256": "3d2f1e82c5d30c8d40353dc221190ec364ab225fb2f2cbc4dc1ae5889b5b168f"
+      },
+      "source_pin_matches": [
+        {
+          "path": "src/core/layer.cpp",
+          "sha256": "4273fc8c08bb0c58ad471d963f232a457dbc96ea6bd20fa1b45d27fee3428cfb"
+        },
+        {
+          "path": "include/strata/core/layer.hpp",
+          "sha256": "80c2e1a8cac8a1600418dbf26d035b342136fb4164636196f51122205656cfb1"
+        },
+        {
+          "path": "src/prefill/prefill.cpp",
+          "sha256": "4750fc7d7e3ea5ca55302e00d12b72fed456cffe09da0ca77305749331633242"
+        },
+        {
+          "path": "src/kernels/sycl/qsa_select.cpp",
+          "sha256": "239891f0a6165c1e9bc139de8446d9d49a0bcd41b5ed5c8f19b43e53fb4602ab"
+        }
+      ],
+      "comparison": "Owner receipt pins match build receipt source_pins and current source byte hashes; Git/commit verification not performed by reviewer."
+    },
+    "actual_entry_qualification": {
+      "qualification": {
+        "path": "qsa-score-prefill-qualification-v1.json",
+        "bytes": 2031,
+        "sha256": "fc594a4e1f09f8b5b12f451754a6e30de529317cfa72ed24d72a1474c93364a2",
+        "passed": true,
+        "complete": true,
+        "scope": "Actual prefill API whole-score/ID parity, identity and sparse boundary, queries 1..9, physical 262144 with 255 and 256 queries; no full-model/RESTORE qualification."
+      },
+      "entry_results": {
+        "path": "qsa-score-prefill-entry-results-v1.ja.md",
+        "bytes": 2807,
+        "sha256": "54ad77d4a28c63361704cc0a9b601efe92b920edae99481dd9c23a75befebe76"
+      },
+      "samples": [
+        {
+          "path": "qsa-score-prefill-suite-default-v1.json",
+          "sha256": "b6f901d400a4d47e01d40f9f2e5a0eef20c4a1d102b3c36ec2e567d24b1fcbf7"
+        },
+        {
+          "path": "qsa-score-prefill-suite-0-v1.json",
+          "sha256": "9a0acfa9429b6f96b442cf427ef19380ecfdcc2fc0b62b5a3163130b78e00816"
+        },
+        {
+          "path": "qsa-score-prefill-suite-8-v1.json",
+          "sha256": "2d7f129d356cbbe484328a1f8826438a47f41b0b20e082334cd527857a12e9ca"
+        },
+        {
+          "path": "qsa-score-prefill-full-0-v1.json",
+          "sha256": "c9e738781604a8a5976ac72d926718a22f3b1d0633694694a8555a6bf8a118c4"
+        },
+        {
+          "path": "qsa-score-prefill-full-8-v1.json",
+          "sha256": "c2b7daef6d232eb11c311df93602480189ec7cf6005a9f189fbbb3332a0ebb4c"
+        },
+        {
+          "path": "qsa-score-prefill-tail-8-v1.json",
+          "sha256": "3cb8c3582a9123b7900cb55256c7c5ebc86d7693534ab9accc30ecd731e84f8e"
+        }
+      ],
+      "model_tile8_or_dispatch_qualified": false
+    },
+    "prior_review_metadata": {
+      "path": "research-round1025-review-v1.txt",
+      "bytes": 11267,
+      "sha256": "6bdd0b6242287f20a562c4332b537df25ae430855ae5cb7f4804d2e7e08609b8",
+      "index_proposal_path": "research-round1025-index-proposal-v1.json",
+      "index_proposal_bytes": 12095,
+      "index_proposal_sha256": "ab3c4577fe3940869455d0c3faea98903d80ca559654b90a467049bac27d6810",
+      "relevance": "R1025 clarifies prior SLM producer/barrier, partial tile and arithmetic gates; R1026 audits a distinct one-SG register reuse entry and its routes."
+    }
+  },
+  "source_pin_review": {
+    "snapshot_manifest_and_file_hashes_verified": true,
+    "owner_source_pins_match_build_receipt": true,
+    "current_owner_file_hashes_match_receipts": true,
+    "git_commit_verified": false,
+    "binary_or_codegen_equivalence_claim": false,
+    "review_scope": "Frozen five-file source snapshot plus owner source files and cited build/test receipts; no build/test/GPU/process/Git activity by reviewer."
+  },
+  "corrections": [
+    {
+      "id": "R1029-C1",
+      "severity": "material generic API contract clarification; no current-engine defect found",
+      "detail": "Tile8 loads pooled[b] before step/query-use checks. The owner receipt and source pins show the intended layer-major state allocates the full pool, zeros all rows before use, and scores in the same in-order compute queue; at physical 262144 it records active 65537 and 65538 allocated rows. This resolves the report's current-engine initialization uncertainty. The header still says same contract as the baseline and does not document full active-prefix initialization/immutability, so a generic direct caller may have a broader read obligation than the baseline.",
+      "action": "Document initialized and immutable pooled rows over [0, active) as part of the dedicated API contract if intended; otherwise avoid loading rows that no query in the tile consumes. Treat as contract/test gap, not a demonstrated current engine bug."
+    },
+    {
+      "id": "R1029-C2",
+      "severity": "test-gap correction",
+      "detail": "The later Main-owned actual-entry qualification covers physical 262144 with 256 queries for tile 0 and tile 8, plus a 255-query tile-8 tail. R1026's suggestion to add 262144 entry cases is superseded. The receipt still lacks active=-1, invalid active values, invalid step records, and focused n=0..5 cases.",
+      "action": "Update retrieval metadata and future test recommendations; do not classify the superseded cases as defects."
+    },
+    {
+      "id": "R1029-C3",
+      "severity": "evidence scope",
+      "detail": "The actual-entry fixture directly qualifies public score/selector APIs, not the prefill.cpp layer-major dispatch, STRATA_SELECT_OLD, short-prefill, decode, or model tile-8 path. Main handoff says only the legacy tile-0 model arm is currently running; reviewer did not inspect processes.",
+      "action": "Keep direct-entry, caller predicate, and real-model qualification as separate evidence classes; do not claim tile-8 model performance, quality, default selection, RESTORE, or production adoption."
+    }
+  ],
+  "novelty_and_depth": {
+    "assessment": "Substantive source-specific audit with low duplication after R1025 metadata review; R1026's new value is parser/entry/caller routing and eager-read behavior, not adjacent-query SLM topology.",
+    "scope_fit": "Within the finite 6-9 KiB decision-support assignment; report is 9199 bytes (about 8.98 KiB), covers bounds, SG convergence, FP32 sequence, routing and concrete counterexample, and distinguishes test gaps from defects.",
+    "accepted_findings": [
+      "No confirmed source defect in bounds, subgroup collective convergence, FP32 operation sequence, route predicate, parser, or call-site validation/order pattern.",
+      "The score kernel's eager pool load is within the validated active/span bounds for the source caller; the current engine owner receipt additionally proves full allocation/zero initialization and same-queue production for its intended path.",
+      "Exact score/ID equality is demonstrated for the recorded synthetic actual-entry cases only; no model or adoption claim follows."
+    ],
+    "limitations": [
+      "No route-seam or full model tile-8 execution in the supplied qualification.",
+      "No generic direct-caller uninitialized-row or cross-queue race test.",
+      "Shared validate_spans/queue_for/finish definitions and their full guarantees are outside the five-file frozen source snapshot.",
+      "No traffic, occupancy, codegen beyond recorded compile settings, speed, quality, or RESTORE conclusion."
+    ]
+  },
+  "retrieval": {
+    "hold_original_report_body_for_main": true,
+    "main_consumption": "Operational digest, R1029-C1..C3, and eligibility metadata only. Direct-entry details may be retrieved from the indexed receipts; do not load the R1026 body as routine intake.",
+    "retrieve_when": "A future source/API decision needs the exact eager-load counterexample, the layer-major route predicate, or the remaining direct-entry test gaps.",
+    "sections": [
+      "R1026: Actual route and compatibility",
+      "R1026: Static safety review — eager pooled read and bounds",
+      "R1026: Actual-entry fixture and test gaps",
+      "R1029: Material corrections and limits"
+    ],
+    "tags": [
+      "QSA dedicated prefill scorer",
+      "query-tile parser",
+      "SG32 XOR convergence",
+      "FP32 score order",
+      "active prefix bounds",
+      "STRATA_SELECT_OLD routing",
+      "pooled-row eager read",
+      "initialized immutable input contract",
+      "direct-entry versus engine dispatch",
+      "262144 component boundary"
+    ],
+    "prior_report_retrieval": "R1025 is relevant only if a future candidate returns to SLM producer ownership or mixed dead/live four-query staging. R589/R593/R1022/R1023 remain matrix/GEMM references only if the implementation question changes to that route."
+  },
+  "next_scope_eligibility": [
+    {
+      "scope_id": "qsa-prefill-direct-caller-pool-contract-v1",
+      "classification": "decision_support; bounded source-only API/caller audit",
+      "schedulable_now": false,
+      "prerequisites": [
+        {
+          "requirement": "Close the active tile-0 real-model baseline and record its receipt.",
+          "evidence_now": "Parent handoff says Main is running only this legacy tile-0 model arm; no completed result was supplied. Reviewer did not inspect processes."
+        },
+        {
+          "requirement": "Record whether a tile-8 run will enter the actual layer-major prefill caller, and identify a remaining caller/input-lifetime question after the Main-owned review.",
+          "evidence_now": "The direct API qualification is complete, but no tile-8 model dispatch result is provided; the owner receipt resolves the measured engine path while the generic header contract remains unstated."
+        }
+      ],
+      "recommendation": "Do not dispatch now. If both prerequisites close and a concrete generic-caller question remains, audit all current qsa_block_scores_prefill call sites, pooled allocation/initialization, queue ordering, and lifetime at the pinned source. Otherwise resolve the API wording in Main's source review without another research assignment.",
+      "expected_outputs": [
+        "Pinned current caller inventory",
+        "Source-backed initialized/immutable span and producer-order contract",
+        "Only the remaining minimal direct-entry test cases, if any"
+      ]
+    }
+  ],
+  "Main_original_body_read": false,
+  "artifact_retention": "R1026 report/spec/eligibility and all pinned source/test receipts remain unchanged. Review added only the requested review and index proposal. No cleanup was performed."
+}
