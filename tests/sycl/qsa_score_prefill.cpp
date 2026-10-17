@@ -22,6 +22,9 @@ using namespace strata;
 using namespace strata::kernels;
 namespace {
 int test_tile = 0;
+int test_head_parallel = 0;
+bool test_active_all = false;
+int test_pattern = 0;
 std::shared_ptr<sycl_backend::Runtime> rt;
 constexpr int guard = 16;
 constexpr float score_canary = -12345.5f;
@@ -112,6 +115,13 @@ void run(int context, int capacity, int queries, int repetitions) {
   for (size_t i = guard; i < pooled.size() - guard; ++i) pooled[i] = value(seed);
   for (int d = 0; d < 128; ++d) dead[size_t(guard + d)] = value(seed);
   for (size_t i = guard; i < query.size() - guard; ++i) query[i] = value(seed);
+  if (test_pattern == 1) {
+    for (size_t i = guard; i < pooled.size() - guard; ++i)
+      pooled[i] = i % 2 ? -0.f : 0.f;
+    for (int d = 0; d < 128; ++d) dead[size_t(guard + d)] = d % 2 ? -0.f : 0.f;
+    for (size_t i = guard; i < query.size() - guard; ++i)
+      query[i] = i % 3 ? -1.f : 1.f;
+  }
   for (int q = 0; q < queries; ++q) {
     const int n = context - queries + q + 1;
     auto *s = steps.data() + guard + q * kStepCount;
@@ -126,10 +136,11 @@ void run(int context, int capacity, int queries, int repetitions) {
   Drain drain;
   pk.put(pooled); dk.put(dead); qq.put(query); st.put(steps);
   sc.put(initial_scores); ids.put(initial_ids);
+  const int64_t scorer_active = test_active_all ? -1 : active;
   auto score = [&] {
     qsa_block_scores_prefill(pk.data() + guard, dk.data() + guard, qq.data() + guard,
                      st.data() + guard, queries, blocks, shape, sc.data() + guard,
-                     &rt->compute(), active);
+                     &rt->compute(), scorer_active);
   };
   auto topk = [&] {
     qsa_block_topk_prefill(sc.data() + guard, st.data() + guard, queries, blocks, cap,
@@ -139,7 +150,7 @@ void run(int context, int capacity, int queries, int repetitions) {
   // outside timed regions; each timed region starts from a checked drained queue.
   qsa_block_scores(pk.data() + guard, dk.data() + guard, qq.data() + guard,
                    st.data() + guard, queries, blocks, shape, sc.data() + guard,
-                   &rt->compute(), active);
+                   &rt->compute(), scorer_active);
   topk(); rt->wait();
   const auto baseline_scores = sc.get(); const auto baseline_ids = ids.get();
   sc.put(initial_scores); ids.put(initial_ids);
@@ -199,7 +210,9 @@ void run(int context, int capacity, int queries, int repetitions) {
   for (int warm = 0; warm < 2; ++warm) { score(); topk(); rt->wait(); }
   std::cout << "frame context=" << context << " capacity=" << capacity << " queries=" << queries
             << " blocks=" << blocks << " active=" << active << " cap=" << cap
-            << " tile=" << test_tile << " repeats=" << repetitions << " warmup_pairs=2" << std::endl;
+            << " tile=" << test_tile << " head_parallel=" << test_head_parallel
+            << " scorer_active=" << scorer_active << " pattern=" << test_pattern
+            << " repeats=" << repetitions << " warmup_pairs=2" << std::endl;
   for (int rep = 0; rep < repetitions; ++rep) {
     for (int slot = 0; slot < 3; ++slot) {
       const int stage = (slot + rep) % 3;
@@ -242,6 +255,15 @@ int main(int argc, char **argv) {
       require(i + 1 < argc, "missing argument value");
       const std::string key(argv[i]); const int v = std::stoi(argv[i + 1]);
       if (key == "--tile") { require(v == 0 || v == 8, "tile"); test_tile = v; }
+      else if (key == "--head-parallel") {
+        require(v == 0 || v == 1, "head-parallel flag"); test_head_parallel = v;
+      }
+      else if (key == "--active-all") {
+        require(v == 0 || v == 1, "active-all flag"); test_active_all = v == 1;
+      }
+      else if (key == "--pattern") {
+        require(v == 0 || v == 1, "pattern"); test_pattern = v;
+      }
       else if (key == "--suite") suite = v == 1;
       else if (key == "--context") context = v;
       else if (key == "--capacity") capacity = v;
@@ -257,6 +279,10 @@ int main(int argc, char **argv) {
     const char *tile_env = std::getenv("STRATA_SYCL_SCORE_QUERY_TILE");
     require(std::string(tile_env ? tile_env : "0") == std::to_string(test_tile),
             "immutable environment must match expected tile");
+    const char *head_env = std::getenv("STRATA_SYCL_SCORE_HEAD_PARALLEL");
+    require(std::string(head_env ? head_env : "0") == std::to_string(test_head_parallel),
+            "immutable environment must match expected head mapping");
+    require(!test_head_parallel || test_tile == 8, "parallel heads require tile 8");
     gate(gates, "before-runtime"); rt = sycl_backend::runtime_for();
     std::cout << "device=" << rt->device().get_info<sycl::info::device::name>()
               << " driver=" << rt->device().get_info<sycl::info::device::driver_version>() << std::endl;

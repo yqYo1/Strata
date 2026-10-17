@@ -5240,6 +5240,21 @@
       "index_proposal_path": "research-round1029-index-proposal-v1.json",
       "source_commit_label": "31415b3bfc7fc6d4ec5fa42cbcf47276ce271811",
       "status": "No confirmed source bounds, SG-convergence, FP32-order, parser or routing defect. Actual-engine eager-read initialization is proven by owner source/receipt; generic direct-entry full-span initialization/immutability remains undocumented. Actual-entry qualification supersedes the report's 262144 test-gap recommendation; model dispatch/performance is still separate."
+    },
+    {
+      "round": 1030,
+      "model": "gpt-6-luna",
+      "classification": "decision_support",
+      "read_only": true,
+      "path": "research-round1030-v1.txt",
+      "bytes": 9088,
+      "sha256": "f71233e3ee35689f726cbf64ad51252dbb1fab42f525dcce882dc8cf280fe960",
+      "review_path": "research-round1031-review-v1.txt",
+      "review_bytes": 6910,
+      "review_sha256": "5c4ec1f3554c0d0e2a58474fac023929cd7d931abfccf04d9e57dc0196d250bf",
+      "index_proposal_path": "research-round1031-index-proposal-v1.json",
+      "source_commit_label": "7d9a853e354be43bbe0b1322cd633196e94fd898",
+      "status": "No confirmed mapping, subgroup convergence, or in-range address defect. The exact-root/FP32 claim is sound under strict same-environment operation ordering; synthetic finite input parity is evidence, not model quality. Positive active/full-prefix initialization and actual caller integration remain explicit contracts."
     }
   ],
   "main_initial_findings": [
@@ -9517,7 +9532,7 @@
       "current_engine_pool_owner_proof": "qsa-score-prefill-owner-contract-v1.json",
       "generic_API_contract": "docs/SYCL_QSA_SCORING.md",
       "actual_entry_results": "qsa-score-prefill-entry-results-v1.ja.md",
-      "header_contract_link_pending_until_model_closes": true,
+      "header_contract_link_pending_until_model_closes": false,
       "model_baseline": "qsa-score-prefill-model-querytile0-tokens65536-warm4-v1.json",
       "baseline_closed": true,
       "tile8_status": "Closed PASS: same new engine actual query8 entry selected once; see qsa-score-prefill-model-comparison-v1.json. First performance regresses; subsequent improves; default remains0."
@@ -9564,6 +9579,47 @@
     "report": "qsa-score-headparallel-results-v1.ja.md",
     "actual_engine_qualified": false,
     "production_selected": false,
-    "next": "First-dispatch/cache diagnostic and actual dedicated-prefill integration; Main alone tests. Orca R1030 independently audits exact-tree lane mapping."
+    "next": "First-dispatch/cache diagnostic and actual dedicated-prefill integration; Main alone tests. Orca R1030 independently audits exact-tree lane mapping.",
+    "actual_entry_source": "qsa-score-headparallel-entry-source-v1.json",
+    "first_dispatch": "qsa-score-first-dispatch-results-v1.json"
+  },
+  "research_review_round1031": {
+    "review_path": "research-round1031-review-v1.txt",
+    "index_proposal": "research-round1031-index-proposal-v1.json",
+    "Main_original_body_read": false,
+    "review_status": "accepted with compiler-receipt, exceptional-input, API-contract, and repeated-load corrections; decision support only",
+    "next_scope_eligibility": [
+      {
+        "scope_id": "qsa-headparallel-followup-after-main-direct-evidence-v1",
+        "classification": "conditional decision support; no new broad survey",
+        "schedulable_now": false,
+        "prerequisites": [
+          {
+            "requirement": "Main closes the current first-dispatch/cache/CPU/UR investigation and records its measurement receipt.",
+            "evidence_now": "Parent handoff says this Main-owned collection is active; the headparallel cohort excludes first-dispatch cost and physical traffic."
+          },
+          {
+            "requirement": "Main decides whether to integrate the private candidate and records the actual entry route, active-bound behavior, and initialized/immutable input owner contract.",
+            "evidence_now": "The candidate remains private; cohort has production_selected=false and model_PP_measured=false. R1029 owner proof covers the existing public scorer route only."
+          },
+          {
+            "requirement": "Name one remaining source/toolchain question that the direct integration review and instrumented measurements cannot resolve.",
+            "evidence_now": "The build receipt confirms strict flags, while no device IR or resource inspection is attached; Main can decide from the actual integration build whether that gap matters."
+          }
+        ],
+        "recommendation": "Do not dispatch now. Main's direct source/API review and instrumented run should resolve the current questions. If they leave one bounded unresolved issue, write a new finite scope for only that issue.",
+        "expected_outputs": [
+          "Source-backed actual caller and input-owner contract",
+          "Codegen/resource facts only if a concrete performance uncertainty remains",
+          "No extrapolation from synthetic component parity to model quality or production adoption"
+        ]
+      }
+    ],
+    "Main_followup": {
+      "active_minus_one": "Production wrapper keeps validate() mapping -1 to all max_blocks; actual-entry all/full-all qualification prepared, not yet run.",
+      "pool_contract": "Header now explicitly documents initialized immutable whole active pool; live engine caller/allocation source unchanged.",
+      "first_dispatch": "qsa-score-first-dispatch-results-v1.json: observed small-binary initial cost, no full-model causality. This does not resolve physical bandwidth/GRF/spills/occupancy.",
+      "exceptional_inputs": "Actual test adds signed-zero/tied scores; overflow/Inf/NaN targeted qualification is not claimed."
+    }
   }
 }

@@ -87,6 +87,72 @@ int prefill_score_query_tile() {
   return tile;
 }
 
+// The root sum tree is unchanged: original lanes l,l+8,l+16,l+24
+// combine as (p0+p2)+(p1+p3), then XOR4/2/1 inside each eight-lane head.
+// All control flow containing a subgroup collective is subgroup-uniform.
+template <int Tile>
+sycl::event submit_scores_headparallel(sycl::queue &queue, const float *pooled,
+                                     const float *dead, const float *query,
+                                     const int32_t *steps, int64_t nq,
+                                     int64_t blocks, float *scores,
+                                     int64_t active) {
+  return queue.parallel_for(
+      sycl::nd_range<1>(size_t(((nq + Tile - 1) / Tile) * active) * 32, 32),
+      [=](sycl::nd_item<1> it) [[sycl::reqd_sub_group_size(32)]] {
+        const int64_t q0 = (it.get_group_linear_id() / active) * Tile;
+        const int64_t b = it.get_group_linear_id() % active;
+        const int lane = it.get_local_linear_id(), head = lane / 8, l = lane % 8;
+        float common[4][4];
+        for (int j = 0; j < 4; ++j)
+          for (int d = 0; d < 4; ++d)
+            common[j][d] = pooled[b * 128 + (l + j * 8) * 4 + d];
+#pragma unroll
+        for (int row = 0; row < Tile; ++row) {
+          const int64_t qi = q0 + row;
+          if (qi >= nq) continue;
+          const auto st = steps + qi * kStepCount;
+          const int64_t n = st[kStepNKv], nb = st[kStepNBid];
+          if (n < 0 || nb != n / 4 || nb >= active || b > nb) continue;
+          const float *q = query + qi * 512 + head * 128;
+          float part[4];
+          for (int j = 0; j < 4; ++j) {
+            const int base = (l + j * 8) * 4;
+            const float a = b == nb ? dead[base] : common[j][0];
+            part[j] = a * q[base];
+            for (int d = 1; d < 4; ++d) {
+              const float k = b == nb ? dead[base + d] : common[j][d];
+              part[j] += k * q[base + d];
+            }
+          }
+          float dot = (part[0] + part[2]) + (part[1] + part[3]);
+          for (int off = 4; off; off /= 2)
+            dot += sycl::permute_group_by_xor(it.get_sub_group(), dot, off);
+          float total = 0;
+          for (int h = 0; h < 4; ++h) {
+            const float hd = sycl::select_from_group(it.get_sub_group(), dot, h * 8);
+            total += hd > 0 ? hd : 0.f;
+          }
+          if (lane == 0) {
+            if (b == nb && n % 4) total += 1e9f;
+            scores[qi * blocks + b] = total;
+          }
+        }
+      });
+}
+
+bool prefill_score_head_parallel() {
+  static const bool enabled = [] {
+    const char *value = std::getenv("STRATA_SYCL_SCORE_HEAD_PARALLEL");
+    if (!value) return false;
+    if ((value[0] != '0' && value[0] != '1') || value[1] != '\0')
+      throw std::invalid_argument("STRATA_SYCL_SCORE_HEAD_PARALLEL must be 0 or 1");
+    if (value[0] == '0') return false;
+    std::fprintf(stderr, "strata QSA score prefill: head_parallel=1\n");
+    return true;
+  }();
+  return enabled;
+}
+
 template <int Mapping>
 sycl::event submit_topk(sycl::queue &queue, const float *scores,
                         const int32_t *steps, int64_t nq, int64_t blocks,
@@ -253,7 +319,11 @@ void qsa_block_scores_prefill(const float *pooled, const float *dead,
                               const float *query, const int32_t *steps,
                               int64_t nq, int64_t blocks, const QsaShapes &s,
                               float *scores, void *stream, int64_t active) {
-  if (!prefill_score_query_tile()) {
+  const int tile = prefill_score_query_tile();
+  const bool parallel_heads = prefill_score_head_parallel();
+  if (parallel_heads && tile != 8)
+    throw std::invalid_argument("head-parallel QSA scoring requires query tile 8");
+  if (!tile) {
     qsa_block_scores(pooled, dead, query, steps, nq, blocks, s, scores,
                      stream, active);
     return;
@@ -263,9 +333,12 @@ void qsa_block_scores_prefill(const float *pooled, const float *dead,
                  {{pooled, checked_count(blocks, 128) * 4}, {dead, 512},
                   {query, checked_count(nq, 512) * 4},
                   {steps, checked_count(nq, kStepCount) * 4}});
-  auto event = submit_scores_querytile<8>(queue_for(stream), pooled, dead,
-                                         query, steps, nq, blocks, scores,
-                                         launched);
+  auto &queue = queue_for(stream);
+  auto event = parallel_heads
+      ? submit_scores_headparallel<8>(queue, pooled, dead, query, steps, nq,
+                                      blocks, scores, launched)
+      : submit_scores_querytile<8>(queue, pooled, dead, query, steps, nq,
+                                   blocks, scores, launched);
   finish(stream, event);
 }
 bool qsa_block_scores_tc(const float *, const float *, const float *,

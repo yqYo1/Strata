@@ -1,0 +1,188 @@
+{
+  "schema": 1,
+  "round": 1031,
+  "reviewer": "Native Codex; requested gpt-6-luna max review",
+  "review_status": "accepted with compiler-receipt, exceptional-input, API-contract, and repeated-load corrections; decision support only",
+  "report_record": {
+    "round": 1030,
+    "model": "gpt-6-luna",
+    "classification": "decision_support",
+    "read_only": true,
+    "path": "research-round1030-v1.txt",
+    "bytes": 9088,
+    "sha256": "f71233e3ee35689f726cbf64ad51252dbb1fab42f525dcce882dc8cf280fe960",
+    "review_path": "research-round1031-review-v1.txt",
+    "review_bytes": 6910,
+    "review_sha256": "5c4ec1f3554c0d0e2a58474fac023929cd7d931abfccf04d9e57dc0196d250bf",
+    "index_proposal_path": "research-round1031-index-proposal-v1.json",
+    "source_commit_label": "7d9a853e354be43bbe0b1322cd633196e94fd898",
+    "status": "No confirmed mapping, subgroup convergence, or in-range address defect. The exact-root/FP32 claim is sound under strict same-environment operation ordering; synthetic finite input parity is evidence, not model quality. Positive active/full-prefix initialization and actual caller integration remain explicit contracts."
+  },
+  "inputs": {
+    "source_pin": {
+      "path": "research-qsa-headparallel-round1030-source-pin-v1.json",
+      "bytes": 2606,
+      "sha256": "6253fe362494a662cc3740b92193fd45341f4dfd093d524542ad8993cd528308",
+      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-qsa-headparallel-round1030-v1/manifest.json",
+      "manifest_sha256": "6253fe362494a662cc3740b92193fd45341f4dfd093d524542ad8993cd528308",
+      "source_commit_label": "7d9a853e354be43bbe0b1322cd633196e94fd898",
+      "candidate_base_commit": "31415b3bfc7fc6d4ec5fa42cbcf47276ce271811",
+      "files": [
+        {
+          "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-headparallel-candidate-v1/qsa_score_headparallel.cpp",
+          "sha256": "791981d4f75921918a2914479b8eee015fabff4dc2f695d8566572bd88491eba"
+        },
+        {
+          "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-headparallel-candidate-v1/fixture.cpp",
+          "sha256": "3ad7917e254ddfa0c3c754a9eaf6dee9abd32bf4608a0ea4b25e5251638d8544"
+        },
+        {
+          "path": "src/kernels/sycl/qsa_select.cpp",
+          "sha256": "239891f0a6165c1e9bc139de8446d9d49a0bcd41b5ed5c8f19b43e53fb4602ab"
+        },
+        {
+          "path": "include/strata/kernels/qsa_select.hpp",
+          "sha256": "6ec13005a715579c118de78a22b3379f4b6279e8882db61671c92d0138e0986d"
+        },
+        {
+          "path": "include/strata/sycl/launch.hpp",
+          "sha256": "4eb1888057ef6ae34f2bbb9d2545321061ee116659e54907047732544d589d95"
+        },
+        {
+          "path": "docs/SYCL_QSA_SCORING.md",
+          "sha256": "008605a785ef10032addd681c38a1abe54e7fcb8a0467e19450972490bd59a53"
+        }
+      ]
+    },
+    "main_build_receipt": {
+      "path": "qsa-score-headparallel-build-v1.json",
+      "sha256": "0030e4230d1b65b57e794053cd72e572b36692515657ead58b6b9bf36b747aa2",
+      "passed": true,
+      "compile_flags": ["-O3", "-fno-fast-math", "-ffp-contract=off", "-fsycl"],
+      "GPU_executed_in_build_receipt": false,
+      "binary_sha256": "7c8aaa2d42cb90d9677f70813b80dba626adbbc90db0dbc646aed0d32b693ee5",
+      "limits": "Flags are confirmed; no retained device IR/disassembly or optimizer proof was reviewed."
+    },
+    "main_cohort": {
+      "path": "qsa-score-headparallel-cohort-v1.json",
+      "sha256": "7c0c662bb6464a7f8f882d6f5bd2a212e4f44dacdae16b8be4212a925d7a659f",
+      "passed": true,
+      "complete": true,
+      "all_score_and_ID_bits_match_original": true,
+      "fresh_faults": [],
+      "qualifications": ["qsa-score-headparallel-suite-0-v1.json", "qsa-score-headparallel-suite-1-v1.json"],
+      "pair_change_percent": {
+        "32768": -20.98890481086141,
+        "78453": -21.23627007483808,
+        "262144": -20.141411215940618
+      },
+      "production_selected": false,
+      "model_PP_measured": false,
+      "limits": [
+        "Synthetic seeded finite inputs; no full-model quality, 262144 model consume, or RESTORE qualification.",
+        "First-dispatch cost, physical traffic, register pressure, spills, and occupancy are not measured in this cohort.",
+        "Candidate repeats pooled key references across four head groups; physical traffic impact is unknown."
+      ]
+    },
+    "owner_contract": {
+      "path": "qsa-score-prefill-owner-contract-v1.json",
+      "source_commit_label": "31415b3bfc7fc6d4ec5fa42cbcf47276ce271811",
+      "scope": "Existing public layer-major scorer owner only; does not prove candidate integration."
+    },
+    "prior_review_metadata": {
+      "research_index_path": "research-index.json",
+      "research_index_sha256": "141ed6c396a77aff3eb33e2047d27980efab7266d5041cb71e5088e52520e812",
+      "r1025_review_path": "research-round1025-review-v1.txt",
+      "r1025_review_sha256": "6bdd0b6242287f20a562c4332b537df25ae430855ae5cb7f4804d2e7e08609b8",
+      "r1025_index_proposal_sha256": "ab3c4577fe3940869455d0c3faea98903d80ca559654b90a467049bac27d6810",
+      "r1029_review_path": "research-round1029-review-v1.txt",
+      "r1029_review_sha256": "ded69bdd49b0371cd0492bf3c29e1d11855c929eaebb5b43893e043aa54d3948",
+      "r1029_index_proposal_sha256": "69fe57ecefbe92cb2adcea0274ac83d4b0c8e24b9a689e4371165013e189a912"
+    }
+  },
+  "source_pin_review": {
+    "snapshot_manifest_and_six_file_hashes_match": true,
+    "source_commit_verified_with_git": false,
+    "candidate_compile_flags_confirmed": true,
+    "device_codegen_or_IR_reviewed": false,
+    "arithmetic_tree_assessment": "Candidate p0/p1/p2/p3 grouping matches the old XOR16/XOR8 root and XOR4/2/1 continuation with corresponding operand order, conditional on compiler and FP-environment preservation.",
+    "empirical_input_scope": "Full score and selected-ID bits matched for the seeded finite synthetic cohort; exceptional classes are not specifically targeted."
+  },
+  "corrections": [
+    {
+      "id": "R1031-C1",
+      "severity": "material evidence correction; no arithmetic defect",
+      "detail": "The report says no candidate build command was available. The separately pinned build receipt confirms -fno-fast-math and -ffp-contract=off. It does not provide retained device IR/disassembly or optimizer proof. Keep exact equivalence conditional and distinguish that source-level conclusion from empirical finite synthetic parity.",
+      "action": "Update retrieval metadata; any broad exactness statement should say it is conditional on same strict device operation ordering. Do not present NaN payload/signaling or exceptional classes as empirically tested."
+    },
+    {
+      "id": "R1031-C2",
+      "severity": "private-entry API/input contract; not a demonstrated current-engine failure",
+      "detail": "Candidate rejects active=-1 and eagerly reads [0,active) pooled rows before query/step/row guards. Bounds follow from active<=blocks and declared spans. Existing R1029 owner proof covers the current public layer-major route, not this private entry's eventual engine wiring.",
+      "action": "At integration, either preserve the public active=-1 default or keep the function private with a positive-active contract; confirm/document active-prefix initialization, immutability, queue ordering, and lifetime for the actual caller."
+    },
+    {
+      "id": "R1031-C3",
+      "severity": "performance-evidence gap; no source correctness defect",
+      "detail": "The candidate's common[4][4] repeats pooled-row logical references across four head groups, four times the one-key-vector-per-lane mapping. Physical traffic may be lower due to caching/coalescing and the clean cohort is faster, but neither source nor the current cohort measures that traffic or register impact.",
+      "action": "Main should use its active first-dispatch cache/CPU/UR evidence and any needed codegen/resource inspection before engine adoption; do not create a researcher assignment while direct Main-owned evidence is pending."
+    }
+  ],
+  "scope_depth_and_redundancy": {
+    "scope_fit": "Finite, useful source audit focused on the head-parallel exact-root mapping, row/control convergence, bounds, and owner contracts.",
+    "depth": "Adequate; include the verified compile flags and precise repeated-load count in future summaries. The strict arithmetic derivation is reproducible from the pinned sources.",
+    "overlap": "Low with R1025's SLM/barrier topology. Moderate with R1029's eager-read and direct-entry versus engine-dispatch caveat; R1030 contributes the distinct four-head root mapping and exact-tree proof.",
+    "accepted_findings": [
+      "No confirmed score-root, convergence, or in-range-address bug.",
+      "Source-level exact FP32 correspondence is supported conditionally; seeded finite synthetic whole-score/ID bit parity is measured, exceptional-class coverage is not.",
+      "Main's 18-process cohort supports component latency improvement only, not model or production adoption."
+    ]
+  },
+  "retrieval": {
+    "hold_original_report_body_for_main": true,
+    "main_consumption": "Operational digest and R1031-C1..C3 only. Retrieve frozen candidate/source pins and cohort limits for a concrete API, exceptional-input, or cache/resource question.",
+    "retrieve_when": "Main integrates or rejects the private scorer, reviews active/pool/lifetime semantics, or evaluates measured repeated-load/resource behavior.",
+    "retrieval_tags": [
+      "QSA head-parallel scorer",
+      "XOR16/XOR8 root-tree equivalence",
+      "FP32 strict contraction",
+      "signed zero and NaN evidence limits",
+      "uniform SG32 convergence",
+      "positive active bound",
+      "eager pooled-prefix read",
+      "initialized immutable pool contract",
+      "four-head repeated key loads",
+      "component timing versus model quality"
+    ],
+    "prior_report_retrieval": "R1025 only if the candidate returns to SLM staging/barriers; R1029 for existing public scorer eager-read and caller-owner contract context."
+  },
+  "next_scope_eligibility": [
+    {
+      "scope_id": "qsa-headparallel-followup-after-main-direct-evidence-v1",
+      "classification": "conditional decision support; no new broad survey",
+      "schedulable_now": false,
+      "prerequisites": [
+        {
+          "requirement": "Main closes the current first-dispatch/cache/CPU/UR investigation and records its measurement receipt.",
+          "evidence_now": "Parent handoff says this Main-owned collection is active; the headparallel cohort excludes first-dispatch cost and physical traffic."
+        },
+        {
+          "requirement": "Main decides whether to integrate the private candidate and records the actual entry route, active-bound behavior, and initialized/immutable input owner contract.",
+          "evidence_now": "The candidate remains private; cohort has production_selected=false and model_PP_measured=false. R1029 owner proof covers the existing public scorer route only."
+        },
+        {
+          "requirement": "Name one remaining source/toolchain question that the direct integration review and instrumented measurements cannot resolve.",
+          "evidence_now": "The build receipt confirms strict flags, while no device IR or resource inspection is attached; Main can decide from the actual integration build whether that gap matters."
+        }
+      ],
+      "recommendation": "Do not dispatch now. Main's direct source/API review and instrumented run should resolve the current questions. If they leave one bounded unresolved issue, write a new finite scope for only that issue.",
+      "expected_outputs": [
+        "Source-backed actual caller and input-owner contract",
+        "Codegen/resource facts only if a concrete performance uncertainty remains",
+        "No extrapolation from synthetic component parity to model quality or production adoption"
+      ]
+    }
+  ],
+  "Main_original_body_read": false,
+  "artifact_retention": "No measurements or artifacts were created or cleaned. R1030 and its source/cohort receipts were left unchanged; this proposal and the review file are the only writes."
+}
