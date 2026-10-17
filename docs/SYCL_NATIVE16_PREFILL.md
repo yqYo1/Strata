@@ -107,6 +107,17 @@ The optional `STRATA_SYCL_VLLM_XE2_NATIVE16` build adds the actual Intel BSD-3 v
 `STRATA_SYCL_PREFILL_NATIVE16_QSA=1` additionally keeps QSA projection/norm/RoPE/append/attention/gate boundaries typed16 for resident unrotated INT8 K/V with session RoPE tables. Indexer/local accumulation and GDN's existing internal FP32 boundaries remain explicit. The shared scratch arena reservation is unchanged. Streaming/host mirrors and rotated/Q4/hybrid KV are currently refused; do not infer full-context adoption from the component tests.
 
 
+The clean same-binary attention screening at source `d72c8ac3` used four
+78,451-token fresh requests per process, thinking on, chunk8192 and no GDN
+chunk64. Prefix33 PP was663.9 on first use, then725.2/720.3/725.0 tok/s;
+direct INT8 attention was566.9, then592.9/589.0/592.5. Subsequent medians were
+725.0 versus592.5, an18.28% direct-path regression. Both processes exited
+normally without fresh GPU faults. Keep the existing prefix route for this
+configuration. The comparison also changes score pitch33 to32, so it does not
+isolate dequantization, physical memory traffic or SLM conflicts. These are
+sequential samples within one process per arm;24-token generation does not
+qualify sustained decode. See the [individual samples and comparison limits](../bench/results/2026-10-15-pr6-recovery-audit/qsa-attention-model-current.json).
+
 ## Optional GDN chunk64
 
 `STRATA_SYCL_PREFILL_GDN_CHUNK64=1` adds a separate experimental long-prefill
