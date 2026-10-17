@@ -1,0 +1,87 @@
+{
+  "schema": "strata-event-service-clock-age-comparison-v1",
+  "created_utc": "2026-10-17T10:25:17.145484+00:00",
+  "experiments": [
+    {
+      "receipt": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/event-service-clock-age-baseline-v1.json",
+      "sha256": "ffc677623f2386d632e945f62d333eed55b8d198b82f07c040cf3b1b857af0eb",
+      "passed": true,
+      "complete": true,
+      "GPU_executed": true,
+      "ownership_closed": true,
+      "error": null,
+      "closure_error": null,
+      "host_clock": [
+        "host_clock_query modes=0 status=0 freq_scaled_ppm=535598 freq_ppm=8.17258"
+      ],
+      "case": "case status=PASS guards=PASS inputs=PASS capture=COMPLETE events=141 kernels=3075 age_delay_ms=0 copy_bytes_each=655360 invalid_timestamps=0 timestamp_qualified=1 timer_resolution_ns=52 hardware_busy=UNMEASURED model_PP=UNRUN",
+      "fresh_faults": [],
+      "driver_dump_entries": [],
+      "n": 141,
+      "invalid": 0,
+      "start_before_submit": 0,
+      "positive_service_all": true,
+      "min_service_ns": 833,
+      "max_query_wall_ns": 270179,
+      "min_start_minus_submit_ns": 24320,
+      "max_start_minus_submit_ns": 49280653,
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-event-service-clock-age-baseline-v1/sycl_event_service_clock_age",
+        "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-event-service-clock-age-baseline-v1/sycl_event_service_clock_age",
+        "bytes": 98600,
+        "sha256": "e20566c2f0cb72ef0f7307558603367488add667cff32b6f06cbd70b6919952f"
+      }
+    },
+    {
+      "receipt": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/event-service-clock-age-aged-v1.json",
+      "sha256": "af65d03eb4ed59297d31d7e722239105b32846d99bbeb7aa5aeff1ec1e184ff2",
+      "passed": false,
+      "complete": false,
+      "GPU_executed": false,
+      "ownership_closed": true,
+      "error": "TypeError(\"'PosixPath' object is not subscriptable\")",
+      "closure_error": "AssertionError()",
+      "host_clock": null,
+      "case": null,
+      "fresh_faults": null,
+      "driver_dump_entries": []
+    },
+    {
+      "receipt": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/event-service-clock-age-aged-v2.json",
+      "sha256": "64ec90ee95ce1f049743b4d8c6091da51f3bb82d29059520fa3c94ce8cca55ce",
+      "passed": false,
+      "complete": true,
+      "GPU_executed": true,
+      "ownership_closed": true,
+      "error": null,
+      "closure_error": null,
+      "host_clock": [
+        "host_clock_query modes=0 status=0 freq_scaled_ppm=535598 freq_ppm=8.17258"
+      ],
+      "case": "case status=PASS guards=PASS inputs=PASS capture=COMPLETE events=141 kernels=3075 age_delay_ms=20000 copy_bytes_each=655360 invalid_timestamps=140 timestamp_qualified=0 timer_resolution_ns=52 hardware_busy=UNMEASURED model_PP=UNRUN",
+      "fresh_faults": [],
+      "driver_dump_entries": [],
+      "n": 141,
+      "invalid": 140,
+      "start_before_submit": 140,
+      "positive_service_all": true,
+      "min_service_ns": 937,
+      "max_query_wall_ns": 257525,
+      "min_start_minus_submit_ns": -723084,
+      "max_start_minus_submit_ns": 25537935,
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-event-service-clock-age-baseline-v1/sycl_event_service_clock_age",
+        "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-event-service-clock-age-baseline-v1/sycl_event_service_clock_age",
+        "bytes": 98600,
+        "sha256": "e20566c2f0cb72ef0f7307558603367488add667cff32b6f06cbd70b6919952f"
+      }
+    }
+  ],
+  "causal_evidence": "Same98600byte native binary, same immutable environment recipe except private cache path, exact same2x640KiB ordinary-host H2D and3075counterkernels/141rawtimestamps. Only test argument adds20s host wait after initial checkedcopy before hot commands. Immediate all141fulltriples pass, aged140fail exclusively start<submit; every GPU end-start remains positive >=52ns and every query remains short. Full guards/input/output/owner/fault closure passed both native runs.",
+  "limits": [
+    "Separate processes, no native LevelZero rawtick crosscheck yet. Demonstrates age-sensitive timestamp ordering failure in this stack, not exact cause, installed source commit, quantitative clock-rate error or NTP causal attribution. Read-only adjtimex reports8.17258ppm in both; no system clock changes.",
+    "No model performance, bandwidth, hardware busy, or GPU-only timing qualification. Original modelfulltriple failures and aged-v1preexec controller failure remain unchanged.",
+    "Aged-v1 TypeError occurred before any command, cursor or GPU work. v2 retained baseline receipt separately from ELF manifest Path and used exact baseline binary; closure_error on v1 was missing cursor, not observedGPUfault."
+  ],
+  "next": "OrcaR998source review of installed v2 timestamp acquisition/conversion, then minimalnative tick/clock comparison if source supports it. Continue unchanged-inference64Kplacement comparison using officialbench independent request wallclock."
+}

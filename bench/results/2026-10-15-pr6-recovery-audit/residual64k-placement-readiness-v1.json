@@ -1,0 +1,50 @@
+{
+  "schema": "strata-residual64k-placement-readiness-v1",
+  "created_utc": "2026-10-17T10:23:41.419978+00:00",
+  "reviewer": "Main",
+  "schedulable_now": true,
+  "source_files_rehashed": 743,
+  "pins": {
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/run_residual64k_placement_v1.py": "b19ee5cb780778ac124dd45711bced26b431439bcc9c5e7de68a33a5f888926b",
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/command-service-collector-engine-build-v2.json": "13bba2552e92891357b3ef016c877aeb029e474a70a137ca85046e4da024e9f3",
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/command-profile-fixture-on-v2.json": "c0513da6054a98e097a299c70086a63998b3f1b5b65055f490e53218e65425d3",
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/command-service-model-diagnostic-on-r0-v2.json": "eeadcf5d75d39c3676d7f89393f3e6b62d529e8e2ed57ae3defc965c8dcab67a",
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/event-service-clock-age-aged-v2.json": "64ec90ee95ce1f049743b4d8c6091da51f3bb82d29059520fa3c94ce8cca55ce",
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/direct_owner_transient_artifacts_v1.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window/src/prefill/layer_major.inc": "7d3c17421a6f5124c87052a1e2c0589c9fbb7e833f70215d36fff448240f1bef",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window/include/strata/prefill/layer_major_plan.hpp": "67bc25500ae777bfb387944a2415325868602b9da82aa945464b64b0a2b8b9fd",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window/src/prefill/moe_window.inc": "9ffec0edda5f8ee3219a64873eca3dba92a3fe47fac84fbd0ee5f2dfe95bb827",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window/src/sycl/compat.cpp": "bd5a664f9a0bd91b0e8e2e59f67d0a2c38c81599613831abbd6e16ad98c01689",
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-14-long-generation-benchmark/run_server_job.py": "af67ae2da5e9d6543224b0fd13ea50b000435db3e014f9a2742c6210d03061ff"
+  },
+  "source_revision": "af99f294",
+  "native_binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-command-service-collector-engine-build-v2/build/strata",
+    "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-command-service-collector-engine-build-v2/build/strata",
+    "bytes": 20039400,
+    "sha256": "084a77039e5e5b8bfe1f317449feeb08b2f7cb72fa3075a635af14a2b35cf91d"
+  },
+  "change": "No arithmetic or queue change. Same existing C8192/window2 native16 BF16 binary, context+KVresident131072, officialbench nominal65536 fresh input; residual GPU rows32768 vs exact actual batched rows. Collector OFF both arms.",
+  "review": [
+    "Main read entire334line controller, source admission/planner and native16 callbacks/checked retirement paths. Source query uses ext_intel_free_memory (missing/invalid query fails), cumulative layer cache+prefix+512MiB reservation then exact residual plan; allocations occur before per-request model submissions. No memory-headroom weakening.",
+    "AllGPU exact n includes partial final chunk; plan span enforces chunk boundaries, device bounds and declared GPU bank size. Window2 only processes pairs of complete8192-token chunks, final partial runs existing single-chunk path. Larger residual bank extends number of windows without increasing operator allocation/capacity.",
+    "BF16 stays BF16 across intermediate layers; final consumer still expands once to existing float callback. Main checked lease drains before owners are destroyed. No setenv/unsetenv after runtime initialization.",
+    "Diagnostics use parameter validation+STRATA_TRACE; clean phase has neither and3 fresh processes per placement in fixed interleaved order. Same request SHA/count/reuse0 and thinking24token completion checked. No general quality or physical262144/RESTORE claim.",
+    "Prior 39K native inference and fresh aged calibration complete without driver fault/dump and close owners; only submit/start timestamp ordering failed. This does not qualify profiler timing or establish hardware busy. Placement timing comes from independent whole-request wallclock in officialbench."
+  ],
+  "hardware_hypothesis": {
+    "resource": "PCIe residual host-tail transfers plus repeated expert dequantization per8192-token chunk",
+    "removed_copy_formula_bytes": "2 * 47 * max(0,n-32768) * 10240 * 2 for intermediate BF16 residual stores/loads, excludes other transfers",
+    "example_n65536_bytes": 63082332160,
+    "allGPU_effect": "More chunk pairs eligible for existing MoE window2 => fewer dequant passes. These two mechanisms are a bundled placement optimization, not isolated proof of bus bottleneck.",
+    "admission": "Actual free VRAM and allocations still need this diagnostic. Rejection must remain failed and no speed comparison/adoption follows an incomplete run."
+  },
+  "gates_not_satisfied": [
+    "Repeated64K performance",
+    "Long numerical/task comparison",
+    "Physical262144 and RESTORE",
+    "prefill>600",
+    "prefill1000",
+    "decode70"
+  ]
+}
