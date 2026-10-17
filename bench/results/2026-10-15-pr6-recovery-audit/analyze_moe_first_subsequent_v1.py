@@ -6,6 +6,8 @@ import importlib.util
 import json
 from pathlib import Path
 import statistics
+import sys
+sys.dont_write_bytecode = True
 
 A = Path(__file__).resolve().parent
 

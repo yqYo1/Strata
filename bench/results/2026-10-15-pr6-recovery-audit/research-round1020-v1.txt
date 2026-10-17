@@ -1,0 +1,57 @@
+# R1020 — layer-major expert upload slab の次層copy overlap
+
+分類: decision support。調査は読み取り専用。基準sourceは依頼で指定された `feature/sycl` commit `f2d0ef42`、Main計測中のimmutable mode8/10 binary `339c1ea17e297ee291461e41f6aa6014985a0cdb2a3ef33783a72660a2ebb406`。指定ファイルのsource関係はwindow10容量拡張を除いて同一との前提でレビューした。Git、build/test、実行・GPU/profiler、process/service確認、製品編集は行っていない。XeStrataは調査・実装参照に使っていない。
+
+## 結論
+
+**安全性だけなら、同じ `upload` slab の再利用は可能。最も狭い候補は、層Lの現在の `run_impl()` が戻った後、既存のpass `drain()` の前に、Main thread上で層L+1の512 blobを同じslabへコピーすること。** Lのweight uploadはlayer entry時にchecked drain済みなので、その時点でupload slabの前回H2D readerは退役済み。現在のLの計算は別のGPU `layer_cache` slotsを読むため、host slabをL+1用に上書きしても計算内容は変わらない。次のlayer cacheへのH2D submitはLのchecked pass drain成功後に限る。これにより新しいslab、VRAM allocation、算術変更、background threadを必要としない。
+
+ただし性能機会は未確認である。Main-thread copyを置ける遅い点は `run_impl()` return後であり、そこに残るGPU作業が同期callback/drainで既に退役していれば重なりはゼロ。source計時の約4.7秒/48層はcopy処理に使ったCPU intervalを示すだけで、隠せるGPU時間、critical path短縮、speedupを示さない。厳密に追加RAM/VRAMも避ける条件ならこの候補を先に試すのが妥当で、効果がなければ採用しない。
+
+worker案はより早く重ねられる可能性があるが、一般 `ExpertSource` のhost-only/thread-safe契約不足、source実装による一時scratch/スレッドstack等、cancel/error時joinを新たに要する。従って今のまま「追加RAMなし」とは証明できず、worker導入は現時点で保留。stable pinned source pointerからslabを省く案はArenaまたは一部File sourceに限定して成立し得るが、現在の `pinned()`だけではDMA完了までのpointer leaseを保証せず、モデルresolver全体の既定案にはならない。
+
+## 現行経路と所有順序
+
+`src/prefill/layer_major.inc` は通常の `new[]` で `upload[512 * stride]` を一つ確保し、resident `ExpertCache` を別VRAMに確保する。各layerで先に `drain()`、次に `copy_blob(layer,e,upload+e*stride)` 512回をMain threadから同期呼び出しし、その後512回 `fill_slot(e, ..., m.copy, bytes)` を投入する。`ExpertCache::fill_slot` は `cudaMemcpyAsync` をsubmitするだけ。512 H2Dを投入したあとのchecked `drain()`が成功してから全512 residency entriesを公開し、そのlayerのcomputeへ入る。ループ末尾では `run_impl()`、もう一度 checked `drain()`、overlay解除、callback完了検査が続き、次layerはその後にだけ始まる。layer境界での前置drainも存在する。`m.copy == m.cs` 条件により本pathは同じqueueを使う。
+
+従って現在の標準順は `upload(L) copy -> H2D(L) -> upload drain -> residency publish -> compute(L) -> pass drain -> copy(L+1)`。候補の変更はcopy(L+1)だけを `compute(L)`の後ろへ移す。`fill_slot(L+1)`は必ずpass drainの後に置き、次のupload drainまでresidency publishしない。なおcallback中のstore/final bridgeやdense activation等がそれぞれdrainを行う場合は、その待ちを消さない。これらがcomputeをどこまで先に完了させるかは本source reviewでは性能判定できない。
+
+Host slabの全blob境界を毎層守ること。各 `copy_blob` は当該layerの `blob_bytes` だけを書く一方、strideは最大blobを256 byteに丸めた値でslab slots間隔。次層のblob bytesが小さいslotのtailは未初期化のままだが、通常経路は `fill_slot` に同じ実blob bytesのみを渡すので読み出さない。変更でもpaddingを一括DMAしたり、slot strideを詰めたりしない。層別境界、512件完了、source failure検出を保つ。
+
+## source resolverとconcurrency
+
+`src/program/generate.cpp` のresolverは、`--mmap-experts`指定時に `FileExpertSource`（`experts.bin` mmap、またはnative GGUF shard map）をsourceにし、それ以外は `ArenaExpertSource`をsourceにする。layer-majorのpreconditionはnative compact FP16の完全なlayoutと `m.src` を要求するが、特定source classだけには限定していない。よって性能・lifetime判定は両resolverを区別する必要がある。
+
+- Base `ExpertSource::copy_blob` は `blob()`を呼び、その返却pointerを次のblob callまでしか有効でないとして即時 `memcpy` する。layer-majorはこのcopyが完了するまで次blobを呼ばず、pointerをDMAへ渡さない。このため現在の同期Main-thread pathでは短命blob契約に収まる。
+- `FileExpertSource::copy_blob` はcomplement/override RAM bytesをコピーするか `copy_from_files`へ進む。GGUF shardは3 role slicesをdestinationへ連結し、experts.bin/mapped dataはblob bytesをコピーする。直接file read経路はthread-local scratchを持ち得る。別workerを使うとMain threadのTLSとは別scratchが新規に必要になる可能性があり、追加RAMゼロを主張できない。ステージされた `blob()`用bufferを保持しないのは重要で、依頼にあるephemeral pointerを越えて保持する設計は不適切。
+- `ArenaExpertSource::blob()`はsource arena内の固定offsetを返す。source ownerが生き、重複更新されない間はstableだが、pinnedかはpin rangeによる。通常の `copy_blob`は同じくupload slabへcopyする。
+
+Layer-majorは `m.stager->active==0` とclaimable queueなしを検査し、このpath自身はStager jobをsubmitしない。既存Stager workerはsourceの`copy_blob`を呼ぶ場合があり、独自に `cudaSetDevice`/event待ちをするが、今回の移植対象にするべきではない。`run_impl`の全expertをcacheでresidentにするため、通常の次層weight fetchを並行実行しない。decode/RESTOREやdense activationは同じsessionのこのlong-prefill経路へ並行再入しないことが前提だが、`RouterLookahead`はdecode側で同じFile sourceへ`warm()`を行うworkerを持つが、layer-major側からlookaheadをsubmitする呼出しはない。通常の単一session呼出しはserialだが、前回decodeからwarm workerが残った状態でprefillへ再入するcallerがあれば、`warm`と`copy_blob`の同時アクセスは別途排除/保証が要る。warmはfile page warmとstamp更新をし、blob/copy_blob自体は呼ばない。worker案には各source classで`copy_blob`と`warm`の同時呼出しが安全という明示契約が追加で必要。
+
+`run_layer_major`がcatchするexception/cancelのreturnでも、stack local ownerは通常解放される。`DraftUploadGuard lease`はtemporary ownersより後に宣言されるため、破棄時に先にchecked drainを試みる。retire不能ならabortしownerを生かす。workerを追加する場合は、leaseより後（したがって破棄順でleaseより前）にjoin guardを必ず宣言し、upload slab/source参照より先にworkerをjoinする。copy failure、例外、cancelどの場合もworkerをjoinしてからreturnさせ、その後にouter leaseがcompute/copy queue drainを確認する。join不能・retire不能時は現在の安全規則に従い、DMAが見ているstorageを解放しない。workerからGPU API、queue submit、event waitを呼ばせない。
+
+## 三案の評価
+
+**A. Main-thread launch-ahead（第一候補）** — `run_impl()`が正常returnしてからchecked pass drainより前に、次layerの全blobを同じupload slabへ同期copyする。現在layer upload drain済みなので上書き安全、GPU cacheを読むcomputeとは独立し、source APIを複数スレッドから呼ばない。次のlayerへ移る直前、checked drain後に初めて `fill_slot` する。失敗/cancel時は既存pass leaseが残作業をdrainする。Main threadの既存計算提出が終わった後にしか始められないので、実際のoverlap範囲が小さい/ゼロの可能性が主要な反証。最後のlayerではcopyを省く。
+
+**B. worker future/reused slab（将来候補）** — 最早点はL upload checked drain成功後、Lのcompute投入より前。workerは同じslabへL+1のhost copyだけを行い、MainがLをGPUへsubmitする。L pass drainの前後にjoinしてstatusを確認し、L+1 H2Dはjoin成功とpass drain成功の両方の後。1 slabゆえ二重bufferは不要。だがGeneric source interfaceは、全sourceについてhost-only、concurrent-call-safe、source lifetime中の停止保証を宣言しない。`copy_blob`のコメントは「transient sourceで複数threadからsafe」と限定しており、全derived sourceに対する安全性を確立していない。worker stackとFileExpertSource direct read TLS scratchも追加RAM要因。採用にはsource capabilityと予算を追加するか、現在すでに確保済みの worker/storage を安全に再利用できる根拠が要る。Main-thread案の効果がなく、全source resolverで条件を明文化できた場合のみ再検討。
+
+**C. source pointer直接H2D（slab copy elimination）** — `pinned()` trueだけでは不足。`blob()` pointerの継続寿命、DMA読出し終了まで不変、該当範囲がGPU DMA可能、layer/expert byte境界、source ownerのchecked drainまでのlease、という一体の保証が必要。Arenaのstable storageまたはFileExpertSourceのpinned complementは個別に有望だが、File mmap/ephemeral GGUF assemblyは常にpinned/stableとは限らない。全slotでcapability成立しないとき、同一slabへのfallback copyを許せば混在経路は作れるが、性能は追加測定事項。source APIに明示lease/capabilityを加えないまま `blob()`を複数回呼び、GPU completion前のpointerを保持するのは拒否。DMA pointerはH2D queue submitの前に得て、layer upload checked drainまでsource ownerと全pointer leaseを保持し、drain成功後だけ破棄できる必要がある。
+
+## 数値・状態保存と実験ゲート
+
+コピー移動はweight byte列・slot対応・operator順を変えないので数学上の推論演算を変えない。ただしerror/cancelの観測時点がずれる。進行中Lの計算が終わるまでworker/copyが走るならcancel latencyは増え得る。L+1 copy failureを発見するのがlayer boundaryになる点を明示し、L+1のresidencyを部分公開しない。全physical 262144-context bounds/admission、共有session state、RESTORE、最後まで短入力が元のdecode weight/cache layout経路に残ることを守る。新しいVRAM/H2D queueや算術経路を導入しない。
+
+最大二つのfalsifiable Main実験:
+
+1. **A/B source-level candidate**: Mainが作業中のimmutable binaryではなく、対象sourceから別isolated buildを行う時点で、現行entry-copyと「`run_impl` return後/pass checked drain前に次layer copy」の2 armだけを比較。同じ有効モデル/config/long input/環境でclean repeated wall prefill samplesを採り、source-copy CPU intervalとは別にpass drainとcopy intervalを記録する。全512×48 blob identity/checksum、層別actual bytes、residency publish order、出力/RESTORE/shared state、cancel/fault cleanupを一致確認。重なるcompute tailがなく速度差が測定揺らぎ内なら棄却する。
+2. Main-thread案が有意に重なり、さらにsource preconditionが不足なら、worker案を全source resolverではなくArena source等の明示capability対象でだけ別候補化する前に、`copy_blob`/`warm`並行安全性、thread/TLS scratch追加RAM、所有者/join/drain失敗経路を静的レビューする。別workerが追加RAM禁止に抵触するなら実験へ進めず、再利用可能な既存worker/storageの根拠が出るまで保留。
+
+## 一次資料と適用限界
+
+- Khronos, [SYCL `queue`](https://github.khronos.org/SYCL_Reference/iface/queue.html): queue commandsはeventを返し、`wait`はenqueued tasksの完了を待つ。API semanticsは本engineのCUDA互換wrapperそのものの実測・性能保証ではない。
+- Khronos, [SYCL `handler::memcpy`](https://github.khronos.org/SYCL_Reference/iface/command-group-handler.html): memcpy端点はhost pointerまたはqueue deviceで使えるUSM pointer。transfer中のhost storageを再利用してよいという意味ではなく、現行 `drain()`を省略する根拠ではない。
+- C++ working draft, [`thread::join`](https://eel.is/c%2B%2Bdraft/thread.thread.member): join完了と対応threadの完了はsynchronizes-with関係にある。これはworker結果/書込みを親threadがjoin後に読むための基礎で、共有source objectの内部thread-safetyを自動的に与えない。
+- C++ working draft, [object lifetime](https://eel.is/c%2B%2Bdraft/basic.life): object lifetime後のstorage参照は制限される。source blobやupload slabを非同期DMA/workerが読む間にownerを生かす必要がある。C++規則はGPU queue completionの証明を提供せず、checked queue drainが別に必要。
+
+適用上の結論はsourceで証明できるreuse安全性まで。4.7s intervalやqueue APIの非同期性から性能改善幅を推定しない。実測・Main review後にのみ採否を決める。

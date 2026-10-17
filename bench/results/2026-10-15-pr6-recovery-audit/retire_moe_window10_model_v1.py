@@ -7,6 +7,8 @@ import importlib.util
 import json
 from pathlib import Path
 import re
+import sys
+sys.dont_write_bytecode = True
 
 A = Path(__file__).resolve().parent
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
