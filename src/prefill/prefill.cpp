@@ -40,6 +40,7 @@
 #include "strata/sycl/cpu_wait_profile.hpp"
 #include "strata/prefill/native16.hpp"
 #include "strata/prefill/moe_window_routes.hpp"
+#include "strata/prefill/moe_accum_plan.hpp"
 #include "strata/prefill/qsa_native16.hpp"
 #include "strata/sycl/command_profile.hpp"
 #include "strata/kernels/qsa_bf16_attention_late_flags.hpp"
@@ -440,18 +441,24 @@ struct PeerPrefill {
 struct MoeWindowContext {
     uint16_t* bank = nullptr;
     uint64_t bank_bytes = 0;
+    uint16_t* mixed = nullptr;
+    uint64_t mixed_bytes = 0;
+    int64_t maximum_rows = 16384;
+    bool accumulation = false;
+    uint32_t status_observed = 0;
     std::vector<int32_t> ids;
     std::shared_ptr<const detail::MoeWindowRoutes> routes;
     std::function<bool(int64_t, int64_t, std::string&)> complete_piece;
     uint64_t windows = 0, dequants = 0, jobs = 0, source_bytes = 0;
     std::unique_ptr<sycl_backend::command_profile::Trace> command_trace;
 };
-bool moe_window_requested() {
-    static const bool enabled = [] {
+int moe_window_requested() {
+    static const int enabled = [] {
         const char* v = std::getenv("STRATA_SYCL_PREFILL_MOE_WINDOW");
-        if (!v || std::strcmp(v, "0") == 0) return false;
-        if (std::strcmp(v, "2") == 0) return true;
-        throw std::invalid_argument("STRATA_SYCL_PREFILL_MOE_WINDOW must be 0 or 2");
+        if (!v || std::strcmp(v, "0") == 0) return 0;
+        if (std::strcmp(v, "2") == 0) return 2;
+        if (std::strcmp(v, "8") == 0) return 8;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_MOE_WINDOW must be 0, 2 or 8");
     }();
     return enabled;
 }
@@ -1871,7 +1878,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
     int ple_buf = 0;
 
 #if defined(STRATA_ENABLE_SYCL)
-    int64_t window_first = -1;
+    int64_t window_first = -1, window_end = -1, window_next = -1;
 #endif
     for (int64_t c0 = 0; c0 < n; c0 += m.T) {
         if (should_stop && should_stop()) { err = "cancelled"; return false; }
@@ -1881,12 +1888,14 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
 #if defined(STRATA_ENABLE_SYCL)
         if (m.moe_window) {
             if (window_first >= 0) {
-                if (c0 != window_first + m.T) { err = "prefill MoE window: piece order"; return false; }
+                if (c0 != window_next || c0 >= window_end) { err = "prefill MoE window: piece order"; return false; }
                 window_piece = true;
             } else if (c0 + m.T < n) {
                 const auto first = m.layer_major_residual.span(c0, T);
                 const auto second = m.layer_major_residual.span(c0 + m.T, std::min(m.T, n - c0 - m.T));
                 window_piece = first.device && second.device;
+                if (window_piece) window_end = std::min({n, m.layer_major_residual.gpu_rows,
+                                                         c0 + m.moe_window->maximum_rows});
             }
         }
 #endif
@@ -3516,18 +3525,23 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
             // Keep existing event pairs reusable and never report FFN completion.
             if (m.layer_major_profile) m.layer_major_profile->chunk_retired();
             if (m.layer_major_qsa_profile) m.layer_major_qsa_profile->chunk_retired();
-            if (window_first < 0) { window_first = c0; continue; }
+            if (window_first < 0) window_first = c0;
+            window_next = c0 + T;
+            if (window_next < window_end) continue;
+            if (window_next != window_end) { err = "prefill MoE window: incomplete final piece"; return false; }
             const int64_t first = window_first, count = c0 + T - first;
-            if (!run_moe_window(LB, first, count, err)) return false;
+            const bool ok = m.moe_window->accumulation ? run_moe_accum_window(LB, first, count, err)
+                                                      : run_moe_window(LB, first, count, err);
+            if (!ok) return false;
             if (m.layer_major_profile) m.layer_major_profile->chunk_retired();
             if (LE == g.n_layers) stats_.tokens += count;
-            // BOTH bank writes are checked before MTP may reuse m.region/emb.
+            // All window writes are checked before MTP may reuse m.region/emb.
             for (int64_t row = first; row < first + count; row += m.T) {
                 const int64_t size = std::min(m.T, first + count - row);
                 if (on_stage_chunk && !on_stage_chunk(pos0 + row + size, err)) return false;
                 if (!m.moe_window->complete_piece || !m.moe_window->complete_piece(row, size, err)) return false;
             }
-            window_first = -1;
+            window_first = window_end = window_next = -1;
             continue;
         }
 #endif
