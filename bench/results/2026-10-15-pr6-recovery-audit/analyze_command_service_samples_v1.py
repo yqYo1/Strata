@@ -75,13 +75,50 @@ def analyze(path):
         groups.append(group)
     assert seen == set(grouped)
     windows = []
+    # These edges occur inside one selected job, without another job in
+    # between, in the pinned moe_window.inc path. Never use down->gather:
+    # unselected jobs can be present between those retained events.
+    job_edges = {('gather', 'gu'), ('gu', 'gu'), ('gu', 'swiglu'),
+                 ('swiglu', 'down'), ('down', 'down')}
     for window in sorted(by_window):
         own = [g for g in groups if g['window'] == window]
         layers = {g['layer'] for g in own}
         assert len(layers) == 1 and all(g['first_row'] == 0 for g in own)
+        events = [r for r in samples if r['window'] == window]
+        first_upload = next(r for r in events if r['kind'] == 'upload')
+        last_write = next(r for r in reversed(events) if r['kind'] == 'write')
+        span = last_write['end'] - first_upload['start']
+        assert span > 0
+        edges = []
+        for previous, following in zip(events, events[1:]):
+            if ((previous['kind'], following['kind']) not in job_edges or
+                    any(previous[k] != following[k] for k in ('expert', 'm', 'bin'))):
+                continue
+            edges.append(dict(
+                previous=previous['kind'], following=following['kind'],
+                gap_ns=following['start'] - previous['end'],
+                late_submit_ns=max(0, following['submit'] - previous['end']),
+            ))
+        gaps = [e['gap_ns'] for e in edges]
+        late = [e['late_submit_ns'] for e in edges]
+        neighbors = dict(
+            count=len(edges),
+            gap_ns_sum=sum(gaps),
+            gap_ns_min=min(gaps, default=0),
+            gap_ns_median=statistics.median(gaps) if gaps else 0,
+            gap_ns_max=max(gaps, default=0),
+            negative_gap_count=sum(g < 0 for g in gaps),
+            late_submit_ns_sum=sum(late),
+            late_submit_ns_median=statistics.median(late) if late else 0,
+            late_submit_ns_max=max(late, default=0),
+            edges_by_kind={f'{a}->{b}': sum(e['previous'] == a and e['following'] == b for e in edges)
+                           for a, b in sorted(job_edges)},
+        )
         windows.append(dict(window=window, layer=layers.pop(), first_row=0,
                             sampled_commands=sum(g['selected'] for g in own),
                             eligible_tagged_commands=sum(g['eligible'] for g in own),
+                            first_upload_start_to_last_write_end_ms=span / 1e6,
+                            known_within_job_neighbor_intervals=neighbors,
                             expanded_service_ms_estimate_by_kind=dict(by_window[window])))
     return dict(
         schema='strata-command-service-sample-analysis-v1',
@@ -98,6 +135,9 @@ def analyze(path):
                 'Queue delay is neither host CPU time nor GPU arithmetic time.',
                 'No CPU/device clock subtraction, hardware busy fraction, PCIe saturation, or full-model extrapolation.',
                 'Gaps between sampled events may contain unselected commands; they are not evidence of idle time.',
+                'Within-job neighbor intervals use only the listed adjacent tag edges and matching expert/M/bin in the pinned source; down-to-gather is excluded.',
+                'Late-submit intervals indicate delay before the next command submission in this queue/backend timebase; they do not identify CPU work, runtime work, or global GPU idleness.',
+                'The window span excludes router computation, router readback/grouping, layer uploads and other model phases.',
                 'Synthetic fixture dimensions are tags for validation, not actual GEMM throughput.',
             ],
         },

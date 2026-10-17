@@ -97,8 +97,10 @@ def main():
                   performance_adopted=False, general_quality_qualified=False,
                   physical262144_RESTORE_qualified=False,
                   scope='Two same-new-binary39K officialbench diagnostics: optimized-QSA/window2, only COMMAND_PROFILE off/on differs. Both have trace/parameter validation;24 thinking tokens are a completion probe. Backend service in4 selected first windows only; no whole-model hardware utilization or production speed adoption.',
-                  retention=dict(raw_bytes_per_sample=1 << 28, single_text_file_bytes=64 << 20,
-                                 consumer='Main actual QSA subgroup diagnostic and matched optimized/subgroup model comparison',
+                  retention=dict(raw_bytes_per_sample=64 << 20, raw_bytes_pair=128 << 20,
+                                 artifact_bytes_per_sample=1 << 28, single_text_file_bytes=64 << 20,
+                                 pair_budget_reason='Two separate fresh owned diagnostic jobs (OFF and ON), each subject to the owner helper hard aggregate 64 MiB stdout/stderr cap; separate immutable startup environments are required to compare collection overhead. The finite combined pair allowance is128 MiB, not256 MiB raw text per sample.',
+                                 consumer='Main paired OFF/ON actual-command service diagnostic; four selected first MoE windows',
                                  review_point='At closed cohort boundary, extract and verify compact evidence, then retire successful full API/protocol logs.'))
 
     def save():
