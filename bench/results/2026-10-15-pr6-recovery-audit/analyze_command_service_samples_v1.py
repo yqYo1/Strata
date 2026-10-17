@@ -91,8 +91,9 @@ def analyze(path):
         assert span > 0
         edges = []
         for previous, following in zip(events, events[1:]):
+            identity_keys = ('expert', 'm', 'bin') + (('row',) if 'row' in previous and 'row' in following else ())
             if ((previous['kind'], following['kind']) not in job_edges or
-                    any(previous[k] != following[k] for k in ('expert', 'm', 'bin'))):
+                    any(previous[k] != following[k] for k in identity_keys)):
                 continue
             edges.append(dict(
                 previous=previous['kind'], following=following['kind'],

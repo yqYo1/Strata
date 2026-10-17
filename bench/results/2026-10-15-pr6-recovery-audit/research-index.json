@@ -8184,5 +8184,108 @@
     },
     "model_performance_adopted": false,
     "known_fixture_exception_cleanup_issue": "Trace is destroyed before Pending fallback drain on fixture exceptions; production owner order is sound; fix before error-path qualification."
+  },
+  "research_review_round995": {
+    "review": {
+      "path": "research-review-round995-v1.json",
+      "sha256": "dc76b7afbf9d09bc8af7f5e2085cb5486f78e9fcd2568ecce0206ef1374cefda",
+      "bytes": 15475
+    },
+    "digest": {
+      "path": "research-review-round995-v1.ja.md",
+      "sha256": "fe2edc4dd057964a92076ddb3e242445248e164e9864f7f3cb7353f4bbc53ff4",
+      "bytes": 1146
+    },
+    "classification": "R992 decision support; R993/994 knowledge collection held",
+    "main_read": "Only short review digest and retrieval/eligibility metadata; no original992/993/994 bodies",
+    "indexing": {
+      "current_index_has_round_entries": false,
+      "index_mutation_performed": false,
+      "next_action": "Main may index this review and source/hash/retrieval metadata at the next report integration boundary; the knowledge-collection bodies should remain held unless their triggers are satisfied."
+    },
+    "next_scopes": [
+      {
+        "scope_id": "native16-route-consumer-contract-v1",
+        "classification": "decision support",
+        "finite_question": "Against the exact 8e653 source, compare what would be required to consume a GPU-built stable route map through the configured custom native16 adapter: host counts/job scalars, fixed upper-bound launches, or device descriptors. Cover host visibility, checked status, queue/owner lifetime, exact map and combine contract, and counterevidence; exclude generic oneMKL assumptions and performance claims.",
+        "report_budget_bytes": 12000,
+        "named_source_evidence": [
+          "src/prefill/moe_window.inc@9ffec0edda5f8ee3219a64873eca3dba92a3fe47fac84fbd0ee5f2dfe95bb827",
+          "include/strata/prefill/moe_window_routes.hpp@29ca1c2adc9bfe241aca0e18fb188567b07839a16a2ccec4dbc6630f139bbd93",
+          "src/prefill/sycl/gemm16.cpp@d5a0e8f8cdbc14f82edd7a883efc09d68ee92195b8fd51301e538b40cc6ed53c",
+          "src/prefill/sycl/vllm_xe2/native16.cpp@d8b361cabea29344b48aff5a9db41303f3ea715de47f27bc57f29f85c5f3aa2d"
+        ],
+        "schedulable_now": true,
+        "prerequisites": [
+          {
+            "evidence": "Exact named source files exist and their hashes match the 8e653 source/build pin.",
+            "status": "met"
+          }
+        ],
+        "dispatch_status": "recommendation only; not dispatched by this review"
+      },
+      {
+        "scope_id": "moe-control-performance-adoption-v1",
+        "classification": "decision support with performance/adoption gate",
+        "finite_question": "Determine whether route grouping, span checks, or MoE GEMM scheduling is a measured long-prefill target on the configured path, and whether a scoped change merits adoption.",
+        "report_budget_bytes": 12000,
+        "schedulable_now": false,
+        "prerequisites": [
+          {
+            "evidence": "ON profile with every required event qualified or a separately qualified replacement; timestamp predicate issue resolved.",
+            "status": "missing"
+          },
+          {
+            "evidence": "Exact source-pinned per-window job/M/type census and separate host compute, submission, and GPU-wait attribution.",
+            "status": "missing"
+          },
+          {
+            "evidence": "Whole dependency-path timing and numerical/fault gates on the current configured path.",
+            "status": "missing"
+          }
+        ],
+        "blocking_evidence": "The 508/532 partial record set omits 8 uploads and 16 kernels; hardware_busy is UNMEASURED, and raw rejected timestamps were not serialized.",
+        "dispatch_status": "do not schedule until all prerequisites are recorded"
+      }
+    ],
+    "settlement": {
+      "path": "orca-control-path-wave992-994-completion-v1.json",
+      "sha256": "2032f11dadf8afbce38b29eee23860a8ba1c1381683e8fd3623489d14f6079b3",
+      "bytes": 2680
+    }
+  },
+  "command_service_model_diagnostic_v1": {
+    "report": {
+      "path": "command-service-model-diagnostic-results-v1.ja.md",
+      "sha256": "d2e419d81b7fded65b78217802ed526433236505d0390845af1476ce313d213f",
+      "bytes": 3686
+    },
+    "cohort": {
+      "path": "command-service-model-diagnostic-cohort-v1.json",
+      "sha256": "2b0e548e741cc95397421122f4f4ff0748ec25186d8d9e4d5f0aeb4df5d382f0",
+      "bytes": 136448
+    },
+    "off": {
+      "path": "command-service-model-diagnostic-off-r0-v1.json",
+      "sha256": "dd748385d232eb43f117fe11b467dad64cec979e5e023b3c6c43901e5d645bfb",
+      "bytes": 50476
+    },
+    "on": {
+      "path": "command-service-model-diagnostic-on-r0-v1.json",
+      "sha256": "0da9196432d497df4f8cb837ecb9e85b15df8044d54b9e5fb6d5d9adec7acaeb",
+      "bytes": 50489
+    },
+    "partial_supplement": {
+      "path": "command-service-model-diagnostic-on-partial-v1.json",
+      "sha256": "b7a2d45a69cafa1d65d48788e7f5f3a9b0a0d9a3d5a1325e236f64d1a3bf98bf",
+      "bytes": 170199
+    },
+    "state": "Both native inferences completed and fault/owner checks closed. ON profile FAILED;24 rejected raw values missing. No model resource-saturation or clean-speed inference.",
+    "independent_stress": {
+      "path": "event-service-stress-v1.json",
+      "sha256": "1c208eced2a7a72bc0a5e5a22e1bcf0218db283c2a175e1d5c901cc6086dae05",
+      "bytes": 113273
+    },
+    "next": "V2 raw-rejection capture after normal/error fixture gates. Original failure immutable; separate64K allGPU residual placement remains an unrun performance candidate."
   }
 }
