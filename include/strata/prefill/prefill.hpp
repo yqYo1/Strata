@@ -135,6 +135,7 @@ private:
     bool run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err);
 #if defined(STRATA_ENABLE_SYCL)
     bool run_moe_window(int64_t layer, int64_t first_row, int64_t rows, std::string& err);
+    bool run_moe_accum_window(int64_t layer, int64_t first_row, int64_t rows, std::string& err);
 #endif
     int64_t stage_lb_ = 0, stage_le_ = -1;
     Prefill* next_ = nullptr;
