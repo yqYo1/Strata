@@ -1,0 +1,141 @@
+{
+  "schema": "strata-research-review-index-proposal-v1",
+  "round": 1007,
+  "index_snapshot": {
+    "path": "research-index.json",
+    "sha256": "b13ac6dc8ad8e5657d9da59beffee39d245c472f48f7f97835037b11e65b4d56",
+    "modified": false
+  },
+  "review": {
+    "path": "research-round1007-review-v1.txt",
+    "sha256": "e7b594764e0a7001ce0da0f67c8343b986adf77daecf82e8a727261886edee33",
+    "bytes": 8349
+  },
+  "reviewed_reports": [
+    {
+      "round": 1005,
+      "path": "research-round1005-v1.txt",
+      "sha256": "5d02e9b8038cc462ac92ac37b0d53127c2f5e9d06b30e3be6d35347fee07e9b1",
+      "bytes": 13123,
+      "spec": {
+        "path": "orca-research-round1005-spec-v1.txt",
+        "sha256": "30f8563bc8bb665e32fe09d490df87a8c4695c1ae2efbd516d4dff3e99a104ba"
+      },
+      "classification": "decision_support",
+      "review_status": "accepted_with_correction",
+      "append_ready_status": "Useful local producer/consumer precision audit; no model, performance or adoption qualification.",
+      "corrections": [
+        "Gemm::f16_out16 takes FP16 input; its bool is output_bf16, and true selects BF16 output. Do not reuse the spec phrase x_f16=true.",
+        "Pinned moe_accum_plan.hpp allocates shared_gate as J*4 bytes (J=8192), not W floats. For the current final combine at 65,536 rows, retain 65,536 BF16-derived gate scalars (262,144 bytes) or document a different bounded schedule; current moe_window.inc W=16,384 capacity is a separate layout."
+      ],
+      "main_read": "Short corrected operational digest and eligibility metadata only."
+    },
+    {
+      "round": 1006,
+      "path": "research-round1006-v1.txt",
+      "sha256": "40dde7e2d1000d5b582220a68ea887a6ce56141f1f5f0020fb593d4fd0784156",
+      "bytes": 16735,
+      "spec": {
+        "path": "orca-research-round1006-spec-v1.txt",
+        "sha256": "e66b8e16f2fd0573e219fa56dc4c313e48771afe5e8d3c5bf15763f66a009b3d"
+      },
+      "classification": "knowledge_collection",
+      "review_status": "retain_held_with_retrieval_corrections",
+      "tags": [
+        "moe",
+        "fp32",
+        "fma",
+        "bf16",
+        "fp16",
+        "accumulation-order",
+        "expert-major",
+        "HC-residual",
+        "cancellation",
+        "deterministic-scatter",
+        "quality-metrics"
+      ],
+      "retrieval_trigger": "Only retrieve for a concrete selected MoE consumer after pinning the matching SGLang/vLLM model/backend/kernel path and defining fixed operands/routes plus a numerical or task-deviation question.",
+      "eligibility": {
+        "schedulable_now": false,
+        "prerequisites": [
+          {
+            "requirement": "Exact selected model revision, backend dispatch and combine kernel/source are pinned.",
+            "evidence_now": "Not established by R1006 or the reviewed index metadata."
+          },
+          {
+            "requirement": "Main records fixed component operands/routes and a specific output or task comparison question.",
+            "evidence_now": "No such fixture/question is recorded in the reviewed material."
+          }
+        ]
+      },
+      "review_corrections_for_retrieval": [
+        "Do not call the source expression non-fused without built-kernel evidence.",
+        "Distinguish arithmetic counterexamples from normalized top-k route-reachable cases; clarify directional BF16 spacing near +1.",
+        "Add exact official document paths/sections or canonical links when retrieved."
+      ],
+      "main_read": "Original report body remains held; expose retrieval tags, trigger and eligibility only."
+    }
+  ],
+  "source_pins": {
+    "contract": {
+      "path": "moe-accum-precision-contract-v1.json",
+      "sha256": "8262dd44238e02646fc49c6aa7c361ac68f4eeb6626dae0505b18e6de4b86a83"
+    },
+    "candidate_base_named_not_git_verified": "e4346e75399cfacf6ed26abd45751e9c92387fb4",
+    "snapshots": {
+      "src/prefill/moe_window.inc": "9ffec0edda5f8ee3219a64873eca3dba92a3fe47fac84fbd0ee5f2dfe95bb827",
+      "src/prefill/sycl/native16.cpp": "d953ae8dcb69be601c57ddf62bbd85ad054c3e7c0a90806461b49f96d18da891",
+      "src/prefill/sycl/gemm16.cpp": "d5a0e8f8cdbc14f82edd7a883efc09d68ee92195b8fd51301e538b40cc6ed53c",
+      "include/strata/prefill/native16.hpp": "6c58224919bb999d73d2720d4be6f0779418d39e2181a4cc1c627239710dc46a",
+      "include/strata/prefill/moe_accum_plan.hpp": "8e33624990a9fda4b996cfe740da4be6f478671f3242abe7e0e80238d60217ba"
+    }
+  },
+  "next_scopes": [
+    {
+      "scope_id": "updated-64k-plan-gate-extent-audit-v1",
+      "classification": "decision_support",
+      "finite_question": "At the exact corrected candidate source pin, verify every scalar-gate and dual-mixed-stream allocation extent and last consumer for the proposed 65,536-row schedule.",
+      "schedulable_now": false,
+      "prerequisites": [
+        {
+          "requirement": "Main supplies a new immutable plan/source pin with the gate plane corrected to full-window coverage or a documented bounded schedule.",
+          "evidence_now": "Current pinned planner has only J=8192 gate entries; correction not yet evidenced."
+        }
+      ],
+      "report_budget_bytes": 10000
+    },
+    {
+      "scope_id": "matching-qwen38-moe-contract-v1",
+      "classification": "decision_support",
+      "finite_question": "Trace the exact selected Qwen3.8-Flash-Next SGLang/vLLM MoE input formats, product/accumulator precision, reduction order, shared branch and residual update through the dispatched kernel.",
+      "schedulable_now": false,
+      "prerequisites": [
+        {
+          "requirement": "Exact upstream model revision, serving backend and runtime/kernel dispatch branch are pinned.",
+          "evidence_now": "No matching-model branch/binary evidence is in the reviewed reports or index metadata."
+        }
+      ],
+      "report_budget_bytes": 15000
+    },
+    {
+      "scope_id": "retrieve-round1006-for-concrete-combine-question-v1",
+      "classification": "knowledge_collection_retrieval",
+      "finite_question": "Retrieve only relevant reduction-bound, counterexample and quality-metric sections after the exact component and comparison question are recorded.",
+      "schedulable_now": false,
+      "prerequisites": [
+        {
+          "requirement": "Exact component, operands/routes and output or task-deviation question are recorded by Main.",
+          "evidence_now": "None in reviewed metadata."
+        }
+      ],
+      "report_budget": "No new broad survey; retrieve selected sections only, or at most one 10,000-byte follow-up if a new exact question remains."
+    }
+  ],
+  "main_read_policy": {
+    "operational_digest_max_words": 180,
+    "round1006_original_body_read_by_main": false,
+    "round1006_body_status": "held",
+    "round1005_read": "corrected source-contract digest only",
+    "index_mutation_performed": false
+  }
+}

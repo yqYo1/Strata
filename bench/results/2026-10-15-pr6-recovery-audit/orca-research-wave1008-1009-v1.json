@@ -1,0 +1,44 @@
+{
+  "recorded_at": "2026-10-17T11:40:55.837252+00:00",
+  "source_snapshot": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-source-v1",
+  "source_sha256": {
+    "include/strata/prefill/moe_accum_plan.hpp": "96e976e24225e5929e20e69995d22e5d603b10fa565147bebadf2e830a00dd7d",
+    "include/strata/prefill/moe_window_routes.hpp": "62abedecd553ababefcdabc4c549d75844f848027516293ed028a46fce617379",
+    "src/prefill/sycl/native16.cpp": "7567f607b4b564c21c8fc4ee21ed41ae7f419a3f0a23a866836f1a85e658627c",
+    "tests/sycl/moe_accum.cpp": "733d12dbbec19b64baac39f71f64b21899e5550b3d0d282d9904f2e9c0ae2ec1"
+  },
+  "reports": [
+    {
+      "round": 1008,
+      "classification": "knowledge collection",
+      "spec_path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/orca-research-round1008-spec-v1.txt"
+    },
+    {
+      "round": 1009,
+      "classification": "knowledge collection",
+      "spec_path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/orca-research-round1009-spec-v1.txt"
+    }
+  ],
+  "eligibility": {
+    "schedulable_now": true,
+    "prerequisites": [
+      {
+        "requirement": "Concrete independently authored layout and kernel source frozen",
+        "evidence": {
+          "include/strata/prefill/moe_accum_plan.hpp": "96e976e24225e5929e20e69995d22e5d603b10fa565147bebadf2e830a00dd7d",
+          "include/strata/prefill/moe_window_routes.hpp": "62abedecd553ababefcdabc4c549d75844f848027516293ed028a46fce617379",
+          "src/prefill/sycl/native16.cpp": "7567f607b4b564c21c8fc4ee21ed41ae7f419a3f0a23a866836f1a85e658627c",
+          "tests/sycl/moe_accum.cpp": "733d12dbbec19b64baac39f71f64b21899e5550b3d0d282d9904f2e9c0ae2ec1"
+        }
+      },
+      {
+        "requirement": "Small primitive compile and GPU smoke closed successfully",
+        "evidence": [
+          "moe-accum-device-build-v1.json",
+          "moe-accum-device-smoke-v1.json"
+        ]
+      }
+    ],
+    "limitation": "No exact-model numerical-contract or performance prerequisite is needed for collection of general dataflow/dispatch techniques; production adoption remains separate."
+  }
+}

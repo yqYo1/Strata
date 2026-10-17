@@ -4745,6 +4745,75 @@
         "evidence_state": "No Strata learned-ID overlap, B570 SLM/sector result or query-group timing exists in the reviewed evidence."
       },
       "review_path": "research-review-round987-v1.json"
+    },
+    {
+      "round": 1005,
+      "path": "research-round1005-v1.txt",
+      "sha256": "5d02e9b8038cc462ac92ac37b0d53127c2f5e9d06b30e3be6d35347fee07e9b1",
+      "bytes": 13123,
+      "spec": {
+        "path": "orca-research-round1005-spec-v1.txt",
+        "sha256": "30f8563bc8bb665e32fe09d490df87a8c4695c1ae2efbd516d4dff3e99a104ba"
+      },
+      "classification": "decision_support",
+      "review_status": "accepted_with_correction",
+      "append_ready_status": "Useful local producer/consumer precision audit; no model, performance or adoption qualification.",
+      "corrections": [
+        "Gemm::f16_out16 takes FP16 input; its bool is output_bf16, and true selects BF16 output. Do not reuse the spec phrase x_f16=true.",
+        "Pinned moe_accum_plan.hpp allocates shared_gate as J*4 bytes (J=8192), not W floats. For the current final combine at 65,536 rows, retain 65,536 BF16-derived gate scalars (262,144 bytes) or document a different bounded schedule; current moe_window.inc W=16,384 capacity is a separate layout."
+      ],
+      "main_read": "Short corrected operational digest and eligibility metadata only.",
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "review_path": "research-round1007-review-v1.txt"
+    },
+    {
+      "round": 1006,
+      "path": "research-round1006-v1.txt",
+      "sha256": "40dde7e2d1000d5b582220a68ea887a6ce56141f1f5f0020fb593d4fd0784156",
+      "bytes": 16735,
+      "spec": {
+        "path": "orca-research-round1006-spec-v1.txt",
+        "sha256": "e66b8e16f2fd0573e219fa56dc4c313e48771afe5e8d3c5bf15763f66a009b3d"
+      },
+      "classification": "knowledge_collection",
+      "review_status": "retain_held_with_retrieval_corrections",
+      "tags": [
+        "moe",
+        "fp32",
+        "fma",
+        "bf16",
+        "fp16",
+        "accumulation-order",
+        "expert-major",
+        "HC-residual",
+        "cancellation",
+        "deterministic-scatter",
+        "quality-metrics"
+      ],
+      "retrieval_trigger": "Only retrieve for a concrete selected MoE consumer after pinning the matching SGLang/vLLM model/backend/kernel path and defining fixed operands/routes plus a numerical or task-deviation question.",
+      "eligibility": {
+        "schedulable_now": false,
+        "prerequisites": [
+          {
+            "requirement": "Exact selected model revision, backend dispatch and combine kernel/source are pinned.",
+            "evidence_now": "Not established by R1006 or the reviewed index metadata."
+          },
+          {
+            "requirement": "Main records fixed component operands/routes and a specific output or task comparison question.",
+            "evidence_now": "No such fixture/question is recorded in the reviewed material."
+          }
+        ]
+      },
+      "review_corrections_for_retrieval": [
+        "Do not call the source expression non-fused without built-kernel evidence.",
+        "Distinguish arithmetic counterexamples from normalized top-k route-reachable cases; clarify directional BF16 spacing near +1.",
+        "Add exact official document paths/sections or canonical links when retrieved."
+      ],
+      "main_read": "Original report body remains held; expose retrieval tags, trigger and eligibility only.",
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "review_path": "research-round1007-review-v1.txt"
     }
   ],
   "main_initial_findings": [
@@ -8380,7 +8449,8 @@
     "status": "HostcapacitycomponentonlyPASS release+UBSan9positive/34negative; engine/GPUkernel/unicity/alias/precisionUNQUALIFIED, notconnectedtoinference.",
     "first_engine_window_rows": 65536,
     "physical262144": "boundedwindowsandhosttailmustbepreserved; fullcontextmodelvalidationpending",
-    "next": "Mainimplementsboundedexpert-majorFP32accumulatorafterexactalias/route/roundingcontract, thenserializedtracedsmallGPUfixture, largestshapechecks, longmodelandcleancomparison. Existingwindow2anddecode-layoutshortprefillretained."
+    "next": "Mainimplementsboundedexpert-majorFP32accumulatorafterexactalias/route/roundingcontract, thenserializedtracedsmallGPUfixture, largestshapechecks, longmodelandcleancomparison. Existingwindow2anddecode-layoutshortprefillretained.",
+    "component_gate": "moe-accum-device-cohort-v1.json; all10 GPU cases PASS, model/quality/262144/RESTORE still pending"
   },
   "retention_placement_clock_v1": {
     "manifest": "closed-placement-diagnostics-retention-v1.json",
@@ -8392,5 +8462,79 @@
     "kept": "One3,897,369byteagedUR+stdout representative, budget4MiB, Mainnativeclockconversion/reuseconsumer; reviewafterrawtick/sourceidentityquestioncloses.",
     "scope": "No source/models/binaries/fixtureinputs/service/GPUchange; originalreceiptsstatusandbytespreserved.",
     "historical_paths": "Maincensusandoldreceiptsmayreferencefullnative/lifecyclefilesnowretired. Usecommittedcompactrecords+excerpts+manifest, notmissingrawfilesasnewqualification."
+  },
+  "research_review_round1007": {
+    "review": {
+      "path": "research-round1007-review-v1.txt",
+      "sha256": "e7b594764e0a7001ce0da0f67c8343b986adf77daecf82e8a727261886edee33",
+      "bytes": 8349
+    },
+    "index_proposal": "research-round1007-index-proposal-v1.json",
+    "reviewed_rounds": [
+      1005,
+      1006
+    ],
+    "main_read_policy": {
+      "operational_digest_max_words": 180,
+      "round1006_original_body_read_by_main": false,
+      "round1006_body_status": "held",
+      "round1005_read": "corrected source-contract digest only",
+      "index_mutation_performed": false
+    },
+    "next_scopes": [
+      {
+        "scope_id": "updated-64k-plan-gate-extent-audit-v1",
+        "classification": "decision_support",
+        "finite_question": "At the exact corrected candidate source pin, verify every scalar-gate and dual-mixed-stream allocation extent and last consumer for the proposed 65,536-row schedule.",
+        "schedulable_now": false,
+        "prerequisites": [
+          {
+            "requirement": "Main supplies a new immutable plan/source pin with the gate plane corrected to full-window coverage or a documented bounded schedule.",
+            "evidence_now": "Current pinned planner has only J=8192 gate entries; correction not yet evidenced."
+          }
+        ],
+        "report_budget_bytes": 10000
+      },
+      {
+        "scope_id": "matching-qwen38-moe-contract-v1",
+        "classification": "decision_support",
+        "finite_question": "Trace the exact selected Qwen3.8-Flash-Next SGLang/vLLM MoE input formats, product/accumulator precision, reduction order, shared branch and residual update through the dispatched kernel.",
+        "schedulable_now": false,
+        "prerequisites": [
+          {
+            "requirement": "Exact upstream model revision, serving backend and runtime/kernel dispatch branch are pinned.",
+            "evidence_now": "No matching-model branch/binary evidence is in the reviewed reports or index metadata."
+          }
+        ],
+        "report_budget_bytes": 15000
+      },
+      {
+        "scope_id": "retrieve-round1006-for-concrete-combine-question-v1",
+        "classification": "knowledge_collection_retrieval",
+        "finite_question": "Retrieve only relevant reduction-bound, counterexample and quality-metric sections after the exact component and comparison question are recorded.",
+        "schedulable_now": false,
+        "prerequisites": [
+          {
+            "requirement": "Exact component, operands/routes and output or task-deviation question are recorded by Main.",
+            "evidence_now": "None in reviewed metadata."
+          }
+        ],
+        "report_budget": "No new broad survey; retrieve selected sections only, or at most one 10,000-byte follow-up if a new exact question remains."
+      }
+    ],
+    "source_correction_applied": "Current W plan now holds W FP32 gates; strict build and all10 GPU primitive cases passed, no engine/model integration yet."
+  },
+  "research_wave1008_1009_current": {
+    "wave": "orca-research-wave1008-1009-v1.json",
+    "live": "orca-research-wave1008-1009-live-v1.json",
+    "classifications": [
+      "knowledge_collection",
+      "knowledge_collection"
+    ],
+    "Main_reads": "No original collection bodies; native Luna max review after completion",
+    "scopes": [
+      "GPU reduction memory/dataflow options",
+      "Sparse heterogeneous submission/dispatch alternatives"
+    ]
   }
 }
