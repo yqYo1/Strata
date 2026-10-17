@@ -68,3 +68,23 @@ Those historical runs do not qualify the current engine's 256K/RESTORE path.
 The retention rules are in [ARTIFACT_RETENTION.md](ARTIFACT_RETENTION.md).
 Review actual consumers at every experiment boundary. Do not grow another
 per-run diary, keep all successful logs, or use compression to avoid selection.
+
+A further 193 untracked copies (8,163,471 bytes) were removed only after exact
+recovery from reachable Git blobs or committed patches was verified. Another
+172 closed transport/cache/obsolete fixture outputs (6,065,631 bytes) were
+retired. The compact path/hash/reason ledger is
+`bench/results/2026-10-15-pr6-recovery-audit/build-retirement-20261018.json`.
+It contains deletion metadata, not bundled original contents. Unreconciled
+legacy source copies remain on hold; they must not be described as recoverable
+merely because another nearby source version is committed.
+
+The host-transfer reference also needed a provenance correction: its reported
+base `57477f26` is not the exact built code. All 380 project pins were retrieved
+and matched at **7d2d344fafc6d64b1baffcafa4904b966dea20fe**. The original
+receipt is unchanged; the current reference explicitly records the correction.
+
+Legacy external builds are a separate pending gate: 4,065 ELF/archive files
+(4,078,627,544 bytes, 326 roots) were inventoried and hashed, but no old binary
+has yet been deleted in this review. Per-build exact-source/recipe verification
+must precede that deletion; an inventory or a filename match is insufficient.
+The retained generation is `main-qsa-score-gemm-entry-engine-build-v2`.
