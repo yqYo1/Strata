@@ -1,0 +1,28 @@
+{
+  "schema": "strata-actual-profile-research-wave976-978-v1",
+  "classification": "decision_support",
+  "schedulable_now": true,
+  "model": "gpt-6-luna",
+  "rounds": [
+    976,
+    977,
+    978
+  ],
+  "input_hashes": {
+    "optimized-profile-after-packed-stall-summary-v1.json": "88972514ae924dc45898148be1800cf8922d580bd2f46de2ef1478cf55ab4e65",
+    "own-qsa-bf16-prefix-tilepack-profile-census-bf16-prefix-optimized-r0-v2.json": "03559f3054091eb4273fd5da9efad12dc7374e0352411a21c65c589da92b2558",
+    "own-qsa-bf16-prefix-tilepack-profile-census-bf16-prefix-tilepack-r0-v2.json": "7fb13c63b2695646a24659c547a0fa0e811fa698d99f9eb06f31c56fd1b00db1",
+    "packed-qsa-stall-stack-v1.json": "7a1524686e20e1ec45b499686f545755f38430cbc465e262887f09d2b73fbbf0",
+    "packed-qsa-stall-stop-v1.json": "ac97ffbc112708e984c0a34f4d0ed0359a829a511a02aa80b405b3d15eb8cf4a",
+    "post-packed-stall-health-v1.json": "8337b8f1ae50baf878ceb37cb66f081c648c638d52e14ff3b461bfd48d6aa9e1"
+  },
+  "prerequisites": [
+    "Actual39K optimized profile closed healthy",
+    "Packed queue non-progress captured and owned process stopped; failure retained",
+    "Post-stop small traced runtime/native16 GPU checks PASS"
+  ],
+  "novelty": "Earlier engine/fixture audits predate the real CPU accounting and per-expert row census. These tasks consume actual new evidence, not a missing-prerequisite source plan.",
+  "Main_work": "Full candidate build in separate verify/moe-window; no clean timing while researchers active.",
+  "report_budget_bytes_each": 24576,
+  "original_bodies_held_until_native_Luna_max_review": true
+}

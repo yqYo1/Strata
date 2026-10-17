@@ -1,0 +1,1030 @@
+{
+  "schema": "strata-qsa-subgroup-engine-model-retention-v1",
+  "recorded_utc": "2026-10-17T08:52:29.135160+00:00",
+  "owner": "Main",
+  "scope": "Seven closed successful diagnostic/clean model roots only; no builds/source/binaries/unresolved failure captures touched.",
+  "individual_receipts_unchanged": [
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/qsa-subgroup-engine-model-diagnostic-subgroup-r0-v1.json",
+      "sha256": "897f592a8fe8006092df03854d96c723ccb62d15693355931a527ed580102dd4"
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/qsa-subgroup-engine-model-clean-optimized-r0-v1.json",
+      "sha256": "6a04b3e2851e117c3baf5414ee076dd8374e1b3f51c9d38da4eb0057c5ec5a2c"
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/qsa-subgroup-engine-model-clean-subgroup-r0-v1.json",
+      "sha256": "7f92a161b08909275cf8473e65b8bf2e8fa01e5421b83af729920ad1c864dadc"
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/qsa-subgroup-engine-model-clean-subgroup-r1-v1.json",
+      "sha256": "c130de349f914b5c7a0ecf583228c11ed7f2578a81eed1926d28ce9bf68d9aba"
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/qsa-subgroup-engine-model-clean-optimized-r1-v1.json",
+      "sha256": "b3fec118bf968718e96c60a7cab378824000d03d322caf16d42c56faaa0b1e69"
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/qsa-subgroup-engine-model-clean-optimized-r2-v1.json",
+      "sha256": "d1f8758acdbe0b43b8adfd1e5dfdac0c59add43c2bfae762c135fd771c2be878"
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/qsa-subgroup-engine-model-clean-subgroup-r2-v1.json",
+      "sha256": "e68cb61cf5e18957c780fd7932167a2943c500738ed8151b88a03ee9f1af8862"
+    }
+  ],
+  "compact_evidence": [
+    {
+      "receipt": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/qsa-subgroup-engine-model-diagnostic-subgroup-r0-v1.json",
+      "native_relevant_lines": [
+        "strata generate: expert arena: mlock failed (raise ulimit -l); SYCL ordinary host arena; MAP_HUGETLB unavailable (needed 23983 2 MiB pages, vm.nr_hugepages=0); using 4 KB pages",
+        "strata prefill: FP16 MoE compact requested=1 effective=1, chunk=8192, scratch rows=8192, accounted=2311569920, shared region=1180698624 bytes",
+        "strata serve: prompt 74 tokens = 0 reused + 74 read in 25995 ms (2.8 tok/s), 24 generated in 7614 ms (3.2 tok/s), drafts accepted 18 of 18, 0 checkpoints",
+        "strata serve: decode expert cache hit rate: 3.6% (427 hits / 12000 lookups)",
+        "strata mtp: prompt expert phase=before-detach free_bytes=4200992768 total_bytes=10666115072",
+        "strata mtp: prompt expert phase=after-detach free_bytes=4908785664 total_bytes=10666115072",
+        "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=80726784; source=resident-Mode0 score_pitch=33 operand_layout=row-major softmax=subgroup",
+        "strata prefill: layer-major candidate, tokens=39261 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=804065280 residual_gpu_rows=32768 residual_gpu=671088640 residual_host=132976640 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
+        "strata prefill: native16 BF16 HC residual/projection IO and MoE outputs; FP32 local accumulations/router/recurrent state; PLE and final callbacks bridge FP32; QSA tensor IO=BF16, indexer/GDN internals FP32; reserved scratch arena unchanged; unqualified",
+        "strata MoE window: windows=96 dequants=27581 jobs=28099 source_H2D_bytes=62914560 GPU_resident_pairs_only=1 operator_max=8192 source_uploads_per_window=1",
+        "strata mtp: prompt expert phase=after-prompt-before-restore free_bytes=5060120576 total_bytes=10666115072",
+        "strata mtp: prompt expert phase=after-restore free_bytes=4352323584 total_bytes=10666115072",
+        "strata serve: prompt 39262 tokens = 0 reused + 39262 read in 79804 ms (492.0 tok/s), 24 generated in 2889 ms (8.3 tok/s), drafts accepted 16 of 21, 0 checkpoints",
+        "strata serve: decode expert cache hit rate: 4.3% (601 hits / 13920 lookups)"
+      ],
+      "journal_before_cursor": "s=9944479cfd1a45c28a589619cb8f2881;i=c2caf58;b=cfda0b6a7c134fe2bdf58f9202770840;m=85afcacb26;t=65e04ff44a2d4;x=c42206684a4d3a0e",
+      "journal_complete_rows": 3,
+      "journal_fault_filter": "(?i)(\\bxe\\b.*(fault|hang|reset|error|wedg|timeout|stuck)|GPU.*(fault|hang|wedg|reset)|GuC.*(fault|hang|reset|error))",
+      "journal_fault_entries": [],
+      "journal_command_exit": 0,
+      "canonical_results_equal": true,
+      "private_wrapper_config_plan_retained": true,
+      "canonical_expert_profile_untouched": "main-moe-window-model-profile-window2-v1/expert-profile.bin"
+    },
+    {
+      "receipt": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/qsa-subgroup-engine-model-clean-optimized-r0-v1.json",
+      "native_relevant_lines": [
+        "strata generate: expert arena: mlock failed (raise ulimit -l); SYCL ordinary host arena; MAP_HUGETLB unavailable (needed 23983 2 MiB pages, vm.nr_hugepages=0); using 4 KB pages",
+        "strata prefill: FP16 MoE compact requested=1 effective=1, chunk=8192, scratch rows=8192, accounted=2311569920, shared region=1180698624 bytes",
+        "strata serve: prompt 74 tokens = 0 reused + 74 read in 24935 ms (3.0 tok/s), 24 generated in 6446 ms (3.7 tok/s), drafts accepted 18 of 18, 0 checkpoints",
+        "strata serve: decode expert cache hit rate: 3.6% (427 hits / 12000 lookups)",
+        "strata mtp: prompt expert phase=before-detach free_bytes=4200992768 total_bytes=10666115072",
+        "strata mtp: prompt expert phase=after-detach free_bytes=4908785664 total_bytes=10666115072",
+        "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=80726784; source=resident-Mode0 score_pitch=33 operand_layout=row-major softmax=serial",
+        "strata prefill: layer-major candidate, tokens=39261 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=804065280 residual_gpu_rows=32768 residual_gpu=671088640 residual_host=132976640 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
+        "strata prefill: native16 BF16 HC residual/projection IO and MoE outputs; FP32 local accumulations/router/recurrent state; PLE and final callbacks bridge FP32; QSA tensor IO=BF16, indexer/GDN internals FP32; reserved scratch arena unchanged; unqualified",
+        "strata MoE window: windows=96 dequants=27679 jobs=28196 source_H2D_bytes=62914560 GPU_resident_pairs_only=1 operator_max=8192 source_uploads_per_window=1",
+        "strata mtp: prompt expert phase=after-prompt-before-restore free_bytes=5060153344 total_bytes=10666115072",
+        "strata mtp: prompt expert phase=after-restore free_bytes=4352356352 total_bytes=10666115072",
+        "strata serve: prompt 39262 tokens = 0 reused + 39262 read in 80035 ms (490.6 tok/s), 24 generated in 1702 ms (14.1 tok/s), drafts accepted 16 of 21, 0 checkpoints",
+        "strata serve: decode expert cache hit rate: 4.4% (612 hits / 13920 lookups)"
+      ],
+      "journal_before_cursor": "s=9944479cfd1a45c28a589619cb8f2881;i=c2cb420;b=cfda0b6a7c134fe2bdf58f9202770840;m=85c5420472;t=65e0514bbdc20;x=b23527cc4d9a3327",
+      "journal_complete_rows": 12,
+      "journal_fault_filter": "(?i)(\\bxe\\b.*(fault|hang|reset|error|wedg|timeout|stuck)|GPU.*(fault|hang|wedg|reset)|GuC.*(fault|hang|reset|error))",
+      "journal_fault_entries": [],
+      "journal_command_exit": 0,
+      "canonical_results_equal": true,
+      "private_wrapper_config_plan_retained": true,
+      "canonical_expert_profile_untouched": "main-moe-window-model-profile-window2-v1/expert-profile.bin"
+    },
+    {
+      "receipt": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/qsa-subgroup-engine-model-clean-subgroup-r0-v1.json",
+      "native_relevant_lines": [
+        "strata generate: expert arena: mlock failed (raise ulimit -l); SYCL ordinary host arena; MAP_HUGETLB unavailable (needed 23983 2 MiB pages, vm.nr_hugepages=0); using 4 KB pages",
+        "strata prefill: FP16 MoE compact requested=1 effective=1, chunk=8192, scratch rows=8192, accounted=2311569920, shared region=1180698624 bytes",
+        "strata serve: prompt 74 tokens = 0 reused + 74 read in 24870 ms (3.0 tok/s), 24 generated in 6466 ms (3.7 tok/s), drafts accepted 18 of 18, 0 checkpoints",
+        "strata serve: decode expert cache hit rate: 3.6% (427 hits / 12000 lookups)",
+        "strata mtp: prompt expert phase=before-detach free_bytes=4200992768 total_bytes=10666115072",
+        "strata mtp: prompt expert phase=after-detach free_bytes=4908785664 total_bytes=10666115072",
+        "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=80726784; source=resident-Mode0 score_pitch=33 operand_layout=row-major softmax=subgroup",
+        "strata prefill: layer-major candidate, tokens=39261 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=804065280 residual_gpu_rows=32768 residual_gpu=671088640 residual_host=132976640 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
+        "strata prefill: native16 BF16 HC residual/projection IO and MoE outputs; FP32 local accumulations/router/recurrent state; PLE and final callbacks bridge FP32; QSA tensor IO=BF16, indexer/GDN internals FP32; reserved scratch arena unchanged; unqualified",
+        "strata MoE window: windows=96 dequants=27581 jobs=28099 source_H2D_bytes=62914560 GPU_resident_pairs_only=1 operator_max=8192 source_uploads_per_window=1",
+        "strata mtp: prompt expert phase=after-prompt-before-restore free_bytes=5060153344 total_bytes=10666115072",
+        "strata mtp: prompt expert phase=after-restore free_bytes=4352356352 total_bytes=10666115072",
+        "strata serve: prompt 39262 tokens = 0 reused + 39262 read in 79251 ms (495.4 tok/s), 24 generated in 1692 ms (14.2 tok/s), drafts accepted 16 of 21, 0 checkpoints",
+        "strata serve: decode expert cache hit rate: 4.3% (601 hits / 13920 lookups)"
+      ],
+      "journal_before_cursor": "s=9944479cfd1a45c28a589619cb8f2881;i=c2cb68e;b=cfda0b6a7c134fe2bdf58f9202770840;m=85cffd8de9;t=65e051f776597;x=63468999b0f3e21e",
+      "journal_complete_rows": 7,
+      "journal_fault_filter": "(?i)(\\bxe\\b.*(fault|hang|reset|error|wedg|timeout|stuck)|GPU.*(fault|hang|wedg|reset)|GuC.*(fault|hang|reset|error))",
+      "journal_fault_entries": [],
+      "journal_command_exit": 0,
+      "canonical_results_equal": true,
+      "private_wrapper_config_plan_retained": true,
+      "canonical_expert_profile_untouched": "main-moe-window-model-profile-window2-v1/expert-profile.bin"
+    },
+    {
+      "receipt": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/qsa-subgroup-engine-model-clean-subgroup-r1-v1.json",
+      "native_relevant_lines": [
+        "strata generate: expert arena: mlock failed (raise ulimit -l); SYCL ordinary host arena; MAP_HUGETLB unavailable (needed 23983 2 MiB pages, vm.nr_hugepages=0); using 4 KB pages",
+        "strata prefill: FP16 MoE compact requested=1 effective=1, chunk=8192, scratch rows=8192, accounted=2311569920, shared region=1180698624 bytes",
+        "strata serve: prompt 74 tokens = 0 reused + 74 read in 24945 ms (3.0 tok/s), 24 generated in 6372 ms (3.8 tok/s), drafts accepted 18 of 18, 0 checkpoints",
+        "strata serve: decode expert cache hit rate: 3.6% (427 hits / 12000 lookups)",
+        "strata mtp: prompt expert phase=before-detach free_bytes=4200992768 total_bytes=10666115072",
+        "strata mtp: prompt expert phase=after-detach free_bytes=4908785664 total_bytes=10666115072",
+        "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=80726784; source=resident-Mode0 score_pitch=33 operand_layout=row-major softmax=subgroup",
+        "strata prefill: layer-major candidate, tokens=39261 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=804065280 residual_gpu_rows=32768 residual_gpu=671088640 residual_host=132976640 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
+        "strata prefill: native16 BF16 HC residual/projection IO and MoE outputs; FP32 local accumulations/router/recurrent state; PLE and final callbacks bridge FP32; QSA tensor IO=BF16, indexer/GDN internals FP32; reserved scratch arena unchanged; unqualified",
+        "strata MoE window: windows=96 dequants=27581 jobs=28099 source_H2D_bytes=62914560 GPU_resident_pairs_only=1 operator_max=8192 source_uploads_per_window=1",
+        "strata mtp: prompt expert phase=after-prompt-before-restore free_bytes=5060153344 total_bytes=10666115072",
+        "strata mtp: prompt expert phase=after-restore free_bytes=4352356352 total_bytes=10666115072",
+        "strata serve: prompt 39262 tokens = 0 reused + 39262 read in 82010 ms (478.7 tok/s), 24 generated in 1678 ms (14.3 tok/s), drafts accepted 16 of 21, 0 checkpoints",
+        "strata serve: decode expert cache hit rate: 4.3% (601 hits / 13920 lookups)"
+      ],
+      "journal_before_cursor": "s=9944479cfd1a45c28a589619cb8f2881;i=c2cb9c7;b=cfda0b6a7c134fe2bdf58f9202770840;m=85de4c19e4;t=65e052dc5f192;x=80ff0e4b94550df0",
+      "journal_complete_rows": 3,
+      "journal_fault_filter": "(?i)(\\bxe\\b.*(fault|hang|reset|error|wedg|timeout|stuck)|GPU.*(fault|hang|wedg|reset)|GuC.*(fault|hang|reset|error))",
+      "journal_fault_entries": [],
+      "journal_command_exit": 0,
+      "canonical_results_equal": true,
+      "private_wrapper_config_plan_retained": true,
+      "canonical_expert_profile_untouched": "main-moe-window-model-profile-window2-v1/expert-profile.bin"
+    },
+    {
+      "receipt": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/qsa-subgroup-engine-model-clean-optimized-r1-v1.json",
+      "native_relevant_lines": [
+        "strata generate: expert arena: mlock failed (raise ulimit -l); SYCL ordinary host arena; MAP_HUGETLB unavailable (needed 23983 2 MiB pages, vm.nr_hugepages=0); using 4 KB pages",
+        "strata prefill: FP16 MoE compact requested=1 effective=1, chunk=8192, scratch rows=8192, accounted=2311569920, shared region=1180698624 bytes",
+        "strata serve: prompt 74 tokens = 0 reused + 74 read in 24801 ms (3.0 tok/s), 24 generated in 6402 ms (3.7 tok/s), drafts accepted 18 of 18, 0 checkpoints",
+        "strata serve: decode expert cache hit rate: 3.6% (427 hits / 12000 lookups)",
+        "strata mtp: prompt expert phase=before-detach free_bytes=4200984576 total_bytes=10666115072",
+        "strata mtp: prompt expert phase=after-detach free_bytes=4908777472 total_bytes=10666115072",
+        "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=80726784; source=resident-Mode0 score_pitch=33 operand_layout=row-major softmax=serial",
+        "strata prefill: layer-major candidate, tokens=39261 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=804065280 residual_gpu_rows=32768 residual_gpu=671088640 residual_host=132976640 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
+        "strata prefill: native16 BF16 HC residual/projection IO and MoE outputs; FP32 local accumulations/router/recurrent state; PLE and final callbacks bridge FP32; QSA tensor IO=BF16, indexer/GDN internals FP32; reserved scratch arena unchanged; unqualified",
+        "strata MoE window: windows=96 dequants=27679 jobs=28196 source_H2D_bytes=62914560 GPU_resident_pairs_only=1 operator_max=8192 source_uploads_per_window=1",
+        "strata mtp: prompt expert phase=after-prompt-before-restore free_bytes=5060145152 total_bytes=10666115072",
+        "strata mtp: prompt expert phase=after-restore free_bytes=4352348160 total_bytes=10666115072",
+        "strata serve: prompt 39262 tokens = 0 reused + 39262 read in 80110 ms (490.1 tok/s), 24 generated in 1688 ms (14.2 tok/s), drafts accepted 16 of 21, 0 checkpoints",
+        "strata serve: decode expert cache hit rate: 4.4% (612 hits / 13920 lookups)"
+      ],
+      "journal_before_cursor": "s=9944479cfd1a45c28a589619cb8f2881;i=c2cbc1c;b=cfda0b6a7c134fe2bdf58f9202770840;m=85e9078eda;t=65e0538816688;x=a4ecff22513b0297",
+      "journal_complete_rows": 12,
+      "journal_fault_filter": "(?i)(\\bxe\\b.*(fault|hang|reset|error|wedg|timeout|stuck)|GPU.*(fault|hang|wedg|reset)|GuC.*(fault|hang|reset|error))",
+      "journal_fault_entries": [],
+      "journal_command_exit": 0,
+      "canonical_results_equal": true,
+      "private_wrapper_config_plan_retained": true,
+      "canonical_expert_profile_untouched": "main-moe-window-model-profile-window2-v1/expert-profile.bin"
+    },
+    {
+      "receipt": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/qsa-subgroup-engine-model-clean-optimized-r2-v1.json",
+      "native_relevant_lines": [
+        "strata generate: expert arena: mlock failed (raise ulimit -l); SYCL ordinary host arena; MAP_HUGETLB unavailable (needed 23983 2 MiB pages, vm.nr_hugepages=0); using 4 KB pages",
+        "strata prefill: FP16 MoE compact requested=1 effective=1, chunk=8192, scratch rows=8192, accounted=2311569920, shared region=1180698624 bytes",
+        "strata serve: prompt 74 tokens = 0 reused + 74 read in 24738 ms (3.0 tok/s), 24 generated in 6387 ms (3.8 tok/s), drafts accepted 18 of 18, 0 checkpoints",
+        "strata serve: decode expert cache hit rate: 3.6% (427 hits / 12000 lookups)",
+        "strata mtp: prompt expert phase=before-detach free_bytes=4200988672 total_bytes=10666115072",
+        "strata mtp: prompt expert phase=after-detach free_bytes=4908781568 total_bytes=10666115072",
+        "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=80726784; source=resident-Mode0 score_pitch=33 operand_layout=row-major softmax=serial",
+        "strata prefill: layer-major candidate, tokens=39261 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=804065280 residual_gpu_rows=32768 residual_gpu=671088640 residual_host=132976640 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
+        "strata prefill: native16 BF16 HC residual/projection IO and MoE outputs; FP32 local accumulations/router/recurrent state; PLE and final callbacks bridge FP32; QSA tensor IO=BF16, indexer/GDN internals FP32; reserved scratch arena unchanged; unqualified",
+        "strata MoE window: windows=96 dequants=27679 jobs=28196 source_H2D_bytes=62914560 GPU_resident_pairs_only=1 operator_max=8192 source_uploads_per_window=1",
+        "strata mtp: prompt expert phase=after-prompt-before-restore free_bytes=5060149248 total_bytes=10666115072",
+        "strata mtp: prompt expert phase=after-restore free_bytes=4352352256 total_bytes=10666115072",
+        "strata serve: prompt 39262 tokens = 0 reused + 39262 read in 79901 ms (491.4 tok/s), 24 generated in 1687 ms (14.2 tok/s), drafts accepted 16 of 21, 0 checkpoints",
+        "strata serve: decode expert cache hit rate: 4.4% (612 hits / 13920 lookups)"
+      ],
+      "journal_before_cursor": "s=9944479cfd1a45c28a589619cb8f2881;i=c2cbe8a;b=cfda0b6a7c134fe2bdf58f9202770840;m=85f3c2eb14;t=65e05433cc2c1;x=c29dbc0dcda3667",
+      "journal_complete_rows": 3,
+      "journal_fault_filter": "(?i)(\\bxe\\b.*(fault|hang|reset|error|wedg|timeout|stuck)|GPU.*(fault|hang|wedg|reset)|GuC.*(fault|hang|reset|error))",
+      "journal_fault_entries": [],
+      "journal_command_exit": 0,
+      "canonical_results_equal": true,
+      "private_wrapper_config_plan_retained": true,
+      "canonical_expert_profile_untouched": "main-moe-window-model-profile-window2-v1/expert-profile.bin"
+    },
+    {
+      "receipt": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/qsa-subgroup-engine-model-clean-subgroup-r2-v1.json",
+      "native_relevant_lines": [
+        "strata generate: expert arena: mlock failed (raise ulimit -l); SYCL ordinary host arena; MAP_HUGETLB unavailable (needed 23983 2 MiB pages, vm.nr_hugepages=0); using 4 KB pages",
+        "strata prefill: FP16 MoE compact requested=1 effective=1, chunk=8192, scratch rows=8192, accounted=2311569920, shared region=1180698624 bytes",
+        "strata serve: prompt 74 tokens = 0 reused + 74 read in 24994 ms (3.0 tok/s), 24 generated in 6417 ms (3.7 tok/s), drafts accepted 18 of 18, 0 checkpoints",
+        "strata serve: decode expert cache hit rate: 3.6% (427 hits / 12000 lookups)",
+        "strata mtp: prompt expert phase=before-detach free_bytes=4200984576 total_bytes=10666115072",
+        "strata mtp: prompt expert phase=after-detach free_bytes=4908777472 total_bytes=10666115072",
+        "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=80726784; source=resident-Mode0 score_pitch=33 operand_layout=row-major softmax=subgroup",
+        "strata prefill: layer-major candidate, tokens=39261 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=804065280 residual_gpu_rows=32768 residual_gpu=671088640 residual_host=132976640 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
+        "strata prefill: native16 BF16 HC residual/projection IO and MoE outputs; FP32 local accumulations/router/recurrent state; PLE and final callbacks bridge FP32; QSA tensor IO=BF16, indexer/GDN internals FP32; reserved scratch arena unchanged; unqualified",
+        "strata MoE window: windows=96 dequants=27581 jobs=28099 source_H2D_bytes=62914560 GPU_resident_pairs_only=1 operator_max=8192 source_uploads_per_window=1",
+        "strata mtp: prompt expert phase=after-prompt-before-restore free_bytes=5060145152 total_bytes=10666115072",
+        "strata mtp: prompt expert phase=after-restore free_bytes=4352348160 total_bytes=10666115072",
+        "strata serve: prompt 39262 tokens = 0 reused + 39262 read in 79175 ms (495.9 tok/s), 24 generated in 1687 ms (14.2 tok/s), drafts accepted 16 of 21, 0 checkpoints",
+        "strata serve: decode expert cache hit rate: 4.3% (601 hits / 13920 lookups)"
+      ],
+      "journal_before_cursor": "s=9944479cfd1a45c28a589619cb8f2881;i=c2cc0ed;b=cfda0b6a7c134fe2bdf58f9202770840;m=85fe7e723f;t=65e054df849ed;x=3b3aacb7c3752e1f",
+      "journal_complete_rows": 4,
+      "journal_fault_filter": "(?i)(\\bxe\\b.*(fault|hang|reset|error|wedg|timeout|stuck)|GPU.*(fault|hang|wedg|reset)|GuC.*(fault|hang|reset|error))",
+      "journal_fault_entries": [],
+      "journal_command_exit": 0,
+      "canonical_results_equal": true,
+      "private_wrapper_config_plan_retained": true,
+      "canonical_expert_profile_untouched": "main-moe-window-model-profile-window2-v1/expert-profile.bin"
+    }
+  ],
+  "removed": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-diagnostic-subgroup-r0-v1/engine-exit.json",
+      "bytes": 2517,
+      "sha256": "1688a154a3733fd4e9d2ef165f4de92d29e39c339db844e2cfd432ea5fbfcc19",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-diagnostic-subgroup-r0-v1/expert-profile.bin",
+      "bytes": 196632,
+      "sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-diagnostic-subgroup-r0-v1/engine-start.json",
+      "bytes": 2428,
+      "sha256": "2e3ded8a0f063d5eb39c6068ae78b355fe2207eddd2043a28f55373a88f055a5",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-diagnostic-subgroup-r0-v1/result.json",
+      "bytes": 6219,
+      "sha256": "48185c403ce8788d636912db98f3ef75945063bed210b56fa690ed29e3a26266",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-diagnostic-subgroup-r0-v1/owned/prefill-only.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-diagnostic-subgroup-r0-v1/owned/server.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-diagnostic-subgroup-r0-v1/owned/journal-before.stdout",
+      "bytes": 156,
+      "sha256": "ac751bfa8a75027b9d07ab9f9818643c38ffae72177006a5431ec4f0b450dbae",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-diagnostic-subgroup-r0-v1/owned/bench.stdout",
+      "bytes": 496,
+      "sha256": "dc69f3483c162de75051e43cb2169b6564e5762d3b7eb7f0764d0d0afdb3e2e9",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-diagnostic-subgroup-r0-v1/owned/journal-final.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-diagnostic-subgroup-r0-v1/owned/server.stdout",
+      "bytes": 2762,
+      "sha256": "859b1c7bb12dd991a0903fa270391a00581476fd7f2831f098898a7ff459e96a",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-diagnostic-subgroup-r0-v1/owned/prefill-only.stdout",
+      "bytes": 272,
+      "sha256": "2321b1a1b7d04c42c4748babdf403f542ebc7976d063750a8fec19045e7c0f48",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-diagnostic-subgroup-r0-v1/owned/journal-final.stdout",
+      "bytes": 2217,
+      "sha256": "dd1f349971348bd2b20a4b73175a5f8daabbc300c8463186d487df81e0debe3a",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-diagnostic-subgroup-r0-v1/owned/engine.stderr",
+      "bytes": 46033,
+      "sha256": "57b4dc712fc1bb35c40e4bea01babd8aa54fb4ace6d64889cc58cefeb39795d8",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-diagnostic-subgroup-r0-v1/owned/journal-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-diagnostic-subgroup-r0-v1/owned/bench.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-diagnostic-subgroup-r0-v1/stock-results/2026-10-17-community-cpu-qwen3-8-flash-next-iq3-s-primary/journal-state.json",
+      "bytes": 178,
+      "sha256": "3c7e59b3a835cf06fe559e17fedaa4b1b6ceb1c8c85f65b9fb6c83f6dc69871f",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-diagnostic-subgroup-r0-v1/stock-results/2026-10-17-community-cpu-qwen3-8-flash-next-iq3-s-primary/requests.jsonl",
+      "bytes": 4683,
+      "sha256": "98823c6727e7a72e93a1f54845937f8aa3df5d35a2d9aa57e4488225bbaa78f1",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-diagnostic-subgroup-r0-v1/stock-results/2026-10-17-community-cpu-qwen3-8-flash-next-iq3-s-primary/results.json",
+      "bytes": 14246,
+      "sha256": "00b04ad0afd353244bb7adeda8da6f9d51238d501bdf00152ae5ae6f3f5898dc",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-diagnostic-subgroup-r0-v1/stock-results/2026-10-17-community-cpu-qwen3-8-flash-next-iq3-s-primary/README.md",
+      "bytes": 832,
+      "sha256": "4b059a47d48107026c02330f07f532273232a89a7c327c220fce7c1160817d62",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r0-v1/expert-profile.bin",
+      "bytes": 196632,
+      "sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r0-v1/engine-exit.json",
+      "bytes": 2514,
+      "sha256": "4ed32023287993e79e3affade3874c1bdde2f912a2363a48cb4c6172e225f2cf",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r0-v1/engine-start.json",
+      "bytes": 2425,
+      "sha256": "32042c5681b3feb1ec405bfafcc48463dd985eea171fa61a819dda1a86a0bf7a",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r0-v1/result.json",
+      "bytes": 6204,
+      "sha256": "3394299b34cd2b896096c5cade329783f128339c83fad3d977374e7998b13dbc",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r0-v1/owned/bench.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r0-v1/owned/prefill-only.stdout",
+      "bytes": 272,
+      "sha256": "2321b1a1b7d04c42c4748babdf403f542ebc7976d063750a8fec19045e7c0f48",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r0-v1/owned/engine.stderr",
+      "bytes": 6101,
+      "sha256": "927b75fe41517a7b200d7266e9cfc29b15d025dae1a29be46ab9192938fe58a5",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r0-v1/owned/journal-final.stdout",
+      "bytes": 9308,
+      "sha256": "cdb6a9fbbb47a8722fe472d0b562f00d47248a35f092381bdf323b93a6c65e61",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r0-v1/owned/server.stdout",
+      "bytes": 2735,
+      "sha256": "69e5e785fd93f329ee146879dec206d88001a6dcfd4edfc7a336c3dbdbf2a4c4",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r0-v1/owned/journal-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r0-v1/owned/prefill-only.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r0-v1/owned/bench.stdout",
+      "bytes": 492,
+      "sha256": "ce663369b197baf3d0942625b31b8a4fcad75ee5a22bec2c0d6dbdf2f5cc36dc",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r0-v1/owned/journal-before.stdout",
+      "bytes": 156,
+      "sha256": "b9f91fcaab91876cc1ac948cfa89209009de5191462be4796a42fbae3b51ff47",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r0-v1/owned/server.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r0-v1/owned/journal-final.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r0-v1/stock-results/2026-10-17-community-cpu-qwen3-8-flash-next-iq3-s-primary/journal-state.json",
+      "bytes": 178,
+      "sha256": "f6faef4d6ccd76e26d1d941f2c18add71d233b19119ae6cd0c6ef67ebd095329",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r0-v1/stock-results/2026-10-17-community-cpu-qwen3-8-flash-next-iq3-s-primary/results.json",
+      "bytes": 14250,
+      "sha256": "0ebda0a9aa0519e32846011c896a53af44dfa4032d0d7b9d644137a6ea69d728",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r0-v1/stock-results/2026-10-17-community-cpu-qwen3-8-flash-next-iq3-s-primary/README.md",
+      "bytes": 832,
+      "sha256": "42f12d8832833c84224bbaa31246c2d923f882ebb6613eceb43e9594660f5bdf",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r0-v1/stock-results/2026-10-17-community-cpu-qwen3-8-flash-next-iq3-s-primary/requests.jsonl",
+      "bytes": 4685,
+      "sha256": "1afa4286287bde6fb59f07640d780039a466218600764be0e78029c947911030",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r0-v1/engine-start.json",
+      "bytes": 2423,
+      "sha256": "b226a7bc76526c84163785ec9e47c30b4bb322a7af0d59d7a3ebd9d90f36bbf2",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r0-v1/engine-exit.json",
+      "bytes": 2512,
+      "sha256": "ae40ffca3b47d839fe18ae7525d9d5550f5bd3b736100520dac7f80569907ebb",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r0-v1/result.json",
+      "bytes": 6199,
+      "sha256": "dda4683d427a402849294f7d0bc7cf70e05abac1c98035b8bce6b6f49d23e5ff",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r0-v1/expert-profile.bin",
+      "bytes": 196632,
+      "sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r0-v1/owned/engine.stderr",
+      "bytes": 6102,
+      "sha256": "4e409595bf74886cb11acae7bd5415de25457791a341c5d8d329c46cea29f8c2",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r0-v1/owned/bench.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r0-v1/owned/prefill-only.stdout",
+      "bytes": 272,
+      "sha256": "2321b1a1b7d04c42c4748babdf403f542ebc7976d063750a8fec19045e7c0f48",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r0-v1/owned/server.stdout",
+      "bytes": 2735,
+      "sha256": "0e54beee5ba2647ed26391c27c8a8cbecbe68a252441fa60d9be8b3f354cdb30",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r0-v1/owned/journal-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r0-v1/owned/journal-final.stdout",
+      "bytes": 5404,
+      "sha256": "09ffe91068d0f64ba7f56519496bd04614a479b72acc02ffe760fef7d289c1e5",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r0-v1/owned/prefill-only.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r0-v1/owned/bench.stdout",
+      "bytes": 491,
+      "sha256": "72aaacf291b0da70e12493449ae80b9994945d8e00c2ce09f226c2b3f1a45127",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r0-v1/owned/journal-before.stdout",
+      "bytes": 156,
+      "sha256": "4d4861e15a0de27682b2105a1a24734ba0b19668ba9ad14b8f5e4a886138c7bd",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r0-v1/owned/server.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r0-v1/owned/journal-final.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r0-v1/stock-results/2026-10-17-community-cpu-qwen3-8-flash-next-iq3-s-primary/requests.jsonl",
+      "bytes": 4684,
+      "sha256": "6e83b31e471047987ad1662c0204e605aad281a4e0e9f3df98ab37ae0a07a928",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r0-v1/stock-results/2026-10-17-community-cpu-qwen3-8-flash-next-iq3-s-primary/README.md",
+      "bytes": 832,
+      "sha256": "db387e52673caa104b2c1f22ed4731cb6d361716ba72b1130397915ee579dce9",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r0-v1/stock-results/2026-10-17-community-cpu-qwen3-8-flash-next-iq3-s-primary/results.json",
+      "bytes": 14249,
+      "sha256": "7e7ee72d4808f0bb20b60b550dad92a81f933fc268ace9f70c65df99ac4d02fd",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r0-v1/stock-results/2026-10-17-community-cpu-qwen3-8-flash-next-iq3-s-primary/journal-state.json",
+      "bytes": 178,
+      "sha256": "45b560e503077e3cb07e16996d43f272e2e98f2c90c22e327427e8d23dd958fd",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r1-v1/result.json",
+      "bytes": 6199,
+      "sha256": "dedc228ce31e4c693b13ebc53801e9daff3f80bbb518b46ad64a31fda64d09de",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r1-v1/engine-exit.json",
+      "bytes": 2512,
+      "sha256": "681fc7c12f234547cb7d6d4789790ece7adf913e7b3fd559aa053d50f290ffc7",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r1-v1/engine-start.json",
+      "bytes": 2423,
+      "sha256": "b37c9c95920efc0cc0abfc727cb36792fb8e6bba96ac9a1284322c2e1edded33",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r1-v1/expert-profile.bin",
+      "bytes": 196632,
+      "sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r1-v1/owned/bench.stdout",
+      "bytes": 491,
+      "sha256": "a29d1860ecc14e73e36cf0dea28b6ec92493300ddc0216ed939fa0229059c8be",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r1-v1/owned/journal-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r1-v1/owned/journal-final.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r1-v1/owned/server.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r1-v1/owned/prefill-only.stdout",
+      "bytes": 272,
+      "sha256": "2321b1a1b7d04c42c4748babdf403f542ebc7976d063750a8fec19045e7c0f48",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r1-v1/owned/server.stdout",
+      "bytes": 2709,
+      "sha256": "9c85e8a7c297fe6a111efaafb3d1e1de582f370c751dc21f0cc0924c8b1ec947",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r1-v1/owned/journal-final.stdout",
+      "bytes": 2217,
+      "sha256": "1019cae6b930e4cc13702227393a2b1777de78f0c06409b1c36f16cca20355d4",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r1-v1/owned/bench.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r1-v1/owned/journal-before.stdout",
+      "bytes": 156,
+      "sha256": "e104c58024eb66beac25f781cc866721e992ed0bcc1c497f4fdc5da14a19dd46",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r1-v1/owned/prefill-only.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r1-v1/owned/engine.stderr",
+      "bytes": 6101,
+      "sha256": "cd4027e5e047322c5904a1084e9a2d34debda840c771e83b3c4096be685e103f",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r1-v1/stock-results/2026-10-17-community-cpu-qwen3-8-flash-next-iq3-s-primary/journal-state.json",
+      "bytes": 178,
+      "sha256": "1abb03a1396f11f7e4fd456482f5ef29020ed3a745395cd6116b2421b11e7ec4",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r1-v1/stock-results/2026-10-17-community-cpu-qwen3-8-flash-next-iq3-s-primary/README.md",
+      "bytes": 832,
+      "sha256": "d3a94b5614918820b588b06ededea3c2cef99703ae56c08b8205c78d44508bc9",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r1-v1/stock-results/2026-10-17-community-cpu-qwen3-8-flash-next-iq3-s-primary/results.json",
+      "bytes": 14248,
+      "sha256": "82ef44b1972b2dae87549d5e94246d14be3d37dbeb56c4a152ce732c506fc2cd",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r1-v1/stock-results/2026-10-17-community-cpu-qwen3-8-flash-next-iq3-s-primary/requests.jsonl",
+      "bytes": 4685,
+      "sha256": "b818ca73f86c743c3e2491f258e4383e754b25257775fcc29ed37bf0f39804e1",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r1-v1/expert-profile.bin",
+      "bytes": 196632,
+      "sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r1-v1/engine-exit.json",
+      "bytes": 2514,
+      "sha256": "1558af02dc576640e564af58ced2229aa20470a6e8d0848f801db6a41bad9243",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r1-v1/result.json",
+      "bytes": 6204,
+      "sha256": "9b9e3451460bd1ddcbec8e93b62f44d2132dff6134091c9c9241f89f217eed98",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r1-v1/engine-start.json",
+      "bytes": 2425,
+      "sha256": "66830c53c95850a90da59f99dc07391686d01705fecd4e773fa049892243a0d1",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r1-v1/owned/prefill-only.stdout",
+      "bytes": 272,
+      "sha256": "2321b1a1b7d04c42c4748babdf403f542ebc7976d063750a8fec19045e7c0f48",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r1-v1/owned/server.stdout",
+      "bytes": 2709,
+      "sha256": "6f3a23f02ee3e1ac6d7f15c4826d83c46450a3c162e4bb2569880e4484c34f21",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r1-v1/owned/journal-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r1-v1/owned/bench.stdout",
+      "bytes": 492,
+      "sha256": "da65d3e294102794ad011cc4d9db470353af5eae867b45ea8b04f6650a1d3cff",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r1-v1/owned/journal-final.stdout",
+      "bytes": 9263,
+      "sha256": "810d26b16c81e0b285e40540c68eb74677cac3a6dac89380e23170daae4b528b",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r1-v1/owned/engine.stderr",
+      "bytes": 6100,
+      "sha256": "02364fabd5c880aff60e5cd0122a373a751dfa750c83de04ba62818358ca29ec",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r1-v1/owned/server.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r1-v1/owned/prefill-only.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r1-v1/owned/journal-final.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r1-v1/owned/journal-before.stdout",
+      "bytes": 156,
+      "sha256": "b0ddf64ca67488a42c8665d79b295b4950739f733b0823a8bfe7ae1be6a778d3",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r1-v1/owned/bench.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r1-v1/stock-results/2026-10-17-community-cpu-qwen3-8-flash-next-iq3-s-primary/README.md",
+      "bytes": 832,
+      "sha256": "87c6c67394e9d54e8488ffa2d30ca66ea11b3164c90ca1d3ea27d66df1d0dfb9",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r1-v1/stock-results/2026-10-17-community-cpu-qwen3-8-flash-next-iq3-s-primary/requests.jsonl",
+      "bytes": 4685,
+      "sha256": "ffef12180158f01f1089481f6540b0b7538fd276df3527d9fec1f98f2cfb220f",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r1-v1/stock-results/2026-10-17-community-cpu-qwen3-8-flash-next-iq3-s-primary/results.json",
+      "bytes": 14250,
+      "sha256": "af1eae5efc41ed2e08288f56a02cb9a097ad2748b9258bcf4718bbf184713150",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r1-v1/stock-results/2026-10-17-community-cpu-qwen3-8-flash-next-iq3-s-primary/journal-state.json",
+      "bytes": 178,
+      "sha256": "3da8b9c0afe3b2485667c8b3049c2d571bd2b98ea98b3be24a4f0a9880845879",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r2-v1/engine-exit.json",
+      "bytes": 2514,
+      "sha256": "9f37737354752a3f7f4fb66ec7d462fb39f0657aec9fda3ed76463e0a19e9950",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r2-v1/result.json",
+      "bytes": 6204,
+      "sha256": "c803ef8c1620f56b4f3edca21cec18f49d0a633f95af56ab9eb4432ecb018e43",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r2-v1/engine-start.json",
+      "bytes": 2425,
+      "sha256": "de5360f75deec318fe319cde3677d37fb80ce10c576dbec479f0dd19c3f98822",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r2-v1/expert-profile.bin",
+      "bytes": 196632,
+      "sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r2-v1/owned/prefill-only.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r2-v1/owned/server.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r2-v1/owned/journal-final.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r2-v1/owned/journal-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r2-v1/owned/bench.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r2-v1/owned/engine.stderr",
+      "bytes": 6100,
+      "sha256": "854573b198aea0fb1195b71ae8bc934128e2de861e35f75e09a1c683bb93f64b",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r2-v1/owned/prefill-only.stdout",
+      "bytes": 272,
+      "sha256": "2321b1a1b7d04c42c4748babdf403f542ebc7976d063750a8fec19045e7c0f48",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r2-v1/owned/bench.stdout",
+      "bytes": 492,
+      "sha256": "4d70946cba10915fcac7227f9b17a91ba8caae9fe0a97dedfe6a6d1c84ef9719",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r2-v1/owned/journal-final.stdout",
+      "bytes": 2217,
+      "sha256": "2464e373478b8d40a650b39956b245c333771e4143b5bb5aaaf4c13b358bc54b",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r2-v1/owned/server.stdout",
+      "bytes": 2709,
+      "sha256": "a678819ebef15be2e73eb0ce8c5e775174eabfe83169338488d6ca2a29063ee6",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r2-v1/owned/journal-before.stdout",
+      "bytes": 155,
+      "sha256": "e05fe59afc16bcadbd11ba053445a6f95f91b9eda875addb2fc79d05c63df4ea",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r2-v1/stock-results/2026-10-17-community-cpu-qwen3-8-flash-next-iq3-s-primary/journal-state.json",
+      "bytes": 178,
+      "sha256": "d423ddec30b73163028b6d2f1845eae7bc13c29d0c3c08e0d621a1cb1ffaf0cc",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r2-v1/stock-results/2026-10-17-community-cpu-qwen3-8-flash-next-iq3-s-primary/requests.jsonl",
+      "bytes": 4685,
+      "sha256": "a86be88202d3a7291eddf82fae5eb43073cbc98c13349654b048a46afaad6893",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r2-v1/stock-results/2026-10-17-community-cpu-qwen3-8-flash-next-iq3-s-primary/README.md",
+      "bytes": 832,
+      "sha256": "c7409ee6363ab56ce320223a6170a53f6abed84772315fbf2d07bad93f9f2e88",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-optimized-r2-v1/stock-results/2026-10-17-community-cpu-qwen3-8-flash-next-iq3-s-primary/results.json",
+      "bytes": 14250,
+      "sha256": "0b286ae11c05e00363d770247d35ef504f821473074ec11995bc5fabcba91a8d",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r2-v1/engine-start.json",
+      "bytes": 2423,
+      "sha256": "4558cbbfd19a9d62dd137c5aec4ec1370212b7d581d8951666ca0fc25d70185a",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r2-v1/expert-profile.bin",
+      "bytes": 196632,
+      "sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r2-v1/engine-exit.json",
+      "bytes": 2512,
+      "sha256": "4525dea09214bcab755b0863de4ee32c1b2089af5e05798d63a2ed2e32e8d9db",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r2-v1/result.json",
+      "bytes": 6199,
+      "sha256": "56d046eae6ad6d3d190cbeb501df37f9af789fa822cec8beb1015476cacdc214",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r2-v1/owned/engine.stderr",
+      "bytes": 6102,
+      "sha256": "80698f39520168098ecf6bb292d096b2a89c8533c526567df42cfdc4827a3c10",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r2-v1/owned/journal-final.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r2-v1/owned/prefill-only.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r2-v1/owned/bench.stdout",
+      "bytes": 491,
+      "sha256": "cd0e8fb322904e3d57506515837fb6002d648da55652d7b42129be5e5706614f",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r2-v1/owned/journal-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r2-v1/owned/server.stdout",
+      "bytes": 2709,
+      "sha256": "214ed41009e9a5923e6590fdfcf25c6ac822f684a3c6a31bc7a1f123793c914e",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r2-v1/owned/bench.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r2-v1/owned/prefill-only.stdout",
+      "bytes": 272,
+      "sha256": "2321b1a1b7d04c42c4748babdf403f542ebc7976d063750a8fec19045e7c0f48",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r2-v1/owned/journal-final.stdout",
+      "bytes": 2956,
+      "sha256": "e193e9f35f3214335ea2bfa0b296c017aa764a0abbb9e885cbab028d39ba4430",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r2-v1/owned/journal-before.stdout",
+      "bytes": 156,
+      "sha256": "4491b2c1b09519e9fbcd7c1e6f2fddfcc6a89f6dba4c5ca21b3cd2a4c92bf843",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r2-v1/owned/server.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r2-v1/stock-results/2026-10-17-community-cpu-qwen3-8-flash-next-iq3-s-primary/results.json",
+      "bytes": 14250,
+      "sha256": "74ef669a9dc3206eab6419f9bf45c3de6c0e276003cf942def50f24f51537388",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r2-v1/stock-results/2026-10-17-community-cpu-qwen3-8-flash-next-iq3-s-primary/README.md",
+      "bytes": 832,
+      "sha256": "f6ac5636e0b6b9ec6a39ad88d1eae9294270344040007d55b0c5e13715f729de",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r2-v1/stock-results/2026-10-17-community-cpu-qwen3-8-flash-next-iq3-s-primary/journal-state.json",
+      "bytes": 178,
+      "sha256": "f3ff3f80c0a069900ad71eedbe2e6e5c6f52633705436d2e44e5034a3af79c29",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-subgroup-engine-model-clean-subgroup-r2-v1/stock-results/2026-10-17-community-cpu-qwen3-8-flash-next-iq3-s-primary/requests.jsonl",
+      "bytes": 4685,
+      "sha256": "78a27de6612ee963bccae2225e7ea0b37a110349da2cf004d7eb6f8584a634c2",
+      "reason": "Closed successful raw protocol/journal/profile or duplicate result; canonical individual receipt and verified compact evidence retained. No current capture/RESTORE consumer."
+    }
+  ],
+  "removed_files": 133,
+  "removed_logical_bytes": 1735753,
+  "deletion_complete": true
+}

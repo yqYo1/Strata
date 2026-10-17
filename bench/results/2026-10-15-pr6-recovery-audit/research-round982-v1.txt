@@ -1,0 +1,92 @@
+# GPU topology and attainable resource ceilings
+
+Classification: knowledge collection (held; do not load into Main unless a concrete hardware-bound question needs it)
+Scope: public-source synthesis for the supplied AMD 5600X / 128 GiB / Intel Arc B570 setup, with driver 1.17.39395+14, LLVM 22.1/libsycl 9, and forced Unified Runtime Level Zero v2 as user-supplied environment context. No local runtime, profiler, build, or GPU work was done. The `max_compute_units=160` observation is only the user-supplied llama-bench listing; it was not independently probed.
+
+## Retrieval and prior-index boundary
+
+I inspected only metadata in `bench/results/2026-10-15-pr6-recovery-audit/research-index.json`; I did not open any prior knowledge-collection report body. Relevant existing coverage:
+
+- R896, `research-round896-v1.txt`: reviewed counter-collection proposal; actual counter collection remains UNRUN.
+- R902, `research-round902-v1.txt`: captured Mode1 kernel-property interpretation; reviewed with SKU and property guardrails, explicitly no occupancy/bottleneck claim.
+- R914, `research-round914-v1.txt`: reviewed controlled work-set reuse and enqueue-grain design; not a hardware-saturation result.
+- R918, `research-round918-v1.txt`: held Level Zero Sysman / PCIe / memory-telemetry semantics; no B570 support claim.
+- R924, `research-round924-v1.txt`: held subgroup roles / SLM pipeline collection; no B570 bottleneck claim.
+- R934, `research-round934-v1.txt`: held mergeable-reduction collection.
+- R950, `research-round950-v1.txt`: held MatrixTile payload/layout collection; accepted with payload-accounting caveat.
+- R977, `research-round977-v1.txt`: small-M design decision support, reviewed and held; retrieval trigger is a concrete small-M screen after the current comparison.
+- R978, `research-round978-v1.txt`: event-path decision support, reviewed and held; do not treat this report as a reason to create another event collector.
+
+This report adds a cross-resource ceiling ledger and a bounded calibration sequence. It does not restate the prior event collector, claim an engine is saturated, or adopt an implementation.
+
+## Evidence and interpretation
+
+### `max_compute_units` is not an Xe-core count
+
+The SYCL reference defines `info::device::max_compute_units` as “the number of parallel compute units available to the device”; it does not define “compute unit” as an Xe-core, XVE/vector engine, XMX engine, EU, or enabled slice. Therefore the supplied value 160 is a useful runtime-reported scheduling quantity, not proof of 160 physical units of any named Xe block.
+
+Intel's 2025-2 Xe architecture guide gives a more specific Xe hierarchy and query recipe: its Xe2-HPG example is a B580 with 20 Xe-cores, 8 vector engines/core, 160 vector engines, XMX support, and 128 KiB SLM per core / maximum per work-group. Intel's B570 product page instead lists 18 Xe-cores, 144 Xe vector engines, and 144 XMX engines. Thus 160 equals the guide's B580 vector-engine count and differs from the B570 SKU counts; this discrepancy merits a same-process identity/property capture, but it does not prove the listing is mislabeled or that the driver is wrong. Cross-check device name and PCI device ID (Intel lists B570 ID 0xE20C), backend/runtime string, root-vs-subdevice status, and the Intel SYCL extension tuple (`gpu_slices`, `gpu_subslices_per_slice`, `gpu_eu_count_per_subslice`, `gpu_hw_threads_per_eu`) alongside `max_compute_units`. The exact extension availability/semantics must be checked in the installed LLVM/libsycl version.
+
+Level Zero's public `ze_device_properties_t` exposes `coreClockRate`, `physicalEUSimdWidth`, `numThreadsPerEU`, `numEUsPerSubslice`, `numSubslicesPerSlice`, and `numSlices`; the latter topology fields are described as maximum counts. Preserve the raw tuple and device identity. Do not multiply independent maxima and call the product an enabled-unit mask for a potentially non-rectangular or fused-down topology. For the supplied forced-UR/L0-v2 stack, public Level Zero 1.18.31 docs are semantic reference, not proof that the user's 1.17 driver returns identical values.
+
+### Arithmetic ceilings: useful priors, not achieved rates
+
+Intel's 2024 Xe2/Lunar Lake technical-tour slides show a second-generation Xe-core with 8 vector engines and 8 XMX engines, SIMD16 vector ALUs, FP16/BF16 on XMX, and peak per-core rates: FP32 vector 256 ops/clock, FP16 vector 512 ops/clock, XMX FP16/BF16 2,048 ops/clock, XMX INT8 4,096 ops/clock. The slide counts each MAC as 2 operations. The 2025-2 Intel guide independently lists B580 as Xe2-HPG with 8 vector engines/core and XMX support; Intel's B570 sheet lists 18 Xe-cores and 144 XMX/vector engines. This supports a **conditional** B570 estimate if the second-generation core rate transfers to this Xe2-HPG SKU:
+
+| Path (conditional per-core rate) | Aggregate at 18 cores × listed 2.5 GHz graphics clock | What the number omits |
+|---|---:|---|
+| SIMD FP32, 256 ops/core/clock | 11.52 TFLOP/s | Clock residency, instruction mix, dependencies, occupancy, tails |
+| SIMD FP16, 512 ops/core/clock | 23.04 TFLOP/s | Same; also does not establish BF16 SIMD parity |
+| XMX FP16/BF16, 2,048 ops/core/clock | 92.16 TFLOP/s | DPAS execution, tiles, data movement, tails, utilization, clock |
+| XMX INT8, 4,096 ops/core/clock | 184.32 TOPS | Same |
+
+These are arithmetic derivations from the cited source, not measured values, and the Xe2 throughput slide is for the Lunar Lake presentation while B570 is Xe2-HPG. The official B570 page lists 2,500 MHz graphics clock and 203 INT8 TOPS; 203 TOPS divided by the slide's 18 × 4,096 ops/clock implies about 2.754 GHz. Intel's public quick-reference table does not define the clock condition for Peak AI TOPS. Keep the 203-TOPS marketing figure and 2.5-GHz product clock distinct until the clock/peak definition or a same-clock measurement closes the gap. Do not use marketing TOPS as an achieved or sustained roof.
+
+XMX performance also requires a successful code path. BF16/FP16 type support, a `joint_matrix`/library call, or an XMX-capable device flag alone does not prove DPAS instructions are emitted for a particular M/N/K, alignment, or compiler/driver. Verify generated device code / instruction counters and report operations using Intel's 2-ops-per-MAC convention. If generated code has no XMX instruction, its relevant compute roof is the SIMD path. If a tile processes more rows/columns than the actual group, pad, masked lanes, fragment conversion, and setup must be charged to useful work; a tiny M or small K can be far from peak even when the global work count is large.
+
+Xe2 vector engines also include extended math, and Intel's slide lists SIN/COS/LOG/EXP and three-way co-issue of FP, integer/extended-math, and XMX classes, but the cited material gives no B570 SFU ops/cycle. Do not convert FP32 throughput into an `exp`, `exp2`, reciprocal, or reciprocal-square-root ceiling. Measure the operation used by the actual kernel (including approximation mode) and its dependency chain/independent instruction-level parallelism. A reduction followed by exp and normalization is a sequence of constrained stages, not an XMX roofline problem.
+
+### SLM, reductions, caches, DRAM
+
+Intel's Xe2-HPG/B580 table distinguishes L1 cache (256 KiB/core), SLM (128 KiB/core), and maximum SLM per work-group (128 KiB). This is a closer public architecture analogue to B570 than the Lunar Lake slide's 192-KiB shared L1$/SLM figure; do not transfer 192 KiB to B570. Query the installed device's SYCL `local_mem_size` and Level Zero `maxSharedLocalMemory` for per-work-group admission. Neither a capacity number nor a max-work-group size states SLM load/store bandwidth, reduction throughput, or active residency. The Intel guide's Xe2-HPG B580 row lists an 18-MB last-level cache; the B570 official sheet does not list cache capacity, so treat the sibling value as a clue, not a measured B570 cache roof.
+
+Use a separate SLM roof from DRAM: a large coalesced SLM copy/load-store loop estimates SLM data rate; subgroup reduction and multi-subgroup/work-group reduction estimate shuffle/collective and local-tree costs; insert explicit barriers only in the latter where the production algorithm needs them. Vary SLM bytes, subgroup count, reduction length, and work-groups in flight. Include identical read/write bytes without reduction as a control. A low reduction rate can come from dependency depth, barriers, subgroup topology, register spills, or low occupancy even if raw SLM bandwidth is high.
+
+Intel lists B570's 10-GB GDDR6, 160-bit interface, 19-Gb/s memory speed, and 380-GB/s graphics bandwidth; `19e9 × 160 / 8 = 380e9` bytes/s is the interface-rate ceiling. The Roofline upper bound is `min(compute peak, measured bandwidth × arithmetic intensity)` per relevant memory level. For sparse gather, arithmetic intensity must use transferred/cache-line traffic, not only the requested scalar bytes; index loads, partially used lines, reuse, and irregularity change effective traffic. A streaming copy/triad whose arrays exceed cache gives a DRAM baseline, not a sparse-gather prediction. A controlled hot-set/randomized-index working-set sweep separates cache reuse from external-memory traffic: sweep sizes across observed cache boundaries, reuse counts, strides and address entropy, while keeping useful work fixed and recording logical bytes separately from measured physical traffic. Reuse can move a kernel from DRAM toward cache roofs, while random gathers may still serialize on latency and underuse bandwidth.
+
+The original Roofline paper formalizes arithmetic intensity against a machine compute/bandwidth bound. Intel Advisor's GPU Roofline documentation explicitly distinguishes measured L3, SLM and DRAM roofs and notes that not every kernel can use the machine maximum. Bell & Garland's non-LLM GPU SpMV work shows why sparse row-length distributions, parallelism, and memory regularity matter; its Kepler-era percentages are not portable to Xe2, but the workload-design lesson is. Eyeriss's CNN ASIC dataflow work is a transferable non-GPU example: local reuse and dataflow placement can reduce expensive movement, but its rates and architecture are not B570 estimates.
+
+### PCIe wire rate versus application payload
+
+Intel specifies B570 as PCIe 4.0 x8. PCI-SIG specifies 16.0 GT/s for Gen4 and 128b/130b encoding. Thus the link coding ceiling is `16e9 × 8 lanes × 128/130 / 8 = 15.754 GB/s` per direction (commonly 15.75 GB/s); full-duplex directions are independent and must not be summed as one transfer. This excludes TLP/header/flow-control overhead, DMA setup, host memory behavior and runtime submission. It is roughly 24× below B570's 380-GB/s local GDDR6 rate. Treat PCIe telemetry as link activity, not bytes delivered to a kernel or application payload bandwidth. Measure H2D and D2H separately with pinned/pageable/USM cases that the production path actually uses, a range of transfer sizes (including small copy launch/setup costs), and a large steady transfer; report bytes/time and the device-side wait separately. Do not infer PCIe cost from the number of bytes logically consumed after cache reuse or from GPU-local memory bandwidth.
+
+## Bounded calibration choices
+
+1. **Resource ladder (best first ceiling check).** Capture the device identity, `max_compute_units`, Intel topology tuple, subgroup/local-memory properties, backend, compiler/device-code version, and clock telemetry. Then run separate steady-state kernels: large aligned FP16 and BF16 XMX GEMMs; equivalent vector/SIMD FMA; independent and dependency-chained exp/exp2/reciprocal cases; SLM copy and one-/multi-subgroup reductions; cache-hot and cache-cold streaming; sequential and randomized gathers; H2D and D2H. Sweep only enough block/work-group sizes to find a plateau and verify XMX codegen. This isolates ceilings and catches disabled/misidentified topology, but its large aligned GEMM is deliberately unlike sparse attention.
+
+2. **Shape-faithful replay (best applicability test).** Use Main's exact QSA row/query/selected-key/head dimensions and small-M expert-group M/N/K histogram, including tails and sparsity distribution; compare XMX, SIMD, and current path with identical storage, accumulation, and correctness contract. Preserve real index layouts and reuse distance; run matched hot/cold and group-size controls. Report useful FLOPs/s, padded XMX operations, row-length quantiles, cache/DRAM bytes when available, register/SLM usage, and per-shape latency. This tells whether tile/padding/gather/reduction cost makes the theoretical XMX roof irrelevant. It requires the actual workload-shape receipt; without it, use synthetic ranges only and label them synthetic.
+
+3. **Resident-path budget check (best system relevance).** After the above, time the real resident component plus the prerequisite transfer/dispatch path and compare its measured stage service to the resource-ladder and shape-replay bounds. Keep PCIe transfer time, kernel device time, host submission/gaps, and any synchronization wait separate; use the existing accepted Main-owned timing path if it answers the question rather than adding another collector. This is the only design that can settle whether resource improvements matter end to end, but it does not isolate a hardware ceiling and needs serialized, matched workload runs.
+
+Recommended order: (1) reconcile identity/topology and basic ceilings, (2) reject irrelevant roofs using real shape histograms, (3) run the resident-path check only for the bottleneck that remains. Sweep clocks under stock conditions and record actual frequency/power/temperature if available; run repeated independent samples after compile/warmup, and do not compare runs with differing memory residency, host buffer mode, or precision contract. No measured or adoption result is provided here.
+
+## Sources and provenance
+
+Primary/authoritative sources checked 2026-10-17; URLs are direct sources, not search pages.
+
+1. Intel, *Intel Arc B570 Graphics Specifications*, product fields and device ID: https://www.intel.com/content/www/us/en/products/sku/241676/intel-arc-b570-graphics/specifications.html
+2. Intel, *Intel Xe GPU Architecture*, oneAPI GPU Optimization Guide 2025-2, especially Xe2-HPG B580 hierarchy/table and SYCL topology query example: https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2025-2/intel-xe-gpu-architecture.html
+3. Intel, *Xe2 and Lunar Lake GPU Deep Dive*, Intel Tech Tour 2024 PDF, slides/pages 5–8 (second-generation Xe-core, XMX/vector rates, ops/MAC); Lunar Lake slide scope is not itself a B570 measurement: https://cdrdv2-public.intel.com/824434/2024_Intel_Tech%20Tour%20TW_Xe2%20and%20Lunar%20Lakes%20GPU.pdf
+4. Khronos, *SYCL Reference: Devices*, `max_compute_units`, subgroup and clock descriptors: https://github.khronos.org/SYCL_Reference/iface/device.html
+5. oneAPI, *Level Zero Specification v1.18.31, Device API*, device property and compute-property definitions: https://oneapi-src.github.io/level-zero-spec/level-zero/1.18.31/core/api/apis/device.html
+6. PCI-SIG, *PCI Express Specification Webinar*, encoding table (Gen4 16 GT/s, 128b/130b; bandwidth after encoding overhead): https://pcisig.com/sites/default/files/files/PCIe_Specification_Webinar_Rev%206_FINAL_0.pdf
+7. Intel Advisor, *Measure GPU Performance Using GPU Roofline*, definitions of cache/SLM/DRAM roofs and measured-versus-maximum interpretation: https://www.intel.com/content/www/us/en/docs/advisor/get-started-guide/2023-0/measure-gpu-performance-using-gpu-roofline.html
+8. Williams, Waterman & Patterson, *Roofline: An Insightful Visual Performance Model for Multicore Architectures*, Communications of the ACM 52(4), 2009, DOI 10.1145/1498765.1498785: https://escholarship.org/uc/item/78h8v7mr
+9. Bell & Garland, *Implementing Sparse Matrix-Vector Multiplication on Throughput-Oriented Processors*, SC09, 2009, author-hosted paper: https://mgarland.org/files/papers/sc09-spmv-throughput.pdf
+10. Chen, Emer & Sze, *Eyeriss: A Spatial Architecture for Energy-Efficient Dataflow for Convolutional Neural Networks*, ISCA 2016, author-hosted paper: https://people.csail.mit.edu/emer/media/papers/2016.06.isca.eyeriss_architecture.pdf
+
+## Retrieval tags and limits
+
+Tags: `Intel Arc B570`, `Xe2-HPG`, `max_compute_units`, `enabled topology`, `XMX`, `BF16`, `FP16`, `SIMD`, `SFU`, `SLM`, `reduction`, `cache roofline`, `random gather`, `GDDR6`, `PCIe payload`, `small-M`, `sparse attention`, `resource calibration`.
+
+Limits: public docs do not establish actual enabled B570 topology or sustained clock on the user's exact forced-UR runtime; public Xe2 slides are not a B570 measurement; B570 XMX/SFU/SLM/cache throughput is unmeasured; the arithmetic roofs do not predict irregular query/group latency, model tok/s, numerical acceptability, physical context, or RESTORE. Main owns later runtime capture and all implementation/build/test/GPU work.

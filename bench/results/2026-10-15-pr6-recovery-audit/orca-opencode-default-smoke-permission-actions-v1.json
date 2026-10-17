@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "policy": "Allow once for individually inspected task-specific commands; no persistent permission or model/config change",
+  "actions": [
+    {
+      "number": 1,
+      "command": "wc -c AGENTS.md CMakeLists.txt && sha256sum AGENTS.md CMakeLists.txt && git branch --show-current",
+      "scope": "Read-only hash/count/current branch; extra Git query was outside worker brief but reversible and allowed once by Main"
+    },
+    {
+      "number": 2,
+      "observed_at_utc": "2026-10-17T09:29:56.188018+00:00",
+      "command": "wc -c worker report and python3 JSON parse/selected-field print",
+      "action": "Allow once",
+      "accepted": true
+    },
+    {
+      "number": 3,
+      "observed_at_utc": "2026-10-17T09:30:10.164904+00:00",
+      "command": "orca orchestration check --terminal term_7d1f29f5-4450-45aa-bccb-a22d1f6f81ef --json",
+      "action": "Allow once",
+      "accepted": true
+    },
+    {
+      "number": 4,
+      "observed_at_utc": "2026-10-17T09:30:26.539454+00:00",
+      "command": "orca orchestration send worker_done for task_0f4b659f79d9 / ctx_c94143874e00; succeeded; worker report path",
+      "action": "Allow once",
+      "accepted": true
+    }
+  ]
+}
