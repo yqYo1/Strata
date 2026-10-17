@@ -9520,7 +9520,7 @@
       "header_contract_link_pending_until_model_closes": true,
       "model_baseline": "qsa-score-prefill-model-querytile0-tokens65536-warm4-v1.json",
       "baseline_closed": true,
-      "tile8_status": "Owned model arm active; revalidate live process/receipt before action, not inferred from this index."
+      "tile8_status": "Closed PASS: same new engine actual query8 entry selected once; see qsa-score-prefill-model-comparison-v1.json. First performance regresses; subsequent improves; default remains0."
     }
   },
   "qsa_score_prefill_entry_current": {
@@ -9544,6 +9544,26 @@
       ],
       "median": 650.3
     },
-    "next": "Close actual same-new-binary tile8 model arm and compare matched request hashes and cold/subsequent samples. Full1000PP/70TG goal remains active."
+    "next": "Complete private head-parallel clean cohort; instrument first-dispatch/cache phases. Tile8 remains opt-in because initial-request regression is unresolved; goal1000PP/70TG active.",
+    "model_comparison": "qsa-score-prefill-model-comparison-v1.json",
+    "model_report": "qsa-score-prefill-model-results-v1.ja.md",
+    "model_query8": {
+      "receipt": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-prefill-model-querytile8-tokens65536-warm4-v1.json",
+      "first_PP": 573.0,
+      "subsequent_PP": [
+        664.3,
+        661.2,
+        663.8
+      ],
+      "median_PP": 663.8,
+      "default_adopted": false
+    }
+  },
+  "qsa_score_headparallel_current": {
+    "cohort": "qsa-score-headparallel-cohort-v1.json",
+    "report": "qsa-score-headparallel-results-v1.ja.md",
+    "actual_engine_qualified": false,
+    "production_selected": false,
+    "next": "First-dispatch/cache diagnostic and actual dedicated-prefill integration; Main alone tests. Orca R1030 independently audits exact-tree lane mapping."
   }
 }
