@@ -83,8 +83,24 @@ base `57477f26` is not the exact built code. All 380 project pins were retrieved
 and matched at **7d2d344fafc6d64b1baffcafa4904b966dea20fe**. The original
 receipt is unchanged; the current reference explicitly records the correction.
 
-Legacy external builds are a separate pending gate: 4,065 ELF/archive files
-(4,078,627,544 bytes, 326 roots) were inventoried and hashed, but no old binary
-has yet been deleted in this review. Per-build exact-source/recipe verification
-must precede that deletion; an inventory or a filename match is insufficient.
-The retained generation is `main-qsa-score-gemm-entry-engine-build-v2`.
+Legacy external builds have a separate recovery gate. The original inventory
+has 4,065 ELF/archive files (4,078,627,544 bytes, 326 roots), now individually
+hashed. Four old generations passed exact source/recipe verification: 1,676
+project inputs were retrieved from the pinned commits and checked. Their 660
+generated build files (441,521,236 bytes) were then removed under the exclusive
+measurement lock, after recording paths/hashes/reasons. Original root receipts
+remain unchanged and are also recoverable from the archive. This is retirement,
+not a new numerical/performance qualification.
+
+The latest retained engine, `main-qsa-score-gemm-entry-engine-build-v2`, still
+matches its measured hash and retains the runtime archive needed by the current
+GDN work. Remaining legacy roots await a complete source/recipe join before
+bulk deletion. Inventory alone is insufficient: 82 original roots had no nearby
+JSON, and one unexecuted ABI-only record had five unlocated source pins. That
+record is not a measured baseline and must not be reused as one.
+
+Main owns the remaining provenance audit. Its bounded inventories and reviews
+are in `~/.local/state/strata-sycl/artifact-retention-audit-20261018`; they are
+current audit inputs, not resume backups. Review and retire them when this gate
+closes, before resuming GPU tuning. Preserve unreconciled measured source first;
+do not conceal legacy provenance gaps by discarding their last code copy.
