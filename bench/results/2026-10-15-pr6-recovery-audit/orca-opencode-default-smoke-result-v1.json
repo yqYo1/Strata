@@ -1,0 +1,158 @@
+{
+  "schema": 1,
+  "completed_at_utc": "2026-10-17T09:31:10.640043+00:00",
+  "passed": true,
+  "scope": "Orca-supervised OpenCode default-model integration smoke test; not research-depth or implementation-quality qualification",
+  "runtime_id": "e9030fc3-f028-4352-a34d-eb9385c8d79e",
+  "orca_app_version": "1.4.219",
+  "opencode_version": "1.19.2",
+  "coordinator": "term_6fbfd718-e3a2-46d8-ab62-73c36d2851a6",
+  "run_id": "run_c8f478972ec8",
+  "task_id": "task_0f4b659f79d9",
+  "dispatch_id": "ctx_c94143874e00",
+  "launch": {
+    "requested": {
+      "agent": "opencode",
+      "model": null,
+      "effort": null
+    },
+    "effective": {
+      "agent": "opencode",
+      "model": null,
+      "effort": null
+    }
+  },
+  "mode": {
+    "mode": "terminal",
+    "preferred": "terminal",
+    "reason": "user_default",
+    "detail": "Started a terminal agent worker, the default for new agent tabs in your settings."
+  },
+  "default_model": {
+    "display_name": "DeepSeek V4.1 Flash Free",
+    "evidence": "Observed in the actual worker terminal during this task; no override supplied",
+    "opaque_provider_model_id": null,
+    "orca_structured_model_field": null
+  },
+  "checked_inputs": [
+    {
+      "path": "AGENTS.md",
+      "bytes": 13123,
+      "sha256": "d0c7e1a40a05087803345d23792c468e760aceb3bba2e012efb59dd01175e89c"
+    },
+    {
+      "path": "CMakeLists.txt",
+      "bytes": 74233,
+      "sha256": "03993aa5162ed3bf3f638c2755b5d44358c74945ea84b0862d0e76ab52eab4f1"
+    }
+  ],
+  "worker_report": {
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/orca-opencode-default-smoke-worker-v1.json",
+    "bytes": 1065,
+    "sha256": "09d762007eed229cd0639b3cded64d306d955e2f4f0c1b08cef533acc2338881"
+  },
+  "verification": {
+    "json_schema_marker_and_status": true,
+    "independent_bytes_and_sha256": true,
+    "primary_branch_and_upstream": true,
+    "valid_worker_done": true,
+    "worker_settled_succeeded": true,
+    "resource_released": true,
+    "delivery_acknowledged": true,
+    "empty_next_delivery": true
+  },
+  "lifecycle": {
+    "worker_done_message": {
+      "id": "msg_1f3be38848e0",
+      "run_id": "run_c8f478972ec8",
+      "delivery_contract": "current_delivery",
+      "from_handle": "term_7d1f29f5-4450-45aa-bccb-a22d1f6f81ef",
+      "to_handle": "run:run_c8f478972ec8",
+      "subject": "OpenCode Orca smoke test complete",
+      "body": "Read AGENTS.md and CMakeLists.txt with OpenCode's tools under the unchanged launch default model, computed SHA256 and byte counts (AGENTS.md 13123 bytes d0c7e1a4..., CMakeLists.txt 74233 bytes 03993aa5...) and git branch feature/sycl, and wrote the single permitted JSON report orca-opencode-default-smoke-worker-v1.json (1065 bytes, valid JSON). Both hashes and sizes are independently reproducible from the worktree, and upstream is recorded as Niko1221/Strata per AGENTS.md. Nothing is left to do; no product files, Git state, builds, GPU jobs or configuration were touched.",
+      "type": "worker_done",
+      "priority": "normal",
+      "thread_id": null,
+      "payload": "{\"taskId\":\"task_0f4b659f79d9\",\"dispatchId\":\"ctx_c94143874e00\",\"outcome\":\"succeeded\",\"filesModified\":[\"bench/results/2026-10-15-pr6-recovery-audit/orca-opencode-default-smoke-worker-v1.json\"],\"reportPath\":\"bench/results/2026-10-15-pr6-recovery-audit/orca-opencode-default-smoke-worker-v1.json\"}",
+      "created_at": "2026-10-17T09:30:26Z",
+      "delivered_at": null
+    },
+    "delivery_id": "delivery_a5811641d325",
+    "release": {
+      "dispatchId": "ctx_c94143874e00",
+      "state": "released",
+      "processAction": "closed_agent_terminal",
+      "archive": {
+        "source": "terminal",
+        "status": "captured"
+      },
+      "mutation": {
+        "requestId": "5d676e6f-82ea-49a8-9aee-7d685c3dd966",
+        "replayed": false
+      }
+    },
+    "post_release_resource": {
+      "state": "released",
+      "id": "wtr_3b9d5aa2868a",
+      "ownerDispatchId": "ctx_c94143874e00",
+      "releaseState": "released",
+      "terminalState": "released"
+    },
+    "post_release_liveness": {
+      "verdict": "exited",
+      "source": "resource_release"
+    }
+  },
+  "permission_handling": {
+    "mode": "Allow once on each inspected command; no persistent config change",
+    "count": 4,
+    "details_file": "orca-opencode-default-smoke-permission-actions-v1.json"
+  },
+  "limitations": [
+    "The default permission configuration blocked four shell operations until Main approved each once. Unattended operation under the same configuration is not qualified.",
+    "Orca provider turn-start observation was unsupported and worker-read used terminal fallback; real report creation and authenticated worker_done supplied completion evidence.",
+    "Orca emitted a terminal-discoverability warning; worker-read, permission responses, lifecycle mail and resource release still succeeded.",
+    "Worker ran an extra read-only git branch query contrary to the task brief; Main allowed it once after inspecting the command. No Git mutations occurred.",
+    "Only one small read/hash/report task was tested; no inference, GPU, long research or implementation-quality claim."
+  ],
+  "original_tuning_work": {
+    "command_profile_fixture_on_receipt": "command-profile-fixture-on-v1.json",
+    "model_pair_not_executed_by_this_smoke_test": true,
+    "research_rounds_988_990_settled_and_released": true,
+    "native_report_review_pending": true
+  },
+  "retention": {
+    "owner": "Main / OpenCode default-model Orca smoke test",
+    "review_point": "Next Orca/OpenCode integration or permission-mode evaluation; superseding receipts may retire this bounded terminal observation",
+    "terminal_observation_budget_bytes": 16384,
+    "full_transcript_collected": false,
+    "reason": "Keep one bounded actual terminal observation proving the default model display and first permission/fallback mechanism; no repeated polling logs retained",
+    "files": [
+      {
+        "path": "orca-opencode-default-smoke-request-v1.json",
+        "bytes": 2614,
+        "sha256": "ac576ce8ee6cdd658440cbdd8ce1a4743da30762d70b8eab9424556c801ddeef"
+      },
+      {
+        "path": "orca-opencode-default-smoke-launch-v1.json",
+        "bytes": 2713,
+        "sha256": "148770099329f2efcd4fd812687b31f022a61bb86ce56ebbae97cdb1ee71b7e1"
+      },
+      {
+        "path": "orca-opencode-default-smoke-first-observation-v1.json",
+        "bytes": 5377,
+        "sha256": "14a223b46d57b8b8b534229e82626e700cb8ce16fa99b65224c6df11241c311a"
+      },
+      {
+        "path": "orca-opencode-default-smoke-permission-actions-v1.json",
+        "bytes": 1202,
+        "sha256": "862caed24872a5dae79f6f768706292c53492c043e1e0ee1731b46e78e210e51"
+      },
+      {
+        "path": "orca-opencode-default-smoke-worker-v1.json",
+        "bytes": 1065,
+        "sha256": "09d762007eed229cd0639b3cded64d306d955e2f4f0c1b08cef533acc2338881"
+      }
+    ]
+  }
+}

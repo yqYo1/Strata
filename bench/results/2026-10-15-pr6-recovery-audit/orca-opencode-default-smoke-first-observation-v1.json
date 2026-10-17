@@ -1,0 +1,126 @@
+{
+  "id": "a8c4b81c-9ec1-4867-97ee-993832f7b081",
+  "ok": true,
+  "result": {
+    "dispatchId": "ctx_c94143874e00",
+    "source": "terminal",
+    "sourceIdentity": "GN7n3FxSaODY76v-4v9LbR6iL-PZNFGk",
+    "terminal": {
+      "handle": "term_7d1f29f5-4450-45aa-bccb-a22d1f6f81ef",
+      "status": "running",
+      "tail": [
+        "  ┃  Target: Test whether OpenCode can execute as an Orca-supervised sub-agent in the existing Strata worktree. This",
+        "  ┃  is a user-requested integration smoke test, not a research or implementation task. Keep the OpenCode model and",
+        "  ┃  agent configuration exactly as launched; do not select a model or change settings.",
+        "  ┃  Change: Read the files AGENTS.md and CMakeLists.txt in /home/yayoi/orca/workspaces/Strata/sycl using your actual",
+        "  ┃  tools. For each, compute the byte count and SHA256, and provide a brief one-sentence description based on",
+        "  ┃  reading the file. Write exactly one JSON report at /home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-",
+        "  ┃  15-pr6-recovery-audit/orca-opencode-default-smoke-worker-v1.json, with schema=1,",
+        "  ┃  marker=\"ORCA_OPENCODE_DEFAULT_SMOKE_20261017_V1\", status=\"completed\", files=[{path,bytes,sha256,description}],",
+        "  ┃  primary_branch, upstream, model_selection=\"unchanged_launch_default\". Include no credentials or environment",
+        "  ┃  dumps. Maximum report size 4096 bytes.",
+        "  ┃  Constraints: Read-only except that one named report. No product edits, Git commands, GPU jobs, builds, tests,",
+        "  ┃  profilers, process inspection, network research, new workers, or configuration changes. The user explicitly",
+        "  ┃  chose OpenCode with its default model for this smoke test; this supersedes normal Luna research-model rules only",
+        "  ┃  for this test.",
+        "  ┃  Ownership: You own only the named report. Main owns all other files and resource cleanup. Finish within five",
+        "  ┃  minutes; if blocked, report the actual blocker through the injected orchestration protocol.",
+        "  ┃  Observable acceptance: The coordinator can parse your JSON, independently match both byte counts and hashes, and",
+        "  ┃  verify your task/dispatch-specific worker_done through Orca. Follow the injected live orchestration preamble,",
+        "  ┃  check your inbox, and send worker_done exactly once with the actual report path and lifecycle IDs. Then idle.",
+        "  ┃  Return a short completion statement without starting further work.",
+        "  ┃",
+        "     + Thought: 1.2s",
+        "     → Read AGENTS.md",
+        "     → Read CMakeLists.txt",
+        "     $ wc -c AGENTS.md CMakeLists.txt && sha256sum AGENTS.md CMakeLists.txt && git branch --show-current",
+        "     ▣  Build · DeepSeek V4.1 Flash Free",
+        "  ┃",
+        "  ┃  △ Permission required",
+        "  ┃    # Shell command",
+        "  ┃",
+        "  ┃  $ wc -c AGENTS.md CMakeLists.txt && sha256sum AGENTS.md CMakeLists.txt && git branch --show-current",
+        "  ┃",
+        "  ┃",
+        "  ┃   Allow once   Allow always   Reject                                 ctrl+f fullscreen  ⇆ select  enter confirm",
+        "  ┃"
+      ],
+      "truncated": true,
+      "limited": false,
+      "oldestCursor": "0",
+      "nextCursor": "4",
+      "latestCursor": "4",
+      "returnedLineCount": 35,
+      "source": "screen"
+    },
+    "cursor": "owr1_eyJ2IjoxLCJkIjoiY3R4X2M5NDE0Mzg3NGUwMCIsInMiOiJ0ZXJtaW5hbCIsImkiOiJHTjduM0Z4U2FPRFk3NnYtNHY5TGJSNmlMLVBaTkZHayIsInAiOjR9",
+    "status": {
+      "worker": "ready",
+      "terminal": "running",
+      "liveness": "live"
+    },
+    "fallbackReason": "provider_unsupported",
+    "warnings": [],
+    "sourceExact": false,
+    "contentComplete": false,
+    "clipping": [
+      "terminal_buffer",
+      "terminal_fallback"
+    ],
+    "projection": {
+      "id": "ctx_c94143874e00",
+      "dispatchId": "ctx_c94143874e00",
+      "taskId": "task_0f4b659f79d9",
+      "runId": "run_c8f478972ec8",
+      "role": "worker",
+      "parent": null,
+      "provider": {
+        "id": "opencode",
+        "model": null
+      },
+      "host": {
+        "kind": "local",
+        "id": "local"
+      },
+      "workspace": {
+        "id": "5fe4e8ac-0321-449b-b256-ff777e405f1b::/home/yayoi/orca/workspaces/Strata/sycl",
+        "kind": "folder_or_worktree"
+      },
+      "stage": {
+        "worker": "ready",
+        "dispatch": "dispatched",
+        "detail": "input_accepted",
+        "activity": "waiting"
+      },
+      "outcome": "in_progress",
+      "liveness": {
+        "verdict": "live",
+        "observedAt": 1792229313500,
+        "source": "agent_status"
+      },
+      "evidence": {
+        "durable": true,
+        "liveStatus": "fresh",
+        "lastObservedAt": 1792229313500
+      },
+      "resource": {
+        "state": "owned",
+        "id": "wtr_3b9d5aa2868a",
+        "ownerDispatchId": "ctx_c94143874e00",
+        "releaseState": "not_requested",
+        "terminalState": "active"
+      },
+      "nextAction": {
+        "kind": "none",
+        "argv": []
+      },
+      "attention": {
+        "categories": [],
+        "requiresAction": false
+      }
+    }
+  },
+  "_meta": {
+    "runtimeId": "e9030fc3-f028-4352-a34d-eb9385c8d79e"
+  }
+}
