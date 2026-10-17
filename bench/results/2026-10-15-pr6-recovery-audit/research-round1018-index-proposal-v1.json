@@ -1,0 +1,132 @@
+{
+  "schema": "strata.parallel-research.index-proposal.v1",
+  "proposal_only": true,
+  "recorded_at": "2026-10-17",
+  "base_index": {
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+    "sha256": "6e3de97c5f6a05066813312d51f1e1ec5bb8b9a3018ffc1e69828afac9266277"
+  },
+  "review": {
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round1018-review-v1.txt",
+    "sha256": "bf01da4480491f7b53d91653f919b43c789d4e0e12c07dd16ce3a71681dc8514",
+    "bytes": 9084,
+    "reviewed_full_reports": true,
+    "reviewed_exact_specs": true,
+    "reviewer_read_r1017_body": true,
+    "main_should_read_r1017_body_now": false,
+    "git_build_test_gpu_profiler_process_service_work": false,
+    "internet_research": "Checked only the named official Intel/LLVM and Codeplay references; branch documentation is mutable and not a pinned toolchain source."
+  },
+  "reviewed_inputs": {
+    "report": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round1017-v1.txt",
+      "sha256": "683a5320114d187f90ad9dff104525eec9ffb7ac6aaa009da060f3c20468564b",
+      "bytes": 14194,
+      "classification": "decision_support"
+    },
+    "spec": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round1017-spec-v1.txt",
+      "sha256": "0eea9273cc27939613882385493540e3bc5a3eb1de9fc95d3f642c0201b66d78"
+    },
+    "eligibility": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round1017-eligibility-v1.json",
+      "sha256": "83b7bb888993dbeafbe3ed3f36709c7ecd17dee1ed76be8323909b3ce916e0d9",
+      "schedulable_now_at_dispatch": true,
+      "recorded_prerequisites": [
+        "Exact compiler/runtime and completed build pin",
+        "Concrete cold/warm and CPU attribution question without assuming cause"
+      ]
+    }
+  },
+  "reports": [
+    {
+      "round": 1017,
+      "classification": "decision_support",
+      "title": "First-long-prefill compilation hypotheses: AOT, in-memory reuse, persistent cache",
+      "path": "research-round1017-v1.txt",
+      "sha256": "683a5320114d187f90ad9dff104525eec9ffb7ac6aaa009da060f3c20468564b",
+      "bytes": 14194,
+      "spec_path": "orca-research-round1017-spec-v1.txt",
+      "spec_sha256": "0eea9273cc27939613882385493540e3bc5a3eb1de9fc95d3f642c0201b66d78",
+      "review_status": "accepted_with_corrections",
+      "correction_ids": ["R1017-C1", "R1017-C2", "R1017-C3", "R1017-C4", "R1017-C5"],
+      "corrections": [
+        "R1017-C1: The current configured STRATA_SYCL_DEVICE_ARCH is empty, but cmake/sycl_backend.cmake supports AOT and uses the exact project target bmg_g21. Any capability gate must test bmg_g21 through the project-equivalent resolver; the newer Intel -device bmg example does not qualify this older clang or this project image.",
+        "R1017-C2: The compiler install bin lacks ocloc, but the pinned build receipt also inventories /usr/bin/ocloc -> /usr/bin/ocloc-26.31.1, SHA-256 76593e79a6a24277305ef6f2ad9fb042028205a0b028cd2beddd98a9681ce9b1. This pins a host command file only; it proves no invocation, version compatibility, bmg_g21 support, or emitted/selected image.",
+        "R1017-C3: Preserve the prior clean 602.0/601.5/603.2 and 576.1/576.4/576.4 fresh-process samples and their status. They follow one short 74-token warm-up and one long request per process; do not relabel them as later-long same-process data or compilation time. Main's prepared run_moe_accum_model_first_subsequent_v5.py has not run, so no first-versus-later receipt exists yet.",
+        "R1017-C4: tools/strata_bench.py supports four distinct run-tag inputs and checks zero prompt reuse, but the harness does not by itself prove one engine process served all four. Record owner PID and every prompt/reuse value. Keep the active mode-8/10 diagnostics ahead of any new runtime/GPU experiment.",
+        "R1017-C5: The first proposed probe is only partly host-only: compiler/help/tool checks can be host-only; cache trace, thread stacks and queue/device event attribution require a later owned runtime diagnostic. Keep those phases separate and keep the existing safe environment fixed. The 12.2548/20.8493s unclassified CPU and 3.3889/3.3916s gemm_submit CPU do not establish JIT causality."
+      ],
+      "scope_depth_review": "Substantive three-way comparison with process/cache lifetime, conditional AOT, phase attribution, code-split tradeoffs, cold/warm request labels and refusal gates. It distinguishes ordinary SYCL JIT from the separate kernel_compiler runtime-compilation feature and makes no measured local cache/AOT claim.",
+      "redundancy_review": "Updates but does not duplicate R611 (4c3738f06d92718e90b8a39ad390715b60666d4e0fe05189ea2224f5a3f5ab0e), which compares the custom DPC++ compiler with the packaged oneAPI compiler/runtime while holding oneMKL fixed. R742 (09983d19cf2a8b5d6b31acfd1784640f3cfda325570de5f03dc7db3ded279605) already records the project's bmg_g21 resolver and AOT-selection gates; R1017 adds cache/process reuse and first-long attribution, with R742's target spelling carried forward as a required correction.",
+      "retrieval": {
+        "hold_body_for_main": true,
+        "retrieve_when": "Main has closed its active same-binary diagnostics and is deciding whether to run a serialized first-long/later-long cohort, enable a dedicated persistent SYCL cache, or qualify the project's bmg_g21 AOT path.",
+        "sections": ["pinned target and measurements", "comparison", "host CPU attribution", "Main probes", "adoption/refusal gates"],
+        "preserve_caveats": [
+          "The exact DPC++ 7.1.0 pre-release / Clang 22.1.0 and loaded runtime files are pinned by local receipts; moving official documentation is not a version/target proof.",
+          "No local AOT image build/selection or compatible ocloc execution has been demonstrated.",
+          "Unclassified CPU and wall-speed deltas do not attribute JIT; wait/poll, grouping, validation, submission, allocation and driver/runtime work remain alternatives.",
+          "The existing clean fresh-process speed samples retain their original status; no first-long/subsequent-long same-process result exists until Main runs the prepared cohort."
+        ],
+        "adoption_prerequisites": [
+          "Close active mode-8/10 measurement and correctness/fault outcomes.",
+          "For cache attribution, show exact cache miss/hit or compiler-stack evidence aligned with request phases and matched inputs.",
+          "For same-process data, prove one live engine PID served all four distinct long requests and prompt reuse is zero for each.",
+          "For AOT, build and identify the exact bmg_g21 image with the pinned compiler/linker and prove runtime image selection without silent fallback.",
+          "Keep output/task numerical checks, fault, physical-262144-context, existing validation and repeated clean performance gates independent."
+        ]
+      }
+    }
+  ],
+  "source_files_verified": {
+    "moe-accum-engine-build-v1.json": "dfdca02b2f2915d394e536785e8724785eb31d284acb7bca5839c117d7bf38b7",
+    "moe-accum-model-profile-window2-tokens65536-v2.json": "3693c21cc9597e1d6c0ae2da884b08f73f78ce359e185e2c5fe2587b4c9c6033",
+    "moe-accum-model-profile-window8-tokens65536-v2.json": "34539da73fe816c014bbb8f1b0c587d094b27d3918a6d4a24e7807c8085b5ccf",
+    "moe-accum-model-clean-main-analysis-v1.json": "a97966914342964da316e9ef97f926dfe4507a08f2dec00000f5aa45479a6a38",
+    "research-compiler-matrix-runtime-round611-v1.txt": "4c3738f06d92718e90b8a39ad390715b60666d4e0fe05189ea2224f5a3f5ab0e",
+    "main-review-round611-612.ja.md": "b47b034678d61552d7c9859fa14dce064073829f9dbf72b361b81a8076f4b191",
+    "research-aot-cold-compile-round742-v1.txt": "09983d19cf2a8b5d6b31acfd1784640f3cfda325570de5f03dc7db3ded279605",
+    "cmake/sycl_backend.cmake": "4f0b50bc3a6338a65e2acd4259ef5c73c80110a0a23eec71b8aeda4f4652ca97",
+    "tools/strata_bench.py": "be421b2775569cd1bd937a35c606985c532c7d98f344a42d119a005ae54e9559"
+  },
+  "next_scope_eligibility": [
+    {
+      "scope_id": "main_first_long_subsequent_long_measurement_after_mode8_10_v1",
+      "classification": "Main-owned measurement; not research dispatch",
+      "schedulable_now": false,
+      "prerequisites": [
+        {
+          "requirement": "Close the active mode-8/10 same-binary diagnostics with individual speed, correctness and fault outcomes.",
+          "evidence_now": "Main reports these diagnostics are active; reviewer did not inspect or control processes."
+        },
+        {
+          "requirement": "Run the prepared four-request cohort (or an equivalent owned server/client sequence) and prove all four long inputs ran through one engine PID with zero prompt-cache reuse.",
+          "evidence_now": "The prepared run_moe_accum_model_first_subsequent_v5.py is not executed; no first/subsequent receipt exists."
+        },
+        {
+          "requirement": "Capture cache trace and thread/phase timing as a separate diagnostic arm without treating it as clean speed data.",
+          "evidence_now": "No current JIT-cache hit/miss or compiler-stack attribution was reviewed."
+        }
+      ],
+      "recommendation": "After the active measurements close, Main may execute the prepared cohort with the pinned binary/model and fixed safe environment. Retain old samples/statuses. Do not dispatch research if direct cache and phase evidence resolves the question."
+    },
+    {
+      "scope_id": "r1019_exact_v711_cache_attribution_if_unresolved_v1",
+      "classification": "Conditional decision-support research",
+      "schedulable_now": false,
+      "prerequisites": [
+        {
+          "requirement": "Closed Main first-long/later-long receipt with the same engine PID, four distinct run tags, zero reuse, and faults/correctness recorded.",
+          "evidence_now": "Not yet run; active mode-8/10 diagnostics have priority."
+        },
+        {
+          "requirement": "Pinned-process runtime/cache traces and thread/phase samples still leave a specific cache or compiler-attribution uncertainty.",
+          "evidence_now": "Current profile CPU buckets are noncausal; no matching cache-miss/compile stack evidence exists in the reviewed inputs."
+        }
+      ],
+      "recommendation": "Only if the prerequisites close and one concrete exact-v711 trace/attribution question remains, dispatch a bounded decision-support review of that question. Otherwise retrieve R1017's relevant sections or make no new assignment."
+    }
+  ],
+  "dispatch_recommendation": "No new research scope is recommended now; Main owns serialized runtime measurement and any cache/AOT qualification."
+}
