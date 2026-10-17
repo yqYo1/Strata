@@ -5,6 +5,10 @@
 #include "strata/kernels/f16_bits.hpp"
 #include "strata/prefill/kernels.hpp"
 #include "strata/sycl/checked_cleanup.hpp"
+#include "strata/sycl/runtime.hpp"
+#include <algorithm>
+#include <memory>
+#include <string>
 #include <cmath>
 #include <cstring>
 #include <iostream>
@@ -19,18 +23,19 @@ void drain() noexcept { sb::checked_cleanup([]{if(rt)rt->wait();},[]{},"GDN chun
 struct Drain {~Drain() noexcept {drain();}};
 template<class T> struct Buffer {
   sb::Allocation storage;size_t count;
+  std::vector<T> upload,download;
   explicit Buffer(size_t n):storage(rt,n*sizeof(T),sb::MemoryKind::Device),count(n){}
   T *data(){return storage.as<T>();}
-  void put(const std::vector<T>& v){need(v.size()==count,"upload extent");rt->wait(rt->compute().memcpy(data(),v.data(),count*sizeof(T)));}
-  std::vector<T> get(){std::vector<T> v(count);rt->wait(rt->compute().memcpy(v.data(),data(),count*sizeof(T)));return v;}
+  void put(const std::vector<T>& v){need(v.size()==count,"upload extent");rt->wait();upload=v;rt->wait(rt->compute().memcpy(data(),upload.data(),count*sizeof(T)));}
+  std::vector<T> get(){rt->wait();download.resize(count);rt->wait(rt->compute().memcpy(download.data(),data(),count*sizeof(T)));return download;}
 };
 struct Scratch {
-  Buffer<gc::BF> q,k,v,kb,vb,inverse,w,u,history,delta,raw;
+  Buffer<gc::BF> q,k,kb,vb,inverse,w,u,history,delta,raw;
   Buffer<float> g,lower;
-  explicit Scratch(gc::Sizes n):q(n.qk),k(n.qk),v(n.values),kb(n.values),vb(n.values),
+  explicit Scratch(gc::Sizes n):q(n.qk),k(n.qk),kb(n.values),vb(n.values),
     inverse(n.inverse),w(n.values),u(n.values),history(n.history),delta(n.values),
     raw(n.values),g(n.gates),lower(n.lower){}
-  gc::Workspace view(){return {q.data(),k.data(),v.data(),kb.data(),vb.data(),inverse.data(),
+  gc::Workspace view(){return {q.data(),k.data(),kb.data(),vb.data(),inverse.data(),
     w.data(),u.data(),history.data(),delta.data(),raw.data(),g.data(),lower.data()};}
 };
 void gate(const char *phase){std::cout<<"GDN_CHUNK64_READY "<<phase<<std::endl;need(std::cin.get()=='X',"Main gate token");}

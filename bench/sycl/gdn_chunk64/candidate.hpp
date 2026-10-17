@@ -8,7 +8,7 @@ using BF = sycl::ext::oneapi::bfloat16;
 // Real typed BF16 storage. Every pointer is a distinct registered Device span.
 // Token padding is local to one <=8192-token prefill call, not context capacity.
 struct Workspace {
-  BF *q, *k, *v, *kb, *vb, *inverse, *w, *u, *history, *delta, *raw;
+  BF *q, *k, *kb, *vb, *inverse, *w, *u, *history, *delta, *raw;
   float *g, *lower;
 };
 struct Sizes { size_t qk, values, inverse, history, gates, lower; };

@@ -1,5 +1,5 @@
 // Main-authored independent chunk64 GDN implementation; repository LICENSE.
-// Mathematical/numerical design references are pinned in the package manifest.
+// Numerical boundaries and references: gdn-current-contract-next-v1.ja.md.
 // No external kernel source copied. Private proposal, not product adoption.
 #include "candidate.hpp"
 #include "strata/kernels/bf16_bits.hpp"
@@ -83,7 +83,7 @@ void run(float *state,const uint16_t *h,const float *gate,const float *beta,
   matrix_check(queue.get_device());
   const std::initializer_list<Span> outputs={
     {state,size_t(HV)*D*D*4},{output,size_t(tokens)*HV*D*2},
-    {ws.q,n.qk*2},{ws.k,n.qk*2},{ws.v,n.values*2},
+    {ws.q,n.qk*2},{ws.k,n.qk*2},
     {ws.kb,n.values*2},{ws.vb,n.values*2},{ws.inverse,n.inverse*2},
     {ws.w,n.values*2},{ws.u,n.values*2},{ws.history,n.history*2},
     {ws.delta,n.values*2},{ws.raw,n.values*2},{ws.g,n.gates*4},{ws.lower,n.lower*4}};
@@ -113,7 +113,6 @@ void run(float *state,const uint16_t *h,const float *gate,const float *beta,
     const BF v=live?sycl::bit_cast<BF>(h[size_t(token)*C+2*HK*D+head*D+d]):BF(0.f);
     const float b=live?beta[size_t(token)*HV+head]:0.f;
     const float eg=sycl::exp(ws.g[(size_t(chunk)*HV+head)*BT+t]);
-    ws.v[id[0]]=v;
     ws.kb[id[0]]=BF((float(k)*b)*eg);
     ws.vb[id[0]]=BF(float(v)*b);
     if(head<HK) {
