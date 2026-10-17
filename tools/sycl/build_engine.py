@@ -2,7 +2,8 @@
 """Build the current comparison engine from verified Git inputs; Main only.
 
 Uses the known-good engine's committed configure recipe, changing only the
-output directory. No engine/GPU execution or overwriting an existing build.
+output directory. No engine/GPU execution. An explicit rebuild reuses a closed
+comparison's cache only after verifying its original inputs from Git.
 """
 import fcntl
 import hashlib
@@ -50,13 +51,28 @@ def pin(root, prefixes):
 
 
 def main():
-    guards.require(len(sys.argv) == 1, 'build_engine.py takes no options')
+    guards.require(len(sys.argv) == 1 or sys.argv[1:] == ['rebuild'], 'use build_engine.py [rebuild]')
+    rebuild = sys.argv[1:] == ['rebuild']
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
         device = guards.driver_guard()
         boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
-        guards.require(not ROOT.exists(), 'retire the previous comparison build before rebuilding')
+        guards.require(ROOT.exists() == rebuild, 'use rebuild only for the closed comparison cache')
+        previous = None
+        if rebuild:
+            committed = git(P, 'show', 'HEAD:' + str(RESULT.relative_to(P)))
+            guards.require(committed == RESULT.read_bytes(), 'commit the previous build identity first')
+            old = json.loads((ROOT / 'record.json').read_text())
+            guards.require(old['passed'] and old['ownership_closed'] and not old['active'], 'previous build not closed')
+            guards.require(digest(old['binary']['path']) == old['binary']['sha256'], 'previous executable changed')
+            for source in [old['project'], *old['dependencies']]:
+                for name, expected in source['source_sha256'].items():
+                    data = git(Path(source['root']), 'show', source['revision'] + ':' + name)
+                    guards.require(hashlib.sha256(data).hexdigest() == expected, 'previous inputs not recoverable')
+            previous = dict(source_commit=old['source_commit'], binary=old['binary'],
+                            reason='Closed unused comparison engine; original source/recipe recovered from Git. '
+                                   'Reuse its cache for the immediate corrected build, not a retained old generation.')
         project = pin(P, ['CMakeLists.txt', 'cmake', 'include', 'src', 'tests',
                           'tools/sycl/build_engine.py', 'tools/sycl/measurement_owner.py',
                           'tools/sycl/measurement_guards.py', str(SETTINGS.relative_to(P)),
@@ -71,9 +87,9 @@ def main():
         settings = json.loads(SETTINGS.read_text())
         compiler = Path(next(a.split('=', 1)[1] for a in argv if a.startswith('-DCMAKE_CXX_COMPILER=')))
         guards.require(digest(compiler) == settings['compiler_sha256'], 'compiler changed')
-        ROOT.mkdir(mode=0o700)
+        ROOT.mkdir(mode=0o700, exist_ok=rebuild)
         for name in ('tmp', 'cache'):
-            (ROOT / name).mkdir()
+            (ROOT / name).mkdir(exist_ok=rebuild)
         env = dict(baseline['environment'])
         env.update(XDG_CACHE_HOME=str(ROOT / 'cache'), TMPDIR=str(ROOT / 'tmp'))
         # Configuration/build never executes the model. The future first model
@@ -83,7 +99,7 @@ def main():
                       configure_argv=argv, environment=env, device=device,
                       recipe_reference=dict(path=str(BASELINE.relative_to(P)), sha256=digest(BASELINE)),
                       complete=False, passed=False, active=False, GPU_executed=False,
-                      production_selected=False, model_quality_qualified=False,
+                      production_selected=False, model_quality_qualified=False, replaces=previous,
                       retention_consumer='Imminent native GDN opt-in model correctness/performance A/B; retire after comparison.')
         owner = None
 
@@ -93,7 +109,7 @@ def main():
                 record['commands'] = owner.commands
             (ROOT / 'record.json').write_text(json.dumps(record, indent=2) + '\n')
 
-        owner = supervision.Owner(ROOT / 'owned', persist)
+        owner = supervision.Owner(ROOT / ('owned-' + project['revision'][:12]), persist)
         persist()
         try:
             for label, command in [('configure', argv), ('compile-link',

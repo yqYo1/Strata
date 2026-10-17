@@ -2405,6 +2405,8 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
 #if defined(STRATA_ENABLE_SYCL)
                     if(m.layer_major_active && m.native16_active && strata::gdn_chunk64::requested()) {
                         auto& b=m.gdn_chunk;
+                        strata::gdn_chunk64::validate_run(state,b.normalized,b.gate,b.beta,b.z,
+                            static_cast<const float*>(wnm->data),EPS,b.output,int(T),b.workspace,m.cs);
                         if(!native_proj16(m.gemm,wqkv,m.mixed_h,b.qkv,T,v.name("attn_qkv.weight"),err) ||
                            !native_proj16(m.gemm,wg,m.mixed_h,b.z,T,v.name("attn_gate.weight"),err))return false;
                         if(!bf16_proj(m.gemm,wa,m.mixed_bf,b.ab,T,v.name("ssm_alpha.weight"),err,2*HV) ||

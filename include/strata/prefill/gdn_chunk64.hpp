@@ -27,6 +27,10 @@ Arena bind_arena(void *base,size_t bytes,int tokens);
 bool requested();
 // Admission only: reject an unsupported queue/device before model mutation.
 void validate_device(void *stream);
+// Span/domain/capability validation only; call before changing conv history.
+void validate_run(float *state,const uint16_t *h,const float *gate,const float *beta,
+                  const uint16_t *z,const float *gamma,float eps,uint16_t *output,
+                  int tokens,Workspace workspace,void *stream);
 struct Events {sycl::event gates,pack,kkt,inverse,wu,carry,readout,norm;};
 struct ConvEvents {sycl::event convolution,history;};
 // BF16 projection -> FP32 conv/SiLU -> BF16 -> FP32 Q/K L2 -> BF16.

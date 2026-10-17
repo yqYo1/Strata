@@ -185,9 +185,9 @@ void conv_bf16(float *history,const uint16_t *qkv,const float *weights,
   finish(stream,event);
   if(events)events->history=event;
 }
-void run(float *state,const uint16_t *h,const float *gate,const float *beta,
+void validate_run(float *state,const uint16_t *h,const float *gate,const float *beta,
          const uint16_t *z,const float *gamma,float eps,uint16_t *output,
-         int tokens,Workspace ws,void *stream,Events *events,bool packed_inverse,bool narrow_carry) {
+         int tokens,Workspace ws,void *stream) {
   const Sizes n=sizes(tokens);
   require(stream && std::isfinite(eps) && eps>=0.f);
   auto &queue=queue_for(stream);
@@ -204,6 +204,12 @@ void run(float *state,const uint16_t *h,const float *gate,const float *beta,
   validate_spans(outputs,inputs,4);
   for(auto span:outputs) validate_device_span(span.pointer,span.bytes,queue);
   for(auto span:inputs) validate_device_span(span.pointer,span.bytes,queue);
+}
+void run(float *state,const uint16_t *h,const float *gate,const float *beta,
+         const uint16_t *z,const float *gamma,float eps,uint16_t *output,
+         int tokens,Workspace ws,void *stream,Events *events,bool packed_inverse,bool narrow_carry) {
+  validate_run(state,h,gate,beta,z,gamma,eps,output,tokens,ws,stream);
+  const Sizes n=sizes(tokens);auto &queue=queue_for(stream);
   const int chunks=(tokens+BT-1)/BT;
   auto event=queue.parallel_for(sycl::range<1>(size_t(chunks)*HV),[=](sycl::id<1> id) {
     const int chunk=int(id[0])/HV, head=int(id[0])%HV;

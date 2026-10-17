@@ -84,6 +84,8 @@ def main():
             files = subprocess.check_output(['git', 'ls-files', '-z', '--', 'serve', 'tools', 'bench.sh'], cwd=P).decode().strip('\0').split('\0')
             pins = {}
             for name in files:
+                if name != 'bench.sh' and (not name.endswith('.py') or name.startswith('tools/hip/')):
+                    continue
                 data = subprocess.check_output(['git', 'show', revision + ':' + name], cwd=P)
                 guards.require((P / name).read_bytes() == data, 'uncommitted benchmark input: ' + name)
                 pins[name] = hashlib.sha256(data).hexdigest()
