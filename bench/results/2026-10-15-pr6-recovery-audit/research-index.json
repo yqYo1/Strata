@@ -4901,6 +4901,66 @@
       "model": "gpt-6-luna",
       "read_only": true,
       "review_path": "research-round1010-review-v1.txt"
+    },
+    {
+      "round": 1011,
+      "path": "research-round1011-v1.txt",
+      "sha256": "b04cb51468b3437528cf1ecc9da70eb206b9270afc58fae08dd7e322a153eeb1",
+      "bytes": 9591,
+      "spec": {
+        "path": "orca-research-round1011-spec-v1.txt",
+        "sha256": "02df66e4fefd3b3a8a1659c6d39dd223b33de28b06e911758162aeee86286d6"
+      },
+      "eligibility": {
+        "path": "orca-research-round1011-eligibility-v1.json",
+        "sha256": "1fceb404d4552e86f47bf5560c434a3b651f6c924b78a0bb2fbe7975b72dd456"
+      },
+      "classification": "decision_support",
+      "review_status": "native_review_complete_no_source_blocker_identified",
+      "append_ready_status": "No concrete bounds, route, partial-window, callback-order, or mode-0/2 regression found; full-model/runtime/numerical qualification remains open.",
+      "corrections": [
+        "The active mode-8 limit is 65,536 rows despite MoeAccumPlan's generic 81,920 maximum: admission, context, route factory and operator guard cap reachability at 65,536.",
+        "R1011's fallback caveat is accurate: only VRAM/headroom admission selects mode 2. Shared-region plan and mixed-slab allocation failures return errors before model work; neither retries mode 2.",
+        "The status destination's successful read is context-owned and synchronized. The pinned source set omits DraftUploadGuard's implementation, so outer-lease retirement on early failure is not independently proven by this snapshot."
+      ],
+      "source_pin": {
+        "snapshot": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-moe-accum-engine-source-c05-v1",
+        "commit_reported_by_spec": "c05c2545d90fb3bedcfff51400919977b6c276ca",
+        "hashes_recomputed": true,
+        "git_commit_or_ancestry_verified": false,
+        "files": {
+          "src/prefill/prefill.cpp": "dd9b4006c66d37cac67990319619092c7e324d700dcfb15329c0ec5c27f80726",
+          "src/prefill/layer_major.inc": "10ab4b8783b19d2cf2b713b25668446c63dbe228aef901e43855b2f8555b5f37",
+          "src/prefill/moe_window.inc": "f5890674d872daa6a485e4cc42afe98ed5ab3bd577ed6720b4df34b8a2974f1f",
+          "include/strata/prefill/prefill.hpp": "d6beba959c31eaf31177898128f7fedddaa77dd7a8e349e96099822dcfb76059",
+          "include/strata/prefill/moe_accum_plan.hpp": "96e976e24225e5929e20e69995d22e5d603b10fa565147bebadf2e830a00dd7d",
+          "include/strata/prefill/moe_window_routes.hpp": "62abedecd553ababefcdabc4c549d75844f848027516293ed028a46fce617379",
+          "include/strata/prefill/layer_major_plan.hpp": "67bc25500ae777bfb387944a2415325868602b9da82aa945464b64b0a2b8b9fd",
+          "include/strata/prefill/native16.hpp": "59f7c17ff2a6a0779d8060505d20ad2cb0efa9c28d40c41e17a48db90b07edd8",
+          "src/prefill/sycl/native16.cpp": "7567f607b4b564c21c8fc4ee21ed41ae7f419a3f0a23a866836f1a85e658627c",
+          "src/prefill/sycl/gemm16.cpp": "d5a0e8f8cdbc14f82edd7a883efc09d68ee92195b8fd51301e538b40cc6ed53c",
+          "include/strata/sycl/launch.hpp": "4eb1888057ef6ae34f2bbb9d2545321061ee116659e54907047732544d589d95",
+          "src/sycl/runtime.cpp": "e6c20e148bc7ceec250ad9a58ddfc851c1476aaab3d68982d2aee2897e572b83"
+        }
+      },
+      "limits": [
+        "Reviewer did not run builds, tests, GPU/model work, profilers, process inspection or Git commands.",
+        "Parent-reported strict engine build and ten primitive GPU results were not independently verified.",
+        "No physical-262144 execution, RESTORE, runtime dispatch, async fault behavior, numerical quality or adoption was qualified."
+      ],
+      "retrieval": {
+        "hold_body_for_Main": false,
+        "operational_digest_max_words": 200,
+        "sections": [
+          "Review result and corrections",
+          "Fallback and mode-0/2 compatibility",
+          "Source-pin limit"
+        ],
+        "retrieve_guard_definition_when": "Main requires proof of early-return/destructor retirement after an async route/status copy or queue failure; the R1011 pin lacks DraftUploadGuard's implementation."
+      },
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "review_path": "research-round1012-review-v1.txt"
     }
   ],
   "main_initial_findings": [
@@ -8676,5 +8736,15 @@
       "operational_digest_max_words": 140,
       "index_mutation_performed": false
     }
+  },
+  "research_review_round1012": {
+    "review": {
+      "path": "research-round1012-review-v1.txt",
+      "sha256": "f36ded666245ae7c245c4694474e46009248301979bdf69313ecf04d07c6c2be",
+      "bytes": 6586
+    },
+    "proposal": "research-round1012-index-proposal-v1.json",
+    "Main_reads": "Short reviewer digest and metadata; Main directly inspected the missing DraftUploadGuard definition and current callback ordering.",
+    "guard_definition_followup": "moe-accum-engine-lease-main-review-v1.json"
   }
 }
