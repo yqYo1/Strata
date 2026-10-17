@@ -162,6 +162,13 @@ Its files live in `.claude/skills/strata-upstream-sync`, exposed by the relative
 
 Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measurement and investigation.
 
+- Apply retention rules to tracked files, untracked files, external state,
+  build outputs and project caches. Before keeping information, name its
+  realistic future consumer and review point, and check whether reachable Git
+  history already supplies it. Completing a run, producing a debug output or
+  reviewing a report does not by itself justify keeping another active file.
+  Reduce unnecessary information rather than bundling, compressing or moving
+  it elsewhere to make a directory look smaller.
 - Set SYCL, Level Zero, driver, profiler and experiment environment variables in
   the native child's environment before `exec`. Keep the process environment
   immutable after runtime/provider initialization. For comparisons, use separate
@@ -175,9 +182,13 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   them. Do not commit every debug output, build receipt or process lifecycle.
   Retire superseded active files to reachable Git history. Resume from current
   documentation and committed decisions, without separate progress backups.
+  Promote reusable fixtures and tooling into maintained source locations;
+  do not keep duplicate source proposals and one-run controllers beside results.
 - Keep the latest known-good engine build, plus only named imminent comparison
   generations (normally one build, at most two for A/B). Record the comparison
   consumer and retirement point. Do not keep one build for each closed experiment.
+  Retire the extra generation when its comparison ends; creating a new build
+  must not silently extend the lifetime of every previous experiment's binary.
 - Before measuring, commit the exact source, local changes, generated inputs
   and build recipe/options; pin compiler/dependency versions and environment.
   Verify those committed inputs match the ones used for the measured executable.
@@ -204,3 +215,8 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   instead of duplicating the file list. Record explicit path/hash/reason for
   untracked/external deletions. Serialize cleanup with tests/builds/GPU work.
   Store compact useful evidence in Git, and necessary large captures outside Git.
+- At each work boundary, reconcile the actual files with these rules, retire
+  closed comparisons and transient output, and commit the useful results and
+  deletion decisions. Check file counts and bytes as well as individual sizes;
+  benchmark directories must remain browsable. A large directory is a reason
+  to review information value, not to split the same unnecessary files.

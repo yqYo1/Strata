@@ -85,22 +85,36 @@ receipt is unchanged; the current reference explicitly records the correction.
 
 Legacy external builds have a separate recovery gate. The original inventory
 has 4,065 ELF/archive files (4,078,627,544 bytes, 326 roots), now individually
-hashed. Four old generations passed exact source/recipe verification: 1,676
-project inputs were retrieved from the pinned commits and checked. Their 660
-generated build files (441,521,236 bytes) were then removed under the exclusive
-measurement lock, after recording paths/hashes/reasons. Original root receipts
-remain unchanged and are also recoverable from the archive. This is retirement,
-not a new numerical/performance qualification.
+hashed. Twenty old generations passed source/recipe recovery checks. Their
+3,187 generated build files (1,961,721,285 bytes) were removed under the
+exclusive measurement lock, after committing the recovery proof and recording
+paths/hashes/reasons. The first four generations account for 1,676 verified
+project inputs; subsequent generations also required exact input checks,
+including overrides recovered from Git history or committed patches. Original
+root receipts remain unchanged. This is retirement, not a new numerical or
+performance qualification.
+
+The canonical-bank source needed reconstruction rather than a nearby commit:
+applying the archived patch to its recorded base reproduced all 374 project
+input hashes, including five pins absent from the initial lookup. The pre-Xe
+reference matched all 595 source inputs at its recorded commit and all five
+recorded executable hashes. Its original compressed receipt and build recipe
+are recoverable from the archive. These checks recover historical inputs;
+they do not adopt either historical implementation into the current engine.
+The host-transfer reference now also records its effective build settings.
 
 The latest retained engine, `main-qsa-score-gemm-entry-engine-build-v2`, still
 matches its measured hash and retains the runtime archive needed by the current
 GDN work. Remaining legacy roots await a complete source/recipe join before
-bulk deletion. Inventory alone is insufficient: 82 original roots had no nearby
-JSON, and one unexecuted ABI-only record had five unlocated source pins. That
-record is not a measured baseline and must not be reused as one.
+deletion. Inventory alone is insufficient: 82 original roots had no nearby
+JSON. Further receipt joins and source recovery are needed where identity or
+configuration remains unresolved. An unexecuted ABI-only record is not a
+measured baseline even when its source is recoverable.
 
 Main owns the remaining provenance audit. Its bounded inventories and reviews
 are in `~/.local/state/strata-sycl/artifact-retention-audit-20261018`; they are
 current audit inputs, not resume backups. Review and retire them when this gate
-closes, before resuming GPU tuning. Preserve unreconciled measured source first;
-do not conceal legacy provenance gaps by discarding their last code copy.
+closes. Unreconciled inputs block deletion of the affected files; current tuning
+with separately verified source can continue. Serialize actual cleanup with
+builds, tests and GPU work. Preserve unreconciled measured source first; do not
+conceal legacy provenance gaps by discarding their last code copy.
