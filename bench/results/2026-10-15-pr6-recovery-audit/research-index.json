@@ -5216,6 +5216,30 @@
       "review_sha256": "6bdd0b6242287f20a562c4332b537df25ae430855ae5cb7f4804d2e7e08609b8",
       "source_commit": "b462cd5cf7d9778cdc7cc064ec616ff6a043954c",
       "status": "Source-grounded FP32 mapping comparison accepted with SLM producer ownership, partial-query tile, and binary contraction clarifications. No implementation, build, test, performance adoption, or full-model qualification."
+    },
+    {
+      "round": 1027,
+      "classification": "knowledge_collection",
+      "path": "research-round1027-v1.txt",
+      "bytes": 10208,
+      "sha256": "33f8ba5c3e2a0c10c0ccd2e7fb91539ef1d1d7bbe904739920a06d6794255d4a",
+      "original_preserved": true,
+      "review_status": "accepted_with_corrections_held"
+    },
+    {
+      "round": 1026,
+      "model": "gpt-6-luna",
+      "classification": "decision_support",
+      "read_only": true,
+      "path": "research-round1026-v1.txt",
+      "bytes": 9199,
+      "sha256": "515baef6ea180c0b28bcfa68d848e5328e35a8e5774263a9e481c469035398a8",
+      "review_path": "research-round1029-review-v1.txt",
+      "review_bytes": 10220,
+      "review_sha256": "ded69bdd49b0371cd0492bf3c29e1d11855c929eaebb5b43893e043aa54d3948",
+      "index_proposal_path": "research-round1029-index-proposal-v1.json",
+      "source_commit_label": "31415b3bfc7fc6d4ec5fa42cbcf47276ce271811",
+      "status": "No confirmed source bounds, SG-convergence, FP32-order, parser or routing defect. Actual-engine eager-read initialization is proven by owner source/receipt; generic direct-entry full-span initialization/immutability remains undocumented. Actual-entry qualification supersedes the report's 262144 test-gap recommendation; model dispatch/performance is still separate."
     }
   ],
   "main_initial_findings": [
@@ -9432,5 +9456,94 @@
     "logical_bytes_removed": 4465188,
     "source_review_mirror": "Retired after R1024/R1025 completion; restore the exact b462cd5cf7d9778cdc7cc064ec616ff6a043954c three files from Git using research-qsa-score-layout-round1024-source-pin-v1.json and the deletion manifest.",
     "preserved": "All independent timing samples and original statuses, source/compiler/runtime/binary pins, owner/fault/guard/oracle records. Current private query-tile source/binary/static archives remain for named next engine integration/parity comparison."
+  },
+  "research_review_round1028": {
+    "review_path": "research-round1028-review-v1.txt",
+    "index_proposal": "research-round1028-index-proposal-v1.json",
+    "Main_original_body_read": false,
+    "review_status": "accepted_with_corrections_held",
+    "next_scope_eligibility": [
+      {
+        "scope_id": "target-sycl-atomic-forward-progress-contract-v1",
+        "classification": "conditional decision_support source study",
+        "schedulable_now": false,
+        "prerequisites": [
+          {
+            "requirement": "Name a real Main-owned scan or recurrence consumer and the specific algorithm choice that remains unresolved after retrieving R1027.",
+            "evidence_now": "R1027 is general knowledge collection; its source snapshot establishes no scan use, and no candidate consumer was supplied for this review."
+          },
+          {
+            "requirement": "Pin the exact compiler, SYCL runtime, backend, driver and target device, plus any extension whose contract is being evaluated.",
+            "evidence_now": "The report made no target query or B570 progress/extension measurement. Its application snapshot declares a source commit only."
+          },
+          {
+            "requirement": "Record the primary-source question that remains unanswered after those pins; Main retains exclusive ownership of builds, tests and GPU evidence.",
+            "evidence_now": "The reviewed Khronos, CUDA and Intel sources answer the portable/spec/vendor boundaries; no independent follow-up is yet justified. Main owns an active baseline model run."
+          }
+        ],
+        "recommendation": "Do not dispatch now. Reopen only when a concrete consumer and exact target make a remaining source-contract question decision-relevant. Keep all target measurement with Main."
+      }
+    ]
+  },
+  "research_review_round1029": {
+    "review_path": "research-round1029-review-v1.txt",
+    "index_proposal": "research-round1029-index-proposal-v1.json",
+    "Main_original_body_read": false,
+    "review_status": "accepted with eager-read, test-coverage, and entry-vs-dispatch corrections; decision support only",
+    "next_scope_eligibility": [
+      {
+        "scope_id": "qsa-prefill-direct-caller-pool-contract-v1",
+        "classification": "decision_support; bounded source-only API/caller audit",
+        "schedulable_now": false,
+        "prerequisites": [
+          {
+            "requirement": "Close the active tile-0 real-model baseline and record its receipt.",
+            "evidence_now": "Parent handoff says Main is running only this legacy tile-0 model arm; no completed result was supplied. Reviewer did not inspect processes."
+          },
+          {
+            "requirement": "Record whether a tile-8 run will enter the actual layer-major prefill caller, and identify a remaining caller/input-lifetime question after the Main-owned review.",
+            "evidence_now": "The direct API qualification is complete, but no tile-8 model dispatch result is provided; the owner receipt resolves the measured engine path while the generic header contract remains unstated."
+          }
+        ],
+        "recommendation": "Do not dispatch now. If both prerequisites close and a concrete generic-caller question remains, audit all current qsa_block_scores_prefill call sites, pooled allocation/initialization, queue ordering, and lifetime at the pinned source. Otherwise resolve the API wording in Main's source review without another research assignment.",
+        "expected_outputs": [
+          "Pinned current caller inventory",
+          "Source-backed initialized/immutable span and producer-order contract",
+          "Only the remaining minimal direct-entry test cases, if any"
+        ]
+      }
+    ],
+    "Main_followup": {
+      "current_engine_pool_owner_proof": "qsa-score-prefill-owner-contract-v1.json",
+      "generic_API_contract": "docs/SYCL_QSA_SCORING.md",
+      "actual_entry_results": "qsa-score-prefill-entry-results-v1.ja.md",
+      "header_contract_link_pending_until_model_closes": true,
+      "model_baseline": "qsa-score-prefill-model-querytile0-tokens65536-warm4-v1.json",
+      "baseline_closed": true,
+      "tile8_status": "Owned model arm active; revalidate live process/receipt before action, not inferred from this index."
+    }
+  },
+  "qsa_score_prefill_entry_current": {
+    "source_commit": "31415b3bfc7fc6d4ec5fa42cbcf47276ce271811",
+    "source_report": "qsa-score-prefill-source-v1.json",
+    "build": "qsa-score-prefill-engine-build-v1.json",
+    "engine_SHA256": "102f32f1960a78a7101d3eee80115182043a7fa1ef8e676ce379a82de84365b2",
+    "qualification": "qsa-score-prefill-qualification-v1.json",
+    "component_cases": 36,
+    "independent_selected_row_checks": 944,
+    "all_original_score_and_ID_bits_match": true,
+    "default": 0,
+    "actual_qualifications": "Dedicated public entry with default,0,8; counts1..9,selection2051/2052,physical262144with256and255queries; nofreshGPUfault. Not fullmodel262144/RESTORE/quality.",
+    "model_baseline": {
+      "receipt": "qsa-score-prefill-model-querytile0-tokens65536-warm4-v1.json",
+      "first_PP": 616.2,
+      "subsequent_PP": [
+        650.3,
+        646.6,
+        651.6
+      ],
+      "median": 650.3
+    },
+    "next": "Close actual same-new-binary tile8 model arm and compare matched request hashes and cold/subsequent samples. Full1000PP/70TG goal remains active."
   }
 }
