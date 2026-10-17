@@ -1,0 +1,2615 @@
+{
+  "schema": "strata-moe-window-production-routing-GPU-v1",
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "GPU_executed": true,
+  "GPU_launch_attempted": true,
+  "commands": [
+    {
+      "label": "journal-before",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-b",
+        "--no-pager",
+        "-n",
+        "0",
+        "--show-cursor"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache"
+      },
+      "started_utc": "2026-10-17T06:55:54.997815+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 715400,
+          "start_ticks": 56891912,
+          "sid": 715400,
+          "pgid": 715400
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 568919.11925706,
+      "pid": 715400,
+      "spawn_return_monotonic": 568919.122544994,
+      "direct_identity": {
+        "pid": 715400,
+        "state": "R",
+        "ppid": 715029,
+        "pgid": 715400,
+        "sid": 715400,
+        "start_ticks": 56891912,
+        "rss_bytes": 299008
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T06:55:55.097448+00:00",
+      "elapsed_seconds": 0.09945793694350868,
+      "logs": {
+        "journal-before.stdout": {
+          "bytes": 156,
+          "sha256": "b4210ac2d6b2dd7974931ad325cbf3423b96b7bb5690e4370bef98d91b5f1443"
+        },
+        "journal-before.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "smoke",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-engine-build-v1/build/sycl_moe_window_test",
+        "--case",
+        "smoke"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr"
+      },
+      "started_utc": "2026-10-17T06:55:55.099496+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 715403,
+          "start_ticks": 56891922,
+          "sid": 715403,
+          "pgid": 715403
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 568919.220983019,
+      "pid": 715403,
+      "spawn_return_monotonic": 568919.224320366,
+      "direct_identity": {
+        "pid": 715403,
+        "state": "D",
+        "ppid": 715029,
+        "pgid": 715403,
+        "sid": 715403,
+        "start_ticks": 56891922,
+        "rss_bytes": 131072
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 166350848,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T06:55:55.939761+00:00",
+      "elapsed_seconds": 0.8400442560669035,
+      "logs": {
+        "smoke.stdout": {
+          "bytes": 398,
+          "sha256": "ff55f780193b222536a6d9cecf431406888df7a861e67256fdc282d65a504ce2"
+        },
+        "smoke.stderr": {
+          "bytes": 404388,
+          "sha256": "ab92d1e25bef3f1b56b65a6f297fe4bfc109e2a5f7b7c95fdf43a6014a228352"
+        }
+      }
+    },
+    {
+      "label": "journal-after-smoke",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-b",
+        "--no-pager",
+        "--after-cursor",
+        "s=9944479cfd1a45c28a589619cb8f2881;i=c2c699d;b=cfda0b6a7c134fe2bdf58f9202770840;m=847503d9c6;t=65e03c47db174;x=de29b928aefb5c94",
+        "-o",
+        "json"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache"
+      },
+      "started_utc": "2026-10-17T06:55:55.941393+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 715442,
+          "start_ticks": 56892006,
+          "sid": 715442,
+          "pgid": 715442
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 568920.06292994,
+      "pid": 715442,
+      "spawn_return_monotonic": 568920.065962573,
+      "direct_identity": {
+        "pid": 715442,
+        "state": "R",
+        "ppid": 715029,
+        "pgid": 715442,
+        "sid": 715442,
+        "start_ticks": 56892006,
+        "rss_bytes": 131072
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T06:55:56.039387+00:00",
+      "elapsed_seconds": 0.09772669395897537,
+      "logs": {
+        "journal-after-smoke.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "journal-after-smoke.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "single",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-engine-build-v1/build/sycl_moe_window_test",
+        "--case",
+        "single"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache",
+        "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+      },
+      "started_utc": "2026-10-17T06:55:56.046180+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 715445,
+          "start_ticks": 56892016,
+          "sid": 715445,
+          "pgid": 715445
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 568920.1686271,
+      "pid": 715445,
+      "spawn_return_monotonic": 568920.171550577,
+      "direct_identity": {
+        "pid": 715445,
+        "state": "R",
+        "ppid": 715029,
+        "pgid": 715445,
+        "sid": 715445,
+        "start_ticks": 56892016,
+        "rss_bytes": 290816
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 166547456,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T06:55:56.859441+00:00",
+      "elapsed_seconds": 0.8120889919809997,
+      "logs": {
+        "single.stdout": {
+          "bytes": 398,
+          "sha256": "b3967bf95b73b8bb6d2ed0b06d4ab50f1f384a1c720ece3b8d11d98b867678db"
+        },
+        "single.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "journal-after-single",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-b",
+        "--no-pager",
+        "--after-cursor",
+        "s=9944479cfd1a45c28a589619cb8f2881;i=c2c699d;b=cfda0b6a7c134fe2bdf58f9202770840;m=847503d9c6;t=65e03c47db174;x=de29b928aefb5c94",
+        "-o",
+        "json"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache"
+      },
+      "started_utc": "2026-10-17T06:55:56.860387+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 715486,
+          "start_ticks": 56892101,
+          "sid": 715486,
+          "pgid": 715486
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 568921.018163988,
+      "pid": 715486,
+      "spawn_return_monotonic": 568921.021602055,
+      "direct_identity": {
+        "pid": 715486,
+        "state": "R",
+        "ppid": 715029,
+        "pgid": 715486,
+        "sid": 715486,
+        "start_ticks": 56892101,
+        "rss_bytes": 262144
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T06:55:56.997057+00:00",
+      "elapsed_seconds": 0.13630545209161937,
+      "logs": {
+        "journal-after-single.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "journal-after-single.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "unwind",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-engine-build-v1/build/sycl_moe_window_test",
+        "--case",
+        "unwind"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache",
+        "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+      },
+      "started_utc": "2026-10-17T06:55:57.006232+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 715489,
+          "start_ticks": 56892112,
+          "sid": 715489,
+          "pgid": 715489
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 568921.128021796,
+      "pid": 715489,
+      "spawn_return_monotonic": 568921.13105481,
+      "direct_identity": {
+        "pid": 715489,
+        "state": "R",
+        "ppid": 715029,
+        "pgid": 715489,
+        "sid": 715489,
+        "start_ticks": 56892112,
+        "rss_bytes": 290816
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 157134848,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T06:55:57.648069+00:00",
+      "elapsed_seconds": 0.6413445499492809,
+      "logs": {
+        "unwind.stdout": {
+          "bytes": 278,
+          "sha256": "d69f74839fb2418cfdf65e4480fb9324ff5ef21151b2bffc4b0c67809f402779"
+        },
+        "unwind.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "journal-after-unwind",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-b",
+        "--no-pager",
+        "--after-cursor",
+        "s=9944479cfd1a45c28a589619cb8f2881;i=c2c699d;b=cfda0b6a7c134fe2bdf58f9202770840;m=847503d9c6;t=65e03c47db174;x=de29b928aefb5c94",
+        "-o",
+        "json"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache"
+      },
+      "started_utc": "2026-10-17T06:55:57.649116+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 715517,
+          "start_ticks": 56892177,
+          "sid": 715517,
+          "pgid": 715517
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 568921.770856454,
+      "pid": 715517,
+      "spawn_return_monotonic": 568921.773772617,
+      "direct_identity": {
+        "pid": 715517,
+        "state": "R",
+        "ppid": 715029,
+        "pgid": 715517,
+        "sid": 715517,
+        "start_ticks": 56892177,
+        "rss_bytes": 282624
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 5779456,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T06:55:57.801681+00:00",
+      "elapsed_seconds": 0.1520939760375768,
+      "logs": {
+        "journal-after-unwind.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "journal-after-unwind.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "negative-source",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-engine-build-v1/build/sycl_moe_window_test",
+        "--case",
+        "negative-source"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache",
+        "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+      },
+      "started_utc": "2026-10-17T06:55:57.811520+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 715524,
+          "start_ticks": 56892193,
+          "sid": 715524,
+          "pgid": 715524
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 568921.933510513,
+      "pid": 715524,
+      "spawn_return_monotonic": 568921.937105646,
+      "direct_identity": {
+        "pid": 715524,
+        "state": "R",
+        "ppid": 715029,
+        "pgid": 715524,
+        "sid": 715524,
+        "start_ticks": 56892193,
+        "rss_bytes": 290816
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 166322176,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T06:55:58.621395+00:00",
+      "elapsed_seconds": 0.8091671349247918,
+      "logs": {
+        "negative-source.stdout": {
+          "bytes": 414,
+          "sha256": "94018eb3fc4ed26914988fd4fb62e3f5424eb4209dde2873679ac9a3549830e6"
+        },
+        "negative-source.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "journal-after-negative-source",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-b",
+        "--no-pager",
+        "--after-cursor",
+        "s=9944479cfd1a45c28a589619cb8f2881;i=c2c699d;b=cfda0b6a7c134fe2bdf58f9202770840;m=847503d9c6;t=65e03c47db174;x=de29b928aefb5c94",
+        "-o",
+        "json"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache"
+      },
+      "started_utc": "2026-10-17T06:55:58.622553+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 715552,
+          "start_ticks": 56892274,
+          "sid": 715552,
+          "pgid": 715552
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 568922.744381769,
+      "pid": 715552,
+      "spawn_return_monotonic": 568922.747472191,
+      "direct_identity": {
+        "pid": 715552,
+        "state": "R",
+        "ppid": 715029,
+        "pgid": 715552,
+        "sid": 715552,
+        "start_ticks": 56892274,
+        "rss_bytes": 286720
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T06:55:58.724660+00:00",
+      "elapsed_seconds": 0.10154229297768325,
+      "logs": {
+        "journal-after-negative-source.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "journal-after-negative-source.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "negative-slot",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-engine-build-v1/build/sycl_moe_window_test",
+        "--case",
+        "negative-slot"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache",
+        "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+      },
+      "started_utc": "2026-10-17T06:55:58.733601+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 715555,
+          "start_ticks": 56892285,
+          "sid": 715555,
+          "pgid": 715555
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 568922.855609297,
+      "pid": 715555,
+      "spawn_return_monotonic": 568922.858621822,
+      "direct_identity": {
+        "pid": 715555,
+        "state": "R",
+        "ppid": 715029,
+        "pgid": 715555,
+        "sid": 715555,
+        "start_ticks": 56892285,
+        "rss_bytes": 282624
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 165208064,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T06:55:59.529261+00:00",
+      "elapsed_seconds": 0.7949344319058582,
+      "logs": {
+        "negative-slot.stdout": {
+          "bytes": 404,
+          "sha256": "f4bac92ca111572f3390ff9440967d516b3be0e7360fb927d5f48d0746605146"
+        },
+        "negative-slot.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "journal-after-negative-slot",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-b",
+        "--no-pager",
+        "--after-cursor",
+        "s=9944479cfd1a45c28a589619cb8f2881;i=c2c699d;b=cfda0b6a7c134fe2bdf58f9202770840;m=847503d9c6;t=65e03c47db174;x=de29b928aefb5c94",
+        "-o",
+        "json"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache"
+      },
+      "started_utc": "2026-10-17T06:55:59.530614+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 715587,
+          "start_ticks": 56892365,
+          "sid": 715587,
+          "pgid": 715587
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 568923.652578061,
+      "pid": 715587,
+      "spawn_return_monotonic": 568923.655473576,
+      "direct_identity": {
+        "pid": 715587,
+        "state": "R",
+        "ppid": 715029,
+        "pgid": 715587,
+        "sid": 715587,
+        "start_ticks": 56892365,
+        "rss_bytes": 446464
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 5996544,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T06:55:59.643081+00:00",
+      "elapsed_seconds": 0.1117713819257915,
+      "logs": {
+        "journal-after-negative-slot.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "journal-after-negative-slot.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "negative-expert",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-engine-build-v1/build/sycl_moe_window_test",
+        "--case",
+        "negative-expert"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache",
+        "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+      },
+      "started_utc": "2026-10-17T06:55:59.652301+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 715591,
+          "start_ticks": 56892377,
+          "sid": 715591,
+          "pgid": 715591
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 568923.774473446,
+      "pid": 715591,
+      "spawn_return_monotonic": 568923.77783563,
+      "direct_identity": {
+        "pid": 715591,
+        "state": "R",
+        "ppid": 715029,
+        "pgid": 715591,
+        "sid": 715591,
+        "start_ticks": 56892377,
+        "rss_bytes": 471040
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 166629376,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T06:56:00.462199+00:00",
+      "elapsed_seconds": 0.8090180340223014,
+      "logs": {
+        "negative-expert.stdout": {
+          "bytes": 415,
+          "sha256": "7eaafdb5648f15154e2236f3b78066398b27916f3cef0f1eed372674a9832bf4"
+        },
+        "negative-expert.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "journal-after-negative-expert",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-b",
+        "--no-pager",
+        "--after-cursor",
+        "s=9944479cfd1a45c28a589619cb8f2881;i=c2c699d;b=cfda0b6a7c134fe2bdf58f9202770840;m=847503d9c6;t=65e03c47db174;x=de29b928aefb5c94",
+        "-o",
+        "json"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache"
+      },
+      "started_utc": "2026-10-17T06:56:00.463612+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 715627,
+          "start_ticks": 56892458,
+          "sid": 715627,
+          "pgid": 715627
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 568924.585677248,
+      "pid": 715627,
+      "spawn_return_monotonic": 568924.588687108,
+      "direct_identity": {
+        "pid": 715627,
+        "state": "R",
+        "ppid": 715029,
+        "pgid": 715627,
+        "sid": 715627,
+        "start_ticks": 56892458,
+        "rss_bytes": 266240
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 5890048,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T06:56:00.579201+00:00",
+      "elapsed_seconds": 0.11479172192048281,
+      "logs": {
+        "journal-after-negative-expert.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "journal-after-negative-expert.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "negative-down",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-engine-build-v1/build/sycl_moe_window_test",
+        "--case",
+        "negative-down"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache",
+        "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+      },
+      "started_utc": "2026-10-17T06:56:00.588472+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 715630,
+          "start_ticks": 56892471,
+          "sid": 715630,
+          "pgid": 715630
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 568924.710713179,
+      "pid": 715630,
+      "spawn_return_monotonic": 568924.713637298,
+      "direct_identity": {
+        "pid": 715630,
+        "state": "R",
+        "ppid": 715029,
+        "pgid": 715630,
+        "sid": 715630,
+        "start_ticks": 56892471,
+        "rss_bytes": 290816
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 166518784,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T06:56:01.415289+00:00",
+      "elapsed_seconds": 0.825859169010073,
+      "logs": {
+        "negative-down.stdout": {
+          "bytes": 398,
+          "sha256": "285486fac8f996dd30e22bc832e52b77c4784f54d5231708c3f3c11194e0974f"
+        },
+        "negative-down.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "journal-after-negative-down",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-b",
+        "--no-pager",
+        "--after-cursor",
+        "s=9944479cfd1a45c28a589619cb8f2881;i=c2c699d;b=cfda0b6a7c134fe2bdf58f9202770840;m=847503d9c6;t=65e03c47db174;x=de29b928aefb5c94",
+        "-o",
+        "json"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache"
+      },
+      "started_utc": "2026-10-17T06:56:01.416806+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 715672,
+          "start_ticks": 56892554,
+          "sid": 715672,
+          "pgid": 715672
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 568925.538959676,
+      "pid": 715672,
+      "spawn_return_monotonic": 568925.542026463,
+      "direct_identity": {
+        "pid": 715672,
+        "state": "R",
+        "ppid": 715029,
+        "pgid": 715672,
+        "sid": 715672,
+        "start_ticks": 56892554,
+        "rss_bytes": 294912
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T06:56:01.521102+00:00",
+      "elapsed_seconds": 0.1034124749712646,
+      "logs": {
+        "journal-after-negative-down.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "journal-after-negative-down.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "hot8193",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-engine-build-v1/build/sycl_moe_window_test",
+        "--case",
+        "hot8193"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache",
+        "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+      },
+      "started_utc": "2026-10-17T06:56:01.530933+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 715676,
+          "start_ticks": 56892565,
+          "sid": 715676,
+          "pgid": 715676
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 568925.653530933,
+      "pid": 715676,
+      "spawn_return_monotonic": 568925.656608791,
+      "direct_identity": {
+        "pid": 715676,
+        "state": "R",
+        "ppid": 715029,
+        "pgid": 715676,
+        "sid": 715676,
+        "start_ticks": 56892565,
+        "rss_bytes": 290816
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 166711296,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T06:56:02.422005+00:00",
+      "elapsed_seconds": 0.8899420610396191,
+      "logs": {
+        "hot8193.stdout": {
+          "bytes": 404,
+          "sha256": "049a0c8134c6545e57c25842651c08f4c171e69e89de280cf275b6917143b709"
+        },
+        "hot8193.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "journal-after-hot8193",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-b",
+        "--no-pager",
+        "--after-cursor",
+        "s=9944479cfd1a45c28a589619cb8f2881;i=c2c699d;b=cfda0b6a7c134fe2bdf58f9202770840;m=847503d9c6;t=65e03c47db174;x=de29b928aefb5c94",
+        "-o",
+        "json"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache"
+      },
+      "started_utc": "2026-10-17T06:56:02.423630+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 715710,
+          "start_ticks": 56892654,
+          "sid": 715710,
+          "pgid": 715710
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 568926.545890108,
+      "pid": 715710,
+      "spawn_return_monotonic": 568926.548810359,
+      "direct_identity": {
+        "pid": 715710,
+        "state": "R",
+        "ppid": 715029,
+        "pgid": 715710,
+        "sid": 715710,
+        "start_ticks": 56892654,
+        "rss_bytes": 446464
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T06:56:02.530383+00:00",
+      "elapsed_seconds": 0.10576082998886704,
+      "logs": {
+        "journal-after-hot8193.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "journal-after-hot8193.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "hot16384",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-engine-build-v1/build/sycl_moe_window_test",
+        "--case",
+        "hot16384"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache",
+        "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+      },
+      "started_utc": "2026-10-17T06:56:02.540500+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 715713,
+          "start_ticks": 56892666,
+          "sid": 715713,
+          "pgid": 715713
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 568926.663020526,
+      "pid": 715713,
+      "spawn_return_monotonic": 568926.667041621,
+      "direct_identity": {
+        "pid": 715713,
+        "state": "R",
+        "ppid": 715029,
+        "pgid": 715713,
+        "sid": 715713,
+        "start_ticks": 56892666,
+        "rss_bytes": 466944
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 170610688,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T06:56:03.438532+00:00",
+      "elapsed_seconds": 0.8968090569833294,
+      "logs": {
+        "hot16384.stdout": {
+          "bytes": 406,
+          "sha256": "e652ab34e1d18e2b9f9dcfcb47c6ade880d00e0d699728ebb0ad41df24d070c0"
+        },
+        "hot16384.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "journal-after-hot16384",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-b",
+        "--no-pager",
+        "--after-cursor",
+        "s=9944479cfd1a45c28a589619cb8f2881;i=c2c699d;b=cfda0b6a7c134fe2bdf58f9202770840;m=847503d9c6;t=65e03c47db174;x=de29b928aefb5c94",
+        "-o",
+        "json"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache"
+      },
+      "started_utc": "2026-10-17T06:56:03.440218+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 715748,
+          "start_ticks": 56892756,
+          "sid": 715748,
+          "pgid": 715748
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 568927.562531894,
+      "pid": 715748,
+      "spawn_return_monotonic": 568927.565452215,
+      "direct_identity": {
+        "pid": 715748,
+        "state": "R",
+        "ppid": 715029,
+        "pgid": 715748,
+        "sid": 715748,
+        "start_ticks": 56892756,
+        "rss_bytes": 131072
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 5779456,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T06:56:03.554474+00:00",
+      "elapsed_seconds": 0.1132081690011546,
+      "logs": {
+        "journal-after-hot16384.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "journal-after-hot16384.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "balanced16384",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-engine-build-v1/build/sycl_moe_window_test",
+        "--case",
+        "balanced16384"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache",
+        "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+      },
+      "started_utc": "2026-10-17T06:56:03.564635+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 715752,
+          "start_ticks": 56892768,
+          "sid": 715752,
+          "pgid": 715752
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 568927.687357268,
+      "pid": 715752,
+      "spawn_return_monotonic": 568927.690777151,
+      "direct_identity": {
+        "pid": 715752,
+        "state": "R",
+        "ppid": 715029,
+        "pgid": 715752,
+        "sid": 715752,
+        "start_ticks": 56892768,
+        "rss_bytes": 290816
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 170692608,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T06:56:04.481200+00:00",
+      "elapsed_seconds": 0.9151281480444595,
+      "logs": {
+        "balanced16384.stdout": {
+          "bytes": 408,
+          "sha256": "73c045193f0a597070daf2e2a65422eab24963037b2bc8dcf63f33aafd34c5b9"
+        },
+        "balanced16384.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "journal-after-balanced16384",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-b",
+        "--no-pager",
+        "--after-cursor",
+        "s=9944479cfd1a45c28a589619cb8f2881;i=c2c699d;b=cfda0b6a7c134fe2bdf58f9202770840;m=847503d9c6;t=65e03c47db174;x=de29b928aefb5c94",
+        "-o",
+        "json"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache"
+      },
+      "started_utc": "2026-10-17T06:56:04.483013+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 715791,
+          "start_ticks": 56892860,
+          "sid": 715791,
+          "pgid": 715791
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 568928.605433409,
+      "pid": 715791,
+      "spawn_return_monotonic": 568928.609031397,
+      "direct_identity": {
+        "pid": 715791,
+        "state": "R",
+        "ppid": 715029,
+        "pgid": 715791,
+        "sid": 715791,
+        "start_ticks": 56892860,
+        "rss_bytes": 266240
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T06:56:04.584798+00:00",
+      "elapsed_seconds": 0.100629031076096,
+      "logs": {
+        "journal-after-balanced16384.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "journal-after-balanced16384.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "tail16383",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-engine-build-v1/build/sycl_moe_window_test",
+        "--case",
+        "tail16383"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache",
+        "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+      },
+      "started_utc": "2026-10-17T06:56:04.595119+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 715794,
+          "start_ticks": 56892871,
+          "sid": 715794,
+          "pgid": 715794
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 568928.71793667,
+      "pid": 715794,
+      "spawn_return_monotonic": 568928.721343097,
+      "direct_identity": {
+        "pid": 715794,
+        "state": "R",
+        "ppid": 715029,
+        "pgid": 715794,
+        "sid": 715794,
+        "start_ticks": 56892871,
+        "rss_bytes": 290816
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 169701376,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T06:56:05.508526+00:00",
+      "elapsed_seconds": 0.9118842659518123,
+      "logs": {
+        "tail16383.stdout": {
+          "bytes": 408,
+          "sha256": "38767454a8363027568c3f60cfd93e2d1c451b27871a4cafd447bb3878b27b23"
+        },
+        "tail16383.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "journal-after-tail16383",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-b",
+        "--no-pager",
+        "--after-cursor",
+        "s=9944479cfd1a45c28a589619cb8f2881;i=c2c699d;b=cfda0b6a7c134fe2bdf58f9202770840;m=847503d9c6;t=65e03c47db174;x=de29b928aefb5c94",
+        "-o",
+        "json"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache"
+      },
+      "started_utc": "2026-10-17T06:56:05.510457+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 715833,
+          "start_ticks": 56892963,
+          "sid": 715833,
+          "pgid": 715833
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 568929.632965469,
+      "pid": 715833,
+      "spawn_return_monotonic": 568929.635940003,
+      "direct_identity": {
+        "pid": 715833,
+        "state": "R",
+        "ppid": 715029,
+        "pgid": 715833,
+        "sid": 715833,
+        "start_ticks": 56892963,
+        "rss_bytes": 483328
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 5931008,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T06:56:05.628853+00:00",
+      "elapsed_seconds": 0.11715198901947588,
+      "logs": {
+        "journal-after-tail16383.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "journal-after-tail16383.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "journal-final",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-b",
+        "--no-pager",
+        "--after-cursor",
+        "s=9944479cfd1a45c28a589619cb8f2881;i=c2c699d;b=cfda0b6a7c134fe2bdf58f9202770840;m=847503d9c6;t=65e03c47db174;x=de29b928aefb5c94",
+        "-o",
+        "json"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache"
+      },
+      "started_utc": "2026-10-17T06:56:10.988513+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 716078,
+          "start_ticks": 56893511,
+          "sid": 716078,
+          "pgid": 716078
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 568935.111976862,
+      "pid": 716078,
+      "spawn_return_monotonic": 568935.115932283,
+      "direct_identity": {
+        "pid": 716078,
+        "state": "R",
+        "ppid": 715029,
+        "pgid": 716078,
+        "sid": 716078,
+        "start_ticks": 56893511,
+        "rss_bytes": 286720
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T06:56:11.102593+00:00",
+      "elapsed_seconds": 0.1119283470325172,
+      "logs": {
+        "journal-final.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "journal-final.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "cases": [
+    {
+      "name": "smoke",
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr"
+      },
+      "samples": [
+        {
+          "rows": 3,
+          "concentrated": 0,
+          "salt": 1,
+          "stopped": 0,
+          "fault": 0,
+          "jobs": 30,
+          "checks_completed": 1
+        },
+        {
+          "rows": 3,
+          "concentrated": 0,
+          "salt": 37,
+          "stopped": 0,
+          "fault": 0,
+          "jobs": 30,
+          "checks_completed": 1
+        }
+      ],
+      "counters": [
+        {
+          "maps": 0,
+          "gather_expert": 0,
+          "down": 0,
+          "combine": 0
+        },
+        {
+          "maps": 0,
+          "gather_expert": 0,
+          "down": 0,
+          "combine": 0
+        }
+      ],
+      "stdout": "moe_window case rows=3 concentrated=0 salt=1 stopped=0 fault=0 jobs=30 checks_completed=1 PASS\nmoe_window counters maps=0 gather_expert=0 down=0 combine=0\nmoe_window case rows=3 concentrated=0 salt=37 stopped=0 fault=0 jobs=30 checks_completed=1 PASS\nmoe_window counters maps=0 gather_expert=0 down=0 combine=0\nmoe_window PASS (synthetic route/gather/combine only; no model/GEMM/state/speed claim)\n",
+      "stderr_sha256": "ab92d1e25bef3f1b56b65a6f297fe4bfc109e2a5f7b7c95fdf43a6014a228352",
+      "stderr_bytes": 404388,
+      "passed": true
+    },
+    {
+      "name": "single",
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache",
+        "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+      },
+      "samples": [
+        {
+          "rows": 1,
+          "concentrated": 0,
+          "salt": 1,
+          "stopped": 0,
+          "fault": 0,
+          "jobs": 10,
+          "checks_completed": 1
+        },
+        {
+          "rows": 1,
+          "concentrated": 0,
+          "salt": 37,
+          "stopped": 0,
+          "fault": 0,
+          "jobs": 10,
+          "checks_completed": 1
+        }
+      ],
+      "counters": [
+        {
+          "maps": 0,
+          "gather_expert": 0,
+          "down": 0,
+          "combine": 0
+        },
+        {
+          "maps": 0,
+          "gather_expert": 0,
+          "down": 0,
+          "combine": 0
+        }
+      ],
+      "stdout": "moe_window case rows=1 concentrated=0 salt=1 stopped=0 fault=0 jobs=10 checks_completed=1 PASS\nmoe_window counters maps=0 gather_expert=0 down=0 combine=0\nmoe_window case rows=1 concentrated=0 salt=37 stopped=0 fault=0 jobs=10 checks_completed=1 PASS\nmoe_window counters maps=0 gather_expert=0 down=0 combine=0\nmoe_window PASS (synthetic route/gather/combine only; no model/GEMM/state/speed claim)\n",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "passed": true
+    },
+    {
+      "name": "unwind",
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache",
+        "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+      },
+      "samples": [
+        {
+          "rows": 3,
+          "concentrated": 0,
+          "salt": 1,
+          "stopped": 1,
+          "fault": 0,
+          "jobs": 30,
+          "checks_completed": 0
+        },
+        {
+          "rows": 3,
+          "concentrated": 0,
+          "salt": 37,
+          "stopped": 1,
+          "fault": 0,
+          "jobs": 30,
+          "checks_completed": 0
+        }
+      ],
+      "counters": [],
+      "stdout": "moe_window case rows=3 concentrated=0 salt=1 stopped=1 fault=0 jobs=30 checks_completed=0 PASS\nmoe_window case rows=3 concentrated=0 salt=37 stopped=1 fault=0 jobs=30 checks_completed=0 PASS\nmoe_window PASS (synthetic route/gather/combine only; no model/GEMM/state/speed claim)\n",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "passed": true
+    },
+    {
+      "name": "negative-source",
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache",
+        "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+      },
+      "samples": [
+        {
+          "rows": 3,
+          "concentrated": 0,
+          "salt": 1,
+          "stopped": 0,
+          "fault": 1,
+          "jobs": 30,
+          "checks_completed": 1
+        },
+        {
+          "rows": 3,
+          "concentrated": 0,
+          "salt": 37,
+          "stopped": 0,
+          "fault": 1,
+          "jobs": 30,
+          "checks_completed": 1
+        }
+      ],
+      "counters": [
+        {
+          "maps": 1,
+          "gather_expert": 2560,
+          "down": 778,
+          "combine": 560
+        },
+        {
+          "maps": 1,
+          "gather_expert": 2560,
+          "down": 1142,
+          "combine": 1059
+        }
+      ],
+      "stdout": "moe_window case rows=3 concentrated=0 salt=1 stopped=0 fault=1 jobs=30 checks_completed=1 PASS\nmoe_window counters maps=1 gather_expert=2560 down=778 combine=560\nmoe_window case rows=3 concentrated=0 salt=37 stopped=0 fault=1 jobs=30 checks_completed=1 PASS\nmoe_window counters maps=1 gather_expert=2560 down=1142 combine=1059\nmoe_window PASS (synthetic route/gather/combine only; no model/GEMM/state/speed claim)\n",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "passed": true
+    },
+    {
+      "name": "negative-slot",
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache",
+        "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+      },
+      "samples": [
+        {
+          "rows": 3,
+          "concentrated": 0,
+          "salt": 1,
+          "stopped": 0,
+          "fault": 2,
+          "jobs": 30,
+          "checks_completed": 1
+        },
+        {
+          "rows": 3,
+          "concentrated": 0,
+          "salt": 37,
+          "stopped": 0,
+          "fault": 2,
+          "jobs": 30,
+          "checks_completed": 1
+        }
+      ],
+      "counters": [
+        {
+          "maps": 1,
+          "gather_expert": 0,
+          "down": 0,
+          "combine": 2543
+        },
+        {
+          "maps": 1,
+          "gather_expert": 0,
+          "down": 0,
+          "combine": 2545
+        }
+      ],
+      "stdout": "moe_window case rows=3 concentrated=0 salt=1 stopped=0 fault=2 jobs=30 checks_completed=1 PASS\nmoe_window counters maps=1 gather_expert=0 down=0 combine=2543\nmoe_window case rows=3 concentrated=0 salt=37 stopped=0 fault=2 jobs=30 checks_completed=1 PASS\nmoe_window counters maps=1 gather_expert=0 down=0 combine=2545\nmoe_window PASS (synthetic route/gather/combine only; no model/GEMM/state/speed claim)\n",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "passed": true
+    },
+    {
+      "name": "negative-expert",
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache",
+        "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+      },
+      "samples": [
+        {
+          "rows": 3,
+          "concentrated": 0,
+          "salt": 1,
+          "stopped": 0,
+          "fault": 3,
+          "jobs": 30,
+          "checks_completed": 1
+        },
+        {
+          "rows": 3,
+          "concentrated": 0,
+          "salt": 37,
+          "stopped": 0,
+          "fault": 3,
+          "jobs": 30,
+          "checks_completed": 1
+        }
+      ],
+      "counters": [
+        {
+          "maps": 0,
+          "gather_expert": 2560,
+          "down": 2434,
+          "combine": 527
+        },
+        {
+          "maps": 0,
+          "gather_expert": 2560,
+          "down": 2431,
+          "combine": 1672
+        }
+      ],
+      "stdout": "moe_window case rows=3 concentrated=0 salt=1 stopped=0 fault=3 jobs=30 checks_completed=1 PASS\nmoe_window counters maps=0 gather_expert=2560 down=2434 combine=527\nmoe_window case rows=3 concentrated=0 salt=37 stopped=0 fault=3 jobs=30 checks_completed=1 PASS\nmoe_window counters maps=0 gather_expert=2560 down=2431 combine=1672\nmoe_window PASS (synthetic route/gather/combine only; no model/GEMM/state/speed claim)\n",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "passed": true
+    },
+    {
+      "name": "negative-down",
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache",
+        "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+      },
+      "samples": [
+        {
+          "rows": 3,
+          "concentrated": 0,
+          "salt": 1,
+          "stopped": 0,
+          "fault": 4,
+          "jobs": 30,
+          "checks_completed": 1
+        },
+        {
+          "rows": 3,
+          "concentrated": 0,
+          "salt": 37,
+          "stopped": 0,
+          "fault": 4,
+          "jobs": 30,
+          "checks_completed": 1
+        }
+      ],
+      "counters": [
+        {
+          "maps": 0,
+          "gather_expert": 0,
+          "down": 1,
+          "combine": 0
+        },
+        {
+          "maps": 0,
+          "gather_expert": 0,
+          "down": 1,
+          "combine": 1
+        }
+      ],
+      "stdout": "moe_window case rows=3 concentrated=0 salt=1 stopped=0 fault=4 jobs=30 checks_completed=1 PASS\nmoe_window counters maps=0 gather_expert=0 down=1 combine=0\nmoe_window case rows=3 concentrated=0 salt=37 stopped=0 fault=4 jobs=30 checks_completed=1 PASS\nmoe_window counters maps=0 gather_expert=0 down=1 combine=1\nmoe_window PASS (synthetic route/gather/combine only; no model/GEMM/state/speed claim)\n",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "passed": true
+    },
+    {
+      "name": "hot8193",
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache",
+        "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+      },
+      "samples": [
+        {
+          "rows": 8193,
+          "concentrated": 1,
+          "salt": 1,
+          "stopped": 0,
+          "fault": 0,
+          "jobs": 20,
+          "checks_completed": 1
+        },
+        {
+          "rows": 8193,
+          "concentrated": 1,
+          "salt": 37,
+          "stopped": 0,
+          "fault": 0,
+          "jobs": 20,
+          "checks_completed": 1
+        }
+      ],
+      "counters": [
+        {
+          "maps": 0,
+          "gather_expert": 0,
+          "down": 0,
+          "combine": 0
+        },
+        {
+          "maps": 0,
+          "gather_expert": 0,
+          "down": 0,
+          "combine": 0
+        }
+      ],
+      "stdout": "moe_window case rows=8193 concentrated=1 salt=1 stopped=0 fault=0 jobs=20 checks_completed=1 PASS\nmoe_window counters maps=0 gather_expert=0 down=0 combine=0\nmoe_window case rows=8193 concentrated=1 salt=37 stopped=0 fault=0 jobs=20 checks_completed=1 PASS\nmoe_window counters maps=0 gather_expert=0 down=0 combine=0\nmoe_window PASS (synthetic route/gather/combine only; no model/GEMM/state/speed claim)\n",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "passed": true
+    },
+    {
+      "name": "hot16384",
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache",
+        "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+      },
+      "samples": [
+        {
+          "rows": 16384,
+          "concentrated": 1,
+          "salt": 1,
+          "stopped": 0,
+          "fault": 0,
+          "jobs": 20,
+          "checks_completed": 1
+        },
+        {
+          "rows": 16384,
+          "concentrated": 1,
+          "salt": 37,
+          "stopped": 0,
+          "fault": 0,
+          "jobs": 20,
+          "checks_completed": 1
+        }
+      ],
+      "counters": [
+        {
+          "maps": 0,
+          "gather_expert": 0,
+          "down": 0,
+          "combine": 0
+        },
+        {
+          "maps": 0,
+          "gather_expert": 0,
+          "down": 0,
+          "combine": 0
+        }
+      ],
+      "stdout": "moe_window case rows=16384 concentrated=1 salt=1 stopped=0 fault=0 jobs=20 checks_completed=1 PASS\nmoe_window counters maps=0 gather_expert=0 down=0 combine=0\nmoe_window case rows=16384 concentrated=1 salt=37 stopped=0 fault=0 jobs=20 checks_completed=1 PASS\nmoe_window counters maps=0 gather_expert=0 down=0 combine=0\nmoe_window PASS (synthetic route/gather/combine only; no model/GEMM/state/speed claim)\n",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "passed": true
+    },
+    {
+      "name": "balanced16384",
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache",
+        "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+      },
+      "samples": [
+        {
+          "rows": 16384,
+          "concentrated": 0,
+          "salt": 1,
+          "stopped": 0,
+          "fault": 0,
+          "jobs": 512,
+          "checks_completed": 1
+        },
+        {
+          "rows": 16384,
+          "concentrated": 0,
+          "salt": 37,
+          "stopped": 0,
+          "fault": 0,
+          "jobs": 512,
+          "checks_completed": 1
+        }
+      ],
+      "counters": [
+        {
+          "maps": 0,
+          "gather_expert": 0,
+          "down": 0,
+          "combine": 0
+        },
+        {
+          "maps": 0,
+          "gather_expert": 0,
+          "down": 0,
+          "combine": 0
+        }
+      ],
+      "stdout": "moe_window case rows=16384 concentrated=0 salt=1 stopped=0 fault=0 jobs=512 checks_completed=1 PASS\nmoe_window counters maps=0 gather_expert=0 down=0 combine=0\nmoe_window case rows=16384 concentrated=0 salt=37 stopped=0 fault=0 jobs=512 checks_completed=1 PASS\nmoe_window counters maps=0 gather_expert=0 down=0 combine=0\nmoe_window PASS (synthetic route/gather/combine only; no model/GEMM/state/speed claim)\n",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "passed": true
+    },
+    {
+      "name": "tail16383",
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1/cache",
+        "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+      },
+      "samples": [
+        {
+          "rows": 16383,
+          "concentrated": 0,
+          "salt": 1,
+          "stopped": 0,
+          "fault": 0,
+          "jobs": 512,
+          "checks_completed": 1
+        },
+        {
+          "rows": 16383,
+          "concentrated": 0,
+          "salt": 37,
+          "stopped": 0,
+          "fault": 0,
+          "jobs": 512,
+          "checks_completed": 1
+        }
+      ],
+      "counters": [
+        {
+          "maps": 0,
+          "gather_expert": 0,
+          "down": 0,
+          "combine": 0
+        },
+        {
+          "maps": 0,
+          "gather_expert": 0,
+          "down": 0,
+          "combine": 0
+        }
+      ],
+      "stdout": "moe_window case rows=16383 concentrated=0 salt=1 stopped=0 fault=0 jobs=512 checks_completed=1 PASS\nmoe_window counters maps=0 gather_expert=0 down=0 combine=0\nmoe_window case rows=16383 concentrated=0 salt=37 stopped=0 fault=0 jobs=512 checks_completed=1 PASS\nmoe_window counters maps=0 gather_expert=0 down=0 combine=0\nmoe_window PASS (synthetic route/gather/combine only; no model/GEMM/state/speed claim)\n",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "passed": true
+    }
+  ],
+  "expected_cases": [
+    [
+      "smoke",
+      3
+    ],
+    [
+      "single",
+      1
+    ],
+    [
+      "unwind",
+      3
+    ],
+    [
+      "negative-source",
+      3
+    ],
+    [
+      "negative-slot",
+      3
+    ],
+    [
+      "negative-expert",
+      3
+    ],
+    [
+      "negative-down",
+      3
+    ],
+    [
+      "hot8193",
+      8193
+    ],
+    [
+      "hot16384",
+      16384
+    ],
+    [
+      "balanced16384",
+      16384
+    ],
+    [
+      "tail16383",
+      16383
+    ]
+  ],
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-engine-build-v1/build/sycl_moe_window_test",
+    "sha256": "1616fe74b7480b467cfdf913276a60837ae25ee01397c2fe05654267f453141f",
+    "bytes": 958888
+  },
+  "build_receipt": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window/bench/results/2026-10-15-pr6-recovery-audit/moe-window-engine-build-v1.json",
+    "sha256": "1b1431ea6a2262d317df1d6d5720573d3d034ec3db541c4530b24069978e0cdd"
+  },
+  "health_receipt": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/post-packed-stall-health-v1.json",
+    "sha256": "8337b8f1ae50baf878ceb37cb66f081c648c638d52e14ff3b461bfd48d6aa9e1"
+  },
+  "recipe_sha256": "b43b0f2ea2b8f45de8e6663b345476d34f72476b2eb9a022c5b33e5c4e7b27ee",
+  "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "scope": "Synthetic production route/gather/combine and independent pre-combine oracle, guards and lease unwind only. No real expert GEMM/dequant/attention/model/state/context/RESTORE/speed qualification.",
+  "retention": {
+    "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-window-fixture-GPU-v1",
+    "budget_bytes": 67108864,
+    "consumer": "Main MoE GPU indexing/owner qualification",
+    "review_point": "After closure: keep all case/counter/fault results; retire successful full API traces after extracting proof."
+  },
+  "journal_before_cursor": "s=9944479cfd1a45c28a589619cb8f2881;i=c2c699d;b=cfda0b6a7c134fe2bdf58f9202770840;m=847503d9c6;t=65e03c47db174;x=de29b928aefb5c94",
+  "fresh_faults": [],
+  "ownership_closed": true,
+  "boot_unchanged": true,
+  "driver_dump_exists": false,
+  "finished_utc": "2026-10-17T06:56:11.104409+00:00"
+}

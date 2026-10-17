@@ -28,7 +28,7 @@ if(NOT STRATA_SYCL_HAS_INTEL_HA_EXP)
   message(STATUS "Experimental Q2 CPU-order route: standard SYCL exp; Intel high-accuracy API unavailable")
 endif()
 
-add_library(strata_sycl_runtime STATIC src/sycl/runtime.cpp src/sycl/compat.cpp)
+add_library(strata_sycl_runtime STATIC src/sycl/runtime.cpp src/sycl/compat.cpp src/sycl/command_profile.cpp)
 add_executable(sycl_host_transfer_probe EXCLUDE_FROM_ALL tools/sycl/host_transfer_probe.cpp)
 target_link_libraries(sycl_host_transfer_probe PRIVATE strata_sycl_runtime)
 add_executable(sycl_transfer_ceiling EXCLUDE_FROM_ALL
@@ -136,6 +136,9 @@ target_compile_options(sycl_gemm16_test PRIVATE -fno-fast-math -ffp-contract=off
 add_executable(sycl_native16_prefill_test EXCLUDE_FROM_ALL tests/sycl/native16_prefill.cpp)
 target_link_libraries(sycl_native16_prefill_test PRIVATE strata_prefill)
 target_compile_options(sycl_native16_prefill_test PRIVATE -fno-fast-math -ffp-contract=off)
+add_executable(sycl_moe_window_test EXCLUDE_FROM_ALL tests/sycl/moe_window.cpp)
+target_link_libraries(sycl_moe_window_test PRIVATE strata_prefill)
+target_compile_options(sycl_moe_window_test PRIVATE -fno-fast-math -ffp-contract=off)
 add_executable(sycl_allocation_teardown_test EXCLUDE_FROM_ALL tests/sycl/allocation_teardown.cpp)
 target_link_libraries(sycl_allocation_teardown_test PRIVATE strata_sycl_runtime)
 # Standalone synthetic hot-operand row/column oneMKL descriptor diagnostic.
@@ -149,6 +152,10 @@ target_link_libraries(strata PRIVATE strata_prefill strata_spec)
 
 option(STRATA_SYCL_TESTS "Build GPU parity and runtime tests for SYCL" ON)
 if(STRATA_SYCL_TESTS)
+  add_executable(sycl_command_profile_test EXCLUDE_FROM_ALL tests/sycl/command_profile.cpp)
+  target_link_libraries(sycl_command_profile_test PRIVATE strata_sycl_runtime)
+  target_compile_features(sycl_command_profile_test PRIVATE cxx_std_20)
+  target_compile_options(sycl_command_profile_test PRIVATE -fno-fast-math -ffp-contract=off)
   enable_testing()
   if(STRATA_SYCL_VLLM_XE2_NATIVE16)
     strata_add_vllm_native16_tests()
@@ -451,6 +458,13 @@ if(STRATA_SYCL_TESTS)
   target_compile_options(sycl_qsa_bf16_prefix_optimized_test PRIVATE -fno-fast-math -ffp-contract=off)
   target_compile_definitions(sycl_qsa_bf16_prefix_optimized_test PRIVATE
     qsa_bf16_prefix_batch=qsa_bf16_prefix_optimized_batch)
+
+  add_executable(sycl_qsa_bf16_prefix_subgroup_test EXCLUDE_FROM_ALL tests/sycl/qsa_bf16_prefix.cpp)
+  target_link_libraries(sycl_qsa_bf16_prefix_subgroup_test PRIVATE strata_kernels)
+  target_compile_features(sycl_qsa_bf16_prefix_subgroup_test PRIVATE cxx_std_20)
+  target_compile_options(sycl_qsa_bf16_prefix_subgroup_test PRIVATE -fno-fast-math -ffp-contract=off)
+  target_compile_definitions(sycl_qsa_bf16_prefix_subgroup_test PRIVATE
+    qsa_bf16_prefix_batch=qsa_bf16_prefix_subgroup_batch)
 
   add_executable(sycl_qsa_bf16_prefix_tilepack_test EXCLUDE_FROM_ALL tests/sycl/qsa_bf16_prefix.cpp)
   target_link_libraries(sycl_qsa_bf16_prefix_tilepack_test PRIVATE strata_kernels)

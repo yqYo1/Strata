@@ -1,4 +1,5 @@
 #include "strata/prefill/native16.hpp"
+#include "strata/prefill/moe_window_routes.hpp"
 #include "strata/kernels/bf16_bits.hpp"
 #include "strata/kernels/f16_bits.hpp"
 #include "strata/sycl/launch.hpp"
@@ -155,6 +156,75 @@ void combine(const uint16_t* d, const int32_t* slot, const float* w, const uint1
                 v = sycl::fma(w[t * 10 + k], load(d[size_t(row) * N + col]), v);
         }
         bo[i] = store(v + load(shared[i]) * sigmoid(sg[t]));
+    });
+}
+
+namespace {
+void accumulator_spans(void* stream, std::initializer_list<Span> outputs,
+                       std::initializer_list<Span> inputs) {
+    validate_spans(outputs, inputs);
+    const auto& q = queue_for(stream);
+    for (auto span : outputs) validate_device_span(span.pointer, span.bytes, q);
+    for (auto span : inputs) validate_device_span(span.pointer, span.bytes, q);
+}
+size_t accumulator_routes(const detail::MoeWindowRoutes& plan, void* stream) {
+    const size_t routes = size_t(plan.rows()) * detail::MoeWindowRoutes::top_k;
+    if (plan.rows() < 1 || plan.rows() > detail::MoeWindowRoutes::max_accum_rows ||
+        plan.original_slots().size() != routes || plan.source_rows().size() != routes ||
+        !queue_for(stream).has_property<sycl::property::queue::in_order>())
+        throw std::invalid_argument("MoE accumulator requires an inverse plan and in-order queue");
+    return routes;
+}
+void accumulator_error(uint32_t* status, uint32_t bit) {
+    sycl::atomic_ref<uint32_t, sycl::memory_order::relaxed, sycl::memory_scope::device,
+                     sycl::access::address_space::global_space>(*status).fetch_or(bit);
+}
+}
+
+void moe_job_weights(const detail::MoeWindowRoutes& plan, const float* weights,
+                     const int32_t* original, float* job_weights, uint32_t* status, void* stream) {
+    const size_t routes = accumulator_routes(plan, stream);
+    accumulator_spans(stream, {{job_weights, routes * 4}, {status, 4}},
+                   {{weights, routes * 4}, {original, routes * 4}});
+    for_each(routes, stream, [=](size_t i) {
+        const int32_t slot = original[i];
+        if (slot < 0 || size_t(slot) >= routes) {
+            accumulator_error(status, 1); job_weights[i] = 0.f;
+        } else job_weights[i] = weights[size_t(slot)];
+    });
+}
+
+void moe_accumulate(const detail::MoeWindowRoutes& plan, size_t job_index,
+                    const uint16_t* down, const int32_t* source, const int32_t* original,
+                    const float* job_weights, float* accumulator, uint32_t* status, void* stream) {
+    const size_t routes = accumulator_routes(plan, stream);
+    const auto& job = plan.jobs().at(job_index);
+    if (job.rows < 1 || job.rows > 8192 || size_t(job.rows) > routes || job.global_row < 0 ||
+        size_t(job.global_row) > routes - size_t(job.rows))
+        throw std::invalid_argument("MoE accumulator job span");
+    const size_t rows = size_t(plan.rows()), offset = size_t(job.global_row);
+    const size_t n = count(job.rows, N);
+    accumulator_spans(stream, {{accumulator, rows * N * 4}, {status, 4}},
+                   {{down, n * 2}, {source, routes * 4}, {original, routes * 4}, {job_weights, routes * 4}});
+    for_each(n, stream, [=](size_t i) {
+        const size_t routed = offset + i / N, col = i % N;
+        const int32_t token = source[routed], slot = original[routed];
+        if (slot < 0 || size_t(slot) >= routes) { accumulator_error(status, 1); return; }
+        if (token < 0 || size_t(token) >= rows || token != slot / 10) {
+            accumulator_error(status, 2); return;
+        }
+        const size_t out = size_t(token) * N + col;
+        accumulator[out] = sycl::fma(job_weights[routed], load(down[i]), accumulator[out]);
+    });
+}
+
+void moe_finish(const float* accumulator, const uint16_t* shared, const float* sg,
+                uint16_t* output, int64_t rows, void* stream) {
+    if (rows > 8192) throw std::invalid_argument("MoE accumulator epilogue exceeds operator capacity");
+    const size_t n = count(rows, N);
+    accumulator_spans(stream, {{output, n * 2}}, {{accumulator, n * 4}, {shared, n * 2}, {sg, size_t(rows) * 4}});
+    for_each(n, stream, [=](size_t i) {
+        output[i] = store(accumulator[i] + load(shared[i]) * sigmoid(sg[i / N]));
     });
 }
 } // namespace strata::prefill::native16

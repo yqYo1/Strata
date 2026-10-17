@@ -110,6 +110,10 @@ public:
     /// mid-prompt checkpoint takes each stage's part.  Runs on that stage's thread, with its device current.
     std::function<bool(int64_t done, std::string& err)> on_stage_chunk;
 
+    // A caller with prefix-state callbacks must leave this true. Set false only
+    // when callbacks consume residuals/MTP without saving intermediate model state.
+    bool requires_prefix_checkpoints = true;
+
     /// Checked before every chunk: true stops the prompt early (`run` returns false with err "cancelled").
     std::function<bool()> should_stop;
 
@@ -129,6 +133,9 @@ public:
 private:
     bool run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err);
     bool run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err);
+#if defined(STRATA_ENABLE_SYCL)
+    bool run_moe_window(int64_t layer, int64_t first_row, int64_t rows, std::string& err);
+#endif
     int64_t stage_lb_ = 0, stage_le_ = -1;
     Prefill* next_ = nullptr;
     const float* hand_in_ = nullptr;    ///< the previous stage's rows of the chunk being read (host, pinned)
