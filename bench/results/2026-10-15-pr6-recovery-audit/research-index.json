@@ -7110,14 +7110,14 @@
     "main_reconciliation": "research-review-round953-main-reconciliation-v1.json"
   },
   "current_main_boundary": {
-    "recorded_utc": "2026-10-17T08:31:18.498095+00:00",
+    "recorded_utc": "2026-10-17T08:50:25.209270+00:00",
     "goal": "Dedicated long prefill repeated>600 then1000tok/s; eventual decode70. Not achieved.",
-    "current_model_comparison": "Actual39K clean six-process MoE baseline452.0/464.1/464.1 vs window2 candidate491.7/491.8/490.8; candidate median491.7tok/s. 24 output tokens are not sustained decode evidence.",
+    "current_model_comparison": "QSA optimized490.6/490.1/491.4 (median490.6,mean490.7) vs subgroup495.4/478.7/495.9 (median495.4,mean490.0). Same new binary/window2. No stable end-to-end gain demonstrated, no adoption.",
     "current_component_comparison": "QSA subgroup same-binary synthetic8192query/2051selected/physical32768: median333.3182415->322.3369095ms across3 fresh processes per arm, 3.29455% latency reduction. All60 samples and fault/numerical gates preserved.",
-    "changes": "Actual opt-in QSA sourcef685b16a; fresh engine + actual CMake GPU gates + actual39K model diagnostic allPASS. Native R987 reviewed new3 reports without Main loading originals. Source remains frozen for comparison.",
-    "next": "Close running6-process same-new-binary optimized/subgroup clean39K model cohort.",
+    "changes": "Closed six real39K model processes, preserved all samples and successful owner/fault closures; retained the negative/inconclusive performance result.",
+    "next": "Use current profiling-enabled compute queue to distinguish GPU command service, host submission/JIT and wait intervals. No profiler/extra GPU work launched yet.",
     "previous_goal_turn": "Progress: actual matched MoE model cohort and private QSA build/GPU qualification.",
-    "this_goal_turn": "Progress: executed/closed6QSAprocesses; selected candidate and implemented actual engine path; fresh build active; R980-982 indexed after nativeR983, fresh Orca research984-986 actual input accepted.",
+    "this_goal_turn": "Progress: actual QSA component cohort, actual opt-in implementation/fresh build/fixture/model diagnostics and full clean model cohort completed; new research984-986 reviewed and indexed. 600/1000prefill and70decode goals remain unmet.",
     "default_sync_PR": "https://github.com/yqYo1/Strata/pull/36",
     "full_physical262144_model_consume_RESTORE": "Unqualified. Component physical262144 fixture coverage does not prove model completion or RESTORE."
   },
@@ -7847,10 +7847,10 @@
     "fixture_recipe": "run_qsa_rowmajor_subgroup_v1.py",
     "source_review": "qsa-rowmajor-subgroup-source-review-v1.json",
     "source_review_sha256": "1abfe92a253bc53885d670e29467cc095a79df7ee53f6546d37c3aaa5b54b17e",
-    "status": "Actual build/smoke/11-case and39K model diagnostic PASS, normal exits/owner/fault closure. R987 completed; six-process clean same-binary model comparison running.",
+    "status": "Actual six-process same-binary model comparison closed/PASS. Median490.6->495.4tok/s(+0.9784%), mean490.7->490.0; candidate478.7 slow sample preserved. Stable model speed improvement not demonstrated; no adoption.",
     "schedulable_now": false,
     "next_owner": "Main",
-    "next_action": "Close actual matched clean model cohort, assess performance, then select next concrete bottleneck/implementation; no source changes or new research while it runs.",
+    "next_action": "Separate device command service from host submission/JIT/completion waits before choosing another optimization; retrieve only relevant R978 decision-support sections.",
     "build_receipt": {
       "path": "qsa-rowmajor-subgroup-build-v1.json",
       "sha256": "d2c01366531c0c8908483d9a713cf74c45df6d1ff0fa4b64ced3f44b4797ec7a",
@@ -7880,7 +7880,17 @@
       "path": "qsa-subgroup-engine-model-diagnostic-cohort-v1.json",
       "sha256": "41c321ac7773aa24dd317c7a726b8cd5936dd6b235d4fed4a435f9da7bac2dfb",
       "bytes": 135165
-    }
+    },
+    "model_cohort": {
+      "path": "qsa-subgroup-engine-model-clean-cohort-v1.json",
+      "sha256": "0212776aa50bc69ae6ae84a863044a6cfab8833a7c85f3c001c04dfb2fb1ac50"
+    },
+    "model_comparison": {
+      "path": "qsa-subgroup-engine-model-clean-comparison-v1.json",
+      "sha256": "56d6a54e3bf938f7f195d07ce1e1d0d2af989b90405206defd830a313400d327"
+    },
+    "model_improvement_demonstrated": false,
+    "performance_adopted": false
   },
   "research_review_round983": {
     "path": "research-review-round983-v1.json",
@@ -8020,5 +8030,36 @@
       "bytes": 1641
     },
     "new_research_recommended": false
+  },
+  "qsa_model_resource_attribution_next": {
+    "classification": "Main-owned implementation/measurement, not new research",
+    "schedulable_now": true,
+    "prerequisite_evidence": [
+      {
+        "path": "qsa-subgroup-engine-model-clean-comparison-v1.json",
+        "sha256": "56d6a54e3bf938f7f195d07ce1e1d0d2af989b90405206defd830a313400d327"
+      },
+      {
+        "path": "research-review-round979-v1.json",
+        "sha256": "56821560bb19d9de911364d94bef1049770253f1079f128429f6ba10c231469f"
+      }
+    ],
+    "question": "Current39K model shows candidate PP variation despite equal within-arm window counts; which part is device command service versus host/JIT/queue gaps? Functional inclusive intervals do not establish resource saturation.",
+    "reuse_report": "research-round978-v1.txt",
+    "retrieve_only_sections": [
+      "Production event path",
+      "Capture options",
+      "Qualification before interpretation"
+    ],
+    "current_tools_observation": {
+      "vtune_on_PATH": false,
+      "unitrace_on_PATH": false,
+      "perf_on_PATH": true,
+      "perf_event_paranoid": 4,
+      "xpu_smi_on_PATH": true,
+      "compute_queue_source": "src/sycl/runtime.cpp:89 enables profiling before queue construction."
+    },
+    "GPU_or_profiler_work_started": false,
+    "source_frozen_until_new_plan": true
   }
 }

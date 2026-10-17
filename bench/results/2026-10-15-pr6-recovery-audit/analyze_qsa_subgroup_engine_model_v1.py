@@ -47,7 +47,8 @@ def main():
         assert all(math.isfinite(request[k]) and request[k]>0 for k in ['prompt_tps','prompt_ms'])
         requests.append(request['request_sha256'])
         samples.append(dict(arm=item['window'],repetition=item['repetition'],
-             receipt=dict(path=item['path'],sha256=item['sha256']),request=request))
+             receipt=dict(path=item['path'],sha256=item['sha256']),request=request,
+             moe_window_lines=value['window_lines']))
     assert all(x == environments[0] for x in environments)
     assert all(x == config_args[0] for x in config_args)
     assert len(set(requests)) == 1
@@ -60,12 +61,14 @@ def main():
             sample_sd_tok_s=statistics.stdev(values),median_prompt_ms=statistics.median(times))
     baseline, candidate = summaries['optimized'],summaries['subgroup']
     gain = candidate['median_tok_s']/baseline['median_tok_s']-1
+    mean_gain = candidate['mean_tok_s']/baseline['mean_tok_s']-1
     separated = min(candidate['samples_tok_s']) > max(baseline['samples_tok_s'])
     result = dict(schema='strata-qsa-subgroup-engine-model-clean-comparison-v1',passed=True,complete=True,
         recorded_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
         source_cohort=dict(path=str(path),sha256=sha(path)),analysis_recipe_sha256=sha(__file__),
         binary=cohort['binary'],samples=samples,summaries=summaries,
         median_rate_gain_fraction=gain,all_candidate_samples_above_all_baseline_samples=separated,
+        mean_rate_gain_fraction=mean_gain,model_improvement_demonstrated=separated and gain>0,
         normalized_environment_and_config_identical_except_QSA_selector=True,
         performance_evidence_qualified_for_this_cohort=True,performance_adopted=False,
         general_quality_qualified=False,physical262144_RESTORE_qualified=False,
@@ -73,6 +76,7 @@ def main():
         limits=['Three independent fresh processes per arm in interleaved order estimate this observed variation only.',
                 'Official bench.sh39K input/64K capacity, C8192/RGPU32768/window2/BF16/vLLM path, no reuse.',
                 'No cross-arm output/token bit equality gate; fingerprints remain observations.',
+                'Changed sum association can change routing: retain per-arm MoE window counts; equal input does not mean equal expert work.',
                 '24 thinking generation tokens are a completion probe, not sustained decode or quality.',
                 'No hardware-resource saturation or full-context/RESTORE qualification follows.'])
     dst = A / 'qsa-subgroup-engine-model-clean-comparison-v1.json'
@@ -87,6 +91,8 @@ def main():
         s=summaries[arm]
         report.append(f"| {arm} | {', '.join(str(v) for v in s['samples_tok_s'])} | {s['median_tok_s']} |")
     report.extend(['',f'中央値の変化は{gain*100:.4f}%。候補全sampleが基準全sampleを上回る: {separated}。',
+        f'平均の変化は{mean_gain*100:.4f}%。中央値と平均を区別し、遅いsampleも残す。',
+        '実モデルの安定した改善はこのcohortでは未証明。現行経路を維持して次の検証を選ぶ。' if not separated else 'このcohortでは全candidateが全baselineを上回った。品質・文脈・採用の資格付けは別。',
         '全process正常終了・所有終了、fresh fault0、dumpなし。個別timing/環境/入力fingerprintをJSONへ保持。',
         'この条件の観測であり、他条件のばらつき全体を保証しない。24生成は完了確認で一般品質やdecode速度ではない。',
         '全physical262144モデルconsume/RESTORE、cancel/reuse、品質とデフォルト採用は未資格付け。',
