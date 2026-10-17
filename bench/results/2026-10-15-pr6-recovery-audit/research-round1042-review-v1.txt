@@ -1,0 +1,25 @@
+# R1042 review — R1041 QSA four-row GEMM epilogue
+
+Recorded 2026-10-17 17:37 UTC. R1041 classification: knowledge collection.
+
+## Verdict
+
+Accept with provenance metadata corrections. The assigned report is 8,126 bytes and its SHA-256 is `8183d4af1f2d0db5c1fa0743b4b70fc4799d3206050072c8769a0f051683cf4c`, matching the expected artifact. Its scope and depth are adequate: it compares same-subgroup ownership, same-workgroup scratch/barrier, grouped-M tiling, and the measured oneMKL-plus-reduction path, then identifies the concrete accumulator-map and runtime evidence still missing. It is appropriately a retrieval report; Main should read it only when a concrete epilogue question arises.
+
+## Source, provenance, and claims
+
+The report's pinned Intel SYCL*TLA design-guide claims are supported by the cited immutable revision `87f6850680a580654b9ea2c80dbc01aeb36ad231`: the guide describes 16-work-item subgroup collectives and round-robin ownership for subgroup-scoped register arrays, while warning that fragment layouts must match. It does not establish the actual QSA `TiledMMA` four-row owner tuple. R1041 preserves this boundary correctly. The official SYCL 2020 revision 12 specification also supports its cross-workgroup caveat: group barriers coordinate only one group; inter-group coordination relies on atomics, with no in-kernel global barrier. Intel's joint-matrix guide supports elementwise `joint_matrix_apply`, not a cross-M reduction. The public oneMKL GEMM API exposes C/ldc and event/dependency parameters but no arbitrary epilogue argument; the report correctly limits that observation to the cited public API.
+
+The exact pinned TLA `LICENSE.txt` declares **BSD-3-Clause**, not MIT. This conflicts with the R1041 research spec calling the same pin an approved MIT reference. The report's BSD label is correct; correct the metadata and resolve the approval discrepancy before using TLA code as an implementation source. R1041 cites documentation and uses no TLA or Xe-Fuse implementation code, so this does not invalidate the source-only ownership analysis.
+
+The Xe-Fuse citation is a mutable `main` README, not an immutable source pin. It describes accumulator epilogue fusion as architectural precedent only; the report expressly excludes code reuse. The current public repository page identifies Apache-2.0, but R1041 did not pin a commit, so keep this citation descriptive and non-operational. Its documented presets do not evidence a four-row cross-M reduction.
+
+The measured-evidence summary is accurate against the pinned local JSONs: the three-process component results show FP16-input scores/IDs differ from the FP32-input control, and the separate one-process trace records one 4-byte buffer write/read across its five scores and 15 GEMMs, not once per GEMM. R1041 correctly labels logical head-panel bytes as accounting rather than measured DRAM traffic. The result hashes are `eef8ecb7f5ddf72418af95e0c9ad6eb6ac7b41ef7c063894811d0e6e13bbdf88` and `05740ed61ee9857c4503ffb85b846bd0fbc23f3d903bcc1cc55a46fad310d537`.
+
+## Novelty, limitations, and next step
+
+R1034 covers the typed score-GEMM prototype and probe gates; R1036 covers fixture scratch semantics and conditional score precision; R1037/R1038 resolve FP32 output and pinned TLA d32-store source support; R1040 covers fail-closed admission. R1041 adds a distinct question: where four adjacent head rows reside relative to each other in the chosen accumulator layout, and what synchronization scope each fusion route requires. This is substantive and does not repeat the resolved d32 survey.
+
+No more source survey is recommended now. The next useful work is Main-owned: after the active serialized score cohort closes, pin the selected native tile/source and derive its lane/register/workgroup owner map, then compare a correct fused candidate with the measured path. R1041 states that the current tile map is unknown, and the task assignment says the cohort is still active; therefore `schedulable_now=false`, with no research dispatch. The TLA license discrepancy is a separate prerequisite for any code adoption. No builds, tests, GPU jobs, profiling, Git, process inspection, or product edits were performed.
+
+Sources checked: [pinned TLA guide](https://github.com/intel/sycl-tla/blob/87f6850680a580654b9ea2c80dbc01aeb36ad231/media/docs/cpp/xe_rearchitecture.md), [pinned TLA license](https://github.com/intel/sycl-tla/blob/87f6850680a580654b9ea2c80dbc01aeb36ad231/LICENSE.txt), [SYCL 2020 rev. 12](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html), [Intel joint-matrix guide](https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2024-2/programming-intel-xmx-using-sycl-joint-matrix.html), [oneMKL GEMM API](https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-dpcpp/2023-0/gemm.html), [Xe-Fuse repository](https://github.com/IntelLabs/Xe-Fuse).

@@ -1,0 +1,42 @@
+# Round1041 — Fusing QSA four-head reduction into GEMM
+
+**Class:** knowledge collection. **Question:** which source-backed layouts can fuse per-head ReLU and four-adjacent-M-row sum into an FP16-input, FP32-accumulator QSA GEMM epilogue? Source/web research only; no implementation or device claims.
+
+## Prior evidence and decision
+
+Consulted `research-index.json` retrieval metadata for R1033/R1034, R1037/R1038 and R1040, plus indexed current score/resource receipts. R1033 covers operand/output precision and score semantics; R1038 resolves TLA d32-store source support; R1040 is engine admission. None resolves accumulator ownership for a four-row epilogue. Keep measured oneMKL GEMM + FP32 head-panel + reduction as baseline. Native fusion is viable only when rows `4q..4q+3` for each output column are available at a common synchronization scope. Tile shape alone does not prove this.
+
+## Pinned sources and provenance
+
+* **Intel SYCL*TLA**, approved immutable revision `87f6850680a580654b9ea2c80dbc01aeb36ad231`, BSD-3-Clause. Its [Xe redesign guide](https://github.com/intel/sycl-tla/blob/87f6850680a580654b9ea2c80dbc01aeb36ad231/media/docs/cpp/xe_rearchitecture.md) says DPAS/block-2D are 16-work-item subgroup collectives; private register-array ownership is round-robin (thread i gets i, i+16, …; lines 400–409). `make_block_2d_copy_D` matches the MMA thread set (313–364). The guide warns fragment layouts must be matched carefully (196–224). This establishes subgroup scope and layout sensitivity, not the selected QSA accumulator map. R1038 already establishes exact pinned-header float D → `XE_STORE_2D<32,...>` support; no repeat d32 survey here.
+* **Intel Xe-Fuse** [README](https://github.com/IntelLabs/Xe-Fuse/blob/main/README.md) describes register-accumulator GEMM epilogue fusion. Architectural precedent only: immutable revision/license were not confirmed in this bounded research, so do not copy/adapt code. Its documented pointwise presets do not establish cross-M four-row reduction.
+* Intel's official [SYCL joint-matrix guide](https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2024-2/programming-intel-xmx-using-sycl-joint-matrix.html) documents `joint_matrix_apply` and collective subgroup participation. It provides elementwise capability, not a four-row reduction contract or TLA-compatible mapping.
+* Intel's public [oneMKL USM GEMM API](https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-dpcpp/2023-0/gemm.html) exposes matrix C/ldc and an event, with no arbitrary epilogue argument in this API. This does not exclude private extensions; no public hook is evidenced for this path.
+
+## Math, ownership, options
+
+Required result is `score[q,n] = Σ(h=0..3) max(F32_acc[4q+h,n],0)`, FP32 accumulation and ordered FP32 head sum. Geometry: M=`4*nq` (nq 1..256; M 4..1024), K=128, N panels ≤8192; nq=255 gives M=1020; block extent up to 65,538. Preserve per-query dead-key score at `n_bid`, tail penalty, future visibility and top-k behavior. Never round head outputs to 16-bit before ReLU/sum.
+
+CuTe's accumulator is a distributed fragment, not a row-major private array. For the chosen atom/tile, record `owner(row,col)=(WG,subgroup,lane,register-slot)` from actual `TiledMMA`/`partition_C`/fragment layouts. The general round-robin rule does not establish this tuple for MMA accumulators. If four rows cross subgroups, subgroup exchange is insufficient; if across workgroups, neither subgroup exchange nor a WG barrier can combine them in one launch. SYCL gives no cross-WG barrier/forward-progress contract.
+
+| Route | Conditions and limitations |
+|---|---|
+| **Same-subgroup native epilogue** | Favorable route: all 4 rows for q and N values owned by one subgroup; map the four F32 values to registers/lanes, ReLU and sum, write one score. Needs a proven lane/slot mapping and legal uniform subgroup shuffle if values are in different lanes. A custom scalar/vector store avoids reshaping to block-2D D; otherwise prove reduced fragment/store layout. May restrict BM/BN and occupancy. |
+| **Same-WG, multiple subgroups** | Write ReLUed values to small local scratch, uniform barrier, then sum/store. Valid only if the whole four-row group is inside one WG. Adds scratch, barrier and initialization; every work-item must reach barrier uniformly. Could erase benefits. |
+| **Grouped-M/custom tile** | Align CTA origin and M tile to complete query groups (multiples of four); custom TLA tiled-MMA/per-query 4-row workgroup can enforce local ownership. Merely repacking input does not fix accumulator partitioning. One-query WG causes many small workgroups and may underutilize at nq=1; test nq=1,255,256 and tile boundaries. |
+| **Current oneMKL + reduction** | GEMM retains its library tile; next kernel reads four FP32 rows, ReLUs/sums with arbitrary tails. Clean global sync and measured baseline, at cost of head-panel materialization/read and another launch. Existing public API shows no generic fused hook. |
+| **GEMM then compact/reduction pass or scalar dots** | Fallback if native mapping is awkward: full-C then reduction is simplest but preserves panel traffic; compact partials need deterministic merge/atomics. Four independent GEMVs avoid panel but lose GEMM/XMX reuse. Neither is demonstrated better. |
+
+## Tails, numerical contract, prerequisites
+
+* M is multiple-of-four but not necessarily BM: final tile has 4,8,… rows. For example BM16 at M1020 leaves 12. Mask padded rows and never emit padded q; cover nq=1,2,3,255,256 and around selected BM.
+* N may have a partial last panel. Guard logical N stores; include tiny N and panel-edge N. At block extent 65,538 distinguish valid IDs/capacity from padded GEMM lanes. Dead row is query-specific; do not substitute pooled score globally.
+* Keep FP32 accumulator; apply ReLU per head before sum, ordered h=0..3. Preserve FP32 through dead replacement/tail handling/top-k. Do not move ReLU after sum or silently change NaN/signed-zero behavior. First compare fused vs existing reduction using identical FP16-rounded inputs; separately assess input-rounding impact and exact ID/task quality against FP32 reference.
+* Source/build proof must pin atom, tile, CTA geometry, subgroup count, fragment layout and coordinate-to-lane/register map for all four heads and N writer. Inspect compiled ISA for F32 accumulation, output stores, hidden reorder and spills. Same-subgroup route must prove supported subgroup exchange and uniform participation. Cross-subgroup route needs all values in one WG, fully initialized scratch and uniform barrier. Cross-WG group requires different tiling or another kernel.
+* Validate M/N masks, store extents, `float*` rectangle and guards; if using block-2D store, R1038 confirms source d32 support but not reduced-layout correctness or B570 lowering. Record registers/spills, local memory/barrier, workgroup count/tail utilization. Measure full path (Q/K conversion + GEMM + epilogue vs GEMM + head reduction), separate host submit/wait and integrated repeated long prefill. No speed claim follows from source.
+
+## Existing measured evidence and novelty
+
+`qsa-score-gemm-results-v2.json` and `qsa-score-gemm-resource-results-v1.json` show current component results and one process tracing 15 GEMMs: one 4-byte buffer write/read total, not recurring per call. Logical head-panel bytes in the result are **not measured DRAM traffic**. The current score cohort's FP16-input outputs differ from original FP32-input scores/IDs; this does not answer epilogue equivalence, which should first use identical rounded inputs. No fused epilogue measurement exists.
+
+R1033/R1037/R1038 establish datatype/API/provenance and d32 stores, not register ownership, subgroup-vs-WG reduction, or grouped-M scheduling. Recommendation: retain oneMKL+reduction as baseline; if fusion is pursued, first document one pinned native tile's complete four-row ownership map. Prefer same-subgroup mapping; compare any local-memory/barrier design against the measured extra-kernel path. No XeStrata material used; no code proposal, build, test, GPU or profiler work performed.

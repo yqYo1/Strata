@@ -5391,6 +5391,62 @@
       "review_sha256": "2f07ad5175e47e1963c8810cd1c2fbc482f9a7fdc88da3319285a820a6d5083e",
       "index_proposal_path": "research-round1040-index-proposal-v1.json",
       "status": "attn_h lifetime, full reservation and sticky status owner order confirmed. Main resolves late capability finding by allocation/submission-free validation at admission; explicit opt-in remains fail-closed before model work. Current model/API runtime unqualified."
+    },
+    {
+      "round": 1041,
+      "model": "gpt-6-luna",
+      "classification": "knowledge_collection",
+      "read_only": true,
+      "path": "research-round1041-v1.txt",
+      "bytes": 8126,
+      "sha256": "8183d4af1f2d0db5c1fa0743b4b70fc4799d3206050072c8769a0f051683cf4c",
+      "review_path": "research-round1042-review-v1.txt",
+      "review_sha256": "5777fa3764aecc345ed6a32c222b3d391ec4b34643c08c11804343a5984787ea",
+      "index_proposal_path": "research-round1042-index-proposal-v1.json",
+      "status": {
+        "decision": "accepted_with_provenance_metadata_corrections",
+        "scope_depth": "Adequate, coherent source comparison with relevant alternatives, limits, and explicit implementation gates.",
+        "source_claims": "Pinned TLA ownership claims, SYCL synchronization limits, joint-matrix elementwise scope, and public oneMKL API shape supported. Actual QSA owner map remains unproven.",
+        "measurement_summary": "Supported by the pinned local component and resource JSONs; no DRAM-traffic or fused-kernel performance claim made.",
+        "source_adoption": "Not qualified or proposed. No XeStrata source consulted or derived content identified.",
+        "runtime_status": "No compiler, AOT, ISA, bounds/fault, numerical epilogue, or performance qualification follows from this source-only report."
+      },
+      "retrieval_tags": [
+        "qsa-gemm-four-adjacent-m-row-epilogue",
+        "qsa-four-head-relu-sum",
+        "qsa-tiledmma-accumulator-owner-map-required",
+        "same-subgroup-fusion-conditional",
+        "same-workgroup-scratch-barrier-alternative",
+        "grouped-m-tile-alternative",
+        "cross-workgroup-no-in-kernel-barrier",
+        "oneMKL-public-gemm-no-arbitrary-epilogue-hook",
+        "joint-matrix-apply-elementwise-only",
+        "fp32-accumulator-and-ordered-head-sum",
+        "qsa-score-id-fp16-input-delta-unqualified",
+        "head-panel-logical-bytes-not-measured-dram",
+        "tla-87f6850-bsd3-license",
+        "mit-bsd-approval-metadata-conflict",
+        "xe-fuse-readme-architectural-reference-only",
+        "qsa-fused-epilogue-runtime-unknown",
+        "no-xestrata-source-used"
+      ],
+      "corrections": [
+        {
+          "id": "R1041-C1",
+          "kind": "source_license_metadata_conflict",
+          "finding": "R1041's BSD-3-Clause label matches LICENSE.txt at the exact pinned Intel SYCL*TLA revision. The R1041 research spec labels that pin MIT.",
+          "evidence": "Immutable LICENSE.txt URL at revision 87f6850680a580654b9ea2c80dbc01aeb36ad231 declares SPDX BSD-3-Clause.",
+          "action": "Correct the index eligibility label and resolve the task approval mismatch before using TLA code as an implementation source. This finding does not invalidate R1041's documentation-only research."
+        },
+        {
+          "id": "R1041-C2",
+          "kind": "source_pin_limit",
+          "finding": "Xe-Fuse is cited through a mutable main README; the report does not pin a commit. The current repository page lists Apache-2.0, but this does not supply immutable provenance for the cited contents.",
+          "evidence": "R1041 source citation and current GitHub repository license metadata.",
+          "action": "Retain only as architectural description; any future source-level use needs an immutable revision and checked license."
+        }
+      ],
+      "main_body_read_on_arrival": false
     }
   ],
   "main_initial_findings": [
@@ -10046,5 +10102,21 @@
     },
     "main_read_policy": "Short operational digest and index metadata only; full bodies not automatically read.",
     "main_resolution": "Pre-model fail-closed admission explicit in source-v2; no unsafe mid-pass fallback. Actual API/negative/status/context tests next."
+  },
+  "research_review_round1042": {
+    "review": {
+      "path": "research-round1042-review-v1.txt",
+      "sha256": "5777fa3764aecc345ed6a32c222b3d391ec4b34643c08c11804343a5984787ea"
+    },
+    "index_proposal": {
+      "path": "research-round1042-index-proposal-v1.json",
+      "sha256": "80761c673e16be1d7ba2fedfcc7d1e9e875d02fae3d3b2798118e25b3de9e353"
+    },
+    "main_read_policy": "Only short operational digest and retrieval metadata; full collection report not read.",
+    "source_license_correction": {
+      "path": "research-round1041-provenance-correction-v1.json",
+      "sha256": "d4a2116cc45377410d3c610b8e903d5a632e88fc0a899e18b9131cde98b10520"
+    },
+    "main_decision": "Main exact local Git object independently confirms BSD3; prior engine docs and preserved core notice already identify BSD3. Incorrect MIT task description corrected in supplemental record, original spec preserved. No code adopted from this research. Further survey not scheduled; existing GEMM integration and model measurements first."
   }
 }
