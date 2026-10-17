@@ -1,5 +1,5 @@
 {
-  "source_commit": "e4f64761c0f19681909f9ed5b6f343020c4eaad8",
+  "source_commit": "0361d33a13c8d8509366818e6e835cebae858253",
   "runtime_archive": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-score-gemm-entry-engine-build-v2/build/libstrata_sycl_runtime.a",
     "sha256": "ba34c7d19cf30499c215e86289a921461b9ac426df6f73f61c6769b65d8ee573",
@@ -43,7 +43,8 @@
     "-o",
     "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current/sycl_gdn_chunk64"
   ],
-  "binary_sha256": "511b5b9ac18d89bb71edbc5614b532c791259ce895b15be39ff414b1fa3b9720",
+  "binary_sha256": "dc3f5ee090c0cbb70bf386a0c173a583a7f95177ee476b396ab2dc0473c7f567",
+  "processes_closed": true,
   "ownership_closed": false,
   "smoke": {
     "passed": false,
@@ -52,19 +53,18 @@
     "launch_attempted": true,
     "observed_runtime_elf_count": 26,
     "GPU_work_admitted": true,
-    "case_results": [],
-    "exit_code": 1,
-    "fresh_faults": [],
-    "boot_unchanged": true,
-    "error_excerpt": "fixture_status=FAIL exact BF16 raw mismatch",
-    "diagnostic_lines": [
+    "case_results": [
       "output_difference i=95 actual_bits=32768 scalar_FP32_bits=0 FP64_norm_bits=0",
       "output_difference i=191 actual_bits=32768 scalar_FP32_bits=0 FP64_norm_bits=0",
       "output_difference i=287 actual_bits=32768 scalar_FP32_bits=0 FP64_norm_bits=0",
       "output_difference i=632 actual_bits=32768 scalar_FP32_bits=0 FP64_norm_bits=0",
-      "dyadic_diagnostic T=1 carry_exact=PASS raw_BF16_unequal=81 output_unequal=41 output_max_ULP=1 output_max_abs=0 FP64_norm_unequal=41"
+      "dyadic_diagnostic T=1 carry_exact=PASS raw_BF16_unequal=81 raw_value_unequal=81 raw_max_abs=9.31323e-10 output_unequal=41 output_max_ULP=1 output_max_abs=0 output_value_unequal=0 FP64_norm_unequal=41"
     ],
-    "failure_mechanism": "Strict bit equality rejected final FP16 signed zero: 41 differences, max absolute error 0, max ordered ULP 1. Raw BF16 has 81 bit differences; numerical raw equality still needs measurement."
+    "exit_code": 1,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "error_excerpt": "fixture_status=FAIL exact BF16 nonzero value mismatch",
+    "failure_mechanism": "81 BF16 raw differences, max_abs=9.31323e-10. FP32 carry exact; final FP16 values equal except signed zero. Readout scaled history and update terms separately before adding, leaving cancellation residuals."
   },
   "smoke_command": [
     "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current/sycl_gdn_chunk64",
@@ -79,43 +79,5 @@
     "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current/sycl_gdn_chunk64",
     "--smoke"
   ],
-  "retirement": {
-    "state": "retired",
-    "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current",
-    "source_commit": "e4f64761c0f19681909f9ed5b6f343020c4eaad8",
-    "verified_project_inputs": 151,
-    "files": [
-      {
-        "path": "owned/build.stderr",
-        "bytes": 0,
-        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-      },
-      {
-        "path": "owned/build.stdout",
-        "bytes": 0,
-        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-      },
-      {
-        "path": "owned/smoke.stderr",
-        "bytes": 87782,
-        "sha256": "c9d9542c7c0ed6b7d392669a7c6e46f2623ebab8d8741e84b2cec157323dc015"
-      },
-      {
-        "path": "owned/smoke.stdout",
-        "bytes": 567,
-        "sha256": "2566f0938dfd8d965e18e96333deffbe7ff3ad46bb1e476a27719a3dfc6b2c0d"
-      },
-      {
-        "path": "record.json",
-        "bytes": 32199,
-        "sha256": "bae3fcfca14a98cccd5855569d889151837b1d70fca55250bdde14e137c97938"
-      },
-      {
-        "path": "sycl_gdn_chunk64",
-        "bytes": 248272,
-        "sha256": "511b5b9ac18d89bb71edbc5614b532c791259ce895b15be39ff414b1fa3b9720"
-      }
-    ],
-    "reason": "Closed superseded qualification; source/recipe recovered from Git."
-  }
+  "next_correction": "Add FP32 history/update terms before applying their common scale; preserve exact-nonzero smoke criteria."
 }

@@ -9,7 +9,7 @@ consumer. The schedule is not the SGLang block16/XPU numerical contract.
 The previous compile stopped because fixture.cpp lacked the runtime.hpp include;
 that include is now explicit. Host DMA buffers remain owned through failure-path
 drain. An unused BF16 V copy was removed, saving 96 MiB of scratch at 8192 tokens
-(workspace now 1,024,983,040 bytes). No GPU test, general numerical qualification,
+(workspace now 1,024,983,040 bytes). No successful smoke, general numerical qualification,
 speed, model quality, full262144 or RESTORE result exists yet. Run the bounded
 dyadic smoke before general chunk-boundary and framework-contract comparisons.
 The first device run passed exact FP32 carry, but strict FP16 bit equality
@@ -17,6 +17,10 @@ rejected signed zeros (41 differences with zero absolute error at T=1).
 Prospective smoke criteria now ignore only the sign of zero for BF16 readout
 and FP16 output, requiring exact bits for every nonzero value. This is not a
 general numerical tolerance, and original failed outcomes remain in Git.
+The next diagnostic isolated a separate BF16 raw mismatch (maximum absolute
+error 9.31323e-10): scaling the two cancelling FP32 readout terms separately
+introduced residuals near zero. The candidate now adds before applying the
+common scale, saving one multiply and avoiding that cancellation error.
 The earlier raw-pointer matrix API error is fixed by explicit local/global
 multi_ptr arguments. Superseded private source copies and build transcripts are
 not required to continue this implementation.

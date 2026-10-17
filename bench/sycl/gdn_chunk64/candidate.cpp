@@ -263,7 +263,9 @@ void run(float *state,const uint16_t *h,const float *gate,const float *beta,
           product<false,false,true,false>(sg,acc,a+row*BT,BT,ws.delta+size_t(matrix)*BT*D+col,D,BT);
           mi::joint_matrix_apply(sg,acc,[=](float &value,size_t r,size_t c) {
             const float scale=sycl::rsqrt(128.f);
-            ws.raw[(size_t(matrix)*BT+row+r)*D+col+c]=BF(temp[(row+r)*16+c]*scale+value*scale);
+            // Add FP32 history/update before scaling. Scaling both cancelling
+            // terms separately leaves tiny residuals and costs an extra multiply.
+            ws.raw[(size_t(matrix)*BT+row+r)*D+col+c]=BF((temp[(row+r)*16+c]+value)*scale);
           });
           item.barrier(sycl::access::fence_space::local_space);
         }
