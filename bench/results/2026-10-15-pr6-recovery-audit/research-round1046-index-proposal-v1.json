@@ -1,0 +1,119 @@
+{
+  "schema": 1,
+  "recorded_at": "2026-10-17T18:26:42Z",
+  "review_record": {
+    "round": 1045,
+    "classification": "knowledge_collection",
+    "report": "research-round1045-v1.txt",
+    "report_bytes": 8605,
+    "report_sha256": "d2f0c511f6148e600e8b2ed46f09ad961147783a732831e5f0801f173ceab010",
+    "eligibility": "orca-research-round1045-eligibility-v1.json",
+    "eligibility_sha256": "5b3cce3a8684fea175457fd6141df0d052bfb115fc28f482eda95b22b3755156",
+    "spec": "orca-research-round1045-spec-v1.txt",
+    "spec_sha256": "0fa11a7c0ef1bad284ffab511e34292971edc30266ce906e11f0aceda1db00a6",
+    "review": "research-round1046-v1.txt",
+    "review_bytes": 6080,
+    "review_sha256": "fde033daebdc4a4de024e09bdbc19e3538eafa651a44cc7415d2839d27cf241c"
+  },
+  "reviewed_context": {
+    "research_index": {
+      "path": "research-index.json",
+      "sha256": "5a785902e5441f1cf8f8d315ad86ce43e7bc73cbc0a4f89ad59b0716d7b09402"
+    },
+    "main_state": "Main currently owns GPU profiling; present evidence is whole-process nonexclusive timing, not physical traffic, occupancy, or a device-busy union."
+  },
+  "source_pin_verification": {
+    "repository": "https://github.com/intel/pti-gpu/tree/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033",
+    "revision": "6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033",
+    "path": "tools/unitrace/src/levelzero/ze_collector.h",
+    "status": "Reviewed read-only at exact immutable revision",
+    "license": "MIT; SPDX in source and pinned repository LICENSE",
+    "relevant_lines": {
+      "allocation_classifier": "4670-4729",
+      "standard_memory_copy": "4743-4751",
+      "memory_copy_region": "4849-4864",
+      "memory_copy_from_context": "3625-3645; 4884-4892",
+      "timing_aggregation": "948-973; 2555-2608; 1390-1444",
+      "requested_size_label": "1094-1127"
+    },
+    "level_zero_contract": {
+      "alloc_properties": "https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/mem.html#zememgetallocproperties",
+      "external_map": "https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/EXT_ExternalMemMap.html",
+      "version_limit": "Current public spec page is v1.19.12, not verified as the build-time snapshot for this collector."
+    },
+    "implementation_adopted": false,
+    "xestrata_used": false
+  },
+  "review_status": {
+    "decision": "accepted_with_source_corrections",
+    "scope_depth": "Narrow source audit adds the exact allocation-type taxonomy and two collector edge cases beyond R875/R880's broader profiler and transfer-evidence boundary. No implementation or current bottleneck result.",
+    "main_report_body_read": false,
+    "main_read_policy": "Keep the original knowledge-collection body held. Use this short review and retrieval metadata; retrieve the specific report section only when an actual trace requires copy-label or requested-payload interpretation.",
+    "corrections": [
+      {
+        "id": "R1046-C1",
+        "severity": "material label correction",
+        "finding": "MemoryCopyFromContext passes null destination context, so the helper returns only the source bucket. Adding that 0-3 bucket to the enum base emits H2H/H2D/H2M/H2S for source H/D/M/S. The report incorrectly states H2H/D2H/M2H/S2H; for device-type source the emitted name is H2D, and no destination type is classified.",
+        "source": "Pinned ze_collector.h lines 249-300, 3625-3645, 4670-4729, 4884-4892"
+      },
+      {
+        "id": "R1046-C2",
+        "severity": "citation correction",
+        "finding": "Several report line anchors point elsewhere in the pinned raw file. Replace with source ranges recorded in source_pin_verification.relevant_lines; the claims were reviewed against the exact raw file.",
+        "source": "Pinned raw ze_collector.h at revision 6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033"
+      }
+    ],
+    "status_boundaries": [
+      "H/D/M/S label allocation-property query results, not physical memory residency, route, or bytes on a wire.",
+      "The standard MemoryCopy requested psize and the MemoryCopyRegion size field are not measured PCIe payload; the region callback stores zero size.",
+      "Device timing is start-to-end command service interval. Aggregate sums are nonexclusive and do not establish dependency critical path, PCIe utilization, occupancy, or a hardware busy-time union.",
+      "Ordinary malloc/mmap classification on the current driver and current hardware traffic were not measured."
+    ]
+  },
+  "deduplication_and_retrieval": {
+    "prior_work": [
+      {
+        "round": 875,
+        "path": "research-round875-v1.txt",
+        "sha256": "6e06a8f71affcb13dc6dd28d1c0f99ec73d730d256d973015898ebd8d2a5795c",
+        "classification": "decision_support",
+        "review": "A/research-scope-review-round880-v1.json",
+        "review_sha256": "13a552d3260a0eab335014889ef9bbad15bfee7362cdd609913d75b0f475a3ff",
+        "relevant_metadata": "R880 accepted with R875-C1/C2 and scoped retrieval. R875 already covers timing versus counters/nonexclusive service, copy intervals and exact payload, and topology versus attained PCIe throughput; no current bottleneck or counter availability established."
+      },
+      {
+        "round": 880,
+        "path": "A/research-scope-review-round880-v1.json",
+        "sha256": "13a552d3260a0eab335014889ef9bbad15bfee7362cdd609913d75b0f475a3ff",
+        "relevant_metadata": "No further profiler survey or implementation recommended; R875 sections 34-38 and 40-44 are retrieval support for copy/payload and PCIe evidence boundaries."
+      }
+    ],
+    "r1045_novelty": "Exact allocator-type endpoint semantics, MemoryCopyFromContext's source-only enum-offset output, and MemoryCopyRegion's zero stored size. Reuse R875/R880 for broader profiler and PCIe caveats rather than repeating them.",
+    "retrieval_trigger": "A concrete current trace contains MemoryCopy, MemoryCopyRegion, or MemoryCopyFromContext rows whose label, requested payload, or dependency attribution matters.",
+    "retrieval_tags": [
+      "unitrace-memory-copy-endpoint-taxonomy",
+      "zeMemGetAllocProperties",
+      "host-imported-maps-to-h",
+      "unknown-allocation-maps-to-m",
+      "shared-allocation-maps-to-s",
+      "memory-copy-from-context-source-only-enum-offset",
+      "memory-copy-region-zero-size-defect",
+      "requested-payload-is-not-physical-pcie-bytes",
+      "device-timing-service-versus-critical-path",
+      "no-physical-traffic-or-busy-union-measurement"
+    ]
+  },
+  "next_scope_eligibility": {
+    "recommended_scope_now": null,
+    "classification": null,
+    "schedulable_now": false,
+    "prerequisites_rechecked": true,
+    "dispatch_performed": false,
+    "reason": "R875/R880 already bound the broad measurement question. Main owns the active GPU profile, and no concrete trace-row question was supplied that justifies another research session. The source taxonomy correction is immediately available in this review."
+  },
+  "main_actions": [
+    "Index R1045 as a held knowledge-collection report and retain its original hash; surface R1046-C1 before interpreting any MemoryCopyFromContext suffix.",
+    "Keep current copy-time sums within the whole-process nonexclusive timing boundary; do not infer physical traffic, occupancy, PCIe utilization, or device-busy union.",
+    "Use R875/R880 metadata for general copy, payload, and PCIe evidence limits; retrieve the R1045 body only for the specified concrete trace trigger."
+  ]
+}

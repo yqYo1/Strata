@@ -5504,6 +5504,46 @@
         "no-xestrata-source-used"
       ],
       "main_body_read_on_arrival": false
+    },
+    {
+      "round": 1045,
+      "model": "gpt-6-luna high",
+      "classification": "knowledge_collection",
+      "read_only": true,
+      "path": "research-round1045-v1.txt",
+      "bytes": 8605,
+      "sha256": "d2f0c511f6148e600e8b2ed46f09ad961147783a732831e5f0801f173ceab010",
+      "review_path": "research-round1046-v1.txt",
+      "review_sha256": "fde033daebdc4a4de024e09bdbc19e3538eafa651a44cc7415d2839d27cf241c",
+      "index_proposal_path": "research-round1046-index-proposal-v1.json",
+      "status": "Accepted and held with source-only MemoryCopyFromContext enum-offset correction R1046-C1 and citation correction C2; no hardware or implementation finding.",
+      "retrieval_tags": [
+        "unitrace-memory-copy-endpoint-taxonomy",
+        "zeMemGetAllocProperties",
+        "host-imported-maps-to-h",
+        "unknown-allocation-maps-to-m",
+        "shared-allocation-maps-to-s",
+        "memory-copy-from-context-source-only-enum-offset",
+        "memory-copy-region-zero-size-defect",
+        "requested-payload-is-not-physical-pcie-bytes",
+        "device-timing-service-versus-critical-path",
+        "no-physical-traffic-or-busy-union-measurement"
+      ],
+      "corrections": [
+        {
+          "id": "R1046-C1",
+          "severity": "material label correction",
+          "finding": "MemoryCopyFromContext passes null destination context, so the helper returns only the source bucket. Adding that 0-3 bucket to the enum base emits H2H/H2D/H2M/H2S for source H/D/M/S. The report incorrectly states H2H/D2H/M2H/S2H; for device-type source the emitted name is H2D, and no destination type is classified.",
+          "source": "Pinned ze_collector.h lines 249-300, 3625-3645, 4670-4729, 4884-4892"
+        },
+        {
+          "id": "R1046-C2",
+          "severity": "citation correction",
+          "finding": "Several report line anchors point elsewhere in the pinned raw file. Replace with source ranges recorded in source_pin_verification.relevant_lines; the claims were reviewed against the exact raw file.",
+          "source": "Pinned raw ze_collector.h at revision 6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033"
+        }
+      ],
+      "main_body_read_on_arrival": false
     }
   ],
   "main_initial_findings": [
@@ -10202,13 +10242,44 @@
     "manifest_sha256": "87610756139bfe569fe6f031419d63f02f36cecd6f032735a558e2a765c945a0",
     "build_recipe": "build_qsa_softmax_actual_entry_v1.py",
     "run_recipe": "run_qsa_softmax_actual_entry_v1.py",
-    "status": "PREPARED_ONLY; not compiled or GPU-tested. Uses current qualified full-build archives, actual row-major APIs and a test-only immutable dispatcher; numerical oracle/cases unchanged, host DMA backing retained through checked drain. No old packed source used.",
+    "status": "Actual current serial/subgroup row-major APIs each passed smoke2/component11 cases, separate owned traced processes, zero fresh GPU faults. Same binary/immutable selector and unchanged oracle/cases; no private packed source selected.",
     "review_reference": "research-round1044-index-proposal-v1.json",
-    "performance_prerequisite": "Current same-path resource evidence must select worthwhile QSA work; no C16/C64 resurvey or old packed retry."
+    "performance_prerequisite": "Current same-path resource evidence must select worthwhile QSA work; no C16/C64 resurvey or old packed retry.",
+    "receipts": [
+      "own-qsa-softmax-actual-entry-serial-smoke-v1.json",
+      "own-qsa-softmax-actual-entry-serial-component-v1.json",
+      "own-qsa-softmax-actual-entry-subgroup-smoke-v1.json",
+      "own-qsa-softmax-actual-entry-subgroup-component-v1.json"
+    ],
+    "next_model_recipe": "run_qsa_softmax_actual_model_v1.py",
+    "qualification_limit": "Physical262144 component has at most one query. Existing q2h13d31 strict numerical failure remains unresolved. Large-query full-context/model/RESTORE/task quality and speed adoption unqualified."
   },
   "qsa_score_gemm_entry_retention": {
     "component": "qsa-score-gemm-entry-retention-v1.json",
     "model_and_superseded_first_build": "qsa-score-gemm-entry-model-retention-v1.json",
     "canonical_status": "All source/outcomes/sample receipts remain unchanged; qualified v2 build retained. Superseded unexecuted v1 build tree retired."
-  }
+  },
+  "research_review_round1046": {
+    "review": {
+      "path": "research-round1046-v1.txt",
+      "sha256": "fde033daebdc4a4de024e09bdbc19e3538eafa651a44cc7415d2839d27cf241c"
+    },
+    "index_proposal": {
+      "path": "research-round1046-index-proposal-v1.json",
+      "sha256": "482147c030b325ef25b97aadbc02b3d293e593a65b2a7a2dc4ad4fadca1bf11d"
+    },
+    "main_read_policy": "Short operational digest/index metadata only; original knowledge report held.",
+    "main_action": "Copy suffixes remain allocation-query categories; no physical PCIe traffic/utilization inference. FromContext source-only correction retained. No fresh generic profiler survey."
+  },
+  "qsa_gemm_resource_profile_current": {
+    "summary": "qsa-gemm-current-resource-profile-v1.json",
+    "sha256": "520b7892640a2d08a3e7cd0413b0f046e747815deaa6430dede9b2075794ae29",
+    "receipt": "own-qsa-gemm-unitrace-direct-model-v1.json",
+    "receipt_sha256": "a5e72f2b3b9262ec2f46d4caa7342b7642add92f60db0a7dbed41606a11089cd",
+    "actual_tokens": 78453,
+    "attention_device_seconds": 37.077867,
+    "main_cpu_wait_fraction": 0.6880802849942296,
+    "decision": "Largest single current device kernel is QSA attention. Qualify actual subgroup softmax and compare clean models; no resource saturation or physical PCIe utilization proof."
+  },
+  "qsa_resource_softmax_retention": "qsa-resource-softmax-retention-v1.json;79successful raw/duplicate files,5043425logicalbytes retired; canonical receipts/current engine/archives/fixture ELF retained."
 }
