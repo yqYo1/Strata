@@ -1,5 +1,5 @@
 // Authored for Strata; repository LICENSE (MIT) applies.
-// Same numerical operations: compare all output bits for a local-pitch change.
+// Same numerical operations: compare all output bits for a row-publication schedule change.
 // Wall timing includes admission, prefix refresh, attention and checked drain;
 // uploads/readbacks/checks are outside timing. No physical-bandwidth claim.
 #include "strata/kernels/qsa_bf16_prefix.hpp"
@@ -93,7 +93,7 @@ void run(int cells,int queries,int cap,bool clustered) {
   const QsaBf16PackedScratch scratch{pk.data()+16,pv.data()+16,pb.data()+16};
   auto invoke=[&](int variant) {
     rt->wait();const auto start=std::chrono::steady_clock::now();
-    require((variant ? qsa_bf16_prefix_padded_batch : qsa_bf16_prefix_optimized_batch)(dq.data(),pools,di.data(),ds.data(),cap,shape,
+    require((variant ? qsa_bf16_prefix_rows_batch : qsa_bf16_prefix_optimized_batch)(dq.data(),pools,di.data(),ds.data(),cap,shape,
         out.data()+16,queries,{pages,pages},cells,scratch,&rt->compute()),"matrix admission");
     rt->wait();return std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count();
   };

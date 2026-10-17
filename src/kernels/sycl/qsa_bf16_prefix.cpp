@@ -39,16 +39,11 @@ static_assert(storage_contract<Cells * Dim>());
 static_assert(storage_contract<16 * Cells>());
 static_assert(16 * sizeof(BFloat) % 8 == 0 && 32 * sizeof(BFloat) % 8 == 0);
 
-template<int KPitch, int VPitch> constexpr int KvElements =
-    Dim * KPitch > Cells * VPitch ? Dim * KPitch : Cells * VPitch;
-template<int ScoreStride, int KPitch = Cells, int VPitch = Dim> constexpr size_t LocalPayload =
-    (16 * Dim + KvElements<KPitch, VPitch> + 16 * Cells) * 2
+template<int ScoreStride> constexpr size_t LocalPayload =
+    (16 * Dim + Cells * Dim + 16 * Cells) * 2
     + (16 * ScoreStride + 3 * 16) * 4 + Cells * 8 + 16 * 4;
 static_assert(LocalPayload<Cells> == 28160);
 static_assert(LocalPayload<Cells + 1> == 28224);
-static_assert(LocalPayload<Cells + 1, 36, 260> == 30272);
-static_assert(255 * 36 + 31 < KvElements<36, 260>);
-static_assert(31 * 260 + 255 < KvElements<36, 260>);
 
 bool matrix_available(const sycl::device &device, size_t local_payload) {
   if (!device.has(sycl::aspect::ext_intel_matrix) || !device.is_gpu() || device.get_info<sycl::info::device::vendor_id>() != 0x8086 ||
@@ -72,18 +67,13 @@ bool matrix_available(const sycl::device &device, size_t local_payload) {
 } // namespace
 
 template<int ScoreStride, bool TilePacked = false, bool SubgroupSoftmax = false,
-         int KPitch = Cells, int VPitch = Dim>
+         bool PublishNextRows = false>
 static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
                              const int32_t *ids, const int32_t *steps,
                              int64_t cap, const QsaShapes &shape, uint16_t *output,
                              int64_t queries, const QsaPromptBf16Bounds &bounds,
                              int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream) {
   static_assert(!SubgroupSoftmax || !TilePacked);
-  static_assert(KPitch >= Cells && VPitch >= Dim);
-  static_assert(KPitch * sizeof(BFloat) % 8 == 0 && VPitch * sizeof(BFloat) % 8 == 0);
-  static_assert(KPitch * sizeof(BFloat) <= (1 << 24) && VPitch * sizeof(BFloat) <= (1 << 24));
-  static_assert(!TilePacked || (KPitch == Cells && VPitch == Dim));
-  static_assert(storage_contract<KvElements<KPitch, VPitch>>());
   // Reuse the qualified admission contract; it never enqueues or waits.
   if (!qsa_prompt_attn_bf16_validate(query, pools, ids, steps, cap, shape,
                                     output, queries, bounds, stream)) return false;
@@ -92,7 +82,7 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
       uint64_t(bounds.logical_pages) * uint64_t(shape.page_size))
     throw std::invalid_argument("QSA BF16 prefix exceeds logical capacity");
   auto &queue = sycl_backend::queue_for(stream);
-  if (!matrix_available(queue.get_device(), LocalPayload<ScoreStride, KPitch, VPitch>)) return false;
+  if (!matrix_available(queue.get_device(), LocalPayload<ScoreStride>)) return false;
   // Validate all writable scratch together with the final output before pack.
   // The old admission also checks the full original inputs and output domains.
   using namespace sycl_backend;
@@ -148,7 +138,7 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
     // The whole operand is a real contiguous array in a 4-byte aligned object.
     // No type-punned uint32_t storage or pointer arithmetic across subarrays.
     sycl::local_accessor<MatrixTile<16 * Dim>, 1> qstorage(1, handler);
-    sycl::local_accessor<MatrixTile<KvElements<KPitch, VPitch>>, 1> kvstorage(1, handler);
+    sycl::local_accessor<MatrixTile<Cells * Dim>, 1> kvstorage(1, handler);
     sycl::local_accessor<MatrixTile<16 * Cells>, 1> pstorage(1, handler);
     sycl::local_accessor<float, 1> scores(16 * ScoreStride, handler), maximum(16, handler),
                                   normalizer(16, handler), alpha(16, handler);
@@ -196,8 +186,7 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
       const int width = steps[batch * kStepCount + kStepWidth];
       const int count = width >= 0 && int64_t(width) <= cap ? width : 0;
       int local_bad = 0, local_live = 0;
-      item.barrier(sycl::access::fence_space::local_space);
-      for (int64_t first = 0; first < count; first += Cells) {
+      auto publish_rows = [&](int64_t first) {
         if (tid < Cells) {
           int64_t row = -1;
           if (first + tid < count) {
@@ -211,7 +200,15 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
           rows[tid] = row;
           if (row >= 0) local_bad |= packed.bad_rows[row];
         }
-        item.barrier(sycl::access::fence_space::local_space);
+      };
+      // Q/state initialization and the first IDs share the initial barrier.
+      if constexpr (PublishNextRows) if (count > 0) publish_rows(0);
+      item.barrier(sycl::access::fence_space::local_space);
+      for (int64_t first = 0; first < count; first += Cells) {
+        if constexpr (!PublishNextRows) {
+          publish_rows(first);
+          item.barrier(sycl::access::fence_space::local_space);
+        }
         for (int i = tid; i < Cells * Dim; i += Workgroup) {
           const int cell = i % Cells, d = i / Cells;
           const int64_t row = rows[cell];
@@ -219,7 +216,7 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
           if constexpr (TilePacked)
             kv[((d / 16) * 2 + cell / 16) * 256 + (d % 16 / 2) * 32 +
                (cell % 16) * 2 + d % 2] = sycl::bit_cast<BFloat>(bits);
-          else kv[d * KPitch + cell] = sycl::bit_cast<BFloat>(bits);
+          else kv[i] = sycl::bit_cast<BFloat>(bits);
         }
         if (tid < Cells) local_live |= rows[tid] >= 0;
         item.barrier(sycl::access::fence_space::local_space);
@@ -233,7 +230,7 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
               mx::joint_matrix_load(sg, b, kv + ((d / 16) * 2 + cell / 16) * 256, 32);
             } else {
               mx::joint_matrix_load(sg, a, qtile + head * Dim + d, Dim);
-              mx::joint_matrix_load(sg, b, kv + d * KPitch + cell, KPitch);
+              mx::joint_matrix_load(sg, b, kv + d * Cells + cell, Cells);
             }
             mx::joint_matrix_mad(sg, product, a, b, product);
           }
@@ -301,7 +298,7 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
           if constexpr (TilePacked)
             kv[((cell / 16) * 16 + d / 16) * 256 + (cell % 16 / 2) * 32 +
                (d % 16) * 2 + cell % 2] = sycl::bit_cast<BFloat>(bits);
-          else kv[cell * VPitch + d] = sycl::bit_cast<BFloat>(bits);
+          else kv[i] = sycl::bit_cast<BFloat>(bits);
         }
         item.barrier(sycl::access::fence_space::local_space);
         const int head = (subgroup / 4) * 8, dim_base = (subgroup % 4) * 64;
@@ -316,11 +313,17 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
               mx::joint_matrix_load(sg, b, kv + ((c / 16) * 16 + dim_base / 16 + j) * 256, 32);
             } else {
               mx::joint_matrix_load(sg, a, probability + head * Cells + c, Cells);
-              mx::joint_matrix_load(sg, b, kv + c * VPitch + dim_base + j * 16, VPitch);
+              mx::joint_matrix_load(sg, b, kv + c * Dim + dim_base + j * 16, Dim);
             }
             mx::joint_matrix_mad(sg, accumulated[j], a, b, accumulated[j]);
           }
         }
+        // V/probability publication above is after every current-row reader.
+        // PV reads only kv/probability/alpha, so early finishers may write next
+        // IDs while other subgroups finish PV. The existing barrier publishes
+        // those IDs and still protects V from the following K overwrite.
+        if constexpr (PublishNextRows)
+          if (first + Cells < count) publish_rows(first + Cells);
         item.barrier(sycl::access::fence_space::local_space);
       }
       const bool invalid_scales = sycl::any_of_group(item.get_group(), local_bad != 0);
@@ -355,12 +358,11 @@ bool qsa_bf16_prefix_optimized_batch(const uint16_t *query, const QsaAttnPools &
   return prefix_batch_impl<Cells + 1>(query, pools, ids, steps, cap, shape,
       output, queries, bounds, live_cells, scratch, stream);
 }
-// Independent local-pitch experiment; same ownership, math and barriers.
-bool qsa_bf16_prefix_padded_batch(const uint16_t *query, const QsaAttnPools &pools,
+bool qsa_bf16_prefix_rows_batch(const uint16_t *query, const QsaAttnPools &pools,
     const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
     uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
     int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream) {
-  return prefix_batch_impl<Cells + 1, false, false, 36, 260>(query, pools, ids, steps,
+  return prefix_batch_impl<Cells + 1, false, false, true>(query, pools, ids, steps,
       cap, shape, output, queries, bounds, live_cells, scratch, stream);
 }
 // FP32 subgroup max/sum; current score33 row-major operands and state layout.

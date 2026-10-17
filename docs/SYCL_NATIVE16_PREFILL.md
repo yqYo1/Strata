@@ -118,10 +118,19 @@ isolate dequantization, physical memory traffic or SLM conflicts. These are
 sequential samples within one process per arm;24-token generation does not
 qualify sustained decode. See the [individual samples and comparison limits](../bench/results/2026-10-15-pr6-recovery-audit/qsa-attention-model-current.json).
 
-The independent `qsa_bf16_prefix_padded_batch` experiment changes local K/V
-row pitches to36/260 at fixed score33. It preserves producer ownership,
-arithmetic and barriers; requested local storage grows28224 to30272 bytes.
-Actual allocation rounding, bank conflicts and occupancy remain unmeasured.
+The fixed-score33 K36/V260 experiment passed all bit, oracle and boundary
+checks. Six rotated samples per arm on8192 queries changed median latency
+by+0.60% (cap33 gathered),-0.51% (cap2051 gathered), and+0.23% (cap2051
+clustered). These mixed subpercent results do not justify selection. Source
+and individual samples remain at commit`ee14c50d`; the experimental pitch code
+is retired from the active implementation.
+
+The next independent `qsa_bf16_prefix_rows_batch` experiment retains score33,
+K32/V256 and28224 requested local bytes. It publishes first IDs with Q/state
+initialization, and next IDs during PV, using the existing final PV barrier.
+All current row readers finish before V/probability publication; PV reads no
+row IDs. The final barrier still protects V-to-K overwrite. This removes one
+workgroup barrier per32-cell tile without changing arithmetic or output order.
 Production dispatch is unchanged. Main's serialized qualification sequence is
 `python3 tools/sycl/build_engine.py rebuild-attention`, then
 `python3 tools/sycl/check_attention.py smoke`, `component`, and `perf`.

@@ -77,7 +77,7 @@ def main():
     targets = ['strata']
     if attention:
         targets += ['sycl_qsa_bf16_late_flags_test', 'sycl_qsa_bf16_prefix_optimized_test',
-                    'sycl_qsa_bf16_prefix_padded_test', 'sycl_qsa_bf16_prefix_padded_bench']
+                    'sycl_qsa_bf16_prefix_rows_test', 'sycl_qsa_bf16_prefix_rows_bench']
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
