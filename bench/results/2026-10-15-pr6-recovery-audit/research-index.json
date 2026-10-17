@@ -4814,6 +4814,93 @@
       "model": "gpt-6-luna",
       "read_only": true,
       "review_path": "research-round1007-review-v1.txt"
+    },
+    {
+      "round": 1008,
+      "path": "research-round1008-v1.txt",
+      "sha256": "db254625a840880a82761f0d56e494b43d8ead9b7bfbf9b565b38035f2f912aa",
+      "bytes": 11131,
+      "spec": {
+        "path": "orca-research-round1008-spec-v1.txt",
+        "sha256": "ce56fbc18c7feedbe9d136fc207084c201c3fdf17b46f0ce09cc8b2d41bca31e"
+      },
+      "classification": "knowledge_collection",
+      "review_status": "retain_held",
+      "append_ready_status": "Useful GPU-local dataflow comparison; no B570 resource, integration, numerical, performance or adoption qualification.",
+      "retrieval": {
+        "hold_body_for_Main": true,
+        "schedulable_now": false,
+        "retrieve_when": "A Main-owned source-pinned decision selects a concrete weighted-accumulator layout or Down-GEMM epilogue boundary and needs the matching dataflow, synchronization or rounding analysis.",
+        "sections": [
+          "Fixed contract and evidence boundary",
+          "Dataflow choices",
+          "Hardware mechanisms and limits",
+          "Transferable design checks",
+          "Applicability gaps"
+        ],
+        "tags": [
+          "MoE",
+          "FP32 accumulator traffic",
+          "expert-major RMW",
+          "token-column ownership",
+          "scratchpad tiling",
+          "Down-GEMM epilogue",
+          "BF16 rounding before weight",
+          "SYCL workgroup barrier",
+          "SLM and registers",
+          "sparse scatter",
+          "physical-context correctness"
+        ]
+      },
+      "main_read": "Original report body held; provide only operational digest and retrieval metadata until trigger is met.",
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "review_path": "research-round1010-review-v1.txt"
+    },
+    {
+      "round": 1009,
+      "path": "research-round1009-v1.txt",
+      "sha256": "62251658a0ce6e98568a02c663f5f8e3770d6f520335affa70238b357b569222",
+      "bytes": 11826,
+      "spec": {
+        "path": "orca-research-round1009-spec-v1.txt",
+        "sha256": "45a3e8153a6e6c11e98d3df659845b93a0db7c8a2a075ebb84357f4c8656c4d7"
+      },
+      "classification": "knowledge_collection",
+      "review_status": "retain_held_with_source_pin_correction",
+      "append_ready_status": "Adds API/lifetime and grouped-scheduler detail to R990; no configured Arc support, host bottleneck or performance qualification.",
+      "corrections": [
+        "R1009's moe_window_routes.hpp hash is mistyped as 62abedecd553ababefcdabc4c549c75844f848027516293ed028a46fce617379; verified immutable snapshot hash is 62abedecd553ababefcdabc4c549d75844f848027516293ed028a46fce617379. Do not repeat the incorrect pin."
+      ],
+      "retrieval": {
+        "hold_body_for_Main": true,
+        "schedulable_now": false,
+        "retrieve_when": "A Main-owned complete-path receipt attributes material time to host grouping/submission or device job imbalance and pins the configured resolver, backend, compiler/runtime and queue/adapter path.",
+        "sections": [
+          "Mechanisms: different layers",
+          "Transferable grouped-GEMM evidence",
+          "API legality and data lifetime",
+          "Forward progress and cancellation",
+          "Conditional relevance to the bounded helper"
+        ],
+        "tags": [
+          "MoE sparse jobs",
+          "host dispatch",
+          "command batching",
+          "SYCL graphs",
+          "Level Zero indirect launch",
+          "grouped GEMM scheduler",
+          "persistent workers",
+          "queue and event lifetime",
+          "cancellation and drain",
+          "API portability",
+          "physical-context correctness"
+        ]
+      },
+      "main_read": "Original report body held; surface the pin correction and retrieval metadata only until trigger is met.",
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "review_path": "research-round1010-review-v1.txt"
     }
   ],
   "main_initial_findings": [
@@ -8535,6 +8622,59 @@
     "scopes": [
       "GPU reduction memory/dataflow options",
       "Sparse heterogeneous submission/dispatch alternatives"
-    ]
+    ],
+    "status": "Completed/released, native Luna max reviewed; collection bodies held for concrete retrieval trigger."
+  },
+  "research_review_round1010": {
+    "review": {
+      "path": "research-round1010-review-v1.txt",
+      "sha256": "ece90ebe272ff50c1074e6cde1c579b9566d5527db7e1d5c9b4b5ec9d641a202",
+      "bytes": 6581
+    },
+    "proposal": "research-round1010-index-proposal-v1.json",
+    "next_scopes": [
+      {
+        "scope_id": "retrieve-round1008-for-selected-dataflow-question-v1",
+        "classification": "knowledge_collection_retrieval",
+        "finite_question": "Retrieve only the relevant R1008 sections after Main records a source-pinned selected accumulator/epilogue decision and its BF16 conversion/FMA contract.",
+        "schedulable_now": false,
+        "prerequisites": [
+          {
+            "requirement": "Main identifies the active selected consumer and whether the concrete question is token-owner layout, staging, or Down-GEMM epilogue fusion.",
+            "evidence_now": "R1008's immutable candidate snapshot is only helper/component evidence; 65,536-row integration and performance are explicitly unqualified, and no layout is selected by this review."
+          },
+          {
+            "requirement": "Main records the intended BF16 rounding point, FMA order and output ownership contract for that consumer.",
+            "evidence_now": "R1008 preserves a stated candidate sequence but does not establish the selected model execution contract or adoption decision."
+          }
+        ],
+        "report_budget_bytes": "No new report planned; retrieve cited sections only."
+      },
+      {
+        "scope_id": "retrieve-round1009-after-path-attribution-v1",
+        "classification": "knowledge_collection_retrieval",
+        "finite_question": "Retrieve R1009's scheduling/API sections only after a complete current-engine receipt identifies material host grouping/submission or device job-imbalance cost.",
+        "schedulable_now": false,
+        "prerequisites": [
+          {
+            "requirement": "Main records host descriptor construction, submission, wait/poll attribution, device command service/gaps and whole-path timing for the selected source/build.",
+            "evidence_now": "R990 says host attribution is not established; R999 reports incomplete profile coverage and unmeasured hardware busy; R1008/R1009 leave candidate integration and performance unqualified."
+          },
+          {
+            "requirement": "Main pins the configured Arc resolver/backend/compiler/runtime/adapter path for the measured command sequence.",
+            "evidence_now": "The reviewed collection reports explicitly say the candidate adapter and target-stack feature support are unverified."
+          }
+        ],
+        "report_budget_bytes": "No new survey planned; retrieve R1009 or R990 first, then define a bounded new question only if a specific gap remains."
+      }
+    ],
+    "source_pin_correction": "R1009 routes header mistyped; use Main immutable snapshot and R1010 verified hash. Original report preserved.",
+    "main_read_policy": {
+      "round1008_original_body_read_by_Main": false,
+      "round1009_original_body_read_by_Main": false,
+      "body_status": "held",
+      "operational_digest_max_words": 140,
+      "index_mutation_performed": false
+    }
   }
 }
