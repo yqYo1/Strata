@@ -9324,5 +9324,25 @@
     "retention": "qsa-prefix64-retention-v1.json",
     "next": "qsa-prefix16-candidate-v1/proposal.json: private lowerSLM18368B candidate, notcompiled/executed atcreation; Main owns gates. Score/topk timing split remains nextindependentbottleneck question.",
     "fork_default_synced_through_PR46": "777f9d51a47bf557e8c96b9d255785d7b49353ba"
+  },
+  "qsa16_experiment_current": {
+    "decision": "qsa-prefix16-decision-v1.json",
+    "report": "qsa-prefix16-results-v1.ja.md",
+    "component_cases": 18,
+    "numerical_component_status": "PASS;1query at262144 included",
+    "working_set32K_latency_reduction_percent": -8.12404876632893,
+    "working_set128K_latency_reduction_percent": 1.4993550795925459,
+    "production_QSA": "32cell score33 unchanged",
+    "adoption": false,
+    "conditional_candidate": "16cell atlargeprefix, needswholemodel/numericalcontract validation",
+    "failed262144speed_original": "qsa-prefix16-bench-base-262144-0-v1.json",
+    "failure_actual_closure": "qsa-prefix16-262144-failure-closure-v1.json",
+    "observer": "qsa16-oracle-observer-base-262144-0-v1.json",
+    "observer_result": "Diagnosticcomplete/physicalclosurePASS, numericalFAIL preserved. Sameinputfingerprints/firstcoordinate/value as prior256K precisionboundary; no newGPUfault.",
+    "observer_correction": "traced=false metadata inherited; actualpreexec/procenv+UR2calls provetracingon. Not a clean speed sample.",
+    "retention": "qsa-prefix16-retention-v1.json",
+    "current_fixture_consumer": "Prospective arithmetic stage-contract/numericalcomparison; retain16cell+observer source/object/binaries, review afterscore/topk measurement.",
+    "next_Main_action": "Create private typed/guarded FP32 QSA score/topk stage timing fixture from actualcaller shapes sel_batch256. Current source src/kernels/qsa_select_bench.cpp already has per-stage concept but rawcuda API/nullstream wait and noMaingates; adapt through qualified Runtime+checkedcleanup, actualqsa_block_topk_prefillmapping and CPUsubmit/wait timing. Avoid inference-math changes until stage share measured.",
+    "research_GEMM_source_followup": "qsa-score-GEMM-source-followup-v1.json"
   }
 }

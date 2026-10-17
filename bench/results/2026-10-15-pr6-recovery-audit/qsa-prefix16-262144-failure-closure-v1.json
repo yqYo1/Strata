@@ -1,0 +1,62 @@
+{
+  "recorded_utc": "2026-10-17T14:09:07.526788+00:00",
+  "original_receipt": {
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-prefix16-bench-base-262144-0-v1.json",
+    "sha256": "43e92b1d53e5839b922c6a2c4a7465ed07836560bd03ecec4756bc313677a5ea",
+    "passed": false,
+    "complete": false,
+    "ownership_closed_field": false
+  },
+  "physical_process_closure_verified": true,
+  "commands": [
+    {
+      "label": "journal-before",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "observation_complete": true
+    },
+    {
+      "label": "qsa-bf16",
+      "exit_code": 1,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "observation_complete": false
+    },
+    {
+      "label": "journal-end",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "observation_complete": true
+    },
+    {
+      "label": "journal-final",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "observation_complete": true
+    }
+  ],
+  "fresh_GPU_faults": [],
+  "driver_dump_entries": [],
+  "reason": "Original owner.closed requires successful protocol observation as well as reaping/empty session. Numericalassertion returned1 before PASSfooter so observation_complete=False; original failure fields remain unchanged. Main independently confirmed all original ownedPID/startticks absent, childreaped, empty sessions and no survivors.",
+  "failure_classification": "Existing32cell baseline sampled-query BF16 oracle assertion at262144prefix; not a GPUhang or candidate16result. Exact numerical mechanism/coordinate unresolved.",
+  "candidate16_262144_timing_executed": false,
+  "retained_diagnostic_files": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-prefix16-bench-base-262144-0-v1/owned/qsa-bf16.stderr",
+      "bytes": 41,
+      "sha256": "642b19dc6e83d0a92d3dcde1cd48e72b6ec7a13c6bb3ef95974ea650f67db0c3",
+      "content": "BF16 operand contract at sampled queries\n"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-prefix16-bench-base-262144-0-v1/owned/qsa-bf16.stdout",
+      "bytes": 596,
+      "sha256": "4972bb1ba7c228f3c61404506f98c3b8e82df82bb4e668527a32e5668c8f8568",
+      "content": "QSA_BF16_READY before-runtime\ndevice=Intel(R) Arc(TM) B570 Graphics driver=1.17.39395+14\nQSA_BF16_READY runtime-ready\narm=base nq=8192 cap=2051 workgroups=16384 cells=262144 global_selected_cells=262144 selected_set=per_query_rotated_uniform_spread_unique device_bytes=1487176128 packed_scratch_payload_bytes=538968064 pack_cost=IN_TIMED_CALL warmups=2 repetitions=10 fingerprints=FNV1a64_native_bytes q=11439647903705736170 k=12142529296547611317 v=4808538208514656389 ks=18214038941969068403 vs=14449012454104502671 table=17081160534730886437 ids=10917603666501170263 steps=9859294967982410533\n"
+    }
+  ],
+  "next_consumer": "Main host-only fixture observer extension, same source/object/input/kernel to identify first failing numerical coordinate and magnitude. Preserve current build/object/binary/fixture as unresolved numericalcomparison fixture.",
+  "cohort_stale_active_intent": "qsa-prefix16-cohort-cells262144-v1.json retains original intent pointing to failed terminal sample; its outer controller exited1. No activeprocess remains."
+}
