@@ -1,0 +1,144 @@
+{
+  "schema": "strata-research-review-v1",
+  "review_round": 997,
+  "classification": "decision-support report review",
+  "created_utc": "2026-10-17",
+  "activity": {
+    "scope": "Read-only source, specification, and receipt review; wrote only this JSON and the paired Japanese digest.",
+    "not_performed": ["builds", "tests", "GPU or profiler work", "process inspection", "Git commands", "source edits", "capture polling"],
+    "knowledge_collection_reports_opened": []
+  },
+  "reviewed_local_artifacts": {
+    "AGENTS.md": "d0c7e1a40a05087803345d23792c468e760aceb3bba2e012efb59dd01175e89c",
+    "docs/ARTIFACT_RETENTION.md": "fdf86d7ea576d6f0400ec7e643b5ddca5c3c577dd053d66c2fd05220e64b1cc1",
+    "research-index.json": "f07765849f8d07aa53e652814924cf1e98eda60051c368112abdaae337a4a95f",
+    "orca-timestamp-contract-round996-completion-v1.json": "deeec413d0a2388d6ce06961dbb9e7686404677b7703d04db61dd3423e43385b",
+    "research-round996-v1.txt": "70652d0ab0e2c9269333ba0c5168f9f4c7d0fa6ee87d01932b844e6418c0fbea",
+    "command-service-model-diagnostic-on-r0-v1.json": "0da9196432d497df4f8cb837ecb9e85b15df8044d54b9e5fb6d5d9adec7acaeb",
+    "command-service-model-diagnostic-on-partial-v1.json": "b7a2d45a69cafa1d65d48788e7f5f3a9b0a0d9a3d5a1325e236f64d1a3bf98bf",
+    "event-service-stress-v1.json": "1c208eced2a7a72bc0a5e5a22e1bcf0218db283c2a175e1d5c901cc6086dae05",
+    "command-service-model-readiness-v2.json": "08363f2740cb0a835d2f7a54a47b60672e739a3879f16b12fa029891275f6724",
+    "command-profile-fixture-error-v2.json": "8b8214d8b865368606556017435a9aded06dda8656c3121e09bf2f36cd8e8244",
+    "command-profile-fixture-off-v2.json": "37c10a72f4846726f9755331ab7487418a2667efb22461ed72b7c7e853713b07",
+    "command-profile-fixture-on-v2.json": "c0513da6054a98e097a299c70086a63998b3f1b5b65055f490e53218e65425d3",
+    "command-service-collector-source-v2.json (W)": "000b914d493d69cb8409129ffc15d66256144f3e9513c91686c3706d76735a3c"
+  },
+  "r996_assessment": {
+    "report_sha256": "70652d0ab0e2c9269333ba0c5168f9f4c7d0fa6ee87d01932b844e6418c0fbea",
+    "completion_record_sha256": "deeec413d0a2388d6ce06961dbb9e7686404677b7703d04db61dd3423e43385b",
+    "verdict": "Good decision-support framing; do not infer a cause from the v1 cluster. Two version/applicability corrections narrow its copy and event-reuse hypotheses.",
+    "verified_local_source_pins": {
+      "manifest_sha256": "000b914d493d69cb8409129ffc15d66256144f3e9513c91686c3706d76735a3c",
+      "manifest_source_commit_claim": "af99f2943b2c782d6691d5500ea852e2169dd02f",
+      "base_commit_claim": "8e653297d7e687539de626f942697f0bece5b299",
+      "all_10_source_file_sha256_pins_match": true,
+      "verification_limit": "File hashes and patch contents were checked. Git object identity or ancestry was not independently checked."
+    },
+    "source_pins": {
+      "cmake/sycl_backend.cmake": "4f0b50bc3a6338a65e2acd4259ef5c73c80110a0a23eec71b8aeda4f4652ca97",
+      "include/strata/sycl/launch.hpp": "4eb1888057ef6ae34f2bbb9d2545321061ee116659e54907047732544d589d95",
+      "include/strata/sycl/command_profile_hook.hpp": "0fda4bbfce1fcb561bb73904bf8216d9d0ed48582c380904809035b3d1481c45",
+      "include/strata/sycl/command_profile.hpp": "edc7da1c5968c5e8b0c9f9b8a0fe673c11c787bab603915f4802e93f687039ed",
+      "src/sycl/command_profile.cpp": "6f931700384536408158004665e8d3643ffac9c2d2e7c78623ff38b45638090a",
+      "src/sycl/compat.cpp": "bd5a664f9a0bd91b0e8e2e59f67d0a2c38c81599613831abbd6e16ad98c01689",
+      "src/prefill/prefill.cpp": "93b47712123c152f0d6643ab689e9b33dbd113d46868558643b990834de62654",
+      "src/prefill/layer_major.inc": "7d3c17421a6f5124c87052a1e2c0589c9fbb7e833f70215d36fff448240f1bef",
+      "src/prefill/moe_window.inc": "9ffec0edda5f8ee3219a64873eca3dba92a3fe47fac84fbd0ee5f2dfe95bb827",
+      "tests/sycl/command_profile.cpp": "c73a357c683d362a7d44a50d5431cf9001247b30469a70513dd99160ca0d18bc"
+    }
+  },
+  "primary_source_review": [
+    {
+      "reference": "SYCL 2020 Revision 12; pinned Khronos SYCL-Docs commit b3bcc5d5cc83217d14ebbb904e353c5a0d17f52b",
+      "url": "https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html",
+      "finding": "R996's order contract is correct: command_start >= command_submit and command_end >= command_start; equality is allowed, all same-backend timestamps share a timebase, and the spec guarantees no specific accuracy.",
+      "limit": "Normative API contract does not establish accuracy or the installed implementation's behavior. A start-before-submit value indicates a returned-contract/conversion defect, not an intentionally separate timebase."
+    },
+    {
+      "reference": "Intel LLVM/UR L0 v2 event.cpp at afcca05be916a6ba0b925a4e088d76c160442be2",
+      "url": "https://github.com/intel/llvm/blob/afcca05be916a6ba0b925a4e088d76c160442be2/unified-runtime/source/adapters/level_zero/v2/event.cpp",
+      "finding": "Pinned source uses zeEventQueryKernelTimestamp for start/end, masks valid bits and converts with timer resolution; submit is obtained through a separate pre-enqueue global-timestamp path. It is an upstream source snapshot, not proof of installed UR source.",
+      "limit": "Installed compiler/driver/adapter binary hashes do not identify its UR source revision or prove all device command kinds behave identically."
+    },
+    {
+      "reference": "Level Zero Core Programming Guide 0.95 and 1.4.8",
+      "urls": [
+        "https://oneapi-src.github.io/level-zero-spec/level-zero/0.95/core/PROG.html",
+        "https://oneapi-src.github.io/level-zero-spec/level-zero/1.4.8/core/PROG.html"
+      ],
+      "finding": "The 0.95 guide says kernel-timestamp events can only be signaled by kernel-launch commands. The later 1.4.8 guide explicitly supports kernel timestamps for non-kernel operations (with undefined duration for signal-event and host-signal operations).",
+      "correction": "R996's copy-specific limitation is valid only as a versioned 0.95 hypothesis. It must not be generalized to the reported 1.17 driver or current UR v2 path without identifying the installed API/runtime behavior."
+    },
+    {
+      "reference": "Intel LLVM/UR event-reuse and timer-resolution changes",
+      "urls": [
+        "https://github.com/intel/llvm/commit/1dc43094fb0937d337da833ee83dbcfa8a0f543d",
+        "https://github.com/intel/llvm/commit/19965837cae4417e264ce26fdef7607c501ac9eb"
+      ],
+      "finding": "The reuse fix is real, but its diff is in the root Level Zero adapter context.cpp/event.cpp, not the v2 event.cpp path. The timer-resolution change also touches v2/event.cpp and distinguishes nanosecond-period versus cycles/second property forms.",
+      "correction": "These commits establish implementation history, not that the forced installed v2 adapter contains or exhibits the same reuse issue. Capture the actual property structure/units and exact installed UR source mapping before attributing a clock-conversion failure."
+    }
+  ],
+  "receipt_findings": {
+    "v1_failed_profile": {
+      "status": "FAILED; immutable source result remains failed",
+      "native_inference_and_owner_fault_closure": "passed",
+      "numeric_records": "508/532",
+      "rejected_events": "24 total: eight ordinary-host route-map uploads plus sixteen kernel events, four gather/GU/SwiGLU/down jobs at layers 15 and 31",
+      "rejected_raw_values_in_v1": "absent",
+      "max_query_wall_ns": 24446,
+      "hardware_busy": "UNMEASURED",
+      "interpretation": "The 1 s query-delay predicate cannot explain the 24 rejects. The saved v1 values cannot identify order, equality, granularity, copy semantics, event reuse, or conversion as the cause."
+    },
+    "independent_event_stress": {
+      "result": "PASS; 3075 kernels plus two ordinary-host 512 KiB H2D copies; 141/141 captured timestamps accepted; no fresh faults",
+      "limit": "Different copy payload/path and no command-by-command match to route-map uploads; counters against a universal copy/kernel failure only. Not model timing evidence."
+    },
+    "v2_patch_and_gates": {
+      "source_scope": "Diagnostic-only source-row metadata and a 32-entry rejected-value ledger; fixture owner order and intentional pre-drain error mode. No arithmetic, launch/drain sequence, or timestamp acceptance predicate changed.",
+      "predicate_preserved": "start < submit; end <= start; positive end-start below reported resolution; query wall >= 1 s",
+      "capture_semantics": "Logged rejected values are the returned SYCL/UR nanosecond values, not native Level Zero counter ticks. The bit for end <= start groups equality with reversed order, though the saved values permit separating them. No event generation, native query status, valid-bit mask, or raw L0 ticks are in this ledger.",
+      "build": "v2 build receipt passed; source manifest records the af99f294 source string.",
+      "off_fixture": "PASS; 387 submissions, guards and input unchanged, zero profile output.",
+      "on_fixture": "PASS; 387 submissions, 141/141 records and 37 groups, no invalids; synthetic metadata, not model performance.",
+      "error_fixture": {
+        "receipt": "PASS with expected native exit 1 after 387 submissions; complete and closed; fresh_faults=[]; profile_qualified=false.",
+        "asserted_evidence": "Fixture runner reads its private stderr and asserts fallback-drain begin < fallback-drain end < Trace profile summary, zero urEventGetProfilingInfo calls, and the missing_checked_retirement summary with records=0/invalid=0. The committed receipt stores those checked booleans, the summary, and stderr SHA256 960d6fe69c5755e23396dc251734eaf9848a87aa723a8a5ed86cf30f35fdb11f, not the stderr text itself.",
+        "owner_implication": "The Trace owner now survives the fixture's checked exception-path drain. Device/host buffers also survive that drain. This validates fixture diagnostic ordering; it does not show that destroying a SYCL event alone cancels queued work or causes GPU undefined behavior, nor explain the v1 model rejects."
+      }
+    },
+    "v2_model_capture": {
+      "state": "UNASSESSED in this review; no terminal receipt was part of the designated read set.",
+      "action_boundary": "Do not poll, wait, inspect processes, or infer status from the active runner. Assess only after a terminal receipt is naturally available and closure is recorded."
+    }
+  },
+  "causal_assessment": {
+    "copy_handling": "Plausible only conditionally on the installed runtime/driver path; v2 1.4.8 documentation permits non-kernel timestamps. A hard query error would take a query-exception path, unlike the original numeric guard failure.",
+    "event_reuse": "Plausible implementation class but not established for installed v2 provider. Main's successful production path holds each selected SYCL event through checked drain and query; the fixture error-path owner-order repair is separate evidence.",
+    "clock_conversion": "Plausible if raw values show submit/start skew, same-tick, sub-resolution, or mask-boundary patterns. Same-backend SYCL timestamps share a timebase, and no rejected v1 values remain to test these patterns.",
+    "performance": "No whole-request GPU-busy, CPU-bottleneck, or speed claim follows from four sampled MoE windows. The v1/v2 receipts keep hardware_busy=UNMEASURED; queue delay is not CPU time and event service is not EU occupancy."
+  },
+  "conditional_next_scopes": [
+    {
+      "scope": "Review the one-process v2 model receipt and all accepted/rejected values, violation masks, counts, input identity, native completion, owner closure, and fault closure.",
+      "prerequisite": "Capture reaches terminal status and receipt records process closure/fault checks.",
+      "gate": "Keep original v1 failure unchanged; do not call a full capture a timestamp pass. If invalid_total exceeds 32, treat raw rejection coverage as incomplete."
+    },
+    {
+      "scope": "If masks/raw values implicate order or conversion, compare representative same-queue UR/SYCL nanoseconds with native L0 ticks/status, valid bits/mask, exact timer-resolution property structure and units, and submit acquisition path.",
+      "prerequisite": "Terminal receipt shows a concrete order, zero/equality, positive sub-resolution, or wrap-like pattern; pin installed adapter/runtime version and exact copy/kernel command identity.",
+      "gate": "Preserve start >= submit and end >= start acceptance; label equality as contract-ordered but still below the current strict service gate."
+    },
+    {
+      "scope": "If route-map uploads remain the sole failure class, test one exact upload size/host-pointer path against a kernel on the same queue and record command type, query outcome, pool flags and native/converted values.",
+      "prerequisite": "Terminal ledger identifies upload-only failures and installed Level Zero API/runtime version is known or explicitly bracketed.",
+      "gate": "Do not claim unsupported query from a numeric rejection; do not widen to another model cohort before the bounded discriminator."
+    },
+    {
+      "scope": "If kernels show recurring stale/recycled values, add a bounded event identity/generation and provider/release/reset trace through post-drain query.",
+      "prerequisite": "Terminal values and exact installed v2 source/provider path make reuse a discriminating hypothesis.",
+      "gate": "Do not infer reuse from layer/job clustering or from the v1-adapter historical fix alone."
+    }
+  ],
+  "operational_digest": "R996 is useful but its copy-specific reading overweights the old L0 0.95 guide, and its event-reuse commit is from the non-v2 adapter path. Keep its hypotheses conditional. The new v2 diagnostic source pins match, the acceptance predicate is unchanged, and build/off/on/error fixtures passed; error-mode ordering is runner-asserted with only the stderr hash retained. The original v1 result remains FAILED (508/532; 24 raw rejects absent). The running 39K v2 capture is unassessed here. Do not claim cause, GPU busy, CPU bottleneck, or speed from these partial records."
+}
