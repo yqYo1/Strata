@@ -213,6 +213,40 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
   }
   invoke();require(guarded()==y,"unchanged input repeat deterministic");immutable();
   if (extended) {
+#if defined(STRATA_QSA_COMPARE_PREFIX33)
+    // Explicit physical-page alias: reads remain valid even when two logical
+    // pages refer to one physical page. Compare all candidate/reference bits.
+    require(pages>1 && live_cells>1 && cap>32,"row-publication diagnostic geometry");
+    const auto original_table=table;table[1]=table[0];dt.put(table);
+    invoke();(void)guarded();immutable();table=original_table;dt.put(table);
+    // Duplicate IDs fill the first tile; a distinct ID appears ONLY in the
+    // later partial tile. Poison each side separately to check both early
+    // sticky diagnostics and the next-row publication path.
+    const auto original_ids=ids;
+    for (int b=0;b<queries;++b) {
+      std::fill(ids.begin()+size_t(b)*cap,ids.begin()+size_t(b+1)*cap,0);
+      ids[size_t(b+1)*cap-1]=1;
+    }
+    di.put(ids);invoke();(void)guarded();immutable();
+    for (int invalid_cell : {0,1}) for (bool key : {false,true}) {
+      auto &scales=key ? ks : vs;auto &device=key ? dks : dvs;
+      const auto saved=scales;
+      for (int head=0;head<KV;++head) {
+        const size_t row=(size_t(table[0])*KV+head)*Page+invalid_cell;
+        scales[row*4]=0x7c00;
+      }
+      device.put(scales);invoke();const auto diagnostic=guarded();
+      for (size_t i=16;i<diagnostic.size()-16;++i)
+        require(std::isnan(load_bf16(diagnostic[i])),"first/later-tile invalid scale diagnostic");
+      immutable();scales=saved;device.put(scales);
+      invoke();const auto finite=guarded();
+      for (size_t i=16;i<finite.size()-16;++i)
+        require(std::isfinite(load_bf16(finite[i])),"diagnostic clears on next call");
+      immutable();
+    }
+    ids=original_ids;di.put(ids);invoke();require(guarded()==y,"restore original selection");immutable();
+    std::cout<<"case explicit_duplicate_ids=PASS aliased_physical_pages=PASS first_later_KV_diagnostics=PASS status=PASS\n";
+#endif
     const auto saved_table=table;std::fill(table.begin(),table.end(),-1);dt.put(table);invoke();
     auto z=guarded();for (size_t i=16;i<z.size()-16;++i) require(z[i]==0,"all missing pages zero");immutable();
     table=saved_table;dt.put(table);

@@ -165,7 +165,14 @@
       "requested_local_payload_bytes": 28224,
       "proof": "Initial Q/state barrier publishes first row IDs. All current row readers finish before V/P publication. PV reads only kv/probability/alpha; next IDs can be written during PV and published by its existing final barrier, which still protects V-to-K reuse.",
       "numerics": "Unchanged online update and DPAS order; per-thread diagnostic ORs reduce after all tiles.",
-      "qualification": "Pending source review, compile, traced smoke, full component exact bits and rotated timing. Production dispatch unchanged."
+      "qualification": "Pending source review, compile, traced smoke, full component exact bits and rotated timing. Production dispatch unchanged.",
+      "source_review": {
+        "report_sha256": "15019fb2e6aeea70eabcef5577ddbcf4df23c63cc43b7b32adf97ea82e8489c3",
+        "review_sha256": "a51c866eb4683d54093169d6c2418868b3133461cf796b0e96fb990cf5c8712a",
+        "source_sha256": "0f70c6caf55829f301af3ac97d21d0cedfdf05d237f7a63d421909878e8981df",
+        "verdict": "Independent Orca Luna review plus native Luna-max review found no source-ordering blocker. This is not runtime or adoption proof.",
+        "required_gate_corrections": "Add explicit duplicate IDs, two logical pages aliasing one physical page, and first-/later-tile-only K/V invalid scales with recovery; implemented in maintained fixture, pending build/execution."
+      }
     }
   },
   "gdn_runtime_contract_review": {
