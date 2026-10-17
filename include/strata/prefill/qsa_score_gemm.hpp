@@ -9,6 +9,9 @@ class Gemm;
 namespace qsa_score_gemm {
 
 bool requested(); // Immutable preexec STRATA_SYCL_PREFILL_SCORE_GEMM=0|1; default0.
+// Allocation/submission-free capability check. The engine calls this at scope
+// admission, before any persistent KV/indexer state can be modified.
+void validate_device(void *stream);
 
 struct Scratch {
   uint16_t *pooled_fp16 = nullptr; // [round_up(max_blocks,64),128]

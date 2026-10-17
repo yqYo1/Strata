@@ -95,6 +95,11 @@ scorer only inside the long layer-major lease. Default0 retains the existing
 scorer. Chunk8192, at most256 selection queries and the owning session's block
 capacity are required; `STRATA_SELECT_OLD` must be absent. The dedicated short
 prefill and decode routes do not allocate or use this workspace.
+The explicit opt-in rejects unsupported Level Zero/FP16/SG32 devices, geometry
+or arena topology before this request starts model work. It does not silently
+switch arithmetic after KV/indexer state has been updated; leave the flag at0
+to select the existing path. The direct API repeats its device check before
+submitting its own work.
 
 This changes completed-block operand rounding. The dead-key FP32 tree and
 partial-tail bonus remain unchanged. The private component experiment passed

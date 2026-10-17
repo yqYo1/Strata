@@ -59,6 +59,9 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         err = "prefill MoE window: old chunk census does not describe window GEMM jobs"; return false;
     }
     const bool score_gemm_on = qsa_score_gemm::requested();
+    // This explicit opt-in is fail-closed at admission. Do not discover an
+    // unsupported device after projections/KV/indexer have updated state.
+    if (score_gemm_on) qsa_score_gemm::validate_device(m.cs);
     if (score_gemm_on && (m.T != 8192 || m.sel_batch <= 0 || m.sel_batch > 256 ||
                          m.max_blocks != ss.max_cells / 4 + 2 ||
                          std::getenv("STRATA_SELECT_OLD"))) {

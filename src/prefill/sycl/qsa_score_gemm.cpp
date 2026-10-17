@@ -35,6 +35,20 @@ bool requested() {
   }();
   return value;
 }
+void validate_device(void *stream) {
+  if (!stream)
+    throw std::invalid_argument("QSA score GEMM needs an explicit stream");
+  auto &queue = sycl_backend::queue_for(stream);
+  const auto device = queue.get_device();
+  const auto subgroups = device.get_info<sycl::info::device::sub_group_sizes>();
+  if (!device.is_gpu() ||
+      queue.get_backend() != sycl::backend::ext_oneapi_level_zero ||
+      !device.has(sycl::aspect::fp16) ||
+      device.get_info<sycl::info::device::max_work_group_size>() < 32 ||
+      device.get_info<sycl::info::device::max_work_item_sizes<1>>()[0] < 32 ||
+      std::find(subgroups.begin(), subgroups.end(), 32) == subgroups.end())
+    throw std::invalid_argument("QSA score GEMM needs Level Zero FP16 GPU with SG32");
+}
 namespace {
 struct Layout { size_t pooled, query, heads, bytes; };
 Layout layout(int64_t nq, int64_t blocks, int64_t tile) {
@@ -78,11 +92,8 @@ void scores(Gemm &gemm, const float *pooled, const float *dead,
       shape.idx_n_head != 4 || shape.idx_dim != 128 || shape.idx_block != 4 ||
       s.tile_blocks <= 0 || s.tile_blocks > 8192 || s.tile_blocks % 64)
     throw std::invalid_argument("invalid QSA score GEMM geometry/owner");
+  validate_device(stream);
   auto &queue = queue_for(stream);
-  if (!queue.get_device().is_gpu() ||
-      queue.get_backend() != sycl::backend::ext_oneapi_level_zero ||
-      !queue.get_device().has(sycl::aspect::fp16))
-    throw std::invalid_argument("QSA score GEMM needs Level Zero FP16 GPU");
   const int64_t padded = (active + 63) / 64 * 64;
   validate_spans({{output, checked_count(nq, blocks) * 4},
                   {s.pooled_fp16, checked_count(padded, 128) * 2},

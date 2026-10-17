@@ -5379,6 +5379,18 @@
           "action": "Keep the typed block-2D route first. If its target qualification fails, evaluate a bounded scalar epilogue before considering the extra conversion pass."
         }
       ]
+    },
+    {
+      "round": 1039,
+      "model": "gpt-6-luna",
+      "classification": "decision_support",
+      "read_only": true,
+      "path": "research-round1039-v1.txt",
+      "sha256": "268376db423b7c53ccc0863807d5bf39f4fe94866db4da0ffca57304aff43f2b",
+      "review_path": "research-round1040-review-v1.txt",
+      "review_sha256": "2f07ad5175e47e1963c8810cd1c2fbc482f9a7fdc88da3319285a820a6d5083e",
+      "index_proposal_path": "research-round1040-index-proposal-v1.json",
+      "status": "attn_h lifetime, full reservation and sticky status owner order confirmed. Main resolves late capability finding by allocation/submission-free validation at admission; explicit opt-in remains fail-closed before model work. Current model/API runtime unqualified."
     }
   ],
   "main_initial_findings": [
@@ -10020,6 +10032,19 @@
       "bytes": 3416,
       "sha256": "05740ed61ee9857c4503ffb85b846bd0fbc23f3d903bcc1cc55a46fad310d537"
     },
-    "next": "Long-prefill-only opt-in integration with Qf dead-region reuse, separately owned sticky status, checked lease retirement, invalid-status injection then actual-model quality/performance gates. No production default adoption yet."
+    "next": "Long-prefill-only opt-in integration borrows future attn_h output, preserves live Qf, independently owns sticky status and validates device before model state updates. Actual API then model quality/performance gates; default remains off."
+  },
+  "research_review_round1040": {
+    "review": {
+      "path": "research-round1040-review-v1.txt",
+      "sha256": "2f07ad5175e47e1963c8810cd1c2fbc482f9a7fdc88da3319285a820a6d5083e",
+      "bytes": 4358
+    },
+    "index_proposal": {
+      "path": "research-round1040-index-proposal-v1.json",
+      "sha256": "579c51027dcdd7547d9aac67c8131d549680a5a74640974442547593e63691a1"
+    },
+    "main_read_policy": "Short operational digest and index metadata only; full bodies not automatically read.",
+    "main_resolution": "Pre-model fail-closed admission explicit in source-v2; no unsafe mid-pass fallback. Actual API/negative/status/context tests next."
   }
 }
