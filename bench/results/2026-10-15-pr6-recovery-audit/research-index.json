@@ -4685,6 +4685,66 @@
         "R982-C1",
         "R982-C2"
       ]
+    },
+    {
+      "round": 984,
+      "path": "research-round984-v1.txt",
+      "sha256": "4c05bec882e4cbc89c05673c54324a617be966b5dc3afbb449b8553ff4f933f3",
+      "bytes": 8486,
+      "classification": "decision_support",
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "status": "Native R987 reviewed; original body unread by Main.",
+      "retrieval": {
+        "hold_body_for_Main": false,
+        "retrieve_when": "Use the BF16 early-admission correction if generalizing this route to another device or changing its capability/resource preflight; no extra report retrieval is needed for the current B570 model diagnostic.",
+        "sections": [
+          "Selection, prefix admission, allocation and lifetime",
+          "Preflight matrix element type"
+        ],
+        "tags": [
+          "QSA",
+          "subgroup route",
+          "BF16 matrix admission",
+          "prefix lease",
+          "CMake fixture"
+        ]
+      },
+      "review_path": "research-review-round987-v1.json"
+    },
+    {
+      "round": 985,
+      "path": "research-round985-v1.txt",
+      "sha256": "ee96d013e099d9ccbe84411eae3c096d2a31f933ee1605112d40fc05cab84b12",
+      "bytes": 16342,
+      "classification": "knowledge_collection",
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "status": "Native R987 reviewed; original body unread by Main.",
+      "retrieval": {
+        "hold_body_for_Main": true,
+        "schedulable_now": false,
+        "retrieve_when": "Close the current QSA model cohort, establish a concrete MoE bottleneck, then use the observed exact-M/format/reuse census to select a bounded screen.",
+        "evidence_state": "R977 supplies aggregate M=1..15 counts but not exact-M or cross-chunk reuse distributions; no alternative has hardware qualification."
+      },
+      "review_path": "research-review-round987-v1.json"
+    },
+    {
+      "round": 986,
+      "path": "research-round986-v1.txt",
+      "sha256": "3297d8282dbd91d13005f84f9f2b0bdf73de4b03c45888fb9bf435fe9c280db3",
+      "bytes": 16994,
+      "classification": "knowledge_collection",
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "status": "Native R987 reviewed; original body unread by Main.",
+      "retrieval": {
+        "hold_body_for_Main": true,
+        "schedulable_now": false,
+        "retrieve_when": "A current-engine GPU census measures exact query-row selector overlap and QSA attention is selected after the current subgroup model evidence.",
+        "evidence_state": "No Strata learned-ID overlap, B570 SLM/sector result or query-group timing exists in the reviewed evidence."
+      },
+      "review_path": "research-review-round987-v1.json"
     }
   ],
   "main_initial_findings": [
@@ -7050,12 +7110,12 @@
     "main_reconciliation": "research-review-round953-main-reconciliation-v1.json"
   },
   "current_main_boundary": {
-    "recorded_utc": "2026-10-17T08:24:52.594273+00:00",
+    "recorded_utc": "2026-10-17T08:31:18.498095+00:00",
     "goal": "Dedicated long prefill repeated>600 then1000tok/s; eventual decode70. Not achieved.",
     "current_model_comparison": "Actual39K clean six-process MoE baseline452.0/464.1/464.1 vs window2 candidate491.7/491.8/490.8; candidate median491.7tok/s. 24 output tokens are not sustained decode evidence.",
     "current_component_comparison": "QSA subgroup same-binary synthetic8192query/2051selected/physical32768: median333.3182415->322.3369095ms across3 fresh processes per arm, 3.29455% latency reduction. All60 samples and fault/numerical gates preserved.",
-    "changes": "Actual opt-in QSA source f685b16a on existing child, fresh127-step engine build and actual CMake GPU smoke/11-case qualification PASS; real39K diagnostic launched.",
-    "next": "Complete fresh build, traced actual CMake fixture, actual model diagnostic, then six-process clean model comparison.",
+    "changes": "Actual opt-in QSA sourcef685b16a; fresh engine + actual CMake GPU gates + actual39K model diagnostic allPASS. Native R987 reviewed new3 reports without Main loading originals. Source remains frozen for comparison.",
+    "next": "Close running6-process same-new-binary optimized/subgroup clean39K model cohort.",
     "previous_goal_turn": "Progress: actual matched MoE model cohort and private QSA build/GPU qualification.",
     "this_goal_turn": "Progress: executed/closed6QSAprocesses; selected candidate and implemented actual engine path; fresh build active; R980-982 indexed after nativeR983, fresh Orca research984-986 actual input accepted.",
     "default_sync_PR": "https://github.com/yqYo1/Strata/pull/36",
@@ -7787,10 +7847,10 @@
     "fixture_recipe": "run_qsa_rowmajor_subgroup_v1.py",
     "source_review": "qsa-rowmajor-subgroup-source-review-v1.json",
     "source_review_sha256": "1abfe92a253bc53885d670e29467cc095a79df7ee53f6546d37c3aaa5b54b17e",
-    "status": "Actual fresh127-step engine build, CMake subgroup smoke and11-case component allPASS; actual39K model diagnostic is running. No model speed/adoption claim.",
+    "status": "Actual build/smoke/11-case and39K model diagnostic PASS, normal exits/owner/fault closure. R987 completed; six-process clean same-binary model comparison running.",
     "schedulable_now": false,
     "next_owner": "Main",
-    "next_action": "Close actual39K model diagnostic, native review of research984-986, then matched clean model cohort.",
+    "next_action": "Close actual matched clean model cohort, assess performance, then select next concrete bottleneck/implementation; no source changes or new research while it runs.",
     "build_receipt": {
       "path": "qsa-rowmajor-subgroup-build-v1.json",
       "sha256": "d2c01366531c0c8908483d9a713cf74c45df6d1ff0fa4b64ced3f44b4797ec7a",
@@ -7815,7 +7875,12 @@
     "source_worktree": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window",
     "engine_build_receipt": "qsa-rowmajor-subgroup-engine-build-v1.json",
     "engine_binary_sha256": "24ea1edf88570c456df2364594662c1f77e8b7bae0db8c17e981cfffe0bfbad9",
-    "engine_component_receipt": "own-qsa-rowmajor-subgroup-engine-component-v1.json"
+    "engine_component_receipt": "own-qsa-rowmajor-subgroup-engine-component-v1.json",
+    "diagnostic_cohort": {
+      "path": "qsa-subgroup-engine-model-diagnostic-cohort-v1.json",
+      "sha256": "41c321ac7773aa24dd317c7a726b8cd5936dd6b235d4fed4a435f9da7bac2dfb",
+      "bytes": 135165
+    }
   },
   "research_review_round983": {
     "path": "research-review-round983-v1.json",
@@ -7878,7 +7943,7 @@
   "research_wave984_986_current": {
     "metadata": "orca-subgroup-followup-wave984-986-v1.json",
     "live_provider_observation": "orca-subgroup-followup-wave984-986-live-v1.json",
-    "status": "Three actual codex/gpt-6-luna workers input-accepted and working; source-only, no steering.",
+    "status": "All3 succeeded, released, deliveries acknowledged and native R987 review complete. Main original bodies remain held.",
     "reports_held_by_main": true,
     "native_review_required_after_completion": true,
     "workers": [
@@ -7900,6 +7965,60 @@
         "dispatch_id": "ctx_cb5632367b9e",
         "terminal": "term_28cf8851-cf2d-48f3-8374-d58af028ab97"
       }
-    ]
+    ],
+    "settlement": {
+      "path": "orca-subgroup-followup-wave984-986-settlement-v1.json",
+      "sha256": "81a45cbad7da522e4ba30952a1c11e141545db320d58e828acd12c6713557b91",
+      "bytes": 3295
+    }
+  },
+  "research_review_round987": {
+    "path": "research-review-round987-v1.json",
+    "sha256": "ad200792bff57709012d29eb9859f2057d51f376d07f6a6538ce033ad1ce54a2",
+    "bytes": 17783,
+    "digest": {
+      "path": "research-review-round987-v1.ja.md",
+      "sha256": "e206c7c9d433b15f632af4410bb62317e138de994683f81c73fbbbb85cf1b22b",
+      "bytes": 1325
+    },
+    "status": "accepted_with_scoped_corrections",
+    "main_original_report_bodies_read": false,
+    "main_read": "Short digest and conditional/retrieval metadata only.",
+    "historical_conditional_scope_eligibility": [
+      {
+        "scope": "Same-new-binary 39K optimized/subgroup clean model cohort",
+        "classification": "Main-owned serialized measurement, not research dispatch",
+        "schedulable_now": false,
+        "prerequisite": "Close the current 39K diagnostic successfully and retain its oracle/fault/owner evidence; this review does not assert its outcome.",
+        "evidence_state": "The exact engine source/build pins, actual CMake smoke and 11-case component gates are closed; model diagnostic remains outside this review."
+      },
+      {
+        "scope": "Generic BF16 capability preflight follow-through",
+        "classification": "Main-owned source follow-through, not research dispatch",
+        "schedulable_now": false,
+        "prerequisite": "Another device class is in supported scope or the early capability-gate contract is being changed.",
+        "evidence_state": "Current B570 subgroup execution passes; the static FP16/BF16 tuple mismatch remains a generic cross-device admission gap."
+      },
+      {
+        "scope": "Small-M long-prefill MoE screen (R985 body held)",
+        "classification": "Main-owned component selection; not new research",
+        "schedulable_now": false,
+        "prerequisite": "Close the current QSA model cohort, establish a concrete MoE bottleneck, then use the observed exact-M/format/reuse census to select a bounded screen.",
+        "evidence_state": "R977 supplies aggregate M=1..15 counts but not exact-M or cross-chunk reuse distributions; no alternative has hardware qualification."
+      },
+      {
+        "scope": "Cross-query selected-KV reuse (R986 body held)",
+        "classification": "Knowledge collection retrieval only unless a concrete Main question emerges",
+        "schedulable_now": false,
+        "prerequisite": "A current-engine GPU census measures exact query-row selector overlap and QSA attention is selected after the current subgroup model evidence.",
+        "evidence_state": "No Strata learned-ID overlap, B570 SLM/sector result or query-group timing exists in the reviewed evidence."
+      }
+    ],
+    "main_diagnostic_reconciliation": {
+      "path": "research-round987-main-reconciliation-v1.json",
+      "sha256": "5d17c30a62692c44cb7550833f8212d7b778c751a09a6b42c49da97d9bad1cf2",
+      "bytes": 1641
+    },
+    "new_research_recommended": false
   }
 }
