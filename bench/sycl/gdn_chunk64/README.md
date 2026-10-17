@@ -62,7 +62,10 @@ faults. Conv output differences against the CPU formula were zero; history,
 guards, inputs, rejection, repeat, split conv and aligned conv/carry handoff
 passed. At source `68e58db6`, those cases plus 8192 also passed the shared arena
 reuse and partial-call relayout, with zero conv CPU-formula differences and no
-new faults. This is component safety evidence, not framework/model qualification.
+new faults. The lifetime-sharing layout at `ed1a9693` also passed all these cases,
+including the exact disjoint/aliased pair comparison, partial-alias rejection and
+rejection before conv history mutation. This is component safety evidence, not
+framework/model qualification.
 It reads BF16 projected QKV,
 retains existing FP32 conv history, accumulates conv/SiLU locally in FP32,
 rounds the activation to BF16, then normalizes Q/K with FP32 local reductions
@@ -88,9 +91,9 @@ buffers, with exact state/output/history and outer guards. The 8192 arena is
 1,467,486,720 bytes for the original disjoint layout, excluding external
 state/history, weights, KV, residuals and GEMM scratch. That layout made model
 setup shrink chunk8192 to6144 and fail the existing MoE-window admission, with
-no GPU fault. The new lifetime-sharing layout is pending requalification; the
-fixture requires it to fit the existing 1,180,698,624-byte legacy GDN reservation
-at8192. These synthetic copies are test setup,
+no GPU fault. The lifetime-sharing layout passed requalification at
+1,148,718,848 bytes (about1.070 GiB), fitting the existing
+1,180,698,624-byte legacy GDN reservation at8192. These synthetic copies are test setup,
 not transfers or host arithmetic in the inference path.
 
 `python3 tools/sycl/build_engine.py` builds the current comparison engine after

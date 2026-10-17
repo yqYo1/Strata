@@ -1,5 +1,5 @@
 {
-  "source_commit": "68e58db68d49d628698a74bfc7bc6dcd7a46a6e5",
+  "source_commit": "ed1a969368ef3aa8cf11ab6dd51639f7cb0ee162",
   "runtime_archive": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-score-gemm-entry-engine-build-v2/build/libstrata_sycl_runtime.a",
     "sha256": "ba34c7d19cf30499c215e86289a921461b9ac426df6f73f61c6769b65d8ee573",
@@ -45,7 +45,7 @@
     "-o",
     "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current/sycl_gdn_chunk64"
   ],
-  "binary_sha256": "34eb70f4757318808664fb2ed4b596beae951c634e338ed86fccc976c4dfa1c7",
+  "binary_sha256": "22123b71d4c6839e31594ee11c04ec655cc68c1df522ef3f0d735bf552fed7d0",
   "processes_closed": true,
   "ownership_closed": true,
   "smoke": {
@@ -78,8 +78,8 @@
     "observed_runtime_elf_count": 26,
     "GPU_work_admitted": true,
     "case_results": [
-      "case T=1 producer=BF16_projection_conv_L2 oracle=independent_CPU_formula max_BF16_ulp=0 max_abs=0 old_FP32_history=PASS final_FP32_history=PASS guards=PASS inputs=PASS rejection=PASS repeat=PASS conv_split=NA direct_BF16_consumer=PASS arena_bytes=8058368 shared_arena_reuse=PASS arena_relayout=NA aligned_pair_handoff=NA model_quality=UNRUN status=SAFETY_PASS",
-      "case T=3 producer=BF16_projection_conv_L2 oracle=independent_CPU_formula max_BF16_ulp=0 max_abs=0 old_FP32_history=PASS final_FP32_history=PASS guards=PASS inputs=PASS rejection=PASS repeat=PASS conv_split=PASS direct_BF16_consumer=PASS arena_bytes=8150272 shared_arena_reuse=PASS arena_relayout=NA aligned_pair_handoff=NA model_quality=UNRUN status=SAFETY_PASS",
+      "case T=1 producer=BF16_projection_conv_L2 oracle=independent_CPU_formula max_BF16_ulp=0 max_abs=0 old_FP32_history=PASS final_FP32_history=PASS guards=PASS inputs=PASS rejection=PASS repeat=PASS conv_split=NA direct_BF16_consumer=PASS arena_bytes=8024832 shared_arena_reuse=PASS arena_relayout=NA aligned_pair_handoff=NA preconv_rejection=PASS partial_alias_rejection=PASS model_quality=UNRUN status=SAFETY_PASS",
+      "case T=3 producer=BF16_projection_conv_L2 oracle=independent_CPU_formula max_BF16_ulp=0 max_abs=0 old_FP32_history=PASS final_FP32_history=PASS guards=PASS inputs=PASS rejection=PASS repeat=PASS conv_split=PASS direct_BF16_consumer=PASS arena_bytes=8051200 shared_arena_reuse=PASS arena_relayout=NA aligned_pair_handoff=NA preconv_rejection=PASS partial_alias_rejection=PASS model_quality=UNRUN status=SAFETY_PASS",
       "fixture_status=PASS general_numerics=UNRUN long_component=UNRUN model_PP=UNRUN physical262144_model=UNRUN RESTORE=UNRUN faults=EXTERNAL_REQUIRED"
     ],
     "exit_code": 0,
@@ -98,12 +98,12 @@
     "observed_runtime_elf_count": 26,
     "GPU_work_admitted": true,
     "case_results": [
-      "case T=63 producer=BF16_projection_conv_L2 oracle=independent_CPU_formula max_BF16_ulp=0 max_abs=0 old_FP32_history=PASS final_FP32_history=PASS guards=PASS inputs=PASS rejection=PASS repeat=PASS conv_split=PASS direct_BF16_consumer=PASS arena_bytes=11403520 shared_arena_reuse=PASS arena_relayout=NA aligned_pair_handoff=NA model_quality=UNRUN status=SAFETY_PASS",
-      "case T=64 producer=BF16_projection_conv_L2 oracle=independent_CPU_formula max_BF16_ulp=0 max_abs=0 old_FP32_history=PASS final_FP32_history=PASS guards=PASS inputs=PASS rejection=PASS repeat=PASS conv_split=PASS direct_BF16_consumer=PASS arena_bytes=11469312 shared_arena_reuse=PASS arena_relayout=NA aligned_pair_handoff=NA model_quality=UNRUN status=SAFETY_PASS",
-      "case T=65 producer=BF16_projection_conv_L2 oracle=independent_CPU_formula max_BF16_ulp=0 max_abs=0 old_FP32_history=PASS final_FP32_history=PASS guards=PASS inputs=PASS rejection=PASS repeat=PASS conv_split=PASS direct_BF16_consumer=PASS arena_bytes=18998784 shared_arena_reuse=PASS arena_relayout=PASS aligned_pair_handoff=PASS model_quality=UNRUN status=SAFETY_PASS",
-      "case T=127 producer=BF16_projection_conv_L2 oracle=independent_CPU_formula max_BF16_ulp=0 max_abs=0 old_FP32_history=PASS final_FP32_history=PASS guards=PASS inputs=PASS rejection=PASS repeat=PASS conv_split=PASS direct_BF16_consumer=PASS arena_bytes=22868224 shared_arena_reuse=PASS arena_relayout=PASS aligned_pair_handoff=PASS model_quality=UNRUN status=SAFETY_PASS",
-      "case T=128 producer=BF16_projection_conv_L2 oracle=independent_CPU_formula max_BF16_ulp=0 max_abs=0 old_FP32_history=PASS final_FP32_history=PASS guards=PASS inputs=PASS rejection=PASS repeat=PASS conv_split=PASS direct_BF16_consumer=PASS arena_bytes=22934016 shared_arena_reuse=PASS arena_relayout=PASS aligned_pair_handoff=PASS model_quality=UNRUN status=SAFETY_PASS",
-      "case T=129 producer=BF16_projection_conv_L2 oracle=independent_CPU_formula max_BF16_ulp=0 max_abs=0 old_FP32_history=PASS final_FP32_history=PASS guards=PASS inputs=PASS rejection=PASS repeat=PASS conv_split=PASS direct_BF16_consumer=PASS arena_bytes=30221824 shared_arena_reuse=PASS arena_relayout=PASS aligned_pair_handoff=PASS model_quality=UNRUN status=SAFETY_PASS",
+      "case T=63 producer=BF16_projection_conv_L2 oracle=independent_CPU_formula max_BF16_ulp=0 max_abs=0 old_FP32_history=PASS final_FP32_history=PASS guards=PASS inputs=PASS rejection=PASS repeat=PASS conv_split=PASS direct_BF16_consumer=PASS arena_bytes=8945152 shared_arena_reuse=PASS arena_relayout=NA aligned_pair_handoff=NA preconv_rejection=PASS partial_alias_rejection=PASS model_quality=UNRUN status=SAFETY_PASS",
+      "case T=64 producer=BF16_projection_conv_L2 oracle=independent_CPU_formula max_BF16_ulp=0 max_abs=0 old_FP32_history=PASS final_FP32_history=PASS guards=PASS inputs=PASS rejection=PASS repeat=PASS conv_split=PASS direct_BF16_consumer=PASS arena_bytes=8978176 shared_arena_reuse=PASS arena_relayout=NA aligned_pair_handoff=NA preconv_rejection=PASS partial_alias_rejection=PASS model_quality=UNRUN status=SAFETY_PASS",
+      "case T=65 producer=BF16_projection_conv_L2 oracle=independent_CPU_formula max_BF16_ulp=0 max_abs=0 old_FP32_history=PASS final_FP32_history=PASS guards=PASS inputs=PASS rejection=PASS repeat=PASS conv_split=PASS direct_BF16_consumer=PASS arena_bytes=16868096 shared_arena_reuse=PASS arena_relayout=PASS aligned_pair_handoff=PASS preconv_rejection=PASS partial_alias_rejection=PASS model_quality=UNRUN status=SAFETY_PASS",
+      "case T=127 producer=BF16_projection_conv_L2 oracle=independent_CPU_formula max_BF16_ulp=0 max_abs=0 old_FP32_history=PASS final_FP32_history=PASS guards=PASS inputs=PASS rejection=PASS repeat=PASS conv_split=PASS direct_BF16_consumer=PASS arena_bytes=17919488 shared_arena_reuse=PASS arena_relayout=PASS aligned_pair_handoff=PASS preconv_rejection=PASS partial_alias_rejection=PASS model_quality=UNRUN status=SAFETY_PASS",
+      "case T=128 producer=BF16_projection_conv_L2 oracle=independent_CPU_formula max_BF16_ulp=0 max_abs=0 old_FP32_history=PASS final_FP32_history=PASS guards=PASS inputs=PASS rejection=PASS repeat=PASS conv_split=PASS direct_BF16_consumer=PASS arena_bytes=17952512 shared_arena_reuse=PASS arena_relayout=PASS aligned_pair_handoff=PASS preconv_rejection=PASS partial_alias_rejection=PASS model_quality=UNRUN status=SAFETY_PASS",
+      "case T=129 producer=BF16_projection_conv_L2 oracle=independent_CPU_formula max_BF16_ulp=0 max_abs=0 old_FP32_history=PASS final_FP32_history=PASS guards=PASS inputs=PASS rejection=PASS repeat=PASS conv_split=PASS direct_BF16_consumer=PASS arena_bytes=25711360 shared_arena_reuse=PASS arena_relayout=PASS aligned_pair_handoff=PASS preconv_rejection=PASS partial_alias_rejection=PASS model_quality=UNRUN status=SAFETY_PASS",
       "fixture_status=PASS general_numerics=UNRUN long_component=UNRUN model_PP=UNRUN physical262144_model=UNRUN RESTORE=UNRUN faults=EXTERNAL_REQUIRED"
     ],
     "exit_code": 0,
@@ -122,7 +122,7 @@
     "observed_runtime_elf_count": 26,
     "GPU_work_admitted": true,
     "case_results": [
-      "case T=8192 producer=BF16_projection_conv_L2 oracle=independent_CPU_formula max_BF16_ulp=0 max_abs=0 old_FP32_history=PASS final_FP32_history=PASS guards=PASS inputs=PASS rejection=PASS repeat=PASS conv_split=PASS direct_BF16_consumer=PASS arena_bytes=1467486720 shared_arena_reuse=PASS arena_relayout=PASS aligned_pair_handoff=PASS model_quality=UNRUN status=SAFETY_PASS",
+      "case T=8192 producer=BF16_projection_conv_L2 oracle=independent_CPU_formula max_BF16_ulp=0 max_abs=0 old_FP32_history=PASS final_FP32_history=PASS guards=PASS inputs=PASS rejection=PASS repeat=PASS conv_split=PASS direct_BF16_consumer=PASS arena_bytes=1148718848 shared_arena_reuse=PASS arena_relayout=PASS aligned_pair_handoff=PASS preconv_rejection=PASS partial_alias_rejection=PASS model_quality=UNRUN status=SAFETY_PASS",
       "fixture_status=PASS general_numerics=UNRUN long_component=UNRUN model_PP=UNRUN physical262144_model=UNRUN RESTORE=UNRUN faults=EXTERNAL_REQUIRED"
     ],
     "exit_code": 0,
@@ -197,124 +197,5 @@
   "command": [
     "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current/sycl_gdn_chunk64",
     "--general"
-  ],
-  "retirement": {
-    "state": "retired",
-    "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current",
-    "source_commit": "68e58db68d49d628698a74bfc7bc6dcd7a46a6e5",
-    "verified_project_inputs": 152,
-    "files": [
-      {
-        "path": "cache/producer/neo_compiler_cache/a/c/ac7714a049f488d8.l0_cache",
-        "bytes": 13192,
-        "sha256": "6e0ee1641a810ea9fee6c172c3bcba48db6e41e701990c1685657c7f4d929fd6"
-      },
-      {
-        "path": "cache/producer/neo_compiler_cache/config.file",
-        "bytes": 8,
-        "sha256": "d029580d027e4454a342f935b5aac3c2d7dc083fd9a5b10857d02f60fb0cdffe"
-      },
-      {
-        "path": "cache/producer-large/neo_compiler_cache/a/c/ac7714a049f488d8.l0_cache",
-        "bytes": 13192,
-        "sha256": "6e0ee1641a810ea9fee6c172c3bcba48db6e41e701990c1685657c7f4d929fd6"
-      },
-      {
-        "path": "cache/producer-large/neo_compiler_cache/config.file",
-        "bytes": 8,
-        "sha256": "d029580d027e4454a342f935b5aac3c2d7dc083fd9a5b10857d02f60fb0cdffe"
-      },
-      {
-        "path": "cache/producer-smoke/neo_compiler_cache/a/c/ac7714a049f488d8.l0_cache",
-        "bytes": 13192,
-        "sha256": "6e0ee1641a810ea9fee6c172c3bcba48db6e41e701990c1685657c7f4d929fd6"
-      },
-      {
-        "path": "cache/producer-smoke/neo_compiler_cache/config.file",
-        "bytes": 8,
-        "sha256": "d029580d027e4454a342f935b5aac3c2d7dc083fd9a5b10857d02f60fb0cdffe"
-      },
-      {
-        "path": "owned/boundaries.stderr",
-        "bytes": 460176,
-        "sha256": "353190ca7da7d2dcd873c6b2ca5fbeac990648e9759344dba2bc430b828d5a43"
-      },
-      {
-        "path": "owned/boundaries.stdout",
-        "bytes": 2797,
-        "sha256": "55aef5981331899b2b359756b7b0754e6826eaf02cbfeb2556f47d2adba2ca38"
-      },
-      {
-        "path": "owned/build.stderr",
-        "bytes": 0,
-        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-      },
-      {
-        "path": "owned/build.stdout",
-        "bytes": 0,
-        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-      },
-      {
-        "path": "owned/general.stderr",
-        "bytes": 558054,
-        "sha256": "2c6d7327060858bb81b5777db230dbed889b30bc6677b0c440a220a983b74ead"
-      },
-      {
-        "path": "owned/general.stdout",
-        "bytes": 2083,
-        "sha256": "f245ea894f0dcf4d5a65d0930d86bf0b6ec790da4a13b2a62e4b37eff5743cfd"
-      },
-      {
-        "path": "owned/producer-large.stderr",
-        "bytes": 278358,
-        "sha256": "cf6d52ad1403bc6347a38bcd61f17211dde343f0481dd805d41beb8a0c880a7f"
-      },
-      {
-        "path": "owned/producer-large.stdout",
-        "bytes": 673,
-        "sha256": "110598ee1c7571d22a0dd6ca7ca8faa799539a66cc8ff61d2df6c362eda17104"
-      },
-      {
-        "path": "owned/producer-smoke.stderr",
-        "bytes": 290894,
-        "sha256": "65c1708b6f2c37308ccb36f9672ca7537b4d7d23998def39c98dfc5b7de8329a"
-      },
-      {
-        "path": "owned/producer-smoke.stdout",
-        "bytes": 1023,
-        "sha256": "f1d6a23277242584e780c2eaf6e17660093f07d5d8e02f24fa78effdb6fbab0a"
-      },
-      {
-        "path": "owned/producer.stderr",
-        "bytes": 1199401,
-        "sha256": "ae02f70946fee7d075aa6e944d1df3a4c7a9223bb9812479e1d1dd3fa3de18d7"
-      },
-      {
-        "path": "owned/producer.stdout",
-        "bytes": 2504,
-        "sha256": "dbbf56ca14f918f8bc869f4c7035e85f93338094e0f4b73ae6df25c4728317c8"
-      },
-      {
-        "path": "owned/smoke.stderr",
-        "bytes": 184975,
-        "sha256": "dbd5e20be5cde66506d64ae9bbfe36a0b4ef8f878baae8b7e877c9a7b188b3e7"
-      },
-      {
-        "path": "owned/smoke.stdout",
-        "bytes": 1127,
-        "sha256": "9b1e5a3bd2ce184b1b1476bfae96006d0a1e40486d8100815c9d2ee89bffe1cf"
-      },
-      {
-        "path": "record.json",
-        "bytes": 35304,
-        "sha256": "6ada9beef17fab1ea645b97baf697838f487b04256d3bb0f90f8a3722bf9a32c"
-      },
-      {
-        "path": "sycl_gdn_chunk64",
-        "bytes": 454632,
-        "sha256": "34eb70f4757318808664fb2ed4b596beae951c634e338ed86fccc976c4dfa1c7"
-      }
-    ],
-    "reason": "Closed superseded qualification; source/recipe recovered from Git."
-  }
+  ]
 }

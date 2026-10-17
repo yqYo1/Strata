@@ -33,14 +33,33 @@ def digest(path):
         return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
+def blobs(root, revision, names):
+    """Recover exact Git blobs in bounded batches, without one process per file."""
+    names = list(names)
+    for start in range(0, len(names), 128):
+        batch = names[start:start + 128]
+        guards.require(all('\n' not in n and '\r' not in n for n in batch), 'unsupported source pathname')
+        request = ''.join(revision + ':' + n + '\n' for n in batch).encode()
+        data = subprocess.check_output(['git', '-C', str(root), 'cat-file', '--batch'], input=request)
+        offset = 0
+        for name in batch:
+            end = data.index(b'\n', offset)
+            fields = data[offset:end].split()
+            guards.require(len(fields) == 3 and fields[1] == b'blob', 'unrecoverable source: ' + name)
+            length = int(fields[2]); begin = end + 1; end = begin + length
+            guards.require(length <= 256 << 20 and data[end:end + 1] == b'\n', 'Git blob extent')
+            yield name, data[begin:end]
+            offset = end + 1
+        guards.require(offset == len(data), 'unexpected Git batch output')
+
+
 def pin(root, prefixes):
     revision = git(root, 'rev-parse', 'HEAD').decode().strip()
     paths = git(root, 'ls-files', '-z', '--', *prefixes).decode().strip('\0').split('\0')
     guards.require(paths and all(paths), 'empty source selection')
     pins = {}
-    for name in sorted(paths):
+    for name, data in blobs(root, revision, sorted(paths)):
         path = root / name
-        data = git(root, 'show', revision + ':' + name)
         guards.require(path.read_bytes() == data, 'uncommitted build input: ' + str(path))
         pins[name] = hashlib.sha256(data).hexdigest()
     extras = git(root, 'ls-files', '--others', '--exclude-standard', '-z', '--', *prefixes).decode().split('\0')
@@ -67,9 +86,9 @@ def main():
             guards.require(old['passed'] and old['ownership_closed'] and not old['active'], 'previous build not closed')
             guards.require(digest(old['binary']['path']) == old['binary']['sha256'], 'previous executable changed')
             for source in [old['project'], *old['dependencies']]:
-                for name, expected in source['source_sha256'].items():
-                    data = git(Path(source['root']), 'show', source['revision'] + ':' + name)
-                    guards.require(hashlib.sha256(data).hexdigest() == expected, 'previous inputs not recoverable')
+                for name, data in blobs(Path(source['root']), source['revision'], source['source_sha256']):
+                    guards.require(hashlib.sha256(data).hexdigest() == source['source_sha256'][name],
+                                   'previous inputs not recoverable')
             previous = dict(source_commit=old['source_commit'], binary=old['binary'],
                             reason='Closed unused comparison engine; original source/recipe recovered from Git. '
                                    'Reuse its cache for the immediate corrected build, not a retained old generation.')
