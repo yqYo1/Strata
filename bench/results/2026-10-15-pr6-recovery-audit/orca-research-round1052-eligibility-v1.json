@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "classification": "decision_support",
+  "schedulable_now": true,
+  "prerequisites": {
+    "actual_target": "gdn-target-gguf-metadata-v1.json binds exact loaded GGUF header: qwen4exp,state128,group16,time_step_rank48,inner6144,conv4. Previously missing target head config is now actual metadata, not generic defaults.",
+    "exact_converter": "Local official llama.cpp3cf03257f219afbe7334045ff7c6a06ac68c627d conversion/qwen4exp.py inherits conversion/qwen.py _LinearAttentionVReorderBase; source available now. This does not yet prove that exact converter produced the loaded file.",
+    "remaining_boundary": "Reconcile target V head grouping/weight permutation/state transpose with actual GDN operator and loaded output gate. Not a generic chunk/WY survey."
+  },
+  "source_pins": {
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/gdn-target-gguf-metadata-v1.json": {
+      "bytes": 6170,
+      "sha256": "c991c03ea0bc59641ad19f2b07abde6c88a9bf0d4d8d4a64052808378740237c"
+    },
+    "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/conversion/qwen4exp.py": {
+      "bytes": 8477,
+      "sha256": "12a0a5aea7877fbb8fe35af041a9c34f8b57b05278871b22c24c650b9760dfc3"
+    },
+    "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/conversion/qwen.py": {
+      "bytes": 40770,
+      "sha256": "b783f53598e1a65cb0ef7fbe0d0f52da472e2784f63acf13a5aea00f623cfaa6"
+    },
+    "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/src/models/qwen4exp.cpp": {
+      "bytes": 60259,
+      "sha256": "863b5df1a53dd132ff994f1b44dcd1c88a2eecd4ad4e031817104c67c03139ac"
+    },
+    "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/LICENSE": {
+      "bytes": 1078,
+      "sha256": "94f29bbed6a22c35b992c5c6ebf0e7c92f13b836b90f36f461c9cf2f0f1d010d"
+    },
+    "/home/yayoi/ghq/github.com/sgl-project/sglang/python/sglang/srt/models/qwen4_exp.py": {
+      "bytes": 105162,
+      "sha256": "9b8c9bc511800bbb53603b37bc3198597f778ba1a2b32a8b40fb5ea0212471e7"
+    },
+    "/home/yayoi/ghq/github.com/sgl-project/sglang/python/sglang/srt/models/qwen3_5.py": {
+      "bytes": 121318,
+      "sha256": "ea8d9aa210d4a3f746e247f2d6e877fe312c3bb31b26c68cd560dfb3a74a0786"
+    },
+    "/home/yayoi/ghq/github.com/sgl-project/sglang/python/sglang/srt/models/qwen3_next.py": {
+      "bytes": 46686,
+      "sha256": "1e160562800a308c0409cf4b0633b107689b90e1c360c4b0a8eedbd0aab3515a"
+    },
+    "/home/yayoi/ghq/github.com/sgl-project/sglang/LICENSE": {
+      "bytes": 11346,
+      "sha256": "1495e1e757ef4d0925a2350563cf5754bb23c51701a8ec4fb3c5cdcbedae6747"
+    },
+    "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/fused_gdn.cpp": {
+      "bytes": 12960,
+      "sha256": "70abf4fd1359477a2e170b54f2172ba148a2ae21306e8145e070ebd0db7d995f"
+    }
+  },
+  "revisions": {
+    "llama.cpp": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+    "SGLang": "877be2974aa151a984e52822c028276c2b1e9303"
+  },
+  "limits": "GGUF header contains no explicit output_gate_type and no precise converter commit; retain uncertainty, do not infer all defaults match. No runtime qualification."
+}

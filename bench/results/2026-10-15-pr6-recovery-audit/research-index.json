@@ -5611,6 +5611,64 @@
         "research-round1044-index-proposal-v1.json: main_owned_results.qsa64_decision; main_owned_results.qsa16_decision; next_scope_eligibility; source_provenance",
         "research-index.json: $.reports[] where round==1043; $.research_review_round1044; $.qsa_gemm_resource_profile_current; $.qsa_softmax_actual_entry_next; $.qsa_score_gemm_entry_model_current"
       ]
+    },
+    {
+      "round": 1052,
+      "model": "gpt-6-luna",
+      "classification": "decision_support",
+      "read_only": true,
+      "path": "research-round1052-v1.txt",
+      "bytes": 9181,
+      "sha256": "9153c76395640fe544435b79f0d9312f02a739480ff3faed01d1b63864b8294d",
+      "review_path": "research-round1053-review-v1.txt",
+      "review_sha256": "e2545aa97ccd87e24940d8b4370dfe632df11174634ce4335d71e238c03252b8",
+      "index_proposal_path": "research-round1053-index-proposal-v1.json",
+      "status": "accepted_with_focused_corrections; decision support only; no implementation, numeric adoption, runtime, performance or artifact-layout qualification",
+      "main_body_read": false,
+      "main_body_read_on_arrival": false,
+      "retrieval_sections": [
+        "Findings and corrections",
+        "Actionable same-input route"
+      ],
+      "corrections": {
+        "layout": "Confirmed source convention: l=16*(s mod 3)+floor(s/3), inverse s=3*(l mod 16)+floor(l/16). R1053-C1 clarifies 2D dt_proj's last-axis branch and target vector params. Loaded IQ3_S metadata proves geometry only, not converter transform.",
+        "state": "Retain R1049-C1 transpose: SGLang[s,v,r]=Strata[r,l,v] with conditional head gather.",
+        "activation": "Qwen config at immutable revision expects sigmoid; generic SGLang RMSNormGated defaults swish when output_gate_type is absent. Exact GGUF config/converter identity remains unavailable.",
+        "precision": "R1053-C2 records BF16 activations with FP32 gates/carry in source-selected SGLang path and current Strata FP32 operands/state plus FP16 output copy. Runtime environment may override SGLang state dtypes.",
+        "decision": "No runtime, inference, model-quality, speed, artifact layout, converter provenance or physical-context adoption claim. No full-model exact-token gate."
+      }
+    },
+    {
+      "round": 1054,
+      "model": "gpt-6-luna",
+      "classification": "decision_support",
+      "read_only": true,
+      "path": "research-round1054-v1.txt",
+      "bytes": 7397,
+      "sha256": "d80d0a58eda4635cf53dc36a64867ed57098144a6b9fa72856bffc8be57f24f5",
+      "review_path": "research-round1055-review-v1.txt",
+      "review_sha256": "2415364017b5043a9ef153817e670f175f5b039d378d93d3d80ae102b1172e8e",
+      "index_proposal_path": "research-round1055-index-proposal-v1.json",
+      "status": {
+        "verdict": "source_contract_passes_with_integration_note",
+        "compiled": false,
+        "gpu_executed": false,
+        "adoption": false,
+        "main_owns_all_execution": true,
+        "operational_digest": "The 32/256, 36/256, 32/260, 36/260 and 40/264 variants satisfy the pinned BMG BF16 stride/base-alignment constraints; all QK/PV addresses fit the exact typed shared-tile extents, producers, barriers, and score-33 local-memory admission. The 36/260 candidate is source-reviewable, while bank effects, physical transactions, compiler lowering, occupancy and speed remain unknown. Proceed only through Main-owned compile, fault, full-bit component, then conditional real-model gates; no pitch result or adoption is established.",
+        "integration_note": "The new pitch entry point is declared manually in the candidate fixture sources and is not added to the public header."
+      },
+      "main_body_read": false,
+      "main_body_read_on_arrival": false,
+      "retrieval_tags": [
+        "qsa-bf16-slm-row-pitch",
+        "qsa-bf16-k-pitch-36-v-pitch-260",
+        "bmg-matrix-load-stride-alignment",
+        "qsa-kv-shared-tile-extent-and-reuse",
+        "no-pitch-performance-result",
+        "no-b570-bank-or-occupancy-claim",
+        "no-xestrata-implementation"
+      ]
     }
   ],
   "main_initial_findings": [
@@ -7978,7 +8036,7 @@
   "current_main_boundary": {
     "prior_goal_turn_classification": "progress",
     "prior_evidence": "Closed current serial/subgroup real-model cohorts and exact attention service binding changed next selected boundary. OpenCode default test was a separate user-requested task and is already complete.",
-    "current_goal_turn_evidence": "K producer schedule implementation in immutable own proposal, qualified compiled products,6oracle processes+2full-bit/timing processes closed;54large-query timing samples;actual GGUF target metadata extracted;research1048/1050 reviewed and new1052 source audit done. No product default changed.",
+    "current_goal_turn_evidence": "Two independent source-controlled QSA memory-schedule studies:20GPU processes closed normally/freshfault0;144large-query timing samples across both studies, all50331648outputs equal percall;48tiny timing samples; individual oracle/safety samples preserved. Native source reviews1049/1051/1053/1055 complete. No new full-model/default speed claim.",
     "prefill_target_tps": 1000,
     "decode_target_tps": 70,
     "goal_achieved": false,
@@ -7988,7 +8046,8 @@
     "baseline_decode_short_probe_tps": 14.1,
     "sustained_decode_qualified": false,
     "physical262144_RESTORE_qualified": false,
-    "next_main": "Evaluate row-major K/V SLM row-pitch change under legal matrix stride/alignment, using current independent oracle/full-bit fixtures, then meaningful long model comparison. Prepare current-contract GDN chunk/state validation from reviewed source mapping; no old private packed retry."
+    "next_main": "First obtain exact currently dominant prefix kernel native code/resource evidence (DPAS versus scalar, GRF/spill, actual SLM including dynamic args; do not treat source payload or kernel time as saturation). Use pinned safe NEO/LevelZero/ocloc mechanism, immutable preexec settings, bounded dedicated directory, existing qualified actual-entry fixture. Independently implement same post-conv GDN fixture in gdn-current-contract-next-v1.ja.md; Main serializes every GPU/build/test/cleanup. Goal remains1000prefill/70decode and incomplete.",
+    "latest_completed_default_boundary": "PR55 merged d7d040b35e93bb7e85538b4e2890c494562bb677; ghq default mirror pulled clean and primary history synchronized."
   },
   "research_review_round955": {
     "review_path": "research-review-round955-v1.json",
@@ -10440,11 +10499,85 @@
       "inner": 6144,
       "conv": 4
     },
-    "source_only_followup": "R1052 awaiting native R1053 review; no implementation adoption. Exact original converter/config identity remains an explicit limit."
+    "source_only_followup": "R1052 accepted by native R1053 with layout/precision corrections. Same post-convolution inputs and current head order permit recurrence optimization without waiting for original converter provenance; separate tagged loader/layout gate retained. No implementation adoption."
   },
   "qsa_kstaging_softmax_model_retention": {
     "path": "qsa-kstaging-softmax-model-retention-v2.json",
     "bytes": 117675,
     "sha256": "7b21e85f711e2e917ebd48c83e682b98127694db576a6640ebd2bf9318ebc3da"
+  },
+  "research_review_round1053": {
+    "review": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round1053-review-v1.txt",
+      "bytes": 6714,
+      "sha256": "e2545aa97ccd87e24940d8b4370dfe632df11174634ce4335d71e238c03252b8"
+    },
+    "index_proposal": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round1053-index-proposal-v1.json",
+      "bytes": 13148,
+      "sha256": "3c0b7d2740f4b418cf6a74daddbe14a5f2fae16919620f5d09a0fbd82200a255"
+    },
+    "relocation": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round1053-artifact-relocation-v1.json",
+      "bytes": 1568,
+      "sha256": "571a2ff9035363b95468bb7d3825f4aca8d3d2e1f4104a9802bd5b91b0a947cc"
+    },
+    "main_read_policy": "Operational digest/index metadata only; original decision-support body unread.",
+    "main_action": {
+      "next_step": "Main-owned bounded same-input recurrence fixture using post-convolution Q/K/V, g, beta, z, gamma and nonzero FP32 state; compare candidate and current local kernel against the pinned SGLang Qwen4Exp chunk path with the immutable sigmoid config and explicit dtype/transposition boundaries.",
+      "provenance_dependency": "Do not block recurrence optimization on historical GGUF conversion provenance if candidate preserves the current loaded input order. Resolve that provenance separately before changing V-weight/head layout.",
+      "fixture_outline": "Define deterministic source-grouped SGLang arrays; derive the Strata tiled view with l=16*j+k for V/Z/g/beta/state, leave Q/K/gamma unchanged, and transpose state as S[s,v,r]=L[r,l,v]. Use BF16 Q/K/V, FP32 gate/beta/state, sigmoid; test T=63,64,65,127,128,129 plus candidate C boundaries. Replay one bounded live Strata recurrence-boundary capture through local baseline/candidate.",
+      "next_research": {
+        "schedulable_now": false,
+        "dispatch_performed": false,
+        "reason": "The current gap is a Main-owned fixture and implementation decision; source research cannot recover the missing artifact converter receipt or replace same-input execution."
+      }
+    }
+  },
+  "research_review_round1055": {
+    "review": {
+      "path": "research-round1055-review-v1.txt",
+      "bytes": 5871,
+      "sha256": "2415364017b5043a9ef153817e670f175f5b039d378d93d3d80ae102b1172e8e"
+    },
+    "index_proposal": {
+      "path": "research-round1055-index-proposal-v1.json",
+      "bytes": 8379,
+      "sha256": "91057e172ca0e83141e2a404386f10c91b5026cc6dcd20d8a06e6be555e467e3"
+    },
+    "main_read_policy": "Operational digest/index metadata only; original report body unread.",
+    "main_action": "No source contract defect found in exact five isolated pitch variants. Public header integration is deferred because this is a fixture snapshot, not the product API. Build has since passed and Main owns the sequential GPU oracle/component tests; source review alone is not runtime qualification."
+  },
+  "qsa_kpitch_current": {
+    "proposal": {
+      "path": "own-qsa-kpitch-v1/manifest.json",
+      "sha256": "eb454d61388df2a4924f9b1b03bc73cbc252d62567ad2417bd918772fded2f0a"
+    },
+    "build": {
+      "path": "own-qsa-kpitch-build-v1.json",
+      "bytes": 353601,
+      "sha256": "9ed650cf65ef80ad0a103944618c20e0d72a6353a1e3ee50801e8aa514373e67"
+    },
+    "source_admission": {
+      "path": "qsa-kpitch-source-admission-v1.json",
+      "bytes": 11679,
+      "sha256": "1b9d487be5cd8cca54f7dd485a381a0c0d44356329fdab1c65c0b22c3f6ececa"
+    },
+    "product_source_changed": false,
+    "adoption": false,
+    "state": "Closed: all5schedule smoke/component and tiny/full-bit timing gates passed; all12GPU processes normal, freshfault0. Source-only snapshot status is not rewritten. No product source/default adoption.",
+    "comparison": {
+      "path": "qsa-kpitch-component-comparison-v1.json",
+      "bytes": 48381,
+      "sha256": "0f496884b1d8c5219c6a0611f9cbdd0e6edb0bf5484c85ffb00bf5c646bedfb2"
+    },
+    "report": "qsa-kpitch-results-v1.ja.md",
+    "decision": "K36/V256 only0.79percent(gather)/0.66percent(clustered) faster; other small paddings mixed/no gain;40/264 approximately60percent slower. No whole-model speed extrapolation. Investigate actual native DPAS/GRF/SLM realization before more memory-layout guessing."
+  },
+  "gdn_current_contract_next": "gdn-current-contract-next-v1.ja.md; actual post-conv same-input recurrence fixture can proceed without original converter provenance if current input/head order is preserved. Layout-changing loader fixture remains separately gated.",
+  "qsa_kpitch_retention": {
+    "path": "qsa-kpitch-retention-v1.json",
+    "bytes": 107852,
+    "sha256": "2dae640d2f30d82c3609ff71d9463d55a42c7b1d94f5f59655687c2e0a84337e"
   }
 }

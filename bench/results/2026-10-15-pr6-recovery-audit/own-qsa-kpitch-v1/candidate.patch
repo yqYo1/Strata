@@ -1,0 +1,55 @@
+--- /home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_bf16_prefix.cpp
++++ /home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-qsa-kpitch-v1/candidate.cpp
+@@ -42,2 +42,4 @@
+-template<int ScoreStride> constexpr size_t LocalPayload =
+-    (16 * Dim + Cells * Dim + 16 * Cells) * 2
++template<int KPitch, int VPitch> constexpr int KvElements =
++    Dim * KPitch > Cells * VPitch ? Dim * KPitch : Cells * VPitch;
++template<int ScoreStride, int KPitch = Cells, int VPitch = Dim> constexpr size_t LocalPayload =
++    (16 * Dim + KvElements<KPitch, VPitch> + 16 * Cells) * 2
+@@ -69 +71,2 @@
+-template<int ScoreStride, bool TilePacked = false, bool SubgroupSoftmax = false>
++template<int ScoreStride, bool TilePacked = false, bool SubgroupSoftmax = false,
++         int KPitch = Cells, int VPitch = Dim>
+@@ -75,0 +79,5 @@
++  static_assert(KPitch >= Cells && VPitch >= Dim);
++  static_assert(KPitch * sizeof(BFloat) % 8 == 0 && VPitch * sizeof(BFloat) % 8 == 0);
++  static_assert(KPitch * sizeof(BFloat) <= (1 << 24) && VPitch * sizeof(BFloat) <= (1 << 24));
++  static_assert(!TilePacked || (KPitch == Cells && VPitch == Dim));
++  static_assert(storage_contract<KvElements<KPitch, VPitch>>());
+@@ -84 +92 @@
+-  if (!matrix_available(queue.get_device(), LocalPayload<ScoreStride>)) return false;
++  if (!matrix_available(queue.get_device(), LocalPayload<ScoreStride, KPitch, VPitch>)) return false;
+@@ -140 +148 @@
+-    sycl::local_accessor<MatrixTile<Cells * Dim>, 1> kvstorage(1, handler);
++    sycl::local_accessor<MatrixTile<KvElements<KPitch, VPitch>>, 1> kvstorage(1, handler);
+@@ -211 +219 @@
+-          else kv[i] = sycl::bit_cast<BFloat>(bits);
++          else kv[d * KPitch + cell] = sycl::bit_cast<BFloat>(bits);
+@@ -225 +233 @@
+-              mx::joint_matrix_load(sg, b, kv + d * Cells + cell, Cells);
++              mx::joint_matrix_load(sg, b, kv + d * KPitch + cell, KPitch);
+@@ -293 +301 @@
+-          else kv[i] = sycl::bit_cast<BFloat>(bits);
++          else kv[cell * VPitch + d] = sycl::bit_cast<BFloat>(bits);
+@@ -308 +316 @@
+-              mx::joint_matrix_load(sg, b, kv + c * Dim + dim_base + j * 16, Dim);
++              mx::joint_matrix_load(sg, b, kv + c * VPitch + dim_base + j * 16, VPitch);
+@@ -362,0 +371,17 @@
++// Main-owned experimental row pitch; no producer ownership or arithmetic change.
++bool qsa_bf16_prefix_pitch_batch(const uint16_t *query, const QsaAttnPools &pools,
++    const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
++    uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
++    int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream, int variant) {
++  if (variant == 0) return qsa_bf16_prefix_optimized_batch(query, pools, ids, steps,
++      cap, shape, output, queries, bounds, live_cells, scratch, stream);
++  if (variant == 1) return prefix_batch_impl<Cells + 1, false, false, 36, 256>(query,
++      pools, ids, steps, cap, shape, output, queries, bounds, live_cells, scratch, stream);
++  if (variant == 2) return prefix_batch_impl<Cells + 1, false, false, 32, 260>(query,
++      pools, ids, steps, cap, shape, output, queries, bounds, live_cells, scratch, stream);
++  if (variant == 3) return prefix_batch_impl<Cells + 1, false, false, 36, 260>(query,
++      pools, ids, steps, cap, shape, output, queries, bounds, live_cells, scratch, stream);
++  if (variant == 4) return prefix_batch_impl<Cells + 1, false, false, 40, 264>(query,
++      pools, ids, steps, cap, shape, output, queries, bounds, live_cells, scratch, stream);
++  throw std::invalid_argument("experimental pitch variant must be0through4");
++}
