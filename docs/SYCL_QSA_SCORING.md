@@ -155,3 +155,11 @@ the report review's default-fixture observation does not cover both targets.
 First checks use tracing/validation; full component checks use parameter
 validation. The shared lock and owned process budgets serialize every run.
 These component tests do not establish full-model context, quality or speed.
+After they pass, `tools/sycl/bench_engine.py prepare qsa-check` pins a traced
+32K model check of direct decoding; commit its plan before `run qsa-check`.
+Clean `qsa-base` and `qsa-direct` modes then run four matched64K-or-longer
+requests each, changing only the operand selector. They keep chunk64 GDN off
+and use the same binary, flags, workload hashes, thinking and24-token output
+cap. Current evidence is `qsa-attention-model-current.json`; archive each
+completed arm in Git before preparing another arm. This is a prefill screen,
+not sustained-generation or model-quality adoption evidence.

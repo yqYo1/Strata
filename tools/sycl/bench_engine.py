@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare/commit/run one official bench.sh native-GDN comparison; Main only."""
+"""Prepare/commit/run a matched official bench.sh GDN or QSA comparison; Main only."""
 import fcntl
 import hashlib
 import json
@@ -29,10 +29,16 @@ def digest(path):
 
 
 def main():
+    modes = ('check', 'base', 'candidate', 'qsa-check', 'qsa-base', 'qsa-direct')
     guards.require(len(sys.argv) == 3 and sys.argv[1] in ('prepare', 'run') and
-                   sys.argv[2] in ('check', 'base', 'candidate'), 'use prepare|run check|base|candidate')
+                   sys.argv[2] in modes, 'use prepare|run ' + '|'.join(modes))
     action, mode = sys.argv[1:]
-    root = B / ('native-gdn-model-' + mode + '-v2')
+    qsa = mode.startswith('qsa-')
+    check = mode in ('check', 'qsa-check')
+    chunk64 = mode in ('check', 'candidate')
+    root = B / (('qsa-attention-model-' + mode[4:] + '-v1') if qsa else
+                ('native-gdn-model-' + mode + '-v2'))
+    result_path = A / 'qsa-attention-model-current.json' if qsa else RESULT
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         reference = json.loads(BASE.read_text())
@@ -60,13 +66,16 @@ def main():
                                                       'STRATA_MEASUREMENT_ENGINE_START', 'STRATA_MEASUREMENT_ENGINE_EXIT'):
                     del env[key]
             settings = json.loads(SETTINGS.read_text())
-            if mode == 'check':
+            if check:
                 env.update({k: v for k, v in settings['environment'].items() if k.startswith('UR_LOG_')})
                 env.update(UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION', STRATA_TRACE='1')
             env.update(PATH='/home/yayoi/.local/share/strata-sycl/venv/bin:' + env['PATH'],
                        TMPDIR=str(root / 'tmp'), XDG_CACHE_HOME=str(root / 'cache'),
                        STRATA_MEASUREMENT_ROOT=str(root), ZES_ENABLE_SYSMAN='0',
-                       STRATA_SYCL_PREFILL_GDN_CHUNK64='0' if mode == 'base' else '1')
+                       STRATA_SYCL_PREFILL_GDN_CHUNK64='1' if chunk64 else '0')
+            if qsa:
+                env['STRATA_SYCL_PREFILL_QSA_MATH'] = (
+                    'bf16' if mode in ('qsa-check', 'qsa-direct') else 'bf16-prefix-optimized')
             config = dict(reference['config'])
             flags = list(config['args'])
             flags[flags.index('--expert-profile') + 1] = str(root / 'expert-profile.bin')
@@ -77,8 +86,8 @@ def main():
             config_path = root / 'config.json'
             config_path.write_text(json.dumps(config, indent=2) + '\n')
             command = ['/bin/sh', str(P / 'bench.sh'), '--config', str(config_path), '--port', str(port),
-                       '--runs', '1' if mode == 'check' else '4', '--prefill-only', '--prefill-tokens',
-                       '32768' if mode == 'check' else '65536', '--workload-id', 'native_gdn_20261018',
+                       '--runs', '1' if check else '4', '--prefill-only', '--prefill-tokens',
+                       '32768' if check else '65536', '--workload-id', 'native_gdn_20261018',
                        '--think', '--fail-fast-engine-error', '--ready-timeout', '600', '--out', str(root / 'bench')]
             revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=P, text=True).strip()
             files = subprocess.check_output(['git', 'ls-files', '-z', '--', 'serve', 'tools', 'bench.sh'], cwd=P).decode().strip('\0').split('\0')
@@ -99,12 +108,12 @@ def main():
             compact = {k: v for k, v in plan.items() if k != 'source_sha256'}
             compact['source_count'] = len(pins)
             compact['source_aggregate_sha256'] = hashlib.sha256(json.dumps(pins, sort_keys=True).encode()).hexdigest()
-            RESULT.write_text(json.dumps(compact, indent=2) + '\n')
-            print('Prepared exact inputs. Commit native-gdn-model-current.json before run ' + mode)
+            result_path.write_text(json.dumps(compact, indent=2) + '\n')
+            print('Prepared exact inputs. Commit ' + result_path.name + ' before run ' + mode)
             return 0
-        record = json.loads(RESULT.read_text())
-        committed = subprocess.check_output(['git', 'show', 'HEAD:' + str(RESULT.relative_to(P))], cwd=P)
-        guards.require(committed == RESULT.read_bytes() and record['mode'] == mode and not record['complete'],
+        record = json.loads(result_path.read_text())
+        committed = subprocess.check_output(['git', 'show', 'HEAD:' + str(result_path.relative_to(P))], cwd=P)
+        guards.require(committed == result_path.read_bytes() and record['mode'] == mode and not record['complete'],
                        'commit a fresh matching plan before launch')
         plan = json.loads((root / 'plan.json').read_text())
         guards.require(all(record.get(k) == v for k, v in plan.items() if k != 'source_sha256'),
@@ -138,7 +147,7 @@ def main():
         owner = supervision.Owner(root / 'owned', persist)
         try:
             entry, out, err = owner.run('bench', plan['command'], plan['environment'], P,
-                wall=900 if mode == 'check' else 1800, cpu=21600, rss_cap=96 << 30,
+                wall=900 if check else 1800, cpu=21600, rss_cap=96 << 30,
                 text_cap=64 << 20, file_cap=64 << 20, total_cap=64 << 20)
             record.update(complete=supervision.closed(entry), exit_code=entry.get('exit_code'))
             results = list((root / 'bench').glob('*/results.json'))
@@ -157,11 +166,17 @@ def main():
             record['native_identity'] = end['native']
             record['route_selection'] = [x for x in log.splitlines() if x.startswith('[gdn-chunk64]')]
             guards.require(end['binary'] == plan['binary'] and end['exit_code'] == 0, 'native engine exit')
-            guards.require(len(requests) == (1 if mode == 'check' else 4) and suite['complete'] and
+            guards.require(len(requests) == (1 if check else 4) and suite['complete'] and
                            not suite['results']['failures'], 'incomplete suite')
             guards.require(all(q['ok'] and q['eligible'] and q['stream_complete'] and q['thinking_requested'] and
                                q['actual_reused_tokens'] == 0 for q in requests), 'ineligible samples')
-            guards.require(bool(record['route_selection']) == (mode != 'base'), 'wrong GDN route')
+            guards.require(bool(record['route_selection']) == chunk64, 'wrong GDN route')
+            if qsa:
+                record['qsa_route'] = [x for x in log.splitlines() if x.startswith(
+                    'strata prefill: QSA BF16 operands, FP32 online state/accumulation;')]
+                expected = 'KV=active-logical-prefix' if mode == 'qsa-base' else 'KV=on-the-fly'
+                guards.require(record['qsa_route'] and all(expected in x for x in record['qsa_route']),
+                               'wrong QSA operand route')
             guards.require(not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|retirement failed|Strata SYCL cleanup:', log), 'runtime failure')
             record['passed'] = bool(record['complete'] and entry.get('exit_code') == 0)
         except BaseException as error:
@@ -179,7 +194,7 @@ def main():
                 record['passed'] = False
             record['passed'] = bool(record['passed'] and record['ownership_closed'] and record['boot_unchanged'] and not record['fresh_faults'])
             persist()
-            RESULT.write_text(json.dumps(record, indent=2) + '\n')
+            result_path.write_text(json.dumps(record, indent=2) + '\n')
         print(json.dumps({k: record.get(k) for k in ('mode', 'complete', 'passed', 'ownership_closed', 'error', 'route_selection')}))
         return 0 if record['passed'] else 1
 
