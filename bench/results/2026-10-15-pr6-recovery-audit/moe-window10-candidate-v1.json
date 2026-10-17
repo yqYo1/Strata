@@ -1,0 +1,62 @@
+{
+  "schema": "strata-moe-window10-source-proposal-v1",
+  "recorded_at": "2026-10-17T12:36:54.792438+00:00",
+  "base_commit": "c05c2545d90fb3bedcfff51400919977b6c276ca",
+  "authorship": "Main independently authored extension of own Strata code; no XeStrata or external source used.",
+  "patch": {
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/moe-window10-candidate-v1.patch",
+    "sha256": "eef7de363b2ad67b8c2d041f260dadb95aae0020d388939a8f0b55a894a6ec25",
+    "bytes": 7049
+  },
+  "source_pins": {
+    "include/strata/prefill/moe_window_routes.hpp": {
+      "base_sha256": "62abedecd553ababefcdabc4c549d75844f848027516293ed028a46fce617379",
+      "candidate_sha256": "ba707fa42eb2c5518f659faac1a44b0c591f196e2408c272ec27c63840533019"
+    },
+    "src/prefill/prefill.cpp": {
+      "base_sha256": "dd9b4006c66d37cac67990319619092c7e324d700dcfb15329c0ec5c27f80726",
+      "candidate_sha256": "820d6196779edfdd147a846766088443b8585b4fc72022276763b889594e23c8"
+    },
+    "src/prefill/layer_major.inc": {
+      "base_sha256": "10ab4b8783b19d2cf2b713b25668446c63dbe228aef901e43855b2f8555b5f37",
+      "candidate_sha256": "d909480f6b7542afc0498d9b8c1e41a1b381a80a94790e87f392d5e2d8687168"
+    },
+    "src/prefill/moe_window.inc": {
+      "base_sha256": "f5890674d872daa6a485e4cc42afe98ed5ab3bd577ed6720b4df34b8a2974f1f",
+      "candidate_sha256": "604ee75328474781416a098ba5997ed68c1cd8a2a30bcc0d061f1e764b24c7d2"
+    },
+    "tests/moe_accum_routes.cpp": {
+      "base_sha256": "31962979062b15c3c6b05d738eb396f4658e3f76e476592a2f972f6f33695289",
+      "candidate_sha256": "81fd92e3ae9f24ed82822838918f4d093832008f944cac8dbb5bc78e41288928"
+    },
+    "tests/sycl/moe_accum.cpp": {
+      "base_sha256": "733d12dbbec19b64baac39f71f64b21899e5550b3d0d282d9904f2e9c0ae2ec1",
+      "candidate_sha256": "24e649e5e64136b9fedbe29bc356b5abb9d179dd1290bceb1b63685346a825ef"
+    }
+  },
+  "applied": false,
+  "GPU_executed": false,
+  "performance_adopted": false,
+  "purpose": "Next Main experiment after active window2/8 clean cohort closes. New opt-in mode10 caps window at81920 while mode0/2/8 and8192 operator limits remain. No source/build/test/GPU mutation during active cohort.",
+  "capacity": {
+    "maximum_rows": 81920,
+    "maximum_mixed_bytes": 419430400,
+    "actual78452_mixed_bytes": 401674240,
+    "GPU_headroom_bytes": 536870912,
+    "metadata_reservation_bytes": 16777216
+  },
+  "gates": [
+    "Wait for authoritative clean-cohort completion/owner closure; preserve all six original receipts.",
+    "Apply only if all base file hashes match. Review full patch and commit source before compilation.",
+    "CPU route Release/UBSan expanded shapes and original planner; explicit81921 refusal.",
+    "Fresh strict fixture compile, traced smoke thenhot81920/balanced81920/partial78452 full output+guards.",
+    "Fresh full engine build with exact compile/source pins; old64K mode8 and mode10 same binary model diagnostics with nofallback, native normalexit/fault checks.",
+    "Clean samebinary repeated measurements if diagnostic supports improvement; numerical/state/physical262144 and RESTORE qualification remain separate."
+  ],
+  "admission_evidence": "New bounded stderr line records actual arena/free/prefix/fixed/mixed bytes before allocation; no resource-use percentage inferred.",
+  "archival_whitespace_review": {
+    "moe-window10-candidate-v1.patch": "One single-space context line is valid unified-diff syntax; preserve patch/source hashes.",
+    "research-round1016-review-v1.txt": "Reviewer original has one blank line at EOF; preserve original hash.",
+    "remaining_staged_files": "git diff --cached --check must pass."
+  }
+}

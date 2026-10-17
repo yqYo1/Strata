@@ -4961,6 +4961,134 @@
       "model": "gpt-6-luna",
       "read_only": true,
       "review_path": "research-round1012-review-v1.txt"
+    },
+    {
+      "round": 1013,
+      "classification": "decision_support",
+      "title": "QSA BF16 prefix workgroup ownership, SLM and matrix-work accounting",
+      "path": "research-round1013-v1.txt",
+      "sha256": "acc8fd532a8ac68a5d513b95591630425a5900b0e04f6178d9b562660b0ef3d2",
+      "bytes": 14597,
+      "spec_path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round1013-spec-v1.txt",
+      "spec_sha256": "6a1c55c65be1db27160f7165462fb55399fbafe1e343c08eeb49b6484c4b4e15",
+      "review_status": "accepted_with_scope_caveats",
+      "correction_ids": [],
+      "scope_depth_review": "Substantive source-specific workgroup, SLM, barrier and matrix-operation accounting; compares current row-major path with already existing subgroup and tile-packed paths, and bounds claims with prior comparison and profile gates. Does not claim implementation or device utilization.",
+      "redundancy_review": "Updates R568 (5201cc7899477d1f57793678f4033bc23180aedd94d5f0f2badab9ce3cb02358), R605 (a86280b15503eedcac57fb52ae08a93d596a52e8875e0f191d8fbc10c6487be2), and R954/R955 subgroup review (R954 cf3d39c909004e954035648ceb9a2dd9854bd537182566de34eb4ebabeea5ca4; R955 c181db87527a7509be605c3b505bc311d0995722edb34a1cfc487d196e06c93a). Novel value is exact mapping/footprint accounting; no new candidate should be treated as accepted.",
+      "retrieval": {
+        "hold_body_for_main": true,
+        "retrieve_when": "A new source/build receipt identifies the active selector and a current same-path profile makes QSA ownership, matrix lowering, SLM, softmax or barriers a concrete decision.",
+        "sections": [
+          "active selector and workgroup mapping",
+          "SLM/barrier accounting",
+          "candidate comparison",
+          "profile and correctness gates"
+        ],
+        "adoption_prerequisites": [
+          "source/build/runtime selector identity",
+          "component and whole-dependency path attribution",
+          "numerical and malformed-ID checks",
+          "padded-head and physical-262144-context gates",
+          "fresh repeated measurement"
+        ]
+      },
+      "spec": {
+        "path": "orca-research-round1013-spec-v1.txt",
+        "sha256": "6a1c55c65be1db27160f7165462fb55399fbafe1e343c08eeb49b6484c4b4e15"
+      },
+      "source_pin_manifest": "orca-research-wave1013-1015-v1.json"
+    },
+    {
+      "round": 1014,
+      "classification": "decision_support",
+      "title": "Expert-major MoE window capacity and 81,920-row reachability",
+      "path": "research-round1014-v1.txt",
+      "sha256": "c957490474d92d95afa3c7ff19a7503ded3cbc2c1f291da917dc9e4239749b4c",
+      "bytes": 15916,
+      "spec_path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round1014-spec-v1.txt",
+      "spec_sha256": "6793398ed05538485d2a2b66151a296502ff33537caac88c64aa180c0ba2d1fa",
+      "review_status": "accepted_with_corrections",
+      "correction_ids": [
+        "R1014-C1",
+        "R1014-C2",
+        "R1014-C3",
+        "R1014-C4",
+        "R1014-C5"
+      ],
+      "corrections": [
+        "R1014-C1: Spec's 401,674,240-byte full-cap mixed-bank arithmetic is actually 78,452 rows; full 81,920 is 419,430,400 bytes. Report corrected this and preserves the 78,453 actual versus 78,452 batched distinction.",
+        "R1014-C2: A capacity-derived maximum must not be rounded down to a full 8,192 multiple if one window must cover 78,452 device rows; distinguish maximum cap, actual rows and final partial piece.",
+        "R1014-C3: Recompute each partial-window arena using every plane's round_up(payload,256)+256 reservation. Formula gives 1,022,996,480 bytes at 78,452 rows, 1,023,006,720 at 78,453, and 1,059,131,904 at 81,920; none proves physical fit.",
+        "R1014-C4: R1012 review correction applies: current mode-2 fallback is for VRAM/headroom admission rejection only. Shared-region planning or later mixed allocation errors fail; they do not retry mode 2.",
+        "R1014-C5: Full 400 MiB reservation is a policy choice, not implied by an 81,920 maximum; current admission sizes count=min(cap,gpu_rows). State the bank reservation policy explicitly."
+      ],
+      "scope_depth_review": "Strong source reachability audit across admission, route factory, operator entrypoint, plan/views, host metadata, async lifetime, callbacks and physical-context tail; supplies an implementation checklist without claiming fit or speed.",
+      "redundancy_review": "Updates the indexed 65,536-row expert-major/accumulator hypothesis and window-route work, including R1011 (b04cb51468b3437528cf1ecc9da70eb206b9270afc58fae08dd7e322a153eeb1) and its R1012 review (f36ded666245ae7c245c4694474e46009248301979bdf69313ecf04d07c6c2be). It adds independent row ceilings and later callback/tail obligations.",
+      "retrieval": {
+        "hold_body_for_main": true,
+        "retrieve_when": "Main selects a cap/admission change and has actual m.region_bytes, post-reservation free VRAM/headroom, mixed-bank reservation policy and GPU-resident row count; retrieve physical-context sections for a window/callback/tail change.",
+        "sections": [
+          "admission and row ceilings",
+          "partial-window capacity arithmetic",
+          "route/status/lease boundaries",
+          "cross-chunk callback and physical-context tail"
+        ],
+        "adoption_prerequisites": [
+          "closed individual-sample comparison",
+          "actual arena and free-VRAM evidence",
+          "explicit fallback/reservation policy",
+          "bounds/status/lease/fault coverage",
+          "physical-262144 and RESTORE correctness",
+          "selected serving-path numerical contract",
+          "repeated clean end-to-end comparison"
+        ]
+      },
+      "spec": {
+        "path": "orca-research-round1014-spec-v1.txt",
+        "sha256": "6793398ed05538485d2a2b66151a296502ff33537caac88c64aa180c0ba2d1fa"
+      },
+      "source_pin_manifest": "orca-research-wave1013-1015-v1.json"
+    },
+    {
+      "round": 1015,
+      "classification": "knowledge_collection",
+      "title": "Reusing sparse K/V operands across query rows and GQA heads",
+      "path": "research-round1015-v1.txt",
+      "sha256": "439ff93e31a8b9ff97a89e5f83620959228c7507d8fd5b1781de8b53e24d1bb6",
+      "bytes": 14632,
+      "spec_path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round1015-spec-v1.txt",
+      "spec_sha256": "2e2ad73c3e2b656da1074436cc9360fe760930f56f31767ada8ab89099816414",
+      "review_status": "accepted_as_held_knowledge_collection_with_scope_correction",
+      "correction_ids": [
+        "R1015-C1"
+      ],
+      "corrections": [
+        "R1015-C1: R986 (SHA 3297d8282dbd91d13005f84f9f2b0bdf73de4b03c45888fb9bf435fe9c280db3) is the closest indexed predecessor, on cross-query selected-KV reuse with the same missing overlap/SLM/query-group evidence and retrieval condition. Record substantial overlap; R1015 is a more concrete source-pinned retrieval entry, not a separate unrelated topic. Do not schedule another broad survey."
+      ],
+      "scope_depth_review": "Substantive bounded literature collection with counterexamples and quantitative illustrations; makes no local overlap, B570 performance or adoption claim. Exact claims are source/version bounded in the report.",
+      "redundancy_review": "Substantially overlaps held R986 on cross-query selected-KV reuse. R1015 adds a pinned current-source mapping and a fuller set of retrieval-oriented design comparisons. It also touches R568 GQA/KV staging, R934 stable reductions, and R1009 grouped scheduling, but should not replace their distinct triggers. R778's separate citation-gap caveat remains.",
+      "retrieval": {
+        "hold_body_for_main": true,
+        "retrieve_when": "A Main-owned same-source census records per-query list lengths and exact selector intersections/union density, and current profiling makes QSA K/V reuse or query-group scheduling a real choice.",
+        "sections": [
+          "same-row GQA operand reuse",
+          "cross-row selector grouping",
+          "split-state reduction",
+          "block/persistent scheduling",
+          "counterexamples and evidence limits"
+        ],
+        "preserve_caveats": [
+          "No target-device overlap or timing was measured.",
+          "Union reuse must preserve per-query selector and causal masks.",
+          "Reduction reassociation needs the selected serving numerical contract.",
+          "R986 remains held and its body is not required unless a specific gap remains."
+        ]
+      },
+      "spec": {
+        "path": "orca-research-round1015-spec-v1.txt",
+        "sha256": "2e2ad73c3e2b656da1074436cc9360fe760930f56f31767ada8ab89099816414"
+      },
+      "source_pin_manifest": "orca-research-wave1013-1015-v1.json"
     }
   ],
   "main_initial_findings": [
@@ -8746,5 +8874,58 @@
     "proposal": "research-round1012-index-proposal-v1.json",
     "Main_reads": "Short reviewer digest and metadata; Main directly inspected the missing DraftUploadGuard definition and current callback ordering.",
     "guard_definition_followup": "moe-accum-engine-lease-main-review-v1.json"
+  },
+  "research_review_round1016": {
+    "review": {
+      "path": "research-round1016-review-v1.txt",
+      "sha256": "51c2fd1771ebd5f48903403444a0f71ed40cff49c4f0c98d3ea783d950924ac0"
+    },
+    "proposal": "research-round1016-index-proposal-v1.json",
+    "reviewed_rounds": [
+      1013,
+      1014,
+      1015
+    ],
+    "Main_reads": "Short operational digest and targeted metadata/corrections only; original bodies held, R1015 collection body not read.",
+    "next_scope_eligibility": [
+      {
+        "scope_id": "r1014_main_owned_cap_decision_after_active_pair_v1",
+        "classification": "Main-owned implementation/measurement; not research dispatch",
+        "schedulable_now": false,
+        "prerequisites": [
+          {
+            "requirement": "Close the active clean window2/8 cohort with individual samples and correctness/fault outcomes.",
+            "evidence_now": "Parent reports the six-sample comparison is active; reviewer did not inspect its process or files."
+          },
+          {
+            "requirement": "Record actual GPU-resident MoE row count, m.region_bytes, post-reservation free VRAM/headroom and mixed-bank reservation policy.",
+            "evidence_now": "The pinned source supplies arithmetic only; no current runtime fit receipt was reviewed."
+          },
+          {
+            "requirement": "Select explicit cap, partial-tail and failure/fallback semantics before editing.",
+            "evidence_now": "R1014's fixed/adaptive policy comparison is source analysis; current fallback is narrower per R1012 review."
+          }
+        ],
+        "recommendation": "After prerequisites close, retrieve R1014 for Main's cap change; do not create a report that only repeats missing capacity facts."
+      },
+      {
+        "scope_id": "r1015_selector_overlap_retrieval_v1",
+        "classification": "Knowledge-collection retrieval; no new research dispatch",
+        "schedulable_now": false,
+        "prerequisites": [
+          {
+            "requirement": "A pinned-engine census measures per-row selected-list length and exact query-row ID overlap/union density.",
+            "evidence_now": "R986 index metadata records no Strata learned-ID overlap, SLM/sector result or query-group timing; R1015 adds no measurement."
+          },
+          {
+            "requirement": "A current source/build profile establishes a material QSA consumer and identifies the scheduling question.",
+            "evidence_now": "The current active window2/8 timing is not evidence of QSA query-group opportunity."
+          }
+        ],
+        "recommendation": "When eligible, retrieve the matching R1015 sections first and consult R986 only for a specific unanswered gap; do not dispatch a duplicate broad survey."
+      }
+    ],
+    "scope_correction": "R1015 substantially overlaps R986; no new broad sparse-attention-reuse survey. Main must supply selector overlap census for retrieval.",
+    "dispatch_recommendation": "No new research scope is recommended now. Main owns the active serialized measurement and any source change."
   }
 }
