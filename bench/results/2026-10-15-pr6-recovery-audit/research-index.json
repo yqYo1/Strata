@@ -5202,6 +5202,20 @@
       "review_path": "research-round1023-review-v1.txt",
       "review_sha256": "dcea71c4dcdaf15adef33b8a0290b90325584999e250dec30dae9410c2687f9d",
       "status": "Source-grounded comparison accepted with applicability and source-pin clarifications; no implementation, measurement, numerical-contract match, or adoption qualification."
+    },
+    {
+      "round": 1024,
+      "model": "gpt-6-luna",
+      "classification": "decision_support",
+      "read_only": true,
+      "path": "research-round1024-v1.txt",
+      "bytes": 10230,
+      "sha256": "1163e2aacbad6160e9546456a52eb0fa10e9f24a431c4a50e8876b5a08669e92",
+      "review_path": "research-round1025-review-v1.txt",
+      "review_bytes": 11267,
+      "review_sha256": "6bdd0b6242287f20a562c4332b537df25ae430855ae5cb7f4804d2e7e08609b8",
+      "source_commit": "b462cd5cf7d9778cdc7cc064ec616ff6a043954c",
+      "status": "Source-grounded FP32 mapping comparison accepted with SLM producer ownership, partial-query tile, and binary contraction clarifications. No implementation, build, test, performance adoption, or full-model qualification."
     }
   ],
   "main_initial_findings": [
@@ -9344,5 +9358,79 @@
     "current_fixture_consumer": "Prospective arithmetic stage-contract/numericalcomparison; retain16cell+observer source/object/binaries, review afterscore/topk measurement.",
     "next_Main_action": "Create private typed/guarded FP32 QSA score/topk stage timing fixture from actualcaller shapes sel_batch256. Current source src/kernels/qsa_select_bench.cpp already has per-stage concept but rawcuda API/nullstream wait and noMaingates; adapt through qualified Runtime+checkedcleanup, actualqsa_block_topk_prefillmapping and CPUsubmit/wait timing. Avoid inference-math changes until stage share measured.",
     "research_GEMM_source_followup": "qsa-score-GEMM-source-followup-v1.json"
+  },
+  "research_review_round1025": {
+    "path": "research-round1025-review-v1.txt",
+    "sha256": "6bdd0b6242287f20a562c4332b537df25ae430855ae5cb7f4804d2e7e08609b8",
+    "index_proposal": "research-round1025-index-proposal-v1.json",
+    "Main_original_body_read": false,
+    "source_followup": "qsa-score-source-contraction-followup-v1.json",
+    "corrections": "Single SLM producer and uniform barrier required; query padding/dead-key selection per row; pin contraction. Register-only Main candidate uses no SLM. 339c1ea1 is a binary hash, not a source commit; source SHA377ad771 matches build+snapshot.",
+    "next_scope_eligibility": [
+      {
+        "scope_id": "main-qsa-register-tile2_4_8-close-before-slm-followup-v1",
+        "classification": "Main-owned implementation/component/GPU evaluation; not research dispatch",
+        "schedulable_now": false,
+        "prerequisites": [
+          {
+            "requirement": "Close the active register-only adjacent-query tile2/4/8 experiment and record exact source/binary/toolchain, codegen/resources, full score and ID parity, guards/faults, and repeated scorer timing.",
+            "evidence_now": "Main's reviewer assignment states that this experiment is active; no result receipt was supplied or reviewed."
+          },
+          {
+            "requirement": "Before another research task, identify one source/document question that the closed experiment and available primary documentation do not answer.",
+            "evidence_now": "R731 already covers the SLM topology; R1024 supplies exact math/bounds with the corrections above. No unresolved independent research question is present yet."
+          }
+        ],
+        "recommendation": "No new research now. Main owns the active register-only experiment and any SLM comparison. Reopen only for a concrete remaining question; otherwise make no assignment.",
+        "expected_outputs": [
+          "Source/binary/compiler pin and codegen/resource evidence",
+          "Exact full-row FP32 score and selected-ID comparison with guards",
+          "Repeated same-input scorer timing, separated from model-path claims"
+        ]
+      }
+    ]
+  },
+  "qsa_score_stage_split_current": {
+    "report": "qsa-select-stage-results-v1.ja.md",
+    "analysis": "qsa-select-stage-analysis-v1.json",
+    "cohort": "qsa-select-stage-cohort-v1.json",
+    "complete": true,
+    "source_SHA256": "377ad7713ebf9af859cd02614871de705a998af3f5f5cf5f551b881a43d29bfa",
+    "conclusion": "Synthetic256-query score share84-87% of isolated score+radix4 sum. SubmitCPU small; wait CPU~wall. No hardware utilization/physical traffic or exact model-phase-share proof."
+  },
+  "qsa_score_querytile_current": {
+    "report": "qsa-score-querytile-results-v1.ja.md",
+    "decision": "qsa-score-querytile-decision-v1.json",
+    "cohort": "qsa-score-querytile-cohort-v1.json",
+    "proposal": "qsa-score-querytile-candidate-v1/proposal.json",
+    "proposed_by": "Main independent implementation; R1024 is parallel read-only research, not author.",
+    "component_passed": true,
+    "production_selected": false,
+    "model_PP_measured": false,
+    "source": "Original repository FP32 scorer, no XeStrata implementation/proposal/helper consulted.",
+    "winner": 8,
+    "score_reduction_percent": {
+      "32768": 16.505768931130028,
+      "78453": 16.942125725799485,
+      "262144": 26.145942598565497
+    },
+    "pair_reduction_percent": {
+      "32768": 14.412045913873527,
+      "78453": 14.60621781036069,
+      "262144": 22.241309618281278
+    },
+    "numerical": "Allscore+ID baseline bits, independent all256row cell oracle, sampled335FP32roundoff, allguards/inputs/repeat pass;18freshprocesses. NofreshGPUfault/dump.",
+    "limits": "Seeded finite synthetic inputs, not model quality/context/RESTORE or sustained decode proof. No measured DRAM/GRF/spill/occupancy; WG count/key reuse are source-level statements.",
+    "next": "Add dedicated-prefill-only opt-in entry preserving public reference/decode/short-prefill, qualify actual entry and whole engine, then official bench.sh comparison.",
+    "retained_consumer": "Current candidate source/binary and production static archives for next engine-entry integration and exact-score comparison.",
+    "goal": "1000PP/70TG remains active; last real model warm4 median652.0PP unchanged."
+  },
+  "retention_qsa_score_stage_v1": {
+    "path": "qsa-score-stage-retention-v1.json",
+    "complete": true,
+    "files_deleted": 345,
+    "logical_bytes_removed": 4465188,
+    "source_review_mirror": "Retired after R1024/R1025 completion; restore the exact b462cd5cf7d9778cdc7cc064ec616ff6a043954c three files from Git using research-qsa-score-layout-round1024-source-pin-v1.json and the deletion manifest.",
+    "preserved": "All independent timing samples and original statuses, source/compiler/runtime/binary pins, owner/fault/guard/oracle records. Current private query-tile source/binary/static archives remain for named next engine integration/parity comparison."
   }
 }

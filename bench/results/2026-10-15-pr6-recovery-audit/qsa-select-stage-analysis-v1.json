@@ -540,7 +540,7 @@
       "score_fraction_of_isolated_stage_sum": 0.8437397428586004
     }
   ],
-  "decision": "Prioritize score mapping/matrix work over top-k; scalar FP32 score owns85-87% of synthetic selection stage sum. CPU submit is small, calling-thread CPU during waits mostly mirrors wall. This is evidence of polling, not evidence of CPU math bottleneck.",
+  "decision": "Prioritize score mapping/matrix work over top-k; scalar FP32 score owns84-87% of synthetic selection stage sum. CPU submit is small, calling-thread CPU during waits mostly mirrors wall. This is evidence of polling, not evidence of CPU math bottleneck.",
   "limits": [
     "Synthetic finite seeded queries/keys, not a real activation trace; cannot directly replace the historical15.8s combined model interval.",
     "Separate drained-stage timings and pair timings include submission/waits; not physical GPU busy, instruction issue, bandwidth counters or DRAM/PCIe bytes.",

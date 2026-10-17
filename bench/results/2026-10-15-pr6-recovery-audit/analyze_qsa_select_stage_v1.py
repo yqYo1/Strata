@@ -26,7 +26,7 @@ for ctx in [32768, 78453, 131072, 262144]:
     rows.append(row)
 record = dict(schema='strata-qsa-select-stage-analysis-v1',
     created_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(), passed=True, rows=rows,
-    decision='Prioritize score mapping/matrix work over top-k; scalar FP32 score owns85-87% of synthetic selection stage sum. CPU submit is small, calling-thread CPU during waits mostly mirrors wall. This is evidence of polling, not evidence of CPU math bottleneck.',
+    decision='Prioritize score mapping/matrix work over top-k; scalar FP32 score owns84-87% of synthetic selection stage sum. CPU submit is small, calling-thread CPU during waits mostly mirrors wall. This is evidence of polling, not evidence of CPU math bottleneck.',
     limits=['Synthetic finite seeded queries/keys, not a real activation trace; cannot directly replace the historical15.8s combined model interval.',
             'Separate drained-stage timings and pair timings include submission/waits; not physical GPU busy, instruction issue, bandwidth counters or DRAM/PCIe bytes.',
             '262144 passes here only for this scorer/selector fixture and guards; full-model262144/RESTORE remain unqualified.',
