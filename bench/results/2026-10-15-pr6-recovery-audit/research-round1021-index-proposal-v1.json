@@ -1,0 +1,158 @@
+{
+  "schema": "strata-research-review-index-proposal-v1",
+  "recorded_utc": "2026-10-17T13:33:17Z",
+  "review": {
+    "path": "research-round1021-review-v1.txt",
+    "sha256": "651978b39da4bcd8c2a7e0a2e8166ec001c5b459d38697fa6ea012765a7ffae0",
+    "bytes": 11226,
+    "reviewed_full_reports": true,
+    "reviewed_exact_specs": true,
+    "read_only_source_audit": true,
+    "build_test_runtime_gpu_profiler_process_service_git_work": false,
+    "main_should_read_original_bodies_now": false,
+    "main_consumption": "Operational digest and eligibility metadata only; hold both original report bodies until a concrete retrieval trigger."
+  },
+  "reviewed_rounds": [
+    {
+      "round": 1019,
+      "classification": "decision_support",
+      "model": "gpt-6-luna",
+      "path": "research-round1019-v1.txt",
+      "sha256": "57a8f1cb6f0f7fb9cdd1aeabf8b5c88e207e472f72e84f5fd5adb96358e7000d",
+      "bytes": 8111,
+      "spec_path": "orca-research-round1019-spec-v1.txt",
+      "spec_sha256": "2da952b8a5b2c61b416c9731bd9051a03099a48faa3285d01b9addd014797301",
+      "spec_bytes": 4017,
+      "source_pin": "f2d0ef42",
+      "source_hashes_verified": {
+        "src/kernels/sycl/qsa_bf16_prefix.cpp": "fa505d02e2b24f7cb6948033921fa697c8aeb58e6f4df6d873f13e5a7918e36b",
+        "include/strata/kernels/qsa_bf16_prefix.hpp": "b114a31b5422fb4ca00eb217a57954188fa4c6b42221876d4fff1144c8494d05"
+      },
+      "reviewer_body_read": true,
+      "main_body_read": false,
+      "status": "Accepted with model-runtime applicability limits; exact 32/64-cell API counts, declared local payload, and no-speed-inference caveats verified.",
+      "corrections": [],
+      "retrieval_trigger": "Main completes the active serialized mode-8/mode-10 cohort and is ready to run the prepared opt-in QSA64 candidate; retrieve only the numerical and gate sections then."
+    },
+    {
+      "round": 1020,
+      "classification": "decision_support",
+      "model": "gpt-6-luna",
+      "path": "research-round1020-v1.txt",
+      "sha256": "bd88a31a388379e0d9b6f9c57f31f8a879c42d5c840ef0fee4e39ea371f9231a",
+      "bytes": 13823,
+      "spec_path": "orca-research-round1020-spec-v1.txt",
+      "spec_sha256": "c3042efc74ddf8a95d19b26eb240a8f8e8c4871f5d537d3b2192ca12508bf67e",
+      "spec_bytes": 3788,
+      "source_pin": "f2d0ef42",
+      "source_hashes_verified": {
+        "src/prefill/layer_major.inc": "10ab4b8783b19d2cf2b713b25668446c63dbe228aef901e43855b2f8555b5f37",
+        "src/core/expert_source.cpp": "fac2d982477f1ba76f202ef8aa0cf88b76b8de41c449e362f7405ddfa4151f2a",
+        "include/strata/core/expert_source.hpp": "cf1462b078e8b373507acd7b2097c67f83438cb25a94e68da95530d0bebc15f2"
+      },
+      "reviewer_body_read": true,
+      "main_body_read": false,
+      "status": "Accepted with correction R1020-C1: the proposed synchronous post-run copy-ahead is safe for slab ownership but has no current GPU tail to overlap because run_impl and callbacks already drain it.",
+      "corrections": ["R1020-C1", "R1020-C2"],
+      "retrieval_trigger": "No retrieval or new research recommended under the current queue/callback ordering. Reopen only if a source change creates a concrete pending GPU tail or an explicit source concurrency/lifetime capability question."
+    }
+  ],
+  "shared_inputs": {
+    "wave_manifest": {
+      "path": "orca-research-wave1019-1020-v1.json",
+      "sha256": "d9e632a08a31db0c77dd0b3e935db58e3094b43ba1f258f0ece61272fe34345e",
+      "bytes": 2288
+    },
+    "pre_review_index": {
+      "path": "research-index.json",
+      "sha256": "b34bdbc8633d484e0b80bf63b416defcade9b27c538919d140985ee5be9a3636",
+      "bytes": 522686
+    },
+    "qsa_main_correction": {
+      "path": "qsa-prefix-matrix-accounting-correction-v1.json",
+      "sha256": "8ed3028a74384360c56f17f674a40a88242300b050853b112d8140f7788e60ea"
+    },
+    "qsa64_candidate_manifest": {
+      "path": "qsa-prefix64-candidate-v1/proposal.json",
+      "sha256": "2e5cd3beaca427ec0506a5bc37c06bfb7fa5d70d40a5698ae70670b864d9d5c0",
+      "qualification": "Unapplied, uncompiled, unexecuted, and not model/RESTORE qualified."
+    },
+    "completed_mode8_mode10_diagnostic": {
+      "path": "moe-window10-first-model-pair-v1.json",
+      "sha256": "19a09b5528b43e4e0615827be107a909461402959ce01a79b28feb09f400ba0e",
+      "use_limit": "Prior completed diagnostic only; do not merge with Main's active four-request cohort or use as candidate qualification."
+    }
+  },
+  "source_order_evidence": {
+    "src/prefill/prefill.cpp": "dd9b4006c66d37cac67990319619092c7e324d700dcfb15329c0ec5c27f80726",
+    "src/prefill/moe_window.inc": "f5890674d872daa6a485e4cc42afe98ed5ab3bd577ed6720b4df34b8a2974f1f",
+    "include/strata/prefill/draft_uploads.hpp": "2d32126e28c67751d14bde6cd46f1db60b92aa3939b17a6f78fd66bc10955908"
+  },
+  "corrections": [
+    {
+      "id": "R1020-C1",
+      "severity": "material applicability correction",
+      "detail": "layer-major requires m.copy == m.cs; run_impl synchronizes the compute/copy queues before return, ordinary non-final chunk callbacks synchronize before callback and drain after residual stores, and the MoE-window route drains its bank/compute work. Post-run copy-ahead can reuse the slab safely but cannot overlap current GPU work in the inspected route.",
+      "action": "Treat option A as no-go unless a future source route proves pending relevant commands at run_impl return; do not spend a new build/GPU run solely on the current placement."
+    },
+    {
+      "id": "R1020-C2",
+      "severity": "reference completeness",
+      "detail": "Add the C++ working draft data-race clause to the existing join/lifetime citations when explaining why join and object lifetime do not imply shared ExpertSource thread safety.",
+      "source": "https://eel.is/c++draft/intro.races"
+    }
+  ],
+  "report_assessment": {
+    "round1019": {
+      "depth": "Adequate for a bounded 64-cell design decision: source geometry, local-memory arithmetic, collective/stride risk, BF16 rounding, bounds, oracle policy, and falsifiable go/no-go gates are covered.",
+      "novelty": "Uses the corrected 32-cell baseline and extends it to a 64-cell opt-in tile; does not repeat cross-query reuse, subgroup-softmax or tile-pack surveys.",
+      "limit": "SGLang/vLLM Qwen3.5 main-branch sources are mutable wiring references, not the exact Qwen3.8-Flash-Next dispatched runtime/numeric contract."
+    },
+    "round1020": {
+      "depth": "Adequate source-lifetime, resolver, slab, error, cancellation, owner, worker, and direct-DMA audit; conservative about unproven performance.",
+      "novelty": "Distinct from earlier matrix/tile and model-cohort reports.",
+      "limit": "Its option-A experiment was left open despite source-visible callback/final drains; use R1020-C1 before considering any work."
+    }
+  },
+  "next_scope_eligibility": [
+    {
+      "scope_id": "main-qsa64-opt-in-qualification-after-clean-cohort-v1",
+      "classification": "Main-owned implementation/build/component/GPU decision; not research dispatch",
+      "schedulable_now": false,
+      "prerequisites": [
+        {
+          "requirement": "Close Main's active serial four-request mode-8 cohort and subsequent mode-10 cohort on the pinned binary, retaining individual throughput, correctness, and fault outcomes.",
+          "evidence_now": "Main handoff reports mode 8 active with early 602.4 and 634.3 tok/s observations, mode 10 next; the cohort is incomplete."
+        },
+        {
+          "requirement": "If the QSA64 candidate is selected for a component comparison, run its fresh opt-in build/fixtures under Main ownership and preserve the 32-cell path; component success must remain separate from model/RESTORE qualification.",
+          "evidence_now": "The candidate manifest says unapplied/uncompiled/unexecuted and all model/RESTORE qualification fields are false."
+        }
+      ],
+      "recommendation": "No new Orca session. After the clean cohort, Main may decide whether to qualify the prepared single-axis tile candidate; do not infer speed or hardware utilization from early cohort samples or static matrix counts."
+    },
+    {
+      "scope_id": "main-upload-overlap-reopen-only-after-ordering-change-v1",
+      "classification": "Main-owned source review/measurement; not research dispatch",
+      "schedulable_now": false,
+      "prerequisites": [
+        {
+          "requirement": "A source-pinned callback route returns with relevant queue work still pending, or another concrete overlap interval is identified.",
+          "evidence_now": "Reviewed current source synchronizes callbacks and queues before run_impl return; no overlap tail remains."
+        },
+        {
+          "requirement": "Any worker proposal states source call concurrency, warm/lookahead interaction, join-on-failure order, and additional thread/TLS RAM within the user's hard memory constraint.",
+          "evidence_now": "The generic source contract provides no such all-source capability; File direct-read may own per-thread scratch."
+        }
+      ],
+      "recommendation": "Reject current post-run copy-ahead; keep worker and pointer-DMA ideas conditional. No extra research or GPU run is eligible now."
+    }
+  ],
+  "dispatch_recommendation": "No new research scope now; Main owns the incomplete serialized cohort and any later candidate build/GPU work.",
+  "main_handoff_boundary": {
+    "binary": "339c1ea17e297ee291461e41f6aa6014985a0cdb2a3ef33783a72660a2ebb406",
+    "actual_prompt_tokens": 78453,
+    "status": "Active four-request clean serial mode-8 cohort; early 602.4 and 634.3 tok/s observations only; mode 10 next.",
+    "inference_limit": "No qualification, JIT attribution, or hardware-utilization inference."
+  }
+}

@@ -458,7 +458,8 @@ int moe_window_requested() {
         if (!v || std::strcmp(v, "0") == 0) return 0;
         if (std::strcmp(v, "2") == 0) return 2;
         if (std::strcmp(v, "8") == 0) return 8;
-        throw std::invalid_argument("STRATA_SYCL_PREFILL_MOE_WINDOW must be 0, 2 or 8");
+        if (std::strcmp(v, "10") == 0) return 10;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_MOE_WINDOW must be 0, 2, 8 or 10");
     }();
     return enabled;
 }

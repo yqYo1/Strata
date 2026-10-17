@@ -259,18 +259,22 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     // FP16 mixed bank only from the remaining budget, retaining 512 MiB.
     int64_t accumulation_rows = 0;
     uint64_t accumulation_bytes = 0;
-    if (window_on && window_requested == 8 && plan.gpu_rows > m.T) {
-        const int64_t count = std::min<int64_t>(65536, plan.gpu_rows);
+    if (window_on && window_requested >= 8 && plan.gpu_rows > m.T) {
+        const int64_t count = std::min<int64_t>(int64_t(window_requested) * m.T, plan.gpu_rows);
         const uint64_t bytes = detail::layer_major_mul(uint64_t(count), N * 2);
         const uint64_t fixed = detail::layer_major_add(gpu_reserved,
             detail::layer_major_add(plan.gpu_bytes, detail::layer_major_add(plan.staging_bytes, gpu_headroom)));
+        std::fprintf(stderr, "strata MoE accumulator admission: requested_mode=%d rows=%lld gpu_prefix_rows=%lld shared_arena_bytes=%llu free_gpu_bytes=%llu fixed_including_headroom_bytes=%llu mixed_fp16_bytes=%llu\n",
+            window_requested, (long long)count, (long long)plan.gpu_rows,
+            (unsigned long long)m.region_bytes, (unsigned long long)free_gpu,
+            (unsigned long long)fixed, (unsigned long long)bytes);
         if (fixed <= free_gpu && bytes <= free_gpu - fixed) {
             (void)detail::MoeAccumPlan::make_contiguous(count, bytes, m.region_bytes);
             accumulation_rows = count; accumulation_bytes = bytes;
         }
     }
-    if (window_on && window_requested == 8 && !accumulation_rows)
-        std::fprintf(stderr, "strata prefill: MoE window8 not admitted by remaining VRAM/GPU-prefix budget; effective_mode=2\n");
+    if (window_on && window_requested >= 8 && !accumulation_rows)
+        std::fprintf(stderr, "strata prefill: MoE window%d not admitted by remaining VRAM/GPU-prefix budget; effective_mode=2\n", window_requested);
     // One owned host upload slab removes every source pointer lease before DMA.
     // Also count the cache's small blocking staging allocation and two maps.
     uint64_t host_need = detail::layer_major_add(plan.host_bytes, cache_bytes);
@@ -504,7 +508,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         if (accumulation_rows) window_context->maximum_rows = accumulation_rows;
         m.moe_window = window_context.get();
         std::fprintf(stderr, "strata MoE window configuration: requested_mode=%d effective_mode=%d maximum_rows=%lld mixed_fp16_bytes=%llu\n",
-            window_requested, accumulation_rows ? 8 : 2, (long long)window_context->maximum_rows,
+            window_requested, accumulation_rows ? window_requested : 2, (long long)window_context->maximum_rows,
             (unsigned long long)accumulation_bytes);
     }
     m.cache = &layer_cache;

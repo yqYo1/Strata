@@ -1,0 +1,53 @@
+{
+  "id": "7e907e16-1979-4dd5-92b4-f9b45d6d633f",
+  "ok": true,
+  "result": {
+    "runId": "run_c8f478972ec8",
+    "deliveryId": "delivery_536cec2f8790",
+    "messages": [
+      {
+        "id": "msg_be2b9f6c14f7",
+        "run_id": "run_c8f478972ec8",
+        "delivery_contract": "current_delivery",
+        "from_handle": "term_db2e195f-4560-4198-b1fc-20d637ddf20c",
+        "to_handle": "run:run_c8f478972ec8",
+        "subject": "R1019 64-cell QSA decision report complete",
+        "body": "Audited the pinned QSA source geometry, declared local-memory arithmetic, BF16 online-softmax behavior, safety gates, and relevant Intel/SGLang/vLLM primary sources. The 64-cell tile is a bounded opt-in experiment candidate, not an adoption recommendation: it can cut long-tile barrier/loop count but doubles declared SLM to 47,936 B/WG, doubles serial softmax width, and changes BF16 probability rounding. Main must measure the isolated same-query 32-vs-64 path and validate framework numerical and physical-context gates; report: bench/results/2026-10-15-pr6-recovery-audit/research-round1019-v1.txt.",
+        "type": "worker_done",
+        "priority": "normal",
+        "thread_id": null,
+        "payload": "{\"taskId\":\"task_50076e8eec71\",\"dispatchId\":\"ctx_bdc9d5e6c3b4\",\"outcome\":\"succeeded\",\"filesModified\":[\"bench/results/2026-10-15-pr6-recovery-audit/research-round1019-v1.txt\"],\"reportPath\":\"bench/results/2026-10-15-pr6-recovery-audit/research-round1019-v1.txt\"}",
+        "created_at": "2026-10-17T13:25:04Z",
+        "delivered_at": null
+      },
+      {
+        "id": "msg_0baea435b0d0",
+        "run_id": "run_c8f478972ec8",
+        "delivery_contract": "current_delivery",
+        "from_handle": "term_c200c546-ffc0-46fe-b456-58b393bd4e5c",
+        "to_handle": "run:run_c8f478972ec8",
+        "subject": "Layer-major upload overlap review complete",
+        "body": "I audited layer-major upload/drain ordering, source implementations, resolver paths, and existing staging/thread ownership, then wrote the bounded decision-support report. Main-thread copy-ahead into the drained slab after run_impl and before the checked pass drain is source-safe without another slab or math change, but available GPU overlap is unmeasured; worker and direct-DMA variants need extra source lifetime/thread-safety capabilities and have unresolved RAM constraints. The report gives required bounds, lifetime, cancellation, failure, and state invariants plus two falsifiable Main gates; no runtime tests or product edits were performed.",
+        "type": "worker_done",
+        "priority": "normal",
+        "thread_id": null,
+        "payload": "{\"taskId\":\"task_20ccca480be7\",\"dispatchId\":\"ctx_f7676ff69b0a\",\"outcome\":\"succeeded\",\"filesModified\":[\"bench/results/2026-10-15-pr6-recovery-audit/research-round1020-v1.txt\"],\"reportPath\":\"bench/results/2026-10-15-pr6-recovery-audit/research-round1020-v1.txt\"}",
+        "created_at": "2026-10-17T13:25:44Z",
+        "delivered_at": null
+      }
+    ],
+    "count": 2,
+    "replayed": true,
+    "acknowledged": null,
+    "timedOut": false,
+    "cancelled": false,
+    "connectionLost": false,
+    "mutation": {
+      "requestId": "fa5bb2c3-dcb6-4bb7-b1b4-9702c51ec611",
+      "replayed": false
+    }
+  },
+  "_meta": {
+    "runtimeId": "e9030fc3-f028-4352-a34d-eb9385c8d79e"
+  }
+}

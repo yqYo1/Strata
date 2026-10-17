@@ -6,7 +6,7 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
     if (!m.moe_window || !m.moe_window->accumulation || !m.native16_active ||
         !m.layer_major_active || m.T != 8192 || m.copy != m.cs || !m.scratch_alias ||
         !m.cache || !m.host_res || layer < 0 || layer >= m.g->n_layers ||
-        rows <= m.T || rows > m.moe_window->maximum_rows || rows > 65536 || first_row < 0) {
+        rows <= m.T || rows > m.moe_window->maximum_rows || rows > detail::MoeAccumPlan::maximum_rows || first_row < 0) {
         err = "prefill MoE accumulator: unsupported entry"; return false;
     }
     auto& owner = *m.moe_window;
