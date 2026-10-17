@@ -1,5 +1,0 @@
-- 判定: R966はソース上の可能性と窓内byte算術を支持するが、実装仕様としては未完。R702の64K FP32設計、R965の全operator 16K拒否に対し、BF16 `Dm`を使いQSA/GDNを8Kのままにする点が新しい。本文は指定上限の1800語。Report SHA-256: `44ab0135…472d892b`。
-- 指定された6つのソースpinは全一致。割当revisionのGit commit metadataは未確認。W=16384のslot-order payload 1,155,137,536 B、MoE region増分53,248,000 B、GDN regionまでの算術余白39,778,816 Bは提示条件で合う。物理fitや速度の証拠ではない。
-- compact MoEの`cnt[e] >= T`は追加前判定なので最終`ne==T`を許す。窓版は両boundsをW基準にすれば`ne==W`も許せる。既存`src_dev + o0`は全窓offsetを指すため、expertごとの再利用ではbaseへ詰め直す必要がある。
-- `R16`と`gated_b16`は8Kの旧FP32 gated領域を二分する。PLEと最終MTP callbackはFP32 `m.R`を使い、MTP fallbackは`m.region`を借りる。16K行をこれらに置かず、row bankの生存期間とMoE終了後のregion解放、2つの8K出力/callback順をMain計画で明示する。
-- 次はMainがrow-bank/alias/callback順を詰め、正確なne/backend census、同一binaryの反復8K対16K全体時間、数値・state・RESTORE・tail・fault検証、物理262144全ownerのGPU/RAM入場を確認する。現在のcensusはforeign CPU benchmark中で未実行。重複調査はdispatchせず`schedulable_now=false`。

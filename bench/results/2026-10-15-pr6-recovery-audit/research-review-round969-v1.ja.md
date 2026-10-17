@@ -1,6 +1,0 @@
-- 判定: 8K operatorのままGPU常駐2-pieceだけMoEを窓化する案はソース上成立する。C++実装仕様は未完で、適用・性能採用はまだ不可。997,820,928 Bのview算術は1,180,698,624 B以下だが、実割当の証明ではない。
-- ホスト結果はv1が配置107・expert job bounds24・拒否13件を18.6ms、v2がsynthetic expert phase18・拒否16件を131.9msでPASS。どちらもC++/GPU/数値/fit/RESTORE/性能を証明しない。
-- 現行`run_layer_major`は層単位で`run_impl`を呼び、`run_impl`は8K pieceごとにattentionとMoE/HCを続けている。`m.T`を16Kへ広げず、元tokens・相対row・絶対位置・層/state ordinalを渡す共有attention-piece／MoE-window境界を明記する。
-- 出力はrow bankへ直接in-place書込みし、途中層は既存`on_chunk16`の再コピーでなく順序cursorだけ進める。BO/injectionは両writeのchecked drainまで保持し、その後に最終bank sliceを8Kずつ`m.R`へ展開してcallback/MTPへ渡す。
-- v2はsynthetic countsとjob総数を検査するが、実ID→expert/source/slot mapやcombine順を作らない。次の契約/テストで全token-slotのroute conservationとdown出力先を検査し、`gather_rows16`呼出元で全W行extentも検証する。
-- 周期checkpointは未解決の採用gateとして維持する。新経路を同一prefixの全層+MTP producer/RESTOREまで接続せず、対象callerでは既存経路を保つか新窓を拒否する。次はMain所有で2-piece GPU windowの実装と限定検証を行い、full 262144 correctness後に性能判断する。新規調査は不要。

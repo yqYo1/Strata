@@ -37,11 +37,17 @@ decodeの実装コードは変えていないが、この測定だけでは差�
 1000 token/sには、この78453 tokenの測定で約28.507秒の追加短縮が必要。
 同じ実行経路のプロファイルでattention本体の120回・37.078秒を
 長大prefillに結び付けたため、次はKのglobalメモリから共有メモリへの
-読み込み順を検証する。カーネル時間はDRAM帯域や演算器の飽和率ではない。
+読み込み順が候補になった。現在はGDN chunk64の独立実装を検証準備中。
+カーネル時間はDRAM帯域や演算器の飽和率ではない。
 
 全サンプル、入力・出力指紋、正確なバイナリ・ソース・起動環境、終了・
 障害確認は[qsa-softmax-actual-model-comparison-v1.json](qsa-softmax-actual-model-comparison-v1.json)と
-その参照する2個の元レシートに保存した。再現は
+起動入力は[qsa-softmax-measurement-inputs-v1.json](qsa-softmax-measurement-inputs-v1.json)、
+ビルド入力は[qsa-score-gemm-entry-engine-build-v2.json](qsa-score-gemm-entry-engine-build-v2.json)。
+2個の元レシートと測定スクリプトは、削除前コミット
+`8063aacc6749d18089f7a53db5d3e47b745f348c`から取得する。476件の
+プロジェクト入力ハッシュがそのコミットの同じパスと一致することを確認した。
+当時の実行コマンドは
 `python3 bench/results/2026-10-15-pr6-recovery-audit/run_qsa_softmax_actual_model_v1.py serial --rep 0 --prefill-tokens 65536`
 および`subgroup --rep 0 --prefill-tokens 65536`。保存先を再利用しないため、再測定時は新しい版の
 レシピを作り、前回のレシートは変更しない。

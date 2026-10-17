@@ -105,7 +105,7 @@ This changes completed-block operand rounding. The dead-key FP32 tree and
 partial-tail bonus remain unchanged. The private component experiment passed
 its documented rounded-input numerical, guard and physical-context component
 checks; those measurements are in
-[the result report](../bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-results-v2.ja.md).
+[the result report](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-results-v2.ja.md).
 They do not establish this integrated path's model quality or throughput.
 
 The scorer borrows the existing `attn_h` reservation during selection. At

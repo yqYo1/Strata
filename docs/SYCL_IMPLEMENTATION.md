@@ -30,7 +30,7 @@ default selection. These variables are read at process startup.
 MMQ and fused expert products use integer SIMD; prompt attention uses Intel
 `joint_matrix` with FP32 scaling and softmax. The ports provide the operations
 without reproducing CUDA-specific instructions or scheduling. Their
-[validation record](../bench/results/2026-10-04-sycl-functional-parity/run.json)
+[validation record](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-functional-parity/run.json)
 and [status report](SYCL_STATUS_2026-10-03.md#single-gpu-feature-ports-2026-10-04)
 state the tested fixtures and numerical limits.
 
@@ -114,7 +114,7 @@ changes have not been measured with new decode medians. The canonical API model 
 `qwen3.8-flash-next-sycl`. The preceding Q2_0 config is saved at
 `~/.local/share/strata-sycl/serve-config-q2_0.json`. Models, logs and local configs
 remain outside Git; reviewed results are in
-[`bench/results/2026-10-03-sycl-iq3s/run.json`](../bench/results/2026-10-03-sycl-iq3s/run.json).
+[`bench/results/2026-10-03-sycl-iq3s/run.json`](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-03-sycl-iq3s/run.json).
 
 ## Measured Q2_0 server configuration (2026-10-03)
 
@@ -176,7 +176,7 @@ the throughput in the table.
 
 Flags, prompts, per-request timings, output hashes, numeric comparisons and
 HTTP check results are summarized in
-[`bench/results/2026-10-03-sycl-mtp-floor/run.json`](../bench/results/2026-10-03-sycl-mtp-floor/run.json).
+[`bench/results/2026-10-03-sycl-mtp-floor/run.json`](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-03-sycl-mtp-floor/run.json).
 Raw execution logs, generated trial files and workstation configs stay outside
 Git; see the [measurement storage policy](../bench/results/README.md).
 The measured Q2_0 config is now saved as
@@ -671,7 +671,7 @@ ids matched the CPU oracle. At position 18, the cached run chose 74455 instead
 of 248045; minimum cosine was 0.10695 and maximum absolute logit difference
 15.31690. Disabling fused GR kept this argmax discrepancy. Its cause remains
 unresolved, so GPU cache model-level numerical validation is not complete.
-[The cache comparison records](../bench/results/2026-10-02-sycl-native-cache/run.json)
+[The cache comparison records](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-02-sycl-native-cache/run.json)
 include prompt ids, configuration, dump hashes and comparison reports. The
 handoff test passed separately for synthetic Q8_0 and Q2_0 experts, including
 nonzero references; maximum CPU differences were 0 and 8.81701e-7 respectively.
@@ -722,7 +722,7 @@ position compared with the CPU reference had cosine 0.994826, RMSE 0.196610,
 and maximum absolute difference 1.154035; both predicted `4`. EOS stopping's
 two rows were bitwise equal to the corresponding prefix of the eight-row run.
 These are limited checks, not numerical equivalence or a broad quality gate.
-[The prefill records](../bench/results/2026-10-02-sycl-prefill/run.json) include
+[The prefill records](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-02-sycl-prefill/run.json) include
 prompt ids, options, dump sizes and hashes, and the complete comparison reports.
 
 ### ESIMD Q5_K output projection
@@ -927,7 +927,7 @@ conclusion; all samples are retained. A separate 32-token cold-cache run
 with 3,038 slots and direct PLE reads retained every float32 logit bit.
 
 Flags, comparison results and raw intervals are in
-[`bench/results/2026-10-03-sycl-q2-xmx/run.json`](../bench/results/2026-10-03-sycl-q2-xmx/run.json).
+[`bench/results/2026-10-03-sycl-q2-xmx/run.json`](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-03-sycl-q2-xmx/run.json).
 
 ### Native graph recording probe
 
@@ -957,7 +957,7 @@ queue before replay passed in both modes. Every logit bit matched in a
 32-token ordinary run and 30 MTP windows/90 rows, including rejected drafts.
 
 The prototype, independent probes, flags, comparisons and all samples are in
-[`bench/results/2026-10-03-sycl-native-recording/run.json`](../bench/results/2026-10-03-sycl-native-recording/run.json).
+[`bench/results/2026-10-03-sycl-native-recording/run.json`](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-03-sycl-native-recording/run.json).
 
 ### Short verifier windows use native recording
 
@@ -1011,7 +1011,7 @@ and replay after destruction of the recording queue. The default also passed
 the real-model OpenAI/Anthropic HTTP checks, complete streaming, repeated
 requests and cancellation recovery. The HTTP server stopped cleanly.
 Flags, memory measurements, comparison summaries and scripts are in
-[`bench/results/2026-10-03-sycl-verifier-native-recording/run.json`](../bench/results/2026-10-03-sycl-verifier-native-recording/run.json).
+[`bench/results/2026-10-03-sycl-verifier-native-recording/run.json`](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-03-sycl-verifier-native-recording/run.json).
 
 ### Captured ordinary post and next route
 
@@ -1053,9 +1053,9 @@ subnormal values, miss-only NaN payloads and an output canary.
 A preceding scalar kernel read all misses directly from host-USM rather than
 using DMA. Its three-pair median was `22.86 -> 22.74 tok/s`; the direct-read
 kernel was replaced. Its raw measurements and prototype are retained in
-[`bench/results/2026-10-03-sycl-post-direct-read/run.json`](../bench/results/2026-10-03-sycl-post-direct-read/run.json).
+[`bench/results/2026-10-03-sycl-post-direct-read/run.json`](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-03-sycl-post-direct-read/run.json).
 The final copy/routing flags and comparison summaries are in
-[`bench/results/2026-10-03-sycl-post-route/run.json`](../bench/results/2026-10-03-sycl-post-route/run.json).
+[`bench/results/2026-10-03-sycl-post-route/run.json`](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-03-sycl-post-route/run.json).
 
 ### Captured native cache-hit work
 
@@ -1162,7 +1162,7 @@ workloads were not isolated. The unit test also checks exact single/batch
 outputs, raw MMVF dots, pending residual updates, final mixing and aliases.
 
 Flags, ids and timings are in
-[`bench/results/2026-10-03-sycl-gr-esimd/`](../bench/results/2026-10-03-sycl-gr-esimd/).
+[`bench/results/2026-10-03-sycl-gr-esimd/`](https://github.com/yqYo1/Strata/tree/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-03-sycl-gr-esimd).
 
 ### Single-token IQ4_XS projections
 
@@ -1192,7 +1192,7 @@ The MMVQ test covers the original SPMD oracle, finite FP16 scale edge cases,
 partially filled virtual blocks, row tails and 1/3/8 activation columns. The
 first/middle/last-row real-weight check passed all 448 tensors. Full options,
 timings and comparisons are in
-[`bench/results/2026-10-03-sycl-iq4xs-esimd/`](../bench/results/2026-10-03-sycl-iq4xs-esimd/).
+[`bench/results/2026-10-03-sycl-iq4xs-esimd/`](https://github.com/yqYo1/Strata/tree/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-03-sycl-iq4xs-esimd).
 The projection tool's `--compare-iq4xs` checks complete matrix outputs;
 `--spmd-iq4xs` selects the original kernels for timings.
 
@@ -1233,7 +1233,7 @@ so its pages were touched and remained unlocked. PLE host time fell from
 speedup or guarantee that those pages remain resident. Background workloads
 were not isolated. Settings, output ids, memory traces and individual timings
 are in
-[`bench/results/2026-10-03-sycl-cache-memory/run.json`](../bench/results/2026-10-03-sycl-cache-memory/run.json).
+[`bench/results/2026-10-03-sycl-cache-memory/run.json`](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-03-sycl-cache-memory/run.json).
 
 ### Shared recording queue for ordinary layer graphs
 
@@ -1269,7 +1269,7 @@ pair fixed both implementations to 3,038 slots and measured `21.21` and
 `21.07 token/s`; this pair does not establish a speed difference. Background
 workloads were not isolated. Full settings, output ids, traces and the standalone
 192-graph memory probe are in
-[`bench/results/2026-10-03-sycl-capture-queue/`](../bench/results/2026-10-03-sycl-capture-queue/).
+[`bench/results/2026-10-03-sycl-capture-queue/`](https://github.com/yqYo1/Strata/tree/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-03-sycl-capture-queue).
 
 ### Native FP16 scale conversion in ESIMD kernels
 
@@ -1304,7 +1304,7 @@ The first/middle/last-row real-weight test passed all 448 tensors with three
 activation columns. A functional MTP probe retained the same 32 ids, 13 rounds
 and 19/28 accepted drafts; it does not establish MTP throughput. Background
 workloads were not isolated. Settings and raw measurements are in
-[`bench/results/2026-10-03-sycl-native-half/`](../bench/results/2026-10-03-sycl-native-half/).
+[`bench/results/2026-10-03-sycl-native-half/`](https://github.com/yqYo1/Strata/tree/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-03-sycl-native-half).
 
 ### Single-column Q4_K ESIMD projections
 
@@ -1341,7 +1341,7 @@ Background workloads were not isolated. PLE RAM pages were touched at startup;
 locking failed, so later residency is not guaranteed. Loading time is excluded
 from decode timing. Full settings, measurements and complete-row comparisons
 are in
-[`bench/results/2026-10-03-sycl-q4k-esimd/`](../bench/results/2026-10-03-sycl-q4k-esimd/).
+[`bench/results/2026-10-03-sycl-q4k-esimd/`](https://github.com/yqYo1/Strata/tree/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-03-sycl-q4k-esimd).
 The projection tool provides `--spmd-q4k` and `--compare-q4k` for these checks.
 
 ### Exact batched Q4_K projections
@@ -1380,7 +1380,7 @@ approximately 29 token/s comparison target remains open.
 The projection tool's `--compare-q4k` accepts multiple columns and checks all
 of them against the original SPMD outputs. Full flags, timings and comparisons
 are in
-[`bench/results/2026-10-03-sycl-q4k-batched-esimd/`](../bench/results/2026-10-03-sycl-q4k-batched-esimd/).
+[`bench/results/2026-10-03-sycl-q4k-batched-esimd/`](https://github.com/yqYo1/Strata/tree/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-03-sycl-q4k-batched-esimd).
 
 ### Q5_K head weight reuse across small windows
 
@@ -1411,7 +1411,7 @@ after. Medians were `15.70` and `15.47 token/s`; these trials establish no
 generation improvement. All six retained the same 128 ids, 63 rounds and
 66/109 accepted drafts. Background workloads were not isolated. All trials,
 flags and comparisons are retained in
-[`bench/results/2026-10-03-sycl-q5-head-batch/`](../bench/results/2026-10-03-sycl-q5-head-batch/).
+[`bench/results/2026-10-03-sycl-q5-head-batch/`](https://github.com/yqYo1/Strata/tree/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-03-sycl-q5-head-batch).
 `--single-q5head` and `--compare-q5head` select the head-only component checks.
 
 ### IQ4_XS integer matrix and table-decoder screen
@@ -1441,7 +1441,7 @@ all three timed shapes. None of these component measurements justifies a
 production change. The existing kernels remain in use; no full-model speed
 claim follows from this screen. Sources, all timings, build commands and
 exact-comparison fixtures are in
-[`bench/results/2026-10-03-sycl-iq4-xmx-screen/run.json`](../bench/results/2026-10-03-sycl-iq4-xmx-screen/run.json).
+[`bench/results/2026-10-03-sycl-iq4-xmx-screen/run.json`](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-03-sycl-iq4-xmx-screen/run.json).
 
 ### Cache experiments retained as measurements
 
@@ -1476,7 +1476,7 @@ Background workloads were not isolated.
 
 Options, calibration prompts, continuations, an experimental profile and
 individual cache-hint measurements are in
-[`bench/results/2026-10-03-sycl-cache-experiments/`](../bench/results/2026-10-03-sycl-cache-experiments/).
+[`bench/results/2026-10-03-sycl-cache-experiments/`](https://github.com/yqYo1/Strata/tree/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-03-sycl-cache-experiments).
 
 ### Cache, worker and large-page screens
 
@@ -1500,7 +1500,7 @@ static auto coding and 96 for dynamic coding. These settings therefore include
 different output text and acceptance counts. Shared background load was not
 isolated; single samples do not select a worker count or justify a default
 change. Flags, counters and outputs are in
-[`bench/results/2026-10-03-sycl-config-screen/run.json`](../bench/results/2026-10-03-sycl-config-screen/run.json).
+[`bench/results/2026-10-03-sycl-config-screen/run.json`](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-03-sycl-config-screen/run.json).
 
 A separate allocation prototype requested `MADV_HUGEPAGE` on just the
 anonymous expert arena, following the [kernel's per-region THP interface](https://www.kernel.org/doc/html/latest/admin-guide/mm/transhuge.html).
@@ -1513,7 +1513,7 @@ and coding processes. Advice succeeded, but their single paired runs slowed:
 acceptance and cache counts, with Q2_0 XMX disabled and 2,048 fixed slots.
 The measurements do not isolate the cause of the slowdown. The prototype was
 reverted. Its patch and measured mappings are in
-[`bench/results/2026-10-03-sycl-arena-thp/run.json`](../bench/results/2026-10-03-sycl-arena-thp/run.json).
+[`bench/results/2026-10-03-sycl-arena-thp/run.json`](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-03-sycl-arena-thp/run.json).
 
 ### Small adaptive refills and completed window boundaries
 
@@ -1562,8 +1562,8 @@ measured `21.26..21.59 token/s`. These conditions remain distinct from fresh
 CLI generation and do not establish a general 29 token/s result.
 
 Flags, continuations and all samples are in
-[`bench/results/2026-10-03-sycl-small-adaptive/run.json`](../bench/results/2026-10-03-sycl-small-adaptive/run.json)
-and [`bench/results/2026-10-03-sycl-adapt-boundary/run.json`](../bench/results/2026-10-03-sycl-adapt-boundary/run.json).
+[`bench/results/2026-10-03-sycl-small-adaptive/run.json`](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-03-sycl-small-adaptive/run.json)
+and [`bench/results/2026-10-03-sycl-adapt-boundary/run.json`](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-03-sycl-adapt-boundary/run.json).
 
 ### Graph submission completion events
 
@@ -1594,7 +1594,7 @@ A functional MTP probe retained its 32 ids, 13 rounds and 19/28 accepted drafts;
 it does not establish MTP throughput. Background workloads were not isolated.
 PLE RAM pages remained unlocked. Full settings and individual measurements are
 in
-[`bench/results/2026-10-03-sycl-graph-completion/run.json`](../bench/results/2026-10-03-sycl-graph-completion/run.json).
+[`bench/results/2026-10-03-sycl-graph-completion/run.json`](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-03-sycl-graph-completion/run.json).
 
 ### Event-completed speculative windows
 
@@ -1645,7 +1645,7 @@ results. The runtime test also checks twelve changing producer/CPU/consumer
 rounds on alternating queues with external completion events.
 
 Flags, ids and results are in
-[`bench/results/2026-10-02-sycl-verify/run.json`](../bench/results/2026-10-02-sycl-verify/run.json).
+[`bench/results/2026-10-02-sycl-verify/run.json`](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-02-sycl-verify/run.json).
 
 On 2026-10-03, three alternating serialized/overlapped MTP runs on B570/5600X
 used the same story, 128 generated tokens, context 512, FP16 KV, four CPU
@@ -1674,7 +1674,7 @@ requests, cancellation after the first emitted token, then another 8-token
 request. Each completed request retained the known continuation's ids.
 
 Flags, output ids, full-window comparisons and persistent-request checks are
-in [`bench/results/2026-10-03-sycl-verify-overlap/run.json`](../bench/results/2026-10-03-sycl-verify-overlap/run.json).
+in [`bench/results/2026-10-03-sycl-verify-overlap/run.json`](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-03-sycl-verify-overlap/run.json).
 
 ### MTP drafting on SYCL
 
@@ -1720,7 +1720,7 @@ emitted token cancelled a request for 128 tokens; the next request produced the
 same eight reference ids and the engine exited successfully. This tests the engine stdin protocol; Python
 HTTP endpoints have not been tested by this probe. Flags, outputs, source and
 runtime artifact hashes are in
-[`bench/results/2026-10-02-sycl-mtp/run.json`](../bench/results/2026-10-02-sycl-mtp/run.json).
+[`bench/results/2026-10-02-sycl-mtp/run.json`](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-02-sycl-mtp/run.json).
 
 On 2026-10-03, the Python server also passed real-model HTTP checks on
 `127.0.0.1:18085`, with the B570/5600X, context 512, native Q2_0, 2,048
@@ -1732,14 +1732,14 @@ next eight-token request returned the preceding text. A complete stream
 also matched the non-streaming response. The server stopped cleanly after
 the checks. This is functional validation, without an HTTP speed comparison.
 Response and validation summaries are in
-[`bench/results/2026-10-03-sycl-http/run.json`](../bench/results/2026-10-03-sycl-http/run.json).
+[`bench/results/2026-10-03-sycl-http/run.json`](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-03-sycl-http/run.json).
 
 The same HTTP checks also passed after changing the local config to automatic
 cache sizing (3,792 slots on this run) and 64 adaptive replacements every four
 verification rounds, with the completed SYCL refill boundary. Repeated output,
 complete streaming output and cancellation recovery matched. This check does
 not compare speed. Response summaries, flags and validation results are in
-[`bench/results/2026-10-03-sycl-adaptive-http/run.json`](../bench/results/2026-10-03-sycl-adaptive-http/run.json).
+[`bench/results/2026-10-03-sycl-adaptive-http/run.json`](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-03-sycl-adaptive-http/run.json).
 
 The local config is `~/.local/share/strata-sycl/serve-config.json`. From this
 checkout, start it with the installed environment:
@@ -1837,7 +1837,7 @@ Three alternating before/after GPU-only runs (`--gpu-only-full`, context 512,
 20 replays per process) measured layers at 36.967/36.954/36.957 ms before and
 35.205/35.152/35.146 ms after. Head time remained about 4 ms. This measurement
 omits expert computation and CPU handoffs and must not be reported as decode
-throughput. [The context records](../bench/results/2026-10-02-sycl-context/run.json)
+throughput. [The context records](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-02-sycl-context/run.json)
 contain the prompt, dump hashes, comparisons, settings and individual timings.
 
 
@@ -1870,7 +1870,7 @@ unsuitable for a throughput claim.
 
 The benchmark uses five graph replays of ten products after warm-up. Raw
 captures remain outside Git; the reviewed timings and validation scope are
-in [`bench/results/2026-10-04-sycl-performance/run.json`](../bench/results/2026-10-04-sycl-performance/run.json).
+in [`bench/results/2026-10-04-sycl-performance/run.json`](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-performance/run.json).
 
 
 For persistent engine measurements, `tools/sycl/serve_bench.py` reads a serve
@@ -2008,7 +2008,7 @@ for tiling around the CPU cache and instruction set;
 [AITER](https://github.com/ROCm/aiter) for fused MoE kernels. These guide experiments,
 not speed claims for this machine. In particular, AMX instructions cannot run on
 this Ryzen; the transferable idea is the layout and scheduling method.
-The [ongoing measurements](../bench/results/2026-10-04-sycl-speed-goal/run.json)
+The [ongoing measurements](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-speed-goal/run.json)
 record the target, experimental conditions and reference links.
 
 The first Zen 3 build retained all completed writing/coding output ids against
@@ -2103,7 +2103,7 @@ The new-driver AOT build with explicit `-doubleGRF` completed, but runtime
 validation failed: the ordinary prompt-MMQ test passed and the XMX test failed
 with `Sub-group size 1 is not supported on the device`. The generated properties lack `isEsimdImage`, so the runtime treats the ESIMD
 subgroup requirement as an ordinary unsupported subgroup. The small
-[`aot_esimd_probe.cpp`](../bench/results/2026-10-04-sycl-speed-goal/aot_esimd_probe.cpp)
+[`aot_esimd_probe.cpp`](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-speed-goal/aot_esimd_probe.cpp)
 reproduces this with the new driver in both JIT and AOT mode. The old driver
 passes in both modes. New-driver split modes `off`, `per_source` and `per_kernel`,
 and its in-process post-link alternative, did not fix it. This is evidence for
@@ -2270,9 +2270,9 @@ Repeated generation improved slightly, but first coding and long prefill
 regressed slightly. The prototype was reverted and serving configurations keep
 the previous allocation behavior. These small mixed differences do not
 establish a uniform improvement or a general conclusion about THP. The
-[full trials and readiness mappings](../bench/results/2026-10-04-sycl-arena-thp-iq3_s/run.json),
-[prototype patch](../bench/results/2026-10-04-sycl-arena-thp-iq3_s/prototype.patch)
-and [benchmark snapshot](../bench/results/2026-10-04-sycl-arena-thp-iq3_s/serve_bench_snapshot.py)
+[full trials and readiness mappings](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-arena-thp-iq3_s/run.json),
+[prototype patch](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-arena-thp-iq3_s/prototype.patch)
+and [benchmark snapshot](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-arena-thp-iq3_s/serve_bench_snapshot.py)
 preserve the experiment.
 
 ### CPU codebook and larger-prompt screens (2026-10-04)
@@ -2285,7 +2285,7 @@ and 1/2/3/4/8-token groups, with five alternating paired timing samples. Every
 output bit matched. None consistently improved the 2–4-token groups used by
 the current speculative configuration. Some eight-token IQ3_S groups improved,
 but that does not establish an engine gain. No prototype was integrated;
-[raw timings, code patches and the CPU harness](../bench/results/2026-10-04-sycl-cpu-codebook/run.json)
+[raw timings, code patches and the CPU harness](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-cpu-codebook/run.json)
 are preserved. These warm component timings exclude host scheduling and data
 transfers.
 
@@ -2297,7 +2297,7 @@ Streamed expert counts fell from 86,957 to 24,064. All eight output ids matched,
 including the expected first color token. This is one trial per setting, and
 its longer input and smaller cache distinguish it from the preceding 827-id
 baseline. No serving configuration changed. The
-[fixture, flags, logs and scripts](../bench/results/2026-10-04-sycl-prefill-scale/run.json)
+[fixture, flags, logs and scripts](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-prefill-scale/run.json)
 support further kernel work. The following experiment changes the GPU
 scratch-weight layout while retaining the same arithmetic.
 
@@ -2338,7 +2338,7 @@ That measured AOT image contains 54 XMX variants using 128 GRFs. Its packed
 IQ2_S exact tile-8 variant has a 192-byte scratch spill; the other 53 have no
 scratch buffers. The later row-offset change below removes that spill. The mixed IQ3_S model in this experiment has IQ2_S gate/up weights in
 20 layers, IQ3_XXS in 17, IQ3_S in 10 and IQ4_XS in 1, so that spill affects
-a substantial part of this workload. The [run record and scripts](../bench/results/2026-10-04-sycl-xmx-packed/run.json)
+a substantial part of this workload. The [run record and scripts](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-xmx-packed/run.json)
 preserve the flags, hashes, timings and output ids.
 
 AOT and JIT each passed all 40 CTests. The MMQ tests cover 50 geometries with
@@ -2395,7 +2395,7 @@ Every completed output id matched; cancellation and recovery also passed.
 The change did not establish a uniform engine gain. It was removed, and the
 configured AOT binary was restored. These results illustrate why warm,
 repeated-expert component gains do not by themselves justify an engine change.
-The [record](../bench/results/2026-10-04-sycl-cpu-loop-unroll/run.json) preserves
+The [record](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-cpu-loop-unroll/run.json) preserves
 all candidate patches, raw component samples and complete serving results.
 
 The native expert manifest contains 20 IQ2_S gate/up layers, 17 IQ3_XXS, 10
@@ -2427,7 +2427,7 @@ single-token. This is a bound from rounded counters, not a measured time or
 byte fraction. It explains the limited scope of changes confined to multi-token
 IQ3_S and motivates examining the existing single-token CPU paths. Full flags,
 output ids and phase counters are in the
-[diagnostic record](../bench/results/2026-10-04-sycl-decode-phases/run.json).
+[diagnostic record](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-decode-phases/run.json).
 
 
 ### XMX weight-row offsets (2026-10-04)
@@ -2458,7 +2458,7 @@ during that screen. These are small measured prefill improvements for these
 fixtures, not a decode-speed claim. CPU/GPU assignment and fallback selection
 are unchanged. Packing remains opt-in.
 
-The [measurement record](../bench/results/2026-10-04-sycl-xmx-rowbase/run.json)
+The [measurement record](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-xmx-rowbase/run.json)
 contains binary hashes, individual measurements, flags and register metadata.
 
 With packing disabled, three further short-prompt pairs had medians of
@@ -2512,9 +2512,9 @@ Both JIT and AOT builds passed the new 256-case CPU test, checking GGML bitwise
 parity, finite results, padded row strides, full/partial/empty row ranges and
 output canaries. A generic x86-64 compilation also checked the fallback stub.
 The local IQ3_S text configs now enable the flag; the repository default
-remains off. The [measurement record](../bench/results/2026-10-04-sycl-cpu-single-exact/run.json)
+remains off. The [measurement record](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-cpu-single-exact/run.json)
 contains all samples, hashes, flags and component measurements. The earlier
-[loop-expansion screen](../bench/results/2026-10-04-sycl-cpu-single-unroll/run.json)
+[loop-expansion screen](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-cpu-single-unroll/run.json)
 also records the slower alternatives. The 1,000 token/s prefill and 70 token/s
 decode targets remain unmet.
 
@@ -2536,7 +2536,7 @@ matched the expected output ids and passed cancellation recovery. No samples
 were excluded, including the slower fourth new coding request.
 
 The expanded CPU test passed all 384 cases on JIT and AOT. No GPU kernels or
-CPU/GPU assignment changed. The [IQ3_S record](../bench/results/2026-10-04-sycl-cpu-iq3s-index/run.json)
+CPU/GPU assignment changed. The [IQ3_S record](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-cpu-iq3s-index/run.json)
 includes the first three pairs, the added two pairs, and all component variants.
 
 An IQ4_NL single-token down prototype shared each input block across two output
@@ -2547,7 +2547,7 @@ However, three alternating engine pairs made all four decode medians slower
 by 0.13–1.77%; the median sum of the four decode times rose 0.70%. It was
 rejected and the preceding gate/up-only implementation was restored. All
 output ids and cancellation checks passed. The
-[record and rejected patch](../bench/results/2026-10-04-sycl-cpu-iq4-rows/run.json)
+[record and rejected patch](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-cpu-iq4-rows/run.json)
 also retain the slower loop-expansion and table-lookup variants. Component
 throughput alone was insufficient to justify this change.
 
@@ -2580,7 +2580,7 @@ packing modes passed repeated 128-token writing/coding, prefill/decode
 cancellation and recovery with identical completed output ids. Local configs
 continue to leave packing off. No decode throughput gain is claimed.
 
-The [measurement record](../bench/results/2026-10-04-sycl-xmx-signspread/run.json)
+The [measurement record](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-xmx-signspread/run.json)
 contains samples, hashes, flags and GPU metadata. JIT and AOT each passed all
 41 tests with the CPU gate/up optimization enabled.
 
@@ -2596,14 +2596,14 @@ One raw-mode screening pair on the B570/5600X gave 8,945.5→9,199.8 ms for
 826 tokens and 26,535.0→26,924.7 ms for 4,007 tokens. All output ids matched.
 No owned build or other GPU test overlapped measurement; existing workstation
 services remained active. This single pair did not support adoption. The
-[record and rejected patch](../bench/results/2026-10-04-sycl-xmx-quarter/run.json)
+[record and rejected patch](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-xmx-quarter/run.json)
 retain the code-size, scratch, correctness and end-to-end evidence.
 
 A follow-up kept only two partials and eight inlined leaf bodies. IQ2_S
 tile-8 scratch fell to 256 bytes in both layouts; JIT and AOT again passed
 all 50 MMQ geometries. One raw screening pair still slowed from
 8,941.3→9,216.5 ms (826 tokens) and 26,555.5→26,846.1 ms (4,007 tokens),
-with matching output ids. The [two-part record and rejected patch](../bench/results/2026-10-04-sycl-xmx-half2/run.json)
+with matching output ids. The [two-part record and rejected patch](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-xmx-half2/run.json)
 retain this follow-up. Neither array-based reduction was adopted.
 
 ### Rejected sixteen-row XMX tile (2026-10-04)
@@ -2624,7 +2624,7 @@ JIT compilation (39,405.4/35,242.3 ms) and were retained separately. Warm
 26,567.1→26,935.6 ms. All eight completed outputs matched. No owned build or
 other GPU test overlapped measurement; existing workstation services remained
 active. Tile-16 was rejected, and the accepted tile-8 implementation restored.
-The [record and rejected patch](../bench/results/2026-10-04-sycl-xmx16/run.json)
+The [record and rejected patch](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-xmx16/run.json)
 retain timings, compiler behavior and device metadata.
 
 ### Rejected CPU dispatch and exponential screens (2026-10-04)
@@ -2645,7 +2645,7 @@ No owned build or other benchmark overlapped measurement; existing workstation
 services remained active. A separate wrapper-isolation component screen did
 not improve the IQ3_S result. These variants were not adopted; restored JIT
 and AOT binaries matched their prior hashes and passed the 384-case test.
-The [dispatch record](../bench/results/2026-10-04-sycl-cpu-single-dispatch/run.json)
+The [dispatch record](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-cpu-single-dispatch/run.json)
 includes all 420 component samples, engine results and the rejected patch.
 
 A separate exponential screen compared Intel SVML four/eight-lane functions
@@ -2654,7 +2654,7 @@ with the static Intel IMF scalar `expf` used by this executable. Among
 functions disagreed on 561,494 values and high-accuracy functions on 45,718.
 Four and eight lanes gave the same mismatch counts. This fails the current
 bitwise requirement, so no vector SwiGLU path was introduced. The
-[source and results](../bench/results/2026-10-04-sycl-cpu-exp-vector/run.json)
+[source and results](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-cpu-exp-vector/run.json)
 record this numerical screen without a throughput claim.
 
 A further single-token prototype interleaved gate and up within each
@@ -2665,7 +2665,7 @@ bitwise. Across inner-loop expansion factors 1/2/4 and 8/64 distinct experts,
 every tested median was slower. For 64 experts, even the best factor for each
 type gave baseline/candidate rate ratios of 0.991, 0.975 and 0.940 respectively.
 This remained a component experiment; the engine was not changed. The
-[paired gate/up screen](../bench/results/2026-10-04-sycl-cpu-single-pair/run.json)
+[paired gate/up screen](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-cpu-single-pair/run.json)
 preserves the generator, harness and all timings.
 
 ### CPU preexpanded-index component screen (2026-10-04)
@@ -2690,7 +2690,7 @@ for IQ3_S and 7.81 ms for IQ2_S, after allocating and zeroing the expanded
 buffers (64.79/42.44 ms). Thus a faster warm kernel alone does not establish a
 serving improvement. No representation change or cache is integrated yet;
 real expert reuse and memory costs are the next checks. The
-[component record](../bench/results/2026-10-04-sycl-cpu-preindex/run.json)
+[component record](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-cpu-preindex/run.json)
 contains every sample, conversion cost, layout and source helper.
 
 ### Prefill events on one queue (2026-10-04)
@@ -2722,7 +2722,7 @@ through the device ring with its events omitted and host completion events
 retained. Persistent writing and coding requests (128 output tokens each,
 twice), prefill/decode cancellation and eight-token recovery matched the
 preceding fixture. The two local text presets select this option; their prior
-configs are backed up. The [measurement record](../bench/results/2026-10-04-sycl-prefill-events/run.json)
+configs are backed up. The [measurement record](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-prefill-events/run.json)
 contains every sample, settings, hashes and validation scope.
 
 ### Prefill device trace and CPU placement (2026-10-04)
@@ -2751,7 +2751,7 @@ With the same prototype binary and normal execution, affinity off measured
 26,622.2 and 26,433.0 ms / 9,441.4 and 8,876.0 ms respectively. All six runs
 returned the same eight output ids. The change gave no repeatable improvement
 and was removed. The accepted source and AOT binary were restored; no local
-CPU-placement setting was enabled. The [diagnostic and screen record](../bench/results/2026-10-04-sycl-prefill-affinity/run.json)
+CPU-placement setting was enabled. The [diagnostic and screen record](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-prefill-affinity/run.json)
 includes the experimental patch and all samples.
 
 ### Routed staging for the measured long prompt (2026-10-04)
@@ -2783,7 +2783,7 @@ The two local text presets select ring 8, with prior configs backed up. Their
 usual context is 512: chunks below 1,024 already use routed staging, so this
 flag alone does not accelerate that configuration. The measured gain applies
 to the large chunk above; larger prompts and other devices need their own
-comparison. The [measurement record](../bench/results/2026-10-04-sycl-prefill-routed/run.json)
+comparison. The [measurement record](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-prefill-routed/run.json)
 contains all six timings, serving checks, settings and reproduction helpers.
 
 ### Compact XMX expert/token grids (2026-10-04)
@@ -2828,7 +2828,7 @@ writing prompt with `--no-prefill-borrow --prompt-cache 0`, matched their
 preceding accepted outputs. Both checks included repeated 128-token generation,
 prefill/decode cancellation and eight-token recovery. No decode-speed gain is
 claimed. The two local text presets enable compaction; their previous configs
-are backed up. The [measurement record](../bench/results/2026-10-04-sycl-xmx-compact/run.json)
+are backed up. The [measurement record](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-xmx-compact/run.json)
 contains all samples, binary hashes, validation logs and reproduction details.
 
 ### Expanded prefill device trace (2026-10-04)
@@ -2847,7 +2847,7 @@ costs with instrumentation, not normal performance measurements. Unmeasured
 span can include uncaptured commands and host gaps; it is not an idle-time
 estimate. A oneMKL completion event may cover only the final internal command.
 The hooks were removed and the accepted AOT binary restored. Prompt attention
-is the next substantial compute cost to investigate. The [trace record](../bench/results/2026-10-04-sycl-prefill-device-full/run.json)
+is the next substantial compute cost to investigate. The [trace record](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-prefill-device-full/run.json)
 retains the grouped intervals, settings and source helpers.
 
 ### Direct prompt-attention output (2026-10-04)
@@ -2892,7 +2892,7 @@ generations from a 4,035-token prompt with prompt reuse and prefill borrowing
 disabled, matched the preceding accepted outputs. Both serving checks passed
 prefill/decode cancellation and eight-token recovery. No decode-speed gain
 is claimed. Both local text presets enable direct output; their previous
-configs are backed up. The [measurement record](../bench/results/2026-10-04-sycl-prompt-direct/run.json)
+configs are backed up. The [measurement record](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-prompt-direct/run.json)
 contains every timing, binary hash, validation result and reproduction details.
 
 ### Parallel prompt exponent trial (2026-10-04)
@@ -2906,7 +2906,7 @@ changed it from 48.46 to 47.61 ms. Each arm had nine timed calls and direct
 output enabled. These are synthetic kernel timings, not full-model prefill
 rates. Neither trial is adopted; the barrier-reuse patch is retained for
 comparison with further memory-access changes. The accepted engine binary
-and sources were restored. The [trial record](../bench/results/2026-10-04-sycl-prompt-exp/run.json)
+and sources were restored. The [trial record](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-prompt-exp/run.json)
 contains the samples and both patches.
 
 ### Prompt key-layout trials (2026-10-04)
@@ -2925,7 +2925,7 @@ used FP16 KV and selected widths up to 4,096, with nine timed calls per arm.
 Every candidate was slower, so none was adopted. These are kernel-only
 measurements; no full-model performance improvement is claimed. The accepted
 sources and engine binary were restored and local settings retained.
-The [trial record](../bench/results/2026-10-04-sycl-prompt-key-layout/run.json)
+The [trial record](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-prompt-key-layout/run.json)
 contains all samples, validation results and patches.
 
 ### Native FP16 prompt KV payloads (2026-10-04)
@@ -2973,9 +2973,9 @@ prompt matched the preceding accepted outputs. Both serving checks passed
 prefill/decode cancellation and eight-token recovery. The long test disabled
 prompt reuse and prefill borrowing. Both local text presets now set the
 minimum to 2,048; their preceding configs are backed up. No decode-speed gain
-is claimed. The [final record](../bench/results/2026-10-04-sycl-prompt-native/run.json)
+is claimed. The [final record](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-prompt-native/run.json)
 contains all final timings, binary hashes, checks and reproduction details;
-the [unrestricted record](../bench/results/2026-10-04-sycl-prompt-native/unrestricted.json)
+the [unrestricted record](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-prompt-native/unrestricted.json)
 retains the earlier trial, including both short-prompt regressions.
 
 ### Common FP16 widening trial (2026-10-04)
@@ -3003,7 +3003,7 @@ discarded.
 
 The conversion change was not adopted. The preceding engine binaries and
 conversion implementation were restored; the exhaustive half-read test remains.
-The [trial record](../bench/results/2026-10-04-sycl-native-f16-widen/run.json)
+The [trial record](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-04-sycl-native-f16-widen/run.json)
 contains all model samples, binary hashes and validation results. Its adjacent
 patch preserves the candidate against the recorded base commit.
 
@@ -3029,4 +3029,4 @@ These are short diagnostic and lifetime checks with tracing enabled, not
 long-prompt performance measurements or physical-256K qualification. The
 earlier stack-canary abort's corrupting write remains unlocated. Source,
 commands, individual results, API boundaries and limitations are recorded in
-the [primary re-audit](../bench/results/2026-10-14-primary-model-baseline/README.ja.md).
+the [primary re-audit](https://github.com/yqYo1/Strata/blob/8063aacc6749d18089f7a53db5d3e47b745f348c/bench/results/2026-10-14-primary-model-baseline/README.ja.md).
