@@ -2,6 +2,9 @@
 // See docs/SYCL_NATIVE16_PREFILL.md for design sources and remaining bridges.
 #pragma once
 #include <cstdint>
+#include <cstddef>
+
+namespace strata::prefill::detail { class MoeWindowRoutes; }
 
 namespace strata::prefill::native16 {
 // Startup configuration only; active execution is restricted to long layer-major.
@@ -24,4 +27,16 @@ void swiglu_pair(const uint16_t* gate, const uint16_t* up, uint16_t* hidden_fp16
 void combine(const uint16_t* down, const int32_t* slot, const float* weight,
              const uint16_t* shared, const float* shared_gate, uint16_t* output,
              int64_t rows, int64_t down_rows, void* stream);
+// Private immutable GPU copies must match the validated host plan. Its unique
+// token/expert contract plus an in-order queue permits FP32 updates without
+// atomics. The owner retains the plan, uploads and buffers through checked drain.
+void moe_job_weights(const detail::MoeWindowRoutes& plan, const float* weights,
+                     const int32_t* original_slots, float* job_weights,
+                     uint32_t* status, void* stream);
+void moe_accumulate(const detail::MoeWindowRoutes& plan, size_t job_index,
+                    const uint16_t* down, const int32_t* source,
+                    const int32_t* original_slots, const float* job_weights,
+                    float* accumulator, uint32_t* status, void* stream);
+void moe_finish(const float* accumulator, const uint16_t* shared,
+                const float* shared_gate, uint16_t* output, int64_t rows, void* stream);
 } // namespace strata::prefill::native16

@@ -18,6 +18,7 @@ public:
     static constexpr int32_t experts = 512;
     static constexpr int32_t top_k = 10;
     static constexpr int32_t max_rows = 16384;
+    static constexpr int32_t max_accum_rows = 65536;
     static constexpr int32_t max_job_rows = 8192;
 
     struct Job {
@@ -38,7 +39,19 @@ public:
         if (!ids || id_count != routes)
             throw std::invalid_argument("MoE window ID span mismatch");
         return std::shared_ptr<const MoeWindowRoutes>(
-            new MoeWindowRoutes(int32_t(rows), ids, routes));
+            new MoeWindowRoutes(int32_t(rows), ids, routes, false));
+    }
+
+    // Separate factory keeps the original 16K API and its rejection contract.
+    static std::shared_ptr<const MoeWindowRoutes> build_accum(
+            int64_t rows, const int32_t* ids, size_t id_count) {
+        if (rows < 1 || rows > max_accum_rows)
+            throw std::invalid_argument("MoE accumulator rows outside [1,65536]");
+        const size_t routes = size_t(rows) * top_k;
+        if (!ids || id_count != routes)
+            throw std::invalid_argument("MoE accumulator ID span mismatch");
+        return std::shared_ptr<const MoeWindowRoutes>(
+            new MoeWindowRoutes(int32_t(rows), ids, routes, true));
     }
 
     MoeWindowRoutes(const MoeWindowRoutes&) = delete;
@@ -52,13 +65,14 @@ public:
     const std::vector<int32_t>& source_rows() const noexcept { return source_; }
     const std::vector<int32_t>& slot_map() const noexcept { return slots_; }
     const std::vector<Job>& jobs() const noexcept { return jobs_; }
+    const std::vector<int32_t>& original_slots() const noexcept { return original_slots_; }
 
     const int32_t* job_source(size_t index) const {
         return source_.data() + jobs_.at(index).global_row;
     }
 
 private:
-    MoeWindowRoutes(int32_t rows, const int32_t* ids, size_t routes) : rows_(rows) {
+    MoeWindowRoutes(int32_t rows, const int32_t* ids, size_t routes, bool inverse) : rows_(rows) {
         // Validate the COMPLETE router output before publishing any upload view.
         for (int32_t t = 0; t < rows; ++t) {
             for (int32_t k = 0; k < top_k; ++k) {
@@ -81,12 +95,14 @@ private:
 
         source_.resize(routes);
         slots_.resize(routes);
+        if (inverse) original_slots_.resize(routes);
         auto cursor = offsets_;
         // Stable in original token-slot order; combine reads slots in that order.
         for (size_t i = 0; i < routes; ++i) {
             const int32_t p = cursor[size_t(ids[i])]++;
             slots_[i] = p;
             source_[size_t(p)] = int32_t(i / top_k);
+            if (inverse) original_slots_[size_t(p)] = int32_t(i);
         }
         jobs_.reserve(experts + experts * size_t(rows > max_job_rows));
         for (int32_t e = 0; e < experts; ++e)
@@ -101,6 +117,7 @@ private:
     std::array<int32_t, experts + 1> offsets_{};
     std::vector<int32_t> source_;
     std::vector<int32_t> slots_;
+    std::vector<int32_t> original_slots_;
     std::vector<Job> jobs_;
 };
 

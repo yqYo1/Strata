@@ -19,7 +19,7 @@ struct MoeAccumPlan {
     enum class Plane : size_t {
         accumulator, weights, slots, source, job_weights, injection,
         gathered, gu, hidden, down_job, shared_chunk, shared_gate,
-        logits, shared_gate_input, shared_up_input, shared_hidden, count
+        logits, shared_gate_input, shared_up_input, shared_hidden, status, count
     };
     struct Span {
         uint64_t offset = 0, bytes = 0, reserved = 0;
@@ -61,9 +61,9 @@ struct MoeAccumPlan {
             multiply(w, width * 4), multiply(w, top_k * 4), multiply(w, top_k * 4),
             multiply(w, top_k * 4), multiply(w, top_k * 4), multiply(w, hc * 4),
             multiply(j, width * 2), multiply(j, 2 * ff * 2), multiply(j, ff * 2),
-            multiply(j, width * 2), multiply(j, width * 2), multiply(j, 4),
+            multiply(j, width * 2), multiply(j, width * 2), multiply(w, 4),
             multiply(j, experts * 4), multiply(j, ff * 2), multiply(j, ff * 2),
-            multiply(j, ff * 2)
+            multiply(j, ff * 2), 4
         };
         for (size_t i = 0; i < payloads.size(); ++i) {
             // Reserve alignment and 256 bytes between views; this is not a
@@ -79,6 +79,13 @@ struct MoeAccumPlan {
             plan.region_bytes += reserved;
         }
         return plan;
+    }
+
+    // The first GPU candidate owns a separate contiguous FP16 mixed allocation.
+    // This preserves the current mixed_h producer without borrowing typed R.
+    static MoeAccumPlan make_contiguous(int64_t n, uint64_t mixed_bytes,
+                                        uint64_t available_region_bytes) {
+        return make(n, mixed_bytes, 0, available_region_bytes);
     }
 
     const Span& span(Plane plane) const {
