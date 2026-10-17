@@ -239,6 +239,25 @@ def main():
                 assert fields['complete']=='1' and fields['windows']==fields['expected']=='4' and fields['error']=='none'
                 assert 0<int(fields['records'])==len(command_records)<=640 and int(fields['peak_events'])<=160
                 assert command_groups
+                groups = [dict(item.split('=',1) for item in line.removeprefix('strata command group: ').split())
+                          for line in command_groups]
+                phase_kinds = {'upload','dequant_gu','dequant_down','gather','gu','swiglu','down','combine','write'}
+                assert {int(g['window']) for g in groups} == {0,1,2,3}
+                assert {int(g['layer']) for g in groups} == {0,15,31,47}
+                assert all(int(g['first_row']) == 0 and 0 < int(g['selected']) <= int(g['eligible']) for g in groups)
+                for window in range(4):
+                    own = [g for g in groups if int(g['window']) == window]
+                    assert len({g['layer'] for g in own}) == 1
+                    assert {g['kind'] for g in own} == phase_kinds
+                    for kind, expected in [('upload',2),('combine',1),('write',2)]:
+                        fixed, = [g for g in own if g['kind'] == kind]
+                        assert int(fixed['eligible']) == int(fixed['selected']) == expected
+                    jobs = {kind:{int(g['bin']):int(g['eligible']) for g in own if g['kind']==kind}
+                            for kind in ('gather','gu','swiglu','down')}
+                    assert all(population == jobs['gather'] for population in jobs.values())
+                    gu_dq, = [g for g in own if g['kind']=='dequant_gu']
+                    down_dq, = [g for g in own if g['kind']=='dequant_down']
+                    assert gu_dq['eligible'] == down_dq['eligible']
                 rec.update(command_profile_summary=summary,command_profile_records=command_records,command_profile_groups=command_groups)
             else:assert not command_summary and not command_records and not command_groups
             assert sha(external) == reference['external_profile_sha256']
