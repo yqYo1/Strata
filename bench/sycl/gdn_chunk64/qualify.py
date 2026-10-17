@@ -81,8 +81,8 @@ def retire():
 
 
 def main():
-    guards.require(__debug__ and len(sys.argv) == 2 and sys.argv[1] in ('build', 'smoke', 'retire'),
-                   'use qualify.py build, smoke or retire')
+    guards.require(__debug__ and len(sys.argv) == 2 and sys.argv[1] in ('build', 'smoke', 'boundaries', 'retire'),
+                   'use qualify.py build, smoke, boundaries or retire')
     action = sys.argv[1]
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -115,8 +115,10 @@ def main():
             record = json.loads((ROOT / 'record.json').read_text())
             guards.require(record['source_commit'] == commit and record['project_input_sha256'] == pins,
                            'rebuild after source changes')
-            guards.require(record.get('build', {}).get('passed') and 'smoke' not in record,
-                           'a successful build and a fresh smoke are required')
+            guards.require(record.get('build', {}).get('passed') and action not in record,
+                           'a successful build and a fresh test are required')
+            if action == 'boundaries':
+                guards.require(record.get('smoke', {}).get('passed'), 'small smoke must pass first')
             guards.require(digest(binary) == record['binary_sha256'] and
                            digest(library) == record['runtime_archive']['sha256'], 'binary/runtime changed')
         owner = None
@@ -210,9 +212,9 @@ def main():
                     guards.require(status.startswith('fixture_status=PASS '), 'missing final fixture status')
                     child.exit(20)
 
-                record['smoke_command'] = [str(binary), '--smoke']
+                record[action + '_command'] = [str(binary), '--' + action]
                 phase['launch_attempted'] = True
-                command, stdout, stderr = owner.run('smoke', [str(binary), '--smoke'], env, P,
+                command, stdout, stderr = owner.run(action, [str(binary), '--' + action], env, P,
                                                      interaction=interaction, wall=180, cpu=180,
                                                      rss_cap=2 << 30, file_cap=32 << 20,
                                                      text_cap=32 << 20, total_cap=1 << 30)
@@ -231,7 +233,7 @@ def main():
                 phase['boot_unchanged'] = boot == Path('/proc/sys/kernel/random/boot_id').read_text().strip()
                 guards.driver_guard()
                 phase['passed'] = (phase['complete'] and phase['exit_code'] == 0 and
-                                   len([line for line in phase['case_results'] if line.startswith('case T=')]) == 2
+                                   len([line for line in phase['case_results'] if line.startswith('case T=')]) == (2 if action == 'smoke' else 6)
                                    and 'fixture_status=PASS' in text and phase['boot_unchanged']
                                    and not phase['fresh_faults'])
                 if not phase['passed']:

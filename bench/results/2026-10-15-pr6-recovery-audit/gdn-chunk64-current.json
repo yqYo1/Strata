@@ -1,5 +1,5 @@
 {
-  "source_commit": "0361d33a13c8d8509366818e6e835cebae858253",
+  "source_commit": "0de53f52bfc012a8f52d184c7dfc536ed87cfd1e",
   "runtime_archive": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-score-gemm-entry-engine-build-v2/build/libstrata_sycl_runtime.a",
     "sha256": "ba34c7d19cf30499c215e86289a921461b9ac426df6f73f61c6769b65d8ee573",
@@ -43,28 +43,26 @@
     "-o",
     "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current/sycl_gdn_chunk64"
   ],
-  "binary_sha256": "dc3f5ee090c0cbb70bf386a0c173a583a7f95177ee476b396ab2dc0473c7f567",
+  "binary_sha256": "9b3150a8ce9b87760ea41137fc12fe194875898ae064a2e69131406eab3750e4",
   "processes_closed": true,
-  "ownership_closed": false,
+  "ownership_closed": true,
   "smoke": {
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "GPU_executed": true,
     "launch_attempted": true,
     "observed_runtime_elf_count": 26,
     "GPU_work_admitted": true,
     "case_results": [
-      "output_difference i=95 actual_bits=32768 scalar_FP32_bits=0 FP64_norm_bits=0",
-      "output_difference i=191 actual_bits=32768 scalar_FP32_bits=0 FP64_norm_bits=0",
-      "output_difference i=287 actual_bits=32768 scalar_FP32_bits=0 FP64_norm_bits=0",
-      "output_difference i=632 actual_bits=32768 scalar_FP32_bits=0 FP64_norm_bits=0",
-      "dyadic_diagnostic T=1 carry_exact=PASS raw_BF16_unequal=81 raw_value_unequal=81 raw_max_abs=9.31323e-10 output_unequal=41 output_max_ULP=1 output_max_abs=0 output_value_unequal=0 FP64_norm_unequal=41"
+      "dyadic_diagnostic T=1 carry_exact=PASS raw_BF16_unequal=0 raw_value_unequal=0 raw_max_abs=0 output_unequal=0 output_max_ULP=0 output_max_abs=0 output_value_unequal=0 FP64_norm_unequal=0",
+      "case T=1 heads=48 key_groups=16 state_width=128 oracle=exact_dyadic_orthogonal carry=PASS raw_BF16=PASS output_FP16=PASS zero_sign_ignored=true unequal=0 max_abs=0 guards=PASS inputs=PASS rejection=PASS repeat=PASS status=PASS",
+      "dyadic_diagnostic T=3 carry_exact=PASS raw_BF16_unequal=0 raw_value_unequal=0 raw_max_abs=0 output_unequal=0 output_max_ULP=0 output_max_abs=0 output_value_unequal=0 FP64_norm_unequal=0",
+      "case T=3 heads=48 key_groups=16 state_width=128 oracle=exact_dyadic_orthogonal carry=PASS raw_BF16=PASS output_FP16=PASS zero_sign_ignored=true unequal=0 max_abs=0 guards=PASS inputs=PASS rejection=PASS repeat=PASS status=PASS",
+      "fixture_status=PASS general_numerics=UNRUN long_component=UNRUN model_PP=UNRUN physical262144_model=UNRUN RESTORE=UNRUN faults=EXTERNAL_REQUIRED"
     ],
-    "exit_code": 1,
+    "exit_code": 0,
     "fresh_faults": [],
-    "boot_unchanged": true,
-    "error_excerpt": "fixture_status=FAIL exact BF16 nonzero value mismatch",
-    "failure_mechanism": "81 BF16 raw differences, max_abs=9.31323e-10. FP32 carry exact; final FP16 values equal except signed zero. Readout scaled history and update terms separately before adding, leaving cancellation residuals."
+    "boot_unchanged": true
   },
   "smoke_command": [
     "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current/sycl_gdn_chunk64",
@@ -78,45 +76,5 @@
   "command": [
     "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current/sycl_gdn_chunk64",
     "--smoke"
-  ],
-  "next_correction": "Add FP32 history/update terms before applying their common scale; preserve exact-nonzero smoke criteria.",
-  "retirement": {
-    "state": "retired",
-    "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current",
-    "source_commit": "0361d33a13c8d8509366818e6e835cebae858253",
-    "verified_project_inputs": 151,
-    "files": [
-      {
-        "path": "owned/build.stderr",
-        "bytes": 0,
-        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-      },
-      {
-        "path": "owned/build.stdout",
-        "bytes": 0,
-        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-      },
-      {
-        "path": "owned/smoke.stderr",
-        "bytes": 87223,
-        "sha256": "cbbc9a1281656b5ec4ce2651d9d6139d5a08eb358ef95fc18e4401a7be2e5250"
-      },
-      {
-        "path": "owned/smoke.stdout",
-        "bytes": 635,
-        "sha256": "8d8a1f44cda942346342a5735c35eed302b699610835fc2418a6e91db5e027f6"
-      },
-      {
-        "path": "record.json",
-        "bytes": 32786,
-        "sha256": "73c8ed2a62b216f0ab68bf6bd0b2c1f7db80050d6df25a79afe3bb1e625ce7a5"
-      },
-      {
-        "path": "sycl_gdn_chunk64",
-        "bytes": 248312,
-        "sha256": "dc3f5ee090c0cbb70bf386a0c173a583a7f95177ee476b396ab2dc0473c7f567"
-      }
-    ],
-    "reason": "Closed superseded qualification; source/recipe recovered from Git."
-  }
+  ]
 }

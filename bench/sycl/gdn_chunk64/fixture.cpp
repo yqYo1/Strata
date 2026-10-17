@@ -141,11 +141,14 @@ void run(int T){
 }
 int main(int argc,char **argv){
   try{
-    need(argc==2 && std::string(argv[1])=="--smoke","only smoke is qualified");
+    need(argc==2 && (std::string(argv[1])=="--smoke" || std::string(argv[1])=="--boundaries"),"expected smoke or boundaries");
     gate("before-runtime");rt=sb::runtime_for();
     std::cout<<"device="<<rt->device().get_info<sycl::info::device::name>()
       <<" driver="<<rt->device().get_info<sycl::info::device::driver_version>()<<std::endl;
-    gate("runtime-ready");run(1);run(3);rt->wait();rt.reset();gate("after-cleanup");
+    gate("runtime-ready");
+    if(std::string(argv[1])=="--smoke"){run(1);run(3);}
+    else for(int T:{63,64,65,127,128,129})run(T);
+    rt->wait();rt.reset();gate("after-cleanup");
     std::cout<<"fixture_status=PASS general_numerics=UNRUN long_component=UNRUN model_PP=UNRUN physical262144_model=UNRUN RESTORE=UNRUN faults=EXTERNAL_REQUIRED"<<std::endl;
     return 0;
   }catch(const std::exception &error){drain();std::cerr<<"fixture_status=FAIL "<<error.what()<<std::endl;return 1;}
