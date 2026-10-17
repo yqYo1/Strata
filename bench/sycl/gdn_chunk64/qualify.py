@@ -4,6 +4,7 @@ import fcntl
 import hashlib
 import json
 import re
+import shutil
 import stat
 from pathlib import Path
 import subprocess
@@ -44,15 +45,52 @@ def source_identity():
     return commit, pins
 
 
+def retire():
+    """Prepare a Git-backed deletion manifest, then retire only after its commit."""
+    record = json.loads((ROOT / 'record.json').read_text())
+    guards.require(not record['active'] and all(c.get('direct_child_reaped') and c.get('session_empty')
+                   for c in record['current_commands']), 'candidate process has not closed')
+    for path, expected in record['project_input_sha256'].items():
+        data = subprocess.check_output(['git', 'show', record['source_commit'] + ':' + path], cwd=P)
+        guards.require(hashlib.sha256(data).hexdigest() == expected, 'source not recoverable: ' + path)
+    result = json.loads(RESULT.read_text())
+    manifest = result.get('retirement')
+    if not manifest:
+        files = []
+        for path in sorted(ROOT.rglob('*')):
+            guards.require(not path.is_symlink(), 'unexpected candidate symlink')
+            if path.is_file():
+                files.append(dict(path=str(path.relative_to(ROOT)), bytes=path.stat().st_size, sha256=digest(path)))
+        result['retirement'] = dict(state='prepared', root=str(ROOT), source_commit=record['source_commit'],
+                                    verified_project_inputs=len(record['project_input_sha256']), files=files,
+                                    reason='Closed superseded qualification; source/recipe recovered from Git.')
+        RESULT.write_text(json.dumps(result, indent=2) + '\n')
+        print('Prepared retirement: commit the compact result, then run retire again.')
+        return 1
+    committed = subprocess.check_output(['git', 'show', 'HEAD:' + str(RESULT.relative_to(P))], cwd=P)
+    guards.require(committed == RESULT.read_bytes() and manifest['state'] == 'prepared' and
+                   manifest['root'] == str(ROOT), 'commit the prepared retirement before deletion')
+    for item in manifest['files']:
+        path = ROOT / item['path']
+        guards.require(path.stat().st_size == item['bytes'] and digest(path) == item['sha256'], 'retirement bytes changed')
+    shutil.rmtree(ROOT)
+    manifest['state'] = 'retired'
+    RESULT.write_text(json.dumps(result, indent=2) + '\n')
+    print('Retired closed candidate; source and original outcome remain in Git.')
+    return 0
+
+
 def main():
-    guards.require(__debug__ and len(sys.argv) == 2 and sys.argv[1] in ('build', 'smoke'),
-                   'use qualify.py build or qualify.py smoke')
+    guards.require(__debug__ and len(sys.argv) == 2 and sys.argv[1] in ('build', 'smoke', 'retire'),
+                   'use qualify.py build, smoke or retire')
     action = sys.argv[1]
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
         guards.driver_guard()
         commit, pins = source_identity()
+        if action == 'retire':
+            return retire()
         settings = json.loads(ENVIRONMENT.read_text())
         base_env = settings['environment']
         compiler = Path(base_env['LD_LIBRARY_PATH'].split(':')[0]).parent / 'bin/clang++'
