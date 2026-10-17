@@ -4137,7 +4137,7 @@
       "spec_sha256": "9e8d502c86e0b284c2ac599e134606f348a37ebdb196c13402a85f1654bd84ab",
       "review_round": 932,
       "review_path": "research-review-round932-v1.json",
-      "main_body_read": false,
+      "main_body_read": true,
       "retrieval": {
         "needed_now": true,
         "hold_body": false,
@@ -4164,7 +4164,8 @@
         "R929-C2",
         "R929-C3"
       ],
-      "status": "R932 content review accepted with prospective corrections; report SHA verified. Lifecycle caveat: worker_done rejected, Dispatch abandoned, user-owned terminal not closed; no accepted worker success/process closure claim."
+      "status": "R932 content review accepted with prospective corrections; report SHA verified. Lifecycle caveat: worker_done rejected, Dispatch abandoned, user-owned terminal not closed; no accepted worker success/process closure claim.",
+      "main_body_read_scope": "Relevant decision-support sections7-16,20-33 for selected GDN framework boundary/source identity."
     },
     {
       "round": 930,
@@ -4360,12 +4361,14 @@
       "review_path": "research-review-round944-v1.json",
       "operational_digest_path": "research-review-round944-v1.ja.md",
       "operational_digest_sha256": "11dfdbd14fe8bf02c9b2e5e5ad82881a984ccb76afeb6ffa8f50905bd707d41c",
-      "main_body_read": false,
+      "main_body_read": true,
       "reviewer_report_body_read": true,
       "status": "Accepted and held; literature/dataflow comparisons only, no local measurement or implementation recommendation.",
       "retrieval_trigger": "A concrete Main-owned GDN recurrence, chunk-boundary, synchronization or precision decision needs the collection.",
       "review_sha256": "63756dfe2ba521b5abb1cf2d513af583c28d8c7d2c04398a7d9802831e2ffa30",
-      "schedulable_now": false
+      "schedulable_now": false,
+      "main_body_read_on_arrival": false,
+      "main_body_read_scope": "Only lines19-44 and53-60, retrieved for current measured GDN recurrence/chunk64/head-layout/precision question; no automatic full-body read."
     },
     {
       "round": 945,
@@ -5544,6 +5547,70 @@
         }
       ],
       "main_body_read_on_arrival": false
+    },
+    {
+      "round": 1048,
+      "model": "gpt-6-luna",
+      "classification": "decision_support",
+      "read_only": true,
+      "path": "research-round1048-v1.txt",
+      "bytes": 9198,
+      "sha256": "773f9f44b5ea752b07e5b898ee2fd451de7d6ee165d29623597a71a0101c6c9a",
+      "review_path": "research-round1049-review-v1.txt",
+      "review_sha256": "f1364f7f7e59d994920abc330d6925581e492f844b1a648fe3df617bd112bfe6",
+      "index_proposal_path": "research-round1049-index-proposal-v1.json",
+      "status": {
+        "decision": "accepted_with_material_corrections",
+        "correction_ids": [
+          "R1049-C1",
+          "R1049-C2",
+          "R1049-C3"
+        ],
+        "status": "Useful head mapping and finite source reconciliation; state transpose, SGLang storage/rounding boundaries and loaded model config remain material corrections. No adoption or runtime qualification.",
+        "retrieval_sections": [
+          "Finding",
+          "Source reconciliation",
+          "Precision and operation boundary for a candidate",
+          "Minimal discriminating validation recipe"
+        ],
+        "main_body_read": false,
+        "reviewer_report_body_read": true
+      },
+      "main_body_read": false,
+      "main_body_read_on_arrival": false,
+      "retrieval_sections": [
+        "Finding",
+        "Source reconciliation",
+        "Precision and operation boundary for a candidate",
+        "Minimal discriminating validation recipe"
+      ]
+    },
+    {
+      "round": 1050,
+      "model": "gpt-6-luna",
+      "classification": "decision_support",
+      "read_only": true,
+      "path": "research-round1050-v1.txt",
+      "bytes": 8277,
+      "sha256": "b95c46ca911f1df870fe89f650b5483fccb451f6ab14c5f16054e3da1c1fe42d",
+      "review_path": "research-round1051-review-v1.txt",
+      "review_sha256": "e72e3495ae49913a42c6938581dd0a1ee86480c04f0f8988299dbf209cb53000",
+      "index_proposal_path": "research-round1051-index-proposal-v1.json",
+      "status": {
+        "decision": "accepted_with_retrieval_corrections",
+        "scope_depth": "A source-backed exact K producer remap, bijection, fixed consumers and barriers, legal conditional alternatives, counterevidence, and bounded same-path comparison are adequate. It adds a concrete selected-row K transpose question beyond R1013/R1043's broader QSA schedule accounting.",
+        "redundancy": "Substantial overlap with R1013/R1043 on current QSA geometry, SLM/barriers and evidence limits. Keep the full report held until the K staging decision is active.",
+        "main_read_policy": "Operational review and this metadata suffice; retrieve the report body only when Main evaluates the exact K producer/consumer mapping.",
+        "no_new_general_survey": true
+      },
+      "main_body_read": false,
+      "main_body_read_on_arrival": false,
+      "retrieval_sections": [
+        "research-round1043-v1.txt: Current schedule and invariant contract; Bounded alternatives and counterevidence; Prior work and evidence limits",
+        "research-round1044-review-v1.txt: Source and schedule verification; Novelty, current evidence, and provenance; Eligibility",
+        "research-round1044-index-proposal-v1.json: main_owned_results.qsa64_decision; main_owned_results.qsa16_decision; next_scope_eligibility; source_provenance",
+        "research-index.json: $.reports[] where round==1043; $.research_review_round1044; $.qsa_gemm_resource_profile_current; $.qsa_softmax_actual_entry_next; $.qsa_score_gemm_entry_model_current"
+      ]
     }
   ],
   "main_initial_findings": [
@@ -7909,16 +7976,19 @@
     "main_reconciliation": "research-review-round953-main-reconciliation-v1.json"
   },
   "current_main_boundary": {
-    "recorded_utc": "2026-10-17T08:50:25.209270+00:00",
-    "goal": "Dedicated long prefill repeated>600 then1000tok/s; eventual decode70. Not achieved.",
-    "current_model_comparison": "QSA optimized490.6/490.1/491.4 (median490.6,mean490.7) vs subgroup495.4/478.7/495.9 (median495.4,mean490.0). Same new binary/window2. No stable end-to-end gain demonstrated, no adoption.",
-    "current_component_comparison": "QSA subgroup same-binary synthetic8192query/2051selected/physical32768: median333.3182415->322.3369095ms across3 fresh processes per arm, 3.29455% latency reduction. All60 samples and fault/numerical gates preserved.",
-    "changes": "Closed six real39K model processes, preserved all samples and successful owner/fault closures; retained the negative/inconclusive performance result.",
-    "next": "Use current profiling-enabled compute queue to distinguish GPU command service, host submission/JIT and wait intervals. No profiler/extra GPU work launched yet.",
-    "previous_goal_turn": "Progress: actual matched MoE model cohort and private QSA build/GPU qualification.",
-    "this_goal_turn": "Progress: actual QSA component cohort, actual opt-in implementation/fresh build/fixture/model diagnostics and full clean model cohort completed; new research984-986 reviewed and indexed. 600/1000prefill and70decode goals remain unmet.",
-    "default_sync_PR": "https://github.com/yqYo1/Strata/pull/36",
-    "full_physical262144_model_consume_RESTORE": "Unqualified. Component physical262144 fixture coverage does not prove model completion or RESTORE."
+    "prior_goal_turn_classification": "progress",
+    "prior_evidence": "Closed current serial/subgroup real-model cohorts and exact attention service binding changed next selected boundary. OpenCode default test was a separate user-requested task and is already complete.",
+    "current_goal_turn_evidence": "K producer schedule implementation in immutable own proposal, qualified compiled products,6oracle processes+2full-bit/timing processes closed;54large-query timing samples;actual GGUF target metadata extracted;research1048/1050 reviewed and new1052 source audit done. No product default changed.",
+    "prefill_target_tps": 1000,
+    "decode_target_tps": 70,
+    "goal_achieved": false,
+    "measured_current_long_prefill_tps": 725.7,
+    "experimental_softmax_tps": 733.5,
+    "experimental_decode_short_probe_tps": 13.1,
+    "baseline_decode_short_probe_tps": 14.1,
+    "sustained_decode_qualified": false,
+    "physical262144_RESTORE_qualified": false,
+    "next_main": "Evaluate row-major K/V SLM row-pitch change under legal matrix stride/alignment, using current independent oracle/full-bit fixtures, then meaningful long model comparison. Prepare current-contract GDN chunk/state validation from reviewed source mapping; no old private packed retry."
   },
   "research_review_round955": {
     "review_path": "research-review-round955-v1.json",
@@ -10281,5 +10351,100 @@
     "main_cpu_wait_fraction": 0.6880802849942296,
     "decision": "Largest single current device kernel is QSA attention. Qualify actual subgroup softmax and compare clean models; no resource saturation or physical PCIe utilization proof."
   },
-  "qsa_resource_softmax_retention": "qsa-resource-softmax-retention-v1.json;79successful raw/duplicate files,5043425logicalbytes retired; canonical receipts/current engine/archives/fixture ELF retained."
+  "qsa_resource_softmax_retention": "qsa-resource-softmax-retention-v1.json;79successful raw/duplicate files,5043425logicalbytes retired; canonical receipts/current engine/archives/fixture ELF retained.",
+  "research_review_round1049": {
+    "review": {
+      "path": "research-round1049-review-v1.txt",
+      "bytes": 4243,
+      "sha256": "f1364f7f7e59d994920abc330d6925581e492f844b1a648fe3df617bd112bfe6"
+    },
+    "index_proposal": {
+      "path": "research-round1049-index-proposal-v1.json",
+      "bytes": 3553,
+      "sha256": "e8e63add3d892872f356d1b7e011c34beaa82dc37ad50f842ebe1e8458c4c608"
+    },
+    "main_read_policy": "Main read operational digest/index metadata only. Original report body not read.",
+    "main_action": "No GDN adoption: reconcile state K/V transpose and V-head permutation, BF16 conv history/chunk intermediates, exact target head48 and sigmoid-vs-swish loaded config before implementing."
+  },
+  "research_review_round1051": {
+    "review": {
+      "path": "research-round1051-review-v1.txt",
+      "bytes": 6709,
+      "sha256": "e72e3495ae49913a42c6938581dd0a1ee86480c04f0f8988299dbf209cb53000"
+    },
+    "index_proposal": {
+      "path": "research-round1051-index-proposal-v1.json",
+      "bytes": 7943,
+      "sha256": "86b6954067f2afcced1803117ed08af547c4b740f1576c47bae482a97b4a0de3"
+    },
+    "main_read_policy": "Main read operational digest/index metadata only. Original report body not read.",
+    "main_action": "Own K-only span4/span256 component proposals preserve consumer layout/math and barriers. Resolve725.7 source via exact closed serial receipt below; no physical transaction/bank/utilization claim."
+  },
+  "qsa_softmax_actual_model_current": {
+    "comparison": {
+      "path": "qsa-softmax-actual-model-comparison-v1.json",
+      "bytes": 18218,
+      "sha256": "87dd9ed31a27078c182d6d8c97760cddc584a33a48e6192e254ca01d02f8a5bf"
+    },
+    "serial_receipt": {
+      "path": "qsa-softmax-actual-model-serial-r0-tokens65536-warm4-v1.json",
+      "bytes": 205533,
+      "sha256": "da5de653a2c03272362357e89c87d069f98d640cd2f7b5b5b01eb7eb79dd9c2e"
+    },
+    "subgroup_receipt": {
+      "path": "qsa-softmax-actual-model-subgroup-r0-tokens65536-warm4-v1.json",
+      "bytes": 205579,
+      "sha256": "2c86e9abbc4ad652b1fd5e58dc4ce740440f6325ded9efaa8cd274e55139fab2"
+    },
+    "serial_warm_median_tps": 725.7,
+    "subgroup_warm_median_tps": 733.5,
+    "prefill_improvement_percent": 1.0748243075651143,
+    "decode_short_probe_medians": [
+      14.1,
+      13.1
+    ],
+    "adoption": false,
+    "source_correction": "R1050 eligibility named prior scoreGEMM comparison whose medians679.4/725.2 are unchanged. Fresh serial725.7 belongs to the exact separate current serial receipt pinned here, not that earlier comparison. All individual samples retained."
+  },
+  "qsa_attention_service_binding_current": {
+    "path": "qsa-attention-current-service-binding-v1.json",
+    "bytes": 3862,
+    "sha256": "ce109c823354847e93117627cbfefdc973e7c28b6ffc43e28a276f96464ba4e1"
+  },
+  "qsa_kstaging_component_current": {
+    "comparison": {
+      "path": "qsa-kstaging-component-comparison-v1.json",
+      "bytes": 30534,
+      "sha256": "73d91ed2d6d140dd255bb7e95c827a6e307f535dccc42b98b2d7522f82c34b17"
+    },
+    "report": "qsa-kstaging-results-v1.ja.md",
+    "source_proposal": {
+      "path": "own-qsa-kstaging-v1/manifest.json",
+      "sha256": "5a7361d28311ad9a8eaf0dbdb731ec548445471d4de78cacf7a968ddb2b1e7ca"
+    },
+    "source_integrated": false,
+    "adoption": false,
+    "decision": "All3schedules numerical/guard/input/closure/fault0 PASS. Six samples per shape/arm with8192queries and50331648output values equal each call. Span256 rejected:10.35-29.48percent slower forcap2051;span4 mixed1.52percent faster gather/-0.73percent clustered;no model-speed extrapolation. Next exact SLM pitch36/260 contract audit selected."
+  },
+  "gdn_target_metadata_current": {
+    "receipt": {
+      "path": "gdn-target-gguf-metadata-v1.json",
+      "bytes": 6170,
+      "sha256": "c991c03ea0bc59641ad19f2b07abde6c88a9bf0d4d8d4a64052808378740237c"
+    },
+    "actual_loaded_header": {
+      "architecture": "qwen4exp",
+      "key_groups": 16,
+      "value_heads": 48,
+      "state": 128,
+      "inner": 6144,
+      "conv": 4
+    },
+    "source_only_followup": "R1052 awaiting native R1053 review; no implementation adoption. Exact original converter/config identity remains an explicit limit."
+  },
+  "qsa_kstaging_softmax_model_retention": {
+    "path": "qsa-kstaging-softmax-model-retention-v2.json",
+    "bytes": 117675,
+    "sha256": "7b21e85f711e2e917ebd48c83e682b98127694db576a6640ebd2bf9318ebc3da"
+  }
 }

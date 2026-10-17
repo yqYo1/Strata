@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "recorded_utc": "2026-10-17T18:43:24.837939+00:00",
+  "classification": "Main source-bound interpretation of an already closed diagnostic; no fresh measurement",
+  "source_receipt": {
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/own-qsa-gemm-unitrace-direct-model-v1.json",
+    "sha256": "a5e72f2b3b9262ec2f46d4caa7342b7642add92f60db0a7dbed41606a11089cd"
+  },
+  "source_pins": {
+    "src/prefill/prefill.cpp": "c64cfeeb826606100b00f154c59c2af32beb5f125fce46d955cad8243a4a2eed",
+    "src/prefill/layer_major.inc": "76cf22527c93af490872d0ea26a72c2961747e3b3dae40232d58490d962371eb",
+    "src/kernels/sycl/qsa_bf16_prefix.cpp": "fa505d02e2b24f7cb6948033921fa697c8aeb58e6f4df6d873f13e5a7918e36b",
+    "src/core/layer.cpp": "4273fc8c08bb0c58ad471d963f232a457dbc96ea6bd20fa1b45d27fee3428cfb"
+  },
+  "binary_sha256": "1e7bf1cb5a7a8ec9b91e46bedbc2d7b7de3f0f7cbddbeeddecee80461a688b26",
+  "selected_environment": {
+    "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-optimized",
+    "STRATA_SYCL_PREFILL_NATIVE16_QSA": "1",
+    "STRATA_SYCL_PREFILL_SAME_QUEUE": "1"
+  },
+  "kernel": {
+    "name": "strata::kernels::prefix_batch_impl<33, false, false>(unsigned short const*, strata::kernels::QsaAttnPools const&, int const*, int const*, long, strata::kernels::QsaShapes const&, unsigned short*, long, strata::kernels::QsaPromptBf16Bounds const&, long, strata::kernels::QsaBf16PackedScratch const&, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+    "calls": 120,
+    "time_ns": 37077867345,
+    "percent": 33.763725,
+    "average_ns": 308982227,
+    "min_ns": 191810625,
+    "max_ns": 355374062
+  },
+  "binding": [
+    "One production call site in src/prefill/prefill.cpp selects the optimized API; its implementation instantiates prefix_batch_impl<33,false,false>. Declaration and implementation are distinct from the call site.",
+    "Actual QSA profile closes 120 matrix chunks/941424queries, no fallback:12QSA layers times10chunks for78452batched rows. The collector reports120 calls of this exact attention body, matching every chunk.",
+    "The initial74token warmup uses the short/decode layout; the long native16 lease enables the selected prefix API. Generated tokens use core decode QSA APIs, which do not call this prefix API.",
+    "The selected native PID emitted one official long request; the collector library/snapshot binds the actual engine, environment and frozen sources. Independent API fixtures were separate prior processes and are absent from this model collector."
+  ],
+  "conclusion": "Within these source/call-count premises, the37.077867s exact-kernel service sum is attributable to the measured long-prefill attention calls, rather than just an unidentified whole-process total. It is GPU command execution service, not PCIe-copy or CPU submission-gap time.",
+  "limits": [
+    "The whole Device/API summary totals remain nonexclusive whole-process sums; no general prefill-only claim is made for other rows.",
+    "The marker interval38.4375s also contains preparation/submission gaps; it is not an exclusive resource sum.",
+    "Execution-service duration can include device stalls and preemption. Arithmetic-unit, VRAM-bandwidth, cache, SLM/bank/barrier and occupancy saturation are not resolved by this binding.",
+    "One queue orders these attention calls, but does not establish a global device busy union or a quantitative critical-path speedup bound.",
+    "No wire-byte count or physical PCIe utilization is measured."
+  ],
+  "verification_commands": [
+    "rg -n \"qsa_bf16_prefix_optimized_batch\\(\" src include",
+    "Inspect source-pinned Prefill::run native16 lease, optimized API template instantiation and core decode QSA call path; compare exact kernel120calls against closed actual matrix_chunks120/fallback0 evidence."
+  ]
+}

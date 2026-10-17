@@ -26,6 +26,14 @@ score GEMM有効を診断した。短い収集確認を先に実行し、両方�
 | うち明示的wait内部 | 75.914 s、CPU時間の68.81% | completion pollingを含み得る |
 | wait外のCPU時間 | 34.413 s | source copy、submit、未分類を含む |
 
+[呼び出し対応の追加確認](qsa-attention-current-service-binding-v1.json)で、
+このattention本体の120 callsを長prefillの12 QSA層×10 chunksに対応付けた。
+選択されたtemplateと唯一のproduction call site、実際のmatrix dispatch 120回・
+fallback 0回を照合した。この特定カーネルの37.078 sは長prefillのGPU実行サービス
+として扱える。warmupやdecodeを含む全体のdevice/API合計とは区別する。
+GPU内部のメモリー待ちや同期も実行時間に入り得るため、演算器の使用率や
+PCIe時間、VRAM帯域飽和の証明にはならない。
+
 CPU時間のうち、source copy 4.716 s、GEMM submit 4.781 s、upload submit
 5.660 s、host grouping 0.162 s、未分類19.066 sだった。これは最初の長入力と
 collector／validation付きの結果で、未分類をCPUの推論演算やJITと断定しない。

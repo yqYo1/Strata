@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "classification": "decision_support",
+  "schedulable_now": true,
+  "scope": "Exact K global-to-row-major-SLM staging schedule, same current attention operands/arithmetic.",
+  "prerequisite_evidence": {
+    "closed_comparison": "qsa-score-gemm-entry-model-comparison-v1.json; fresh actual serial cohort normal/fault0 PASS725.7median. Subgroup cohort remains active; research must not touch it.",
+    "same_path_resource": "qsa-attention-current-service-binding-v1.json:120attentioncalls/37.077867345s bound to78Kprefill, not physical saturation.",
+    "selected_boundary": "K stage i=tid+128*n,cell=i%32,d=i/32,global packed.k[row*256+d] ->SLM kv[d*32+cell]. V stage has cell=i/256,d=i%256. Select legal alternatives at this exact producer/consumer boundary; no generic schedule survey.",
+    "dedup": "Read R1043/R1044 first, preserve C16/C64 outcomes and no old private packed retry."
+  },
+  "source": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_bf16_prefix.cpp",
+    "sha256": "fa505d02e2b24f7cb6948033921fa697c8aeb58e6f4df6d873f13e5a7918e36b",
+    "engine_sha256": "1e7bf1cb5a7a8ec9b91e46bedbc2d7b7de3f0f7cbddbeeddecee80461a688b26",
+    "build_source_commit": "a8aa3345dc095894f45ce5559a4fe640adca290d"
+  },
+  "limits": "Source address pattern is not measured DRAM/cache/SLM saturation or a speed prediction. No product changes/execution requested."
+}

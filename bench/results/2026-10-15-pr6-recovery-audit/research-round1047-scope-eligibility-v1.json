@@ -1,0 +1,84 @@
+{
+  "schema": "strata-research-scope-eligibility-v1",
+  "round": 1047,
+  "review_date": "2026-10-18",
+  "inputs": {
+    "resource_profile": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-gemm-current-resource-profile-v1.json",
+      "sha256": "520b7892640a2d08a3e7cd0413b0f046e747815deaa6430dede9b2075794ae29",
+      "source_receipt_sha256": "a5e72f2b3b9262ec2f46d4caa7342b7642add92f60db0a7dbed41606a11089cd",
+      "source_commit": "a8aa3345dc095894f45ce5559a4fe640adca290d"
+    },
+    "research_index": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+      "sha256": "e5505e550db80b77851d6c53e56b0611a7bc4ebff35c6636f00df6f8874423a6"
+    }
+  },
+  "decision": {
+    "new_knowledge_collection_scopes_recommended": 0,
+    "schedulable_now": false,
+    "rationale": "The only new measurement evidence ranks components; it does not isolate a new algorithm, source boundary or selected numerical contract that earlier held research left unanswered. Main already owns a fresh serial-then-subgroup QSA comparison. Starting a broader GDN, MoE or generic SYCL survey now would repeat indexed work or report a design question Main has not selected."
+  },
+  "candidate_assessments": [
+    {
+      "candidate": "GDN recurrence and dataflow",
+      "schedulable_now": false,
+      "current_evidence": "The current 78,453-token diagnostic attributes 8.032 s across 1,476 recurrence commands; it is whole-process command time, not a clean speed result or critical-path split. The current output16-only candidate remains uncompiled and GPU-unrun.",
+      "prior_work": [
+        {
+          "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round943-v1.txt",
+          "sha256": "cb69c0466c2d034da2d7dcf2cd99290e0b2218637a74ff99b10ced10470d4515",
+          "review_path": "bench/results/2026-10-15-pr6-recovery-audit/research-review-round944-v1.json",
+          "review_sha256": "63756dfe2ba521b5abb1cf2d513af583c28d8c7d2c04398a7d9802831e2ffa30",
+          "status": "Held source-literature comparison already covers chunked GDN/WY, recurrence scans, local-state tiling, non-LLM IIR and systolic dataflow; retrieval requires a concrete Main-owned GDN design decision."
+        },
+        {
+          "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round929-v1.txt",
+          "sha256": "2ee52e869c739c9e968f7740bcf6a252ac25e79275298475156ae5cb30c6fc0b",
+          "review_path": "bench/results/2026-10-15-pr6-recovery-audit/research-review-round932-v1.json",
+          "status": "Covers Qwen4-Exp model-path GDN/HC/PLE order and a related vLLM family analogy; it does not pin the target model/backend route or qualify component timing/adoption."
+        }
+      ],
+      "next_gate": "After the QSA pair, Main pins a specific GDN recurrence/dataflow change and its SGLang/vLLM serving-path contract; retrieve the matching R943 sections first and request new work only for a demonstrated gap."
+    },
+    {
+      "candidate": "GPU-native MoE accumulation and row gather",
+      "schedulable_now": false,
+      "current_evidence": "The profile reports moe_accumulate at 3.259 s/21,479 calls and gather_rows16 at 2.532 s/29,573 calls. The totals are nonexclusive and do not map a critical dependency or identify a selected fusion/layout decision. Host grouping is 0.162 s; 75.914 s in explicit waits may include polling.",
+      "prior_work": [
+        {
+          "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round1006-v1.txt",
+          "sha256": "40dde7e2d1000d5b582220a68ea887a6ce56141f1f5f0020fb593d4fd0784156",
+          "review_path": "bench/results/2026-10-15-pr6-recovery-audit/research-round1007-review-v1.txt",
+          "review_sha256": "e7b594764e0a7001ce0da0f67c8343b986adf77daecf82e8a727261886edee33",
+          "status": "Held reduction-order, precision and quality comparisons; retrieval requires the exact selected component and fixed operands/routes."
+        },
+        {
+          "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round1008-v1.txt",
+          "sha256": "db254625a840880a82761f0d56e494b43d8ead9b7bfbf9b565b38035f2f912aa",
+          "review_path": "bench/results/2026-10-15-pr6-recovery-audit/research-round1010-review-v1.txt",
+          "review_sha256": "ece90ebe272ff50c1074e6cde1c579b9566d5527db7e1d5c9b4b5ec9d641a202",
+          "status": "Held GPU-local accumulator/dataflow alternatives; retrieval requires a source-pinned selected layout or Down-GEMM epilogue boundary and rounding contract."
+        },
+        {
+          "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round1009-v1.txt",
+          "sha256": "62251658a0ce6e98568a02c663f5f8e3770d6f520335affa70238b357b569222",
+          "review_path": "bench/results/2026-10-15-pr6-recovery-audit/research-round1010-review-v1.txt",
+          "review_sha256": "ece90ebe272ff50c1074e6cde1c579b9566d5527db7e1d5c9b4b5ec9d641a202",
+          "status": "Held grouped-scheduling/API/lifetime analysis; retrieval requires material host grouping/submission or device job imbalance attribution and exact runtime path."
+        }
+      ],
+      "next_gate": "No new scope until Main identifies the exact producer/consumer boundary, selected layout and SGLang/vLLM rounding/order contract; reuse R1006/R1008/R1009 sections before defining any non-overlapping question."
+    },
+    {
+      "candidate": "Transferable non-LLM SYCL optimization",
+      "schedulable_now": false,
+      "reason": "R943 already compares non-LLM recurrence/dataflow sources; a new generic SYCL or profiler/copy/SLM survey would add no decision support to the current evidence."
+    }
+  ],
+  "execution_boundary": {
+    "active_main_work": "Main-owned fresh four-request serial QSA cohort followed by four-request subgroup cohort; do not duplicate or dispatch around it.",
+    "measurement_limits": "The profile is a collector-enabled diagnostic; command totals overlap and are not utilization, physical traffic, occupancy or critical-path attribution. The 667.2 tok/s diagnostic sample does not replace the clean cohort.",
+    "future_source_rules": "Any later research must name a finite unanswered question, pin exact source/revision and primary references, compare alternatives and counterevidence, verify provenance and licenses, and remain source-analysis only. Do not use XeStrata or copy/adapt source; Main retains all build, test, GPU and profiler work."
+  }
+}
