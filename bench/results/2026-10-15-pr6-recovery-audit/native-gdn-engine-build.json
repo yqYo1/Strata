@@ -1,0 +1,111 @@
+{
+  "source_commit": "e58974fb955a99173610ca6da94e60da7d983f80",
+  "compiler": {
+    "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+    "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
+  },
+  "configure_argv": [
+    "/usr/bin/cmake",
+    "-S",
+    "/home/yayoi/orca/workspaces/Strata/sycl",
+    "-B",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build",
+    "-G",
+    "Ninja",
+    "-DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+    "-DCMAKE_BUILD_TYPE=Release",
+    "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+    "-DMKL_DIR=/opt/intel/oneapi/mkl/2026.1/lib/cmake/mkl",
+    "-DSTRATA_BUILD_CONVERSATION_TESTS:BOOL=OFF",
+    "-DSTRATA_BUILD_PREFILL_HOST_TESTS:BOOL=ON",
+    "-DSTRATA_BUILD_TESTS:BOOL=OFF",
+    "-DSTRATA_CPU_ARCH:STRING=znver3",
+    "-DSTRATA_ENABLE_CUDA:BOOL=OFF",
+    "-DSTRATA_ENABLE_HIP:BOOL=OFF",
+    "-DSTRATA_ENABLE_SYCL:BOOL=ON",
+    "-DSTRATA_GGML_DIR:PATH=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+    "-DSTRATA_MMQ_KQUANTS:BOOL=OFF",
+    "-DSTRATA_NATIVE_EXPERTS:BOOL=ON",
+    "-DSTRATA_ORCA_Q4KS_MMQ:BOOL=OFF",
+    "-DSTRATA_PORTABLE:BOOL=OFF",
+    "-DSTRATA_PREFILL_MMQ:BOOL=OFF",
+    "-DSTRATA_SYCL_AOT_DOUBLE_GRF:BOOL=OFF",
+    "-DSTRATA_SYCL_TESTS:BOOL=ON",
+    "-DSTRATA_WERROR:BOOL=ON",
+    "-DSTRATA_SYCL_VLLM_XE2_NATIVE16=ON",
+    "-DSTRATA_SYCL_DEVICE_ARCH=",
+    "-DSYCL_TLA_SOURCE_DIR=/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f"
+  ],
+  "environment": {
+    "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+    "OMP_NUM_THREADS": "1",
+    "GIT_TERMINAL_PROMPT": "0",
+    "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+    "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+    "PIP_CONFIG_FILE": "/dev/null",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+    "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+    "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/cache",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/tmp"
+  },
+  "device": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  },
+  "recipe_reference": {
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-entry-engine-build-v2.json",
+    "sha256": "9b7734387f0fc56f36afe9d7bca75e5f0bedcef479271e982025abe1d4334a1a"
+  },
+  "complete": true,
+  "passed": true,
+  "active": false,
+  "GPU_executed": false,
+  "production_selected": false,
+  "model_quality_qualified": false,
+  "retention_consumer": "Imminent native GDN opt-in model correctness/performance A/B; retire after comparison.",
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 20369176,
+    "sha256": "6de4210b2823723a52bc832efd215d0b18c2fa5bcf74b66a885f3a11e1c90042"
+  },
+  "compile_database_sha256": "b66f06245bd4e17eebe529776538793591620d96c97f8e95d11cdeba277f82af",
+  "configured_compile_entries": 209,
+  "ownership_closed": true,
+  "inputs": [
+    {
+      "root": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "revision": "e58974fb955a99173610ca6da94e60da7d983f80",
+      "count": 475,
+      "aggregate_sha256": "9484009414110ca4e47d2e6963947bb9ed884e4989e1fca9b21e457f77bed624"
+    },
+    {
+      "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+      "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+      "count": 3608,
+      "aggregate_sha256": "322862d213ed722d6500da0b58a1b7fffff53aa0de77d7f2e8ba685c653a0d9f"
+    },
+    {
+      "root": "/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+      "revision": "87f6850680a580654b9ea2c80dbc01aeb36ad231",
+      "count": 5703,
+      "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
+    }
+  ]
+}
