@@ -24,3 +24,5 @@ plannerは未接続の部品で、GPUkernel・alias寿命・route契約・モデ
 R998〜1000、R1002〜1003のOrcaLuna調査を反復し、nativeLuna-maxのR1001/R1004がレビューした。収集R1000/R1003の本文はMain未読。R998のaged合否数の取り違えとR1002の寸法表の誤りはレビューで明記し、原文/receiptは保持した。今後の判定には訂正済みレビューとMainの実データを使う。
 
 個別測定、全環境/入力/ソース/バイナリ/所有とfault結果はresidual64k-placement-clean-cohort-v1.jsonおよび6件のsample、集計はresidual64k-placement-clean-analysis-v1.json。容量テストはmoe-accum-plan-host-v1.json、元の配置計算はmoe-expert-major-arena-census-v1.json。上流は2026-10-16T01:15Zの296b59d2確認記録があり、次の48時間確認は10-18T01:15Z以降。今回は新しい上流確認を行ったとは扱わない。
+
+正常実行の全ログ・重複bench結果・終了済みworkerの起動記録など235ファイル、論理10,309,594Bを要点抽出後に削除した。未解決の時刻問題は1件の代表UR/stdout計3,897,369Bだけを4MiB予算で保持する。削除内容・ハッシュ・置換先はclosed-placement-diagnostics-retention-v1.json。ソース、モデル、バイナリ、最後のfixture入力、元の結果判定は変更していない。
