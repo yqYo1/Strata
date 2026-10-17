@@ -4,6 +4,7 @@ import fcntl
 import hashlib
 import json
 import re
+import stat
 from pathlib import Path
 import subprocess
 import sys
@@ -138,7 +139,15 @@ def main():
                         fields = line.split(None, 5)
                         if len(fields) != 6 or not fields[5].startswith('/'):
                             continue
+                        # Device/anonymous mappings are not files to inspect:
+                        # opening a DRM node and reading it waits for events.
+                        if fields[5].endswith(' (deleted)'):
+                            guards.require('x' not in fields[1], 'deleted executable mapping')
+                            continue
                         path = str(Path(fields[5]).resolve())
+                        if not stat.S_ISREG(Path(path).stat().st_mode):
+                            guards.require('x' not in fields[1], 'non-file executable mapping')
+                            continue
                         with Path(path).open('rb') as stream:
                             if stream.read(4) != b'\x7fELF':
                                 continue

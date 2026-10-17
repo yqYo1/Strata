@@ -1,0 +1,88 @@
+{
+  "source_commit": "159b3478b96c95aafe80d61e2134aca8990bc214",
+  "runtime_archive": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-score-gemm-entry-engine-build-v2/build/libstrata_sycl_runtime.a",
+    "sha256": "ba34c7d19cf30499c215e86289a921461b9ac426df6f73f61c6769b65d8ee573",
+    "source_commit": "a8aa3345dc095894f45ce5559a4fe640adca290d",
+    "build_receipt": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-entry-engine-build-v2.json",
+    "build_receipt_sha256": "9b7734387f0fc56f36afe9d7bca75e5f0bedcef479271e982025abe1d4334a1a"
+  },
+  "compiler": {
+    "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+    "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
+  },
+  "model_quality_qualified": false,
+  "physical262144_RESTORE_qualified": false,
+  "production_selected": false,
+  "performance_measured": false,
+  "build": {
+    "passed": true,
+    "complete": true,
+    "GPU_executed": false,
+    "exit_code": 0
+  },
+  "active": false,
+  "build_command": [
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+    "-std=c++20",
+    "-O3",
+    "-DNDEBUG",
+    "-DSTRATA_ENABLE_SYCL=1",
+    "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+    "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-fsycl",
+    "-fsycl-id-queries-range=size_t",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/gdn_chunk64/candidate.cpp",
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/gdn_chunk64/fixture.cpp",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-score-gemm-entry-engine-build-v2/build/libstrata_sycl_runtime.a",
+    "-o",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current/sycl_gdn_chunk64"
+  ],
+  "binary_sha256": "995b753adee1df2730cc16e45eaa68dd43d3de61fcec87b1391a3068418c4adf",
+  "ownership_closed": false,
+  "smoke": {
+    "passed": false,
+    "complete": false,
+    "GPU_executed": false,
+    "launch_attempted": true,
+    "observed_runtime_elf_count": 9,
+    "case_results": [],
+    "exit_code": -15,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "error_excerpt": "   ---> urAdapterGet\n   <--- urAdapterGet(.NumEntries = 0, .phAdapters = nullptr, .pNumAdapters = 0x7fff4fdc46ec (1)) -> UR_RESULT_SUCCESS;\n   ---> urAdapterGet\n   <--- urAdapterGet(.NumEntries = 1, .phAdapters = 0x1c94470 {0x1a99e50}, .pNumAdapters = nullptr) -> UR_RESULT_SUCCESS;\n   ---> urAdapterGetInfo\n   <--- urAdapterGetInfo(.hAdapter = 0x1a99e50, .propName = UR_ADAPTER_INFO_BACKEND, .propSize = 4, .pPropValue = 0x7fff4fdc46f0 (UR_BACKEND_LEVEL_ZERO), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;\n   ---> urAdapterSetLoggerCallback\n   <--- urAdapterSetLoggerCallback(.hAdapter = 0x1a99e50, .pfnLoggerCallback = 0x7efd76e4ab30, .pUserData = nullptr, .level = UR_LOGGER_LEVEL_WARN) -> UR_RESULT_SUCCESS;\n   ---> urPlatformGet\n   <--- urPlatformGet(.hAdapter = 0x1a99e50, .NumEntries = 0, .phPlatforms = nullptr, .pNumPlatforms = 0x7fff4fdc46f4 (1)) -> UR_RESULT_SUCCESS;\n   ---> urPlatformGet\n   <--- urPlatformGet(.hAdapter = 0x1a99e50, .NumEntries = 1, .phPlatforms = 0x1c94470 {0x1c94660}, .pNumPlatforms = nullptr) -> UR_RESULT_SUCCESS;\n   ---> urPlatformGetInfo\n   <--- urPlatformGetInfo(.hPlatform = 0x1c94660, .propName = UR_PLATFORM_INFO_BACKEND, .propSize = 4, .pPropValue = 0x7fff4fdc46f4 (UR_BACKEND_LEVEL_ZERO), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;\n   ---> urDeviceGet\n   <--- urDeviceGet(.hPlatform = 0x1c94660, .DeviceType = UR_DEVICE_TYPE_ALL, .NumEntries = 0, .phDevices = nullptr, .pNumDevices = 0x7fff4fdc4574 (1)) -> UR_RESULT_SUCCESS;\n   ---> urDeviceGet\n   <--- urDeviceGet(.hPlatform = 0x1c94660, .DeviceType = UR_DEVICE_TYPE_ALL, .NumEntries = 1, .phDevices = 0x1c96c00 {0x1c96c20}, .pNumDevices = nullptr) -> UR_RESULT_SUCCESS;\n   ---> urPlatformGetInfo\n   <--- urPlatformGetInfo(.hPlatform = 0x1c94660, .propName = UR_PLATFORM_INFO_BACKEND, .propSize = 4, .pPropValue = 0x7fff4fdc4440 (UR_BACKEND_LEVEL_ZERO), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;\n   ---> urDeviceGetInfo\n   <--- urDeviceGetInfo(.hDevice = 0x1c96c20, .propName = UR_DEVICE_INFO_TYPE, .propSize = 4, .pPropValue = 0x7fff4fdc4468 (UR_DEVICE_TYPE_GPU), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;\n   ---> urDeviceGetInfo\n   <--- urDeviceGetInfo(.hDevice = 0x1c96c20, .propName = UR_DEVICE_INFO_PARENT_DEVICE, .propSize = 8, .pPropValue = 0x7fff4fdc4438 (nullptr), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;\n   ---> urDeviceGetInfo\n   <--- urDeviceGetInfo(.hDevice = 0x1c96c20, .propName = UR_DEVICE_INFO_TYPE, .propSize = 4, .pPropValue = 0x7fff4fdc4438 (UR_DEVICE_TYPE_GPU), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;\n   ---> urDeviceGetInfo\n   <--- urDeviceGetInfo(.hDevice = 0x1c96c20, .propName = UR_DEVICE_INFO_USE_NATIVE_ASSERT, .propSize = 1, .pPropValue = 0x7fff4fdc4437 (true), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;\n   ---> urDeviceGetInfo\n   <--- urDeviceGetInfo(.hDevice = 0x1c96c20, .propName = UR_DEVICE_INFO_EXTENSIONS, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7fff4fdc43a8 (245)) -> UR_RESULT_SUCCESS;\n   ---> urDeviceGetInfo\n   <--- urDeviceGetInfo(.hDevice = 0x1c96c20, .propName = UR_DEVICE_INFO_EXTENSIONS, .propSize = 245, .pPropValue = 0x1c97930 (cl_khr_il_program cl_khr_subgroups cl_intel_subgroups cl_intel_subgroups_short cl_intel_required_subgroup_size cl_khr_fp16 cl_khr_fp64 cl_khr_int64_base_atomics cl_khr_int64_extended_atomics cl_khr_3d_image_writes cl_intel_bfloat16_conversions ), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;\n   ---> urDeviceRetain\n   <--- urDeviceRetain(.hDevice = 0x1c96c20) -> UR_RESULT_SUCCESS;\n   ---> urDeviceRelease\n   <--- urDeviceRelease(.hDevice = 0x1c96c20) -> UR_RESULT_SUCCESS;\n   ---> urDeviceGetInfo\n   <--- urDeviceGetInfo(.hDevice = 0x1c96c20, .propName = UR_DEVICE_INFO_SUPPORTED_PARTITIONS, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7fff4fdc4438 (0)) -> UR_RESULT_SUCCESS;\n   ---> urDeviceGet\n   <--- urDeviceGet(.hPlatform = 0x1c94660, .DeviceType = UR_DEVICE_TYPE_GPU, .NumEntries = 0, .phDevices = nullptr, .pNumDevices = 0x7fff4fdc4694 (1)) -> UR_RESULT_SUCCESS;\n   ---> urDeviceGet\n   <--- urDeviceGet(.hPlatform = 0x1c94660, .DeviceType = UR_DEVICE_TYPE_GPU, .NumEntries = 1, .phDevices = 0x1c94640 {0x1c96c20}, .pNumDevices = nullptr) -> UR_RESULT_SUCCESS;\n   ---> urPlatformGetInfo\n   <--- urPlatformGetInfo(.hPlatform = 0x1c94660, .propName = UR_PLATFORM_INFO_BACKEND, .propSize = 4, .pPropValue = 0x7fff4fdc4560 (UR_BACKEND_LEVEL_ZERO), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;\n   ---> urDeviceGetInfo\n   <--- urDeviceGetInfo(.hDevice = 0x1c96c20, .propName = UR_DEVICE_INFO_TYPE, .propSize = 4, .pPropValue = 0x7fff4fdc4588 (UR_DEVICE_TYPE_GPU), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;\n   ---> urDeviceRelease\n   <--- urDeviceRelease(.hDevice = 0x1c96c20) -> UR_RESULT_SUCCESS;\n   ---> urDeviceGetInfo\n   <--- urDeviceGetInfo(.hDevice = 0x1c96c20, .propName = UR_DEVICE_INFO_SUPPORTED_PARTITIONS, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7fff4fdc4558 (0)) -> UR_RESULT_SUCCESS;\n   ---> urDeviceGetInfo\n   <--- urDeviceGetInfo(.hDevice = 0x1c96c20, .propName = UR_DEVICE_INFO_USM_DEVICE_SUPPORT, .propSize = 4, .pPropValue = 0x7fff4fdc48a4 (UR_DEVICE_USM_ACCESS_CAPABILITY_FLAG_ACCESS | UR_DEVICE_USM_ACCESS_CAPABILITY_FLAG_ATOMIC_ACCESS), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;\n   ---> urDeviceGetInfo\n   <--- urDeviceGetInfo(.hDevice = 0x1c96c20, .propName = UR_DEVICE_INFO_USM_HOST_SUPPORT, .propSize = 4, .pPropValue = 0x7fff4fdc48a4 (UR_DEVICE_USM_ACCESS_CAPABILITY_FLAG_ACCESS | UR_DEVICE_USM_ACCESS_CAPABILITY_FLAG_ATOMIC_ACCESS), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;\n   ---> urDeviceGetInfo\n   <--- urDeviceGetInfo(.hDevice = 0x1c96c20, .propName = UR_DEVICE_INFO_COMPONENT_DEVICES, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7fff4fdc4540 (0)) -> UR_RESULT_SUCCESS;\n   ---> urContextCreate\n   <--- urContextCreate(.DeviceCount = 1, .phDevices = 0x1c97e80 {0x1c96c20}, .pProperties = nullptr, .phContext = 0x1c98050 (0x1c98d50)) -> UR_RESULT_SUCCESS;\n   ---> urDeviceGetInfo\n   <--- urDeviceGetInfo(.hDevice = 0x1c96c20, .propName = UR_DEVICE_INFO_QUEUE_PROPERTIES, .propSize = 4, .pPropValue = 0x7fff4fdc4840 (UR_QUEUE_FLAG_OUT_OF_ORDER_EXEC_MODE_ENABLE | UR_QUEUE_FLAG_PROFILING_ENABLE), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;\n   ---> urQueueCreate\n   <--- urQueueCreate(.hContext = 0x1c98d50, .hDevice = 0x1c96c20, .pProperties = 0x7fff4fdc4890 ((struct ur_queue_properties_t){.stype = UR_STRUCTURE_TYPE_QUEUE_PROPERTIES, .pNext = nullptr, .flags = UR_QUEUE_FLAG_PROFILING_ENABLE}), .phQueue = 0x7fff4fdc4888 (0x1c9e270)) -> UR_RESULT_SUCCESS;\n   ---> urQueueCreate\n   <--- urQueueCreate(.hContext = 0x1c98d50, .hDevice = 0x1c96c20, .pProperties = 0x7fff4fdc4890 ((struct ur_queue_properties_t){.stype = UR_STRUCTURE_TYPE_QUEUE_PROPERTIES, .pNext = nullptr, .flags = 0}), .phQueue = 0x7fff4fdc4888 (0x1cac4b0)) -> UR_RESULT_SUCCESS;\n   ---> urDeviceGetInfo\n   <--- urDeviceGetInfo(.hDevice = 0x1c96c20, .propName = UR_DEVICE_INFO_NAME, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7fff4fdc4868 (31)) -> UR_RESULT_SUCCESS;\n   ---> urDeviceGetInfo\n   <--- urDeviceGetInfo(.hDevice = 0x1c96c20, .propName = UR_DEVICE_INFO_NAME, .propSize = 31, .pPropValue = 0x1cb4a70 (Intel(R) Arc(TM) B570 Graphics), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;\n   ---> urDeviceGetInfo\n   <--- urDeviceGetInfo(.hDevice = 0x1c96c20, .propName = UR_DEVICE_INFO_DRIVER_VERSION, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x7fff4fdc4988 (14)) -> UR_RESULT_SUCCESS;\n   ---> urDeviceGetInfo\n   <--- urDeviceGetInfo(.hDevice = 0x1c96c20, .propName = UR_DEVICE_INFO_DRIVER_VERSION, .propSize = 14, .pPropValue = 0x7fff4fdc49c0 (1.17.39395+14), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;\n",
+    "failure_mechanism": "Host ELF observer attempted read(4) on non-regular /dev/dri/renderD128 while the child waited at runtime-ready, before the GPU-work gate token.",
+    "GPU_work_admitted": false,
+    "supervisor_interrupted_by_Main": true,
+    "gpu_kernels_submitted": false,
+    "progress": [
+      "before-runtime",
+      "device=B570 driver=1.17.39395+14",
+      "runtime-ready"
+    ],
+    "observation": {
+      "supervisor_wait": "drm_read",
+      "child_wait": "anon_pipe_read",
+      "fd_target": "/dev/dri/renderD128",
+      "correction": "stat.S_ISREG before opening mapped paths; reject deleted/non-file executable mappings"
+    }
+  },
+  "smoke_command": [
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current/sycl_gdn_chunk64",
+    "--smoke"
+  ],
+  "project_input_count": 151,
+  "environment_reference": {
+    "path": "tools/sycl/measurement_environment.json",
+    "sha256": "637cc6f8f410cf8400fd7b4598182e2e91d1c5cf907ef428e73321faf0aa47fa"
+  },
+  "command": [
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current/sycl_gdn_chunk64",
+    "--smoke"
+  ]
+}
