@@ -1,0 +1,387 @@
+{
+  "schema": "strata-moe-accum-clean-excerpts-v1",
+  "samples": {
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-model-profile-window2-tokens65536-clean-r0-v3.json": {
+      "receipt_sha256": "97163b955712fed1d02eb9254285d7d6d1e43a2e014bd819ee90911c4dd86ba8",
+      "original_status": "PASS",
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "window_lines": [
+        "strata MoE window: windows=240 dequants=65543 jobs=66696 source_H2D_bytes=150627840 GPU_resident_pairs_only=1 operator_max=8192 source_uploads_per_window=1"
+      ],
+      "configuration": [
+        "strata MoE window configuration: requested_mode=2 effective_mode=2 maximum_rows=16384 mixed_fp16_bytes=0"
+      ],
+      "logs": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window2-tokens65536-clean-r0-v3/owned/engine.stderr",
+          "sha256": "3b4fd98b252380490fac044373d56b4d2efa64c59fe52ec110eeb87af5de30ff",
+          "bytes": 6209,
+          "selected_lines": [
+            "strata prefill: FP16 MoE compact requested=1 effective=1, chunk=8192, scratch rows=8192, accounted=2311569920, shared region=1180698624 bytes",
+            "strata serve: prompt 74 tokens = 0 reused + 74 read in 24880 ms (3.0 tok/s), 24 generated in 6469 ms (3.7 tok/s), drafts accepted 18 of 18, 0 checkpoints",
+            "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=161297312; source=resident-Mode0 score_pitch=33 operand_layout=row-major softmax=serial",
+            "strata MoE window configuration: requested_mode=2 effective_mode=2 maximum_rows=16384 mixed_fp16_bytes=0",
+            "strata prefill: layer-major candidate, tokens=78452 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=1606696960 residual_gpu_rows=78452 residual_gpu=1606696960 residual_host=0 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
+            "strata prefill: native16 BF16 HC residual/projection IO and MoE outputs; FP32 local accumulations/router/recurrent state; PLE and final callbacks bridge FP32; QSA tensor IO=BF16, indexer/GDN internals FP32; reserved scratch arena unchanged; unqualified",
+            "strata MoE window: windows=240 dequants=65543 jobs=66696 source_H2D_bytes=150627840 GPU_resident_pairs_only=1 operator_max=8192 source_uploads_per_window=1",
+            "strata serve: prompt 78453 tokens = 0 reused + 78453 read in 136188 ms (576.1 tok/s), 24 generated in 1704 ms (14.1 tok/s), drafts accepted 16 of 21, 0 checkpoints"
+          ]
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window2-tokens65536-clean-r0-v3/owned/journal-before.stdout",
+          "sha256": "adfa02bc6f05fcb5fedab71492533813de0bf66be41603c0a489db6213994f96",
+          "bytes": 156,
+          "selected_lines": [
+            "-- No entries --",
+            "-- cursor: s=9944479cfd1a45c28a589619cb8f2881;i=c2d6cc2;b=cfda0b6a7c134fe2bdf58f9202770840;m=8906c01e90;t=65e085639f63e;x=a9934452ae0f2a4c"
+          ]
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window2-tokens65536-clean-r0-v3/owned/journal-final.stdout",
+          "sha256": "907b59edc1234e3e37b46ddb8bf072c4ca6237c1a35b7c676abd8f9e555fa984",
+          "bytes": 9984,
+          "selected_lines": []
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window2-tokens65536-clean-r0-v3/owned/server.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0,
+          "selected_lines": []
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window2-tokens65536-clean-r0-v3/owned/bench.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0,
+          "selected_lines": []
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window2-tokens65536-clean-r0-v3/owned/prefill-only.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0,
+          "selected_lines": []
+        }
+      ]
+    },
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-model-profile-window8-tokens65536-clean-r0-v3.json": {
+      "receipt_sha256": "3a9b6811b7628a8b9ff389774e1657288374802c1c855e1036b1f33b24968ffd",
+      "original_status": "PASS",
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "window_lines": [
+        "strata MoE accumulator window: windows=96 dequants=31665 jobs=34224 source_H2D_bytes=150627840 GPU_resident_windows_only=1 operator_max=8192 maximum_rows=65536"
+      ],
+      "configuration": [
+        "strata MoE window configuration: requested_mode=8 effective_mode=8 maximum_rows=65536 mixed_fp16_bytes=335544320"
+      ],
+      "logs": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window8-tokens65536-clean-r0-v3/owned/engine.stderr",
+          "sha256": "f5bb1fa4733975a2f7d6ab9e5005407a9424a4c02b3bb938eebfe358f34e0221",
+          "bytes": 6222,
+          "selected_lines": [
+            "strata prefill: FP16 MoE compact requested=1 effective=1, chunk=8192, scratch rows=8192, accounted=2311569920, shared region=1180698624 bytes",
+            "strata serve: prompt 74 tokens = 0 reused + 74 read in 25021 ms (3.0 tok/s), 24 generated in 6557 ms (3.7 tok/s), drafts accepted 18 of 18, 0 checkpoints",
+            "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=161297312; source=resident-Mode0 score_pitch=33 operand_layout=row-major softmax=serial",
+            "strata MoE window configuration: requested_mode=8 effective_mode=8 maximum_rows=65536 mixed_fp16_bytes=335544320",
+            "strata prefill: layer-major candidate, tokens=78452 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=1606696960 residual_gpu_rows=78452 residual_gpu=1606696960 residual_host=0 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
+            "strata prefill: native16 BF16 HC residual/projection IO and MoE outputs; FP32 local accumulations/router/recurrent state; PLE and final callbacks bridge FP32; QSA tensor IO=BF16, indexer/GDN internals FP32; reserved scratch arena unchanged; unqualified",
+            "strata MoE accumulator window: windows=96 dequants=31665 jobs=34224 source_H2D_bytes=150627840 GPU_resident_windows_only=1 operator_max=8192 maximum_rows=65536",
+            "strata serve: prompt 78453 tokens = 0 reused + 78453 read in 130311 ms (602.0 tok/s), 24 generated in 1746 ms (13.7 tok/s), drafts accepted 16 of 21, 0 checkpoints"
+          ]
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window8-tokens65536-clean-r0-v3/owned/journal-before.stdout",
+          "sha256": "d0b62d87f785f8dab705e51cd346b6a63fe0d2834c50471020ff877713f93cb6",
+          "bytes": 156,
+          "selected_lines": [
+            "-- No entries --",
+            "-- cursor: s=9944479cfd1a45c28a589619cb8f2881;i=c2d6ffb;b=cfda0b6a7c134fe2bdf58f9202770840;m=89150ec4f9;t=65e0864889ca7;x=d4a983629f565572"
+          ]
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window8-tokens65536-clean-r0-v3/owned/journal-final.stdout",
+          "sha256": "8e6db65e798170a9b758627f0cb6929ec437b45806aaa36a4bf3215624fb7023",
+          "bytes": 2956,
+          "selected_lines": [
+            "{\"SYSLOG_FACILITY\":\"0\",\"__CURSOR\":\"s=9944479cfd1a45c28a589619cb8f2881;i=c2d70c4;b=cfda0b6a7c134fe2bdf58f9202770840;m=8918a2bd43;t=65e08681c94f1;x=d0f3302e4d91485b\",\"_RUNTIME_SCOPE\":\"system\",\"__SEQNUM\":\"204304580\",\"__SEQNUM_ID\":\"9944479cfd1a45c28a589619cb8f2881\",\"_HOSTNAME\":\"jitakusaba01\",\"__MONOTONIC_TIMESTAMP\":\"588823838019\",\"__REALTIME_TIMESTAMP\":\"1792240059716849\",\"MESSAGE\":\"[UFW BLOCK] IN=enp11s0 OUT= MAC=01:00:5e:00:00:01:54:9b:49:a7:36:e0:08:00 SRC=192.168.0.1 DST=224.0.0.1 LEN=32 TOS=0x00 PREC=0xA0 TTL=1 ID=0 PROTO=2 \",\"_SOURCE_MONOTONIC_TIMESTAMP\":\"588819102632\",\"SYSLOG_IDENTIFIER\":\"kernel\",\"_BOOT_ID\":\"cfda0b6a7c134fe2bdf58f9202770840\",\"_MACHINE_ID\":\"483b0a40e3274d529541e9a13dc5a67d\",\"PRIORITY\":\"4\",\"_TRANSPORT\":\"kernel\"}",
+            "{\"__MONOTONIC_TIMESTAMP\":\"588883862010\",\"SYSLOG_FACILITY\":\"0\",\"__SEQNUM\":\"204304779\",\"_HOSTNAME\":\"jitakusaba01\",\"_MACHINE_ID\":\"483b0a40e3274d529541e9a13dc5a67d\",\"MESSAGE\":\"[UFW BLOCK] IN=enp11s0 OUT= MAC=01:00:5e:00:00:01:54:9b:49:a7:36:e0:08:00 SRC=192.168.0.1 DST=224.0.0.1 LEN=32 TOS=0x00 PREC=0xA0 TTL=1 ID=0 PROTO=2 \",\"_SOURCE_MONOTONIC_TIMESTAMP\":\"588879126355\",\"PRIORITY\":\"4\",\"__REALTIME_TIMESTAMP\":\"1792240119740840\",\"__SEQNUM_ID\":\"9944479cfd1a45c28a589619cb8f2881\",\"__CURSOR\":\"s=9944479cfd1a45c28a589619cb8f2881;i=c2d718b;b=cfda0b6a7c134fe2bdf58f9202770840;m=891c36a1fa;t=65e086bb079a8;x=934b1d84ea4b85d0\",\"_RUNTIME_SCOPE\":\"system\",\"SYSLOG_IDENTIFIER\":\"kernel\",\"_BOOT_ID\":\"cfda0b6a7c134fe2bdf58f9202770840\",\"_TRANSPORT\":\"kernel\"}",
+            "{\"__CURSOR\":\"s=9944479cfd1a45c28a589619cb8f2881;i=c2d7257;b=cfda0b6a7c134fe2bdf58f9202770840;m=891fca3c85;t=65e086f441433;x=7a05a86f0bb4a537\",\"_BOOT_ID\":\"cfda0b6a7c134fe2bdf58f9202770840\",\"__SEQNUM\":\"204304983\",\"__REALTIME_TIMESTAMP\":\"1792240179745843\",\"_TRANSPORT\":\"kernel\",\"__SEQNUM_ID\":\"9944479cfd1a45c28a589619cb8f2881\",\"SYSLOG_FACILITY\":\"0\",\"SYSLOG_IDENTIFIER\":\"kernel\",\"_RUNTIME_SCOPE\":\"system\",\"_SOURCE_MONOTONIC_TIMESTAMP\":\"588939131009\",\"__MONOTONIC_TIMESTAMP\":\"588943867013\",\"_MACHINE_ID\":\"483b0a40e3274d529541e9a13dc5a67d\",\"PRIORITY\":\"4\",\"MESSAGE\":\"[UFW BLOCK] IN=enp11s0 OUT= MAC=01:00:5e:00:00:01:54:9b:49:a7:36:e0:08:00 SRC=192.168.0.1 DST=224.0.0.1 LEN=32 TOS=0x00 PREC=0xA0 TTL=1 ID=0 PROTO=2 \",\"_HOSTNAME\":\"jitakusaba01\"}",
+            "{\"__MONOTONIC_TIMESTAMP\":\"589003871013\",\"__CURSOR\":\"s=9944479cfd1a45c28a589619cb8f2881;i=c2d732d;b=cfda0b6a7c134fe2bdf58f9202770840;m=89235dd325;t=65e0872d7aad3;x=34d76f05e064a1a9\",\"_TRANSPORT\":\"kernel\",\"SYSLOG_IDENTIFIER\":\"kernel\",\"_MACHINE_ID\":\"483b0a40e3274d529541e9a13dc5a67d\",\"__SEQNUM\":\"204305197\",\"__SEQNUM_ID\":\"9944479cfd1a45c28a589619cb8f2881\",\"PRIORITY\":\"4\",\"_BOOT_ID\":\"cfda0b6a7c134fe2bdf58f9202770840\",\"MESSAGE\":\"[UFW BLOCK] IN=enp11s0 OUT= MAC=01:00:5e:00:00:01:54:9b:49:a7:36:e0:08:00 SRC=192.168.0.1 DST=224.0.0.1 LEN=32 TOS=0x00 PREC=0xA0 TTL=1 ID=0 PROTO=2 \",\"_RUNTIME_SCOPE\":\"system\",\"SYSLOG_FACILITY\":\"0\",\"__REALTIME_TIMESTAMP\":\"1792240239749843\",\"_HOSTNAME\":\"jitakusaba01\",\"_SOURCE_MONOTONIC_TIMESTAMP\":\"588999134888\"}"
+          ]
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window8-tokens65536-clean-r0-v3/owned/server.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0,
+          "selected_lines": []
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window8-tokens65536-clean-r0-v3/owned/bench.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0,
+          "selected_lines": []
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window8-tokens65536-clean-r0-v3/owned/prefill-only.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0,
+          "selected_lines": []
+        }
+      ]
+    },
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-model-profile-window8-tokens65536-clean-r1-v3.json": {
+      "receipt_sha256": "3ce0cd14522292450d159dab61e9f9a1a492e1ad28447715e82ae49647a8514c",
+      "original_status": "PASS",
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "window_lines": [
+        "strata MoE accumulator window: windows=96 dequants=31665 jobs=34224 source_H2D_bytes=150627840 GPU_resident_windows_only=1 operator_max=8192 maximum_rows=65536"
+      ],
+      "configuration": [
+        "strata MoE window configuration: requested_mode=8 effective_mode=8 maximum_rows=65536 mixed_fp16_bytes=335544320"
+      ],
+      "logs": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window8-tokens65536-clean-r1-v3/owned/engine.stderr",
+          "sha256": "97c7418737d50bc396fe275802e98afacd0f5180a6e82d1646cbc69fa9319544",
+          "bytes": 6221,
+          "selected_lines": [
+            "strata prefill: FP16 MoE compact requested=1 effective=1, chunk=8192, scratch rows=8192, accounted=2311569920, shared region=1180698624 bytes",
+            "strata serve: prompt 74 tokens = 0 reused + 74 read in 25303 ms (2.9 tok/s), 24 generated in 6559 ms (3.7 tok/s), drafts accepted 18 of 18, 0 checkpoints",
+            "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=161297312; source=resident-Mode0 score_pitch=33 operand_layout=row-major softmax=serial",
+            "strata MoE window configuration: requested_mode=8 effective_mode=8 maximum_rows=65536 mixed_fp16_bytes=335544320",
+            "strata prefill: layer-major candidate, tokens=78452 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=1606696960 residual_gpu_rows=78452 residual_gpu=1606696960 residual_host=0 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
+            "strata prefill: native16 BF16 HC residual/projection IO and MoE outputs; FP32 local accumulations/router/recurrent state; PLE and final callbacks bridge FP32; QSA tensor IO=BF16, indexer/GDN internals FP32; reserved scratch arena unchanged; unqualified",
+            "strata MoE accumulator window: windows=96 dequants=31665 jobs=34224 source_H2D_bytes=150627840 GPU_resident_windows_only=1 operator_max=8192 maximum_rows=65536",
+            "strata serve: prompt 78453 tokens = 0 reused + 78453 read in 130420 ms (601.5 tok/s), 24 generated in 1814 ms (13.2 tok/s), drafts accepted 16 of 21, 0 checkpoints"
+          ]
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window8-tokens65536-clean-r1-v3/owned/journal-before.stdout",
+          "sha256": "f07c08f4cfae835335268799d27ad1b0e580207645fc9e6172a2d7b4baacfd7d",
+          "bytes": 156,
+          "selected_lines": [
+            "-- No entries --",
+            "-- cursor: s=9944479cfd1a45c28a589619cb8f2881;i=c2d73fc;b=cfda0b6a7c134fe2bdf58f9202770840;m=8926f16b71;t=65e08766b431f;x=909423ce9674f025"
+          ]
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window8-tokens65536-clean-r1-v3/owned/journal-final.stdout",
+          "sha256": "73390746755547cce3524c0942b92b3d85a729bd176801c5d9e33147b7392a97",
+          "bytes": 5403,
+          "selected_lines": []
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window8-tokens65536-clean-r1-v3/owned/server.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0,
+          "selected_lines": []
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window8-tokens65536-clean-r1-v3/owned/bench.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0,
+          "selected_lines": []
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window8-tokens65536-clean-r1-v3/owned/prefill-only.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0,
+          "selected_lines": []
+        }
+      ]
+    },
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-model-profile-window2-tokens65536-clean-r1-v3.json": {
+      "receipt_sha256": "26a153e87de4ab5bdedbd5dd00d428754208c5dfb9fbc0c77a20ecbb41a422f7",
+      "original_status": "PASS",
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "window_lines": [
+        "strata MoE window: windows=240 dequants=65543 jobs=66696 source_H2D_bytes=150627840 GPU_resident_pairs_only=1 operator_max=8192 source_uploads_per_window=1"
+      ],
+      "configuration": [
+        "strata MoE window configuration: requested_mode=2 effective_mode=2 maximum_rows=16384 mixed_fp16_bytes=0"
+      ],
+      "logs": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window2-tokens65536-clean-r1-v3/owned/engine.stderr",
+          "sha256": "5dae589d393d3026e429489390e652dfa4ac93858c79973e37c494c4cd2b3faf",
+          "bytes": 6210,
+          "selected_lines": [
+            "strata prefill: FP16 MoE compact requested=1 effective=1, chunk=8192, scratch rows=8192, accounted=2311569920, shared region=1180698624 bytes",
+            "strata serve: prompt 74 tokens = 0 reused + 74 read in 24730 ms (3.0 tok/s), 24 generated in 6330 ms (3.8 tok/s), drafts accepted 18 of 18, 0 checkpoints",
+            "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=161297312; source=resident-Mode0 score_pitch=33 operand_layout=row-major softmax=serial",
+            "strata MoE window configuration: requested_mode=2 effective_mode=2 maximum_rows=16384 mixed_fp16_bytes=0",
+            "strata prefill: layer-major candidate, tokens=78452 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=1606696960 residual_gpu_rows=78452 residual_gpu=1606696960 residual_host=0 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
+            "strata prefill: native16 BF16 HC residual/projection IO and MoE outputs; FP32 local accumulations/router/recurrent state; PLE and final callbacks bridge FP32; QSA tensor IO=BF16, indexer/GDN internals FP32; reserved scratch arena unchanged; unqualified",
+            "strata MoE window: windows=240 dequants=65543 jobs=66696 source_H2D_bytes=150627840 GPU_resident_pairs_only=1 operator_max=8192 source_uploads_per_window=1",
+            "strata serve: prompt 78453 tokens = 0 reused + 78453 read in 136115 ms (576.4 tok/s), 24 generated in 1713 ms (14.0 tok/s), drafts accepted 16 of 21, 0 checkpoints"
+          ]
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window2-tokens65536-clean-r1-v3/owned/journal-before.stdout",
+          "sha256": "2077bf9009d6aef20b496e9f0a8e17ff3990ef5753ad59f1aadf4cd7f65e9022",
+          "bytes": 156,
+          "selected_lines": [
+            "-- No entries --",
+            "-- cursor: s=9944479cfd1a45c28a589619cb8f2881;i=c2d7701;b=cfda0b6a7c134fe2bdf58f9202770840;m=8935413906;t=65e0884bb10b4;x=5aad61f8c9d3a560"
+          ]
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window2-tokens65536-clean-r1-v3/owned/journal-final.stdout",
+          "sha256": "aff776bcedfd166cd7776f7fdb2aa648e030fe598eda0f3a15a1333fdbe9de0f",
+          "bytes": 10002,
+          "selected_lines": []
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window2-tokens65536-clean-r1-v3/owned/server.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0,
+          "selected_lines": []
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window2-tokens65536-clean-r1-v3/owned/bench.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0,
+          "selected_lines": []
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window2-tokens65536-clean-r1-v3/owned/prefill-only.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0,
+          "selected_lines": []
+        }
+      ]
+    },
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-model-profile-window2-tokens65536-clean-r2-v3.json": {
+      "receipt_sha256": "d8965b7ea397aa4cd7b6894aeb02d4120f80c9f197688723f40affe610919737",
+      "original_status": "PASS",
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "window_lines": [
+        "strata MoE window: windows=240 dequants=65543 jobs=66696 source_H2D_bytes=150627840 GPU_resident_pairs_only=1 operator_max=8192 source_uploads_per_window=1"
+      ],
+      "configuration": [
+        "strata MoE window configuration: requested_mode=2 effective_mode=2 maximum_rows=16384 mixed_fp16_bytes=0"
+      ],
+      "logs": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window2-tokens65536-clean-r2-v3/owned/engine.stderr",
+          "sha256": "4e8826918867336a24de17b2f7f778c81b69943407de179cc2f184c717734319",
+          "bytes": 6210,
+          "selected_lines": [
+            "strata prefill: FP16 MoE compact requested=1 effective=1, chunk=8192, scratch rows=8192, accounted=2311569920, shared region=1180698624 bytes",
+            "strata serve: prompt 74 tokens = 0 reused + 74 read in 24785 ms (3.0 tok/s), 24 generated in 6454 ms (3.7 tok/s), drafts accepted 18 of 18, 0 checkpoints",
+            "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=161297312; source=resident-Mode0 score_pitch=33 operand_layout=row-major softmax=serial",
+            "strata MoE window configuration: requested_mode=2 effective_mode=2 maximum_rows=16384 mixed_fp16_bytes=0",
+            "strata prefill: layer-major candidate, tokens=78452 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=1606696960 residual_gpu_rows=78452 residual_gpu=1606696960 residual_host=0 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
+            "strata prefill: native16 BF16 HC residual/projection IO and MoE outputs; FP32 local accumulations/router/recurrent state; PLE and final callbacks bridge FP32; QSA tensor IO=BF16, indexer/GDN internals FP32; reserved scratch arena unchanged; unqualified",
+            "strata MoE window: windows=240 dequants=65543 jobs=66696 source_H2D_bytes=150627840 GPU_resident_pairs_only=1 operator_max=8192 source_uploads_per_window=1",
+            "strata serve: prompt 78453 tokens = 0 reused + 78453 read in 136112 ms (576.4 tok/s), 24 generated in 1709 ms (14.0 tok/s), drafts accepted 16 of 21, 0 checkpoints"
+          ]
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window2-tokens65536-clean-r2-v3/owned/journal-before.stdout",
+          "sha256": "57766393772da5f4ff9033fc829f0ae915c9a40bbfb02e419a6bc64258793f07",
+          "bytes": 156,
+          "selected_lines": [
+            "-- No entries --",
+            "-- cursor: s=9944479cfd1a45c28a589619cb8f2881;i=c2d7a1d;b=cfda0b6a7c134fe2bdf58f9202770840;m=89438fcc7b;t=65e089309a429;x=61351d66bdebfd0a"
+          ]
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window2-tokens65536-clean-r2-v3/owned/journal-final.stdout",
+          "sha256": "0418d5b13683af86c5249af1f80caa1faac2e627c499087d840b0e61cfe4e00f",
+          "bytes": 2956,
+          "selected_lines": [
+            "{\"__CURSOR\":\"s=9944479cfd1a45c28a589619cb8f2881;i=c2d7af4;b=cfda0b6a7c134fe2bdf58f9202770840;m=894723537f;t=65e08969d2b2d;x=6bcaca1830fd3c6f\",\"_HOSTNAME\":\"jitakusaba01\",\"__REALTIME_TIMESTAMP\":\"1792240839895853\",\"__SEQNUM\":\"204307188\",\"_BOOT_ID\":\"cfda0b6a7c134fe2bdf58f9202770840\",\"MESSAGE\":\"[UFW BLOCK] IN=enp11s0 OUT= MAC=01:00:5e:00:00:01:54:9b:49:a7:36:e0:08:00 SRC=192.168.0.1 DST=224.0.0.1 LEN=32 TOS=0x00 PREC=0xA0 TTL=1 ID=0 PROTO=2 \",\"PRIORITY\":\"4\",\"__SEQNUM_ID\":\"9944479cfd1a45c28a589619cb8f2881\",\"_SOURCE_MONOTONIC_TIMESTAMP\":\"589599277378\",\"_TRANSPORT\":\"kernel\",\"__MONOTONIC_TIMESTAMP\":\"589604017023\",\"_RUNTIME_SCOPE\":\"system\",\"SYSLOG_IDENTIFIER\":\"kernel\",\"SYSLOG_FACILITY\":\"0\",\"_MACHINE_ID\":\"483b0a40e3274d529541e9a13dc5a67d\"}",
+            "{\"MESSAGE\":\"[UFW BLOCK] IN=enp11s0 OUT= MAC=01:00:5e:00:00:01:54:9b:49:a7:36:e0:08:00 SRC=192.168.0.1 DST=224.0.0.1 LEN=32 TOS=0x00 PREC=0xA0 TTL=1 ID=0 PROTO=2 \",\"SYSLOG_IDENTIFIER\":\"kernel\",\"__SEQNUM\":\"204307391\",\"__SEQNUM_ID\":\"9944479cfd1a45c28a589619cb8f2881\",\"PRIORITY\":\"4\",\"_MACHINE_ID\":\"483b0a40e3274d529541e9a13dc5a67d\",\"_BOOT_ID\":\"cfda0b6a7c134fe2bdf58f9202770840\",\"__REALTIME_TIMESTAMP\":\"1792240899910856\",\"__CURSOR\":\"s=9944479cfd1a45c28a589619cb8f2881;i=c2d7bbf;b=cfda0b6a7c134fe2bdf58f9202770840;m=894ab7151a;t=65e089a30ecc8;x=b4bc74b565c8ed95\",\"__MONOTONIC_TIMESTAMP\":\"589664032026\",\"_RUNTIME_SCOPE\":\"system\",\"_SOURCE_MONOTONIC_TIMESTAMP\":\"589659292139\",\"_TRANSPORT\":\"kernel\",\"SYSLOG_FACILITY\":\"0\",\"_HOSTNAME\":\"jitakusaba01\"}",
+            "{\"__REALTIME_TIMESTAMP\":\"1792240959917845\",\"SYSLOG_FACILITY\":\"0\",\"_HOSTNAME\":\"jitakusaba01\",\"__MONOTONIC_TIMESTAMP\":\"589724039015\",\"PRIORITY\":\"4\",\"__CURSOR\":\"s=9944479cfd1a45c28a589619cb8f2881;i=c2d7c82;b=cfda0b6a7c134fe2bdf58f9202770840;m=894e4ab767;t=65e089dc48f15;x=961349314c7baffa\",\"MESSAGE\":\"[UFW BLOCK] IN=enp11s0 OUT= MAC=01:00:5e:00:00:01:54:9b:49:a7:36:e0:08:00 SRC=192.168.0.1 DST=224.0.0.1 LEN=32 TOS=0x00 PREC=0xA0 TTL=1 ID=0 PROTO=2 \",\"_BOOT_ID\":\"cfda0b6a7c134fe2bdf58f9202770840\",\"_TRANSPORT\":\"kernel\",\"_MACHINE_ID\":\"483b0a40e3274d529541e9a13dc5a67d\",\"_SOURCE_MONOTONIC_TIMESTAMP\":\"589719298228\",\"__SEQNUM\":\"204307586\",\"_RUNTIME_SCOPE\":\"system\",\"__SEQNUM_ID\":\"9944479cfd1a45c28a589619cb8f2881\",\"SYSLOG_IDENTIFIER\":\"kernel\"}",
+            "{\"__SEQNUM\":\"204307786\",\"__MONOTONIC_TIMESTAMP\":\"589784053015\",\"_HOSTNAME\":\"jitakusaba01\",\"_SOURCE_MONOTONIC_TIMESTAMP\":\"589779312288\",\"_BOOT_ID\":\"cfda0b6a7c134fe2bdf58f9202770840\",\"__SEQNUM_ID\":\"9944479cfd1a45c28a589619cb8f2881\",\"__REALTIME_TIMESTAMP\":\"1792241019931845\",\"_TRANSPORT\":\"kernel\",\"MESSAGE\":\"[UFW BLOCK] IN=enp11s0 OUT= MAC=01:00:5e:00:00:01:54:9b:49:a7:36:e0:08:00 SRC=192.168.0.1 DST=224.0.0.1 LEN=32 TOS=0x00 PREC=0xA0 TTL=1 ID=0 PROTO=2 \",\"_MACHINE_ID\":\"483b0a40e3274d529541e9a13dc5a67d\",\"SYSLOG_FACILITY\":\"0\",\"SYSLOG_IDENTIFIER\":\"kernel\",\"__CURSOR\":\"s=9944479cfd1a45c28a589619cb8f2881;i=c2d7d4a;b=cfda0b6a7c134fe2bdf58f9202770840;m=8951de7517;t=65e08a1584cc5;x=c3f421d6e15b0f53\",\"PRIORITY\":\"4\",\"_RUNTIME_SCOPE\":\"system\"}"
+          ]
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window2-tokens65536-clean-r2-v3/owned/server.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0,
+          "selected_lines": []
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window2-tokens65536-clean-r2-v3/owned/bench.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0,
+          "selected_lines": []
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window2-tokens65536-clean-r2-v3/owned/prefill-only.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0,
+          "selected_lines": []
+        }
+      ]
+    },
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-model-profile-window8-tokens65536-clean-r2-v3.json": {
+      "receipt_sha256": "c524310e3d55f72014c5f94579b61376cb1c02d0fcf319bb6263cbd66887f535",
+      "original_status": "PASS",
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "window_lines": [
+        "strata MoE accumulator window: windows=96 dequants=31665 jobs=34224 source_H2D_bytes=150627840 GPU_resident_windows_only=1 operator_max=8192 maximum_rows=65536"
+      ],
+      "configuration": [
+        "strata MoE window configuration: requested_mode=8 effective_mode=8 maximum_rows=65536 mixed_fp16_bytes=335544320"
+      ],
+      "logs": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window8-tokens65536-clean-r2-v3/owned/engine.stderr",
+          "sha256": "566839fc5178052e90eab83fdd7b51fe893a0bc17d1f63d3bc11ca8ea51d2b82",
+          "bytes": 6221,
+          "selected_lines": [
+            "strata prefill: FP16 MoE compact requested=1 effective=1, chunk=8192, scratch rows=8192, accounted=2311569920, shared region=1180698624 bytes",
+            "strata serve: prompt 74 tokens = 0 reused + 74 read in 24758 ms (3.0 tok/s), 24 generated in 6412 ms (3.7 tok/s), drafts accepted 18 of 18, 0 checkpoints",
+            "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=161297312; source=resident-Mode0 score_pitch=33 operand_layout=row-major softmax=serial",
+            "strata MoE window configuration: requested_mode=8 effective_mode=8 maximum_rows=65536 mixed_fp16_bytes=335544320",
+            "strata prefill: layer-major candidate, tokens=78452 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=1606696960 residual_gpu_rows=78452 residual_gpu=1606696960 residual_host=0 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
+            "strata prefill: native16 BF16 HC residual/projection IO and MoE outputs; FP32 local accumulations/router/recurrent state; PLE and final callbacks bridge FP32; QSA tensor IO=BF16, indexer/GDN internals FP32; reserved scratch arena unchanged; unqualified",
+            "strata MoE accumulator window: windows=96 dequants=31665 jobs=34224 source_H2D_bytes=150627840 GPU_resident_windows_only=1 operator_max=8192 maximum_rows=65536",
+            "strata serve: prompt 78453 tokens = 0 reused + 78453 read in 130070 ms (603.2 tok/s), 24 generated in 1719 ms (14.0 tok/s), drafts accepted 16 of 21, 0 checkpoints"
+          ]
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window8-tokens65536-clean-r2-v3/owned/journal-before.stdout",
+          "sha256": "3bb7472402dc69260de361b988a25254aed607364488b2a90f918587184ac4e3",
+          "bytes": 156,
+          "selected_lines": [
+            "-- No entries --",
+            "-- cursor: s=9944479cfd1a45c28a589619cb8f2881;i=c2d7d4a;b=cfda0b6a7c134fe2bdf58f9202770840;m=8951de7517;t=65e08a1584cc5;x=c3f421d6e15b0f53"
+          ]
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window8-tokens65536-clean-r2-v3/owned/journal-final.stdout",
+          "sha256": "39f9d9071e2edd2093335feff67894bacf433c9669ea7c7e950cb691fe963c68",
+          "bytes": 10785,
+          "selected_lines": []
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window8-tokens65536-clean-r2-v3/owned/server.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0,
+          "selected_lines": []
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window8-tokens65536-clean-r2-v3/owned/bench.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0,
+          "selected_lines": []
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-model-profile-window8-tokens65536-clean-r2-v3/owned/prefill-only.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0,
+          "selected_lines": []
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,515 @@
+{
+  "schema": "strata-moe-window10-component-retention-v1",
+  "recorded_at": "2026-10-17T12:55:19.727924+00:00",
+  "complete": true,
+  "components": [
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-plan-host-v3.json",
+      "sha256": "05a84b4420a7459732d2ff0a3574776a2206176646d2c797044f6a5702e16973",
+      "passed": true,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "stdout": null,
+      "case_result": null,
+      "UR_kernel_submissions": null,
+      "compile_argv": null,
+      "dynamic": null,
+      "snapshots_in_original_receipt": 0
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-build-v2.json",
+      "sha256": "351d9a3d2f9ec8b1f08d2fcdb6ec7c3ab33e90cace52138289aa3125bf403f5e",
+      "passed": true,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "stdout": null,
+      "case_result": null,
+      "UR_kernel_submissions": null,
+      "compile_argv": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-std=c++20",
+        "-O3",
+        "-DNDEBUG",
+        "-DSTRATA_ENABLE_SYCL=1",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window/include",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fsycl",
+        "-fsycl-id-queries-range=size_t",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window/tests/sycl/moe_accum.cpp",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window/src/prefill/sycl/native16.cpp",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-command-service-collector-engine-build-v2/build/libstrata_sycl_runtime.a",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-build-v2/sycl_moe_accum"
+      ],
+      "dynamic": "\nDynamic section at offset 0x36db0 contains 28 entries:\n  Tag        Type                         Name/Value\n 0x0000000000000001 (NEEDED)             Shared library: [libstdc++.so.6]\n 0x0000000000000001 (NEEDED)             Shared library: [libm.so.6]\n 0x0000000000000001 (NEEDED)             Shared library: [libgcc_s.so.1]\n 0x0000000000000001 (NEEDED)             Shared library: [libsycl.so.9]\n 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]\n 0x000000000000000c (INIT)               0x404000\n 0x000000000000000d (FINI)               0x4199b4\n 0x0000000000000019 (INIT_ARRAY)         0x437b98\n 0x000000000000001b (INIT_ARRAYSZ)       24 (bytes)\n 0x000000000000001a (FINI_ARRAY)         0x437bb0\n 0x000000000000001c (FINI_ARRAYSZ)       16 (bytes)\n 0x000000006ffffef5 (GNU_HASH)           0x4003b0\n 0x0000000000000005 (STRTAB)             0x401280\n 0x0000000000000006 (SYMTAB)             0x400488\n 0x000000000000000a (STRSZ)              6698 (bytes)\n 0x000000000000000b (SYMENT)             24 (bytes)\n 0x0000000000000015 (DEBUG)              0x0\n 0x0000000000000003 (PLTGOT)             0x437fe8\n 0x0000000000000002 (PLTRELSZ)           3048 (bytes)\n 0x0000000000000014 (PLTREL)             RELA\n 0x0000000000000017 (JMPREL)             0x403138\n 0x0000000000000007 (RELA)               0x402f58\n 0x0000000000000008 (RELASZ)             480 (bytes)\n 0x0000000000000009 (RELAENT)            24 (bytes)\n 0x000000006ffffffe (VERNEED)            0x402dd8\n 0x000000006fffffff (VERNEEDNUM)         4\n 0x000000006ffffff0 (VERSYM)             0x402caa\n 0x0000000000000000 (NULL)               0x0\n",
+      "snapshots_in_original_receipt": 0
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-smoke-v2.json",
+      "sha256": "fc5d1890b3e761c9a66012005d4dc7cea1fee9e28530c7c54b6b681569dab809",
+      "passed": true,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "stdout": "ACCUM_READY before-runtime\ndevice=Intel(R) Arc(TM) B570 Graphics driver=1.17.39395+14\nACCUM_READY runtime-ready\ncase rows=3 hot=0 numeric=0 fault=0 jobs=30 expected_kernels=63 status=0 old_order_bf16_differences=0 guards=PASS full_output=PASS host_plan=VALIDATED PASS\nfixture drain begin\nfixture drain end\nACCUM_READY after-cleanup\nfixture_status=PASS model_PP=UNRUN\n",
+      "case_result": "case rows=3 hot=0 numeric=0 fault=0 jobs=30 expected_kernels=63 status=0 old_order_bf16_differences=0 guards=PASS full_output=PASS host_plan=VALIDATED PASS",
+      "UR_kernel_submissions": 63,
+      "compile_argv": null,
+      "dynamic": "\nDynamic section at offset 0x36db0 contains 28 entries:\n  Tag        Type                         Name/Value\n 0x0000000000000001 (NEEDED)             Shared library: [libstdc++.so.6]\n 0x0000000000000001 (NEEDED)             Shared library: [libm.so.6]\n 0x0000000000000001 (NEEDED)             Shared library: [libgcc_s.so.1]\n 0x0000000000000001 (NEEDED)             Shared library: [libsycl.so.9]\n 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]\n 0x000000000000000c (INIT)               0x404000\n 0x000000000000000d (FINI)               0x4199b4\n 0x0000000000000019 (INIT_ARRAY)         0x437b98\n 0x000000000000001b (INIT_ARRAYSZ)       24 (bytes)\n 0x000000000000001a (FINI_ARRAY)         0x437bb0\n 0x000000000000001c (FINI_ARRAYSZ)       16 (bytes)\n 0x000000006ffffef5 (GNU_HASH)           0x4003b0\n 0x0000000000000005 (STRTAB)             0x401280\n 0x0000000000000006 (SYMTAB)             0x400488\n 0x000000000000000a (STRSZ)              6698 (bytes)\n 0x000000000000000b (SYMENT)             24 (bytes)\n 0x0000000000000015 (DEBUG)              0x0\n 0x0000000000000003 (PLTGOT)             0x437fe8\n 0x0000000000000002 (PLTRELSZ)           3048 (bytes)\n 0x0000000000000014 (PLTREL)             RELA\n 0x0000000000000017 (JMPREL)             0x403138\n 0x0000000000000007 (RELA)               0x402f58\n 0x0000000000000008 (RELASZ)             480 (bytes)\n 0x0000000000000009 (RELAENT)            24 (bytes)\n 0x000000006ffffffe (VERNEED)            0x402dd8\n 0x000000006fffffff (VERNEEDNUM)         4\n 0x000000006ffffff0 (VERSYM)             0x402caa\n 0x0000000000000000 (NULL)               0x0\n",
+      "snapshots_in_original_receipt": 3
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-hot81920-v2.json",
+      "sha256": "875bf3d024fb94d4aa4046b0e10cefece8efcb5bc92ad734273b6415ea47233c",
+      "passed": true,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "stdout": "ACCUM_READY before-runtime\ndevice=Intel(R) Arc(TM) B570 Graphics driver=1.17.39395+14\nACCUM_READY runtime-ready\ncase rows=81920 hot=1 numeric=0 fault=0 jobs=100 expected_kernels=221 status=0 old_order_bf16_differences=0 guards=PASS full_output=PASS host_plan=VALIDATED PASS\nfixture drain begin\nfixture drain end\nACCUM_READY after-cleanup\nfixture_status=PASS model_PP=UNRUN\n",
+      "case_result": "case rows=81920 hot=1 numeric=0 fault=0 jobs=100 expected_kernels=221 status=0 old_order_bf16_differences=0 guards=PASS full_output=PASS host_plan=VALIDATED PASS",
+      "UR_kernel_submissions": 221,
+      "compile_argv": null,
+      "dynamic": "\nDynamic section at offset 0x36db0 contains 28 entries:\n  Tag        Type                         Name/Value\n 0x0000000000000001 (NEEDED)             Shared library: [libstdc++.so.6]\n 0x0000000000000001 (NEEDED)             Shared library: [libm.so.6]\n 0x0000000000000001 (NEEDED)             Shared library: [libgcc_s.so.1]\n 0x0000000000000001 (NEEDED)             Shared library: [libsycl.so.9]\n 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]\n 0x000000000000000c (INIT)               0x404000\n 0x000000000000000d (FINI)               0x4199b4\n 0x0000000000000019 (INIT_ARRAY)         0x437b98\n 0x000000000000001b (INIT_ARRAYSZ)       24 (bytes)\n 0x000000000000001a (FINI_ARRAY)         0x437bb0\n 0x000000000000001c (FINI_ARRAYSZ)       16 (bytes)\n 0x000000006ffffef5 (GNU_HASH)           0x4003b0\n 0x0000000000000005 (STRTAB)             0x401280\n 0x0000000000000006 (SYMTAB)             0x400488\n 0x000000000000000a (STRSZ)              6698 (bytes)\n 0x000000000000000b (SYMENT)             24 (bytes)\n 0x0000000000000015 (DEBUG)              0x0\n 0x0000000000000003 (PLTGOT)             0x437fe8\n 0x0000000000000002 (PLTRELSZ)           3048 (bytes)\n 0x0000000000000014 (PLTREL)             RELA\n 0x0000000000000017 (JMPREL)             0x403138\n 0x0000000000000007 (RELA)               0x402f58\n 0x0000000000000008 (RELASZ)             480 (bytes)\n 0x0000000000000009 (RELAENT)            24 (bytes)\n 0x000000006ffffffe (VERNEED)            0x402dd8\n 0x000000006fffffff (VERNEEDNUM)         4\n 0x000000006ffffff0 (VERSYM)             0x402caa\n 0x0000000000000000 (NULL)               0x0\n",
+      "snapshots_in_original_receipt": 3
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-balanced81920-v2.json",
+      "sha256": "fe3bf127b04f1dc3600c3bb30d48a9c78c28953fbef69ab491cb8875719c1e37",
+      "passed": true,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "stdout": "ACCUM_READY before-runtime\ndevice=Intel(R) Arc(TM) B570 Graphics driver=1.17.39395+14\nACCUM_READY runtime-ready\ncase rows=81920 hot=0 numeric=0 fault=0 jobs=512 expected_kernels=1045 status=0 old_order_bf16_differences=0 guards=PASS full_output=PASS host_plan=VALIDATED PASS\nfixture drain begin\nfixture drain end\nACCUM_READY after-cleanup\nfixture_status=PASS model_PP=UNRUN\n",
+      "case_result": "case rows=81920 hot=0 numeric=0 fault=0 jobs=512 expected_kernels=1045 status=0 old_order_bf16_differences=0 guards=PASS full_output=PASS host_plan=VALIDATED PASS",
+      "UR_kernel_submissions": 1045,
+      "compile_argv": null,
+      "dynamic": "\nDynamic section at offset 0x36db0 contains 28 entries:\n  Tag        Type                         Name/Value\n 0x0000000000000001 (NEEDED)             Shared library: [libstdc++.so.6]\n 0x0000000000000001 (NEEDED)             Shared library: [libm.so.6]\n 0x0000000000000001 (NEEDED)             Shared library: [libgcc_s.so.1]\n 0x0000000000000001 (NEEDED)             Shared library: [libsycl.so.9]\n 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]\n 0x000000000000000c (INIT)               0x404000\n 0x000000000000000d (FINI)               0x4199b4\n 0x0000000000000019 (INIT_ARRAY)         0x437b98\n 0x000000000000001b (INIT_ARRAYSZ)       24 (bytes)\n 0x000000000000001a (FINI_ARRAY)         0x437bb0\n 0x000000000000001c (FINI_ARRAYSZ)       16 (bytes)\n 0x000000006ffffef5 (GNU_HASH)           0x4003b0\n 0x0000000000000005 (STRTAB)             0x401280\n 0x0000000000000006 (SYMTAB)             0x400488\n 0x000000000000000a (STRSZ)              6698 (bytes)\n 0x000000000000000b (SYMENT)             24 (bytes)\n 0x0000000000000015 (DEBUG)              0x0\n 0x0000000000000003 (PLTGOT)             0x437fe8\n 0x0000000000000002 (PLTRELSZ)           3048 (bytes)\n 0x0000000000000014 (PLTREL)             RELA\n 0x0000000000000017 (JMPREL)             0x403138\n 0x0000000000000007 (RELA)               0x402f58\n 0x0000000000000008 (RELASZ)             480 (bytes)\n 0x0000000000000009 (RELAENT)            24 (bytes)\n 0x000000006ffffffe (VERNEED)            0x402dd8\n 0x000000006fffffff (VERNEEDNUM)         4\n 0x000000006ffffff0 (VERSYM)             0x402caa\n 0x0000000000000000 (NULL)               0x0\n",
+      "snapshots_in_original_receipt": 3
+    },
+    {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-partial78452-v2.json",
+      "sha256": "11b42b175a450921baf49336facb43c7a20bfe95639e2939e3024d75d7e0f8a4",
+      "passed": true,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "stdout": "ACCUM_READY before-runtime\ndevice=Intel(R) Arc(TM) B570 Graphics driver=1.17.39395+14\nACCUM_READY runtime-ready\ncase rows=78452 hot=0 numeric=0 fault=0 jobs=512 expected_kernels=1045 status=0 old_order_bf16_differences=0 guards=PASS full_output=PASS host_plan=VALIDATED PASS\nfixture drain begin\nfixture drain end\nACCUM_READY after-cleanup\nfixture_status=PASS model_PP=UNRUN\n",
+      "case_result": "case rows=78452 hot=0 numeric=0 fault=0 jobs=512 expected_kernels=1045 status=0 old_order_bf16_differences=0 guards=PASS full_output=PASS host_plan=VALIDATED PASS",
+      "UR_kernel_submissions": 1045,
+      "compile_argv": null,
+      "dynamic": "\nDynamic section at offset 0x36db0 contains 28 entries:\n  Tag        Type                         Name/Value\n 0x0000000000000001 (NEEDED)             Shared library: [libstdc++.so.6]\n 0x0000000000000001 (NEEDED)             Shared library: [libm.so.6]\n 0x0000000000000001 (NEEDED)             Shared library: [libgcc_s.so.1]\n 0x0000000000000001 (NEEDED)             Shared library: [libsycl.so.9]\n 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]\n 0x000000000000000c (INIT)               0x404000\n 0x000000000000000d (FINI)               0x4199b4\n 0x0000000000000019 (INIT_ARRAY)         0x437b98\n 0x000000000000001b (INIT_ARRAYSZ)       24 (bytes)\n 0x000000000000001a (FINI_ARRAY)         0x437bb0\n 0x000000000000001c (FINI_ARRAYSZ)       16 (bytes)\n 0x000000006ffffef5 (GNU_HASH)           0x4003b0\n 0x0000000000000005 (STRTAB)             0x401280\n 0x0000000000000006 (SYMTAB)             0x400488\n 0x000000000000000a (STRSZ)              6698 (bytes)\n 0x000000000000000b (SYMENT)             24 (bytes)\n 0x0000000000000015 (DEBUG)              0x0\n 0x0000000000000003 (PLTGOT)             0x437fe8\n 0x0000000000000002 (PLTRELSZ)           3048 (bytes)\n 0x0000000000000014 (PLTREL)             RELA\n 0x0000000000000017 (JMPREL)             0x403138\n 0x0000000000000007 (RELA)               0x402f58\n 0x0000000000000008 (RELASZ)             480 (bytes)\n 0x0000000000000009 (RELAENT)            24 (bytes)\n 0x000000006ffffffe (VERNEED)            0x402dd8\n 0x000000006fffffff (VERNEEDNUM)         4\n 0x000000006ffffff0 (VERSYM)             0x402caa\n 0x0000000000000000 (NULL)               0x0\n",
+      "snapshots_in_original_receipt": 3
+    }
+  ],
+  "files": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/owned/compile-routes-ubsan.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-plan-host-v3.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/owned/compile-release.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-plan-host-v3.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/owned/compiler-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-plan-host-v3.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/owned/test-release.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-plan-host-v3.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/owned/compile-ubsan.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-plan-host-v3.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/owned/test-routes-ubsan.stdout",
+      "bytes": 1442,
+      "sha256": "3bafb0c0d06e6e112607a222950640eddd129d0bd34254a9940938488a67f400",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-plan-host-v3.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/owned/test-routes-release.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-plan-host-v3.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/owned/test-ubsan.stdout",
+      "bytes": 640,
+      "sha256": "083b53ef1c32a368e9b41e6e0165c47c1b37c36c5ccbe372f56aeac7790ee49e",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-plan-host-v3.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/owned/compile-routes-release.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-plan-host-v3.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/owned/compile-release.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-plan-host-v3.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/owned/compiler-version.stdout",
+      "bytes": 266,
+      "sha256": "39553616934606f58b27c04bed0cdbbe5b00c92c831a9aaadebd7ceda61d1334",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-plan-host-v3.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/owned/test-release.stdout",
+      "bytes": 640,
+      "sha256": "083b53ef1c32a368e9b41e6e0165c47c1b37c36c5ccbe372f56aeac7790ee49e",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-plan-host-v3.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/owned/compile-ubsan.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-plan-host-v3.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/owned/compile-routes-ubsan.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-plan-host-v3.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/owned/test-ubsan.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-plan-host-v3.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/owned/compile-routes-release.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-plan-host-v3.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/owned/test-routes-ubsan.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-plan-host-v3.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/owned/test-routes-release.stdout",
+      "bytes": 1442,
+      "sha256": "3bafb0c0d06e6e112607a222950640eddd129d0bd34254a9940938488a67f400",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-plan-host-v3.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-build-v2/owned/journal-before.stdout",
+      "bytes": 156,
+      "sha256": "fb568c4d0ad016c688c36004e7157210dd1145f2ed9105fc1877e0a0834f1126",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-build-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-build-v2/owned/compile-link.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-build-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-build-v2/owned/journal-final.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-build-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-build-v2/owned/readelf.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-build-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-build-v2/owned/compile-link.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-build-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-build-v2/owned/journal-final.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-build-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-build-v2/owned/readelf.stdout",
+      "bytes": 1614,
+      "sha256": "2fabc74a5aa194225815c6d872e2da647d4c90a2ba11bfdf73a531e95f2d0745",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-build-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-build-v2/owned/journal-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-build-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-smoke-v2/owned/journal-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-smoke-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-smoke-v2/owned/accumulator-case.stdout",
+      "bytes": 367,
+      "sha256": "5db1054edb760bfd4db96ecf9a91ea884caa4359956587835e94757c2beb1727",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-smoke-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-smoke-v2/owned/journal-final.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-smoke-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-smoke-v2/owned/readelf.stdout",
+      "bytes": 1614,
+      "sha256": "2fabc74a5aa194225815c6d872e2da647d4c90a2ba11bfdf73a531e95f2d0745",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-smoke-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-smoke-v2/owned/accumulator-case.stderr",
+      "bytes": 170315,
+      "sha256": "e8dd80854295eafacc1c24403cc2a4eb481f539fde8c16158743f683c1d5f9c3",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-smoke-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-smoke-v2/owned/journal-before.stdout",
+      "bytes": 156,
+      "sha256": "1ae4842e0b513f307812843163f70964157625f84844c9e9ff70ca1c836c1f99",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-smoke-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-smoke-v2/owned/journal-final.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-smoke-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-smoke-v2/owned/readelf.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-smoke-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-hot81920-v2/owned/accumulator-case.stdout",
+      "bytes": 373,
+      "sha256": "4b69d14f939baed6837fb202529c3c70718854932fed53f3e0d581243c0c9c29",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-hot81920-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-hot81920-v2/owned/journal-final.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-hot81920-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-hot81920-v2/owned/journal-before.stdout",
+      "bytes": 156,
+      "sha256": "1ae4842e0b513f307812843163f70964157625f84844c9e9ff70ca1c836c1f99",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-hot81920-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-hot81920-v2/owned/readelf.stdout",
+      "bytes": 1614,
+      "sha256": "2fabc74a5aa194225815c6d872e2da647d4c90a2ba11bfdf73a531e95f2d0745",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-hot81920-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-hot81920-v2/owned/journal-final.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-hot81920-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-hot81920-v2/owned/accumulator-case.stderr",
+      "bytes": 466913,
+      "sha256": "2a143275e9d8bab5502017bc33550d9e99928cda15579f1eedc9a2212a9f036f",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-hot81920-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-hot81920-v2/owned/readelf.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-hot81920-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-hot81920-v2/owned/journal-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-hot81920-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-balanced81920-v2/owned/journal-final.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-balanced81920-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-balanced81920-v2/owned/readelf.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-balanced81920-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-balanced81920-v2/owned/accumulator-case.stdout",
+      "bytes": 374,
+      "sha256": "10a1725d415ee2027c5cace1fc6558c6bb39c69b6e346182140493eea4aeacfb",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-balanced81920-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-balanced81920-v2/owned/journal-before.stdout",
+      "bytes": 156,
+      "sha256": "1ae4842e0b513f307812843163f70964157625f84844c9e9ff70ca1c836c1f99",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-balanced81920-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-balanced81920-v2/owned/journal-final.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-balanced81920-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-balanced81920-v2/owned/journal-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-balanced81920-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-balanced81920-v2/owned/accumulator-case.stderr",
+      "bytes": 2060231,
+      "sha256": "c26dc54b732dac4754e27ce6bc5c0f08d361ea51be130b043b8d2d3411c32949",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-balanced81920-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-balanced81920-v2/owned/readelf.stdout",
+      "bytes": 1614,
+      "sha256": "2fabc74a5aa194225815c6d872e2da647d4c90a2ba11bfdf73a531e95f2d0745",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-balanced81920-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-partial78452-v2/owned/journal-final.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-partial78452-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-partial78452-v2/owned/readelf.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-partial78452-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-partial78452-v2/owned/journal-before.stdout",
+      "bytes": 156,
+      "sha256": "1ae4842e0b513f307812843163f70964157625f84844c9e9ff70ca1c836c1f99",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-partial78452-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-partial78452-v2/owned/accumulator-case.stdout",
+      "bytes": 374,
+      "sha256": "e359607c6c4167f72fd58a39316d3643d0e06fed3dafcaea9883ba211602f832",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-partial78452-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-partial78452-v2/owned/journal-final.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-partial78452-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-partial78452-v2/owned/readelf.stdout",
+      "bytes": 1614,
+      "sha256": "2fabc74a5aa194225815c6d872e2da647d4c90a2ba11bfdf73a531e95f2d0745",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-partial78452-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-partial78452-v2/owned/journal-before.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-partial78452-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-device-partial78452-v2/owned/accumulator-case.stderr",
+      "bytes": 2060533,
+      "sha256": "4dc483934eeee8847ceb7d74f9b2adcb7f887972c4c0d7466d69e554fa7b534e",
+      "replacement": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-device-partial78452-v2.json",
+      "reason": "Closed successful compile/test/readelf/journal text; actual argv/output/kernelcount/ELF snapshots/owner/fault outcomes retained in immutable receipt."
+    }
+  ],
+  "deleted": 58,
+  "logical_bytes_removed": 4772760,
+  "scope": "Retire only bounded closed successful native/CPU text. Keep binaries, full original status/receipts, source and input data. New fixture did not test actualGEMM/model/PP/quality/physical262144/RESTORE."
+}

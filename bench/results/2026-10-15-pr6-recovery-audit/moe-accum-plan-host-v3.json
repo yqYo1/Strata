@@ -1,0 +1,669 @@
+{
+  "schema": "strata-moe-accum-plan-host-v3",
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "phase": "closed",
+  "parent_identity": {
+    "pid": 1568706,
+    "state": "R",
+    "ppid": 1568669,
+    "pgid": 1568669,
+    "sid": 1568669,
+    "start_ticks": 59032600,
+    "rss_bytes": 15470592
+  },
+  "GPU_executed": false,
+  "source_pins": {
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window/tests/moe_accum_plan.cpp": "7f29d9432c5d9945bc33c5da6548b930313d43c50567c1ccd0e88115fd1476ad",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window/include/strata/prefill/moe_accum_plan.hpp": "96e976e24225e5929e20e69995d22e5d603b10fa565147bebadf2e830a00dd7d",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window/tests/moe_accum_routes.cpp": "81fd92e3ae9f24ed82822838918f4d093832008f944cac8dbb5bc78e41288928",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window/include/strata/prefill/moe_window_routes.hpp": "ba707fa42eb2c5518f659faac1a44b0c591f196e2408c272ec27c63840533019",
+    "/usr/bin/x86_64-linux-gnu-g++-13": "1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769",
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/run_moe_accum_plan_host_v3.py": "3c3007ec16e00da8e63ffa3566711214516f32885ce77486ebdcd7ff74c07744",
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/direct_owner_transient_artifacts_v1.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a"
+  },
+  "commands": [
+    {
+      "label": "compiler-version",
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-g++-13",
+        "--version"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/tmp"
+      },
+      "started_utc": "2026-10-17T12:52:41.959066+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1568713,
+          "start_ticks": 59032608,
+          "sid": 1568713,
+          "pgid": 1568713
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 590326.080747964,
+      "pid": 1568713,
+      "spawn_return_monotonic": 590326.082458566,
+      "direct_identity": {
+        "pid": 1568713,
+        "state": "R",
+        "ppid": 1568706,
+        "pgid": 1568713,
+        "sid": 1568713,
+        "start_ticks": 59032608,
+        "rss_bytes": 331776
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T12:52:42.055188+00:00",
+      "elapsed_seconds": 0.09591695806011558,
+      "logs": {
+        "compiler-version.stdout": {
+          "bytes": 266,
+          "sha256": "39553616934606f58b27c04bed0cdbbe5b00c92c831a9aaadebd7ceda61d1334"
+        },
+        "compiler-version.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "compile-release",
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-g++-13",
+        "-std=c++20",
+        "-O2",
+        "-DNDEBUG",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-pedantic",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window/include",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window/tests/moe_accum_plan.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/moe_accum_plan_release"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/tmp"
+      },
+      "started_utc": "2026-10-17T12:52:42.055626+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1568717,
+          "start_ticks": 59032617,
+          "sid": 1568717,
+          "pgid": 1568717
+        },
+        {
+          "pid": 1568718,
+          "start_ticks": 59032617,
+          "sid": 1568717,
+          "pgid": 1568717
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 590326.177061629,
+      "pid": 1568717,
+      "spawn_return_monotonic": 590326.178541416,
+      "direct_identity": {
+        "pid": 1568717,
+        "state": "R",
+        "ppid": 1568706,
+        "pgid": 1568717,
+        "sid": 1568717,
+        "start_ticks": 59032617,
+        "rss_bytes": 593920
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 76206080,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T12:52:42.510452+00:00",
+      "elapsed_seconds": 0.45465992006938905,
+      "logs": {
+        "compile-release.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile-release.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "test-release",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/moe_accum_plan_release"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/tmp"
+      },
+      "started_utc": "2026-10-17T12:52:42.510961+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1568731,
+          "start_ticks": 59032663,
+          "sid": 1568731,
+          "pgid": 1568731
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 590326.632430785,
+      "pid": 1568731,
+      "spawn_return_monotonic": 590326.634061085,
+      "direct_identity": {
+        "pid": 1568731,
+        "state": "R",
+        "ppid": 1568706,
+        "pgid": 1568731,
+        "sid": 1568731,
+        "start_ticks": 59032663,
+        "rss_bytes": 311296
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T12:52:42.607074+00:00",
+      "elapsed_seconds": 0.09590884204953909,
+      "logs": {
+        "test-release.stdout": {
+          "bytes": 640,
+          "sha256": "083b53ef1c32a368e9b41e6e0165c47c1b37c36c5ccbe372f56aeac7790ee49e"
+        },
+        "test-release.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "compile-routes-release",
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-g++-13",
+        "-std=c++20",
+        "-O2",
+        "-DNDEBUG",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-pedantic",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window/include",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window/tests/moe_accum_routes.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/moe_accum_routes_release"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/tmp"
+      },
+      "started_utc": "2026-10-17T12:52:42.607701+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1568738,
+          "start_ticks": 59032672,
+          "sid": 1568738,
+          "pgid": 1568738
+        },
+        {
+          "pid": 1568739,
+          "start_ticks": 59032673,
+          "sid": 1568738,
+          "pgid": 1568738
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 590326.729228251,
+      "pid": 1568738,
+      "spawn_return_monotonic": 590326.730975031,
+      "direct_identity": {
+        "pid": 1568738,
+        "state": "R",
+        "ppid": 1568706,
+        "pgid": 1568738,
+        "sid": 1568738,
+        "start_ticks": 59032672,
+        "rss_bytes": 425984
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 80318464,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T12:52:43.346843+00:00",
+      "elapsed_seconds": 0.7388878060737625,
+      "logs": {
+        "compile-routes-release.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile-routes-release.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "test-routes-release",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/moe_accum_routes_release"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/tmp"
+      },
+      "started_utc": "2026-10-17T12:52:43.347344+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1568769,
+          "start_ticks": 59032746,
+          "sid": 1568769,
+          "pgid": 1568769
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 590327.46887666,
+      "pid": 1568769,
+      "spawn_return_monotonic": 590327.470449622,
+      "direct_identity": {
+        "pid": 1568769,
+        "state": "R",
+        "ppid": 1568706,
+        "pgid": 1568769,
+        "sid": 1568769,
+        "start_ticks": 59032746,
+        "rss_bytes": 278528
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 5898240,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T12:52:43.539045+00:00",
+      "elapsed_seconds": 0.19142866204492748,
+      "logs": {
+        "test-routes-release.stdout": {
+          "bytes": 1442,
+          "sha256": "3bafb0c0d06e6e112607a222950640eddd129d0bd34254a9940938488a67f400"
+        },
+        "test-routes-release.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "compile-ubsan",
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-g++-13",
+        "-std=c++20",
+        "-O2",
+        "-DNDEBUG",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-pedantic",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=undefined",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window/include",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window/tests/moe_accum_plan.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/moe_accum_plan_ubsan"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/tmp"
+      },
+      "started_utc": "2026-10-17T12:52:43.539899+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1568777,
+          "start_ticks": 59032766,
+          "sid": 1568777,
+          "pgid": 1568777
+        },
+        {
+          "pid": 1568778,
+          "start_ticks": 59032766,
+          "sid": 1568777,
+          "pgid": 1568777
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 590327.661505181,
+      "pid": 1568777,
+      "spawn_return_monotonic": 590327.663106367,
+      "direct_identity": {
+        "pid": 1568777,
+        "state": "R",
+        "ppid": 1568706,
+        "pgid": 1568777,
+        "sid": 1568777,
+        "start_ticks": 59032766,
+        "rss_bytes": 294912
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 77856768,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T12:52:44.028222+00:00",
+      "elapsed_seconds": 0.48801593796815723,
+      "logs": {
+        "compile-ubsan.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile-ubsan.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "test-ubsan",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/moe_accum_plan_ubsan"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/tmp"
+      },
+      "started_utc": "2026-10-17T12:52:44.028780+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1568796,
+          "start_ticks": 59032815,
+          "sid": 1568796,
+          "pgid": 1568796
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 590328.150379866,
+      "pid": 1568796,
+      "spawn_return_monotonic": 590328.15194785,
+      "direct_identity": {
+        "pid": 1568796,
+        "state": "R",
+        "ppid": 1568706,
+        "pgid": 1568796,
+        "sid": 1568796,
+        "start_ticks": 59032815,
+        "rss_bytes": 278528
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T12:52:44.124413+00:00",
+      "elapsed_seconds": 0.09529269102495164,
+      "logs": {
+        "test-ubsan.stdout": {
+          "bytes": 640,
+          "sha256": "083b53ef1c32a368e9b41e6e0165c47c1b37c36c5ccbe372f56aeac7790ee49e"
+        },
+        "test-ubsan.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "compile-routes-ubsan",
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-g++-13",
+        "-std=c++20",
+        "-O2",
+        "-DNDEBUG",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-pedantic",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=undefined",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window/include",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-moe-window/tests/moe_accum_routes.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/moe_accum_routes_ubsan"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/tmp"
+      },
+      "started_utc": "2026-10-17T12:52:44.125144+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1568799,
+          "start_ticks": 59032824,
+          "sid": 1568799,
+          "pgid": 1568799
+        },
+        {
+          "pid": 1568800,
+          "start_ticks": 59032824,
+          "sid": 1568799,
+          "pgid": 1568799
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 590328.246785664,
+      "pid": 1568799,
+      "spawn_return_monotonic": 590328.248506345,
+      "direct_identity": {
+        "pid": 1568799,
+        "state": "R",
+        "ppid": 1568706,
+        "pgid": 1568799,
+        "sid": 1568799,
+        "start_ticks": 59032824,
+        "rss_bytes": 294912
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 114503680,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T12:52:45.030574+00:00",
+      "elapsed_seconds": 0.9050546819344163,
+      "logs": {
+        "compile-routes-ubsan.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile-routes-ubsan.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "test-routes-ubsan",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/moe_accum_routes_ubsan"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/tmp"
+      },
+      "started_utc": "2026-10-17T12:52:45.031200+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1568832,
+          "start_ticks": 59032915,
+          "sid": 1568832,
+          "pgid": 1568832
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 590329.152853775,
+      "pid": 1568832,
+      "spawn_return_monotonic": 590329.154425876,
+      "direct_identity": {
+        "pid": 1568832,
+        "state": "R",
+        "ppid": 1568706,
+        "pgid": 1568832,
+        "sid": 1568832,
+        "start_ticks": 59032915,
+        "rss_bytes": 311296
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 5533696,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-17T12:52:45.281696+00:00",
+      "elapsed_seconds": 0.25010642409324646,
+      "logs": {
+        "test-routes-ubsan.stdout": {
+          "bytes": 1442,
+          "sha256": "3bafb0c0d06e6e112607a222950640eddd129d0bd34254a9940938488a67f400"
+        },
+        "test-routes-ubsan.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "scope": "Capacity/offset/guard-reservation and rejection tests only. Host routes/uniqueness and capacity only. No GPU kernel, alias lifetime, precision, inference adoption or performance qualification.",
+  "ownership_closed": true,
+  "closed_GPU_cohort": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/moe-accum-model-clean-cohort-v1.json",
+    "sha256": "00bdf4483f09e7e709b816c28da5087c765e3e12464b9694a9d3503491d4626b"
+  },
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/tmp"
+  },
+  "compiler_version": "x86_64-linux-gnu-g++-13 (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+  "results": {
+    "release": {
+      "binary": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/moe_accum_plan_release",
+      "binary_sha256": "15b13c77910c84588c2ebddd49ca6158d4cf2c067315f7a48293ea9adfc4f3f2",
+      "stdout": "case rows=8193 primary=8193 tail=0 region=290897920 PASS\ncase rows=16383 primary=16383 tail=0 region=376236544 PASS\ncase rows=16384 primary=16384 tail=0 region=376246784 PASS\ncase rows=32768 primary=32768 tail=0 region=546968064 PASS\ncase rows=49152 primary=49152 tail=0 region=717689344 PASS\ncase rows=65536 primary=65536 tail=0 region=888410624 PASS\ncase rows=65537 primary=65536 tail=1 region=888422400 PASS\ncase rows=78452 primary=65536 tail=12916 region=1022996480 PASS\ncase rows=81920 primary=65536 tail=16384 region=1059131904 PASS\nnegative_checks=34 PASS\nmoe_accum_plan PASS GPU=UNRUN numeric=UNQUALIFIED lifetime=EXTERNAL_REQUIRED\n"
+    },
+    "routes-release": {
+      "binary": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/moe_accum_routes_release",
+      "binary_sha256": "77f529404cde8e085a33fb042a4fee4dc22e62515b54a3ae9a69899cdc9da80b",
+      "stdout": "routes rows=1 hot=0 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=1 hot=1 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=8192 hot=0 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=8192 hot=1 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=8193 hot=0 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=8193 hot=1 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=16384 hot=0 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=16384 hot=1 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=32768 hot=0 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=32768 hot=1 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=65536 hot=0 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=65536 hot=1 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=65537 hot=0 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=65537 hot=1 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=78452 hot=0 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=78452 hot=1 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=81920 hot=0 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=81920 hot=1 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nmoe_accum_routes PASS GPU=UNRUN\n"
+    },
+    "ubsan": {
+      "binary": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/moe_accum_plan_ubsan",
+      "binary_sha256": "49b73ca23b5f0134c81b95948e656405c8de38ac1da982a4126b1f8508b4e25c",
+      "stdout": "case rows=8193 primary=8193 tail=0 region=290897920 PASS\ncase rows=16383 primary=16383 tail=0 region=376236544 PASS\ncase rows=16384 primary=16384 tail=0 region=376246784 PASS\ncase rows=32768 primary=32768 tail=0 region=546968064 PASS\ncase rows=49152 primary=49152 tail=0 region=717689344 PASS\ncase rows=65536 primary=65536 tail=0 region=888410624 PASS\ncase rows=65537 primary=65536 tail=1 region=888422400 PASS\ncase rows=78452 primary=65536 tail=12916 region=1022996480 PASS\ncase rows=81920 primary=65536 tail=16384 region=1059131904 PASS\nnegative_checks=34 PASS\nmoe_accum_plan PASS GPU=UNRUN numeric=UNQUALIFIED lifetime=EXTERNAL_REQUIRED\n"
+    },
+    "routes-ubsan": {
+      "binary": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-moe-accum-plan-host-v3/moe_accum_routes_ubsan",
+      "binary_sha256": "1b76caa9b981cff1cf407da37af32681cd151f8e94f5b842e5dbde78519b8a8f",
+      "stdout": "routes rows=1 hot=0 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=1 hot=1 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=8192 hot=0 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=8192 hot=1 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=8193 hot=0 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=8193 hot=1 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=16384 hot=0 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=16384 hot=1 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=32768 hot=0 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=32768 hot=1 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=65536 hot=0 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=65536 hot=1 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=65537 hot=0 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=65537 hot=1 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=78452 hot=0 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=78452 hot=1 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=81920 hot=0 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nroutes rows=81920 hot=1 inverse=PASS unique=PASS bounded_jobs=PASS legacy=PASS\nmoe_accum_routes PASS GPU=UNRUN\n"
+    }
+  }
+}
