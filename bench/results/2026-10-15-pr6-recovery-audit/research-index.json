@@ -8060,6 +8060,35 @@
       "compute_queue_source": "src/sycl/runtime.cpp:89 enables profiling before queue construction."
     },
     "GPU_or_profiler_work_started": false,
-    "source_frozen_until_new_plan": true
+    "source_frozen_until_new_plan": true,
+    "Main_retrieval": {
+      "report": "research-round978-v1.txt",
+      "sha256": "b6a8a2297544f0e24c693c3607f013bb4dcf412ff9a610f9b953db3c55b8614e",
+      "classification": "decision_support",
+      "sections_read": [
+        "Production event path",
+        "Capture options",
+        "Qualification before interpretation"
+      ],
+      "other_original_collection_bodies_read": false,
+      "trigger": "Actual six-process QSA model comparison closed; observed run variation despite unchanged within-arm MoE counts leaves device-service versus host/JIT/wait question."
+    },
+    "current_window_source_correction": "R978 is based on window0 census/chunk framing. Actual window2 has its own existing final checked cudaStreamSynchronize at moe_window.inc:153 before routes.reset at157. Audit sample lifetime/strata at that boundary; do not reuse old command populations or assume five request-wide retirements.",
+    "next_action": "First build/run a small independently owned profiling-timestamp calibration on the already profiled compute queue. Only after that qualifies, design bounded default-off production-event collection at actual window/phase drains.",
+    "source_pins": {
+      "src/sycl/runtime.cpp": "e6c20e148bc7ceec250ad9a58ddfc851c1476aaab3d68982d2aee2897e572b83",
+      "src/sycl/compat.cpp": "64cb6ea563a5d2f4f2abe4726d8d2130c5611b1938423dfe5131691cb936e9c0",
+      "include/strata/sycl/launch.hpp": "9c5aaf14e4b92232d4dcd4e2e68071201d436d287a9615088a9428d88f53b1ce",
+      "src/prefill/moe_window.inc": "a8c9cf74404151a583fce2b3ff4a08f0b78713aee48242d2820bc53f8e73c1e4",
+      "src/prefill/sycl/gemm16.cpp": "d5a0e8f8cdbc14f82edd7a883efc09d68ee92195b8fd51301e538b40cc6ed53c",
+      "src/prefill/sycl/vllm_xe2/native16.cpp": "d8b361cabea29344b48aff5a9db41303f3ea715de47f27bc57f29f85c5f3aa2d"
+    }
+  },
+  "retention_qsa_subgroup_model_v1": {
+    "manifest": "qsa-subgroup-engine-model-retention-v1.json",
+    "files": 133,
+    "logical_bytes": 1735753,
+    "individual_receipts_byte_identical": true,
+    "current_wrapper_config_plan_and_canonical_profile_retained": true
   }
 }
