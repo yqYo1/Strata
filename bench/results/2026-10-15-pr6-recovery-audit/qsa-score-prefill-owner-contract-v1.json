@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "source_commit": "31415b3bfc7fc6d4ec5fa42cbcf47276ce271811",
+  "source_pins": {
+    "src/core/layer.cpp": "4273fc8c08bb0c58ad471d963f232a457dbc96ea6bd20fa1b45d27fee3428cfb",
+    "include/strata/core/layer.hpp": "80c2e1a8cac8a1600418dbf26d035b342136fb4164636196f51122205656cfb1",
+    "src/prefill/prefill.cpp": "4750fc7d7e3ea5ca55302e00d12b72fed456cffe09da0ca77305749331633242",
+    "src/kernels/sycl/qsa_select.cpp": "239891f0a6165c1e9bc139de8446d9d49a0bcd41b5ed5c8f19b43e53fb4602ab"
+  },
+  "actual_engine_binary_sha256": "102f32f1960a78a7101d3eee80115182043a7fa1ef8e676ce379a82de84365b2",
+  "facts": [
+    "core/layer.cpp kv_plan allocates max_cells/idx_block+2 pooled rows for main indexer states; only ring drafter-without-indexer reduces rows to2.",
+    "State takes exactly pooled_rows*idx_dim float elements and initializes the entire idx_pooled buffer to zero before use.",
+    "Dedicated-prefill caller uses primary max_cells/idx_block+2 score stride and explicit last-query n_bid+1 launch bound. At physical262144 this active bound is65537 and allocated pooled row count65538.",
+    "The measured configuration keeps main context/KV both131072 and uses the same compute queue for producers and scoring. Pooled-key hoisting reads within allocated initialized input; no concurrent indexer producer is allowed in this measured in-order path."
+  ],
+  "limits": "This is an allocation/initialization/caller-source proof for the current engine configuration, not a generic claim that arbitrary partial or concurrently-written pooled arrays are legal. New prefll API retains input allocations through completion and treats the full declared pooled span as immutable.",
+  "consumer": "Review qsa_block_scores_prefill hoisted pooled-key loads and physical-context extent before model adoption."
+}
