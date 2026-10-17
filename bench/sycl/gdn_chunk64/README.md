@@ -79,11 +79,18 @@ implementation. No model benchmark or production adoption of this path exists.
 
 The shared arena planner is used by Prefill's size accounting/carving and the
 fixture. Projection QKV dies after conv/history update and is reused by FP32
-lower-KKT scratch. Every live recurrence input remains separate from scratch.
+lower-KKT and the disjoint inverse. Normalized input dies after pack and shares
+history storage; vb dies after W/U and shares FP16 output storage. Only those
+two exact same-base recurrence aliases are admitted; partial aliases and other
+overlaps are rejected. Preflight occurs before conv history changes.
 The new fixture checks this reuse and partial-chunk rebinding against disjoint
 buffers, with exact state/output/history and outer guards. The 8192 arena is
-1,467,486,720 bytes, excluding external state/history, weights, KV, residuals and
-GEMM scratch. These synthetic copies are test setup,
+1,467,486,720 bytes for the original disjoint layout, excluding external
+state/history, weights, KV, residuals and GEMM scratch. That layout made model
+setup shrink chunk8192 to6144 and fail the existing MoE-window admission, with
+no GPU fault. The new lifetime-sharing layout is pending requalification; the
+fixture requires it to fit the existing 1,180,698,624-byte legacy GDN reservation
+at8192. These synthetic copies are test setup,
 not transfers or host arithmetic in the inference path.
 
 `python3 tools/sycl/build_engine.py` builds the current comparison engine after

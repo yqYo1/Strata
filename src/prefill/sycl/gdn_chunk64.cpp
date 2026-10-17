@@ -88,16 +88,20 @@ struct ArenaPlan {
 Arena plan_arena(ArenaPlan &plan,int tokens) {
   const auto n=sizes(tokens);const size_t T=size_t(tokens);
   Arena b;
-  auto *reuse=plan.take<unsigned char>(std::max(T*C*2,n.lower*4));
+  const size_t inverse_offset=(n.lower*4+255)&~size_t(255);
+  auto *reuse=plan.take<unsigned char>(std::max(T*C*2,inverse_offset+n.inverse*2));
   b.qkv=reinterpret_cast<uint16_t*>(reuse);b.workspace.lower=reinterpret_cast<float*>(reuse);
-  b.z=plan.take<uint16_t>(T*HV*D);b.normalized=plan.take<uint16_t>(T*C);
-  b.output=plan.take<uint16_t>(T*HV*D);b.ab=plan.take<float>(T*HV*2);
+  b.workspace.inverse=reuse?reinterpret_cast<BF*>(reuse+inverse_offset):nullptr;
+  auto *history=plan.take<unsigned char>(std::max(T*C*2,n.history*2));
+  b.normalized=reinterpret_cast<uint16_t*>(history);b.workspace.history=reinterpret_cast<BF*>(history);
+  b.z=plan.take<uint16_t>(T*HV*D);b.ab=plan.take<float>(T*HV*2);
   b.gate=plan.take<float>(T*HV);b.beta=plan.take<float>(T*HV);
   auto& w=b.workspace;
   w.q=plan.take<BF>(n.qk);w.k=plan.take<BF>(n.qk);
   w.kb=plan.take<BF>(n.values);w.vb=plan.take<BF>(n.values);
-  w.inverse=plan.take<BF>(n.inverse);w.w=plan.take<BF>(n.values);w.u=plan.take<BF>(n.values);
-  w.history=plan.take<BF>(n.history);w.delta=plan.take<BF>(n.values);
+  b.output=reinterpret_cast<uint16_t*>(w.vb);
+  w.w=plan.take<BF>(n.values);w.u=plan.take<BF>(n.values);
+  w.delta=plan.take<BF>(n.values);
   w.raw=plan.take<BF>(n.values);w.g=plan.take<float>(n.gates);
   return b;
 }
@@ -201,7 +205,29 @@ void validate_run(float *state,const uint16_t *h,const float *gate,const float *
   const std::initializer_list<Span> inputs={
     {h,size_t(tokens)*C*2},{gate,size_t(tokens)*HV*4},
     {beta,size_t(tokens)*HV*4},{z,size_t(tokens)*HV*D*2},{gamma,D*4}};
-  validate_spans(outputs,inputs,4);
+  // Stage lifetimes permit exactly two same-base aliases: h is consumed by
+  // pack before carry writes history; vb is consumed by W/U before norm writes
+  // output. All other overlaps, including partial aliases, remain forbidden.
+  validate_spans({{state,size_t(HV)*D*D*4},{ws.q,n.qk*2},{ws.k,n.qk*2},
+    {ws.kb,n.values*2},{ws.vb,n.values*2},{ws.inverse,n.inverse*2},
+    {ws.w,n.values*2},{ws.u,n.values*2},{ws.history,n.history*2},
+    {ws.delta,n.values*2},{ws.raw,n.values*2},{ws.g,n.gates*4},{ws.lower,n.lower*4}},
+    {{gate,size_t(tokens)*HV*4},{beta,size_t(tokens)*HV*4},
+     {z,size_t(tokens)*HV*D*2},{gamma,D*4}},4);
+  const Span hs{h,size_t(tokens)*C*2},os{output,size_t(tokens)*HV*D*2};
+  validate_spans({hs},{{state,size_t(HV)*D*D*4},os,{ws.q,n.qk*2},{ws.k,n.qk*2},
+    {ws.kb,n.values*2},{ws.vb,n.values*2},{ws.inverse,n.inverse*2},
+    {ws.w,n.values*2},{ws.u,n.values*2},{ws.delta,n.values*2},
+    {ws.raw,n.values*2},{ws.g,n.gates*4},{ws.lower,n.lower*4}},4);
+  if(h!=reinterpret_cast<const uint16_t*>(ws.history))
+    validate_spans({hs},{{ws.history,n.history*2}},4);
+  validate_spans({os},{{state,size_t(HV)*D*D*4},hs,{gate,size_t(tokens)*HV*4},
+    {beta,size_t(tokens)*HV*4},{z,size_t(tokens)*HV*D*2},{gamma,D*4},
+    {ws.q,n.qk*2},{ws.k,n.qk*2},{ws.kb,n.values*2},{ws.inverse,n.inverse*2},
+    {ws.w,n.values*2},{ws.u,n.values*2},{ws.history,n.history*2},
+    {ws.delta,n.values*2},{ws.raw,n.values*2},{ws.g,n.gates*4},{ws.lower,n.lower*4}},4);
+  if(output!=reinterpret_cast<uint16_t*>(ws.vb))
+    validate_spans({os},{{ws.vb,n.values*2}},4);
   for(auto span:outputs) validate_device_span(span.pointer,span.bytes,queue);
   for(auto span:inputs) validate_device_span(span.pointer,span.bytes,queue);
 }

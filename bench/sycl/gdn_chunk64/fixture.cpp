@@ -307,7 +307,11 @@ void run_producer(int T){
   Scratch scratch(gc::sizes(T));Drain pair_pending;
   Z.put(input.z);G.put(input.gates);B.put(input.beta);N.put(input.gamma);state.put(input.initial);
   const std::vector<uint16_t> out_blank(out.count,0x5500);out.put(out_blank);history.put(initial);
-  auto pair=[&](int begin,int count){invoke(begin,count);gc::run(state.data()+Pad,H.data()+Pad+size_t(begin)*C,
+  auto pair=[&](int begin,int count){
+    gc::validate_run(state.data()+Pad,H.data()+Pad+size_t(begin)*C,
+      G.data()+size_t(begin)*HV,B.data()+size_t(begin)*HV,Z.data()+size_t(begin)*HV*D,N.data(),Eps,
+      out.data()+Pad+size_t(begin)*HV*D,count,scratch.view(),&rt->compute());
+    invoke(begin,count);gc::run(state.data()+Pad,H.data()+Pad+size_t(begin)*C,
     G.data()+size_t(begin)*HV,B.data()+size_t(begin)*HV,Z.data()+size_t(begin)*HV*D,N.data(),Eps,
     out.data()+Pad+size_t(begin)*HV*D,count,scratch.view(),&rt->compute());};
   pair(0,T);rt->wait();const auto pair_state=state.get();const auto pair_out=out.get();
@@ -324,6 +328,7 @@ void run_producer(int T){
   // Rebind partial chunks in the same allocation, after the preceding output
   // copy, exactly as a shared arena must be reused on one in-order stream.
   constexpr size_t Guard=256;const size_t bytes=gc::arena_bytes(T);
+  if(T==8192)need(bytes<=1180698624ULL,"native arena exceeds existing8192 legacy GDN reservation");
   Buffer<uint8_t> arena(bytes+2*Guard);Drain arena_pending;
   rt->wait(rt->compute().memset(arena.data(),0xa5,arena.count));
   reject([&]{(void)gc::bind_arena(arena.data()+Guard,bytes-1,T);});
@@ -336,6 +341,7 @@ void run_producer(int T){
     queue.memcpy(b.z,Z.data()+size_t(begin)*HV*D,size_t(count)*HV*D*2);
     queue.memcpy(b.gate,G.data()+size_t(begin)*HV,size_t(count)*HV*4);
     queue.memcpy(b.beta,B.data()+size_t(begin)*HV,size_t(count)*HV*4);
+    gc::validate_run(state.data()+Pad,b.normalized,b.gate,b.beta,b.z,N.data(),Eps,b.output,count,b.workspace,&queue);
     gc::conv_bf16(history.data()+Pad,b.qkv,W.data(),b.normalized,count,Eps,&queue);
     gc::run(state.data()+Pad,b.normalized,b.gate,b.beta,b.z,N.data(),Eps,
             b.output,count,b.workspace,&queue);
@@ -347,11 +353,21 @@ void run_producer(int T){
     need(state.get()==pair_state && out.get()==pair_out && history.get()==actual_history,"shared arena relayout differs");}
   const std::vector<uint8_t> guard(Guard,0xa5);
   need(arena.get_range(0,Guard)==guard && arena.get_range(Guard+bytes,Guard)==guard,"shared arena guards");
+  auto bound=gc::bind_arena(arena.data()+Guard,bytes,T);
+  reject([&]{gc::validate_run(state.data()+Pad,bound.normalized+2,bound.gate,bound.beta,
+    bound.z,N.data(),Eps,bound.output,T,bound.workspace,&rt->compute());});
+  reject([&]{gc::validate_run(state.data()+Pad,bound.normalized,bound.gate,bound.beta,
+    bound.z,N.data(),Eps,bound.output+2,T,bound.workspace,&rt->compute());});
+  {Buffer<float> short_state(1);Drain more;const auto before=history.get();
+    reject([&]{gc::validate_run(short_state.data(),bound.normalized,bound.gate,bound.beta,
+      bound.z,N.data(),Eps,bound.output,T,bound.workspace,&rt->compute());
+      gc::conv_bf16(history.data()+Pad,bound.qkv,W.data(),bound.normalized,T,Eps,&rt->compute());});
+    need(history.get()==before,"invalid recurrence changed conv history");}
   std::cout<<"case T="<<T<<" producer=BF16_projection_conv_L2 oracle=independent_CPU_formula max_BF16_ulp="<<max_ulp
     <<" max_abs="<<max_abs<<" old_FP32_history=PASS final_FP32_history=PASS guards=PASS inputs=PASS"
     <<" rejection=PASS repeat=PASS conv_split="<<(T>1?"PASS":"NA")
     <<" direct_BF16_consumer=PASS arena_bytes="<<bytes<<" shared_arena_reuse=PASS arena_relayout="<<(T>64?"PASS":"NA")
-    <<" aligned_pair_handoff="<<(T>64?"PASS":"NA")
+    <<" aligned_pair_handoff="<<(T>64?"PASS":"NA")<<" preconv_rejection=PASS partial_alias_rejection=PASS"
     <<" model_quality=UNRUN status=SAFETY_PASS"<<std::endl;
 }
 void run_component(){

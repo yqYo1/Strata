@@ -32,7 +32,7 @@ def main():
     guards.require(len(sys.argv) == 3 and sys.argv[1] in ('prepare', 'run') and
                    sys.argv[2] in ('check', 'base', 'candidate'), 'use prepare|run check|base|candidate')
     action, mode = sys.argv[1:]
-    root = B / ('native-gdn-model-' + mode)
+    root = B / ('native-gdn-model-' + mode + '-v2')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         reference = json.loads(BASE.read_text())

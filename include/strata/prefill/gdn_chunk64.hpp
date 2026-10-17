@@ -19,8 +19,9 @@ struct Arena {
   float *ab=nullptr,*gate=nullptr,*beta=nullptr;
   Workspace workspace{};
 };
-// Shared by Prefill sizing, actual carving and the device fixture. QKV storage
-// is reused by lower KKT only after conv/history completion on the same queue.
+// Shared by Prefill sizing, actual carving and the device fixture. After conv,
+// QKV is reused by lower KKT + inverse. After pack, normalized aliases history.
+// After W/U, vb aliases output. The in-order queue establishes all lifetimes.
 size_t arena_bytes(int tokens);
 Arena bind_arena(void *base,size_t bytes,int tokens);
 // Immutable opt-in; the normal/short-input path remains the existing route.
@@ -44,6 +45,8 @@ void conv_bf16(float *history,const uint16_t *qkv,const float *weights,
 // BF16 activation producer contract; FP32 gate/beta/gamma and persistent carry.
 // State remains [128,48,128]; output is genuine FP16 for the existing consumer.
 // No allocations, environment mutation, host tensor math, or implicit waits.
+// Disjoint spans or the exact same-base h/history and output/vb aliases above
+// are supported; partial or other overlaps are rejected before submission.
 void run(float *state, const uint16_t *h, const float *gate, const float *beta,
          const uint16_t *z, const float *gamma, float eps, uint16_t *output,
          int tokens, Workspace workspace, void *stream, Events *events=nullptr,
