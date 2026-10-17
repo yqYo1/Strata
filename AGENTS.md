@@ -14,6 +14,12 @@ offers the same steps as tools.
 
 ## Working on the code
 
+At session start, resume and after context compaction, reread this file and the
+current committed decisions relevant to the task before launching work. Check
+the actual branch, worktree and pending changes; do not rely on conversational
+memory or create a separate resume checkpoint. Apply the retention rules below
+to existing artifacts as well as newly generated ones.
+
 This is a personal fork based on **Niko1221/Strata**, optimized for this PC's
 Intel GPU, CPU and RAM. Niko1221/Strata is the only upstream. Because of the
 user's license constraint, **XeStrata is a performance reference only**. Do not
@@ -77,6 +83,9 @@ are outside this work's scope.
 - Integrate completed child source, tests, skills and reports into the actual
   `feature/sycl` tree, then push. Update the fork's remote default through a PR
   at each completed boundary; the ghq root remains the default mirror and only pulls.
+  Use a merge commit for PRs containing original source revisions referenced by
+  measurements, and verify those revisions remain reachable from the retained
+  default branch before retiring their branches.
 - Pin delegated source proposals to an immutable commit or a fully hashed source
   snapshot. Generate the patch against that same base, even if the main worktree
   changes during implementation. Review the complete patch and preservation of
@@ -186,7 +195,9 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   do not keep duplicate source proposals and one-run controllers beside results.
 - Keep the latest known-good engine build, plus only named imminent comparison
   generations (normally one build, at most two for A/B). Record the comparison
-  consumer and retirement point. Do not keep one build for each closed experiment.
+  consumer and retirement point in the current compact results. An unnamed
+  possible future comparison does not justify another generation. Do not keep
+  one build for each closed experiment.
   Retire the extra generation when its comparison ends; creating a new build
   must not silently extend the lifetime of every previous experiment's binary.
 - Before measuring, commit the exact source, local changes, generated inputs
@@ -196,6 +207,8 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   source path or binary hash alone does not establish recoverability.
 - Before retiring an old executable, library, object/native dump or build tree,
   retrieve and verify its required source/recipe from reachable Git history.
+  Read the recorded revisions and compare the recovered inputs with the build's
+  source identities; the existence of a commit or report alone is insufficient.
   Reconcile any uncommitted measured inputs first; do not delete their last copy
   while claiming Git can restore them. Remove comparison generations when the
   comparison closes. Installed toolchains/runtime dependencies and model weights
@@ -217,6 +230,8 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   Store compact useful evidence in Git, and necessary large captures outside Git.
 - At each work boundary, reconcile the actual files with these rules, retire
   closed comparisons and transient output, and commit the useful results and
-  deletion decisions. Check file counts and bytes as well as individual sizes;
+  deletion decisions. Record any retained exception's current consumer and next
+  review point; do not report cleanup complete while silently carrying old
+  comparisons forward. Check file counts and bytes as well as individual sizes;
   benchmark directories must remain browsable. A large directory is a reason
   to review information value, not to split the same unnecessary files.

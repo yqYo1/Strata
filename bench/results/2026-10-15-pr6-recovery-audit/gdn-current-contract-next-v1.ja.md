@@ -62,6 +62,30 @@ Mainは元のR1052レポート本文を自動読み込みせず、レビュー�
 現在の未完成ソースは`bench/sycl/gdn_chunk64`。full64 FP32 solveを一度
 BF16へ丸める独立スケジュールで、XPUのblock16 BF16 scratchやCUDAの
 4-block配置との厳密な同一性はない。FP16 consumer変換前のBF16段階も
-比較する。最新ビルドはfixtureのruntime.hpp include不足で停止し、GPU実行・
-一般数値・速度の検証はない。短い直交入力だけで一般入力を認定しない。
+比較する。runtime.hpp include、ホストDMAバッファ寿命、実行管理を修正した。
+独立した直交・二進分数入力のT=1/3と63/64/65、127/128/129は、FP32 carry・
+BF16 raw・FP16出力が差0で通過し、新しいGPU障害はなかった。rawの2項を
+FP32で加算してから共通係数を掛け、別々の乗算で生じた相殺誤差を除去した。
+一般入力は独立した逐次FP64数式基準との誤差を診断し、64境界で別callへ渡す
+carryも確認する。この診断はframework数値契約・品質の合格判定ではない。
+一般入力6長さの有限値・ガード・入力不変・反復・64境界の別callへのcarry引き継ぎも
+通過した。FP64数式基準に対する相対L2誤差は状態約0.29～0.30%、出力約0.39～0.40%。
+8192の同一合成入力でも、SLM係数保持とcarryの16列分割は元候補とのFP32状態・
+FP16出力が全トークンでビット一致した。候補と現行FP32との差は品質合格ではない。
+単体の時間短縮を実モデルprefillの速度改善として扱わない。詳細と全個別値は
+`gdn-chunk64-current.json`と`bench/sycl/gdn_chunk64/README.md`にある。
+一般数値の認定・実モデルの速度/品質・物理262144・RESTOREは未完了。
+短い直交入力だけで一般入力を認定しない。
 R1059の[修正事項](research-round1059-review-v1.txt)を適用して検証を進める。
+
+数値差の大きさを評価する補助資料として、固定SGLang
+`877be2974aa151a984e52822c028276c2b1e9303`の
+[登録済みchunkテスト](https://github.com/sgl-project/sglang/blob/877be2974aa151a984e52822c028276c2b1e9303/test/registered/attention/test_chunk_gated_delta_rule.py)
+をローカルのghq cloneから確認した（15528 bytes、SHA256
+`61ee983ed4d441e6403d995456ac64a0df121e29817c617456c4474d902bb31a`）。
+BF16 Q/K/VとFP32の初期state poolを使い、chunkと逐次GPU基準の正規化前出力・
+終了stateを`atol=2e-2, rtol=1e-2`で比較する。これは同一ビットを要求する基準ではない。
+今回の小さい合成入力のraw/state絶対誤差はこの絶対許容値より小さいが、入力分布・
+gate/betaのdtypeや丸めの位置は同一ではなく、そのSGLangテストを実行した証拠でもない。
+RMSNorm後のFP16出力やモデル能力の合格へこの許容値を流用しない。
+現環境の既定Pythonにはtorch/triton/numpy/sglangがなく、SGLang実経路の比較は未実行。
