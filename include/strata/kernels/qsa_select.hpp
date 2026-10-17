@@ -45,6 +45,17 @@ void qsa_block_topk(const float* scores, const int32_t* steps, int64_t nq, int64
                                                    ///< CUDA uses the bound only on sm_75; HIP keeps its existing policy.
                                                    ///< Omit it for captured graphs whose context can grow after capture.
 #if defined(STRATA_ENABLE_SYCL)
+/// Dedicated layer-major prefill scorer; same contract as qsa_block_scores.
+/// STRATA_SYCL_SCORE_QUERY_TILE=8 reuses pooled-key registers across eight
+/// adjacent queries, preserving FP32 operation order. Unset or 0 keeps the
+/// original scorer; other values are invalid. Set before exec and keep the
+/// environment immutable after runtime init. Decode, short-prefill and
+/// reference callers retain qsa_block_scores and do not read this flag.
+void qsa_block_scores_prefill(const float* pooled, const float* dead, const float* q_idx,
+                             const int32_t* steps, int64_t nq, int64_t max_blocks,
+                             const QsaShapes& s, float* scores, void* stream,
+                             int64_t active_blocks = -1);
+
 /// Dedicated layer-major long-prefill selector. Geometry, active-block bound,
 /// output and validation contracts match qsa_block_topk. This is the only SYCL
 /// entrypoint that reads STRATA_SYCL_SELECT_RADIX4 / STRATA_SYCL_SELECT_CYCLIC:

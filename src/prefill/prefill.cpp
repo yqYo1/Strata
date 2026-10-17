@@ -2538,9 +2538,17 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                         static const bool old_sel = std::getenv("STRATA_SELECT_OLD") != nullptr;
                         if (old_sel || !strata::kernels::qsa_block_scores_tc(st.idx_pooled, st.idx_dead, m.q_idx + t0 * 512,
                                                                              steps0, nb, m.max_blocks, s, m.sel_scores,
-                                                                             m.cs, active))
+                                                                             m.cs, active)) {
+#if defined(STRATA_ENABLE_SYCL)
+                            if (m.layer_major_active && !old_sel)
+                                strata::kernels::qsa_block_scores_prefill(st.idx_pooled, st.idx_dead,
+                                                              m.q_idx + t0 * 512, steps0, nb, m.max_blocks, s,
+                                                              m.sel_scores, m.cs, active);
+                            else
+#endif
                             strata::kernels::qsa_block_scores(st.idx_pooled, st.idx_dead, m.q_idx + t0 * 512, steps0, nb,
                                                               m.max_blocks, s, m.sel_scores, m.cs, active);
+                        }
 #if defined(STRATA_ENABLE_SYCL)
                         if (m.layer_major_active)
                             strata::kernels::qsa_block_topk_prefill(m.sel_scores, steps0, nb, m.max_blocks, m.cap, s,

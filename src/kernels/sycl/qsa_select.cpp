@@ -1,6 +1,7 @@
 #include "strata/kernels/qsa_select.hpp"
 #include "strata/sycl/launch.hpp"
 #include <climits>
+#include <cstdio>
 #include <cstdlib>
 
 namespace strata::kernels {
@@ -23,6 +24,69 @@ uint32_t order(float value) {
     b = 0;
   return b & 0x80000000u ? ~b : b | 0x80000000u;
 }
+// Independently qualified register-only query reuse. Keep the lane-local
+// four-term sums, five XOR collectives and four-head accumulation unchanged.
+// One WG is one SG32; every conditional around a collective is SG-uniform.
+template <int Tile>
+sycl::event submit_scores_querytile(sycl::queue &queue, const float *pooled,
+                                    const float *dead, const float *query,
+                                    const int32_t *steps, int64_t nq,
+                                    int64_t blocks, float *scores,
+                                    int64_t active) {
+  return queue.parallel_for(
+      sycl::nd_range<1>(size_t(((nq + Tile - 1) / Tile) * active) * 32, 32),
+      [=](sycl::nd_item<1> it) [[sycl::reqd_sub_group_size(32)]] {
+        const int64_t q0 = (it.get_group_linear_id() / active) * Tile,
+                      b = it.get_group_linear_id() % active;
+        const int lane = it.get_local_linear_id();
+        float common[4];
+        for (int d = 0; d < 4; ++d)
+          common[d] = pooled[b * 128 + lane * 4 + d];
+#pragma unroll
+        for (int row = 0; row < Tile; ++row) {
+          const int64_t qi = q0 + row;
+          if (qi >= nq)
+            continue;
+          const auto st = steps + qi * kStepCount;
+          const int64_t n = st[kStepNKv], nb = st[kStepNBid];
+          if (n < 0 || nb != n / 4 || nb >= active || b > nb)
+            continue;
+          float key[4];
+          for (int d = 0; d < 4; ++d)
+            key[d] = b == nb ? dead[lane * 4 + d] : common[d];
+          const float *q = query + qi * 512;
+          float total = 0;
+          for (int h = 0; h < 4; ++h) {
+            float dot = key[0] * q[h * 128 + lane * 4];
+            for (int d = 1; d < 4; ++d)
+              dot += key[d] * q[h * 128 + lane * 4 + d];
+            for (int off = 16; off; off /= 2)
+              dot += sycl::permute_group_by_xor(it.get_sub_group(), dot, off);
+            total += dot > 0 ? dot : 0.f;
+          }
+          if (lane == 0) {
+            if (b == nb && n % 4)
+              total += 1e9f;
+            scores[qi * blocks + b] = total;
+          }
+        }
+      });
+}
+
+int prefill_score_query_tile() {
+  static const int tile = [] {
+    const char *value = std::getenv("STRATA_SYCL_SCORE_QUERY_TILE");
+    if (!value)
+      return 0;
+    if ((value[0] != '0' && value[0] != '8') || value[1] != '\0')
+      throw std::invalid_argument("STRATA_SYCL_SCORE_QUERY_TILE must be 0 or 8");
+    const int selected = value[0] == '8' ? 8 : 0;
+    std::fprintf(stderr, "strata QSA score prefill: query_tile=%d\n", selected);
+    return selected;
+  }();
+  return tile;
+}
+
 template <int Mapping>
 sycl::event submit_topk(sycl::queue &queue, const float *scores,
                         const int32_t *steps, int64_t nq, int64_t blocks,
@@ -183,6 +247,25 @@ void qsa_block_scores(const float *pooled, const float *dead,
           scores[qi * blocks + b] = total;
         }
       });
+  finish(stream, event);
+}
+void qsa_block_scores_prefill(const float *pooled, const float *dead,
+                              const float *query, const int32_t *steps,
+                              int64_t nq, int64_t blocks, const QsaShapes &s,
+                              float *scores, void *stream, int64_t active) {
+  if (!prefill_score_query_tile()) {
+    qsa_block_scores(pooled, dead, query, steps, nq, blocks, s, scores,
+                     stream, active);
+    return;
+  }
+  const int64_t launched = validate(nq, blocks, active, s);
+  validate_spans({{scores, checked_count(nq, blocks) * 4}},
+                 {{pooled, checked_count(blocks, 128) * 4}, {dead, 512},
+                  {query, checked_count(nq, 512) * 4},
+                  {steps, checked_count(nq, kStepCount) * 4}});
+  auto event = submit_scores_querytile<8>(queue_for(stream), pooled, dead,
+                                         query, steps, nq, blocks, scores,
+                                         launched);
   finish(stream, event);
 }
 bool qsa_block_scores_tc(const float *, const float *, const float *,

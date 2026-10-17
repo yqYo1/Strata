@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "base_commit": "42074fa0818f8de1a07804b6a5ebb80af510f2e8",
+  "source_pins": {
+    "src/kernels/sycl/qsa_select.cpp": "239891f0a6165c1e9bc139de8446d9d49a0bcd41b5ed5c8f19b43e53fb4602ab",
+    "include/strata/kernels/qsa_select.hpp": "6ec13005a715579c118de78a22b3379f4b6279e8882db61671c92d0138e0986d",
+    "src/prefill/prefill.cpp": "4750fc7d7e3ea5ca55302e00d12b72fed456cffe09da0ca77305749331633242",
+    "tests/sycl/qsa_score_prefill.cpp": "88b6d04aecbb7f186d4861d34975a1ae88e2b3f31982c7c1a14cc667923ccf0e",
+    "cmake/sycl_backend.cmake": "250a9876f8c80f6053e6c0e0db29fe7964b158cc98f80049c8f2e2ed770f1adf"
+  },
+  "provenance": "Main independently integrated its own qualified query8 candidate, derived only from repository FP32 scorer. Same lane sum/XOR/head order, per-query dead and tail; no XeStrata code/helpers/proposals used.",
+  "adoption": "Dedicated-prefill-only opt-in; default0 and original public scorer preserved, STRATA_SELECT_OLD forces original. Build and actual-entry/model gates pending.",
+  "preserved": [
+    "FP32 arithmetic/storage",
+    "short-prefill/decode/reference entry",
+    "bounds and active launch contract",
+    "physical262144-context and RESTORE requirements",
+    "existing radix4/cyclic selection flags"
+  ]
+}
