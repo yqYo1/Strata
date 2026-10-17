@@ -136,6 +136,10 @@ prefix into transient BF16 storage and uses score pitch33. Both keep local
 FP32 online state and matrix accumulators. This comparison changes the attention
 operand supply, not the score-GEMM selector above. Existing GDN stays selected
 after its matched78K comparison established no material gain from chunk64.
+The current direct implementation also uses score pitch32, while the optimized
+prefix implementation uses33. This compares the existing implementations;
+an elapsed-time difference alone cannot isolate KV staging, physical bandwidth
+or the effect of score padding. Keep that caveat in the model decision.
 
 Before another direct-Q8 model run, its operand arrays explicitly enforce the
 four-byte matrix-load base required by the
