@@ -59,12 +59,14 @@ struct Record {
   uint8_t window=0,bin=0;
 };
 struct Pending { std::optional<sycl::event> event; Record record; };
+struct Invalid { Record record; uint64_t query_wall=0; unsigned violations=0; };
 } // namespace
 
 struct Trace::Impl {
   void* stream;
   unsigned expected, windows=0, current=0;
   size_t used=0, records=0, peak=0;
+  size_t invalid_total=0, invalid_saved=0;
   uint64_t timer_resolution=0, query_wall_ns=0;
   bool complete=true;
   const char* error="none";
@@ -74,6 +76,7 @@ struct Trace::Impl {
   std::array<Window,Frames> window;
   std::array<Pending,PendingMax> pending;
   std::array<Record,RecordsMax> record;
+  std::array<Invalid,32> invalid;
   void fail(const char* message) noexcept { complete=false; if (!std::strcmp(error,"none")) error=message; }
 };
 
@@ -103,9 +106,17 @@ Trace::~Trace() noexcept {
   if (x.windows!=x.expected) x.fail("frame_count");
   for (size_t i=0;i<x.records;++i) {
     const auto& r=x.record[i];const auto& m=r.meta;
-    std::fprintf(stderr,"strata command sample: window=%u kind=%s bin=%u expert=%d m=%d n=%d k=%d format=%d submit=%llu start=%llu end=%llu\n",
+    std::fprintf(stderr,"strata command sample: window=%u kind=%s bin=%u expert=%d m=%d n=%d k=%d format=%d row=%lld submit=%llu start=%llu end=%llu\n",
         unsigned(r.window),kind_name(m.kind),unsigned(r.bin),m.expert,m.rows,m.n,m.k,m.format,
+        (long long)m.source_row,
         (unsigned long long)r.submitted,(unsigned long long)r.start,(unsigned long long)r.end);
+  }
+  for (size_t i=0;i<x.invalid_saved;++i) {
+    const auto& bad=x.invalid[i];const auto& r=bad.record;const auto& m=r.meta;
+    std::fprintf(stderr,"strata command invalid: window=%u kind=%s bin=%u expert=%d m=%d n=%d k=%d format=%d row=%lld submit=%llu start=%llu end=%llu query_wall_ns=%llu violations=%u\n",
+        unsigned(r.window),kind_name(m.kind),unsigned(r.bin),m.expert,m.rows,m.n,m.k,m.format,
+        (long long)m.source_row,(unsigned long long)r.submitted,(unsigned long long)r.start,
+        (unsigned long long)r.end,(unsigned long long)bad.query_wall,bad.violations);
   }
   for (unsigned w=0;w<x.windows;++w)
     for (size_t k=1;k<Kinds;++k) for (size_t b=0;b<Bins;++b) {
@@ -115,9 +126,9 @@ Trace::~Trace() noexcept {
           w,x.window[w].layer,(long long)x.window[w].first_row,kind_name(Kind(k)),b,g.eligible,g.selected,
           (unsigned long long)g.service,(unsigned long long)g.queue_delay);
     }
-  std::fprintf(stderr,"strata command profile: complete=%d windows=%u expected=%u records=%zu peak_events=%zu cap=%zu timer_resolution_ns=%llu max_query_wall_ns=%llu error=%s scope=selected_first_windows hardware_busy=UNMEASURED\n",
+  std::fprintf(stderr,"strata command profile: complete=%d windows=%u expected=%u records=%zu peak_events=%zu cap=%zu timer_resolution_ns=%llu max_query_wall_ns=%llu error=%s invalid=%zu invalid_saved=%zu scope=selected_first_windows hardware_busy=UNMEASURED\n",
       int(x.complete),x.windows,x.expected,x.records,x.peak,PendingMax,
-      (unsigned long long)x.timer_resolution,(unsigned long long)x.query_wall_ns,x.error);
+      (unsigned long long)x.timer_resolution,(unsigned long long)x.query_wall_ns,x.error,x.invalid_total,x.invalid_saved);
   // On an early error the enclosing layer-major checked lease has retired
   // before this request owner is destroyed. Never query its unfinished events.
 }
@@ -147,7 +158,7 @@ void Frame::consider(int32_t expert, int64_t row, int64_t rows) noexcept {
 Tag Frame::tag(Kind kind, int32_t expert, int64_t row, int64_t rows,
                int64_t n, int64_t k, int32_t format) noexcept {
   Meta m;
-  m.kind=kind;m.expert=expert;m.format=format;
+  m.kind=kind;m.expert=expert;m.format=format;m.source_row=row;
   if (trace_) {
     auto& x=*trace_->impl_;
     if (rows<0 || rows>INT32_MAX || n<0 || n>INT32_MAX || k<0 || k>INT32_MAX || kind==Kind::none || size_t(kind)>=Kinds) {
@@ -198,8 +209,14 @@ void Frame::after_checked_drain() noexcept {
       r.end=p.event->get_profiling_info<sycl::info::event_profiling::command_end>();
       const uint64_t wall=std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now()-before).count();
       x.query_wall_ns=std::max(x.query_wall_ns,wall);
-      if (r.start<r.submitted || r.end<=r.start || r.end-r.start<x.timer_resolution || wall>=1000000000ULL) {
-        x.fail("timestamp_order_granularity_or_query_delay");continue;
+      const unsigned violations=unsigned(r.start<r.submitted) |
+          (unsigned(r.end<=r.start)<<1) |
+          (unsigned(r.end>r.start && r.end-r.start<x.timer_resolution)<<2) |
+          (unsigned(wall>=1000000000ULL)<<3);
+      if (violations) {
+        x.fail("timestamp_order_granularity_or_query_delay");++x.invalid_total;
+        if (x.invalid_saved<x.invalid.size()) x.invalid[x.invalid_saved++]={r,wall,violations};
+        continue;
       }
       if (x.records==RecordsMax) { x.fail("record_capacity");continue; }
       x.record[x.records++]=r;

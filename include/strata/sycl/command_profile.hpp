@@ -9,6 +9,7 @@ enum class Kind : uint8_t { none, upload, dequant_gu, dequant_down, gather, gu,
 struct Meta {
   Kind kind = Kind::none;
   int32_t expert = -1, rows = 0, n = 0, k = 0, format = -1;
+  int64_t source_row = -1;
   bool selected = false;
 };
 bool requested(); // Startup-only, default off; never changes process environment.

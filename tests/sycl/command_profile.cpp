@@ -21,7 +21,7 @@ void gate(const char* phase) {
   if (!value || std::string(value)!="1") return;
   std::cout<<"EVENT_PROFILE_READY "<<phase<<'\n';need(std::cin.get()=='X',"Main gate token");
 }
-void run() {
+void run(bool inject) {
   constexpr size_t Guard=16,Words=64,Count=Words+Guard*2;
   constexpr uint32_t Sentinel=0x14ac28be;
   std::array<uint32_t,Count> source{},result{};
@@ -30,10 +30,20 @@ void run() {
   const auto original=source;
   Allocation memory(runtime,sizeof(source),MemoryKind::Device);
   auto& queue=runtime->compute();auto* base=memory.as<uint32_t>();auto* data=base+Guard;
-  bool retired=false;
-  struct Pending { bool& done;~Pending() noexcept { if (!done) drain(); } } pending{retired};
-  runtime->wait(queue.memcpy(base,source.data(),sizeof(source)));
+  // Retain the event owner through the fallback checked drain on exceptions.
   std::unique_ptr<cp::Trace> trace;
+  bool retired=false;
+  struct Pending {
+    bool& done;
+    ~Pending() noexcept {
+      if (!done) {
+        std::cerr<<"fixture fallback drain begin\n";
+        drain();
+        std::cerr<<"fixture fallback drain end\n";
+      }
+    }
+  } pending{retired};
+  runtime->wait(queue.memcpy(base,source.data(),sizeof(source)));
   if (cp::requested()) trace.reset(new cp::Trace(&queue,1));
   {
     auto frame=trace ? trace->begin(0,0) : cp::Frame{};
@@ -69,6 +79,7 @@ void run() {
       auto tag=frame.tag(cp::Kind::write,-1,i*32,32,10240);launch(i+2);
     }
     need(launches==387,"complete synthetic launch population");
+    if (inject) throw std::runtime_error("injected-before-drain");
     runtime->wait();retired=true;
     frame.after_checked_drain();
   }
@@ -83,11 +94,12 @@ void run() {
 } // namespace
 int main(int argc,char** argv) {
   try {
-    std::cout.setf(std::ios::unitbuf);need(argc==2 && std::string(argv[1])=="--fixture","--fixture required");
+    std::cout.setf(std::ios::unitbuf);
+    need(argc==2 && (std::string(argv[1])=="--fixture" || std::string(argv[1])=="--inject-before-drain"),"fixture mode required");
     gate("before-runtime");runtime=runtime_for();
     std::cout<<"device="<<runtime->device().get_info<sycl::info::device::name>()
              <<" driver="<<runtime->device().get_info<sycl::info::device::driver_version>()<<'\n';
-    gate("runtime-ready");run();runtime->wait();runtime.reset();gate("after-cleanup");
+    gate("runtime-ready");run(std::string(argv[1])=="--inject-before-drain");runtime->wait();runtime.reset();gate("after-cleanup");
     std::cout<<"fixture_status=PASS model_PP=UNRUN faults=EXTERNAL_REQUIRED\n";return 0;
   } catch (const std::exception& error) { drain();std::cerr<<error.what()<<'\n';return 1; }
 }
