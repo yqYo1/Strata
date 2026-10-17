@@ -58,10 +58,10 @@ void test(int32_t rows, bool hot) {
 }
 int main() {
     try {
-        for (int32_t rows : {1, 8192, 8193, 16384, 32768, 65536}) {
+        for (int32_t rows : {1, 8192, 8193, 16384, 32768, 65536, 65537, 78452, 81920}) {
             test(rows, false); test(rows, true);
         }
-        refuses([] { (void)Routes::build_accum(65537, nullptr, 0); });
+        refuses([] { (void)Routes::build_accum(Routes::max_accum_rows + 1, nullptr, 0); });
         refuses([] { (void)Routes::build_accum(0, nullptr, 0); });
         std::puts("moe_accum_routes PASS GPU=UNRUN");
         return 0;

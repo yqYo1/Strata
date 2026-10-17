@@ -18,7 +18,7 @@ public:
     static constexpr int32_t experts = 512;
     static constexpr int32_t top_k = 10;
     static constexpr int32_t max_rows = 16384;
-    static constexpr int32_t max_accum_rows = 65536;
+    static constexpr int32_t max_accum_rows = 81920;
     static constexpr int32_t max_job_rows = 8192;
 
     struct Job {
@@ -46,7 +46,7 @@ public:
     static std::shared_ptr<const MoeWindowRoutes> build_accum(
             int64_t rows, const int32_t* ids, size_t id_count) {
         if (rows < 1 || rows > max_accum_rows)
-            throw std::invalid_argument("MoE accumulator rows outside [1,65536]");
+            throw std::invalid_argument("MoE accumulator rows outside [1,81920]");
         const size_t routes = size_t(rows) * top_k;
         if (!ids || id_count != routes)
             throw std::invalid_argument("MoE accumulator ID span mismatch");
