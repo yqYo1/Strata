@@ -258,7 +258,7 @@ void run_component(){
     const auto last=stop.get_profiling_info<sycl::info::event_profiling::command_start>();
     need(last>=first,"component marker order");
     if(index<0)return;
-    std::cout<<"component_sample n="<<index<<" arm="<<(candidate?(arm==2?"chunk64_packed":"chunk64_original"):"current_FP32")
+    std::cout<<"component_sample n="<<index<<" arm="<<(candidate?(arm>=2?"chunk64_packed":"chunk64_original"):"current_FP32")
       <<(arm==3?"_V16":"")<<" tokens="<<T<<" queue_interval_ns="<<(last-first)<<" host_wall_ms="<<wall;
     if(candidate){
       const std::array<std::pair<const char*,sycl::event>,8> stages={{{"gates",events.gates},{"pack",events.pack},
