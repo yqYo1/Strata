@@ -455,6 +455,13 @@ if(STRATA_SYCL_TESTS)
   target_compile_definitions(sycl_qsa_bf16_prefix_optimized_test PRIVATE
     qsa_bf16_prefix_batch=qsa_bf16_prefix_optimized_batch)
 
+  add_executable(sycl_qsa_bf16_prefix_subgroup_test EXCLUDE_FROM_ALL tests/sycl/qsa_bf16_prefix.cpp)
+  target_link_libraries(sycl_qsa_bf16_prefix_subgroup_test PRIVATE strata_kernels)
+  target_compile_features(sycl_qsa_bf16_prefix_subgroup_test PRIVATE cxx_std_20)
+  target_compile_options(sycl_qsa_bf16_prefix_subgroup_test PRIVATE -fno-fast-math -ffp-contract=off)
+  target_compile_definitions(sycl_qsa_bf16_prefix_subgroup_test PRIVATE
+    qsa_bf16_prefix_batch=qsa_bf16_prefix_subgroup_batch)
+
   add_executable(sycl_qsa_bf16_prefix_tilepack_test EXCLUDE_FROM_ALL tests/sycl/qsa_bf16_prefix.cpp)
   target_link_libraries(sycl_qsa_bf16_prefix_tilepack_test PRIVATE strata_kernels)
   target_compile_features(sycl_qsa_bf16_prefix_tilepack_test PRIVATE cxx_std_20)

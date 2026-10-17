@@ -66,12 +66,13 @@ bool matrix_available(const sycl::device &device, size_t local_payload) {
 }
 } // namespace
 
-template<int ScoreStride, bool TilePacked = false>
+template<int ScoreStride, bool TilePacked = false, bool SubgroupSoftmax = false>
 static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
                              const int32_t *ids, const int32_t *steps,
                              int64_t cap, const QsaShapes &shape, uint16_t *output,
                              int64_t queries, const QsaPromptBf16Bounds &bounds,
                              int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream) {
+  static_assert(!SubgroupSoftmax || !TilePacked);
   // Reuse the qualified admission contract; it never enqueues or waits.
   if (!qsa_prompt_attn_bf16_validate(query, pools, ids, steps, cap, shape,
                                     output, queries, bounds, stream)) return false;
@@ -230,7 +231,38 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
           });
         }
         item.barrier(sycl::access::fence_space::local_space);
-        if (tid < 16) {
+        if constexpr (SubgroupSoftmax) {
+          // Each SIMD16 subgroup owns two head rows. Every lane participates,
+          // including missing cells and padded heads; FP32 state stays local.
+          for (int h = subgroup; h < 16; h += 8) {
+            const int c0 = lane, c1 = lane + 16;
+            const float s0 = scores[h * ScoreStride + c0];
+            const float s1 = scores[h * ScoreStride + c1];
+            const bool row0 = rows[c0] >= 0, row1 = rows[c1] >= 0;
+            const bool valid0 = row0 && sycl::isfinite(s0);
+            const bool valid1 = row1 && sycl::isfinite(s1);
+            const int bad = (row0 && !valid0) || (row1 && !valid1);
+            const int score_bad = sycl::reduce_over_group(sg, bad, sycl::maximum<int>());
+            const float lane_max = sycl::fmax(valid0 ? s0 : -INFINITY,
+                                             valid1 ? s1 : -INFINITY);
+            const float tile_max = sycl::reduce_over_group(sg, lane_max, sycl::maximum<float>());
+            const float prior = !lane ? maximum[h] : -INFINITY;
+            const float old_m = sycl::group_broadcast(sg, prior, 0);
+            const float m = sycl::fmax(old_m, tile_max);
+            const float p0 = valid0 ? sycl::exp2(s0 - m) : 0.f;
+            const float p1 = valid1 ? sycl::exp2(s1 - m) : 0.f;
+            const float sum = sycl::reduce_over_group(sg, p0 + p1, sycl::plus<float>());
+            probability[h * Cells + c0] = BFloat(p0);
+            probability[h * Cells + c1] = BFloat(p1);
+            if (!lane) {
+              const float old_norm = normalizer[h];
+              const float a = old_norm > 0.f ? sycl::exp2(old_m - m) : 0.f;
+              bad_head[h] |= score_bad;
+              maximum[h] = m; alpha[h] = a;
+              normalizer[h] = sycl::fma(old_norm, a, sum);
+            }
+          }
+        } else if (tid < 16) {
           float m = maximum[tid];
           for (int c = 0; c < Cells; ++c) if (rows[c] >= 0) {
             const float score = scores[tid * ScoreStride + c];
@@ -310,6 +342,14 @@ bool qsa_bf16_prefix_optimized_batch(const uint16_t *query, const QsaAttnPools &
     uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
     int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream) {
   return prefix_batch_impl<Cells + 1>(query, pools, ids, steps, cap, shape,
+      output, queries, bounds, live_cells, scratch, stream);
+}
+// FP32 subgroup max/sum; current score33 row-major operands and state layout.
+bool qsa_bf16_prefix_subgroup_batch(const uint16_t *query, const QsaAttnPools &pools,
+    const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
+    uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
+    int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream) {
+  return prefix_batch_impl<Cells + 1, false, true>(query, pools, ids, steps, cap, shape,
       output, queries, bounds, live_cells, scratch, stream);
 }
 // Dense16 A tiles and BF16 pair-packed B tiles; same numerical contract.

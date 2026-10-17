@@ -61,6 +61,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     }
     const bool qsa_prefix_on = qsa_math == native16::qsa::AttentionMath::bf16_prefix ||
         qsa_math == native16::qsa::AttentionMath::bf16_prefix_optimized ||
+        qsa_math == native16::qsa::AttentionMath::bf16_prefix_subgroup ||
         qsa_math == native16::qsa::AttentionMath::bf16_prefix_tilepack;
     if (qsa16_on && !native16_on) {
         err = "prefill QSA16: requires STRATA_SYCL_PREFILL_NATIVE16=bf16"; return false;
@@ -437,12 +438,14 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     }
     if (qsa_math != native16::qsa::AttentionMath::existing)
         std::fprintf(stderr, "strata prefill: QSA BF16 operands, FP32 online state/accumulation; "
-                     "KV=%s transient_bytes=%llu; source=resident-Mode0 score_pitch=%d operand_layout=%s\n",
+                     "KV=%s transient_bytes=%llu; source=resident-Mode0 score_pitch=%d operand_layout=%s softmax=%s\n",
                      qsa_prefix_on ? "active-logical-prefix" : "on-the-fly",
                      (unsigned long long) prefix_bytes,
                      (qsa_math == native16::qsa::AttentionMath::bf16_prefix_optimized ||
+                      qsa_math == native16::qsa::AttentionMath::bf16_prefix_subgroup ||
                       qsa_math == native16::qsa::AttentionMath::bf16_prefix_tilepack) ? 33 : 32,
-                     qsa_math == native16::qsa::AttentionMath::bf16_prefix_tilepack ? "dense16-vnni" : "row-major");
+                     qsa_math == native16::qsa::AttentionMath::bf16_prefix_tilepack ? "dense16-vnni" : "row-major",
+                     qsa_math == native16::qsa::AttentionMath::bf16_prefix_subgroup ? "subgroup" : "serial");
     if (plan.gpu_bytes) {
         uint8_t* p = nullptr;
         if (cudaMalloc(reinterpret_cast<void**>(&p), size_t(plan.gpu_bytes)) != cudaSuccess) {
