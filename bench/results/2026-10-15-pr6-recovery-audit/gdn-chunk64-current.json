@@ -1,5 +1,5 @@
 {
-  "source_commit": "0f22a5f8e31b77c38b5cb18e6c7cb35f6bd783e7",
+  "source_commit": "1ff3091d34becdaf21d5cd3d93942f16ed276894",
   "runtime_archive": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-score-gemm-entry-engine-build-v2/build/libstrata_sycl_runtime.a",
     "sha256": "ba34c7d19cf30499c215e86289a921461b9ac426df6f73f61c6769b65d8ee573",
@@ -14,12 +14,14 @@
   "model_quality_qualified": false,
   "physical262144_RESTORE_qualified": false,
   "production_selected": false,
-  "performance_measured": false,
+  "model_performance_measured": false,
+  "retention_consumer": "Current GDN8192 component/contract comparison; retire when superseded or closed.",
   "build": {
-    "passed": true,
+    "passed": false,
     "complete": true,
     "GPU_executed": false,
-    "exit_code": 0
+    "exit_code": 1,
+    "error_excerpt": "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/gdn_chunk64/fixture.cpp:234:24: error: unused variable 'C' [-Werror,-Wunused-variable]\n  234 |   constexpr int T=8192,C=10240,HV=48,D=128,Pad=16,State=HV*D*D;\n      |                        ^\n1 error generated.\n"
   },
   "active": false,
   "build_command": [
@@ -39,157 +41,38 @@
     "-Werror",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/gdn_chunk64/candidate.cpp",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/gdn_chunk64/fixture.cpp",
+    "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/fused_gdn.cpp",
     "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-score-gemm-entry-engine-build-v2/build/libstrata_sycl_runtime.a",
     "-o",
     "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current/sycl_gdn_chunk64"
   ],
-  "binary_sha256": "70d76c80afd64f3e205c4ecddafe1cb92031d4082bb5f3f92a314893674dc41a",
   "processes_closed": true,
   "ownership_closed": true,
-  "smoke": {
-    "passed": true,
-    "complete": true,
-    "GPU_executed": true,
-    "launch_attempted": true,
-    "observed_runtime_elf_count": 26,
-    "GPU_work_admitted": true,
-    "case_results": [
-      "dyadic_diagnostic T=1 carry_exact=PASS raw_BF16_unequal=0 raw_value_unequal=0 raw_max_abs=0 output_unequal=0 output_max_ULP=0 output_max_abs=0 output_value_unequal=0 FP64_norm_unequal=0",
-      "case T=1 heads=48 key_groups=16 state_width=128 oracle=exact_dyadic_orthogonal carry=PASS raw_BF16=PASS output_FP16=PASS zero_sign_ignored=true unequal=0 max_abs=0 guards=PASS inputs=PASS rejection=PASS repeat=PASS status=PASS",
-      "dyadic_diagnostic T=3 carry_exact=PASS raw_BF16_unequal=0 raw_value_unequal=0 raw_max_abs=0 output_unequal=0 output_max_ULP=0 output_max_abs=0 output_value_unequal=0 FP64_norm_unequal=0",
-      "case T=3 heads=48 key_groups=16 state_width=128 oracle=exact_dyadic_orthogonal carry=PASS raw_BF16=PASS output_FP16=PASS zero_sign_ignored=true unequal=0 max_abs=0 guards=PASS inputs=PASS rejection=PASS repeat=PASS status=PASS",
-      "fixture_status=PASS general_numerics=UNRUN long_component=UNRUN model_PP=UNRUN physical262144_model=UNRUN RESTORE=UNRUN faults=EXTERNAL_REQUIRED"
-    ],
-    "exit_code": 0,
-    "fresh_faults": [],
-    "boot_unchanged": true
-  },
-  "smoke_command": [
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current/sycl_gdn_chunk64",
-    "--smoke"
-  ],
-  "boundaries": {
-    "passed": true,
-    "complete": true,
-    "GPU_executed": true,
-    "launch_attempted": true,
-    "observed_runtime_elf_count": 26,
-    "GPU_work_admitted": true,
-    "case_results": [
-      "dyadic_diagnostic T=63 carry_exact=PASS raw_BF16_unequal=0 raw_value_unequal=0 raw_max_abs=0 output_unequal=0 output_max_ULP=0 output_max_abs=0 output_value_unequal=0 FP64_norm_unequal=0",
-      "case T=63 heads=48 key_groups=16 state_width=128 oracle=exact_dyadic_orthogonal carry=PASS raw_BF16=PASS output_FP16=PASS zero_sign_ignored=true unequal=0 max_abs=0 guards=PASS inputs=PASS rejection=PASS repeat=PASS status=PASS",
-      "dyadic_diagnostic T=64 carry_exact=PASS raw_BF16_unequal=0 raw_value_unequal=0 raw_max_abs=0 output_unequal=0 output_max_ULP=0 output_max_abs=0 output_value_unequal=0 FP64_norm_unequal=0",
-      "case T=64 heads=48 key_groups=16 state_width=128 oracle=exact_dyadic_orthogonal carry=PASS raw_BF16=PASS output_FP16=PASS zero_sign_ignored=true unequal=0 max_abs=0 guards=PASS inputs=PASS rejection=PASS repeat=PASS status=PASS",
-      "dyadic_diagnostic T=65 carry_exact=PASS raw_BF16_unequal=0 raw_value_unequal=0 raw_max_abs=0 output_unequal=0 output_max_ULP=0 output_max_abs=0 output_value_unequal=0 FP64_norm_unequal=0",
-      "case T=65 heads=48 key_groups=16 state_width=128 oracle=exact_dyadic_orthogonal carry=PASS raw_BF16=PASS output_FP16=PASS zero_sign_ignored=true unequal=0 max_abs=0 guards=PASS inputs=PASS rejection=PASS repeat=PASS status=PASS",
-      "dyadic_diagnostic T=127 carry_exact=PASS raw_BF16_unequal=0 raw_value_unequal=0 raw_max_abs=0 output_unequal=0 output_max_ULP=0 output_max_abs=0 output_value_unequal=0 FP64_norm_unequal=0",
-      "case T=127 heads=48 key_groups=16 state_width=128 oracle=exact_dyadic_orthogonal carry=PASS raw_BF16=PASS output_FP16=PASS zero_sign_ignored=true unequal=0 max_abs=0 guards=PASS inputs=PASS rejection=PASS repeat=PASS status=PASS",
-      "dyadic_diagnostic T=128 carry_exact=PASS raw_BF16_unequal=0 raw_value_unequal=0 raw_max_abs=0 output_unequal=0 output_max_ULP=0 output_max_abs=0 output_value_unequal=0 FP64_norm_unequal=0",
-      "case T=128 heads=48 key_groups=16 state_width=128 oracle=exact_dyadic_orthogonal carry=PASS raw_BF16=PASS output_FP16=PASS zero_sign_ignored=true unequal=0 max_abs=0 guards=PASS inputs=PASS rejection=PASS repeat=PASS status=PASS",
-      "dyadic_diagnostic T=129 carry_exact=PASS raw_BF16_unequal=0 raw_value_unequal=0 raw_max_abs=0 output_unequal=0 output_max_ULP=0 output_max_abs=0 output_value_unequal=0 FP64_norm_unequal=0",
-      "case T=129 heads=48 key_groups=16 state_width=128 oracle=exact_dyadic_orthogonal carry=PASS raw_BF16=PASS output_FP16=PASS zero_sign_ignored=true unequal=0 max_abs=0 guards=PASS inputs=PASS rejection=PASS repeat=PASS status=PASS",
-      "fixture_status=PASS general_numerics=UNRUN long_component=UNRUN model_PP=UNRUN physical262144_model=UNRUN RESTORE=UNRUN faults=EXTERNAL_REQUIRED"
-    ],
-    "exit_code": 0,
-    "fresh_faults": [],
-    "boot_unchanged": true
-  },
-  "boundaries_command": [
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current/sycl_gdn_chunk64",
-    "--boundaries"
-  ],
-  "general": {
-    "passed": true,
-    "complete": true,
-    "GPU_executed": true,
-    "scope": "Finite/bounds/input/repeat/aligned-handoff safety; FP64 mathematical errors are diagnostic only.",
-    "framework_numerics_qualified": false,
-    "launch_attempted": true,
-    "observed_runtime_elf_count": 26,
-    "GPU_work_admitted": true,
-    "case_results": [
-      "case T=63 oracle=sequential_FP64_math accuracy=DIAGNOSTIC_ONLY carry_rel_L2=0.00296291 carry_max_abs=0.00107428 raw_rel_L2=0.00399581 raw_max_abs=0.00012207 output_rel_L2=0.00387046 output_max_abs=0.0175781 finite=PASS guards=PASS inputs=PASS repeat=PASS aligned_handoff=NA status=SAFETY_PASS",
-      "case T=64 oracle=sequential_FP64_math accuracy=DIAGNOSTIC_ONLY carry_rel_L2=0.00296746 carry_max_abs=0.00100361 raw_rel_L2=0.00399808 raw_max_abs=0.00012207 output_rel_L2=0.00387335 output_max_abs=0.0175781 finite=PASS guards=PASS inputs=PASS repeat=PASS aligned_handoff=NA status=SAFETY_PASS",
-      "case T=65 oracle=sequential_FP64_math accuracy=DIAGNOSTIC_ONLY carry_rel_L2=0.00293508 carry_max_abs=0.000997506 raw_rel_L2=0.00400035 raw_max_abs=0.00012207 output_rel_L2=0.00387778 output_max_abs=0.0175781 finite=PASS guards=PASS inputs=PASS repeat=PASS aligned_handoff=PASS status=SAFETY_PASS",
-      "case T=127 oracle=sequential_FP64_math accuracy=DIAGNOSTIC_ONLY carry_rel_L2=0.00296182 carry_max_abs=0.000863754 raw_rel_L2=0.00403412 raw_max_abs=0.00012207 output_rel_L2=0.0039529 output_max_abs=0.0175781 finite=PASS guards=PASS inputs=PASS repeat=PASS aligned_handoff=PASS status=SAFETY_PASS",
-      "case T=128 oracle=sequential_FP64_math accuracy=DIAGNOSTIC_ONLY carry_rel_L2=0.00296859 carry_max_abs=0.000901355 raw_rel_L2=0.00403342 raw_max_abs=0.00012207 output_rel_L2=0.00395296 output_max_abs=0.0175781 finite=PASS guards=PASS inputs=PASS repeat=PASS aligned_handoff=PASS status=SAFETY_PASS",
-      "case T=129 oracle=sequential_FP64_math accuracy=DIAGNOSTIC_ONLY carry_rel_L2=0.00293524 carry_max_abs=0.000863353 raw_rel_L2=0.00403367 raw_max_abs=0.00012207 output_rel_L2=0.00395415 output_max_abs=0.0175781 finite=PASS guards=PASS inputs=PASS repeat=PASS aligned_handoff=PASS status=SAFETY_PASS",
-      "fixture_status=PASS general_numerics=DIAGNOSTIC_ONLY long_component=UNRUN model_PP=UNRUN physical262144_model=UNRUN RESTORE=UNRUN faults=EXTERNAL_REQUIRED"
-    ],
-    "exit_code": 0,
-    "fresh_faults": [],
-    "boot_unchanged": true
-  },
-  "general_command": [
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current/sycl_gdn_chunk64",
-    "--general"
-  ],
-  "project_input_count": 151,
+  "project_input_count": 152,
   "environment_reference": {
     "path": "tools/sycl/measurement_environment.json",
     "sha256": "637cc6f8f410cf8400fd7b4598182e2e91d1c5cf907ef428e73321faf0aa47fa"
   },
   "command": [
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current/sycl_gdn_chunk64",
-    "--general"
-  ],
-  "retirement": {
-    "state": "retired",
-    "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current",
-    "source_commit": "0f22a5f8e31b77c38b5cb18e6c7cb35f6bd783e7",
-    "verified_project_inputs": 151,
-    "files": [
-      {
-        "path": "owned/boundaries.stderr",
-        "bytes": 462936,
-        "sha256": "7163c01fd7ab5b0fb4c7700368dfc7d436481ab7b0bb278e4c169b06ac8b3c6e"
-      },
-      {
-        "path": "owned/boundaries.stdout",
-        "bytes": 2797,
-        "sha256": "55aef5981331899b2b359756b7b0754e6826eaf02cbfeb2556f47d2adba2ca38"
-      },
-      {
-        "path": "owned/build.stderr",
-        "bytes": 0,
-        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-      },
-      {
-        "path": "owned/build.stdout",
-        "bytes": 0,
-        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-      },
-      {
-        "path": "owned/general.stderr",
-        "bytes": 560623,
-        "sha256": "20bc83c44aaae53c48bc95cb7e06fd7ee88b8a02f0a2024cac9e5d367d7ef3ff"
-      },
-      {
-        "path": "owned/general.stdout",
-        "bytes": 2083,
-        "sha256": "f245ea894f0dcf4d5a65d0930d86bf0b6ec790da4a13b2a62e4b37eff5743cfd"
-      },
-      {
-        "path": "owned/smoke.stderr",
-        "bytes": 185987,
-        "sha256": "94aba01633d2d0a919bf60515ceda8ea14de02c9dd4954cbab5aae51f9c62998"
-      },
-      {
-        "path": "owned/smoke.stdout",
-        "bytes": 1127,
-        "sha256": "9b1e5a3bd2ce184b1b1476bfae96006d0a1e40486d8100815c9d2ee89bffe1cf"
-      },
-      {
-        "path": "record.json",
-        "bytes": 29794,
-        "sha256": "f3d1f46949f4b45bfd67117e7b97ea5079fb9963bc9807e3bd745b7c819d18e0"
-      },
-      {
-        "path": "sycl_gdn_chunk64",
-        "bytes": 268928,
-        "sha256": "70d76c80afd64f3e205c4ecddafe1cb92031d4082bb5f3f92a314893674dc41a"
-      }
-    ],
-    "reason": "Closed superseded qualification; source/recipe recovered from Git."
-  }
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+    "-std=c++20",
+    "-O3",
+    "-DNDEBUG",
+    "-DSTRATA_ENABLE_SYCL=1",
+    "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+    "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-fsycl",
+    "-fsycl-id-queries-range=size_t",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/gdn_chunk64/candidate.cpp",
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/gdn_chunk64/fixture.cpp",
+    "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/fused_gdn.cpp",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-score-gemm-entry-engine-build-v2/build/libstrata_sycl_runtime.a",
+    "-o",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-chunk64-current/sycl_gdn_chunk64"
+  ]
 }

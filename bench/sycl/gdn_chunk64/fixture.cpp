@@ -231,7 +231,7 @@ void run_general(int T){
     <<" status=SAFETY_PASS"<<std::endl;
 }
 void run_component(){
-  constexpr int T=8192,C=10240,HV=48,D=128,Pad=16,State=HV*D*D;
+  constexpr int T=8192,HV=48,D=128,Pad=16,State=HV*D*D;
   GeneralInputs input(T);
   std::vector<float> hf(input.h.size()),zf(input.z.size());
   for(size_t i=0;i<hf.size();++i)hf[i]=k::f32_from_bf16(input.h[i]);
