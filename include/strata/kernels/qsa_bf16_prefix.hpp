@@ -21,6 +21,12 @@ bool qsa_bf16_prefix_optimized_batch(const uint16_t *q, const QsaAttnPools &pool
     const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
     uint16_t *out, int64_t queries, const QsaPromptBf16Bounds &bounds,
     int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream);
+// Experimental score33 with local K/V row pitches36/260; identical math/order.
+// Uses30272 requested local bytes; no bank-conflict or residency claim.
+bool qsa_bf16_prefix_padded_batch(const uint16_t *q, const QsaAttnPools &pools,
+    const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
+    uint16_t *out, int64_t queries, const QsaPromptBf16Bounds &bounds,
+    int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream);
 // Score33 row-major storage; subgroup FP32 max/sum changes sum association.
 // BF16 probability rounding and FP32 online state/accumulation are preserved.
 bool qsa_bf16_prefix_subgroup_batch(const uint16_t *q, const QsaAttnPools &pools,

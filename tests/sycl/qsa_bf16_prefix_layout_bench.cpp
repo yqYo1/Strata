@@ -1,244 +1,142 @@
 // Authored for Strata; repository LICENSE (MIT) applies.
-// Matched live-prefix baseline/candidate timing, not model PP or utilization.
-// Every physical input is initialized; both arms allocate/initialize scratch.
-// Identical prefix pack time and cache effects are included in every call.
+// Same numerical operations: compare all output bits for a local-pitch change.
+// Wall timing includes admission, prefix refresh, attention and checked drain;
+// uploads/readbacks/checks are outside timing. No physical-bandwidth claim.
 #include "strata/kernels/qsa_bf16_prefix.hpp"
 #include "strata/sycl/runtime.hpp"
 #include "strata/sycl/checked_cleanup.hpp"
-#include <algorithm>
+#include <array>
 #include <bit>
 #include <chrono>
 #include <cmath>
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
+#include <memory>
 #include <stdexcept>
 #include <string>
-#include <time.h>
 #include <vector>
-
 using namespace strata;
 using namespace strata::kernels;
-#ifndef STRATA_QSA_PREFIX_CANDIDATE
-#define STRATA_QSA_PREFIX_CANDIDATE qsa_bf16_prefix_coalesced_batch
-#endif
-#ifndef STRATA_QSA_PREFIX_CANDIDATE_NAME
-#define STRATA_QSA_PREFIX_CANDIDATE_NAME "coalesced"
-#endif
-namespace strata::kernels {
-// A separately compiled candidate with the same public signature.
-bool STRATA_QSA_PREFIX_CANDIDATE(const uint16_t *, const QsaAttnPools &,
-    const int32_t *, const int32_t *, int64_t, const QsaShapes &, uint16_t *,
-    int64_t, const QsaPromptBf16Bounds &, int64_t, const QsaBf16PackedScratch &, void *);
-}
 namespace {
 std::shared_ptr<sycl_backend::Runtime> rt;
 void require(bool x,const char *s) { if (!x) throw std::runtime_error(s); }
 void drain() noexcept {
-  sycl_backend::checked_cleanup([] { if (rt) rt->wait(); },[] {},"QSA matched benchmark drain");
+  sycl_backend::checked_cleanup([] { if (rt) rt->wait(); },[] {},"QSA pitch performance fixture drain");
 }
 struct Drain { ~Drain() noexcept { drain(); } };
 template<class T> struct Buffer {
   sycl_backend::Allocation memory;
+  std::vector<T> upload,download;
   explicit Buffer(size_t n):memory(rt,n*sizeof(T),sycl_backend::MemoryKind::Device) {}
   T *data() { return memory.as<T>(); }
   void put(const std::vector<T> &v) {
-    require(v.size()*sizeof(T)==memory.size(),"upload extent");
-    rt->wait(rt->compute().memcpy(data(),v.data(),memory.size()));
+    require(memory.size()==v.size()*sizeof(T),"upload extent");rt->wait();upload=v;
+    rt->wait(rt->compute().memcpy(data(),upload.data(),memory.size()));
   }
-  std::vector<T> get() {
-    std::vector<T> v(memory.size()/sizeof(T));
-    rt->wait(rt->compute().memcpy(v.data(),data(),memory.size()));return v;
+  const std::vector<T> &get() {
+    rt->wait();download.resize(memory.size()/sizeof(T));
+    rt->wait(rt->compute().memcpy(download.data(),data(),memory.size()));return download;
   }
 };
-uint16_t bf(float x) {
-  const auto b=std::bit_cast<uint32_t>(x);
+uint16_t bf16(float x) {
+  const uint32_t b=std::bit_cast<uint32_t>(x);
   return uint16_t((b+0x7fff+((b>>16)&1))>>16);
 }
-float unbf(uint16_t b) { return std::bit_cast<float>(uint32_t(b)<<16); }
-uint16_t hf(float x) { return std::bit_cast<uint16_t>(_Float16(x)); }
-float unhf(uint16_t b) { return float(std::bit_cast<_Float16>(b)); }
-template<class T> uint64_t fingerprint(const std::vector<T> &v) {
-  const auto *p=reinterpret_cast<const unsigned char *>(v.data());uint64_t h=14695981039346656037ull;
-  for (size_t i=0;i<v.size()*sizeof(T);++i) { h^=p[i];h*=1099511628211ull; }return h;
-}
-double cpu() {
-  timespec t{};require(clock_gettime(CLOCK_THREAD_CPUTIME_ID,&t)==0,"thread clock");
-  return double(t.tv_sec)+double(t.tv_nsec)*1e-9;
-}
+uint16_t half(float x) { return std::bit_cast<uint16_t>(_Float16(x)); }
 void gate(bool enabled,const char *phase) {
   if (!enabled) return;
   std::cout<<"QSA_BF16_READY "<<phase<<'\n';require(std::cin.get()=='X',"Main gate token");
 }
-void run(const std::string &arm,int nq,int repetitions,int Cells) {
-  constexpr int H=24,D=256,K=2,Page=16,Cap=2051;
-  const int Pages=(Cells+Page-1)/Page;
-  const size_t elements=size_t(nq)*H*D,rows=Pages*K*Page;
-  std::vector<int8_t> k(rows*D),v(k.size());
-  std::vector<uint16_t> ks(rows*4),vs(ks.size()),qb(elements);
-  std::vector<float> qf(elements);
-  std::vector<int32_t> table(Pages),ids(size_t(nq)*Cap),steps(size_t(nq)*kStepCount);
-  for (int p=0;p<Pages;++p) table[p]=Pages-1-p;
-  for (size_t i=0;i<k.size();++i) { k[i]=int8_t(int(i*7%255)-127);v[i]=int8_t(int(i*11%255)-127); }
-  for (size_t i=0;i<ks.size();++i) { ks[i]=hf(.007f+float(i%7)*.0001f);vs[i]=hf(.008f+float(i%11)*.0002f); }
-  // Both arms see identical BF16 Q. The extra FP32 backing is an unchanged
-  // allocation/input control outside timing, not a precision reference.
-  for (size_t i=0;i<elements;++i) { qb[i]=bf(float(std::sin(double(i)*.019)));qf[i]=unbf(qb[i]); }
-  for (int b=0;b<nq;++b) {
-    steps[b*kStepCount+kStepPos]=4096+b;steps[b*kStepCount+kStepNKv]=Cells;
-    steps[b*kStepCount+kStepWidth]=Cap;
-    for (int c=0;c<Cap;++c) ids[b*Cap+c]=int((int64_t(c)*Cells/Cap+int64_t(b)*17)%Cells);
-    if (!b) ids[b*Cap+Cap-1]=Cells-1;
+void run(int cells,int queries,int cap,bool clustered) {
+  constexpr int Dim=256,Heads=24,KV=2,Page=16;
+  const int pages=(cells+Page-1)/Page,rows=pages*KV*Page;
+  std::vector<int32_t> table(pages),ids(size_t(queries)*cap),steps(size_t(queries)*kStepCount);
+  for (int p=0;p<pages;++p) table[p]=p%13==5 ? -1 : pages-1-p;
+  std::vector<int8_t> k(size_t(rows)*Dim),v(k.size());
+  for (size_t i=0;i<k.size();++i) {
+    k[i]=int8_t(int((uint64_t(i)*1664525+1013904223)%255)-127);
+    v[i]=int8_t(int((uint64_t(i)*1103515245+12345)%251)-125);
   }
-  std::vector<int32_t> selected_stamp(size_t(Cells),0);
-  for (int b=0;b<nq;++b) for (int c=0;c<Cap;++c) {
-    const int cell=ids[b*Cap+c];
-    require(cell>=0 && cell<Cells && selected_stamp[cell]!=b+1,"complete selected bounds and per-query uniqueness");
-    selected_stamp[cell]=b+1;
+  std::vector<uint16_t> ks(size_t(rows)*4),vs(ks.size()),q(size_t(queries)*Heads*Dim);
+  for (size_t i=0;i<ks.size();++i) {
+    ks[i]=half(std::ldexp(1.f,-10-int(i%4)));
+    vs[i]=half(std::ldexp(i%3 ? 1.f : -1.f,-9-int(i%4)));
   }
-  const size_t selected_cells=std::count_if(selected_stamp.begin(),selected_stamp.end(),[](int32_t x){return x!=0;});
-  require(nq!=8192 || selected_cells==size_t(Cells),"full physical-context logical coverage in timing cohort");
-  // Allocate and initialize every arm's backing in every process. This makes
-  // memory pressure identical while keeping unused outputs checked as well.
+  for (size_t i=0;i<q.size();++i) q[i]=bf16(float(int((uint64_t(i)*17+13)%127)-63)*.03125f);
+  for (int b=0;b<queries;++b) {
+    steps[size_t(b)*kStepCount+kStepPos]=cells-1;
+    steps[size_t(b)*kStepCount+kStepNKv]=cells;
+    steps[size_t(b)*kStepCount+kStepWidth]=cap;
+    for (int c=0;c<cap;++c) {
+      int32_t cell=clustered ? int32_t((uint64_t(b)*11+c)%cells)
+          : int32_t((uint64_t(b)*8191+uint64_t(c)*7919+37)%cells);
+      if (c%97==13) cell=-1;
+      if (c%103==7) cell=cells+13;
+      ids[size_t(b)*cap+c]=cell;
+    }
+  }
+  const uint16_t marker=bf16(1234.f);const int32_t bad_marker=0x12345678;
+  Buffer<uint16_t> dq(q.size()),dks(ks.size()),dvs(vs.size()),out(q.size()+32);
   Buffer<int8_t> dk(k.size()),dv(v.size());
-  Buffer<uint16_t> dks(ks.size()),dvs(vs.size()),dqb(qb.size()),ob(elements+32);
-  Buffer<float> dqf(qf.size()),of(elements+32);
   Buffer<int32_t> dt(table.size()),di(ids.size()),ds(steps.size());
-  Buffer<uint16_t> pk(rows*D+32),pv(rows*D+32);Buffer<int32_t> bad(rows+32);
+  Buffer<uint16_t> pk(size_t(rows)*Dim+32),pv(size_t(rows)*Dim+32);
+  Buffer<int32_t> pb(size_t(rows)+32);
   Drain pending;
-  const uint16_t guard=bf(1234.f);
-  std::vector<uint16_t> initb(elements+32,guard);
-  std::vector<float> initf(elements+32,1234.f);
-  const int32_t bad_guard=0x12345678;
-  pk.put(std::vector<uint16_t>(rows*D+32,guard));pv.put(std::vector<uint16_t>(rows*D+32,guard));
-  bad.put(std::vector<int32_t>(rows+32,bad_guard));
-  dk.put(k);dv.put(v);dks.put(ks);dvs.put(vs);dqb.put(qb);dqf.put(qf);
-  ob.put(initb);of.put(initf);dt.put(table);di.put(ids);ds.put(steps);
-  size_t bytes=0;
-  for (size_t n : {dk.memory.size(),dv.memory.size(),dks.memory.size(),dvs.memory.size(),
-      dqb.memory.size(),dqf.memory.size(),ob.memory.size(),of.memory.size(),
-      dt.memory.size(),di.memory.size(),ds.memory.size(),pk.memory.size(),pv.memory.size(),bad.memory.size()}) bytes+=n;
-  require(bytes<(size_t(2)<<30),"device footprint budget");
-  QsaAttnPools pools{};pools.k_q=dk.data();pools.v_q=dv.data();
-  pools.k_scale=dks.data();pools.v_scale=dvs.data();pools.page_table=dt.data();
+  dq.put(q);dks.put(ks);dvs.put(vs);dk.put(k);dv.put(v);dt.put(table);di.put(ids);ds.put(steps);
+  out.put(std::vector<uint16_t>(q.size()+32,marker));
+  pk.put(std::vector<uint16_t>(size_t(rows)*Dim+32,marker));
+  pv.put(std::vector<uint16_t>(size_t(rows)*Dim+32,marker));
+  pb.put(std::vector<int32_t>(size_t(rows)+32,bad_marker));
+  QsaAttnPools pools;pools.k_q=dk.data();pools.v_q=dv.data();pools.k_scale=dks.data();pools.v_scale=dvs.data();pools.page_table=dt.data();
   auto shape=qsa_real_shapes();shape.page_size=Page;
-  auto issue=[&] {
-    bool ok=false;
-    if (arm=="base") ok=qsa_bf16_prefix_batch(dqb.data(),pools,di.data(),ds.data(),Cap,shape,
-        ob.data()+16,nq,{Pages,Pages},Cells,{pk.data()+16,pv.data()+16,bad.data()+16},&rt->compute());
-    if (arm==STRATA_QSA_PREFIX_CANDIDATE_NAME) ok=STRATA_QSA_PREFIX_CANDIDATE(dqb.data(),pools,di.data(),ds.data(),Cap,shape,
-        ob.data()+16,nq,{Pages,Pages},Cells,{pk.data()+16,pv.data()+16,bad.data()+16},&rt->compute());
-    require(ok,"selected matrix entry unavailable; no fallback");
+  const QsaBf16PackedScratch scratch{pk.data()+16,pv.data()+16,pb.data()+16};
+  auto invoke=[&](int variant) {
+    rt->wait();const auto start=std::chrono::steady_clock::now();
+    require((variant ? qsa_bf16_prefix_padded_batch : qsa_bf16_prefix_optimized_batch)(dq.data(),pools,di.data(),ds.data(),cap,shape,
+        out.data()+16,queries,{pages,pages},cells,scratch,&rt->compute()),"matrix admission");
+    rt->wait();return std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count();
   };
-  auto values=[&] {
-    auto b=ob.get();auto f=of.get();
-    { auto a=pk.get(),v=pv.get();auto flags=bad.get();
-      for (size_t i=0;i<16;++i)
-        require(a[i]==guard && a[a.size()-16+i]==guard && v[i]==guard && v[v.size()-16+i]==guard &&
-            flags[i]==bad_guard && flags[flags.size()-16+i]==bad_guard,"packed allocation guards");
-      for (size_t i=16;i<flags.size()-16;++i) require(flags[i]==0,"all logical finite-scale diagnostics");
-    }
-    for (size_t i=0;i<16;++i)
-      require(b[i]==guard && b[b.size()-16+i]==guard && f[i]==1234.f && f[f.size()-16+i]==1234.f,"output guards");
-    require(f==initf,"unused FP32 output immutable");
-    std::vector<float> out(elements);
-    for (size_t i=0;i<elements;++i) {
-      out[i]=unbf(b[16+i]);
-      require(std::isfinite(out[i]),"complete output finite");
-    }
-    return out;
+  auto guards=[&] {
+    const auto &a=pk.get();const auto &b=pv.get();const auto &c=pb.get();const auto &y=out.get();
+    for (size_t i=0;i<16;++i) require(a[i]==marker && a[a.size()-16+i]==marker &&
+        b[i]==marker && b[b.size()-16+i]==marker && c[i]==bad_marker &&
+        c[c.size()-16+i]==bad_marker && y[i]==marker && y[y.size()-16+i]==marker,"output/scratch guards");
   };
-  std::cout<<"arm="<<arm<<" nq="<<nq<<" cap="<<Cap<<" workgroups="<<nq*2
-           <<" cells="<<Cells<<" global_selected_cells="<<selected_cells<<" selected_set=per_query_rotated_uniform_spread_unique"
-           <<" device_bytes="<<bytes<<" packed_scratch_payload_bytes="<<(rows*(D*4+4))
-           <<" pack_cost=IN_TIMED_CALL"<<" warmups=2 repetitions="<<repetitions
-           <<" fingerprints=FNV1a64_native_bytes q="<<fingerprint(qb)<<" k="<<fingerprint(k)
-           <<" v="<<fingerprint(v)<<" ks="<<fingerprint(ks)<<" vs="<<fingerprint(vs)
-           <<" table="<<fingerprint(table)<<" ids="<<fingerprint(ids)<<" steps="<<fingerprint(steps)<<'\n';
-  issue();rt->wait();const auto initial=values();
-  // Independent BF16-operand oracle at four complete queries, same criteria
-  // for both layout arms. This bounded32K fixture does not reuse the known
-  // strict-scalar256K case or waive its recorded numerical failure.
-  double max_error=0,max_ratio=0;size_t compared=0;
-  for (int b=0;b<nq;++b) {
-    if (b!=0 && b!=1 && b!=2 && b!=nq-1) continue;
-    for (int h=0;h<H;++h) {
-      std::vector<float> score(Cap),value(size_t(Cap)*D),acc(D,0.f);
-      for (int c=0;c<Cap;++c) {
-        const int cell=ids[b*Cap+c];
-        const int64_t row=(int64_t(table[cell/Page])*K+h/12)*Page+cell%Page;
-        double dot=0;
-        for (int d=0;d<D;++d) {
-          const float q=unbf(bf((qf[(size_t(b)*H+h)*D+d]*.0625f)*1.4426950408f));
-          dot+=double(q)*unbf(bf(float(k[row*D+d])*unhf(ks[row*4+d/64])));
-          value[size_t(c)*D+d]=unbf(bf(float(v[row*D+d])*unhf(vs[row*4+d/64])));
-        }
-        score[c]=float(dot);
-      }
-      float maximum=-INFINITY,norm=0;
-      for (int first=0;first<Cap;first+=32) {
-        const int last=std::min(Cap,first+32);float next=maximum,sum=0;
-        for (int c=first;c<last;++c) next=std::max(next,score[c]);
-        const float alpha=norm>0 ? std::exp2(maximum-next) : 0.f;
-        std::vector<float> p(size_t(last-first));
-        for (int c=first;c<last;++c) { const float x=std::exp2(score[c]-next);sum+=x;p[c-first]=unbf(bf(x)); }
-        for (int d=0;d<D;++d) {
-          double term=0;for (int c=first;c<last;++c) term+=double(p[c-first])*value[size_t(c)*D+d];
-          acc[d]=float(double(acc[d]*alpha)+term);
-        }
-        norm=std::fma(norm,alpha,sum);maximum=next;
-      }
-      for (int d=0;d<D;++d) {
-        const float ref=unbf(bf(acc[d]/norm));
-        const double error=std::fabs(double(initial[(size_t(b)*H+h)*D+d])-ref);
-        const uint16_t mag=bf(std::fabs(ref));
-        const double budget=double(unbf(uint16_t(mag+1))-unbf(mag))+2e-6;
-        max_error=std::max(max_error,error);max_ratio=std::max(max_ratio,error/budget);
-        require(error<=budget,"BF16 operand contract at sampled queries");++compared;
-      }
-    }
+  invoke(0);guards();const auto reference=out.get();
+  for (size_t i=16;i<reference.size()-16;++i)
+    require(std::isfinite(std::bit_cast<float>(uint32_t(reference[i])<<16)),"baseline all finite");
+  const std::array<int,2> variants{0,1};
+  for (int variant:variants) {
+    invoke(variant);guards();require(out.get()==reference,"warm full-output bit comparison");
   }
-  for (int w=0;w<2;++w) { issue();rt->wait(); }
-  using Clock=std::chrono::steady_clock;
-  auto ms=[](auto a,auto b) { return std::chrono::duration<double,std::milli>(b-a).count(); };
-  for (int i=0;i<repetitions;++i) {
-    const double c0=cpu();const auto t0=Clock::now();issue();const auto t1=Clock::now();
-    const double c1=cpu();rt->wait();const auto t2=Clock::now();const double c2=cpu();
-    std::cout<<"sample="<<i<<" whole_wall_ms="<<ms(t0,t2)<<" enqueue_wall_ms="<<ms(t0,t1)
-             <<" wait_wall_ms="<<ms(t1,t2)<<" whole_thread_cpu_ms="<<(c2-c0)*1000
-             <<" enqueue_thread_cpu_ms="<<(c1-c0)*1000<<" wait_thread_cpu_ms="<<(c2-c1)*1000
-             <<" validation=PENDING_FINAL_CHECKS\n";
+  for (int round=0;round<6;++round) for (int index=0;index<2;++index) {
+    const int variant=variants[(round+index)%2];const double ms=invoke(variant);
+    guards();require(out.get()==reference,"timed full-output bit comparison");
+    std::cout<<"sample cells="<<cells<<" queries="<<queries<<" cap="<<cap
+        <<" pattern="<<(clustered ? "clustered" : "gather")<<" round="<<round
+        <<" order="<<index<<" variant="<<variant<<" milliseconds="<<std::setprecision(12)<<ms
+        <<" compared="<<q.size()<<" exact_bits=PASS guards=PASS status=PASS\n";
   }
-  const auto final=values();
-  for (size_t i=0;i<initial.size();++i)
-    require(std::bit_cast<uint32_t>(initial[i])==std::bit_cast<uint32_t>(final[i]),"complete repeat bit identity including signed zero");
-  require(dk.get()==k && dv.get()==v && dks.get()==ks && dvs.get()==vs && dqb.get()==qb && dqf.get()==qf &&
-          dt.get()==table && di.get()==ids && ds.get()==steps,"all input bytes immutable");
-  std::cout<<"case status=PASS guards=PASS inputs=PASS full_finite=PASS repeat_bits=PASS"
-           <<" oracle="<<"BF16_operands_FP32_online_queries_0_1_2_last"
-           <<" compared="<<compared<<" max_abs="<<max_error<<" max_budget_ratio="<<max_ratio
-           <<" output_FNV1a64="<<fingerprint(final)
-           <<" per_repeat_numerical=FINAL_FRAME_ONLY model_PP=UNRUN physical_traffic=UNMEASURED utilization=UNMEASURED\n";
+  require(dq.get()==q && dk.get()==k && dv.get()==v && dks.get()==ks && dvs.get()==vs &&
+      dt.get()==table && di.get()==ids && ds.get()==steps,"all inputs immutable");
+  std::cout<<"case cells="<<cells<<" queries="<<queries<<" cap="<<cap
+      <<" pattern="<<(clustered ? "clustered" : "gather")<<" samples=12 full_bits=PASS guards=PASS inputs=PASS status=PASS\n";
 }
-} // namespace
+}
 int main(int argc,char **argv) {
   try {
-    std::cout.setf(std::ios::unitbuf);std::cout<<std::setprecision(12);
-    require(argc==9 && std::string(argv[1])=="--arm" && std::string(argv[3])=="--nq" &&
-            std::string(argv[5])=="--repeats" && std::string(argv[7])=="--cells","--arm base|" STRATA_QSA_PREFIX_CANDIDATE_NAME " --nq 3|8192 --repeats 1|10 --cells 2113|32768");
-    const std::string arm=argv[2];const int nq=std::stoi(argv[4]),reps=std::stoi(argv[6]),cells=std::stoi(argv[8]);
-    require((arm=="base" || arm==STRATA_QSA_PREFIX_CANDIDATE_NAME) && (nq==3 || nq==8192) &&
-            (reps==1 || reps==10) && (cells==2113 || cells==32768),"bounded benchmark arguments");
-    for (auto [key,value] : {std::pair{"STRATA_SYCL_PROMPT_DIRECT","1"},
-        {"STRATA_SYCL_PROMPT_K_CELL_MAJOR","0"},{"STRATA_SYCL_PROMPT_SOFTMAX_SUBGROUP","0"},
-        {"STRATA_SYCL_PROMPT_NATIVE_KV_MIN","0"}}) {
-      const char *found=std::getenv(key);require(found && std::string(found)==value,"fixed pre-exec legacy controls");
-    }
-    const char *g=std::getenv("STRATA_TEST_MAIN_GATES");const bool gates=g && std::string(g)=="1";
-    gate(gates,"before-runtime");rt=sycl_backend::runtime_for();
+    std::cout.setf(std::ios::unitbuf);
+    require(argc==2 && (std::string(argv[1])=="--smoke" || std::string(argv[1])=="--component"),"--smoke|--component required");
+    const char *g=std::getenv("STRATA_TEST_MAIN_GATES");const bool gated=g && std::string(g)=="1";
+    gate(gated,"before-runtime");rt=sycl_backend::runtime_for();
     std::cout<<"device="<<rt->device().get_info<sycl::info::device::name>()
-             <<" driver="<<rt->device().get_info<sycl::info::device::driver_version>()<<'\n';
-    gate(gates,"runtime-ready");run(arm,nq,reps,cells);rt->wait();rt.reset();gate(gates,"after-cleanup");
-    std::cout<<"fixture_status=PASS model_PP=UNRUN physical262144_model=UNRUN RESTORE=UNRUN faults=EXTERNAL_REQUIRED\n";return 0;
+        <<" driver="<<rt->device().get_info<sycl::info::device::driver_version>()<<'\n';
+    gate(gated,"runtime-ready");
+    if (std::string(argv[1])=="--smoke") run(97,3,33,false);
+    else { run(78453,8192,33,false);run(78453,8192,2051,false);run(78453,8192,2051,true); }
+    rt->wait();rt.reset();gate(gated,"after-cleanup");
+    std::cout<<"fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED\n";
+    return 0;
   } catch (const std::exception &e) { drain();std::cerr<<e.what()<<'\n';return 1; }
 }

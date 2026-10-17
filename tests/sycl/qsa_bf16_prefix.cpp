@@ -125,6 +125,14 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
     require(attention(dq.data(),pools,di.data(),ds.data(),cap,shape,
         out.data()+16,queries,{pages,pages},&rt->compute()),"BF16 matrix unavailable");
     rt->wait();
+#if defined(STRATA_QSA_COMPARE_PREFIX33)
+    // Compare every output bit, including NaN diagnostics, masks and guards.
+    // Both calls use the same inputs; the second refreshes identical scratch.
+    const auto candidate=out.get();out.put(sentinel);
+    require(qsa_bf16_prefix_optimized_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
+        out.data()+16,queries,{pages,pages},live_cells,scratch,&rt->compute()),"prefix33 reference unavailable");
+    rt->wait();require(out.get()==candidate,"complete prefix33 bit identity");
+#endif
   };
   auto guarded=[&] {
     packed_guards();
@@ -266,6 +274,9 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
            <<" compared="<<compared<<" max_abs="<<std::setprecision(10)<<max_error
            <<" max_budget_ratio="<<max_budget_ratio<<" oracle=BF16_operands_FP32_online"
            <<" packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS\n";
+#if defined(STRATA_QSA_COMPARE_PREFIX33)
+  std::cout<<"case exact_prefix33_bits=PASS cells="<<cells<<" cap="<<cap<<" queries="<<queries<<'\n';
+#endif
 }
 } // namespace
 

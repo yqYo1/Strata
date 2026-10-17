@@ -118,6 +118,18 @@ isolate dequantization, physical memory traffic or SLM conflicts. These are
 sequential samples within one process per arm;24-token generation does not
 qualify sustained decode. See the [individual samples and comparison limits](../bench/results/2026-10-15-pr6-recovery-audit/qsa-attention-model-current.json).
 
+The independent `qsa_bf16_prefix_padded_batch` experiment changes local K/V
+row pitches to36/260 at fixed score33. It preserves producer ownership,
+arithmetic and barriers; requested local storage grows28224 to30272 bytes.
+Actual allocation rounding, bank conflicts and occupancy remain unmeasured.
+Production dispatch is unchanged. Main's serialized qualification sequence is
+`python3 tools/sycl/build_engine.py rebuild-attention`, then
+`python3 tools/sycl/check_attention.py smoke`, `component`, and `perf`.
+The oracle fixture compares all output bits with prefix33, including diagnostics
+and physical262144 component extent. The timing fixture rotates six samples
+per arm on three8192-query shapes, outside uploads/readbacks. These checks
+do not qualify full-model context, RESTORE, quality or model throughput.
+
 ## Optional GDN chunk64
 
 `STRATA_SYCL_PREFILL_GDN_CHUNK64=1` adds a separate experimental long-prefill
