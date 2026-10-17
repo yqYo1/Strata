@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "provenance": "Main independently integrates its own qualified head-parallel mapping from a7e118f5. No XeStrata implementation/helpers/proposals. Retains original public scorer, original query8 helper, caller routing and strict FP32 flags.",
+  "private_cohort": "qsa-score-headparallel-cohort-v1.json",
+  "first_dispatch": "qsa-score-first-dispatch-results-v1.json",
+  "default_selected": false,
+  "actual_entry_qualification_pending": true,
+  "model_qualification_pending": true,
+  "source_pins": {
+    "src/kernels/sycl/qsa_select.cpp": "463a9ec02ed28125a5cd38b7b5d28784b849a4fbb199cb017042cd99078efee1",
+    "include/strata/kernels/qsa_select.hpp": "043ec673be1b02f215aa77f6295968adb3f1d5b70d22f57341425336b709835e",
+    "tests/sycl/qsa_score_prefill.cpp": "99db7c19aa8680f660e13353a9cc99176350cab6571b12307658461907ec106f",
+    "docs/SYCL_QSA_SCORING.md": "edfcc8bf879afe396f3fb992990870962dc929893173d23f22bbc9743930a6da"
+  },
+  "Main_source_review": [
+    "Root arithmetic and subgroup-uniform continuations preserved with a Tile8 template instantiation.",
+    "Existing validate maps active=-1 to max_blocks before either query8 helper; caller/pool source unchanged. Header now explicitly documents all launched rows initialized, immutable and retained.",
+    "Head flag is opt-in only, exact0/1, cached before first enqueue and requires query_tile8; existing0/8 controls remain.",
+    "Reference/short/decode/STRATA_SELECT_OLD remain on old public entry; no change to top-k mapping.",
+    "Actual fixture adds full active bound(-1) and signed-zero/tied-score input cases without replacing or relaxing the original checks."
+  ]
+}

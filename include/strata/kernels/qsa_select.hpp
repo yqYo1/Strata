@@ -45,11 +45,18 @@ void qsa_block_topk(const float* scores, const int32_t* steps, int64_t nq, int64
                                                    ///< CUDA uses the bound only on sm_75; HIP keeps its existing policy.
                                                    ///< Omit it for captured graphs whose context can grow after capture.
 #if defined(STRATA_ENABLE_SYCL)
-/// Dedicated layer-major prefill scorer; same contract as qsa_block_scores.
+/// Dedicated layer-major prefill scorer; geometry/output match qsa_block_scores.
+/// Optimized paths may read every launched pooled row before inspecting steps:
+/// initialize and keep pooled[0, active_blocks) immutable until completion
+/// (all max_blocks rows for active_blocks=-1); allocate the full declared spans.
+/// See docs/SYCL_QSA_SCORING.md for queue, capture and ownership requirements.
 /// STRATA_SYCL_SCORE_QUERY_TILE=8 reuses pooled-key registers across eight
 /// adjacent queries, preserving FP32 operation order. Unset or 0 keeps the
-/// original scorer; other values are invalid. Set before exec and keep the
-/// environment immutable after runtime init. Decode, short-prefill and
+/// original scorer; other values are invalid. With tile 8, the separate opt-in
+/// STRATA_SYCL_SCORE_HEAD_PARALLEL=1 maps four heads to eight lanes each;
+/// unset or 0 retains sequential heads. Other combinations are invalid.
+/// Set before exec and keep the environment immutable after runtime init.
+/// Decode, short-prefill and
 /// reference callers retain qsa_block_scores and do not read this flag.
 void qsa_block_scores_prefill(const float* pooled, const float* dead, const float* q_idx,
                              const int32_t* steps, int64_t nq, int64_t max_blocks,

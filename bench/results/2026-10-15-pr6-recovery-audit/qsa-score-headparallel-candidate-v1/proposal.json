@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "provenance": "Main independently authored from the repository FP32 score tree and its own query8 helper; no XeStrata code/helper/proposal or research report body used.",
+  "base_source_commit": "31415b3bfc7fc6d4ec5fa42cbcf47276ce271811",
+  "compiled": false,
+  "production_selected": false,
+  "math": "Preserve the original root sum tree: each eight-lane head combines its four original lane contributions via(p0+p2)+(p1+p3), then XOR4/2/1; fetch original root lanes for four heads and add sequentially. Eight queries share keys. WG32/SG32, noSLM/XMX/dtypechange.",
+  "hypothesis": "Fewer subgroup shuffle/reduction rounds may reduce score service cost, offset by larger live key registers and repeated logical key loads across heads. Physical traffic, GRF, spill, occupancy and speed are unmeasured.",
+  "files": {
+    "fixture.cpp": "3ad7917e254ddfa0c3c754a9eaf6dee9abd32bf4608a0ea4b25e5251638d8544",
+    "qsa_score_headparallel.cpp": "791981d4f75921918a2914479b8eee015fabff4dc2f695d8566572bd88491eba"
+  }
+}

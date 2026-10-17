@@ -11,6 +11,11 @@ Set `STRATA_SYCL_SCORE_QUERY_TILE` before starting the process and keep the
 process environment unchanged after runtime initialization. An omitted value or
 `0` selects the original scorer; `8` shares a pooled key across eight adjacent
 queries. Other values raise an error. The setting is cached on the first call.
+With tile `8`, `STRATA_SYCL_SCORE_HEAD_PARALLEL=1` enables a separate four-head
+parallel mapping. An omitted value or `0` keeps sequential heads; values other
+than `0`/`1`, or enabling parallel heads with tile `0`, raise an error. This
+setting is also fixed before exec and cached. Both optimizations remain opt-in
+until actual engine performance, including the first request, is qualified.
 The engine's `STRATA_SELECT_OLD` override bypasses this entry and forces the
 original scorer. Direct callers of this entry do not read that override.
 
@@ -67,8 +72,12 @@ or authorize releasing its buffers.
 
 The query-sharing path retains FP32 operands, four-term lane-local sums, the
 original XOR reduction tree, sequential head sums and tail treatment. The SYCL
-build disables floating-point contraction for the scorer. Exact score and ID
-parity is checked against the original kernel in the actual-entry fixture
+build disables floating-point contraction for the scorer.
+The head-parallel mapping groups eight lanes per head, combines the original
+lane contributions in the same root tree, and sums the four head roots in the
+original order. Its fewer subgroup exchanges do not establish lower physical
+memory traffic, register pressure or occupancy.
+Exact score and ID parity is checked against the original kernel in the actual-entry fixture
 `tests/sycl/qsa_score_prefill.cpp`; this does not impose FP32 parity on unrelated
 future 16-bit algorithms.
 
