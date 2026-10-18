@@ -15,6 +15,7 @@
 #include <cstddef>
 #include <sycl/ext/oneapi/bfloat16.hpp>
 #include <sycl/ext/oneapi/matrix/matrix.hpp>
+#include <sycl/ext/intel/experimental/grf_size_properties.hpp>
 
 namespace strata::kernels {
 namespace {
@@ -149,7 +150,17 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
                                   normalizer(16, handler), alpha(16, handler);
     sycl::local_accessor<int64_t, 1> rows(Cells, handler);
     sycl::local_accessor<int, 1> bad_head(16, handler);
+    // The measured default cached-Q specialization spills at128GRF. Let the
+    // Intel backend choose a supported size for this kernel only. Do not force
+    // a device-specific GRF value or change the production prefix's property.
+    auto properties = [] {
+      namespace exp = sycl::ext::oneapi::experimental;
+      if constexpr (CacheQueries)
+        return exp::properties{sycl::ext::intel::experimental::grf_size_automatic};
+      else return exp::properties{};
+    }();
     handler.parallel_for(sycl::nd_range<1>(size_t(queries) * 2 * Workgroup, Workgroup),
+        properties,
         [=](sycl::nd_item<1> item) [[sycl::reqd_sub_group_size(16)]] {
       auto qtile = sycl::address_space_cast<sycl::access::address_space::local_space,
           sycl::access::decorated::no>(qstorage[0].values);

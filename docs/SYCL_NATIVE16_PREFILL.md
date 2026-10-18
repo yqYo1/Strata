@@ -169,8 +169,19 @@ it must not be attributed to the executed production prefix33.
 The next independently authored `qsa_bf16_prefix_qcache_batch` candidate loads
 the same16 BF16 Q fragments per QK subgroup once, preserves their DPAS order,
 and reuses their initial shared arena for K/V after a uniform workgroup barrier.
-It requests20036 local bytes, including a nonzero four-byte unused accessor;
-emitted GRF/spill cost and actual speed remain unmeasured until its gates run.
+It budgets20036 local bytes, including a nonzero four-byte unused accessor.
+The installed compiler removes that unused accessor: traced dynamic arguments
+total20032B. Default128GRF compilation adds2112B spill metadata and4096B scratch,
+yet six rotated samples per arm reduced median latency by11.81%,13.24%,11.83%
+for cap33 gather, cap2051 gather and cap2051 clustered. Exact-bit/oracle,
+diagnostic/alias and physical262144 component gates passed; no new GPU faults.
+Source`0ddd14719211` and individual results at`13976170f` preserve this variant.
+
+The next comparison applies the installed compiler's
+[`grf_size_automatic` property](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_intel_grf_size.asciidoc)
+only to the cached-Q kernel. This asks the Intel backend to select a supported
+size, avoiding an assumed legal fixed GRF value. Its actual GRF/spill cost and
+speed require fresh qualification; the production prefix has no added property.
 The unchanged production prefix is the comparison arm. The candidate remains
 fixture-only; no model dispatch or numerical-contract change is implied.
 
