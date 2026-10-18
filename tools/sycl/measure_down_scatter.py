@@ -71,6 +71,29 @@ def compact_result(record):
     return result
 
 
+def postchecks(record, boot, cursor):
+    """A missing fault observation is failed qualification, never a clean run."""
+    record.update(postchecks_complete=False, postcheck_errors=[], fresh_faults=None,
+                  boot_unchanged=False, driver_after=None)
+    try:
+        after = subprocess.check_output(['journalctl', '-k', '-b', '--after-cursor', cursor, '--no-pager'], text=True)
+        record['fresh_faults'] = [line for line in after.splitlines() if re.search(
+            r'(?i)(gpu.*(?:hang|fault|reset|wedg)|xe.*(?:error|fault|reset|timeout))', line)]
+    except Exception as error:
+        record['postcheck_errors'].append(dict(check='kernel_journal', error=str(error)))
+    try:
+        record['boot_unchanged'] = boot == Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+    except Exception as error:
+        record['postcheck_errors'].append(dict(check='boot_identity', error=str(error)))
+    try:
+        record['driver_after'] = guards.driver_guard()
+    except Exception as error:
+        record['postcheck_errors'].append(dict(check='driver_guard', error=str(error)))
+    record['postchecks_complete'] = not record['postcheck_errors']
+    record['passed'] = bool(record['passed'] and record['postchecks_complete'] and
+        record['ownership_closed'] and record['boot_unchanged'] and not record['fresh_faults'])
+
+
 def main():
     guards.require(len(sys.argv) == 2 and sys.argv[1] in ('plan', 'ownership', 'smoke', 'validate', 'perf'),
                    'use measure_down_scatter.py plan|ownership|smoke|validate|perf')
@@ -259,25 +282,7 @@ def main():
             record['error'] = str(error)
         finally:
             record['ownership_closed'] = owner.active is None and all(supervision.closed(c) for c in owner.commands)
-            record.update(postchecks_complete=False, postcheck_errors=[], fresh_faults=None,
-                          boot_unchanged=False, driver_after=None)
-            try:
-                after = subprocess.check_output(['journalctl', '-k', '-b', '--after-cursor', cursor, '--no-pager'], text=True)
-                record['fresh_faults'] = [line for line in after.splitlines() if re.search(
-                    r'(?i)(gpu.*(?:hang|fault|reset|wedg)|xe.*(?:error|fault|reset|timeout))', line)]
-            except Exception as error:
-                record['postcheck_errors'].append(dict(check='kernel_journal', error=str(error)))
-            try:
-                record['boot_unchanged'] = boot == Path('/proc/sys/kernel/random/boot_id').read_text().strip()
-            except Exception as error:
-                record['postcheck_errors'].append(dict(check='boot_identity', error=str(error)))
-            try:
-                record['driver_after'] = guards.driver_guard()
-            except Exception as error:
-                record['postcheck_errors'].append(dict(check='driver_guard', error=str(error)))
-            record['postchecks_complete'] = not record['postcheck_errors']
-            record['passed'] = bool(record['passed'] and record['postchecks_complete'] and
-                record['ownership_closed'] and record['boot_unchanged'] and not record['fresh_faults'])
+            postchecks(record, boot, cursor)
             persist(); RESULT.write_text(json.dumps(compact_result(record), indent=2) + '\n')
         print(json.dumps({k: record.get(k) for k in ('mode', 'complete', 'passed', 'ownership_closed', 'error', 'resident_summary')}))
         return 0 if record['passed'] else 1
