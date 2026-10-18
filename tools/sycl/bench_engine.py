@@ -64,6 +64,24 @@ def compact_command_service(profile):
     return profile
 
 
+def selected_service_screen(profile):
+    """Descriptive per-stratum sample-mean expansion; never a hardware ceiling."""
+    kinds = {}
+    windows = set()
+    for values in profile['groups']:
+        group = dict(zip(profile['group_columns'], values))
+        windows.add(group['window'])
+        item = kinds.setdefault(group['kind'], dict(eligible_commands=0, sampled_commands=0,
+            expanded_sample_mean_service_ns=0.0))
+        item['eligible_commands'] += group['eligible']
+        item['sampled_commands'] += group['service_samples']
+        item['expanded_sample_mean_service_ns'] += (group['eligible'] *
+            group['sample_service_ns'] / group['service_samples'])
+    return dict(window_ids=sorted(windows), per_kind=kinds,
+        method='Within each selected window/kind/row-bin, multiply the sample mean service by eligible command count, then sum by kind.',
+        limits='Deterministic sparse samples in four selected windows; descriptive screening assumes within-stratum representativeness. Not full-model service, statistical confidence, GPU utilization, critical path, physical bytes or a hardware ceiling.')
+
+
 CPU_HOST_BASE = ('source_copy', 'host_group', 'gemm_submit', 'route_exchange',
     'upload_submit', 'residual_input_host', 'residual_input_device',
     'residual_store_host', 'residual_store_device')
@@ -482,6 +500,8 @@ def main():
                         'detail_not_retained': 'Cold per-command/per-layer timing and detailed job histogram are not used by this aggregate first-use comparison.'}
                     record['window_census'] = compact_window_census(record.pop('planned_moe_windows'))
                     record['command_service_profile'] = compact_command_service(record['command_service_profile'])
+                    if host_profile:
+                        record['selected_service_screen'] = selected_service_screen(record['command_service_profile'])
                     record['resource_profile_request_index'] = 1
                     record['request_separation'] = {
                         'method': 'Exact long layer-major GDN route markers delimit two requests; each interval independently passes complete census/coarse/QSA/CPU/command gates.',
