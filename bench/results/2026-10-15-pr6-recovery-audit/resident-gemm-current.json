@@ -7391,9 +7391,13 @@
   },
   "interpretation": {
     "measured_reference_only": true,
-    "model_service_still_unmeasured": true,
-    "next_action": "Observe matching streamed model kernels before diagnosing hardware saturation or choosing a GEMM rewrite.",
+    "model_service_still_unmeasured": false,
+    "next_action": "Preserve complete resident/streamed samples; correct duty-cycle/warm-state comparability before treating the resident implementation rate as a ceiling. Prioritize remaining QSA cost and test MoE intermediate reduction separately.",
     "spread": "Keep every independent process and burst; GU8192 spread is substantial and not explained by these measurements.",
-    "minor_shape": "M64 Down wide wins this fixture, but M<128 contributes only0.6273% of model arithmetic; no dispatch change adopted."
+    "minor_shape": "M64 Down wide wins this fixture, but M<128 contributes only0.6273% of model arithmetic; no dispatch change adopted.",
+    "model_evidence": {
+      "commit": "f97d3dc9b",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/moe-window-census-current.json"
+    }
   }
 }
