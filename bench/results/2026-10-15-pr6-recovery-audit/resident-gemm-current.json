@@ -1,8 +1,8 @@
 {
-  "source_commit": "7b02a499506dbd4dbf418ed65bb281d4d93beab9",
+  "source_commit": "5eb48ed4fce7d0fb8f52afdacc4bf074a2f9e96f",
   "fixture": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_native16_paired_gemm_bench",
-    "sha256": "c4e432ebd7918ab94d8eafc8018a97ebe1b948f5cd598c8b9239cd7e2f27b0a2"
+    "sha256": "ca253fcdbb3fe1c76ce810e24240334e91eafdeb1ebe05abb3def1ad35efe807"
   },
   "checks": [
     {
@@ -29,14 +29,14 @@
         "device_tensor_bytes": 23872,
         "input_fnv1a64": "6638105146750739685",
         "initial_pageable_upload_bytes": 17408,
-        "initial_pageable_upload_wall_seconds": 0.003699511,
-        "initial_pageable_upload_thread_cpu_seconds": 0.0018194649999999993,
+        "initial_pageable_upload_wall_seconds": 0.003536917,
+        "initial_pageable_upload_thread_cpu_seconds": 0.001578272999999998,
         "weight_fnv1a64": "18263907186522231141",
         "oracle": "rank2_binary_exact_v1",
         "process_index": 0,
         "warmups_per_route": 3,
         "timed_submits_per_route": 0,
-        "pid": 3716255,
+        "pid": 3732146,
         "rotation_base": 0,
         "route_order": [
           "old_f32_direct",
@@ -60,6 +60,7 @@
         "samples_per_route": 0,
         "scope": "resident_operator_reference;not_hardware_peak_or_model_quality_or_speed;not_adversarial_accumulator_gate"
       },
+      "submit_clock_inversions": [],
       "samples": []
     },
     {
@@ -87,14 +88,14 @@
         "device_tensor_bytes": 7866816,
         "input_fnv1a64": "16669166520643708645",
         "initial_pageable_upload_bytes": 6881920,
-        "initial_pageable_upload_wall_seconds": 0.006112401,
-        "initial_pageable_upload_thread_cpu_seconds": 0.0036314399999999997,
+        "initial_pageable_upload_wall_seconds": 0.00590391,
+        "initial_pageable_upload_thread_cpu_seconds": 0.003440032999999995,
         "weight_fnv1a64": "10777993185871135461",
         "oracle": "rank2_binary_exact_v1",
         "process_index": 0,
         "warmups_per_route": 3,
         "timed_submits_per_route": 3,
-        "pid": 3716316,
+        "pid": 3732166,
         "rotation_base": 0,
         "route_order": [
           "vllm_compact16x64_bf16_output",
@@ -115,6 +116,7 @@
         "samples_per_route": 3,
         "scope": "resident_operator_reference;not_hardware_peak_or_model_quality_or_speed;not_adversarial_accumulator_gate"
       },
+      "submit_clock_inversions": [],
       "samples": [
         {
           "kind": "sample",
@@ -127,58 +129,59 @@
           "warmup": false,
           "sample": 0,
           "submits": 8,
-          "submit_to_completion_wall_seconds": 0.000597094,
-          "thread_cpu_submit_seconds": 0.000325751000000013,
-          "thread_cpu_wait_check_seconds": 0.0002535759999999776,
+          "submit_to_completion_wall_seconds": 0.000592572,
+          "thread_cpu_submit_seconds": 0.0003342950000000122,
+          "thread_cpu_wait_check_seconds": 0.0002398200000000017,
           "logical_flop_per_submit": 419430400,
-          "kernel_total_seconds": 0.000475208,
+          "kernel_total_seconds": 0.00047458200000000003,
           "profiling_contract_valid": true,
+          "profiling_service_valid": true,
           "profiling_duration_positive": true,
           "profiling_cross_event_ordered": true,
           "device_timestamps_ns": [
             [
-              638856152746043,
-              638856152815312,
-              638856152878020
+              639197703969611,
+              639197704036979,
+              639197704099583
             ],
             [
-              638856152793252,
-              638856152881875,
-              638856152941145
+              639197704017851,
+              639197704103437,
+              639197704162916
             ],
             [
-              638856152839017,
-              638856152944895,
-              638856153003645
+              639197704061473,
+              639197704166875,
+              639197704225625
             ],
             [
-              638856152880986,
-              638856153007500,
-              638856153066354
+              639197704104133,
+              639197704229479,
+              639197704288020
             ],
             [
-              638856152921983,
-              638856153070520,
-              638856153129166
+              639197704146633,
+              639197704291875,
+              639197704350833
             ],
             [
-              638856152963150,
-              638856153133020,
-              638856153191979
+              639197704189323,
+              639197704354583,
+              639197704413437
             ],
             [
-              638856153004407,
-              638856153195833,
-              638856153254895
+              639197704231712,
+              639197704417291,
+              639197704475833
             ],
             [
-              638856153045785,
-              638856153258645,
-              638856153317604
+              639197704276837,
+              639197704479687,
+              639197704538541
             ]
           ],
-          "logical_kernel_TFLOPs": 7.060998973081261,
-          "logical_wall_TFLOPs": 5.619623040928229
+          "logical_kernel_TFLOPs": 7.070312822652355,
+          "logical_wall_TFLOPs": 5.662507172124231
         },
         {
           "kind": "sample",
@@ -191,58 +194,59 @@
           "warmup": false,
           "sample": 0,
           "submits": 8,
-          "submit_to_completion_wall_seconds": 0.000475174,
-          "thread_cpu_submit_seconds": 0.00032949900000001087,
-          "thread_cpu_wait_check_seconds": 0.0001279899999999945,
+          "submit_to_completion_wall_seconds": 0.000476603,
+          "thread_cpu_submit_seconds": 0.0003367620000000182,
+          "thread_cpu_wait_check_seconds": 0.00012150699999999293,
           "logical_flop_per_submit": 419430400,
-          "kernel_total_seconds": 0.00035520900000000005,
+          "kernel_total_seconds": 0.00035677100000000003,
           "profiling_contract_valid": true,
+          "profiling_service_valid": true,
           "profiling_duration_positive": true,
           "profiling_cross_event_ordered": true,
           "device_timestamps_ns": [
             [
-              638856158415595,
-              638856158484583,
-              638856158532500
+              639197709638572,
+              639197709706875,
+              639197709756250
             ],
             [
-              638856158463535,
-              638856158536354,
-              638856158581354
+              639197709688305,
+              639197709760104,
+              639197709805104
             ],
             [
-              638856158506586,
-              638856158585208,
-              638856158629270
+              639197709732258,
+              639197709808854,
+              639197709852500
             ],
             [
-              638856158549035,
-              638856158633125,
-              638856158677500
+              639197709775388,
+              639197709856354,
+              639197709900729
             ],
             [
-              638856158590633,
-              638856158681458,
-              638856158724479
+              639197709818159,
+              639197709904583,
+              639197709947187
             ],
             [
-              638856158632342,
-              638856158728437,
-              638856158773125
+              639197709863724,
+              639197709951770,
+              639197709996770
             ],
             [
-              638856158673268,
-              638856158776875,
-              638856158817812
+              639197709906815,
+              639197710000625,
+              639197710041666
             ],
             [
-              638856158718122,
-              638856158821666,
-              638856158866875
+              639197709949054,
+              639197710045520,
+              639197710091250
             ]
           ],
-          "logical_kernel_TFLOPs": 9.446391279500236,
-          "logical_wall_TFLOPs": 7.061504206880007
+          "logical_kernel_TFLOPs": 9.405033480860272,
+          "logical_wall_TFLOPs": 7.04033168066504
         },
         {
           "kind": "sample",
@@ -255,58 +259,59 @@
           "warmup": false,
           "sample": 1,
           "submits": 8,
-          "submit_to_completion_wall_seconds": 0.00047295,
-          "thread_cpu_submit_seconds": 0.000333274999999994,
-          "thread_cpu_wait_check_seconds": 0.00012183800000001299,
+          "submit_to_completion_wall_seconds": 0.000475481,
+          "thread_cpu_submit_seconds": 0.0003361610000000015,
+          "thread_cpu_wait_check_seconds": 0.0001209960000000121,
           "logical_flop_per_submit": 419430400,
-          "kernel_total_seconds": 0.000355206,
+          "kernel_total_seconds": 0.000357083,
           "profiling_contract_valid": true,
+          "profiling_service_valid": true,
           "profiling_duration_positive": true,
           "profiling_cross_event_ordered": true,
           "device_timestamps_ns": [
             [
-              638856163953009,
-              638856164019479,
-              638856164067812
+              639197715202466,
+              639197715269166,
+              639197715318020
             ],
             [
-              638856164000298,
-              638856164071770,
-              638856164116458
+              639197715250195,
+              639197715321875,
+              639197715367083
             ],
             [
-              638856164042868,
-              638856164120208,
-              638856164164895
+              639197715297053,
+              639197715370937,
+              639197715415312
             ],
             [
-              638856164084807,
-              638856164168854,
-              638856164213645
+              639197715340134,
+              639197715419062,
+              639197715464166
             ],
             [
-              638856164129400,
-              638856164217500,
-              638856164259895
+              639197715382774,
+              639197715467916,
+              639197715510416
             ],
             [
-              638856164171539,
-              638856164263750,
-              638856164308750
+              639197715425454,
+              639197715514270,
+              639197715559375
             ],
             [
-              638856164212396,
-              638856164312604,
-              638856164353541
+              639197715469677,
+              639197715563229,
+              639197715604375
             ],
             [
-              638856164259965,
-              638856164357395,
-              638856164401770
+              639197715512076,
+              639197715608229,
+              639197715653020
             ]
           ],
-          "logical_kernel_TFLOPs": 9.446471061862693,
-          "logical_wall_TFLOPs": 7.0947102230679775
+          "logical_kernel_TFLOPs": 9.396815866339198,
+          "logical_wall_TFLOPs": 7.056944862150118
         },
         {
           "kind": "sample",
@@ -319,58 +324,59 @@
           "warmup": false,
           "sample": 1,
           "submits": 8,
-          "submit_to_completion_wall_seconds": 0.00060069,
-          "thread_cpu_submit_seconds": 0.00039646300000001355,
-          "thread_cpu_wait_check_seconds": 0.00018187100000000012,
+          "submit_to_completion_wall_seconds": 0.000603323,
+          "thread_cpu_submit_seconds": 0.00040044999999999664,
+          "thread_cpu_wait_check_seconds": 0.00017952599999998542,
           "logical_flop_per_submit": 419430400,
-          "kernel_total_seconds": 0.00047479300000000005,
+          "kernel_total_seconds": 0.00047531200000000003,
           "profiling_contract_valid": true,
+          "profiling_service_valid": true,
           "profiling_duration_positive": true,
           "profiling_cross_event_ordered": true,
           "device_timestamps_ns": [
             [
-              638856169568320,
-              638856169635937,
-              638856169698437
+              639197720879221,
+              639197720954375,
+              639197721016979
             ],
             [
-              638856169628202,
-              638856169702291,
-              638856169761562
+              639197720935146,
+              639197721020729,
+              639197721080312
             ],
             [
-              638856169696440,
-              638856169765416,
-              638856169824375
+              639197720986242,
+              639197721084062,
+              639197721143125
             ],
             [
-              638856169760260,
-              638856169828229,
-              638856169886875
+              639197721036687,
+              639197721146875,
+              639197721205729
             ],
             [
-              638856169815984,
-              638856169890729,
-              638856169949583
+              639197721090057,
+              639197721209479,
+              639197721268437
             ],
             [
-              638856169859686,
-              638856169953437,
-              638856170012083
+              639197721142114,
+              639197721272291,
+              639197721331041
             ],
             [
-              638856169901414,
-              638856170016041,
-              638856170074791
+              639197721194953,
+              639197721335000,
+              639197721393750
             ],
             [
-              638856169943022,
-              638856170078645,
-              638856170137812
+              639197721249155,
+              639197721397604,
+              639197721456354
             ]
           ],
-          "logical_kernel_TFLOPs": 7.067170745988251,
-          "logical_wall_TFLOPs": 5.585981454660474
+          "logical_kernel_TFLOPs": 7.0594540007405655,
+          "logical_wall_TFLOPs": 5.561603320277861
         },
         {
           "kind": "sample",
@@ -383,58 +389,59 @@
           "warmup": false,
           "sample": 2,
           "submits": 8,
-          "submit_to_completion_wall_seconds": 0.000601452,
-          "thread_cpu_submit_seconds": 0.00035252099999999453,
-          "thread_cpu_wait_check_seconds": 0.00023229500000002123,
+          "submit_to_completion_wall_seconds": 0.000600818,
+          "thread_cpu_submit_seconds": 0.00040683199999999586,
+          "thread_cpu_wait_check_seconds": 0.00017118099999999248,
           "logical_flop_per_submit": 419430400,
-          "kernel_total_seconds": 0.00047427200000000003,
+          "kernel_total_seconds": 0.000476667,
           "profiling_contract_valid": true,
+          "profiling_service_valid": true,
           "profiling_duration_positive": true,
           "profiling_cross_event_ordered": true,
           "device_timestamps_ns": [
             [
-              638856175341917,
-              638856175410520,
-              638856175473333
+              639197726622732,
+              639197726693645,
+              639197726756250
             ],
             [
-              638856175393183,
-              638856175477187,
-              638856175536354
+              639197726678096,
+              639197726760104,
+              639197726819895
             ],
             [
-              638856175436374,
-              638856175540208,
-              638856175599062
+              639197726728871,
+              639197726823750,
+              639197726883125
             ],
             [
-              638856175478754,
-              638856175602916,
-              638856175661562
+              639197726780448,
+              639197726887083,
+              639197726945729
             ],
             [
-              638856175520702,
-              638856175665416,
-              638856175724166
+              639197726835080,
+              639197726949583,
+              639197727008750
             ],
             [
-              638856175562420,
-              638856175728020,
-              638856175786562
+              639197726886938,
+              639197727012604,
+              639197727071354
             ],
             [
-              638856175607385,
-              638856175790416,
-              638856175849270
+              639197726936060,
+              639197727075208,
+              639197727134375
             ],
             [
-              638856175649434,
-              638856175853229,
-              638856175911875
+              639197726986464,
+              639197727138125,
+              639197727197291
             ]
           ],
-          "logical_kernel_TFLOPs": 7.074934214965252,
-          "logical_wall_TFLOPs": 5.578904384722304
+          "logical_kernel_TFLOPs": 7.0393864060234925,
+          "logical_wall_TFLOPs": 5.58479140105656
         },
         {
           "kind": "sample",
@@ -447,58 +454,59 @@
           "warmup": false,
           "sample": 2,
           "submits": 8,
-          "submit_to_completion_wall_seconds": 0.000608615,
-          "thread_cpu_submit_seconds": 0.0005035850000000008,
-          "thread_cpu_wait_check_seconds": 8.225400000000382e-05,
+          "submit_to_completion_wall_seconds": 0.000510167,
+          "thread_cpu_submit_seconds": 0.0004083370000000086,
+          "thread_cpu_wait_check_seconds": 7.827699999998772e-05,
           "logical_flop_per_submit": 419430400,
-          "kernel_total_seconds": 0.00036729300000000004,
+          "kernel_total_seconds": 0.00036135400000000004,
           "profiling_contract_valid": true,
+          "profiling_service_valid": true,
           "profiling_duration_positive": true,
           "profiling_cross_event_ordered": true,
           "device_timestamps_ns": [
             [
-              638856181678019,
-              638856181757916,
-              638856181806041
+              639197732323523,
+              639197732400729,
+              639197732449166
             ],
             [
-              638856181743442,
-              638856181809895,
-              638856181854583
+              639197732385820,
+              639197732453020,
+              639197732497187
             ],
             [
-              638856181797693,
-              638856181859166,
-              638856181903125
+              639197732440512,
+              639197732500937,
+              639197732543958
             ],
             [
-              638856181867034,
-              638856181948437,
-              638856181996458
+              639197732491528,
+              639197732547708,
+              639197732592083
             ],
             [
-              638856181936885,
-              638856182000312,
-              638856182045520
+              639197732542624,
+              639197732596145,
+              639197732639270
             ],
             [
-              638856181998220,
-              638856182060520,
-              638856182108958
+              639197732598489,
+              639197732657604,
+              639197732705625
             ],
             [
-              638856182057120,
-              638856182112812,
-              638856182157812
+              639197732650827,
+              639197732709479,
+              639197732754791
             ],
             [
-              638856182105110,
-              638856182161666,
-              638856182205520
+              639197732702524,
+              639197732758645,
+              639197732803541
             ]
           ],
-          "logical_kernel_TFLOPs": 9.135603455551834,
-          "logical_wall_TFLOPs": 5.51324433344561
+          "logical_kernel_TFLOPs": 9.285750814990285,
+          "logical_wall_TFLOPs": 6.577146699022086
         }
       ]
     },
@@ -527,14 +535,14 @@
         "device_tensor_bytes": 5327296,
         "input_fnv1a64": "14739519724620044005",
         "initial_pageable_upload_bytes": 3359360,
-        "initial_pageable_upload_wall_seconds": 0.005153607,
-        "initial_pageable_upload_thread_cpu_seconds": 0.0026883589999999874,
+        "initial_pageable_upload_wall_seconds": 0.005083136,
+        "initial_pageable_upload_thread_cpu_seconds": 0.0026528369999999912,
         "weight_fnv1a64": "11317224156872055269",
         "oracle": "rank2_binary_exact_v1",
         "process_index": 0,
         "warmups_per_route": 3,
         "timed_submits_per_route": 3,
-        "pid": 3716381,
+        "pid": 3732182,
         "rotation_base": 0,
         "route_order": [
           "vllm_compact16x64_bf16_output",
@@ -555,6 +563,7 @@
         "samples_per_route": 3,
         "scope": "resident_operator_reference;not_hardware_peak_or_model_quality_or_speed;not_adversarial_accumulator_gate"
       },
+      "submit_clock_inversions": [],
       "samples": [
         {
           "kind": "sample",
@@ -567,58 +576,59 @@
           "warmup": false,
           "sample": 0,
           "submits": 8,
-          "submit_to_completion_wall_seconds": 0.000482958,
-          "thread_cpu_submit_seconds": 0.0003997389999999962,
-          "thread_cpu_wait_check_seconds": 6.273700000000715e-05,
+          "submit_to_completion_wall_seconds": 0.000397944,
+          "thread_cpu_submit_seconds": 0.00033405599999999924,
+          "thread_cpu_wait_check_seconds": 4.54549999999998e-05,
           "logical_flop_per_submit": 209715200,
-          "kernel_total_seconds": 0.000181978,
+          "kernel_total_seconds": 0.00018187500000000002,
           "profiling_contract_valid": true,
+          "profiling_service_valid": true,
           "profiling_duration_positive": true,
           "profiling_cross_event_ordered": true,
           "device_timestamps_ns": [
             [
-              638856442749635,
-              638856442830000,
-              638856442854895
+              639198024829764,
+              639198024899895,
+              639198024924375
             ],
             [
-              638856442820307,
-              638856442907395,
-              638856442932083
+              639198024881962,
+              639198024939791,
+              639198024964375
             ],
             [
-              638856442889657,
-              638856442935833,
-              638856442956562
+              639198024925734,
+              639198025010416,
+              639198025035104
             ],
             [
-              638856442947966,
-              638856443037500,
-              638856443062083
+              639198024968835,
+              639198025038958,
+              639198025059895
             ],
             [
-              638856442991949,
-              638856443065937,
-              638856443086770
+              639198025010513,
+              639198025063750,
+              639198025084687
             ],
             [
-              638856443034559,
-              638856443090625,
-              638856443111354
+              639198025051860,
+              639198025128854,
+              639198025153333
             ],
             [
-              638856443076648,
-              638856443154895,
-              638856443179479
+              639198025093188,
+              639198025157187,
+              639198025178020
             ],
             [
-              638856443121662,
-              638856443183229,
-              638856443204166
+              639198025137611,
+              639198025181875,
+              639198025202812
             ]
           ],
-          "logical_kernel_TFLOPs": 9.219364978184176,
-          "logical_wall_TFLOPs": 3.4738457588444542
+          "logical_kernel_TFLOPs": 9.224586116838486,
+          "logical_wall_TFLOPs": 4.215974106909514
         },
         {
           "kind": "sample",
@@ -631,58 +641,59 @@
           "warmup": false,
           "sample": 0,
           "submits": 8,
-          "submit_to_completion_wall_seconds": 0.000406815,
-          "thread_cpu_submit_seconds": 0.00033325300000000557,
-          "thread_cpu_wait_check_seconds": 5.5734000000001727e-05,
+          "submit_to_completion_wall_seconds": 0.00043855,
+          "thread_cpu_submit_seconds": 0.000334807999999992,
+          "thread_cpu_wait_check_seconds": 8.486799999998795e-05,
           "logical_flop_per_submit": 209715200,
-          "kernel_total_seconds": 0.000238124,
+          "kernel_total_seconds": 0.00023364700000000002,
           "profiling_contract_valid": true,
+          "profiling_service_valid": true,
           "profiling_duration_positive": true,
           "profiling_cross_event_ordered": true,
           "device_timestamps_ns": [
             [
-              638856449471841,
-              638856449539166,
-              638856449570312
+              639198031468333,
+              639198031534687,
+              639198031564583
             ],
             [
-              638856449520522,
-              638856449583854,
-              638856449615416
+              639198031515602,
+              639198031578229,
+              639198031609270
             ],
             [
-              638856449564144,
-              638856449658854,
-              638856449690208
+              639198031563872,
+              639198031651145,
+              639198031680937
             ],
             [
-              638856449606353,
-              638856449694062,
-              638856449723541
+              639198031607785,
+              639198031684791,
+              639198031714583
             ],
             [
-              638856449651948,
-              638856449727291,
-              638856449753020
+              639198031652298,
+              639198031718437,
+              639198031744687
             ],
             [
-              638856449694528,
-              638856449756875,
-              638856449786875
+              639198031694227,
+              639198031748541,
+              639198031777812
             ],
             [
-              638856449736166,
-              638856449790625,
-              638856449820208
+              639198031736065,
+              639198031781562,
+              639198031809062
             ],
             [
-              638856449778335,
-              638856449824583,
-              638856449853854
+              639198031777804,
+              639198031852395,
+              639198031882500
             ]
           ],
-          "logical_kernel_TFLOPs": 7.045579613982631,
-          "logical_wall_TFLOPs": 4.12404065730123
+          "logical_kernel_TFLOPs": 7.180582673862707,
+          "logical_wall_TFLOPs": 3.8256107627408507
         },
         {
           "kind": "sample",
@@ -695,58 +706,59 @@
           "warmup": false,
           "sample": 1,
           "submits": 8,
-          "submit_to_completion_wall_seconds": 0.00040366,
-          "thread_cpu_submit_seconds": 0.0003247479999999858,
-          "thread_cpu_wait_check_seconds": 6.101299999999865e-05,
+          "submit_to_completion_wall_seconds": 0.000406049,
+          "thread_cpu_submit_seconds": 0.0003268919999999953,
+          "thread_cpu_wait_check_seconds": 6.092499999998946e-05,
           "logical_flop_per_submit": 209715200,
-          "kernel_total_seconds": 0.00023750000000000003,
+          "kernel_total_seconds": 0.000234896,
           "profiling_contract_valid": true,
+          "profiling_service_valid": true,
           "profiling_duration_positive": true,
           "profiling_cross_event_ordered": true,
           "device_timestamps_ns": [
             [
-              638856456074182,
-              638856456140625,
-              638856456170416
+              639198038117212,
+              639198038182916,
+              639198038214479
             ],
             [
-              638856456121190,
-              638856456184062,
-              638856456215520
+              639198038164100,
+              639198038219062,
+              639198038245625
             ],
             [
-              638856456166525,
-              638856456257812,
-              638856456289375
+              639198038209735,
+              639198038259375,
+              639198038291145
             ],
             [
-              638856456212401,
-              638856456293229,
-              638856456320937
+              639198038252335,
+              639198038335208,
+              639198038365520
             ],
             [
-              638856456254280,
-              638856456324791,
-              638856456354166
+              639198038293723,
+              639198038369375,
+              639198038398958
             ],
             [
-              638856456294585,
-              638856456358020,
-              638856456386250
+              639198038334850,
+              639198038402916,
+              639198038430625
             ],
             [
-              638856456333989,
-              638856456390104,
-              638856456419791
+              639198038376488,
+              639198038434375,
+              639198038463958
             ],
             [
-              638856456374024,
-              638856456423645,
-              638856456453333
+              639198038417956,
+              639198038467916,
+              639198038495729
             ]
           ],
-          "logical_kernel_TFLOPs": 7.06409094736842,
-          "logical_wall_TFLOPs": 4.1562740920576715
+          "logical_kernel_TFLOPs": 7.142401743750426,
+          "logical_wall_TFLOPs": 4.131820543825992
         },
         {
           "kind": "sample",
@@ -759,58 +771,59 @@
           "warmup": false,
           "sample": 1,
           "submits": 8,
-          "submit_to_completion_wall_seconds": 0.000408218,
-          "thread_cpu_submit_seconds": 0.00031701400000000435,
-          "thread_cpu_wait_check_seconds": 7.361799999999752e-05,
+          "submit_to_completion_wall_seconds": 0.000397793,
+          "thread_cpu_submit_seconds": 0.0003367499999999968,
+          "thread_cpu_wait_check_seconds": 4.253099999998455e-05,
           "logical_flop_per_submit": 209715200,
-          "kernel_total_seconds": 0.000184374,
+          "kernel_total_seconds": 0.000181356,
           "profiling_contract_valid": true,
+          "profiling_service_valid": true,
           "profiling_duration_positive": true,
           "profiling_cross_event_ordered": true,
           "device_timestamps_ns": [
             [
-              638856462640215,
-              638856462706354,
-              638856462730625
+              639198044749710,
+              639198044815520,
+              639198044840000
             ],
             [
-              638856462686272,
-              638856462747083,
-              638856462771562
+              639198044797389,
+              639198044856354,
+              639198044880937
             ],
             [
-              638856462727469,
-              638856462819791,
-              638856462844270
+              639198044841011,
+              639198044926458,
+              639198044950937
             ],
             [
-              638856462767955,
-              638856462848020,
-              638856462868645
+              639198044882970,
+              639198044954791,
+              639198044975520
             ],
             [
-              638856462808200,
-              638856462872500,
-              638856462893125
+              639198044924057,
+              639198044979270,
+              639198045000208
             ],
             [
-              638856462848476,
-              638856462906666,
-              638856462931145
+              639198044972237,
+              639198045048645,
+              639198045073229
             ],
             [
-              638856462891827,
-              638856462975000,
-              638856462999479
+              639198045018684,
+              639198045077187,
+              639198045097812
             ],
             [
-              638856462932253,
-              638856463003333,
-              638856463024270
+              639198045060803,
+              639198045101666,
+              639198045122604
             ]
           ],
-          "logical_kernel_TFLOPs": 9.09955633657674,
-          "logical_wall_TFLOPs": 4.109866786863881
+          "logical_kernel_TFLOPs": 9.250984803370166,
+          "logical_wall_TFLOPs": 4.217574467122347
         },
         {
           "kind": "sample",
@@ -823,58 +836,59 @@
           "warmup": false,
           "sample": 2,
           "submits": 8,
-          "submit_to_completion_wall_seconds": 0.000408629,
-          "thread_cpu_submit_seconds": 0.0003358690000000164,
-          "thread_cpu_wait_check_seconds": 5.5072999999988825e-05,
+          "submit_to_completion_wall_seconds": 0.000442568,
+          "thread_cpu_submit_seconds": 0.0003478510000000101,
+          "thread_cpu_wait_check_seconds": 7.662399999999736e-05,
           "logical_flop_per_submit": 209715200,
-          "kernel_total_seconds": 0.000184687,
+          "kernel_total_seconds": 0.00018093500000000002,
           "profiling_contract_valid": true,
+          "profiling_service_valid": true,
           "profiling_duration_positive": true,
           "profiling_cross_event_ordered": true,
           "device_timestamps_ns": [
             [
-              638856469191481,
-              638856469262395,
-              638856469287083
+              639198051349276,
+              639198051414687,
+              639198051439166
             ],
             [
-              638856469244811,
-              638856469302083,
-              638856469326562
+              639198051395923,
+              639198051455208,
+              639198051479583
             ],
             [
-              638856469286409,
-              638856469371041,
-              638856469395520
+              639198051438413,
+              639198051524166,
+              639198051548645
             ],
             [
-              638856469326704,
-              638856469399375,
-              638856469420104
+              639198051480201,
+              639198051552500,
+              639198051573020
             ],
             [
-              638856469369505,
-              638856469423958,
-              638856469444791
+              639198051524715,
+              639198051576979,
+              639198051597708
             ],
             [
-              638856469409720,
-              638856469458333,
-              638856469482708
+              639198051571402,
+              639198051646458,
+              639198051671145
             ],
             [
-              638856469449916,
-              638856469526562,
-              638856469550937
+              639198051614113,
+              639198051675000,
+              639198051695833
             ],
             [
-              638856469489830,
-              638856469554791,
-              638856469575520
+              639198051655650,
+              639198051699687,
+              639198051720520
             ]
           ],
-          "logical_kernel_TFLOPs": 9.084134779383499,
-          "logical_wall_TFLOPs": 4.105733073276737
+          "logical_kernel_TFLOPs": 9.272510017409566,
+          "logical_wall_TFLOPs": 3.7908786898284554
         },
         {
           "kind": "sample",
@@ -887,302 +901,65 @@
           "warmup": false,
           "sample": 2,
           "submits": 8,
-          "submit_to_completion_wall_seconds": 0.00041454,
-          "thread_cpu_submit_seconds": 0.0003253589999999973,
-          "thread_cpu_wait_check_seconds": 7.151499999999422e-05,
+          "submit_to_completion_wall_seconds": 0.000623351,
+          "thread_cpu_submit_seconds": 0.000489539000000011,
+          "thread_cpu_wait_check_seconds": 0.00010748099999999261,
           "logical_flop_per_submit": 209715200,
-          "kernel_total_seconds": 0.00023322900000000003,
+          "kernel_total_seconds": 0.000250731,
           "profiling_contract_valid": true,
+          "profiling_service_valid": true,
           "profiling_duration_positive": true,
           "profiling_cross_event_ordered": true,
           "device_timestamps_ns": [
             [
-              638856475823057,
-              638856475888958,
-              638856475920312
+              639198058123610,
+              639198058198750,
+              639198058230312
             ],
             [
-              638856475874824,
-              638856475933854,
-              638856475964166
+              639198058196006,
+              639198058281770,
+              639198058313229
             ],
             [
-              638856475918726,
-              638856475981458,
-              638856476013333
+              639198058259274,
+              639198058326770,
+              639198058358541
             ],
             [
-              638856475959924,
-              638856476056041,
-              638856476088333
+              639198058322242,
+              639198058405208,
+              639198058436979
             ],
             [
-              638856476000610,
-              638856476092187,
-              638856476117916
+              639198058389288,
+              639198058450520,
+              639198058481979
             ],
             [
-              638856476041527,
-              638856476121770,
-              638856476149687
+              639198058451715,
+              639198058531041,
+              639198058563020
             ],
             [
-              638856476082303,
-              638856476153541,
-              638856476182604
+              639198058509093,
+              639198058567708,
+              639198058596875
             ],
             [
-              638856476122879,
-              638856476186354,
-              638856476211041
+              639198058573794,
+              639198058642916,
+              639198058674479
             ]
           ],
-          "logical_kernel_TFLOPs": 7.193451929219779,
-          "logical_wall_TFLOPs": 4.047188691079269
-        }
-      ]
-    },
-    {
-      "phase": "diagnostic",
-      "command": [
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_native16_paired_gemm_bench",
-        "--resident",
-        "8",
-        "fp16",
-        "--process",
-        "0"
-      ],
-      "plan": {
-        "kind": "plan",
-        "mode": "measure",
-        "resident_only": true,
-        "submits_per_sample": 8,
-        "shape": 8,
-        "T": 5963,
-        "N": 1280,
-        "K": 2560,
-        "ldy": 1280,
-        "beta": 0,
-        "input_type": "fp16",
-        "device_tensor_bytes": 128678336,
-        "input_fnv1a64": "4834186686110060261",
-        "initial_pageable_upload_bytes": 37084800,
-        "initial_pageable_upload_wall_seconds": 0.011159899,
-        "initial_pageable_upload_thread_cpu_seconds": 0.008574619000000006,
-        "weight_fnv1a64": "10777993185871135461",
-        "oracle": "rank2_binary_exact_v1",
-        "process_index": 0,
-        "warmups_per_route": 3,
-        "timed_submits_per_route": 3,
-        "pid": 3718565,
-        "rotation_base": 0,
-        "route_order": [
-          "vllm_compact16x64_bf16_output",
-          "vllm_wide128x128_bf16_output"
-        ]
-      },
-      "process": 0,
-      "exit_code": 1,
-      "ownership_closed": true,
-      "passed": false,
-      "validation_count": 8,
-      "native_result": {
-        "kind": "result",
-        "status": "FAIL",
-        "error": "invalid or unordered device timestamps (see emitted tuples)"
-      },
-      "samples": [
-        {
-          "kind": "sample",
-          "status": "pending_validation",
-          "ordinal": 6,
-          "route": "vllm_wide128x128_bf16_output",
-          "implementation": "R810::Gemm::beta0(wide_128x128,output=bf16);local_fp32_acc",
-          "stored_output_type": "bf16",
-          "global_fp32_intermediate": false,
-          "warmup": false,
-          "sample": 0,
-          "submits": 8,
-          "submit_to_completion_wall_seconds": 0.008496106,
-          "thread_cpu_submit_seconds": 0.00036372199999989974,
-          "thread_cpu_wait_check_seconds": 0.008113003000000063,
-          "logical_flop_per_submit": 39079116800,
-          "kernel_total_seconds": 0.008354584,
-          "profiling_contract_valid": true,
-          "profiling_duration_positive": true,
-          "profiling_cross_event_ordered": true,
-          "device_timestamps_ns": [
-            [
-              638904941871696,
-              638904941904583,
-              638904942943854
-            ],
-            [
-              638904941939363,
-              638904942948750,
-              638904943996145
-            ],
-            [
-              638904941983406,
-              638904944000416,
-              638904945051979
-            ],
-            [
-              638904942030704,
-              638904945055937,
-              638904946118229
-            ],
-            [
-              638904942072984,
-              638904946122291,
-              638904947170312
-            ],
-            [
-              638904942114562,
-              638904947174375,
-              638904948214062
-            ],
-            [
-              638904942156520,
-              638904948218020,
-              638904949298229
-            ],
-            [
-              638904942206334,
-              638904949302187,
-              638904950288333
-            ]
-          ]
-        },
-        {
-          "kind": "sample",
-          "status": "pending_validation",
-          "ordinal": 7,
-          "route": "vllm_compact16x64_bf16_output",
-          "implementation": "R810::Gemm::beta0(compact_16x64,output=bf16);local_fp32_acc",
-          "stored_output_type": "bf16",
-          "global_fp32_intermediate": false,
-          "warmup": false,
-          "sample": 0,
-          "submits": 8,
-          "submit_to_completion_wall_seconds": 0.026080812,
-          "thread_cpu_submit_seconds": 0.00035637999999971193,
-          "thread_cpu_wait_check_seconds": 0.025626675000000265,
-          "logical_flop_per_submit": 39079116800,
-          "kernel_total_seconds": 0.025934479000000003,
-          "profiling_contract_valid": true,
-          "profiling_duration_positive": true,
-          "profiling_cross_event_ordered": true,
-          "device_timestamps_ns": [
-            [
-              638905157501747,
-              638905157525937,
-              638905161062083
-            ],
-            [
-              638905157568582,
-              638905161067187,
-              638905164598750
-            ],
-            [
-              638905157613136,
-              638905164603333,
-              638905167795520
-            ],
-            [
-              638905157656186,
-              638905167799375,
-              638905170950520
-            ],
-            [
-              638905157698366,
-              638905170954270,
-              638905174087395
-            ],
-            [
-              638905157740905,
-              638905174091145,
-              638905177223437
-            ],
-            [
-              638905157782443,
-              638905177227187,
-              638905180323750
-            ],
-            [
-              638905157827798,
-              638905180327500,
-              638905183488958
-            ]
-          ]
-        },
-        {
-          "kind": "sample",
-          "status": "pending_validation",
-          "ordinal": 8,
-          "route": "vllm_compact16x64_bf16_output",
-          "implementation": "R810::Gemm::beta0(compact_16x64,output=bf16);local_fp32_acc",
-          "stored_output_type": "bf16",
-          "global_fp32_intermediate": false,
-          "warmup": false,
-          "sample": 1,
-          "submits": 8,
-          "submit_to_completion_wall_seconds": 0.016382384,
-          "thread_cpu_submit_seconds": 0.00035522600000037485,
-          "thread_cpu_wait_check_seconds": 0.01600373899999985,
-          "logical_flop_per_submit": 39079116800,
-          "kernel_total_seconds": null,
-          "profiling_contract_valid": false,
-          "profiling_duration_positive": true,
-          "profiling_cross_event_ordered": true,
-          "device_timestamps_ns": [
-            [
-              638905389707622,
-              638905389707291,
-              638905391813854
-            ],
-            [
-              638905389771472,
-              638905391817395,
-              638905393942187
-            ],
-            [
-              638905389815805,
-              638905393945312,
-              638905396060416
-            ],
-            [
-              638905389858265,
-              638905396063229,
-              638905398120833
-            ],
-            [
-              638905389899933,
-              638905398123541,
-              638905400083645
-            ],
-            [
-              638905389944597,
-              638905400086250,
-              638905402049270
-            ],
-            [
-              638905389986826,
-              638905402051875,
-              638905404024166
-            ],
-            [
-              638905390029055,
-              638905404026770,
-              638905405992916
-            ]
-          ]
+          "logical_kernel_TFLOPs": 6.6913209774619,
+          "logical_wall_TFLOPs": 2.6914556967102
         }
       ]
     }
   ],
-  "complete": false,
-  "passed": false,
+  "complete": true,
+  "passed": true,
   "active": false,
   "model_performance_measured": false,
   "model_quality_qualified": false,
@@ -1201,7 +978,13 @@
     "Initial uploads use pageable fixture memory, not the production pinned-weight pipeline or a PCIe ceiling.",
     "Event timestamps share a device timebase; never subtract them from host clocks. Profiling does not guarantee exact timing accuracy."
   ],
-  "mode": "diagnostic",
+  "profiling_policy": {
+    "evidence_commit": "0f6356d12",
+    "service": "Positive ordered GPU start/end pairs only; no mixed submit/start latency claim.",
+    "submission_clock": "Preserve every inversion and report full-clock qualification separately; no clamping or deleting samples.",
+    "numerics": "Unchanged full-output closed-form oracle, guards and input immutability after each burst."
+  },
+  "mode": "smoke",
   "environment": {
     "PATH": "/usr/bin:/bin",
     "HOME": "/home/yayoi",
@@ -1223,9 +1006,10 @@
     "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
     "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
     "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v2/tmp",
-    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v2/cache"
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/tmp",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/cache"
   },
+  "full_submit_clock_order_qualified": true,
   "ownership_closed": true,
   "fresh_faults": [],
   "boot_unchanged": true,
@@ -1236,15 +1020,5 @@
     "device": "0xe20c",
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
-  },
-  "error": "resident-8-0: {\"kind\": \"result\", \"status\": \"FAIL\", \"error\": \"invalid or unordered device timestamps (see emitted tuples)\"}ueueRelease\n   <--- urQueueRelease(.hQueue = 0x1bf120a0) -> UR_RESULT_SUCCESS;\n   ---> urContextRelease\n   <--- urContextRelease(.hContext = 0x1bf0cb80) -> UR_RESULT_SUCCESS;\n   ---> urProgramRelease\n   <--- urProgramRelease(.hProgram = 0x1bf381f0) -> UR_RESULT_SUCCESS;\n   ---> urKernelRelease\n   <--- urKernelRelease(.hKernel = 0x1c5ecbe0) -> UR_RESULT_SUCCESS;\n   ---> urProgramRelease\n   <--- urProgramRelease(.hProgram = 0x1bf381f0) -> UR_RESULT_SUCCESS;\n   ---> urKernelRelease\n   <--- urKernelRelease(.hKernel = 0x1bf0bb90) -> UR_RESULT_SUCCESS;\n   ---> urKernelRelease\n   <--- urKernelRelease(.hKernel = 0x1c5ecbe0) -> UR_RESULT_SUCCESS;\n   ---> urKernelRelease\n   <--- urKernelRelease(.hKernel = 0x1bf0bb90) -> UR_RESULT_SUCCESS;\n   ---> urProgramRelease\n   <--- urProgramRelease(.hProgram = 0x1bf381f0) -> UR_RESULT_SUCCESS;\n   ---> urDeviceRelease\n   <--- urDeviceRelease(.hDevice = 0x1bf0aa50) -> UR_RESULT_SUCCESS;\n   ---> urAdapterRelease\n   <--- urAdapterRelease(.hAdapter = 0x1bd0f6f0) -> UR_RESULT_SUCCESS;\n",
-  "timestamp_failure_analysis": {
-    "first_event_start_minus_submit_ns": -331,
-    "GPU_start_end_pairs_positive": true,
-    "GPU_cross_event_ordered": true,
-    "host_wall_seconds": 0.016382384,
-    "all_GPU_kernel_durations_seconds": 0.016265624,
-    "numerical_validation_of_rejected_burst": "UNRUN; original early assertion preserved",
-    "decision": "Retain full profiling-contract failure. A new prospectively documented service-only metric may use positive ordered device start/end pairs without mixing submission-clock calibration; validate output afterward. No model/kernel change."
   }
 }
