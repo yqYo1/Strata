@@ -1,5 +1,5 @@
 {
-  "source_commit": "ec73e1271126de0964c2a9aa929e4e8c99ca61ae",
+  "source_commit": "853535ed58dd01c9d535874eefda5b623a1dad09",
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -73,20 +73,20 @@
     "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-entry-engine-build-v2.json",
     "sha256": "9b7734387f0fc56f36afe9d7bca75e5f0bedcef479271e982025abe1d4334a1a"
   },
-  "complete": false,
-  "passed": false,
+  "complete": true,
+  "passed": true,
   "active": false,
   "GPU_executed": false,
   "production_selected": false,
   "model_quality_qualified": false,
   "replaces": {
-    "source_commit": "7829568c61f4a47e5c1b06497f59e41a3417a5fb",
+    "source_commit": "ec73e1271126de0964c2a9aa929e4e8c99ca61ae",
     "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-down-scatter-v1/strata",
       "bytes": 20573552,
       "sha256": "bb8b3f097837026528699031de72b2fae5f779f095efda96161fce037847f5d0"
     },
-    "source_build_passed": true,
+    "source_build_passed": false,
     "retained_binary_source_commit": "7829568c61f4a47e5c1b06497f59e41a3417a5fb",
     "reason": "Closed unused comparison engine; original source/recipe recovered from Git. Reuse its cache for the immediate corrected build, not a retained old generation."
   },
@@ -157,14 +157,26 @@
       "archive_searched": "8063aacc6749d18089f7a53db5d3e47b745f348c"
     }
   },
-  "error": "compile-link failed: xe_gemm_bsd.hpp:161 queried size(SubgroupTensor), whose pinned TLA overload returns void; query its Tensor view instead. Four undefined-device-function diagnostics are secondary instantiation errors. No GPU execution.",
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 20960536,
+    "sha256": "d7a16fc294266a8bb817d53c154373114ecca259f79f42ce8bcae489d47d0dca"
+  },
+  "compile_database_sha256": "14b196583de92fa05257e717b9de693316644cd53bea6d838e241bcfc8c23f05",
+  "configured_compile_entries": 215,
+  "fixtures": {
+    "sycl_moe_down_scatter_bench": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_down_scatter_bench",
+      "sha256": "ecefe5c0d65311aa79e3c9db77ae0247a0f0f58fe2a28674ab395c2387a4e7ec"
+    }
+  },
   "ownership_closed": true,
   "inputs": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "ec73e1271126de0964c2a9aa929e4e8c99ca61ae",
+      "revision": "853535ed58dd01c9d535874eefda5b623a1dad09",
       "count": 492,
-      "aggregate_sha256": "3dd0937213077564d57b884eb4b85ec2fd1178202db63d8a443f3e06618d18ed"
+      "aggregate_sha256": "c805a4b6ce0df62227ab8e62eb6fc9cdff100381cd40ea147a92698efc6da6ba"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
@@ -178,13 +190,5 @@
       "count": 5703,
       "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
     }
-  ],
-  "compile_failure_diagnostic": {
-    "source_commit": "ec73e1271126de0964c2a9aa929e4e8c99ca61ae",
-    "mechanism": "CuTe size overload requires tCrC.tensor() for the static ownership assertion",
-    "compile_stdout_sha256": "1500b353793149104ed1a9fad96e5eb8064a5833801665807f81a81d1d72532d",
-    "compile_stdout_bytes": 66918,
-    "GPU_executed": false,
-    "original_status": "complete=false,passed=false,ownership_closed=true; preserved"
-  }
+  ]
 }
