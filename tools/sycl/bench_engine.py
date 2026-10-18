@@ -31,6 +31,23 @@ def digest(path):
         return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
+def qualified_build_source_matches(qualified, build):
+    """Reuse a native gate only across proved controller-only admission."""
+    if not (build.get('complete') and build.get('passed') and
+            build.get('ownership_closed') and not build.get('active')):
+        return False
+    if qualified == build['source_commit']:
+        return True
+    comparison = build.get('previous_output_comparison', {})
+    fixtures = comparison.get('fixture_bytes_match', {})
+    return (qualified == build.get('binary_origin_source_commit') and
+        comparison.get('controller_only_admission') is True and
+        comparison.get('native_and_recipe_inputs_match') is True and
+        comparison.get('engine_bytes_match') is True and
+        set(fixtures) == set(build.get('fixtures', {})) and bool(fixtures) and
+        all(value is True for value in fixtures.values()))
+
+
 def compact_window_census(windows):
     """Keep source-shaped work volume after checking every planned window."""
     histogram = Counter()
@@ -218,6 +235,14 @@ def extract_resource_profile(log, phase_profile, command_profile, limits, cpu_ve
             guards.require(int(gu[0]['fused_jobs']) + int(gu[0]['separate_jobs']) == total_jobs,
                            'GU fusion/work census differs')
             expected['moe_swiglu'] = int(gu[0]['separate_jobs'])
+        down = [dict(x.split('=', 1) for x in line.split(': ', 1)[1].split())
+                for line in log.splitlines() if line.startswith('strata MoE Down fusion:')]
+        guards.require(len(down) <= 1, 'duplicate request Down totals')
+        if down:
+            guards.require(int(down[0]['fused_jobs']) >= 0 and int(down[0]['separate_jobs']) >= 0 and
+                int(down[0]['fused_jobs']) + int(down[0]['separate_jobs']) == total_jobs,
+                'Down fusion/work census differs')
+            expected['moe_accumulate'] = int(down[0]['separate_jobs'])
         experts = sum(n for window in record['planned_moe_windows']
                       for m, n in window['jobs_per_expert_histogram'] if m > 0)
         expected.update(moe_dequant_gu=experts, moe_dequant_down=experts)
@@ -711,6 +736,7 @@ def main():
              'qsa-long-input-expert-bank-host-check', 'qsa-long-input-expert-bank-host-census',
              'qsa-long-input-source-view-check', 'qsa-long-input-source-view-base',
              'qsa-long-input-source-view-candidate',
+             'qsa-long-input-down-check', 'qsa-long-input-down-base', 'qsa-long-input-down-candidate',
              'qsa-kvvec4-timing-check', 'qsa-kvvec4-census') + tuple(
                  f'qsa-gdncols{n}-{phase}' for n in (2, 4, 8) for phase in ('check', 'base', 'candidate'))
     guards.require(len(sys.argv) in (3, 4) and sys.argv[1] in ('prepare', 'run') and
@@ -719,17 +745,21 @@ def main():
     cohort = int(sys.argv[3]) if len(sys.argv) == 4 else 0
     guards.require(cohort in (0, 1, 2) and (len(sys.argv) == 3 or
         mode in ('qsa-gu-fusion-base', 'qsa-gu-fusion-candidate', 'qsa-long-input', 'qsa-long-input-balanced', 'qsa-long-input-scratch', 'qsa-long-input-expert-bank', 'qsa-long-input-expert-bank-64k',
-                 'qsa-long-input-source-view-base', 'qsa-long-input-source-view-candidate')),
+                 'qsa-long-input-source-view-base', 'qsa-long-input-source-view-candidate',
+                 'qsa-long-input-down-base', 'qsa-long-input-down-candidate')),
         'optional cohort0|1|2 is for GU paired arms or independent long-input processes')
     column_mode = re.fullmatch(r'qsa-gdncols(2|4|8)-(check|base|candidate|warm-census|host-check|host-traced-check|host-census)', mode)
     ordered_trial = mode.startswith('qsa-ordered-exp-')
     long_trial = mode.startswith('qsa-long-input')
     source_view_trial = mode.startswith('qsa-long-input-source-view-')
-    source_view_on = source_view_trial and not mode.endswith('-base')
+    down_trial = mode.startswith('qsa-long-input-down-')
+    down_candidate = down_trial and not mode.endswith('-base')
+    paired_long_trial = source_view_trial or down_trial
+    source_view_on = down_trial or (source_view_trial and not mode.endswith('-base'))
     balanced_placement = mode in ('qsa-long-input-balanced-check', 'qsa-long-input-balanced')
-    staged_host = mode == 'qsa-long-input-source-view-check' or mode in ('qsa-long-input-expert-bank-host-check', 'qsa-long-input-expert-bank-host-census')
+    staged_host = mode in ('qsa-long-input-source-view-check', 'qsa-long-input-down-check', 'qsa-long-input-expert-bank-host-check', 'qsa-long-input-expert-bank-host-census')
     single_window = mode in ('qsa-long-input-expert-bank-64k-check', 'qsa-long-input-expert-bank-64k')
-    staged_bank = source_view_trial or staged_host or single_window or mode in ('qsa-long-input-expert-bank-check', 'qsa-long-input-expert-bank')
+    staged_bank = paired_long_trial or staged_host or single_window or mode in ('qsa-long-input-expert-bank-check', 'qsa-long-input-expert-bank')
     long_minimum = 65536 if single_window else 98304
     bank_residual_rows = 78450 if single_window else 117488
     bank_window_rows = (78450,) if single_window else (81920, 35568)
@@ -765,7 +795,7 @@ def main():
         generation += '-repeat' + str(cohort)
     root = B / (('qsa-attention-model-' + mode[4:] + '-' + generation) if qsa else
                 ('native-gdn-model-' + mode + '-v2'))
-    result_path = (A / 'prefill-long-input-current.json' if source_view_trial else
+    result_path = (A / 'prefill-long-input-current.json' if paired_long_trial else
                    A / 'prefill-host-attribution-current.json' if host_profile else
                    A / 'prefill-long-input-current.json' if long_trial else
                    A / 'moe-gu-swiglu-model-current.json' if gu_trial else
@@ -787,7 +817,7 @@ def main():
             guards.require(build['passed'] and build['complete'] and build['ownership_closed'] and not build['active'],
                            'qualified closed engine build required')
             profile_route_qualification = None
-            if staged_host and not source_view_trial:
+            if staged_host and not paired_long_trial:
                 revision = subprocess.check_output(['git', 'rev-parse', '692e2658d'], cwd=P, text=True).strip()
                 path = 'bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json'
                 data = subprocess.check_output(['git', 'show', revision + ':' + path], cwd=P)
@@ -836,15 +866,18 @@ def main():
                     ['git','show','HEAD:'+str(component_path.relative_to(P))],cwd=P) and
                     component['complete'] and component['passed'] and component['ownership_closed'] and
                     gpu.get('mode')=='validate' and gpu.get('complete') and gpu.get('passed') and
-                    gpu.get('ownership_closed') and gpu['build_source_commit']==build['source_commit'] and
+                    gpu.get('ownership_closed') and qualified_build_source_matches(gpu['build_source_commit'], build) and
                     gpu['fixture']==build['fixtures']['sycl_expert_bank_test'],
                     'matching committed production expert-bank upload/byte/unwind gates required')
                 guards.require(digest(gpu['fixture']['path'])==gpu['fixture']['sha256'],'bank fixture changed')
                 bank_qualification = dict(component_path=str(component_path.relative_to(P)),
                     component_sha256=digest(component_path),build_source_commit=gpu['build_source_commit'],
+                    current_build_admission_commit=build['source_commit'],
+                    native_origin_source_commit=build.get('binary_origin_source_commit', build['source_commit']),
+                    evidence_reused_for_identical_native_outputs=True,
                     limits=gpu['limits'])
             source_view_qualification = None
-            if source_view_trial:
+            if paired_long_trial:
                 guards.require(gpu.get('provider_checks_passed') is True and
                     gpu.get('provider_fixture') == build['fixtures'].get('file_expert_source_test'),
                     'matching production Arena private/shared/fallback checks required')
@@ -857,6 +890,25 @@ def main():
                 source_view_qualification = index['main_gpu_admission']
                 guards.require(all(digest(P/name)==expected for name,expected in
                     source_view_qualification['source_files_sha256'].items()), 'reviewed source-view implementation changed')
+            down_qualification = None
+            if down_trial:
+                component_path = A / 'moe-down-scatter-current.json'
+                component = json.loads(component_path.read_text())
+                guards.require(component_path.read_bytes() == subprocess.check_output(
+                    ['git', 'show', 'HEAD:' + str(component_path.relative_to(P))], cwd=P) and
+                    component['mode'] == 'perf' and component['passed'] and component['complete'] and
+                    component['ownership_closed'] and not component['active'] and component['postchecks_complete'] and
+                    not component['fresh_faults'] and component['boot_unchanged'] and
+                    component['source_commit'] == build['source_commit'] and
+                    component['fixture'] == build['fixtures']['sycl_moe_down_scatter_bench'] and
+                    len(component['timing_samples']) == 504 and component['resident_summary']['advance_to_model'],
+                    'committed current-fixture selective Down correctness and unchanged performance gate required')
+                guards.require(digest(component['fixture']['path']) == component['fixture']['sha256'],
+                               'qualified Down fixture changed')
+                down_qualification = dict(component_path=str(component_path.relative_to(P)),
+                    component_sha256=digest(component_path), fixture=component['fixture'],
+                    component_source_commit=component['source_commit'],
+                    limits='Current-fixture component permits only this matched117K trial; no model adoption.')
             if gu_trial or long_trial:
                 component_path = A / 'moe-gu-swiglu-current.json'
                 component = json.loads(component_path.read_text())
@@ -901,13 +953,13 @@ def main():
                 prior = json.loads(result_path.read_text())
                 required = long_clean_mode + '-check' if cohort == 0 else long_clean_mode
                 preceding_cohort = max(0, cohort-1)
-                if source_view_trial:
+                if paired_long_trial:
                     first,second = ('base','candidate') if cohort%2==0 else ('candidate','base')
                     arm = mode.rsplit('-',1)[1]
                     preceding_cohort = cohort if arm==second else max(0,cohort-1)
-                    required = ('qsa-long-input-source-view-'+first if arm==second else
-                        'qsa-long-input-source-view-'+('candidate' if (cohort-1)%2==0 else 'base') if cohort else
-                        'qsa-long-input-source-view-check')
+                    prefix = 'qsa-long-input-down-' if down_trial else 'qsa-long-input-source-view-'
+                    required = (prefix+first if arm==second else
+                        prefix+('candidate' if (cohort-1)%2==0 else 'base') if cohort else prefix+'check')
                 guards.require(result_path.read_bytes() == subprocess.check_output(
                     ['git', 'show', 'HEAD:' + str(result_path.relative_to(P))], cwd=P) and
                     prior['mode'] == required and prior.get('cohort_index', 0) == preceding_cohort and
@@ -948,7 +1000,7 @@ def main():
                         digest(P / 'include/strata/sycl/cpu_wait_profile.hpp'), 'matching CPU accounting gates required')
                 qualification = []
                 if mode not in ('qsa-gdncols4-host-check', 'qsa-long-input-expert-bank-host-check',
-                                'qsa-long-input-source-view-check'):
+                                'qsa-long-input-source-view-check', 'qsa-long-input-down-check'):
                     prior_bytes = subprocess.check_output(['git', 'show',
                         'HEAD:' + str(result_path.relative_to(P))], cwd=P)
                     guards.require(prior_bytes == result_path.read_bytes(), 'commit the previous host model gate')
@@ -988,7 +1040,7 @@ def main():
             env['STRATA_SYCL_PREFILL_GU_SWIGLU'] = 'large' if gu_candidate else '0'
             env['STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW'] = '1' if source_view_on else '0'
             if long_trial:
-                env['STRATA_SYCL_PREFILL_DOWN_SCATTER'] = '0'
+                env['STRATA_SYCL_PREFILL_DOWN_SCATTER'] = 'large' if down_candidate else '0'
                 if balanced_placement:
                     env['STRATA_PREFILL_LAYER_MAJOR_R_GPU'] = '81920'
                 if scratch_mixed:
@@ -1084,8 +1136,9 @@ def main():
                     plan['previous_screen'] = previous_screen
                 if not check:
                     plan['preceding_long_input_result'] = preceding_long
-            if source_view_trial:
+            if paired_long_trial:
                 plan['source_view_qualification'] = source_view_qualification
+            if source_view_trial:
                 plan['source_view_comparison'] = dict(enabled=source_view_on,
                     expected_actual_read_tokens=117489, expected_borrowed_layer_span_bytes=50292326400,
                     requested_only_change='STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW=0|1',
@@ -1093,6 +1146,14 @@ def main():
                     prospective_selection='All3 independent paired subsequent medians favor the view; geometric mean of paired ratios>1.005, no fresh faults or eligibility/ownership failures. Target1000tok/s is checked separately, not assumed from source-copy removal.',
                     limits='Opt-in117K scheduling comparison; default adoption still needs broad quality,physical262144,session/RESTORE and sustained-generation gates.')
                 plan['long_input_screen']['question'] = 'Same binary,117489 fresh tokens,384 expert slots and identical GPU placement: eliminate redundant CPU source repacking; include actual transfer/submission cost in full-request speed.'
+            if down_trial:
+                plan['down_qualification'] = down_qualification
+                plan['down_comparison'] = dict(enabled=down_candidate,
+                    requested_only_change='STRATA_SYCL_PREFILL_DOWN_SCATTER=0|large',
+                    order=['A0','B0','B1','A1','A2','B2'], requests_per_process=4,
+                    prospective_selection='All3 independent paired subsequent medians favor fusion; geometric mean of the3 process-pair median ratios>1.002, no fresh faults or eligibility/ownership failures. Target1000tok/s is checked separately.',
+                    limits='Source-view stays enabled; unchanged117K workload/384 slots/GPU placement/GU/QSA/GDN. Not broad quality,physical262144,session/RESTORE or sustained70tok/s decode qualification.')
+                plan['long_input_screen']['question'] = 'Same binary,117489 fresh tokens,immutable expert view and identical GPU placement: select fused Down/accumulation only at>=2334 expert rows; all other scheduling remains fixed.'
             if gu_trial:
                 plan['independent_process_plan'] = dict(order=['A0','B0','B1','A1','A2','B2'],
                     target_pairs=3, requests_per_process=4, first_use_separate=True,
@@ -1119,6 +1180,11 @@ def main():
                             question='Validate the admitted immutable Arena view on117K input and quantify remaining preparation/upload/explicit-wait CPU before clean same-binary A/B.',
                             route='Current committed candidate engine,117488 all-GPU rows,384 slots,borrowed mixed scratch,GU-large,Down0;81920+35568 rows per layer; source_view=1.',
                             source_copy_hypothesis='Legacy source_copy category now measures preparation only: actual source marker must prove view admission, zero owned upload slab and no512-expert CPU repacking. A classification change is not a speedup; clean matched request latency decides.')
+                    if down_trial:
+                        plan['phase_profile_scope'].update(
+                            question='Validate actual117K selective Down route,borrowed-scratch ownership,work conservation and complete CPU accounting before clean matched off/on processes.',
+                            route='Same admitted native engine,117488 all-GPU rows,384 slots,source_view=1,GU-large,Down-large;81920+35568 rows per layer.',
+                            source_copy_hypothesis='Immutable source view remains fixed. This is a validated model route/accounting check, not clean speed or a claim that Down service is the hardware bottleneck.')
             (root / 'plan.json').write_text(json.dumps(plan, indent=2) + '\n')
             compact = {k: v for k, v in plan.items() if k != 'source_sha256'}
             compact['source_count'] = len(pins)
@@ -1163,6 +1229,9 @@ def main():
         if staged_bank:
             guards.require(digest(P/plan['expert_bank_qualification']['component_path'])==
                 plan['expert_bank_qualification']['component_sha256'], 'expert-bank component evidence changed')
+        if down_trial:
+            guards.require(digest(P / plan['down_qualification']['component_path']) ==
+                           plan['down_qualification']['component_sha256'], 'Down component evidence changed')
         boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
         journal = subprocess.check_output(['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True)
         cursor = next(x.split(': ', 1)[1] for x in journal.splitlines() if x.startswith('-- cursor: '))
@@ -1200,7 +1269,7 @@ def main():
             guards.require(all(q['ok'] and q['eligible'] and q['stream_complete'] and q['thinking_requested'] and
                                q['actual_reused_tokens'] == 0 for q in requests), 'ineligible samples')
             guards.require(bool(record['route_selection']) == chunk64, 'wrong GDN route')
-            if source_view_trial:
+            if paired_long_trial:
                 source = [dict(t.split('=',1) for t in line.split(': ',1)[1].split())
                     for line in log.splitlines() if line.startswith('strata prefill expert source:')]
                 guards.require(len(source)==request_count and all(
@@ -1236,9 +1305,12 @@ def main():
                 selected = [x for x in log.splitlines() if x.startswith('[native16-down]')]
                 counts = [dict(x.split('=', 1) for x in line.split(': ', 1)[1].split())
                     for line in log.splitlines() if line.startswith('strata MoE Down fusion:')]
-                guards.require(selected == ['[native16-down] fusion=0 min_rows=2334'] and
-                    len(counts) == request_count and all(int(c['fused_jobs']) == int(c['fused_rows']) == 0 and
-                        int(c['separate_jobs']) > 0 for c in counts), 'long screen changed Down route')
+                guards.require(selected == ['[native16-down] fusion=' + ('large' if down_candidate else '0') + ' min_rows=2334'] and
+                    len(counts) == request_count and all(int(c['min_rows']) == 2334 and
+                        int(c['separate_jobs']) > 0 and (int(c['fused_jobs']) > 0 and
+                        int(c['fused_rows']) >= 2334 * int(c['fused_jobs']) if down_candidate else
+                        int(c['fused_jobs']) == int(c['fused_rows']) == 0) for c in counts),
+                    'long screen changed selected Down route')
                 record['down_route'] = dict(selection=selected, per_request_counts=counts)
                 admission = [x for x in log.splitlines() if x.startswith('strata MoE window configuration:')]
                 record['moe_window_admission'] = admission
