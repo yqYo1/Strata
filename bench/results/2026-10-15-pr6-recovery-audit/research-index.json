@@ -381,6 +381,28 @@
       "Hardware1000tok/s goal accepts longer>=64K input, but156K+ residual growth risks PCIe spill; release/rebuild feasibility affects placement tuning."
     ],
     "question": "Source-audit substantial decode-only owners and RAM-backed reconstructibility, including captured-pointer/graph lifetimes and partial-retention choices; no code/proposal import.",
-    "ownership": "Orca Luna read-only current src/include/configured entrypoint; exclude protected proposals and all XeStrata sources."
+    "ownership": "Orca Luna read-only current src/include/configured entrypoint; exclude protected proposals and all XeStrata sources.",
+    "state": "Orca report and native Luna-max review complete; source feasibility corrected before any implementation.",
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/decode-vram-rebuild-source.md",
+    "report_bytes": 21388,
+    "report_sha256": "47469da53aaae15558aaae754f2b1aa028aa050d373eb9845fda9c5c89b28740",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/decode-vram-rebuild-source-review.json",
+    "review_sha256": "2082f11644d8500b9a8a9a3f853c005506bba5b805ceb33c716030e0b2f28d24",
+    "reviewed_facts": [
+      "Current generate.cpp already banks NativeDense and canonical owners around long prompts; both switches are enabled. NativeDense projections are shared with native16 prefill, not an extra persistent BF16 duplicate. Do not reimplement the existing transaction.",
+      "Existing 78K clean baseline logs target expert cache128slots/0.26GiB and separate prompt buffers. This rounded startup value is not an exact runtime owner/reader census.",
+      "Existing compact39K diagnostic retains enabled bank switches but no bank phase/count telemetry; clean78K runs deliberately omit STRATA_TRACE. Their MTP free-byte delta does not quantify NativeDense/canonical savings.",
+      "Additional target ExpertCache release/refill from host expert source is conditional on exact bytes, resident slots and captured target/verifier bindings. Preserve shared QSA/GDN/MTP state. Head release currently D2H-saves."
+    ],
+    "next_main_step": {
+      "schedulable_now": false,
+      "question": "Exact target-cache allocation and reader/binding census before considering RAM rebuild versus retention.",
+      "prerequisites": [
+        "Close frozen cached-Q A/B and preserve individual samples.",
+        "Use the measured source/config; collect exact cache bytes/slot state, host source validity and every captured reader before proposing release.",
+        "Any feature follows same-binary on/off comparison, physical262144/RESTORE and sustained thinking-generation gates."
+      ]
+    },
+    "retention": "Keep report/review through immediate cache-owner decision, then prune. Main read only review digest and next-step metadata, not collection body."
   }
 }
