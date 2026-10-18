@@ -554,6 +554,16 @@ have180s deadlines,64MiB raw-text and256MiB total budgets. This is a capability
 probe, without model execution or a GPU-counter/compute-ceiling claim. No sysctl,
 driver or privilege changes are part of it.
 
+The CPU software probe was refused at collector startup by the current ptrace
+policy (`ptrace_scope=1`); it produced no qualified CPU samples. Preserve the
+[failed capability receipt](../bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json).
+The reviewed next path is disjoint non-GEMM host timing around existing launch
+segments, preserving internal GEMM/transfer scopes. The current Host accounting
+rejects nested Host regions, so a whole-job outer timer is invalid. Instrumentation
+is not implemented yet: qualify its CPU-only lifetime/exception/accounting cases,
+then separate traced and untraced bounded model diagnostics. No speedup follows
+from this source review.
+
 ## Optional GDN chunk64
 
 `STRATA_SYCL_PREFILL_GDN_CHUNK64=1` adds a separate experimental long-prefill
