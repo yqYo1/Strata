@@ -660,6 +660,37 @@ change inference order or treat it as adopted before same-library correctness
 and matched component/model timing pass. Existing source-specific fusion and
 indexed-A references are available; no repeat generic survey is needed.
 
+The next prototype is now an explicit `Gemm::down_scatter` component API,
+with no model dispatch hook. It shares the licensed vLLM-XPU BSD DPAS loop;
+the dense output specialization retains its existing reorder and block2D store.
+The new epilogue obtains logical coordinates from the same TLA `partition_C`
+that shapes its FP32 accumulator, rounds through TLA's BF16 conversion with
+unchanged thread/value ownership, then widens for explicit FP32 FMA. It masks
+logical tails before map/address reads. The immutable expert plan proves one
+token row per job; the original in-order queue serializes overlapping experts.
+The plan's full registered maps/weights, FP16 inputs, FP32 accumulator, status
+and optional BF16 diagnostic spans are checked before enqueue. No output
+tensor is materialized by the null-diagnostic kernel. These are implementation
+contracts, not yet validation or speed results.
+
+Before any GPU check, the maintained
+[component fixture](../bench/sycl/moe_down_scatter.cpp) exhaustively counts the
+actual TLA tile/thread/fragment ownership on the CPU: both tile policies,
+rows1,3,17,33,129,2334,5963,8191,8192, with no missing or repeated valid cells.
+Next comes one bounded traced seven-result gate: separate/fused BF16 and
+FP32 bitwise checks, an independent finite integer-dot/RNE oracle, nine invalid
+admissions and four invalid maps. Then22 component cases cover both tiles,
+tails, split jobs, adjacent experts, irregular maps and rounding/exceptional
+values. Clean resident timing uses three processes, six rotated rounds per
+arm and16 commands per sample, at64,160,2334,5963,8192 routed rows with both
+contiguous and every-other-token layouts. Marker intervals include host gaps;
+they are not a hardware saturation or physical-traffic measurement.
+The prospective model-experiment gate is geometric-mean latency ratio<=0.95
+across the ten shapes, no shape ratio>1.05, and every process improves at
+2334/5963/8192 for both layouts. Passing permits a subsequent matched model
+experiment; it does not qualify model quality, physical262144/RESTORE or decode.
+Main uses `tools/sycl/measure_down_scatter.py` for finite owned phase execution.
+
 After recording those results, Main retired221 closed-run, CPU-fixture,
 consumed-review and old-fallback files (61,391,969bytes). Original run helpers
 and the fallback's9799 source inputs were retrieved and hash-verified from Git

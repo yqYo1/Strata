@@ -137,6 +137,25 @@
       "binary_receipt_hashes_match": true,
       "retirement_authorized": false,
       "limits": "Receipt integrity is not source recovery. Seed chains, similarly named build proofs and declared commits do not qualify these final binaries. All six roots retain provenance holds; detailed missing recovery steps remain in the hashed review."
+    },
+    "main_recovery_attempt": {
+      "state": "partial_source_recovery_dependency_and_recipe_holds_remain",
+      "source_lookup": "Read/hash historical src/prefill/prefill.cpp and sycl/src/prefill/prefill.cpp Git blobs; no original source or dependency copy deleted.",
+      "historical_blobs_checked": 246,
+      "exact_source_blobs": {
+        "3e36c1ecf97e1af8802d1c16d9c55055c2f585a450ea80da2895fd37458d9f31": "4c40208d512032e73e583e7de159eb7a7d0eb777",
+        "093af5fbe3605da6f94c55f6da38a0b4afbb5cc95df5d12ce7eec98475c9c41e": "ed4d3ed1b1a84a7225a557c9e9df26efd7d1a53c",
+        "e0685a85bc391b6ef916c33ea3f959680088832b8a9a7d706668acba3c47f8d0": null,
+        "1a6598a158e0b11e79c7a9f93ba7e452e3c316f108e38a07ed88c88a04cc8b72": null
+      },
+      "primary_exact_binary_hits_in_archive": {
+        "d3861dd547081928443f683501dd209c744712b2accffc80cd9f95bc7f5d0e9a": [],
+        "6361e706e2313049f8697e6cabe36a318737d541db323ba60fe13f6a5a223e09": []
+      },
+      "holds": "Two333-pin receipts each match332 declared-commit blobs, with one prefill.cpp override; final source blob lookup above. Skip-order and phase-validity source lookup does not recover their unlocated controllers, linked inputs or complete dependency recipe. Primary consumer roots still lack exact build/source records. No root is retired or a qualified baseline.",
+      "next_action": "Recover the exact overrides/controllers and each linked product source recipe before retiring the named roots; keep bounded new component work independent of these unqualified legacy artifacts.",
+      "lookup_head": "29e6d1f085b1249b7f60babeadcd4b8f059ae3ce",
+      "archive_searched": "8063aacc6749d18089f7a53db5d3e47b745f348c"
     }
   },
   "host_counter_model_runtime_qualification": {
@@ -168,5 +187,27 @@
     "binary_sha256": "8a345b0c56bde695eaa72faaceae68c005a1533eee491558134b597004b6064a",
     "manifest": "bench/results/2026-10-15-pr6-recovery-audit/build-retirement-20261018.json",
     "state": "retired_after_CPU_off_on39K_and_warm78K_qualification"
+  },
+  "retained_validation_reference": {
+    "source_commit": "7829568c61f4a47e5c1b06497f59e41a3417a5fb",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-down-scatter-v1/strata",
+      "bytes": 20573552,
+      "sha256": "bb8b3f097837026528699031de72b2fae5f779f095efda96161fce037847f5d0"
+    },
+    "fixtures": {
+      "sycl_gdn_columns_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-down-scatter-v1/sycl_gdn_columns_bench",
+        "bytes": 255752,
+        "sha256": "5b4d1714f89e4dd6e1c6c93d6e76b276f081f74a5b7694c3c8c326accf0be0f9"
+      }
+    },
+    "original_build_record": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-down-scatter-v1/build-record.json",
+      "sha256": "5a0430556e8c32b81ce835653ce4997175602bcdd277b4a390481ac97bb3a054"
+    },
+    "input_blobs_recovered_and_verified": 9801,
+    "qualification_reference": "bench/results/2026-10-15-pr6-recovery-audit/prefill-host-attribution-current.json at80c867368c3a0b7a898cde1afa2dda43e3fb9246",
+    "consumer": "Known-good engine/GDN fallback while the isolated Down/scatter component and any later model route are qualified; counts as one retained generation. Retire only after replacement selection."
   }
 }

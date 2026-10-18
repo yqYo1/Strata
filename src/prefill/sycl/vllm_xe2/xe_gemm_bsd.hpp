@@ -36,15 +36,19 @@
 // Only the 16-bit beta-zero tile is retained. Full Intel BSD notice above.
 // Changes: clean namespace/name, remove unused typedefs/scales/bias/FP8,
 // bound initial prefetch by actual K tiles, trim unrelated includes.
+// Strata extension: an explicit final-fragment epilogue, with dense output
+// retained as the default. The inherited DPAS loop and its barriers are shared.
 #include <sycl/sycl.hpp>
 #include <cute/tensor.hpp>
 #include <cute/atom/mma_atom.hpp>
 #include <cute/atom/copy_traits_xe_2d.hpp>
 #include <cute/util/xe_split_barrier.hpp>
 #include <cutlass/numeric_types.h>
+#include <type_traits>
 
 namespace strata::experimental::vllm_xe2_native16::derived {
 using namespace cute;
+struct DenseOutput {};
 template <
     class GmemTiledCopyA,
     class GmemTiledCopyB,
@@ -52,13 +56,15 @@ template <
     class ATensor,
     class BTensor,
     class DTensor,
-    class TiledMMA>
+    class TiledMMA,
+    class Epilogue = DenseOutput>
 CUTE_DEVICE void xe_gemm_beta0(
     ATensor const& A,  // (M,K)
     BTensor const& B,  // (N,K)
     DTensor& C,  // (M,N)
     Coord<int, int, cute::Underscore, int> blk_coord,
-    TiledMMA const& mma) {
+    TiledMMA const& mma,
+    Epilogue const& epilogue = {}) {
   auto item = sycl::ext::oneapi::this_work_item::get_nd_item<3>();
   auto wg_m = get<0>(blk_coord);
   auto wg_n = get<1>(blk_coord);
@@ -80,12 +86,10 @@ CUTE_DEVICE void xe_gemm_beta0(
 
   auto copy_a = get_block_2d_copy_A<GmemTiledCopyA>(mma, A);
   auto copy_b = get_block_2d_copy_B<GmemTiledCopyB>(mma, B);
-  auto copy_c = get_block_2d_copy_D<GmemTiledCopyC>(mma, C);
 
   auto thr_mma = mma.get_slice(local_id);
   auto thr_copy_a = copy_a.get_slice(local_id);
   auto thr_copy_b = copy_b.get_slice(local_id);
-  auto thr_copy_c = copy_c.get_slice(local_id);
 
   auto tCrA = thr_mma.partition_sg_fragment_A(gA(_, _, 0));
   auto tCrB = thr_mma.partition_sg_fragment_B(gB(_, _, 0));
@@ -98,8 +102,6 @@ CUTE_DEVICE void xe_gemm_beta0(
 
   /* Partition C */
   auto tCrC = thr_mma.partition_sg_fragment_C(gC);
-  auto tCrC_out = thr_copy_c.partition_sg_fragment_S(gC);
-  auto tCgC = thr_copy_c.partition_D(gC);
 
   auto prefetch_a = make_block_2d_prefetch(copy_a);
   auto prefetch_b = make_block_2d_prefetch(copy_b);
@@ -144,8 +146,21 @@ CUTE_DEVICE void xe_gemm_beta0(
     barrier_wait(barrier_scope);
   }
 
-  reorder(tCrC, tCrC_out);
-  copy(copy_c, tCrC_out, tCgC);
+  if constexpr (std::is_same_v<Epilogue, DenseOutput>) {
+    auto copy_c = get_block_2d_copy_D<GmemTiledCopyC>(mma, C);
+    auto thr_copy_c = copy_c.get_slice(local_id);
+    auto tCrC_out = thr_copy_c.partition_sg_fragment_S(gC);
+    auto tCgC = thr_copy_c.partition_D(gC);
+    reorder(tCrC, tCrC_out);
+    copy(copy_c, tCrC_out, tCgC);
+  } else {
+    // partition_fragment_C constructs tCrC from the shape of partition_C.
+    // Therefore the per-thread fragment and these logical coordinates have
+    // the same element order. No guessed lane/subgroup-to-M/N arithmetic.
+    auto coordinates = thr_mma.partition_C(gC);
+    static_assert(decltype(size(coordinates))::value == decltype(size(tCrC))::value);
+    epilogue(tCrC, coordinates);
+  }
 }
 
 } // namespace strata::experimental::vllm_xe2_native16::derived
