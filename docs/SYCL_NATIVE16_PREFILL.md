@@ -1187,3 +1187,15 @@ descriptor. Code size and static metadata do not establish JIT behavior,
 complete ABI equivalence, occupancy, instruction-cache pressure or speed.
 Use the pending timing cohort to decide this candidate; raw logs/JIT and any
 extra comparison generation are reviewed only after owned work closes.
+
+While this cohort is frozen, the benchmark client adds minimum actual-input
+sizes98304 and131072 in source`10a18c2e7`; its source files are outside this
+component build/run's pinned inputs. Run the maintained client/evidence tests
+after the owned GPU cohort closes, before using either size. The first longer
+screen should use98304 with the current131072 context/resident-KV setting,
+keeping the selected engine route, chunk and other placement settings fixed.
+This asks whether amortizing fixed work over more input improves throughput;
+it is not a same-workload kernel speedup. Keep first-use and subsequent requests
+separate and record actual counts. A131072-minimum screen needs a larger
+context allocation and its explicit capacity/boundary check first. Neither
+screen establishes physical262144-context or sustained decode qualification.

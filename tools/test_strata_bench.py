@@ -43,7 +43,7 @@ class BenchmarkTest(unittest.TestCase):
                      patch.object(suite, "prefill_prompt", return_value="fixed test prompt"):
                     suite.run_prefill_only()
                 self.assertEqual(chat.call_count, 2)  # short warmup and one long request
-                self.assertTrue(all(call.args[4] == 24 and call.args[5] is True
+                self.assertTrue(all(call.args[3] == 24 and call.args[4] is True
                                     for call in chat.call_args_list))
                 result = suite.out["prefill_only"]
                 self.assertTrue(result["complete"])
