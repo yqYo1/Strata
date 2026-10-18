@@ -457,6 +457,30 @@ def summarize_source_view():
         receipt_revision = git('log', '-1', '--format=%H', '--', path).decode().strip()
         guards.require(json.loads(git('show', receipt_revision + ':' + path)) == current,
                        'final cohort does not match its original result commit')
+        original_build = json.loads(git('show', receipt_revision + ':' + str(BUILD.relative_to(P))))
+        full_build = json.loads((B / 'main-native-gdn-engine/record.json').read_text())
+        guards.require(all(full_build[k] == original_build[k] for k in (
+            'source_commit', 'binary', 'compiler', 'configure_argv', 'environment', 'recipe_reference',
+            'compile_database_sha256', 'configured_compile_entries', 'targets', 'fixtures')) and
+            full_build['complete'] and full_build['passed'] and full_build['ownership_closed'] and
+            not full_build['active'] and full_build['binary'] == current['binary'] and
+            full_build['source_commit'] == current['build_source_commit'],
+            'original build receipt or measured executable identity differs')
+        input_sources = [full_build['project'], *full_build['dependencies']]
+        guards.require(len(input_sources) == len(original_build['inputs']), 'incomplete build source sets')
+        recovered_build_inputs = 0
+        for source, recorded in zip(input_sources, original_build['inputs']):
+            pins = source['source_sha256']
+            recovered = {n: hashlib.sha256(data).hexdigest() for n, data in
+                         blobs(Path(source['root']), source['revision'], sorted(pins))}
+            guards.require({k: v for k, v in source.items() if k != 'source_sha256'} == recorded and
+                recovered == pins and len(pins) == recorded['count'] and
+                hashlib.sha256(json.dumps(pins, sort_keys=True, separators=(',', ':')).encode()).hexdigest() ==
+                recorded['aggregate_sha256'], 'original engine/dependency source is not recoverable')
+            recovered_build_inputs += len(pins)
+        recipe = full_build['recipe_reference']
+        guards.require(hashlib.sha256(git('show', full_build['project']['revision'] + ':' +
+            recipe['path'])).hexdigest() == recipe['sha256'], 'original build recipe is not recoverable')
         records, revision, seen = [], receipt_revision, set()
         while len(records) < 6:
             guards.require(revision not in seen, 'cyclic source-view cohort history')
@@ -560,6 +584,8 @@ def summarize_source_view():
             requested_expert_payload_matches_in_all_pairs=all(p['requested_payload_matches'] for p in pairs),
             candidate_process_medians=candidate_medians, prefill1000_target_passed=all(x >= 1000 for x in candidate_medians),
             exact_original_benchmark_inputs_recovered=True, frozen_input_count=len(source_set),
+            exact_original_build_inputs_recovered=recovered_build_inputs,
+            original_build_source_commit=full_build['source_commit'], original_recipe=recipe,
             matched_engine_configuration_workloads_and_guarded_runtime=True,
             original_outcomes_unchanged=True, GPU_executed=False, model_executed=False,
             decision='Retain immutable source views as an opt-in for further qualification; default stays off.' if selected else
