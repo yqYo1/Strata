@@ -67,8 +67,8 @@ def emitted_resources(text, trace):
 
 
 def main():
-    guards.require(len(sys.argv) == 2 and sys.argv[1] in ('smoke', 'resources', 'overview', 'memory'),
-                   'use profile_attention.py smoke|resources|overview|memory')
+    guards.require(len(sys.argv) == 2 and sys.argv[1] in ('smoke', 'resources', 'isa', 'overview', 'memory'),
+                   'use profile_attention.py smoke|resources|isa|overview|memory')
     mode = sys.argv[1]
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -96,7 +96,7 @@ def main():
         settings = json.loads(SETTINGS.read_text())
         for path, item in settings['runtime_elfs'].items():
             guards.require(digest(path) == item['sha256'], 'runtime changed: ' + path)
-        if mode == 'smoke' or (mode == 'resources' and not ROOT.exists()):
+        if mode == 'smoke' or (mode in ('resources', 'isa') and not ROOT.exists()):
             guards.require(not ROOT.exists(), 'inspect/close the existing profile; no automatic replacement')
             ROOT.mkdir(mode=0o700)
             record = dict(source_commit=revision, input_sha256=inputs, fixture=fixture,
@@ -107,7 +107,7 @@ def main():
             record = json.loads(RESULT.read_text())
             guards.require(record['fixture'] == fixture and record['ownership_closed'] and not record['active'],
                            'matching, fully closed prior collection required')
-            if mode != 'resources':
+            if mode not in ('resources', 'isa'):
                 guards.require(record['passed'] and record['hardware_metrics_qualified'],
                                'prior successful collection with explicitly reviewed hardware coverage required')
         guards.require(not (ROOT / mode).exists(), 'mode already launched; inspect its existing receipt')
@@ -116,7 +116,7 @@ def main():
         for name in ('tmp', 'cache', 'user'):
             (run / name).mkdir()
         env = dict(settings['environment'])
-        if mode not in ('smoke', 'resources'):
+        if mode not in ('smoke', 'resources', 'isa'):
             for key in list(env):
                 if key.startswith('UR_LOG_') or key in ('UR_ENABLE_LAYERS', 'STRATA_TRACE'):
                     del env[key]
@@ -127,11 +127,17 @@ def main():
                    '-knob', 'gpu-sampling-interval=1', '-data-limit=16', '-user-data-dir', str(run / 'user'),
                    '-result-dir', str(run / 'vtune'), '--', fixture['path'],
                    '--smoke' if mode == 'smoke' else '--component']
-        if mode == 'resources':
+        if mode in ('resources', 'isa'):
             # Dump metadata only, without changing optimization or dumping IR/ISA.
             # Intel IGC documentation/configuration_flags.md: release-available.
             env['IGC_DumpZEInfoToConsole'] = '1'
             command = [fixture['path'], '--smoke']
+        if mode == 'isa':
+            # ShaderDumpEnable emits IR/vISA/GenISA without the early exit of
+            # DumpASMToConsole. No override or optimization control is set.
+            # Owner monitors run (the parent of owned), including these files.
+            (run / 'isa').mkdir()
+            env.update(IGC_ShaderDumpEnable='1', IGC_DumpToCustomDir=str(run / 'isa'))
         boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
         journal = subprocess.check_output(['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True)
         cursor = next(x.split(': ', 1)[1] for x in journal.splitlines() if x.startswith('-- cursor: '))
@@ -167,7 +173,7 @@ def main():
                 owner_error=entry.get('error')))
             record.update(complete=True, passed=bool(native_pass and collector_ok),
                           hardware_metrics_qualified=False)
-            if mode == 'resources':
+            if mode in ('resources', 'isa'):
                 record['emitted_metadata_observed'] = 'grf_count:' in text and 'slm_size:' in text
                 record['passed'] = record['passed'] and record['emitted_metadata_observed']
                 record['emitted_resource_summary'] = dict(kernels=emitted_resources(stdout, stderr),
@@ -175,6 +181,15 @@ def main():
                     limits=['Compiler metadata and traced dynamic arguments, not hardware counters or measured occupancy.',
                             'Static slm_size excludes separately supplied dynamic-local arguments; hardware rounding is unmeasured.',
                             'Compiled variants without a successful traced launch are not executed-path evidence.'])
+            if mode == 'isa':
+                files = sorted(p for p in (run / 'isa').rglob('*') if p.is_file())
+                guards.require(all(not p.is_symlink() for p in files), 'unexpected shader dump link')
+                record['isa_files'] = [dict(path=str(p.relative_to(ROOT)), bytes=p.stat().st_size,
+                                            sha256=digest(p)) for p in files]
+                record['isa_question'] = ('Match executed attention kernels to their K load/store lowering; '
+                    'typed four-element source does not establish emitted transaction width. '
+                    'Retire dumps after extracting the current candidate decision; not hardware traffic counters.')
+                guards.require(any(p.suffix in ('.asm', '.visaasm') for p in files), 'no ISA dump observed')
         except BaseException as error:
             record['error'] = str(error)
         finally:

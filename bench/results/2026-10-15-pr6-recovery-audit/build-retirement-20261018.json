@@ -1,73 +1,55 @@
 {
   "schema": "strata-artifact-retirement-v2",
-  "completed_retirement_archive": {
-    "commit": "6ae5b81a7285906bf64dec3b54d23714150f1441",
-    "path": "bench/results/2026-10-15-pr6-recovery-audit/build-retirement-20261018.json",
-    "sha256": "d4c6ae95f1b4cd998b63cdcfbf20279961c58fae14dfef135ad0c354ca90e3bf",
-    "bytes": 1136609,
-    "reason": "Completed per-file retirement details remain in reachable Git; no current consumer needs them checked out. Original recovery/failure evidence preserved."
+  "state": "retired",
+  "previous_decision_archive": {
+    "commit": "a6dc8b975",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/build-retirement-20261018.json"
   },
-  "closed_cached_query_ab": {
-    "state": "retired",
-    "groups": [
-      {
-        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-qcache-base-v1",
-        "file_count": 70,
-        "bytes": 12692150,
-        "result_commit": "c5442179d",
-        "result_path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-cached-query-model-current.json",
-        "original_passed": true
-      },
-      {
-        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-qcache-v1",
-        "file_count": 70,
-        "bytes": 12693877,
-        "result_commit": "31a03f3f9",
-        "result_path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-cached-query-model-current.json",
-        "original_passed": true
-      }
-    ],
-    "file_count": 140,
-    "bytes": 25386027,
-    "jit_elf_files": 106,
-    "verified_source_inputs": [
-      {
-        "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-        "revision": "77407e65f41b24cea19b9b63d44ea4355633672e",
-        "count": 476,
-        "aggregate_sha256": "717b9afbf6de691f28927f6a19abed33a94af945013391c640c56225e056337f"
-      },
-      {
-        "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
-        "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
-        "count": 3608,
-        "aggregate_sha256": "322862d213ed722d6500da0b58a1b7fffff53aa0de77d7f2e8ba685c653a0d9f"
-      },
-      {
-        "root": "/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
-        "revision": "87f6850680a580654b9ea2c80dbc01aeb36ad231",
-        "count": 5703,
-        "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
-      }
-    ],
-    "compiler": {
-      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-      "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
+  "evidence_commit": "23b0e7bb8",
+  "source_recovery": [
+    {
+      "root": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "revision": "52f047586416444c07123374ee5a13550c2e6e40",
+      "count": 485,
+      "aggregate_sha256": "d9ec2232004548a9ef8512af2d99ede55eda06397f8b424bb3a8c662d8501414"
     },
-    "runtime_recipe": "tools/sycl/measurement_environment.json",
-    "reason": "Matched comparison closes at6ae5b81a7; retain compact results and current engine/fixtures, retire successful raw output and per-run caches.",
-    "deleted_files": 140,
-    "file_manifest": {
-      "commit": "f615fde1786a7d16e12886fc9d2d34f4bd83bb4f",
-      "path": "bench/results/2026-10-15-pr6-recovery-audit/build-retirement-20261018.json",
-      "sha256": "d1133bd73e5f01380a9b832c5ee50266f4f0a856293df3e78071581e062dbd84",
-      "rows": "closed_cached_query_ab.files"
+    {
+      "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+      "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+      "count": 3608,
+      "aggregate_sha256": "322862d213ed722d6500da0b58a1b7fffff53aa0de77d7f2e8ba685c653a0d9f"
     },
-    "all_manifest_paths_absent": true
-  },
+    {
+      "root": "/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+      "revision": "87f6850680a580654b9ea2c80dbc01aeb36ad231",
+      "count": 5703,
+      "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
+    },
+    {
+      "root": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "revision": "112071c5cb78e7b983272a734216f2081a946f96",
+      "count": 485,
+      "aggregate_sha256": "8a50780bb6d0ba0f7312b23980c99621af2100a234a91fb930152b6271fa05e3"
+    }
+  ],
+  "source_recovery_note": "All current build inputs individually recovered/hash-verified; old112 project path set verified by its original count+aggregate, and dependencies equal the individually recovered current records. Benchmark helper inputs also recovered per arm.",
+  "roots": [
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-kvec4-check-v1",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-kvec4-base-v1",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-kvec4-v1",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-current",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-hardware-profile-current"
+  ],
+  "file_count": 327,
+  "bytes": 72073080,
   "retained_exceptions": [
-    "Current known-good main-native-gdn-engine remains. Extra main-qsa-score-gemm-entry-engine-build-v2 has no imminent A/B consumer. Retirement audit verified476project+207TLA original Git inputs and all71installed compiler/runtime pins; inherited GGML dependency recipe/source closure still needs reconciliation before deleting the last old build. Finish this before the next build; do not retain it as a perpetual fallback.",
+    "Current known-good main-native-gdn-engine and its imminent comparison fixtures only; the unused extra generation is retired.",
     "Protected untracked provenance holds and legacy main-primary-native-build-root-v1 with unresolved missing source inputs.",
     "Active Orca research reports and review inputs."
-  ]
+  ],
+  "keep": "Current main-native-gdn-engine executable/fixtures and source/dependency worktrees; VMM report/review until placement owner census; existing unresolved provenance holds unchanged.",
+  "manifest_archive_commit": "66980745b",
+  "manifest_archive_path": "bench/results/2026-10-15-pr6-recovery-audit/build-retirement-20261018.json",
+  "deleted_count": 327,
+  "deleted_bytes": 72073080
 }

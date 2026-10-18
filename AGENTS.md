@@ -28,6 +28,11 @@ than keeping contradictory versions. Do not infer that an unfinished experiment,
 unverified feature or research proposal became adopted during a context change.
 Read relevant compact committed results before retrieving historical detail.
 Do not load the research library or old raw logs wholesale as a resume procedure.
+Before launching a measurement, adopting a change or deleting artifacts, check
+the applicable sections below again against the actual inputs and current
+consumer. A startup read alone does not replace these action-time checks.
+Pass the applicable rules and report-index location to each delegated task;
+delegation does not transfer Main's responsibility for integration and testing.
 
 This is a personal fork based on **Niko1221/Strata**, optimized for this PC's
 Intel GPU, CPU and RAM. Niko1221/Strata is the only upstream. Because of the

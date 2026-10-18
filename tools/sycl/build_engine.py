@@ -77,7 +77,8 @@ def main():
     targets = ['strata']
     if attention:
         targets += ['sycl_qsa_bf16_late_flags_test', 'sycl_qsa_bf16_prefix_optimized_test',
-                    'sycl_qsa_bf16_prefix_qcache_test', 'sycl_qsa_bf16_prefix_qcache_bench']
+                    'sycl_qsa_bf16_prefix_qcache_test', 'sycl_qsa_bf16_prefix_kvec4_test',
+                    'sycl_qsa_bf16_prefix_qcache_bench']
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
@@ -107,6 +108,7 @@ def main():
                             reason='Closed unused comparison engine; original source/recipe recovered from Git. '
                                    'Reuse its cache for the immediate corrected build, not a retained old generation.')
         project = pin(P, ['CMakeLists.txt', 'cmake', 'include', 'src', 'tests',
+                          'third_party', 'bench/sycl',
                           'tools/sycl/build_engine.py', 'tools/sycl/measurement_owner.py',
                           'tools/sycl/check_attention.py',
                           'tools/sycl/measurement_guards.py', str(SETTINGS.relative_to(P)),

@@ -1,17 +1,17 @@
 {
-  "source_commit": "e4c2c4db3f7147f909fd3a9cb9230a29529abd90",
+  "source_commit": "b072f3df34632ff120eba6a0952029d66b9a2662",
   "input_sha256": {
-    "tools/sycl/profile_attention.py": "9e6ba34f84b2438021d3ec577f427c7253dd00f72de66f56054f3b4574c91b41",
+    "tools/sycl/profile_attention.py": "34e6a04d3590659fb178be52a5c0f3976016819048e8db973a4300846672b47b",
     "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
     "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
     "tools/sycl/measurement_environment.json": "637cc6f8f410cf8400fd7b4598182e2e91d1c5cf907ef428e73321faf0aa47fa",
-    "bench/results/2026-10-15-pr6-recovery-audit/qsa-attention-current.json": "184c0c104196a7e98a2b48bb9bbdcc9ad657d20ef469aa3e97f485c59124fb91"
+    "bench/results/2026-10-15-pr6-recovery-audit/qsa-attention-current.json": "e6b9fe9ebb97b63b92a748b822c60d7ac2ada987786187d465e5c6989cc238b8"
   },
   "fixture": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_qcache_bench",
-    "sha256": "d7d32e4b20e3824bd28c05469b47231d00f3e6c2e7899eb3baf264021930885e"
+    "sha256": "d9ff8dad4992b189000e2fff0e8ee6c9621cf65bfc9a8df9b602725721b2aa6b"
   },
-  "build_source_commit": "feb927fa36b3432a64730a8fb12e8abed09ce310",
+  "build_source_commit": "112071c5cb78e7b983272a734216f2081a946f96",
   "driver": {
     "pci": "/sys/bus/pci/devices/0000:05:00.0",
     "driver": "xe",
@@ -22,18 +22,18 @@
   },
   "checks": [
     {
-      "mode": "resources",
+      "mode": "isa",
       "command": [
         "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_qcache_bench",
         "--smoke"
       ],
-      "recipe_commit": "e4c2c4db3f7147f909fd3a9cb9230a29529abd90",
+      "recipe_commit": "b072f3df34632ff120eba6a0952029d66b9a2662",
       "input_sha256": {
-        "tools/sycl/profile_attention.py": "9e6ba34f84b2438021d3ec577f427c7253dd00f72de66f56054f3b4574c91b41",
+        "tools/sycl/profile_attention.py": "34e6a04d3590659fb178be52a5c0f3976016819048e8db973a4300846672b47b",
         "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
         "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
         "tools/sycl/measurement_environment.json": "637cc6f8f410cf8400fd7b4598182e2e91d1c5cf907ef428e73321faf0aa47fa",
-        "bench/results/2026-10-15-pr6-recovery-audit/qsa-attention-current.json": "184c0c104196a7e98a2b48bb9bbdcc9ad657d20ef469aa3e97f485c59124fb91"
+        "bench/results/2026-10-15-pr6-recovery-audit/qsa-attention-current.json": "e6b9fe9ebb97b63b92a748b822c60d7ac2ada987786187d465e5c6989cc238b8"
       },
       "environment": {
         "PATH": "/usr/bin:/bin",
@@ -56,9 +56,11 @@
         "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
         "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
         "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-hardware-profile-current/resources/tmp",
-        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-hardware-profile-current/resources/cache",
-        "IGC_DumpZEInfoToConsole": "1"
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-hardware-profile-current/isa/tmp",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-hardware-profile-current/isa/cache",
+        "IGC_DumpZEInfoToConsole": "1",
+        "IGC_ShaderDumpEnable": "1",
+        "IGC_DumpToCustomDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-hardware-profile-current/isa/isa"
       },
       "collector_exit_code": 0,
       "collector_ok": true,
@@ -75,7 +77,7 @@
   "consumer": "Current QSA hardware resource attribution; retire raw collector output after extraction.",
   "model_performance_measured": false,
   "hardware_metrics_qualified": false,
-  "mode": "resources",
+  "mode": "isa",
   "complete": true,
   "passed": true,
   "active": false,
@@ -100,11 +102,13 @@
     "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
     "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
     "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-hardware-profile-current/resources/tmp",
-    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-hardware-profile-current/resources/cache",
-    "IGC_DumpZEInfoToConsole": "1"
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-hardware-profile-current/isa/tmp",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-hardware-profile-current/isa/cache",
+    "IGC_DumpZEInfoToConsole": "1",
+    "IGC_ShaderDumpEnable": "1",
+    "IGC_DumpToCustomDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-hardware-profile-current/isa/isa"
   },
-  "current_recipe_commit": "e4c2c4db3f7147f909fd3a9cb9230a29529abd90",
+  "current_recipe_commit": "b072f3df34632ff120eba6a0952029d66b9a2662",
   "permissions": {
     "dev/xe/observation_paranoid": "1",
     "kernel/perf_event_paranoid": "4",
@@ -119,27 +123,7 @@
   "emitted_resource_summary": {
     "kernels": [
       {
-        "kernel": "_ZTSZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvEUlN4sycl3_V17nd_itemILi1EEEE_",
-        "execution_env": {
-          "grf_count": "128",
-          "has_4gb_buffers": "true",
-          "has_no_stateless_write": "true",
-          "indirect_stateless_count": "25",
-          "inline_data_payload_size": "32",
-          "offset_to_skip_per_thread_data_load": "128",
-          "simd_size": "32",
-          "subgroup_independent_forward_progress": "true",
-          "eu_thread_count": "8"
-        },
-        "per_thread_memory_buffers": null,
-        "observed_launches": {
-          "launches": 8,
-          "local_arguments": [],
-          "dynamic_local_bytes": 0
-        }
-      },
-      {
-        "kernel": "_ZTSZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0ELb1EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvEUlN4sycl3_V17nd_itemILi1EEEE_",
+        "kernel": "_ZTSZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0ELb1ELb1EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvEUlN4sycl3_V17nd_itemILi1EEEE_",
         "execution_env": {
           "grf_count": "128",
           "has_4gb_buffers": "true",
@@ -159,68 +143,27 @@
         }
       },
       {
-        "kernel": "_ZTSN6strata7kernels12_GLOBAL__N_112PrefixKernelIZZNS0_L17prefix_batch_implILi33ELb0ELb0ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiSA_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESP_EUlNSN_7nd_itemILi1EEEE_Lb0EEE",
+        "kernel": "_ZTSZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvEUlN4sycl3_V17nd_itemILi1EEEE_",
         "execution_env": {
-          "barrier_count": "1",
           "grf_count": "128",
           "has_4gb_buffers": "true",
-          "has_dpas": "true",
           "has_no_stateless_write": "true",
-          "require_disable_eufusion": "true",
-          "indirect_stateless_count": "4",
+          "indirect_stateless_count": "25",
           "inline_data_payload_size": "32",
-          "offset_to_skip_per_thread_data_load": "192",
-          "simd_size": "16",
-          "slm_size": "32",
+          "offset_to_skip_per_thread_data_load": "128",
+          "simd_size": "32",
           "subgroup_independent_forward_progress": "true",
           "eu_thread_count": "8"
         },
         "per_thread_memory_buffers": null,
         "observed_launches": {
           "launches": 8,
-          "local_arguments": [
-            {
-              "index": 0,
-              "bytes": 8192
-            },
-            {
-              "index": 1,
-              "bytes": 16384
-            },
-            {
-              "index": 2,
-              "bytes": 1024
-            },
-            {
-              "index": 4,
-              "bytes": 64
-            },
-            {
-              "index": 5,
-              "bytes": 64
-            },
-            {
-              "index": 6,
-              "bytes": 64
-            },
-            {
-              "index": 14,
-              "bytes": 256
-            },
-            {
-              "index": 16,
-              "bytes": 2112
-            },
-            {
-              "index": 17,
-              "bytes": 64
-            }
-          ],
-          "dynamic_local_bytes": 28224
+          "local_arguments": [],
+          "dynamic_local_bytes": 0
         }
       },
       {
-        "kernel": "_ZTSN6strata7kernels12_GLOBAL__N_112PrefixKernelIZZNS0_L17prefix_batch_implILi32ELb0ELb0ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiSA_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESP_EUlNSN_7nd_itemILi1EEEE_Lb0EEE",
+        "kernel": "_ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0ELb1ELb1EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_",
         "execution_env": {
           "barrier_count": "1",
           "grf_count": "128",
@@ -228,36 +171,16 @@
           "has_dpas": "true",
           "has_no_stateless_write": "true",
           "require_disable_eufusion": "true",
-          "indirect_stateless_count": "4",
+          "indirect_stateless_count": "5",
           "inline_data_payload_size": "32",
           "offset_to_skip_per_thread_data_load": "192",
           "simd_size": "16",
           "slm_size": "32",
-          "spill_size": "1856",
+          "spill_size": "2368",
           "subgroup_independent_forward_progress": "true",
           "eu_thread_count": "8"
         },
-        "per_thread_memory_buffers": "- type:            scratch\n        usage:           single_space\n        size:            2048",
-        "observed_launches": null
-      },
-      {
-        "kernel": "_ZTSN6strata7kernels12_GLOBAL__N_112PrefixKernelIZZNS0_L17prefix_batch_implILi33ELb0ELb0ELb1EEEbPKtRKNS0_12QsaAttnPoolsEPKiSA_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESP_EUlNSN_7nd_itemILi1EEEE_Lb1EEE",
-        "execution_env": {
-          "barrier_count": "1",
-          "grf_count": "256",
-          "has_4gb_buffers": "true",
-          "has_dpas": "true",
-          "has_no_stateless_write": "true",
-          "require_disable_eufusion": "true",
-          "indirect_stateless_count": "4",
-          "inline_data_payload_size": "32",
-          "offset_to_skip_per_thread_data_load": "192",
-          "simd_size": "16",
-          "slm_size": "32",
-          "subgroup_independent_forward_progress": "true",
-          "eu_thread_count": "4"
-        },
-        "per_thread_memory_buffers": null,
+        "per_thread_memory_buffers": "- type:            scratch\n        usage:           single_space\n        size:            4096",
         "observed_launches": {
           "launches": 7,
           "local_arguments": [
@@ -296,11 +219,90 @@
           ],
           "dynamic_local_bytes": 20032
         }
+      },
+      {
+        "kernel": "_ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_",
+        "execution_env": {
+          "barrier_count": "1",
+          "grf_count": "128",
+          "has_4gb_buffers": "true",
+          "has_dpas": "true",
+          "has_no_stateless_write": "true",
+          "require_disable_eufusion": "true",
+          "indirect_stateless_count": "4",
+          "inline_data_payload_size": "32",
+          "offset_to_skip_per_thread_data_load": "192",
+          "simd_size": "16",
+          "slm_size": "32",
+          "spill_size": "2112",
+          "subgroup_independent_forward_progress": "true",
+          "eu_thread_count": "8"
+        },
+        "per_thread_memory_buffers": "- type:            scratch\n        usage:           single_space\n        size:            4096",
+        "observed_launches": {
+          "launches": 8,
+          "local_arguments": [
+            {
+              "index": 0,
+              "bytes": 16384
+            },
+            {
+              "index": 1,
+              "bytes": 1024
+            },
+            {
+              "index": 3,
+              "bytes": 64
+            },
+            {
+              "index": 4,
+              "bytes": 64
+            },
+            {
+              "index": 5,
+              "bytes": 64
+            },
+            {
+              "index": 13,
+              "bytes": 256
+            },
+            {
+              "index": 15,
+              "bytes": 2112
+            },
+            {
+              "index": 16,
+              "bytes": 64
+            }
+          ],
+          "dynamic_local_bytes": 20032
+        }
+      },
+      {
+        "kernel": "_ZTSZZN6strata7kernelsL17prefix_batch_implILi32ELb0ELb0ELb0ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_",
+        "execution_env": {
+          "barrier_count": "1",
+          "grf_count": "128",
+          "has_4gb_buffers": "true",
+          "has_dpas": "true",
+          "has_no_stateless_write": "true",
+          "require_disable_eufusion": "true",
+          "indirect_stateless_count": "4",
+          "inline_data_payload_size": "32",
+          "offset_to_skip_per_thread_data_load": "192",
+          "simd_size": "16",
+          "slm_size": "32",
+          "spill_size": "1920",
+          "subgroup_independent_forward_progress": "true",
+          "eu_thread_count": "8"
+        },
+        "per_thread_memory_buffers": "- type:            scratch\n        usage:           single_space\n        size:            2048",
+        "observed_launches": null
       }
     ],
     "raw_sha256": {
-      "vtune.stdout": "4bb420f370a0ff6cef4e338ade4a1f2e27cc25038c655c478cac4944a8c3de34",
-      "vtune.stderr": "184a95cf560ff5879e3193b4bae45efce833d1655fb0559775e9f12c405342bb"
+      "vtune.stdout": "201aedddd812f433bd85dfcfa790bb1579dedba3759430275ca6258ff0fc46b1",
+      "vtune.stderr": "a9af5297657543e9b4f9bbf2a0c6604e0fb1483f83622256f318285279a053f4"
     },
     "limits": [
       "Compiler metadata and traced dynamic arguments, not hardware counters or measured occupancy.",
@@ -308,6 +310,7 @@
       "Compiled variants without a successful traced launch are not executed-path evidence."
     ]
   },
+  "isa_question": "Match executed attention kernels to their K load/store lowering; typed four-element source does not establish emitted transaction width. Retire dumps after extracting the current candidate decision; not hardware traffic counters.",
   "ownership_closed": true,
   "fresh_faults": [],
   "boot_unchanged": true,
@@ -319,16 +322,77 @@
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
   },
-  "automatic_grf_summary": {
-    "baseline_grf": 128,
-    "candidate_grf": 256,
-    "baseline_eu_thread_count_metadata": 8,
-    "candidate_eu_thread_count_metadata": 4,
-    "baseline_dynamic_local_bytes": 28224,
-    "candidate_dynamic_local_bytes": 20032,
-    "either_spill_or_scratch_descriptor_present": false,
-    "limits": "Compiler allocation/launch metadata, not measured occupancy, physical traffic or performance. All component/speed/model decisions remain separate. Raw slm_size=32 unit/schema interpretation needs primary-source verification; do not equate it with total local memory.",
-    "both_static_slm_size_metadata": 32,
-    "static_slm_size_unit_verified": false
+  "executed_K_lowering": {
+    "artifact_identities": {
+      "OCL_asm8e7a457e18682e05_simd16_entry_0001.asm": {
+        "bytes": 1047535,
+        "sha256": "ab2327b9166f78e20e3eba4a9052874167ca268de4250be727312242114fbac3"
+      },
+      "OCL_asm8e7a457e18682e05_simd16_entry_0001.visa.ll": {
+        "bytes": 563603,
+        "sha256": "c6a093045067a58be85214530c8d0f4bb926485895ed7110a9b78094450bfeec"
+      },
+      "OCL_asm8e7a457e18682e05_simd16_entry_0004.asm": {
+        "bytes": 1038718,
+        "sha256": "bae41a6ddb24879c2a7ad64c31df4213d477647aa4b6274d6a0479c70df869bc"
+      },
+      "OCL_asm8e7a457e18682e05_simd16_entry_0004.visa.ll": {
+        "bytes": 560536,
+        "sha256": "993f2b021a3d453ba416474a592b134921cdff87991f8286d52cc542bd756da8"
+      }
+    },
+    "executed_kernels": {
+      "candidate": "//.kernel _ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0ELb1ELb1EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_",
+      "baseline": "//.kernel _ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_"
+    },
+    "candidate_K_loop": {
+      "genISA": [
+        "        load.ugm.d32.a64 (16|M0)  r13:1         [r10:2]            {I@1,$0} // ex_desc:0x0; desc:0x4100580 // $1170",
+        "        load.ugm.d32.a64 (16|M0)  r12:1         [r10:2+0x4]        {$1} // ex_desc:0x4000; desc:0x4100580 // $1171",
+        "        mov (16|M0)              r16.0<1>:w    r13.0<2;1,0>:w                   {$0.dst}             //  ALU pipe: int; $1172",
+        "        mov (16|M0)              r16.16<1>:w   r13.1<2;1,0>:w                                        //  ALU pipe: int; $1173",
+        "        sync.nop                             null                             {F@2}                  // $1174",
+        "        mov (16|M0)              r17.0<1>:w    r12.0<2;1,0>:w                   {$1.dst}             //  ALU pipe: int; $1174",
+        "        mov (16|M0)              r17.16<1>:w   r12.1<2;1,0>:w                   {F@1}                //  ALU pipe: int; $1175"
+      ],
+      "llvm": [
+        "  %vCastload = load i32, ptr addrspace(1) %IntToPtr2, align 2\t\t; visa id: 1170",
+        "  %997 = add i64 %996, 4",
+        "  %IntToPtr2503 = inttoptr i64 %997 to ptr addrspace(1)",
+        "  %vCastload504 = load i32, ptr addrspace(1) %IntToPtr2503, align 2\t\t; visa id: 1171",
+        "  %998 = bitcast i32 %vCastload to <2 x i16>\t\t; visa id: 1172",
+        "  %999 = bitcast i32 %vCastload504 to <2 x i16>\t\t; visa id: 1174",
+        "  br label %.loopexit, !stats.blockFrequency.digits !793, !stats.blockFrequency.scale !801\t\t; visa id: 1176"
+      ],
+      "interpretation": "Two d32 A64 loads per four consecutive uint16 values, at offsets0 and4; LLVM loads preserve align2. Four separate d16 SLM stores follow, at64byte strides. This is not one64bit message."
+    },
+    "baseline_K_loop": {
+      "genISA": [
+        "        load.ugm.d16u32.a64 (16|M0)  r12:1      [r10:2]            {I@1,$10} // ex_desc:0x0; desc:0x4100B80 // $1144",
+        "        mov (16|M0)              r14.0<1>:w    r12.0<2;1,0>:w                   {$10.dst}            //  ALU pipe: int; $1145"
+      ],
+      "interpretation": "One d16u32 A64 load per scalar K value, followed by one d16 SLM store."
+    },
+    "static_metadata": {
+      "candidate_instruction_count": 5718,
+      "baseline_instruction_count": 5679,
+      "candidate_spill_bytes": 2368,
+      "baseline_spill_bytes": 2112,
+      "GRF_each": 128,
+      "scratch_bytes_each": 4096,
+      "dynamic_local_argument_bytes_each": 20032
+    },
+    "full_valid_tile_source_accounting": "128work-items; baseline64 scalar iterations/lane versus candidate16 four-element iterations/lane. Emitted K instructions imply64 versus32 active-lane load issues for a full valid tile, same 128 bytes of K payload per lane. This is source/ISA accounting, not a measured counter.",
+    "limits": [
+      "Kernel identities match observed launched resource records; unused kernel dumps are excluded.",
+      "No bandwidth, physical DRAM traffic, occupancy, memory-level-parallelism or bank-conflict counters collected.",
+      "Reduced load issue count and loop repetition can explain a gain but do not alone prove the limiting resource.",
+      "Static instruction count and spill metadata are larger for the candidate, despite the clean component speed gain."
+    ],
+    "decision": "Proceed with opt-in model screen and retire raw dumps once compact extraction is committed; no additional ISA question remains for this candidate."
+  },
+  "raw_artifacts_retired": {
+    "manifest_commit": "66980745b",
+    "reason": "Executed K lowering/resource excerpts extracted; source recovery verified; all source/ISA readers settled."
   }
 }

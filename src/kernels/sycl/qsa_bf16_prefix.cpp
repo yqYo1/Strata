@@ -69,7 +69,7 @@ bool matrix_available(const sycl::device &device, size_t local_payload) {
 } // namespace
 
 template<int ScoreStride, bool TilePacked = false, bool SubgroupSoftmax = false,
-         bool CacheQueries = false>
+         bool CacheQueries = false, bool VectorK4 = false>
 static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
                              const int32_t *ids, const int32_t *steps,
                              int64_t cap, const QsaShapes &shape, uint16_t *output,
@@ -77,6 +77,7 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
                              int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream) {
   static_assert(!SubgroupSoftmax || !TilePacked);
   static_assert(!CacheQueries || !TilePacked);
+  static_assert(!VectorK4 || (CacheQueries && !TilePacked));
   // Reuse the qualified admission contract; it never enqueues or waits.
   if (!qsa_prompt_attn_bf16_validate(query, pools, ids, steps, cap, shape,
                                     output, queries, bounds, stream)) return false;
@@ -223,14 +224,33 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
       for (int64_t first = 0; first < count; first += Cells) {
         publish_rows(first);
         item.barrier(sycl::access::fence_space::local_space);
-        for (int i = tid; i < Cells * Dim; i += Workgroup) {
-          const int cell = i % Cells, d = i / Cells;
-          const int64_t row = rows[cell];
-          const uint16_t bits = row >= 0 ? packed.k[row * Dim + d] : uint16_t(0);
-          if constexpr (TilePacked)
-            kv[((d / 16) * 2 + cell / 16) * 256 + (d % 16 / 2) * 32 +
-               (cell % 16) * 2 + d % 2] = sycl::bit_cast<BFloat>(bits);
-          else kv[i] = sycl::bit_cast<BFloat>(bits);
+        if constexpr (VectorK4) {
+          for (int i = tid; i < Cells * (Dim / 4); i += Workgroup) {
+            const int cell = i % Cells, d = (i / Cells) * 4;
+            const int64_t row = rows[cell];
+            sycl::vec<uint16_t, 4> words{uint16_t(0)};
+            if (row >= 0) {
+              // Typed vec::load needs only alignof(uint16_t), not an
+              // eight-byte object or a type-punned uint64_t pointer.
+              words.load(0, sycl::address_space_cast<
+                  sycl::access::address_space::global_space,
+                  sycl::access::decorated::no>(packed.k + row * Dim + d));
+            }
+            // Retain parallel rows and contiguous cell stores within a
+            // subgroup. Each of the 8192 local destinations has one writer.
+            for (int j = 0; j < 4; ++j)
+              kv[(d + j) * Cells + cell] = sycl::bit_cast<BFloat>(uint16_t(words[j]));
+          }
+        } else {
+          for (int i = tid; i < Cells * Dim; i += Workgroup) {
+            const int cell = i % Cells, d = i / Cells;
+            const int64_t row = rows[cell];
+            const uint16_t bits = row >= 0 ? packed.k[row * Dim + d] : uint16_t(0);
+            if constexpr (TilePacked)
+              kv[((d / 16) * 2 + cell / 16) * 256 + (d % 16 / 2) * 32 +
+                 (cell % 16) * 2 + d % 2] = sycl::bit_cast<BFloat>(bits);
+            else kv[i] = sycl::bit_cast<BFloat>(bits);
+          }
         }
         if (tid < Cells) local_live |= rows[tid] >= 0;
         item.barrier(sycl::access::fence_space::local_space);
@@ -375,6 +395,13 @@ bool qsa_bf16_prefix_qcache_batch(const uint16_t *query, const QsaAttnPools &poo
     int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream) {
   return prefix_batch_impl<Cells + 1, false, false, true>(query, pools, ids, steps,
       cap, shape, output, queries, bounds, live_cells, scratch, stream);
+}
+bool qsa_bf16_prefix_kvec4_batch(const uint16_t *query, const QsaAttnPools &pools,
+    const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
+    uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
+    int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream) {
+  return prefix_batch_impl<Cells + 1, false, false, true, true>(query, pools, ids,
+      steps, cap, shape, output, queries, bounds, live_cells, scratch, stream);
 }
 // FP32 subgroup max/sum; current score33 row-major operands and state layout.
 bool qsa_bf16_prefix_subgroup_batch(const uint16_t *query, const QsaAttnPools &pools,

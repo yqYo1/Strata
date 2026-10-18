@@ -2730,6 +2730,10 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                             matrix_used = strata::kernels::qsa_bf16_prefix_tilepack_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
                                 {st.n_pages, st.n_slots}, p0 + T, m.qsa_prefix, m.cs);
+                        else if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_kvec4)
+                            matrix_used = strata::kernels::qsa_bf16_prefix_kvec4_batch(
+                                m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
+                                {st.n_pages, st.n_slots}, p0 + T, m.qsa_prefix, m.cs);
                         else if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_qcache)
                             matrix_used = strata::kernels::qsa_bf16_prefix_qcache_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
