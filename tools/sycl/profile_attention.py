@@ -29,8 +29,8 @@ def digest(path):
 
 
 def main():
-    guards.require(len(sys.argv) == 2 and sys.argv[1] in ('smoke', 'overview', 'memory'),
-                   'use profile_attention.py smoke|overview|memory')
+    guards.require(len(sys.argv) == 2 and sys.argv[1] in ('smoke', 'resources', 'overview', 'memory'),
+                   'use profile_attention.py smoke|resources|overview|memory')
     mode = sys.argv[1]
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -67,16 +67,18 @@ def main():
                           model_performance_measured=False, hardware_metrics_qualified=False)
         else:
             record = json.loads(RESULT.read_text())
-            guards.require(record['fixture'] == fixture and record['ownership_closed']
-                           and record['passed'] and record['hardware_metrics_qualified'],
-                           'prior successful collection with explicitly reviewed hardware coverage required')
+            guards.require(record['fixture'] == fixture and record['ownership_closed'] and not record['active'],
+                           'matching, fully closed prior collection required')
+            if mode != 'resources':
+                guards.require(record['passed'] and record['hardware_metrics_qualified'],
+                               'prior successful collection with explicitly reviewed hardware coverage required')
         guards.require(not (ROOT / mode).exists(), 'mode already launched; inspect its existing receipt')
         run = ROOT / mode
         run.mkdir()
         for name in ('tmp', 'cache', 'user'):
             (run / name).mkdir()
         env = dict(settings['environment'])
-        if mode != 'smoke':
+        if mode not in ('smoke', 'resources'):
             for key in list(env):
                 if key.startswith('UR_LOG_') or key in ('UR_ENABLE_LAYERS', 'STRATA_TRACE'):
                     del env[key]
@@ -87,6 +89,11 @@ def main():
                    '-knob', 'gpu-sampling-interval=1', '-data-limit=16', '-user-data-dir', str(run / 'user'),
                    '-result-dir', str(run / 'vtune'), '--', fixture['path'],
                    '--smoke' if mode == 'smoke' else '--component']
+        if mode == 'resources':
+            # Dump metadata only, without changing optimization or dumping IR/ISA.
+            # Intel IGC documentation/configuration_flags.md: release-available.
+            env['IGC_DumpZEInfoToConsole'] = '1'
+            command = [fixture['path'], '--smoke']
         boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
         journal = subprocess.check_output(['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True)
         cursor = next(x.split(': ', 1)[1] for x in journal.splitlines() if x.startswith('-- cursor: '))
@@ -110,15 +117,23 @@ def main():
             text = stdout + '\n' + stderr
             native_pass = 'fixture_status=PASS' in stdout
             collector_ok = supervision.closed(entry) and entry.get('exit_code') == 0
+            resource_lines = [s for s in text.splitlines() if re.search(
+                r'^\s*(?:-\s*)?(?:name|execution_env|grf_count|simd_size|slm_size|barrier_count|has_barrier|'
+                r'required_work_group_size|private_size|spill_size|scratch_size|per_thread_memory_buffers|'
+                r'allocation_type|memory_usage|size|is_fixed_size|slot):', s)]
             record['checks'].append(dict(mode=mode, command=command, collector_exit_code=entry.get('exit_code'),
                 collector_ok=collector_ok, target_reported_pass=native_pass,
                 ownership_closed=supervision.closed(entry),
+                emitted_resource_lines=resource_lines if mode == 'resources' else [],
                 target_cases=[s for s in stdout.splitlines() if s.startswith(('case ', 'fixture_status='))],
                 collector_diagnostics=[s for s in text.splitlines() if re.search(
                     r'(?i)vtune:|error|warning|permission|not supported|unsupported|no data|GPU Time|XVE|bandwidth', s)][-80:],
                 owner_error=entry.get('error')))
             record.update(complete=True, passed=bool(native_pass and collector_ok),
                           hardware_metrics_qualified=False)
+            if mode == 'resources':
+                record['emitted_metadata_observed'] = 'grf_count:' in text and 'slm_size:' in text
+                record['passed'] = record['passed'] and record['emitted_metadata_observed']
         except BaseException as error:
             record['error'] = str(error)
         finally:
