@@ -517,6 +517,20 @@ process variability;24 generated tokens do not qualify sustained decode, task
 quality, agent workloads, full-model262144 or conversation RESTORE. The component
 gain therefore translates to a small model gain and does not qualify1000PP.
 
+The next resource check uses the same qualified engine through
+`bench_engine.py prepare|run qsa-gdncols4-warm-census`: two fresh78K requests,
+thinking on, with the existing parameter-validated coarse/GDN/QSA/CPU/command
+observers enabled before process startup. Exact long-request route markers
+separate the records; each independently must pass all48-layer census and
+observer completion checks. Retain first-use aggregate/CPU observations and
+the subsequent request's detailed service samples. This tests whether first-use
+CPU cost distorted the previous attribution; both speeds remain profiled,
+and sampled service is not occupancy or full critical-path coverage. CPU parser
+checks reproduced retained48-layer GDN and678 command observations and rejected
+merged requests, missing windows/samples, incomplete or duplicate CPU headers,
+and a missing GDN aggregate. The reconstructed check used synthetic census
+distributions and absolute clock origins for already-retired raw logs.
+
 ## Optional GDN chunk64
 
 `STRATA_SYCL_PREFILL_GDN_CHUNK64=1` adds a separate experimental long-prefill

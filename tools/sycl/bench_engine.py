@@ -4,6 +4,7 @@ import fcntl
 import hashlib
 import json
 import math
+from collections import Counter
 from pathlib import Path
 import re
 import shutil
@@ -29,8 +30,123 @@ def digest(path):
         return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
+def compact_window_census(windows):
+    """Keep source-shaped work volume after checking every planned window."""
+    histogram = Counter()
+    first = windows[0]
+    for window in windows:
+        guards.require(all(window[k] == first[k] for k in
+            ('gu_nk', 'down_nk', 'gu_down_storage', 'hidden_storage')),
+            'inconsistent census geometry/storage')
+        guards.require(len(dict(window['job_rows_histogram'])) == len(window['job_rows_histogram']),
+                       'duplicate census histogram bin')
+        histogram.update(dict(window['job_rows_histogram']))
+    return dict(window_count=len(windows), layer_rows_jobs_columns=['layer', 'rows', 'jobs'],
+        layer_rows_jobs=[[w['layer'], w['rows'], w['jobs']] for w in windows],
+        aggregate_job_rows_histogram=sorted(histogram.items()),
+        jobs=sum(w['jobs'] for w in windows), routed_rows=sum(w['rows'] * 10 for w in windows),
+        gu_nk=first['gu_nk'], down_nk=first['down_nk'],
+        gu_down_storage=first['gu_down_storage'], hidden_storage=first['hidden_storage'],
+        requested_router_D2H_bytes=sum(w['requested_router_D2H_bytes'] for w in windows),
+        requested_map_H2D_bytes=sum(w['requested_map_H2D_bytes'] for w in windows),
+        all_job_row_and_expert_conservation_checks_passed=True, planned_matches_retired=True,
+        limits='Requested/logical metadata; not physical PCIe or VRAM traffic, occupancy or additive wall time.')
+
+def extract_resource_profile(log, phase_profile, command_profile, limits):
+    """Validate one long-request interval; never aggregate across requests."""
+    record = {}
+    prefix = 'strata MoE planned job census: '
+    record['planned_moe_windows'] = [json.loads(x[len(prefix):]) for x in log.splitlines() if x.startswith(prefix)]
+    guards.require(len(record['planned_moe_windows']) == 48 and
+        [x['layer'] for x in record['planned_moe_windows']] == list(range(48)), 'missing window census')
+    total_jobs = total_rows = 0
+    for window in record['planned_moe_windows']:
+        guards.require(sum(n for m, n in window['job_rows_histogram']) == window['jobs'] and
+            sum(m*n for m, n in window['job_rows_histogram']) == window['rows']*10 and
+            sum(n for m, n in window['jobs_per_expert_histogram']) == 512 and
+            sum(m*n for m, n in window['jobs_per_expert_histogram']) == window['jobs'], 'census conservation')
+        total_jobs += window['jobs']; total_rows += window['rows']
+    totals = [x for x in log.splitlines() if x.startswith('strata MoE accumulator window: ')]
+    guards.require(len(totals) == 1 and f'jobs={total_jobs} ' in totals[0] and
+                   f'windows={len(record["planned_moe_windows"])} ' in totals[0], 'planned/retired job totals differ')
+    record['retired_moe_totals'] = totals
+    record['resource_diagnostics'] = [x for x in log.splitlines() if x.startswith(
+        ('strata lm profile:', 'strata lm qsa profile:', 'strata prefill cpu wait:', 'strata prefill cpu host:'))]
+    coarse_prefix = 'strata lm profile: v=' + ('3' if phase_profile else '2') + ' complete=1 errors=0'
+    for prefix in (coarse_prefix,
+                   'strata lm qsa profile: v=1 complete=1 errors=0',
+                   'strata prefill cpu wait: version=3 available=1 complete=1',
+                   'strata prefill cpu host: version=3 available=1 open_regions=0'):
+        guards.require(sum(x.startswith(prefix) for x in record['resource_diagnostics']) == 1,
+                       'missing or duplicate complete resource observer: ' + prefix)
+    record['census_scope'] = 'Planned host metadata reconciled with completed window issuer totals; profiler/validation enabled, not clean speed or physical hardware saturation.'
+    if phase_profile:
+        # The supported coarse observer checks every event/query and
+        # expected stage count. Nested intervals are nonexclusive.
+        expected_phases = ('GDN_projections', 'GDN_conv_gates', 'GDN_recurrence', 'GDN_output')
+        layers, aggregate = [], None
+        for line in log.splitlines():
+            if not line.startswith('strata lm profile: layer='):
+                continue
+            fields = dict(part.split('=', 1) for part in line[len('strata lm profile: '):].split())
+            queue = [float(v) for v in fields['queue_ms'].split(',')]
+            samples = [int(v) for v in fields['samples'].split(',')]
+            host = [float(v) for v in fields['gdn_submit_wall_ms'].split(',')]
+            guards.require(len(queue) == len(samples) == 10 and len(host) == 4,
+                           'wrong coarse v3 vector extent')
+            guards.require(all(math.isfinite(v) and v >= 0 for v in queue + host) and
+                           all(v >= 0 for v in samples), 'invalid coarse v3 interval/sample')
+            row = dict(layer=int(fields['layer']), expected_chunks=int(fields['gdn_expected_chunks']),
+                       gdn_parent_queue_ms=queue[2], queue_ms=queue[6:],
+                       samples=samples[6:], host_submit_wall_ms=host)
+            guards.require(all(n == row['expected_chunks'] for n in samples[6:]) and
+                           samples[2] == row['expected_chunks'], 'GDN stage/parent count mismatch')
+            if row['layer'] == -1:
+                guards.require(aggregate is None, 'duplicate aggregate')
+                aggregate = row
+            else:
+                layers.append(row)
+        record['gdn_phase_queue_intervals'] = dict(order=expected_phases, layers=layers, aggregate=aggregate,
+            limits=limits)
+        guards.require([x['layer'] for x in layers] == list(range(48)) and
+            sum(x['expected_chunks'] > 0 for x in layers) == 36 and aggregate is not None and
+            aggregate['expected_chunks'] == sum(x['expected_chunks'] for x in layers),
+            'incomplete per-layer GDN stage coverage')
+    if command_profile:
+        def rows(prefix):
+            return [dict(part.split('=', 1) for part in line[len(prefix):].split())
+                    for line in log.splitlines() if line.startswith(prefix)]
+        summaries = rows('strata command profile: ')
+        groups = rows('strata command group: ')
+        samples = rows('strata command sample: ')
+        invalid = rows('strata command invalid: ')
+        # Keep service intervals and signed clock diagnostics, not a
+        # permanent raw absolute timeline. All samples remain present.
+        for sample in samples:
+            submit, start, end = (int(sample.pop(key)) for key in ('submit', 'start', 'end'))
+            sample.update(service_ns=end-start, start_minus_submit_ns=start-submit)
+        record['command_service_profile'] = dict(version=2, summaries=summaries,
+            groups=groups, samples=samples, invalid=invalid,
+            scope='Deterministic samples in first accumulator expert phases of layers0,15,31,47; initial router/shared/final writes excluded; no device-busy or physical-traffic claim.')
+        guards.require('strata MoE window configuration: requested_mode=10 effective_mode=10 ' in log,
+            'command service must sample the admitted production accumulator route')
+        guards.require(len(summaries) == 1 and summaries[0]['version'] == '2' and
+            summaries[0]['service_complete'] == '1' and summaries[0]['invalid'] == '0' and
+            summaries[0]['windows'] == summaries[0]['expected'] == '4' and not invalid and
+            len(samples) == int(summaries[0]['records']) and groups and
+            all(int(g['selected']) == int(g['service_samples']) and int(g['selected']) > 0 for g in groups) and
+            sum(int(g['service_samples']) for g in groups) == len(samples) and
+            sum(int(g['queue_delay_samples']) for g in groups) +
+                int(summaries[0]['submit_clock_inversions']) == len(samples) and
+            sum(s['start_minus_submit_ns'] < 0 for s in samples) == int(summaries[0]['submit_clock_inversions']) and
+            all(s['service_ns'] >= int(summaries[0]['timer_resolution_ns']) for s in samples),
+            'incomplete GPU-only command service profile')
+    return record
+
+
 def main():
     modes = ('check', 'base', 'candidate', 'qsa-check', 'qsa-base', 'qsa-direct', 'qsa-census',
+             'qsa-gdncols4-warm-census',
              'qsa-qcache-check', 'qsa-qcache-base', 'qsa-qcache',
              'qsa-kvec4-check', 'qsa-kvec4-base', 'qsa-kvec4', 'qsa-kvec4-census',
              'qsa-kvvec4-check', 'qsa-kvvec4-base', 'qsa-kvvec4',
@@ -39,24 +155,26 @@ def main():
     guards.require(len(sys.argv) == 3 and sys.argv[1] in ('prepare', 'run') and
                    sys.argv[2] in modes, 'use prepare|run ' + '|'.join(modes))
     action, mode = sys.argv[1:]
-    column_mode = re.fullmatch(r'qsa-gdncols(2|4|8)-(check|base|candidate)', mode)
+    column_mode = re.fullmatch(r'qsa-gdncols(2|4|8)-(check|base|candidate|warm-census)', mode)
+    warm_profile = mode == 'qsa-gdncols4-warm-census'
     column_trial = column_mode is not None
     column_check = column_trial and column_mode[2] == 'check'
     column_partitions = int(column_mode[1]) if column_trial and column_mode[2] != 'base' else 0
     qsa = mode.startswith('qsa-')
     short_profile = mode == 'qsa-kvvec4-timing-check'
-    phase_profile = short_profile or mode == 'qsa-kvvec4-census'
+    phase_profile = warm_profile or short_profile or mode == 'qsa-kvvec4-census'
     census = phase_profile or mode in ('qsa-census', 'qsa-kvec4-census')
     qcache = mode.startswith('qsa-qcache')
     kvvec4 = column_trial or mode.startswith('qsa-kvvec4')
     kvec4 = kvvec4 or mode.startswith('qsa-kvec4')
     check = census or column_check or mode in ('check', 'qsa-check', 'qsa-qcache-check', 'qsa-kvec4-check', 'qsa-kvvec4-check')
+    request_count = 2 if warm_profile else 1 if check else 4
     chunk64 = mode in ('check', 'candidate')
     generation = 'v2' if short_profile or mode == 'qsa-kvec4-check' else 'v1'
     root = B / (('qsa-attention-model-' + mode[4:] + '-' + generation) if qsa else
                 ('native-gdn-model-' + mode + '-v2'))
-    result_path = (A / 'gdn-columns-model-current.json' if column_trial else
-                   A / 'moe-window-census-current.json' if census else
+    result_path = (A / 'moe-window-census-current.json' if census else
+                   A / 'gdn-columns-model-current.json' if column_trial else
                    A / 'qsa-kvvec4-model-current.json' if kvvec4 else
                    A / 'qsa-kvec4-model-current.json' if kvec4 else
                    A / 'qsa-cached-query-model-current.json' if qcache else
@@ -120,7 +238,7 @@ def main():
             config_path = root / 'config.json'
             config_path.write_text(json.dumps(config, indent=2) + '\n')
             command = ['/bin/sh', str(P / 'bench.sh'), '--config', str(config_path), '--port', str(port),
-                       '--runs', '1' if check else '4', '--prefill-only', '--prefill-tokens',
+                       '--runs', str(request_count), '--prefill-only', '--prefill-tokens',
                        '32768' if short_profile or (check and not census) else '65536', '--workload-id', 'native_gdn_20261018',
                        '--think', '--fail-fast-engine-error', '--ready-timeout', '600', '--out', str(root / 'bench')]
             revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=P, text=True).strip()
@@ -140,8 +258,9 @@ def main():
                         physical262144_RESTORE_qualified=False, performance_adopted=False)
             if phase_profile:
                 plan['phase_profile_scope'] = {
-                    'question': 'Separate current GDN input projection, conv/gates, recurrence and output projection before selecting a topology change.',
-                    'route': 'Existing GDN recurrence, chunk64 disabled; qualified opt-in QSA K/Vvec4.',
+                    'question': ('Compare first-use and subsequent78K CPU/queue-stage observations on the faster screened route before identifying the next limiting resource.' if warm_profile else
+                        'Separate current GDN input projection, conv/gates, recurrence and output projection before selecting a topology change.'),
+                    'route': f'GDN columns={column_partitions}, chunk64 disabled; qualified opt-in QSA K/Vvec4.',
                     'coverage': 'Checked coarse observer v3, four extra event pairs retired only after existing checked drains; per-layer expected counts for all36GDN layers, with zero GDN samples on12QSA layers. Legacy STRATA_PREFILL_TIMING remains prohibited.',
                     'limits': 'Event-marker intervals include host submit gaps and queue dependencies, not isolated kernel service, measured occupancy, physical traffic or a clean speed cohort. Host submit wall intervals are not thread CPU time.',
                     'retirement': 'Extract compact phase samples and faults; retire normal full logs/JIT after source/recipe recovery. No implementation adoption.'}
@@ -208,7 +327,7 @@ def main():
             record['native_identity'] = end['native']
             record['route_selection'] = [x for x in log.splitlines() if x.startswith('[gdn-chunk64]')]
             guards.require(end['binary'] == plan['binary'] and end['exit_code'] == 0, 'native engine exit')
-            guards.require(len(requests) == (1 if check else 4) and suite['complete'] and
+            guards.require(len(requests) == request_count and suite['complete'] and
                            not suite['results']['failures'], 'incomplete suite')
             guards.require(all(q['ok'] and q['eligible'] and q['stream_complete'] and q['thinking_requested'] and
                                q['actual_reused_tokens'] == 0 for q in requests), 'ineligible samples')
@@ -246,92 +365,33 @@ def main():
                         'wrong four-value V kernel selection')
                     record['v_staging_route'] = selected
             if census:
-                prefix = 'strata MoE planned job census: '
-                record['planned_moe_windows'] = [json.loads(x[len(prefix):]) for x in log.splitlines() if x.startswith(prefix)]
-                guards.require(len(record['planned_moe_windows']) == 48 and
-                    [x['layer'] for x in record['planned_moe_windows']] == list(range(48)), 'missing window census')
-                total_jobs = total_rows = 0
-                for window in record['planned_moe_windows']:
-                    guards.require(sum(n for m, n in window['job_rows_histogram']) == window['jobs'] and
-                        sum(m*n for m, n in window['job_rows_histogram']) == window['rows']*10 and
-                        sum(n for m, n in window['jobs_per_expert_histogram']) == 512 and
-                        sum(m*n for m, n in window['jobs_per_expert_histogram']) == window['jobs'], 'census conservation')
-                    total_jobs += window['jobs']; total_rows += window['rows']
-                totals = [x for x in log.splitlines() if x.startswith('strata MoE accumulator window: ')]
-                guards.require(len(totals) == 1 and f'jobs={total_jobs} ' in totals[0] and
-                               f'windows={len(record["planned_moe_windows"])} ' in totals[0], 'planned/retired job totals differ')
-                record['retired_moe_totals'] = totals
-                record['resource_diagnostics'] = [x for x in log.splitlines() if x.startswith(
-                    ('strata lm profile:', 'strata lm qsa profile:', 'strata prefill cpu wait:', 'strata prefill cpu host:'))]
-                coarse_prefix = 'strata lm profile: v=' + ('3' if phase_profile else '2') + ' complete=1 errors=0'
-                for prefix in (coarse_prefix,
-                               'strata lm qsa profile: v=1 complete=1 errors=0',
-                               'strata prefill cpu wait: version=3 available=1 complete=1',
-                               'strata prefill cpu host: version=3 available=1 open_regions=0'):
-                    guards.require(any(x.startswith(prefix) for x in record['resource_diagnostics']),
-                                   'missing complete resource observer: ' + prefix)
-                record['census_scope'] = 'Planned host metadata reconciled with completed window issuer totals; profiler/validation enabled, not clean speed or physical hardware saturation.'
-            if phase_profile:
-                # The supported coarse observer checks every event/query and
-                # expected stage count. Nested intervals are nonexclusive.
-                expected_phases = ('GDN_projections', 'GDN_conv_gates', 'GDN_recurrence', 'GDN_output')
-                layers, aggregate = [], None
-                for line in log.splitlines():
-                    if not line.startswith('strata lm profile: layer='):
-                        continue
-                    fields = dict(part.split('=', 1) for part in line[len('strata lm profile: '):].split())
-                    queue = [float(v) for v in fields['queue_ms'].split(',')]
-                    samples = [int(v) for v in fields['samples'].split(',')]
-                    host = [float(v) for v in fields['gdn_submit_wall_ms'].split(',')]
-                    guards.require(len(queue) == len(samples) == 10 and len(host) == 4,
-                                   'wrong coarse v3 vector extent')
-                    guards.require(all(math.isfinite(v) and v >= 0 for v in queue + host) and
-                                   all(v >= 0 for v in samples), 'invalid coarse v3 interval/sample')
-                    row = dict(layer=int(fields['layer']), expected_chunks=int(fields['gdn_expected_chunks']),
-                               gdn_parent_queue_ms=queue[2], queue_ms=queue[6:],
-                               samples=samples[6:], host_submit_wall_ms=host)
-                    guards.require(all(n == row['expected_chunks'] for n in samples[6:]) and
-                                   samples[2] == row['expected_chunks'], 'GDN stage/parent count mismatch')
-                    if row['layer'] == -1:
-                        guards.require(aggregate is None, 'duplicate aggregate')
-                        aggregate = row
-                    else:
-                        layers.append(row)
-                record['gdn_phase_queue_intervals'] = dict(order=expected_phases, layers=layers, aggregate=aggregate,
-                    limits=plan['phase_profile_scope']['limits'])
-                guards.require([x['layer'] for x in layers] == list(range(48)) and
-                    sum(x['expected_chunks'] > 0 for x in layers) == 36 and aggregate is not None and
-                    aggregate['expected_chunks'] == sum(x['expected_chunks'] for x in layers),
-                    'incomplete per-layer GDN stage coverage')
-            if phase_profile or mode in ('qsa-kvec4-check', 'qsa-kvec4-census'):
-                def rows(prefix):
-                    return [dict(part.split('=', 1) for part in line[len(prefix):].split())
-                            for line in log.splitlines() if line.startswith(prefix)]
-                summaries = rows('strata command profile: ')
-                groups = rows('strata command group: ')
-                samples = rows('strata command sample: ')
-                invalid = rows('strata command invalid: ')
-                # Keep service intervals and signed clock diagnostics, not a
-                # permanent raw absolute timeline. All samples remain present.
-                for sample in samples:
-                    submit, start, end = (int(sample.pop(key)) for key in ('submit', 'start', 'end'))
-                    sample.update(service_ns=end-start, start_minus_submit_ns=start-submit)
-                record['command_service_profile'] = dict(version=2, summaries=summaries,
-                    groups=groups, samples=samples, invalid=invalid,
-                    scope='Deterministic samples in first accumulator expert phases of layers0,15,31,47; initial router/shared/final writes excluded; no device-busy or physical-traffic claim.')
-                guards.require('strata MoE window configuration: requested_mode=10 effective_mode=10 ' in log,
-                    'command service must sample the admitted production accumulator route')
-                guards.require(len(summaries) == 1 and summaries[0]['version'] == '2' and
-                    summaries[0]['service_complete'] == '1' and summaries[0]['invalid'] == '0' and
-                    summaries[0]['windows'] == summaries[0]['expected'] == '4' and not invalid and
-                    len(samples) == int(summaries[0]['records']) and groups and
-                    all(int(g['selected']) == int(g['service_samples']) and int(g['selected']) > 0 for g in groups) and
-                    sum(int(g['service_samples']) for g in groups) == len(samples) and
-                    sum(int(g['queue_delay_samples']) for g in groups) +
-                        int(summaries[0]['submit_clock_inversions']) == len(samples) and
-                    sum(s['start_minus_submit_ns'] < 0 for s in samples) == int(summaries[0]['submit_clock_inversions']) and
-                    all(s['service_ns'] >= int(summaries[0]['timer_resolution_ns']) for s in samples),
-                    'incomplete GPU-only command service profile')
+                request_logs = [log]
+                if warm_profile:
+                    starts = [m.start() for m in re.finditer(r'(?m)^strata prefill: GDN columns=', log)]
+                    guards.require(len(starts) == request_count, 'wrong number of long-request start markers')
+                    guards.require(not any(x in log[:starts[0]] for x in
+                        ('strata lm profile: v=', 'strata command profile:', 'strata prefill cpu wait:')),
+                        'resource observer before first long-request marker')
+                    request_logs = [log[a:b] for a, b in zip(starts, starts[1:] + [len(log)])]
+                profiles = [extract_resource_profile(part, phase_profile,
+                    phase_profile or mode in ('qsa-kvec4-check', 'qsa-kvec4-census'),
+                    plan.get('phase_profile_scope', {}).get('limits', '')) for part in request_logs]
+                record.update(profiles[-1])
+                if warm_profile:
+                    cold = profiles[0]
+                    record['first_use_resource_summary'] = {
+                        'request_index': 0, 'all_profile_gates_passed': True,
+                        'resource_diagnostics': [x for x in cold['resource_diagnostics'] if
+                            'layer=' not in x or 'layer=-1 ' in x],
+                        'gdn_phase_aggregate': cold['gdn_phase_queue_intervals']['aggregate'],
+                        'command_service_summary': cold['command_service_profile']['summaries'],
+                        'window_census': compact_window_census(cold['planned_moe_windows'])}
+                    record['window_census'] = compact_window_census(record.pop('planned_moe_windows'))
+                    record['resource_profile_request_index'] = 1
+                    record['request_separation'] = {
+                        'method': 'Exact long layer-major GDN route markers delimit two requests; each interval independently passes complete census/coarse/QSA/CPU/command gates.',
+                        'first_request': 'First-use profiled warmup, not an independent process repetition.',
+                        'second_request': 'Subsequent fresh78K request with the same immutable observer environment; profiled speed is not a clean speed sample.'}
             guards.require(not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|retirement failed|Strata SYCL cleanup:', log), 'runtime failure')
             record['passed'] = bool(record['complete'] and entry.get('exit_code') == 0)
         except BaseException as error:

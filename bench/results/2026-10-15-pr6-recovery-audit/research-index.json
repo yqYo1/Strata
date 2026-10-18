@@ -942,5 +942,29 @@
       "Reassess the remaining warmed resource bottleneck before selecting another recurrence candidate.",
       "Any implementation needs committed independent source plus component arithmetic/bounds/collective and codegen gates before model execution."
     ]
+  },
+  "warm_resource_collector_review_scope": {
+    "classification": "decision_support",
+    "schedulable_now": true,
+    "question": "Audit the new two-request warm resource collector: exact request segmentation, independent completion/conservation gates, parser extraction compatibility and information retained for first-use versus subsequent attribution. No GPU math or implementation changes.",
+    "prerequisites_met": [
+      "Source change exists and CPU checks preserve previously retained48-layer GDN/678 command observations.",
+      "Six malformed/mixed input cases are rejected; actual model execution remains Main-owned.",
+      "Previous reports audit different kernels/resources; this is the first review of this two-request collector delta."
+    ],
+    "source_sha256": {
+      "tools/sycl/bench_engine.py": "8ad07fba52086447e2dcca370b1bd32fa869464ac2b05e6498baa45161f321a5"
+    },
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/warm-resource-collector-review.md",
+    "main_reads_body_on_arrival": false,
+    "state": "Eligible finite source-only review; no researcher execution or implementation. Main continues owned measurement.",
+    "retention_consumer": "One current resource-attribution integrity decision, reviewed at its closure.",
+    "report_budget": {
+      "words": [
+        1500,
+        2200
+      ],
+      "maximum_bytes": 24576
+    }
   }
 }
