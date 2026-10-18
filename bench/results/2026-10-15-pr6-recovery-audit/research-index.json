@@ -2183,5 +2183,39 @@
       }
     },
     "main_index_reconciliation": "The new scope key is present. The prior eligibility-review index snapshot predates its addition; the native review lack-key observation is not accepted as current state."
+  },
+  "current_down_controller_candidate_scope": {
+    "classification": "decision support",
+    "schedulable_now": true,
+    "status": "source_committed_eligible",
+    "question": "Audit fresh current-build Down qualification controller: immutable source/build/fixture/phase gates, preserving original outcomes, failed/incomplete paths, all used timing samples and compact checked evidence. No kernel changes or performance claim.",
+    "candidate_source": {
+      "commit": "b1139e108fe6ac220bbab9e8807d1bf1ba8c46a5",
+      "worktree": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/task-sycl-down-qualification",
+      "source_sha256": {
+        "tools/sycl/measure_down_scatter.py": "a9ff35ea94caa76f8480eba616d9eea316479353568c984cc7e1dff54b2d157f",
+        "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+        "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+        "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
+        "tools/sycl/build_engine.py": "000afecd54c94c00357aec84029f56e937fe920cd8ef933faee8c46421cbdd75",
+        "bench/sycl/moe_down_scatter.cpp": "2be41d0daaa389781d29e8dbd78248de7f04b73016239ae892afcffa7e605d0d"
+      }
+    },
+    "prerequisite_evidence": "Current Down fixture ddaf0ad9 differs from source45 validated3eba42d8; source-view model comparison is frozen on Main. Isolated controller source is committed; no tests/GPU run. The controller is also an engine-build input, so its update must not silently retag the existing executable or refresh old hashes.",
+    "prior_scopes": [
+      "selective_down_engine_hook_scope",
+      "down_workgroup_row_cache_contract_scope",
+      "implemented_expert_bank_scope"
+    ],
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/fresh-down-controller-source-review.md",
+    "report_budget": {
+      "target_words": [
+        1000,
+        1600
+      ],
+      "maximum_bytes": 16384
+    },
+    "consumer": "Main-owned current-fixture qualification after the six frozen117K A/B processes close; integrate then retire temporary child branch.",
+    "next_review": "Before integration/execution. A source audit does not qualify the actual current binary or performance."
   }
 }
