@@ -661,6 +661,9 @@ def main():
                     limits=gpu['limits'])
             source_view_qualification = None
             if source_view_trial:
+                guards.require(gpu.get('provider_checks_passed') is True and
+                    gpu.get('provider_fixture') == build['fixtures'].get('file_expert_source_test'),
+                    'matching production Arena private/shared/fallback checks required')
                 index_path = A/'research-index.json'
                 index = json.loads(index_path.read_text())['immutable_arena_layer_view_candidate_scope']
                 guards.require(index_path.read_bytes()==subprocess.check_output(
