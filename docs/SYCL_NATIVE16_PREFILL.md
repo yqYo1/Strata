@@ -1401,7 +1401,12 @@ immutable source/slot guards, seven admission rejections per case and caller
 unwind after queued work. Three old math/gather fixtures rebuild to identical
 SHA256 bytes, so their existing checks remain component evidence; this does not
 claim a fresh run or qualify the changed model orchestration.
-Next use the pinned117K model check with R_GPU=auto and384 slots, then separate
-clean timing under the same prospective futility rule. Require all117488 engine
-rows and both81920+35568 windows on GPU plus completed upload/hit counters.
-Model performance, physical262144 and RESTORE remain unqualified.
+The parameter-validated117489-token model request then passed, with all117488
+engine rows on GPU, zero host residual,96 exact entry/retirement window pairs
+and normal process closure. Requested expert H2D payload was40102860800B across
+19631 uploads, with13594 permanent hits; unused experts are not bulk-uploaded.
+The final layer used267 permanent slots. No fresh fault occurred. Its874.6tok/s
+first-use reading includes validation/logging and is diagnostic.
+Next collect separate clean timing under the same prospective futility rule.
+Physical262144, production failure/session/RESTORE and default adoption remain
+unqualified; this bounded check does not establish sustained decode speed.
