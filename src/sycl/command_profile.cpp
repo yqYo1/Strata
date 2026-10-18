@@ -48,7 +48,10 @@ void consider(std::array<Choice,PerBin>& choices, uint64_t hash, int64_t id) {
 bool contains(const std::array<Choice,PerBin>& choices, int64_t id) {
   return std::any_of(choices.begin(),choices.end(),[&](auto x){return x.id==id;});
 }
-struct Group { uint32_t eligible=0, selected=0; uint64_t service=0, queue_delay=0; };
+struct Group {
+  uint32_t eligible=0, selected=0, service_samples=0, queue_delay_samples=0;
+  uint64_t service=0, queue_delay=0;
+};
 struct Window {
   int32_t layer=-1; int64_t first_row=0;
   std::array<std::array<Group,Bins>,Kinds> groups{};
@@ -67,6 +70,7 @@ struct Trace::Impl {
   unsigned expected, windows=0, current=0;
   size_t used=0, records=0, peak=0;
   size_t invalid_total=0, invalid_saved=0;
+  size_t submit_clock_inversions=0;
   uint64_t timer_resolution=0, query_wall_ns=0;
   bool complete=true;
   const char* error="none";
@@ -122,12 +126,14 @@ Trace::~Trace() noexcept {
     for (size_t k=1;k<Kinds;++k) for (size_t b=0;b<Bins;++b) {
       const auto& g=x.window[w].groups[k][b];if (!g.eligible) continue;
       if (!g.selected) x.fail("unsampled_eligible_stratum");
-      std::fprintf(stderr,"strata command group: window=%u layer=%d first_row=%lld kind=%s bin=%zu eligible=%u selected=%u sample_service_ns=%llu sample_queue_delay_ns=%llu\n",
+      std::fprintf(stderr,"strata command group: window=%u layer=%d first_row=%lld kind=%s bin=%zu eligible=%u selected=%u service_samples=%u queue_delay_samples=%u sample_service_ns=%llu sample_queue_delay_ns=%llu\n",
           w,x.window[w].layer,(long long)x.window[w].first_row,kind_name(Kind(k)),b,g.eligible,g.selected,
+          g.service_samples,g.queue_delay_samples,
           (unsigned long long)g.service,(unsigned long long)g.queue_delay);
     }
-  std::fprintf(stderr,"strata command profile: complete=%d windows=%u expected=%u records=%zu peak_events=%zu cap=%zu timer_resolution_ns=%llu max_query_wall_ns=%llu error=%s invalid=%zu invalid_saved=%zu scope=selected_first_windows hardware_busy=UNMEASURED\n",
-      int(x.complete),x.windows,x.expected,x.records,x.peak,PendingMax,
+  std::fprintf(stderr,"strata command profile: version=2 service_complete=%d submit_clock_qualified=%d submit_clock_inversions=%zu windows=%u expected=%u records=%zu peak_events=%zu cap=%zu timer_resolution_ns=%llu max_query_wall_ns=%llu error=%s invalid=%zu invalid_saved=%zu scope=selected_first_windows hardware_busy=UNMEASURED\n",
+      int(x.complete),int(x.complete && !x.submit_clock_inversions),x.submit_clock_inversions,
+      x.windows,x.expected,x.records,x.peak,PendingMax,
       (unsigned long long)x.timer_resolution,(unsigned long long)x.query_wall_ns,x.error,x.invalid_total,x.invalid_saved);
   // On an early error the enclosing layer-major checked lease has retired
   // before this request owner is destroyed. Never query its unfinished events.
@@ -201,6 +207,7 @@ void Frame::after_checked_drain() noexcept {
       if (x.pending[i].event->get_info<sycl::info::event::command_execution_status>()!=sycl::info::event_command_status::complete) {
         x.fail("event_incomplete_after_drain");return;
       }
+    uint64_t previous_end=0;
     for (size_t i=0;i<x.used;++i) {
       auto& p=x.pending[i];auto& r=p.record;
       const auto before=std::chrono::steady_clock::now();
@@ -209,10 +216,17 @@ void Frame::after_checked_drain() noexcept {
       r.end=p.event->get_profiling_info<sycl::info::event_profiling::command_end>();
       const uint64_t wall=std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now()-before).count();
       x.query_wall_ns=std::max(x.query_wall_ns,wall);
-      const unsigned violations=unsigned(r.start<r.submitted) |
-          (unsigned(r.end<=r.start)<<1) |
+      // Intel LLVM estimates command_submit separately from GPU timestamps.
+      // An inversion disqualifies queue latency, not positive ordered GPU
+      // service. Preserve the raw tuple; never clamp timestamps or subtract
+      // unsigned values before checking order. Original strict failures stay
+      // failed in Git. This version2 policy is prospective.
+      if (r.start<r.submitted) ++x.submit_clock_inversions;
+      const unsigned violations=(unsigned(r.end<=r.start)<<1) |
           (unsigned(r.end>r.start && r.end-r.start<x.timer_resolution)<<2) |
-          (unsigned(wall>=1000000000ULL)<<3);
+          (unsigned(wall>=1000000000ULL)<<3) |
+          (unsigned(i && r.start<previous_end)<<4);
+      previous_end=r.end;
       if (violations) {
         x.fail("timestamp_order_granularity_or_query_delay");++x.invalid_total;
         if (x.invalid_saved<x.invalid.size()) x.invalid[x.invalid_saved++]={r,wall,violations};
@@ -221,7 +235,8 @@ void Frame::after_checked_drain() noexcept {
       if (x.records==RecordsMax) { x.fail("record_capacity");continue; }
       x.record[x.records++]=r;
       auto& g=x.window[r.window].groups[size_t(r.meta.kind)][r.bin];
-      g.service+=r.end-r.start;g.queue_delay+=r.start-r.submitted;
+      g.service+=r.end-r.start;++g.service_samples;
+      if (r.start>=r.submitted) { g.queue_delay+=r.start-r.submitted;++g.queue_delay_samples; }
     }
     for (size_t i=0;i<x.used;++i) x.pending[i].event.reset();
     x.used=0;

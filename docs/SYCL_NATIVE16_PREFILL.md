@@ -299,6 +299,34 @@ hardware peak nor a weighted prediction of model latency. Initial pageable
 fixture uploads are recorded separately and do not qualify the production
 pinned-memory PCIe ceiling. No model route or default is changed by this fixture.
 
+The complete sweep at source`5eb48ed4` passed all435 invocation validations
+across smoke, traced diagnostics and30 clean timing processes. Selected M8192
+GU service was52.210 TFLOP/s (process medians51.896/63.963/52.210); Down was
+45.668 (44.489/45.668/46.013). Keep the GU spread rather than treating its
+best process as the hardware limit. The individual timed bursts and shapes
+remain in [the compact result](../bench/results/2026-10-15-pr6-recovery-audit/resident-gemm-current.json).
+This evidence justifies comparing resident service with actual model commands;
+it does not establish that GPU arithmetic is the whole-model bottleneck.
+
+Main's next model observation reuses the existing bounded command sampler.
+Version2 qualifies positive, ordered GPU start/end service independently of the
+estimated submit clock. Every retained tuple contributes its signed
+start-minus-submit diagnostic; inverted samples never contribute queue-delay
+sums. Group counts state how many service and queue-delay samples qualified.
+Query delays, incomplete events, invalid duration/order and capacity failures
+still invalidate service. Original version1 rejected receipts remain failed.
+The sampler adds no GPU commands or readbacks and queries only completed events
+after the existing checked drain; it samples first windows in layers0/15/31/47,
+not all device work. Timestamp gaps alone do not prove device idle.
+
+With source and recipe committed, build using`tools/sycl/build_engine.py rebuild`.
+Prepare/commit/run`qsa-kvec4-check` for the traced/validated32K-class input,
+then prepare/commit/run`qsa-kvec4-census` for one official78K request with the
+existing coarse, CPU, route-histogram and command observers. These profiled
+requests support resource attribution; use separate clean processes for speed
+comparisons. Neither run qualifies sustained generation, model task quality or
+the full physical262144-context/RESTORE paths.
+
 ## Optional GDN chunk64
 
 `STRATA_SYCL_PREFILL_GDN_CHUNK64=1` adds a separate experimental long-prefill
