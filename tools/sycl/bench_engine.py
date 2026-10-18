@@ -29,16 +29,17 @@ def digest(path):
 
 
 def main():
-    modes = ('check', 'base', 'candidate', 'qsa-check', 'qsa-base', 'qsa-direct')
+    modes = ('check', 'base', 'candidate', 'qsa-check', 'qsa-base', 'qsa-direct', 'qsa-census')
     guards.require(len(sys.argv) == 3 and sys.argv[1] in ('prepare', 'run') and
                    sys.argv[2] in modes, 'use prepare|run ' + '|'.join(modes))
     action, mode = sys.argv[1:]
     qsa = mode.startswith('qsa-')
-    check = mode in ('check', 'qsa-check')
+    census = mode == 'qsa-census'
+    check = mode in ('check', 'qsa-check', 'qsa-census')
     chunk64 = mode in ('check', 'candidate')
     root = B / (('qsa-attention-model-' + mode[4:] + '-v1') if qsa else
                 ('native-gdn-model-' + mode + '-v2'))
-    result_path = A / 'qsa-attention-model-current.json' if qsa else RESULT
+    result_path = A / 'moe-window-census-current.json' if census else A / 'qsa-attention-model-current.json' if qsa else RESULT
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         reference = json.loads(BASE.read_text())
@@ -76,6 +77,10 @@ def main():
             if qsa:
                 env['STRATA_SYCL_PREFILL_QSA_MATH'] = (
                     'bf16' if mode in ('qsa-check', 'qsa-direct') else 'bf16-prefix-optimized')
+            if census:
+                env.update(STRATA_PREFILL_LAYER_MAJOR_PROFILE='1',
+                           STRATA_PREFILL_LAYER_MAJOR_QSA_PROFILE='1',
+                           STRATA_PREFILL_CPU_WAIT_PROFILE='1')
             config = dict(reference['config'])
             flags = list(config['args'])
             flags[flags.index('--expert-profile') + 1] = str(root / 'expert-profile.bin')
@@ -87,7 +92,7 @@ def main():
             config_path.write_text(json.dumps(config, indent=2) + '\n')
             command = ['/bin/sh', str(P / 'bench.sh'), '--config', str(config_path), '--port', str(port),
                        '--runs', '1' if check else '4', '--prefill-only', '--prefill-tokens',
-                       '32768' if check else '65536', '--workload-id', 'native_gdn_20261018',
+                       '32768' if check and not census else '65536', '--workload-id', 'native_gdn_20261018',
                        '--think', '--fail-fast-engine-error', '--ready-timeout', '600', '--out', str(root / 'bench')]
             revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=P, text=True).strip()
             files = subprocess.check_output(['git', 'ls-files', '-z', '--', 'serve', 'tools', 'bench.sh'], cwd=P).decode().strip('\0').split('\0')
@@ -147,7 +152,7 @@ def main():
         owner = supervision.Owner(root / 'owned', persist)
         try:
             entry, out, err = owner.run('bench', plan['command'], plan['environment'], P,
-                wall=900 if check else 1800, cpu=21600, rss_cap=96 << 30,
+                wall=900 if check and not census else 1800, cpu=21600, rss_cap=96 << 30,
                 text_cap=64 << 20, file_cap=64 << 20, total_cap=64 << 20)
             record.update(complete=supervision.closed(entry), exit_code=entry.get('exit_code'))
             results = list((root / 'bench').glob('*/results.json'))
@@ -174,9 +179,34 @@ def main():
             if qsa:
                 record['qsa_route'] = [x for x in log.splitlines() if x.startswith(
                     'strata prefill: QSA BF16 operands, FP32 online state/accumulation;')]
-                expected = 'KV=active-logical-prefix' if mode == 'qsa-base' else 'KV=on-the-fly'
+                expected = 'KV=active-logical-prefix' if mode in ('qsa-base', 'qsa-census') else 'KV=on-the-fly'
                 guards.require(record['qsa_route'] and all(expected in x for x in record['qsa_route']),
                                'wrong QSA operand route')
+            if census:
+                prefix = 'strata MoE planned job census: '
+                record['planned_moe_windows'] = [json.loads(x[len(prefix):]) for x in log.splitlines() if x.startswith(prefix)]
+                guards.require(len(record['planned_moe_windows']) == 48 and
+                    [x['layer'] for x in record['planned_moe_windows']] == list(range(48)), 'missing window census')
+                total_jobs = total_rows = 0
+                for window in record['planned_moe_windows']:
+                    guards.require(sum(n for m, n in window['job_rows_histogram']) == window['jobs'] and
+                        sum(m*n for m, n in window['job_rows_histogram']) == window['rows']*10 and
+                        sum(n for m, n in window['jobs_per_expert_histogram']) == 512 and
+                        sum(m*n for m, n in window['jobs_per_expert_histogram']) == window['jobs'], 'census conservation')
+                    total_jobs += window['jobs']; total_rows += window['rows']
+                totals = [x for x in log.splitlines() if x.startswith('strata MoE accumulator window: ')]
+                guards.require(len(totals) == 1 and f'jobs={total_jobs} ' in totals[0] and
+                               f'windows={len(record["planned_moe_windows"])} ' in totals[0], 'planned/retired job totals differ')
+                record['retired_moe_totals'] = totals
+                record['resource_diagnostics'] = [x for x in log.splitlines() if x.startswith(
+                    ('strata lm profile:', 'strata lm qsa profile:', 'strata prefill cpu wait:', 'strata prefill cpu host:'))]
+                for prefix in ('strata lm profile: v=2 complete=1 errors=0',
+                               'strata lm qsa profile: v=1 complete=1 errors=0',
+                               'strata prefill cpu wait: version=3 available=1 complete=1',
+                               'strata prefill cpu host: version=3 available=1 open_regions=0'):
+                    guards.require(any(x.startswith(prefix) for x in record['resource_diagnostics']),
+                                   'missing complete resource observer: ' + prefix)
+                record['census_scope'] = 'Planned host metadata reconciled with completed window issuer totals; profiler/validation enabled, not clean speed or physical hardware saturation.'
             guards.require(not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|retirement failed|Strata SYCL cleanup:', log), 'runtime failure')
             record['passed'] = bool(record['complete'] and entry.get('exit_code') == 0)
         except BaseException as error:

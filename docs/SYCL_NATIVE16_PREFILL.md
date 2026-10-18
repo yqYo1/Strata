@@ -107,6 +107,53 @@ The optional `STRATA_SYCL_VLLM_XE2_NATIVE16` build adds the actual Intel BSD-3 v
 `STRATA_SYCL_PREFILL_NATIVE16_QSA=1` additionally keeps QSA projection/norm/RoPE/append/attention/gate boundaries typed16 for resident unrotated INT8 K/V with session RoPE tables. Indexer/local accumulation and GDN's existing internal FP32 boundaries remain explicit. The shared scratch arena reservation is unchanged. Streaming/host mirrors and rotated/Q4/hybrid KV are currently refused; do not infer full-context adoption from the component tests.
 
 
+The clean same-binary attention screening at source `d72c8ac3` used four
+78,451-token fresh requests per process, thinking on, chunk8192 and no GDN
+chunk64. Prefix33 PP was663.9 on first use, then725.2/720.3/725.0 tok/s;
+direct INT8 attention was566.9, then592.9/589.0/592.5. Subsequent medians were
+725.0 versus592.5, an18.28% direct-path regression. Both processes exited
+normally without fresh GPU faults. Keep the existing prefix route for this
+configuration. The comparison also changes score pitch33 to32, so it does not
+isolate dequantization, physical memory traffic or SLM conflicts. These are
+sequential samples within one process per arm;24-token generation does not
+qualify sustained decode. See the [individual samples and comparison limits](../bench/results/2026-10-15-pr6-recovery-audit/qsa-attention-model-current.json).
+
+The fixed-score33 K36/V260 experiment passed all bit, oracle and boundary
+checks. Six rotated samples per arm on8192 queries changed median latency
+by+0.60% (cap33 gathered),-0.51% (cap2051 gathered), and+0.23% (cap2051
+clustered). These mixed subpercent results do not justify selection. Source
+and individual samples remain at commit`ee14c50d`; the experimental pitch code
+is retired from the active implementation.
+
+The independent `qsa_bf16_prefix_rows_batch` experiment retains score33,
+K32/V256 and28224 requested local bytes. It publishes first IDs with Q/state
+initialization, and next IDs during PV, using the existing final PV barrier.
+All current row readers finish before V/probability publication; PV reads no
+row IDs. The final barrier still protects V-to-K overwrite. This removes one
+workgroup barrier per32-cell tile without changing arithmetic or output order.
+Production dispatch is unchanged. Main's serialized qualification sequence is
+`python3 tools/sycl/build_engine.py rebuild-attention`, then
+`python3 tools/sycl/check_attention.py smoke`, `component`, and `perf`.
+The oracle fixture compares all output bits with prefix33, including diagnostics
+and physical262144 component extent. The timing fixture rotates six samples
+per arm on three8192-query shapes, outside uploads/readbacks. These checks
+do not qualify full-model context, RESTORE, quality or model throughput.
+
+This schedule passed all those correctness checks, including explicit duplicate
+IDs, aliased physical pages and first-/later-tile K/V diagnostics. Six rotated
+samples per arm changed median latency by-0.60%,+0.10%,+0.24% for the same three
+shapes above. It is not selected. At cap2051, baseline gathered versus clustered
+reads took419.8 versus299.4ms with the same matrix work. This is locality
+sensitivity, not a physical-bandwidth or saturation measurement.
+
+For the next current-path MoE census, Main uses `python3 tools/sycl/bench_engine.py
+prepare qsa-census`, commits its plan, then uses `run qsa-census`. This runs one
+official78K request with parameter validation, trace and existing coarse/QSA/CPU
+observers. The optional profile records exact planned job-size and jobs/expert
+histograms from already available host routes; final issuer totals must match.
+It adds no tensor readback or GPU submission. Requested DMA bytes and diagnostic
+timings must stay distinct from physical traffic and clean speed.
+
 ## Optional GDN chunk64
 
 `STRATA_SYCL_PREFILL_GDN_CHUNK64=1` adds a separate experimental long-prefill

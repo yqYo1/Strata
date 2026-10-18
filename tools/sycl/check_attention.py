@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Main-owned checks of direct Q8 and the exact production score33 prefix path."""
+"""Main-owned direct/prefix/row-publication checks and a rotated same-binary row-publication timing."""
 import fcntl
 import hashlib
 import json
@@ -18,7 +18,9 @@ ROOT = B / 'qsa-attention-current'
 ENGINE = B / 'main-native-gdn-engine'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/qsa-attention-current.json'
 SETTINGS = P / 'tools/sycl/measurement_environment.json'
-TARGETS = ('sycl_qsa_bf16_late_flags_test', 'sycl_qsa_bf16_prefix_optimized_test')
+TARGETS = ('sycl_qsa_bf16_late_flags_test', 'sycl_qsa_bf16_prefix_optimized_test',
+           'sycl_qsa_bf16_prefix_rows_test')
+BENCH = 'sycl_qsa_bf16_prefix_rows_bench'
 
 
 def digest(path):
@@ -27,8 +29,8 @@ def digest(path):
 
 
 def main():
-    guards.require(len(sys.argv) == 2 and sys.argv[1] in ('smoke', 'component'),
-                   'use check_attention.py smoke|component')
+    guards.require(len(sys.argv) == 2 and sys.argv[1] in ('smoke', 'component', 'perf'),
+                   'use check_attention.py smoke|component|perf')
     mode = sys.argv[1]
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -40,7 +42,7 @@ def main():
         for group in [build['project'], *build['dependencies']]:
             for name, expected in group['source_sha256'].items():
                 guards.require(digest(Path(group['root']) / name) == expected, 'build source changed: ' + name)
-        fixtures = {name: build['fixtures'][name] for name in TARGETS}
+        fixtures = {name: build['fixtures'][name] for name in (*TARGETS, BENCH)}
         for item in fixtures.values():
             guards.require(digest(item['path']) == item['sha256'], 'fixture binary changed')
         if mode == 'smoke':
@@ -49,11 +51,13 @@ def main():
             record = dict(source_commit=build['source_commit'], fixtures=fixtures, checks=[],
                           passed=False, complete=False, active=False, model_performance_measured=False,
                           model_quality_qualified=False, physical262144_model_RESTORE_qualified=False,
-                          consumer='Immediate direct-Q8 versus score33-prefix model comparison; retire raw checks afterward.')
+                          consumer='Immediate prefix33 versus fused row publication same-binary component comparison; retire raw checks afterward.')
         else:
             record = json.loads(RESULT.read_text())
             guards.require(record['passed'] and record['ownership_closed'] and record['source_commit'] ==
                            build['source_commit'] and record['fixtures'] == fixtures, 'matching smoke required')
+            guards.require(record['mode'] == ('component' if mode == 'perf' else 'smoke'),
+                           'require smoke then component then perf on this exact build')
         guards.require(not (ROOT / ('owned-' + mode)).exists(), 'this check already started; inspect its receipt')
         settings = json.loads(SETTINGS.read_text())
         for path, item in settings['runtime_elfs'].items():
@@ -62,6 +66,10 @@ def main():
         if mode == 'component':
             env['UR_ENABLE_LAYERS'] = 'UR_LAYER_PARAMETER_VALIDATION'
             env.pop('UR_LOG_TRACING', None)
+        if mode == 'perf':
+            for key in list(env):
+                if key.startswith('UR_LOG_') or key in ('UR_ENABLE_LAYERS', 'STRATA_TRACE'):
+                    del env[key]
         for name in ('tmp', 'cache'):
             (ROOT / name).mkdir(exist_ok=True)
         env.update(TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'))
@@ -77,8 +85,9 @@ def main():
 
         owner = supervision.Owner(ROOT / ('owned-' + mode), persist)
         try:
-            for name in TARGETS:
-                command = [fixtures[name]['path'], '--' + mode]
+            targets = (BENCH,) if mode == 'perf' else (*TARGETS, BENCH) if mode == 'smoke' else TARGETS
+            for name in targets:
+                command = [fixtures[name]['path'], '--component' if mode == 'perf' else '--' + mode]
                 entry, out, err = owner.run(name, command, env, P, wall=180, cpu=360,
                     rss_cap=4 << 30, file_cap=64 << 20, text_cap=64 << 20, total_cap=64 << 20)
                 stdout = out.read_text(errors='replace')
@@ -89,7 +98,9 @@ def main():
                 record['checks'].append(dict(mode=mode, target=name, command=command,
                     binary_sha256=fixtures[name]['sha256'], passed=passed, exit_code=entry.get('exit_code'),
                     ownership_closed=supervision.closed(entry),
-                    cases=[x for x in stdout.splitlines() if x.startswith(('case ', 'fixture_status='))]))
+                    cases=[x for x in stdout.splitlines() if x.startswith(('case ', 'fixture_status='))],
+                    samples=[dict(token.split('=', 1) for token in x.split()[1:])
+                             for x in stdout.splitlines() if x.startswith('sample ')]))
                 guards.require(passed, name + ': ' + (stderr or stdout)[-8192:])
             record.update(complete=True, passed=True)
         except BaseException as error:

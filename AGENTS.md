@@ -26,6 +26,8 @@ in compact committed results; do not turn this file into a chronological log.
 Later user instructions supersede older rules; update the affected policy rather
 than keeping contradictory versions. Do not infer that an unfinished experiment,
 unverified feature or research proposal became adopted during a context change.
+Read relevant compact committed results before retrieving historical detail.
+Do not load the research library or old raw logs wholesale as a resume procedure.
 
 This is a personal fork based on **Niko1221/Strata**, optimized for this PC's
 Intel GPU, CPU and RAM. Niko1221/Strata is the only upstream. Because of the
@@ -133,6 +135,13 @@ are outside this work's scope.
   time, GPU utilization and critical-path wall time are different quantities.
   Use a profiler when attribution is unclear, then collect clean speed samples
   separately. A stage percentage alone does not establish hardware saturation.
+  Distinguish requested transfer bytes from measured bus traffic, job counts
+  from arithmetic volume, and overlapping queue intervals from additive wall
+  time. Do not add a printed aggregate to its constituent samples. Dense-model
+  throughput and active-parameter counts provide context, but a ceiling needs
+  the actual layer operations, tensor shapes, precision and data movement.
+  Device-specific compiler flags and binaries are allowed for this PC; record
+  them with the measured source and build recipe.
 - Follow [docs/BENCHMARKS.md](docs/BENCHMARKS.md). Use the pinned upstream
   `bench.sh` for standard comparisons and the same maintained extension on both
   engines for added workloads. Adoption evidence includes the long-input and

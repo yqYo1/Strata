@@ -66,7 +66,8 @@ bool matrix_available(const sycl::device &device, size_t local_payload) {
 }
 } // namespace
 
-template<int ScoreStride, bool TilePacked = false, bool SubgroupSoftmax = false>
+template<int ScoreStride, bool TilePacked = false, bool SubgroupSoftmax = false,
+         bool PublishNextRows = false>
 static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
                              const int32_t *ids, const int32_t *steps,
                              int64_t cap, const QsaShapes &shape, uint16_t *output,
@@ -185,8 +186,7 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
       const int width = steps[batch * kStepCount + kStepWidth];
       const int count = width >= 0 && int64_t(width) <= cap ? width : 0;
       int local_bad = 0, local_live = 0;
-      item.barrier(sycl::access::fence_space::local_space);
-      for (int64_t first = 0; first < count; first += Cells) {
+      auto publish_rows = [&](int64_t first) {
         if (tid < Cells) {
           int64_t row = -1;
           if (first + tid < count) {
@@ -200,7 +200,15 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
           rows[tid] = row;
           if (row >= 0) local_bad |= packed.bad_rows[row];
         }
-        item.barrier(sycl::access::fence_space::local_space);
+      };
+      // Q/state initialization and the first IDs share the initial barrier.
+      if constexpr (PublishNextRows) if (count > 0) publish_rows(0);
+      item.barrier(sycl::access::fence_space::local_space);
+      for (int64_t first = 0; first < count; first += Cells) {
+        if constexpr (!PublishNextRows) {
+          publish_rows(first);
+          item.barrier(sycl::access::fence_space::local_space);
+        }
         for (int i = tid; i < Cells * Dim; i += Workgroup) {
           const int cell = i % Cells, d = i / Cells;
           const int64_t row = rows[cell];
@@ -310,6 +318,12 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
             mx::joint_matrix_mad(sg, accumulated[j], a, b, accumulated[j]);
           }
         }
+        // V/probability publication above is after every current-row reader.
+        // PV reads only kv/probability/alpha, so early finishers may write next
+        // IDs while other subgroups finish PV. The existing barrier publishes
+        // those IDs and still protects V from the following K overwrite.
+        if constexpr (PublishNextRows)
+          if (first + Cells < count) publish_rows(first + Cells);
         item.barrier(sycl::access::fence_space::local_space);
       }
       const bool invalid_scales = sycl::any_of_group(item.get_group(), local_bad != 0);
@@ -343,6 +357,13 @@ bool qsa_bf16_prefix_optimized_batch(const uint16_t *query, const QsaAttnPools &
     int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream) {
   return prefix_batch_impl<Cells + 1>(query, pools, ids, steps, cap, shape,
       output, queries, bounds, live_cells, scratch, stream);
+}
+bool qsa_bf16_prefix_rows_batch(const uint16_t *query, const QsaAttnPools &pools,
+    const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
+    uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
+    int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream) {
+  return prefix_batch_impl<Cells + 1, false, false, true>(query, pools, ids, steps,
+      cap, shape, output, queries, bounds, live_cells, scratch, stream);
 }
 // FP32 subgroup max/sum; current score33 row-major operands and state layout.
 bool qsa_bf16_prefix_subgroup_batch(const uint16_t *query, const QsaAttnPools &pools,

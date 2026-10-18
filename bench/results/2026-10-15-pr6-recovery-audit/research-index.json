@@ -4,42 +4,7 @@
   "historical_index_path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
   "archive_lookup": "Read the pinned historical index and git grep that revision before repeating research. Retrieve selected old report sections only when their question is relevant; do not restore whole directories.",
   "main_reads_collection_bodies_on_arrival": false,
-  "active_reports": [
-    {
-      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round943-v1.txt",
-      "sha256": "cb69c0466c2d034da2d7dcf2cd99290e0b2218637a74ff99b10ced10470d4515",
-      "information_value": "A distinct, source-checked comparison of chunked recurrent scans, GDN-specific transforms, precision/state handoffs, synchronization, and dataflow tradeoffs, including non-LLM and accelerator limits. It does not treat scalar affine scans as a drop-in GDN implementation or imply Arc performance.",
-      "why_active_now": "The current index names a Main-owned post-conv GDN chunk fixture as a next action; R943 has already been selectively retrieved for the measured GDN recurrence/chunk/head-layout/precision question.",
-      "retrieval_trigger": "Use only for the current GDN fixture's recurrence, chunk-boundary, state-precision, or synchronization choice. Reassess after that fixture/decision closes.",
-      "carry_forward_caveats": "R943-C1..C4: compact affine-pair scans are not a drop-in GDN method; model-family source does not prove the active runtime branch; reassociation, precision, context and RESTORE gates remain Main-owned. The full review JSON may leave the working tree once these caveats and the retrieval trigger remain in the active index/digest."
-    },
-    {
-      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round934-v1.txt",
-      "sha256": "221e946b5cffb271a04e5eb0164308a59cd97937a12c860e90842181c5476442",
-      "information_value": "The only accepted standalone survey here of mergeable stable reductions, online softmax/log-sum-exp partial states, weighted-average trees, rounding/tail behavior, and scratch/launch/synchronization crossover. It transfers beyond one model and is not duplicated by local benchmark results.",
-      "why_active_now": "The index records a targeted retrieval for an intra-work-group FP32 sum-order/crossover question after the packed-layout component/codegen boundary. Keep while that selected-cell reduction question remains open.",
-      "retrieval_trigger": "Read only the indexed relevant sections if a measured Main-owned reduction split or reassociation is selected; remove from active checkout once that question closes.",
-      "carry_forward_caveats": "No Strata speedup, B570 support, current bottleneck, or utilization result. The worker did not verify the dispatch-supplied 2a5ba71b source-context pin. Keep that caveat in active metadata."
-    },
-    {
-      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-matrix-register-reuse-20261018.md",
-      "sha256": "747e2627239edefb7280283f82158535765996b444b8a57c860708e82b4d69eb",
-      "classification": "knowledge_collection",
-      "information_value": "Source-backed joint_matrix operand views, state ownership, SLM/register tradeoffs and persistent-versus-split schedules; no measured Strata/B570 gain claimed by the survey.",
-      "why_active_now": "Resident GDN8192 timing exposed carry and reduction/resource costs. Current V16 carry reduced requested SLM and per-workitem state; next concrete question is GDN readout/RMS reduction ownership and reuse.",
-      "retrieval_trigger": "Retrieve only selected sections for the measured GDN state/SLM/reduction schedule decision.",
-      "review_point": "Next GDN resident scheduling comparison or closure of the readout/reduction decision; remove if superseded.",
-      "review_sha256": "e436ff6c7a571b693bd9b447ed5243f7efa24684175cb2a0be9b8e347fae9bfa",
-      "carry_forward_caveats": "Survey sources do not establish B570 runtime support, occupancy, spills, physical bandwidth, numerical equivalence or performance. Use Main-owned device/contract evidence; no XeStrata source adoption."
-    }
-  ],
-  "current_decision_review": {
-    "path": "research-round1059-review-v1.txt",
-    "sha256": "9a3acaa8be75326506ca08e4a48fb510c9689e470de7ee671f64ee435fa346bb",
-    "consumer": "Current independently authored GDN chunk64 numerical/provenance contract; review when this implementation decision closes."
-  },
-  "current_implementation": "../../../src/prefill/sycl/gdn_chunk64.cpp",
-  "current_contract": "../../sycl/gdn_chunk64/README.md",
+  "active_reports": [],
   "conditional_scope": {
     "schedulable_now": false,
     "question": "Localize one measured general GDN mismatch to one pinned framework rounding boundary.",
@@ -132,32 +97,27 @@
       "active_body": false
     }
   ],
-  "current_fixture": "../../sycl/gdn_chunk64",
   "current_attention_decision": {
     "report_sha256": "4e4e89f035e9f3c8cd3767af59caf5517df5da5799c094c6890ee6dc5f71a4b1",
     "review_sha256": "9f787293e3c498e0cc8a195eab97585967027201ca8ac177f5f0c981ef087a2a",
     "source": "src/kernels/sycl/qsa_bf16_prefix.cpp",
-    "source_sha256": "fa505d02e2b24f7cb6948033921fa697c8aeb58e6f4df6d873f13e5a7918e36b",
-    "current_main_work": "Same-binary official model comparison of existing direct INT8 and prefix BF16 attention. Direct pitch32 versus optimized-prefix pitch33 is a coupled difference; do not attribute the result to physical traffic alone.",
+    "current_main_work": "Both independently authored local candidates closed without a broad component win: pitch mixed subpercent and row-publication mixed subpercent. All oracle/exact-bit, partial/invalid/alias/late-diagnostic and physical262144 component gates passed, no fresh faults. Production still uses existing prefix. Next decision needs current emitted-resource/global-gather evidence; not another generic survey.",
     "production_fixture_correction": "CMake already defines sycl_qsa_bf16_prefix_optimized_test, mapping the default fixture function to the actual pitch33 function. At build source d72c8ac3, Main ran this exact target and directQ8 through traced smoke and component tests, including physical262144 component extent. This corrects the review default-target observation, not full-model qualification.",
     "resource_limits": "37.078s is prior device service, not utilization/critical-path proof. Requested SLM payload28224B; padding/residency/GRF/spills need device/compiler evidence.",
     "next_implementation": [
-      {
-        "question": "Compile and measure the already audited fixed-score33 K36/V260 local-pitch candidate.",
-        "schedulable_now": false,
-        "prerequisites": [
-          "Close current Main-owned GPU comparison before builds or further GPU work.",
-          "Recheck archived independent provenance and exact live-source match; integrate maintained API/fixture wiring.",
-          "Compile/JIT and exact full-output bits, tail/invalid/alias/reuse/fault gates before rotated component/model timings."
-        ]
-      },
       {
         "question": "Coalesce next row-ID publication with the existing end-of-tile barrier if prefix remains selected.",
         "schedulable_now": false,
         "prerequisites": [
           "Complete the current direct-versus-prefix model comparison.",
           "Preserve the barrier before K overwrites V and prove no remaining current-tile row-ID reader."
-        ]
+        ],
+        "completed_prerequisites": [
+          "Prefix model route retained after clean direct comparison.",
+          "K36/V260 compile/smoke/physical262144 component/exact-bit/rotated component gates closed; mixed speed, not selected.",
+          "Main checked every current-row reader against the proposed PV overlap; independent Orca source review is next."
+        ],
+        "status": "Completed full gate; no broad component win. Keep original prefix selected. Record pending code retirement at next implementation boundary."
       },
       {
         "question": "Preload16 Q joint_matrix fragments per QK subgroup and reuse the Q/KV SLM arena.",
@@ -166,7 +126,8 @@
           "Establish prefix as a useful model route.",
           "Same BF16 slices, uniform subgroup participation and a workgroup barrier before K overwrite.",
           "Compile/JIT support and exact production-instance correctness; joint_matrix objects are noncopyable on this compiler.",
-          "Measure actual GRF/spill/SLM metadata and model timing;28224->20032B is requested memory only."
+          "Measure actual GRF/spill/SLM metadata and model timing;28224->20032B is requested memory only.",
+          "Pin emitted baseline register/SLM resources and choose a bounded Q-fragment variant; added GRF/spill/residency cost remains unknown."
         ]
       }
     ],
@@ -182,6 +143,30 @@
       "decision": "Reuse the existing source-audited pitch proposal after the current comparison; no new duplicate survey. Recheck immutable source/provenance and wire maintained API/tests before compiling.",
       "candidate": "Fixed score33,Cells32,WG128,SG16; K36/V260 shared tile needs9216 BF16 values,30272B requested local payload,34368B admission minimum. No hardware occupancy/bank map or performance result.",
       "do_not_repeat": "Old global K span256 schedule regressed10.35–29.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
+    },
+    "reviewed_base_source_sha256": "fa505d02e2b24f7cb6948033921fa697c8aeb58e6f4df6d873f13e5a7918e36b",
+    "source_sha256": "0f70c6caf55829f301af3ac97d21d0cedfdf05d237f7a63d421909878e8981df",
+    "closed_pitch_result": {
+      "commit": "ee14c50d404e04aa30424a5c5b33346c583842df",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-attention-current.json",
+      "decision": "K36/V260 not selected; revert experimental pitch code to Git history."
+    },
+    "row_publication_implementation": {
+      "api": "qsa_bf16_prefix_rows_batch",
+      "score_pitch": 33,
+      "K_pitch": 32,
+      "V_pitch": 256,
+      "requested_local_payload_bytes": 28224,
+      "proof": "Initial Q/state barrier publishes first row IDs. All current row readers finish before V/P publication. PV reads only kv/probability/alpha; next IDs can be written during PV and published by its existing final barrier, which still protects V-to-K reuse.",
+      "numerics": "Unchanged online update and DPAS order; per-thread diagnostic ORs reduce after all tiles.",
+      "qualification": "Source reviewed, compiled, traced smoke/full component and36 rotated timing samples passed. Mixed subpercent speed; not selected or model-qualified.",
+      "source_review": {
+        "report_sha256": "15019fb2e6aeea70eabcef5577ddbcf4df23c63cc43b7b32adf97ea82e8489c3",
+        "review_sha256": "a51c866eb4683d54093169d6c2418868b3133461cf796b0e96fb990cf5c8712a",
+        "source_sha256": "0f70c6caf55829f301af3ac97d21d0cedfdf05d237f7a63d421909878e8981df",
+        "verdict": "Independent Orca Luna review plus native Luna-max review found no source-ordering blocker. This is not runtime or adoption proof.",
+        "required_gate_corrections": "Add explicit duplicate IDs, two logical pages aliasing one physical page, and first-/later-tile-only K/V invalid scales with recovery; implemented in maintained fixture, pending build/execution."
+      }
     }
   },
   "gdn_runtime_contract_review": {
@@ -195,5 +180,89 @@
     "required_next_evidence": "A concrete adoption question, captured actual backend/activation/pool overrides and same-input comparison. Current0.07% model PP difference supplies no performance adoption case.",
     "review_scope_correction": "The reviewer did not locate the current index; Main verified and updated this actual file. Do not propagate that as an index-absence claim.",
     "retention": "Original report/review bodies have completed their compact-contract consumer. Retire them at the next idle cleanup boundary; no automatic full-report promotion."
+  },
+  "closed_research_consumer_review": {
+    "review_sha256": "602f7944b6090a581c411519b52dc376c2126d2e4c21af0b11d8206b4f23925d",
+    "source_commit": "fbc7f56d7b0ddb5db5f3722ef33ca044c3f8a5c8",
+    "retired_count": 3,
+    "retired_bytes": 52427,
+    "retired_references": [
+      {
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round943-v1.txt",
+        "sha256": "cb69c0466c2d034da2d7dcf2cd99290e0b2218637a74ff99b10ced10470d4515",
+        "bytes": 17226,
+        "source_commit": "fbc7f56d7b0ddb5db5f3722ef33ca044c3f8a5c8",
+        "reason": "Indexed trigger was a GDN recurrence/chunk/state decision. That comparison is closed with no material adoption; Main names no open GDN choice. The source survey proves no Strata performance, runtime route or 262144-context result.",
+        "retrieval_trigger": "A new Main-owned GDN change creates a concrete recurrence, boundary, precision or sync choice. Preserve R943-C1..C4 limits: scalar scans do not drop into GDN; source family does not prove runtime route; numerical/context/RESTORE gates stay with Main."
+      },
+      {
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round934-v1.txt",
+        "sha256": "221e946b5cffb271a04e5eb0164308a59cd97937a12c860e90842181c5476442",
+        "bytes": 19144,
+        "source_commit": "fbc7f56d7b0ddb5db5f3722ef33ca044c3f8a5c8",
+        "reason": "Its conditional consumer is a selected-cell stable-reduction split. The closed QSA screen and pending pitch candidate select no split or reduction bottleneck.",
+        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report’s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
+      },
+      {
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-matrix-register-reuse-20261018.md",
+        "sha256": "747e2627239edefb7280283f82158535765996b444b8a57c860708e82b4d69eb",
+        "bytes": 16057,
+        "source_commit": "fbc7f56d7b0ddb5db5f3722ef33ca044c3f8a5c8",
+        "reason": "Its GDN owner-map consumer is stale. For Q-fragment preload/SLM alias, it adds generic joint_matrix/SLM advice but no QSA schedule; the compact QSA review already gives fragment loads, arena lifetime/barrier, SLM arithmetic and gates.",
+        "retrieval_trigger": "If Q-fragment work is selected and a specific API/layout/resource question remains, retrieve only matching sections and recheck immutable Intel/source license pins. Report says no XeStrata source and no copied code."
+      }
+    ],
+    "decision": "No remaining named near-term consumer; verified exact Git blobs before tracked deletion. Keep compact query-state review for the selected row-publication experiment. Main did not read collection bodies."
+  },
+  "moe_grouped_decision": {
+    "report_sha256": "b950cb6a6f31935cef0f279d109a5bd6785f5646935e42fceed2b7c428bdc5a4",
+    "review_sha256": "b4fdc287bede7c68615c04b27994741bf6b3ffea4c920f1d8adc9b5b199e09c2",
+    "reviewed_source_commit": "4f648279eb0e73f072ddf53550deb8426cc86e99",
+    "source_pins_recovered_verified": true,
+    "corrections": [
+      "Mode10 means up to ten8192-row chunks, not ten experts.",
+      "Two dequant pairs already allocated; current window uses one. Pair9.375MiB; four-expert residency adds18.75MiB for two more pairs, plus activations/outputs/workspace.",
+      "GU/down stores are BF16, SwiGLU hidden is FP16, accumulation is FP32 in the existing expert/job order.",
+      "Fixed residency was a bounded research question, not a user prohibition on memory/performance tradeoffs."
+    ],
+    "main_census": {
+      "schedulable_now": true,
+      "prerequisite": "QSA comparison closed; current-path profile and exact planned-job census are next, with source/config frozen before build/run.",
+      "observer": "Use existing coarse/QSA/CPU-wait profiles. New per-window host metadata census adds no tensor readback or GPU work and reconciles planned jobs with final retired totals.",
+      "limitations": "Diagnostic timing and requested DMA bytes, not clean speed, physical bandwidth/saturation or an additive critical-path partition.",
+      "state": "Closed successfully:48 windows/21514 planned and retired jobs, source51a6f70a; no fresh faults. See moe-window-census-current.json."
+    },
+    "grouped_candidate": {
+      "schedulable_now": false,
+      "prerequisites": [
+        "Current measured jobs/expert and rows/job, submit/wait CPU versus device/wall attribution.",
+        "Prove pair1 and activation/output lifetime in grouped path; exact BF16/FP16 and FP32-order gates.",
+        "Full262144-context memory accounting before any added residency."
+      ]
+    },
+    "retention": "Keep report/review pair only through this census and ensuing grouping decision; no further generic grouped-GEMM survey.",
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/moe-grouped-native16-feasibility.md",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/moe-grouped-native16-feasibility-review.json",
+    "retained_report_bytes": 19397,
+    "census_evidence": {
+      "result": "moe-window-census-current.json",
+      "jobs": 21514,
+      "small_jobs_below128": 11764,
+      "small_job_percent": 54.68067305010691,
+      "small_arithmetic_row_percent": 0.6272891438283408,
+      "extra_split_jobs": 3030,
+      "GEMM_submit_cpu_s": 3.361248519,
+      "main_CPU_s": 108.695958514,
+      "explicit_wait_CPU_s": 76.885899749,
+      "outside_wait_CPU_s": 31.810058765,
+      "decision": "Grouping stays conditional. Removing only all counted GEMM submit CPU costs at most2.95% of this114s diagnostic wall under no-overlap/other-cost-fixed assumptions; this does not bound grouped device-kernel gains. Prioritize current QSA global-memory/resource attribution over another grouping survey."
+    }
+  },
+  "closed_gdn_decision": {
+    "implementation": "../../../src/prefill/sycl/gdn_chunk64.cpp",
+    "contract": "../../sycl/gdn_chunk64/README.md",
+    "fixture": "../../sycl/gdn_chunk64",
+    "result": "native-gdn-model-current.json",
+    "decision": "No material model gain: existing GDN retained. New GDN research remains conditional on a concrete adoption/mismatch question and actual framework runtime evidence."
   }
 }
