@@ -1350,8 +1350,16 @@ closed normally, with mode10,98304 GPU residual rows, zero extra mixed allocatio
 thinking observed and no fresh GPU fault. All96 entry/retirement windows matched
 the48-layer81920+16384 schedule and expected extents. Its794.2tok/s first-use
 reading includes validation/logging and is not a clean speed comparison.
-Next run `qsa-long-input-scratch` clean cohort0; retain first use separately from
-its three subsequent requests and apply the committed target/futility criteria.
+The clean cohort0 then closed with795.0tok/s on first use and845.9,846.1,845.8
+on its three subsequent requests (median845.9, sample SD0.1528). All four actual
+117489-token request hashes match the81920-row screen at commit0dc815171;
+its802.1tok/s subsequent median is5.46% lower in this capacity comparison.
+Each placement has one independent process; this is not a repeated-process
+gain or an isolated kernel change. No fresh fault occurred. The prospective
+futility rule stops this configuration without cohorts1/2;1000tok/s is not met.
+Keep this opt-in capacity reference. Next measure remaining exact VRAM owners
+and the changed route/resource costs. The target-cache startup0.26GiB is rounded
+and cannot justify a release budget; head/dense composition remains excluded.
 Short prefill, broader numerical/task quality, full physical262144 context and
 RESTORE remain unqualified; this check does not establish default adoption or
 sustained decode performance.
