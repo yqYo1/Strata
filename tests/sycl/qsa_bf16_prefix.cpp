@@ -316,7 +316,7 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
       if (invalid==1) probe.head=16;
       if (invalid==2) probe.kv_head=2;
       if (invalid==3) probe.states=nullptr;
-      if (invalid==4) probe.states=reinterpret_cast<float *>(out.data());
+      if (invalid==4) probe.states=reinterpret_cast<float *>(out.data()+16); // Actual output, after the guard.
       if (invalid==5) probe.states=state_initial.empty() ? nullptr : const_cast<float *>(state_initial.data());
       if (invalid==6) probe.states=reinterpret_cast<float *>(reinterpret_cast<char *>(state.data())+1);
       if (invalid==7) probe.query=-1;

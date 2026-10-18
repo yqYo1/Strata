@@ -36,7 +36,7 @@ def main():
                    'use check_attention.py smoke|component|perf [ordered-exp]')
     mode = sys.argv[1]
     ordered = sys.argv[2:] == ['ordered-exp']
-    root = B / 'qsa-ordered-exp-component-v1' if ordered else ROOT
+    root = B / 'qsa-ordered-exp-component-v2' if ordered else ROOT
     result_path = P / 'bench/results/2026-10-15-pr6-recovery-audit/qsa-ordered-exp-current.json' if ordered else RESULT
     targets = ('sycl_qsa_bf16_prefix_kvvec4_test', 'sycl_qsa_bf16_prefix_ordered_exp_test') if ordered else TARGETS
     bench = 'sycl_qsa_bf16_prefix_ordered_exp_bench' if ordered else BENCH
@@ -63,7 +63,8 @@ def main():
                           candidate='qsa_bf16_prefix_ordered_exp_batch' if ordered else 'qsa_bf16_prefix_kvvec4_batch',
                           consumer='Immediate same-binary component comparison; preserve individual samples and retire raw checks after closure.',
                           prospective_gate='For ordered-exp:3 independent processes,6 rotated samples per arm/shape. Geomean candidate/base<=0.95 across3 matched shapes; no shape>1.05; each process improves for both cap2051 patterns. Component advance only, no model or decode adoption.',
-                          limits='Complete wrapper wall includes admission, pack, attention and checked drain. No hardware saturation, physical traffic, occupancy or model speed inference.')
+                          limits='Complete wrapper wall includes admission, pack, attention and checked drain. No hardware saturation, physical traffic, occupancy or model speed inference.',
+                          previous_attempt=dict(commit='963d387698f8b30b8fff9229449775000bdef4b8', path=str(result_path.relative_to(P)), passed=False, reason='Initial fixture case4 pointed at legal leading guard rather than actual output; corrected overlap address, unchanged numerical/admission gates.') if ordered else None)
         else:
             record = json.loads(result_path.read_text())
             if ordered:
