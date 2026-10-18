@@ -782,3 +782,12 @@ and readback stay outside marker intervals. Main supervises each process for
 advance gate remains geometric-mean latency ratio<=0.95 against the separate
 reference, no shape>1.05, and each process improves at2334/5963/8192 in both
 placements. Passing permits a later model experiment, not inference adoption.
+
+Source7ad7aad7ad7399ba54ce3aaa5171b0298370e117 has now passed all36 CPU
+ownership,14 traced small and52 GPU correctness cases. Both value/coordinate
+layouts, captures and null-capture kernels match the separate BF16/FP32 reference
+bitwise; invalid admissions/maps and buffer guards passed. Those processes
+closed without fresh GPU faults or a boot change. The result at37f3c641b records
+these component gates. The three-process performance comparison remains open
+in `moe-down-scatter-component-v3`; inspect its existing ownership receipt before
+resuming. No model speed or dispatch change is claimed.
