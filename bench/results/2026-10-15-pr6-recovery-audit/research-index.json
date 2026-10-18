@@ -719,5 +719,35 @@
       "evidence": "moe-window-census-current.json:command_service_profile.sample_columns/samples",
       "facts": "Current compact receipt includes separate GU/Down service for all five M8192 pairs, not only joint sums. Main reconstructed them by(window,expert,row) and verified the original five tuples. service_complete=1 with17 estimated-submit inversions; submit_clock_qualified=0 does not invalidate ordered GPU start/end service. No queue-delay or device-busy claim."
     }
+  },
+  "gdn_column_partition_scope": {
+    "classification": "decision_support",
+    "schedulable_now": false,
+    "eligible_at_dispatch": true,
+    "question": "Static feasibility of partitioning the existing exact-FP32 persistent long-prefill GDN recurrence across value columns and moving RMS/gating to a separate GPU kernel; compare2/4/8 partitions with ordering, state ownership and exact reduction gates.",
+    "prerequisites_met": [
+      "Main identified a concrete scheduling-only candidate from current fused_gdn.cpp; no change to recurrence math, storage contract or shared state proposed.",
+      "Current long-prefill entrypoint calls S128,hk16,hv48 and original persistent kernel launches48 workgroups of512 lanes per chunk.",
+      "Current18.0893s GDN coarse interval includes projection/conv/recurrence/output and host gaps; recurrence cost and actual occupancy remain unknown, so no speed claim or adoption is permitted."
+    ],
+    "source_sha256": {
+      "src/kernels/sycl/fused_gdn.cpp": "70abf4fd1359477a2e170b54f2172ba148a2ae21306e8145e070ebd0db7d995f",
+      "src/prefill/prefill.cpp": "c838ba98c9a9a8d4d7e910a112de16e3676c0c65ce2406915a1178a961ac807f"
+    },
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/gdn-column-partition-feasibility.md",
+    "main_reads_body_on_arrival": false,
+    "retention_consumer": "One exact-math scheduling feasibility decision, reviewed after Main measures GDN substages; no generic GDN/framework survey.",
+    "state": "Orca read-only source feasibility active; Main has closed the frozen V4 A/B.",
+    "task": "task_3ce46d3702d2",
+    "dispatch": "ctx_2d69595a0c6f",
+    "terminal": "term_f0bae62e-973f-4369-b216-490ffc3751a5",
+    "model_evidence": "Custom argv gpt-6-luna medium, updates disabled; satisfied TUI-idle and observed turn_started.",
+    "report_budget": {
+      "words": [
+        1800,
+        2600
+      ],
+      "maximum_bytes": 30720
+    }
   }
 }
