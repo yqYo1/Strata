@@ -1,0 +1,118 @@
+{
+  "source_commit": "dc8ca3459414c409cc7f87c31c038f0f7ce5b02f",
+  "fixtures": {
+    "sycl_qsa_bf16_prefix_kvvec4_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_kvvec4_test",
+      "sha256": "bc6add39d091a6aa57ca7bf0330c4c269ce1dd7106d5d2a238eb3948adb6fa89"
+    },
+    "sycl_qsa_bf16_prefix_ordered_exp_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_ordered_exp_test",
+      "sha256": "7e84f4b821bd73336661262996f8f9434d937e600da410feb1b40e262296e0e9"
+    },
+    "sycl_qsa_bf16_prefix_ordered_exp_bench": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_ordered_exp_bench",
+      "sha256": "d06bf20eee697f0ed7b46d1fe6139d3cd2380bccb7eaa471f382dab9901fded9"
+    }
+  },
+  "checks": [
+    {
+      "mode": "smoke",
+      "target": "sycl_qsa_bf16_prefix_kvvec4_test",
+      "process": 0,
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_kvvec4_test",
+        "--smoke"
+      ],
+      "binary_sha256": "bc6add39d091a6aa57ca7bf0330c4c269ce1dd7106d5d2a238eb3948adb6fa89",
+      "passed": true,
+      "exit_code": 0,
+      "ownership_closed": true,
+      "cases": [
+        "case explicit_duplicate_ids=PASS aliased_physical_pages=PASS first_later_KV_diagnostics=PASS status=PASS",
+        "case cells=97 live_cells=49 active_rows=128 cap=33 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case exact_prefix33_bits=PASS cells=97 cap=33 queries=1",
+        "case cells=97 live_cells=71 active_rows=160 cap=33 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case exact_prefix33_bits=PASS cells=97 cap=33 queries=3",
+        "fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED"
+      ],
+      "samples": []
+    },
+    {
+      "mode": "smoke",
+      "target": "sycl_qsa_bf16_prefix_ordered_exp_test",
+      "process": 0,
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_ordered_exp_test",
+        "--smoke"
+      ],
+      "binary_sha256": "7e84f4b821bd73336661262996f8f9434d937e600da410feb1b40e262296e0e9",
+      "passed": false,
+      "exit_code": 1,
+      "ownership_closed": true,
+      "cases": [
+        "case explicit_duplicate_ids=PASS aliased_physical_pages=PASS first_later_KV_diagnostics=PASS status=PASS"
+      ],
+      "samples": []
+    }
+  ],
+  "passed": false,
+  "complete": false,
+  "active": false,
+  "model_performance_measured": false,
+  "model_quality_qualified": false,
+  "physical262144_model_RESTORE_qualified": false,
+  "baseline": "qsa_bf16_prefix_kvvec4_batch",
+  "candidate": "qsa_bf16_prefix_ordered_exp_batch",
+  "consumer": "Immediate same-binary component comparison; preserve individual samples and retire raw checks after closure.",
+  "prospective_gate": "For ordered-exp:3 independent processes,6 rotated samples per arm/shape. Geomean candidate/base<=0.95 across3 matched shapes; no shape>1.05; each process improves for both cap2051 patterns. Component advance only, no model or decode adoption.",
+  "limits": "Complete wrapper wall includes admission, pack, attention and checked drain. No hardware saturation, physical traffic, occupancy or model speed inference.",
+  "ownership_closed": true,
+  "mode": "smoke",
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+    "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "ZES_ENABLE_SYSMAN": "0",
+    "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+    "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+    "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-ordered-exp-component-v1/tmp",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-ordered-exp-component-v1/cache"
+  },
+  "GPU_executed": true,
+  "error": "sycl_qsa_bf16_prefix_ordered_exp_test: invalid state capture submitted work",
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  },
+  "controller_error_tail_sha256": "5aec5939293002650e5f054230725fe2876c8362deb1a4567af72dfceef7a539",
+  "diagnosis": {
+    "kind": "Fixture admission-example address error; original smoke remains failed.",
+    "source_commit": "dc8ca3459414c409cc7f87c31c038f0f7ce5b02f",
+    "fixture_error": "invalid state capture submitted work",
+    "stderr_sha256": "0b9b75042dffc666465e0c2a9ddc1f81620e8f1d8e73d1dbbf84ecfa9e2804dd",
+    "stderr_bytes": 2997668,
+    "explanation": "At cap33, state capture spans32bytes. Invalid case4 uses out.data(), which points to32bytes of leading guard. Actual output starts at out.data()+16 uint16 elements,32bytes later. These spans do not overlap, so capture was legal and wrote only allocated guard memory; the fixture incorrectly expected rejection.",
+    "correction": "Point case4 to out.data()+16, inside the actual output span. Keep all existing rejection, output/state bit and guard gates; use a fresh run root after rebuilding committed code.",
+    "runtime_outcome": "Processes closed normally; no fresh driver fault or boot change. Full ordered-exp fixture and performance remain unqualified."
+  }
+}
