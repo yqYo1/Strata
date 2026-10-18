@@ -873,12 +873,16 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     stats_.tokens = old_stats.tokens + n;
     stats_.chunks = old_stats.chunks + logical_chunks;
     stats_.ms_total = old_stats.ms_total + ms_since(started);
-    if (window_context && window_context->accumulation)
+    if (window_context && window_context->accumulation) {
+        std::fprintf(stderr, "strata MoE GU fusion: fused_jobs=%llu fused_rows=%llu separate_jobs=%llu min_rows=2334\n",
+            (unsigned long long)window_context->gu_fused_jobs,
+            (unsigned long long)window_context->gu_fused_rows,
+            (unsigned long long)(window_context->jobs - window_context->gu_fused_jobs));
         std::fprintf(stderr, "strata MoE accumulator window: windows=%llu dequants=%llu jobs=%llu source_H2D_bytes=%llu GPU_resident_windows_only=1 operator_max=8192 maximum_rows=%lld\n",
             (unsigned long long)window_context->windows, (unsigned long long)window_context->dequants,
             (unsigned long long)window_context->jobs, (unsigned long long)window_context->source_bytes,
             (long long)window_context->maximum_rows);
-    else if (window_context)
+    } else if (window_context)
         std::fprintf(stderr, "strata MoE window: windows=%llu dequants=%llu jobs=%llu source_H2D_bytes=%llu GPU_resident_pairs_only=1 operator_max=8192 source_uploads_per_window=1\n",
             (unsigned long long)window_context->windows, (unsigned long long)window_context->dequants,
             (unsigned long long)window_context->jobs, (unsigned long long)window_context->source_bytes);

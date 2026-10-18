@@ -859,6 +859,42 @@ matched measurements and the broader correctness gates. The eliminated logical
 GU write/read is5120bytes per row,40MiB for8192 rows; this is an operation count,
 not a measurement of physical VRAM traffic or a proof of a bandwidth bottleneck.
 
+At source`5ca094afc`, the packed ownership36 cases, traced smoke4 cases and13
+admissions, full18 cases and all timed outputs passed without a fresh GPU fault.
+BF16 captures were exact and the observed FP16 difference was0 ULP, including
+the no-capture specialization. NaN payload bits are not an adoption criterion;
+the finite hidden output must remain saturated and within the stated bound.
+The native Luna-max review corrected a research false positive: the all-slot
+partner loop, XOR involution, parity and packed writer census also prove sloti+1.
+
+| Rows | Fused/separate wall ratio, median of3 process ratios | Decision for next model trial |
+| --- | ---: | --- |
+| 64 | 0.85950 (range0.67026–0.92128) | Exclude because of wide timing spread |
+| 160 | 1.07211 | Retain separate GU/SwiGLU |
+| 2334 | 0.97321 | Eligible large-job candidate |
+| 5963 | 0.94814 | Eligible large-job candidate |
+| 8192 | 0.92754 | Eligible large-job candidate |
+
+The component wall-ratio geometric mean was0.94205. This is a component result,
+not model throughput. Preserve the samples in the
+[current component result](../bench/results/2026-10-15-pr6-recovery-audit/moe-gu-swiglu-current.json).
+The explicit startup selector`STRATA_SYCL_PREFILL_GU_SWIGLU=large` is a model
+experiment: use the wide fused kernel only for jobs>=2334 rows in the existing
+long-input accumulator window. Smaller jobs keep the separate operators.
+Speeds between the sampled sizes remain unmeasured; actual model timing decides
+this threshold. Default, short-input prefill and decode do not select this API.
+Existing command-service census assumes a separate activation command, so the
+new selector rejects that observer until fused-command coverage is qualified;
+the ordinary parameter validation and trace path remains available.
+
+Run/commit `bench_engine.py prepare qsa-gu-fusion-check`, then its matching
+`run`. Only a passed>=32K actual-input admission permits the corresponding
+`base` then`candidate` phases. Both clean arms use the same engine, ordered-exp
+QSA, GDN columns4, matched official`bench.sh` requests and thinking enabled;
+only the GU selector changes. Each arm records first-use plus3 subsequent
+fresh>=64K requests and actual fused/separate job counts. Repeated independent
+cohorts are still required if variability prevents an adoption decision.
+
 ## MoE Down/scatter component
 
 `Gemm::down_scatter` is an explicit component API with no model dispatch hook.

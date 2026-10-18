@@ -34,7 +34,7 @@ struct Native16BackendState {
 namespace {
 enum class Backend { own, vllm };
 enum class VllmTile { automatic, compact, wide };
-struct BackendConfig { Backend backend; VllmTile tile; };
+struct BackendConfig { Backend backend; VllmTile tile; bool gu_fusion; };
 const BackendConfig &backend_config() {
   static const BackendConfig config = [] {
     const char *name = std::getenv("STRATA_SYCL_PREFILL_NATIVE16_BACKEND");
@@ -56,12 +56,22 @@ const BackendConfig &backend_config() {
 #endif
     // Existing mode parser is immutable and does not select a device/provider.
     const bool active = native16::requested();
+    const char *gu = std::getenv("STRATA_SYCL_PREFILL_GU_SWIGLU");
+    const bool gu_fusion = gu && std::strcmp(gu, "large") == 0;
+    if (gu && std::strcmp(gu, "0") != 0 && !gu_fusion)
+      throw std::invalid_argument("STRATA_SYCL_PREFILL_GU_SWIGLU must be 0 or large");
+    if (gu_fusion && (!active || !use_vllm || chosen == VllmTile::compact))
+      throw std::invalid_argument("GU_SWIGLU=large requires native16 bf16, vllm and auto/wide tile");
+    const char *command_profile = std::getenv("STRATA_SYCL_PREFILL_COMMAND_PROFILE");
+    if (gu_fusion && command_profile && std::strcmp(command_profile, "0") != 0)
+      throw std::invalid_argument("GU fusion command-service census is not yet qualified; use separate GU for that observer");
     std::fprintf(stderr, "[native16-route] engine=%s backend=%s tile=%s%s\n",
         active ? "bf16" : "0", use_vllm ? "vllm" : "own",
         use_vllm ? (chosen == VllmTile::automatic ? "auto(T<128:compact;else:wide)" :
                     chosen == VllmTile::compact ? "compact" : "wide") : "own",
         use_vllm ? " aot=bmg-g21-a0 isolated=1 experimental" : "");
-    return BackendConfig{use_vllm ? Backend::vllm : Backend::own, chosen};
+    std::fprintf(stderr, "[native16-gu] fusion=%s min_rows=2334\n", gu_fusion ? "large" : "0");
+    return BackendConfig{use_vllm ? Backend::vllm : Backend::own, chosen, gu_fusion};
   }();
   return config;
 }
@@ -74,11 +84,8 @@ void validate_vllm_aot_device(const sycl::queue &q) {
       d.get_info<ex::info::device::architecture>() != ex::architecture::intel_gpu_bmg_g21)
     throw std::invalid_argument("vllm engine hook requires Intel Level Zero BMG G21 AOT");
 }
-sycl::event vllm_submit(std::shared_ptr<Native16BackendState> &state,
-                        const uint16_t *x, const uint16_t *w, uint16_t *y,
-                        int64_t t, int64_t n, int64_t k, bool input_bf16,
-                        bool output_bf16, int64_t ld, float beta, void *stream) {
-  namespace vx = experimental::vllm_xe2_native16;
+Native16BackendState &vllm_state(std::shared_ptr<Native16BackendState> &state,
+                               const uint16_t *x, void *stream) {
   auto &q = sycl_backend::queue_for(stream);
   if (!state) {
     validate_vllm_aot_device(q);
@@ -89,6 +96,14 @@ sycl::event vllm_submit(std::shared_ptr<Native16BackendState> &state,
   }
   if (&q != &state->adapter.queue())
     throw std::invalid_argument("vllm Gemm stream address changed after binding");
+  return *state;
+}
+sycl::event vllm_submit(std::shared_ptr<Native16BackendState> &state,
+                        const uint16_t *x, const uint16_t *w, uint16_t *y,
+                        int64_t t, int64_t n, int64_t k, bool input_bf16,
+                        bool output_bf16, int64_t ld, float beta, void *stream) {
+  namespace vx = experimental::vllm_xe2_native16;
+  auto &bound = vllm_state(state, x, stream);
   const auto &config = backend_config();
   const auto tile = config.tile == VllmTile::compact ||
                     (config.tile == VllmTile::automatic && t < 128)
@@ -100,7 +115,7 @@ sycl::event vllm_submit(std::shared_ptr<Native16BackendState> &state,
   problem.output = output_bf16 ? vx::Storage::bf16 : vx::Storage::fp16;
   problem.beta = beta;
   sycl_backend::cpu_wait_profile::Host submission(sycl_backend::cpu_wait_profile::gemm_submit);
-  auto event = state->adapter.beta0(problem, tile);
+  auto event = bound.adapter.beta0(problem, tile);
   submission.finish();
   return event;
 }
@@ -313,5 +328,20 @@ void Gemm::bf16_out16(const uint16_t *x, const uint16_t *w, uint16_t *y,
   }
   dispatch<BFloat>(x, w, y, t, n, k, output_bf16, ld, beta,
                    stream_, out16_support_);
+}
+bool Gemm::try_gu_swiglu16(const uint16_t *x, const uint16_t *w, uint16_t *hidden, int64_t t) {
+  if (!handle_) throw std::invalid_argument("uninitialized SYCL GEMM16");
+  if (!backend_config().gu_fusion || t < 2334) return false;
+#if defined(STRATA_SYCL_VLLM_XE2_NATIVE16)
+  namespace vx = experimental::vllm_xe2_native16;
+  auto &bound = vllm_state(out16_backend_, x, stream_);
+  sycl_backend::cpu_wait_profile::Host submission(sycl_backend::cpu_wait_profile::gemm_submit);
+  const auto event = bound.adapter.gu_swiglu({x, w, hidden, t, nullptr}, vx::Tile::wide_128x128);
+  submission.finish();
+  sycl_backend::finish(stream_, event);
+  return true;
+#else
+  throw std::invalid_argument("GU fusion requires compiled vllm backend");
+#endif
 }
 } // namespace strata::prefill
