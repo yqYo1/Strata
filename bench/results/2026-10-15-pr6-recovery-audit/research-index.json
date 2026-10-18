@@ -1325,5 +1325,68 @@
       "NaN payloads ignored; infinite hidden outputs rejected; one-ULP bound applies to finite saturated FP16 results.",
       "All36 packed ownership cases and bounded component checks passed; no model or physical262144/RESTORE qualification. New scope waits for production-route evidence."
     ]
+  },
+  "gu_epilogue_codegen_collection_scope": {
+    "classification": "knowledge_collection",
+    "schedulable_now": false,
+    "eligible_at_dispatch": true,
+    "prerequisites_met": [
+      "Concrete qualified GU prototype and component shape timings exist;39,260-token production admission passed.",
+      "Pinned UR V2 forced-batched event profiling rejection is recorded, allowing a source-specific caller/cut-boundary audit without re-running that flag."
+    ],
+    "question": "Compare activation epilogue layouts, register/code size, coalescing, SFU math and DPAS overlap techniques using the actual qualified packed GU kernel as a concrete applicability case.",
+    "source_commit": "f6f6714f7eab7c2d8681f3c9925ac185a1eeca29",
+    "source_files_sha256": {
+      "src/prefill/sycl/vllm_xe2/native16.cpp": "56f07930bfd201e17b419f34ee0ff1a3f7da06d8515f763f6cea907dab74308a",
+      "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp": "84fb1251c2f9f93bd7774fb2a5a6c928df9ac8e86d1c7f6cf1a6cec058403fa6",
+      "bench/sycl/moe_gu_swiglu.cpp": "bea7e3406940a21850a4524b6bb2f2f3a9f666bf5e0bf20094e903227e3b2e18"
+    },
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/gu-epilogue-codegen-collection.md",
+    "report_budget": {
+      "words": [
+        1800,
+        2600
+      ],
+      "maximum_bytes": 32768
+    },
+    "state": "Orca knowledge collection dispatched; Main does not read body on arrival.",
+    "main_reads_body_on_arrival": false,
+    "retention_consumer": "Indexed substantive knowledge for a named later implementation question; native review determines novelty and retrieval sections after completion.",
+    "dispatch": "ctx_eeff26a5e252",
+    "task": "task_10ab22fd152b",
+    "terminal": "term_e7f3fbdf-2b08-4d9e-9a71-92d0a99a431b",
+    "model_evidence": "Custom gpt-6-luna/medium terminal; tui-idle satisfied and turn_started observed."
+  },
+  "prefill_queue_profiling_collection_scope": {
+    "classification": "knowledge_collection",
+    "schedulable_now": false,
+    "eligible_at_dispatch": true,
+    "prerequisites_met": [
+      "Concrete qualified GU prototype and component shape timings exist;39,260-token production admission passed.",
+      "Pinned UR V2 forced-batched event profiling rejection is recorded, allowing a source-specific caller/cut-boundary audit without re-running that flag."
+    ],
+    "question": "Audit actual profiling-dependent call sites and a possible prefill-only queue boundary, preserving calibration, diagnostics, graph/lifetime and decode APIs after forced-batched profiling failed.",
+    "source_commit": "f6f6714f7eab7c2d8681f3c9925ac185a1eeca29",
+    "source_files_sha256": {
+      "src/sycl/runtime.cpp": "e6c20e148bc7ceec250ad9a58ddfc851c1476aaab3d68982d2aee2897e572b83",
+      "src/sycl/compat.cpp": "bd5a664f9a0bd91b0e8e2e59f67d0a2c38c81599613831abbd6e16ad98c01689",
+      "include/strata/sycl/runtime.hpp": "a0e0687886e09c50922d01f7023ba3b51e8ac2dbe43f461a798ba82438b2a074",
+      "src/program/generate.cpp": "a6938dccf1ae127b0751e8e6b89f720e1e5d75e9d6d70ff937e99841f338daec"
+    },
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/prefill-queue-profiling-collection.md",
+    "report_budget": {
+      "words": [
+        1800,
+        2600
+      ],
+      "maximum_bytes": 32768
+    },
+    "state": "Orca knowledge collection dispatched; Main does not read body on arrival.",
+    "main_reads_body_on_arrival": false,
+    "retention_consumer": "Indexed substantive knowledge for a named later implementation question; native review determines novelty and retrieval sections after completion.",
+    "dispatch": "ctx_0b4e5338e746",
+    "task": "task_fdfaee9cd6a1",
+    "terminal": "term_e563a032-ef9f-4179-9573-012e03ff834e",
+    "model_evidence": "Custom gpt-6-luna/medium terminal; tui-idle satisfied and turn_started observed."
   }
 }
