@@ -956,6 +956,1416 @@
           "logical_wall_TFLOPs": 2.6914556967102
         }
       ]
+    },
+    {
+      "phase": "diagnostic",
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_native16_paired_gemm_bench",
+        "--resident",
+        "8",
+        "fp16",
+        "--process",
+        "0"
+      ],
+      "plan": {
+        "kind": "plan",
+        "mode": "measure",
+        "resident_only": true,
+        "submits_per_sample": 8,
+        "shape": 8,
+        "T": 5963,
+        "N": 1280,
+        "K": 2560,
+        "ldy": 1280,
+        "beta": 0,
+        "input_type": "fp16",
+        "device_tensor_bytes": 128678336,
+        "input_fnv1a64": "4834186686110060261",
+        "initial_pageable_upload_bytes": 37084800,
+        "initial_pageable_upload_wall_seconds": 0.011101583,
+        "initial_pageable_upload_thread_cpu_seconds": 0.008492565000000007,
+        "weight_fnv1a64": "10777993185871135461",
+        "oracle": "rank2_binary_exact_v1",
+        "process_index": 0,
+        "warmups_per_route": 3,
+        "timed_submits_per_route": 3,
+        "pid": 3734212,
+        "rotation_base": 0,
+        "route_order": [
+          "vllm_compact16x64_bf16_output",
+          "vllm_wide128x128_bf16_output"
+        ]
+      },
+      "process": 0,
+      "exit_code": 0,
+      "ownership_closed": true,
+      "passed": true,
+      "validation_count": 12,
+      "native_result": {
+        "kind": "result",
+        "status": "PASS",
+        "validated_invocations": 12,
+        "warmups_per_route": 3,
+        "process_index": 0,
+        "samples_per_route": 3,
+        "scope": "resident_operator_reference;not_hardware_peak_or_model_quality_or_speed;not_adversarial_accumulator_gate"
+      },
+      "submit_clock_inversions": [
+        {
+          "ordinal": 9,
+          "warmup": false,
+          "event_index": 0,
+          "timestamps_ns": [
+            639245441108975,
+            639245441105520,
+            639245441944270
+          ],
+          "start_minus_submit_ns": -3455
+        }
+      ],
+      "samples": [
+        {
+          "kind": "sample",
+          "status": "PASS",
+          "ordinal": 6,
+          "route": "vllm_wide128x128_bf16_output",
+          "implementation": "R810::Gemm::beta0(wide_128x128,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 0,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.008408125,
+          "thread_cpu_submit_seconds": 0.0003607559999998511,
+          "thread_cpu_wait_check_seconds": 0.008028865999999857,
+          "logical_flop_per_submit": 39079116800,
+          "kernel_total_seconds": 0.008264479,
+          "profiling_contract_valid": true,
+          "profiling_service_valid": true,
+          "profiling_duration_positive": true,
+          "profiling_cross_event_ordered": true,
+          "device_timestamps_ns": [
+            [
+              639244770026185,
+              639244770059791,
+              639244771103541
+            ],
+            [
+              639244770096086,
+              639244771108541,
+              639244772155312
+            ],
+            [
+              639244770144947,
+              639244772159687,
+              639244773209375
+            ],
+            [
+              639244770188128,
+              639244773213437,
+              639244774252083
+            ],
+            [
+              639244770230839,
+              639244774256041,
+              639244775313541
+            ],
+            [
+              639244770274130,
+              639244775317604,
+              639244776360312
+            ],
+            [
+              639244770315938,
+              639244776364375,
+              639244777413958
+            ],
+            [
+              639244770357616,
+              639244777417604,
+              639244778353437
+            ]
+          ],
+          "logical_kernel_TFLOPs": 37.82851095634704,
+          "logical_wall_TFLOPs": 37.18224151044377
+        },
+        {
+          "kind": "sample",
+          "status": "PASS",
+          "ordinal": 7,
+          "route": "vllm_compact16x64_bf16_output",
+          "implementation": "R810::Gemm::beta0(compact_16x64,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 0,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.026080235,
+          "thread_cpu_submit_seconds": 0.00035597599999981355,
+          "thread_cpu_wait_check_seconds": 0.025695763999999954,
+          "logical_flop_per_submit": 39079116800,
+          "kernel_total_seconds": 0.025936771,
+          "profiling_contract_valid": true,
+          "profiling_service_valid": true,
+          "profiling_duration_positive": true,
+          "profiling_cross_event_ordered": true,
+          "device_timestamps_ns": [
+            [
+              639244985084293,
+              639244985105833,
+              639244988618125
+            ],
+            [
+              639244985148543,
+              639244988623125,
+              639244992130729
+            ],
+            [
+              639244985193217,
+              639244992135104,
+              639244995329791
+            ],
+            [
+              639244985236528,
+              639244995333541,
+              639244998472083
+            ],
+            [
+              639244985278988,
+              639244998475833,
+              639245001623125
+            ],
+            [
+              639244985321898,
+              639245001626875,
+              639245004773958
+            ],
+            [
+              639244985366893,
+              639245004777708,
+              639245007923437
+            ],
+            [
+              639244985409172,
+              639245007927187,
+              639245011070729
+            ]
+          ],
+          "logical_kernel_TFLOPs": 12.053656733137675,
+          "logical_wall_TFLOPs": 11.987351126245603
+        },
+        {
+          "kind": "sample",
+          "status": "PASS",
+          "ordinal": 8,
+          "route": "vllm_compact16x64_bf16_output",
+          "implementation": "R810::Gemm::beta0(compact_16x64,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 1,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.016412325,
+          "thread_cpu_submit_seconds": 0.0003682799999999986,
+          "thread_cpu_wait_check_seconds": 0.016025589999999923,
+          "logical_flop_per_submit": 39079116800,
+          "kernel_total_seconds": 0.016283958,
+          "profiling_contract_valid": true,
+          "profiling_service_valid": true,
+          "profiling_duration_positive": true,
+          "profiling_cross_event_ordered": true,
+          "device_timestamps_ns": [
+            [
+              639245218024906,
+              639245218035625,
+              639245220161458
+            ],
+            [
+              639245218100909,
+              639245220164895,
+              639245222281041
+            ],
+            [
+              639245218146464,
+              639245222284062,
+              639245224412916
+            ],
+            [
+              639245218190166,
+              639245224415625,
+              639245226480625
+            ],
+            [
+              639245218236974,
+              639245226483333,
+              639245228454791
+            ],
+            [
+              639245218279393,
+              639245228457395,
+              639245230422916
+            ],
+            [
+              639245218321392,
+              639245230425625,
+              639245232385000
+            ],
+            [
+              639245218363561,
+              639245232387604,
+              639245234339375
+            ]
+          ],
+          "logical_kernel_TFLOPs": 19.198829572024195,
+          "logical_wall_TFLOPs": 19.04866826607443
+        },
+        {
+          "kind": "sample",
+          "status": "PASS",
+          "ordinal": 9,
+          "route": "vllm_wide128x128_bf16_output",
+          "implementation": "R810::Gemm::beta0(wide_128x128,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 1,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.006718346,
+          "thread_cpu_submit_seconds": 0.0003722680000000089,
+          "thread_cpu_wait_check_seconds": 0.006308519000000068,
+          "logical_flop_per_submit": 39079116800,
+          "kernel_total_seconds": 0.006591251,
+          "profiling_contract_valid": false,
+          "profiling_service_valid": true,
+          "profiling_duration_positive": true,
+          "profiling_cross_event_ordered": true,
+          "device_timestamps_ns": [
+            [
+              639245441108975,
+              639245441105520,
+              639245441944270
+            ],
+            [
+              639245441176392,
+              639245441948333,
+              639245442775104
+            ],
+            [
+              639245441220815,
+              639245442778645,
+              639245443594791
+            ],
+            [
+              639245441264116,
+              639245443598020,
+              639245444409791
+            ],
+            [
+              639245441307708,
+              639245444413125,
+              639245445230625
+            ],
+            [
+              639245441350037,
+              639245445233854,
+              639245446062083
+            ],
+            [
+              639245441392166,
+              639245446065416,
+              639245446879062
+            ],
+            [
+              639245441434706,
+              639245446882395,
+              639245447720833
+            ]
+          ],
+          "logical_kernel_TFLOPs": 47.431501910638815,
+          "logical_wall_TFLOPs": 46.53421160505874
+        },
+        {
+          "kind": "sample",
+          "status": "PASS",
+          "ordinal": 10,
+          "route": "vllm_wide128x128_bf16_output",
+          "implementation": "R810::Gemm::beta0(wide_128x128,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 2,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.008447149,
+          "thread_cpu_submit_seconds": 0.0003755829999998461,
+          "thread_cpu_wait_check_seconds": 0.008053000999999949,
+          "logical_flop_per_submit": 39079116800,
+          "kernel_total_seconds": 0.008302604,
+          "profiling_contract_valid": true,
+          "profiling_service_valid": true,
+          "profiling_duration_positive": true,
+          "profiling_cross_event_ordered": true,
+          "device_timestamps_ns": [
+            [
+              639245655085976,
+              639245655087187,
+              639245656137291
+            ],
+            [
+              639245655151068,
+              639245656142187,
+              639245657191666
+            ],
+            [
+              639245655196163,
+              639245657195937,
+              639245658254791
+            ],
+            [
+              639245655239835,
+              639245658258750,
+              639245659315000
+            ],
+            [
+              639245655282615,
+              639245659319166,
+              639245660351666
+            ],
+            [
+              639245655324954,
+              639245660355729,
+              639245661399479
+            ],
+            [
+              639245655370369,
+              639245661403541,
+              639245662473645
+            ],
+            [
+              639245655412268,
+              639245662477291,
+              639245663418854
+            ]
+          ],
+          "logical_kernel_TFLOPs": 37.654804974439344,
+          "logical_wall_TFLOPs": 37.01046760273792
+        },
+        {
+          "kind": "sample",
+          "status": "PASS",
+          "ordinal": 11,
+          "route": "vllm_compact16x64_bf16_output",
+          "implementation": "R810::Gemm::beta0(compact_16x64,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 2,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.026110542,
+          "thread_cpu_submit_seconds": 0.0003855640000001159,
+          "thread_cpu_wait_check_seconds": 0.025706081000000047,
+          "logical_flop_per_submit": 39079116800,
+          "kernel_total_seconds": 0.025949688000000002,
+          "profiling_contract_valid": true,
+          "profiling_service_valid": true,
+          "profiling_duration_positive": true,
+          "profiling_cross_event_ordered": true,
+          "device_timestamps_ns": [
+            [
+              639245870000365,
+              639245870002291,
+              639245873542812
+            ],
+            [
+              639245870078331,
+              639245873547916,
+              639245877067187
+            ],
+            [
+              639245870134707,
+              639245877071666,
+              639245880254687
+            ],
+            [
+              639245870184430,
+              639245880258437,
+              639245883402083
+            ],
+            [
+              639245870227481,
+              639245883405833,
+              639245886576250
+            ],
+            [
+              639245870270080,
+              639245886580104,
+              639245889705312
+            ],
+            [
+              639245870312199,
+              639245889709062,
+              639245892831354
+            ],
+            [
+              639245870354449,
+              639245892835104,
+              639245895980416
+            ]
+          ],
+          "logical_kernel_TFLOPs": 12.047656773368526,
+          "logical_wall_TFLOPs": 11.97343718104358
+        }
+      ]
+    },
+    {
+      "phase": "diagnostic",
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_native16_paired_gemm_bench",
+        "--resident",
+        "8",
+        "fp16",
+        "--process",
+        "1"
+      ],
+      "plan": {
+        "kind": "plan",
+        "mode": "measure",
+        "resident_only": true,
+        "submits_per_sample": 8,
+        "shape": 8,
+        "T": 5963,
+        "N": 1280,
+        "K": 2560,
+        "ldy": 1280,
+        "beta": 0,
+        "input_type": "fp16",
+        "device_tensor_bytes": 128678336,
+        "input_fnv1a64": "4834186686110060261",
+        "initial_pageable_upload_bytes": 37084800,
+        "initial_pageable_upload_wall_seconds": 0.011287665,
+        "initial_pageable_upload_thread_cpu_seconds": 0.008657391999999986,
+        "weight_fnv1a64": "10777993185871135461",
+        "oracle": "rank2_binary_exact_v1",
+        "process_index": 1,
+        "warmups_per_route": 3,
+        "timed_submits_per_route": 3,
+        "pid": 3734330,
+        "rotation_base": 1,
+        "route_order": [
+          "vllm_compact16x64_bf16_output",
+          "vllm_wide128x128_bf16_output"
+        ]
+      },
+      "process": 1,
+      "exit_code": 0,
+      "ownership_closed": true,
+      "passed": true,
+      "validation_count": 12,
+      "native_result": {
+        "kind": "result",
+        "status": "PASS",
+        "validated_invocations": 12,
+        "warmups_per_route": 3,
+        "process_index": 1,
+        "samples_per_route": 3,
+        "scope": "resident_operator_reference;not_hardware_peak_or_model_quality_or_speed;not_adversarial_accumulator_gate"
+      },
+      "submit_clock_inversions": [
+        {
+          "ordinal": 10,
+          "warmup": false,
+          "event_index": 0,
+          "timestamps_ns": [
+            639248907607054,
+            639248907591250,
+            639248909770312
+          ],
+          "start_minus_submit_ns": -15804
+        },
+        {
+          "ordinal": 11,
+          "warmup": false,
+          "event_index": 0,
+          "timestamps_ns": [
+            639249130833100,
+            639249130830104,
+            639249131636250
+          ],
+          "start_minus_submit_ns": -2996
+        }
+      ],
+      "samples": [
+        {
+          "kind": "sample",
+          "status": "PASS",
+          "ordinal": 6,
+          "route": "vllm_compact16x64_bf16_output",
+          "implementation": "R810::Gemm::beta0(compact_16x64,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 0,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.016396003,
+          "thread_cpu_submit_seconds": 0.00041164199999998985,
+          "thread_cpu_wait_check_seconds": 0.015963603999999965,
+          "logical_flop_per_submit": 39079116800,
+          "kernel_total_seconds": 0.016271146,
+          "profiling_contract_valid": true,
+          "profiling_service_valid": true,
+          "profiling_duration_positive": true,
+          "profiling_cross_event_ordered": true,
+          "device_timestamps_ns": [
+            [
+              639248025161505,
+              639248025181145,
+              639248027297395
+            ],
+            [
+              639248025229894,
+              639248027300833,
+              639248029417916
+            ],
+            [
+              639248025275639,
+              639248029421041,
+              639248031533750
+            ],
+            [
+              639248025319381,
+              639248031536458,
+              639248033608229
+            ],
+            [
+              639248025388742,
+              639248033610833,
+              639248035561666
+            ],
+            [
+              639248025451289,
+              639248035564375,
+              639248037534166
+            ],
+            [
+              639248025500411,
+              639248037536770,
+              639248039504166
+            ],
+            [
+              639248025543622,
+              639248039506770,
+              639248041472083
+            ]
+          ],
+          "logical_kernel_TFLOPs": 19.21394684799706,
+          "logical_wall_TFLOPs": 19.067630958593995
+        },
+        {
+          "kind": "sample",
+          "status": "PASS",
+          "ordinal": 7,
+          "route": "vllm_wide128x128_bf16_output",
+          "implementation": "R810::Gemm::beta0(wide_128x128,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 0,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.006721402,
+          "thread_cpu_submit_seconds": 0.0003583319999997947,
+          "thread_cpu_wait_check_seconds": 0.006344417000000213,
+          "logical_flop_per_submit": 39079116800,
+          "kernel_total_seconds": 0.0065925,
+          "profiling_contract_valid": true,
+          "profiling_service_valid": true,
+          "profiling_duration_positive": true,
+          "profiling_cross_event_ordered": true,
+          "device_timestamps_ns": [
+            [
+              639248247979015,
+              639248247991770,
+              639248248827395
+            ],
+            [
+              639248248043385,
+              639248248831458,
+              639248249658437
+            ],
+            [
+              639248248088390,
+              639248249661875,
+              639248250483541
+            ],
+            [
+              639248248132002,
+              639248250486875,
+              639248251310104
+            ],
+            [
+              639248248177928,
+              639248251313437,
+              639248252130937
+            ],
+            [
+              639248248220578,
+              639248252134270,
+              639248252952708
+            ],
+            [
+              639248248263238,
+              639248252955937,
+              639248253785625
+            ],
+            [
+              639248248307751,
+              639248253788958,
+              639248254608333
+            ]
+          ],
+          "logical_kernel_TFLOPs": 47.42251564656807,
+          "logical_wall_TFLOPs": 46.51305403247716
+        },
+        {
+          "kind": "sample",
+          "status": "PASS",
+          "ordinal": 8,
+          "route": "vllm_wide128x128_bf16_output",
+          "implementation": "R810::Gemm::beta0(wide_128x128,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 1,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.008413775,
+          "thread_cpu_submit_seconds": 0.0003630609999998313,
+          "thread_cpu_wait_check_seconds": 0.00803155000000011,
+          "logical_flop_per_submit": 39079116800,
+          "kernel_total_seconds": 0.00827448,
+          "profiling_contract_valid": true,
+          "profiling_service_valid": true,
+          "profiling_duration_positive": true,
+          "profiling_cross_event_ordered": true,
+          "device_timestamps_ns": [
+            [
+              639248460575807,
+              639248460589166,
+              639248461641979
+            ],
+            [
+              639248460643224,
+              639248461646875,
+              639248462691562
+            ],
+            [
+              639248460688348,
+              639248462695937,
+              639248463748958
+            ],
+            [
+              639248460731830,
+              639248463752916,
+              639248464803125
+            ],
+            [
+              639248460774881,
+              639248464807187,
+              639248465854375
+            ],
+            [
+              639248460817801,
+              639248465858437,
+              639248466900520
+            ],
+            [
+              639248460865190,
+              639248466904583,
+              639248467966354
+            ],
+            [
+              639248460909273,
+              639248467970000,
+              639248468892708
+            ]
+          ],
+          "logical_kernel_TFLOPs": 37.78278929914629,
+          "logical_wall_TFLOPs": 37.15727297200127
+        },
+        {
+          "kind": "sample",
+          "status": "PASS",
+          "ordinal": 9,
+          "route": "vllm_compact16x64_bf16_output",
+          "implementation": "R810::Gemm::beta0(compact_16x64,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 1,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.026018816,
+          "thread_cpu_submit_seconds": 0.0003867259999998929,
+          "thread_cpu_wait_check_seconds": 0.025612065999999878,
+          "logical_flop_per_submit": 39079116800,
+          "kernel_total_seconds": 0.025877605,
+          "profiling_contract_valid": true,
+          "profiling_service_valid": true,
+          "profiling_duration_positive": true,
+          "profiling_cross_event_ordered": true,
+          "device_timestamps_ns": [
+            [
+              639248675721249,
+              639248675726562,
+              639248679253958
+            ],
+            [
+              639248675784698,
+              639248679258958,
+              639248682806145
+            ],
+            [
+              639248675829562,
+              639248682810520,
+              639248686004166
+            ],
+            [
+              639248675885768,
+              639248686007916,
+              639248689143333
+            ],
+            [
+              639248675931303,
+              639248689147083,
+              639248692253229
+            ],
+            [
+              639248675973903,
+              639248692257083,
+              639248695370208
+            ],
+            [
+              639248676019448,
+              639248695373958,
+              639248698523333
+            ],
+            [
+              639248676063531,
+              639248698527187,
+              639248701632500
+            ]
+          ],
+          "logical_kernel_TFLOPs": 12.081215954876813,
+          "logical_wall_TFLOPs": 12.015647998740603
+        },
+        {
+          "kind": "sample",
+          "status": "PASS",
+          "ordinal": 10,
+          "route": "vllm_compact16x64_bf16_output",
+          "implementation": "R810::Gemm::beta0(compact_16x64,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 2,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.016822209,
+          "thread_cpu_submit_seconds": 0.0003810629999998483,
+          "thread_cpu_wait_check_seconds": 0.016421822999999947,
+          "logical_flop_per_submit": 39079116800,
+          "kernel_total_seconds": 0.016703853,
+          "profiling_contract_valid": false,
+          "profiling_service_valid": true,
+          "profiling_duration_positive": true,
+          "profiling_cross_event_ordered": true,
+          "device_timestamps_ns": [
+            [
+              639248907607054,
+              639248907591250,
+              639248909770312
+            ],
+            [
+              639248907671766,
+              639248909773958,
+              639248911954687
+            ],
+            [
+              639248907717131,
+              639248911957708,
+              639248914125416
+            ],
+            [
+              639248907764189,
+              639248914128229,
+              639248916261041
+            ],
+            [
+              639248907807360,
+              639248916263645,
+              639248918285520
+            ],
+            [
+              639248907854478,
+              639248918288229,
+              639248920300000
+            ],
+            [
+              639248907898681,
+              639248920302708,
+              639248922318125
+            ],
+            [
+              639248907941672,
+              639248922320833,
+              639248924315312
+            ]
+          ],
+          "logical_kernel_TFLOPs": 18.71621681536589,
+          "logical_wall_TFLOPs": 18.58453514636514
+        },
+        {
+          "kind": "sample",
+          "status": "PASS",
+          "ordinal": 11,
+          "route": "vllm_wide128x128_bf16_output",
+          "implementation": "R810::Gemm::beta0(wide_128x128,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 2,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.006705621,
+          "thread_cpu_submit_seconds": 0.0003784800000001809,
+          "thread_cpu_wait_check_seconds": 0.006307587000000225,
+          "logical_flop_per_submit": 39079116800,
+          "kernel_total_seconds": 0.00656552,
+          "profiling_contract_valid": false,
+          "profiling_service_valid": true,
+          "profiling_duration_positive": true,
+          "profiling_cross_event_ordered": true,
+          "device_timestamps_ns": [
+            [
+              639249130833100,
+              639249130830104,
+              639249131636250
+            ],
+            [
+              639249130917478,
+              639249131640312,
+              639249132456562
+            ],
+            [
+              639249130963314,
+              639249132460000,
+              639249133292916
+            ],
+            [
+              639249131006775,
+              639249133296250,
+              639249134124791
+            ],
+            [
+              639249131050547,
+              639249134128125,
+              639249134948333
+            ],
+            [
+              639249131093318,
+              639249134951666,
+              639249135770208
+            ],
+            [
+              639249131136709,
+              639249135773541,
+              639249136610625
+            ],
+            [
+              639249131179289,
+              639249136613854,
+              639249137419687
+            ]
+          ],
+          "logical_kernel_TFLOPs": 47.617391219583524,
+          "logical_wall_TFLOPs": 46.6225177951453
+        }
+      ]
+    },
+    {
+      "phase": "diagnostic",
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_native16_paired_gemm_bench",
+        "--resident",
+        "8",
+        "fp16",
+        "--process",
+        "2"
+      ],
+      "plan": {
+        "kind": "plan",
+        "mode": "measure",
+        "resident_only": true,
+        "submits_per_sample": 8,
+        "shape": 8,
+        "T": 5963,
+        "N": 1280,
+        "K": 2560,
+        "ldy": 1280,
+        "beta": 0,
+        "input_type": "fp16",
+        "device_tensor_bytes": 128678336,
+        "input_fnv1a64": "4834186686110060261",
+        "initial_pageable_upload_bytes": 37084800,
+        "initial_pageable_upload_wall_seconds": 0.011443039,
+        "initial_pageable_upload_thread_cpu_seconds": 0.008794416000000027,
+        "weight_fnv1a64": "10777993185871135461",
+        "oracle": "rank2_binary_exact_v1",
+        "process_index": 2,
+        "warmups_per_route": 3,
+        "timed_submits_per_route": 3,
+        "pid": 3734431,
+        "rotation_base": 2,
+        "route_order": [
+          "vllm_compact16x64_bf16_output",
+          "vllm_wide128x128_bf16_output"
+        ]
+      },
+      "process": 2,
+      "exit_code": 0,
+      "ownership_closed": true,
+      "passed": true,
+      "validation_count": 12,
+      "native_result": {
+        "kind": "result",
+        "status": "PASS",
+        "validated_invocations": 12,
+        "warmups_per_route": 3,
+        "process_index": 2,
+        "samples_per_route": 3,
+        "scope": "resident_operator_reference;not_hardware_peak_or_model_quality_or_speed;not_adversarial_accumulator_gate"
+      },
+      "submit_clock_inversions": [
+        {
+          "ordinal": 8,
+          "warmup": false,
+          "event_index": 0,
+          "timestamps_ns": [
+            639251799330321,
+            639251799329166,
+            639251801447500
+          ],
+          "start_minus_submit_ns": -1155
+        },
+        {
+          "ordinal": 9,
+          "warmup": false,
+          "event_index": 0,
+          "timestamps_ns": [
+            639252022032805,
+            639252022029687,
+            639252022857083
+          ],
+          "start_minus_submit_ns": -3118
+        },
+        {
+          "ordinal": 11,
+          "warmup": false,
+          "event_index": 0,
+          "timestamps_ns": [
+            639252451213657,
+            639252451207916,
+            639252454732916
+          ],
+          "start_minus_submit_ns": -5741
+        }
+      ],
+      "samples": [
+        {
+          "kind": "sample",
+          "status": "PASS",
+          "ordinal": 6,
+          "route": "vllm_wide128x128_bf16_output",
+          "implementation": "R810::Gemm::beta0(wide_128x128,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 0,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.008465983,
+          "thread_cpu_submit_seconds": 0.0003745320000001495,
+          "thread_cpu_wait_check_seconds": 0.008072666999999978,
+          "logical_flop_per_submit": 39079116800,
+          "kernel_total_seconds": 0.00832354,
+          "profiling_contract_valid": true,
+          "profiling_service_valid": true,
+          "profiling_duration_positive": true,
+          "profiling_cross_event_ordered": true,
+          "device_timestamps_ns": [
+            [
+              639251350401436,
+              639251350432187,
+              639251351519791
+            ],
+            [
+              639251350467760,
+              639251351524583,
+              639251352569166
+            ],
+            [
+              639251350512514,
+              639251352573437,
+              639251353624062
+            ],
+            [
+              639251350555334,
+              639251353628020,
+              639251354676145
+            ],
+            [
+              639251350598185,
+              639251354680208,
+              639251355739062
+            ],
+            [
+              639251350641366,
+              639251355743125,
+              639251356803437
+            ],
+            [
+              639251350690388,
+              639251356807500,
+              639251357839166
+            ],
+            [
+              639251350744770,
+              639251357842812,
+              639251358784583
+            ]
+          ],
+          "logical_kernel_TFLOPs": 37.56009274899862,
+          "logical_wall_TFLOPs": 36.92813160621749
+        },
+        {
+          "kind": "sample",
+          "status": "PASS",
+          "ordinal": 7,
+          "route": "vllm_compact16x64_bf16_output",
+          "implementation": "R810::Gemm::beta0(compact_16x64,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 0,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.026103646,
+          "thread_cpu_submit_seconds": 0.00035285200000023664,
+          "thread_cpu_wait_check_seconds": 0.025732191999999987,
+          "logical_flop_per_submit": 39079116800,
+          "kernel_total_seconds": 0.02596073,
+          "profiling_contract_valid": true,
+          "profiling_service_valid": true,
+          "profiling_duration_positive": true,
+          "profiling_cross_event_ordered": true,
+          "device_timestamps_ns": [
+            [
+              639251565186251,
+              639251565207916,
+              639251568740729
+            ],
+            [
+              639251565249350,
+              639251568745729,
+              639251572316979
+            ],
+            [
+              639251565293823,
+              639251572321041,
+              639251575468020
+            ],
+            [
+              639251565337305,
+              639251575471875,
+              639251578608958
+            ],
+            [
+              639251565380245,
+              639251578612812,
+              639251581731458
+            ],
+            [
+              639251565423005,
+              639251581735312,
+              639251584890416
+            ],
+            [
+              639251565465445,
+              639251584894270,
+              639251588043125
+            ],
+            [
+              639251565508085,
+              639251588046875,
+              639251591196875
+            ]
+          ],
+          "logical_kernel_TFLOPs": 12.042532486567211,
+          "logical_wall_TFLOPs": 11.976600295606215
+        },
+        {
+          "kind": "sample",
+          "status": "PASS",
+          "ordinal": 8,
+          "route": "vllm_compact16x64_bf16_output",
+          "implementation": "R810::Gemm::beta0(compact_16x64,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 1,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.016370504,
+          "thread_cpu_submit_seconds": 0.0003688820000000703,
+          "thread_cpu_wait_check_seconds": 0.015982157999999913,
+          "logical_flop_per_submit": 39079116800,
+          "kernel_total_seconds": 0.016245627000000002,
+          "profiling_contract_valid": false,
+          "profiling_service_valid": true,
+          "profiling_duration_positive": true,
+          "profiling_cross_event_ordered": true,
+          "device_timestamps_ns": [
+            [
+              639251799330321,
+              639251799329166,
+              639251801447500
+            ],
+            [
+              639251799397948,
+              639251801451041,
+              639251803553333
+            ],
+            [
+              639251799442903,
+              639251803556354,
+              639251805666354
+            ],
+            [
+              639251799486134,
+              639251805669166,
+              639251807728229
+            ],
+            [
+              639251799528623,
+              639251807730937,
+              639251809689791
+            ],
+            [
+              639251799570642,
+              639251809692395,
+              639251811655312
+            ],
+            [
+              639251799613212,
+              639251811657916,
+              639251813627187
+            ],
+            [
+              639251799655942,
+              639251813629895,
+              639251815594791
+            ]
+          ],
+          "logical_kernel_TFLOPs": 19.244128552255937,
+          "logical_wall_TFLOPs": 19.09733105346054
+        },
+        {
+          "kind": "sample",
+          "status": "PASS",
+          "ordinal": 9,
+          "route": "vllm_wide128x128_bf16_output",
+          "implementation": "R810::Gemm::beta0(wide_128x128,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 1,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.006713587,
+          "thread_cpu_submit_seconds": 0.0003814059999998065,
+          "thread_cpu_wait_check_seconds": 0.006313599000000281,
+          "logical_flop_per_submit": 39079116800,
+          "kernel_total_seconds": 0.006585106,
+          "profiling_contract_valid": false,
+          "profiling_service_valid": true,
+          "profiling_duration_positive": true,
+          "profiling_cross_event_ordered": true,
+          "device_timestamps_ns": [
+            [
+              639252022032805,
+              639252022029687,
+              639252022857083
+            ],
+            [
+              639252022097526,
+              639252022861145,
+              639252023684479
+            ],
+            [
+              639252022142180,
+              639252023688020,
+              639252024495312
+            ],
+            [
+              639252022184980,
+              639252024498645,
+              639252025321875
+            ],
+            [
+              639252022236016,
+              639252025325104,
+              639252026150833
+            ],
+            [
+              639252022278997,
+              639252026154166,
+              639252026980312
+            ],
+            [
+              639252022324943,
+              639252026983645,
+              639252027814062
+            ],
+            [
+              639252022367112,
+              639252027817500,
+              639252028639062
+            ]
+          ],
+          "logical_kernel_TFLOPs": 47.475763396974926,
+          "logical_wall_TFLOPs": 46.567197892870084
+        },
+        {
+          "kind": "sample",
+          "status": "PASS",
+          "ordinal": 10,
+          "route": "vllm_wide128x128_bf16_output",
+          "implementation": "R810::Gemm::beta0(wide_128x128,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 2,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.00847495,
+          "thread_cpu_submit_seconds": 0.00038091399999995446,
+          "thread_cpu_wait_check_seconds": 0.00807462999999986,
+          "logical_flop_per_submit": 39079116800,
+          "kernel_total_seconds": 0.008331459000000001,
+          "profiling_contract_valid": true,
+          "profiling_service_valid": true,
+          "profiling_duration_positive": true,
+          "profiling_cross_event_ordered": true,
+          "device_timestamps_ns": [
+            [
+              639252235287702,
+              639252235288020,
+              639252236340416
+            ],
+            [
+              639252235351421,
+              639252236345208,
+              639252237407395
+            ],
+            [
+              639252235396165,
+              639252237411666,
+              639252238476979
+            ],
+            [
+              639252235443003,
+              639252238481041,
+              639252239534062
+            ],
+            [
+              639252235486064,
+              639252239538229,
+              639252240591458
+            ],
+            [
+              639252235528764,
+              639252240595416,
+              639252241638229
+            ],
+            [
+              639252235571193,
+              639252241642187,
+              639252242711562
+            ],
+            [
+              639252235613232,
+              639252242715312,
+              639252243648437
+            ]
+          ],
+          "logical_kernel_TFLOPs": 37.524392114274335,
+          "logical_wall_TFLOPs": 36.88905945167818
+        },
+        {
+          "kind": "sample",
+          "status": "PASS",
+          "ordinal": 11,
+          "route": "vllm_compact16x64_bf16_output",
+          "implementation": "R810::Gemm::beta0(compact_16x64,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 2,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.026001652,
+          "thread_cpu_submit_seconds": 0.00036531699999997613,
+          "thread_cpu_wait_check_seconds": 0.02561736599999964,
+          "logical_flop_per_submit": 39079116800,
+          "kernel_total_seconds": 0.025853854000000002,
+          "profiling_contract_valid": false,
+          "profiling_service_valid": true,
+          "profiling_duration_positive": true,
+          "profiling_cross_event_ordered": true,
+          "device_timestamps_ns": [
+            [
+              639252451213657,
+              639252451207916,
+              639252454732916
+            ],
+            [
+              639252451281655,
+              639252454737916,
+              639252458256875
+            ],
+            [
+              639252451326759,
+              639252458261250,
+              639252461443854
+            ],
+            [
+              639252451371203,
+              639252461447708,
+              639252464574270
+            ],
+            [
+              639252451414875,
+              639252464578229,
+              639252467710625
+            ],
+            [
+              639252451458546,
+              639252467714375,
+              639252470854479
+            ],
+            [
+              639252451501707,
+              639252470858333,
+              639252473960312
+            ],
+            [
+              639252451544678,
+              639252473964062,
+              639252477090312
+            ]
+          ],
+          "logical_kernel_TFLOPs": 12.092314530746556,
+          "logical_wall_TFLOPs": 12.02357967101475
+        }
+      ]
     }
   ],
   "complete": true,
@@ -984,7 +2394,7 @@
     "submission_clock": "Preserve every inversion and report full-clock qualification separately; no clamping or deleting samples.",
     "numerics": "Unchanged full-output closed-form oracle, guards and input immutability after each burst."
   },
-  "mode": "smoke",
+  "mode": "diagnostic",
   "environment": {
     "PATH": "/usr/bin:/bin",
     "HOME": "/home/yayoi",
@@ -1009,7 +2419,7 @@
     "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/tmp",
     "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/cache"
   },
-  "full_submit_clock_order_qualified": true,
+  "full_submit_clock_order_qualified": false,
   "ownership_closed": true,
   "fresh_faults": [],
   "boot_unchanged": true,
