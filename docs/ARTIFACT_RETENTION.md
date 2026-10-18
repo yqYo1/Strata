@@ -94,7 +94,13 @@ preserve the original inputs and resolve any mismatch explicitly.
 
 Before removing an old build, verify that its measured source and recipe can be
 retrieved from the recorded commits and that no current comparison needs the
-executable. Preserve original evidence and source provenance without retaining
+executable. Match the exact final binary and all required build inputs. A
+matching binary/receipt hash proves artifact continuity, not recoverable source;
+a seed build, similar root name, later build or review eligibility label cannot
+substitute for that check. Record a review's missing recovery steps in the
+current compact result, keeping unresolved legacy holds distinct from qualified
+comparison generations. Do not claim global retirement from a current-build-only
+inventory. Preserve original evidence and source provenance without retaining
 duplicate source snapshots. Build reproducibility means recovering the correct
 inputs and recipe; byte-identical binaries may additionally require the original
 toolchain. Do not retain an unusable orphan binary as a substitute for source.

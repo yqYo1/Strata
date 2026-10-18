@@ -665,7 +665,13 @@ consumed-review and old-fallback files (61,391,969bytes). Original run helpers
 and the fallback's9799 source inputs were retrieved and hash-verified from Git
 before deletion. Keep the new runtime-qualified engine and its current GDN
 fixture. Older legacy build provenance remains an explicit separate exception;
-a six-root review is in progress, so this is not a global cleanup claim.
+the six-root review has completed, with no exact final-build source proof for
+any of those roots. Each binary matches its own receipt, but seed links,
+similarly named proofs and declared commits do not establish recovery of the
+final source, recipe and dependencies. Keep the six provenance holds until
+their recovery steps are verified. The review identity and unresolved outcome
+are recorded in the [current build result](../bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json);
+this is not a global cleanup claim or authorization to retire those roots.
 
 ## Optional GDN chunk64
 
