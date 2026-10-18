@@ -1,11 +1,11 @@
 {
   "mode": "qsa-kvec4-check",
-  "source_commit": "3e2637d50c5645a411f243cfaeb9a60c97c3c506",
-  "build_source_commit": "e3c54faa687a1d64efb960a546f4d912098af06c",
+  "source_commit": "0b52c95af29e0e1988617065e26be9562bd4c2b2",
+  "build_source_commit": "f111b5ff6c84797bff2139355cb6b1b4500f165f",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-    "bytes": 20465008,
-    "sha256": "387656afc16cea0f6df58ceb651703ec53d17ca5145fb1f64e512f058e79b68a"
+    "bytes": 20469104,
+    "sha256": "26b2f1c06f7ac9ee72a0885930f03826891f14abb8612c212efcc65e42a0bed6"
   },
   "environment": {
     "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
@@ -61,7 +61,7 @@
     "STRATA_SYCL_SELECT_CYCLIC": "0",
     "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
     "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-kvec4-check-v1/cache",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-kvec4-check-v2/cache",
     "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
     "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-kvec4",
     "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
@@ -80,8 +80,8 @@
     "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
     "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
     "STRATA_TRACE": "1",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-kvec4-check-v1/tmp",
-    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-kvec4-check-v1",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-kvec4-check-v2/tmp",
+    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-kvec4-check-v2",
     "ZES_ENABLE_SYSMAN": "0",
     "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0"
   },
@@ -101,7 +101,7 @@
       "--expert-cache",
       "128",
       "--expert-profile",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-kvec4-check-v1/expert-profile.bin",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-kvec4-check-v2/expert-profile.bin",
       "--expert-cache-per-layer",
       "--pool-workers",
       "5",
@@ -140,7 +140,7 @@
       "strata"
     ],
     "host": "127.0.0.1",
-    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-kvec4-check-v1/engine.stderr",
+    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-kvec4-check-v2/engine.stderr",
     "engine_silence_s": 480,
     "parallel": 1,
     "open_browser": false,
@@ -150,9 +150,9 @@
     "/bin/sh",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
     "--config",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-kvec4-check-v1/config.json",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-kvec4-check-v2/config.json",
     "--port",
-    "57455",
+    "60491",
     "--runs",
     "1",
     "--prefill-only",
@@ -165,80 +165,20 @@
     "--ready-timeout",
     "600",
     "--out",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-kvec4-check-v1/bench"
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-kvec4-check-v2/bench"
   ],
   "reference": {
     "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-softmax-measurement-inputs-v1.json",
     "sha256": "3792c36462e333816ce5d5d9ac39f3dcc13809939d8d3133c570d8945257d1dd"
   },
-  "config_sha256": "ea3cc54c5a857ce06101a16364aa83ea9973578306f8f5d72d996697c2d02293",
+  "config_sha256": "684aab3ac94f409f941226edb1e172a3fb14b70f74e61890d4be03a082f6a8b6",
   "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
-  "complete": true,
+  "complete": false,
   "passed": false,
   "active": false,
   "model_quality_qualified": false,
   "physical262144_RESTORE_qualified": false,
   "performance_adopted": false,
   "source_count": 102,
-  "source_aggregate_sha256": "563a0582f3bebfca66a36802b38605ccfd184a252b38588d5c02bd431a4617f4",
-  "exit_code": 1,
-  "requests": [
-    {
-      "run": 0,
-      "ok": false,
-      "eligible": false,
-      "actual_prompt_tokens": null,
-      "actual_read_tokens": null,
-      "actual_reused_tokens": null,
-      "generated_tokens": 0,
-      "thinking_requested": true,
-      "reasoning_observed": false,
-      "stream_complete": false,
-      "request_sha256": "1fd63b8c67a1888e443800b5c6d339ca116df2cb91941e6f332b6adf74275b3a",
-      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "reasoning_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "ttft_s": null,
-      "total_s": 1.556,
-      "prompt_tps": null,
-      "prompt_ms": null,
-      "decode_tps": null,
-      "decode_ms": null,
-      "prompt_tps_source": null,
-      "decode_tps_source": null,
-      "drafts_offered": null,
-      "drafts_accepted": null,
-      "finish_reason": null,
-      "err": "{'type': 'server_error', 'message': 'prefill command profile requires window2 and48 layers'}; usage.prompt_tokens must report >= 32768, got None; timings.prompt_n must report >= 32768, got None; every reported reuse count must be zero, got []; completion usage outside 1..24; actual prompt lacks verified context/output headroom; missing finite positive engine prompt_per_second",
-      "eligibility_errors": [
-        "{'type': 'server_error', 'message': 'prefill command profile requires window2 and48 layers'}",
-        "usage.prompt_tokens must report >= 32768, got None",
-        "timings.prompt_n must report >= 32768, got None",
-        "every reported reuse count must be zero, got []",
-        "completion usage outside 1..24",
-        "actual prompt lacks verified context/output headroom",
-        "missing finite positive engine prompt_per_second"
-      ]
-    }
-  ],
-  "engine_exit_code": 1,
-  "native_identity": {
-    "pid": 3759138,
-    "start_ticks": 63989711,
-    "sid": 3759112
-  },
-  "route_selection": [],
-  "error": "native engine exit",
-  "error_excerpt": "strata serve: prefill command profile requires window2 and48 layers",
-  "ownership_closed": true,
-  "fresh_faults": [],
-  "boot_unchanged": true,
-  "driver_after": {
-    "pci": "/sys/bus/pci/devices/0000:05:00.0",
-    "driver": "xe",
-    "vendor": "0x8086",
-    "device": "0xe20c",
-    "kernel": "7.0.0-38-generic",
-    "devcoredump": false
-  },
-  "failure_mechanism": "Startup admission restricts command profiling to window2, while production uses accumulator window10 and explicitly rejects that legacy collector. Long model inference did not run; no GPU fault."
+  "source_aggregate_sha256": "b0145811d988da0924ecfca48f37841f5142a2392ab7ee3943e8c30d286967e9"
 }
