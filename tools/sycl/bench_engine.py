@@ -425,6 +425,188 @@ def summarize_gu():
     return 0
 
 
+def source_view_pair_statistics(arms):
+    """Each process contributes one subsequent median to its paired ratio."""
+    guards.require(len(arms) == 6 and {a['label'] for a in arms} ==
+                   {'A0', 'B0', 'A1', 'B1', 'A2', 'B2'}, 'six unique source-view arms required')
+    pairs = []
+    for cohort in range(3):
+        a = next(x for x in arms if x['label'] == 'A' + str(cohort))
+        b = next(x for x in arms if x['label'] == 'B' + str(cohort))
+        pairs.append(dict(cohort=cohort, base_median=a['subsequent_median'],
+            candidate_median=b['subsequent_median'], median_ratio=b['subsequent_median']/a['subsequent_median'],
+            first_use_ratio=b['first_use_tps']/a['first_use_tps'],
+            requested_payload_matches=a['requested_expert_H2D_bytes'] == b['requested_expert_H2D_bytes'],
+            output_hashes_match=a['output_hashes'] == b['output_hashes'],
+            reasoning_hashes_match=a['reasoning_hashes'] == b['reasoning_hashes']))
+    geomean = statistics.geometric_mean(p['median_ratio'] for p in pairs)
+    medians = [a['subsequent_median'] for a in arms if a['label'].startswith('B')]
+    return dict(pairs=pairs, paired_median_speed_geomean=geomean,
+        geomean_gain_percent=100*(geomean-1),
+        performance_selection_gate_passed=all(p['median_ratio'] > 1 for p in pairs) and geomean > 1.005,
+        requested_expert_payload_matches_in_all_pairs=all(p['requested_payload_matches'] for p in pairs),
+        candidate_process_medians=medians, prefill1000_target_passed=all(x >= 1000 for x in medians))
+
+
+def summarize_source_view():
+    """Analyze three frozen process pairs; first use remains separate evidence."""
+    from build_engine import blobs
+    path = str((A / 'prefill-long-input-current.json').relative_to(P))
+
+    def git(*args):
+        return subprocess.check_output(['git', *args], cwd=P)
+
+    def canonical(value, root):
+        if isinstance(value, str):
+            return value.replace(root, '$RUN')
+        if isinstance(value, list):
+            return [canonical(x, root) for x in value]
+        if isinstance(value, dict):
+            return {k: canonical(v, root) for k, v in value.items()
+                    if k != 'STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW'}
+        return value
+
+    with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        guards.no_model_owners([])
+        head = git('rev-parse', 'HEAD').decode().strip()
+        for item in (Path(__file__).resolve(), P / path):
+            guards.require(item.read_bytes() == git('show', head + ':' + str(item.relative_to(P))),
+                           'commit the analyzer and final cohort before summary')
+        current = json.loads((P / path).read_text())
+        guards.require(current['mode'] == 'qsa-long-input-source-view-candidate' and
+            current['cohort_index'] == 2 and 'independent_source_view_comparison' not in current,
+            'summarize the completed final source-view cohort exactly once')
+        receipt_revision = git('log', '-1', '--format=%H', '--', path).decode().strip()
+        guards.require(json.loads(git('show', receipt_revision + ':' + path)) == current,
+                       'final cohort does not match its original result commit')
+        original_build = json.loads(git('show', receipt_revision + ':' + str(BUILD.relative_to(P))))
+        full_build = json.loads((B / 'main-native-gdn-engine/record.json').read_text())
+        guards.require(all(full_build[k] == original_build[k] for k in (
+            'source_commit', 'binary', 'compiler', 'configure_argv', 'environment', 'recipe_reference',
+            'compile_database_sha256', 'configured_compile_entries', 'targets', 'fixtures')) and
+            full_build['complete'] and full_build['passed'] and full_build['ownership_closed'] and
+            not full_build['active'] and full_build['binary'] == current['binary'] and
+            full_build['source_commit'] == current['build_source_commit'],
+            'original build receipt or measured executable identity differs')
+        input_sources = [full_build['project'], *full_build['dependencies']]
+        guards.require(len(input_sources) == len(original_build['inputs']), 'incomplete build source sets')
+        recovered_build_inputs = 0
+        for source, recorded in zip(input_sources, original_build['inputs']):
+            pins = source['source_sha256']
+            recovered = {n: hashlib.sha256(data).hexdigest() for n, data in
+                         blobs(Path(source['root']), source['revision'], sorted(pins))}
+            guards.require({k: v for k, v in source.items() if k != 'source_sha256'} == recorded and
+                recovered == pins and len(pins) == recorded['count'] and
+                hashlib.sha256(json.dumps(pins, sort_keys=True, separators=(',', ':')).encode()).hexdigest() ==
+                recorded['aggregate_sha256'], 'original engine/dependency source is not recoverable')
+            recovered_build_inputs += len(pins)
+        recipe = full_build['recipe_reference']
+        guards.require(hashlib.sha256(git('show', full_build['project']['revision'] + ':' +
+            recipe['path'])).hexdigest() == recipe['sha256'], 'original build recipe is not recoverable')
+        records, revision, seen = [], receipt_revision, set()
+        while len(records) < 6:
+            guards.require(revision not in seen, 'cyclic source-view cohort history')
+            seen.add(revision)
+            guards.require(subprocess.run(['git', 'merge-base', '--is-ancestor', revision, head],
+                cwd=P, check=False).returncode == 0, 'unreachable original cohort')
+            record = json.loads(git('show', revision + ':' + path))
+            guards.require(record['mode'] in ('qsa-long-input-source-view-base',
+                'qsa-long-input-source-view-candidate') and record['passed'] and record['complete'] and
+                record['ownership_closed'] and not record['active'] and
+                record['exit_code'] == record['engine_exit_code'] == 0 and
+                not record['fresh_faults'] and record['boot_unchanged'], 'failed or incomplete source-view cohort')
+            records.append((revision, record))
+            revision = record['preceding_long_input_result']['commit']
+        records.reverse()
+        expected = [('base', 0), ('candidate', 0), ('candidate', 1), ('base', 1), ('base', 2), ('candidate', 2)]
+        guards.require([(d['mode'].rsplit('-', 1)[1], d['cohort_index']) for _, d in records] == expected,
+                       'source-view process order differs from frozen plan')
+        guards.require(len({(d['native_identity']['pid'], d['native_identity']['start_ticks'])
+                            for _, d in records}) == 6, 'six independent native processes required')
+        guards.require(digest(current['binary']['path']) == current['binary']['sha256'],
+                       'measured engine binary changed before analysis')
+        common, source_set, arms = None, None, []
+        for receipt_commit, d in records:
+            root = d['environment']['STRATA_MEASUREMENT_ROOT']
+            candidate = d['mode'].endswith('-candidate')
+            guards.require(d['environment']['STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW'] ==
+                           ('1' if candidate else '0'), 'wrong source-view selector')
+            command = canonical(d['command'], root)
+            command[command.index('--port') + 1] = '$PORT'
+            comparison = {k: v for k, v in d['source_view_comparison'].items() if k != 'enabled'}
+            identity = dict(binary=d['binary'], build_source=d['build_source_commit'],
+                profile=d['profile_sha256'], reference=d['reference'],
+                environment=canonical(d['environment'], root), config=canonical(d['config'], root),
+                command=command, prospective_comparison=comparison,
+                prospective_long_input_screen=d['long_input_screen'])
+            common = identity if common is None else common
+            guards.require(identity == common and d['source_view_comparison']['enabled'] == candidate,
+                           'unmatched source-view inputs or prospective criteria')
+            source = d['source_commit']
+            guards.require(subprocess.run(['git', 'merge-base', '--is-ancestor', source, head],
+                cwd=P, check=False).returncode == 0, 'unreachable original benchmark source')
+            names = git('ls-tree', '-r', '--name-only', source, '--', 'serve', 'tools', 'bench.sh').decode().splitlines()
+            names = [n for n in names if n == 'bench.sh' or
+                     (n.endswith('.py') and not n.startswith('tools/hip/'))]
+            pins = {n: hashlib.sha256(data).hexdigest() for n, data in blobs(P, source, names)}
+            guards.require(len(pins) == d['source_count'] and
+                hashlib.sha256(json.dumps(pins, sort_keys=True).encode()).hexdigest() ==
+                d['source_aggregate_sha256'], 'unrecoverable original benchmark snapshot')
+            source_set = pins if source_set is None else source_set
+            guards.require(pins == source_set, 'frozen benchmark inputs changed between processes')
+            requests = d['requests']
+            guards.require(len(requests) == 4 and all(r['run'] == i and r['ok'] and r['eligible'] and
+                not r['eligibility_errors'] and r['stream_complete'] and r['thinking_requested'] and
+                r['reasoning_observed'] and r['actual_prompt_tokens'] == r['actual_read_tokens'] == 117489 and
+                r['actual_reused_tokens'] == 0 and r['generated_tokens'] == 24 and
+                math.isfinite(r['prompt_tps']) and r['prompt_tps'] > 0 for i, r in enumerate(requests)),
+                'ineligible source-view request')
+            guards.require([r['request_sha256'] for r in requests] ==
+                           [r['request_sha256'] for r in current['requests']], 'request bytes differ')
+            routes = d['expert_source_route']
+            guards.require(len(routes) == 4 and all(
+                int(r['requested_view']) == int(r['effective_view']) == int(candidate) and
+                int(r['layers']) == (48 if candidate else 0) and
+                int(r['owned_slab_bytes']) == (0 if candidate else 1363148800) and
+                int(r['borrowed_layer_span_bytes']) == (50292326400 if candidate else 0) and
+                r['host_copy'] == ('eliminated' if candidate else 'synchronous') and
+                r['source_owner'] == 'caller_through_checked_retirement' for r in routes),
+                'source-view route or original fallback differs')
+            values = [r['prompt_tps'] for r in requests]
+            median = statistics.median(values[1:])
+            guards.require(median == d['long_input_process_summary']['median_prompt_tps'],
+                           'process summary differs from original samples')
+            totals = d['expert_bank_route']['per_request_totals']
+            guards.require(len(totals) == 4 and all(int(t['requested_H2D_bytes']) > 0 and
+                t['final_drain'] == 'checked' for t in totals), 'incomplete expert transfer accounting')
+            arms.append(dict(label=('B' if candidate else 'A') + str(d['cohort_index']),
+                receipt_commit=receipt_commit, receipt_path=path, source_commit=source,
+                first_use_tps=values[0], subsequent_tps=values[1:], subsequent_median=median,
+                subsequent_sample_SD=statistics.stdev(values[1:]),
+                requested_expert_H2D_bytes=[int(t['requested_H2D_bytes']) for t in totals],
+                output_hashes=[r['output_sha256'] for r in requests],
+                reasoning_hashes=[r['reasoning_sha256'] for r in requests]))
+        statistics_result = source_view_pair_statistics(arms)
+        selected = statistics_result['performance_selection_gate_passed']
+        current['independent_source_view_comparison'] = dict(analyzer_source_commit=head, arms=arms,
+            independent_units='Three process pairs; the three subsequent requests within a process are repeated samples, not independent processes.',
+            **statistics_result,
+            exact_original_benchmark_inputs_recovered=True, frozen_input_count=len(source_set),
+            exact_original_build_inputs_recovered=recovered_build_inputs,
+            original_build_source_commit=full_build['source_commit'], original_recipe=recipe,
+            matched_engine_configuration_workloads_and_guarded_runtime=True,
+            original_outcomes_unchanged=True, GPU_executed=False, model_executed=False,
+            decision='Retain immutable source views as an opt-in for further qualification; default stays off.' if selected else
+                     'Retain synchronous source copying; prospective performance selection failed.',
+            limits='First-use samples, including regressions, remain separate and unfiltered. Requested bytes are not wire traffic. Output hashes are descriptive and not an exact-text acceptance criterion.24-token generation does not qualify sustained70tok/s decode, broad task quality,physical262144 or session/RESTORE.')
+        (P / path).write_text(json.dumps(current, indent=2) + '\n')
+        print(json.dumps({k: current['independent_source_view_comparison'][k] for k in (
+            'pairs', 'paired_median_speed_geomean', 'geomean_gain_percent', 'performance_selection_gate_passed',
+            'candidate_process_medians', 'prefill1000_target_passed', 'decision')}))
+    return 0
+
+
 def reanalyze_staged_host():
     """Reconcile a closed parser failure; preserve its original failed outcome."""
     from build_engine import blobs
@@ -511,6 +693,8 @@ def main():
         return reanalyze_staged_host()
     if sys.argv[1:] == ['summarize-gu']:
         return summarize_gu()
+    if sys.argv[1:] == ['summarize-source-view']:
+        return summarize_source_view()
     modes = ('check', 'base', 'candidate', 'qsa-check', 'qsa-base', 'qsa-direct', 'qsa-census',
              'qsa-gdncols4-warm-census',
              'qsa-gdncols4-host-check', 'qsa-gdncols4-host-traced-check', 'qsa-gdncols4-host-census',

@@ -1244,12 +1244,20 @@ model comparison because its shared adapter translation unit changed during
 the previous Down work. Source45c387d11 built successfully;54 ownership,45
 traced smoke and110 full correctness events passed in closed owned processes,
 including startup flag0/large, threshold/tail/fallback checks and mixed map
-masks. No fresh driver fault occurred. Clean selective timing and same-build
-GU requalification was then completed:36 ownership cases,4 small correctness
+masks. No fresh driver fault occurred. Same-build GU requalification, including
+its clean timing, was then completed:36 ownership cases,4 small correctness
 cases with13 admission rejects,18 full cases and3 clean timing processes passed
 without a fresh fault. The component wall-time geomean is0.952777; the existing
 >=2334 selector still excludes the slower160-row shape. Selective Down timing
 remains pending; no new model speed or adoption is claimed.
+
+The current source-view build's Down fixture differs from the source45 fixture
+that passed those checks. Its old receipt cannot qualify the new executable.
+After the frozen source-view comparison closes, prepare a fresh committed
+current-fixture plan and repeat ownership, traced small and full selected-route
+checks before the three-process selective timing, using the unchanged gate
+above. Keep the original validation and unrun timing status intact. Retain useful
+individual queue/wall samples and checked totals, rather than full parser events.
 
 The maintained model controller now provides `prepare|run qsa-long-input-check`
 and `prepare|run qsa-long-input [0|1|2]`. Its prospective screen holds131072
@@ -1503,15 +1511,31 @@ requested expert H2D bytes for every matched request:
 | --- | ---: | --- | ---: | ---: |
 | A0, synchronous copy | 891.6 | 957.4,952.7,951.6 | 952.7 | 3.0806 |
 | B0, immutable view | 829.0 | 995.5,996.9,997.2 | 996.9 | 0.9074 |
+| B1, immutable view | 908.7 | 995.8,995.9,996.1 | 995.9 | 0.1528 |
+| A1, synchronous copy | 883.4 | 951.8,950.7,954.7 | 951.8 | 2.0664 |
+| A2, synchronous copy | 886.2 | 956.4,956.0,957.6 | 956.4 | 0.8327 |
+| B2, immutable view | 920.5 | 998.5,998.3,998.3 | 998.3 | 0.1155 |
 
-The subsequent-median ratio is1.046394, while the first-use ratio is0.929789.
-The first-use regression remains part of the result; its cause is unproven.
-Neither the three-pair adoption criterion nor1000tok/s is qualified by this one
-pair. Original results are at commits`b9dd79277` and`fc886a352` in
-`bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json`.
-Continue the frozen A0/B0/B1/A1/A2/B2 order; do not equate disappearance of the
-source-copy category with a measured gain in other workloads. Broader quality,
+All six processes subsequently closed in the frozen A0/B0/B1/A1/A2/B2 order,
+with normal native exits, no fresh faults and identical requested expert payloads
+for each matched request. The three paired subsequent-median ratios are
+1.046394,1.046333,1.043810; their geometric mean is1.045512 (**4.5512%**).
+All three pairs favor the view and exceed the unchanged prospective aggregate
+criterion. These are three independent process-pair ratios, not nine independent
+request ratios. First-use ratios0.929789,1.028639,1.038705 remain separate; the
+initial829.0 regression is retained and its cause remains unproven.
+The three view-process medians996.9,995.9,998.3 still miss1000tok/s.
+Retain the view as an opt-in tuning path; default adoption, broader quality,
 physical262144,session/RESTORE and sustained-generation qualification remain pending.
+
+The committed offline analyzer recovered all110 benchmark inputs per process,
+9813 original engine/dependency inputs and the original build recipe from Git.
+Six fault-evidence and six adversarial statistics regressions passed; they do
+not execute the GPU or qualify the pending Down component. The compact
+[current comparison](../bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json)
+keeps all24 speed samples, spread, original source/receipt pointers and limits.
+Do not equate disappearance of the source-copy category with a gain in other
+workloads or requested payload equality with measured physical PCIe traffic.
 
 Keep the compiled
 fine command sampler off: it lacks a staged-expert-copy tag and would reject
