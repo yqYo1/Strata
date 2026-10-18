@@ -10,7 +10,6 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
         err = "prefill MoE accumulator: unsupported entry"; return false;
     }
     auto& owner = *m.moe_window;
-    if (owner.command_trace) { err = "prefill MoE accumulator: window2 command collector unsupported"; return false; }
     auto& queue = sycl_backend::queue_for(m.cs);
     const uint64_t offset = detail::layer_major_mul(uint64_t(first_row), D * 2);
     const uint64_t bytes = detail::layer_major_mul(uint64_t(rows), D * 2);
@@ -122,11 +121,22 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
         }
         std::fputs("]}\n",stderr);
     }
-    if (cudaMemcpyAsync(inverse, owner.routes->original_slots().data(), size_t(rows * K * 4), cudaMemcpyHostToDevice, m.cs) != cudaSuccess ||
-        cudaMemcpyAsync(source, owner.routes->source_rows().data(), size_t(rows * K * 4), cudaMemcpyHostToDevice, m.cs) != cudaSuccess) {
-        err = "prefill MoE accumulator: immutable maps upload"; return false;
+    namespace cp = sycl_backend::command_profile;
+    auto command_trace = owner.command_trace ? owner.command_trace->begin(layer, first_row) : cp::Frame{};
+    if (command_trace)
+        for (const auto& job : owner.routes->jobs())
+            command_trace.consider(job.expert, job.global_row, job.rows);
+    {
+        auto tag = command_trace.tag(cp::Kind::upload, -1, 0, rows, K, 4);
+        if (cudaMemcpyAsync(inverse, owner.routes->original_slots().data(), size_t(rows * K * 4), cudaMemcpyHostToDevice, m.cs) != cudaSuccess ||
+            cudaMemcpyAsync(source, owner.routes->source_rows().data(), size_t(rows * K * 4), cudaMemcpyHostToDevice, m.cs) != cudaSuccess) {
+            err = "prefill MoE accumulator: immutable maps upload"; return false;
+        }
     }
-    native16::moe_job_weights(*owner.routes, weights, inverse, job_weights, status, m.cs);
+    {
+        auto tag = command_trace.tag(cp::Kind::job_weights, -1, 0, rows, K);
+        native16::moe_job_weights(*owner.routes, weights, inverse, job_weights, status, m.cs);
+    }
     const auto& layout = strata::kernels::cpu::expert_layout();
     const auto& format = layout.fmt[size_t(layer)];
     int32_t loaded = -1;
@@ -140,28 +150,57 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
             sycl_backend::validate_device_span(blob, size_t(layout.blob_bytes(layer)), queue);
             sycl_backend::validate_device_span(m.dq_gu[0], size_t(2 * 640 * N * 2), queue);
             sycl_backend::validate_device_span(m.dq_d[0], size_t(N * 640 * 2), queue);
-            strata::kernels::iq_dequant_gu_f16(format.gu_type, blob, blob + format.up_off,
-                format.n_ff, format.n_embd, m.dq_gu[0], m.cs);
-            strata::kernels::iq_dequant_f16(format.d_type, blob + format.down_off,
-                format.n_embd * format.n_ff, m.dq_d[0], m.cs);
+            {
+                auto tag = command_trace.tag(cp::Kind::dequant_gu, job.expert, job.global_row, job.rows,
+                    2 * format.n_ff, format.n_embd, format.gu_type);
+                strata::kernels::iq_dequant_gu_f16(format.gu_type, blob, blob + format.up_off,
+                    format.n_ff, format.n_embd, m.dq_gu[0], m.cs);
+            }
+            {
+                auto tag = command_trace.tag(cp::Kind::dequant_down, job.expert, job.global_row, job.rows,
+                    format.n_embd, format.n_ff, format.d_type);
+                strata::kernels::iq_dequant_f16(format.d_type, blob + format.down_off,
+                    format.n_embd * format.n_ff, m.dq_d[0], m.cs);
+            }
             loaded = job.expert; ++owner.dequants; ++stats_.experts_resident;
         }
         if (job.rows < 1 || job.rows > m.T || job.global_row < 0 || job.global_row > rows * K - job.rows)
             throw std::invalid_argument("prefill MoE accumulator: job bounds");
         sycl_backend::validate_device_span(source + job.global_row, size_t(job.rows * 4), queue);
-        gather_rows16(mixed, source + job.global_row, gathered, job.rows, N, m.cs);
-        m.gemm.f16_out16(gathered, m.dq_gu[0], gu, job.rows, 2 * 640, N, true);
-        native16::swiglu(gu, hidden, job.rows, m.cs);
-        m.gemm.f16_out16(hidden, m.dq_d[0], down, job.rows, N, 640, true);
-        native16::moe_accumulate(*owner.routes, index, down, source, inverse, job_weights, accumulator, status, m.cs);
+        {
+            auto tag = command_trace.tag(cp::Kind::gather, job.expert, job.global_row, job.rows, N);
+            gather_rows16(mixed, source + job.global_row, gathered, job.rows, N, m.cs);
+        }
+        {
+            auto tag = command_trace.tag(cp::Kind::gu, job.expert, job.global_row, job.rows, 2 * 640, N, format.gu_type);
+            m.gemm.f16_out16(gathered, m.dq_gu[0], gu, job.rows, 2 * 640, N, true);
+        }
+        {
+            auto tag = command_trace.tag(cp::Kind::swiglu, job.expert, job.global_row, job.rows, 640);
+            native16::swiglu(gu, hidden, job.rows, m.cs);
+        }
+        {
+            auto tag = command_trace.tag(cp::Kind::down, job.expert, job.global_row, job.rows, N, 640, format.d_type);
+            m.gemm.f16_out16(hidden, m.dq_d[0], down, job.rows, N, 640, true);
+        }
+        {
+            auto tag = command_trace.tag(cp::Kind::accumulate, job.expert, job.global_row, job.rows, N);
+            native16::moe_accumulate(*owner.routes, index, down, source, inverse, job_weights, accumulator, status, m.cs);
+        }
         ++owner.jobs;
     }
     // The host status destination belongs to the outer checked lease, even if DMA fails.
     owner.status_observed = ~uint32_t(0);
-    if (cudaMemcpyAsync(&owner.status_observed, status, sizeof(uint32_t), cudaMemcpyDeviceToHost, m.cs) != cudaSuccess ||
-        cudaStreamSynchronize(m.cs) != cudaSuccess) {
-        err = "prefill MoE accumulator: status readback/drain"; return false;
+    {
+        auto tag = command_trace.tag(cp::Kind::status, -1, 0, rows);
+        if (cudaMemcpyAsync(&owner.status_observed, status, sizeof(uint32_t), cudaMemcpyDeviceToHost, m.cs) != cudaSuccess ||
+            cudaStreamSynchronize(m.cs) != cudaSuccess) {
+            err = "prefill MoE accumulator: status readback/drain"; return false;
+        }
     }
+    // Existing status drain retires all selected expert events. Stop sampling
+    // before the shared-expert/final-write phase; no extra drain or GPU work.
+    command_trace.after_checked_drain();
     if (owner.status_observed) { err = "prefill MoE accumulator: invalid device route map"; return false; }
     for (int64_t at = 0; at < rows; at += m.T) {
         if (should_stop && should_stop()) { err = "cancelled"; return false; }

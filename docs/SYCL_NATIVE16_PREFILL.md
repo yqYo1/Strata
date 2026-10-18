@@ -319,6 +319,19 @@ The sampler adds no GPU commands or readbacks and queries only completed events
 after the existing checked drain; it samples first windows in layers0/15/31/47,
 not all device work. Timestamp gaps alone do not prove device idle.
 
+The first model check at`d9f3e91d9` exited1 before long-model arithmetic: the
+legacy collector admitted only window2 and explicitly refused the production
+window10 accumulator path. No fresh GPU fault occurred. The corrected route
+tags its map upload, job-weight preparation, dequant, gather, GU, SwiGLU, Down,
+FP32 accumulation and existing status readback, retiring the sampled events
+at that existing status drain. It excludes initial router preparation and final
+shared-expert/writes. Accumulation adds a fifth sampled command per selected
+job; the finite cap is192 events/frame (maximum172 from32 selected jobs,
+four experts and four non-job commands), with total host storage checked
+against128KiB and included in admission. Requested window8/10 must really be
+admitted; the observer cannot silently measure a window2 fallback. The existing
+window2 collector remains separate. No arithmetic or synchronization is added.
+
 With source and recipe committed, build using`tools/sycl/build_engine.py rebuild`.
 Prepare/commit/run`qsa-kvec4-check` for the traced/validated32K-class input,
 then prepare/commit/run`qsa-kvec4-census` for one official78K request with the

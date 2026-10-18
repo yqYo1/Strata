@@ -16,10 +16,10 @@ namespace strata::sycl_backend::command_profile {
 thread_local Trace* active = nullptr;
 namespace {
 constexpr size_t Kinds = size_t(Kind::count), Bins = 8, PerBin = 4;
-constexpr size_t Frames = 4, PendingMax = 160, RecordsMax = Frames * PendingMax;
+constexpr size_t Frames = 4, PendingMax = 192, RecordsMax = Frames * PendingMax;
 const char* kind_name(Kind kind) {
   constexpr const char* names[] = {"none","upload","dequant_gu","dequant_down",
-      "gather","gu","swiglu","down","combine","write"};
+      "gather","gu","swiglu","down","combine","write","accumulate","job_weights","status"};
   return names[size_t(kind)];
 }
 unsigned row_bin(int64_t rows) {
@@ -29,7 +29,7 @@ unsigned row_bin(int64_t rows) {
   return b;
 }
 bool by_job(Kind kind) {
-  return kind==Kind::gather || kind==Kind::gu || kind==Kind::swiglu || kind==Kind::down;
+  return kind==Kind::gather || kind==Kind::gu || kind==Kind::swiglu || kind==Kind::down || kind==Kind::accumulate;
 }
 bool by_expert(Kind kind) { return kind==Kind::dequant_gu || kind==Kind::dequant_down; }
 // Independent deterministic FNV rank over IDs, not copied implementation code.

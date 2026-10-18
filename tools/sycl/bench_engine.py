@@ -41,7 +41,8 @@ def main():
     kvec4 = mode.startswith('qsa-kvec4')
     check = census or mode in ('check', 'qsa-check', 'qsa-qcache-check', 'qsa-kvec4-check')
     chunk64 = mode in ('check', 'candidate')
-    root = B / (('qsa-attention-model-' + mode[4:] + '-v1') if qsa else
+    generation = 'v2' if mode == 'qsa-kvec4-check' else 'v1'
+    root = B / (('qsa-attention-model-' + mode[4:] + '-' + generation) if qsa else
                 ('native-gdn-model-' + mode + '-v2'))
     result_path = (A / 'moe-window-census-current.json' if census else
                    A / 'qsa-kvec4-model-current.json' if kvec4 else
@@ -246,7 +247,9 @@ def main():
                     sample.update(service_ns=end-start, start_minus_submit_ns=start-submit)
                 record['command_service_profile'] = dict(version=2, summaries=summaries,
                     groups=groups, samples=samples, invalid=invalid,
-                    scope='Deterministic samples in first MoE windows of layers0,15,31,47; no device-busy or physical-traffic claim.')
+                    scope='Deterministic samples in first accumulator expert phases of layers0,15,31,47; initial router/shared/final writes excluded; no device-busy or physical-traffic claim.')
+                guards.require('strata MoE window configuration: requested_mode=10 effective_mode=10 ' in log,
+                    'command service must sample the admitted production accumulator route')
                 guards.require(len(summaries) == 1 and summaries[0]['version'] == '2' and
                     summaries[0]['service_complete'] == '1' and summaries[0]['invalid'] == '0' and
                     summaries[0]['windows'] == summaries[0]['expected'] == '4' and not invalid and
