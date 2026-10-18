@@ -805,6 +805,18 @@ This gate measures compatibility, not speed or hardware saturation. A failed
 profiling/synchronization contract prevents model advancement without changing
 the900.6tok/s route or weakening its existing API.
 
+At source`dfba48ef52e1bd8df596ecda06ab4eae0c882359`, the ordinary control
+passed all10 cases. The forced-batched candidate passed the initial copy/order
+case, then returned`UR_RESULT_ERROR_PROFILING_INFO_NOT_AVAILABLE` for the first
+explicit-stream elapsed-time query. The remaining candidate cases did not run.
+Both processes closed without a fresh GPU fault or boot change. Reject this
+setting for the current profiling-enabled runtime; no forced-batched model or
+speed measurement follows. The engine executable is byte-identical to the
+900.6tok/s reference. Keep the
+[failed gate and compact diagnostic](../bench/results/2026-10-15-pr6-recovery-audit/submission-acceptance-current.json).
+The selected next implementation is the interleaved GU/SwiGLU epilogue seam;
+prove actual fragment partner ownership before running its GPU kernel.
+
 ## MoE Down/scatter component
 
 `Gemm::down_scatter` is an explicit component API with no model dispatch hook.

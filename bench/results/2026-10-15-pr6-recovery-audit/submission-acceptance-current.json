@@ -29,10 +29,26 @@
       ],
       "stdout_sha256": "dadad801d8022f3b40ad3bdab3e29f65fc13e1f61d60b219406f04e9881bb5be",
       "stderr_sha256": "7c3579f75c18685f7dcffe2bd5ef72aae47df18c217d67c0553e065d0907fc81"
+    },
+    {
+      "mode": "candidate",
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_submission_test",
+        "--submission"
+      ],
+      "environment_selector": "1",
+      "passed": false,
+      "exit_code": 1,
+      "ownership_closed": true,
+      "cases": [
+        "case stream_copy_ordering=PASS"
+      ],
+      "stdout_sha256": "c3912d9baac0f7b5cb603ff33ef4677f2f95ea96d2b9126e52ac546a65566fd2",
+      "stderr_sha256": "15a87ed559018e00d6a175a77403e18b5f590ed693b8c9e8f0a2829ba2fe8bbc"
     }
   ],
-  "complete": true,
-  "passed": true,
+  "complete": false,
+  "passed": false,
   "active": false,
   "model_performance_measured": false,
   "model_quality_qualified": false,
@@ -40,7 +56,7 @@
   "consumer": "Bounded runtime compatibility gate before any forced-batched model run; retire normal full traces after recording outcomes.",
   "prospective_gate": "Both separate processes pass10 numerical/guard/event/profiling/lifetime/teardown cases without faults. Any failed contract rejects advancing this runtime mode.",
   "limits": "Startup flag plus pinned source/adapter identity; no hardware saturation or performance claim. Graph replay is excluded.",
-  "mode": "control",
+  "mode": "candidate",
   "ownership_closed": true,
   "environment": {
     "PATH": "/usr/bin:/bin",
@@ -63,6 +79,7 @@
     "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
     "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
     "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+    "UR_L0_V2_FORCE_BATCHED": "1",
     "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/submission-acceptance-v1/tmp",
     "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/submission-acceptance-v1/cache"
   },
@@ -75,5 +92,9 @@
     "device": "0xe20c",
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
-  }
+  },
+  "error_excerpt": "compat: create streams and USM owners\n   <--- urEventGetProfilingInfo(.hEvent = 0x13921d80, .propName = UR_PROFILING_INFO_COMMAND_END, .propSize = 8, .pPropValue = 0x7ffc8d4b2a48 (0), .pPropSizeRet = nullptr) -> UR_RESULT_ERROR_PROFILING_INFO_NOT_AVAILABLE;\ncudaEventElapsedTime(&ms, begin, done): level_zero backend failed with error: 17 (UR_RESULT_ERROR_PROFILING_INFO_NOT_AVAILABLE)",
+  "error": "submission acceptance failed; inspect preserved compact error excerpt",
+  "decision": "Reject forced-batched setting for the current profiling-enabled runtime/API; explicit-stream elapsed-time query fails before remaining candidate cases. No model run or speed claim.",
+  "retention": "Keep one compact excerpt for this distinct unresolved provider profiling limitation; retire normal control traces and duplicate teardown output after scope review.900.6tok/s engine remains unchanged."
 }
