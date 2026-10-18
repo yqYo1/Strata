@@ -2299,8 +2299,8 @@
   },
   "selective_down_model_controller_scope": {
     "classification": "decision support",
-    "schedulable_now": true,
-    "status": "eligible_committed_conditional_model_controller",
+    "schedulable_now": false,
+    "status": "source_audit_running",
     "question": "Audit the matched117K selective Down model controller, native-origin qualification reuse, actual Down/CPU/work counters and prospective process-order/acceptance gates. Identify concrete source bugs before model execution.",
     "candidate_source": {
       "commit": "c8b1553becb0d1e0197b2e2018179e014ef19512",
@@ -2326,6 +2326,11 @@
       "maximum_bytes": 20480
     },
     "consumer": "Main-owned model trial only if the current Down component passes unchanged gates; no engine code or GPU work delegated.",
-    "next_review": "Before any Down model plan/launch; native Luna-max review then Main fixes/tests. Retire consumed review transaction at decision closure."
+    "next_review": "Before any Down model plan/launch; native Luna-max review then Main fixes/tests. Retire consumed review transaction at decision closure.",
+    "tests_executed_by_Main": {
+      "command": "python3 tools/sycl/test_source_view_statistics.py",
+      "passed": 11,
+      "GPU_executed": false
+    }
   }
 }
