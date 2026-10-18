@@ -1072,3 +1072,36 @@ metadata/predicates while preserving static fragment access; a dynamic register
 index or restricted pointer must not be assumed faster or legal without checks.
 The QSA ordered-exp component and opt-in model screen subsequently passed their
 gates as described above. Neither Down fusion variant is selected.
+
+### Next Down discriminator: workgroup row metadata
+
+The selected next component hypothesis stages each logical M row's validated
+token and weight once per workgroup, independently of the TLA fragment layout.
+It targets repeated global metadata loads, address calculations and predicates
+in the rejected scalar epilogue; those source operations and the compiled code
+size do not establish a measured resource bottleneck or predict a speedup.
+Main will not change the frozen GU model comparison's inputs to implement it.
+
+Use the existing matrix mapping and explicit opt-in component API. Local IDs
+cover the16 or128 M rows without overlap, including a masked final M tile.
+Validate the slot/token before loading a weight, OR the existing error bit for
+an invalid map, and publish an invalid-token sentinel. After one unconditional
+workgroup local-memory barrier, the unchanged DPAS helper and BF16 conversion
+feed the original per-cell FP32 FMA using cached token/weight. All work-items
+must reach the barrier. No subgroup row-ownership assumption, dynamic fragment
+index, global metadata slab, alias promise or barrier removal is included.
+Two local arrays require128 or1024 bytes per workgroup; query the device limit
+and retain all current span, plan lifetime and disjoint-writer checks.
+
+Before implementation, an independent source-only review must assess the
+barrier, tails, error semantics and numerical contract against the pinned SYCL
+and TLA interfaces, and compare counterarguments such as static factoring or
+already-commoned loads. Main owns implementation, codegen inspection and tests.
+Keep the existing separate and scalar-fused controls. Require exact captures,
+FP32 accumulation, guards, immutable inputs and invalid-map outcomes before
+three clean independent processes measure the fixed78451-row window at
+64/160/2334/5963/8192 expert rows in both placements. The existing advance gate
+(geomean latency ratio<=0.95, no shape>1.05, each large shape improves in every
+process) remains prospective. The extra barrier or SLM accesses may regress;
+reject the variant if it fails. Component success alone permits only a later
+model trial, not adoption or a hardware-saturation claim.
