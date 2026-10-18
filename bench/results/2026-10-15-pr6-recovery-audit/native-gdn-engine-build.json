@@ -1,5 +1,5 @@
 {
-  "source_commit": "853535ed58dd01c9d535874eefda5b623a1dad09",
+  "source_commit": "7fbe795cebbf898bf27b1e6ad7debe86cfa93a5f",
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -80,21 +80,21 @@
   "production_selected": false,
   "model_quality_qualified": false,
   "replaces": {
-    "source_commit": "ec73e1271126de0964c2a9aa929e4e8c99ca61ae",
+    "source_commit": "853535ed58dd01c9d535874eefda5b623a1dad09",
     "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-down-scatter-v1/strata",
-      "bytes": 20573552,
-      "sha256": "bb8b3f097837026528699031de72b2fae5f779f095efda96161fce037847f5d0"
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+      "bytes": 20960536,
+      "sha256": "d7a16fc294266a8bb817d53c154373114ecca259f79f42ce8bcae489d47d0dca"
     },
-    "source_build_passed": false,
-    "retained_binary_source_commit": "7829568c61f4a47e5c1b06497f59e41a3417a5fb",
+    "source_build_passed": true,
+    "retained_binary_source_commit": "853535ed58dd01c9d535874eefda5b623a1dad09",
     "reason": "Closed unused comparison engine; original source/recipe recovered from Git. Reuse its cache for the immediate corrected build, not a retained old generation."
   },
   "targets": [
     "strata",
     "sycl_moe_down_scatter_bench"
   ],
-  "retention_consumer": "Known-good bb8 model fallback plus one unqualified-model Down component generation for imminent matrix-layout versus coalesced-layout comparison. Replace/reuse candidate cache after original source/recipe verification; keep at most these2 generations and select a model-validated engine before retiring the fallback.",
+  "retention_consumer": "Current long-prefill comparison and its attention fixtures; retire when comparison closes.",
   "retained_validation_reference": {
     "source_commit": "7829568c61f4a47e5c1b06497f59e41a3417a5fb",
     "binary": {
@@ -160,23 +160,23 @@
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
     "bytes": 20960536,
-    "sha256": "d7a16fc294266a8bb817d53c154373114ecca259f79f42ce8bcae489d47d0dca"
+    "sha256": "fa35ec33debd8f8262bf2b7f52171eaeaca545e9a009f27be9ffb02c34ac2927"
   },
   "compile_database_sha256": "14b196583de92fa05257e717b9de693316644cd53bea6d838e241bcfc8c23f05",
   "configured_compile_entries": 215,
   "fixtures": {
     "sycl_moe_down_scatter_bench": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_down_scatter_bench",
-      "sha256": "ecefe5c0d65311aa79e3c9db77ae0247a0f0f58fe2a28674ab395c2387a4e7ec"
+      "sha256": "ee7b6b5dc1e2a8b873715b27ef5e129217ed24921d51fc844487c49c382e9e87"
     }
   },
   "ownership_closed": true,
   "inputs": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "853535ed58dd01c9d535874eefda5b623a1dad09",
+      "revision": "7fbe795cebbf898bf27b1e6ad7debe86cfa93a5f",
       "count": 492,
-      "aggregate_sha256": "c805a4b6ce0df62227ab8e62eb6fc9cdff100381cd40ea147a92698efc6da6ba"
+      "aggregate_sha256": "c7ba711b19f7193afa7419f03b296f9cb8210a92062ae57fce3d8b9346c46f1e"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
@@ -191,27 +191,9 @@
       "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
     }
   ],
-  "down_component_qualification": {
-    "source_commit": "853535ed58dd01c9d535874eefda5b623a1dad09",
-    "result": "bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json",
-    "correctness_passed": true,
-    "three_process_timing_complete": true,
-    "model_experiment_gate_passed": false,
-    "production_selected": false
-  },
   "existing_dense_native_text_comparison": {
-    "reference": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-down-scatter-v1/strata",
-      "bytes": 20573552,
-      "sha256": "bb8b3f097837026528699031de72b2fae5f779f095efda96161fce037847f5d0"
-    },
-    "candidate": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-      "bytes": 20960536,
-      "sha256": "d7a16fc294266a8bb817d53c154373114ecca259f79f42ce8bcae489d47d0dca"
-    },
-    "reference_images": 2,
-    "candidate_images": 2,
+    "reference": "bb8b3f097837026528699031de72b2fae5f779f095efda96161fce037847f5d0",
+    "candidate": "fa35ec33debd8f8262bf2b7f52171eaeaca545e9a009f27be9ffb02c34ac2927",
     "reference_native_entries": 16,
     "candidate_native_entries": 20,
     "missing_existing_entries": [],
@@ -260,24 +242,34 @@
       }
     },
     "added_native_entries": {
-      ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_117DownScatterKernelILNS1_4TileE0ELb0EEE": {
-        "bytes": 15680,
-        "sha256": "c1fbae8d0683fbbdc17cbc65d1d3b2e84521f8c720ec05fac5dc49f4d645a249"
-      },
       ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_117DownScatterKernelILNS1_4TileE0ELb1EEE": {
         "bytes": 17280,
-        "sha256": "4a130be92ea0db56432a8d02e2edd701fe6f9cf1f9219496e005ac40917dc909"
-      },
-      ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_117DownScatterKernelILNS1_4TileE1ELb0EEE": {
-        "bytes": 126912,
-        "sha256": "d9e3e013bbc47b28ff0cc28c7b1db494bea70c65dc45c4198890a7dec4ee9635"
+        "sha256": "5f871f7bac31ee15c11c471bf9ff30c7fbe352ca802ca7b655f3bcb4c19f6d60"
       },
       ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_117DownScatterKernelILNS1_4TileE1ELb1EEE": {
         "bytes": 141248,
-        "sha256": "dacc64374d1ab68a96c367ad0d65cbdba53738b64ab940448ae104abe04caf3d"
+        "sha256": "6db40bd0884b75c3ae8482a741c877110b15d881ca149369ab6fdf6aa8076123"
+      },
+      ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_117DownScatterKernelILNS1_4TileE1ELb0EEE": {
+        "bytes": 126912,
+        "sha256": "c1eccd00ba5fd3b417fb77cd7a9ad1fa10c8e34ab32b163fbaa5e8af69813ccd"
+      },
+      ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_117DownScatterKernelILNS1_4TileE0ELb0EEE": {
+        "bytes": 15680,
+        "sha256": "d8279ed65b4334f58ef7d9a3dc4d1f5b9f9effba00c43ba02f376b247b279dde"
       }
     },
-    "scope": "Embedded .text bytes only; no runtime execution, metadata/ABI, quality, speed or occupancy claim.",
-    "inspector_source_commit": "4af35cd4773ae30d94af52f3856e122d87416100"
+    "matching_prior_scatter_entries": 0,
+    "inspector_source_commit": "4af35cd4773ae30d94af52f3856e122d87416100",
+    "prior_changed_control_result": {
+      "revision": "9fc4bd7fcf99bbc554f72f3b451bd75ddc299743",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json"
+    },
+    "scope": "Embedded native .text identity only; no ABI/metadata, execution, quality, timing or occupancy claim."
+  },
+  "dense_helper_source_restoration": {
+    "original_source": "7829568c61f4a47e5c1b06497f59e41a3417a5fb",
+    "path": "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp",
+    "original_definition_restored_verbatim": true
   }
 }
