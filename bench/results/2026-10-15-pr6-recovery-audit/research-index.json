@@ -1734,5 +1734,26 @@
       "Actual enqueue/drain fault injection and production session/physical262144/RESTORE remain unqualified. Component passes do not establish model speed."
     ],
     "review_point": "After current staged-bank model comparison closes, retain only concrete remaining correctness findings; no duplicate source audit while unchanged inputs are frozen."
+  },
+  "staged_copy_resource_contract_scope": {
+    "classification": "decision support",
+    "schedulable_now": true,
+    "state": "eligible; actual staged model route introduces a concrete copy-resource attribution question",
+    "prerequisites_met": [
+      "Source1222e27d0 stages compressed raw expert blobs on the compute in-order stream through stage_expert_bank -> ExpertCache::fill_slot -> cudaMemcpyAsync -> SYCL queue.memcpy.",
+      "The validated117K model at48e13aaba completed19631 uploads/40102860800 requested expert bytes and13594 permanent hits. Clean speed is being measured separately.",
+      "Qualified runtime environment pins UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD=1 and EnableDirectSubmission=0. Previous host-submission audit addressed CPU accounting, not this actual copy engine/metric mapping."
+    ],
+    "question": "Trace the qualified UR Level Zero V2 copy-offload-disabled path and distinguish DMA/copy-kernel/host staging resources and which device metrics can classify them. Explain what a GPU compute utilization percentage can and cannot mean for this staged-copy path, and recommend a bounded safe attribution plan without changing the avoidance settings.",
+    "source_references": [
+      "tools/sycl/measurement_environment.json",
+      "include/strata/prefill/expert_bank_upload.hpp",
+      "src/core/expert_cache.cpp",
+      "src/sycl/compat.cpp"
+    ],
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/staged-copy-resource-contract.md",
+    "report_budget": "10KiB target,16KiB maximum; one coherent runtime path/metric investigation",
+    "main_reads_body_on_arrival": false,
+    "retention_consumer": "Main resource attribution for the current staged-bank long-prefill route after clean timing; review at attribution closure."
   }
 }
