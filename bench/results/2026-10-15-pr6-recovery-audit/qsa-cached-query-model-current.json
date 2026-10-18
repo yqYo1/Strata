@@ -1,6 +1,6 @@
 {
-  "mode": "qsa-qcache-base",
-  "source_commit": "aaa95e35af9827608b266937dd6059b19c76e92c",
+  "mode": "qsa-qcache",
+  "source_commit": "4f161af8370b30c1a4f3170edb5fc79be732f5be",
   "build_source_commit": "77407e65f41b24cea19b9b63d44ea4355633672e",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
@@ -61,9 +61,9 @@
     "STRATA_SYCL_SELECT_CYCLIC": "0",
     "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
     "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-qcache-base-v1/cache",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-qcache-v1/cache",
     "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
-    "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-optimized",
+    "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-qcache",
     "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
     "STRATA_SYCL_PREFILL_NATIVE16_QSA": "1",
     "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
@@ -74,8 +74,8 @@
     "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
     "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
     "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-qcache-base-v1/tmp",
-    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-qcache-base-v1",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-qcache-v1/tmp",
+    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-qcache-v1",
     "ZES_ENABLE_SYSMAN": "0",
     "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0"
   },
@@ -95,7 +95,7 @@
       "--expert-cache",
       "128",
       "--expert-profile",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-qcache-base-v1/expert-profile.bin",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-qcache-v1/expert-profile.bin",
       "--expert-cache-per-layer",
       "--pool-workers",
       "5",
@@ -134,7 +134,7 @@
       "strata"
     ],
     "host": "127.0.0.1",
-    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-qcache-base-v1/engine.stderr",
+    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-qcache-v1/engine.stderr",
     "engine_silence_s": 480,
     "parallel": 1,
     "open_browser": false,
@@ -144,9 +144,9 @@
     "/bin/sh",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
     "--config",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-qcache-base-v1/config.json",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-qcache-v1/config.json",
     "--port",
-    "35707",
+    "37187",
     "--runs",
     "4",
     "--prefill-only",
@@ -159,185 +159,45 @@
     "--ready-timeout",
     "600",
     "--out",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-qcache-base-v1/bench"
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-qcache-v1/bench"
   ],
   "reference": {
     "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-softmax-measurement-inputs-v1.json",
     "sha256": "3792c36462e333816ce5d5d9ac39f3dcc13809939d8d3133c570d8945257d1dd"
   },
-  "config_sha256": "8789df5396595c6644bf0d53cb8bdf447f09a32aaf9dc8c9ceb700808afed315",
+  "config_sha256": "792dffe894e45768b722df7247bdb46763c1de43e0ee2bbc1dd02110ee11ee08",
   "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
-  "complete": true,
-  "passed": true,
+  "complete": false,
+  "passed": false,
   "active": false,
   "model_quality_qualified": false,
   "physical262144_RESTORE_qualified": false,
   "performance_adopted": false,
   "source_count": 101,
   "source_aggregate_sha256": "ca4e3e0f87ab054a61451e6e029a77aecca01e18ce87bc19209218afff4cec4e",
-  "exit_code": 0,
-  "requests": [
-    {
-      "run": 0,
-      "ok": true,
-      "eligible": true,
-      "actual_prompt_tokens": 78451,
-      "actual_read_tokens": 78451,
-      "actual_reused_tokens": 0,
-      "generated_tokens": 24,
-      "thinking_requested": true,
-      "reasoning_observed": true,
-      "stream_complete": true,
-      "request_sha256": "b592f434eb31230e4aaadcc163951732a26b553480a4411e6eb2bc82bcb9b827",
-      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
-      "ttft_s": 116.436,
-      "total_s": 118.048,
-      "prompt_tps": 676.6,
-      "prompt_ms": 115943.8,
-      "decode_tps": 14.0,
-      "decode_ms": 1711.5,
-      "prompt_tps_source": "engine",
-      "decode_tps_source": "engine",
-      "drafts_offered": 21,
-      "drafts_accepted": 16,
-      "finish_reason": "length",
-      "err": null,
-      "eligibility_errors": []
-    },
-    {
-      "run": 1,
-      "ok": true,
-      "eligible": true,
-      "actual_prompt_tokens": 78451,
-      "actual_read_tokens": 78451,
-      "actual_reused_tokens": 0,
-      "generated_tokens": 24,
-      "thinking_requested": true,
-      "reasoning_observed": true,
-      "stream_complete": true,
-      "request_sha256": "8530456cd33ae82d7e7aea5341796493f9442cfebbf87eede5e23695a72d47d8",
-      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
-      "ttft_s": 108.689,
-      "total_s": 110.287,
-      "prompt_tps": 725.0,
-      "prompt_ms": 108210.6,
-      "decode_tps": 14.2,
-      "decode_ms": 1694.5,
-      "prompt_tps_source": "engine",
-      "decode_tps_source": "engine",
-      "drafts_offered": 21,
-      "drafts_accepted": 16,
-      "finish_reason": "length",
-      "err": null,
-      "eligibility_errors": []
-    },
-    {
-      "run": 2,
-      "ok": true,
-      "eligible": true,
-      "actual_prompt_tokens": 78451,
-      "actual_read_tokens": 78451,
-      "actual_reused_tokens": 0,
-      "generated_tokens": 24,
-      "thinking_requested": true,
-      "reasoning_observed": true,
-      "stream_complete": true,
-      "request_sha256": "8ac504de3338c11bab99f2710c4923aeb2edd5879aec93bdcca5ec1b9867dc60",
-      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
-      "ttft_s": 109.668,
-      "total_s": 111.283,
-      "prompt_tps": 718.5,
-      "prompt_ms": 109191.2,
-      "decode_tps": 14.0,
-      "decode_ms": 1711.0,
-      "prompt_tps_source": "engine",
-      "decode_tps_source": "engine",
-      "drafts_offered": 21,
-      "drafts_accepted": 16,
-      "finish_reason": "length",
-      "err": null,
-      "eligibility_errors": []
-    },
-    {
-      "run": 3,
-      "ok": true,
-      "eligible": true,
-      "actual_prompt_tokens": 78451,
-      "actual_read_tokens": 78451,
-      "actual_reused_tokens": 0,
-      "generated_tokens": 24,
-      "thinking_requested": true,
-      "reasoning_observed": true,
-      "stream_complete": true,
-      "request_sha256": "7fddc7f387d219bf7547dba5443bb66d05dce49bd06b4ad3c05d0c2462897f3b",
-      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
-      "ttft_s": 108.768,
-      "total_s": 110.358,
-      "prompt_tps": 724.5,
-      "prompt_ms": 108289.0,
-      "decode_tps": 14.2,
-      "decode_ms": 1688.0,
-      "prompt_tps_source": "engine",
-      "decode_tps_source": "engine",
-      "drafts_offered": 21,
-      "drafts_accepted": 16,
-      "finish_reason": "length",
-      "err": null,
-      "eligibility_errors": []
-    }
-  ],
-  "engine_exit_code": 0,
-  "native_identity": {
-    "pid": 3433569,
-    "start_ticks": 63270790,
-    "sid": 3433533
-  },
-  "route_selection": [],
-  "qsa_route": [
-    "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=161297312; source=resident-Mode0 score_pitch=33 operand_layout=row-major softmax=serial",
-    "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=161297312; source=resident-Mode0 score_pitch=33 operand_layout=row-major softmax=serial",
-    "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=161297312; source=resident-Mode0 score_pitch=33 operand_layout=row-major softmax=serial",
-    "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=161297312; source=resident-Mode0 score_pitch=33 operand_layout=row-major softmax=serial"
-  ],
-  "cached_query_route": [],
-  "ownership_closed": true,
-  "fresh_faults": [],
-  "boot_unchanged": true,
-  "driver_after": {
-    "pci": "/sys/bus/pci/devices/0000:05:00.0",
-    "driver": "xe",
-    "vendor": "0x8086",
-    "device": "0xe20c",
-    "kernel": "7.0.0-38-generic",
-    "devcoredump": false
-  },
-  "baseline_sample_summary": {
-    "prompt": {
-      "individual": [
-        676.6,
-        725.0,
-        718.5,
-        724.5
+  "matched_baseline_preflight": {
+    "commit": "c5442179d",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-cached-query-model-current.json",
+    "exact_binary_build_sources_benchmark_sources_profile_reference": true,
+    "normalized_config_and_workload_command_equal": true,
+    "environment_differences": {
+      "TMPDIR": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-qcache-base-v1/tmp",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-qcache-v1/tmp"
       ],
-      "first": 676.6,
-      "subsequent_median": 724.5,
-      "subsequent_sample_sd": 3.6170890690351176
-    },
-    "short_decode": {
-      "individual": [
-        14.0,
-        14.2,
-        14.0,
-        14.2
+      "XDG_CACHE_HOME": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-qcache-base-v1/cache",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-qcache-v1/cache"
       ],
-      "first": 14.0,
-      "subsequent_median": 14.2,
-      "subsequent_sample_sd": 0.11547005383792475
+      "STRATA_MEASUREMENT_ROOT": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-qcache-base-v1",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-qcache-v1"
+      ],
+      "STRATA_SYCL_PREFILL_QSA_MATH": [
+        "bf16-prefix-optimized",
+        "bf16-prefix-qcache"
+      ]
     },
-    "limits": "Four fresh78451-token requests in one process; first use separated.24 generated tokens do not qualify sustained decode. No candidate decision yet."
+    "limits": "Owned paths/port and QSA selector only. Individual actual request hashes/read/reused counts still require post-run comparison."
   }
 }
