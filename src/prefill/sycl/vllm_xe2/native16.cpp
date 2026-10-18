@@ -11,6 +11,7 @@
 #include <limits>
 #include <stdexcept>
 #include <type_traits>
+#include <vector>
 
 namespace strata::experimental::vllm_xe2_native16 {
 namespace {
@@ -112,7 +113,108 @@ template <> struct ShapePolicy<Tile::wide_128x128> {
                           Stride<Int<2>, Int<1>, Int<0>>>;
   static constexpr int threads = 128;
 };
+template <class Input, Tile Policy>
+using TileMMA = typename TiledMMAHelper<MMA_Atom<XE_DPAS_TT<8, float, Input>>,
+    Layout<typename ShapePolicy<Policy>::Shape>,
+    typename ShapePolicy<Policy>::Subgroups>::TiledMMA;
 template <class Input, class Output, Tile Policy> class DenseKernel;
+template <Tile Policy, bool Capture> class DownScatterKernel;
+
+template <bool Capture> struct DownEpilogue {
+  DownScatterProblem p;
+  int t, token_rows;
+  size_t routes, offset;
+
+  template <class Fragment, class Coordinates>
+  CUTE_DEVICE void operator()(const Fragment &fragment, const Coordinates &coordinates) const {
+    // Use the pinned TLA type-conversion operation with the accumulator's
+    // unchanged thread/value layout. Dense output converts with this same
+    // float->bfloat16 reorder machinery before its block2D store.
+    auto rounded = make_fragment_like<cutlass::bfloat16_t>(fragment.tensor());
+    reorder(fragment.tensor(), rounded, fragment.tv_layout(), fragment.tv_layout());
+    CUTE_UNROLL
+    for (int i = 0; i < size(rounded); ++i) {
+      const auto coordinate = coordinates(i);
+      const int row = get<0>(coordinate), col = get<1>(coordinate);
+      // All collectives have completed. Mask logical coordinates BEFORE any
+      // map read/address computation, including the last partial M tile.
+      if (row < 0 || row >= t || col < 0 || col >= 2560) continue;
+      if constexpr (Capture)
+        p.rounded_diagnostic[size_t(row) * 2560 + size_t(col)] =
+            sycl::bit_cast<uint16_t>(rounded(i));
+      const size_t routed = offset + size_t(row);
+      const int32_t slot = p.original[routed], token = p.source[routed];
+      uint32_t error = 0;
+      if (slot < 0 || size_t(slot) >= routes) error = 1;
+      else if (token < 0 || token >= token_rows || token != slot / 10) error = 2;
+      if (error) {
+        sycl::atomic_ref<uint32_t, sycl::memory_order::relaxed,
+            sycl::memory_scope::device, sycl::access::address_space::global_space>(
+                *p.status).fetch_or(error);
+        continue;
+      }
+      const size_t out = size_t(token) * 2560 + size_t(col);
+      p.accumulator[out] = sycl::fma(p.job_weights[routed], float(rounded(i)), p.accumulator[out]);
+    }
+  }
+};
+
+template <Tile Policy, bool Capture>
+sycl::event enqueue_down(sycl::queue &q, DownScatterProblem p, Geometry g,
+                         int token_rows, size_t routes, size_t offset) {
+  using P = ShapePolicy<Policy>;
+  using MMA = TileMMA<cutlass::half_t, Policy>;
+  namespace ex = sycl::ext::oneapi::experimental;
+  namespace ix = sycl::ext::intel::experimental;
+  const ex::properties props{ex::sub_group_size<16>, ix::grf_size<256>};
+  // The host-only plan pointer is never sent to or dereferenced by the kernel.
+  p.plan = nullptr;
+  const sycl::nd_range<3> range(sycl::range<3>(g.groups_m, g.groups_n, P::threads),
+                              sycl::range<3>(1, 1, P::threads));
+  return q.submit([&](sycl::handler &h) {
+    h.parallel_for<DownScatterKernel<Policy, Capture>>(range, props, [=](sycl::nd_item<3> item) {
+      auto a = make_tensor(make_gmem_ptr(reinterpret_cast<const cutlass::half_t *>(p.x)),
+          make_layout(make_shape(g.t, g.k), make_stride(g.k, _1{})));
+      auto b = make_tensor(make_gmem_ptr(reinterpret_cast<const cutlass::half_t *>(p.w)),
+          make_layout(make_shape(g.n, g.k), make_stride(g.k, _1{})));
+      // A shape/coordinate view, without a fabricated uint16_t output pointer.
+      auto c = make_identity_tensor(make_shape(g.t, g.n));
+      const auto coord = make_coord(int(item.get_group(0)), int(item.get_group(1)), _, 0);
+      derived::xe_gemm_epilogue<void, void, void>(a, b, c, coord, MMA{},
+          DownEpilogue<Capture>{p, g.t, token_rows, routes, offset});
+    });
+  });
+}
+
+template <Tile Policy>
+DownOwnership inspect_ownership(int rows) {
+  using P = ShapePolicy<Policy>;
+  using MMA = TileMMA<cutlass::half_t, Policy>;
+  const MMA mma{};
+  const auto shape = mma.tile_mnk();
+  auto identity = make_identity_tensor(make_shape(rows, 2560));
+  std::vector<uint8_t> visits(size_t(rows) * 2560, 0);
+  DownOwnership result{visits.size(), 0, 0, 0};
+  for (int m = 0; m < (rows + int(get<0>(shape)) - 1) / int(get<0>(shape)); ++m)
+    for (int n = 0; n < (2560 + int(get<1>(shape)) - 1) / int(get<1>(shape)); ++n) {
+      auto tile = local_tile(identity, shape, make_coord(m, n, 0), Step<_1, _1, X>{});
+      for (int lane = 0; lane < P::threads; ++lane) {
+        const auto coordinates = mma.get_slice(lane).partition_C(tile);
+        for (int i = 0; i < size(coordinates); ++i) {
+          const auto coordinate = coordinates(i);
+          const int row = get<0>(coordinate), col = get<1>(coordinate);
+          if (row < 0 || row >= rows || col < 0 || col >= 2560) { ++result.masked; continue; }
+          auto &count = visits[size_t(row) * 2560 + size_t(col)];
+          if (count < 2) ++count;
+        }
+      }
+    }
+  for (auto count : visits) {
+    result.missing += count == 0;
+    result.multiple += count > 1;
+  }
+  return result;
+}
 
 template <class Input, class Output, Tile Policy>
 sycl::event enqueue(sycl::queue &q, const Problem &p, Geometry g) {
@@ -164,6 +266,52 @@ sycl::event select_tile(sycl::queue &q, const Problem &p, Geometry g, Tile tile)
 
 Gemm::Gemm(sycl_backend::Runtime &runtime, sycl::queue &q)
     : runtime_(runtime), queue_(q), has_fp16_(check_device(runtime, q)) {}
+
+DownOwnership inspect_down_ownership(int64_t rows, Tile tile) {
+  if (rows < 1 || rows > 8192)
+    throw std::invalid_argument("Down ownership: rows outside [1,8192]");
+  if (tile == Tile::compact_16x64) return inspect_ownership<Tile::compact_16x64>(int(rows));
+  if (tile == Tile::wide_128x128) return inspect_ownership<Tile::wide_128x128>(int(rows));
+  throw std::invalid_argument("Down ownership: invalid tile");
+}
+
+sycl::event Gemm::down_scatter(const DownScatterProblem &p, Tile tile) {
+  using Routes = strata::prefill::detail::MoeWindowRoutes;
+  if (!has_fp16_ || !p.plan || p.plan->rows() < 1 || p.plan->rows() > Routes::max_accum_rows)
+    throw std::invalid_argument("Down scatter: native FP16 and published accumulator plan required");
+  const size_t routes = size_t(p.plan->rows()) * Routes::top_k;
+  if (p.plan->source_rows().size() != routes || p.plan->original_slots().size() != routes)
+    throw std::invalid_argument("Down scatter: inverse plan required");
+  const auto &job = p.plan->jobs().at(p.job_index);
+  if (job.rows < 1 || job.rows > 8192 || job.global_row < 0 ||
+      size_t(job.rows) > routes ||
+      size_t(job.global_row) > routes - size_t(job.rows))
+    throw std::invalid_argument("Down scatter: invalid job interval");
+  Problem shape;
+  shape.t = job.rows; shape.n = 2560; shape.k = 640;
+  const auto g = geometry(shape, tile);
+  const size_t ab = mul(mul(size_t(p.plan->rows()), 2560), 4), mb = mul(routes, 4);
+  const std::initializer_list<sycl_backend::Span> inputs{
+      {p.x, g.xb}, {p.w, g.wb}, {p.source, mb}, {p.original, mb}, {p.job_weights, mb}};
+  validate_spans({{p.accumulator, ab}, {p.status, 4}}, inputs);
+  if (p.rounded_diagnostic)
+    validate_spans({{p.accumulator, ab}, {p.status, 4}, {p.rounded_diagnostic, g.yb}}, inputs);
+  for (auto span : inputs) validate_device_span(span.pointer, span.bytes, queue_);
+  validate_device_span(p.accumulator, ab, queue_);
+  validate_device_span(p.status, 4, queue_);
+  if (p.rounded_diagnostic) validate_device_span(p.rounded_diagnostic, g.yb, queue_);
+  // Only X/W participate in block2D IO; retain the adapter's 64B base contract.
+  if (reinterpret_cast<uintptr_t>(p.x) % 64 || reinterpret_cast<uintptr_t>(p.w) % 64)
+    throw std::invalid_argument("Down scatter: block2D inputs require 64B alignment");
+  runtime_.check();
+  const auto submit = [&]<Tile Policy>() {
+    if (p.rounded_diagnostic)
+      return enqueue_down<Policy, true>(queue_, p, g, p.plan->rows(), routes, size_t(job.global_row));
+    return enqueue_down<Policy, false>(queue_, p, g, p.plan->rows(), routes, size_t(job.global_row));
+  };
+  if (tile == Tile::compact_16x64) return submit.template operator()<Tile::compact_16x64>();
+  return submit.template operator()<Tile::wide_128x128>();
+}
 
 sycl::event Gemm::beta0(const Problem &p, Tile tile) {
   const auto g = geometry(p, tile);

@@ -71,8 +71,8 @@ def pin(root, prefixes):
 
 def main():
     guards.require(len(sys.argv) == 1 or sys.argv[1:] in
-                   (['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn']),
-                   'use build_engine.py [rebuild|rebuild-attention|rebuild-gemm|rebuild-gdn]')
+                   (['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn'], ['rebuild-down']),
+                   'use build_engine.py [rebuild|rebuild-attention|rebuild-gemm|rebuild-gdn|rebuild-down]')
     rebuild = len(sys.argv) == 2
     attention = sys.argv[1:] == ['rebuild-attention']
     targets = ['strata']
@@ -85,6 +85,8 @@ def main():
         targets += ['sycl_native16_paired_gemm_bench']
     if sys.argv[1:] == ['rebuild-gdn']:
         targets += ['sycl_gdn_columns_bench']
+    if sys.argv[1:] == ['rebuild-down']:
+        targets += ['sycl_moe_down_scatter_bench']
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
@@ -93,11 +95,13 @@ def main():
         guards.require(ROOT.exists() == rebuild, 'use rebuild only for the closed comparison cache')
         previous = None
         retained_reference = None
+        legacy_exception = None
         if rebuild:
             committed = git(P, 'show', 'HEAD:' + str(RESULT.relative_to(P)))
             guards.require(committed == RESULT.read_bytes(), 'commit the previous build identity first')
             old = json.loads((ROOT / 'record.json').read_text())
             retained_reference = json.loads(committed).get('retained_validation_reference')
+            legacy_exception = json.loads(committed).get('legacy_provenance_exception')
             guards.require(retained_reference is not None,
                            'preserve and commit the qualified fallback before reusing this build directory')
             for item in [retained_reference['binary'], *retained_reference.get('fixtures', {}).values()]:
@@ -130,6 +134,7 @@ def main():
                           'tools/sycl/check_host_profile.py',
                           'tools/sycl/measure_gemm.py',
                           'tools/sycl/measure_gdn_columns.py',
+                          'tools/sycl/measure_down_scatter.py',
                           'tools/sycl/measurement_guards.py', str(SETTINGS.relative_to(P)),
                           str(BASELINE.relative_to(P))])
         baseline = json.loads(BASELINE.read_text())
@@ -159,6 +164,8 @@ def main():
                       retention_consumer='Current long-prefill comparison and its attention fixtures; retire when comparison closes.')
         if retained_reference:
             record['retained_validation_reference'] = retained_reference
+        if legacy_exception:
+            record['legacy_provenance_exception'] = legacy_exception
         owner = None
 
         def persist():

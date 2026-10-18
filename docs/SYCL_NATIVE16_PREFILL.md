@@ -660,6 +660,76 @@ change inference order or treat it as adopted before same-library correctness
 and matched component/model timing pass. Existing source-specific fusion and
 indexed-A references are available; no repeat generic survey is needed.
 
+## MoE Down/scatter component
+
+`Gemm::down_scatter` is an explicit component API with no model dispatch hook.
+Its separately named final-fragment sibling retains the licensed vLLM-XPU BSD
+DPAS loop; the original dense helper definition is preserved verbatim from
+`7829568c6`. FP16 X/weights have the fixed production Down shape2560x640.
+The new epilogue uses the actual TLA `partition_C` coordinates, BF16 conversion
+on the accumulator's unchanged thread/value layout, then explicit FP32 FMA.
+Logical tails are masked before map reads. The published immutable expert plan
+provides unique token rows per job; the original in-order queue serializes
+contributions from different jobs/experts. Complete registered device spans,
+non-aliasing and the original block2D input alignment are checked before enqueue.
+A diagnostic-only BF16 capture is optional; the null-capture kernel materializes
+no Down tensor. These contracts do not establish speed or model qualification.
+
+Source`7fbe795ce` passed18 exhaustive CPU tile/element ownership cases for both
+policies at1,3,17,33,129,2334,5963,8191,8192 rows; one traced seven-result small
+GPU gate; and22 tail/split/irregular/rounding cases. BF16 captures and FP32
+accumulation matched the separate reference bitwise, including exceptional
+inputs and invalid-map status. The small finite cases also checked an independent
+integer-dot/RNE oracle; nine invalid admissions rejected. All processes closed
+normally without a fresh GPU fault or boot change. Main uses the maintained
+[fixture](../bench/sycl/moe_down_scatter.cpp) and
+[phase controller](../tools/sycl/measure_down_scatter.py).
+
+Three independent resident processes measured six rotated rounds per arm/shape,
+16 repetitions per sample, at64,160,2334,5963,8192 routed rows and both contiguous
+and every-other-token layouts. The baseline uses the same tile as the candidate:
+compact below128 rows, wide otherwise. Queue-marker intervals include host gaps;
+they are not device busy, physical traffic or a hardware ceiling.
+
+| Routed rows | Contiguous separate/fused ms | Every-other-token separate/fused ms |
+| --- | ---: | ---: |
+| 64 | 0.045553 /0.045326 | 0.022663 /0.022998 |
+| 160 | 0.028639 /0.051579 | 0.028363 /0.051549 |
+| 2334 | 0.337158 /0.397920 | 0.369938 /0.418913 |
+| 5963 | 0.810121 /0.879896 | 0.929319 /0.855455 |
+| 8192 | 1.112955 /1.189010 | 1.337500 /1.127850 |
+
+The ten-shape geometric-mean latency ratio is1.148080, so the unchanged
+prospective gate failed. That gate requires ratio<=0.95, no shape ratio>1.05,
+and every process to improve at2334/5963/8192 for both layouts. Irregular8192
+improves15.67%, but160 and2334 regress in every process. **Do not connect this
+variant to the model.** Individual samples, process medians and limits are in
+the [current result](../bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json).
+The clean model reference remains867.1 tok/s; this component did not change it.
+Physical262144, model quality, RESTORE and decode remain separate gates.
+
+Offline inspection of the retained known-good and rebuilt engine native images
+found identical instruction streams through EOT and identical complete per-kernel
+`.ze_info` blocks for all eight existing dense entries. Nine bytes per entry
+differ after EOT in null-destination immediates/padding; no branch targets enter
+that region and no unresolved indirect transfer was found. The other eight
+existing native text entries matched directly; four new scatter entries were
+added. The [build result](../bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json)
+records hashes and exact comparison scope. This checks those native calculations
+and recorded kernel argument information, not total host behavior or model speed.
+
+The reviewed next discriminator is an explicitly constructed BF16 output-copy
+TV layout. The current descriptor is an identity tensor, so the copy layout and
+its paired coordinates need a new ownership/equality proof; `partition_C` tests
+alone do not establish it. Keep the separate two-stage path as performance
+anchor and raw scatter as diagnostic control. Do not change metadata hoisting
+or alias declarations in the same experiment. Also predeclare a representative
+working-set comparison: this fixture's accumulator contains T or2T token rows,
+whereas the measured model window has78451. Row sparsity and VRAM footprint
+must be matched before a model-relevance claim. Evaluate tile choice separately.
+Logical byte removal and one fewer launch did not establish a speedup, and the
+shape-dependent timings do not yet establish their hardware cause.
+
 After recording those results, Main retired221 closed-run, CPU-fixture,
 consumed-review and old-fallback files (61,391,969bytes). Original run helpers
 and the fallback's9799 source inputs were retrieved and hash-verified from Git
