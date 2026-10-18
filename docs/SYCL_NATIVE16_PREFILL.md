@@ -783,11 +783,24 @@ advance gate remains geometric-mean latency ratio<=0.95 against the separate
 reference, no shape>1.05, and each process improves at2334/5963/8192 in both
 placements. Passing permits a later model experiment, not inference adoption.
 
-Source7ad7aad7ad7399ba54ce3aaa5171b0298370e117 has now passed all36 CPU
-ownership,14 traced small and52 GPU correctness cases. Both value/coordinate
-layouts, captures and null-capture kernels match the separate BF16/FP32 reference
-bitwise; invalid admissions/maps and buffer guards passed. Those processes
-closed without fresh GPU faults or a boot change. The result at37f3c641b records
-these component gates. The three-process performance comparison remains open
-in `moe-down-scatter-component-v3`; inspect its existing ownership receipt before
-resuming. No model speed or dispatch change is claimed.
+Source7ad7aad7ad7399ba54ce3aaa5171b0298370e117 passed all36 CPU ownership,
+14 traced small and52 GPU correctness cases. Captures and normal kernels
+matched BF16 outputs and FP32 accumulation bitwise, including guards and invalid
+maps. The three independent performance processes also completed normally,
+with540 measured and90 warmup samples and no fresh GPU fault or boot change.
+
+| Routed rows | Contiguous separate / raw / output-copy ms | Distributed separate / raw / output-copy ms |
+| --- | ---: | ---: |
+| 64 | 0.027161 / 0.025632 / 0.025791 | 0.026423 / 0.025879 / 0.025898 |
+| 160 | 0.030964 / 0.054749 / 0.054603 | 0.030911 / 0.055638 / 0.055446 |
+| 2334 | 0.338083 / 0.399388 / 0.397962 | 0.367198 / 0.419964 / 0.418617 |
+| 5963 | 0.798512 / 0.848633 / 0.847256 | 0.847103 / 0.937369 / 0.934727 |
+| 8192 | 1.087380 / 1.127760 / 1.125495 | 1.160900 / 1.225910 / 1.224640 |
+
+The output-copy/separate geometric-mean latency ratio is1.175797. Every process
+is slower at2334/5963/8192 in both placements, so the predeclared advance gate
+fails. **Keep the separate engine route; do not connect either fusion variant.**
+The [current individual results](../bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json)
+preserve the raw control, spread and every sample. This repeated same-buffer
+component regime does not identify physical traffic, saturation or model speed.
+The clean model reference remains867.1 tok/s; no new model speed was measured.
