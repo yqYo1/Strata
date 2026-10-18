@@ -174,12 +174,76 @@
   },
   "config_sha256": "000ae5881460240d384368bfe5f43fe3f36095f760495feabfe0dd66591364a6",
   "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
-  "complete": false,
-  "passed": false,
+  "complete": true,
+  "passed": true,
   "active": false,
   "model_quality_qualified": false,
   "physical262144_RESTORE_qualified": false,
   "performance_adopted": false,
   "source_count": 103,
-  "source_aggregate_sha256": "1ca6b8a88af7406e5d0540573a93aef9e3041e76384baf30b61849e7ba23ede5"
+  "source_aggregate_sha256": "1ca6b8a88af7406e5d0540573a93aef9e3041e76384baf30b61849e7ba23ede5",
+  "exit_code": 0,
+  "requests": [
+    {
+      "run": 0,
+      "ok": true,
+      "eligible": true,
+      "actual_prompt_tokens": 39260,
+      "actual_read_tokens": 39260,
+      "actual_reused_tokens": 0,
+      "generated_tokens": 24,
+      "thinking_requested": true,
+      "reasoning_observed": true,
+      "stream_complete": true,
+      "request_sha256": "1fd63b8c67a1888e443800b5c6d339ca116df2cb91941e6f332b6adf74275b3a",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
+      "ttft_s": 64.087,
+      "total_s": 65.676,
+      "prompt_tps": 615.4,
+      "prompt_ms": 63793.3,
+      "decode_tps": 14.2,
+      "decode_ms": 1687.9,
+      "prompt_tps_source": "engine",
+      "decode_tps_source": "engine",
+      "drafts_offered": 21,
+      "drafts_accepted": 16,
+      "finish_reason": "length",
+      "err": null,
+      "eligibility_errors": []
+    }
+  ],
+  "engine_exit_code": 0,
+  "native_identity": {
+    "pid": 4025230,
+    "start_ticks": 64623903,
+    "sid": 4025208
+  },
+  "route_selection": [],
+  "gdn_column_route": [
+    "strata prefill: GDN columns=4 workgroups=192 lanes=128 epilogue=GPU_FP32_same_order scratch=existing_y"
+  ],
+  "qsa_route": [
+    "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=80718560; source=resident-Mode0 score_pitch=33 operand_layout=row-major softmax=serial"
+  ],
+  "cached_query_route": [
+    "strata prefill: QSA cached_query=1 grf_policy=default source=qualified-component"
+  ],
+  "k_staging_route": [
+    "strata prefill: QSA k_staging=typed4 parallel_rows=1 source=qualified-component"
+  ],
+  "v_staging_route": [
+    "strata prefill: QSA v_staging=typed4 layout=row-major source=qualified-component"
+  ],
+  "ownership_closed": true,
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  }
 }
