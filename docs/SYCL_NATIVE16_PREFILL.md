@@ -777,6 +777,34 @@ Before another rebuild overwrites this selected engine, preserve and hash-check
 it outside the reused cache and commit a new fallback reference. The six legacy
 provenance holds remain unresolved; this is not global storage cleanup.
 
+## Submission batching acceptance
+
+The pinned UR Level Zero V2 provider exposes the startup-only experimental
+`UR_L0_V2_FORCE_BATCHED` selector. The source audit in the research index confirms
+that common command-list creation still honors the existing copy-offload
+disable flag, but regular batched-event profiling is an unresolved compatibility
+question. Current engine streams explicitly request in-order execution and
+profiling. Do not infer acceptance from the environment variable or ELF strings.
+
+The maintained compatibility fixture's explicit `--submission` mode stops before
+graph recording. It checks two-stream copies/order, explicit/default-stream
+elapsed times, direct kernel profiling, integer/guard results for1/119/120/121/241
+queued kernels, ordinary-RAM copy lifetime and teardown. `sycl_submission_test`
+is a manual target; the default/native compatibility tests keep their graph
+coverage. No inference math or production queue property changes here.
+
+Main first preserves the selected engine, commits source/recipe/controller and
+runs `build_engine.py rebuild-submission`. Then run/commit
+`check_submission.py control` and only after it passes run
+`check_submission.py candidate`. Separate owned processes keep the selector
+unset versus1, set all runtime variables before initialization, and retain
+copy-offload disable1. Both phases use tracing/parameter validation and finite
+90-second/120CPU-second/2GiB-RSS/64MiB-output budgets. All10 fixture cases and
+normal ownership/fault closure must pass before a forced-batched model run.
+This gate measures compatibility, not speed or hardware saturation. A failed
+profiling/synchronization contract prevents model advancement without changing
+the900.6tok/s route or weakening its existing API.
+
 ## MoE Down/scatter component
 
 `Gemm::down_scatter` is an explicit component API with no model dispatch hook.
