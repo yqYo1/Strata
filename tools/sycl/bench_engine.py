@@ -90,6 +90,39 @@ CPU_HOST_MOE = ('moe_map_upload', 'moe_job_weights', 'moe_dequant_gu',
     'moe_dequant_down', 'moe_gather', 'moe_swiglu', 'moe_accumulate', 'moe_status')
 
 
+def split_long_request_logs(log, count):
+    starts = [m.start() for m in re.finditer(r'(?m)^strata prefill: GDN columns=', log)]
+    guards.require(len(starts) == count, 'wrong number of long-request start markers')
+    guards.require(not any(x in log[:starts[0]] for x in
+        ('strata lm profile: v=', 'strata command profile:', 'strata prefill cpu wait:')),
+        'resource observer before first long-request marker')
+    return [log[a:b] for a, b in zip(starts, starts[1:] + [len(log)])]
+
+
+def extract_mixed_owners(log, window_pairs, tail_offset):
+    entries = [x for x in log.splitlines() if x.startswith('strata MoE mixed owners: phase=entry')]
+    retired = [x for x in log.splitlines() if x.startswith('strata MoE mixed owners: phase=retired')]
+    expected_keys = [(layer, first, rows) for layer in range(48) for first, rows in window_pairs]
+    guards.require(len(entries) == len(retired) == len(expected_keys) and all(
+        'direct_owners=1 previous_attention=checked_drain' in x for x in entries) and all(
+        'route_status=0 shared_HC=checked_drain callbacks=after_return' in x for x in retired),
+        'incomplete mixed owner/phase census')
+    samples = [dict(field.split('=', 1) for field in x.split()[4:]) for x in entries]
+    done = [dict(field.split('=', 1) for field in x.split()[4:]) for x in retired]
+    keys = lambda items: [tuple(int(x[k]) for k in ('layer', 'first', 'rows')) for x in items]
+    guards.require(keys(samples) == keys(done) == expected_keys,
+                   'mixed owner census has duplicate, missing or reordered windows')
+    guards.require(all(int(x['primary_bytes']) == min(int(x['rows']), 65536) * 2560 * 2 and
+        int(x['tail_bytes']) == max(0, int(x['rows']) - 65536) * 2560 * 2 and
+        int(x['region_bytes']) == 1180698624 and int(x['tail_offset']) == tail_offset and
+        int(x['residual_bytes']) == int(x['rows']) * 4 * 2560 * 2 for x in samples),
+        'mixed owner census has unexpected logical extents')
+    columns = ('layer', 'first', 'rows', 'primary_bytes', 'region_bytes',
+               'tail_offset', 'tail_bytes', 'residual_bytes')
+    return dict(owner_columns=columns, owner_samples=[[int(x[k]) for k in columns] for x in samples],
+                retired_windows=len(retired), all_direct_owners_and_checked_drains=True)
+
+
 def extract_cpu_observers(log, expected_version=None):
     """A complete accounting partition is distinct from a successful request."""
     result = []
@@ -371,7 +404,94 @@ def summarize_gu():
     return 0
 
 
+def reanalyze_staged_host():
+    """Reconcile a closed parser failure; preserve its original failed outcome."""
+    from build_engine import blobs
+    path = A / 'prefill-host-attribution-current.json'
+    with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=P, text=True).strip()
+        for item in (path, Path(__file__).resolve()):
+            guards.require(item.read_bytes() == subprocess.check_output(
+                ['git', 'show', revision + ':' + str(item.relative_to(P))], cwd=P),
+                'commit original failed result and corrected analyzer first')
+        record = json.loads(path.read_text())
+        guards.require(record['mode'] == 'qsa-long-input-expert-bank-host-census' and
+            record['complete'] and record['ownership_closed'] and not record['active'] and
+            not record['passed'] and record.get('error') == 'incomplete mixed owner/phase census' and
+            not record['fresh_faults'] and record['boot_unchanged'] and
+            record['exit_code'] == record['engine_exit_code'] == 0 and
+            'corrected_resource_analysis' not in record, 'not the closed specified parser failure')
+        for name, expected in record['read_only_reanalysis_inputs'].items():
+            guards.require(Path(name).stat().st_size == expected['bytes'] and
+                           digest(name) == expected['sha256'], 'captured input changed: ' + name)
+        root = Path(record['environment']['STRATA_MEASUREMENT_ROOT'])
+        original = json.loads((root / 'record.json').read_text())
+        guards.require(original['ownership_closed'] and not original['active'] and
+            all(supervision.closed(c) for c in original['owned_commands']), 'original ownership not closed')
+        plan = json.loads((root / 'plan.json').read_text())
+        for name, raw in blobs(P, plan['source_commit'], plan['source_sha256']):
+            guards.require(hashlib.sha256(raw).hexdigest() == plan['source_sha256'][name],
+                           'original benchmark input not recoverable: ' + name)
+        guards.require(plan['binary'] == record['binary'] and digest(record['binary']['path']) ==
+                       record['binary']['sha256'], 'original engine identity changed')
+        requests = record['requests']
+        guards.require(len(requests) == 2 and all(q['ok'] and q['eligible'] and q['stream_complete'] and
+            q['actual_prompt_tokens'] == q['actual_read_tokens'] == 117489 and
+            q['actual_reused_tokens'] == 0 and q['thinking_requested'] and q['reasoning_observed']
+            for q in requests), 'original request eligibility differs')
+        log = (root / 'engine.stderr').read_text(errors='replace')
+        guards.require(not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|retirement failed|Strata SYCL cleanup:', log),
+                       'original runtime error is not a parser-only failure')
+        parts = split_long_request_logs(log, 2)
+        pairs = ((0, 81920), (81920, 35568))
+        owners = [extract_mixed_owners(part, pairs, 1059131904) for part in parts]
+        profiles = [extract_resource_profile(part, True, False, '', 4, pairs) for part in parts]
+        negatives = []
+
+        def reject(label, action):
+            try:
+                action()
+            except RuntimeError:
+                negatives.append(label)
+                return
+            raise RuntimeError('negative parser check unexpectedly accepted: ' + label)
+
+        reject('combined_requests_are_not_one96_window_interval',
+               lambda: extract_resource_profile(log, True, False, '', 4, pairs))
+        first = parts[0].splitlines(keepends=True)
+        census = next(i for i, line in enumerate(first) if line.startswith('strata MoE planned job census:'))
+        reject('missing_planned_window', lambda: extract_resource_profile(
+            ''.join(first[:census] + first[census + 1:]), True, False, '', 4, pairs))
+        entry = next(i for i, line in enumerate(first) if line.startswith('strata MoE mixed owners: phase=entry'))
+        reject('missing_owner_entry', lambda: extract_mixed_owners(
+            ''.join(first[:entry] + first[entry + 1:]), pairs, 1059131904))
+        changed = re.sub(r'(?m)^(strata MoE GU fusion: fused_jobs=)(\d+)',
+            lambda m: m[1] + str(int(m[2]) + 1), parts[0], count=1)
+        reject('changed_GU_work_total', lambda: extract_resource_profile(changed, True, False, '', 4, pairs))
+        cold, warm = profiles
+        warm['window_census'] = compact_window_census(warm.pop('planned_moe_windows'))
+        cold_summary = dict(resource_diagnostics=[x for x in cold['resource_diagnostics']
+            if 'layer=' not in x or 'layer=-1 ' in x], host_counter_conservation=cold['host_counter_conservation'],
+            all_resource_gates_passed=True)
+        record['corrected_resource_analysis'] = dict(source_commit=revision,
+            original_failed_result=dict(commit=revision, path=str(path.relative_to(P))),
+            complete=True, passed=True, model_executed=False, GPU_executed=False,
+            original_outcome_unchanged=True, negative_parser_checks=negatives,
+            per_request_owner_windows=[x['retired_windows'] for x in owners],
+            all_owner_keys_extents_and_retirements_checked=True,
+            first_use=cold_summary, subsequent=warm,
+            profiled_prompt_tps=[q['prompt_tps'] for q in requests],
+            limits='Offline accounting reanalysis only: original passed=false/parser error remain. Two completed requests, not independent processes or clean speed. No physical bus traffic, arithmetic saturation, model quality/full-context/RESTORE adoption.')
+        path.write_text(json.dumps(record, indent=2) + '\n')
+        print(json.dumps(dict(original_passed=record['passed'], analysis_passed=True,
+            owner_windows=[x['retired_windows'] for x in owners], negative_checks=negatives)))
+    return 0
+
+
 def main():
+    if sys.argv[1:] == ['reanalyze-staged-host']:
+        return reanalyze_staged_host()
     if sys.argv[1:] == ['summarize-gu']:
         return summarize_gu()
     modes = ('check', 'base', 'candidate', 'qsa-check', 'qsa-base', 'qsa-direct', 'qsa-census',
@@ -911,33 +1031,16 @@ def main():
                             record['moe_window_work'] = dict(per_request_totals=work,
                                 limits='Completed work counts and requested source-map H2D bytes; not physical traffic, arithmetic saturation or additive wall time.')
                     if check:
-                        entries = [x for x in log.splitlines() if x.startswith('strata MoE mixed owners: phase=entry')]
-                        retired = [x for x in log.splitlines() if x.startswith('strata MoE mixed owners: phase=retired')]
-                        expected_windows = 48 * (len(bank_window_rows) if staged_bank else 2)
-                        guards.require(len(entries) == len(retired) == expected_windows and all(
-                            'direct_owners=1 previous_attention=checked_drain' in x for x in entries) and all(
-                            'route_status=0 shared_HC=checked_drain callbacks=after_return' in x for x in retired),
-                            'incomplete mixed owner/phase census')
-                        # Retain every window key/extent, without raw virtual addresses.
-                        columns = ('layer', 'first', 'rows', 'primary_bytes', 'region_bytes',
-                                   'tail_offset', 'tail_bytes', 'residual_bytes')
-                        samples = [dict(field.split('=', 1) for field in x.split()[4:]) for x in entries]
-                        retired_samples = [dict(field.split('=', 1) for field in x.split()[4:]) for x in retired]
                         window_pairs = ((0, bank_window_rows[0]),) if single_window else (
                             (0, 81920), (81920, 35568 if staged_bank else 16384))
-                        expected_keys = [(layer, first, rows) for layer in range(48)
-                                         for first, rows in window_pairs]
-                        keys = lambda items: [tuple(int(x[k]) for k in ('layer', 'first', 'rows')) for x in items]
-                        guards.require(keys(samples) == keys(retired_samples) == expected_keys,
-                            'mixed owner census has duplicate, missing or reordered windows')
-                        guards.require(all(int(x['primary_bytes']) == min(int(x['rows']), 65536) * 2560 * 2 and
-                            int(x['tail_bytes']) == max(0, int(x['rows']) - 65536) * 2560 * 2 and
-                            int(x['region_bytes']) == 1180698624 and int(x['tail_offset']) == mixed_tail_offset and
-                            int(x['residual_bytes']) == int(x['rows']) * 4 * 2560 * 2 for x in samples),
-                            'mixed owner census has unexpected logical extents')
-                        record['mixed_scratch_route'].update(owner_columns=columns,
-                            owner_samples=[[int(x[k]) for k in columns] for x in samples],
-                            retired_windows=len(retired), all_direct_owners_and_checked_drains=True)
+                        parts = split_long_request_logs(log, request_count) if warm_profile else [log]
+                        owners = [extract_mixed_owners(part, window_pairs, mixed_tail_offset) for part in parts]
+                        record['mixed_scratch_route'].update(owners[0])
+                        if warm_profile:
+                            record['mixed_scratch_route'].update(
+                                owner_samples=[row for owner in owners for row in owner['owner_samples']],
+                                retired_windows=sum(owner['retired_windows'] for owner in owners),
+                                per_request_retired_windows=[owner['retired_windows'] for owner in owners])
                 if not check:
                     values = [float(q['prompt_tps']) for q in requests[1:]]
                     guards.require(len(values) == 3 and all(0 < v < float('inf') for v in values),
@@ -988,12 +1091,7 @@ def main():
             if census:
                 request_logs = [log]
                 if warm_profile:
-                    starts = [m.start() for m in re.finditer(r'(?m)^strata prefill: GDN columns=', log)]
-                    guards.require(len(starts) == request_count, 'wrong number of long-request start markers')
-                    guards.require(not any(x in log[:starts[0]] for x in
-                        ('strata lm profile: v=', 'strata command profile:', 'strata prefill cpu wait:')),
-                        'resource observer before first long-request marker')
-                    request_logs = [log[a:b] for a, b in zip(starts, starts[1:] + [len(log)])]
+                    request_logs = split_long_request_logs(log, request_count)
                 profiles = [extract_resource_profile(part, phase_profile,
                     command_profile, plan.get('phase_profile_scope', {}).get('limits', ''),
                     4 if host_profile else None,
