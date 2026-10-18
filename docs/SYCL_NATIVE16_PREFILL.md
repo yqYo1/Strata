@@ -1142,8 +1142,17 @@ metadata slot and checks each actual TLA coordinate against its workgroup's M
 interval. The published plan, maps and weights stay immutable through the
 checked drain. Typed metadata/output alignment is rejected before submission.
 
-The new fixture requires54 host ownership cases,30 traced small-check events
-(including16 admission rejects per policy and7 invalid-map cases), and78 full
+Before its first GPU run, source review found that this fixture's borrowed
+queue was not drained by `Allocation` teardown: `Runtime::wait()` covers only
+the two built-in queues. A synchronous submission/admission exception could
+therefore unwind owners while earlier borrowed-queue work remained pending.
+Explicit checked drains now precede Case and Buffer member destruction; a
+failed drain exits without releasing those owners. This is a source-level
+lifetime fix, not a demonstrated cause of an earlier GPU fault.
+
+The new fixture requires54 host ownership cases,33 traced small-check events
+(including16 admission rejects,7 invalid-map cases and synchronous-exception
+retirement per policy), and78 full
 correctness events across the three policies and both tiles. It verifies full
 input bits/guards, diagnostic M tails, null-capture non-writes, combined
 bad-slot/bad-token precedence and a mixed-row error mask of3. Clean timing

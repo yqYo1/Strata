@@ -55,7 +55,7 @@ def main():
                 complete=False, passed=False, active=False, model_performance_adopted=False,
                 model_quality_qualified=False, physical262144_model_RESTORE_qualified=False,
                 consumer='One Down/scatter component comparison; retire raw logs/JIT after extracting samples.',
-                prospective_gates='54 exhaustive host cell/row-cache ownership cases across3 policies/2 tiles; traced30-event small gate with16 admission rejects per policy and7 invalid-map cases;78 tail/split/irregular/rounding and78451-window checks;3 independent resident processes with6 rotated rounds of3 arms per shape. Exact capture, full FP32 accumulator, inputs and guards; slot-first mixed-invalid precedence. Advance only with geomean<=0.95 against separate, no shape>1.05 and every large shape improves in every process.',
+                prospective_gates='54 exhaustive host cell/row-cache ownership cases across3 policies/2 tiles; traced33-event small gate with16 admission rejects per policy,7 invalid-map cases and synchronous-exception queue retirement;78 tail/split/irregular/rounding and78451-window checks;3 independent resident processes with6 rotated rounds of3 arms per shape. Exact capture, full FP32 accumulator, inputs and guards; slot-first mixed-invalid precedence. Advance only with geomean<=0.95 against separate, no shape>1.05 and every large shape improves in every process.',
                 limits='FP16 Down2560x640, BF16-round then explicit FP32 FMA. Component only; no model dispatch. Fixed78451-token FP32 accumulator, contiguous-prefix or evenly distributed token rows. Arm0 separate;1 scalar matrix mapping;2 matrix with workgroup row metadata cache. Old output-copy policy remains in correctness diagnostics. Same tile: compact below128, wide otherwise. Marker intervals include host submission gaps; no physical traffic, occupancy, saturation or model speed inferred.',
                 previous_result=dict(commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip(),
                     path=str(RESULT.relative_to(P)), geometric_mean_latency_ratio=prior['resident_summary']['geometric_mean_latency_ratio'],
@@ -112,7 +112,7 @@ def main():
                     'fixture_status=PASS' in stdout and not re.search(
                         r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed|CHECKED_DRAIN_FAILED', stderr),
                     'fixture failed: ' + (stderr or stdout)[-4096:])
-                expected = {'ownership': 54, 'smoke': 30, 'validate': 78, 'perf': 210}[mode]
+                expected = {'ownership': 54, 'smoke': 33, 'validate': 78, 'perf': 210}[mode]
                 guards.require(len(events) == expected and all(e['status'] == 'PASS' for e in events),
                                'incomplete fixture results')
                 if mode == 'ownership':
@@ -120,6 +120,8 @@ def main():
                         not e['metadata_missing'] and not e['metadata_multiple'] and not e['metadata_outside_tile'] and
                         (e['mapping'] != 2 or e['metadata_slots'] > 0) for e in events), 'row cache ownership incomplete')
                 if mode == 'smoke':
+                    guards.require(sum(e['kind'] == 'exception_unwind' and e['queue_complete'] for e in events) == 3,
+                                   'borrowed-queue exception retirement incomplete')
                     guards.require(sum(e['kind'] == 'admissions' and e['rejected'] == 16 for e in events) == 3 and
                         sum(e['kind'] == 'invalid_map' and e['case'] == 4 and e['expected_mask'] == 1 for e in events) == 3 and
                         sum(e['kind'] == 'invalid_map' and e['case'] == 6 and e['expected_mask'] == 3 for e in events) == 3,

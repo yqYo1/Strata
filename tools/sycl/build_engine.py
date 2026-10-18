@@ -171,7 +171,8 @@ def main():
                       complete=False, passed=False, active=False, GPU_executed=False,
                       production_selected=False, model_quality_qualified=False, replaces=previous,
                       targets=targets,
-                      retention_consumer='Current long-prefill comparison and its attention fixtures; retire when comparison closes.')
+                      retention_consumer='Current comparison engine and requested fixtures: ' + ', '.join(targets) +
+                          '; select the validated generation and retire the extra after qualification/comparison closure.')
         if retained_reference:
             record['retained_validation_reference'] = retained_reference
         if legacy_exception:

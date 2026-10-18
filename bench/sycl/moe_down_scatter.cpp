@@ -28,13 +28,25 @@ template <> float marker<float>() { return -913.25f; }
 template <> uint16_t marker<uint16_t>() { return 0xa55a; }
 template <> int32_t marker<int32_t>() { return 0x5aa55aa5; }
 template <> uint32_t marker<uint32_t>() { return 0x5aa55aa5; }
+void drain(sycl::queue &q) noexcept {
+  try { q.wait_and_throw(); runtime->check(); }
+  catch (...) {
+    std::cerr << "CHECKED_DRAIN_FAILED: Down fixture queue; retaining owners until exit\n";
+    std::_Exit(86);
+  }
+}
 void wait(sycl::queue &q, sycl::event event) {
   try { event.wait_and_throw(); runtime->check(); }
   catch (...) {
     // Keep all caller-owned host and device destinations alive during drain.
-    try { q.wait_and_throw(); runtime->check(); } catch (...) { std::_Exit(86); }
+    drain(q);
     throw;
   }
+}
+template <class Submit> void submit_wait(sycl::queue &q, Submit submit) {
+  // Catch synchronous submission failures while the caller's host copy buffer
+  // is still alive, including during Buffer construction.
+  try { wait(q, submit()); } catch (...) { drain(q); throw; }
 }
 template <class T> struct Buffer {
   sb::Allocation owner;
@@ -43,16 +55,19 @@ template <class T> struct Buffer {
   Buffer(size_t count, sycl::queue &queue)
       : owner(runtime, (count + 2 * Pad) * sizeof(T), sb::MemoryKind::Device), n(count), q(queue) {
     std::vector<T> values(n + 2 * Pad, marker<T>());
-    wait(q, q.memcpy(owner.data(), values.data(), values.size() * sizeof(T)));
+    submit_wait(q, [&] { return q.memcpy(owner.data(), values.data(), values.size() * sizeof(T)); });
   }
+  // Runtime::wait() drains its two built-in queues, not this borrowed queue.
+  // Also protect members unwound from an incomplete Case constructor.
+  ~Buffer() { drain(q); }
   T *data() const { return owner.as<T>() + Pad; }
   void set(const std::vector<T> &values) {
     need(values.size() == n, "upload extent");
-    wait(q, q.memcpy(data(), values.data(), n * sizeof(T)));
+    submit_wait(q, [&] { return q.memcpy(data(), values.data(), n * sizeof(T)); });
   }
   std::vector<T> get() const {
     std::vector<T> all(n + 2 * Pad);
-    wait(q, q.memcpy(all.data(), owner.data(), all.size() * sizeof(T)));
+    submit_wait(q, [&] { return q.memcpy(all.data(), owner.data(), all.size() * sizeof(T)); });
     for (size_t i = 0; i < Pad; ++i)
       need(all[i] == marker<T>() && all[n + Pad + i] == marker<T>(), "buffer guard changed");
     return std::vector<T>(all.begin() + Pad, all.begin() + Pad + n);
@@ -126,6 +141,9 @@ struct Case {
     for (size_t i = 0; i < initial.size(); ++i) initial[i] = float(int(i % 19) - 9) / 16.f;
     reset();
   }
+  // Run before host routes and USM members are destroyed, including when
+  // a later submission throws before an event reaches wait().
+  ~Case() { drain(q); }
   void reset() {
     reference.set(initial); candidate.set(initial);
     reference_status.set({0}); candidate_status.set({0});
@@ -145,12 +163,14 @@ struct Case {
     return gemm.down_scatter(problem(job, observe), tile, mapping);
   }
   void separate(size_t index, xe::Tile tile) {
-    const auto &job = routes->jobs().at(index);
-    xe::Problem p;
-    p.x = x.data(); p.w = w.data(); p.y = down.data(); p.t = job.rows; p.n = N; p.k = K;
-    (void)gemm.beta0(p, tile);
-    strata::prefill::native16::moe_accumulate(*routes, index, down.data(), source.data(), original.data(),
-        weights.data(), reference.data(), reference_status.data(), &q);
+    try {
+      const auto &job = routes->jobs().at(index);
+      xe::Problem p;
+      p.x = x.data(); p.w = w.data(); p.y = down.data(); p.t = job.rows; p.n = N; p.k = K;
+      (void)gemm.beta0(p, tile);
+      strata::prefill::native16::moe_accumulate(*routes, index, down.data(), source.data(), original.data(),
+          weights.data(), reference.data(), reference_status.data(), &q);
+    } catch (...) { drain(q); throw; }
   }
   void check(size_t index, xe::Tile tile, xe::ScatterLayout mapping, uint32_t expected = 0) {
     const auto inputs = input_snapshot();
@@ -252,6 +272,25 @@ void correctness(int tokens, bool irregular, bool edges, xe::Tile tile, sycl::qu
             << ",\"edges\":" << edges << ",\"tile\":" << int(tile) << ",\"jobs\":" << jobs.size()
             << ",\"inputs_immutable\":true,\"capture_and_no_capture\":true,\"status\":\"PASS\"}\n";
 }
+void exception_unwind(sycl::queue &q, xe::ScatterLayout mapping) {
+  sycl::event pending;
+  bool submitted = false, rejected = false;
+  try {
+    Case c(3, false, false, q);
+    pending = c.fused(0, xe::Tile::wide_128x128, false, mapping);
+    submitted = true;
+    auto invalid = c.problem(0);
+    invalid.plan = nullptr;
+    (void)c.gemm.down_scatter(invalid, xe::Tile::wide_128x128, mapping);
+  } catch (const std::invalid_argument &) { rejected = true; }
+  need(submitted && rejected, "synchronous admission exception not exercised");
+  need(pending.get_info<sycl::info::event::command_execution_status>() ==
+           sycl::info::event_command_status::complete,
+       "borrowed queue still pending after Case destruction");
+  runtime->check();
+  std::cout << "{\"kind\":\"exception_unwind\",\"mapping\":" << int(mapping)
+            << ",\"queue_complete\":true,\"status\":\"PASS\"}\n";
+}
 class Marker;
 sycl::event mark(sycl::queue &q) { return q.single_task<Marker>([] {}); }
 void benchmark(int process, sycl::queue &q) {
@@ -328,6 +367,7 @@ int main(int argc, char **argv) {
                       << ",\"mapping\":" << int(mapping) << ",\"expected_mask\":" << expected
                       << ",\"inputs_immutable\":true,\"capture_and_no_capture\":true,\"status\":\"PASS\"}\n";
           }
+          exception_unwind(q, mapping);
         }
       } else if (mode == "--validate") {
         for (auto mapping : {xe::ScatterLayout::matrix, xe::ScatterLayout::output_copy,
