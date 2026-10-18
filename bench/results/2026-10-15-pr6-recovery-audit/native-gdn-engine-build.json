@@ -96,29 +96,7 @@
     "sycl_qsa_bf16_prefix_ordered_exp_test",
     "sycl_qsa_bf16_prefix_ordered_exp_bench"
   ],
-  "retention_consumer": "Current long-prefill comparison and its attention fixtures; retire when comparison closes.",
-  "retained_validation_reference": {
-    "source_commit": "7829568c61f4a47e5c1b06497f59e41a3417a5fb",
-    "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-down-scatter-v1/strata",
-      "bytes": 20573552,
-      "sha256": "bb8b3f097837026528699031de72b2fae5f779f095efda96161fce037847f5d0"
-    },
-    "fixtures": {
-      "sycl_gdn_columns_bench": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-down-scatter-v1/sycl_gdn_columns_bench",
-        "bytes": 255752,
-        "sha256": "5b4d1714f89e4dd6e1c6c93d6e76b276f081f74a5b7694c3c8c326accf0be0f9"
-      }
-    },
-    "original_build_record": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-down-scatter-v1/build-record.json",
-      "sha256": "5a0430556e8c32b81ce835653ce4997175602bcdd277b4a390481ac97bb3a054"
-    },
-    "input_blobs_recovered_and_verified": 9801,
-    "qualification_reference": "bench/results/2026-10-15-pr6-recovery-audit/prefill-host-attribution-current.json at80c867368c3a0b7a898cde1afa2dda43e3fb9246",
-    "consumer": "Known-good engine/GDN fallback while the isolated Down/scatter component and any later model route are qualified; counts as one retained generation. Retire only after replacement selection."
-  },
+  "retention_consumer": "Keep only current ce1 engine and3 qualified QSA fixtures for next tuning/queue acceptance. Closed old bb8 fallback and GDN fixture retired after source recovery and replacement screening selection. Existing legacy provenance holds remain distinct.",
   "legacy_provenance_exception": {
     "state": "Unresolved legacy cleanup; not qualified comparison generations.",
     "observed_engine_and_fixture_paths": 41,
@@ -206,5 +184,35 @@
     "component_result": "bench/results/2026-10-15-pr6-recovery-audit/qsa-ordered-exp-current.json",
     "state": "Component gate, validated39K model admission and matched78K clean screen passed. Subsequent median900.6 vs867.4tok/s; explicit opt-in only. Broader quality/context/RESTORE and sustained decode unqualified.",
     "model_adopted": false
+  },
+  "retained_latest_selection": {
+    "source_commit": "ce1e950a843953c7856382978f7993bcc848e366",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+      "bytes": 21499072,
+      "sha256": "e400bbe545fcb13376812f353f89648a9924e2af1ff9c26b593c31a3e28be934"
+    },
+    "fixtures": {
+      "sycl_qsa_bf16_prefix_kvvec4_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_kvvec4_test",
+        "sha256": "bc6add39d091a6aa57ca7bf0330c4c269ce1dd7106d5d2a238eb3948adb6fa89"
+      },
+      "sycl_qsa_bf16_prefix_ordered_exp_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_ordered_exp_test",
+        "sha256": "aae503f30434e6f424f6dbfe26dd070eeed4f71e2ef54bb0fafbe927bc12cefe"
+      },
+      "sycl_qsa_bf16_prefix_ordered_exp_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_ordered_exp_bench",
+        "sha256": "d06bf20eee697f0ed7b46d1fe6139d3cd2380bccb7eaa471f382dab9901fded9"
+      }
+    },
+    "evidence_commit": "cf2a622ae",
+    "scope": "Validated current long-prefill screening engine, including same-binary baseline and faster ordered-exp opt-in. No broader model/decode adoption.",
+    "next_rebuild_prerequisite": "Preserve/hash-check this selected generation and required same-build fixtures outside the reused build directory, then commit retained_validation_reference before calling rebuild. No old fallback remains."
+  },
+  "retired_previous_fallback": {
+    "source_commit": "7829568c61f4a47e5c1b06497f59e41a3417a5fb",
+    "source_inputs_recovered": 9801,
+    "retirement_manifest": "bench/results/2026-10-15-pr6-recovery-audit/build-retirement-20261018.json"
   }
 }
