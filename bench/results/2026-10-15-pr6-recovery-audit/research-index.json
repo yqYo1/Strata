@@ -1150,5 +1150,32 @@
     "current_source_commit": "dc8ca3459414c409cc7f87c31c038f0f7ce5b02f",
     "current_source_path": "/home/yayoi/orca/workspaces/Strata/sycl",
     "current_consumer_note": "Prototype merged into feature/sycl and built after Down comparison closure. Kernel source remains the reviewed360 implementation;907 adds header comments and clears stale phase ownership. Runtime gates remain pending. Retire temporary child branch/worktree after default integration preserves original commits."
+  },
+  "down_scatter_row_metadata_grouping_scope": {
+    "classification": "decision_support",
+    "schedulable_now": true,
+    "eligible_at_dispatch": true,
+    "prerequisites_met": [
+      "Fixed78451-window output-copy fusion finished all3 independent performance processes and failed the predeclared gate (geomean1.175797).",
+      "Actual wide native no-capture scatter text125504/126912B versus8128B dense; code size is evidence, not a proven slowdown cause.",
+      "Maintained source has per-value unrolled row metadata and predicates; a concrete post-prototype grouping question remains beyond the closed output-copy layout survey."
+    ],
+    "question": "Can the actual Down epilogue share row-invariant metadata/predicates while preserving static fragment access, exact output/FP32 accumulation and the published plan ownership? Compare legal alternatives and one bounded discrimination experiment.",
+    "source_files_sha256": {
+      "src/prefill/sycl/vllm_xe2/native16.cpp": "8e6ce16735fb3c5d51e6af9dd72f218ff191d1288e334eff3c6cba3244e44ee6",
+      "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp": "84fb1251c2f9f93bd7774fb2a5a6c928df9ac8e86d1c7f6cf1a6cec058403fa6",
+      "bench/sycl/moe_down_scatter.cpp": "d6156021d39e065e76f2fb97b31866f390c8312d127ee0e7bfb54ca01a9f76b6"
+    },
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/down-scatter-row-metadata-grouping.md",
+    "report_budget": {
+      "words": [
+        1800,
+        2600
+      ],
+      "maximum_bytes": 32768
+    },
+    "state": "Eligible; dispatch preparation. No implementation or GPU work delegated.",
+    "main_reads_body_on_arrival": false,
+    "retention_consumer": "Native Luna-max review; retrieve only concrete next-epilogue design sections if QSA closes or a MoE implementation is selected. Review at that decision."
   }
 }
