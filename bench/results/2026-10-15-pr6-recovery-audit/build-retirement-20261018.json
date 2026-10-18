@@ -1,79 +1,784 @@
 {
   "schema": 1,
-  "state": "retired",
-  "previous_decision_archive": "b29d561fc",
-  "evidence_commit": "1f3e0f60b51fa16d5880056b8bb0b567a62da4d5",
+  "state": "prepared",
+  "previous_decision_archive": "6059b1705e19130d2e23f865514c65267209e92c",
+  "evidence_commit": "3e98e62cf7e3a9dbc36f35c83be9ade491312fbb",
   "source_recovery": [
     {
-      "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "799953bd2dbd065936a3e5178539de4ed9c133cb",
-      "count": 486,
-      "aggregate_sha256": "d8d81c8c9ba13f1ad222cb44e747ec5535b06b095f482a84bc252b471480ef2f"
-    },
-    {
-      "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
-      "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
-      "count": 3608,
-      "aggregate_sha256": "322862d213ed722d6500da0b58a1b7fffff53aa0de77d7f2e8ba685c653a0d9f"
-    },
-    {
-      "root": "/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
-      "revision": "87f6850680a580654b9ea2c80dbc01aeb36ad231",
-      "count": 5703,
-      "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
-    },
-    {
+      "kind": "engine_source",
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "016ae608038f706c8baf1d598cfae6c2a2d882f2",
       "count": 488,
-      "aggregate_sha256": "4edb2aa6b851fb80ece5dfbe99a998087e2bbd880ac7d1d7544f6d6ef6b592c6"
+      "aggregate_sha256": "4edb2aa6b851fb80ece5dfbe99a998087e2bbd880ac7d1d7544f6d6ef6b592c6",
+      "recovered_from_git_and_hash_compared": true
+    },
+    {
+      "kind": "dependency",
+      "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+      "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+      "count": 3608,
+      "aggregate_sha256": "322862d213ed722d6500da0b58a1b7fffff53aa0de77d7f2e8ba685c653a0d9f",
+      "recovered_from_git_and_hash_compared": true
+    },
+    {
+      "kind": "dependency",
+      "root": "/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+      "revision": "87f6850680a580654b9ea2c80dbc01aeb36ad231",
+      "count": 5703,
+      "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5",
+      "recovered_from_git_and_hash_compared": true
     },
     {
       "kind": "benchmark_helpers",
-      "revision": "b29d561fc03813af2f3aeeb20c4fda58a3688564",
-      "count": 102,
-      "aggregate_sha256": "83cc75c181e20045f55074a39414e6df1e02ad0f66cd7680d59aa9f4dba20283",
-      "shared_profile_retained_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
-    },
-    {
-      "kind": "benchmark_helpers",
-      "revision": "4b07e070acf5b28cb9d14574850be8db206134a0",
+      "root": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "revision": "fc09c9e27c96cfbfbe0af4f7ce263b6b38fe07ea",
       "count": 103,
       "aggregate_sha256": "1ca6b8a88af7406e5d0540573a93aef9e3041e76384baf30b61849e7ba23ede5",
-      "shared_profile_retained_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+      "recovered_from_git_and_hash_compared": true
+    },
+    {
+      "kind": "benchmark_helpers",
+      "root": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "revision": "09d4365720b45551aeea68dbc80951542550b858",
+      "count": 103,
+      "aggregate_sha256": "1ca6b8a88af7406e5d0540573a93aef9e3041e76384baf30b61849e7ba23ede5",
+      "recovered_from_git_and_hash_compared": true
+    },
+    {
+      "kind": "build_recipe",
+      "revision": "3e98e62cf7e3a9dbc36f35c83be9ade491312fbb",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-entry-engine-build-v2.json",
+      "sha256": "9b7734387f0fc56f36afe9d7bca75e5f0bedcef479271e982025abe1d4334a1a",
+      "recovered_from_git_and_hash_compared": true
     }
   ],
   "roots": [
     {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-gdn-columns-v1",
-      "reason": "Fallback condition closed: exact component/tails/streamed262144 and actual39K model admission passed; original source/recipe recovered and verified."
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1",
+      "reason": "Matched clean78K screen closed and samples committed; successful logs, duplicate private profile, process receipts and JIT/cache output have no remaining consumer. Exact engine/dependency/helper inputs and recipe recovered from Git.",
+      "files": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/bench/2026-10-18-community-cpu-qwen3-8-flash-next-iq3-s-primary/README.md",
+          "bytes": 976,
+          "sha256": "610b8e5a8a4ccb94048a2d4d84fa72eeb91ee804314e5e5f13cbc301179cc3ef"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/bench/2026-10-18-community-cpu-qwen3-8-flash-next-iq3-s-primary/engine-log-excerpt.txt",
+          "bytes": 365,
+          "sha256": "7205ce4e742c39dcd791cae640919e41567f66d945f72b525fee33f752a7a543"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/bench/2026-10-18-community-cpu-qwen3-8-flash-next-iq3-s-primary/journal-state.json",
+          "bytes": 179,
+          "sha256": "ad7eb0bec9f1db7922f6ccbf18925ec13f316bf162e293526a1b6d8596f42881"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/bench/2026-10-18-community-cpu-qwen3-8-flash-next-iq3-s-primary/requests.jsonl",
+          "bytes": 10053,
+          "sha256": "f4f80e156ece2e11ac2963f5fd9806694c6fcb64d0c87d8648044c6c361dddab"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/bench/2026-10-18-community-cpu-qwen3-8-flash-next-iq3-s-primary/results.json",
+          "bytes": 27077,
+          "sha256": "c390294a3d960372cad3051e41675eb7648afad8bf16a1243d93254815edc9b7"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/0/1/012483aa3d44e81b.l0_cache",
+          "bytes": 208008,
+          "sha256": "892bc61e4ab905484820810193944971d4afa0073cb37632d20d2c7016cd617d"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/0/7/079f68540d16bb98.l0_cache",
+          "bytes": 11112,
+          "sha256": "1191e3414be269f8e1c7a86f39d0f23b16c9820f055359e9d4ecc5b29b4afe06"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/0/c/0cf9775b0d94870e.l0_cache",
+          "bytes": 108856,
+          "sha256": "5730787432ccd1a9c70c506897091c39ef4909865e9c2146439903ef2310750a"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/1/7/1706e58eba41e7af.l0_cache",
+          "bytes": 72712,
+          "sha256": "d56d4132e538b44afbd7d6141eca017b489d09360769bb3da7e56a819c1192ff"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/1/8/180e6455d959aad6.l0_cache",
+          "bytes": 28880,
+          "sha256": "55790b99be895e307a49f0760efbfb4cf20b718dde30a31c3fd0d6df447b4805"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/1/f/1f495dac0e12333d.l0_cache",
+          "bytes": 675640,
+          "sha256": "824dcbb224b493dd728e00390c09142f19848fa13e24ce385c1d428a71a9fc0b"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/2/d/2dd6d41342c070a1.l0_cache",
+          "bytes": 3482720,
+          "sha256": "547147d5012da092b3ee5675c4dd33ac8ed2b5e90eae8762d663ef23ab9c9770"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/2/f/2f0e0b358d929a20.l0_cache",
+          "bytes": 2712968,
+          "sha256": "239a729b5177187d2b5a19c362f95f67d326c11781dabd21af35ada09e269a14"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/3/0/307d90cc2325b7b7.l0_cache",
+          "bytes": 16352,
+          "sha256": "01d6538bcca035849d4f540375d79e06f83fdc1dc1eb1d8cd5329dcc60ac2c53"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/3/4/34ca18dddd104eaf.l0_cache",
+          "bytes": 199616,
+          "sha256": "159c6af0de33c2a17f404c0b6d22d3e83299e360c7674fd1e32ea4829cab2edf"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/4/3/43f5a491b4a2ee4a.l0_cache",
+          "bytes": 75992,
+          "sha256": "fc26c514c40fb8f25d9342a8252a61d177bbd4630d8889034eb1feb19429b500"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/4/4/445f5a0cdda80d32.l0_cache",
+          "bytes": 9936,
+          "sha256": "b7d9474842a8a0540e2a98e964c4d8a09fcc81d21d7c98c40740db74d8dfe20f"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/4/4/448059b787ebcff7.l0_cache",
+          "bytes": 54824,
+          "sha256": "b82991f0e94ad70f13930214716fbe24356b7033e64fe84e87376012166504b2"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/4/4/44e491736a29a069.l0_cache",
+          "bytes": 44656,
+          "sha256": "2a405695fd329ba34e09049e0180fc6a80ce1621d6aa7d82173280fdd16e7ae0"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/4/9/49183d0c5c0bc344.l0_cache",
+          "bytes": 23096,
+          "sha256": "1d6c24a82db7f23919d77deb7bc82d9396c1bc38b58764033fcc17c124f7e040"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/4/9/4997738f528b7d1c.l0_cache",
+          "bytes": 23664,
+          "sha256": "34ff9976f279120cf8d226affd86e8848c7fe1708f5567dc085f6ac70a8fce74"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/5/2/52d3b0cae291dbba.l0_cache",
+          "bytes": 61656,
+          "sha256": "bccba697e5d6c538c01e478d27bc18a104d18f996345f189342f4a795763b746"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/5/6/560de3911e62817c.l0_cache",
+          "bytes": 1330208,
+          "sha256": "9b104b40b3ac286d36c09e4b050bbeea97d993bb68d77446d207bb36f7211a76"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/5/6/5639839a9e4f0f12.l0_cache",
+          "bytes": 78000,
+          "sha256": "8cd82f61b877ea0595f23ddca1ba4925fcecbe864e53da91600721b1227f6bf0"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/5/8/5878cda70ea95f57.l0_cache",
+          "bytes": 28368,
+          "sha256": "e38688ac854024e4dbcdda58fa62bf3768e67a1fc18cde55fb9dcdc8289a5325"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/5/e/5e6f45b9a6f80a30.l0_cache",
+          "bytes": 33200,
+          "sha256": "3088c1af01aed869d783ecb6363ac4831b4049e3ca958c237a7f1d5206afa107"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/6/7/6716b77593da3f51.l0_cache",
+          "bytes": 29080,
+          "sha256": "0d4fa3d6c1079d0492d32f5bb3df4cac044b8c1d72840d70f9b48fd0536fad06"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/6/7/6791aad61e53c0b2.l0_cache",
+          "bytes": 84456,
+          "sha256": "3f6c90b3dbc1425da151bc0afa378f7678ebfcd013d1be8e05ca9f41532bec3b"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/6/d/6da5eb3c10690c07.l0_cache",
+          "bytes": 18120,
+          "sha256": "ab9c429dcab5639cc9a529ff6eaec2c1cefed06bbea792b173c0d850389cc06d"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/7/4/74412b6d98f5e9f5.l0_cache",
+          "bytes": 385864,
+          "sha256": "a59851f1c405efc04249f4af035f0c0112488f3bdc98e9dc630ce3363a76ee7d"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/7/4/7446e6c5659816c0.l0_cache",
+          "bytes": 12944,
+          "sha256": "fab487b26e0b90ab0be1c3fd2b577849616ded40792222eaee39884251b1da58"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/7/6/7679a5cea851ad57.l0_cache",
+          "bytes": 71208,
+          "sha256": "4693867a320a3b1a269fbe132b5632e3c1022d7d3f2ea4b71867aefa432dea78"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/7/9/794086552c635046.l0_cache",
+          "bytes": 49784,
+          "sha256": "954b17ae1b229262421db8a9ba996c6fa82e0d6095d31600421eda5fb19dbfc1"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/8/0/80fb6b6ab3cafaf8.l0_cache",
+          "bytes": 60464,
+          "sha256": "8d5e74ddcc2359af3e460846081b70fc43a09b7793448335798d8ee0d281383b"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/8/7/8753b22fe3fff374.l0_cache",
+          "bytes": 130952,
+          "sha256": "1030eefe438777f19ac8f28808e83ab0780ee7f03faa2cb68ecb9e4d5cf4f622"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/8/a/8a799de64939a68f.l0_cache",
+          "bytes": 12728,
+          "sha256": "1fcb1901c2d04bc43085833f2799445a3c173557e3eeceefc7eac02ae00f19b4"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/8/a/8a9a1bc3c916673b.l0_cache",
+          "bytes": 194296,
+          "sha256": "00fa9c13422d4fca94403b9e680b9cc4d4ac217c7bd0df64b9da5f08eeefa41c"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/8/c/8cbe13244582ad48.l0_cache",
+          "bytes": 68776,
+          "sha256": "9409abe0fef5ebfe173a830acf83381debcfbbe81717954ffe8a0867c6ce7efe"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/9/8/980b0c6e48f5e5df.l0_cache",
+          "bytes": 148360,
+          "sha256": "0c4b967d555172607bb1191cf86428749270c3d0fe96e4eec1f76d61c9f4d611"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/9/f/9ffab109e8c7a925.l0_cache",
+          "bytes": 244144,
+          "sha256": "ab3e166cd835d40495833267482f01d799769e3b12f1dbe48729bd0e939dd9c8"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/a/3/a3aa4e90af5189ae.l0_cache",
+          "bytes": 30256,
+          "sha256": "5aabe104a2b3d0a193c725bbfb37b70e2b475f19dae268b82a05d375498243d7"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/a/5/a583cb2296066a34.l0_cache",
+          "bytes": 47560,
+          "sha256": "bbc8ebc20f4ceb363c5f9bce48c09ba26f12fbcdf07fa5f436deb9cb62513264"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/a/d/ad04d07876974a0e.l0_cache",
+          "bytes": 194760,
+          "sha256": "3ed2bfa84e8f926749659ec99a7a5928d9fe2bf73d879c3c58680629d885ac4a"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/b/0/b07ef8d345628187.l0_cache",
+          "bytes": 103816,
+          "sha256": "1a36945316c35095a41f9f279afe40f7d732595a952c13bf6838596c44f64cfb"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/b/5/b59c9a74b6a11e00.l0_cache",
+          "bytes": 96312,
+          "sha256": "c8efb1990e2b42bdeb3a14b9cfe6a8194a2b2c060904f35bc51a7db5b12b54ec"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/b/5/b5b342a566624e9c.l0_cache",
+          "bytes": 26144,
+          "sha256": "e73793745190bf11d45f49bb4862faac29bd937954e26a8cb9b2dc5a14e6731a"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/c/4/c40e1fd53a5e0b31.l0_cache",
+          "bytes": 156208,
+          "sha256": "f5bdd2ea0d50a649a1e1f8439e3e363e765a64be1c1a402836de4fd2fb65face"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/c/5/c531f0fdb15afaff.l0_cache",
+          "bytes": 22224,
+          "sha256": "0462a8a39e607a1b4f892a643b13b74df20bfff39963ca0eb2ed9b5d4c2110a8"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/c/e/cedac49a85b8be0f.l0_cache",
+          "bytes": 227336,
+          "sha256": "8797076e5090d1553c40c0b297cdbf120a28d61c2b84ac48b00e5e536a2172b7"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/c/f/cf49de26ebd74973.l0_cache",
+          "bytes": 50680,
+          "sha256": "616dd91f448ae1507a3a5fc953a8a3e9ddbe0548c11db967c9c19d3c465dffc5"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/config.file",
+          "bytes": 8,
+          "sha256": "6de8b55ecec6d8f65621842c2f1bb556db74544761cb43ce70964481d6d53fa0"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/d/0/d08ffbd06505dd9c.l0_cache",
+          "bytes": 134504,
+          "sha256": "93f5f8ae3e5d9f4dad221ce1cf0d7a89a47b57e7b2f946b4c6fffe67983d4bb9"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/d/2/d26449785c3bc728.l0_cache",
+          "bytes": 113256,
+          "sha256": "e0419cc1f775da821ba7496a4741ad0412bcb6069873121d7efcdc18ea252753"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/d/3/d35b52d5c3e6bf06.l0_cache",
+          "bytes": 85880,
+          "sha256": "c1bb6805809e23fae17a22303fda587223487c199e22d55bc627675e74456fbd"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/d/6/d675c8629b44a1c9.l0_cache",
+          "bytes": 287560,
+          "sha256": "46caf7c236b1bf1362bf97f5b93ac156cc2c4ce943f0fd817167c06dfbd14df3"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/d/8/d83ae6a9dcf0c3a0.l0_cache",
+          "bytes": 30032,
+          "sha256": "c6483b74f248691aa7f541f20bd7f3858ee2f1093f3e79bd57e1fe6ee56a2e5c"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/e/0/e0a3e1cc1f46e0a6.l0_cache",
+          "bytes": 11288,
+          "sha256": "65740dd8642659ed7337b0fb30a8ed58a1ca97c85554318e1451573550bfac5a"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/e/5/e51bd19a182fe46e.l0_cache",
+          "bytes": 25504,
+          "sha256": "b06541ddebfb4e02df06bd84365e5e569bf5396d2fa8e463d7230e4386fd8b2f"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/cache/neo_compiler_cache/f/1/f1a21f1c6cec3757.l0_cache",
+          "bytes": 37416,
+          "sha256": "28f54a7035561f528607847f065687618f58115658e061444f93470bc882e8f6"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/config.json",
+          "bytes": 1634,
+          "sha256": "72b12ce4f8357352e0f5aadd7a80448bff86672a22cd448df797ef331657704f"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/engine-exit.json",
+          "bytes": 1293,
+          "sha256": "2f5c26bd140f4da17f3dcd75e19e3f034b8688cb80c47bae610911ca34706db2"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/engine-start.json",
+          "bytes": 1277,
+          "sha256": "2f0c1e002cafc69ebeee14644c3527e788630dd02120edbd75a823e941a1e69a"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/engine.stderr",
+          "bytes": 16392,
+          "sha256": "9d1665f1a547b0c99c4f831488b077c17bd6627971100409c3fe2ae10b4b8703"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/expert-profile.bin",
+          "bytes": 196632,
+          "sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/launch.json",
+          "bytes": 1207,
+          "sha256": "08d5cf6fe21ca3befeef19521c367d347b8b6d47a5c12a595cd003c692fe784c"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/owned/bench.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/owned/bench.stdout",
+          "bytes": 579,
+          "sha256": "661957d0b0b4b205980cf46a5b7956b965d1789e045d74029312f607e0db6c9a"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/plan.json",
+          "bytes": 17466,
+          "sha256": "ace65ebada8ea601acbc4110280f14cf63f002f5f731cf3e002efc2bb9893e40"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/record.json",
+          "bytes": 19954,
+          "sha256": "e3effd4001d9d65ea40949311fdb86dadfad784dad85a807d8e9fd52fd0d994c"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1/tmp/strata-bench-4043652.log",
+          "bytes": 6140,
+          "sha256": "a276e0f525ba4a1c4553bb0ddc6c1b00c0d98fa3a29e1fbb652093cc18f23894"
+        }
+      ]
     },
     {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-kvvec4-census-v1",
-      "reason": "Full GDN resource decision and all selected command-service samples/histogram preserved inb765345ef; successful raw logs/JIT/duplicate receipts no longer needed."
-    },
-    {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-check-v1",
-      "reason": "Validated model admission compact evidence preserved in1f3e0f60b51fa16d5880056b8bb0b567a62da4d5; no fresh fault or unresolved failure requires full successful logs."
-    },
-    {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-columns-component-v1",
-      "reason": "All exact-check outcomes and individual resident samples preserved in4b07e070a; latest fixture executable retained separately, raw traces/JIT no longer have a comparison consumer."
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1",
+      "reason": "Matched clean78K screen closed and samples committed; successful logs, duplicate private profile, process receipts and JIT/cache output have no remaining consumer. Exact engine/dependency/helper inputs and recipe recovered from Git.",
+      "files": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/bench/2026-10-18-community-cpu-qwen3-8-flash-next-iq3-s-primary/README.md",
+          "bytes": 976,
+          "sha256": "0f39d88aa85c37ed94a5c5d4e1d25b8459723638b1a8f7865d6f52abf6a036d2"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/bench/2026-10-18-community-cpu-qwen3-8-flash-next-iq3-s-primary/engine-log-excerpt.txt",
+          "bytes": 365,
+          "sha256": "6a977b6c28e548351ea6d3ca32eb9e8596826e17aa1433c4e0e990c2849be691"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/bench/2026-10-18-community-cpu-qwen3-8-flash-next-iq3-s-primary/journal-state.json",
+          "bytes": 179,
+          "sha256": "789dcee30408cf4f31ef026b72f6a14a0efcc87ea27fa0ae96e125e0d02ce454"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/bench/2026-10-18-community-cpu-qwen3-8-flash-next-iq3-s-primary/requests.jsonl",
+          "bytes": 10052,
+          "sha256": "9038e2f524d416ea86614fc62a5666dad367efa02a8078d7675422009933797b"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/bench/2026-10-18-community-cpu-qwen3-8-flash-next-iq3-s-primary/results.json",
+          "bytes": 27073,
+          "sha256": "9f60692d81046dd8f4930713149427450df4aee1dfa90c7c42ffd7445d4d1ca5"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/0/1/012483aa3d44e81b.l0_cache",
+          "bytes": 208008,
+          "sha256": "892bc61e4ab905484820810193944971d4afa0073cb37632d20d2c7016cd617d"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/0/7/079f68540d16bb98.l0_cache",
+          "bytes": 11112,
+          "sha256": "1191e3414be269f8e1c7a86f39d0f23b16c9820f055359e9d4ecc5b29b4afe06"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/0/c/0cf9775b0d94870e.l0_cache",
+          "bytes": 108856,
+          "sha256": "5730787432ccd1a9c70c506897091c39ef4909865e9c2146439903ef2310750a"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/1/7/1706e58eba41e7af.l0_cache",
+          "bytes": 72712,
+          "sha256": "d56d4132e538b44afbd7d6141eca017b489d09360769bb3da7e56a819c1192ff"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/1/8/180e6455d959aad6.l0_cache",
+          "bytes": 28880,
+          "sha256": "55790b99be895e307a49f0760efbfb4cf20b718dde30a31c3fd0d6df447b4805"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/1/f/1f495dac0e12333d.l0_cache",
+          "bytes": 675640,
+          "sha256": "824dcbb224b493dd728e00390c09142f19848fa13e24ce385c1d428a71a9fc0b"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/2/d/2dd6d41342c070a1.l0_cache",
+          "bytes": 3482720,
+          "sha256": "547147d5012da092b3ee5675c4dd33ac8ed2b5e90eae8762d663ef23ab9c9770"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/2/f/2f0e0b358d929a20.l0_cache",
+          "bytes": 2712968,
+          "sha256": "239a729b5177187d2b5a19c362f95f67d326c11781dabd21af35ada09e269a14"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/3/0/307d90cc2325b7b7.l0_cache",
+          "bytes": 16352,
+          "sha256": "01d6538bcca035849d4f540375d79e06f83fdc1dc1eb1d8cd5329dcc60ac2c53"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/3/4/34ca18dddd104eaf.l0_cache",
+          "bytes": 199616,
+          "sha256": "159c6af0de33c2a17f404c0b6d22d3e83299e360c7674fd1e32ea4829cab2edf"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/4/3/43f5a491b4a2ee4a.l0_cache",
+          "bytes": 75992,
+          "sha256": "fc26c514c40fb8f25d9342a8252a61d177bbd4630d8889034eb1feb19429b500"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/4/4/445f5a0cdda80d32.l0_cache",
+          "bytes": 9936,
+          "sha256": "b7d9474842a8a0540e2a98e964c4d8a09fcc81d21d7c98c40740db74d8dfe20f"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/4/4/448059b787ebcff7.l0_cache",
+          "bytes": 54824,
+          "sha256": "b82991f0e94ad70f13930214716fbe24356b7033e64fe84e87376012166504b2"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/4/4/44e491736a29a069.l0_cache",
+          "bytes": 44656,
+          "sha256": "2a405695fd329ba34e09049e0180fc6a80ce1621d6aa7d82173280fdd16e7ae0"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/4/9/49183d0c5c0bc344.l0_cache",
+          "bytes": 23096,
+          "sha256": "1d6c24a82db7f23919d77deb7bc82d9396c1bc38b58764033fcc17c124f7e040"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/4/9/4997738f528b7d1c.l0_cache",
+          "bytes": 23664,
+          "sha256": "34ff9976f279120cf8d226affd86e8848c7fe1708f5567dc085f6ac70a8fce74"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/5/2/52d3b0cae291dbba.l0_cache",
+          "bytes": 61656,
+          "sha256": "bccba697e5d6c538c01e478d27bc18a104d18f996345f189342f4a795763b746"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/5/6/560de3911e62817c.l0_cache",
+          "bytes": 1330208,
+          "sha256": "9b104b40b3ac286d36c09e4b050bbeea97d993bb68d77446d207bb36f7211a76"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/5/6/5639839a9e4f0f12.l0_cache",
+          "bytes": 78000,
+          "sha256": "8cd82f61b877ea0595f23ddca1ba4925fcecbe864e53da91600721b1227f6bf0"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/5/8/5878cda70ea95f57.l0_cache",
+          "bytes": 28368,
+          "sha256": "e38688ac854024e4dbcdda58fa62bf3768e67a1fc18cde55fb9dcdc8289a5325"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/5/e/5e6f45b9a6f80a30.l0_cache",
+          "bytes": 33200,
+          "sha256": "3088c1af01aed869d783ecb6363ac4831b4049e3ca958c237a7f1d5206afa107"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/6/7/6716b77593da3f51.l0_cache",
+          "bytes": 29080,
+          "sha256": "0d4fa3d6c1079d0492d32f5bb3df4cac044b8c1d72840d70f9b48fd0536fad06"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/6/7/6791aad61e53c0b2.l0_cache",
+          "bytes": 84456,
+          "sha256": "3f6c90b3dbc1425da151bc0afa378f7678ebfcd013d1be8e05ca9f41532bec3b"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/6/d/6da5eb3c10690c07.l0_cache",
+          "bytes": 18120,
+          "sha256": "ab9c429dcab5639cc9a529ff6eaec2c1cefed06bbea792b173c0d850389cc06d"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/7/4/74412b6d98f5e9f5.l0_cache",
+          "bytes": 385864,
+          "sha256": "a59851f1c405efc04249f4af035f0c0112488f3bdc98e9dc630ce3363a76ee7d"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/7/4/7446e6c5659816c0.l0_cache",
+          "bytes": 12944,
+          "sha256": "fab487b26e0b90ab0be1c3fd2b577849616ded40792222eaee39884251b1da58"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/7/6/7679a5cea851ad57.l0_cache",
+          "bytes": 71208,
+          "sha256": "4693867a320a3b1a269fbe132b5632e3c1022d7d3f2ea4b71867aefa432dea78"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/7/9/794086552c635046.l0_cache",
+          "bytes": 49784,
+          "sha256": "954b17ae1b229262421db8a9ba996c6fa82e0d6095d31600421eda5fb19dbfc1"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/8/0/80fb6b6ab3cafaf8.l0_cache",
+          "bytes": 60464,
+          "sha256": "8d5e74ddcc2359af3e460846081b70fc43a09b7793448335798d8ee0d281383b"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/8/7/8753b22fe3fff374.l0_cache",
+          "bytes": 130952,
+          "sha256": "1030eefe438777f19ac8f28808e83ab0780ee7f03faa2cb68ecb9e4d5cf4f622"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/8/a/8a799de64939a68f.l0_cache",
+          "bytes": 12728,
+          "sha256": "1fcb1901c2d04bc43085833f2799445a3c173557e3eeceefc7eac02ae00f19b4"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/8/a/8a9a1bc3c916673b.l0_cache",
+          "bytes": 194296,
+          "sha256": "00fa9c13422d4fca94403b9e680b9cc4d4ac217c7bd0df64b9da5f08eeefa41c"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/8/c/8cbe13244582ad48.l0_cache",
+          "bytes": 68776,
+          "sha256": "9409abe0fef5ebfe173a830acf83381debcfbbe81717954ffe8a0867c6ce7efe"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/9/8/980b0c6e48f5e5df.l0_cache",
+          "bytes": 148360,
+          "sha256": "0c4b967d555172607bb1191cf86428749270c3d0fe96e4eec1f76d61c9f4d611"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/9/f/9ffab109e8c7a925.l0_cache",
+          "bytes": 244144,
+          "sha256": "ab3e166cd835d40495833267482f01d799769e3b12f1dbe48729bd0e939dd9c8"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/a/3/a3aa4e90af5189ae.l0_cache",
+          "bytes": 30256,
+          "sha256": "5aabe104a2b3d0a193c725bbfb37b70e2b475f19dae268b82a05d375498243d7"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/a/5/a583cb2296066a34.l0_cache",
+          "bytes": 47560,
+          "sha256": "bbc8ebc20f4ceb363c5f9bce48c09ba26f12fbcdf07fa5f436deb9cb62513264"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/a/d/ad04d07876974a0e.l0_cache",
+          "bytes": 194760,
+          "sha256": "3ed2bfa84e8f926749659ec99a7a5928d9fe2bf73d879c3c58680629d885ac4a"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/b/0/b07ef8d345628187.l0_cache",
+          "bytes": 103816,
+          "sha256": "1a36945316c35095a41f9f279afe40f7d732595a952c13bf6838596c44f64cfb"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/b/5/b59c9a74b6a11e00.l0_cache",
+          "bytes": 96312,
+          "sha256": "c8efb1990e2b42bdeb3a14b9cfe6a8194a2b2c060904f35bc51a7db5b12b54ec"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/b/5/b5b342a566624e9c.l0_cache",
+          "bytes": 26144,
+          "sha256": "e73793745190bf11d45f49bb4862faac29bd937954e26a8cb9b2dc5a14e6731a"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/c/4/c40e1fd53a5e0b31.l0_cache",
+          "bytes": 156208,
+          "sha256": "f5bdd2ea0d50a649a1e1f8439e3e363e765a64be1c1a402836de4fd2fb65face"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/c/5/c531f0fdb15afaff.l0_cache",
+          "bytes": 22224,
+          "sha256": "0462a8a39e607a1b4f892a643b13b74df20bfff39963ca0eb2ed9b5d4c2110a8"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/c/e/cedac49a85b8be0f.l0_cache",
+          "bytes": 227336,
+          "sha256": "8797076e5090d1553c40c0b297cdbf120a28d61c2b84ac48b00e5e536a2172b7"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/c/f/cf49de26ebd74973.l0_cache",
+          "bytes": 50680,
+          "sha256": "616dd91f448ae1507a3a5fc953a8a3e9ddbe0548c11db967c9c19d3c465dffc5"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/config.file",
+          "bytes": 8,
+          "sha256": "6de8b55ecec6d8f65621842c2f1bb556db74544761cb43ce70964481d6d53fa0"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/d/0/d08ffbd06505dd9c.l0_cache",
+          "bytes": 134504,
+          "sha256": "93f5f8ae3e5d9f4dad221ce1cf0d7a89a47b57e7b2f946b4c6fffe67983d4bb9"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/d/2/d26449785c3bc728.l0_cache",
+          "bytes": 113256,
+          "sha256": "e0419cc1f775da821ba7496a4741ad0412bcb6069873121d7efcdc18ea252753"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/d/3/d35b52d5c3e6bf06.l0_cache",
+          "bytes": 85880,
+          "sha256": "c1bb6805809e23fae17a22303fda587223487c199e22d55bc627675e74456fbd"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/d/6/d675c8629b44a1c9.l0_cache",
+          "bytes": 287560,
+          "sha256": "46caf7c236b1bf1362bf97f5b93ac156cc2c4ce943f0fd817167c06dfbd14df3"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/d/8/d83ae6a9dcf0c3a0.l0_cache",
+          "bytes": 30032,
+          "sha256": "c6483b74f248691aa7f541f20bd7f3858ee2f1093f3e79bd57e1fe6ee56a2e5c"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/e/0/e0a3e1cc1f46e0a6.l0_cache",
+          "bytes": 11288,
+          "sha256": "65740dd8642659ed7337b0fb30a8ed58a1ca97c85554318e1451573550bfac5a"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/e/5/e51bd19a182fe46e.l0_cache",
+          "bytes": 25504,
+          "sha256": "b06541ddebfb4e02df06bd84365e5e569bf5396d2fa8e463d7230e4386fd8b2f"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/cache/neo_compiler_cache/f/1/f1a21f1c6cec3757.l0_cache",
+          "bytes": 37416,
+          "sha256": "28f54a7035561f528607847f065687618f58115658e061444f93470bc882e8f6"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/config.json",
+          "bytes": 1644,
+          "sha256": "55ca1140e050d45957ea2ea8cc1807fa5f648d8572d5df71e39ccd0b006cdd71"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/engine-exit.json",
+          "bytes": 1298,
+          "sha256": "417ecd8a0614ea354294a830caefff192e55d771a78c3357dfb8bd71e6039992"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/engine-start.json",
+          "bytes": 1282,
+          "sha256": "8ab08ac77544f09f8e713b41fa4c428ad5a22d76cad1cabe5a066feb2b8b5291"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/engine.stderr",
+          "bytes": 16809,
+          "sha256": "a5e010fb4f8c9356a23035952d29b7b979bcf6ec8a2609c5352b68da40e84748"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/expert-profile.bin",
+          "bytes": 196632,
+          "sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/launch.json",
+          "bytes": 1212,
+          "sha256": "39d92f8911a673e94f7745c5eb4fa6e3f178a4acd99ad51d486c10967f90335c"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/owned/bench.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/owned/bench.stdout",
+          "bytes": 583,
+          "sha256": "f4bd74d1e39b0776c12d9803c65be2f1a8ac02c9937c4fb46a0e27e1f02bce5a"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/plan.json",
+          "bytes": 17506,
+          "sha256": "9ab49dca863444bc4fba5c2e0d8ef25e02cba307c31075642d34ea3f02869615"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/record.json",
+          "bytes": 20461,
+          "sha256": "ef067fc26895adb6b5bf156ca42ae1f6fb0d549fbfd563229713b3186c067c0f"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1/tmp/strata-bench-4066229.log",
+          "bytes": 6139,
+          "sha256": "db7da19c800f528b3459bbd7d1ed0420c6a5d49763efe1d07a756551d4efb0d0"
+        }
+      ]
     }
   ],
   "standalone_paths": [
-    "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/gdn-columns-worker-start.json",
-    "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/gdn-split-methods-worker-start.json"
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/gdn-subgroup-worker-start.json",
+      "bytes": 2226,
+      "sha256": "22a0f9c0b5ae1a35d0d837fc4404513e261a3e0e7678ae1c1186f5953ca53681",
+      "reason": "Completed Orca dispatch released, PTY closed and delivery acknowledged; substantive report remains for native review, launch transaction has no consumer."
+    }
   ],
-  "file_count": 159,
-  "bytes": 48870368,
+  "file_count": 141,
+  "bytes": 25550429,
   "retained_exceptions": [
-    "Current main-native-gdn-engine engine/fixture retained for imminent clean matched78K GDN comparison.",
-    "Relevant external research bodies/reviews retained through the named source/resource decision; Main does not load collection bodies on arrival.",
+    "Single latest main-native-gdn-engine and same-library recurrence fixture retained for warmed resource attribution; no duplicate baseline build needed.",
+    "Subgroup knowledge-collection report and ongoing native review retained.",
     "Legacy untracked provenance holds and main-primary-native-build-root-v1 untouched; not a global cleanup claim."
-  ],
-  "manifest_archive_commit": "ca635fa0e7678ce105ce8bbaceda2d3a65345799",
-  "manifest_archive_path": "bench/results/2026-10-15-pr6-recovery-audit/build-retirement-20261018.json",
-  "deleted_count": 159,
-  "deleted_bytes": 48870368
+  ]
 }
