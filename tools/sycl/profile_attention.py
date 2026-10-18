@@ -28,6 +28,44 @@ def digest(path):
         return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
+def emitted_resources(text, trace):
+    """Join complete compiler resource blocks to successful traced launches."""
+    created = {}
+    launches = {}
+    for line in trace.splitlines():
+        if '<--- urKernelCreate(' in line and 'UR_RESULT_SUCCESS' in line:
+            match = re.search(r'\((_ZTS\S+)\).*?\.phKernel = .*?\((0x[0-9a-f]+)\)', line)
+            if match:
+                created[match[2]] = match[1]
+        if '<--- urEnqueueKernelLaunchWithArgsExp(' not in line or 'UR_RESULT_SUCCESS' not in line:
+            continue
+        handle = re.search(r'\.hKernel = (0x[0-9a-f]+)', line)[1]
+        local = [dict(index=int(i), bytes=int(n)) for i, n in re.findall(
+            r'UR_EXP_KERNEL_ARG_TYPE_LOCAL, \.index = (\d+), \.size = (\d+)', line)]
+        name = created[handle]
+        value = launches.setdefault(name, dict(launches=0, local_arguments=local,
+                                               dynamic_local_bytes=sum(x['bytes'] for x in local)))
+        guards.require(value['local_arguments'] == local, 'different dynamic-local configuration')
+        value['launches'] += 1
+    resources = []
+    for block in re.split(r'(?m)^  - name:\s+', text)[1:]:
+        name = block.splitlines()[0].strip()
+        execution = re.search(r'(?ms)^    execution_env:\n(.*?)(?=^    \S|\Z)', block)
+        if not execution:
+            continue
+        fields = dict(re.findall(r'^      (\w+):\s*(.*?)\s*$', execution[1], re.M))
+        scratch = re.search(r'(?ms)^    per_thread_memory_buffers:\n(.*?)(?=^    \S|\Z)', block)
+        # Keep executed kernels and distinct spill evidence, not every compiled template.
+        if name not in launches and not scratch:
+            continue
+        resources.append(dict(kernel=name, execution_env=fields,
+            per_thread_memory_buffers=scratch[1].strip() if scratch else None,
+            observed_launches=launches.get(name)))
+    guards.require(resources and all(any(r['kernel'] == name for r in resources) for name in launches),
+                   'complete resource metadata for every observed kernel required')
+    return resources
+
+
 def main():
     guards.require(len(sys.argv) == 2 and sys.argv[1] in ('smoke', 'resources', 'overview', 'memory'),
                    'use profile_attention.py smoke|resources|overview|memory')
@@ -107,7 +145,8 @@ def main():
 
         def persist():
             record['active'] = bool(owner and owner.active is not None)
-            (ROOT / 'record.json').write_text(json.dumps(record, indent=2) + '\n')
+            (ROOT / 'record.json').write_text(json.dumps(
+                dict(record, owned_commands=owner.commands if owner else []), indent=2) + '\n')
 
         owner = supervision.Owner(run / 'owned', persist)
         try:
@@ -118,15 +157,10 @@ def main():
             text = stdout + '\n' + stderr
             native_pass = 'fixture_status=PASS' in stdout
             collector_ok = supervision.closed(entry) and entry.get('exit_code') == 0
-            resource_lines = [s for s in text.splitlines() if re.search(
-                r'^\s*(?:-\s*)?(?:name|execution_env|grf_count|simd_size|slm_size|barrier_count|has_barrier|'
-                r'required_work_group_size|private_size|spill_size|scratch_size|per_thread_memory_buffers|'
-                r'allocation_type|memory_usage|size|is_fixed_size|slot):', s)]
             record['checks'].append(dict(mode=mode, command=command, recipe_commit=revision,
                 input_sha256=inputs, environment=env, collector_exit_code=entry.get('exit_code'),
                 collector_ok=collector_ok, target_reported_pass=native_pass,
                 ownership_closed=supervision.closed(entry),
-                emitted_resource_lines=resource_lines if mode == 'resources' else [],
                 target_cases=[s for s in stdout.splitlines() if s.startswith(('case ', 'fixture_status='))],
                 collector_diagnostics=[s for s in text.splitlines() if re.search(
                     r'(?i)vtune:|error|warning|permission|not supported|unsupported|no data|GPU Time|XVE|bandwidth', s)][-80:],
@@ -136,6 +170,11 @@ def main():
             if mode == 'resources':
                 record['emitted_metadata_observed'] = 'grf_count:' in text and 'slm_size:' in text
                 record['passed'] = record['passed'] and record['emitted_metadata_observed']
+                record['emitted_resource_summary'] = dict(kernels=emitted_resources(stdout, stderr),
+                    raw_sha256={p.name: digest(p) for p in (out, err)},
+                    limits=['Compiler metadata and traced dynamic arguments, not hardware counters or measured occupancy.',
+                            'Static slm_size excludes separately supplied dynamic-local arguments; hardware rounding is unmeasured.',
+                            'Compiled variants without a successful traced launch are not executed-path evidence.'])
         except BaseException as error:
             record['error'] = str(error)
         finally:
