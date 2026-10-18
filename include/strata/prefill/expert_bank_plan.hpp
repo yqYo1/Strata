@@ -21,9 +21,11 @@ struct ExpertBankPlan {
     // Host source storage always holds all512 experts, regardless of GPU slots.
     static ExpertBankPlan make(int64_t n, int64_t chunk, int64_t width,
             uint64_t blob_stride, uint64_t free_gpu, uint64_t other_reserved,
-            uint64_t headroom, int64_t requested_rows, LayerMajorResidualDtype dtype,
+            uint64_t headroom, uint64_t max_device_alloc_bytes,
+            int64_t requested_rows, LayerMajorResidualDtype dtype,
             int64_t requested_slots, bool supported) {
-        if (!blob_stride || blob_stride % 256 || requested_slots < 0 || requested_slots > experts)
+        if (!blob_stride || blob_stride % 256 || !max_device_alloc_bytes ||
+            requested_slots < 0 || requested_slots > experts)
             throw std::invalid_argument("invalid expert bank stride or slot count");
         ExpertBankPlan p;
         p.stride = blob_stride;
@@ -43,9 +45,9 @@ struct ExpertBankPlan {
                     p.selection = Selection::insufficient;
                     const uint64_t bank = layer_major_mul(uint64_t(requested_slots), blob_stride);
                     const uint64_t need = layer_major_add(fixed, bank);
-                    if (need <= free_gpu) {
+                    if (need <= free_gpu && bank <= max_device_alloc_bytes) {
                         auto residual = LayerMajorResidualPlan::make(n, chunk, width,
-                            free_gpu - need, -1, dtype);
+                            std::min(free_gpu - need, max_device_alloc_bytes), -1, dtype);
                         if (residual.gpu_rows == n) {
                             p.selection = Selection::staged;
                             p.slots = requested_slots;
@@ -59,10 +61,10 @@ struct ExpertBankPlan {
         }
         p.device_bytes = p.host_upload_bytes;
         const uint64_t need = layer_major_add(fixed, p.device_bytes);
-        if (need > free_gpu)
+        if (need > free_gpu || p.device_bytes > max_device_alloc_bytes)
             throw std::invalid_argument("original expert bank exceeds free GPU budget with headroom");
         p.residual = LayerMajorResidualPlan::make(n, chunk, width,
-            free_gpu - need, requested_rows, dtype);
+            std::min(free_gpu - need, max_device_alloc_bytes), requested_rows, dtype);
         return p;
     }
 

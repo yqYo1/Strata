@@ -14,7 +14,7 @@ import measurement_owner as supervision
 
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'moe-expert-bank-component-v2'
+ROOT = B / 'moe-expert-bank-component-v3'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/moe-expert-bank-current.json'
 
 
@@ -126,6 +126,7 @@ def main():
         guards.no_model_owners([])
         guards.require(not ROOT.exists(), 'inspect prior expert-bank job; do not restart')
         prior = None
+        device_limits = None
         if RESULT.exists():
             raw = subprocess.check_output(['git','show','HEAD:'+str(RESULT.relative_to(P))],cwd=P)
             old = json.loads(raw)
@@ -133,6 +134,7 @@ def main():
                 not old['active'], 'commit the closed preceding bank plan before replacement')
             prior = dict(commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip(),
                 path=str(RESULT.relative_to(P)),source_commit=old['source_commit'],passed=old['passed'])
+            device_limits = old.get('device_limits')
         revision = subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip()
         pins = {}
         for name in ('include/strata/prefill/expert_bank_plan.hpp',
@@ -156,6 +158,8 @@ def main():
             limits='CPU capacity/state planning only. No owner/queue/DMA completion, GPU staging, model speed, physical262144 or RESTORE qualification.')
         if prior:
             record['previous_result'] = prior
+        if device_limits:
+            record['device_limits'] = device_limits
         owner = None
 
         def persist():
@@ -174,7 +178,8 @@ def main():
                     text=out.read_text()
                     guards.require('fallback262144=original exact_boundary=PASS' in text and
                         'short_tail_fallback_cases=3' in text and
-                        'uploads=9 hits=3 negative_checks=15 PASS' in text and
+                        'single_alloc_limit_cases=4' in text and
+                        'uploads=9 hits=3 negative_checks=18 PASS' in text and
                         'expert_bank_plan PASS GPU=UNRUN' in text,'incomplete expert-bank coverage')
                     record['checks']=[dict(case='admission_and_tickets',passed=True,
                         result_lines=text.splitlines())]

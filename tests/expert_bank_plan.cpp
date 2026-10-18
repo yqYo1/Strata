@@ -14,9 +14,9 @@ template<class Error = std::invalid_argument, class F> void rejects(F f) {
     need(caught); ++negative;
 }
 ExpertBankPlan plan(int slots, uint64_t free = Free, int64_t rows = 117488,
-                    int64_t requested = -1, bool supported = true) {
+                    int64_t requested = -1, bool supported = true, uint64_t max_alloc = 4ull << 30) {
     return ExpertBankPlan::make(rows, 8192, 10240, Stride, free, Other, Headroom,
-        requested, LayerMajorResidualDtype::bf16, slots, supported);
+        max_alloc, requested, LayerMajorResidualDtype::bf16, slots, supported);
 }
 
 int main() try {
@@ -46,6 +46,14 @@ int main() try {
         need(short_tail.residual.gpu_rows == rows); // all GPU, but normal FFN tail
     }
     need(plan(384, Free, 90113).staged()); //81920+8193: both accumulator windows
+    // Hypothetical stricter devices: total free bytes must not bypass the
+    // single-allocation limit. This fixture performs no device allocation.
+    const auto two_gib = plan(384, Free, 117488, -1, true, 2ull << 30);
+    need(!two_gib.staged() && two_gib.slots == 512 && two_gib.residual.gpu_rows == 98304);
+    const auto smaller_limit = plan(384, Free, 117488, -1, true, 1536ull << 20);
+    need(!smaller_limit.staged() && smaller_limit.residual.gpu_rows == 73728);
+    need(plan(384, Free, 117488, -1, true, 2406154240).staged());
+    need(!plan(384, Free, 117488, -1, true, 2406154239).staged());
     const auto full_context = plan(384, Free, 262144);
     need(!full_context.staged() && full_context.slots == 512);
     need(full_context.residual.rows == 262144 && full_context.residual.gpu_rows == 98304);
@@ -54,11 +62,14 @@ int main() try {
     rejects([] { (void)plan(513); });
     rejects([] { (void)plan(384, 0); });
     rejects([] { (void)plan(0, Free, 117488, 117489); });
+    rejects([] { (void)plan(384, Free, 117488, -1, true, 0); });
+    rejects([] { (void)plan(384, Free, 117488, -1, true, 1ull << 30); });
+    rejects([] { (void)plan(384, Free, 117488, 117488, true, 2ull << 30); });
     rejects([] { (void)ExpertBankPlan::make(117488,8192,10240,Stride-1,Free,Other,Headroom,
-        -1,LayerMajorResidualDtype::bf16,384,true); });
+        4ull<<30,-1,LayerMajorResidualDtype::bf16,384,true); });
     rejects<std::overflow_error>([] { (void)ExpertBankPlan::make(117488,8192,10240,
-        uint64_t(1)<<63,Free,Other,Headroom,-1,LayerMajorResidualDtype::bf16,384,true); });
-    std::puts("expert_bank_capacity full117488=GPU partial_request=preserved fallback262144=original exact_boundary=PASS short_tail_fallback_cases=3");
+        uint64_t(1)<<63,Free,Other,Headroom,4ull<<30,-1,LayerMajorResidualDtype::bf16,384,true); });
+    std::puts("expert_bank_capacity full117488=GPU partial_request=preserved fallback262144=original exact_boundary=PASS short_tail_fallback_cases=3 single_alloc_limit_cases=4");
 
     // A host oracle models complete slot contents; accepted enqueue updates it.
     // Two ascending scans must retain three permanent hits without scan eviction.
@@ -97,7 +108,7 @@ int main() try {
         one.queued(t);
     }
     need(one.permanent_used() == 0);
-    need(negative == 15);
+    need(negative == 18);
     std::printf("expert_bank_slots uploads=%d hits=%d negative_checks=%zu PASS\n",uploads,hits,negative);
     std::puts("expert_bank_plan PASS GPU=UNRUN model=UNRUN physical262144_RESTORE=UNQUALIFIED");
     return 0;

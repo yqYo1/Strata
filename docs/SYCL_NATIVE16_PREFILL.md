@@ -1375,8 +1375,11 @@ The committed CPU admission/ticket planner passes exact-budget, explicit-prefix,
 stale-ticket and three short-tail fallback cases. It selects the original512-slot
 path when full GPU residency is unavailable or a final1..8192-row window would
 take normal FFN. Its262144-row case is capacity arithmetic, not physical-context
-qualification. Single-allocation admission for the2406154240B full residual is
-not yet checked; query the actual SYCL device limit before connecting this plan.
+qualification. The query-only check reports10132807680B as the B570
+max_mem_alloc_size, above the2406154240B residual. It submits no allocations or
+kernels, so actual allocation success remains untested. The planner now accepts
+an explicit per-allocation cap and must preserve it independently of total budget;
+CPU cap-boundary/fallback checks are pending at this source revision.
 The planner is not yet connected to the engine; GPU staging and
 model performance are untested. Implement and qualify those before measuring
 this candidate or reporting a speedup.
