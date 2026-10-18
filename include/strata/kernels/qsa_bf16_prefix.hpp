@@ -50,7 +50,9 @@ bool qsa_bf16_prefix_ordered_exp_batch(const uint16_t *q, const QsaAttnPools &po
 // Diagnostic-only online state for one query, KV group and head row. Includes
 // padded head rows12..15; they follow the original state update too. Each
 // ceil(cap/32) row stores FP32 [maximum, alpha, normalizer, tile_sum]. Caller
-// owns the registered disjoint device span through checked completion.
+// owns and initializes the registered disjoint device span through checked
+// completion. Entries beyond the selected width stay unchanged. Zero queries
+// follow the normal no-op contract.
 struct QsaPrefixStateProbe {
   int64_t query = 0;
   int kv_head = 0, head = 0;

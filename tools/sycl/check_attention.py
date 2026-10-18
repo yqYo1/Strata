@@ -91,7 +91,7 @@ def main():
         boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
         journal = subprocess.check_output(['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True)
         cursor = next(x.split(': ', 1)[1] for x in journal.splitlines() if x.startswith('-- cursor: '))
-        record.update(passed=False, complete=False, mode=mode, environment=env)
+        record.update(passed=False, complete=False, ownership_closed=False, mode=mode, environment=env, GPU_executed=True)
         owner = None
 
         def persist():
