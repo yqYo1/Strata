@@ -147,7 +147,7 @@
       "candidate_path": "bench/results/2026-10-15-pr6-recovery-audit/own-qsa-kpitch-v1",
       "decision": "Reuse the existing source-audited pitch proposal after the current comparison; no new duplicate survey. Recheck immutable source/provenance and wire maintained API/tests before compiling.",
       "candidate": "Fixed score33,Cells32,WG128,SG16; K36/V260 shared tile needs9216 BF16 values,30272B requested local payload,34368B admission minimum. No hardware occupancy/bank map or performance result.",
-      "do_not_repeat": "Old global K span256 schedule regressed10.35\u201329.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
+      "do_not_repeat": "Old global K span256 schedule regressed10.35–29.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
     },
     "reviewed_base_source_sha256": "fa505d02e2b24f7cb6948033921fa697c8aeb58e6f4df6d873f13e5a7918e36b",
     "source_sha256": "c3ad8326f097050ff9ab1859e116f2cad3709a8464162143f752bc294cbe1e01",
@@ -208,7 +208,7 @@
         "bytes": 19144,
         "source_commit": "fbc7f56d7b0ddb5db5f3722ef33ca044c3f8a5c8",
         "reason": "Its conditional consumer is a selected-cell stable-reduction split. The closed QSA screen and pending pitch candidate select no split or reduction bottleneck.",
-        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report\u2019s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
+        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report’s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
       },
       {
         "path": "bench/results/2026-10-15-pr6-recovery-audit/research-matrix-register-reuse-20261018.md",
@@ -1379,8 +1379,8 @@
         "Retrieval map for a later concrete question"
       ],
       "paper_sections": [
-        "SyclKittens \u00a7\u00a73.2\u20133.3 and Appendix D for operand layouts, subgroup prefetch and the measured ablation.",
-        "Xe-Forge \u00a7\u00a7IV\u2013V, VI-A, VI-D\u2013VI-E for search/validation workflow, hardware, baseline and kernel results."
+        "SyclKittens §§3.2–3.3 and Appendix D for operand layouts, subgroup prefetch and the measured ablation.",
+        "Xe-Forge §§IV–V, VI-A, VI-D–VI-E for search/validation workflow, hardware, baseline and kernel results."
       ]
     }
   },
@@ -2100,5 +2100,63 @@
         "Current verifier weight reads and acceptance behavior are measured, establishing a nonduplicated question."
       ]
     }
+  },
+  "sycl_command_submission_amortization_collection_scope": {
+    "classification": "knowledge collection",
+    "question": "For repeated same-queue SYCL/oneAPI kernel and copy command streams, compare mechanisms that amortize host submission work: per-command submission, supported command batching/list execution, and replayable command graphs with parameter updates. Using official Khronos/Intel/Unified Runtime sources and transferable non-LLM SYCL/HPC examples, determine what each mechanism actually amortizes, how it handles dynamic pointers/maps/shapes, dependencies, asynchronous errors, capture restrictions and replay/update costs, and where measured benefits fail to transfer. Map applicability to Strata’s repeated GEMM/upload submit pattern without proposing code or claiming local performance.",
+    "schedulable_now": true,
+    "status": "eligible_not_dispatched",
+    "eligibility_review": {
+      "path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/next-research-scopes-review-20261019.json",
+      "sha256": "64209345f03af9b142ff16dcdb25adf560a604feed5ef546638b40021dba1d68"
+    },
+    "prerequisite_evidence": {
+      "main_profile_source_commit": "a57611b9c52f5d1cf2f5281b3cc7eb4087b5cd12",
+      "main_assignment_profile": "Source-view-on profile reported upload submission CPU about 4.88s and GEMM submission CPU about 5.11s; clean view-on speed sample remains pending.",
+      "completed_attribution_path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-host-attribution-current.json#corrected_resource_analysis",
+      "analysis_record_source_commit": "66602bee1e3cf607eeeb779e977c9fc79cfba8c3",
+      "subsequent_profile_counts_cpu_s": {
+        "upload_submit": [
+          33244,
+          4.819954359
+        ],
+        "gemm_submit": [
+          99252,
+          5.070871445
+        ]
+      },
+      "eligibility_basis": "The host attribution and negative parser checks passed; repeated per-call host submission work is a concrete future retrieval use. This research collects alternatives and counters rather than establishing the cost mechanism."
+    },
+    "prior_reports": [
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/moe-status-host-readback.md",
+        "sha256": "be2ab806210ce8173d52266caf3a0f706e5f253cc45f85764cd200dd7c99f82d",
+        "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/moe-status-host-readback-native-review.json",
+        "review_sha256": "dd3c7a68f9e9c290107cb3074e3a05cb98b9b2f964b6f69e7e94924060f8c6ff",
+        "relationship": "Covers four-byte status D2H, ordinary host versus same-context host USM, runtime-internal blocking hypotheses, exact adapter source tracing, and status lifetime/error constraints. Do not repeat its pageable-host staging or status-drain investigation."
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/validated-launch-ownership-methods.md",
+        "sha256": "42e19c1b77e4eb959eed7c177b1068aa9a866b47c0635554fa52da9dff8d5ead",
+        "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/validated-launch-ownership-review.json",
+        "review_sha256": "14fd01e91c493c6510b62133a4bd908aaa205c1ed5646588f2b53e3448dfbfcb",
+        "relationship": "Covers registry/span validation batching, allocation leases, and graph pointer lifetime/capture constraints. The proposed question is specifically command-stream submission amortization and external HPC performance evidence; do not repeat pointer-validation or ownership analysis."
+      },
+      {
+        "index_scope": "closed_host_submission_scope_audit",
+        "index_path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+        "relationship": "Historical host accounting audit is marked consumed/retired after CPU off/on and warm gates; retain its compact accounting decisions but do not treat it as a command-batching survey."
+      }
+    ],
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/sycl-command-submission-amortization.md",
+    "report_budget": {
+      "target_words": [
+        1600,
+        2200
+      ],
+      "maximum_bytes": 24576
+    },
+    "consumer": "Future Main-owned decision about whether to reduce repeated host submission through batching or replay after wrapper attribution; Main retrieves only the relevant alternatives and limitations.",
+    "next_review": "At closure of the next host-submission mechanism decision. Retire the report if no batching/capture candidate is selected or it adds no reusable evidence beyond the compact review."
   }
 }
