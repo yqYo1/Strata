@@ -173,12 +173,67 @@
   },
   "config_sha256": "0d896b0feb1da7a644fad573604567630553a7295e57349030edacf9680f28dd",
   "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
-  "complete": false,
-  "passed": false,
+  "complete": true,
+  "passed": true,
   "active": false,
   "model_quality_qualified": false,
   "physical262144_RESTORE_qualified": false,
   "performance_adopted": false,
   "source_count": 101,
-  "source_aggregate_sha256": "ca4e3e0f87ab054a61451e6e029a77aecca01e18ce87bc19209218afff4cec4e"
+  "source_aggregate_sha256": "ca4e3e0f87ab054a61451e6e029a77aecca01e18ce87bc19209218afff4cec4e",
+  "exit_code": 0,
+  "requests": [
+    {
+      "run": 0,
+      "ok": true,
+      "eligible": true,
+      "actual_prompt_tokens": 39260,
+      "actual_read_tokens": 39260,
+      "actual_reused_tokens": 0,
+      "generated_tokens": 24,
+      "thinking_requested": true,
+      "reasoning_observed": true,
+      "stream_complete": true,
+      "request_sha256": "1fd63b8c67a1888e443800b5c6d339ca116df2cb91941e6f332b6adf74275b3a",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
+      "ttft_s": 69.402,
+      "total_s": 70.988,
+      "prompt_tps": 568.1,
+      "prompt_ms": 69101.7,
+      "decode_tps": 14.3,
+      "decode_ms": 1678.9,
+      "prompt_tps_source": "engine",
+      "decode_tps_source": "engine",
+      "drafts_offered": 21,
+      "drafts_accepted": 16,
+      "finish_reason": "length",
+      "err": null,
+      "eligibility_errors": []
+    }
+  ],
+  "engine_exit_code": 0,
+  "native_identity": {
+    "pid": 3422225,
+    "start_ticks": 63246072,
+    "sid": 3422186
+  },
+  "route_selection": [],
+  "qsa_route": [
+    "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=80718560; source=resident-Mode0 score_pitch=33 operand_layout=row-major softmax=serial"
+  ],
+  "cached_query_route": [
+    "strata prefill: QSA cached_query=1 grf_policy=default source=qualified-component"
+  ],
+  "ownership_closed": true,
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  }
 }
