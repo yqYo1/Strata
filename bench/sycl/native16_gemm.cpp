@@ -335,9 +335,10 @@ void run(std::shared_ptr<Runtime> rt, Shape s, int shape_id, bool bf, bool smoke
       << ",\"thread_cpu_wait_check_seconds\":" << cpu_completed-cpu_submitted
       << ",\"logical_flop_per_submit\":" << uint64_t(2)*s.t*s.n*s.k
       << ",\"kernel_total_seconds\":";
-    if (events[0] && contract_valid && duration_positive) std::cout << double(kernel_ns)*1e-9;
+    if (events[0] && duration_positive && cross_event_ordered) std::cout << double(kernel_ns)*1e-9;
     else std::cout << "null";
     std::cout << ",\"profiling_contract_valid\":" << (contract_valid?"true":"false")
+      << ",\"profiling_service_valid\":" << (duration_positive && cross_event_ordered?"true":"false")
       << ",\"profiling_duration_positive\":" << (duration_positive?"true":"false")
       << ",\"profiling_cross_event_ordered\":" << (cross_event_ordered?"true":"false");
     std::cout << ",\"device_timestamps_ns\":[";
@@ -347,11 +348,12 @@ void run(std::shared_ptr<Runtime> rt, Shape s, int shape_id, bool bf, bool smoke
       std::cout << '[' << v[0] << ',' << v[1] << ',' << v[2] << ']';
     }
     std::cout << "]}" << std::endl;
-    // Emit every tuple before rejecting a profiling assertion. A logging
-    // failure must not be mistaken for a numerical failure or hidden by the
-    // normal backend-selection notice on stderr. Preserve the original gate.
-    require(contract_valid && duration_positive && cross_event_ordered,
-            "invalid or unordered device timestamps (see emitted tuples)");
+    // Prospectively revised service metric after 0f6356d12: submit can use an
+    // estimated clock and invert against GPU start. Preserve that diagnostic,
+    // but derive service only from positive ordered GPU start/end pairs.
+    // No clamping, removal of samples, or relaxed numerical/guard criteria.
+    require(duration_positive && cross_event_ordered,
+            "invalid or unordered GPU service timestamps (see emitted tuples)");
     uint64_t hash = 0;
     if (use32) {
       const auto got = download(q,y32); guards(got,y32,Mark32);

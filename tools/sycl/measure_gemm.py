@@ -16,7 +16,7 @@ import measurement_owner as supervision
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
 A = P / 'bench/results/2026-10-15-pr6-recovery-audit'
-ROOT = B / 'resident-gemm-v2'
+ROOT = B / 'resident-gemm-v3'
 ENGINE = B / 'main-native-gdn-engine'
 RESULT = A / 'resident-gemm-current.json'
 SETTINGS = P / 'tools/sycl/measurement_environment.json'
@@ -65,6 +65,10 @@ def main():
                                   'Service reference for this implementation and shapes, not a hardware peak or a prediction of whole-model speed.',
                                   'Initial uploads use pageable fixture memory, not the production pinned-weight pipeline or a PCIe ceiling.',
                                   'Event timestamps share a device timebase; never subtract them from host clocks. Profiling does not guarantee exact timing accuracy.'])
+            record['profiling_policy'] = dict(evidence_commit='0f6356d12',
+                service='Positive ordered GPU start/end pairs only; no mixed submit/start latency claim.',
+                submission_clock='Preserve every inversion and report full-clock qualification separately; no clamping or deleting samples.',
+                numerics='Unchanged full-output closed-form oracle, guards and input immutability after each burst.')
         else:
             record = json.loads(RESULT.read_text())
             guards.require(record['mode'] in ('smoke', 'diagnostic') and record['passed'] and record['ownership_closed'] and
@@ -114,7 +118,7 @@ def main():
                 checked = dict(phase=mode, command=command, plan=plans[0] if plans else None, process=process,
                     exit_code=entry.get('exit_code'), ownership_closed=supervision.closed(entry), passed=False,
                     validation_count=len(validations), native_result=result[-1] if result else None,
-                    samples=[s for s in samples if not s['warmup']])
+                    samples=[s for s in samples if not s['warmup'] or entry.get('exit_code') != 0])
                 record['checks'].append(checked)
                 persist()
                 guards.require(supervision.closed(entry) and entry.get('exit_code') == 0 and len(result) == len(plans) == 1
@@ -128,7 +132,7 @@ def main():
                         and validation['guards'] and validation['inputs_immutable'], 'unvalidated sample')
                     if plans[0]['resident_only']:
                         guards.require(sample['submits'] == 8 and len(sample['device_timestamps_ns']) == 8 and
-                            sample['kernel_total_seconds'] > 0, 'missing burst events')
+                            sample['profiling_service_valid'] and sample['kernel_total_seconds'] > 0, 'missing valid GPU service events')
                         sample['logical_kernel_TFLOPs'] = sample['logical_flop_per_submit'] * 8 / sample['kernel_total_seconds'] / 1e12
                         sample['logical_wall_TFLOPs'] = sample['logical_flop_per_submit'] * 8 / sample['submit_to_completion_wall_seconds'] / 1e12
                     sample['status'] = 'PASS'
@@ -147,6 +151,8 @@ def main():
                             production_selected=(('compact' in route) == (plan['T'] < 128)),
                             per_process_median_kernel_TFLOPs=medians, median_kernel_TFLOPs=statistics.median(medians),
                             sample_stdev_process_medians=statistics.stdev(medians)))
+            record['full_submit_clock_order_qualified'] = all(s['profiling_contract_valid']
+                for c in record['checks'] for s in c['samples'])
             record.update(complete=True, passed=True)
         except BaseException as error:
             record['error'] = str(error)

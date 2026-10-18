@@ -280,6 +280,18 @@ the build receipt, then use Main-owned `tools/sycl/measure_gemm.py smoke` and
 trace/parameter validation, and the clean sweep uses separate untraced children.
 The source and all planned inputs stay frozen through the sweep.
 
+The original sweep stopped at a profiling assertion, not a GPU fault
+(`543ab5e28`). A bounded logged repeat (`0f6356d12`) found submit331ns after
+the first GPU start while all GPU start/end intervals were positive and ordered.
+The compiler's reported source revision, Intel LLVM`504366f4`, documents an
+estimated submit clock in `sycl/source/detail/event_impl.cpp`; device start/end
+are separate queries. This source corroborates a clock-domain explanation, but
+does not prove every installed runtime byte came from that revision. The new
+prospective service metric uses only positive ordered GPU start/end pairs;
+submit-clock inversions remain recorded and disqualify submit-to-start latency
+claims. No timestamp is clamped or sample silently excluded. Original failed
+receipts stay failed in Git; all numerical, guard and lifetime checks remain.
+
 This is a resident, reused-operand implementation reference. It excludes IQ3
 weight dequantization, routing, SwiGLU, scatter and model transfers. Cold/warm
 GPU clocks and cache reuse can differ from model execution. It is neither a
