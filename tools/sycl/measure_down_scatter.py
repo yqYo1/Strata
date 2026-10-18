@@ -50,7 +50,7 @@ def compact_result(record):
     """Keep checked totals and all used timings; raw events stay in owned output."""
     result = dict(record)
     checks, samples = [], []
-    columns = ('process', 'rows', 'irregular', 'round', 'arm', 'wall_ms', 'queue_interval_ms')
+    columns = ('process', 'rows', 'irregular', 'round', 'order', 'arm', 'wall_ms', 'queue_interval_ms')
     for check in record['checks']:
         row = {k: v for k, v in check.items() if k != 'events'}
         events = check.get('events', [])
@@ -177,11 +177,17 @@ def main():
                     child_env['STRATA_SYCL_PREFILL_DOWN_SCATTER'] = 'large' if args[1] == '1' else '0'
                 entry, out, err = owner.run(str(ordinal), command, child_env, P, wall=1200 if mode == 'perf' else 600, cpu=2400 if mode == 'perf' else 1800,
                     rss_cap=6 << 30, file_cap=64 << 20, text_cap=64 << 20, total_cap=128 << 20)
+                result = dict(mode=mode, command=command, exit_code=entry.get('exit_code'),
+                    ownership_closed=supervision.closed(entry), events=[], passed=False,
+                    closure=dict(observation_complete=entry.get('observation_complete'),
+                        direct_child_reaped=entry.get('direct_child_reaped'), session_empty=entry.get('session_empty'),
+                        owner_error=bool(entry.get('error') or entry.get('errors')),
+                        cleanup_attempted=bool(entry.get('cleanup'))))
+                record['checks'].append(result)
+                persist()  # Retain closure even when stdout is truncated or parsing fails.
                 stdout, stderr = out.read_text(errors='replace'), err.read_text(errors='replace')
                 events = [json.loads(line) for line in stdout.splitlines() if line.startswith('{')]
-                result = dict(mode=mode, command=command, exit_code=entry.get('exit_code'),
-                    ownership_closed=supervision.closed(entry), events=events, passed=False)
-                record['checks'].append(result)
+                result['events'] = events
                 guards.require(result['ownership_closed'] and result['exit_code'] == 0 and
                     'fixture_status=PASS' in stdout and not re.search(
                         r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed|CHECKED_DRAIN_FAILED', stderr),
@@ -225,6 +231,7 @@ def main():
                     {(r, i, p, n, a) for r in (64, 160, 2333, 2334, 2335, 5963, 8192)
                      for i in (0, 1) for p in range(3) for n in range(6) for a in (0, 1)} and
                     all(e['fused_route'] == bool(e['arm'] and e['rows'] >= 2334) and
+                        e['order'] in (0, 1) and e['arm'] == (e['process'] + e['round'] + 2 + e['order']) % 2 and
                         e['repeat'] == 16 and all(math.isfinite(e[k]) and e[k] > 0
                             for k in ('wall_ms', 'queue_interval_ms')) for e in samples),
                     'selected timing/process/route coverage incomplete')
@@ -252,14 +259,25 @@ def main():
             record['error'] = str(error)
         finally:
             record['ownership_closed'] = owner.active is None and all(supervision.closed(c) for c in owner.commands)
-            after = subprocess.check_output(['journalctl', '-k', '-b', '--after-cursor', cursor, '--no-pager'], text=True)
-            record['fresh_faults'] = [line for line in after.splitlines() if re.search(
-                r'(?i)(gpu.*(?:hang|fault|reset|wedg)|xe.*(?:error|fault|reset|timeout))', line)]
-            record['boot_unchanged'] = boot == Path('/proc/sys/kernel/random/boot_id').read_text().strip()
-            try: record['driver_after'] = guards.driver_guard()
+            record.update(postchecks_complete=False, postcheck_errors=[], fresh_faults=None,
+                          boot_unchanged=False, driver_after=None)
+            try:
+                after = subprocess.check_output(['journalctl', '-k', '-b', '--after-cursor', cursor, '--no-pager'], text=True)
+                record['fresh_faults'] = [line for line in after.splitlines() if re.search(
+                    r'(?i)(gpu.*(?:hang|fault|reset|wedg)|xe.*(?:error|fault|reset|timeout))', line)]
             except Exception as error:
-                record['driver_error'] = str(error); record['passed'] = False
-            record['passed'] = bool(record['passed'] and record['ownership_closed'] and record['boot_unchanged'] and not record['fresh_faults'])
+                record['postcheck_errors'].append(dict(check='kernel_journal', error=str(error)))
+            try:
+                record['boot_unchanged'] = boot == Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+            except Exception as error:
+                record['postcheck_errors'].append(dict(check='boot_identity', error=str(error)))
+            try:
+                record['driver_after'] = guards.driver_guard()
+            except Exception as error:
+                record['postcheck_errors'].append(dict(check='driver_guard', error=str(error)))
+            record['postchecks_complete'] = not record['postcheck_errors']
+            record['passed'] = bool(record['passed'] and record['postchecks_complete'] and
+                record['ownership_closed'] and record['boot_unchanged'] and not record['fresh_faults'])
             persist(); RESULT.write_text(json.dumps(compact_result(record), indent=2) + '\n')
         print(json.dumps({k: record.get(k) for k in ('mode', 'complete', 'passed', 'ownership_closed', 'error', 'resident_summary')}))
         return 0 if record['passed'] else 1
