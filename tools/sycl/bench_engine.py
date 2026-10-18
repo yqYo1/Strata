@@ -366,6 +366,7 @@ def main():
              'qsa-ordered-exp-check', 'qsa-ordered-exp-base', 'qsa-ordered-exp-candidate',
              'qsa-gu-fusion-check', 'qsa-gu-fusion-base', 'qsa-gu-fusion-candidate',
              'qsa-long-input-check', 'qsa-long-input',
+             'qsa-long-input-balanced-check', 'qsa-long-input-balanced',
              'qsa-kvvec4-timing-check', 'qsa-kvvec4-census') + tuple(
                  f'qsa-gdncols{n}-{phase}' for n in (2, 4, 8) for phase in ('check', 'base', 'candidate'))
     guards.require(len(sys.argv) in (3, 4) and sys.argv[1] in ('prepare', 'run') and
@@ -373,18 +374,20 @@ def main():
     action, mode = sys.argv[1:3]
     cohort = int(sys.argv[3]) if len(sys.argv) == 4 else 0
     guards.require(cohort in (0, 1, 2) and (len(sys.argv) == 3 or
-        mode in ('qsa-gu-fusion-base', 'qsa-gu-fusion-candidate', 'qsa-long-input')),
+        mode in ('qsa-gu-fusion-base', 'qsa-gu-fusion-candidate', 'qsa-long-input', 'qsa-long-input-balanced')),
         'optional cohort0|1|2 is for GU paired arms or independent long-input processes')
     column_mode = re.fullmatch(r'qsa-gdncols(2|4|8)-(check|base|candidate|warm-census|host-check|host-traced-check|host-census)', mode)
     ordered_trial = mode.startswith('qsa-ordered-exp-')
-    long_trial = mode in ('qsa-long-input-check', 'qsa-long-input')
+    long_trial = mode.startswith('qsa-long-input')
+    balanced_placement = mode in ('qsa-long-input-balanced-check', 'qsa-long-input-balanced')
+    long_clean_mode = 'qsa-long-input-balanced' if balanced_placement else 'qsa-long-input'
     gu_trial = mode.startswith('qsa-gu-fusion-')
     gu_candidate = long_trial or (gu_trial and mode != 'qsa-gu-fusion-base')
     ordered_candidate = long_trial or gu_trial or (ordered_trial and mode != 'qsa-ordered-exp-base')
     host_profile = mode.startswith('qsa-gdncols4-host-')
     warm_profile = mode in ('qsa-gdncols4-warm-census', 'qsa-gdncols4-host-census')
     column_trial = column_mode is not None or ordered_trial or gu_trial or long_trial
-    column_check = mode in ('qsa-long-input-check', 'qsa-ordered-exp-check', 'qsa-gu-fusion-check') or (column_mode is not None and column_mode[2] == 'check')
+    column_check = mode in ('qsa-long-input-balanced-check', 'qsa-long-input-check', 'qsa-ordered-exp-check', 'qsa-gu-fusion-check') or (column_mode is not None and column_mode[2] == 'check')
     column_partitions = 4 if ordered_trial or gu_trial or long_trial else int(column_mode[1]) if column_mode is not None and column_mode[2] != 'base' else 0
     qsa = mode.startswith('qsa-')
     short_profile = mode == 'qsa-kvvec4-timing-check' or (host_profile and not warm_profile)
@@ -455,9 +458,18 @@ def main():
                         'commit matching preceding GU model phase')
                     gu_qualification['preceding_result'] = dict(commit=subprocess.check_output(
                         ['git','rev-parse','HEAD'],cwd=P,text=True).strip(),path=str(result_path.relative_to(P)),mode=prior['mode'])
+            previous_screen = None
+            if long_trial and check and result_path.exists():
+                prior = json.loads(result_path.read_text())
+                guards.require(result_path.read_bytes() == subprocess.check_output(
+                    ['git', 'show', 'HEAD:' + str(result_path.relative_to(P))], cwd=P) and
+                    prior['complete'] and prior['ownership_closed'] and not prior['active'],
+                    'preserve the closed preceding screen before a new configuration')
+                previous_screen = dict(commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=P, text=True).strip(),
+                    path=str(result_path.relative_to(P)), mode=prior['mode'], passed=prior['passed'], error=prior.get('error'))
             if long_trial and not check:
                 prior = json.loads(result_path.read_text())
-                required = 'qsa-long-input-check' if cohort == 0 else 'qsa-long-input'
+                required = long_clean_mode + '-check' if cohort == 0 else long_clean_mode
                 guards.require(result_path.read_bytes() == subprocess.check_output(
                     ['git', 'show', 'HEAD:' + str(result_path.relative_to(P))], cwd=P) and
                     prior['mode'] == required and prior.get('cohort_index', 0) == max(0, cohort - 1) and
@@ -533,6 +545,8 @@ def main():
             env['STRATA_SYCL_PREFILL_GU_SWIGLU'] = 'large' if gu_candidate else '0'
             if long_trial:
                 env['STRATA_SYCL_PREFILL_DOWN_SCATTER'] = '0'
+                if balanced_placement:
+                    env['STRATA_PREFILL_LAYER_MAJOR_R_GPU'] = '81920'
             if qsa:
                 env['STRATA_SYCL_PREFILL_QSA_MATH'] = (
                     'bf16-prefix-ordered-exp' if ordered_candidate else
@@ -594,6 +608,11 @@ def main():
                     context_capacity=131072, required_client_context=123160,
                     question='Amortization at longer input on fixed placement/chunk/GU/QSA routes; not a same-workload kernel gain.',
                     qualification='One validated long request, then3 independent clean processes with4 fresh requests each. Separate first use and3 subsequent requests; target each independent subsequent median>=1000tok/s. Not sustained decode, model-quality or physical262144 qualification.')
+                if balanced_placement:
+                    plan['long_input_screen'].update(residual_GPU_rows=81920,
+                        question='Test the explicit81920-row residual prefix against the diagnosed automatic-placement cliff; preserve512MiB headroom and head retention. Additional RAM transfers are part of total cost; no same-placement kernel claim.')
+                if previous_screen:
+                    plan['previous_screen'] = previous_screen
                 if not check:
                     plan['preceding_long_input_result'] = preceding_long
             if gu_trial:
@@ -709,6 +728,15 @@ def main():
                     len(counts) == request_count and all(int(c['fused_jobs']) == int(c['fused_rows']) == 0 and
                         int(c['separate_jobs']) > 0 for c in counts), 'long screen changed Down route')
                 record['down_route'] = dict(selection=selected, per_request_counts=counts)
+                admission = [x for x in log.splitlines() if x.startswith('strata MoE window configuration:')]
+                record['moe_window_admission'] = admission
+                guards.require(len(admission) == request_count and all('requested_mode=10 effective_mode=10 ' in x for x in admission),
+                    'long screen requires actual accumulator mode10')
+                if balanced_placement:
+                    placement = [x for x in log.splitlines() if x.startswith('strata prefill: layer-major candidate,')]
+                    guards.require(len(placement) == request_count and all('residual_gpu_rows=81920 ' in x for x in placement),
+                        'wrong balanced residual placement')
+                    record['residual_placement'] = placement
             if column_trial:
                 selected = [x for x in log.splitlines() if x.startswith('strata prefill: GDN columns=')]
                 expected_column_route = (f'strata prefill: GDN columns={column_partitions} '

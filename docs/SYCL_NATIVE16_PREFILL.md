@@ -1274,3 +1274,15 @@ route comparison or a clean speed regression. Before a new configuration
 probe, audit/test existing output-head release and restore, or explicitly
 compare residual-prefix/window placement; preserve safety headroom and guards.
 Selective Down timing remains the next pending component comparison.
+
+The next capacity discriminator uses `qsa-long-input-balanced-check`, followed
+by `qsa-long-input-balanced [0|1|2]` only after it passes. Its only placement
+change is the existing `STRATA_PREFILL_LAYER_MAJOR_R_GPU=81920`; output heads
+remain resident and the512MiB safety allowance stays fixed. Relative to the
+failed automatic98304-row prefix, this releases335544320B for the mixed bank,
+18577280B more than the observed admission shortfall. That is an admission
+calculation, not measured free memory or speed. More residual rows move through
+RAM, so their extra transfer cost must be included. The new check must prove
+actual mode10,81920 GPU rows,GU-large and Down0; it links the original failed
+screen in Git. Prioritize this measured VRAM cliff before spending another
+clean timing cohort on the still-unqualified selective Down candidate.
