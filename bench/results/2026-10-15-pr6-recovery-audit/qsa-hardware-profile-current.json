@@ -1,17 +1,17 @@
 {
-  "source_commit": "e4c2c4db3f7147f909fd3a9cb9230a29529abd90",
+  "source_commit": "078ba8495bd830d608ce69a3be562a4949402c00",
   "input_sha256": {
     "tools/sycl/profile_attention.py": "9e6ba34f84b2438021d3ec577f427c7253dd00f72de66f56054f3b4574c91b41",
     "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
     "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
     "tools/sycl/measurement_environment.json": "637cc6f8f410cf8400fd7b4598182e2e91d1c5cf907ef428e73321faf0aa47fa",
-    "bench/results/2026-10-15-pr6-recovery-audit/qsa-attention-current.json": "184c0c104196a7e98a2b48bb9bbdcc9ad657d20ef469aa3e97f485c59124fb91"
+    "bench/results/2026-10-15-pr6-recovery-audit/qsa-attention-current.json": "bfbbae4bd993091f2dfa53e72a06ac252569f59bdb394297ef0fa1342ba0dde0"
   },
   "fixture": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_qcache_bench",
-    "sha256": "d7d32e4b20e3824bd28c05469b47231d00f3e6c2e7899eb3baf264021930885e"
+    "sha256": "72f6fb6051a8629c3cd6c90f615268b58b90bfbb73825261fe6d50506de2cb3f"
   },
-  "build_source_commit": "feb927fa36b3432a64730a8fb12e8abed09ce310",
+  "build_source_commit": "2d4f2448404cd500dbb5e5137dda171d27bda1b6",
   "driver": {
     "pci": "/sys/bus/pci/devices/0000:05:00.0",
     "driver": "xe",
@@ -27,13 +27,13 @@
         "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_qcache_bench",
         "--smoke"
       ],
-      "recipe_commit": "e4c2c4db3f7147f909fd3a9cb9230a29529abd90",
+      "recipe_commit": "078ba8495bd830d608ce69a3be562a4949402c00",
       "input_sha256": {
         "tools/sycl/profile_attention.py": "9e6ba34f84b2438021d3ec577f427c7253dd00f72de66f56054f3b4574c91b41",
         "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
         "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
         "tools/sycl/measurement_environment.json": "637cc6f8f410cf8400fd7b4598182e2e91d1c5cf907ef428e73321faf0aa47fa",
-        "bench/results/2026-10-15-pr6-recovery-audit/qsa-attention-current.json": "184c0c104196a7e98a2b48bb9bbdcc9ad657d20ef469aa3e97f485c59124fb91"
+        "bench/results/2026-10-15-pr6-recovery-audit/qsa-attention-current.json": "bfbbae4bd993091f2dfa53e72a06ac252569f59bdb394297ef0fa1342ba0dde0"
       },
       "environment": {
         "PATH": "/usr/bin:/bin",
@@ -104,7 +104,7 @@
     "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-hardware-profile-current/resources/cache",
     "IGC_DumpZEInfoToConsole": "1"
   },
-  "current_recipe_commit": "e4c2c4db3f7147f909fd3a9cb9230a29529abd90",
+  "current_recipe_commit": "078ba8495bd830d608ce69a3be562a4949402c00",
   "permissions": {
     "dev/xe/observation_paranoid": "1",
     "kernel/perf_event_paranoid": "4",
@@ -119,27 +119,7 @@
   "emitted_resource_summary": {
     "kernels": [
       {
-        "kernel": "_ZTSZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvEUlN4sycl3_V17nd_itemILi1EEEE_",
-        "execution_env": {
-          "grf_count": "128",
-          "has_4gb_buffers": "true",
-          "has_no_stateless_write": "true",
-          "indirect_stateless_count": "25",
-          "inline_data_payload_size": "32",
-          "offset_to_skip_per_thread_data_load": "128",
-          "simd_size": "32",
-          "subgroup_independent_forward_progress": "true",
-          "eu_thread_count": "8"
-        },
-        "per_thread_memory_buffers": null,
-        "observed_launches": {
-          "launches": 8,
-          "local_arguments": [],
-          "dynamic_local_bytes": 0
-        }
-      },
-      {
-        "kernel": "_ZTSZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0ELb1EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvEUlN4sycl3_V17nd_itemILi1EEEE_",
+        "kernel": "_ZTSZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0ELb1ELb1EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvEUlN4sycl3_V17nd_itemILi1EEEE_",
         "execution_env": {
           "grf_count": "128",
           "has_4gb_buffers": "true",
@@ -159,68 +139,27 @@
         }
       },
       {
-        "kernel": "_ZTSN6strata7kernels12_GLOBAL__N_112PrefixKernelIZZNS0_L17prefix_batch_implILi33ELb0ELb0ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiSA_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESP_EUlNSN_7nd_itemILi1EEEE_Lb0EEE",
+        "kernel": "_ZTSZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvEUlN4sycl3_V17nd_itemILi1EEEE_",
         "execution_env": {
-          "barrier_count": "1",
           "grf_count": "128",
           "has_4gb_buffers": "true",
-          "has_dpas": "true",
           "has_no_stateless_write": "true",
-          "require_disable_eufusion": "true",
-          "indirect_stateless_count": "4",
+          "indirect_stateless_count": "25",
           "inline_data_payload_size": "32",
-          "offset_to_skip_per_thread_data_load": "192",
-          "simd_size": "16",
-          "slm_size": "32",
+          "offset_to_skip_per_thread_data_load": "128",
+          "simd_size": "32",
           "subgroup_independent_forward_progress": "true",
           "eu_thread_count": "8"
         },
         "per_thread_memory_buffers": null,
         "observed_launches": {
           "launches": 8,
-          "local_arguments": [
-            {
-              "index": 0,
-              "bytes": 8192
-            },
-            {
-              "index": 1,
-              "bytes": 16384
-            },
-            {
-              "index": 2,
-              "bytes": 1024
-            },
-            {
-              "index": 4,
-              "bytes": 64
-            },
-            {
-              "index": 5,
-              "bytes": 64
-            },
-            {
-              "index": 6,
-              "bytes": 64
-            },
-            {
-              "index": 14,
-              "bytes": 256
-            },
-            {
-              "index": 16,
-              "bytes": 2112
-            },
-            {
-              "index": 17,
-              "bytes": 64
-            }
-          ],
-          "dynamic_local_bytes": 28224
+          "local_arguments": [],
+          "dynamic_local_bytes": 0
         }
       },
       {
-        "kernel": "_ZTSN6strata7kernels12_GLOBAL__N_112PrefixKernelIZZNS0_L17prefix_batch_implILi32ELb0ELb0ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiSA_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESP_EUlNSN_7nd_itemILi1EEEE_Lb0EEE",
+        "kernel": "_ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0ELb1ELb1EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_",
         "execution_env": {
           "barrier_count": "1",
           "grf_count": "128",
@@ -233,31 +172,11 @@
           "offset_to_skip_per_thread_data_load": "192",
           "simd_size": "16",
           "slm_size": "32",
-          "spill_size": "1856",
+          "spill_size": "2112",
           "subgroup_independent_forward_progress": "true",
           "eu_thread_count": "8"
         },
-        "per_thread_memory_buffers": "- type:            scratch\n        usage:           single_space\n        size:            2048",
-        "observed_launches": null
-      },
-      {
-        "kernel": "_ZTSN6strata7kernels12_GLOBAL__N_112PrefixKernelIZZNS0_L17prefix_batch_implILi33ELb0ELb0ELb1EEEbPKtRKNS0_12QsaAttnPoolsEPKiSA_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESP_EUlNSN_7nd_itemILi1EEEE_Lb1EEE",
-        "execution_env": {
-          "barrier_count": "1",
-          "grf_count": "256",
-          "has_4gb_buffers": "true",
-          "has_dpas": "true",
-          "has_no_stateless_write": "true",
-          "require_disable_eufusion": "true",
-          "indirect_stateless_count": "4",
-          "inline_data_payload_size": "32",
-          "offset_to_skip_per_thread_data_load": "192",
-          "simd_size": "16",
-          "slm_size": "32",
-          "subgroup_independent_forward_progress": "true",
-          "eu_thread_count": "4"
-        },
-        "per_thread_memory_buffers": null,
+        "per_thread_memory_buffers": "- type:            scratch\n        usage:           single_space\n        size:            4096",
         "observed_launches": {
           "launches": 7,
           "local_arguments": [
@@ -296,11 +215,90 @@
           ],
           "dynamic_local_bytes": 20032
         }
+      },
+      {
+        "kernel": "_ZTSZZN6strata7kernelsL17prefix_batch_implILi33ELb0ELb0ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_",
+        "execution_env": {
+          "barrier_count": "1",
+          "grf_count": "128",
+          "has_4gb_buffers": "true",
+          "has_dpas": "true",
+          "has_no_stateless_write": "true",
+          "require_disable_eufusion": "true",
+          "indirect_stateless_count": "4",
+          "inline_data_payload_size": "32",
+          "offset_to_skip_per_thread_data_load": "192",
+          "simd_size": "16",
+          "slm_size": "32",
+          "spill_size": "2112",
+          "subgroup_independent_forward_progress": "true",
+          "eu_thread_count": "8"
+        },
+        "per_thread_memory_buffers": "- type:            scratch\n        usage:           single_space\n        size:            4096",
+        "observed_launches": {
+          "launches": 8,
+          "local_arguments": [
+            {
+              "index": 0,
+              "bytes": 16384
+            },
+            {
+              "index": 1,
+              "bytes": 1024
+            },
+            {
+              "index": 3,
+              "bytes": 64
+            },
+            {
+              "index": 4,
+              "bytes": 64
+            },
+            {
+              "index": 5,
+              "bytes": 64
+            },
+            {
+              "index": 13,
+              "bytes": 256
+            },
+            {
+              "index": 15,
+              "bytes": 2112
+            },
+            {
+              "index": 16,
+              "bytes": 64
+            }
+          ],
+          "dynamic_local_bytes": 20032
+        }
+      },
+      {
+        "kernel": "_ZTSZZN6strata7kernelsL17prefix_batch_implILi32ELb0ELb0ELb0ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS8_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvENKUlRN4sycl3_V17handlerEE_clESN_EUlNSL_7nd_itemILi1EEEE_",
+        "execution_env": {
+          "barrier_count": "1",
+          "grf_count": "128",
+          "has_4gb_buffers": "true",
+          "has_dpas": "true",
+          "has_no_stateless_write": "true",
+          "require_disable_eufusion": "true",
+          "indirect_stateless_count": "4",
+          "inline_data_payload_size": "32",
+          "offset_to_skip_per_thread_data_load": "192",
+          "simd_size": "16",
+          "slm_size": "32",
+          "spill_size": "1920",
+          "subgroup_independent_forward_progress": "true",
+          "eu_thread_count": "8"
+        },
+        "per_thread_memory_buffers": "- type:            scratch\n        usage:           single_space\n        size:            2048",
+        "observed_launches": null
       }
     ],
     "raw_sha256": {
-      "vtune.stdout": "4bb420f370a0ff6cef4e338ade4a1f2e27cc25038c655c478cac4944a8c3de34",
-      "vtune.stderr": "184a95cf560ff5879e3193b4bae45efce833d1655fb0559775e9f12c405342bb"
+      "vtune.stdout": "26aa65596f22d161cf5a2dd68b2143443adc7de9c7a11ad60799e65f20b3e8cb",
+      "vtune.stderr": "02530822e532ffe186c1905c9ed4a9e501ad79ad3418b5c66b88db75d81769bd"
     },
     "limits": [
       "Compiler metadata and traced dynamic arguments, not hardware counters or measured occupancy.",
@@ -318,17 +316,5 @@
     "device": "0xe20c",
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
-  },
-  "automatic_grf_summary": {
-    "baseline_grf": 128,
-    "candidate_grf": 256,
-    "baseline_eu_thread_count_metadata": 8,
-    "candidate_eu_thread_count_metadata": 4,
-    "baseline_dynamic_local_bytes": 28224,
-    "candidate_dynamic_local_bytes": 20032,
-    "either_spill_or_scratch_descriptor_present": false,
-    "limits": "Compiler allocation/launch metadata, not measured occupancy, physical traffic or performance. All component/speed/model decisions remain separate. Raw slm_size=32 unit/schema interpretation needs primary-source verification; do not equate it with total local memory.",
-    "both_static_slm_size_metadata": 32,
-    "static_slm_size_unit_verified": false
   }
 }
