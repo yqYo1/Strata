@@ -72,6 +72,18 @@ from decode. About 1K generated tokens is a starting observation window. Increas
 independent repetitions or length when variation still prevents a decision.
 Do not pool the original 24-token decode with this new workload.
 
+For a prefill-only screen, `bench.sh --prefill-only --prefill-tokens N` accepts
+32768,65536,98304 or131072 as the minimum **actual prompt and read tokens**.
+Thinking stays on and output is capped at24 tokens; this does not qualify
+decode. Fixed prompt construction targets1.25 times that minimum, independently
+of server responses. The client checks context room before sending, and records
+actual engine counts and zero reuse rather than relabeling the construction
+target as measured tokens. Minimum98304 needs known context>=123160, fitting
+the current131072 setting; minimum131072 needs>=164120, so any larger-context
+engine run first needs its VRAM/workspace and boundary admission check.
+These added sizes are prepared for a longer-input screening comparison; no
+speed or model-context qualification is established by the client change.
+
 ```sh
 python3 tools/test_strata_bench.py
 python3 tools/test_benchmark_evidence.py

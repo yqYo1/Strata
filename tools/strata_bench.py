@@ -58,6 +58,7 @@ import long_generation_bench as long_generation     # noqa: E402
 SCHEMA = 2
 CHAT_MAX_TOKENS = 100
 LONG_MAX_TOKENS = 24
+PREFILL_TOKEN_CHOICES = (32768, 65536, 98304, 131072)
 AGENT_MAX_TOKENS = 64
 AGENT_THINK_MAX_TOKENS = 8192
 AGENT_TURNS = 5
@@ -417,8 +418,8 @@ class Suite:
         self.prefill_only, self.prefill_tokens = prefill_only, prefill_tokens
         if prefill_only and (want_clients or want_long or want_long_generation or long_generation_only or quick):
             raise ValueError("prefill-only cannot be combined with other suite scopes")
-        if prefill_tokens not in (32768,65536):
-            raise ValueError("prefill minimum must be 32768 or 65536")
+        if prefill_tokens not in PREFILL_TOKEN_CHOICES:
+            raise ValueError(f"prefill minimum must be one of {PREFILL_TOKEN_CHOICES}")
         if prefill_only:
             self.think = True
         self.clients, self.want_long = want_clients, want_long
@@ -1325,7 +1326,7 @@ def main(argv=None) -> int:
     ap.add_argument("--long-generation", action="store_true", help="also two 32K-input, >=1K-output MTP workloads (thinking on, up to 16K output)")
     ap.add_argument("--long-generation-only", action="store_true", help="run only the new long-generation workloads and warm-up")
     ap.add_argument("--prefill-only", action="store_true", help="only one short warmup and fresh long prefill requests; thinking on, output capped at 24")
-    ap.add_argument("--prefill-tokens", type=int, choices=(32768,65536), default=None, help="minimum ACTUAL prompt/read tokens for --prefill-only (default 65536)")
+    ap.add_argument("--prefill-tokens", type=int, choices=PREFILL_TOKEN_CHOICES, default=None, help="minimum ACTUAL prompt/read tokens for --prefill-only (default 65536)")
     ap.add_argument("--think", action="store_true", help="leave thinking on (the default suite turns it off)")
     ap.add_argument("--out", help="where to write the results folder (default: bench/results)")
     ap.add_argument("--compare", metavar="DIR", help="a results folder (or its results.json) to put beside this run")
