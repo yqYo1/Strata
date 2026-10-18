@@ -72,6 +72,7 @@ historical logs or the research library wholesale.
 | Build | Commit the exact engine, benchmark, controller, generated inputs and recipe first; pin compiler, dependencies and environment. Identify retained generations across worktrees and preserve the validated fallback before overwriting it. | [Measurement](#measurement-and-gpu-execution), [artifacts](#measurement-and-diagnostic-artifacts) |
 | Run or compare | Verify committed inputs against the build record and actual executable hash. Check job ownership and the frozen comparison plan; keep first-use, subsequent-request and independent-process samples distinct. | [Measurement](#measurement-and-gpu-execution), [artifacts](#measurement-and-diagnostic-artifacts) |
 | Integrate | Check provenance and decide inference parts individually, including prefill and decode. Preserve required non-inference functions. History preservation and component success alone do not qualify a model route. | [Scope](#this-forks-scope), [integration](#git-integration-and-tuning) |
+| Delegate research | Check scope eligibility, available capacity, the required Orca/model choice, report budget and previous-report index. Pass the current rules and keep Main's work moving. | [Parallel research](#parallel-research) |
 | Receive research | Check its classification and delegate review to native Codex gpt-6-luna with max reasoning. Main reads the short review digest; retrieve collection-report sections only for a concrete question. | [Parallel research](#parallel-research) |
 | Retain a file or build | Name the realistic next consumer and review point; check compact results and reachable Git history first. Preserve individual comparison samples without automatically retaining raw logs, reports or another build generation. | [Artifacts](#measurement-and-diagnostic-artifacts), [retention policy](docs/ARTIFACT_RETENTION.md) |
 | Delete artifacts | Confirm the consumer ended and useful evidence is preserved. For a build, retrieve and compare its original source/recipe from Git against the exact final executable's inputs. Check active ownership and the last required fixture. | [Artifacts](#measurement-and-diagnostic-artifacts), [deletion records](docs/ARTIFACT_RETENTION.md#cleanup-and-deletion-records) |
@@ -306,6 +307,11 @@ every delegated task; Main remains responsible for integration and testing.
   Research may write only its named report, with sources, applicability and evidence
   limits; it must not run builds, tests, GPU jobs, profilers, process inspection,
   Git commands or product edits. Do not interrupt or steer a running researcher.
+- A returned report is not proof of worker/process closure. Check the existing
+  task, dispatch and terminal handles before retrying, releasing or replacing a
+  worker. Keep an unconfirmed completion pending; do not infer success from
+  an idle prompt, forge a worker receipt or start a duplicate task. Record only
+  the useful result and remaining ownership issue in the existing index.
 - Delegate completed report review for scope, depth, redundancy and indexing to
   a **native Codex subagent using gpt-6-luna with max reasoning**, rather than
   Orca. This is the explicit exception to Orca research dispatch. The reviewer

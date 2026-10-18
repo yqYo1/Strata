@@ -20,6 +20,36 @@ def response(offered=1600, accepted=1200, generated=1152):
 
 
 class BenchmarkTest(unittest.TestCase):
+    def test_larger_prefill_checks_context_before_sending_and_keeps_actual_counts(self):
+        for minimum in (98304, 131072):
+            required = minimum * 5 // 4 + 24 + 256
+            with self.subTest(minimum=minimum):
+                too_small = bench.Suite("http://localhost", "", required - 1, 1, False,
+                                        log=lambda _: None, prefill_only=True, prefill_tokens=minimum)
+                with patch.object(bench, "chat") as chat:
+                    with self.assertRaises(bench.EngineRequestError):
+                        too_small.run_prefill_only()
+                    chat.assert_not_called()
+
+                # Actual engine counts may differ from the construction target.
+                # Qualification must keep those counts, thinking and zero reuse.
+                raw = response(generated=24)
+                actual = minimum + 17
+                raw["usage"]["prompt_tokens"] = actual
+                raw["timings"]["prompt_n"] = actual
+                suite = bench.Suite("http://localhost", "", required, 1, False,
+                                    log=lambda _: None, prefill_only=True, prefill_tokens=minimum)
+                with patch.object(bench, "chat", return_value=raw) as chat, \
+                     patch.object(suite, "prefill_prompt", return_value="fixed test prompt"):
+                    suite.run_prefill_only()
+                self.assertEqual(chat.call_count, 2)  # short warmup and one long request
+                self.assertTrue(all(call.args[3] == 24 and call.args[4] is True
+                                    for call in chat.call_args_list))
+                result = suite.out["prefill_only"]
+                self.assertTrue(result["complete"])
+                self.assertEqual(result["eligible_runs"], 1)
+                self.assertEqual(result["requests"][0]["actual_read_tokens"], actual)
+
     def test_streamed_reasoning_uses_completion_usage(self):
         events = [{"choices": [{"delta": {"reasoning_content": "thinking"}}]},
                   {"choices": [{"delta": {"content": "answer "*100}}]},

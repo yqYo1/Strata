@@ -147,7 +147,7 @@
       "candidate_path": "bench/results/2026-10-15-pr6-recovery-audit/own-qsa-kpitch-v1",
       "decision": "Reuse the existing source-audited pitch proposal after the current comparison; no new duplicate survey. Recheck immutable source/provenance and wire maintained API/tests before compiling.",
       "candidate": "Fixed score33,Cells32,WG128,SG16; K36/V260 shared tile needs9216 BF16 values,30272B requested local payload,34368B admission minimum. No hardware occupancy/bank map or performance result.",
-      "do_not_repeat": "Old global K span256 schedule regressed10.35\u201329.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
+      "do_not_repeat": "Old global K span256 schedule regressed10.35–29.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
     },
     "reviewed_base_source_sha256": "fa505d02e2b24f7cb6948033921fa697c8aeb58e6f4df6d873f13e5a7918e36b",
     "source_sha256": "c3ad8326f097050ff9ab1859e116f2cad3709a8464162143f752bc294cbe1e01",
@@ -208,7 +208,7 @@
         "bytes": 19144,
         "source_commit": "fbc7f56d7b0ddb5db5f3722ef33ca044c3f8a5c8",
         "reason": "Its conditional consumer is a selected-cell stable-reduction split. The closed QSA screen and pending pitch candidate select no split or reduction bottleneck.",
-        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report\u2019s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
+        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report’s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
       },
       {
         "path": "bench/results/2026-10-15-pr6-recovery-audit/research-matrix-register-reuse-20261018.md",
@@ -656,16 +656,87 @@
     ],
     "next_scope_eligibility": {
       "schedulable_now": false,
-      "prerequisites": [
-        "Main selects and pins the actual framework reference revision, dispatch and math lowering for a concrete native-exp2 candidate."
+      "prerequisites_met": [
+        "Exact framework revision, CUDA QSA fresh/prefix branch and source hashes verified.",
+        "PyTorch version pin resolves Triton and its LLVM revision; source lowering to approximate FP32 exp2 identified.",
+        "Current local math-only seam and changed score/reduction boundaries named; no need for unavailable counters or a CUDA device to audit the source contract."
       ],
-      "limits": "Bounded functional feasibility does not require physical counters; clean timing and physical resource claims have separate gates."
+      "question": "Pin the selected FP32 ex2.approx error/domain/FTZ contract and Intel native-exp2 API constraints, then specify the smallest legal math-only candidate and discriminating edge/state gates. Resolve exact source ambiguities; do not repeat generic native-math or dispatch surveys.",
+      "active_dispatch": "ctx_1a4c70297f89; no duplicate or repeat survey"
     },
     "temporary_prior_retired": {
       "source_commit": "8063aacc6749d18089f7a53db5d3e47b745f348c",
       "source_sha256": "dde882d45c2100e6d13472cee30dfec671edbb025f0887f60aa2a8aa386d2637",
       "manifest_commit": "143b07d89820dfffcc8e79541ab456e669ee8e24",
       "reason": "Finite historical retrieval/review ended; original text remains recoverable from Git."
+    },
+    "selected_reference": {
+      "classification": "decision_support",
+      "state": "pinned source-contract investigation; no CUDA execution or shared whole-kernel numerical contract claimed",
+      "framework": {
+        "repository": "sgl-project/sglang",
+        "revision": "877be2974aa151a984e52822c028276c2b1e9303"
+      },
+      "configuration": "CUDA Qwen4Exp QSA, forward_extend, no CP, no fused-KV early return, no speculative paged mode. Fresh prefix-free input dispatches sparse_gqa_fwd_interface_triton; existing prefix dispatches packed sparse_gqa_fwd_interface_triton_ck.",
+      "dispatch_source_sha256": {
+        "python/sglang/srt/layers/attention/attention_registry.py": "734c5fb9f563904e383bbcc419d049a0911a0a38c2899df12dc862f5770aeb26",
+        "python/sglang/srt/layers/attention/qwen_sparse_attn_backend.py": "d98cca322c28e7eabccb8c96bc8690b0be0a601c47e290d03a758bef08decf8d",
+        "python/sglang/srt/layers/attention/qsa/sparse_attn.py": "4607a09c536dca1439919c526f82f5f42c315cb2b6281b685584054170242516",
+        "python/sglang/srt/models/qwen4_exp.py": "9b8c9bc511800bbb53603b37bc3198597f778ba1a2b32a8b40fb5ea0212471e7",
+        "python/pyproject.toml": "6bf7a1f03c235ed0404d91067987995e6f1e06ea8182c206853a7f4cdb830f3c",
+        "LICENSE": "1495e1e757ef4d0925a2350563cf5754bb23c51701a8ec4fb3c5cdcbedae6747"
+      },
+      "dependency_source_chain": {
+        "pytorch_v2_14_1": "5c4886908584029761b579af026dcfb627c84070",
+        "pytorch_triton_pin_file": ".ci/docker/ci_commit_pins/triton.txt",
+        "pytorch_triton_pin_sha256": "d0e2335305974dc31d3b882cbcfc31c5763424305f1806b34cffa953303740ac",
+        "triton_version": "3.8.0",
+        "triton_revision": "675c59878aa2280b31f722aaf42b825fcee21de8",
+        "triton_math_sha256": "08abee21ce6230a873ed0831f70f9570b7ce39969dbf9b2f28ae1a1992ee1cc7",
+        "triton_llvm_info_sha256": "8585b3566426f93f3dc430d4f2814299edef0a2ba0f2b1a9b5b27a5fb0dbcf74",
+        "llvm_revision": "4611156032e1ebac68b2b8f6107b1475a7c60800",
+        "llvm_nvptx_instrinfo_sha256": "dd048c313ae8a843a74361e002482bae3d6fa4df8f276f56a2b517e0cad74ef0"
+      },
+      "observed_source_contract": "SGLang scales Q by scale*log2(e) then rounds back to Q dtype before dot; FP32 exp2/max/normalizer/PV accumulator, probabilities cast to V dtype, tl.sum reduction (its exact execution order is not proved here). The scaled-Q boundary may match local code when scale=1/16; its binding/lowering still needs verification. Triton emits math.exp2 then LLVM exp2; pinned NVPTX pattern selects ex2.approx.f32 with an FTZ flag whose deployed setting remains unproven. Local accumulation/reduction scheduling does not establish whole-kernel equivalence.",
+      "verification": "Main retrieved and byte-compared all listed SGLang files against Git blobs; retrieved immutable PyTorch/Triton/LLVM primary-source blobs and pins. This is source evidence, not installed CUDA artifacts, PTX/SASS or observed framework outputs.",
+      "consumer": "One math-only native-exp2 candidate decision for current QSA; review at its source-contract/first component gate. No global fast-math or whole-path equivalence claim."
+    },
+    "selected_local_source": {
+      "commit": "c9ad511e4f3ec8387327e6c86d8e6a9e02988eac",
+      "path": "src/kernels/sycl/qsa_bf16_prefix.cpp",
+      "sha256": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192"
+    },
+    "next_research_state": "Pinned source audit and native review complete. No repeat survey eligible; Main owns implementation. Original worker completion remains unconfirmed in the existing dispatch.",
+    "pinned_contract_dispatch": {
+      "task": "task_5a8bdd6c7c16",
+      "dispatch": "ctx_1a4c70297f89",
+      "terminal": "term_2822b640-891c-4093-9518-ae44099a02cd",
+      "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-pinned-native-exp2-contract.md",
+      "model_evidence": "Fresh custom terminal argv codex --model gpt-6-luna -c model_reasoning_effort=medium -c check_for_update_on_startup=false; tui-idle satisfied and worker-start observed turn_started. Existing-terminal launch metadata has null model fields; no inferred launcher override.",
+      "report_budget": {
+        "words": [
+          1500,
+          2300
+        ],
+        "maximum_bytes": 32768
+      },
+      "next_consumer": "Main selects one guarded math-only prototype using the reviewed contract; retire report/review after that first discriminator or rejection. Reconcile existing Orca completion separately before claiming lifecycle closure.",
+      "report_bytes": 15515,
+      "report_sha256": "cbefc9baf2f907f55f06896557e21e975fa4c6331cac74ce18c833b73f275270",
+      "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-pinned-native-exp2-contract-native-review.json",
+      "review_bytes": 10552,
+      "review_sha256": "50a63c29bdd5c841c61cc42a649f53eb4c7ac2eef84417a1a364b510ce78ca02",
+      "technical_state": "Report and native Codex gpt-6-luna max review complete; accept with minor precision corrections.",
+      "lifecycle_state": "Completion receipt unconfirmed: worker reports runtime_unavailable from its original outcome-send; no durable worker_done delivered. Exact dispatch remains dispatched/in_progress with retained external terminal and idle prompt. No worker impersonation, release or duplicate task."
+    },
+    "pinned_contract_review_digest": {
+      "decision": "accept_with_minor_precision_corrections",
+      "corrections": [
+        "Scaled-Q BF16 conversion may match local code if the selected scale is 1/16 and lowering preserves its FP32 sequence; verify the binding before asserting a difference.",
+        "The invalid IEEE subtraction -inf - -inf produces NaN; this is not a language-level undefined-behavior finding."
+      ],
+      "limits": "Pinned source lowering selects approximate FP32 exp2 with FTZ-dependent spelling; deployed CUDA artifacts are not observed. SYCL native exp2 range/error/denormal behavior is implementation-defined. No full negative-domain legality, whole-kernel equivalence or speed gain established.",
+      "next_action": "Select one compile-time guarded math-only seam and establish the actual implementation domain, special/state behavior, isolated codegen and clean local numerical/performance gates. No generic repeat research until a concrete prototype leaves a finite unresolved question."
     }
   },
   "warmed_gemm_reference_scope": {
@@ -1284,8 +1355,8 @@
         "Retrieval map for a later concrete question"
       ],
       "paper_sections": [
-        "SyclKittens \u00a7\u00a73.2\u20133.3 and Appendix D for operand layouts, subgroup prefetch and the measured ablation.",
-        "Xe-Forge \u00a7\u00a7IV\u2013V, VI-A, VI-D\u2013VI-E for search/validation workflow, hardware, baseline and kernel results."
+        "SyclKittens §§3.2–3.3 and Appendix D for operand layouts, subgroup prefetch and the measured ablation.",
+        "Xe-Forge §§IV–V, VI-A, VI-D–VI-E for search/validation workflow, hardware, baseline and kernel results."
       ]
     }
   },
