@@ -141,10 +141,14 @@ integration and testing.
   **1000 tok/s**, with repeated long-input results above **600 tok/s** as the
   first milestone. Record milestone evidence in results, not as changing state
   in this policy. The longer-term decode target is **70 tok/s**;
-  neither target is achieved by a component microbenchmark. Keep short-input
-  prefill through the decode weight/cache layout available. Defer its dispatch
-  threshold and new decode
-  optimization until the prefill milestone; this does not defer long-prefill
+  neither target is achieved by a component microbenchmark. Continue measured
+  optimization after the first milestone and when individual gains become small.
+  A rejected candidate is a result, not completion of the optimization goal.
+  When progress stalls, identify the next evidence gap and investigate applicable
+  methods from other engines or hardware before selecting another bounded test.
+  Keep short-input prefill through the decode weight/cache layout available.
+  Defer its dispatch threshold and new decode optimization until the prefill
+  milestone; this does not defer long-prefill
   chunk-size, placement or scheduling tuning. Preserve shared state and the
   physical 262144-context correctness requirements.
 - Prefer GPU-local long-prefill data and control when added GPU work costs less
@@ -267,6 +271,10 @@ integration and testing.
   needed. Keep individual samples and spread; do not dismiss a slower result as
   noise without repeated evidence. Check past verified best results and their
   source/configuration when investigating a regression.
+  Before collecting adoption evidence, commit the comparison order, repetition
+  plan, acceptance criteria and stopping rules. Assess the proposed mechanism's
+  gain separately from the throughput target and broader correctness gates;
+  preserve failed outcomes rather than changing criteria after seeing results.
 - Qualify the advertised **262144-token physical context**, including filling
   it completely, tail/boundary cases, prefill-to-decode state and RESTORE paths.
   No output room at a completely full context is expected; crashes, invalid
@@ -439,6 +447,9 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   missing inputs, current consumer, next bounded action and review point in the
   existing result. Keep it distinct from qualified comparison builds. An orphan
   binary does not recover its source or justify unrelated logs/caches/duplicates.
+  If bounded recovery establishes that the required original inputs cannot be
+  recovered, preserve the compact provenance failure and retire the unusable
+  binary; do not renew a hold indefinitely or count it as a validated reference.
 - After closure and evidence verification, retire successful full API traces,
   repeated polling/synchronization logs, raw profiler timelines and duplicate
   kernel windows. Keep one useful diagnostic per distinct unresolved mechanism,

@@ -140,6 +140,10 @@ For each temporary provenance hold, record the exact missing inputs, current
 consumer, next bounded recovery action and review point in the existing compact
 result. Preserve unique unreconciled source/recipe evidence; a hold does not
 justify retaining unrelated logs, caches or duplicate build outputs.
+If bounded recovery establishes that the required original inputs cannot be
+recovered, retain the compact provenance failure and retire the unusable binary.
+Do not renew the hold indefinitely or treat that executable as a validated
+comparison reference.
 
 ## Temporary diagnostic collection
 
