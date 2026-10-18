@@ -660,6 +660,72 @@ change inference order or treat it as adopted before same-library correctness
 and matched component/model timing pass. Existing source-specific fusion and
 indexed-A references are available; no repeat generic survey is needed.
 
+## Ordered parallel exponentials for QSA
+
+A separate component candidate adds `qsa_bf16_prefix_ordered_exp_batch` beside
+KVvec4, without a model dispatch hook. It keeps cached BF16 Q, typed K/V loads,
+score pitch33, probability rounding and FP32 recurrent updates. SIMD16 lanes
+compute two exponentials each. Every lane executes32 uniform indexed exchanges;
+lane0 sums cells0..31 in the original ascending FP32 order. The existing subgroup
+max/invalid-score reduction supplies the maximum. No additional workgroup
+barrier, SLM array, host arithmetic or transfer is added to the normal route.
+Shuffle latency, register effects and speed remain unmeasured.
+
+The implementation follows the independently authored existing Strata kernel
+and the reviewed order-preserving QSA design indexed under
+`qsa_ordered_parallel_softmax_scope`; no third-party implementation is copied.
+The pinned compiler's public `select_from_group` API supplies lane exchange.
+The diagnostic-only `QsaPrefixStateProbe` records one query/KV group/head's
+maximum, alpha, normalizer and tile sum per32-cell tile, including padded heads.
+Its full device extent, alignment and disjointness are checked before either
+kernel submits. Non-probe entrypoints have no capture writes. Captured outputs
+must match normal outputs before interpreting state differences.
+
+Main first closes the frozen Down comparison; this source was prepared in an
+isolated child of `feature/sycl`, without another build/GPU job. After integration,
+reuse the closed candidate cache with `build_engine.py rebuild-ordered`, preserve
+the validated fallback, and run `check_attention.py smoke|component|perf ordered-exp`
+one phase at a time, committing each result before advancing. The first small
+GPU phase uses tracing and parameter validation. Require complete BF16 output,
+FP32 state/guard and input-preservation comparisons, invalid state-span/coordinate
+rejections, width/tail/missing/duplicate/page-alias diagnostics and physical262144
+component addressing. A component check does not qualify full-context model,
+RESTORE, numerical quality or sustained generation.
+
+The prospective clean timing compares actual KVvec4 and ordered-exp exports in
+three independent processes, six rotated measured samples per arm/shape, at
+78453 cells/8192 queries with cap33 gather and cap2051 gather/clustered patterns.
+Timing includes admission, pack, attention and checked drain, with checks/copies
+outside. Main's finite budget is180seconds,360CPU-seconds,4GiB RSS and64MiB output
+per child. Advance only for geometric-mean candidate/base ratio<=0.95, no shape
+ratio>1.05, and every process faster in both cap2051 patterns. Passing permits a
+later matched official long-input model A/B; it is not inference adoption or a
+hardware saturation claim.
+
+Source`9d000172f53c399453a0662c3eac2b0771114e7e` passed the traced smoke and
+all11 numerical/boundary cases per arm. Ordered-exp also matched the serial
+FP32 maximum, alpha, normalizer and tile-sum bits, including padded heads and
+unused capture guards; all9 invalid probe admissions rejected. No fresh GPU
+fault or boot change was detected. The initial failed smoke remains archived
+at`963d387698f8b30b8fff9229449775000bdef4b8`: its invalid-overlap test pointed
+at the legal leading guard, and the corrected test points inside the output.
+This was a fixture error, not a relaxed kernel admission or numerical criterion.
+
+Three independent clean processes then completed all108 individual samples:
+
+| Cap / access | KVvec4 median ms | Ordered-exp median ms | Latency change |
+| --- | ---: | ---: | ---: |
+| 33 / gathered | 8.792280 | 8.618858 | -1.97% |
+| 2051 / gathered | 231.586801 | 224.028323 | -3.26% |
+| 2051 / clustered | 174.369835 | 139.799954 | -19.83% |
+
+Every process improved both cap2051 patterns. The geometric-mean latency ratio
+is0.912692, satisfying the prospective component gate. The
+[individual results](../bench/results/2026-10-15-pr6-recovery-audit/qsa-ordered-exp-current.json)
+retain spread and process medians. Proceed to an explicit opt-in long-prefill
+model route and a matched official78K comparison; no new model throughput or
+sustained decode, task-quality, full-context or RESTORE qualification is claimed.
+
 ## MoE Down/scatter component
 
 `Gemm::down_scatter` is an explicit component API with no model dispatch hook.
@@ -704,17 +770,18 @@ prospective gate failed. That gate requires ratio<=0.95, no shape ratio>1.05,
 and every process to improve at2334/5963/8192 for both layouts. Irregular8192
 improves15.67%, but160 and2334 regress in every process. **Do not connect this
 variant to the model.** Individual samples, process medians and limits are in
-the [current result](../bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json).
+the [original raw-fragment result](https://github.com/yqYo1/Strata/blob/16b697d9c2c5a699c8e7250e7a04d2b5cfbf15b0/bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json).
 The clean model reference remains867.1 tok/s; this component did not change it.
 Physical262144, model quality, RESTORE and decode remain separate gates.
 
-Offline inspection of the retained known-good and rebuilt engine native images
+For the earlier7fbe795ce build, offline inspection of the retained known-good
+and rebuilt engine native images
 found identical instruction streams through EOT and identical complete per-kernel
 `.ze_info` blocks for all eight existing dense entries. Nine bytes per entry
 differ after EOT in null-destination immediates/padding; no branch targets enter
 that region and no unresolved indirect transfer was found. The other eight
 existing native text entries matched directly; four new scatter entries were
-added. The [build result](../bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json)
+added. The [original build result](https://github.com/yqYo1/Strata/blob/16b697d9c2c5a699c8e7250e7a04d2b5cfbf15b0/bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json)
 records hashes and exact comparison scope. This checks those native calculations
 and recorded kernel argument information, not total host behavior or model speed.
 
@@ -760,3 +827,57 @@ thinking on, four requests per process. Existing versus chunk64 first PP was
 Keep the existing GDN selected for performance. The new route remains opt-in;
 its full64 solve differs from the SGLang XPU block16 contract, and numerical/task
 quality, sustained generation, physical262144 and RESTORE are still unqualified.
+
+The next source candidate adds an explicit `ScatterLayout::output_copy` parameter
+without a model hook. It constructs the pinned TLA public
+`make_block_2d_copy_D<cutlass::bfloat16_t>(mma, stride)` layout without a global
+output pointer. Values use `partition_sg_fragment_S`, paired coordinates use
+`partition_S`, and the same TLA reorder as dense BF16 output precedes the
+unchanged scalar FP32 scatter/FMA. The original matrix mapping remains a
+diagnostic arm. No tile, metadata-hoisting or alias-policy change is combined.
+
+Before measurement, the new plan requires36 host ownership cases,14 traced
+small checks and52 GPU correctness cases across both layouts and tiles,
+including fixed78451-token windows. Only after those pass, three independent
+processes compare separate, raw-fragment and output-copy arms at64/160/2334/5963/8192
+expert rows, contiguous or evenly distributed over the same78451-row accumulator.
+Six rotated measured rounds and one warmup use16 repeats; every timed sample
+gets a full bitwise reference comparison outside timing. Allocations, resets
+and readback stay outside marker intervals. Main supervises each process for
+900seconds (other phases600),6GiB host RSS and128MiB raw output. The prospective
+advance gate remains geometric-mean latency ratio<=0.95 against the separate
+reference, no shape>1.05, and each process improves at2334/5963/8192 in both
+placements. Passing permits a later model experiment, not inference adoption.
+
+Source7ad7aad7ad7399ba54ce3aaa5171b0298370e117 passed all36 CPU ownership,
+14 traced small and52 GPU correctness cases. Captures and normal kernels
+matched BF16 outputs and FP32 accumulation bitwise, including guards and invalid
+maps. The three independent performance processes also completed normally,
+with540 measured and90 warmup samples and no fresh GPU fault or boot change.
+
+| Routed rows | Contiguous separate / raw / output-copy ms | Distributed separate / raw / output-copy ms |
+| --- | ---: | ---: |
+| 64 | 0.027161 / 0.025632 / 0.025791 | 0.026423 / 0.025879 / 0.025898 |
+| 160 | 0.030964 / 0.054749 / 0.054603 | 0.030911 / 0.055638 / 0.055446 |
+| 2334 | 0.338083 / 0.399388 / 0.397962 | 0.367198 / 0.419964 / 0.418617 |
+| 5963 | 0.798512 / 0.848633 / 0.847256 | 0.847103 / 0.937369 / 0.934727 |
+| 8192 | 1.087380 / 1.127760 / 1.125495 | 1.160900 / 1.225910 / 1.224640 |
+
+The output-copy/separate geometric-mean latency ratio is1.175797. Every process
+is slower at2334/5963/8192 in both placements, so the predeclared advance gate
+fails. **Keep the separate engine route; do not connect either fusion variant.**
+The [current individual results](../bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json)
+preserve the raw control, spread and every sample. This repeated same-buffer
+component regime does not identify physical traffic, saturation or model speed.
+The clean model reference remains867.1 tok/s; no new model speed was measured.
+
+Bounded offline ELF inspection of the actual7ad engine also found125504/126912
+byte native wide no-capture scatter sections, versus8128 bytes for dense
+FP16-to-BF16 wide GEMM. Compact scatter sections were15936/15680 versus3072
+bytes dense. Raw and output-copy code hashes differ. This is compiled code-size
+evidence, not proof of instruction-cache pressure, occupancy or a slowdown
+mechanism. Before another fusion variant, investigate grouping repeated row
+metadata/predicates while preserving static fragment access; a dynamic register
+index or restricted pointer must not be assumed faster or legal without checks.
+The QSA ordered-exp component now passed its gate; the next serialized experiment
+is its opt-in long-prefill model comparison described above.

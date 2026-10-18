@@ -250,9 +250,9 @@ CUTE_DEVICE void xe_gemm_epilogue(
 
   // The default dense helper above remains verbatim. Only this experimental
   // sibling exposes the post-DPAS fragment and its paired logical coordinates.
-  auto coordinates = thr_mma.partition_C(gC);
-  static_assert(decltype(size(coordinates))::value == decltype(size(tCrC.tensor()))::value);
-  epilogue(tCrC, coordinates);
+  // The selected epilogue supplies its own value/coordinate layout. All
+  // workgroup collectives above finish before any logical-tail masking.
+  epilogue(tCrC, gC, mma, local_id);
 }
 
 } // namespace strata::experimental::vllm_xe2_native16::derived

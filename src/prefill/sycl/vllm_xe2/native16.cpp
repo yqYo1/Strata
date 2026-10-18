@@ -118,20 +118,39 @@ using TileMMA = typename TiledMMAHelper<MMA_Atom<XE_DPAS_TT<8, float, Input>>,
     Layout<typename ShapePolicy<Policy>::Shape>,
     typename ShapePolicy<Policy>::Subgroups>::TiledMMA;
 template <class Input, class Output, Tile Policy> class DenseKernel;
-template <Tile Policy, bool Capture> class DownScatterKernel;
+template <Tile Policy, bool Capture, ScatterLayout Mapping> class DownScatterKernel;
 
-template <bool Capture> struct DownEpilogue {
+template <bool Capture, ScatterLayout Mapping> struct DownEpilogue {
   DownScatterProblem p;
   int t, token_rows;
   size_t routes, offset;
 
-  template <class Fragment, class Coordinates>
-  CUTE_DEVICE void operator()(const Fragment &fragment, const Coordinates &coordinates) const {
-    // Use the pinned TLA type-conversion operation with the accumulator's
-    // unchanged thread/value layout. Dense output converts with this same
-    // float->bfloat16 reorder machinery before its block2D store.
-    auto rounded = make_fragment_like<cutlass::bfloat16_t>(fragment.tensor());
-    reorder(fragment.tensor(), rounded, fragment.tv_layout(), fragment.tv_layout());
+  template <class Fragment, class Coordinates, class MMA>
+  CUTE_DEVICE void operator()(const Fragment &fragment, const Coordinates &tile,
+                              const MMA &mma, int lane) const {
+    if constexpr (Mapping == ScatterLayout::output_copy) {
+      // Public layout-only factory: no fabricated pointer or global BF16 slab.
+      // partition_sg_fragment_S constructs BF16 values in the SAME per-thread
+      // shape as partition_S(tile). Dense output uses this exact conversion.
+      auto copy = make_block_2d_copy_D<cutlass::bfloat16_t>(mma, make_stride(2560, _1{}));
+      auto thread = copy.get_slice(lane);
+      auto rounded = thread.partition_sg_fragment_S(tile);
+      auto coordinates = thread.partition_S(tile);
+      static_assert(decltype(size(coordinates))::value ==
+                    decltype(size(rounded.tensor()))::value);
+      reorder(fragment, rounded);
+      scatter(rounded.tensor(), coordinates);
+    } else {
+      auto rounded = make_fragment_like<cutlass::bfloat16_t>(fragment.tensor());
+      reorder(fragment.tensor(), rounded, fragment.tv_layout(), fragment.tv_layout());
+      auto coordinates = mma.get_slice(lane).partition_C(tile);
+      static_assert(decltype(size(coordinates))::value == decltype(size(rounded))::value);
+      scatter(rounded, coordinates);
+    }
+  }
+
+  template <class Values, class Coordinates>
+  CUTE_DEVICE void scatter(const Values &rounded, const Coordinates &coordinates) const {
     CUTE_UNROLL
     for (int i = 0; i < size(rounded); ++i) {
       const auto coordinate = coordinates(i);
@@ -159,7 +178,7 @@ template <bool Capture> struct DownEpilogue {
   }
 };
 
-template <Tile Policy, bool Capture>
+template <Tile Policy, bool Capture, ScatterLayout Mapping>
 sycl::event enqueue_down(sycl::queue &q, DownScatterProblem p, Geometry g,
                          int token_rows, size_t routes, size_t offset) {
   using P = ShapePolicy<Policy>;
@@ -172,7 +191,7 @@ sycl::event enqueue_down(sycl::queue &q, DownScatterProblem p, Geometry g,
   const sycl::nd_range<3> range(sycl::range<3>(g.groups_m, g.groups_n, P::threads),
                               sycl::range<3>(1, 1, P::threads));
   return q.submit([&](sycl::handler &h) {
-    h.parallel_for<DownScatterKernel<Policy, Capture>>(range, props, [=](sycl::nd_item<3> item) {
+    h.parallel_for<DownScatterKernel<Policy, Capture, Mapping>>(range, props, [=](sycl::nd_item<3> item) {
       auto a = make_tensor(make_gmem_ptr(reinterpret_cast<const cutlass::half_t *>(p.x)),
           make_layout(make_shape(g.t, g.k), make_stride(g.k, _1{})));
       auto b = make_tensor(make_gmem_ptr(reinterpret_cast<const cutlass::half_t *>(p.w)),
@@ -181,12 +200,12 @@ sycl::event enqueue_down(sycl::queue &q, DownScatterProblem p, Geometry g,
       auto c = make_identity_tensor(make_shape(g.t, g.n));
       const auto coord = make_coord(int(item.get_group(0)), int(item.get_group(1)), _, 0);
       derived::xe_gemm_epilogue<void, void, void>(a, b, c, coord, MMA{},
-          DownEpilogue<Capture>{p, g.t, token_rows, routes, offset});
+          DownEpilogue<Capture, Mapping>{p, g.t, token_rows, routes, offset});
     });
   });
 }
 
-template <Tile Policy>
+template <Tile Policy, ScatterLayout Mapping>
 DownOwnership inspect_ownership(int rows) {
   using P = ShapePolicy<Policy>;
   using MMA = TileMMA<cutlass::half_t, Policy>;
@@ -199,7 +218,12 @@ DownOwnership inspect_ownership(int rows) {
     for (int n = 0; n < (2560 + int(get<1>(shape)) - 1) / int(get<1>(shape)); ++n) {
       auto tile = local_tile(identity, shape, make_coord(m, n, 0), Step<_1, _1, X>{});
       for (int lane = 0; lane < P::threads; ++lane) {
-        const auto coordinates = mma.get_slice(lane).partition_C(tile);
+        const auto coordinates = [&] {
+          if constexpr (Mapping == ScatterLayout::output_copy) {
+            auto copy = make_block_2d_copy_D<cutlass::bfloat16_t>(mma, make_stride(2560, _1{}));
+            return copy.get_slice(lane).partition_S(tile);
+          } else return mma.get_slice(lane).partition_C(tile);
+        }();
         for (int i = 0; i < size(coordinates); ++i) {
           const auto coordinate = coordinates(i);
           const int row = get<0>(coordinate), col = get<1>(coordinate);
@@ -267,15 +291,24 @@ sycl::event select_tile(sycl::queue &q, const Problem &p, Geometry g, Tile tile)
 Gemm::Gemm(sycl_backend::Runtime &runtime, sycl::queue &q)
     : runtime_(runtime), queue_(q), has_fp16_(check_device(runtime, q)) {}
 
-DownOwnership inspect_down_ownership(int64_t rows, Tile tile) {
+DownOwnership inspect_down_ownership(int64_t rows, Tile tile, ScatterLayout mapping) {
   if (rows < 1 || rows > 8192)
     throw std::invalid_argument("Down ownership: rows outside [1,8192]");
-  if (tile == Tile::compact_16x64) return inspect_ownership<Tile::compact_16x64>(int(rows));
-  if (tile == Tile::wide_128x128) return inspect_ownership<Tile::wide_128x128>(int(rows));
+  const auto inspect = [&]<Tile Policy>() {
+    if (mapping == ScatterLayout::matrix)
+      return inspect_ownership<Policy, ScatterLayout::matrix>(int(rows));
+    if (mapping == ScatterLayout::output_copy)
+      return inspect_ownership<Policy, ScatterLayout::output_copy>(int(rows));
+    throw std::invalid_argument("Down ownership: invalid scatter layout");
+  };
+  if (tile == Tile::compact_16x64) return inspect.template operator()<Tile::compact_16x64>();
+  if (tile == Tile::wide_128x128) return inspect.template operator()<Tile::wide_128x128>();
   throw std::invalid_argument("Down ownership: invalid tile");
 }
 
-sycl::event Gemm::down_scatter(const DownScatterProblem &p, Tile tile) {
+sycl::event Gemm::down_scatter(const DownScatterProblem &p, Tile tile, ScatterLayout mapping) {
+  if (mapping != ScatterLayout::matrix && mapping != ScatterLayout::output_copy)
+    throw std::invalid_argument("Down scatter: invalid layout");
   using Routes = strata::prefill::detail::MoeWindowRoutes;
   if (!has_fp16_ || !p.plan || p.plan->rows() < 1 || p.plan->rows() > Routes::max_accum_rows)
     throw std::invalid_argument("Down scatter: native FP16 and published accumulator plan required");
@@ -304,13 +337,19 @@ sycl::event Gemm::down_scatter(const DownScatterProblem &p, Tile tile) {
   if (reinterpret_cast<uintptr_t>(p.x) % 64 || reinterpret_cast<uintptr_t>(p.w) % 64)
     throw std::invalid_argument("Down scatter: block2D inputs require 64B alignment");
   runtime_.check();
-  const auto submit = [&]<Tile Policy>() {
+  const auto submit = [&]<Tile Policy, ScatterLayout Mapping>() {
     if (p.rounded_diagnostic)
-      return enqueue_down<Policy, true>(queue_, p, g, p.plan->rows(), routes, size_t(job.global_row));
-    return enqueue_down<Policy, false>(queue_, p, g, p.plan->rows(), routes, size_t(job.global_row));
+      return enqueue_down<Policy, true, Mapping>(queue_, p, g, p.plan->rows(), routes, size_t(job.global_row));
+    return enqueue_down<Policy, false, Mapping>(queue_, p, g, p.plan->rows(), routes, size_t(job.global_row));
   };
-  if (tile == Tile::compact_16x64) return submit.template operator()<Tile::compact_16x64>();
-  return submit.template operator()<Tile::wide_128x128>();
+  const auto select = [&]<ScatterLayout Mapping>() {
+    if (tile == Tile::compact_16x64)
+      return submit.template operator()<Tile::compact_16x64, Mapping>();
+    return submit.template operator()<Tile::wide_128x128, Mapping>();
+  };
+  if (mapping == ScatterLayout::output_copy)
+    return select.template operator()<ScatterLayout::output_copy>();
+  return select.template operator()<ScatterLayout::matrix>();
 }
 
 sycl::event Gemm::beta0(const Problem &p, Tile tile) {

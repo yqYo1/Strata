@@ -64,10 +64,18 @@ template <class T> void equal(const Buffer<T> &a, const Buffer<T> &b) {
        "separate/fused bitwise mismatch");
 }
 uint16_t half(float value) { return sycl::bit_cast<uint16_t>(sycl::half(value)); }
-std::shared_ptr<const Routes> plan(int tokens, bool irregular) {
+std::shared_ptr<const Routes> plan(int tokens, bool irregular, int target_rows = 0) {
   std::vector<int32_t> ids(size_t(tokens) * 10);
-  for (int t = 0; t < tokens; ++t)
-    for (int s = 0; s < 10; ++s) ids[size_t(t) * 10 + s] = s ? s : (irregular && t % 2 ? 10 : 0);
+  need(target_rows >= 0 && target_rows <= std::min(tokens, 8192), "target row span");
+  for (int t = 0; t < tokens; ++t) {
+    // A fixed model-sized window with either a contiguous prefix or exactly
+    // target_rows evenly distributed unique tokens. Other slots stay valid.
+    const bool selected = target_rows ? (irregular ?
+        int64_t(t + 1) * target_rows / tokens != int64_t(t) * target_rows / tokens :
+        t < target_rows) : !(irregular && t % 2);
+    for (int slot = 0; slot < 10; ++slot)
+      ids[size_t(t) * 10 + slot] = slot ? slot : (selected ? 0 : 10);
+  }
   return Routes::build_accum(tokens, ids.data(), ids.size());
 }
 struct Case {
@@ -81,8 +89,8 @@ struct Case {
   std::vector<int32_t> host_source, host_original;
   std::vector<float> initial;
   bool edge_inputs;
-  Case(int tokens, bool irregular, bool edges, sycl::queue &queue)
-      : routes(plan(tokens, irregular)), q(queue), gemm(*runtime, q),
+  Case(int tokens, bool irregular, bool edges, sycl::queue &queue, int target_rows = 0)
+      : routes(plan(tokens, irregular, target_rows)), q(queue), gemm(*runtime, q),
         x(size_t(std::min(tokens, 8192)) * K, q), w(size_t(N) * K, q),
         down(size_t(std::min(tokens, 8192)) * N, q), capture(down.n, q),
         source(size_t(tokens) * 10, q), original(source.n, q), weights(source.n, q),
@@ -118,8 +126,8 @@ struct Case {
     return {routes.get(), job, x.data(), w.data(), source.data(), original.data(), weights.data(),
             candidate.data(), candidate_status.data(), observe ? capture.data() : nullptr};
   }
-  sycl::event fused(size_t job, xe::Tile tile, bool observe) {
-    return gemm.down_scatter(problem(job, observe), tile);
+  sycl::event fused(size_t job, xe::Tile tile, bool observe, xe::ScatterLayout mapping) {
+    return gemm.down_scatter(problem(job, observe), tile, mapping);
   }
   void separate(size_t index, xe::Tile tile) {
     const auto &job = routes->jobs().at(index);
@@ -129,9 +137,9 @@ struct Case {
     strata::prefill::native16::moe_accumulate(*routes, index, down.data(), source.data(), original.data(),
         weights.data(), reference.data(), reference_status.data(), &q);
   }
-  void check(size_t index, xe::Tile tile, uint32_t expected = 0) {
+  void check(size_t index, xe::Tile tile, xe::ScatterLayout mapping, uint32_t expected = 0) {
     separate(index, tile);
-    wait(q, fused(index, tile, true));
+    wait(q, fused(index, tile, true, mapping));
     equal(reference, candidate); equal(reference_status, candidate_status);
     need(reference_status.get().at(0) == expected, "unexpected route status");
     auto a = down.get(), b = capture.get();
@@ -154,24 +162,25 @@ struct Case {
     }
     // Also qualify the actual no-capture kernel, including its queue ordering.
     separate(index, tile);
-    wait(q, fused(index, tile, false));
+    wait(q, fused(index, tile, false, mapping));
     equal(reference, candidate); equal(reference_status, candidate_status);
   }
 };
 
 void ownership() {
-  for (auto tile : {xe::Tile::compact_16x64, xe::Tile::wide_128x128})
+  for (auto mapping : {xe::ScatterLayout::matrix, xe::ScatterLayout::output_copy})
+   for (auto tile : {xe::Tile::compact_16x64, xe::Tile::wide_128x128})
     for (int rows : {1, 3, 17, 33, 129, 2334, 5963, 8191, 8192}) {
-      const auto r = xe::inspect_down_ownership(rows, tile);
+      const auto r = xe::inspect_down_ownership(rows, tile, mapping);
       need(r.cells == size_t(rows) * N && !r.missing && !r.multiple, "tile ownership is not bijective");
       std::cout << "{\"kind\":\"ownership\",\"tile\":" << int(tile) << ",\"rows\":" << rows
-                << ",\"cells\":" << r.cells << ",\"masked\":" << r.masked << ",\"status\":\"PASS\"}\n";
+                << ",\"mapping\":" << int(mapping) << ",\"cells\":" << r.cells << ",\"masked\":" << r.masked << ",\"status\":\"PASS\"}\n";
     }
 }
-void admissions(Case &c) {
+void admissions(Case &c, xe::ScatterLayout mapping) {
   int rejected = 0;
   auto rejects = [&](xe::DownScatterProblem p, xe::Tile t = xe::Tile::wide_128x128) {
-    try { (void)c.gemm.down_scatter(p, t); }
+    try { (void)c.gemm.down_scatter(p, t, mapping); }
     catch (const std::invalid_argument &) { ++rejected; return; }
     catch (const std::out_of_range &) { ++rejected; return; }
     throw std::runtime_error("invalid admission submitted work");
@@ -187,16 +196,21 @@ void admissions(Case &c) {
   std::vector<int32_t> duplicate(10, 0);
   try { (void)Routes::build_accum(1, duplicate.data(), duplicate.size()); }
   catch (const std::invalid_argument &) { ++rejected; }
-  need(rejected == 9, "admission checks incomplete");
-  std::cout << "{\"kind\":\"admissions\",\"rejected\":" << rejected << ",\"status\":\"PASS\"}\n";
+  try { (void)c.gemm.down_scatter(c.problem(0), xe::Tile::wide_128x128,
+                                  static_cast<xe::ScatterLayout>(99)); }
+  catch (const std::invalid_argument &) { ++rejected; }
+  need(rejected == 10, "admission checks incomplete");
+  std::cout << "{\"kind\":\"admissions\",\"rejected\":" << rejected << ",\"mapping\":" << int(mapping) << ",\"status\":\"PASS\"}\n";
 }
-void correctness(int tokens, bool irregular, bool edges, xe::Tile tile, sycl::queue &q) {
-  Case c(tokens, irregular, edges, q);
+void correctness(int tokens, bool irregular, bool edges, xe::Tile tile, sycl::queue &q,
+                 xe::ScatterLayout mapping, int target_rows = 0) {
+  Case c(tokens, irregular, edges, q, target_rows);
   std::vector<size_t> jobs{0, std::min(size_t(1), c.routes->jobs().size() - 1), c.routes->jobs().size() - 1};
   if (tokens > 8192 && !irregular) jobs.push_back(2); // split job plus next expert, overlapping tokens
   std::sort(jobs.begin(), jobs.end()); jobs.erase(std::unique(jobs.begin(), jobs.end()), jobs.end());
-  for (auto job : jobs) c.check(job, tile);
+  for (auto job : jobs) c.check(job, tile, mapping);
   std::cout << "{\"kind\":\"correctness\",\"tokens\":" << tokens << ",\"irregular\":" << irregular
+            << ",\"target_rows\":" << target_rows << ",\"mapping\":" << int(mapping)
             << ",\"edges\":" << edges << ",\"tile\":" << int(tile) << ",\"jobs\":" << jobs.size()
             << ",\"status\":\"PASS\"}\n";
 }
@@ -205,17 +219,19 @@ sycl::event mark(sycl::queue &q) { return q.single_task<Marker>([] {}); }
 void benchmark(int process, sycl::queue &q) {
   for (int rows : {64, 160, 2334, 5963, 8192}) for (bool irregular : {false, true}) {
     const auto tile = rows < 128 ? xe::Tile::compact_16x64 : xe::Tile::wide_128x128;
-    Case c(rows * (irregular ? 2 : 1), irregular, false, q);
+    Case c(78451, irregular, false, q, rows);
     need(c.routes->jobs().front().rows == rows, "timing job shape");
-    c.check(0, tile);
+    c.check(0, tile, xe::ScatterLayout::matrix);
+    c.check(0, tile, xe::ScatterLayout::output_copy);
     constexpr int repeat = 16;
-    for (int round = -1; round < 6; ++round) for (int order = 0; order < 2; ++order) {
-      const int arm = (process + round + 3 + order) % 2;
+    for (int round = -1; round < 6; ++round) for (int order = 0; order < 3; ++order) {
+      const int arm = (process + round + 3 + order) % 3;
+      const auto mapping = arm == 1 ? xe::ScatterLayout::matrix : xe::ScatterLayout::output_copy;
       c.reset();
       const auto start = mark(q);
       const auto wall = std::chrono::steady_clock::now();
       for (int i = 0; i < repeat; ++i)
-        if (arm) (void)c.fused(0, tile, false); else c.separate(0, tile);
+        if (arm) (void)c.fused(0, tile, false, mapping); else c.separate(0, tile);
       const auto end = mark(q); wait(q, end);
       const double wall_ms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - wall).count() / repeat;
       const double queue_ms = double(end.get_profiling_info<sycl::info::event_profiling::command_start>() -
@@ -223,12 +239,14 @@ void benchmark(int process, sycl::queue &q) {
       if (arm) {
         for (int i = 0; i < repeat; ++i) c.separate(0, tile);
       } else {
-        for (int i = 0; i < repeat; ++i) (void)c.fused(0, tile, false);
+        for (int i = 0; i < repeat; ++i) (void)c.fused(0, tile, false, mapping);
       }
       q.wait_and_throw(); runtime->check(); equal(c.reference, c.candidate);
       need(c.reference_status.get()[0] == 0 && c.candidate_status.get()[0] == 0, "timed route status");
       need(std::isfinite(wall_ms) && wall_ms > 0 && std::isfinite(queue_ms) && queue_ms > 0, "invalid timing");
       std::cout << "{\"kind\":\"sample\",\"process\":" << process << ",\"rows\":" << rows
+                << ",\"window_rows\":" << c.routes->rows() << ",\"accumulator_bytes\":" << c.reference.n * sizeof(float)
+                << ",\"source_first\":" << c.host_source.front() << ",\"source_last\":" << c.host_source[size_t(rows - 1)]
                 << ",\"irregular\":" << irregular << ",\"round\":" << round << ",\"order\":" << order
                 << ",\"arm\":" << arm << ",\"repeat\":" << repeat << ",\"wall_ms\":" << wall_ms
                 << ",\"queue_interval_ms\":" << queue_ms << ",\"status\":\"PASS\"}\n";
@@ -247,27 +265,33 @@ int main(int argc, char **argv) {
       runtime = sb::runtime_for();
       auto q = runtime->make_queue(true);
       if (mode == "--smoke") {
-        correctness(3, false, false, xe::Tile::wide_128x128, q);
-        correctness(3, true, true, xe::Tile::compact_16x64, q);
-        Case c(3, false, false, q); admissions(c);
-        for (int kind = 0; kind < 4; ++kind) {
-          c.reset(); auto s = c.host_source, o = c.host_original;
-          const auto at = size_t(c.routes->jobs()[0].global_row);
-          if (kind == 0) o[at] = -1;
-          if (kind == 1) o[at] = int(o.size());
-          if (kind == 2) s[at] = -1;
-          if (kind == 3) s[at] = c.routes->rows();
-          c.source.set(s); c.original.set(o);
-          c.check(0, xe::Tile::wide_128x128, kind < 2 ? 1 : 2);
-          std::cout << "{\"kind\":\"invalid_map\",\"case\":" << kind << ",\"status\":\"PASS\"}\n";
+        for (auto mapping : {xe::ScatterLayout::matrix, xe::ScatterLayout::output_copy}) {
+          correctness(3, false, false, xe::Tile::wide_128x128, q, mapping);
+          correctness(3, true, true, xe::Tile::compact_16x64, q, mapping);
+          Case c(3, false, false, q); admissions(c, mapping);
+          for (int kind = 0; kind < 4; ++kind) {
+            c.reset(); auto src = c.host_source, original = c.host_original;
+            const auto at = size_t(c.routes->jobs()[0].global_row);
+            if (kind == 0) original[at] = -1;
+            if (kind == 1) original[at] = int(original.size());
+            if (kind == 2) src[at] = -1;
+            if (kind == 3) src[at] = c.routes->rows();
+            c.source.set(src); c.original.set(original);
+            c.check(0, xe::Tile::wide_128x128, mapping, kind < 2 ? 1 : 2);
+            std::cout << "{\"kind\":\"invalid_map\",\"case\":" << kind
+                      << ",\"mapping\":" << int(mapping) << ",\"status\":\"PASS\"}\n";
+          }
         }
       } else if (mode == "--validate") {
-        for (auto tile : {xe::Tile::compact_16x64, xe::Tile::wide_128x128}) {
-          for (int tokens : {1, 17, 33, 129, 2334, 5963, 8191, 8192, 8193})
-            correctness(tokens, false, false, tile, q);
-          correctness(16384, true, false, tile, q);
-          correctness(17, true, true, tile, q);
-        }
+        for (auto mapping : {xe::ScatterLayout::matrix, xe::ScatterLayout::output_copy})
+          for (auto tile : {xe::Tile::compact_16x64, xe::Tile::wide_128x128}) {
+            for (int tokens : {1, 17, 33, 129, 2334, 5963, 8191, 8192, 8193})
+              correctness(tokens, false, false, tile, q, mapping);
+            correctness(16384, true, false, tile, q, mapping);
+            correctness(17, true, true, tile, q, mapping);
+            for (bool irregular : {false, true})
+              correctness(78451, irregular, false, tile, q, mapping, 17);
+          }
       } else if (mode == "--bench") { need(argc == 3, "bench process required"); benchmark(std::stoi(argv[2]), q); }
       else throw std::runtime_error("invalid mode");
       q.wait_and_throw(); runtime->check(); runtime->wait();

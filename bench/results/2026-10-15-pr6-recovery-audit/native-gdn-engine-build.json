@@ -1,5 +1,5 @@
 {
-  "source_commit": "7fbe795cebbf898bf27b1e6ad7debe86cfa93a5f",
+  "source_commit": "9d000172f53c399453a0662c3eac2b0771114e7e",
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -80,21 +80,23 @@
   "production_selected": false,
   "model_quality_qualified": false,
   "replaces": {
-    "source_commit": "853535ed58dd01c9d535874eefda5b623a1dad09",
+    "source_commit": "dc8ca3459414c409cc7f87c31c038f0f7ce5b02f",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-      "bytes": 20960536,
-      "sha256": "d7a16fc294266a8bb817d53c154373114ecca259f79f42ce8bcae489d47d0dca"
+      "bytes": 21499072,
+      "sha256": "bfb9bf19fd93d2d5f4751d6ed97f62c9a4d684b1050b798c621971c39501090f"
     },
     "source_build_passed": true,
-    "retained_binary_source_commit": "853535ed58dd01c9d535874eefda5b623a1dad09",
+    "retained_binary_source_commit": "dc8ca3459414c409cc7f87c31c038f0f7ce5b02f",
     "reason": "Closed unused comparison engine; original source/recipe recovered from Git. Reuse its cache for the immediate corrected build, not a retained old generation."
   },
   "targets": [
     "strata",
-    "sycl_moe_down_scatter_bench"
+    "sycl_qsa_bf16_prefix_kvvec4_test",
+    "sycl_qsa_bf16_prefix_ordered_exp_test",
+    "sycl_qsa_bf16_prefix_ordered_exp_bench"
   ],
-  "retention_consumer": "Known-good bb8 engine/GDN fallback plus the current unqualified-model Down component generation, retained only for the imminent copy-layout/representative-working-set comparison. Replace candidate cache after original-input verification; retain at most these2 generations. Keep fallback until model-qualified replacement is selected.",
+  "retention_consumer": "Known-good bb8 engine/GDN fallback plus current ordered-exp QSA candidate. Preserve only these2 qualified/current comparison generations, apart from explicitly recorded legacy provenance holds; review candidate/fallback selection after QSA qualification.",
   "retained_validation_reference": {
     "source_commit": "7829568c61f4a47e5c1b06497f59e41a3417a5fb",
     "binary": {
@@ -159,24 +161,32 @@
   },
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-    "bytes": 20960536,
-    "sha256": "fa35ec33debd8f8262bf2b7f52171eaeaca545e9a009f27be9ffb02c34ac2927"
+    "bytes": 21499072,
+    "sha256": "bfb9bf19fd93d2d5f4751d6ed97f62c9a4d684b1050b798c621971c39501090f"
   },
-  "compile_database_sha256": "14b196583de92fa05257e717b9de693316644cd53bea6d838e241bcfc8c23f05",
-  "configured_compile_entries": 215,
+  "compile_database_sha256": "6471b0cb0d11bae6a27f8c4bf3a50dc3b41eef4a9708cb27bcb8157cf59f4f0c",
+  "configured_compile_entries": 217,
   "fixtures": {
-    "sycl_moe_down_scatter_bench": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_down_scatter_bench",
-      "sha256": "ee7b6b5dc1e2a8b873715b27ef5e129217ed24921d51fc844487c49c382e9e87"
+    "sycl_qsa_bf16_prefix_kvvec4_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_kvvec4_test",
+      "sha256": "bc6add39d091a6aa57ca7bf0330c4c269ce1dd7106d5d2a238eb3948adb6fa89"
+    },
+    "sycl_qsa_bf16_prefix_ordered_exp_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_ordered_exp_test",
+      "sha256": "aae503f30434e6f424f6dbfe26dd070eeed4f71e2ef54bb0fafbe927bc12cefe"
+    },
+    "sycl_qsa_bf16_prefix_ordered_exp_bench": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_ordered_exp_bench",
+      "sha256": "d06bf20eee697f0ed7b46d1fe6139d3cd2380bccb7eaa471f382dab9901fded9"
     }
   },
   "ownership_closed": true,
   "inputs": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "7fbe795cebbf898bf27b1e6ad7debe86cfa93a5f",
+      "revision": "9d000172f53c399453a0662c3eac2b0771114e7e",
       "count": 492,
-      "aggregate_sha256": "c7ba711b19f7193afa7419f03b296f9cb8210a92062ae57fce3d8b9346c46f1e"
+      "aggregate_sha256": "07abb8ad35a6d9192768f1f4347a05e8ae25ba106fa8526f93a83a00c640dead"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
@@ -191,238 +201,11 @@
       "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
     }
   ],
-  "existing_dense_native_text_comparison": {
-    "reference": "bb8b3f097837026528699031de72b2fae5f779f095efda96161fce037847f5d0",
-    "candidate": "fa35ec33debd8f8262bf2b7f52171eaeaca545e9a009f27be9ffb02c34ac2927",
-    "reference_native_entries": 16,
-    "candidate_native_entries": 20,
-    "missing_existing_entries": [],
-    "changed_existing_text": [
-      ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tES5_LNS1_4TileE0EEE",
-      ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tES5_LNS1_4TileE1EEE",
-      ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tENS4_10bfloat16_tELNS1_4TileE0EEE",
-      ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tENS4_10bfloat16_tELNS1_4TileE1EEE",
-      ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tENS4_6half_tELNS1_4TileE0EEE",
-      ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tENS4_6half_tELNS1_4TileE1EEE",
-      ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE0EEE",
-      ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE1EEE"
-    ],
-    "matching_existing_entries": {
-      ".text._ZTSN4sycl3_V16detail19__pf_kernel_wrapperIZZN6compat6detailL6memcpyENS0_5queueEPvPKvNS0_5rangeILi3EEESA_NS0_2idILi3EEESC_SA_RKSt6vectorINS0_5eventESaISE_EEENKUlRNS0_7handlerEE_clESK_E16memcpy_3d_detailEE": {
-        "bytes": 3904,
-        "sha256": "fef3f9b36f21cda8f7d7c1ec35f1c3a1313a3e2e4c5153782b3075487e076257"
-      },
-      ".text._ZTSZZN6compat6detailL6memcpyEN4sycl3_V15queueEPvPKvNS2_5rangeILi3EEES8_NS2_2idILi3EEESA_S8_RKSt6vectorINS2_5eventESaISC_EEENKUlRNS2_7handlerEE_clESI_E16memcpy_3d_detail": {
-        "bytes": 2560,
-        "sha256": "4f68ff746610fea3422f87eace2233f4c90b4e72efb61b9bb4c9227986a7262f"
-      },
-      ".text._ZTSN4sycl3_V16detail18RoundedRangeKernelINS0_4itemILi1ELb1EEELi1EZNS0_7handler4fillItEEvPvRKT_mEUlNS0_2idILi1EEEE_EE": {
-        "bytes": 1088,
-        "sha256": "765f1ec4b9cc75fd0cf00b23789d9f083eab707e120aac86a0dbe9301dfebc0c"
-      },
-      ".text._ZTSZN4sycl3_V17handler4fillItEEvPvRKT_mEUlNS0_2idILi1EEEE_": {
-        "bytes": 704,
-        "sha256": "29fcac95d7ee5105134506e00af4ff2279212054c0e3b837bc37f421f64ef224"
-      },
-      ".text._ZTSN4sycl3_V16detail18RoundedRangeKernelINS0_4itemILi1ELb1EEELi1EZNS0_7handler4fillIjEEvPvRKT_mEUlNS0_2idILi1EEEE_EE": {
-        "bytes": 1088,
-        "sha256": "1a3163dcf16a82f208d86cf0e5e90e28842ad5cba5190e321aba5be0556cf7dc"
-      },
-      ".text._ZTSZN4sycl3_V17handler4fillIjEEvPvRKT_mEUlNS0_2idILi1EEEE_": {
-        "bytes": 704,
-        "sha256": "15ec3811a9601944b5cf9f5aafef3307fb0ff50ebbd75b42d6b6b25c8a2ccf98"
-      },
-      ".text._ZTSN4sycl3_V16detail18RoundedRangeKernelINS0_4itemILi1ELb1EEELi1EZNS0_7handler4fillIhEEvPvRKT_mEUlNS0_2idILi1EEEE_EE": {
-        "bytes": 1088,
-        "sha256": "2ad3a8619669a19c213bf73a38c56a0f906db84b4d5ded936f9ca9fb23364916"
-      },
-      ".text._ZTSZN4sycl3_V17handler4fillIhEEvPvRKT_mEUlNS0_2idILi1EEEE_": {
-        "bytes": 640,
-        "sha256": "6834d2171235274ae90e1b11ad714938abab0953c6884a84ad51b858574e8f83"
-      }
-    },
-    "added_native_entries": {
-      ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_117DownScatterKernelILNS1_4TileE0ELb1EEE": {
-        "bytes": 17280,
-        "sha256": "5f871f7bac31ee15c11c471bf9ff30c7fbe352ca802ca7b655f3bcb4c19f6d60"
-      },
-      ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_117DownScatterKernelILNS1_4TileE1ELb1EEE": {
-        "bytes": 141248,
-        "sha256": "6db40bd0884b75c3ae8482a741c877110b15d881ca149369ab6fdf6aa8076123"
-      },
-      ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_117DownScatterKernelILNS1_4TileE1ELb0EEE": {
-        "bytes": 126912,
-        "sha256": "c1eccd00ba5fd3b417fb77cd7a9ad1fa10c8e34ab32b163fbaa5e8af69813ccd"
-      },
-      ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_117DownScatterKernelILNS1_4TileE0ELb0EEE": {
-        "bytes": 15680,
-        "sha256": "d8279ed65b4334f58ef7d9a3dc4d1f5b9f9effba00c43ba02f376b247b279dde"
-      }
-    },
-    "matching_prior_scatter_entries": 0,
-    "inspector_source_commit": "4af35cd4773ae30d94af52f3856e122d87416100",
-    "prior_changed_control_result": {
-      "revision": "9fc4bd7fcf99bbc554f72f3b451bd75ddc299743",
-      "path": "bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json"
-    },
-    "scope": "Embedded native .text identity only; no ABI/metadata, execution, quality, timing or occupancy claim.",
-    "offline_instruction_and_metadata_check": {
-      "tool": "/usr/bin/ocloc disasm",
-      "GPU_executed": false,
-      "passed": true,
-      "kernels": [
-        {
-          "kernel": ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tENS4_6half_tELNS1_4TileE0EEE",
-          "through_EOT_identical": true,
-          "post_EOT_offset": 2976,
-          "instruction_lines_through_EOT": 230,
-          "through_EOT_disassembly_sha256": "a48d3eb071d32553b6b172abeb9ed64eddeb096a36c6acc2fa5b515811ec92a7",
-          "explicit_branch_targets_below_post_EOT_region": true,
-          "no_unresolved_indirect_control_transfer": true
-        },
-        {
-          "kernel": ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tENS4_6half_tELNS1_4TileE1EEE",
-          "through_EOT_identical": true,
-          "post_EOT_offset": 9040,
-          "instruction_lines_through_EOT": 789,
-          "through_EOT_disassembly_sha256": "81e07a0fb35c21b358f47665f5f2eca5f9fcccf4e3df1850588071d43736224e",
-          "explicit_branch_targets_below_post_EOT_region": true,
-          "no_unresolved_indirect_control_transfer": true
-        },
-        {
-          "kernel": ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE0EEE",
-          "through_EOT_identical": true,
-          "post_EOT_offset": 2848,
-          "instruction_lines_through_EOT": 214,
-          "through_EOT_disassembly_sha256": "744eb565ee7bcabba6ce57c37c156b860a32bf06b6c2ab923f3f1693811bbd38",
-          "explicit_branch_targets_below_post_EOT_region": true,
-          "no_unresolved_indirect_control_transfer": true
-        },
-        {
-          "kernel": ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE1EEE",
-          "through_EOT_identical": true,
-          "post_EOT_offset": 7936,
-          "instruction_lines_through_EOT": 660,
-          "through_EOT_disassembly_sha256": "92ba8d21e120a76b0b4effd3c8d4cc43d43f57372c824fa1afd7b29c50f4c181",
-          "explicit_branch_targets_below_post_EOT_region": true,
-          "no_unresolved_indirect_control_transfer": true
-        },
-        {
-          "kernel": ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tENS4_10bfloat16_tELNS1_4TileE0EEE",
-          "through_EOT_identical": true,
-          "post_EOT_offset": 2848,
-          "instruction_lines_through_EOT": 214,
-          "through_EOT_disassembly_sha256": "d93e7de4c2fddd0fd144eff9d0283cdef9de859488b486468ca5d6f0ce8890fc",
-          "explicit_branch_targets_below_post_EOT_region": true,
-          "no_unresolved_indirect_control_transfer": true
-        },
-        {
-          "kernel": ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tENS4_10bfloat16_tELNS1_4TileE1EEE",
-          "through_EOT_identical": true,
-          "post_EOT_offset": 7936,
-          "instruction_lines_through_EOT": 660,
-          "through_EOT_disassembly_sha256": "0479e4031c3064fc768a60225baf902260405fcf44801b1628c091815b4e0153",
-          "explicit_branch_targets_below_post_EOT_region": true,
-          "no_unresolved_indirect_control_transfer": true
-        },
-        {
-          "kernel": ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tES5_LNS1_4TileE0EEE",
-          "through_EOT_identical": true,
-          "post_EOT_offset": 2976,
-          "instruction_lines_through_EOT": 230,
-          "through_EOT_disassembly_sha256": "6c874dfcaf2bc60a65c3981b72ff47b2b95455c3f7a33c9fde7143adaf0c3545",
-          "explicit_branch_targets_below_post_EOT_region": true,
-          "no_unresolved_indirect_control_transfer": true
-        },
-        {
-          "kernel": ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tES5_LNS1_4TileE1EEE",
-          "through_EOT_identical": true,
-          "post_EOT_offset": 9040,
-          "instruction_lines_through_EOT": 789,
-          "through_EOT_disassembly_sha256": "804a52c9f7f4265c4ad33646992483d32a1628812010a2061a799d40cf887a0b",
-          "explicit_branch_targets_below_post_EOT_region": true,
-          "no_unresolved_indirect_control_transfer": true
-        }
-      ],
-      "ze_info_kernel_blocks_identical": {
-        "_ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tES5_LNS1_4TileE0EEE": "44440eed770ef4076968626aa6cfa1f4334cfb8294476d6732cde4f6f7e958a1",
-        "_ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tES5_LNS1_4TileE1EEE": "411836015d3cd637b5c6e416eac8908b462dbd2c38070414f3a5ac0a22e599a6",
-        "_ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tENS4_10bfloat16_tELNS1_4TileE0EEE": "b893a0f0a07700c3da7e0d870217a2addfe2e6830e4b3fda36cf14ad7b794154",
-        "_ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tENS4_10bfloat16_tELNS1_4TileE1EEE": "f201d42b4ac0c9dd5fda6b25eff3b80d06c323cecc087a064939d93848fd82a0",
-        "_ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tENS4_6half_tELNS1_4TileE0EEE": "96437b5870b98dcdb95fa8c090b3e74788e2e2ce3932bf8c82f9fcaf96f1650b",
-        "_ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tENS4_6half_tELNS1_4TileE1EEE": "f7c8d43cf32667adf78dafc26c213e1119b5b5bce9f671ae42835fac76ce5b06",
-        "_ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE0EEE": "140c1f166b173971934ae0bb02dc1afecf2fe4a370214638f30f3a537b9d22c9",
-        "_ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE1EEE": "1c6e7ea7538249f591656c982ff11321fd9c1009569cd2d51d5be648d6a5e43a"
-      },
-      "conclusion": "All8 dense instruction streams through their single EOT and complete per-kernel ze_info blocks match. Raw text-byte differences lie after EOT in null-destination marker immediates/padding; explicit branch targets remain below that region and indirect transfers were not found. This resolves the raw code difference for these native kernels, not model quality, runtime timing or total host executable equivalence.",
-      "extractor_source_commit": "ff5a9e784b6fa5d2c57845469d7330ffe23a638c",
-      "disassembler_sha256": "76593e79a6a24277305ef6f2ad9fb042028205a0b028cd2beddd98a9681ce9b1",
-      "inputs": [
-        {
-          "label": "reference",
-          "binary_sha256": "bb8b3f097837026528699031de72b2fae5f779f095efda96161fce037847f5d0",
-          "native_image": {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/inspect-existing-dense-v1/reference/image-0.bin",
-            "bytes": 162616,
-            "sha256": "b00f74ec86404be55d19ff3b827eba4a5cf4ec7ce1785e00b188bcb8cac15808"
-          }
-        },
-        {
-          "label": "candidate",
-          "binary_sha256": "fa35ec33debd8f8262bf2b7f52171eaeaca545e9a009f27be9ffb02c34ac2927",
-          "native_image": {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/inspect-existing-dense-v1/candidate/image-0.bin",
-            "bytes": 526816,
-            "sha256": "8e5b33ace812c17512d72e579971b441a724c7c15fdaafae42f18f1c622d6232"
-          }
-        }
-      ],
-      "effective_commands": [
-        {
-          "argv": [
-            "/usr/bin/ocloc",
-            "disasm",
-            "-file",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/inspect-existing-dense-v1/reference/image-0.bin",
-            "-dump",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/inspect-existing-dense-v1/reference/disasm"
-          ],
-          "environment": {
-            "PATH": "/usr/bin:/bin",
-            "LANG": "C.UTF-8"
-          },
-          "exit_code": 0
-        },
-        {
-          "argv": [
-            "/usr/bin/ocloc",
-            "disasm",
-            "-file",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/inspect-existing-dense-v1/candidate/image-0.bin",
-            "-dump",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/inspect-existing-dense-v1/candidate/disasm"
-          ],
-          "environment": {
-            "PATH": "/usr/bin:/bin",
-            "LANG": "C.UTF-8"
-          },
-          "exit_code": 0
-        }
-      ],
-      "extraction_rule": "inspect_native_sections.inspect(binary,private_directory); select image containing DenseKernel text; disassemble offline; compare instructions through the unique EOT, direct branch destinations and complete per-kernel ze_info blocks."
-    }
-  },
-  "dense_helper_source_restoration": {
-    "original_source": "7829568c61f4a47e5c1b06497f59e41a3417a5fb",
-    "path": "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp",
-    "original_definition_restored_verbatim": true
-  },
-  "down_component_qualification": {
-    "source_commit": "7fbe795cebbf898bf27b1e6ad7debe86cfa93a5f",
-    "result": "bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json",
-    "correctness_passed": true,
-    "three_process_timing_complete": true,
-    "model_experiment_gate_passed": false,
-    "production_selected": false
+  "qsa_ordered_exp_qualification": {
+    "source_commit": "9d000172f53c399453a0662c3eac2b0771114e7e",
+    "state": "Traced smoke, all11 cases/arm and3-process clean component performance gate passed (ratio0.912692). No model hook or model adoption yet.",
+    "reviewed_prototype_commit": "36023af50c1fc1d4f1d6dc2a827a75bdbd0c3c8a",
+    "original_failed_smoke_commit": "963d387698f8b30b8fff9229449775000bdef4b8",
+    "model_adopted": false
   }
 }

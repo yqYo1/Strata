@@ -40,69 +40,49 @@ These are durable operating rules for Main and delegated work. Use the
 for upstream evaluation; the user's project-specific rules here take precedence
 over generic workflow examples.
 
-At session start, resume and after context compaction, reread this file and the
-current committed decisions relevant to the task before launching work. Check
-the actual branch, worktree, pending changes and owned in-flight jobs; do not
-rely on conversational memory or create a separate resume checkpoint. Check the
-existing job's receipt before resuming a measurement or starting another one.
-Apply the retention rules below to existing artifacts as well as newly generated
-ones. When the user changes a durable operating rule, update the affected section
-and relevant maintained policy document before the next action it governs. If a
-policy file is itself frozen by an active run, apply the instruction immediately
-and update that file at the first safe boundary. Keep durable rules here and
-per-run state in compact committed results; do not turn this file into a
-chronological log or create a second policy copy in a resume note.
-Later user instructions supersede older rules; update the affected policy rather
-than keeping contradictory versions. Do not infer that an unfinished experiment,
-unverified feature or research proposal became adopted during a context change.
-Use [the maintained prefill decisions](docs/SYCL_NATIVE16_PREFILL.md) and their
-linked compact results to identify the current validated build, clean speed
-reference, selected next experiment, pending validation and provenance holds.
-Verify those against the actual files before acting. Preserve the distinction
-between a proposed change, a tested component and a qualified model route when
-resuming or reporting progress. Read historical detail only for a concrete gap.
-Do not load the research library or old raw logs wholesale as a resume procedure.
-Before launching a measurement, adopting a change or deleting artifacts, check
-the applicable sections below again against the actual inputs and current
-consumer. A startup read alone does not replace these action-time checks.
-Pass the applicable rules and report-index location to each delegated task;
-delegation does not transfer Main's responsibility for integration and testing.
+At session start, resume and after context compaction, reread this file before
+launching work. Use [the maintained prefill decisions](docs/SYCL_NATIVE16_PREFILL.md)
+and their linked compact results to recover the validated build, clean speed
+reference, selected experiment, pending validation and provenance holds. Verify
+them against the actual branch, worktree, pending changes and owned in-flight
+jobs. Inspect the existing job's receipt and process handle before starting or
+resuming a measurement. Conversational memory and a stale receipt are insufficient.
 
-Use the following checks at the point of action, with details in the sections below:
-Treat them as prerequisites: complete a missing check before the action, rather
-than recording after the fact that it was skipped. Keep an explicit unresolved
-exception pending until its recorded condition is met; a context change or a
-new experiment does not clear it.
+**Repeat the applicable check immediately before each action.** These are
+prerequisites, not items to explain away in a later report. A startup read does
+not replace them. Use this table to find the detailed rule without rereading
+historical logs or the research library wholesale.
 
-- Before a build or measurement, verify the exact committed engine, benchmark,
-  controller, generated inputs and recipe, the existing job's ownership and the
-  comparison plan. Identify the retained known-good build and
-  any imminent comparison build across all project worktrees before creating
-  another generation. Preserve the validated fallback before a rebuild can
-  overwrite its output path. Do not measure uncommitted changes or assume that
-  committing them after measurement makes the original executable reproducible.
-- Before integration, check provenance and decide each inference component
-  separately, including prefill and decode. Preserve required non-inference
-  functions; merging history or a report alone does not integrate an implementation.
-- When research arrives, check its classification and delegate report review.
-  Main reads the short review digest, and retrieves collection report sections
-  only for a concrete question; arrival alone is not a reason to load them.
-- Before keeping a log, report or binary, name its realistic next consumer and
-  review point. Check whether the necessary information is already in compact
-  results or recoverable Git history. A completed debug step does not justify
-  another permanent file; all individual comparison samples can be retained
-  without retaining every raw log.
-- Before deletion, verify the current consumer has ended and useful evidence is
-  preserved. For a build, recover and compare the original source/recipe from Git;
-  an assumed ability to rebuild is insufficient. Match the exact final binary
-  and its build inputs; a similarly named root, seed build or intermediate
-  receipt does not establish the final executable's provenance.
-- At each work boundary, commit and push the useful changes, integrate completed
-  work into `feature/sycl` and the fork default through a PR, then verify the
-  remote refs and pull the clean ghq default mirror. Retire finished branches,
-  comparison builds and raw output. Record any exception, its concrete remaining
-  action and its next review point in the existing compact result. Do not report
-  this boundary complete from a local commit or history-only merge alone.
+| Action | Required check | Detailed rules |
+| --- | --- | --- |
+| Build or measure | Exact engine, benchmark, controller, generated inputs and recipe are already committed and match the run. Verify job ownership and the comparison plan; identify retained generations across worktrees and preserve the validated fallback before overwriting it. | [Measurement](#measurement-and-gpu-execution), [artifacts](#measurement-and-diagnostic-artifacts) |
+| Integrate | Check provenance and decide inference parts individually, including prefill and decode. Preserve required non-inference functions. History preservation and component success alone do not qualify a model route. | [Scope](#this-forks-scope), [integration](#git-integration-and-tuning) |
+| Receive research | Check its classification and delegate review to native Codex gpt-6-luna with max reasoning. Main reads the short review digest; retrieve collection-report sections only for a concrete question. | [Parallel research](#parallel-research) |
+| Retain a file or build | Name the realistic next consumer and review point; check compact results and reachable Git history first. Preserve individual comparison samples without automatically retaining raw logs, reports or another build generation. | [Artifacts](#measurement-and-diagnostic-artifacts), [retention policy](docs/ARTIFACT_RETENTION.md) |
+| Delete artifacts | Confirm the consumer ended and useful evidence is preserved. For a build, retrieve and compare its original source/recipe from Git against the exact final executable's inputs. Check active ownership and the last required fixture. | [Artifacts](#measurement-and-diagnostic-artifacts), [deletion records](docs/ARTIFACT_RETENTION.md#cleanup-and-deletion-records) |
+| Close a work boundary | Commit and push useful changes; integrate completed work into feature/sycl and the fork default through a PR. Verify remote refs, pull the clean ghq default mirror, and retire finished branches, comparison builds and raw output. | [Git workflow](#git-integration-and-tuning), [artifacts](#measurement-and-diagnostic-artifacts) |
+
+An uncommitted measurement snapshot is not qualified retroactively by a later
+commit. A nearby revision, similarly named build root or matching binary hash
+alone does not prove recoverable source. Keep an unresolved exception pending
+with its concrete remaining action and next review point in the existing compact
+result; a new experiment or context change does not clear it. Do not report a
+boundary complete from a local commit or history-only merge alone.
+
+When the user changes a durable operating rule, update its affected section and
+relevant maintained policy document before the next action it governs. If the
+file is frozen by an active run, apply the instruction immediately and update
+the file at the first safe boundary. Later user instructions supersede older
+ones; replace contradictory rules instead of appending a second version.
+Keep durable rules here and per-run state in compact committed results, without
+a chronological policy log, separate resume checkpoint or duplicate policy copy.
+Apply retention rules to existing artifacts as well as new ones.
+
+Preserve the distinction between a proposal, a tested component and a qualified
+model route when resuming or reporting. An unfinished experiment or research
+proposal does not become adopted during a context change. Read historical detail
+only for a concrete gap. Pass applicable rules and the report-index location to
+every delegated task; Main remains responsible for integration and testing.
 
 ### Git, integration and tuning
 

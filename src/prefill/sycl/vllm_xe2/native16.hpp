@@ -8,6 +8,7 @@ namespace strata::experimental::vllm_xe2_native16 {
 
 enum class Storage { fp16, bf16 };
 enum class Tile { compact_16x64, wide_128x128 };
+enum class ScatterLayout { matrix, output_copy };
 
 struct Problem {
   const uint16_t *x = nullptr; // compact X[T,K], same input type as W
@@ -39,9 +40,10 @@ struct DownScatterProblem {
 struct DownOwnership {
   size_t cells = 0, missing = 0, multiple = 0, masked = 0;
 };
-// Host-only inspection of the actual TLA partition_C used by the epilogue.
+// Host-only inspection of the selected epilogue's actual TLA coordinates.
 // Exhaustively counts every tile/lane/fragment element, including M tails.
-DownOwnership inspect_down_ownership(int64_t rows, Tile tile);
+DownOwnership inspect_down_ownership(int64_t rows, Tile tile,
+                                     ScatterLayout layout = ScatterLayout::matrix);
 
 // Source proposal only. Does not alter Gemm::*_out16 or select a runtime/device.
 // Runtime, queue and all registered Allocation owners must outlive submitted
@@ -63,7 +65,8 @@ public:
   // Component candidate only; no engine dispatch selects this API yet.
   // Same DPAS order, then BF16 rounding/widening, then FP32 sycl::fma.
   sycl::event down_scatter(const DownScatterProblem &problem,
-                         Tile tile = Tile::wide_128x128);
+                         Tile tile = Tile::wide_128x128,
+                         ScatterLayout layout = ScatterLayout::matrix);
   sycl::queue &queue() const { return queue_; }
 
 private:

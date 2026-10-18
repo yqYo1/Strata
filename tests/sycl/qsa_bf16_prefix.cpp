@@ -8,6 +8,7 @@
 #include <bit>
 #include <cmath>
 #include <cstdint>
+#include <cstring>
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
@@ -108,6 +109,12 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
   Buffer<uint16_t> packed_k(size_t(active_rows)*Dim+2*PackedGuard),packed_v(size_t(active_rows)*Dim+2*PackedGuard);
   Buffer<int32_t> packed_bad(size_t(active_rows)+2*PackedGuard);
   const int32_t bad_guard=0x12345678;
+#if defined(STRATA_QSA_COMPARE_PREFIX_STATE)
+  const size_t state_values=size_t((cap+31)/32)*4;
+  const float state_guard=-913.75f;
+  Buffer<float> state(state_values+32);
+  const std::vector<float> state_initial(state_values+32,state_guard);
+#endif
   Drain pending; // Destroy before every input/output owner on success and failure.
   packed_k.put(std::vector<uint16_t>(size_t(active_rows)*Dim+2*PackedGuard,guard));
   packed_v.put(std::vector<uint16_t>(size_t(active_rows)*Dim+2*PackedGuard,guard));
@@ -140,6 +147,32 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
     require(qsa_bf16_prefix_optimized_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
         out.data()+16,queries,{pages,pages},live_cells,scratch,&rt->compute()),"prefix33 reference unavailable");
     rt->wait();require(out.get()==candidate,"complete prefix33 bit identity");
+#if defined(STRATA_QSA_COMPARE_PREFIX_STATE)
+    // Capture both real and padded rows. The diagnostic specialization must
+    // preserve the corresponding normal output, including NaNs and guards.
+    // Compare raw FP32 bits before final BF16 output could hide a difference.
+    for (int kv_head : {0,1}) for (int head : {0,15}) {
+      std::vector<float> serial;
+      for (bool ordered : {false,true}) {
+        state.put(state_initial);out.put(sentinel);
+        const QsaPrefixStateProbe probe{0,kv_head,head,state.data()+16};
+        require(qsa_bf16_prefix_state_probe_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
+            out.data()+16,queries,{pages,pages},live_cells,scratch,ordered,probe,&rt->compute()),
+            "state probe admission");
+        rt->wait();require(out.get()==candidate,"state probe changed final output");
+        const auto observed=state.get();
+        for (size_t i=0;i<16;++i)
+          require(observed[i]==state_guard && observed[observed.size()-16+i]==state_guard,"state guards");
+        const int width=steps[kStepWidth];
+        const size_t used=(width>=0 && width<=cap) ? size_t((width+31)/32)*4 : 0;
+        for (size_t i=used;i<state_values;++i)
+          require(observed[16+i]==state_guard,"state capture wrote beyond selected width");
+        if (!ordered) serial=observed;
+        else require(std::memcmp(serial.data(),observed.data(),observed.size()*sizeof(float))==0,
+                     "online maximum/alpha/normalizer/sum FP32 bits differ");
+      }
+    }
+#endif
 #endif
   };
   auto guarded=[&] {
@@ -274,6 +307,35 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
     const auto saved_ks=ks;std::fill(ks.begin(),ks.end(),uint16_t(0x7c00));dks.put(ks);invoke();z=guarded();
     for (size_t i=16;i<z.size()-16;++i) require(std::isnan(load_bf16(z[i])),"live invalid K scale diagnostic");
     immutable();ks=saved_ks;dks.put(ks);invoke();require(guarded()==y,"recover original output");immutable();
+
+#if defined(STRATA_QSA_COMPARE_PREFIX_STATE)
+    // Invalid state views are refused before either pack/attention submission.
+    for (int invalid=0;invalid<8;++invalid) {
+      QsaPrefixStateProbe probe{0,0,0,state.data()+16};
+      if (invalid==0) probe.query=queries;
+      if (invalid==1) probe.head=16;
+      if (invalid==2) probe.kv_head=2;
+      if (invalid==3) probe.states=nullptr;
+      if (invalid==4) probe.states=reinterpret_cast<float *>(out.data()+16); // Actual output, after the guard.
+      if (invalid==5) probe.states=state_initial.empty() ? nullptr : const_cast<float *>(state_initial.data());
+      if (invalid==6) probe.states=reinterpret_cast<float *>(reinterpret_cast<char *>(state.data())+1);
+      if (invalid==7) probe.query=-1;
+      bool refused=false;
+      try { (void)qsa_bf16_prefix_state_probe_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
+          out.data()+16,queries,{pages,pages},live_cells,scratch,true,probe,&rt->compute()); }
+      catch (const std::invalid_argument &) { refused=true; }
+      require(refused,"invalid state capture submitted work");
+      require(guarded()==y,"state rejection changed output");
+    }
+    { Buffer<float> tiny(1); Drain pending_tiny;
+      bool refused=false;
+      try { (void)qsa_bf16_prefix_state_probe_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
+          out.data()+16,queries,{pages,pages},live_cells,scratch,false,{0,0,0,tiny.data()},&rt->compute()); }
+      catch (const std::invalid_argument &) { refused=true; }
+      require(refused,"short state span submitted work");
+    }
+    std::cout<<"case state_admission_rejections=9 status=PASS\n";
+#endif
     bool rejected=false;
     try { (void)attention(dq.data(),pools,di.data(),ds.data(),cap,shape,dq.data(),queries,{pages,pages},&rt->compute()); }
     catch (const std::invalid_argument &) { rejected=true; }
@@ -317,6 +379,9 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
            <<" max_budget_ratio="<<max_budget_ratio<<" oracle=BF16_operands_FP32_online"
            <<" packed_guard_elements="<<PackedGuard<<" packed_k_mod8="<<reinterpret_cast<uintptr_t>(scratch.k)%8
            <<" packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS\n";
+#if defined(STRATA_QSA_COMPARE_PREFIX_STATE)
+  std::cout<<"case exact_FP32_online_state=PASS real_padded_heads=PASS state_guards=PASS cells="<<cells<<" cap="<<cap<<'\n';
+#endif
 #if defined(STRATA_QSA_COMPARE_PREFIX33)
   std::cout<<"case exact_prefix33_bits=PASS cells="<<cells<<" cap="<<cap<<" queries="<<queries<<'\n';
 #endif
