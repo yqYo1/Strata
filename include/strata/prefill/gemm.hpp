@@ -58,6 +58,10 @@ public:
     void bf16_out16(const uint16_t* X, const uint16_t* W, uint16_t* Y,
                     int64_t T, int64_t N, int64_t K, bool output_bf16 = false,
                     int64_t ldy = 0, float beta = 0.0f);
+    /// Explicit long-prefill GU candidate. Returns false without submission
+    /// unless startup GU_SWIGLU=large selects a >=2334-row job. Fixed FP16
+    /// X[T,2560], W[1280,2560] -> FP16 hidden[T,640], BF16-rounded operands.
+    bool try_gu_swiglu16(const uint16_t* X, const uint16_t* W, uint16_t* hidden, int64_t T);
 #endif
 
     /// W given as native GGUF blocks of `ggml_type`, dequantized to FP16 in the scratch, X in FP16.

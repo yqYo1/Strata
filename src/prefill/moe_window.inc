@@ -179,14 +179,19 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
             auto tag = command_trace.tag(cp::Kind::gather, job.expert, job.global_row, job.rows, N);
             gather_rows16(mixed, source + job.global_row, gathered, job.rows, N, m.cs);
         }
+        bool fused_gu = false;
         {
             auto tag = command_trace.tag(cp::Kind::gu, job.expert, job.global_row, job.rows, 2 * 640, N, format.gu_type);
-            m.gemm.f16_out16(gathered, m.dq_gu[0], gu, job.rows, 2 * 640, N, true);
+            fused_gu = m.gemm.try_gu_swiglu16(gathered, m.dq_gu[0], hidden, job.rows);
+            if (!fused_gu) m.gemm.f16_out16(gathered, m.dq_gu[0], gu, job.rows, 2 * 640, N, true);
         }
-        {
+        if (!fused_gu) {
             hp::Host host(hp::moe_swiglu);
             auto tag = command_trace.tag(cp::Kind::swiglu, job.expert, job.global_row, job.rows, 640);
             native16::swiglu(gu, hidden, job.rows, m.cs);
+        } else {
+            ++owner.gu_fused_jobs;
+            owner.gu_fused_rows += uint64_t(job.rows);
         }
         {
             auto tag = command_trace.tag(cp::Kind::down, job.expert, job.global_row, job.rows, N, 640, format.d_type);

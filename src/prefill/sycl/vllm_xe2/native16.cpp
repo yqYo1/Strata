@@ -119,6 +119,74 @@ using TileMMA = typename TiledMMAHelper<MMA_Atom<XE_DPAS_TT<8, float, Input>>,
     typename ShapePolicy<Policy>::Subgroups>::TiledMMA;
 template <class Input, class Output, Tile Policy> class DenseKernel;
 template <Tile Policy, bool Capture, ScatterLayout Mapping> class DownScatterKernel;
+template <Tile Policy, bool Capture> class GuSwiGLUKernel;
+
+template <bool Capture> struct GuSwiGLUEpilogue {
+  GuSwiGLUProblem p;
+  template <class Fragment, class Coordinates, class MMA>
+  CUTE_DEVICE void operator()(const Fragment &fragment, const Coordinates &tile,
+                              const MMA &mma, int lane) const {
+    auto rounded = make_fragment_like<cutlass::bfloat16_t>(fragment.tensor());
+    reorder(fragment.tensor(), rounded, fragment.tv_layout(), fragment.tv_layout());
+    auto coordinates = mma.get_slice(lane).partition_C(tile);
+    static_assert(decltype(size(rounded))::value == decltype(size(coordinates))::value);
+    static_assert(decltype(size(rounded))::value % 2 == 0);
+    const auto sg = sycl::ext::oneapi::this_work_item::get_nd_item<3>().get_sub_group();
+    CUTE_UNROLL
+    for (int i = 0; i < size(rounded); i += 2) {
+      // Both BF16s keep their individual rounding. Exchange BEFORE logical
+      // masking, with identical loop/mask participation by every SG16 lane.
+      const uint32_t own = uint32_t(sycl::bit_cast<uint16_t>(rounded(i))) |
+          (uint32_t(sycl::bit_cast<uint16_t>(rounded(i + 1))) << 16);
+      const uint32_t partner = sycl::permute_group_by_xor(sg, own, 1);
+      const bool odd = (int(get<1>(coordinates(i))) & 1) != 0;
+      // Adjacent lanes split the TWO fragment indices: even-column lane uses
+      // i, odd-column lane uses i+1. Host inspection proves unique H writers.
+      const int index = i + int(odd), shift = int(odd) * 16;
+      const uint16_t gb = uint16_t((odd ? partner : own) >> shift);
+      const uint16_t ub = uint16_t((odd ? own : partner) >> shift);
+      const auto coordinate = coordinates(index);
+      const int row = get<0>(coordinate), col = get<1>(coordinate);
+      if constexpr (Capture) {
+        CUTE_UNROLL
+        for (int j = 0; j < 2; ++j) {
+          const auto c = coordinates(i + j);
+          if (get<0>(c) >= 0 && get<0>(c) < p.rows && get<1>(c) >= 0 && get<1>(c) < 1280)
+            p.rounded_diagnostic[size_t(get<0>(c)) * 1280 + size_t(get<1>(c))] =
+                sycl::bit_cast<uint16_t>(rounded(i + j));
+        }
+      }
+      if (row < 0 || row >= p.rows || col < 0 || col >= 1280) continue;
+      const float g = float(sycl::bit_cast<cutlass::bfloat16_t>(gb));
+      const float u = float(sycl::bit_cast<cutlass::bfloat16_t>(ub));
+      const float v = (g * (1.f / (1.f + sycl::exp(-g)))) * u;
+      const float clipped = sycl::isnan(v) ? v : sycl::clamp(v, -65504.f, 65504.f);
+      p.y[size_t(row) * 640 + size_t(col / 2)] = sycl::bit_cast<uint16_t>(sycl::half(clipped));
+    }
+  }
+};
+
+template <Tile Policy, bool Capture>
+sycl::event enqueue_gu(sycl::queue &q, GuSwiGLUProblem p, Geometry g) {
+  using P = ShapePolicy<Policy>;
+  using MMA = TileMMA<cutlass::half_t, Policy>;
+  namespace ex = sycl::ext::oneapi::experimental;
+  namespace ix = sycl::ext::intel::experimental;
+  const ex::properties props{ex::sub_group_size<16>, ix::grf_size<256>};
+  const sycl::nd_range<3> range(sycl::range<3>(g.groups_m, g.groups_n, P::threads),
+                              sycl::range<3>(1, 1, P::threads));
+  return q.submit([&](sycl::handler &h) {
+    h.parallel_for<GuSwiGLUKernel<Policy, Capture>>(range, props, [=](sycl::nd_item<3> item) {
+      auto a = make_tensor(make_gmem_ptr(reinterpret_cast<const cutlass::half_t *>(p.x)),
+          make_layout(make_shape(g.t, g.k), make_stride(g.k, _1{})));
+      auto b = make_tensor(make_gmem_ptr(reinterpret_cast<const cutlass::half_t *>(p.w)),
+          make_layout(make_shape(g.n, g.k), make_stride(g.k, _1{})));
+      auto c = make_identity_tensor(make_shape(g.t, g.n));
+      const auto coord = make_coord(int(item.get_group(0)), int(item.get_group(1)), _, 0);
+      derived::xe_gemm_epilogue<void, void, void>(a, b, c, coord, MMA{}, GuSwiGLUEpilogue<Capture>{p});
+    });
+  });
+}
 
 template <bool Capture, ScatterLayout Mapping> struct DownEpilogue {
   DownScatterProblem p;
@@ -240,6 +308,58 @@ DownOwnership inspect_ownership(int rows) {
   return result;
 }
 
+template <Tile Policy, GuLayout Mapping>
+GuPairOwnership inspect_gu_pair(int rows) {
+  using P = ShapePolicy<Policy>;
+  using MMA = TileMMA<cutlass::half_t, Policy>;
+  const MMA mma{};
+  const auto shape = mma.tile_mnk();
+  auto identity = make_identity_tensor(make_shape(rows, 1280));
+  std::vector<uint8_t> gu(size_t(rows) * 1280, 0), hidden(size_t(rows) * 640, 0),
+      packed(size_t(rows) * 640, 0);
+  GuPairOwnership result;
+  result.gu_values = gu.size(); result.hidden_values = hidden.size();
+  for (int m = 0; m < (rows + int(get<0>(shape)) - 1) / int(get<0>(shape)); ++m)
+    for (int n = 0; n < (1280 + int(get<1>(shape)) - 1) / int(get<1>(shape)); ++n) {
+      auto tile = local_tile(identity, shape, make_coord(m, n, 0), Step<_1, _1, X>{});
+      const auto partition = [&](int lane) {
+        if constexpr (Mapping == GuLayout::output_copy) {
+          auto copy = make_block_2d_copy_D<cutlass::bfloat16_t>(mma, make_stride(1280, _1{}));
+          return copy.get_slice(lane).partition_S(tile);
+        } else return mma.get_slice(lane).partition_C(tile);
+      };
+      for (int lane = 0; lane < P::threads; ++lane) {
+        const auto own = partition(lane), partner = partition(lane ^ 1);
+        for (int i = 0; i < size(own); ++i) {
+          const auto c = own(i), p = partner(i);
+          const int row = get<0>(c), col = get<1>(c);
+          if (row < 0 || row >= rows || col < 0 || col >= 1280) { ++result.masked; continue; }
+          auto &visited = gu[size_t(row) * 1280 + size_t(col)];
+          if (visited < 2) ++visited;
+          if (col % 2) continue;
+          auto &written = hidden[size_t(row) * 640 + size_t(col / 2)];
+          if (written < 2) ++written;
+          ++result.checked_pairs;
+          result.partner_mismatch += get<0>(p) != row || get<1>(p) != col + 1;
+        }
+        if (size(own) % 2) ++result.packed_orientation_mismatch;
+        for (int i = 0; i + 1 < size(own); i += 2) {
+          const int parity = int(get<1>(own(i))) & 1;
+          result.packed_orientation_mismatch += (int(get<1>(own(i + 1))) & 1) != parity;
+          const auto c = own(i + parity);
+          const int row = get<0>(c), col = get<1>(c);
+          if (row < 0 || row >= rows || col < 0 || col >= 1280) continue;
+          auto &written = packed[size_t(row) * 640 + size_t(col / 2)];
+          if (written < 2) ++written;
+        }
+      }
+    }
+  for (auto count : gu) { result.gu_missing += count == 0; result.gu_multiple += count > 1; }
+  for (auto count : hidden) { result.hidden_missing += count == 0; result.hidden_multiple += count > 1; }
+  for (auto count : packed) { result.packed_missing += count == 0; result.packed_multiple += count > 1; }
+  return result;
+}
+
 template <class Input, class Output, Tile Policy>
 sycl::event enqueue(sycl::queue &q, const Problem &p, Geometry g) {
   using P = ShapePolicy<Policy>;
@@ -306,6 +426,21 @@ DownOwnership inspect_down_ownership(int64_t rows, Tile tile, ScatterLayout mapp
   throw std::invalid_argument("Down ownership: invalid tile");
 }
 
+GuPairOwnership inspect_gu_pair_ownership(int64_t rows, Tile tile, GuLayout mapping) {
+  if (rows < 1 || rows > 8192)
+    throw std::invalid_argument("GU ownership: rows outside [1,8192]");
+  const auto inspect = [&]<Tile Policy>() {
+    if (mapping == GuLayout::matrix)
+      return inspect_gu_pair<Policy, GuLayout::matrix>(int(rows));
+    if (mapping == GuLayout::output_copy)
+      return inspect_gu_pair<Policy, GuLayout::output_copy>(int(rows));
+    throw std::invalid_argument("GU ownership: invalid layout");
+  };
+  if (tile == Tile::compact_16x64) return inspect.template operator()<Tile::compact_16x64>();
+  if (tile == Tile::wide_128x128) return inspect.template operator()<Tile::wide_128x128>();
+  throw std::invalid_argument("GU ownership: invalid tile");
+}
+
 sycl::event Gemm::down_scatter(const DownScatterProblem &p, Tile tile, ScatterLayout mapping) {
   if (mapping != ScatterLayout::matrix && mapping != ScatterLayout::output_copy)
     throw std::invalid_argument("Down scatter: invalid layout");
@@ -369,5 +504,29 @@ sycl::event Gemm::beta0(const Problem &p, Tile tile) {
   if (p.output == Storage::fp16)
     return select_tile<cutlass::bfloat16_t, cutlass::half_t>(queue_, p, g, tile);
   return select_tile<cutlass::bfloat16_t, cutlass::bfloat16_t>(queue_, p, g, tile);
+}
+
+sycl::event Gemm::gu_swiglu(const GuSwiGLUProblem &p, Tile tile) {
+  if (!has_fp16_ || p.rows < 1 || p.rows > 8192)
+    throw std::invalid_argument("GU SwiGLU: native FP16 and rows in [1,8192] required");
+  Problem shape;
+  shape.t = p.rows; shape.n = 1280; shape.k = 2560;
+  const auto g = geometry(shape, tile);
+  const size_t hb = mul(mul(size_t(p.rows), 640), 2);
+  validate_spans({{p.y, hb}}, {{p.x, g.xb}, {p.w, g.wb}}, 2);
+  if (p.rounded_diagnostic)
+    validate_spans({{p.y, hb}, {p.rounded_diagnostic, g.yb}}, {{p.x, g.xb}, {p.w, g.wb}}, 2);
+  validate_device_span(p.x, g.xb, queue_); validate_device_span(p.w, g.wb, queue_);
+  validate_device_span(p.y, hb, queue_);
+  if (p.rounded_diagnostic) validate_device_span(p.rounded_diagnostic, g.yb, queue_);
+  if (reinterpret_cast<uintptr_t>(p.x) % 64 || reinterpret_cast<uintptr_t>(p.w) % 64)
+    throw std::invalid_argument("GU SwiGLU: block2D inputs require 64B alignment");
+  runtime_.check();
+  const auto submit = [&]<Tile Policy>() {
+    if (p.rounded_diagnostic) return enqueue_gu<Policy, true>(queue_, p, g);
+    return enqueue_gu<Policy, false>(queue_, p, g);
+  };
+  if (tile == Tile::compact_16x64) return submit.template operator()<Tile::compact_16x64>();
+  return submit.template operator()<Tile::wide_128x128>();
 }
 } // namespace strata::experimental::vllm_xe2_native16

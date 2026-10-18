@@ -817,6 +817,84 @@ speed measurement follows. The engine executable is byte-identical to the
 The selected next implementation is the interleaved GU/SwiGLU epilogue seam;
 prove actual fragment partner ownership before running its GPU kernel.
 
+## MoE GU/SwiGLU component
+
+The first gate is host-only inspection of the actual pinned TLA matrix and
+output-copy layouts. `build_engine.py rebuild-gu` builds the manual
+`sycl_moe_gu_swiglu_bench` target. `measure_gu_swiglu.py ownership` checks both
+compact16x64 and wide128x128 policies at1/3/17/33/129/2334/5963/8191/8192 rows,
+including masked tails. Each logical GU value and hidden output must have one
+owner. Adjacent interleaved gate/up columns may use same-index lane-XOR1 exchange
+only if every pair in that layout passes. This mode creates no Runtime, queue or
+USM allocation and submits no GPU work; its90s/120CPU-second/2GiB-RSS/64MiB-output
+budget is independent of later numerical and performance gates. No model path
+selects a fused GU kernel at this stage.
+
+The original ownership gate at source`b3e982d93` passed all36 cases, with zero
+adjacent-pair mismatches for both layouts/policies (receipt at`3ea300e5d`). The
+next explicit component API uses the matrix layout and packs two already-rounded
+BF16 fragment values into one32-bit subgroup exchange. Adjacent lanes compute
+different fragment indices, balancing the hidden writers. A new host gate must
+prove this packed mapping before any GPU test, followed by a384-work-item check
+of the actual local/subgroup index relationship. This is newly authored Strata
+code using the existing licensed DPAS helper and public TLA/SYCL APIs.
+
+Run/commit `measure_gu_swiglu.py ownership`, then `smoke`, then `validate`, then
+`perf`. Smoke uses tracing/parameter validation and checks both tile policies,
+finite/rounding/NaN/saturation inputs and13 rejected admissions. Full validation
+adds1/17/33/129/2334/5963/8191/8192-row cases for both policies. BF16 diagnostic
+capture must match dense DPAS output exactly; hidden output preserves finite
+FP16 saturation and NaN classification, with a prospective maximum1 FP16 ULP
+bound across the existing JIT activation and new AOT epilogue. Small finite
+cases also use an independent integer dot-product oracle. Check guards and input
+immutability for both capture and no-capture specializations.
+
+Clean timing uses three independent processes, rotated separate/fused arms,
+five measured rounds plus warmup,16 submissions per burst, at64/160/2334/5963/8192
+rows. Keep every measured sample and both host wall time and queue intervals;
+an interval includes launch bubbles and does not establish GPU busy time.
+The prospective component gate is wall-ratio geomean<0.98 with every large
+shape/process ratio<=1.02. Any model integration still requires long-input
+matched measurements and the broader correctness gates. The eliminated logical
+GU write/read is5120bytes per row,40MiB for8192 rows; this is an operation count,
+not a measurement of physical VRAM traffic or a proof of a bandwidth bottleneck.
+
+At source`5ca094afc`, the packed ownership36 cases, traced smoke4 cases and13
+admissions, full18 cases and all timed outputs passed without a fresh GPU fault.
+BF16 captures were exact and the observed FP16 difference was0 ULP, including
+the no-capture specialization. NaN payload bits are not an adoption criterion;
+the finite hidden output must remain saturated and within the stated bound.
+The native Luna-max review corrected a research false positive: the all-slot
+partner loop, XOR involution, parity and packed writer census also prove sloti+1.
+
+| Rows | Fused/separate wall ratio, median of3 process ratios | Decision for next model trial |
+| --- | ---: | --- |
+| 64 | 0.85950 (range0.67026–0.92128) | Exclude because of wide timing spread |
+| 160 | 1.07211 | Retain separate GU/SwiGLU |
+| 2334 | 0.97321 | Eligible large-job candidate |
+| 5963 | 0.94814 | Eligible large-job candidate |
+| 8192 | 0.92754 | Eligible large-job candidate |
+
+The component wall-ratio geometric mean was0.94205. This is a component result,
+not model throughput. Preserve the samples in the
+[current component result](../bench/results/2026-10-15-pr6-recovery-audit/moe-gu-swiglu-current.json).
+The explicit startup selector`STRATA_SYCL_PREFILL_GU_SWIGLU=large` is a model
+experiment: use the wide fused kernel only for jobs>=2334 rows in the existing
+long-input accumulator window. Smaller jobs keep the separate operators.
+Speeds between the sampled sizes remain unmeasured; actual model timing decides
+this threshold. Default, short-input prefill and decode do not select this API.
+Existing command-service census assumes a separate activation command, so the
+new selector rejects that observer until fused-command coverage is qualified;
+the ordinary parameter validation and trace path remains available.
+
+Run/commit `bench_engine.py prepare qsa-gu-fusion-check`, then its matching
+`run`. Only a passed>=32K actual-input admission permits the corresponding
+`base` then`candidate` phases. Both clean arms use the same engine, ordered-exp
+QSA, GDN columns4, matched official`bench.sh` requests and thinking enabled;
+only the GU selector changes. Each arm records first-use plus3 subsequent
+fresh>=64K requests and actual fused/separate job counts. Repeated independent
+cohorts are still required if variability prevents an adoption decision.
+
 ## MoE Down/scatter component
 
 `Gemm::down_scatter` is an explicit component API with no model dispatch hook.
