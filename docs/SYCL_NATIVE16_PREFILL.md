@@ -1482,7 +1482,16 @@ those sources keep the original synchronous copy. The next bounded gate also
 uses the real Arena provider to check blob identity, later source calls, invalid
 layers, close/reopen, File fallback and Linux shared exclusion, before synthetic
 GPU upload/guard/unwind cases. Initial compilation and the14 CPU view extent
-checks passed; revised provider/GPU/model qualification remains pending.
+checks passed. The real provider checks and all six traced small/six full GPU
+cases subsequently passed at build source`a57611b9c`, without a fresh fault or
+boot change. These include fixed/compact source strides and checked unwind.
+An earlier build stopped before execution because the provider target was not
+registered in the separate SYCL CMake path; that failed receipt is preserved.
+Model qualification and speed remain pending. The next official117K check
+requires actual48-layer view admission, zero owned upload slab, unchanged
+384-slot/residual placement and full owner/work/CPU accounting. Clean0/1 pairs
+follow separately, with rotated A0/B0/B1/A1/A2/B2 order; do not equate disappearance
+of the source-copy category with a measured throughput gain.
 
 Keep the compiled
 fine command sampler off: it lacks a staged-expert-copy tag and would reject
