@@ -1495,10 +1495,23 @@ The legacy source-copy region now prepares references in0.000038133wall /
 still took4.94585wall /4.88016CPU seconds, and explicit wait CPU was78.90636s.
 The125.91473s observer frame and923.2tok/s first-use reading are profiled;
 they are not clean repeated performance. All owners closed normally without
-a fresh fault. The warm/clean comparison remains pending. Clean0/1 pairs use
-rotated A0/B0/B1/A1/A2/B2 order; do not equate disappearance of the source-copy
-category with a measured throughput gain. Broader quality,physical262144,
-session/RESTORE and sustained-generation qualification remain pending.
+a fresh fault. The first clean pair then closed normally on the same binary,
+110 benchmark-input hashes and four fresh request hashes, with identical
+requested expert H2D bytes for every matched request:
+
+| Process | First use, tok/s | Subsequent individual samples, tok/s | Subsequent median | Sample SD |
+| --- | ---: | --- | ---: | ---: |
+| A0, synchronous copy | 891.6 | 957.4,952.7,951.6 | 952.7 | 3.0806 |
+| B0, immutable view | 829.0 | 995.5,996.9,997.2 | 996.9 | 0.9074 |
+
+The subsequent-median ratio is1.046394, while the first-use ratio is0.929789.
+The first-use regression remains part of the result; its cause is unproven.
+Neither the three-pair adoption criterion nor1000tok/s is qualified by this one
+pair. Original results are at commits`b9dd79277` and`fc886a352` in
+`bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json`.
+Continue the frozen A0/B0/B1/A1/A2/B2 order; do not equate disappearance of the
+source-copy category with a measured gain in other workloads. Broader quality,
+physical262144,session/RESTORE and sustained-generation qualification remain pending.
 
 Keep the compiled
 fine command sampler off: it lacks a staged-expert-copy tag and would reject
