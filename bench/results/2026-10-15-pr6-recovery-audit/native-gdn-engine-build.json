@@ -94,22 +94,7 @@
     "strata",
     "sycl_gdn_columns_bench"
   ],
-  "retention_consumer": "Current long-prefill comparison and its attention fixtures; retire when comparison closes.",
-  "retained_validation_reference": {
-    "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-gdn-columns-v1/strata",
-      "bytes": 20515304,
-      "sha256": "96a3f5ccde5650ce7e072540218eab60ff480b9078494c327941b209a47a2894"
-    },
-    "source_commit": "799953bd2dbd065936a3e5178539de4ed9c133cb",
-    "original_build_recipe_revision": "799953bd2dbd065936a3e5178539de4ed9c133cb",
-    "full_build_record": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-gdn-columns-v1/build-record.json",
-      "sha256": "560fa2ceb9f9c6bed80ad423cc0e4ab876159ef81edea896aa5c3e5e6756e053"
-    },
-    "consumer": "Known-good fallback while the new GDN scheduling engine is compiled and qualified.",
-    "retirement_point": "After the new engine passes the traced component gates and selected32K-class model check; recover exact original inputs/recipe and retire this extra generation at that closed boundary."
-  },
+  "retention_consumer": "Latest exact-GDN engine/fixture: component gates and actual39K partitioned model admission passed; imminent consumer is clean same-binary78K original versus4-partition model screen. Review at comparison closure.",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
     "bytes": 20573552,
@@ -143,5 +128,13 @@
       "count": 5703,
       "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
     }
-  ]
+  ],
+  "partitioned_model_runtime_qualification": {
+    "revision": "1f3e0f60b51fa16d5880056b8bb0b567a62da4d5",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/gdn-columns-model-current.json",
+    "actual_read_tokens": 39260,
+    "partitions": 4,
+    "passed": true,
+    "limits": "Runtime admission only; model quality and full model physical-context/RESTORE remain unqualified."
+  }
 }
