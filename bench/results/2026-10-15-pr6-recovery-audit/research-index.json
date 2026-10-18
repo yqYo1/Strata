@@ -945,7 +945,7 @@
   },
   "warm_resource_collector_review_scope": {
     "classification": "decision_support",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "question": "Audit the new two-request warm resource collector: exact request segmentation, independent completion/conservation gates, parser extraction compatibility and information retained for first-use versus subsequent attribution. No GPU math or implementation changes.",
     "prerequisites_met": [
       "Source change exists and CPU checks preserve previously retained48-layer GDN/678 command observations.",
@@ -957,7 +957,7 @@
     },
     "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/warm-resource-collector-review.md",
     "main_reads_body_on_arrival": false,
-    "state": "Eligible finite source-only review; no researcher execution or implementation. Main continues owned measurement.",
+    "state": "Orca review completed and released; PTY positively closed and delivery acknowledged. Native gpt-6-luna/max review complete; Main received its short digest. The two-request measurement is closed and passed, with zero CPU throw counters.",
     "retention_consumer": "One current resource-attribution integrity decision, reviewed at its closure.",
     "report_budget": {
       "words": [
@@ -965,6 +965,17 @@
         2200
       ],
       "maximum_bytes": 24576
+    },
+    "report_sha256": "69dcea9472661527a4f3da62520759a8a84a8db77b811591d1bc1c60d868cd42",
+    "report_bytes": 12562,
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/warm-resource-collector-native-review.json",
+    "review_sha256": "73a37f75aa3171d1d4fe15583060ed4bcce10c6dd43d4b1bae4aad4588fa1faa",
+    "review_bytes": 6754,
+    "review_digest": {
+      "request_segmentation": "Fits declared coarse first-use/subsequent attribution; detailed cold command/per-layer timing is not required by that question.",
+      "accepted_guard_followup": "Explicit command frame/stratum reconciliation and CPU wait/host throw checks; both original closed intervals pass the added guards, four malformed cases are rejected.",
+      "corrections": "Pinned coarse/QSA complete gates already validate their expected counts. CPU available=1 entails valid accounting/no open waits, but does not alone rule out throw counters. No evidence the original result was wrong.",
+      "scope_limit": "Profiled requests, not clean speed or independent process repetitions; selected GPU service is not full-window coverage or physical hardware saturation."
     }
   }
 }

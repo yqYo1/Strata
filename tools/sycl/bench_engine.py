@@ -52,6 +52,18 @@ def compact_window_census(windows):
         all_job_row_and_expert_conservation_checks_passed=True, planned_matches_retired=True,
         limits='Requested/logical metadata; not physical PCIe or VRAM traffic, occupancy or additive wall time.')
 
+def compact_command_service(profile):
+    """Preserve every selected interval without repeated per-sample field names."""
+    for name in ('sample', 'group'):
+        rows = profile[name + 's']
+        columns = list(rows[0])
+        guards.require(all(set(row) == set(columns) for row in rows),
+                       'inconsistent command record fields')
+        profile[name + '_columns'] = columns
+        profile[name + 's'] = [[row[k] if k == 'kind' else int(row[k]) for k in columns] for row in rows]
+    return profile
+
+
 def extract_resource_profile(log, phase_profile, command_profile, limits):
     """Validate one long-request interval; never aggregate across requests."""
     record = {}
@@ -79,6 +91,12 @@ def extract_resource_profile(log, phase_profile, command_profile, limits):
                    'strata prefill cpu host: version=3 available=1 open_regions=0'):
         guards.require(sum(x.startswith(prefix) for x in record['resource_diagnostics']) == 1,
                        'missing or duplicate complete resource observer: ' + prefix)
+    for prefix in ('strata prefill cpu wait:', 'strata prefill cpu host:'):
+        line = next(x for x in record['resource_diagnostics'] if x.startswith(prefix))
+        fields = dict(part.split('=', 1) for part in line[len(prefix):].split())
+        throws = [int(v) for k, v in fields.items() if k.endswith('_throws')]
+        guards.require(throws and not any(throws), 'CPU attribution includes thrown wait/host regions')
+    record['cpu_attribution_qualified'] = True
     record['census_scope'] = 'Planned host metadata reconciled with completed window issuer totals; profiler/validation enabled, not clean speed or physical hardware saturation.'
     if phase_profile:
         # The supported coarse observer checks every event/query and
@@ -128,6 +146,15 @@ def extract_resource_profile(log, phase_profile, command_profile, limits):
         record['command_service_profile'] = dict(version=2, summaries=summaries,
             groups=groups, samples=samples, invalid=invalid,
             scope='Deterministic samples in first accumulator expert phases of layers0,15,31,47; initial router/shared/final writes excluded; no device-busy or physical-traffic claim.')
+        frame_layers = {0: 0, 1: 15, 2: 31, 3: 47}
+        group_keys = [(int(g['window']), g['kind'], int(g['bin'])) for g in groups]
+        guards.require(len(set(group_keys)) == len(group_keys) and
+            {int(g['window']) for g in groups} == set(frame_layers) and
+            all(frame_layers.get(int(g['window'])) == int(g['layer']) and int(g['first_row']) == 0
+                for g in groups), 'unexpected or duplicate command window/stratum')
+        observed = Counter((int(s['window']), s['kind'], int(s['bin'])) for s in samples)
+        guards.require(observed == {key: int(g['service_samples']) for key, g in zip(group_keys, groups)},
+                       'command samples do not match window/stratum counts')
         guards.require('strata MoE window configuration: requested_mode=10 effective_mode=10 ' in log,
             'command service must sample the admitted production accumulator route')
         guards.require(len(summaries) == 1 and summaries[0]['version'] == '2' and
@@ -385,8 +412,11 @@ def main():
                             'layer=' not in x or 'layer=-1 ' in x],
                         'gdn_phase_aggregate': cold['gdn_phase_queue_intervals']['aggregate'],
                         'command_service_summary': cold['command_service_profile']['summaries'],
-                        'window_census': compact_window_census(cold['planned_moe_windows'])}
+                        'window_census': {k: v for k, v in compact_window_census(cold['planned_moe_windows']).items()
+                                          if k != 'aggregate_job_rows_histogram'},
+                        'detail_not_retained': 'Cold per-command/per-layer timing and detailed job histogram are not used by this aggregate first-use comparison.'}
                     record['window_census'] = compact_window_census(record.pop('planned_moe_windows'))
+                    record['command_service_profile'] = compact_command_service(record['command_service_profile'])
                     record['resource_profile_request_index'] = 1
                     record['request_separation'] = {
                         'method': 'Exact long layer-major GDN route markers delimit two requests; each interval independently passes complete census/coarse/QSA/CPU/command gates.',
