@@ -1691,5 +1691,30 @@
       "Same-queue enqueue ordering and checked outer lease are required; actual staged DMA, failure retirement, model speed, physical262144 and RESTORE remain untested."
     ],
     "main_followup": "Query-only device properties at source8f5233059 report max_mem_alloc_size10132807680B, above the2406154240B proposed residual. CPU planner at cb74810ab now respects an explicit allocation cap and passes stricter hypothetical cap fallbacks. Engine staging, actual allocation/queue retirement, model speed, full-context/RESTORE remain untested."
+  },
+  "implemented_expert_bank_scope": {
+    "classification": "decision support",
+    "schedulable_now": true,
+    "state": "eligible for one actual-code audit",
+    "source_commit": "1222e27d0",
+    "source_files_sha256": {
+      "include/strata/prefill/expert_bank_plan.hpp": "1c3b9157f64c4e1c3aede95017ba17ad3c10d433946b5efa25d0c073c5f8c3a9",
+      "include/strata/prefill/expert_bank_upload.hpp": "8a8e117f7b73aa32621cbfeb959b091b19456af2ffab2cc99e7af2a42a8f14ad",
+      "src/prefill/layer_major.inc": "8ec7c5550c26c76c3d93cef4b011a4fc5673f200082469530c2900cde4218129",
+      "src/prefill/moe_window.inc": "ea2a5b20006827a9173d4588de0061ed0845307dc8ea58c2d72422841a11936c",
+      "src/prefill/prefill.cpp": "94a0bd84d40e2e826b259d511221a195d4569ae30171e8eabd9c8c7b2a22a7f6",
+      "src/core/expert_cache.cpp": "7d9a7fe0c54e8d55addcc9e9d7117d0b3addd3da294feb3b78b0fde735ce806e",
+      "tests/sycl/expert_bank.cpp": "5b32f7e18b2aba1cc18cc70a985cc906f8b59eb454badc9317e1558c27fb893c"
+    },
+    "prerequisites_met": [
+      "The default-off384-slot production path and shared upload helper/fixture are committed at e0620e260 plus explicit mutable-owner correction1222e27d0.",
+      "CPU allocation-cap and short-tail fallbacks passed at cb74810ab; current build is in progress under Main ownership.",
+      "The previous source034 design audit did not inspect this implemented staging code."
+    ],
+    "question": "Audit the actual staged expert-bank integration, especially private scratch publication, shared production upload helper, host-slab/queue lifetime, normal-FFN shape fallback and error teardown. Distinguish concrete bugs from untested model/session gates.",
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/implemented-expert-bank-audit.md",
+    "report_budget": "10KiB target,16KiB maximum; one finite actual-code audit",
+    "main_reads_body_on_arrival": false,
+    "retention_consumer": "Main next staged-bank component/model qualification; native Luna-max review first, review retention at comparison closure."
   }
 }
