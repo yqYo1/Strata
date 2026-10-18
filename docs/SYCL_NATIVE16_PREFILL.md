@@ -1245,7 +1245,11 @@ the previous Down work. Source45c387d11 built successfully;54 ownership,45
 traced smoke and110 full correctness events passed in closed owned processes,
 including startup flag0/large, threshold/tail/fallback checks and mixed map
 masks. No fresh driver fault occurred. Clean selective timing and same-build
-GU requalification remain pending; no new model speed or adoption is claimed.
+GU requalification was then completed:36 ownership cases,4 small correctness
+cases with13 admission rejects,18 full cases and3 clean timing processes passed
+without a fresh fault. The component wall-time geomean is0.952777; the existing
+>=2334 selector still excludes the slower160-row shape. Selective Down timing
+remains pending; no new model speed or adoption is claimed.
 
 The maintained model controller now provides `prepare|run qsa-long-input-check`
 and `prepare|run qsa-long-input [0|1|2]`. Its prospective screen holds131072
