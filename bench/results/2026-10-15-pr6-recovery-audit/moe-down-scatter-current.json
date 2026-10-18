@@ -30,6 +30,101 @@
       ],
       "event_count": 54,
       "immutable_input_failures": 0
+    },
+    {
+      "mode": "smoke",
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_down_scatter_bench",
+        "--smoke"
+      ],
+      "exit_code": 0,
+      "ownership_closed": true,
+      "passed": true,
+      "closure": {
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "owner_error": false,
+        "cleanup_attempted": false
+      },
+      "event_totals": [
+        [
+          "admissions",
+          "PASS",
+          3
+        ],
+        [
+          "correctness",
+          "PASS",
+          6
+        ],
+        [
+          "exception_unwind",
+          "PASS",
+          3
+        ],
+        [
+          "invalid_map",
+          "PASS",
+          21
+        ]
+      ],
+      "event_count": 33,
+      "immutable_input_failures": 0
+    },
+    {
+      "mode": "smoke",
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_down_scatter_bench",
+        "--route-smoke",
+        "0"
+      ],
+      "exit_code": 0,
+      "ownership_closed": true,
+      "passed": true,
+      "closure": {
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "owner_error": false,
+        "cleanup_attempted": false
+      },
+      "event_totals": [
+        [
+          "selected_route",
+          "PASS",
+          6
+        ]
+      ],
+      "event_count": 6,
+      "immutable_input_failures": 0
+    },
+    {
+      "mode": "smoke",
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_down_scatter_bench",
+        "--route-smoke",
+        "1"
+      ],
+      "exit_code": 0,
+      "ownership_closed": true,
+      "passed": true,
+      "closure": {
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "owner_error": false,
+        "cleanup_attempted": false
+      },
+      "event_totals": [
+        [
+          "selected_route",
+          "PASS",
+          6
+        ]
+      ],
+      "event_count": 6,
+      "immutable_input_failures": 0
     }
   ],
   "controller_source_commit": "7fe6d6a7b05d18febaf32134930e108bc88ed4a8",
@@ -41,9 +136,9 @@
   },
   "build_record_sha256": "61f9e2b14b9db7c5e2b1b531032665ca9709fd8127a69960fe80aa0eff25cbc0",
   "run_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-scatter-component-v6",
-  "mode": "ownership",
+  "mode": "smoke",
   "ownership_closed": true,
-  "GPU_executed": false,
+  "GPU_executed": true,
   "complete": true,
   "passed": true,
   "active": false,
@@ -81,6 +176,11 @@
     "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
     "SYCL_CACHE_PERSISTENT": "0",
     "ZES_ENABLE_SYSMAN": "0",
+    "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+    "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+    "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
     "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
     "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
     "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
