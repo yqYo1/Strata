@@ -1876,7 +1876,7 @@
   "host_layer_slab_prefetch_contract_scope": {
     "classification": "decision support",
     "schedulable_now": false,
-    "state": "Orca completed/released/acknowledged; native Luna-max review running. Main has not read the full report.",
+    "state": "Orca completed/released/acknowledged and its Main-created terminal closed; native Luna-max review complete. Main read only the short digest.",
     "source_commit": "1222e27d01f32c5bb31f574ff4b143c489a3bcf1",
     "source_files_sha256": {
       "src/prefill/layer_major.inc": "8ec7c5550c26c76c3d93cef4b011a4fc5673f200082469530c2900cde4218129",
@@ -1909,6 +1909,23 @@
     "report_sha256": "94318116ec97e9de04e0973e74c67b002e6a31efd72b1ae6cff799f388813c3a",
     "completion_delivery": "delivery_7c8286b5a6c8",
     "review_task": "/root/review_host_slab_prefetch_20261019",
-    "lifecycle_state": "Task/dispatch completed; worker-release returned external_terminal/processAction=none. Main then verified idle and explicitly closed its own fresh finite-task terminal; completion delivery acknowledged."
+    "lifecycle_state": "Task/dispatch completed; worker-release returned external_terminal/processAction=none. Main then verified idle and explicitly closed its own fresh finite-task terminal; completion delivery acknowledged.",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/host-layer-slab-prefetch-native-review.json",
+    "review_sha256": "abe94c2eab89678ecf36c90e7a646a465e0618ee460c3028558283dcb335b58a",
+    "review_bytes": 6617,
+    "reviewed_digest": [
+      "All five supplied source hashes and report hash match; Main also verified all five original Git blobs at source1222e27d0.",
+      "CPU-only slab preparation is plausible only for audited providers and exclusive source ownership. Arena non-atomic reads_ requires exclusive calls and post-join stats; fail closed for custom providers.",
+      "Quiesce or qualify File lookahead and exclude lifecycle/exchange mutation. Existing Stager calls GPU/event APIs and is unsuitable.",
+      "Cancellation/error delivery, worker join before drain/destruction, failed-drain owner retention and second-slab RAM admission still need implementation/qualification. Historical4.856s does not establish a current cost or speedup."
+    ],
+    "next_scope": {
+      "schedulable_now": false,
+      "prerequisites": [
+        "Current staged117K profile proves material source-copy critical-path cost.",
+        "Main selects and commits an exact audited-provider candidate with prospective tests."
+      ],
+      "question": "Candidate-specific thread/owner/error review only; no repeated generic staging survey."
+    }
   }
 }
