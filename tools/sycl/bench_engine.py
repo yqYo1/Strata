@@ -487,6 +487,14 @@ def main():
                         'method': 'Exact long layer-major GDN route markers delimit two requests; each interval independently passes complete census/coarse/QSA/CPU/command gates.',
                         'first_request': 'First-use profiled warmup, not an independent process repetition.',
                         'second_request': 'Subsequent fresh78K request with the same immutable observer environment; profiled speed is not a clean speed sample.'}
+                if host_profile and not warm_profile:
+                    # The short off/on gates need checked work totals, not a
+                    # second copy of every planned per-layer row distribution.
+                    record['window_census'] = {k: v for k, v in
+                        compact_window_census(record.pop('planned_moe_windows')).items()
+                        if k != 'aggregate_job_rows_histogram'}
+                    if 'command_service_profile' in record:
+                        record['command_service_profile'] = compact_command_service(record['command_service_profile'])
             guards.require(not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|retirement failed|Strata SYCL cleanup:', log), 'runtime failure')
             record['passed'] = bool(record['complete'] and entry.get('exit_code') == 0)
         except BaseException as error:
