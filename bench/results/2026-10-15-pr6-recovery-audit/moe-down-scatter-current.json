@@ -1,0 +1,206 @@
+{
+  "source_commit": "853535ed58dd01c9d535874eefda5b623a1dad09",
+  "fixture": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_down_scatter_bench",
+    "sha256": "ecefe5c0d65311aa79e3c9db77ae0247a0f0f58fe2a28674ab395c2387a4e7ec"
+  },
+  "checks": [
+    {
+      "mode": "ownership",
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_down_scatter_bench",
+        "--ownership"
+      ],
+      "exit_code": 0,
+      "ownership_closed": true,
+      "events": [
+        {
+          "kind": "ownership",
+          "tile": 0,
+          "rows": 1,
+          "cells": 2560,
+          "masked": 38400,
+          "status": "PASS"
+        },
+        {
+          "kind": "ownership",
+          "tile": 0,
+          "rows": 3,
+          "cells": 7680,
+          "masked": 33280,
+          "status": "PASS"
+        },
+        {
+          "kind": "ownership",
+          "tile": 0,
+          "rows": 17,
+          "cells": 43520,
+          "masked": 38400,
+          "status": "PASS"
+        },
+        {
+          "kind": "ownership",
+          "tile": 0,
+          "rows": 33,
+          "cells": 84480,
+          "masked": 38400,
+          "status": "PASS"
+        },
+        {
+          "kind": "ownership",
+          "tile": 0,
+          "rows": 129,
+          "cells": 330240,
+          "masked": 38400,
+          "status": "PASS"
+        },
+        {
+          "kind": "ownership",
+          "tile": 0,
+          "rows": 2334,
+          "cells": 5975040,
+          "masked": 5120,
+          "status": "PASS"
+        },
+        {
+          "kind": "ownership",
+          "tile": 0,
+          "rows": 5963,
+          "cells": 15265280,
+          "masked": 12800,
+          "status": "PASS"
+        },
+        {
+          "kind": "ownership",
+          "tile": 0,
+          "rows": 8191,
+          "cells": 20968960,
+          "masked": 2560,
+          "status": "PASS"
+        },
+        {
+          "kind": "ownership",
+          "tile": 0,
+          "rows": 8192,
+          "cells": 20971520,
+          "masked": 0,
+          "status": "PASS"
+        },
+        {
+          "kind": "ownership",
+          "tile": 1,
+          "rows": 1,
+          "cells": 2560,
+          "masked": 325120,
+          "status": "PASS"
+        },
+        {
+          "kind": "ownership",
+          "tile": 1,
+          "rows": 3,
+          "cells": 7680,
+          "masked": 320000,
+          "status": "PASS"
+        },
+        {
+          "kind": "ownership",
+          "tile": 1,
+          "rows": 17,
+          "cells": 43520,
+          "masked": 284160,
+          "status": "PASS"
+        },
+        {
+          "kind": "ownership",
+          "tile": 1,
+          "rows": 33,
+          "cells": 84480,
+          "masked": 243200,
+          "status": "PASS"
+        },
+        {
+          "kind": "ownership",
+          "tile": 1,
+          "rows": 129,
+          "cells": 330240,
+          "masked": 325120,
+          "status": "PASS"
+        },
+        {
+          "kind": "ownership",
+          "tile": 1,
+          "rows": 2334,
+          "cells": 5975040,
+          "masked": 250880,
+          "status": "PASS"
+        },
+        {
+          "kind": "ownership",
+          "tile": 1,
+          "rows": 5963,
+          "cells": 15265280,
+          "masked": 135680,
+          "status": "PASS"
+        },
+        {
+          "kind": "ownership",
+          "tile": 1,
+          "rows": 8191,
+          "cells": 20968960,
+          "masked": 2560,
+          "status": "PASS"
+        },
+        {
+          "kind": "ownership",
+          "tile": 1,
+          "rows": 8192,
+          "cells": 20971520,
+          "masked": 0,
+          "status": "PASS"
+        }
+      ],
+      "passed": true
+    }
+  ],
+  "complete": true,
+  "passed": true,
+  "active": false,
+  "model_performance_adopted": false,
+  "model_quality_qualified": false,
+  "physical262144_model_RESTORE_qualified": false,
+  "consumer": "One Down/scatter component comparison; retire raw logs/JIT after extracting samples.",
+  "prospective_gates": "18 exhaustive host tile-ownership cases; traced small7-event correctness/admission/map gate;22 tail/split/irregular/rounding checks;3 independent resident processes with6 rotated rounds per shape/arm.",
+  "limits": "FP16 Down2560x640, BF16-round then explicit FP32 FMA. Component only; existing engine route unchanged. Marker intervals include host submission gaps. No physical VRAM/PCIe traffic, occupancy, saturation or model speed is inferred.",
+  "mode": "ownership",
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+    "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "ZES_ENABLE_SYSMAN": "0",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-scatter-component-v1/tmp",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-scatter-component-v1/cache"
+  },
+  "GPU_executed": false,
+  "ownership_closed": true,
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  }
+}
