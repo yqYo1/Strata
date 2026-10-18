@@ -16,7 +16,7 @@ import measurement_owner as supervision
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
 A = P / 'bench/results/2026-10-15-pr6-recovery-audit'
-ROOT = B / 'resident-gemm-current'
+ROOT = B / 'resident-gemm-v2'
 ENGINE = B / 'main-native-gdn-engine'
 RESULT = A / 'resident-gemm-current.json'
 SETTINGS = P / 'tools/sycl/measurement_environment.json'
@@ -31,8 +31,8 @@ def digest(path):
 
 
 def main():
-    guards.require(len(sys.argv) == 2 and sys.argv[1] in ('smoke', 'perf'),
-                   'use measure_gemm.py smoke|perf')
+    guards.require(len(sys.argv) == 2 and sys.argv[1] in ('smoke', 'diagnostic', 'perf'),
+                   'use measure_gemm.py smoke|diagnostic|perf')
     mode = sys.argv[1]
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -67,7 +67,7 @@ def main():
                                   'Event timestamps share a device timebase; never subtract them from host clocks. Profiling does not guarantee exact timing accuracy.'])
         else:
             record = json.loads(RESULT.read_text())
-            guards.require(record['mode'] == 'smoke' and record['passed'] and record['ownership_closed'] and
+            guards.require(record['mode'] in ('smoke', 'diagnostic') and record['passed'] and record['ownership_closed'] and
                 record['source_commit'] == build['source_commit'] and record['fixture'] == fixture,
                 'matching successful smoke required')
             guards.require(subprocess.check_output(['git', 'show', 'HEAD:' + str(RESULT.relative_to(P))], cwd=P)
@@ -96,8 +96,9 @@ def main():
                 owned_commands=owner.commands if owner else []), indent=2) + '\n')
 
         owner = supervision.Owner(ROOT / ('owned-' + mode), persist)
-        jobs = [('--smoke', None, 0), ('--resident', 4, 0), ('--resident', 5, 0)] if mode == 'smoke' else [
-            ('--resident', shape, process) for shape in (4,5,0,1,6,7,8,9,2,3) for process in range(3)]
+        jobs = ([('--smoke', None, 0), ('--resident', 4, 0), ('--resident', 5, 0)] if mode == 'smoke' else
+                [('--resident', 8, process) for process in range(3)] if mode == 'diagnostic' else
+                [('--resident', shape, process) for shape in (4,5,0,1,6,7,8,9,2,3) for process in range(3)])
         try:
             for flag, shape, process in jobs:
                 command = [fixture['path'], flag] + ([] if shape is None else [str(shape)]) + ['fp16', '--process', str(process)]
@@ -108,12 +109,18 @@ def main():
                 events = [json.loads(line) for line in stdout.splitlines() if line.startswith('{')]
                 result = [e for e in events if e.get('kind') == 'result']
                 plans = [e for e in events if e.get('kind') == 'plan']
+                samples = [e for e in events if e.get('kind') == 'sample']
+                validations = [e for e in events if e.get('kind') == 'validation']
+                checked = dict(phase=mode, command=command, plan=plans[0] if plans else None, process=process,
+                    exit_code=entry.get('exit_code'), ownership_closed=supervision.closed(entry), passed=False,
+                    validation_count=len(validations), native_result=result[-1] if result else None,
+                    samples=[s for s in samples if not s['warmup']])
+                record['checks'].append(checked)
+                persist()
                 guards.require(supervision.closed(entry) and entry.get('exit_code') == 0 and len(result) == len(plans) == 1
                     and result[0]['status'] == 'PASS' and not re.search(
                         r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|CHECKED_DRAIN_FAILED|cleanup failed', stderr),
-                    label + ': ' + (stderr or stdout)[-8192:])
-                samples = [e for e in events if e.get('kind') == 'sample']
-                validations = [e for e in events if e.get('kind') == 'validation']
+                    label + ': ' + json.dumps(result[-1] if result else {'output_tail': stdout[-4096:]}) + stderr[-1024:])
                 guards.require(len(samples) == len(validations) == result[0]['validated_invocations'], 'validation count')
                 for sample, validation in zip(samples, validations):
                     guards.require(sample['ordinal'] == validation['ordinal'] and sample['route'] == validation['route']
@@ -125,9 +132,7 @@ def main():
                         sample['logical_kernel_TFLOPs'] = sample['logical_flop_per_submit'] * 8 / sample['kernel_total_seconds'] / 1e12
                         sample['logical_wall_TFLOPs'] = sample['logical_flop_per_submit'] * 8 / sample['submit_to_completion_wall_seconds'] / 1e12
                     sample['status'] = 'PASS'
-                record['checks'].append(dict(phase=mode, command=command, plan=plans[0], process=process,
-                    exit_code=entry['exit_code'], ownership_closed=supervision.closed(entry), passed=True,
-                    validation_count=len(validations), samples=[s for s in samples if not s['warmup']]))
+                checked['passed'] = True
                 persist()
             if mode == 'perf':
                 record['summary'] = []

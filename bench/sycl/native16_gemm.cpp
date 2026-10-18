@@ -195,6 +195,7 @@ void device_record(const Runtime &rt) {
     << ",\"vendor\":" << quote(dev.get_info<sycl::info::device::vendor>())
     << ",\"vendor_id\":" << dev.get_info<sycl::info::device::vendor_id>()
     << ",\"driver\":" << quote(dev.get_info<sycl::info::device::driver_version>())
+    << ",\"profiling_timer_resolution_ns\":" << dev.get_info<sycl::info::device::profiling_timer_resolution>()
     << ",\"platform\":" << quote(dev.get_platform().get_info<sycl::info::platform::name>())
     << ",\"platform_version\":" << quote(dev.get_platform().get_info<sycl::info::platform::version>())
     << ",\"in_order\":true,\"one_runtime_one_compute_queue\":true,\"matrix_tuples\":[";
@@ -309,15 +310,17 @@ void run(std::shared_ptr<Runtime> rt, Shape s, int shape_id, bool bf, bool smoke
     require(std::isfinite(elapsed) && elapsed > 0, "invalid wall sample");
     std::array<std::array<uint64_t,3>,8> timestamps{};
     uint64_t kernel_ns = 0;
+    bool contract_valid = true, cross_event_ordered = true, duration_positive = true;
     if (events[0]) for (int i=0;i<submits;++i) {
       const auto &event = *events[size_t(i)];
       auto &v = timestamps[size_t(i)];
       v = {event.get_profiling_info<sycl::info::event_profiling::command_submit>(),
            event.get_profiling_info<sycl::info::event_profiling::command_start>(),
            event.get_profiling_info<sycl::info::event_profiling::command_end>()};
-      require(v[0]<=v[1] && v[1]<v[2] && (!i || timestamps[size_t(i-1)][2]<=v[1]),
-              "invalid or unordered device timestamps");
-      kernel_ns += v[2]-v[1];
+      contract_valid &= v[0]<=v[1] && v[1]<=v[2];
+      duration_positive &= v[1]<v[2];
+      cross_event_ordered &= !i || timestamps[size_t(i-1)][2]<=v[1];
+      if (v[1]<=v[2]) kernel_ns += v[2]-v[1];
     }
     // Flush the individual measurement before readback/validation so failed
     // comparisons retain their timing and explicit unvalidated status.
@@ -332,8 +335,11 @@ void run(std::shared_ptr<Runtime> rt, Shape s, int shape_id, bool bf, bool smoke
       << ",\"thread_cpu_wait_check_seconds\":" << cpu_completed-cpu_submitted
       << ",\"logical_flop_per_submit\":" << uint64_t(2)*s.t*s.n*s.k
       << ",\"kernel_total_seconds\":";
-    if (events[0]) std::cout << double(kernel_ns)*1e-9;
+    if (events[0] && contract_valid && duration_positive) std::cout << double(kernel_ns)*1e-9;
     else std::cout << "null";
+    std::cout << ",\"profiling_contract_valid\":" << (contract_valid?"true":"false")
+      << ",\"profiling_duration_positive\":" << (duration_positive?"true":"false")
+      << ",\"profiling_cross_event_ordered\":" << (cross_event_ordered?"true":"false");
     std::cout << ",\"device_timestamps_ns\":[";
     if (events[0]) for (int i=0;i<submits;++i) {
       if (i) std::cout << ',';
@@ -341,6 +347,11 @@ void run(std::shared_ptr<Runtime> rt, Shape s, int shape_id, bool bf, bool smoke
       std::cout << '[' << v[0] << ',' << v[1] << ',' << v[2] << ']';
     }
     std::cout << "]}" << std::endl;
+    // Emit every tuple before rejecting a profiling assertion. A logging
+    // failure must not be mistaken for a numerical failure or hidden by the
+    // normal backend-selection notice on stderr. Preserve the original gate.
+    require(contract_valid && duration_positive && cross_event_ordered,
+            "invalid or unordered device timestamps (see emitted tuples)");
     uint64_t hash = 0;
     if (use32) {
       const auto got = download(q,y32); guards(got,y32,Mark32);
