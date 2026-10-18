@@ -2104,8 +2104,8 @@
   "sycl_command_submission_amortization_collection_scope": {
     "classification": "knowledge collection",
     "question": "For repeated same-queue SYCL/oneAPI kernel and copy command streams, compare mechanisms that amortize host submission work: per-command submission, supported command batching/list execution, and replayable command graphs with parameter updates. Using official Khronos/Intel/Unified Runtime sources and transferable non-LLM SYCL/HPC examples, determine what each mechanism actually amortizes, how it handles dynamic pointers/maps/shapes, dependencies, asynchronous errors, capture restrictions and replay/update costs, and where measured benefits fail to transfer. Map applicability to Strata’s repeated GEMM/upload submit pattern without proposing code or claiming local performance.",
-    "schedulable_now": true,
-    "status": "eligible_not_dispatched",
+    "schedulable_now": false,
+    "status": "report_complete_native_review_running",
     "eligibility_review": {
       "path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/next-research-scopes-review-20261019.json",
       "sha256": "64209345f03af9b142ff16dcdb25adf560a604feed5ef546638b40021dba1d68"
@@ -2157,6 +2157,12 @@
       "maximum_bytes": 24576
     },
     "consumer": "Future Main-owned decision about whether to reduce repeated host submission through batching or replay after wrapper attribution; Main retrieves only the relevant alternatives and limitations.",
-    "next_review": "At closure of the next host-submission mechanism decision. Retire the report if no batching/capture candidate is selected or it adds no reusable evidence beyond the compact review."
+    "next_review": "At closure of the next host-submission mechanism decision. Retire the report if no batching/capture candidate is selected or it adds no reusable evidence beyond the compact review.",
+    "report_bytes": 16513,
+    "report_sha256": "d83461a4e0067653aa2dbbd0fc6f656d2ab444eee732f222ab8e63265c253001",
+    "native_review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/sycl-command-submission-amortization-native-review.json",
+    "main_read_collection_body": false,
+    "collector_model_observed": "gpt-6-luna",
+    "worker_ownership_closed": true
   }
 }
