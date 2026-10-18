@@ -215,7 +215,7 @@ and retire its active API/fixtures. Changed local stores and memory-level
 parallelism are possible explanations; no physical traffic or bank counters
 were collected. The current cached-Q model route keeps its original K gather.
 
-The next component candidate preserves parallel row ownership and contiguous
+The four-value K candidate preserves parallel row ownership and contiguous
 cell stores, grouping four adjacent K values per lane. With thread`t=0..127`,
 loop`r=0..15` and element`j=0..3`, its map is
 `cell=t%32,d=4*(t/32)+16*r+j`; all8192 local destinations have one writer.
@@ -225,8 +225,21 @@ The installed SDK implements this API with typed element loads; an actual
 wide hardware transaction is not yet established. The oracle target also
 uses a17-element scratch guard to exercise a pointer unaligned to eight bytes.
 BF16 bits, matrix arithmetic/strides and all barriers stay unchanged. Main
-authors this candidate independently; no model dispatch selects it. Build
-pins also cover project `third_party` and maintained `bench/sycl` inputs.
+authors this candidate independently. Six rotated samples per arm reduced
+component median latency9.16%,10.15%,15.72% for cap33 gather, cap2051 gather
+and cap2051 clustered (`d39258f6e`, source`112071c5c`). Bitwise comparisons,
+guards, two-byte scratch alignment and physical262144 component cases passed.
+This does not qualify model speed, task quality, physical262144 model/RESTORE
+or sustained decode. Build pins also cover project `third_party` and maintained
+`bench/sycl` inputs.
+
+The model screening selector is
+`STRATA_SYCL_PREFILL_QSA_MATH=bf16-prefix-kvec4`; defaults stay unchanged.
+It uses the same prefix admission, scratch lease and cached-Q arithmetic as
+`bf16-prefix-qcache`. Main prepares/commits/runs `qsa-kvec4-check`, then
+`qsa-kvec4-base` and `qsa-kvec4` with `tools/sycl/bench_engine.py` for a fresh
+same-binary comparison. The first run enables validation and trace; timing arms
+are clean processes. A successful model screen alone is not default adoption.
 
 ## Optional GDN chunk64
 
