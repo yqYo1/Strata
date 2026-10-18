@@ -9,6 +9,7 @@ from pathlib import Path
 import re
 import shutil
 import socket
+import statistics
 import subprocess
 import sys
 
@@ -229,7 +230,132 @@ def extract_resource_profile(log, phase_profile, command_profile, limits, cpu_ve
     return record
 
 
+def summarize_gu():
+    """Close the committed three-pair plan without launching GPU work."""
+    path = str((A / 'moe-gu-swiglu-model-current.json').relative_to(P))
+
+    def git(*args):
+        return subprocess.check_output(['git', *args], cwd=P)
+
+    def canonical(value, root):
+        if isinstance(value, str):
+            return value.replace(root, '$RUN')
+        if isinstance(value, list):
+            return [canonical(x, root) for x in value]
+        if isinstance(value, dict):
+            return {k: canonical(v, root) for k, v in value.items()
+                    if k != 'STRATA_SYCL_PREFILL_GU_SWIGLU'}
+        return value
+
+    with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        guards.no_model_owners([])
+        head = git('rev-parse', 'HEAD').decode().strip()
+        guards.require((P / path).read_bytes() == git('show', head + ':' + path),
+                       'commit the final cohort before summary')
+        current = json.loads((P / path).read_text())
+        guards.require(current['mode'] == 'qsa-gu-fusion-candidate' and
+            current['cohort_index'] == 2 and 'independent_process_comparison' not in current,
+            'summarize the completed final GU cohort exactly once')
+        records, commit, seen = [], head, set()
+        while len(records) < 6:
+            guards.require(commit not in seen, 'cyclic cohort provenance')
+            seen.add(commit)
+            guards.require(subprocess.run(['git', 'merge-base', '--is-ancestor', commit, head],
+                cwd=P, check=False).returncode == 0, 'cohort source is not reachable')
+            d = json.loads(git('show', commit + ':' + path))
+            guards.require(d['mode'] in ('qsa-gu-fusion-base', 'qsa-gu-fusion-candidate') and
+                d['passed'] and d['complete'] and d['ownership_closed'] and not d['active'] and
+                d['exit_code'] == d['engine_exit_code'] == 0 and not d['fresh_faults'] and
+                d['boot_unchanged'], 'incomplete, failed or faulted cohort')
+            records.append((commit, d))
+            commit = d['gu_qualification']['preceding_result']['commit']
+        records.reverse()
+        expected = [('base',0),('candidate',0),('candidate',1),('base',1),('base',2),('candidate',2)]
+        guards.require([(d['mode'].rsplit('-',1)[1],d.get('cohort_index',0)) for _,d in records]
+                       == expected, 'cohort order differs from the frozen plan')
+        guards.require(len({(d['native_identity']['pid'],d['native_identity']['start_ticks'])
+                            for _,d in records}) == 6, 'independent native processes required')
+        guards.require(digest(current['binary']['path']) == current['binary']['sha256'],
+                       'current measured executable changed')
+        common, arms, source_sets = None, [], []
+        for receipt_commit, d in records:
+            root = d['environment']['STRATA_MEASUREMENT_ROOT']
+            candidate = d['mode'].endswith('-candidate')
+            guards.require(d['environment']['STRATA_SYCL_PREFILL_GU_SWIGLU'] ==
+                           ('large' if candidate else '0'), 'wrong GU selector')
+            command = canonical(d['command'], root)
+            command[command.index('--port') + 1] = '$PORT'
+            identity = dict(binary=d['binary'], build_source=d['build_source_commit'],
+                profile=d['profile_sha256'], environment=canonical(d['environment'], root),
+                config=canonical(d['config'], root), command=command)
+            common = identity if common is None else common
+            guards.require(identity == common, 'unmatched binary, profile, configuration or environment')
+            source = d['source_commit']
+            names = git('ls-tree','-r','--name-only',source,'--','serve','tools','bench.sh').decode().splitlines()
+            pins = {n: hashlib.sha256(git('show', source + ':' + n)).hexdigest() for n in names
+                    if n == 'bench.sh' or (n.endswith('.py') and not n.startswith('tools/hip/'))}
+            guards.require(len(pins) == d['source_count'] and
+                hashlib.sha256(json.dumps(pins,sort_keys=True).encode()).hexdigest() ==
+                d['source_aggregate_sha256'], 'unrecoverable benchmark source identity')
+            source_sets.append(pins)
+            requests = d['requests']
+            guards.require(len(requests) == 4 and all(r['run'] == i and r['ok'] and r['eligible'] and
+                not r['eligibility_errors'] and r['stream_complete'] and r['thinking_requested'] and
+                r['reasoning_observed'] and r['actual_prompt_tokens'] == r['actual_read_tokens'] == 78451 and
+                r['actual_reused_tokens'] == 0 and r['generated_tokens'] == 24 and
+                math.isfinite(r['prompt_tps']) and r['prompt_tps'] > 0 for i,r in enumerate(requests)),
+                'ineligible or unmatched request geometry')
+            guards.require([r['request_sha256'] for r in requests] ==
+                           [r['request_sha256'] for r in current['requests']], 'request bytes differ')
+            routes = d['gu_route']['per_request_counts']
+            guards.require(len(routes) == 4 and all(
+                (int(r['fused_jobs']) > 0 if candidate else int(r['fused_jobs']) == 0) and
+                int(r['separate_jobs']) > 0 and int(r['min_rows']) == 2334 for r in routes),
+                'actual GU dispatch differs from selected arm')
+            values = [r['prompt_tps'] for r in requests]
+            arms.append(dict(label=('B' if candidate else 'A') + str(d.get('cohort_index',0)),
+                receipt_commit=receipt_commit, receipt_path=path, source_commit=source,
+                first_use_tps=values[0], subsequent_tps=values[1:],
+                subsequent_median=statistics.median(values[1:]),
+                subsequent_sample_SD=statistics.stdev(values[1:])))
+        # The cohort0->1 extension changed only this owner/receipt controller.
+        # The actual executed bench.sh, server and workload helpers must match.
+        varying = sorted(n for n in set().union(*source_sets)
+                         if len({s.get(n) for s in source_sets}) != 1)
+        guards.require(varying == ['tools/sycl/bench_engine.py'],
+                       'unexpected cross-cohort benchmark source change')
+        for i,j in ((0,1),(2,3),(4,5)):
+            guards.require(source_sets[i] == source_sets[j], 'paired source snapshots differ')
+        pairs, ratios = [], []
+        for cohort in range(3):
+            a,b = next(x for x in arms if x['label']=='A'+str(cohort)),next(x for x in arms if x['label']=='B'+str(cohort))
+            matched = [y/x for x,y in zip(a['subsequent_tps'],b['subsequent_tps'])]
+            ratios.extend(matched)
+            pairs.append(dict(cohort=cohort,base_median=a['subsequent_median'],
+                candidate_median=b['subsequent_median'],
+                median_gain_percent=100*(b['subsequent_median']/a['subsequent_median']-1),
+                matched_subsequent_speed_ratios=matched))
+        geomean = math.exp(statistics.mean(math.log(x) for x in ratios))
+        passed = all(p['median_gain_percent'] > 0 for p in pairs) and geomean > 1.002
+        current['independent_process_comparison'] = dict(arms=arms,pairs=pairs,
+            matched_subsequent_speed_geomean=geomean,geomean_gain_percent=100*(geomean-1),
+            all_nine_matched_inputs_faster=all(x>1 for x in ratios),
+            exact_committed_source_recovered=True,matched_configuration_workloads_and_runtime=True,
+            allowed_cross_cohort_source_change=varying,performance_selection_gate_passed=passed,
+            decision='Retain explicit large-job fusion for further qualification; default stays off.' if passed else
+                     'Retain separate route; prospective independent performance gate failed.',
+            limits='Three independent process pairs, four fresh78451-token requests each. First use excluded from '
+                   'selection. Individual full receipts remain at the original reachable commits.24-token generation '
+                   'does not qualify sustained decode, broad task quality or physical262144/RESTORE.')
+        (P/path).write_text(json.dumps(current,indent=2)+'\n')
+        print(json.dumps(current['independent_process_comparison']))
+    return 0
+
+
 def main():
+    if sys.argv[1:] == ['summarize-gu']:
+        return summarize_gu()
     modes = ('check', 'base', 'candidate', 'qsa-check', 'qsa-base', 'qsa-direct', 'qsa-census',
              'qsa-gdncols4-warm-census',
              'qsa-gdncols4-host-check', 'qsa-gdncols4-host-traced-check', 'qsa-gdncols4-host-census',

@@ -1476,5 +1476,163 @@
       "No occupancy/spills/I-cache/SFU/critical-path measurement is established. Follow-up remains conditional during current model cohort."
     ],
     "observed_failure_evidence": "bench/results/2026-10-15-pr6-recovery-audit/submission-acceptance-current.json; installed adapter ELF identity is pinned, exact source derivation remains unproven."
+  },
+  "down_workgroup_row_cache_contract_scope": {
+    "classification": "decision_support",
+    "schedulable_now": false,
+    "eligible_at_dispatch": true,
+    "prerequisites_met": [
+      "Main selected an explicit workgroup row-cache design in commit109aa7d08, retaining the published DPAS/rounding/scatter contract and all current controls.",
+      "Prior fixed-window Down comparison failed its gate; exact code size and source per-value metadata path are recorded, without a saturation claim.",
+      "This review changes no pinned input and needs no process inspection or hardware work during the frozen GU cohort."
+    ],
+    "question": "Assess the selected16/128-row workgroup-local token/weight cache against SYCL/TLA barriers, tails, lifetime, errors and exact arithmetic; compare static factoring and compile-time commoning counterarguments.",
+    "source_commit": "109aa7d08",
+    "source_files_sha256": {
+      "src/prefill/sycl/vllm_xe2/native16.cpp": "56f07930bfd201e17b419f34ee0ff1a3f7da06d8515f763f6cea907dab74308a",
+      "src/prefill/sycl/vllm_xe2/native16.hpp": "0591edc61d600139733ab131addf0b996aa76f86c6c0eebaeb5f66cdaf4e1152",
+      "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp": "84fb1251c2f9f93bd7774fb2a5a6c928df9ac8e86d1c7f6cf1a6cec058403fa6",
+      "bench/sycl/moe_down_scatter.cpp": "d6156021d39e065e76f2fb97b31866f390c8312d127ee0e7bfb54ca01a9f76b6",
+      "docs/SYCL_NATIVE16_PREFILL.md": "430854c99f80838002039164210c0c1508ef12b7162e84c06c474c6ba3b12d3b"
+    },
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/down-workgroup-row-cache-contract.md",
+    "report_budget": {
+      "words": [
+        1600,
+        2300
+      ],
+      "maximum_bytes": 32768
+    },
+    "state": "Orca and native Luna-max review complete; conditionally accepted decision support, no implementation/performance adoption.",
+    "main_reads_body_on_arrival": false,
+    "retention_consumer": "Main next Down component implementation after the GU cohort closes; native Luna-max review first, retire transactional report after decision.",
+    "dispatch": "ctx_ab7111815d0c",
+    "task": "task_efb7c9ba8733",
+    "terminal": "term_4a395514-c73f-40af-a829-45dcb9c247af",
+    "model_evidence": "Custom gpt-6-luna/medium argv; tui-idle satisfied, worker-start input_accepted and turn_started observed.",
+    "report_sha256": "2da0b7909014337e1cebdc355fcbe1930dc19166ca5acc29d1f5321b2cbe8652",
+    "report_bytes": 13825,
+    "delivery": "delivery_23effccf12c6",
+    "review_task": "/root/review_down_row_cache_contract_20261018",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/down-workgroup-row-cache-contract-native-review.json",
+    "review_sha256": "9f3d2634982e6353925593122324723b50571a66490af925fcfc751640e0a8be",
+    "reviewed_digest": [
+      "All five source pins match; workgroup-local cache is distinct from earlier per-thread/subgroup grouping.",
+      "Keep BF16 capture for invalid maps; preserve final OR bitmask and slot-first priority, not atomic invocation counts.",
+      "No runtime, compiled-code or performance evidence for the new cache; no follow-up research before a committed candidate leaves a concrete question."
+    ],
+    "retrieval_sections": [
+      "Scope and source identity",
+      "Execution and ownership proof",
+      "Holes and likely correctness traps",
+      "Alternatives and cost counterarguments",
+      "Decisions and Main-owned gates",
+      "Primary references and limits"
+    ],
+    "corrections": [
+      {
+        "id": "CAPTURE-1",
+        "severity": "required correctness contract",
+        "detail": "State explicitly that Capture remains before route validity handling. The current code writes the rounded BF16 value for every in-bounds logical cell even when its map is invalid. A cached invalid-token sentinel must not bypass this write. Require exact BF16 capture comparison for invalid-map cases as well as valid routes."
+      },
+      {
+        "id": "STATUS-1",
+        "severity": "status contract precision",
+        "detail": "Replace the tentative claim that fixtures must establish whether atomic multiplicity is observable. The API exposes a uint32 status bitmask (bit 1 invalid slot, bit 2 invalid token), and the implementation/reference use fetch_or; callers compare final bits, with no invocation counter. Preserve the final OR mask and same-row precedence: invalid slot yields bit 1 and suppresses the token-error branch; bit 2 applies only after a valid slot. A producer may OR once per logical row per workgroup, including repeated work across N-tile groups. Atomic-call count is not a correctness requirement; contention is only a performance effect."
+      },
+      {
+        "id": "STATUS-TEST-1",
+        "severity": "test-plan completeness",
+        "detail": "The existing fixture injects invalid slot and invalid token separately. Add a deterministic case where both are invalid for the same routed row and assert the final mask is exactly bit 1, locking the current slot-first else-if precedence."
+      },
+      {
+        "id": "PIN-1",
+        "severity": "source reproducibility",
+        "detail": "All indexed product-source hashes match, but the report's SYCL*TLA tutorial citation uses mutable main while the current manifest pins revision 87f6850680a580654b9ea2c80dbc01aeb36ad231. Replace it with the immutable commit URL and name the relevant header paths through the manifest hash. The recorded source commit 109aa7d08 was not ancestry-verified because Git inspection was outside this review scope."
+      }
+    ],
+    "retention": {
+      "consumer": "Main's next Down component implementation decision after the frozen GU cohort closes.",
+      "review_point": "Keep this transactional report/review through that decision. Then carry only reusable corrections and the selected decision into the existing compact result; retire these review artifacts if no concrete unresolved question still needs them.",
+      "no_adoption": true
+    },
+    "next_scope": {
+      "schedulable_now": false,
+      "scope": "At most one candidate-specific review of a remaining SYCL/TLA legality or emitted-code ambiguity; do not repeat the generic row-cache, barrier, tail or status survey.",
+      "prerequisites": [
+        "The frozen GU cohort has closed and Main has selected and committed exact candidate/control inputs and recipe.",
+        "Main has completed first-pass correctness and codegen review and can state one finite unresolved question.",
+        "Provide the candidate/source hash, pinned TLA revision and relevant header pins; for codegen questions provide compiler/device identity, relevant IR/disassembly and source mapping."
+      ],
+      "if_prerequisites_fail": "Do not dispatch a repeat session; Main proceeds with the existing report gates or records the unresolved blocker in the current compact result."
+    },
+    "review_source_commit": "109aa7d08"
+  },
+  "intel_tile_programming_collection_scope": {
+    "classification": "knowledge_collection",
+    "schedulable_now": false,
+    "eligible_at_dispatch": true,
+    "prerequisites_met": [
+      "New primary-source SyclKittens2610.04277 and Xe-Forge2605.26118 search hits are absent by title/ID in current and historical report indexes.",
+      "Current B570 production-shaped resident GEMM reference and pinned TLA/vLLM component give concrete applicability anchors; source-only work does not change the frozen GU cohort."
+    ],
+    "question": "Collect reusable Intel GPU tile-programming architecture and validation/autotuning knowledge from SyclKittens and Xe-Forge, compared with current TLA beta-zero GEMM; separate claimed results, actual artifacts, licenses and transferable mechanisms.",
+    "source_files_sha256": {
+      "src/prefill/sycl/vllm_xe2/native16.cpp": "56f07930bfd201e17b419f34ee0ff1a3f7da06d8515f763f6cea907dab74308a",
+      "src/prefill/sycl/vllm_xe2/native16.hpp": "0591edc61d600139733ab131addf0b996aa76f86c6c0eebaeb5f66cdaf4e1152",
+      "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp": "84fb1251c2f9f93bd7774fb2a5a6c928df9ac8e86d1c7f6cf1a6cec058403fa6"
+    },
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/intel-tile-programming-collection.md",
+    "report_budget": {
+      "words": [
+        2000,
+        2800
+      ],
+      "maximum_bytes": 36864
+    },
+    "main_reads_body_on_arrival": false,
+    "state": "Orca and native Luna-max review complete; retain substantive indexed reference conditionally, no implementation or speed adoption.",
+    "retention_consumer": "Indexed tile execution, data reuse, resource tuning and correctness methods for a later specific B570 GEMM/attention implementation question; native review supplies retrieval sections and next review point.",
+    "dispatch": "ctx_e161f745cf6d",
+    "task": "task_4332af067896",
+    "terminal": "term_006976c8-6e98-4801-8a8d-a722cc796953",
+    "model_evidence": "Custom gpt-6-luna/medium argv; tui-idle satisfied and worker-start turn_started observed.",
+    "report_sha256": "b1a56f487a3935cd174a514d0bf922fc6563dfc6afd1053af08dd776930b9fe3",
+    "report_bytes": 15486,
+    "delivery": "delivery_c5b5cb02bb5d",
+    "review_task": "/root/review_intel_tile_collection_20261018",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/intel-tile-programming-collection-native-review.json",
+    "review_sha256": "cfb795f4f7b025d16c6ea595772027207c4553d7168de36cac7c7bd3cdcd1ad2",
+    "reviewed_digest": [
+      "Report and all3 source hashes match; substantive held reference, no XeStrata material.",
+      "Correct prefetch deduplication scope to across subgroups within one workgroup; preserve the existing vLLM-derived BSD lineage.",
+      "Xe-Forge docs listB570 but useG31 and allow skipped correctness; no B570 model-speed evidence. Use the pinned framework numerical contract for adoption.",
+      "Fresh follow-up research is not eligible until a concrete measured B570/G21 TLA question is selected."
+    ],
+    "next_scope_eligibility": {
+      "schedulable_now": false,
+      "recommendation": "No new broad tile survey. Use this held report first if a concrete B570/G21 GEMM/attention comparison becomes selected.",
+      "prerequisites_for_any_new_research": [
+        "Main closes the active comparison and records a same-path attribution identifying a remaining tile/reuse/resource decision.",
+        "Exact TLA, vLLM-derived helper, compiler/runtime/driver and external repository commits are pinned.",
+        "A finite mechanism question distinguishes an unresolved G21 compatibility or code-generation issue from questions already covered by R924/R952/R1013/R1041 and this report."
+      ],
+      "next_action": "If a prerequisite is missing, Main resolves it from maintained receipts/source or retrieves the named sections; do not dispatch another generic SYCL tile or prefetch survey."
+    },
+    "retrieval": {
+      "consumer": "Only retrieve when Main-owned attribution selects a concrete current-TLA beta-zero GEMM tile, intra-workgroup operand-reuse, or register/SLM policy question on the B570/G21 path.",
+      "review_point": "Review at closure of that single bounded component comparison, or when its source/target changes; until then keep the report indexed and its body held.",
+      "exact_report_sections": [
+        "Transfer to current TLA GEMM and shape policy",
+        "What the implementations teach",
+        "Correctness, applicability, and required evidence",
+        "Scope, existence, versions, and provenance (only if source reuse/provenance is in question)",
+        "Retrieval map for a later concrete question"
+      ],
+      "paper_sections": [
+        "SyclKittens \u00a7\u00a73.2\u20133.3 and Appendix D for operand layouts, subgroup prefetch and the measured ablation.",
+        "Xe-Forge \u00a7\u00a7IV\u2013V, VI-A, VI-D\u2013VI-E for search/validation workflow, hardware, baseline and kernel results."
+      ]
+    }
   }
 }
