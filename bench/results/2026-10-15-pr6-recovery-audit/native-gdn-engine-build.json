@@ -136,5 +136,55 @@
     "partitions": 4,
     "passed": true,
     "limits": "Runtime admission only; model quality and full model physical-context/RESTORE remain unqualified."
+  },
+  "retained_validation_reference": {
+    "source_commit": "016ae608038f706c8baf1d598cfae6c2a2d882f2",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-host-profile-v1/strata",
+      "bytes": 20573552,
+      "sha256": "8a345b0c56bde695eaa72faaceae68c005a1533eee491558134b597004b6064a"
+    },
+    "fixtures": {
+      "sycl_gdn_columns_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-host-profile-v1/sycl_gdn_columns_bench",
+        "sha256": "124bf03346caf2da0df753a49d576e4a1ffd4d8074b109f5514de6ac5545ad51",
+        "bytes": 255752
+      }
+    },
+    "build_receipt": {
+      "revision": "fd0c38e7119c74c6c0d16782e2ad69460dfcb4f0",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json",
+      "sha256": "d95f13529f0fe3686d98033726783749cf7af345292a77e1207d6cc683cd4ee3"
+    },
+    "recovered_original_inputs": [
+      {
+        "revision": "016ae608038f706c8baf1d598cfae6c2a2d882f2",
+        "verified_inputs": 488
+      },
+      {
+        "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+        "verified_inputs": 3608
+      },
+      {
+        "revision": "87f6850680a580654b9ea2c80dbc01aeb36ad231",
+        "verified_inputs": 5703
+      }
+    ],
+    "recipe_reference": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-entry-engine-build-v2.json",
+      "sha256": "9b7734387f0fc56f36afe9d7bca75e5f0bedcef479271e982025abe1d4334a1a"
+    },
+    "consumer": "Qualified fallback through host-counter engine build and command-tracing off/on model gates; select retained validated generation at qualification closure."
+  },
+  "legacy_provenance_exception": {
+    "state": "Unresolved legacy cleanup; not qualified comparison generations.",
+    "observed_engine_and_fixture_paths": 41,
+    "scope": "Prebuild rg inventory across project worktrees and post-reboot state; includes current/CPU fixtures and legacy artifacts.",
+    "evidence": [
+      "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/component-binary-provenance-review-v2.json",
+      "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/binary-source-recovery-review.json"
+    ],
+    "reason": "Previous exact-source audit is incomplete, with missing/mismatched receipt inputs and unmatched artifacts. Do not delete original measured inputs or call global cleanup complete.",
+    "next_review": "After the new host-counter engine passes its bounded off/on model qualification, reconcile legacy roots against existing provenance reviews; retain only exact-source holds that still require original bytes."
   }
 }

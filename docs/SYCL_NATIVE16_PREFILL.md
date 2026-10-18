@@ -591,9 +591,19 @@ Every version4 category count must match the48-layer planned-work census:
 one map/job-weight/status region per window, one dequant pair per active expert,
 and one gather/SwiGLU/accumulation per job. Retain compact qualification receipts
 and retire successful full logs/CPU fixture binaries once their consumer closes.
-This instrumentation has not yet run; it is not a speedup, hardware saturation,
+The model counters have not yet run; this is not a speedup, hardware saturation,
 task-quality, physical262144 or RESTORE qualification. Observer overhead remains
 unqualified until compared with a matched clean cohort.
+
+The CPU-only gates passed at`fd0c38e71`: six lifetime/accounting cases and eight
+invalid-case/parser rejections, with all owned processes closed. This does not
+execute the model. The current qualified engine and GDN fixture were hash-checked
+and copied before reusing the build root; all488 project,3608ggml and5703TLA
+original source inputs were recovered and verified from their recorded commits.
+The global inventory also still contains legacy artifacts under an unfinished
+provenance audit. They are not qualified comparison builds; the current build
+receipt records that exception and its next review after bounded model admission.
+No global storage-cleanup completion is claimed.
 
 ## Optional GDN chunk64
 
