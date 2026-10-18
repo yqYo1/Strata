@@ -177,13 +177,22 @@ for cap33 gather, cap2051 gather and cap2051 clustered. Exact-bit/oracle,
 diagnostic/alias and physical262144 component gates passed; no new GPU faults.
 Source`0ddd14719211` and individual results at`13976170f` preserve this variant.
 
-The next comparison applies the installed compiler's
+The separate comparison applied the installed compiler's
 [`grf_size_automatic` property](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_intel_grf_size.asciidoc)
-only to the cached-Q kernel. This asks the Intel backend to select a supported
-size, avoiding an assumed legal fixed GRF value. Its actual GRF/spill cost and
-speed require fresh qualification; the production prefix has no added property.
-The unchanged production prefix is the comparison arm. The candidate remains
-fixture-only; no model dispatch or numerical-contract change is implied.
+only to the cached-Q kernel through the SDK's functor property API. It selected
+256GRF, removed scratch and changed compiler thread-count metadata from8 to4.
+Its matched median latency nevertheless increased16.65%,16.20%,12.65%; reject
+this variant (`b82207709`). The comparison also changes the SDK functor form,
+so it does not isolate GRF mode as the sole cause. Occupancy remains unmeasured.
+
+The original default128GRF kernel source is restored byte-for-byte. The new
+explicit `STRATA_SYCL_PREFILL_QSA_MATH=bf16-prefix-qcache` model screening route
+uses the existing prefix allocation/admission and leaves default dispatch alone.
+Main prepares/commits/runs `qsa-qcache-check`, then matched `qsa-qcache-base` and
+`qsa-qcache` with `tools/sycl/bench_engine.py`. The check uses validation/trace;
+the two speed arms each use four fresh78K requests, thinking on and the same
+binary/configuration. These24-output screens cannot qualify sustained decode,
+full-model262144 context, RESTORE or task quality.
 
 ## Optional GDN chunk64
 

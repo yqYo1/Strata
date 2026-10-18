@@ -86,6 +86,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     }
     const bool qsa_prefix_on = qsa_math == native16::qsa::AttentionMath::bf16_prefix ||
         qsa_math == native16::qsa::AttentionMath::bf16_prefix_optimized ||
+        qsa_math == native16::qsa::AttentionMath::bf16_prefix_qcache ||
         qsa_math == native16::qsa::AttentionMath::bf16_prefix_subgroup ||
         qsa_math == native16::qsa::AttentionMath::bf16_prefix_tilepack;
     if (qsa16_on && !native16_on) {
@@ -545,9 +546,12 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                      (unsigned long long) prefix_bytes,
                      (qsa_math == native16::qsa::AttentionMath::bf16_prefix_optimized ||
                       qsa_math == native16::qsa::AttentionMath::bf16_prefix_subgroup ||
+                      qsa_math == native16::qsa::AttentionMath::bf16_prefix_qcache ||
                       qsa_math == native16::qsa::AttentionMath::bf16_prefix_tilepack) ? 33 : 32,
                      qsa_math == native16::qsa::AttentionMath::bf16_prefix_tilepack ? "dense16-vnni" : "row-major",
                      qsa_math == native16::qsa::AttentionMath::bf16_prefix_subgroup ? "subgroup" : "serial");
+    if (qsa_math == native16::qsa::AttentionMath::bf16_prefix_qcache)
+        std::fprintf(stderr, "strata prefill: QSA cached_query=1 grf_policy=default source=qualified-component\n");
     if (plan.gpu_bytes) {
         uint8_t* p = nullptr;
         if (cudaMalloc(reinterpret_cast<void**>(&p), size_t(plan.gpu_bytes)) != cudaSuccess) {
