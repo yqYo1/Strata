@@ -16,7 +16,6 @@
 #include <sycl/ext/oneapi/bfloat16.hpp>
 #include <sycl/ext/oneapi/matrix/matrix.hpp>
 #include <sycl/ext/intel/experimental/grf_size_properties.hpp>
-#include <sycl/ext/oneapi/experimental/enqueue_functions.hpp>
 
 namespace strata::kernels {
 namespace {
@@ -48,6 +47,17 @@ template<int ScoreStride, bool CacheQueries = false> constexpr size_t LocalPaylo
 static_assert(LocalPayload<Cells> == 28160);
 static_assert(LocalPayload<Cells + 1> == 28224);
 static_assert(LocalPayload<Cells + 1, true> == 20036);
+
+template<class Body, bool CacheQueries> struct PrefixKernel {
+  Body body;
+  void operator()(sycl::nd_item<1> item) const { body(item); }
+  auto get(sycl::ext::oneapi::experimental::properties_tag) const {
+    namespace exp = sycl::ext::oneapi::experimental;
+    if constexpr (CacheQueries)
+      return exp::properties{exp::sub_group_size<16>, sycl::ext::intel::experimental::grf_size_automatic};
+    else return exp::properties{exp::sub_group_size<16>};
+  }
+};
 
 bool matrix_available(const sycl::device &device, size_t local_payload) {
   if (!device.has(sycl::aspect::ext_intel_matrix) || !device.is_gpu() || device.get_info<sycl::info::device::vendor_id>() != 0x8086 ||
@@ -154,15 +164,7 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
     // The measured default cached-Q specialization spills at128GRF. Let the
     // Intel backend choose a supported size for this kernel only. Do not force
     // a device-specific GRF value or change the production prefix's property.
-    namespace exp = sycl::ext::oneapi::experimental;
-    auto properties = [] {
-      if constexpr (CacheQueries)
-        return exp::properties{exp::sub_group_size<16>, sycl::ext::intel::experimental::grf_size_automatic};
-      else return exp::properties{exp::sub_group_size<16>};
-    }();
-    exp::nd_launch(handler, exp::launch_config{
-        sycl::nd_range<1>(size_t(queries) * 2 * Workgroup, Workgroup), properties},
-        [=](sycl::nd_item<1> item) {
+    auto body = [=](sycl::nd_item<1> item) {
       auto qtile = sycl::address_space_cast<sycl::access::address_space::local_space,
           sycl::access::decorated::no>(qstorage[0].values);
       auto kv = sycl::address_space_cast<sycl::access::address_space::local_space,
@@ -362,7 +364,9 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
             result = sycl::bit_cast<uint16_t>(BFloat(value / normalizer[h]));
           output[(batch * 24 + kv_head * Heads + h) * Dim + dim_base + j * 16 + c] = result;
         });
-    });
+    };
+    handler.parallel_for(sycl::nd_range<1>(size_t(queries) * 2 * Workgroup, Workgroup),
+        PrefixKernel<decltype(body), CacheQueries>{body});
   });
   sycl_backend::finish(stream, event);
   return true;
