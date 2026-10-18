@@ -942,5 +942,57 @@
       "Reassess the remaining warmed resource bottleneck before selecting another recurrence candidate.",
       "Any implementation needs committed independent source plus component arithmetic/bounds/collective and codegen gates before model execution."
     ]
+  },
+  "warm_host_submission_scope_audit": {
+    "classification": "decision_support",
+    "schedulable_now": false,
+    "question": "Audit source ownership and counter boundaries for classifying warmed16.63s unclassified host CPU: current MoE Tag lifetimes for non-GEMM dispatch versus existing GEMM/transfer scopes, nested Host accounting and safe optional scope ownership. No implementation, timing claims or generic validation survey.",
+    "prerequisites_met": [
+      "Two fresh78K requests show warm wall89.508s, GPU-wait CPU59.184s, outside-wait CPU29.622s and unclassified CPU16.630s at7ff786a27.",
+      "VTune software CPU collection refused launch with ptrace-scope restriction; explicit source counters are an available next path.",
+      "Existing tag/native CPU observer source is unchanged and readable; review does not require missing device counters or runtime execution."
+    ],
+    "source_sha256": {
+      "src/prefill/moe_window.inc": "f96629ab0b9850d3d7636cc7bd8b4142e028116f1e1679772b611d8475580da6",
+      "src/sycl/command_profile.cpp": "480139608ebad117634cfe98a4e30c12926757ef026f23da3e66b7c78f6adf2b",
+      "include/strata/sycl/command_profile.hpp": "0b0a2a875be247f8598ecd1052604236c240ab4c08bc5567c068ea6ae117aba4",
+      "include/strata/sycl/cpu_wait_profile.hpp": "f29b86702df27fa6510cfc31d13d0442f9386cdae491952fefbcfa7b0816567d"
+    },
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/warm-host-submission-scope-audit.md",
+    "state": "Orca source audit and native Luna-max review complete; worker released, PTY closed and delivery acknowledged. Main has received only the short review digest; instrumentation remains unimplemented.",
+    "retention_consumer": "Immediate Main-owned disjoint CPU timing instrumentation and its entry-gate checks; review body need at qualification closure.",
+    "report_budget": {
+      "words": [
+        1500,
+        2400
+      ],
+      "maximum_bytes": 28672
+    },
+    "report_bytes": 16051,
+    "report_sha256": "380342261b4f2b23100192cb0e7ce9740f61723ac87b29f0ca28ffd3fb448828",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/warm-host-submission-scope-native-review.json",
+    "review_bytes": 7481,
+    "review_sha256": "7e019014db502c4a2350ee24a4f734ad634610efd8cdccf88ace19b7fb5e3bdd",
+    "review_digest": {
+      "accounting": "Host inside a whole expert job would overlap internal GEMM Host regions and invalidate accounting. Instrument disjoint non-GEMM segments only; Wait inside Host remains subtractable.",
+      "ownership": "Current null-Trace Tag is a no-op; a future independent host phase can time when CPU Scope is active with command GPU tracing off. No host instrumentation is implemented today.",
+      "gates": [
+        "Standalone CPU fixture checks disabled/enabled scopes, nested-region failure, exceptions and destruction/elision.",
+        "Bounded model diagnostics with command tracing off/on in separate processes; zero clock/region/throw errors and exact counter conservation."
+      ],
+      "limits": "Source feasibility/accounting only; no measured new counters, speedup or hardware-bottleneck proof."
+    }
+  },
+  "closed_warm_resource_collector_review": {
+    "original_source_commit": "f0861e51bc72ef6534e2146ea6708a7ffee094ae",
+    "accepted_guard_commit": "468c93c8acd1c3ea92e8878cf064b7f2908523db",
+    "evidence_commit": "7ff786a272f1f9716242c789063dea947ae51555",
+    "outcome": {
+      "request_segmentation": "Fits declared coarse first-use/subsequent attribution; detailed cold command/per-layer timing is not required by that question.",
+      "accepted_guard_followup": "Explicit command frame/stratum reconciliation and CPU wait/host throw checks; both original closed intervals pass the added guards, four malformed cases are rejected.",
+      "corrections": "Pinned coarse/QSA complete gates already validate their expected counts. CPU available=1 entails valid accounting/no open waits, but does not alone rule out throw counters. No evidence the original result was wrong.",
+      "scope_limit": "Profiled requests, not clean speed or independent process repetitions; selected GPU service is not full-window coverage or physical hardware saturation."
+    },
+    "retention": "Detailed report/review have no remaining consumer after original-log checks; retire under the current deletion manifest. Useful corrections are in code and this compact decision."
   }
 }

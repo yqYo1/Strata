@@ -2,7 +2,10 @@
 """Main-owned, bounded VTune capability/attention collection; no privilege changes."""
 import fcntl
 import hashlib
+import csv
+import io
 import json
+import math
 from pathlib import Path
 import re
 import subprocess
@@ -66,7 +69,107 @@ def emitted_resources(text, trace):
     return resources
 
 
+def cpu_smoke():
+    """Check unprivileged software stack sampling before profiling model CPU cost."""
+    root = B / 'cpu-software-profiler-smoke-v1'
+    result = P / 'bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json'
+    target = Path('/usr/bin/openssl')
+    with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        guards.no_model_owners([])
+        driver = guards.driver_guard()
+        guards.require(not root.exists(), 'inspect the existing CPU probe; no automatic retry')
+        revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=P, text=True).strip()
+        pins = {}
+        for path in (Path(__file__).resolve(), P / 'tools/sycl/measurement_guards.py',
+                     P / 'tools/sycl/measurement_owner.py'):
+            name = str(path.relative_to(P))
+            data = subprocess.check_output(['git', 'show', revision + ':' + name], cwd=P)
+            guards.require(path.read_bytes() == data, 'uncommitted CPU probe input: ' + name)
+            pins[name] = hashlib.sha256(data).hexdigest()
+        root.mkdir(mode=0o700)
+        for name in ('tmp', 'cache', 'user'):
+            (root / name).mkdir()
+        env = dict(PATH='/usr/bin:/bin', HOME='/home/yayoi', LANG='C.UTF-8', LC_ALL='C.UTF-8',
+                   TMPDIR=str(root / 'tmp'), XDG_CACHE_HOME=str(root / 'cache'))
+        command = [str(VTUNE), '-collect', 'hotspots', '-knob', 'sampling-mode=sw',
+                   '-knob', 'enable-stack-collection=true', '-knob', 'stack-size=4096',
+                   '-knob', 'enable-characterization-insights=false', '-data-limit=16',
+                   '-user-data-dir', str(root / 'user'), '-result-dir', str(root / 'vtune'),
+                   '--', str(target), 'speed', '-seconds', '3', '-bytes', '16384', '-evp', 'sha256']
+        report_command = [str(VTUNE), '-report', 'hotspots', '-result-dir', str(root / 'vtune'),
+                          '-format', 'csv', '-csv-delimiter', 'tab', '-group-by', 'function', '-limit', '12']
+        record = dict(mode='cpu-smoke', source_commit=revision, input_sha256=pins,
+            command=command, report_command=report_command, environment=env, driver_before=driver,
+            profiler=dict(path=str(VTUNE.resolve()), sha256=digest(VTUNE),
+                version=subprocess.check_output([str(VTUNE), '--version'], text=True, timeout=15).strip()),
+            target=dict(path=str(target.resolve()), sha256=digest(target),
+                version=subprocess.check_output([str(target), 'version'], text=True, timeout=10).strip()),
+            purpose='Qualify CPU function/stack sampling for warmed16.63s unclassified host cost; no model speed or GPU hardware-counter result.',
+            consumer='Next Main-owned CPU profile of the warmed official long-prefill benchmark.',
+            budgets=dict(wall_s=180, cpu_s=180, rss_bytes=4 << 30, text_bytes=64 << 20,
+                file_bytes=128 << 20, total_bytes=256 << 20,
+                reason='Bounded VTune native metadata plus a16MiB collection limit; raw text remains capped at64MiB.'),
+            model_executed=False, cpu_sampling_qualified=False, GPU_hardware_metrics_qualified=False,
+            complete=False, passed=False, active=False)
+        boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+        journal = subprocess.check_output(['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True)
+        cursor = next(x.split(': ', 1)[1] for x in journal.splitlines() if x.startswith('-- cursor: '))
+        owner = None
+
+        def persist():
+            record['active'] = bool(owner and owner.active is not None)
+            (root / 'record.json').write_text(json.dumps(dict(record,
+                owned_commands=owner.commands if owner else []), indent=2) + '\n')
+
+        owner = supervision.Owner(root / 'owned', persist)
+        try:
+            for label, argv in (('collect', command), ('report', report_command)):
+                entry, out, err = owner.run(label, argv, env, P, wall=180, cpu=180,
+                    rss_cap=4 << 30, file_cap=128 << 20, text_cap=64 << 20, total_cap=256 << 20)
+                text = out.read_text(errors='replace')
+                diagnostics = err.read_text(errors='replace')
+                record['complete'] = supervision.closed(entry)
+                record[label] = dict(exit_code=entry.get('exit_code'), ownership_closed=supervision.closed(entry),
+                    diagnostics=[x for x in diagnostics.splitlines() if re.search(
+                        r'(?i)vtune:|error|warning|permission|unsupported|not supported|no data', x)][-32:])
+                guards.require(supervision.closed(entry) and entry.get('exit_code') == 0,
+                               label + ' failed: ' + diagnostics[-4096:])
+                if label == 'report':
+                    reader = csv.DictReader(io.StringIO(text), delimiter='\t')
+                    rows = list(reader)
+                    guards.require(reader.fieldnames and rows, 'missing CPU hotspot table')
+                    cpu_column = next((k for k in reader.fieldnames if 'CPU Time' in k), None)
+                    guards.require(cpu_column is not None, 'missing CPU Time column')
+                    times = [float(row[cpu_column]) for row in rows]
+                    guards.require(all(math.isfinite(v) and v >= 0 for v in times) and sum(times) > 0,
+                                   'no positive finite CPU samples')
+                    guards.require(any('libcrypto' in str(row).lower() or 'openssl' in str(row).lower()
+                                       for row in rows), 'target module samples missing')
+                    record['hotspots'] = dict(columns=reader.fieldnames, rows=rows,
+                        reported_CPU_time_sum_s=sum(times), limit='Top12 functions from a software-only capability probe, not model cost.')
+            record['passed'] = record['cpu_sampling_qualified'] = True
+        except BaseException as error:
+            record['error'] = str(error)
+        finally:
+            record['ownership_closed'] = owner.active is None and all(supervision.closed(c) for c in owner.commands)
+            after = subprocess.check_output(['journalctl', '-k', '-b', '--after-cursor', cursor, '--no-pager'], text=True)
+            record['fresh_faults'] = [x for x in after.splitlines() if re.search(
+                r'(?i)(gpu.*(?:hang|fault|reset|wedg)|xe.*(?:error|fault|reset|timeout))', x)]
+            record['boot_unchanged'] = boot == Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+            record['passed'] = bool(record['passed'] and record['ownership_closed'] and
+                                    record['boot_unchanged'] and not record['fresh_faults'])
+            record['cpu_sampling_qualified'] = record['passed']
+            persist()
+            result.write_text(json.dumps(record, indent=2) + '\n')
+        print(json.dumps({k: record.get(k) for k in
+            ('mode', 'passed', 'complete', 'cpu_sampling_qualified', 'ownership_closed', 'error')}))
+        return 0 if record['passed'] else 1
+
+
 def main():
+    if sys.argv[1:] == ['cpu-smoke']:
+        return cpu_smoke()
     guards.require(len(sys.argv) == 2 and sys.argv[1] in ('smoke', 'resources', 'isa', 'overview', 'memory'),
                    'use profile_attention.py smoke|resources|isa|overview|memory')
     mode = sys.argv[1]

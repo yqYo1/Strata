@@ -1,11 +1,11 @@
 {
   "schema": 1,
   "state": "retired",
-  "previous_decision_archive": "6059b1705e19130d2e23f865514c65267209e92c",
-  "evidence_commit": "3e98e62cf7e3a9dbc36f35c83be9ade491312fbb",
+  "previous_decision_archive": "2feec34581463647022db6877127e5f4a837afcb",
+  "evidence_commit": "821be8b722c6982d16adbdd4deb1240edb56c239",
   "source_recovery": [
     {
-      "kind": "engine_source",
+      "kind": "engine_source_or_dependency",
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "016ae608038f706c8baf1d598cfae6c2a2d882f2",
       "count": 488,
@@ -13,7 +13,7 @@
       "recovered_from_git_and_hash_compared": true
     },
     {
-      "kind": "dependency",
+      "kind": "engine_source_or_dependency",
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
       "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
       "count": 3608,
@@ -21,7 +21,7 @@
       "recovered_from_git_and_hash_compared": true
     },
     {
-      "kind": "dependency",
+      "kind": "engine_source_or_dependency",
       "root": "/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
       "revision": "87f6850680a580654b9ea2c80dbc01aeb36ad231",
       "count": 5703,
@@ -31,54 +31,76 @@
     {
       "kind": "benchmark_helpers",
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "fc09c9e27c96cfbfbe0af4f7ce263b6b38fe07ea",
+      "revision": "f0861e51bc72ef6534e2146ea6708a7ffee094ae",
       "count": 103,
-      "aggregate_sha256": "1ca6b8a88af7406e5d0540573a93aef9e3041e76384baf30b61849e7ba23ede5",
-      "recovered_from_git_and_hash_compared": true
-    },
-    {
-      "kind": "benchmark_helpers",
-      "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "09d4365720b45551aeea68dbc80951542550b858",
-      "count": 103,
-      "aggregate_sha256": "1ca6b8a88af7406e5d0540573a93aef9e3041e76384baf30b61849e7ba23ede5",
+      "aggregate_sha256": "773986289f237363ee5e3801079db25ca6e19244d9e3c32e88adf1537cfe57cd",
       "recovered_from_git_and_hash_compared": true
     },
     {
       "kind": "build_recipe",
-      "revision": "3e98e62cf7e3a9dbc36f35c83be9ade491312fbb",
       "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-entry-engine-build-v2.json",
       "sha256": "9b7734387f0fc56f36afe9d7bca75e5f0bedcef479271e982025abe1d4334a1a",
+      "recovered_from_git_and_hash_compared": true
+    },
+    {
+      "kind": "CPU_probe_helpers",
+      "root": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "revision": "d9a7952fdd6956c257082985be0ac8a6e0c0d800",
+      "count": 3,
+      "aggregate_sha256": "aaedc99b53a666ea5784956fd6c014ee349481dd69babc0f23d1f0c22273f134",
       "recovered_from_git_and_hash_compared": true
     }
   ],
   "roots": [
     {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-base-v1",
-      "reason": "Matched clean78K screen closed and samples committed; successful logs, duplicate private profile, process receipts and JIT/cache output have no remaining consumer. Exact engine/dependency/helper inputs and recipe recovered from Git."
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-warm-census-v1",
+      "reason": "Closed two-request warm resource check; compact samples, supplementary integrity audit and decision committed; normal logs/JIT/private profile have no current consumer.",
+      "original_passed": true
     },
     {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gdncols4-candidate-v1",
-      "reason": "Matched clean78K screen closed and samples committed; successful logs, duplicate private profile, process receipts and JIT/cache output have no remaining consumer. Exact engine/dependency/helper inputs and recipe recovered from Git."
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-software-profiler-smoke-v1",
+      "reason": "CPU collector refused launch before useful target sampling; compact failed qualification, exact error, tool identities and observed ptrace policy committed. No raw collector consumer.",
+      "original_passed": false
     }
   ],
   "standalone_paths": [
     {
-      "path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/gdn-subgroup-worker-start.json",
+      "path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/warm-resource-worker-start.json",
       "bytes": 2226,
-      "sha256": "22a0f9c0b5ae1a35d0d837fc4404513e261a3e0e7678ae1c1186f5953ca53681",
-      "reason": "Completed Orca dispatch released, PTY closed and delivery acknowledged; substantive report remains for native review, launch transaction has no consumer."
+      "sha256": "02ad92753fa51571aef5d0c2189b0fe88d27dabaf80cdd2ddf4fbcc015ac2bcb",
+      "reason": "Orca launch transaction settled, released, PTY closed and acknowledged."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/warm-resource-collector-review.md",
+      "bytes": 12562,
+      "sha256": "69dcea9472661527a4f3da62520759a8a84a8db77b811591d1bc1c60d868cd42",
+      "reason": "Source-only collector review is superseded by accepted guard code and compact corrections; no reusable body consumer."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/warm-resource-collector-native-review.json",
+      "bytes": 6754,
+      "sha256": "73a37f75aa3171d1d4fe15583060ed4bcce10c6dd43d4b1bae4aad4588fa1faa",
+      "reason": "Long review detail closed after guard integration and exact original-log validation; compact corrections remain in Git."
     }
   ],
-  "file_count": 141,
-  "bytes": 25550429,
+  "file_count": 86,
+  "bytes": 14123783,
   "retained_exceptions": [
-    "Single latest main-native-gdn-engine and same-library recurrence fixture retained for warmed resource attribution; no duplicate baseline build needed.",
-    "Subgroup knowledge-collection report and completed native review retained for the indexed conditional recurrence-design decision; Main has not loaded the collection body.",
-    "Legacy untracked provenance holds and main-primary-native-build-root-v1 untouched; not a global cleanup claim."
+    "One current main-native-gdn-engine and recurrence fixture retained for upcoming source-counter qualification; exact known-good engine remains unchanged.",
+    "Completed warm-host source audit and native review retained for imminent Main instrumentation gates; all associated Orca launch transactions are retired.",
+    "Older explicit provenance holds and reusable conditional knowledge reports untouched; not a global cleanup claim."
   ],
-  "manifest_archive_commit": "8764e586b15569444d324860c3c403691b6ecc5f",
+  "manifest_archive_commit": "060050233dad470d587063f0883820a895fa8ec6",
   "manifest_archive_path": "bench/results/2026-10-15-pr6-recovery-audit/build-retirement-20261018.json",
-  "deleted_count": 141,
-  "deleted_bytes": 25550429
+  "deleted_count": 86,
+  "deleted_bytes": 14123783,
+  "supplemental_paths": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/warm-host-worker-start.json",
+      "bytes": 2226,
+      "sha256": "d74e01d5ccce513e84a2bf1a9d797125dd7126e9574e5287085166164bcf6742",
+      "reason": "Accepted source-audit settlement, release, positive PTY closure and acknowledged delivery; launch transaction has no remaining consumer.",
+      "state": "retired"
+    }
+  ]
 }

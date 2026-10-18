@@ -517,6 +517,53 @@ process variability;24 generated tokens do not qualify sustained decode, task
 quality, agent workloads, full-model262144 or conversation RESTORE. The component
 gain therefore translates to a small model gain and does not qualify1000PP.
 
+The next resource check uses the same qualified engine through
+`bench_engine.py prepare|run qsa-gdncols4-warm-census`: two fresh78K requests,
+thinking on, with the existing parameter-validated coarse/GDN/QSA/CPU/command
+observers enabled before process startup. Exact long-request route markers
+separate the records; each independently must pass all48-layer census and
+observer completion checks. Retain first-use aggregate/CPU observations and
+the subsequent request's detailed service samples. This tests whether first-use
+CPU cost distorted the previous attribution; both speeds remain profiled,
+and sampled service is not occupancy or full critical-path coverage. CPU parser
+checks reproduced retained48-layer GDN and678 command observations and rejected
+merged requests, missing windows/samples, incomplete or duplicate CPU headers,
+and a missing GDN aggregate. The reconstructed check used synthetic census
+distributions and absolute clock origins for already-retired raw logs.
+
+The two-request check passed at78,451 fresh tokens each, with no new GPU fault
+and every owner closed. Profiled PP was778.9 first-use and866.6 subsequently;
+the clean867.1 median remains the speed reference. Warm QSA attention, MoE,
+GDN recurrence and upload queue intervals were20.8568,20.9974,6.52363 and8.38669s.
+Main-thread CPU was88.806s over89.508s wall:59.184s inside GPU waits and29.622s
+outside them. The latter includes4.720s source copy,4.823s upload submission,
+3.277s GEMM submission and16.630s unclassified CPU. These overlap device work
+and are not an additive hardware-bottleneck breakdown. First-use unclassified
+CPU/wall was19.490/26.745s versus warm16.630/16.971s; the cause remains unknown.
+Next check software call-stack collection for the remaining host cost. The
+[compact profile](../bench/results/2026-10-15-pr6-recovery-audit/moe-window-census-current.json)
+keeps all673 selected warm command intervals. Review added exact frame/stratum
+and zero-throw guards; both original log intervals passed those CPU-only checks.
+
+Before another model run, Main checks unprivileged VTune CPU stack collection
+with `profile_attention.py cpu-smoke`. It runs the installed OpenSSL SHA256
+workload for3s under software sampling, with hardware characterization disabled,
+then requires positive target-module CPU samples in a finite hotspot table.
+Source/helpers and installed tool hashes are pinned; collection/report processes
+have180s deadlines,64MiB raw-text and256MiB total budgets. This is a capability
+probe, without model execution or a GPU-counter/compute-ceiling claim. No sysctl,
+driver or privilege changes are part of it.
+
+The CPU software probe was refused at collector startup by the current ptrace
+policy (`ptrace_scope=1`); it produced no qualified CPU samples. Preserve the
+[failed capability receipt](../bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json).
+The reviewed next path is disjoint non-GEMM host timing around existing launch
+segments, preserving internal GEMM/transfer scopes. The current Host accounting
+rejects nested Host regions, so a whole-job outer timer is invalid. Instrumentation
+is not implemented yet: qualify its CPU-only lifetime/exception/accounting cases,
+then separate traced and untraced bounded model diagnostics. No speedup follows
+from this source review.
+
 ## Optional GDN chunk64
 
 `STRATA_SYCL_PREFILL_GDN_CHUNK64=1` adds a separate experimental long-prefill

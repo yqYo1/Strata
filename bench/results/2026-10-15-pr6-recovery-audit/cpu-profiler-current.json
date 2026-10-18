@@ -1,0 +1,107 @@
+{
+  "mode": "cpu-smoke",
+  "source_commit": "d9a7952fdd6956c257082985be0ac8a6e0c0d800",
+  "input_sha256": {
+    "tools/sycl/profile_attention.py": "8a6724bee76dababd392c9f82e4c572ce014e928d76e346eec8de4a1bbb3f341",
+    "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+    "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a"
+  },
+  "command": [
+    "/opt/intel/oneapi/vtune/latest/bin64/vtune",
+    "-collect",
+    "hotspots",
+    "-knob",
+    "sampling-mode=sw",
+    "-knob",
+    "enable-stack-collection=true",
+    "-knob",
+    "stack-size=4096",
+    "-knob",
+    "enable-characterization-insights=false",
+    "-data-limit=16",
+    "-user-data-dir",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-software-profiler-smoke-v1/user",
+    "-result-dir",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-software-profiler-smoke-v1/vtune",
+    "--",
+    "/usr/bin/openssl",
+    "speed",
+    "-seconds",
+    "3",
+    "-bytes",
+    "16384",
+    "-evp",
+    "sha256"
+  ],
+  "report_command": [
+    "/opt/intel/oneapi/vtune/latest/bin64/vtune",
+    "-report",
+    "hotspots",
+    "-result-dir",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-software-profiler-smoke-v1/vtune",
+    "-format",
+    "csv",
+    "-csv-delimiter",
+    "tab",
+    "-group-by",
+    "function",
+    "-limit",
+    "12"
+  ],
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-software-profiler-smoke-v1/tmp",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-software-profiler-smoke-v1/cache"
+  },
+  "driver_before": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  },
+  "profiler": {
+    "path": "/opt/intel/oneapi/vtune/2026.4/bin64/vtune",
+    "sha256": "7987d63d0e8ed24fdad6572d8f0873e709831463d202a7fb71c59b6709e9a05d",
+    "version": "Intel(R) VTune(TM) Profiler 2026.4.0 (build 632893) Command Line Tool\nCopyright (C) 2009 Intel Corporation. All rights reserved."
+  },
+  "target": {
+    "path": "/usr/bin/openssl",
+    "sha256": "b4f547c0f16272d1cc7f870330a6f2c243710c335e7a99c734ff7a0c6fdb2503",
+    "version": "OpenSSL 3.0.13 30 Jan 2024 (Library: OpenSSL 3.0.13 30 Jan 2024)"
+  },
+  "purpose": "Qualify CPU function/stack sampling for warmed16.63s unclassified host cost; no model speed or GPU hardware-counter result.",
+  "consumer": "Next Main-owned CPU profile of the warmed official long-prefill benchmark.",
+  "budgets": {
+    "wall_s": 180,
+    "cpu_s": 180,
+    "rss_bytes": 4294967296,
+    "text_bytes": 67108864,
+    "file_bytes": 134217728,
+    "total_bytes": 268435456,
+    "reason": "Bounded VTune native metadata plus a16MiB collection limit; raw text remains capped at64MiB."
+  },
+  "model_executed": false,
+  "cpu_sampling_qualified": false,
+  "GPU_hardware_metrics_qualified": false,
+  "complete": true,
+  "passed": false,
+  "active": false,
+  "collect": {
+    "exit_code": 1,
+    "ownership_closed": true,
+    "diagnostics": [
+      "vtune: Error: Cannot start data collection because the scope of ptrace system call is limited. To enable profiling, please set /proc/sys/kernel/yama/ptrace_scope to 0. To make this change permanent, set kernel.yama.ptrace_scope to 0 in /etc/sysctl.d/10-ptrace.conf and reboot the machine."
+    ]
+  },
+  "error": "collect failed: vtune: Error: Cannot start data collection because the scope of ptrace system call is limited. To enable profiling, please set /proc/sys/kernel/yama/ptrace_scope to 0. To make this change permanent, set kernel.yama.ptrace_scope to 0 in /etc/sysctl.d/10-ptrace.conf and reboot the machine.\n",
+  "ownership_closed": true,
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "ptrace_scope_after": "1",
+  "decision": "Software collector refused launch under the observed ptrace policy; keep this failed qualification. Next use explicit existing CPU timing regions, without a profiler-permission change."
+}
