@@ -1131,352 +1131,6 @@
       "No implementation or performance adoption from the report."
     ]
   },
-  "ur_v2_submission_batching_scope": {
-    "classification": "knowledge_collection",
-    "schedulable_now": false,
-    "eligible_at_dispatch": true,
-    "prerequisites_met": [
-      "Current pinned environment force-loads libur_adapter_level_zero_v2.so.0.12.0 and disables copy offload; warm78K profile attributes29.63s CPU outside explicit waits but does not prove submission is on the critical path.",
-      "Historical index metadata search found no command-list/immediate-command/submission-batch scope; existing validated-launch-ownership report addresses span admission, not this provider-specific question."
-    ],
-    "question": "Compare public submission batching/coalescing choices for the pinned UR Level Zero v2 adapter, preserving event/error/lifetime semantics; distinguish old-adapter environment knobs from actual support.",
-    "source_files_sha256": {
-      "src/sycl/runtime.cpp": "e6c20e148bc7ceec250ad9a58ddfc851c1476aaab3d68982d2aee2897e572b83",
-      "include/strata/sycl/launch.hpp": "4eb1888057ef6ae34f2bbb9d2545321061ee116659e54907047732544d589d95",
-      "tools/sycl/measurement_environment.json": "637cc6f8f410cf8400fd7b4598182e2e91d1c5cf907ef428e73321faf0aa47fa"
-    },
-    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/ur-v2-submission-batching.md",
-    "report_budget": {
-      "words": [
-        1800,
-        2600
-      ],
-      "maximum_bytes": 32768
-    },
-    "state": "Orca and native Luna-max review complete; settled terminals released/closed and delivery acknowledged.",
-    "main_reads_body_on_arrival": false,
-    "retention_consumer": "Native Luna-max scope review and indexed section retrieval for a concrete later implementation; review when selected or superseded.",
-    "dispatch": "ctx_13927f41d173",
-    "task": "task_a05a3add39c0",
-    "terminal": "term_5b09d41d-970e-487f-a8b6-129e6d2a3e1f",
-    "model_evidence": "Custom terminal argv gpt-6-luna/medium; tui-idle satisfied and worker-start observed turn_started.",
-    "report_sha256": "3cb3e5fd9c826f4923a3a77f06f6ae339fa9c92e99a7c30b9fd0e45f68d78ed5",
-    "report_bytes": 18658,
-    "delivery": "delivery_587c1ba40ec2",
-    "review_task": "/root/review_ur_v2_submission_20261018",
-    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/ur-v2-submission-batching-native-review.json",
-    "review_sha256": "bae1704321ce7489ea03e922a9a64142168ca5aea2d75ae5524fe2dc1c7035e0",
-    "reviewed_digest": [
-      "Pinned ELF hash matches and contains forced-batching names; source, not strings alone, establishes flag parsing.",
-      "Use true/1 rather than any non-null value. Batched path assumes in-order; actual runtime queue flags and lifetime/error semantics still need Main acceptance.",
-      "120 queued operations flush before next enqueue. Adjacent historical work exists; no prior topic was too broad.",
-      "No performance/adoption claim; fresh acceptance plan only after frozen QSA cohort closes."
-    ],
-    "next_scope": {
-      "question": "Forced-batching acceptance and matched queue-mode comparison on actual in-order queues.",
-      "schedulable_now": false,
-      "prerequisites": [
-        "Frozen QSA model comparison closed.",
-        "Main pins adapter and actual in-order queue creation, audits source lifetimes/waits, and commits a fresh bounded plan."
-      ]
-    },
-    "main_source_preflight": {
-      "source_revision": "504366f4b82ff00bbac7b0c956635eed8bc599d8",
-      "copy_offload_avoidance": "Pinned command_list_cache.cpp lines88-110 overrides requested offload with the existing force-disable flag for both command-list kinds; batched constructor true hints alone do not bypass it.",
-      "runtime_queue_contract": "Current Runtime compute/transfer/make_queue all set in_order; compute also enables profiling.",
-      "profiling_question": "Batched regular events request EVENT_FLAGS_COUNTER without profiling; event.cpp rejects profiling unless the event has profiling or explicit timestamps. Audit/acceptance must cover actual barrier-event elapsed-time and direct event profiling before any long forced-batched model run. No forced-batched GPU work launched.",
-      "source_sha256": {
-        "command_list_cache.cpp": "94adf607a0280592b3d4ffdb83077386c3a0b257473a827ed268264403e9eac2",
-        "queue_batched.cpp": "1acaeb74da378f52786f561023d04bc49cc1fb140ac53ce4faf1c341e04332a2",
-        "event.cpp": "35cb322613492ac825ce2759c5c89a57df88eb5546c0d38ef28655d20aee10c2"
-      },
-      "source_url_prefix": "https://github.com/intel/llvm/blob/504366f4b82ff00bbac7b0c956635eed8bc599d8/unified-runtime/source/adapters/level_zero/v2/"
-    }
-  },
-  "moe_gu_swiglu_epilogue_scope": {
-    "classification": "decision_support",
-    "schedulable_now": false,
-    "eligible_at_dispatch": true,
-    "prerequisites_met": [
-      "Actual current accumulator route exposes one GU GEMM then native16::swiglu per job, with interleaved gate/up columns and FP16 hidden output.",
-      "R783 covered an older GEMM-to-SwiGLU seam with oneMKL/joint_matrix; current owned vLLM-Xe2/TLA epilogue implementation and rejected Down output-copy findings create a new source-specific feasibility question."
-    ],
-    "question": "Assess native Xe2 gate/up GEMM-to-SwiGLU fusion for actual interleaved GU columns and FP16 hidden output, preserving BF16 per-operand rounding and public fragment ownership.",
-    "source_files_sha256": {
-      "src/prefill/moe_window.inc": "b2369ed8791c914d659fa4511ce815386d761b5d4181153485a43a204395345b",
-      "src/prefill/sycl/native16.cpp": "7567f607b4b564c21c8fc4ee21ed41ae7f419a3f0a23a866836f1a85e658627c",
-      "src/prefill/sycl/vllm_xe2/native16.cpp": "8e6ce16735fb3c5d51e6af9dd72f218ff191d1288e334eff3c6cba3244e44ee6",
-      "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp": "84fb1251c2f9f93bd7774fb2a5a6c928df9ac8e86d1c7f6cf1a6cec058403fa6"
-    },
-    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/moe-gu-swiglu-epilogue.md",
-    "report_budget": {
-      "words": [
-        1800,
-        2600
-      ],
-      "maximum_bytes": 32768
-    },
-    "state": "Orca and native Luna-max review complete; settled terminals released/closed and delivery acknowledged.",
-    "main_reads_body_on_arrival": false,
-    "retention_consumer": "Native Luna-max scope review and indexed section retrieval for a concrete later implementation; review when selected or superseded.",
-    "dispatch": "ctx_f0b19816ae7e",
-    "task": "task_6badfb3cfce8",
-    "terminal": "term_430c5bad-b3f1-4227-9c62-9f7aae6c4913",
-    "model_evidence": "Custom terminal argv gpt-6-luna/medium; tui-idle satisfied and worker-start observed turn_started.",
-    "report_sha256": "6223b983a511709d62717d0342d77e6e8b8eadbc4af6b403e6d65688fbb61abb",
-    "report_bytes": 17116,
-    "delivery": "delivery_587c1ba40ec2",
-    "review_task": "/root/review_gu_swiglu_20261018",
-    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/moe-gu-swiglu-epilogue-native-review.json",
-    "review_sha256": "5dba3cf3ff2d6e73b1bb83fe7069aeef80235458c86be74af48eeb1a65eff673",
-    "reviewed_digest": [
-      "Current GU really interleaves gate/up, including the environment-gated parallel dequant path.",
-      "Preserve BF16 operand rounding and hidden() finite-FP16 clamp/NaN behavior.",
-      "Existing xe_gemm_bsd.hpp derives from pinned BSD-3 vLLM-XPU; exact fragment pairing and speed unproven.",
-      "Prototype review remains conditional on Main selecting/committing this seam after QSA timing."
-    ]
-  },
-  "submission_acceptance_contract_scope": {
-    "classification": "decision_support",
-    "schedulable_now": false,
-    "eligible_at_dispatch": true,
-    "prerequisites_met": [
-      "Concrete submission-only fixture/controller committed with these exact source hashes before dispatch.",
-      "Prior UR V2 source audit identified batched event-profiling compatibility as a concrete unresolved gate, not a generic survey.",
-      "The900.6tok/s source and executable are retained/hash-verified outside the pending rebuild."
-    ],
-    "question": "Audit the actual no-graph submission acceptance fixture and controller for in-order/USM/host lifetimes, batch-boundary and profiling coverage, copy-offload avoidance and failure/ownership semantics.",
-    "source_files_sha256": {
-      "tests/sycl/compat.cpp": "1040611974c4454c28d327f4f21a94d4e6cbc034f49a15560634886a5fb51994",
-      "tools/sycl/check_submission.py": "655f93e1ae3169ee5d84f3be53abba604507eef79d1a7a92057d1f054df20703",
-      "cmake/sycl_backend.cmake": "4f10b761dc8566b59616d70fd4a8a46730923280c219a965352c0d839d09aaa9",
-      "src/sycl/compat.cpp": "bd5a664f9a0bd91b0e8e2e59f67d0a2c38c81599613831abbd6e16ad98c01689",
-      "src/sycl/runtime.cpp": "e6c20e148bc7ceec250ad9a58ddfc851c1476aaab3d68982d2aee2897e572b83"
-    },
-    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/submission-acceptance-contract.md",
-    "report_budget": {
-      "words": [
-        1800,
-        2400
-      ],
-      "maximum_bytes": 32768
-    },
-    "state": "Orca and native Luna-max audit complete; actual profiling gate failed before boundary cases, no model advancement.",
-    "main_reads_body_on_arrival": false,
-    "retention_consumer": "Native Luna-max review and concrete acceptance-gate corrections; retire full audit payload after this runtime-mode decision.",
-    "source_commit": "dfba48ef52e1bd8df596ecda06ab4eae0c882359",
-    "dispatch": "ctx_7a8b6f7a254e",
-    "task": "task_b995016ab6a6",
-    "terminal": "term_62521406-8db6-4648-889f-35c942a59472",
-    "model_evidence": "Custom gpt-6-luna/medium terminal; tui-idle satisfied and turn_started observed.",
-    "report_bytes": 18133,
-    "report_sha256": "cad7299664c77352e115b4d6b2d23ef155af93e3ab58ea726275c55f4ee38fb9",
-    "delivery": "delivery_43d1fa96a52d",
-    "review_task": "/root/review_submission_contract_20261018",
-    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/submission-acceptance-contract-native-review.json",
-    "review_sha256": "b66a92495bac2b8ee9372d5e847149eba8198e91a06013f7861e90b2fa454388",
-    "reviewed_digest": [
-      "Five source hashes match; accepted with a material runtime-location correction.",
-      "Actual first explicit-stream elapsed-time query failed after stream_copy_ordering; candidate did not reach queued-kernel cases, unlike report prediction.",
-      "Control all10 passed; failed candidate owner closed, no new fault, model advancement false. Kernel counts differ from provider operation counts."
-    ]
-  },
-  "gu_packed_epilogue_contract_scope": {
-    "classification": "decision_support",
-    "schedulable_now": false,
-    "eligible_at_dispatch": true,
-    "prerequisites_met": [
-      "Concrete packed two-fragment GU epilogue and qualification fixture/controller committed at5ca094afc.",
-      "Original36-case actual TLA partner ownership passed atb3e982d93, receipt committed at3ea300e5d; packed-writer proof remains a new explicit gate."
-    ],
-    "source_commit": "5ca094afc633d55cf67b126820987549bcf4fc1a",
-    "question": "Audit concrete packed BF16 pair exchange, unique hidden ownership, convergence/tails, storage/activation precision, memory/lifetime and actual qualification coverage before any GPU smoke.",
-    "source_files_sha256": {
-      "src/prefill/sycl/vllm_xe2/native16.cpp": "56f07930bfd201e17b419f34ee0ff1a3f7da06d8515f763f6cea907dab74308a",
-      "src/prefill/sycl/vllm_xe2/native16.hpp": "0591edc61d600139733ab131addf0b996aa76f86c6c0eebaeb5f66cdaf4e1152",
-      "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp": "84fb1251c2f9f93bd7774fb2a5a6c928df9ac8e86d1c7f6cf1a6cec058403fa6",
-      "src/prefill/sycl/native16.cpp": "7567f607b4b564c21c8fc4ee21ed41ae7f419a3f0a23a866836f1a85e658627c",
-      "bench/sycl/moe_gu_swiglu.cpp": "bea7e3406940a21850a4524b6bb2f2f3a9f666bf5e0bf20094e903227e3b2e18",
-      "tools/sycl/measure_gu_swiglu.py": "3355189632437134184d4d67d16669731b43b0aec29696587d2a55095b1780b1"
-    },
-    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/gu-packed-epilogue-contract.md",
-    "report_budget": {
-      "words": [
-        1800,
-        2600
-      ],
-      "maximum_bytes": 32768
-    },
-    "state": "Orca and native Luna-max review complete; worker released/closed and delivery acknowledged.",
-    "main_reads_body_on_arrival": false,
-    "retention_consumer": "Native Luna-max completed-report review and concrete prototype contract corrections; review at component qualification closure.",
-    "dispatch": "ctx_db7c9cc49f8f",
-    "task": "task_964238a402a1",
-    "terminal": "term_4a026e9e-d777-478f-8871-e570e961f63b",
-    "model_evidence": "Custom terminal argv gpt-6-luna/medium; tui-idle satisfied, input accepted and turn_started observed.",
-    "report_bytes": 15947,
-    "report_sha256": "6a4254e5bf77f3d1c6e2faf1f8f606ea46a476eb62cc9aa0f77f192f03efcec5",
-    "delivery": "delivery_3ba622846a91",
-    "review_task": "/root/review_gu_packed_contract_20261018",
-    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/gu-packed-epilogue-contract-native-review.json",
-    "review_sha256": "e51b36e6df47bbeb3f35242cc5cfaa83965e2871727eb19e0e9e701cc8d5fbc6",
-    "reviewed_digest": [
-      "All six pinned hashes match. The asserted i+1 proof gap is a false positive: all-slot partner checks, XOR involution, parity and packed writer census cover it.",
-      "NaN payloads ignored; infinite hidden outputs rejected; one-ULP bound applies to finite saturated FP16 results.",
-      "All36 packed ownership cases and bounded component checks passed; no model or physical262144/RESTORE qualification. New scope waits for production-route evidence."
-    ]
-  },
-  "gu_epilogue_codegen_collection_scope": {
-    "classification": "knowledge_collection",
-    "schedulable_now": false,
-    "eligible_at_dispatch": true,
-    "prerequisites_met": [
-      "Concrete qualified GU prototype and component shape timings exist;39,260-token production admission passed.",
-      "Pinned UR V2 forced-batched event profiling rejection is recorded, allowing a source-specific caller/cut-boundary audit without re-running that flag."
-    ],
-    "question": "Compare activation epilogue layouts, register/code size, coalescing, SFU math and DPAS overlap techniques using the actual qualified packed GU kernel as a concrete applicability case.",
-    "source_commit": "f6f6714f7eab7c2d8681f3c9925ac185a1eeca29",
-    "source_files_sha256": {
-      "src/prefill/sycl/vllm_xe2/native16.cpp": "56f07930bfd201e17b419f34ee0ff1a3f7da06d8515f763f6cea907dab74308a",
-      "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp": "84fb1251c2f9f93bd7774fb2a5a6c928df9ac8e86d1c7f6cf1a6cec058403fa6",
-      "bench/sycl/moe_gu_swiglu.cpp": "bea7e3406940a21850a4524b6bb2f2f3a9f666bf5e0bf20094e903227e3b2e18"
-    },
-    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/gu-epilogue-codegen-collection.md",
-    "report_budget": {
-      "words": [
-        1800,
-        2600
-      ],
-      "maximum_bytes": 32768
-    },
-    "state": "Orca and native Luna-max review complete; external worker released/closed and delivery acknowledged.",
-    "main_reads_body_on_arrival": false,
-    "retention_consumer": "Indexed substantive knowledge for a named later implementation question; native review determines novelty and retrieval sections after completion.",
-    "dispatch": "ctx_eeff26a5e252",
-    "task": "task_10ab22fd152b",
-    "terminal": "term_e7f3fbdf-2b08-4d9e-9a71-92d0a99a431b",
-    "model_evidence": "Custom gpt-6-luna/medium terminal; tui-idle satisfied and turn_started observed.",
-    "report_sha256": "9b11ad64b3ae2e143e285ba9737547baa85b10bb73cc78a1df28c0b5e4c05fae",
-    "report_bytes": 19206,
-    "review_task": "/root/review_gu_queue_collections_20261018",
-    "delivery": "delivery_1fd1355ff5c8",
-    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/gu-queue-collections-native-review.json",
-    "review_sha256": "9b796ae6a82d3cf5ee4d5dcc717f937a985bbca13b703d06b82b874de2472c97",
-    "retrieval_sections": [
-      "Subgroup packing and pair ownership alternatives",
-      "Conversion placement and arithmetic order",
-      "Hidden output layout and coalescing",
-      "Special-function work and GEMM overlap",
-      "What a Main-owned codegen audit would need"
-    ],
-    "reuse_corrections": [
-      {
-        "id": "GU-C1",
-        "severity": "material measurement provenance clarification",
-        "finding": "The shape ratios match `bench/results/2026-10-15-pr6-recovery-audit/moe-gu-swiglu-current.json` (SHA-256 `7803949ea68db226635731271c50279e6484881ceb14f9633d00b30c4d43a329`), whose source_commit is `5ca094afc633d55cf67b126820987549bcf4fc1a`; the collection scope is pinned at `f6f6714f7eab7c2d8681f3c9925ac185a1eeca29`. The three overlapping GU source hashes match, but these are distinct source commits. The report should cite the compact result and call the numbers component measurements from that receipt, not imply a new measurement of the collection's full source snapshot. The receipt itself states no model-performance, quality, or physical-262144/RESTORE qualification.",
-        "additional_unpinned_result": "The 39,260-token production-admission figures and associated 2,519-job/15,829,095-row counts have no receipt path/hash in the report. Add the exact compact admission receipt reference before those figures are reused for production-weighted shape decisions."
-      },
-      {
-        "id": "GU-C2",
-        "severity": "citation precision and mutable reference",
-        "finding": "CUTLASS's cited `gemm_api_3x.md` supports a separate collective epilogue abstraction and the cited arguments page supports a custom fused transformation over the accumulator. The cited pages do not establish a dedicated epilogue tile or an epilogue fusion visitor as phrased in the report. Replace those terms with the documented API concepts, or cite the exact visitor/tile API that is meant. The report's CUTLASS `main` and `latest` links are mutable; pin the revision and verify its license before any implementation reference is used. Current CUTLASS LICENSE.txt says BSD-3-Clause, but that is not a historical pin for the report's URLs."
-      }
-    ],
-    "retention": {
-      "decision": "retain_conditionally_in_indexed_library",
-      "consumer": "A future Main-selected, source-pinned comparison of one concrete GU alternative, such as partial unrolling or a pair-local destination layout, with compiler resource/code-size artifacts and the numerical contract fixed.",
-      "review_point": "After the current clean model cohort closes and Main identifies a specific codegen question; if no candidate is selected, retire the full body and retain only compact provenance/retrieval metadata."
-    },
-    "next_scope": {
-      "schedulable_now": false,
-      "missing_prerequisites": [
-        "The active Main-owned clean whole-model cohort has not closed.",
-        "No exact production tile/row-frequency distribution and no pinned generated-code/resource record were supplied for this review.",
-        "No single candidate variant and frozen component A/B plan is selected."
-      ],
-      "future_gate": "After those prerequisites close, compare at most one candidate against the packed XOR baseline, preserve exact numerical/ownership gates, use at least three independent process samples by shape, and keep component evidence separate from model-route adoption."
-    },
-    "reviewed_digest": [
-      "Source hashes and report hash match; substantive nonduplicated source guidance accepted conditionally.",
-      "No occupancy/spills/I-cache/SFU/critical-path measurement is established. Follow-up remains conditional during current model cohort."
-    ],
-    "evidence_links": {
-      "component_commit": "33a7d854c",
-      "admission_commit": "001723bd8",
-      "admission_path": "bench/results/2026-10-15-pr6-recovery-audit/moe-gu-swiglu-model-current.json"
-    }
-  },
-  "prefill_queue_profiling_collection_scope": {
-    "classification": "knowledge_collection",
-    "schedulable_now": false,
-    "eligible_at_dispatch": true,
-    "prerequisites_met": [
-      "Concrete qualified GU prototype and component shape timings exist;39,260-token production admission passed.",
-      "Pinned UR V2 forced-batched event profiling rejection is recorded, allowing a source-specific caller/cut-boundary audit without re-running that flag."
-    ],
-    "question": "Audit actual profiling-dependent call sites and a possible prefill-only queue boundary, preserving calibration, diagnostics, graph/lifetime and decode APIs after forced-batched profiling failed.",
-    "source_commit": "f6f6714f7eab7c2d8681f3c9925ac185a1eeca29",
-    "source_files_sha256": {
-      "src/sycl/runtime.cpp": "e6c20e148bc7ceec250ad9a58ddfc851c1476aaab3d68982d2aee2897e572b83",
-      "src/sycl/compat.cpp": "bd5a664f9a0bd91b0e8e2e59f67d0a2c38c81599613831abbd6e16ad98c01689",
-      "include/strata/sycl/runtime.hpp": "a0e0687886e09c50922d01f7023ba3b51e8ac2dbe43f461a798ba82438b2a074",
-      "src/program/generate.cpp": "a6938dccf1ae127b0751e8e6b89f720e1e5d75e9d6d70ff937e99841f338daec"
-    },
-    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/prefill-queue-profiling-collection.md",
-    "report_budget": {
-      "words": [
-        1800,
-        2600
-      ],
-      "maximum_bytes": 32768
-    },
-    "state": "Orca and native Luna-max review complete; external worker released/closed and delivery acknowledged.",
-    "main_reads_body_on_arrival": false,
-    "retention_consumer": "Indexed substantive knowledge for a named later implementation question; native review determines novelty and retrieval sections after completion.",
-    "dispatch": "ctx_0b4e5338e746",
-    "task": "task_fdfaee9cd6a1",
-    "terminal": "term_e563a032-ef9f-4179-9573-012e03ff834e",
-    "model_evidence": "Custom gpt-6-luna/medium terminal; tui-idle satisfied and turn_started observed.",
-    "report_sha256": "1e1f4c853e220fcd779c9af674c9d5b5d122d27ed851e3ac909dce12e1747c32",
-    "report_bytes": 18102,
-    "review_task": "/root/review_gu_queue_collections_20261018",
-    "delivery": "delivery_1fd1355ff5c8",
-    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/gu-queue-collections-native-review.json",
-    "review_sha256": "9b796ae6a82d3cf5ee4d5dcc717f937a985bbca13b703d06b82b874de2472c97",
-    "retrieval_sections": [
-      "Caller inventory and cuts",
-      "Current queue topology and invariants",
-      "Profiling contract and provider evidence",
-      "Architecture options",
-      "Acceptance gates for a future independent prototype"
-    ],
-    "reuse_corrections": [
-      {
-        "id": "QUEUE-C1",
-        "severity": "material source/runtime attribution and result path correction",
-        "finding": "`ur-v2-submission-batching.md` is a source survey and explicitly proposes acceptance work; it does not record the actual forced-batched runtime rejection. The separate compact result is `bench/results/2026-10-15-pr6-recovery-audit/submission-acceptance-current.json` (SHA-256 `96c198a45163a77a68eb163c4840c51e1b4ca2dd8fba55feb133d67848603f58`). Control passed ten cases; candidate passed only `stream_copy_ordering` and then failed at explicit-stream `cudaEventElapsedTime` with `UR_RESULT_ERROR_PROFILING_INFO_NOT_AVAILABLE`. Replace the malformed backticked reference `actual submission-acceptance-current.json` with the exact filename/path, and attribute source semantics to pinned Intel LLVM revision `504366f4b82ff00bbac7b0c956635eed8bc599d8` while attributing the observed failure to this result. The installed adapter ELF was not source-matched, so do not claim the pinned source proves that ELF's provenance."
-      }
-    ],
-    "retention": {
-      "decision": "retain_conditionally_in_indexed_library",
-      "consumer": "A later Main-owned source cut map and bounded evaluation of a dedicated long-prefill non-profiling queue, if a concrete call site and measured overhead make that seam active.",
-      "review_point": "After the current clean model cohort closes and Main either selects a queue-boundary prototype or rules it out; if no prototype is selected, retire the full body and leave only compact retrieval metadata."
-    },
-    "next_scope": {
-      "schedulable_now": false,
-      "missing_prerequisites": [
-        "The current Main-owned clean model cohort is active.",
-        "No committed prototype or complete source cut map covering launches, callbacks, graph/replay, calibration/decode exclusions, dependencies, and final drains exists in the reviewed inputs.",
-        "No bounded small queue/stream/event/error/lifetime acceptance plan for a selected seam is ready."
-      ],
-      "future_gate": "Do not rerun forced-batched profiling. If Main later chooses a separate queue, pin and commit the prototype and fallback, first qualify queue semantics on a bounded traced path, then compare clean matched long-prefill model samples."
-    },
-    "reviewed_digest": [
-      "Source hashes and report hash match; substantive nonduplicated source guidance accepted conditionally.",
-      "No occupancy/spills/I-cache/SFU/critical-path measurement is established. Follow-up remains conditional during current model cohort."
-    ],
-    "observed_failure_evidence": "bench/results/2026-10-15-pr6-recovery-audit/submission-acceptance-current.json; installed adapter ELF identity is pinned, exact source derivation remains unproven."
-  },
   "down_workgroup_row_cache_contract_scope": {
     "classification": "decision_support",
     "schedulable_now": false,
@@ -1634,5 +1288,61 @@
         "Xe-Forge \u00a7\u00a7IV\u2013V, VI-A, VI-D\u2013VI-E for search/validation workflow, hardware, baseline and kernel results."
       ]
     }
+  },
+  "closed_gu_component_findings": {
+    "former_index_commit": "3d4fc3a999ca94809111ee225529bf6f5fb80dcc",
+    "by_topic": {
+      "gu_epilogue_codegen_collection_scope": [
+        "Component shape numbers belong to moe-gu-swiglu-current.json (SHA-256 7803949ea68db226635731271c50279e6484881ceb14f9633d00b30c4d43a329; source 5ca094afc633d55cf67b126820987549bcf4fc1a), not a new measurement of collection source f6f6714f7eab7c2d8681f3c9925ac185a1eeca29.",
+        "The model result itself records the current six-process performance screen and still marks quality/context qualification and adoption false.",
+        "The collection codegen survey's CUTLASS claims exceeded its cited API pages; its main/latest links were mutable. With no CUTLASS-based variant selected, remove that survey and its retrieval sections rather than carrying the claim forward.",
+        "Queue runtime failure attribution belongs to the compact submission acceptance result; do not attribute it to the source survey or claim the installed adapter's provenance from the pinned source alone."
+      ],
+      "prefill_queue_profiling_collection_scope": [
+        "The acceptance failure is in submission-acceptance-current.json (SHA-256 96c198a45163a77a68eb163c4840c51e1b4ca2dd8fba55feb133d67848603f58), not in the UR V2 source survey.",
+        "The pinned provider source identity 504366f4b82ff00bbac7b0c956635eed8bc599d8 did not establish provenance of the installed adapter ELF.",
+        "The collection codegen survey's CUTLASS claims exceeded its cited API pages; its main/latest links were mutable. With no CUTLASS-based variant selected, remove that survey and its retrieval sections rather than carrying the claim forward.",
+        "Queue runtime failure attribution belongs to the compact submission acceptance result; do not attribute it to the source survey or claim the installed adapter's provenance from the pinned source alone."
+      ],
+      "gu_packed_epilogue_contract_scope": [
+        "The claimed i+1 proof gap was a false positive: all-slot partner checks, XOR involution, parity and packed-writer census cover the proof.",
+        "NaN payload bits are ignored; infinite hidden outputs are rejected; the one-ULP bound applies to finite saturated FP16 outputs.",
+        "Source provenance is already in xe_gemm_bsd.hpp and docs/SYCL_VLLM_XE2_NATIVE16.md: vllm-project/vllm-xpu-kernels commit 6b30c9b92cc525c32729df988b5f918e7c5661a5, Intel BSD-3 notice."
+      ],
+      "moe_gu_swiglu_epilogue_scope": [
+        "The current route interleaves gate/up columns and preserves BF16 operand rounding plus finite-FP16 saturation/NaN behavior.",
+        "The existing vLLM-XPU implementation source is pinned at 6b30c9b92cc525c32729df988b5f918e7c5661a and its BSD-3 notice remains in the source."
+      ],
+      "submission_acceptance_contract_scope": [
+        "Control passed all ten cases; the forced-batched candidate passed only stream-copy ordering, then failed at explicit-stream elapsed-time profiling before remaining candidate cases.",
+        "No forced-batched model or speed measurement followed; the current profiling-enabled runtime rejects this setting."
+      ],
+      "ur_v2_submission_batching_scope": [
+        "The current runtime queues are in-order and compute queues enable profiling; forced-batched event timing failed in the actual acceptance result.",
+        "Pinned UR V2 source revision 504366f4b82ff00bbac7b0c956635eed8bc599d8 is a source reference, not proof that the installed adapter ELF came from that revision."
+      ]
+    },
+    "measurement_evidence": [
+      {
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/moe-gu-swiglu-model-current.json",
+        "reviewed_sha256": "7a9512cf71717a5c4d4f1f509c1cfd679c51f6a31af33a5ed423bb2fbfb582d6",
+        "exact_matching_reachable_commit": "93c021ea5",
+        "current_file_preserved": true
+      },
+      {
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/moe-gu-swiglu-current.json",
+        "reviewed_sha256": "7803949ea68db226635731271c50279e6484881ceb14f9633d00b30c4d43a329",
+        "exact_matching_reachable_commit": "3d4fc3a999ca94809111ee225529bf6f5fb80dcc",
+        "current_file_preserved": true
+      },
+      {
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/submission-acceptance-current.json",
+        "reviewed_sha256": "96c198a45163a77a68eb163c4840c51e1b4ca2dd8fba55feb133d67848603f58",
+        "exact_matching_reachable_commit": "3d4fc3a999ca94809111ee225529bf6f5fb80dcc",
+        "current_file_preserved": true
+      }
+    ],
+    "full_external_payloads_discarded_not_archived": true,
+    "decision": "Full reports/review transactions have no current consumer after the GU cohort. Use compact findings and pinned code/results; no GU codegen variant or dedicated nonprofiling queue prototype selected."
   }
 }

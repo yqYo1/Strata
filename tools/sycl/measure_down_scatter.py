@@ -15,7 +15,7 @@ import measurement_owner as supervision
 
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'moe-down-scatter-component-v3'
+ROOT = B / 'moe-down-scatter-component-v4'
 BUILD = B / 'main-native-gdn-engine/record.json'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json'
 SETTINGS = P / 'tools/sycl/measurement_environment.json'
@@ -45,14 +45,21 @@ def main():
         guards.require(digest(fixture['path']) == fixture['sha256'], 'fixture changed')
         if mode == 'ownership':
             guards.require(not ROOT.exists(), 'inspect existing job; do not restart')
+            prior_bytes = subprocess.check_output(['git','show','HEAD:' + str(RESULT.relative_to(P))],cwd=P)
+            guards.require(prior_bytes == RESULT.read_bytes(), 'commit the preceding Down result before replacement')
+            prior = json.loads(prior_bytes)
+            guards.require(prior['mode'] == 'perf' and prior['passed'] and prior['ownership_closed'],
+                           'closed original Down comparison required')
             ROOT.mkdir(mode=0o700)
             record = dict(source_commit=build['source_commit'], fixture=fixture, checks=[],
                 complete=False, passed=False, active=False, model_performance_adopted=False,
                 model_quality_qualified=False, physical262144_model_RESTORE_qualified=False,
                 consumer='One Down/scatter component comparison; retire raw logs/JIT after extracting samples.',
-                prospective_gates='36 exhaustive host ownership cases across both mappings/tiles; traced14-event small gate;52 tail/split/irregular/rounding and78451-window checks;3 independent resident processes with6 rotated rounds of3 arms per shape. Advance only against separate reference, not against rejected raw scatter.',
-                limits='FP16 Down2560x640, BF16-round then explicit FP32 FMA. Component only; no model dispatch. Fixed78451-token FP32 accumulator, contiguous-prefix or evenly distributed token rows. Arm0 separate;1 raw MMA mapping;2 BF16 output-copy mapping. Same tile: compact below128, wide otherwise. Marker intervals include host submission gaps; no physical traffic, occupancy, saturation or model speed inferred.',
-                previous_result=dict(commit='16b697d9c2c5a699c8e7250e7a04d2b5cfbf15b0', path=str(RESULT.relative_to(P)), geometric_mean_latency_ratio=1.1480799185774464, advance_to_model=False),
+                prospective_gates='54 exhaustive host cell/row-cache ownership cases across3 policies/2 tiles; traced33-event small gate with16 admission rejects per policy,7 invalid-map cases and synchronous-exception queue retirement;78 tail/split/irregular/rounding and78451-window checks;3 independent resident processes with6 rotated rounds of3 arms per shape. Exact capture, full FP32 accumulator, inputs and guards; slot-first mixed-invalid precedence. Advance only with geomean<=0.95 against separate, no shape>1.05 and every large shape improves in every process.',
+                limits='FP16 Down2560x640, BF16-round then explicit FP32 FMA. Component only; no model dispatch. Fixed78451-token FP32 accumulator, contiguous-prefix or evenly distributed token rows. Arm0 separate;1 scalar matrix mapping;2 matrix with workgroup row metadata cache. Old output-copy policy remains in correctness diagnostics. Same tile: compact below128, wide otherwise. Marker intervals include host submission gaps; no physical traffic, occupancy, saturation or model speed inferred.',
+                previous_result=dict(commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip(),
+                    path=str(RESULT.relative_to(P)), geometric_mean_latency_ratio=prior['resident_summary']['geometric_mean_latency_ratio'],
+                    advance_to_model=prior['resident_summary']['advance_to_model']),
                 retention='Keep original individual samples in this result; retire successful API traces, routine logs and JIT caches after comparison closure and verified extraction. Preserve known-good fallback; do not retain another closed component binary.')
         else:
             record = json.loads(RESULT.read_text())
@@ -105,9 +112,22 @@ def main():
                     'fixture_status=PASS' in stdout and not re.search(
                         r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed|CHECKED_DRAIN_FAILED', stderr),
                     'fixture failed: ' + (stderr or stdout)[-4096:])
-                expected = {'ownership': 36, 'smoke': 14, 'validate': 52, 'perf': 210}[mode]
+                expected = {'ownership': 54, 'smoke': 33, 'validate': 78, 'perf': 210}[mode]
                 guards.require(len(events) == expected and all(e['status'] == 'PASS' for e in events),
                                'incomplete fixture results')
+                if mode == 'ownership':
+                    guards.require(sum(e['mapping'] == 2 for e in events) == 18 and all(
+                        not e['metadata_missing'] and not e['metadata_multiple'] and not e['metadata_outside_tile'] and
+                        (e['mapping'] != 2 or e['metadata_slots'] > 0) for e in events), 'row cache ownership incomplete')
+                if mode == 'smoke':
+                    guards.require(sum(e['kind'] == 'exception_unwind' and e['queue_complete'] for e in events) == 3,
+                                   'borrowed-queue exception retirement incomplete')
+                    guards.require(sum(e['kind'] == 'admissions' and e['rejected'] == 16 for e in events) == 3 and
+                        sum(e['kind'] == 'invalid_map' and e['case'] == 4 and e['expected_mask'] == 1 for e in events) == 3 and
+                        sum(e['kind'] == 'invalid_map' and e['case'] == 6 and e['expected_mask'] == 3 for e in events) == 3,
+                        'admission or mixed-invalid status checks incomplete')
+                guards.require(all(e['inputs_immutable'] for e in events if e['kind'] in
+                                   ('correctness','invalid_map','sample')), 'input immutability not checked')
                 result['passed'] = True; persist()
             if mode == 'perf':
                 samples = [e for c in record['checks'] if c['mode'] == 'perf' for e in c['events'] if e['round'] >= 0]
@@ -130,7 +150,7 @@ def main():
                     advance_to_model=ratio <= .95 and all(s['ratio'] <= 1.05 for s in summary) and all(
                         a < b for s in summary if s['rows'] >= 2334 for a, b in zip(
                             s['arms'][2]['process_medians_ms'], s['arms'][0]['process_medians_ms'])),
-                    prospective_gate='Output-copy/separate geometric mean ratio<=0.95 across10 fixed78451-window shapes; no shape median>1.05; each of3 process medians improves at2334/5963/8192 in both layouts. This only permits a later model experiment, not adoption.')
+                    prospective_gate='Row-cache/separate geometric mean ratio<=0.95 across10 fixed78451-window shapes; no shape median>1.05; each of3 process medians improves at2334/5963/8192 in both token placements. This only permits a later model experiment, not adoption.')
             record.update(complete=True, passed=True)
         except BaseException as error:
             record['error'] = str(error)

@@ -106,12 +106,14 @@ template <> struct ShapePolicy<Tile::compact_16x64> {
   using Subgroups = Layout<cute::Shape<Int<1>, Int<4>, Int<1>>,
                           Stride<Int<4>, Int<1>, Int<0>>>;
   static constexpr int threads = 64;
+  static constexpr int rows = 16;
 };
 template <> struct ShapePolicy<Tile::wide_128x128> {
   using Shape = cute::Shape<Int<128>, Int<128>, Int<32>>;
   using Subgroups = Layout<cute::Shape<Int<4>, Int<2>, Int<1>>,
                           Stride<Int<2>, Int<1>, Int<0>>>;
   static constexpr int threads = 128;
+  static constexpr int rows = 128;
 };
 template <class Input, Tile Policy>
 using TileMMA = typename TiledMMAHelper<MMA_Atom<XE_DPAS_TT<8, float, Input>>,
@@ -246,6 +248,38 @@ template <bool Capture, ScatterLayout Mapping> struct DownEpilogue {
   }
 };
 
+template <bool Capture> struct CachedDownEpilogue {
+  DownScatterProblem p;
+  int t, base;
+  sycl::local_accessor<int32_t, 1> tokens;
+  sycl::local_accessor<float, 1> weights;
+
+  template <class Fragment, class Coordinates, class MMA>
+  CUTE_DEVICE void operator()(const Fragment &fragment, const Coordinates &tile,
+                              const MMA &mma, int lane) const {
+    auto rounded = make_fragment_like<cutlass::bfloat16_t>(fragment.tensor());
+    reorder(fragment.tensor(), rounded, fragment.tv_layout(), fragment.tv_layout());
+    auto coordinates = mma.get_slice(lane).partition_C(tile);
+    static_assert(decltype(size(coordinates))::value == decltype(size(rounded))::value);
+    CUTE_UNROLL
+    for (int i = 0; i < size(rounded); ++i) {
+      const auto coordinate = coordinates(i);
+      const int row = get<0>(coordinate), col = get<1>(coordinate);
+      if (row < 0 || row >= t || col < 0 || col >= 2560) continue;
+      // Capture is observable even when the associated route is invalid.
+      if constexpr (Capture)
+        p.rounded_diagnostic[size_t(row) * 2560 + size_t(col)] =
+            sycl::bit_cast<uint16_t>(rounded(i));
+      const int local = row - base;
+      if (local < 0 || size_t(local) >= tokens.size()) continue;
+      const int32_t token = tokens[local];
+      if (token < 0) continue;
+      const size_t out = size_t(token) * 2560 + size_t(col);
+      p.accumulator[out] = sycl::fma(weights[local], float(rounded(i)), p.accumulator[out]);
+    }
+  }
+};
+
 template <Tile Policy, bool Capture, ScatterLayout Mapping>
 sycl::event enqueue_down(sycl::queue &q, DownScatterProblem p, Geometry g,
                          int token_rows, size_t routes, size_t offset) {
@@ -259,17 +293,61 @@ sycl::event enqueue_down(sycl::queue &q, DownScatterProblem p, Geometry g,
   const sycl::nd_range<3> range(sycl::range<3>(g.groups_m, g.groups_n, P::threads),
                               sycl::range<3>(1, 1, P::threads));
   return q.submit([&](sycl::handler &h) {
-    h.parallel_for<DownScatterKernel<Policy, Capture, Mapping>>(range, props, [=](sycl::nd_item<3> item) {
-      auto a = make_tensor(make_gmem_ptr(reinterpret_cast<const cutlass::half_t *>(p.x)),
-          make_layout(make_shape(g.t, g.k), make_stride(g.k, _1{})));
-      auto b = make_tensor(make_gmem_ptr(reinterpret_cast<const cutlass::half_t *>(p.w)),
-          make_layout(make_shape(g.n, g.k), make_stride(g.k, _1{})));
-      // A shape/coordinate view, without a fabricated uint16_t output pointer.
-      auto c = make_identity_tensor(make_shape(g.t, g.n));
-      const auto coord = make_coord(int(item.get_group(0)), int(item.get_group(1)), _, 0);
-      derived::xe_gemm_epilogue<void, void, void>(a, b, c, coord, MMA{},
-          DownEpilogue<Capture, Mapping>{p, g.t, token_rows, routes, offset});
-    });
+    if constexpr (Mapping == ScatterLayout::matrix_row_cache) {
+      static_assert(P::rows <= P::threads);
+      static_assert(int(get<0>(MMA{}.tile_mnk())) == P::rows);
+      sycl::local_accessor<int32_t, 1> tokens(sycl::range<1>(P::rows), h);
+      sycl::local_accessor<float, 1> weights(sycl::range<1>(P::rows), h);
+      h.parallel_for<DownScatterKernel<Policy, Capture, Mapping>>(range, props, [=](sycl::nd_item<3> item) {
+        const int base = int(item.get_group(0)) * P::rows;
+        const int local = int(item.get_local_linear_id());
+        // One producer initializes every local slot, including masked M tails.
+        // No lane returns before the unconditional publication barrier.
+        if (local < P::rows) {
+          const int row = base + local;
+          int32_t token = -1;
+          float weight = 0.f;
+          if (row < g.t) {
+            const size_t routed = offset + size_t(row);
+            const int32_t slot = p.original[routed], source = p.source[routed];
+            uint32_t error = 0;
+            if (slot < 0 || size_t(slot) >= routes) error = 1;
+            else if (source < 0 || source >= token_rows || source != slot / 10) error = 2;
+            if (error) {
+              sycl::atomic_ref<uint32_t, sycl::memory_order::relaxed,
+                  sycl::memory_scope::device, sycl::access::address_space::global_space>(
+                      *p.status).fetch_or(error);
+            } else {
+              token = source;
+              weight = p.job_weights[routed];
+            }
+          }
+          tokens[local] = token;
+          weights[local] = weight;
+        }
+        item.barrier(sycl::access::fence_space::local_space);
+        auto a = make_tensor(make_gmem_ptr(reinterpret_cast<const cutlass::half_t *>(p.x)),
+            make_layout(make_shape(g.t, g.k), make_stride(g.k, _1{})));
+        auto b = make_tensor(make_gmem_ptr(reinterpret_cast<const cutlass::half_t *>(p.w)),
+            make_layout(make_shape(g.n, g.k), make_stride(g.k, _1{})));
+        auto c = make_identity_tensor(make_shape(g.t, g.n));
+        const auto coord = make_coord(int(item.get_group(0)), int(item.get_group(1)), _, 0);
+        derived::xe_gemm_epilogue<void, void, void>(a, b, c, coord, MMA{},
+            CachedDownEpilogue<Capture>{p, g.t, base, tokens, weights});
+      });
+    } else {
+      h.parallel_for<DownScatterKernel<Policy, Capture, Mapping>>(range, props, [=](sycl::nd_item<3> item) {
+        auto a = make_tensor(make_gmem_ptr(reinterpret_cast<const cutlass::half_t *>(p.x)),
+            make_layout(make_shape(g.t, g.k), make_stride(g.k, _1{})));
+        auto b = make_tensor(make_gmem_ptr(reinterpret_cast<const cutlass::half_t *>(p.w)),
+            make_layout(make_shape(g.n, g.k), make_stride(g.k, _1{})));
+        // A shape/coordinate view, without a fabricated uint16_t output pointer.
+        auto c = make_identity_tensor(make_shape(g.t, g.n));
+        const auto coord = make_coord(int(item.get_group(0)), int(item.get_group(1)), _, 0);
+        derived::xe_gemm_epilogue<void, void, void>(a, b, c, coord, MMA{},
+            DownEpilogue<Capture, Mapping>{p, g.t, token_rows, routes, offset});
+      });
+    }
   });
 }
 
@@ -285,6 +363,16 @@ DownOwnership inspect_ownership(int rows) {
   for (int m = 0; m < (rows + int(get<0>(shape)) - 1) / int(get<0>(shape)); ++m)
     for (int n = 0; n < (2560 + int(get<1>(shape)) - 1) / int(get<1>(shape)); ++n) {
       auto tile = local_tile(identity, shape, make_coord(m, n, 0), Step<_1, _1, X>{});
+      if constexpr (Mapping == ScatterLayout::matrix_row_cache) {
+        std::vector<uint8_t> writes(P::rows, 0);
+        for (int lane = 0; lane < P::threads; ++lane)
+          if (lane < P::rows) ++writes[size_t(lane)];
+        result.metadata_slots += writes.size();
+        for (auto count : writes) {
+          result.metadata_missing += count == 0;
+          result.metadata_multiple += count > 1;
+        }
+      }
       for (int lane = 0; lane < P::threads; ++lane) {
         const auto coordinates = [&] {
           if constexpr (Mapping == ScatterLayout::output_copy) {
@@ -295,6 +383,8 @@ DownOwnership inspect_ownership(int rows) {
         for (int i = 0; i < size(coordinates); ++i) {
           const auto coordinate = coordinates(i);
           const int row = get<0>(coordinate), col = get<1>(coordinate);
+          if constexpr (Mapping == ScatterLayout::matrix_row_cache)
+            result.metadata_outside_tile += row < m * P::rows || row >= (m + 1) * P::rows;
           if (row < 0 || row >= rows || col < 0 || col >= 2560) { ++result.masked; continue; }
           auto &count = visits[size_t(row) * 2560 + size_t(col)];
           if (count < 2) ++count;
@@ -409,7 +499,8 @@ sycl::event select_tile(sycl::queue &q, const Problem &p, Geometry g, Tile tile)
 } // namespace
 
 Gemm::Gemm(sycl_backend::Runtime &runtime, sycl::queue &q)
-    : runtime_(runtime), queue_(q), has_fp16_(check_device(runtime, q)) {}
+    : runtime_(runtime), queue_(q), has_fp16_(check_device(runtime, q)),
+      local_mem_bytes_(q.get_device().get_info<sycl::info::device::local_mem_size>()) {}
 
 DownOwnership inspect_down_ownership(int64_t rows, Tile tile, ScatterLayout mapping) {
   if (rows < 1 || rows > 8192)
@@ -419,6 +510,8 @@ DownOwnership inspect_down_ownership(int64_t rows, Tile tile, ScatterLayout mapp
       return inspect_ownership<Policy, ScatterLayout::matrix>(int(rows));
     if (mapping == ScatterLayout::output_copy)
       return inspect_ownership<Policy, ScatterLayout::output_copy>(int(rows));
+    if (mapping == ScatterLayout::matrix_row_cache)
+      return inspect_ownership<Policy, ScatterLayout::matrix_row_cache>(int(rows));
     throw std::invalid_argument("Down ownership: invalid scatter layout");
   };
   if (tile == Tile::compact_16x64) return inspect.template operator()<Tile::compact_16x64>();
@@ -442,7 +535,8 @@ GuPairOwnership inspect_gu_pair_ownership(int64_t rows, Tile tile, GuLayout mapp
 }
 
 sycl::event Gemm::down_scatter(const DownScatterProblem &p, Tile tile, ScatterLayout mapping) {
-  if (mapping != ScatterLayout::matrix && mapping != ScatterLayout::output_copy)
+  if (mapping != ScatterLayout::matrix && mapping != ScatterLayout::output_copy &&
+      mapping != ScatterLayout::matrix_row_cache)
     throw std::invalid_argument("Down scatter: invalid layout");
   using Routes = strata::prefill::detail::MoeWindowRoutes;
   if (!has_fp16_ || !p.plan || p.plan->rows() < 1 || p.plan->rows() > Routes::max_accum_rows)
@@ -458,6 +552,12 @@ sycl::event Gemm::down_scatter(const DownScatterProblem &p, Tile tile, ScatterLa
   Problem shape;
   shape.t = job.rows; shape.n = 2560; shape.k = 640;
   const auto g = geometry(shape, tile);
+  if (mapping == ScatterLayout::matrix_row_cache) {
+    const size_t local_bytes = size_t(tile == Tile::compact_16x64 ? 16 : 128) *
+        (sizeof(int32_t) + sizeof(float));
+    if (local_mem_bytes_ < local_bytes)
+      throw std::invalid_argument("Down scatter: insufficient local memory for row cache");
+  }
   const size_t ab = mul(mul(size_t(p.plan->rows()), 2560), 4), mb = mul(routes, 4);
   const std::initializer_list<sycl_backend::Span> inputs{
       {p.x, g.xb}, {p.w, g.wb}, {p.source, mb}, {p.original, mb}, {p.job_weights, mb}};
@@ -471,6 +571,11 @@ sycl::event Gemm::down_scatter(const DownScatterProblem &p, Tile tile, ScatterLa
   // Only X/W participate in block2D IO; retain the adapter's 64B base contract.
   if (reinterpret_cast<uintptr_t>(p.x) % 64 || reinterpret_cast<uintptr_t>(p.w) % 64)
     throw std::invalid_argument("Down scatter: block2D inputs require 64B alignment");
+  if ((reinterpret_cast<uintptr_t>(p.source) | reinterpret_cast<uintptr_t>(p.original) |
+       reinterpret_cast<uintptr_t>(p.job_weights) | reinterpret_cast<uintptr_t>(p.accumulator) |
+       reinterpret_cast<uintptr_t>(p.status)) % 4 ||
+      (p.rounded_diagnostic && reinterpret_cast<uintptr_t>(p.rounded_diagnostic) % 2))
+    throw std::invalid_argument("Down scatter: typed map/output alignment required");
   runtime_.check();
   const auto submit = [&]<Tile Policy, ScatterLayout Mapping>() {
     if (p.rounded_diagnostic)
@@ -484,6 +589,8 @@ sycl::event Gemm::down_scatter(const DownScatterProblem &p, Tile tile, ScatterLa
   };
   if (mapping == ScatterLayout::output_copy)
     return select.template operator()<ScatterLayout::output_copy>();
+  if (mapping == ScatterLayout::matrix_row_cache)
+    return select.template operator()<ScatterLayout::matrix_row_cache>();
   return select.template operator()<ScatterLayout::matrix>();
 }
 

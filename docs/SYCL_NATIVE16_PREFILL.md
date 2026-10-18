@@ -930,6 +930,12 @@ selector stays off:24-token generation does not qualify sustained decode,
 broad task quality or physical262144/RESTORE. The1000tok/s prefill and70tok/s
 decode goals remain unmet.
 
+The historical runtime check covers the then-configured `runtime_elfs`, not
+a complete loaded-library census. A later offline dependency check found the
+four linked MKL libraries absent from that set; subsequent settings pin them
+and the libdl/libpthread shims as well. This does not retroactively add per-launch
+hash evidence to the six finished processes or change their original status.
+
 ## MoE Down/scatter component
 
 `Gemm::down_scatter` is an explicit component API with no model dispatch hook.
@@ -1094,7 +1100,8 @@ token and weight once per workgroup, independently of the TLA fragment layout.
 It targets repeated global metadata loads, address calculations and predicates
 in the rejected scalar epilogue; those source operations and the compiled code
 size do not establish a measured resource bottleneck or predict a speedup.
-Main will not change the frozen GU model comparison's inputs to implement it.
+The GU model comparison closed before this implementation; its original
+source and individual samples remain reachable in Git.
 
 Use the existing matrix mapping and explicit opt-in component API. Local IDs
 cover the16 or128 M rows without overlap, including a masked final M tile.
@@ -1128,3 +1135,55 @@ combined bad-slot/bad-token case and require exactly bit1. This review found
 the cache conditionally legal; it provides no new runtime or speed evidence.
 Use the pinned TLA revision87f6850680a580654b9ea2c80dbc01aeb36ad231 when
 resolving its interface references.
+
+The component implementation exposes `ScatterLayout::matrix_row_cache`; no
+engine route selects it. The original matrix and output-copy kernels remain
+separate specializations. Its host ownership check also counts every local
+metadata slot and checks each actual TLA coordinate against its workgroup's M
+interval. The published plan, maps and weights stay immutable through the
+checked drain. Typed metadata/output alignment is rejected before submission.
+
+Before its first GPU run, source review found that this fixture's borrowed
+queue was not drained by `Allocation` teardown: `Runtime::wait()` covers only
+the two built-in queues. A synchronous submission/admission exception could
+therefore unwind owners while earlier borrowed-queue work remained pending.
+Explicit checked drains now precede Case and Buffer member destruction; a
+failed drain exits without releasing those owners. This is a source-level
+lifetime fix, not a demonstrated cause of an earlier GPU fault.
+
+The new fixture requires54 host ownership cases,33 traced small-check events
+(including16 admission rejects,7 invalid-map cases and synchronous-exception
+retirement per policy), and78 full
+correctness events across the three policies and both tiles. It verifies full
+input bits/guards, diagnostic M tails, null-capture non-writes, combined
+bad-slot/bad-token precedence and a mixed-row error mask of3. Clean timing
+retains three arms: separate, scalar matrix fusion and row-cached matrix fusion;
+output-copy remains a correctness diagnostic. All checking/readback is outside
+the reported bursts. `rebuild-down` also rebuilds the GU fixture because the
+component shares its adapter translation unit; the validated prior engine and
+same-build GU fixture are preserved before overwrite. These are prospective
+performance gates, not a new model performance result.
+
+At source`c9ad511e4f3ec8387327e6c86d8e6a9e02988eac`, the54 CPU ownership,
+33 traced small-check and78 full correctness events passed. All three policies,
+tails, capture/non-capture, immutable inputs, invalid maps and checked exception
+retirement completed without a fresh driver fault. The current
+[component result](../bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json)
+records these gates. Three independent clean timing processes are running
+through `measure_down_scatter.py perf`; do not infer their closure from the
+preceding committed validation result. Inspect the owned job at
+`moe-down-scatter-component-v4/record.json` under the existing external
+measurement root before resuming. Reuse its process handle rather than launch
+a duplicate. Each process has a900s wall/2400s CPU deadline. Source and fixture
+inputs remain frozen until closure. No model route selects the cache.
+
+Offline AOT inspection of engine`f004aabae84dbea46db59bdf98ec0413a8bf93b53c13e9b5b28e5c2ed045fc86`
+and fixture`e28d402742cfceca3d238142e2de1065b8bd1d6c0ca553ad87feb3052b8186e3`
+found identical native no-capture code between those two artifacts for both
+policies/tiles. Scalar matrix versus row-cache text is15680/11648 bytes
+(compact) and126912/67840 (wide). All selected metadata entries report
+256GRF/SIMD16/eu_thread_count4, barrier_count2 and no per-thread memory-buffer
+descriptor. Code size and static metadata do not establish JIT behavior,
+complete ABI equivalence, occupancy, instruction-cache pressure or speed.
+Use the pending timing cohort to decide this candidate; raw logs/JIT and any
+extra comparison generation are reviewed only after owned work closes.

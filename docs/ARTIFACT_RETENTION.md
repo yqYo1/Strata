@@ -150,6 +150,13 @@ an active run or remove a current consumer's last required fixture. Preserve
 original success/failure status and numerical criteria. Retirement is not a
 new validation result.
 
+At each work boundary, reconcile the actual retained paths and build generations
+with their named consumers. A written policy, deletion plan or eligibility label
+does not establish completed cleanup. Keep any remaining consumer, missing
+recovery evidence, next bounded action and review point in the existing compact
+result. After verified deletion, remove stale active index/path references;
+do not create a separate resume checkpoint or permanent inventory for this check.
+
 For tracked files, record the original reachable commit, selection/reason rules,
 exceptions and counts/bytes. **Git's deletion diff already records each path and
 blob hash; do not duplicate thousands of those rows in another permanent

@@ -52,7 +52,9 @@ order before launching work:
    linked compact committed results. Use Git for older evidence; do not load the
    full session log or research library unless a concrete question requires it.
 3. Verify that state against the actual branch, worktree, pending changes and
-   owned in-flight jobs. Inspect an existing job's receipt and process handle
+   owned in-flight jobs. Include retained builds and artifacts: confirm their
+   named consumers still exist and carry unresolved cleanup/provenance work
+   forward. Inspect an existing job's receipt and process handle
    before starting or resuming a measurement. Resume a live job through its
    existing handle; conversational memory and a stale receipt are insufficient.
 4. Choose the next action from the table below. Check the last actual upstream
@@ -73,7 +75,7 @@ historical logs or the research library wholesale.
 | Receive research | Check its classification and delegate review to native Codex gpt-6-luna with max reasoning. Main reads the short review digest; retrieve collection-report sections only for a concrete question. | [Parallel research](#parallel-research) |
 | Retain a file or build | Name the realistic next consumer and review point; check compact results and reachable Git history first. Preserve individual comparison samples without automatically retaining raw logs, reports or another build generation. | [Artifacts](#measurement-and-diagnostic-artifacts), [retention policy](docs/ARTIFACT_RETENTION.md) |
 | Delete artifacts | Confirm the consumer ended and useful evidence is preserved. For a build, retrieve and compare its original source/recipe from Git against the exact final executable's inputs. Check active ownership and the last required fixture. | [Artifacts](#measurement-and-diagnostic-artifacts), [deletion records](docs/ARTIFACT_RETENTION.md#cleanup-and-deletion-records) |
-| Close a work boundary | Commit and push useful changes; integrate completed work into feature/sycl and the fork default through a PR. Verify remote refs, pull the clean ghq default mirror, and retire finished branches, comparison builds and raw output. | [Git workflow](#git-integration-and-tuning), [artifacts](#measurement-and-diagnostic-artifacts) |
+| Close a work boundary | Commit and push useful changes; integrate completed work into feature/sycl and the fork default through a PR. Verify remote refs and pull the clean ghq default mirror. Check actual retained paths/generations, retire finished branches, comparison builds and raw output, and record concrete remaining holds. | [Git workflow](#git-integration-and-tuning), [artifacts](#measurement-and-diagnostic-artifacts) |
 
 An uncommitted measurement snapshot is not qualified retroactively by a later
 commit. A nearby revision, similarly named build root or matching binary hash
@@ -353,6 +355,11 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   reviewing a report does not by itself justify keeping another active file.
   Reduce unnecessary information rather than bundling, compressing or moving
   it elsewhere to make a directory look smaller.
+  At each work boundary, check the actual retained paths against these rules;
+  writing a policy or deletion plan alone does not complete cleanup. Record
+  remaining consumers, missing recovery evidence and the next bounded action
+  in the existing compact result. Remove stale paths/index entries after
+  verified deletion, without creating another progress or inventory file.
 - Set SYCL, Level Zero, driver, profiler and experiment environment variables in
   the native child's environment before `exec`. Keep the process environment
   immutable after runtime/provider initialization. For comparisons, use separate
