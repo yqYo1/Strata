@@ -1220,3 +1220,94 @@ it is not a same-workload kernel speedup. Keep first-use and subsequent requests
 separate and record actual counts. A131072-minimum screen needs a larger
 context allocation and its explicit capacity/boundary check first. Neither
 screen establishes physical262144-context or sustained decode qualification.
+
+The next Down prototype adds startup-only
+`STRATA_SYCL_PREFILL_DOWN_SCATTER=large` (default0). Only the native-BF16,
+vLLM auto/wide backend accepts it; jobs below2334 rows still execute separate
+Down and accumulation. The selected wide row-cache kernel retains BF16 output
+rounding before FP32 FMA and writes neither the Down nor diagnostic tensor.
+The outer window keeps its existing immutable route owner, queue ordering,
+status drain and exception lease. No router readback or transfer is removed.
+Command-service profiling rejects this fusion until that observer is qualified.
+Request-level counters distinguish fused and separate jobs/rows.
+
+This is Main-authored routing and validation, with no new copied implementation.
+The fresh component plan adds actual startup-selected flag0/large processes,
+2333/2334/2335 boundaries, false-return non-writes, map masks1/2/3 and
+8191/8192 tails. Three clean timing processes compare the selected hook plus
+fallback against separate dense+accumulation at14 fixed-window shapes. The
+prospective gate is geometric-mean latency ratio<=0.97, no shape>1.05 and
+improvement at every>=2334-row shape in each process. A3% component gain warrants
+only a subsequent matched model experiment; the prior uniform candidate's
+failed5% gate is unchanged. Requalify the same-build GU fixture before the next
+model comparison because its shared adapter translation unit changed during
+the previous Down work. Source45c387d11 built successfully;54 ownership,45
+traced smoke and110 full correctness events passed in closed owned processes,
+including startup flag0/large, threshold/tail/fallback checks and mixed map
+masks. No fresh driver fault occurred. Clean selective timing and same-build
+GU requalification was then completed:36 ownership cases,4 small correctness
+cases with13 admission rejects,18 full cases and3 clean timing processes passed
+without a fresh fault. The component wall-time geomean is0.952777; the existing
+>=2334 selector still excludes the slower160-row shape. Selective Down timing
+remains pending; no new model speed or adoption is claimed.
+
+The maintained model controller now provides `prepare|run qsa-long-input-check`
+and `prepare|run qsa-long-input [0|1|2]`. Its prospective screen holds131072
+context/resident INT8 KV,8192 chunks,GU-large,ordered-exp QSA and GDN columns4
+fixed; Down fusion is explicitly off. Minimum actual input is98304 and the
+client's constructed122880-token budget plus24 output and256 guard requires
+123160 context. The validation request must close before three independent
+clean four-request processes. Keep first use separate from each process's
+three subsequent samples; the target is a subsequent median>=1000tok/s in each
+process. This measures longer-input amortization rather than a same-input
+kernel improvement. Capacity/admission and actual route/token checks remain
+required. The first parameter-validated117489-token request closed with native
+exit0, thinking observed,24 generated tokens and no fresh fault. Its750.2tok/s
+first-use reading is diagnostic only: the frozen route gate failed. At admission
+only4257304576B were free; fixed reservations including512MiB headroom needed
+4154841216B and the mixed bank needed419430400B, a316967040B shortfall.
+Mode10 safely fell back to mode2, with98304 GPU residual rows and392888320B
+host residual storage; the accumulator/GU fusion counters were absent. The
+[failed screen](https://github.com/yqYo1/Strata/blob/2e83c15f6d4cc62ddaa65a99719dfb76bb3344bd/bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json)
+keeps its original failure and individual sample. Do not call this a matched
+route comparison or a clean speed regression. Before a new configuration
+probe, audit/test existing output-head release and restore, or explicitly
+compare residual-prefix/window placement; preserve safety headroom and guards.
+Selective Down timing remains the next pending component comparison.
+
+The next capacity discriminator uses `qsa-long-input-balanced-check`, followed
+by `qsa-long-input-balanced [0|1|2]` only after it passes. Its only placement
+change is the existing `STRATA_PREFILL_LAYER_MAJOR_R_GPU=81920`; output heads
+remain resident and the512MiB safety allowance stays fixed. Relative to the
+failed automatic98304-row prefix, this releases335544320B for the mixed bank,
+18577280B more than the observed admission shortfall. That is an admission
+calculation, not measured free memory or speed. More residual rows move through
+RAM, so their extra transfer cost must be included. The new check must prove
+actual mode10,81920 GPU rows,GU-large and Down0; it links the original failed
+screen in Git. Prioritize this measured VRAM cliff before spending another
+clean timing cohort on the still-unqualified selective Down candidate.
+
+The balanced validation request closed normally at117489 actual read tokens,
+with mode10 and81920 GPU rows confirmed. Its first-use parameter-validated
+reading is756.8tok/s, compared with the original diagnostic750.2; one sample
+per configuration does not establish a speed gain. The mixed bank fits with
+18581376B beyond the unchanged512MiB allowance, and the host residual is
+728432640B. GU counters show5240 fused jobs/35581471 rows and16172 separate
+jobs; Down remains separate for21412 jobs. No fresh fault occurred.
+The clean four-request process then closed normally, with117489 fresh read
+tokens per request, thinking on, mode10 and81920 GPU rows throughout. First
+use was755.3tok/s; subsequent samples were802.1,802.1 and802.0 (median802.1,
+sample SD0.0577). Ownership closed, boot unchanged and no fresh fault occurred.
+The prospective futility rule (median<950 and all3 subsequent samples<975)
+stops this configuration without the other two independent processes. The
+route/correctness screen passed; the1000tok/s target did not. Keep all samples
+in the [current result](../bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json).
+This is a different input size from the earlier78K~903tok/s reference and does
+not establish a same-input regression or sustained decode performance.
+
+Before another model run, check native16 scratch allocation/readers against the
+existing indexed memory-lifetime findings, and audit/test existing output-head
+release/restore as a separate capacity option. Hold the GPU residual prefix
+explicitly in a head-release comparison: automatic placement could consume the
+freed memory before mixed-bank admission. Selective Down remains off in this
+model route and its clean component timing is still pending.

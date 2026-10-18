@@ -476,6 +476,7 @@ struct MoeWindowContext {
     std::function<bool(int64_t, int64_t, std::string&)> complete_piece;
     uint64_t windows = 0, dequants = 0, jobs = 0, source_bytes = 0;
     uint64_t gu_fused_jobs = 0, gu_fused_rows = 0;
+    uint64_t down_fused_jobs = 0, down_fused_rows = 0;
     std::unique_ptr<sycl_backend::command_profile::Trace> command_trace;
 };
 int moe_window_requested() {

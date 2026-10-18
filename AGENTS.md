@@ -6,6 +6,11 @@ has CUDA/HIP backends and this fork's SYCL backend. The project also has a Pytho
 Anthropic-compatible API and a web app (`serve/`), and a one-click installer (`setup.py`, started by
 `START-HERE.bat` / `setup.sh`).
 
+Start each session or resumed task at [Session and action checks](#session-and-action-checks),
+then use its action table before building, measuring, integrating, delegating or
+deleting. These rules apply across context compaction and delegated work; a
+conversation summary does not replace the maintained policy or actual job state.
+
 ## This fork's scope
 
 This is a personal fork based on **Niko1221/Strata**, optimized for this PC's
@@ -44,8 +49,10 @@ At session start, resume and after context compaction, perform these checks in
 order before launching work:
 
 1. Reread this file and [the artifact retention policy](docs/ARTIFACT_RETENTION.md).
-   Apply the latest user instructions; a conversation summary is not a substitute
-   for the maintained rules.
+   Check the latest durable user instructions against the affected sections and
+   update any missing or contradictory rule before its next governed action.
+   Keep the existing canonical section current rather than appending another
+   version. A conversation summary is not a substitute for the maintained rules.
 2. Recover the validated build, clean speed reference, selected experiment,
    pending validation and provenance holds from
    [the maintained prefill decisions](docs/SYCL_NATIVE16_PREFILL.md) and their
@@ -112,8 +119,10 @@ context compaction does not complete or abandon the ongoing tuning experiment.
 Preserve the distinction between a proposal, a tested component and a qualified
 model route when resuming or reporting. An unfinished experiment or research
 proposal does not become adopted during a context change. Read historical detail
-only for a concrete gap. Pass applicable rules and the report-index location to
-every delegated task; Main remains responsible for integration and testing.
+only for a concrete gap. Pass applicable rules, their current Git revision and
+the report-index location to every delegated task. Check returned work against
+the current rules again before integration; Main remains responsible for
+integration and testing.
 
 ### Git, integration and tuning
 

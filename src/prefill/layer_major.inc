@@ -878,6 +878,10 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             (unsigned long long)window_context->gu_fused_jobs,
             (unsigned long long)window_context->gu_fused_rows,
             (unsigned long long)(window_context->jobs - window_context->gu_fused_jobs));
+        std::fprintf(stderr, "strata MoE Down fusion: fused_jobs=%llu fused_rows=%llu separate_jobs=%llu min_rows=2334\n",
+            (unsigned long long)window_context->down_fused_jobs,
+            (unsigned long long)window_context->down_fused_rows,
+            (unsigned long long)(window_context->jobs - window_context->down_fused_jobs));
         std::fprintf(stderr, "strata MoE accumulator window: windows=%llu dequants=%llu jobs=%llu source_H2D_bytes=%llu GPU_resident_windows_only=1 operator_max=8192 maximum_rows=%lld\n",
             (unsigned long long)window_context->windows, (unsigned long long)window_context->dequants,
             (unsigned long long)window_context->jobs, (unsigned long long)window_context->source_bytes,

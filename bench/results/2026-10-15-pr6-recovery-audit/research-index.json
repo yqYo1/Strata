@@ -121,7 +121,7 @@
       },
       {
         "question": "Preload16 Q joint_matrix fragments per QK subgroup and reuse the Q/KV SLM arena.",
-        "schedulable_now": true,
+        "schedulable_now": false,
         "prerequisites": [
           "Establish prefix as a useful model route.",
           "Same BF16 slices, uniform subgroup participation and a workgroup barrier before K overwrite.",
@@ -147,7 +147,7 @@
       "candidate_path": "bench/results/2026-10-15-pr6-recovery-audit/own-qsa-kpitch-v1",
       "decision": "Reuse the existing source-audited pitch proposal after the current comparison; no new duplicate survey. Recheck immutable source/provenance and wire maintained API/tests before compiling.",
       "candidate": "Fixed score33,Cells32,WG128,SG16; K36/V260 shared tile needs9216 BF16 values,30272B requested local payload,34368B admission minimum. No hardware occupancy/bank map or performance result.",
-      "do_not_repeat": "Old global K span256 schedule regressed10.35–29.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
+      "do_not_repeat": "Old global K span256 schedule regressed10.35\u201329.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
     },
     "reviewed_base_source_sha256": "fa505d02e2b24f7cb6948033921fa697c8aeb58e6f4df6d873f13e5a7918e36b",
     "source_sha256": "c3ad8326f097050ff9ab1859e116f2cad3709a8464162143f752bc294cbe1e01",
@@ -208,7 +208,7 @@
         "bytes": 19144,
         "source_commit": "fbc7f56d7b0ddb5db5f3722ef33ca044c3f8a5c8",
         "reason": "Its conditional consumer is a selected-cell stable-reduction split. The closed QSA screen and pending pitch candidate select no split or reduction bottleneck.",
-        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report’s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
+        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report\u2019s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
       },
       {
         "path": "bench/results/2026-10-15-pr6-recovery-audit/research-matrix-register-reuse-20261018.md",
@@ -233,7 +233,7 @@
       "Fixed residency was a bounded research question, not a user prohibition on memory/performance tradeoffs."
     ],
     "main_census": {
-      "schedulable_now": true,
+      "schedulable_now": false,
       "prerequisite": "QSA comparison closed; current-path profile and exact planned-job census are next, with source/config frozen before build/run.",
       "observer": "Use existing coarse/QSA/CPU-wait profiles. New per-window host metadata census adds no tensor readback or GPU work and reconciles planned jobs with final retired totals.",
       "limitations": "Diagnostic timing and requested DMA bytes, not clean speed, physical bandwidth/saturation or an additive critical-path partition.",
@@ -440,7 +440,20 @@
       ],
       "question": "Does a measured156K+ peak identify one reclaimable activation owner?"
     },
-    "retention": "Keep decision support through the concrete owner census, then prune; no implementation adoption."
+    "retention": "Keep decision support through the concrete owner census, then prune; no implementation adoption.",
+    "scratch_retrieval_review": {
+      "path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/native16-scratch-retrieval-review.json",
+      "sha256": "7c3be57094162810407f17cded2b49f47e8d6ad3e11cde58ba5bb775bb580540",
+      "state": "Native Codex Luna-max existing-report retrieval complete; Main read only short digest. No build, test or runtime work.",
+      "reviewed_facts": [
+        "Existing report rejects early arbitrary mixed-row retirement but did not cover current scratch alias capacity.",
+        "Source-derived disjoint capacity: m.R335544320bytes idle during mode10 helper plus121566720bytes unused m.region tail; total457111040bytes exceeds419430400-byte mixed bank. This is not measured free VRAM.",
+        "m.R remains required for PLE, short-input fallback and final callbacks. Current helper requires a contiguous bank; two-span gather/index and ownership changes are conditional, not adopted."
+      ],
+      "next_main_step": "Recover exact source/build/receipt and allocation-owner census, then review bounded two-bank access and phase ownership before any implementation or GPU run.",
+      "schedulable_now": false,
+      "retention": "Current capacity-option decision; retire review after the owner/layout decision is recorded."
+    }
   },
   "low_bit_residual_storage_scope": {
     "classification": "knowledge_collection",
@@ -629,26 +642,10 @@
       "Main selected the exact prospective sycl::native::exp2 versus sycl::exp2 question at4b9618071, preserving original failures and current arithmetic; this is distinct from divergence diagnosis.",
       "R938 recovered by verified hash for worker-only selected retrieval; both indices shared to avoid a generic repeat."
     ],
-    "state": "Orca and native Luna-max review complete; accepted settlement/ack and owned-terminal positive closure.",
+    "state": "Pinned source contract and native review complete; original generic survey/review superseded and retired. Newer exact dispatch completion receipt remains unconfirmed.",
     "question": "Actual framework-selected exp2/FTZ and BF16-probability/FP32-state contract for one explicit native-exp2 candidate; targeted flags versus global side effects, counterexamples and finite numerical gates.",
-    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-native-exp2-contract.md",
     "main_reads_body_on_arrival": false,
-    "dispatch": "ctx_59a560c281bb",
-    "task": "task_08841e6cf1f3",
-    "terminal": "term_1f5cec80-e2d8-496f-b7b8-c40770e61510",
-    "model_evidence": "Custom argv gpt-6-luna medium, updates disabled; satisfied TUI-idle then observed turn_started.",
-    "report_budget": {
-      "words": [
-        1800,
-        2600
-      ],
-      "maximum_bytes": 30720
-    },
     "retention_consumer": "Native Luna-max novelty/depth review then exact math-intrinsic selection; no performance adoption or global fast-math change.",
-    "report_bytes": 15082,
-    "report_sha256": "52f862fa849ef4e5f93b1d031b440a221d4568dcd2dcb805855385823ba78eeb",
-    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-native-exp2-review.json",
-    "review_sha256": "5a19265cc9d871278b3b23c489032aa56bc7346bfe51eab3f77a00a75c83865e",
     "reviewed_digest": [
       "Useful current-QSA math-only feasibility gates; generic native-math/FTZ material already covered by R938.",
       "When old maximum exceeds the current tile maximum, the old-state rescale supplies exp2(0), not the current tile maximum.",
@@ -737,6 +734,12 @@
       ],
       "limits": "Pinned source lowering selects approximate FP32 exp2 with FTZ-dependent spelling; deployed CUDA artifacts are not observed. SYCL native exp2 range/error/denormal behavior is implementation-defined. No full negative-domain legality, whole-kernel equivalence or speed gain established.",
       "next_action": "Select one compile-time guarded math-only seam and establish the actual implementation domain, special/state behavior, isolated codegen and clean local numerical/performance gates. No generic repeat research until a concrete prototype leaves a finite unresolved question."
+    },
+    "original_survey_retirement": {
+      "manifest": "bench/results/2026-10-15-pr6-recovery-audit/build-retirement-20261018.json",
+      "archive_commit": "ec50e1c89bdd5d842085653a857905a2b2b95bd7",
+      "payloads_archived": false,
+      "reason": "Pinned successor and reviewed corrections replace generic survey; no remaining body consumer."
     }
   },
   "warmed_gemm_reference_scope": {
@@ -1355,8 +1358,8 @@
         "Retrieval map for a later concrete question"
       ],
       "paper_sections": [
-        "SyclKittens §§3.2–3.3 and Appendix D for operand layouts, subgroup prefetch and the measured ablation.",
-        "Xe-Forge §§IV–V, VI-A, VI-D–VI-E for search/validation workflow, hardware, baseline and kernel results."
+        "SyclKittens \u00a7\u00a73.2\u20133.3 and Appendix D for operand layouts, subgroup prefetch and the measured ablation.",
+        "Xe-Forge \u00a7\u00a7IV\u2013V, VI-A, VI-D\u2013VI-E for search/validation workflow, hardware, baseline and kernel results."
       ]
     }
   },
@@ -1415,5 +1418,83 @@
     ],
     "full_external_payloads_discarded_not_archived": true,
     "decision": "Full reports/review transactions have no current consumer after the GU cohort. Use compact findings and pinned code/results; no GU codegen variant or dedicated nonprofiling queue prototype selected."
+  },
+  "selective_down_engine_hook_scope": {
+    "classification": "decision_support",
+    "schedulable_now": false,
+    "state": "Technical report and native Luna-max review complete; Orca lifecycle receipt remains unconfirmed.",
+    "question": "Audit the exact startup-selected Down>=2334 engine hook and production fixture for queue/USM/plan lifetime, map/status semantics, false-route fallback and feature preservation; identify concrete contract violations rather than repeat epilogue-layout surveying.",
+    "prerequisites_met": [
+      "Committed Main-authored hook, callsite and fixture at45c387d11f20579e2f4a96511497fa7a5fb6e4ce.",
+      "Uniform cache result remains rejected; new threshold/prospective gate is recorded before execution.",
+      "Native adapter and borrowed-queue exception drain already exist and can be checked against the new caller without GPU execution."
+    ],
+    "source_commit": "45c387d11f20579e2f4a96511497fa7a5fb6e4ce",
+    "source_sha256": {
+      "src/prefill/sycl/gemm16.cpp": "9e25396467e1e130a636931bc81c1d29261f420ecb36545c3dba087fe30ac467",
+      "src/prefill/moe_window.inc": "5cdeff59c0c38647a5fbb0055269160f294f150bb8ec1b9943428fe4fc6cf0e9",
+      "bench/sycl/moe_down_scatter.cpp": "2be41d0daaa389781d29e8dbd78248de7f04b73016239ae892afcffa7e605d0d"
+    },
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/selective-down-engine-hook-audit.md",
+    "main_reads_body_on_arrival": false,
+    "report_budget": {
+      "words": [
+        1500,
+        2300
+      ],
+      "maximum_bytes": 30000
+    },
+    "retention_consumer": "Native Luna-max source/scope review, then Main resolves concrete findings before the first model trial. Retire after hook qualification or rejection.",
+    "task": "task_931bd47a2ed8",
+    "dispatch": "ctx_b4e5a89c7a73",
+    "terminal": "term_b7019021-1843-4ddb-97da-8c5213cc9636",
+    "model_evidence": "Custom terminal argv gpt-6-luna medium, updates disabled and named report directory writable; tui-idle satisfied, worker-start observed turn_started.",
+    "report_sha256": "46e7020ae1a17c51d1246a4fe9dfdc9d5e61cd606ccf09cfa769e7a5b8c4207a",
+    "report_bytes": 12042,
+    "lifecycle_state": "Author final transcript reports runtime_unavailable from its exact lifecycle command. Dispatch remains in_progress with retained external terminal; no worker receipt forged, no release or duplicate research.",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/selective-down-engine-hook-native-review.json",
+    "review_sha256": "30ab2b4a90697723551a5530437bfc260fee7128e552f4a6b90d07d371fec49f",
+    "review_digest": [
+      "All7 source pins and report hash match; no hook defect found. Existing checked caller drain retains owners/fails closed.",
+      "Same-row bad-slot+bad-token is already covered low-level; add selected-wrapper coverage. Fresh-process config rejection coverage remains open. Fixture retirement test is synchronous, not an asynchronous fault-injection result.",
+      "These gaps do not block Down0 long-input screening. Fusion remains unqualified pending clean timing and targeted gates."
+    ]
+  },
+  "qsa_kv_cache_representation_long_context_scope": {
+    "classification": "knowledge_collection",
+    "schedulable_now": false,
+    "state": "Technical report and native Luna-max review complete; Orca lifecycle receipt remains unconfirmed.",
+    "question": "For Strata's QSA path with 2 KV heads, 24 query heads and dimension 256, compare supported long-context K/V representations around the current resident, unrotated INT8 cache. Examine grouped/per-channel and per-token scaling, sub-8-bit formats, scale/zero-point metadata cost, dequantization placement, rotary/layout constraints, and compatibility with the actual SGLang/vLLM numerical contract. Identify the strongest counterexamples and the source or measured evidence needed before any 262144-context implementation decision. Keep cache representation separate from cross-query sparsity, residual-state precision, and softmax math.",
+    "novelty": "The sparse cross-query report studies selected-set ordering, union blocks and inverse schedules; the low-bit report studies persistent HC4 residual/hidden-state storage; QSA math reports cover exp2 and normalizer scheduling. None targets K/V cache representation and its metadata/dequantization tradeoff. The current tile-programming collection is a broader execution-method reference and explicitly says not to repeat a tile survey.",
+    "prerequisites_met": [
+      "docs/SYCL_NATIVE16_PREFILL.md identifies the optional typed QSA path as resident, unrotated INT8 K/V and says streaming/host mirrors and rotated/Q4/hybrid KV are refused.",
+      "The indexed sparse-QSA scope records the concrete 2KV/24Qhead/Dim256 geometry; the maintained tuning policy requires physical 262144-context correctness.",
+      "The existing source and literature question can be answered without a new profiler, GPU run or missing numerical incident. It must remain a reference collection and may not claim that K/V capacity or traffic currently limits throughput."
+    ],
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-long-context-kv-representation.md",
+    "report_budget": {
+      "words_min": 1500,
+      "words_max": 2100,
+      "maximum_bytes": 30000,
+      "requirements": "Compare alternatives, applicability and counterevidence; pin framework/repository revisions and per-file provenance/license where relevant; separate published claims, source-visible behavior and hardware/model evidence; state numerical, rotary, layout and metadata limits. Do not author code, recommend adoption from literature alone, or claim measured local speed/capacity."
+    },
+    "main_reads_body_on_arrival": false,
+    "retention_consumer": "Retrieve only if Main later selects a QSA K/V representation, dequantization placement or long-context cache-capacity comparison. Use the report to frame the exact source contract and correctness/performance gates; do not read it on arrival or treat it as a candidate implementation.",
+    "review_point": "At the next Main decision that selects or rejects a K/V cache representation for QSA/full-context work. Then retain only reusable findings in the existing compact result and retire transactional report/review material if no current consumer remains.",
+    "task": "task_58f846b4c165",
+    "dispatch": "ctx_876800e9149b",
+    "terminal": "term_344908d0-3a3c-4132-9b50-2248f383b86c",
+    "model_evidence": "Custom gpt-6-luna medium terminal, updates disabled and named report directory writable; tui-idle satisfied and worker-start observed turn_started.",
+    "report_sha256": "a60266798e43157f7ffb6986522d66cf4aec56975cc8513c7fc21ddf60d3b017",
+    "report_bytes": 13461,
+    "lifecycle_state": "Author final transcript reports runtime_unavailable from its exact lifecycle command. Dispatch remains in_progress with retained external terminal; no worker receipt forged, no release or duplicate research.",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-long-context-kv-native-review.json",
+    "review_sha256": "17a9b39b2258196d718a2f8bc253ae334c9f430e4eecde246d85e85ab0bdfd63",
+    "review_digest": [
+      "Substantive novel conditional reference; payload arithmetic verified. Four scales/token means per-token-per-head scaling.",
+      "Mutable framework links remain discovery only; pin exact backend/model implementation before any candidate decision. No local performance, quality or compatibility established.",
+      "No follow-up research eligible now. Main retains only retrieval metadata and does not read collection body on arrival."
+    ],
+    "scope_selection": "Native Luna-max novelty/prerequisite review corrected2 stale flags and selected this one scope. Consumed review transaction retired with the same manifest; current question, prerequisites and report remain indexed."
   }
 }

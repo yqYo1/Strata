@@ -88,7 +88,7 @@ public:
   // still requires the caller to drain the queue before releasing any owner.
   // Explicit tile makes later operator comparisons possible without env edits.
   sycl::event beta0(const Problem &problem, Tile tile = Tile::wide_128x128);
-  // Component candidate only; no engine dispatch selects this API yet.
+  // Component candidate and explicit large-job engine hook; default off.
   // Same DPAS order, then BF16 rounding/widening, then FP32 sycl::fma.
   sycl::event down_scatter(const DownScatterProblem &problem,
                          Tile tile = Tile::wide_128x128,

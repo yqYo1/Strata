@@ -193,14 +193,20 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
             ++owner.gu_fused_jobs;
             owner.gu_fused_rows += uint64_t(job.rows);
         }
+        bool fused_down = false;
         {
             auto tag = command_trace.tag(cp::Kind::down, job.expert, job.global_row, job.rows, N, 640, format.d_type);
-            m.gemm.f16_out16(hidden, m.dq_d[0], down, job.rows, N, 640, true);
+            fused_down = m.gemm.try_down_scatter16(*owner.routes, index, hidden, m.dq_d[0],
+                source, inverse, job_weights, accumulator, status);
+            if (!fused_down) m.gemm.f16_out16(hidden, m.dq_d[0], down, job.rows, N, 640, true);
         }
-        {
+        if (!fused_down) {
             hp::Host host(hp::moe_accumulate);
             auto tag = command_trace.tag(cp::Kind::accumulate, job.expert, job.global_row, job.rows, N);
             native16::moe_accumulate(*owner.routes, index, down, source, inverse, job_weights, accumulator, status, m.cs);
+        } else {
+            ++owner.down_fused_jobs;
+            owner.down_fused_rows += uint64_t(job.rows);
         }
         ++owner.jobs;
     }

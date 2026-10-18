@@ -16,7 +16,7 @@ import measurement_owner as supervision
 
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'moe-gu-swiglu-component-v2'
+ROOT = B / 'moe-gu-swiglu-component-v3'
 ENGINE = B / 'main-native-gdn-engine'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/moe-gu-swiglu-current.json'
 SETTINGS = P / 'tools/sycl/measurement_environment.json'
@@ -46,6 +46,9 @@ def main():
         guards.require(digest(fixture['path']) == fixture['sha256'], 'fixture changed')
         if mode == 'ownership':
             guards.require(not ROOT.exists(), 'inspect/retire the previous ownership job before reuse')
+            guards.require(RESULT.read_bytes() == subprocess.check_output(
+                ['git', 'show', 'HEAD:' + str(RESULT.relative_to(P))], cwd=P),
+                'commit the previous GU evidence before replacement')
         else:
             guards.require(RESULT.read_bytes() == subprocess.check_output(
                 ['git', 'show', 'HEAD:' + str(RESULT.relative_to(P))], cwd=P), 'commit the preceding phase first')

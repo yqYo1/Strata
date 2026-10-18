@@ -20,6 +20,12 @@ review that need again. Remove an obsolete index row instead of preserving an
 entire chain of stale references. Link historical evidence to a pinned Git
 revision. Keep the archive commit reachable; do not rewrite shared history.
 
+Preserve the original source commits referenced by retained measurements when
+integrating branches. Use a merge commit for such work and verify those commits
+are reachable from the fork's retained default branch before deleting their
+branches or recoverable build artifacts. A squash or rebase with equivalent
+files does not preserve the recorded commit identities.
+
 Useful active content is normally:
 
 - The current comparison's individual samples, including rejected/failed speed
