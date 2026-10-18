@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <bit>
 #include <cmath>
+#include <cstdint>
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
@@ -62,6 +63,11 @@ void gate(bool enabled,const char *phase) {
 
 void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=0) {
   constexpr int Heads=24,KV=2,Dim=256,Page=16;
+#ifdef STRATA_QSA_PACKED_GUARD
+  constexpr int PackedGuard=STRATA_QSA_PACKED_GUARD;
+#else
+  constexpr int PackedGuard=16;
+#endif
   if (!live_cells) live_cells=cells;
   require(live_cells>0 && live_cells<=cells,"fixture live prefix bounds");
   const int pages=(cells+Page-1)/Page, rows=pages*KV*Page;
@@ -99,17 +105,19 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
   Buffer<uint16_t> dq(q.size()),dks(ks.size()),dvs(vs.size()),out(sentinel.size());
   Buffer<int8_t> dk(k.size()),dv(v.size());
   Buffer<int32_t> dt(table.size()),di(ids.size()),ds(steps.size());
-  Buffer<uint16_t> packed_k(size_t(active_rows)*Dim+32),packed_v(size_t(active_rows)*Dim+32);
-  Buffer<int32_t> packed_bad(size_t(active_rows)+32);
+  Buffer<uint16_t> packed_k(size_t(active_rows)*Dim+2*PackedGuard),packed_v(size_t(active_rows)*Dim+2*PackedGuard);
+  Buffer<int32_t> packed_bad(size_t(active_rows)+2*PackedGuard);
   const int32_t bad_guard=0x12345678;
   Drain pending; // Destroy before every input/output owner on success and failure.
-  packed_k.put(std::vector<uint16_t>(size_t(active_rows)*Dim+32,guard));
-  packed_v.put(std::vector<uint16_t>(size_t(active_rows)*Dim+32,guard));
-  packed_bad.put(std::vector<int32_t>(size_t(active_rows)+32,bad_guard));
+  packed_k.put(std::vector<uint16_t>(size_t(active_rows)*Dim+2*PackedGuard,guard));
+  packed_v.put(std::vector<uint16_t>(size_t(active_rows)*Dim+2*PackedGuard,guard));
+  packed_bad.put(std::vector<int32_t>(size_t(active_rows)+2*PackedGuard,bad_guard));
   dq.put(q);dks.put(ks);dvs.put(vs);dk.put(k);dv.put(v);dt.put(table);di.put(ids);ds.put(steps);out.put(sentinel);
   QsaAttnPools pools; pools.k_q=dk.data();pools.v_q=dv.data();pools.k_scale=dks.data();pools.v_scale=dvs.data();pools.page_table=dt.data();
   auto shape=qsa_real_shapes();shape.page_size=Page;
-  const QsaBf16PackedScratch scratch{packed_k.data()+16,packed_v.data()+16,packed_bad.data()+16};
+  const QsaBf16PackedScratch scratch{packed_k.data()+PackedGuard,packed_v.data()+PackedGuard,packed_bad.data()+PackedGuard};
+  if constexpr (PackedGuard==17)
+    require(reinterpret_cast<uintptr_t>(scratch.k)%8!=0,"packed K must exercise two-byte-only alignment");
   auto attention=[&](const uint16_t *qin,const QsaAttnPools &p,const int32_t *ii,const int32_t *ss,
                      int64_t c,const QsaShapes &sh,uint16_t *o,int64_t nq,
                      const QsaPromptBf16Bounds &b,void *stream) {
@@ -117,9 +125,9 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
   };
   auto packed_guards=[&] {
     auto a=packed_k.get(),b=packed_v.get();auto bad=packed_bad.get();
-    for (size_t i=0;i<16;++i)
-      require(a[i]==guard && a[a.size()-16+i]==guard && b[i]==guard && b[b.size()-16+i]==guard &&
-              bad[i]==bad_guard && bad[bad.size()-16+i]==bad_guard,"packed output guards");
+    for (size_t i=0;i<PackedGuard;++i)
+      require(a[i]==guard && a[a.size()-PackedGuard+i]==guard && b[i]==guard && b[b.size()-PackedGuard+i]==guard &&
+              bad[i]==bad_guard && bad[bad.size()-PackedGuard+i]==bad_guard,"packed output guards");
   };
   auto invoke=[&] {
     require(attention(dq.data(),pools,di.data(),ds.data(),cap,shape,
@@ -155,12 +163,12 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
     for (int64_t row=0;row<active_rows;++row) {
       const int page=int(row/(KV*Page)),head=int(row/Page%KV),offset=int(row%Page);
       const int64_t source=row_of(page*Page+offset,head*(Heads/KV));
-      require(pb[16+row]==0,"finite or masked prefix diagnostic row");
+      require(pb[PackedGuard+row]==0,"finite or masked prefix diagnostic row");
       for (int d=0;d<Dim;++d) {
         const uint16_t key=source>=0 ? round_bf16(float(k[source*Dim+d])*load_half(ks[source*4+d/64])) : 0;
         const uint16_t val=source>=0 ? round_bf16(float(v[source*Dim+d])*load_half(vs[source*4+d/64])) : 0;
-        require(pk[16+row*Dim+d]==key,"complete logical K prefix including zero padding/missing pages");
-        require(pv[16+row*Dim+d]==val,"complete logical V prefix including zero padding/missing pages");
+        require(pk[PackedGuard+row*Dim+d]==key,"complete logical K prefix including zero padding/missing pages");
+        require(pv[PackedGuard+row*Dim+d]==val,"complete logical V prefix including zero padding/missing pages");
       }
     }
   }
@@ -307,6 +315,7 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
   std::cout<<"case cells="<<cells<<" live_cells="<<live_cells<<" active_rows="<<active_rows<<" cap="<<cap<<" queries="<<queries<<" masked="<<masked
            <<" compared="<<compared<<" max_abs="<<std::setprecision(10)<<max_error
            <<" max_budget_ratio="<<max_budget_ratio<<" oracle=BF16_operands_FP32_online"
+           <<" packed_guard_elements="<<PackedGuard<<" packed_k_mod8="<<reinterpret_cast<uintptr_t>(scratch.k)%8
            <<" packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS\n";
 #if defined(STRATA_QSA_COMPARE_PREFIX33)
   std::cout<<"case exact_prefix33_bits=PASS cells="<<cells<<" cap="<<cap<<" queries="<<queries<<'\n';

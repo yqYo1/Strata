@@ -206,17 +206,27 @@ opt-in candidate for further tuning; default adoption and the broader gates
 above remain open. Short-output decode medians14.2 versus14.0 tok/s do not
 decide sustained decode performance. See the [individual samples and comparison](../bench/results/2026-10-15-pr6-recovery-audit/qsa-cached-query-model-current.json).
 
-The next component-only candidate changes K staging ownership, preserving
-cached Q, BF16 bits, local `kv[d*32+cell]`, matrix strides and barriers. With
-thread `t=0..127` and loop `r=0..63`, the old map is `cell=t%32,d=t/32+4*r`;
-the candidate uses `cell=r/2,d=t+128*(r%2)`. Both cover8192 destinations once.
-The new global loads are contiguous within each row; local stores become
-strided. Physical transactions, SLM conflicts and speed are unmeasured.
-Main authored the index change independently; the reviewed staging report is
-decision support only. No model dispatch selects it. The existing oracle,
-full-bit/guard/physical262144 component checks precede rotated same-binary
-cached-Q versus coalesced-K timings. Build pins now also cover project
-`third_party` and maintained `bench/sycl` inputs.
+The component-only row-coalesced K experiment passed all numerical, guard and
+physical262144 component gates, but increased median latency12.44%,27.98%,7.75%
+for cap33 gather, cap2051 gather and cap2051 clustered (six rotated samples per
+arm; result`eb9b0469c`, source`2d4f24484`). Both attention kernels emitted128GRF,
+2112B spill metadata,4096B scratch and20032B dynamic-local arguments. Reject it
+and retire its active API/fixtures. Changed local stores and memory-level
+parallelism are possible explanations; no physical traffic or bank counters
+were collected. The current cached-Q model route keeps its original K gather.
+
+The next component candidate preserves parallel row ownership and contiguous
+cell stores, grouping four adjacent K values per lane. With thread`t=0..127`,
+loop`r=0..15` and element`j=0..3`, its map is
+`cell=t%32,d=4*(t/32)+16*r+j`; all8192 local destinations have one writer.
+Typed `vec<uint16_t,4>::load` avoids wider-pointer aliasing and needs only the
+existing two-byte alignment per [SYCL2020 vec members](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html).
+The installed SDK implements this API with typed element loads; an actual
+wide hardware transaction is not yet established. The oracle target also
+uses a17-element scratch guard to exercise a pointer unaligned to eight bytes.
+BF16 bits, matrix arithmetic/strides and all barriers stay unchanged. Main
+authors this candidate independently; no model dispatch selects it. Build
+pins also cover project `third_party` and maintained `bench/sycl` inputs.
 
 ## Optional GDN chunk64
 

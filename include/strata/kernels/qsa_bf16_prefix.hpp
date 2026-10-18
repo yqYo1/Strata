@@ -27,9 +27,9 @@ bool qsa_bf16_prefix_qcache_batch(const uint16_t *q, const QsaAttnPools &pools,
     const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
     uint16_t *out, int64_t queries, const QsaPromptBf16Bounds &bounds,
     int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream);
-// Cached Q with row-coalesced K loads and the same transposed local layout.
-// Diagnostic candidate only; no additional scratch or arithmetic changes.
-bool qsa_bf16_prefix_kcoalesced_batch(const uint16_t *q, const QsaAttnPools &pools,
+// Cached Q with four adjacent typed K values per lane, parallel row ownership
+// and the same local layout. Diagnostic only; no extra alignment requirement.
+bool qsa_bf16_prefix_kvec4_batch(const uint16_t *q, const QsaAttnPools &pools,
     const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
     uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
     int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream);
