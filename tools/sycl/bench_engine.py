@@ -240,9 +240,13 @@ def main():
              'qsa-gu-fusion-check', 'qsa-gu-fusion-base', 'qsa-gu-fusion-candidate',
              'qsa-kvvec4-timing-check', 'qsa-kvvec4-census') + tuple(
                  f'qsa-gdncols{n}-{phase}' for n in (2, 4, 8) for phase in ('check', 'base', 'candidate'))
-    guards.require(len(sys.argv) == 3 and sys.argv[1] in ('prepare', 'run') and
+    guards.require(len(sys.argv) in (3, 4) and sys.argv[1] in ('prepare', 'run') and
                    sys.argv[2] in modes, 'use prepare|run ' + '|'.join(modes))
-    action, mode = sys.argv[1:]
+    action, mode = sys.argv[1:3]
+    cohort = int(sys.argv[3]) if len(sys.argv) == 4 else 0
+    guards.require(cohort in (0, 1, 2) and (len(sys.argv) == 3 or
+        mode in ('qsa-gu-fusion-base', 'qsa-gu-fusion-candidate')),
+        'optional cohort0|1|2 is only for GU base/candidate; use order A0/B0/B1/A1/A2/B2')
     column_mode = re.fullmatch(r'qsa-gdncols(2|4|8)-(check|base|candidate|warm-census|host-check|host-traced-check|host-census)', mode)
     ordered_trial = mode.startswith('qsa-ordered-exp-')
     gu_trial = mode.startswith('qsa-gu-fusion-')
@@ -265,6 +269,8 @@ def main():
     request_count = 2 if warm_profile else 1 if check else 4
     chunk64 = mode in ('check', 'candidate')
     generation = 'v2' if short_profile or mode == 'qsa-kvec4-check' else 'v1'
+    if cohort:
+        generation += '-repeat' + str(cohort)
     root = B / (('qsa-attention-model-' + mode[4:] + '-' + generation) if qsa else
                 ('native-gdn-model-' + mode + '-v2'))
     result_path = (A / 'prefill-host-attribution-current.json' if host_profile else
@@ -304,10 +310,18 @@ def main():
                     selector='large: matrix-wide jobs>=2334 rows; smaller jobs retain separate GU/SwiGLU')
                 if not mode.endswith('-check'):
                     prior = json.loads(result_path.read_text())
-                    required = 'qsa-gu-fusion-check' if mode.endswith('-base') else 'qsa-gu-fusion-base'
+                    first, second = ('base', 'candidate') if cohort % 2 == 0 else ('candidate', 'base')
+                    current = mode.rsplit('-', 1)[1]
+                    if current == second:
+                        required, preceding_cohort = 'qsa-gu-fusion-' + first, cohort
+                    elif cohort:
+                        required, preceding_cohort = 'qsa-gu-fusion-' + ('candidate' if (cohort - 1) % 2 == 0 else 'base'), cohort - 1
+                    else:
+                        required, preceding_cohort = 'qsa-gu-fusion-check', 0
                     guards.require(result_path.read_bytes() == subprocess.check_output(
                         ['git','show','HEAD:' + str(result_path.relative_to(P))],cwd=P) and
-                        prior['mode'] == required and prior['passed'] and prior['ownership_closed'] and prior['binary'] == build['binary'],
+                        prior['mode'] == required and prior.get('cohort_index', 0) == preceding_cohort and
+                        prior['passed'] and prior['ownership_closed'] and prior['binary'] == build['binary'],
                         'commit matching preceding GU model phase')
                     gu_qualification['preceding_result'] = dict(commit=subprocess.check_output(
                         ['git','rev-parse','HEAD'],cwd=P,text=True).strip(),path=str(result_path.relative_to(P)),mode=prior['mode'])
@@ -427,6 +441,12 @@ def main():
                 plan['ordered_exp_qualification'] = ordered_qualification
             if gu_trial:
                 plan['gu_qualification'] = gu_qualification
+                plan['cohort_index'] = cohort
+                plan['independent_process_plan'] = dict(order=['A0','B0','B1','A1','A2','B2'],
+                    target_pairs=3, requests_per_process=4, first_use_separate=True,
+                    prospective_selection='All three independent paired subsequent-request medians favor fusion; '
+                        'geometric mean of per-input paired ratios>1.002, no new faults or eligibility/ownership failures.',
+                    limits='Default remains disabled pending broader quality/context gates. Metadata-only controller extension after cohort0 does not change bench.sh/workload/engine.')
             if phase_profile:
                 plan['phase_profile_scope'] = {
                     'question': ('Classify non-GEMM MoE host CPU with disjoint version4 regions and exact planned-work counts; command tracing off/on gates precede the two-request warm profile.' if host_profile else
@@ -445,7 +465,8 @@ def main():
             return 0
         record = json.loads(result_path.read_text())
         committed = subprocess.check_output(['git', 'show', 'HEAD:' + str(result_path.relative_to(P))], cwd=P)
-        guards.require(committed == result_path.read_bytes() and record['mode'] == mode and not record['complete'],
+        guards.require(committed == result_path.read_bytes() and record['mode'] == mode and
+                       record.get('cohort_index', 0) == cohort and not record['complete'],
                        'commit a fresh matching plan before launch')
         plan = json.loads((root / 'plan.json').read_text())
         guards.require(all(record.get(k) == v for k, v in plan.items() if k != 'source_sha256'),
