@@ -194,6 +194,38 @@ void moe_job_weights(const detail::MoeWindowRoutes& plan, const float* weights,
     });
 }
 
+void moe_gather_mixed(const detail::MoeWindowRoutes& plan, size_t job_index,
+                      const uint16_t* primary, const uint16_t* tail, int64_t primary_rows,
+                      const int32_t* source, uint16_t* gathered, uint32_t* status, void* stream) {
+    const size_t routes = accumulator_routes(plan, stream);
+    const auto& job = plan.jobs().at(job_index);
+    const int64_t rows = plan.rows();
+    if (primary_rows <= 0 || primary_rows > rows || job.rows < 1 || job.rows > 8192 ||
+        job.global_row < 0 || size_t(job.global_row) > routes - size_t(job.rows))
+        throw std::invalid_argument("MoE mixed gather bank/job bounds");
+    const size_t n = count(job.rows, N), offset = size_t(job.global_row);
+    // Always validate complete logical banks, not just the first input row.
+    accumulator_spans(stream, {{gathered, n * 2}, {status, 4}},
+        {{primary, count(primary_rows, N) * 2}, {source, routes * 4}});
+    if (primary_rows < rows) {
+        accumulator_spans(stream, {{gathered, n * 2}, {status, 4}},
+            {{tail, count(rows - primary_rows, N) * 2}});
+        validate_spans({{primary, count(primary_rows, N) * 2}},
+                       {{tail, count(rows - primary_rows, N) * 2}});
+    } else if (tail) throw std::invalid_argument("MoE mixed gather unexpected tail");
+    for_each(n, stream, [=](size_t i) {
+        const int32_t row = source[offset + i / N];
+        const size_t col = i % N;
+        if (row < 0 || int64_t(row) >= rows) {
+            if (!col) accumulator_error(status, 4);
+            gathered[i] = 0;
+            return;
+        }
+        gathered[i] = int64_t(row) < primary_rows ? primary[size_t(row) * N + col]
+            : tail[size_t(int64_t(row) - primary_rows) * N + col];
+    });
+}
+
 void moe_accumulate(const detail::MoeWindowRoutes& plan, size_t job_index,
                     const uint16_t* down, const int32_t* source, const int32_t* original,
                     const float* job_weights, float* accumulator, uint32_t* status, void* stream) {

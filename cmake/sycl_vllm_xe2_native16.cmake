@@ -66,6 +66,9 @@ target_link_libraries(strata_prefill INTERFACE "${_strata_native_image}" "${_str
 message(STATUS "Strata: opt-in vLLM Xe2 native16; isolated BMG G21 AOT object; existing engine JIT; external TLA pinned; UNQUALIFIED")
 
 function(strata_add_vllm_native16_tests)
+  add_executable(sycl_moe_accum_test EXCLUDE_FROM_ALL tests/sycl/moe_accum.cpp)
+  target_link_libraries(sycl_moe_accum_test PRIVATE strata_prefill)
+  target_compile_options(sycl_moe_accum_test PRIVATE -fno-fast-math -ffp-contract=off)
   add_executable(sycl_vllm_native16_test EXCLUDE_FROM_ALL tests/sycl/vllm_native16.cpp)
   target_include_directories(sycl_vllm_native16_test PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/prefill/sycl/vllm_xe2")
   target_link_libraries(sycl_vllm_native16_test PRIVATE strata_prefill)

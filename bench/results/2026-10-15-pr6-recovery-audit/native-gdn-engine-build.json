@@ -1,5 +1,5 @@
 {
-  "source_commit": "45c387d11f20579e2f4a96511497fa7a5fb6e4ce",
+  "source_commit": "034bddff8393e8c1c9cee89e9235807230a81ad2",
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -80,42 +80,48 @@
   "production_selected": false,
   "model_quality_qualified": false,
   "replaces": {
-    "source_commit": "c9ad511e4f3ec8387327e6c86d8e6a9e02988eac",
+    "source_commit": "45c387d11f20579e2f4a96511497fa7a5fb6e4ce",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-      "bytes": 22039376,
-      "sha256": "f004aabae84dbea46db59bdf98ec0413a8bf93b53c13e9b5b28e5c2ed045fc86"
+      "bytes": 22039520,
+      "sha256": "4b7ea4883c0df2d5f973a08b22b0efc3ee7bdbed560828d2e221683ff986bcf0"
     },
     "source_build_passed": true,
-    "retained_binary_source_commit": "c9ad511e4f3ec8387327e6c86d8e6a9e02988eac",
+    "retained_binary_source_commit": "45c387d11f20579e2f4a96511497fa7a5fb6e4ce",
     "reason": "Closed unused comparison engine; original source/recipe recovered from Git. Reuse its cache for the immediate corrected build, not a retained old generation."
   },
   "targets": [
     "strata",
-    "sycl_moe_down_scatter_bench",
-    "sycl_moe_gu_swiglu_bench"
+    "sycl_moe_accum_test",
+    "sycl_moe_gu_swiglu_bench",
+    "sycl_moe_down_scatter_bench"
   ],
-  "retention_consumer": "Current comparison engine and requested fixtures: strata, sycl_moe_down_scatter_bench, sycl_moe_gu_swiglu_bench; select the validated generation and retire the extra after qualification/comparison closure.",
+  "retention_consumer": "Current comparison engine and requested fixtures: strata, sycl_moe_accum_test, sycl_moe_gu_swiglu_bench, sycl_moe_down_scatter_bench; select the validated generation and retire the extra after qualification/comparison closure.",
   "retained_validation_reference": {
-    "source_commit": "3d8708758477338512ee7bc662163fed7a23938a",
+    "source_commit": "45c387d11f20579e2f4a96511497fa7a5fb6e4ce",
     "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-row-cache-v1/strata",
-      "bytes": 21751832,
-      "sha256": "89895909e04a811b2b34ba2f9eca957718086c13df2f669726b8182368482e02"
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-mixed-scratch-v1/strata",
+      "bytes": 22039520,
+      "sha256": "4b7ea4883c0df2d5f973a08b22b0efc3ee7bdbed560828d2e221683ff986bcf0"
     },
     "fixtures": {
+      "sycl_moe_down_scatter_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-mixed-scratch-v1/sycl_moe_down_scatter_bench",
+        "bytes": 13161632,
+        "sha256": "3eba42d8e0e729aa460d284a5cd7fde0f21a18a988c1abfa7a4956d85197db88"
+      },
       "sycl_moe_gu_swiglu_bench": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-row-cache-v1/sycl_moe_gu_swiglu_bench",
-        "bytes": 1623120,
-        "sha256": "204e2d0af3675aa0f165a5001d3747a044f336ce5ca6f84855087fa531b1705a"
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-mixed-scratch-v1/sycl_moe_gu_swiglu_bench",
+        "bytes": 1910808,
+        "sha256": "ea855e79f7b7fc3ee813d442f4eafd3614e16f737b9878b7980b4af2a98f4393"
       }
     },
     "original_build_record": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-row-cache-v1/build-record.json",
-      "sha256": "54ef4619d78f61595a21d71255ee7b5a3feab7d4f8ca8c99420f5ab8c35eb213"
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-mixed-scratch-v1/build-record.json",
+      "sha256": "26f84ba58e06a9ed7d41fff9a588023b3e27dfb4035b1b1a5ec322c84076e310"
     },
-    "qualification_reference": "GUI numerical/admission gates and six clean78451-token processes; current GU performance comparison at93c021ea5. Retained separate route, fusion default off.",
-    "consumer": "Current qualified engine fallback and same-build GU regression fixture for the imminent Down workgroup row-cache component build; retire at explicit replacement/comparison closure."
+    "qualification_reference": "Head0 native16/GU-large/mode10: traced and full component gates, three GU timing processes, and four117489-token clean requests at0dc815171. Source45c387d11; source3d870875 clean78K speed samples remain in Git. This selects an executable fallback, not quality/default adoption or a same-input speed claim.",
+    "consumer": "Validated head0 fallback for the imminent mixed-scratch build and original4b7 executable for the unresolved head1 early-error CPU-teardown fault. Head1 is not qualified or allowed for unreviewed reruns."
   },
   "legacy_provenance_exception": {
     "state": "Unresolved legacy cleanup; not qualified comparison generations.",
@@ -159,28 +165,32 @@
   },
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-    "bytes": 22039520,
-    "sha256": "4b7ea4883c0df2d5f973a08b22b0efc3ee7bdbed560828d2e221683ff986bcf0"
+    "bytes": 22065872,
+    "sha256": "5338945aa6fb7a6df6c482da4b802046af856c4340a2a644deecfb8a32a2d01f"
   },
-  "compile_database_sha256": "0aacba49cb00933c4c1b159db95cde1647c51470c56db8970b36703912efee59",
-  "configured_compile_entries": 219,
+  "compile_database_sha256": "0dd5024d998ba0e2d89f0a29b86028ad6d21f70e19f64570c222ef3560ecc253",
+  "configured_compile_entries": 220,
   "fixtures": {
-    "sycl_moe_down_scatter_bench": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_down_scatter_bench",
-      "sha256": "3eba42d8e0e729aa460d284a5cd7fde0f21a18a988c1abfa7a4956d85197db88"
+    "sycl_moe_accum_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_accum_test",
+      "sha256": "35de609c81091c9ce2e87f9b28742466e5f21356570396cc45e7ee83e7b4432b"
     },
     "sycl_moe_gu_swiglu_bench": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_gu_swiglu_bench",
-      "sha256": "ea855e79f7b7fc3ee813d442f4eafd3614e16f737b9878b7980b4af2a98f4393"
+      "sha256": "7dc7b336b920e25b205d0f3f0b6fb5a08475ac3d08a7d7e71141ccb7d2bcc659"
+    },
+    "sycl_moe_down_scatter_bench": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_down_scatter_bench",
+      "sha256": "ddaf0ad94be379f8c601a3226641c52c4c42478054f1ec42f4daa563f1d51dd4"
     }
   },
   "ownership_closed": true,
   "inputs": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "45c387d11f20579e2f4a96511497fa7a5fb6e4ce",
-      "count": 495,
-      "aggregate_sha256": "b6162767ede8d9b6f476a52f2aacb564408d4373fe6184f0a6822001fa161554"
+      "revision": "034bddff8393e8c1c9cee89e9235807230a81ad2",
+      "count": 496,
+      "aggregate_sha256": "df2207b2f53080aef535b9a8a311d7b50856f8b1042262803545da78f3147658"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",

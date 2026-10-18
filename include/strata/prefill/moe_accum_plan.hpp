@@ -88,6 +88,19 @@ struct MoeAccumPlan {
         return make(n, mixed_bytes, 0, available_region_bytes);
     }
 
+    // Borrow the idle legacy R allocation and the tail AFTER all live Mode10
+    // planes. Capacity only: the caller must prove exclusive phase ownership,
+    // distinct registered allocations, queue retirement and consumer mapping.
+    // Do not use emb as the second bank: the final shared output still uses it.
+    static MoeAccumPlan make_scratch_borrowed(int64_t n, uint64_t legacy_r_bytes,
+                                             uint64_t available_region_bytes) {
+        auto plan = make(n, legacy_r_bytes, available_region_bytes, available_region_bytes);
+        if (plan.primary_rows <= 0 || plan.region_bytes > available_region_bytes ||
+            plan.tail_bytes > available_region_bytes - plan.region_bytes)
+            throw std::invalid_argument("MoE mixed tail exceeds idle shared-arena suffix");
+        return plan;
+    }
+
     const Span& span(Plane plane) const {
         return planes.at(size_t(plane));
     }

@@ -1,0 +1,98 @@
+{
+  "mode": "validate",
+  "source_commit": "6b3ee1e35d3f08bf23e9cd85268e31b18dde1502",
+  "capacity_source_sha256": {
+    "include/strata/prefill/moe_accum_plan.hpp": "1fa1618eaf96a6ec50bc948f7c6750fc33f463c702cfbf36cd57e928597ca1aa",
+    "tests/moe_accum_plan.cpp": "3a657278ebcd64d61933c306e94b8cfc023c552ffefbcacd242474b4a4ca44a5",
+    "tools/sycl/check_mixed_scratch.py": "ee2efe617bfeab19660d44bfbc5c62cac050453937591165a0e9fd183d870ee2"
+  },
+  "compiler": {
+    "path": "/usr/bin/c++",
+    "version": "c++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+    "sha256": "1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769"
+  },
+  "checks": [
+    {
+      "case": "plan",
+      "original_negative_cases": 34,
+      "new_borrowed_cases": 6,
+      "new_borrowed_negative_cases": 2,
+      "passed": true
+    },
+    {
+      "case": "smoke",
+      "result": "mixed_gather rows=8193 primary_rows=8192 compared_values=20971520 admission_rejects=6 invalid_rows=4 status=4 inputs_immutable=1 guards=PASS PASS",
+      "passed": true
+    },
+    {
+      "case": "contiguous",
+      "result": "mixed_gather rows=16384 primary_rows=16384 compared_values=20971520 admission_rejects=6 invalid_rows=4 status=4 inputs_immutable=1 guards=PASS PASS",
+      "passed": true
+    },
+    {
+      "case": "65537",
+      "result": "mixed_gather rows=65537 primary_rows=65536 compared_values=20971520 admission_rejects=6 invalid_rows=4 status=4 inputs_immutable=1 guards=PASS PASS",
+      "passed": true
+    },
+    {
+      "case": "partial",
+      "result": "mixed_gather rows=78452 primary_rows=65536 compared_values=20971520 admission_rejects=6 invalid_rows=4 status=4 inputs_immutable=1 guards=PASS PASS",
+      "passed": true
+    },
+    {
+      "case": "full",
+      "result": "mixed_gather rows=81920 primary_rows=65536 compared_values=20971520 admission_rejects=6 invalid_rows=4 status=4 inputs_immutable=1 guards=PASS PASS",
+      "passed": true
+    }
+  ],
+  "limits": "Capacity arithmetic and bit-copy gathers only. No helper lifetime, model speed, quality or physical262144/RESTORE qualification.",
+  "complete": true,
+  "passed": true,
+  "active": false,
+  "GPU_executed": true,
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+    "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "ZES_ENABLE_SYSMAN": "0",
+    "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+    "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+    "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-mixed-scratch-component-v1/tmp",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-mixed-scratch-component-v1/cache"
+  },
+  "plan_binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-mixed-scratch-component-v1/plan-test",
+    "bytes": 22120,
+    "sha256": "f38f8bf3f48dcccd374ea40471a08b7c2d898593bea9c8dff5cae7a5ee92d5bc"
+  },
+  "ownership_closed": true,
+  "boot_unchanged": true,
+  "fresh_faults": [],
+  "build_source_commit": "034bddff8393e8c1c9cee89e9235807230a81ad2",
+  "fixture": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_accum_test",
+    "sha256": "35de609c81091c9ce2e87f9b28742466e5f21356570396cc45e7ee83e7b4432b"
+  },
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  }
+}

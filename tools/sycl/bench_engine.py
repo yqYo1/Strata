@@ -367,6 +367,7 @@ def main():
              'qsa-gu-fusion-check', 'qsa-gu-fusion-base', 'qsa-gu-fusion-candidate',
              'qsa-long-input-check', 'qsa-long-input',
              'qsa-long-input-balanced-check', 'qsa-long-input-balanced',
+             'qsa-long-input-scratch-check', 'qsa-long-input-scratch',
              'qsa-kvvec4-timing-check', 'qsa-kvvec4-census') + tuple(
                  f'qsa-gdncols{n}-{phase}' for n in (2, 4, 8) for phase in ('check', 'base', 'candidate'))
     guards.require(len(sys.argv) in (3, 4) and sys.argv[1] in ('prepare', 'run') and
@@ -374,20 +375,22 @@ def main():
     action, mode = sys.argv[1:3]
     cohort = int(sys.argv[3]) if len(sys.argv) == 4 else 0
     guards.require(cohort in (0, 1, 2) and (len(sys.argv) == 3 or
-        mode in ('qsa-gu-fusion-base', 'qsa-gu-fusion-candidate', 'qsa-long-input', 'qsa-long-input-balanced')),
+        mode in ('qsa-gu-fusion-base', 'qsa-gu-fusion-candidate', 'qsa-long-input', 'qsa-long-input-balanced', 'qsa-long-input-scratch')),
         'optional cohort0|1|2 is for GU paired arms or independent long-input processes')
     column_mode = re.fullmatch(r'qsa-gdncols(2|4|8)-(check|base|candidate|warm-census|host-check|host-traced-check|host-census)', mode)
     ordered_trial = mode.startswith('qsa-ordered-exp-')
     long_trial = mode.startswith('qsa-long-input')
     balanced_placement = mode in ('qsa-long-input-balanced-check', 'qsa-long-input-balanced')
-    long_clean_mode = 'qsa-long-input-balanced' if balanced_placement else 'qsa-long-input'
+    scratch_mixed = mode in ('qsa-long-input-scratch-check', 'qsa-long-input-scratch')
+    long_clean_mode = ('qsa-long-input-scratch' if scratch_mixed else
+                       'qsa-long-input-balanced' if balanced_placement else 'qsa-long-input')
     gu_trial = mode.startswith('qsa-gu-fusion-')
     gu_candidate = long_trial or (gu_trial and mode != 'qsa-gu-fusion-base')
     ordered_candidate = long_trial or gu_trial or (ordered_trial and mode != 'qsa-ordered-exp-base')
     host_profile = mode.startswith('qsa-gdncols4-host-')
     warm_profile = mode in ('qsa-gdncols4-warm-census', 'qsa-gdncols4-host-census')
     column_trial = column_mode is not None or ordered_trial or gu_trial or long_trial
-    column_check = mode in ('qsa-long-input-balanced-check', 'qsa-long-input-check', 'qsa-ordered-exp-check', 'qsa-gu-fusion-check') or (column_mode is not None and column_mode[2] == 'check')
+    column_check = mode in ('qsa-long-input-scratch-check', 'qsa-long-input-balanced-check', 'qsa-long-input-check', 'qsa-ordered-exp-check', 'qsa-gu-fusion-check') or (column_mode is not None and column_mode[2] == 'check')
     column_partitions = 4 if ordered_trial or gu_trial or long_trial else int(column_mode[1]) if column_mode is not None and column_mode[2] != 'base' else 0
     qsa = mode.startswith('qsa-')
     short_profile = mode == 'qsa-kvvec4-timing-check' or (host_profile and not warm_profile)
@@ -427,6 +430,21 @@ def main():
                            'qualified closed engine build required')
             ordered_qualification = None
             gu_qualification = None
+            mixed_qualification = None
+            if scratch_mixed:
+                component_path = A / 'moe-mixed-scratch-current.json'
+                component = json.loads(component_path.read_text())
+                guards.require(component_path.read_bytes() == subprocess.check_output(
+                    ['git', 'show', 'HEAD:' + str(component_path.relative_to(P))], cwd=P) and
+                    component['mode'] == 'validate' and component['passed'] and component['complete'] and
+                    component['ownership_closed'] and component['GPU_executed'] and
+                    component['build_source_commit'] == build['source_commit'] and
+                    {x['case'] for x in component['checks']} ==
+                        {'plan', 'smoke', 'contiguous', '65537', 'partial', 'full'},
+                    'matching committed two-bank capacity and bit-copy gates required')
+                mixed_qualification = dict(component_path=str(component_path.relative_to(P)),
+                    component_sha256=digest(component_path), fixture=component['fixture'],
+                    limits='Component capacity/gather only; this model check must establish actual Prefill owners, bank phases and callback retirement.')
             if gu_trial or long_trial:
                 component_path = A / 'moe-gu-swiglu-current.json'
                 component = json.loads(component_path.read_text())
@@ -550,6 +568,9 @@ def main():
                 env['STRATA_SYCL_PREFILL_DOWN_SCATTER'] = '0'
                 if balanced_placement:
                     env['STRATA_PREFILL_LAYER_MAJOR_R_GPU'] = '81920'
+                if scratch_mixed:
+                    env.update(STRATA_SYCL_PREFILL_MIXED_SCRATCH='1',
+                        STRATA_PREFILL_LAYER_MAJOR_R_GPU='98304', STRATA_PREFILL_RELEASE_HEADS='0')
             if qsa:
                 env['STRATA_SYCL_PREFILL_QSA_MATH'] = (
                     'bf16-prefix-ordered-exp' if ordered_candidate else
@@ -614,6 +635,10 @@ def main():
                 if balanced_placement:
                     plan['long_input_screen'].update(residual_GPU_rows=81920,
                         question='Test the explicit81920-row residual prefix against the diagnosed automatic-placement cliff; preserve512MiB headroom and head retention. Additional RAM transfers are part of total cost; no same-placement kernel claim.')
+                if scratch_mixed:
+                    plan['mixed_qualification'] = mixed_qualification
+                    plan['long_input_screen'].update(residual_GPU_rows=98304,
+                        question='Borrow idle R/shared-arena spans for mixed input, with zero extra mixed allocation and16384 more GPU residual rows than the81920 screen. Preserve512MiB headroom and existing dense banking; heads remain resident. Placement plus storage comparison, not a kernel-only speed claim.')
                 if previous_screen:
                     plan['previous_screen'] = previous_screen
                 if not check:
@@ -671,6 +696,9 @@ def main():
         if ordered_trial or long_trial:
             guards.require(digest(P / plan['ordered_exp_qualification']['component_path']) ==
                            plan['ordered_exp_qualification']['component_sha256'], 'QSA component evidence changed')
+        if scratch_mixed:
+            guards.require(digest(P / plan['mixed_qualification']['component_path']) ==
+                           plan['mixed_qualification']['component_sha256'], 'mixed component evidence changed')
         boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
         journal = subprocess.check_output(['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True)
         cursor = next(x.split(': ', 1)[1] for x in journal.splitlines() if x.startswith('-- cursor: '))
@@ -735,11 +763,34 @@ def main():
                 record['moe_window_admission'] = admission
                 guards.require(len(admission) == request_count and all('requested_mode=10 effective_mode=10 ' in x for x in admission),
                     'long screen requires actual accumulator mode10')
-                if balanced_placement:
+                if balanced_placement or scratch_mixed:
                     placement = [x for x in log.splitlines() if x.startswith('strata prefill: layer-major candidate,')]
-                    guards.require(len(placement) == request_count and all('residual_gpu_rows=81920 ' in x for x in placement),
-                        'wrong balanced residual placement')
+                    expected_rows = 98304 if scratch_mixed else 81920
+                    guards.require(len(placement) == request_count and all(
+                        f'residual_gpu_rows={expected_rows} ' in x for x in placement), 'wrong explicit residual placement')
                     record['residual_placement'] = placement
+                if scratch_mixed:
+                    banks = [x for x in log.splitlines() if x.startswith('strata MoE mixed banks:')]
+                    guards.require(len(banks) == request_count and all(
+                        'storage=scratch primary_bytes=335544320 tail_bytes=83886080 tail_offset=1059131904 extra_allocation_bytes=0' in x
+                        for x in banks), 'wrong mixed scratch backing or extra allocation')
+                    guards.require('strata prefill heads:' not in log, 'scratch trial unexpectedly retired output heads')
+                    record['mixed_scratch_route'] = dict(backing=banks)
+                    if check:
+                        entries = [x for x in log.splitlines() if x.startswith('strata MoE mixed owners: phase=entry')]
+                        retired = [x for x in log.splitlines() if x.startswith('strata MoE mixed owners: phase=retired')]
+                        expected_windows = 48 * 2  #81920 then16384, all48 layers
+                        guards.require(len(entries) == len(retired) == expected_windows and all(
+                            'direct_owners=1 previous_attention=checked_drain' in x for x in entries) and all(
+                            'route_status=0 shared_HC=checked_drain callbacks=after_return' in x for x in retired),
+                            'incomplete mixed owner/phase census')
+                        # Retain every window key/extent, without raw virtual addresses.
+                        columns = ('layer', 'first', 'rows', 'primary_bytes', 'region_bytes',
+                                   'tail_offset', 'tail_bytes', 'residual_bytes')
+                        samples = [dict(field.split('=', 1) for field in x.split()[4:]) for x in entries]
+                        record['mixed_scratch_route'].update(owner_columns=columns,
+                            owner_samples=[[int(x[k]) for k in columns] for x in samples],
+                            retired_windows=len(retired), all_direct_owners_and_checked_drains=True)
                 if not check:
                     values = [float(q['prompt_tps']) for q in requests[1:]]
                     guards.require(len(values) == 3 and all(0 < v < float('inf') for v in values),

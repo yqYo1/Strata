@@ -57,6 +57,12 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     if(gdn_chunk_on)strata::gdn_chunk64::validate_device(m.cs);
     const int window_requested = moe_window_requested();
     const bool window_on = window_requested && !requires_prefix_checkpoints;
+    const bool scratch_mixed_on = moe_scratch_mixed_requested();
+    if (scratch_mixed_on && (!window_on || window_requested != 10 || !native16_on ||
+        m.T != 8192 || !m.scratch_alias || m.borrowed || m.copy != m.cs)) {
+        err = "prefill mixed scratch: requires mode10 native16, owned chunk8192 scratch and one queue";
+        return false;
+    }
     const bool command_profile_on = sycl_backend::command_profile::requested();
     if (command_profile_on && (!window_on || g.n_layers != 48)) {
         err = "prefill command profile requires an admitted MoE window and48 layers"; return false;
@@ -299,6 +305,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     // FP16 mixed bank only from the remaining budget, retaining 512 MiB.
     int64_t accumulation_rows = 0;
     uint64_t accumulation_bytes = 0;
+    detail::MoeAccumPlan borrowed_mixed_plan;
     if (window_on && window_requested >= 8 && plan.gpu_rows > m.T) {
         const int64_t count = std::min<int64_t>(int64_t(window_requested) * m.T, plan.gpu_rows);
         const uint64_t bytes = detail::layer_major_mul(uint64_t(count), N * 2);
@@ -308,9 +315,23 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             window_requested, (long long)count, (long long)plan.gpu_rows,
             (unsigned long long)m.region_bytes, (unsigned long long)free_gpu,
             (unsigned long long)fixed, (unsigned long long)bytes);
-        if (fixed <= free_gpu && bytes <= free_gpu - fixed) {
-            (void)detail::MoeAccumPlan::make_contiguous(count, bytes, m.region_bytes);
-            accumulation_rows = count; accumulation_bytes = bytes;
+        if (fixed <= free_gpu && (scratch_mixed_on || bytes <= free_gpu - fixed)) {
+            if (scratch_mixed_on) {
+                // These are independently owned persistent scratch allocations,
+                // idle only inside the FFN helper after its attention drain.
+                auto owns = [&](const void* pointer) {
+                    return std::find(m.owned.begin(), m.owned.end(), pointer) != m.owned.end();
+                };
+                if (!owns(m.R) || !owns(m.region) || !owns(m.emb)) {
+                    err = "prefill mixed scratch: direct Prefill owners required"; return false;
+                }
+                borrowed_mixed_plan = detail::MoeAccumPlan::make_scratch_borrowed(count,
+                    detail::layer_major_mul(uint64_t(m.T), D * 4), m.region_bytes);
+                accumulation_rows = count; // no additional mixed allocation
+            } else {
+                (void)detail::MoeAccumPlan::make_contiguous(count, bytes, m.region_bytes);
+                accumulation_rows = count; accumulation_bytes = bytes;
+            }
         }
     }
     if (window_on && window_requested >= 8 && !accumulation_rows)
@@ -619,6 +640,19 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         window_context->bank_bytes = plan.gpu_bytes;
         window_context->mixed = reinterpret_cast<uint16_t*>(mixed_storage.get());
         window_context->mixed_bytes = accumulation_bytes;
+        if (scratch_mixed_on && accumulation_rows) {
+            window_context->scratch_mixed = true;
+            window_context->mixed = reinterpret_cast<uint16_t*>(m.R);
+            window_context->mixed_bytes = borrowed_mixed_plan.primary_bytes;
+            window_context->mixed_tail_offset = borrowed_mixed_plan.region_bytes;
+            window_context->mixed_tail_bytes = borrowed_mixed_plan.tail_bytes;
+            window_context->mixed_tail = borrowed_mixed_plan.tail_bytes ?
+                reinterpret_cast<uint16_t*>(m.region + size_t(borrowed_mixed_plan.region_bytes)) : nullptr;
+            std::fprintf(stderr, "strata MoE mixed banks: storage=scratch primary_bytes=%llu tail_bytes=%llu tail_offset=%llu extra_allocation_bytes=0 phase=FFN_only_after_attention_drain\n",
+                (unsigned long long)borrowed_mixed_plan.primary_bytes,
+                (unsigned long long)borrowed_mixed_plan.tail_bytes,
+                (unsigned long long)borrowed_mixed_plan.region_bytes);
+        }
         window_context->accumulation = accumulation_rows != 0;
         if (accumulation_rows) window_context->maximum_rows = accumulation_rows;
         m.moe_window = window_context.get();

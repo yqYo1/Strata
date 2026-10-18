@@ -394,9 +394,11 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   generations (normally one build, at most two for A/B). Record the comparison
   consumer and retirement point in the current compact results. An unnamed
   possible future comparison does not justify another generation. Do not keep
-  one build for each closed experiment. Count generations across this project's
-  worktrees, output directories and renamed copies, rather than allowing the
-  same quota separately for each location.
+  one build for each closed experiment or wait for storage pressure to retire
+  them. Close a comparison by recording the useful evidence, selecting the
+  validated generation, verifying Git recovery and removing the extra build.
+  Count generations across this project's worktrees, output directories and
+  renamed copies, rather than allowing the same quota separately for each location.
   Keep project-generated executables, libraries, objects and JIT/native dumps
   outside Git, including the retained latest generation. Commit their necessary
   source, recipe and compact measurement evidence instead.
@@ -414,8 +416,11 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   exact source, local changes, generated inputs and build recipe/options; pin
   compiler/dependency versions and environment.
   Verify those committed inputs match the ones used for the measured executable.
-  Record the source revision and binary hash with the result. A nearby commit,
-  source path or binary hash alone does not establish recoverability.
+  Record the tested source revision and binary hash with the result, separately
+  from the later commit that records results or documentation. Do not label an
+  existing executable with the current HEAD merely because a new report was
+  committed. A nearby commit, source path or binary hash alone does not establish
+  recoverability.
   Include benchmark/controller changes and generated workloads in this check;
   committing them later does not retroactively qualify a different measured
   snapshot. Preserve and reconcile the original inputs when a mismatch is found.
@@ -423,6 +428,9 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   retrieve and verify its required source/recipe from reachable Git history.
   Read the recorded revisions and compare the recovered inputs with the build's
   source identities; the existence of a commit or report alone is insufficient.
+  Commit the useful measurement evidence and recovery decision before deleting
+  the last executable used for that result. Preserve the original tested source
+  commit and its referenced inputs through branch integration and cleanup.
   A receipt hash matching a binary proves artifact continuity, not recoverable
   source. Review eligibility labels and cross-root links against that exact
   final build; do not transfer proof from a seed, similarly named or later build.
