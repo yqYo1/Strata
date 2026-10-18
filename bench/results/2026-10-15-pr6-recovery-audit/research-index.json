@@ -432,7 +432,28 @@
     ],
     "question": "Compare coalesced K gather/local transpose, subgroup or padded staging, and prefix prepacking with matrix layout/barrier/resource constraints.",
     "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-coalesced-k-staging.md",
-    "state": "Fresh Orca Luna worker started; Main continues frozen model comparison, no steering."
+    "state": "Orca completed, native Luna-max reviewed, worker released and terminal positively closed.",
+    "report_bytes": 18922,
+    "report_sha256": "9df0736e111b2b2264d7a1c0083ce654cfdb0a77517242e9d89c5c058e864152",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-layout-research-review.json",
+    "review_sha256": "be6de6a60b154cf82214477ff502963b688731365a46dc672c4177c79d348852",
+    "reviewed_decision": "The report matches TilePacked=false. Evaluate row-coalesced K loads scattering unchanged BF16 bits into the existing transposed local layout; preserve V staging, matrix stride and uniform barriers. Physical traffic, SLM banks, occupancy and speed remain unmeasured.",
+    "main_ownership_map": {
+      "scope": "Hypothetical simple staging candidate, not implemented or measured. Workgroup128,Dim256,Cells32,tid0..127,iteration r0..63.",
+      "current": "cell=tid%32;d=tid/32+4*r; global=packedK[rows[cell]*256+d];local=kv[d*32+cell].",
+      "candidate": "cell=r/2;d=tid+128*(r%2);global uses same element;local=kv[d*32+cell]. Invalid rows write zero; both maps cover8192destinations exactly once.",
+      "constraints": "Keep cached-Q retirement barrier, K publication barrier, row lifetime and QK-before-V arena overwrite unchanged. Coalesced global addresses may trade for slower local stores; benchmark rather than assuming a gain."
+    },
+    "next_step": {
+      "schedulable_now": false,
+      "owner": "Main implementation/measurement, not another research worker",
+      "prerequisites": [
+        "Commit independently authored candidate plus same-binary fixtures/recipe and source pins.",
+        "Audit exact local destinations, duplicate/aliased/invalid rows and all collective/barrier lifetimes.",
+        "Bounded traced correctness then same-binary component timing; inspect emitted lowering/resource cost before clean model comparison."
+      ]
+    },
+    "retention": "Temporary external reference through first correctness/component comparison; no automatic full-report commit."
   },
   "sparse_cross_query_reuse_scope": {
     "classification": "knowledge_collection",
@@ -444,6 +465,19 @@
     "question": "Cross-query sparse KV reuse: ordering, union blocks and inverse schedules, with index/workspace cost and numerical/causal limits.",
     "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/sparse-attention-cross-query-reuse.md",
     "main_reads_body_on_arrival": false,
-    "state": "Fresh Orca Luna worker started; native Luna-max reviews and indexes after settlement."
+    "state": "Orca completed, native Luna-max reviewed, worker released and terminal positively closed.",
+    "report_bytes": 14404,
+    "report_sha256": "a46e07e6ff978218cf2161c40ee5c2fcd5b6bb2b95fe4073e9462e67f09e0279",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-layout-research-review.json",
+    "review_sha256": "be6de6a60b154cf82214477ff502963b688731365a46dc672c4177c79d348852",
+    "next_step": {
+      "schedulable_now": false,
+      "prerequisites": [
+        "Measure current selector logical/physical page overlap, unions, duplicates and incidence skew at representative context strata.",
+        "Show reuse could pay for new mappings, workspace, synchronization and online-softmax ownership costs."
+      ],
+      "owner": "Main measurement/retrieval when a concrete scheduling decision arises; no duplicate architectural survey."
+    },
+    "retention": "Indexed knowledge reference conditional on actual locality evidence; Main has not read the body."
   }
 }
