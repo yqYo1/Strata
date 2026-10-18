@@ -1487,11 +1487,18 @@ cases subsequently passed at build source`a57611b9c`, without a fresh fault or
 boot change. These include fixed/compact source strides and checked unwind.
 An earlier build stopped before execution because the provider target was not
 registered in the separate SYCL CMake path; that failed receipt is preserved.
-Model qualification and speed remain pending. The next official117K check
-requires actual48-layer view admission, zero owned upload slab, unchanged
-384-slot/residual placement and full owner/work/CPU accounting. Clean0/1 pairs
-follow separately, with rotated A0/B0/B1/A1/A2/B2 order; do not equate disappearance
-of the source-copy category with a measured throughput gain.
+The official117K check subsequently passed actual48-layer view admission,
+zero owned upload slab, unchanged384-slot/residual placement,96 owner windows
+and complete work/CPU accounting. Requested expert H2D remained40102860800B.
+The legacy source-copy region now prepares references in0.000038133wall /
+0.000035870CPU seconds; actual bulk CPU copying is absent. Upload submission
+still took4.94585wall /4.88016CPU seconds, and explicit wait CPU was78.90636s.
+The125.91473s observer frame and923.2tok/s first-use reading are profiled;
+they are not clean repeated performance. All owners closed normally without
+a fresh fault. The warm/clean comparison remains pending. Clean0/1 pairs use
+rotated A0/B0/B1/A1/A2/B2 order; do not equate disappearance of the source-copy
+category with a measured throughput gain. Broader quality,physical262144,
+session/RESTORE and sustained-generation qualification remain pending.
 
 Keep the compiled
 fine command sampler off: it lacks a staged-expert-copy tag and would reject
