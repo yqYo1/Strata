@@ -2225,9 +2225,9 @@
     "native_review_sha256": "1d14e1433619a0036ef3e7e4f4a8f226b8333b7ee0558700bc2f667294396706",
     "native_review_digest": "Report hash and all six original source pins match. Source review only: guard post-run fault-check failures, preserve per-command closure before parsing, retain/validate sample order, and admit a fresh committed build after frozen A/B closure. No binary, fixture execution or speed qualification.",
     "main_resolution": {
-      "commit": "78fe77611dc22b25619e0221246fb2f2a58bafa0",
-      "controller_sha256": "3b7d67e4a4db878c51571d97aa6c2bcd63d78b4df6174ca9c84a2b9bb3eb4b52",
-      "changes": "Persist closure before stdout parsing; independently guard journal/boot/driver postchecks, record unknown fault state as failed, always write phase result; retain and validate timing rotation order.",
+      "commit": "f5b3db400108ac2f05901a017d776e4fecdc2e3a",
+      "controller_sha256": "5c5fb137b4424536f2fdc603526ab4adb2af02788f7cf088ebfb5ad92d9a1336",
+      "changes": "Persist closure before parsing; guarded journal/boot/driver postchecks record unknown observations as failure and always permit phase persistence. Retain/check timing order. Extract postchecks for six offline fault/compaction regressions, prepared but not executed during frozen speed work.",
       "source_reviewed_revision_unchanged": true,
       "fixed_revision_re_reviewed": false,
       "tests_executed": false,
@@ -2238,7 +2238,7 @@
   "source_view_analysis_candidate_scope": {
     "classification": "decision support",
     "schedulable_now": false,
-    "status": "source_review_returned_native_review_running",
+    "status": "source_audit_and_native_review_closed_main_delta_committed_tests_pending",
     "question": "Audit the frozen six-process source-view analyzer: source/receipt recovery, matched inputs, independent-unit statistics, cold/warm separation, unchanged prospective gates, and incomplete/malformed evidence rejection. Identify concrete false-positive/false-negative paths and useful bounded negative tests.",
     "candidate_source": {
       "commit": "cf86b5716e1800f4ea6c00bc0e395851d43f065b",
@@ -2264,12 +2264,23 @@
       "maximum_bytes": 18432
     },
     "consumer": "Main checks this source before merging/executing the offline six-process aggregate after B2 closure.",
-    "next_review": "After report and native Luna-max review; Main owns all fixes and tests, retire transaction paperwork at consumer closure.",
+    "next_review": "After B2 closure, before aggregate execution; retire consumed source-review transaction files after compact resolution and tests are committed.",
     "collector_model_requested": "gpt-6-luna",
     "collector_model_observed": "gpt-6-luna",
     "worker_ownership_closed": true,
     "report_bytes": 9049,
     "report_sha256": "545481a73bac0910af4ec2073b65325bce9e6e142ea9bc37978f8abecf2df2a6",
-    "native_review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/source-view-analysis-source-native-review.json"
+    "native_review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/source-view-analysis-source-native-review.json",
+    "native_review_sha256": "439e0a74c56ababd7695515d7cf0155f99c904ec9837fe7966b880950a4e8c69",
+    "native_review_digest": "Report hash and three original source pins match. Requested H2D payload equality is descriptive, not an extra frozen speed gate. Build-source recovery was absent evidence, not a measured mismatch. Review applies to pinned child source; the intentionally frozen Main controller differs, as expected from isolated preparation.",
+    "main_resolution": {
+      "commit": "2b0aad84a127abaa8f7c5c4bf47baf6c9200de12",
+      "analyzer_sha256": "8677d9e20fea18761f91dd0f4df43022443f863b220fbfa7b9e2a503f51f6c40",
+      "changes": "Keep original three-pair median/geomean criteria and descriptive payload/output hashes. Independently recover original project/dependency inputs and recipe against original build receipt. Add offline adversarial process-statistics tests; retain all first-use samples.",
+      "tests_executed": false,
+      "GPU_executed": false,
+      "fixed_revision_re_reviewed": false,
+      "remaining": "After B2 closes, commit its original receipt, merge child without rewriting measured source commits, run offline fault-evidence/statistics regressions, then execute committed analyzer. Default adoption and full-context/task/session/long-generation gates remain open."
+    }
   }
 }
