@@ -43,5 +43,44 @@
   },
   "ownership_closed": true,
   "implementation_status": "CPU planner only; engine not wired, GPU staging/model performance UNRUN.",
-  "next_action": "Implement bounded expert-bank slots in the single-queue all-GPU accumulator path, keeping the full512-expert immutable host slab and checked owner lease. Preserve original512-slot/host-tail dispatch for insufficient full-residual capacity and normal-FFN short windows. Then qualify actual upload/read ordering, guards, failure/lifetime and fallback before a model check and clean matched117K screen."
+  "next_action": "Implement bounded expert-bank slots in the single-queue all-GPU accumulator path, keeping the full512-expert immutable host slab and checked owner lease. Preserve original512-slot/host-tail dispatch for insufficient full-residual capacity and normal-FFN short windows. Then qualify actual upload/read ordering, guards, failure/lifetime and fallback before a model check and clean matched117K screen.",
+  "device_limits": {
+    "source_commit": "e567f08328de1a645a86a49b5338a0103e379741",
+    "source_sha256": {
+      "tools/sycl/capability_inventory.cpp": "44626a881b0f6dc39b4b92ad1e3ff373d97816994fbbaebe0248a430a67140ce",
+      "tools/sycl/check_expert_bank.py": "9370e2ff903624bf96f98ce73dd096711b498b10c6204e9e82f239f48c013825",
+      "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
+      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a"
+    },
+    "environment_reference": "tools/sycl/measurement_environment.json",
+    "compiler": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+      "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
+    },
+    "complete": false,
+    "passed": false,
+    "ownership_closed": true,
+    "driver_before": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "allocation_and_kernel_submission": false,
+    "limits": "Device properties only. Capacity is not an allocation, owner, performance or physical-context qualification.",
+    "error": "unexpected or incomplete device limits",
+    "boot_unchanged": true,
+    "fresh_faults": [],
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    }
+  }
 }
