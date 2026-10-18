@@ -660,6 +660,13 @@ change inference order or treat it as adopted before same-library correctness
 and matched component/model timing pass. Existing source-specific fusion and
 indexed-A references are available; no repeat generic survey is needed.
 
+After recording those results, Main retired221 closed-run, CPU-fixture,
+consumed-review and old-fallback files (61,391,969bytes). Original run helpers
+and the fallback's9799 source inputs were retrieved and hash-verified from Git
+before deletion. Keep the new runtime-qualified engine and its current GDN
+fixture. Older legacy build provenance remains an explicit separate exception;
+a six-root review is in progress, so this is not a global cleanup claim.
+
 ## Optional GDN chunk64
 
 `STRATA_SYCL_PREFILL_GDN_CHUNK64=1` adds a separate experimental long-prefill
