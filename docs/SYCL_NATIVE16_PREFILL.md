@@ -817,6 +817,19 @@ speed measurement follows. The engine executable is byte-identical to the
 The selected next implementation is the interleaved GU/SwiGLU epilogue seam;
 prove actual fragment partner ownership before running its GPU kernel.
 
+## MoE GU/SwiGLU component
+
+The first gate is host-only inspection of the actual pinned TLA matrix and
+output-copy layouts. `build_engine.py rebuild-gu` builds the manual
+`sycl_moe_gu_swiglu_bench` target. `measure_gu_swiglu.py ownership` checks both
+compact16x64 and wide128x128 policies at1/3/17/33/129/2334/5963/8191/8192 rows,
+including masked tails. Each logical GU value and hidden output must have one
+owner. Adjacent interleaved gate/up columns may use same-index lane-XOR1 exchange
+only if every pair in that layout passes. This mode creates no Runtime, queue or
+USM allocation and submits no GPU work; its90s/120CPU-second/2GiB-RSS/64MiB-output
+budget is independent of later numerical and performance gates. No model path
+selects a fused GU kernel at this stage.
+
 ## MoE Down/scatter component
 
 `Gemm::down_scatter` is an explicit component API with no model dispatch hook.

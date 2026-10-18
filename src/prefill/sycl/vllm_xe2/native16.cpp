@@ -240,6 +240,46 @@ DownOwnership inspect_ownership(int rows) {
   return result;
 }
 
+template <Tile Policy, GuLayout Mapping>
+GuPairOwnership inspect_gu_pair(int rows) {
+  using P = ShapePolicy<Policy>;
+  using MMA = TileMMA<cutlass::half_t, Policy>;
+  const MMA mma{};
+  const auto shape = mma.tile_mnk();
+  auto identity = make_identity_tensor(make_shape(rows, 1280));
+  std::vector<uint8_t> gu(size_t(rows) * 1280, 0), hidden(size_t(rows) * 640, 0);
+  GuPairOwnership result;
+  result.gu_values = gu.size(); result.hidden_values = hidden.size();
+  for (int m = 0; m < (rows + int(get<0>(shape)) - 1) / int(get<0>(shape)); ++m)
+    for (int n = 0; n < (1280 + int(get<1>(shape)) - 1) / int(get<1>(shape)); ++n) {
+      auto tile = local_tile(identity, shape, make_coord(m, n, 0), Step<_1, _1, X>{});
+      const auto partition = [&](int lane) {
+        if constexpr (Mapping == GuLayout::output_copy) {
+          auto copy = make_block_2d_copy_D<cutlass::bfloat16_t>(mma, make_stride(1280, _1{}));
+          return copy.get_slice(lane).partition_S(tile);
+        } else return mma.get_slice(lane).partition_C(tile);
+      };
+      for (int lane = 0; lane < P::threads; ++lane) {
+        const auto own = partition(lane), partner = partition(lane ^ 1);
+        for (int i = 0; i < size(own); ++i) {
+          const auto c = own(i), p = partner(i);
+          const int row = get<0>(c), col = get<1>(c);
+          if (row < 0 || row >= rows || col < 0 || col >= 1280) { ++result.masked; continue; }
+          auto &visited = gu[size_t(row) * 1280 + size_t(col)];
+          if (visited < 2) ++visited;
+          if (col % 2) continue;
+          auto &written = hidden[size_t(row) * 640 + size_t(col / 2)];
+          if (written < 2) ++written;
+          ++result.checked_pairs;
+          result.partner_mismatch += get<0>(p) != row || get<1>(p) != col + 1;
+        }
+      }
+    }
+  for (auto count : gu) { result.gu_missing += count == 0; result.gu_multiple += count > 1; }
+  for (auto count : hidden) { result.hidden_missing += count == 0; result.hidden_multiple += count > 1; }
+  return result;
+}
+
 template <class Input, class Output, Tile Policy>
 sycl::event enqueue(sycl::queue &q, const Problem &p, Geometry g) {
   using P = ShapePolicy<Policy>;
@@ -304,6 +344,21 @@ DownOwnership inspect_down_ownership(int64_t rows, Tile tile, ScatterLayout mapp
   if (tile == Tile::compact_16x64) return inspect.template operator()<Tile::compact_16x64>();
   if (tile == Tile::wide_128x128) return inspect.template operator()<Tile::wide_128x128>();
   throw std::invalid_argument("Down ownership: invalid tile");
+}
+
+GuPairOwnership inspect_gu_pair_ownership(int64_t rows, Tile tile, GuLayout mapping) {
+  if (rows < 1 || rows > 8192)
+    throw std::invalid_argument("GU ownership: rows outside [1,8192]");
+  const auto inspect = [&]<Tile Policy>() {
+    if (mapping == GuLayout::matrix)
+      return inspect_gu_pair<Policy, GuLayout::matrix>(int(rows));
+    if (mapping == GuLayout::output_copy)
+      return inspect_gu_pair<Policy, GuLayout::output_copy>(int(rows));
+    throw std::invalid_argument("GU ownership: invalid layout");
+  };
+  if (tile == Tile::compact_16x64) return inspect.template operator()<Tile::compact_16x64>();
+  if (tile == Tile::wide_128x128) return inspect.template operator()<Tile::wide_128x128>();
+  throw std::invalid_argument("GU ownership: invalid tile");
 }
 
 sycl::event Gemm::down_scatter(const DownScatterProblem &p, Tile tile, ScatterLayout mapping) {

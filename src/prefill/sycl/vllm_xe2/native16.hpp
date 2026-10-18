@@ -9,6 +9,7 @@ namespace strata::experimental::vllm_xe2_native16 {
 enum class Storage { fp16, bf16 };
 enum class Tile { compact_16x64, wide_128x128 };
 enum class ScatterLayout { matrix, output_copy };
+enum class GuLayout { matrix, output_copy };
 
 struct Problem {
   const uint16_t *x = nullptr; // compact X[T,K], same input type as W
@@ -44,6 +45,17 @@ struct DownOwnership {
 // Exhaustively counts every tile/lane/fragment element, including M tails.
 DownOwnership inspect_down_ownership(int64_t rows, Tile tile,
                                      ScatterLayout layout = ScatterLayout::matrix);
+
+struct GuPairOwnership {
+  size_t gu_values = 0, hidden_values = 0, masked = 0;
+  size_t gu_missing = 0, gu_multiple = 0, hidden_missing = 0, hidden_multiple = 0;
+  size_t checked_pairs = 0, partner_mismatch = 0;
+};
+// Host-only proof for interleaved GU[N1280,K2560] -> H[N640]. Tests whether
+// each even column's adjacent odd column is held at the same fragment index
+// by local lane XOR1 in its SIMD16 subgroup, for both actual TLA layouts.
+// A nonzero partner_mismatch is evidence against that schedule, not a GPU run.
+GuPairOwnership inspect_gu_pair_ownership(int64_t rows, Tile tile, GuLayout layout);
 
 // Source proposal only. Does not alter Gemm::*_out16 or select a runtime/device.
 // Runtime, queue and all registered Allocation owners must outlive submitted
