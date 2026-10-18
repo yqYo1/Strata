@@ -254,6 +254,39 @@ independent processes. The24-token output does not qualify sustained decode;
 model quality, agent/long-generation, physical262144 and RESTORE gates remain
 open, so this route stays opt-in.
 
+## Resident MoE service reference
+
+The maintained `sycl_native16_paired_gemm_bench --resident` fixture calls the
+same vLLM Xe2 `beta0` implementation as production, with FP16 operands/weights,
+BF16 outputs and FP32 accumulation. The shape sweep retains the original IDs
+and adds Down8192, compact64 and exact M2334/M5963 row-mass quantiles from
+`66d5c545` (histogram SHA`4aa422bcaddb00220f44ca5ad931328df36425f226cc5d49f21aca1e0f39d0b3`).
+M8192 contains24,829,952 of37,656,000 routed rows; job counts alone are misleading.
+Production selects compact16x64 below128 rows and wide128x128 otherwise.
+
+Each resident sample submits eight identical beta0 kernels on one in-order
+profiling queue, with all owners alive and no intervening transfer. It checks
+the final full output against the independent closed-form oracle, all guards
+and input immutability. Three warmups precede three timed bursts per route;
+Main uses three independent processes per shape. Reset/readback/checking are
+outside the reported burst interval. Record GPU event submit/start/end,
+CPU submit/wait and host submit-to-completion wall time separately. Event
+nanoseconds share a backend timebase per the [SYCL profiling contract](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html#sec:event-profiling);
+do not subtract them from host clocks or claim exact hardware-cycle accuracy.
+
+Build committed inputs with `tools/sycl/build_engine.py rebuild-gemm`, commit
+the build receipt, then use Main-owned `tools/sycl/measure_gemm.py smoke` and
+`perf`, committing the smoke before clean timing. The small first checks use
+trace/parameter validation, and the clean sweep uses separate untraced children.
+The source and all planned inputs stay frozen through the sweep.
+
+This is a resident, reused-operand implementation reference. It excludes IQ3
+weight dequantization, routing, SwiGLU, scatter and model transfers. Cold/warm
+GPU clocks and cache reuse can differ from model execution. It is neither a
+hardware peak nor a weighted prediction of model latency. Initial pageable
+fixture uploads are recorded separately and do not qualify the production
+pinned-memory PCIe ceiling. No model route or default is changed by this fixture.
+
 ## Optional GDN chunk64
 
 `STRATA_SYCL_PREFILL_GDN_CHUNK64=1` adds a separate experimental long-prefill
