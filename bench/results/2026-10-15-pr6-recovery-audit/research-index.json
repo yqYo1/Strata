@@ -1579,7 +1579,7 @@
   "implemented_mixed_scratch_lifetime_scope": {
     "classification": "decision support",
     "schedulable_now": false,
-    "state": "running",
+    "state": "completed awaiting native review",
     "prerequisites_met": [
       "New default-off implementation is committed at 6b3ee1e35 and built from 034bddff8393e8c1c9cee89e9235807230a81ad2.",
       "CPU capacity and all five GPU gather gates passed in moe-mixed-scratch-current.json; no new fault.",
@@ -1604,6 +1604,32 @@
     "task": "task_c01b2a59d061",
     "dispatch": "ctx_82c1da94d7d4",
     "terminal": "term_f92754a8-4719-405a-ab47-09b4eca46b53",
-    "model_evidence": "Explicit terminal argv gpt-6-luna, medium; worker-start existing-terminal effective preference fields are null, not independent provider verification."
+    "model_evidence": "Explicit terminal argv gpt-6-luna, medium; worker-start existing-terminal effective preference fields are null, not independent provider verification.",
+    "report_sha256": "b7bcf0083048eabbc8942686f444f65c8328e2d8508b12d9468e5dba53609b99",
+    "report_bytes": 8229,
+    "completion_delivery": "delivery_4dc6273330c1",
+    "lifecycle_state": "accepted succeeded worker_done; worker-release retains this externally launched terminal without asserting process closure",
+    "review_task": "/root/review_implemented_mixed_scratch_20261019"
+  },
+  "out_of_core_sycl_hpc_scheduling_scope": {
+    "classification": "knowledge collection",
+    "schedulable_now": false,
+    "state": "running",
+    "question": "Transferable discrete-GPU out-of-core scheduling from non-LLM SYCL/HPC graph and sparse workloads: ownership-safe pipelining, batching and memory-pressure tradeoffs, beyond already indexed LLM tensor-byte or resident-GEMM surveys.",
+    "novelty": "The active topic index covers LLM-specific tile reuse, logical traffic, cache representation, lifetime and burst/reference methodology; this finite survey targets external-memory algorithm scheduling and original non-LLM implementation evidence.",
+    "prerequisites_met": [
+      "Current source/build and compact model resource/placement evidence are committed and available.",
+      "This knowledge-collection question needs published algorithm/source evidence, not unavailable GPU counters or an unselected local candidate.",
+      "The prior-report index and historical archive lookup are shared to reject duplicate mechanisms before writing a reference."
+    ],
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/out-of-core-sycl-hpc-scheduling.md",
+    "report_budget": "12 KiB target, 20 KiB maximum; finite coherent survey, not broad tile tuning",
+    "main_reads_body_on_arrival": false,
+    "retention_consumer": "Reusable scheduling knowledge only if native Luna-max review finds substantive nonduplicated applicability; Main retrieves sections only for a concrete future question.",
+    "eligible_at_dispatch": true,
+    "task": "task_f7242131cd8c",
+    "dispatch": "ctx_fdf2eff1f10a",
+    "terminal": "term_21383564-e3ab-4bff-981e-e0bf00ef11a1",
+    "model_evidence": "Explicit terminal argv gpt-6-luna medium; existing-terminal launch preference fields null, not independent provider verification."
   }
 }
