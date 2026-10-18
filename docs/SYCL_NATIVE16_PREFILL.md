@@ -1100,7 +1100,8 @@ token and weight once per workgroup, independently of the TLA fragment layout.
 It targets repeated global metadata loads, address calculations and predicates
 in the rejected scalar epilogue; those source operations and the compiled code
 size do not establish a measured resource bottleneck or predict a speedup.
-Main will not change the frozen GU model comparison's inputs to implement it.
+The GU model comparison closed before this implementation; its original
+source and individual samples remain reachable in Git.
 
 Use the existing matrix mapping and explicit opt-in component API. Local IDs
 cover the16 or128 M rows without overlap, including a masked final M tile.
@@ -1161,4 +1162,28 @@ output-copy remains a correctness diagnostic. All checking/readback is outside
 the reported bursts. `rebuild-down` also rebuilds the GU fixture because the
 component shares its adapter translation unit; the validated prior engine and
 same-build GU fixture are preserved before overwrite. These are prospective
-checks, not completed validation or a new performance result.
+performance gates, not a new model performance result.
+
+At source`c9ad511e4f3ec8387327e6c86d8e6a9e02988eac`, the54 CPU ownership,
+33 traced small-check and78 full correctness events passed. Both policies,
+tails, capture/non-capture, immutable inputs, invalid maps and checked exception
+retirement completed without a fresh driver fault. The current
+[component result](../bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json)
+records these gates. Three independent clean timing processes are running
+through `measure_down_scatter.py perf`; do not infer their closure from the
+preceding committed validation result. Inspect the owned job at
+`moe-down-scatter-component-v4/record.json` under the existing external
+measurement root before resuming. Reuse its process handle rather than launch
+a duplicate. Each process has a900s wall/2400s CPU deadline. Source and fixture
+inputs remain frozen until closure. No model route selects the cache.
+
+Offline AOT inspection of engine`f004aabae84dbea46db59bdf98ec0413a8bf93b53c13e9b5b28e5c2ed045fc86`
+and fixture`e28d402742cfceca3d238142e2de1065b8bd1d6c0ca553ad87feb3052b8186e3`
+found identical native no-capture code between those two artifacts for both
+policies/tiles. Scalar matrix versus row-cache text is15680/11648 bytes
+(compact) and126912/67840 (wide). All selected metadata entries report
+256GRF/SIMD16/eu_thread_count4, barrier_count2 and no per-thread memory-buffer
+descriptor. Code size and static metadata do not establish JIT behavior,
+complete ABI equivalence, occupancy, instruction-cache pressure or speed.
+Use the pending timing cohort to decide this candidate; raw logs/JIT and any
+extra comparison generation are reviewed only after owned work closes.
