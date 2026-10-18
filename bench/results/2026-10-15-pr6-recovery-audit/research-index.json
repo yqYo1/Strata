@@ -363,15 +363,33 @@
       "B570380GB/s is advertised, not sustainable measured bandwidth; compatible compute peak remains unknown."
     ],
     "next_main_measurement": {
-      "schedulable_now": false,
+      "schedulable_now": true,
       "prerequisites": [
         "Close frozen Qcache A/B and record source/workload parity/outcome.",
         "Recover/hash-verify exact M histogram from66d5c545 or use explicitly unweighted M sweep.",
         "Use same production backend/tile mode, FP16 operands/weights and BF16 outputs with correctness and finite owned budgets."
       ],
-      "question": "Current-shaped MoE GU/Down throughput ceiling, separating explicit transfers and host submit from timed kernel/whole-call evidence."
+      "question": "Current-shaped MoE GU/Down throughput ceiling, separating explicit transfers and host submit from timed kernel/whole-call evidence.",
+      "prerequisites_met": [
+        "Matched Qcache A/B closed with exact actual request/binary/config parity at6ae5b81a7.",
+        "Recovered3361-bin histogram from66d5c545 and reverified canonical SHA4aa422bcaddb00220f44ca5ad931328df36425f226cc5d49f21aca1e0f39d0b3.",
+        "Current source gemm16.cpp selects compact16x64 forM<128, wide128x128 otherwise; native16.cpp confirms complete M/N/K tile geometry."
+      ]
     },
-    "retention": "Keep report/review until Main records ceiling measurement decision; no automatic full-report commit."
+    "retention": "Keep report/review until Main records ceiling measurement decision; no automatic full-report commit.",
+    "tile_geometry_accounting": {
+      "histogram_commit": "66d5c545939ade5c6f1732d8a7b4d3a7fe5d1676",
+      "histogram_path": "bench/results/2026-10-15-pr6-recovery-audit/moe-window-census-current.json",
+      "histogram_field": "window_census.aggregate_job_rows_histogram",
+      "histogram_canonical_sha256": "4aa422bcaddb00220f44ca5ad931328df36425f226cc5d49f21aca1e0f39d0b3",
+      "logical_rows": 37656000,
+      "geometry_padded_rows": 38222704,
+      "logical_flop": 370173542400000,
+      "geometry_padded_flop": 375744469401600,
+      "geometry_padding_overhead_percent": 1.5049500743573363,
+      "formula": "sum(job_count*ceil(M/tileM)*tileM);tileM=16 ifM<128 else128;both N andK dimensions fill their tile extents;2*(1280*2560+2560*640)FLOP/row",
+      "limits": "Source/geometry accounting, not observed instruction or hardware-counter work; no compatible measured compute ceiling yet. Small-M jobs contain0.6273%logical arithmetic and total geometric padding adds only1.505%, so counts/padding alone do not explain the stage cost."
+    }
   },
   "decode_vram_rebuild_scope": {
     "schedulable_now": true,
