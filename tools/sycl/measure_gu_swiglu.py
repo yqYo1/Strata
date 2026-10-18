@@ -16,7 +16,7 @@ import measurement_owner as supervision
 
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'moe-gu-swiglu-component-v3'
+ROOT = B / 'moe-gu-swiglu-component-v4'
 ENGINE = B / 'main-native-gdn-engine'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/moe-gu-swiglu-current.json'
 SETTINGS = P / 'tools/sycl/measurement_environment.json'
@@ -94,7 +94,10 @@ def main():
 
         def persist():
             record['active'] = bool(owner and owner.active is not None)
-            (ROOT / 'record.json').write_text(json.dumps(record, indent=2) + '\n')
+            # Keep authoritative process handles locally without duplicating
+            # command/environment lifecycle data in the committed result.
+            full = dict(record, owned_commands=owner.commands if owner else [])
+            (ROOT / 'record.json').write_text(json.dumps(full, indent=2) + '\n')
 
         owner = supervision.Owner(ROOT / ('owned-' + mode), persist)
         try:
