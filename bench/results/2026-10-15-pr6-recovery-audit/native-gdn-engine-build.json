@@ -1,5 +1,5 @@
 {
-  "source_commit": "db71e718f5275c6db58e2f762cd54850b1aaa7dc",
+  "source_commit": "1222e27d01f32c5bb31f574ff4b143c489a3bcf1",
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -73,20 +73,20 @@
     "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-entry-engine-build-v2.json",
     "sha256": "9b7734387f0fc56f36afe9d7bca75e5f0bedcef479271e982025abe1d4334a1a"
   },
-  "complete": false,
-  "passed": false,
+  "complete": true,
+  "passed": true,
   "active": false,
   "GPU_executed": false,
   "production_selected": false,
   "model_quality_qualified": false,
   "replaces": {
-    "source_commit": "034bddff8393e8c1c9cee89e9235807230a81ad2",
+    "source_commit": "db71e718f5275c6db58e2f762cd54850b1aaa7dc",
     "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-expert-bank-v1/strata",
       "bytes": 22065872,
       "sha256": "5338945aa6fb7a6df6c482da4b802046af856c4340a2a644deecfb8a32a2d01f"
     },
-    "source_build_passed": true,
+    "source_build_passed": false,
     "retained_binary_source_commit": "034bddff8393e8c1c9cee89e9235807230a81ad2",
     "reason": "Closed unused comparison engine; original source/recipe recovered from Git. Reuse its cache for the immediate corrected build, not a retained old generation."
   },
@@ -184,14 +184,38 @@
       "scope": "Does not resolve the separate six legacy roots."
     }
   },
-  "error": "compile-link failed: [1/8] Building CXX object CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o\nFAILED: CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o \n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++ -DSTRATA_ENABLE_SYCL=1 -DSTRATA_NATIVE_EXPERTS=1 -DSTRATA_PREFILL_FUSED=1 -DSTRATA_PREFILL_MMQ=1 -DSTRATA_SYCL_VLLM_XE2_NATIVE16=1 -DSTRATA_VERSION=\\\"0.1.38\\\" -I/home/yayoi/orca/workspaces/Strata/sycl/include -I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat -I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include -isystem /opt/intel/oneapi/mkl/2026.1/include -O3 -DNDEBUG -std=c++20 -fno-fast-math -ffp-contract=off -fsycl -fsycl-id-queries-range=size_t -Wall -Wextra -Werror -DMKL_ILP64 -MD -MT CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o -MF CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o.d -o CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o -c /home/yayoi/orca/workspaces/Strata/sycl/src/prefill/prefill.cpp\nIn file included from /home/yayoi/orca/workspaces/Strata/sycl/src/prefill/prefill.cpp:1785:\n/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/moe_window.inc:194:84: error: binding reference of type 'core::ExpertCache' to value of type 'const core::ExpertCache' drops 'const' qualifier\n  194 |                 const auto ticket = detail::stage_expert_bank(*owner.expert_slots, *m.cache,\n      |                                                                                    ^~~~~~~~\n/home/yayoi/orca/workspaces/Strata/sycl/include/strata/prefill/expert_bank_upload.hpp:12:28: note: passing argument to parameter 'cache' here\n   12 |         core::ExpertCache& cache, const uint8_t* slab, uint64_t slab_bytes,\n      |                            ^\n1 error generated.\n[2/8] Building CXX object CMakeFiles/sycl_expert_bank_test.dir/tests/sycl/expert_bank.cpp.o\nninja: build stopped: subcommand failed.\n",
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 22070744,
+    "sha256": "ce19688e2788b13e5f61258f4d16b5f27da3d9d78e3f96a46fd2e06c873bb670"
+  },
+  "compile_database_sha256": "b9a5ef0d9b0aafb7deef3c00745083d73b7cddc59b6391d8b3a9dcde64a179df",
+  "configured_compile_entries": 221,
+  "fixtures": {
+    "sycl_moe_accum_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_accum_test",
+      "sha256": "35de609c81091c9ce2e87f9b28742466e5f21356570396cc45e7ee83e7b4432b"
+    },
+    "sycl_moe_gu_swiglu_bench": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_gu_swiglu_bench",
+      "sha256": "7dc7b336b920e25b205d0f3f0b6fb5a08475ac3d08a7d7e71141ccb7d2bcc659"
+    },
+    "sycl_moe_down_scatter_bench": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_down_scatter_bench",
+      "sha256": "ddaf0ad94be379f8c601a3226641c52c4c42478054f1ec42f4daa563f1d51dd4"
+    },
+    "sycl_expert_bank_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_expert_bank_test",
+      "sha256": "f2f3df7eb393f4de6c7f900f6cd25e6edacaf00c2fb3bcec6c3e3edab0c03b88"
+    }
+  },
   "ownership_closed": true,
   "inputs": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "db71e718f5275c6db58e2f762cd54850b1aaa7dc",
+      "revision": "1222e27d01f32c5bb31f574ff4b143c489a3bcf1",
       "count": 501,
-      "aggregate_sha256": "d57a516ce9b3f09824cf34ab6619bc8a04b8cfc5b60cbd385e8bd58098cd86f4"
+      "aggregate_sha256": "777ea6fb5048bdea01fc4c64896ccd089694ee27763c4f935981710e54460121"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",

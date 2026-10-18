@@ -1389,5 +1389,10 @@ enqueue, with source/cache/status owners retained through the existing checked
 lease. The original path still publishes all512 experts after its initial drain.
 Staged requested H2D bytes/hits are counted separately: its uploads occur inside
 the MoE dependency path, not the initial bulk-upload interval.
-Compilation and GPU checks are pending; model performance is untested. Do not
-report this candidate as a speedup or default adoption before those gates.
+The corrected source1222e27d0 compiles successfully, including the production
+engine and shared-helper GPU fixture. The initial attempt rejected the const
+cache view at compile time, before any execution; the implementation now owns
+an explicit mutable upload target rather than casting away const. The source034
+validated engine/fixtures are retained externally for this immediate comparison.
+GPU checks and model performance are pending. Do not report this candidate as
+a speedup or default adoption before those gates.
