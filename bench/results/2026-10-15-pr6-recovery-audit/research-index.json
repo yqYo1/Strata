@@ -517,9 +517,21 @@
     "question": "Attribute current sparse-QSA register lifetimes and static spill sources across cached-Q, PV accumulators and K staging; compare source scheduling alternatives and experimental controls without claiming occupancy or changing the kernel.",
     "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-register-lifetime.md",
     "main_reads_body_on_arrival": false,
-    "state": "Orca Luna read-only running; Main continues frozen matched model comparison without steering.",
+    "state": "Orca Luna and native Luna-max review complete; exact settled researcher terminal closed. Main matched A/B remains active.",
     "eligible_at_dispatch": true,
     "dispatch": "ctx_499b25ba545a",
-    "task": "task_489a6e33d2a3"
+    "task": "task_489a6e33d2a3",
+    "report_sha256": "f736255b37d9a1ecad8c755e8f20623081b851c942bf5e97c6dda0210e482dfa",
+    "report_bytes": 11910,
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-register-lifetime-review.json",
+    "review_sha256": "35b9109beedce8e09baf61988883505a893c7c38c1097bd99b41c9617ee7cb98",
+    "review_bytes": 7263,
+    "reviewed_digest": [
+      "PV accumulators are required persistent online state; cached-Q is an adjustable long-lived fragment set, but static spill metadata does not establish hot spill cost.",
+      "Qcache/no-cache model gain was already measured4.306% at6ae5b81a7; a duplicate toggle without a new question adds no evidence.",
+      "VectorK4 currently requires CacheQueries by static_assert; fixing K staging while toggling cache needs an explicit source change. Cache mode also changes dynamic-local requirements, so it is not a pure register-pressure experiment.",
+      "No code adoption or follow-on scope during frozen A/B."
+    ],
+    "retention_consumer": "Current Kvec4 decision only. After A/B, retain this compact correction and retire the overlapping body/review/launch transaction files."
   }
 }
