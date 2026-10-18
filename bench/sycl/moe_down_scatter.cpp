@@ -1,5 +1,6 @@
 // Main-authored MoE Down epilogue qualification; repository LICENSE (MIT).
 #include "native16.hpp"
+#include "strata/prefill/gemm.hpp"
 #include "strata/prefill/native16.hpp"
 #include <algorithm>
 #include <array>
@@ -105,6 +106,8 @@ struct Case {
   std::shared_ptr<const Routes> routes;
   sycl::queue &q;
   xe::Gemm gemm;
+  strata::prefill::Gemm routed;
+  bool routed_initialized = false;
   Buffer<uint16_t> x, w, down, capture;
   Buffer<int32_t> source, original;
   Buffer<float> weights, reference, candidate;
@@ -161,6 +164,55 @@ struct Case {
   }
   sycl::event fused(size_t job, xe::Tile tile, bool observe, xe::ScatterLayout mapping) {
     return gemm.down_scatter(problem(job, observe), tile, mapping);
+  }
+  void init_routed() {
+    if (!routed_initialized) {
+      std::string error;
+      if (!routed.init_external(&q, nullptr, 0, nullptr, 0, error))
+        throw std::runtime_error(error);
+      routed_initialized = true;
+    }
+  }
+  bool try_selected(size_t index) {
+    init_routed();
+    return routed.try_down_scatter16(*routes, index, x.data(), w.data(), source.data(),
+        original.data(), weights.data(), candidate.data(), candidate_status.data());
+  }
+  void selected_fallback(size_t index) {
+    const auto &job = routes->jobs().at(index);
+    routed.f16_out16(x.data(), w.data(), down.data(), job.rows, N, K, true);
+    strata::prefill::native16::moe_accumulate(*routes, index, down.data(), source.data(),
+        original.data(), weights.data(), candidate.data(), candidate_status.data(), &q);
+  }
+  bool selected_submit(size_t index) {
+    const bool selected = try_selected(index);
+    if (!selected) selected_fallback(index);
+    return selected;
+  }
+  void check_selected(bool enabled, uint32_t expected_mask = 0) {
+    const auto inputs = input_snapshot();
+    const auto tile = routes->jobs().front().rows < 128 ?
+        xe::Tile::compact_16x64 : xe::Tile::wide_128x128;
+    separate(0, tile); drain(q);
+    const auto down_before = down.get(), capture_before = capture.get();
+    const bool selected = try_selected(0); drain(q);
+    need(selected == (enabled && routes->jobs().front().rows >= 2334), "wrong selected route");
+    need(same_bytes(down_before, down.get()) && same_bytes(capture_before, capture.get()),
+         "try route wrote a Down/diagnostic tensor");
+    if (!selected) {
+      need(same_bytes(initial, candidate.get()) && candidate_status.get()[0] == 0,
+           "false route modified outputs");
+      selected_fallback(0); drain(q);
+    }
+    equal(reference, candidate); equal(reference_status, candidate_status);
+    need(candidate_status.get()[0] == expected_mask, "selected route error mask");
+    inputs_unchanged(inputs);
+    std::cout << "{\"kind\":\"selected_route\",\"rows\":" << routes->jobs().front().rows
+              << ",\"window_rows\":" << routes->rows() << ",\"source_first\":" << host_source.front()
+              << ",\"source_last\":" << host_source[size_t(routes->jobs().front().rows - 1)]
+              << ",\"enabled\":" << enabled << ",\"selected\":" << selected
+              << ",\"expected_mask\":" << expected_mask
+              << ",\"inputs_immutable\":true,\"false_route_no_write\":true,\"status\":\"PASS\"}\n";
   }
   void separate(size_t index, xe::Tile tile) {
     try {
@@ -294,22 +346,22 @@ void exception_unwind(sycl::queue &q, xe::ScatterLayout mapping) {
 class Marker;
 sycl::event mark(sycl::queue &q) { return q.single_task<Marker>([] {}); }
 void benchmark(int process, sycl::queue &q) {
-  for (int rows : {64, 160, 2334, 5963, 8192}) for (bool irregular : {false, true}) {
+  for (int rows : {64, 160, 2333, 2334, 2335, 5963, 8192}) for (bool irregular : {false, true}) {
     const auto tile = rows < 128 ? xe::Tile::compact_16x64 : xe::Tile::wide_128x128;
     Case c(78451, irregular, false, q, rows);
     need(c.routes->jobs().front().rows == rows, "timing job shape");
     c.check(0, tile, xe::ScatterLayout::matrix);
     c.check(0, tile, xe::ScatterLayout::matrix_row_cache);
+    c.reset(); c.check_selected(true);
     const auto inputs = c.input_snapshot();
     constexpr int repeat = 16;
-    for (int round = -1; round < 6; ++round) for (int order = 0; order < 3; ++order) {
-      const int arm = (process + round + 3 + order) % 3;
-      const auto mapping = arm == 2 ? xe::ScatterLayout::matrix_row_cache : xe::ScatterLayout::matrix;
+    for (int round = -1; round < 6; ++round) for (int order = 0; order < 2; ++order) {
+      const int arm = (process + round + 2 + order) % 2;
       c.reset();
       const auto start = mark(q);
       const auto wall = std::chrono::steady_clock::now();
       for (int i = 0; i < repeat; ++i)
-        if (arm) (void)c.fused(0, tile, false, mapping); else c.separate(0, tile);
+        if (arm) (void)c.selected_submit(0); else c.separate(0, tile);
       const auto end = mark(q); wait(q, end);
       const double wall_ms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - wall).count() / repeat;
       const double queue_ms = double(end.get_profiling_info<sycl::info::event_profiling::command_start>() -
@@ -317,7 +369,7 @@ void benchmark(int process, sycl::queue &q) {
       if (arm) {
         for (int i = 0; i < repeat; ++i) c.separate(0, tile);
       } else {
-        for (int i = 0; i < repeat; ++i) (void)c.fused(0, tile, false, mapping);
+        for (int i = 0; i < repeat; ++i) (void)c.selected_submit(0);
       }
       q.wait_and_throw(); runtime->check(); equal(c.reference, c.candidate);
       c.inputs_unchanged(inputs);
@@ -327,7 +379,7 @@ void benchmark(int process, sycl::queue &q) {
                 << ",\"window_rows\":" << c.routes->rows() << ",\"accumulator_bytes\":" << c.reference.n * sizeof(float)
                 << ",\"source_first\":" << c.host_source.front() << ",\"source_last\":" << c.host_source[size_t(rows - 1)]
                 << ",\"irregular\":" << irregular << ",\"round\":" << round << ",\"order\":" << order
-                << ",\"arm\":" << arm << ",\"mapping\":" << int(mapping)
+                << ",\"arm\":" << arm << ",\"fused_route\":" << (arm && rows >= 2334)
                 << ",\"repeat\":" << repeat << ",\"wall_ms\":" << wall_ms
                 << ",\"queue_interval_ms\":" << queue_ms << ",\"inputs_immutable\":true,\"status\":\"PASS\"}\n";
     }
@@ -380,6 +432,26 @@ int main(int argc, char **argv) {
             for (bool irregular : {false, true})
               correctness(78451, irregular, false, tile, q, mapping, 17);
           }
+      } else if (mode == "--route-smoke" || mode == "--route-validate") {
+        need(argc == 3 && (std::string(argv[2]) == "0" || std::string(argv[2]) == "1"), "route enabled argument");
+        const bool enabled = std::string(argv[2]) == "1";
+        if (mode == "--route-smoke") {
+          for (int rows : {2333, 2334, 2335}) {
+            Case c(rows, false, false, q); c.check_selected(enabled);
+          }
+          Case c(2334, false, false, q);
+          for (uint32_t mask : {1u, 2u, 3u}) {
+            c.reset(); auto src = c.host_source, original = c.host_original;
+            if (mask & 1) original[0] = -1;
+            if (mask & 2) src[mask == 3 ? 1 : 0] = -1;
+            c.source.set(src); c.original.set(original); c.check_selected(enabled, mask);
+          }
+        } else {
+          for (int rows : {1, 17, 160, 2333, 2334, 2335, 8191, 8192})
+            for (bool irregular : {false, true}) {
+              Case c(2 * rows + 17, irregular, false, q, rows); c.check_selected(enabled);
+            }
+        }
       } else if (mode == "--bench") { need(argc == 3, "bench process required"); benchmark(std::stoi(argv[2]), q); }
       else throw std::runtime_error("invalid mode");
       q.wait_and_throw(); runtime->check(); runtime->wait();

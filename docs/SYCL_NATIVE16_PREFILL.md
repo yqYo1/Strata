@@ -1220,3 +1220,25 @@ it is not a same-workload kernel speedup. Keep first-use and subsequent requests
 separate and record actual counts. A131072-minimum screen needs a larger
 context allocation and its explicit capacity/boundary check first. Neither
 screen establishes physical262144-context or sustained decode qualification.
+
+The next Down prototype adds startup-only
+`STRATA_SYCL_PREFILL_DOWN_SCATTER=large` (default0). Only the native-BF16,
+vLLM auto/wide backend accepts it; jobs below2334 rows still execute separate
+Down and accumulation. The selected wide row-cache kernel retains BF16 output
+rounding before FP32 FMA and writes neither the Down nor diagnostic tensor.
+The outer window keeps its existing immutable route owner, queue ordering,
+status drain and exception lease. No router readback or transfer is removed.
+Command-service profiling rejects this fusion until that observer is qualified.
+Request-level counters distinguish fused and separate jobs/rows.
+
+This is Main-authored routing and validation, with no new copied implementation.
+The fresh component plan adds actual startup-selected flag0/large processes,
+2333/2334/2335 boundaries, false-return non-writes, map masks1/2/3 and
+8191/8192 tails. Three clean timing processes compare the selected hook plus
+fallback against separate dense+accumulation at14 fixed-window shapes. The
+prospective gate is geometric-mean latency ratio<=0.97, no shape>1.05 and
+improvement at every>=2334-row shape in each process. A3% component gain warrants
+only a subsequent matched model experiment; the prior uniform candidate's
+failed5% gate is unchanged. Requalify the same-build GU fixture before the next
+model comparison because its shared adapter translation unit changed during
+the previous Down work. None of these new gates has executed yet.

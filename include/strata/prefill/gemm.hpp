@@ -16,6 +16,7 @@
 namespace strata::prefill {
 #if defined(STRATA_ENABLE_SYCL)
 struct Native16BackendState;
+namespace detail { class MoeWindowRoutes; }
 #endif
 
 class Gemm {
@@ -62,6 +63,15 @@ public:
     /// unless startup GU_SWIGLU=large selects a >=2334-row job. Fixed FP16
     /// X[T,2560], W[1280,2560] -> FP16 hidden[T,640], BF16-rounded operands.
     bool try_gu_swiglu16(const uint16_t* X, const uint16_t* W, uint16_t* hidden, int64_t T);
+    /// Opt-in long-prefill Down+accumulation, >=2334 expert rows only. False
+    /// means no submission: caller retains separate Down and accumulation.
+    /// Fixed FP16 X[T,640], W[2560,640]; BF16 RNE then explicit FP32 FMA.
+    /// Plan/maps/weights and FP32 accumulator/status remain alive and immutable
+    /// (except outputs) through the stream's checked drain. No host readback.
+    bool try_down_scatter16(const detail::MoeWindowRoutes& plan, size_t job_index,
+                            const uint16_t* X, const uint16_t* W,
+                            const int32_t* source, const int32_t* original,
+                            const float* weights, float* accumulator, uint32_t* status);
 #endif
 
     /// W given as native GGUF blocks of `ggml_type`, dequantized to FP16 in the scratch, X in FP16.

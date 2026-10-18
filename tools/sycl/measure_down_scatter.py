@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Main-owned Down/accumulation fusion gates; no engine dispatch adoption."""
+"""Main-owned selective Down/accumulation qualification; default-off engine hook."""
 import fcntl
 import hashlib
 import json
@@ -8,7 +8,6 @@ import re
 import statistics
 import subprocess
 import sys
-from collections import Counter
 
 sys.dont_write_bytecode = True
 import measurement_guards as guards
@@ -16,7 +15,7 @@ import measurement_owner as supervision
 
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'moe-down-scatter-component-v4'
+ROOT = B / 'moe-down-scatter-component-v5'
 BUILD = B / 'main-native-gdn-engine/record.json'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json'
 SETTINGS = P / 'tools/sycl/measurement_environment.json'
@@ -28,84 +27,14 @@ def digest(path):
         return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
-def compact_result():
-    """Retain every measured timing and verified outcome after owned closure."""
-    r = json.loads(RESULT.read_text())
-    raw = json.loads((ROOT / 'record.json').read_text())
-    guards.require(r['mode'] == 'perf' and r['complete'] and r['passed'] and
-                   r['ownership_closed'] and not r['active'] and
-                   all(raw.get(k) == v for k, v in r.items()), 'require the original closed result')
-    guards.require(all(c['passed'] and c['ownership_closed'] and c['exit_code'] == 0
-                       for c in r['checks']), 'incomplete phase')
-    by_mode = {m: [e for c in r['checks'] if c['mode'] == m for e in c['events']]
-               for m in ('ownership', 'smoke', 'validate', 'perf')}
-    guards.require([len(by_mode[m]) for m in by_mode] == [54, 33, 78, 630] and
-                   all(e['status'] == 'PASS' for es in by_mode.values() for e in es), 'missing evidence')
-    measured = [e for e in by_mode['perf'] if e['round'] >= 0]
-    guards.require(len(measured) == 540, 'missing individual speed samples')
-    samples = []
-    for shape in r['resident_summary']['shapes']:
-        for arm in shape['arms']:
-            group = [e for e in measured if (e['rows'], e['irregular'], e['arm']) ==
-                     (shape['rows'], shape['irregular'], arm['arm'])]
-            values = [e['queue_interval_ms'] for e in group]
-            guards.require(len(values) == 18 and statistics.median(values) == arm['median_ms'] and
-                           statistics.stdev(values) == arm['sample_sd_ms'], 'summary does not reproduce')
-        for process in range(3):
-            arms = []
-            for arm in shape['arms']:
-                group = sorted((e for e in measured if (e['rows'], e['irregular'], e['arm'], e['process']) ==
-                    (shape['rows'], shape['irregular'], arm['arm'], process)), key=lambda e: e['round'])
-                guards.require([e['round'] for e in group] == list(range(6)) and
-                    statistics.median(e['queue_interval_ms'] for e in group) == arm['process_medians_ms'][process],
-                    'process samples do not reproduce')
-                arms.append(dict(arm=arm['arm'], queue_interval_ms=[e['queue_interval_ms'] for e in group],
-                                 wall_ms=[e['wall_ms'] for e in group]))
-            samples.append(dict(rows=shape['rows'], irregular=shape['irregular'], process=process, arms=arms))
-    guards.require(statistics.geometric_mean(s['ratio'] for s in r['resident_summary']['shapes']) ==
-                   r['resident_summary']['geometric_mean_latency_ratio'], 'aggregate changed')
-    before_bytes = RESULT.stat().st_size
-    r['evidence_extraction'] = dict(source_raw_sha256=digest(RESULT),
-        controller_commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=P, text=True).strip(),
-        individual_measured_samples=540, excluded_warmup_samples=90,
-        retention='Keep all measured queue/wall samples and original decision. Warmup durations are unused by selection and have no next consumer; retain their successful count, not their repeated payloads. Completed nominal case detail is recoverable from the pinned fixture and preceding committed phase results.')
-    ownership, smoke, validation = (by_mode[m] for m in ('ownership', 'smoke', 'validate'))
-    r['validation_evidence'] = dict(ownership_cases=len(ownership),
-        metadata_max_errors={k: max(e[k] for e in ownership) for k in
-            ('metadata_missing', 'metadata_multiple', 'metadata_outside_tile')},
-        traced_smoke_events=len(smoke), admission_rejects=[e['rejected'] for e in smoke if e['kind'] == 'admissions'],
-        invalid_map_cases=[dict(mapping=e['mapping'], case=e['case'], expected_mask=e['expected_mask'])
-                           for e in smoke if e['kind'] == 'invalid_map'],
-        checked_exception_cases=[e for e in smoke if e['kind'] == 'exception_unwind'],
-        correctness_cases=len(validation),
-        mapping_tile_case_counts=sorted([list(k) + [v] for k, v in Counter(
-            (e['mapping'], e['tile']) for e in validation).items()]),
-        case_columns=['tokens', 'irregular', 'edges', 'target_rows'],
-        cases=sorted({tuple(e[k] for k in ('tokens', 'irregular', 'edges', 'target_rows')) for e in validation}),
-        inputs_immutable=all(e['inputs_immutable'] for es in (smoke, validation, by_mode['perf'])
-                             for e in es if e['kind'] in ('correctness', 'invalid_map', 'sample')),
-        all_case_status_passed=True)
-    r['timing_samples'] = dict(window_rows=78451, accumulator_bytes=78451 * 2560 * 4,
-        rounds=list(range(6)), order='arm=(process+round+3+order)%3, order=0..2',
-        repeat=16, groups=samples, limits='Marker intervals include host submission gaps; not physical traffic or GPU-busy time.')
-    for c in r['checks']:
-        c['successful_events'] = len(c.pop('events'))
-    RESULT.write_text(json.dumps(r, indent=2) + '\n')
-    print(json.dumps(dict(compacted=True, before_bytes=before_bytes, after_bytes=RESULT.stat().st_size,
-                          individual_measured_samples=540, original_advance_to_model=r['resident_summary']['advance_to_model'])))
-    return 0
-
-
 def main():
-    guards.require(len(sys.argv) == 2 and sys.argv[1] in ('ownership', 'smoke', 'validate', 'perf', 'compact'),
-                   'use measure_down_scatter.py ownership|smoke|validate|perf|compact')
+    guards.require(len(sys.argv) == 2 and sys.argv[1] in ('ownership', 'smoke', 'validate', 'perf'),
+                   'use measure_down_scatter.py ownership|smoke|validate|perf')
     mode = sys.argv[1]
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
         guards.driver_guard()
-        if mode == 'compact':
-            return compact_result()
         build = json.loads(BUILD.read_text())
         guards.require(build['complete'] and build['passed'] and build['ownership_closed'] and
                        not build['active'], 'closed successful build required')
@@ -126,8 +55,8 @@ def main():
                 complete=False, passed=False, active=False, model_performance_adopted=False,
                 model_quality_qualified=False, physical262144_model_RESTORE_qualified=False,
                 consumer='One Down/scatter component comparison; retire raw logs/JIT after extracting samples.',
-                prospective_gates='54 exhaustive host cell/row-cache ownership cases across3 policies/2 tiles; traced33-event small gate with16 admission rejects per policy,7 invalid-map cases and synchronous-exception queue retirement;78 tail/split/irregular/rounding and78451-window checks;3 independent resident processes with6 rotated rounds of3 arms per shape. Exact capture, full FP32 accumulator, inputs and guards; slot-first mixed-invalid precedence. Advance only with geomean<=0.95 against separate, no shape>1.05 and every large shape improves in every process.',
-                limits='FP16 Down2560x640, BF16-round then explicit FP32 FMA. Component only; no model dispatch. Fixed78451-token FP32 accumulator, contiguous-prefix or evenly distributed token rows. Arm0 separate;1 scalar matrix mapping;2 matrix with workgroup row metadata cache. Old output-copy policy remains in correctness diagnostics. Same tile: compact below128, wide otherwise. Marker intervals include host submission gaps; no physical traffic, occupancy, saturation or model speed inferred.',
+                prospective_gates='New selective candidate, not a revision of the rejected uniform gate:54 exhaustive host ownership cases;33 legacy traced smoke plus6 actual-route events in each of separate processes with flag0/large;78 legacy correctness plus16 selected-route cases per flag. Exact BF16 capture/FP32 FMA, inputs/guards/status, false-route no-write,2333/2334/2335 threshold, split8191/8192 and mixed invalid masks.3 independent clean processes,6 rotated two-arm rounds over14 shapes. Advance only with selected/separate geomean<=0.97, no shape>1.05 and every >=2334-row shape improves in every process. A3% component gain warrants only a subsequent same-workload model experiment.',
+                limits='FP16 Down2560x640, BF16-round then explicit FP32 FMA. Fixed78451-token FP32 accumulator; contiguous/distributed maps. Arm0 separate low-level dense+accumulation;1 actual production startup-selected hook plus its public dense+accumulation fallback. Both use compact below128,wide otherwise; hook uses cached-wide only at>=2334. The public wrapper adds binding/dispatch checks. Marker intervals include submission gaps; no physical traffic, occupancy, saturation or model speed inferred. No model route adoption.',
                 previous_result=dict(commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip(),
                     path=str(RESULT.relative_to(P)), geometric_mean_latency_ratio=prior['resident_summary']['geometric_mean_latency_ratio'],
                     advance_to_model=prior['resident_summary']['advance_to_model']),
@@ -145,6 +74,10 @@ def main():
         for path, info in settings['runtime_elfs'].items():
             guards.require(digest(path) == info['sha256'], 'runtime changed: ' + path)
         env = dict(settings['environment'])
+        env.update(STRATA_SYCL_PREFILL_NATIVE16='bf16',
+                   STRATA_SYCL_PREFILL_NATIVE16_BACKEND='vllm',
+                   STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE='auto',
+                   STRATA_SYCL_PREFILL_DOWN_SCATTER='large')
         if mode != 'smoke':
             env['UR_ENABLE_LAYERS'] = 'UR_LAYER_PARAMETER_VALIDATION'
             env.pop('UR_LOG_TRACING', None)
@@ -159,6 +92,8 @@ def main():
         journal = subprocess.check_output(['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True)
         cursor = next(line.split(': ', 1)[1] for line in journal.splitlines() if line.startswith('-- cursor: '))
         jobs = [['--bench', str(i)] for i in range(3)] if mode == 'perf' else [['--' + mode]]
+        if mode in ('smoke', 'validate'):
+            jobs += [['--route-' + mode, str(flag)] for flag in (0, 1)]
         record.update(mode=mode, passed=False, complete=False, environment=env,
                       GPU_executed=mode != 'ownership')
         owner = None
@@ -172,7 +107,10 @@ def main():
         try:
             for ordinal, args in enumerate(jobs):
                 command = [fixture['path'], *args]
-                entry, out, err = owner.run(str(ordinal), command, env, P, wall=900 if mode == 'perf' else 600, cpu=2400 if mode == 'perf' else 1800,
+                child_env = dict(env)
+                if args[0].startswith('--route-'):
+                    child_env['STRATA_SYCL_PREFILL_DOWN_SCATTER'] = 'large' if args[1] == '1' else '0'
+                entry, out, err = owner.run(str(ordinal), command, child_env, P, wall=1200 if mode == 'perf' else 600, cpu=2400 if mode == 'perf' else 1800,
                     rss_cap=6 << 30, file_cap=64 << 20, text_cap=64 << 20, total_cap=128 << 20)
                 stdout, stderr = out.read_text(errors='replace'), err.read_text(errors='replace')
                 events = [json.loads(line) for line in stdout.splitlines() if line.startswith('{')]
@@ -183,14 +121,29 @@ def main():
                     'fixture_status=PASS' in stdout and not re.search(
                         r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed|CHECKED_DRAIN_FAILED', stderr),
                     'fixture failed: ' + (stderr or stdout)[-4096:])
-                expected = {'ownership': 54, 'smoke': 33, 'validate': 78, 'perf': 210}[mode]
+                routed = args[0].startswith('--route-')
+                expected = (6 if mode == 'smoke' else 16) if routed else {'ownership': 54, 'smoke': 33, 'validate': 78, 'perf': 210}[mode]
                 guards.require(len(events) == expected and all(e['status'] == 'PASS' for e in events),
                                'incomplete fixture results')
                 if mode == 'ownership':
                     guards.require(sum(e['mapping'] == 2 for e in events) == 18 and all(
                         not e['metadata_missing'] and not e['metadata_multiple'] and not e['metadata_outside_tile'] and
                         (e['mapping'] != 2 or e['metadata_slots'] > 0) for e in events), 'row cache ownership incomplete')
-                if mode == 'smoke':
+                if routed:
+                    flag = int(args[1])
+                    guards.require(all(e['kind'] == 'selected_route' and e['enabled'] == flag and
+                        e['selected'] == bool(flag and e['rows'] >= 2334) and e['false_route_no_write']
+                        for e in events), 'selected dispatch/no-write evidence incomplete')
+                    if mode == 'smoke':
+                        guards.require([e['expected_mask'] for e in events] == [0, 0, 0, 1, 2, 3],
+                                       'selected threshold or invalid-map masks incomplete')
+                    else:
+                        guards.require({(e['rows'], bool(e['source_first'])) for e in events} ==
+                            {(r, irregular) for r in (1, 17, 160, 2333, 2334, 2335, 8191, 8192)
+                             for irregular in (False, True)} and
+                            all(e['window_rows'] == 2 * e['rows'] + 17 and e['expected_mask'] == 0
+                                for e in events), 'selected tail/placement coverage incomplete')
+                if mode == 'smoke' and not routed:
                     guards.require(sum(e['kind'] == 'exception_unwind' and e['queue_complete'] for e in events) == 3,
                                    'borrowed-queue exception retirement incomplete')
                     guards.require(sum(e['kind'] == 'admissions' and e['rejected'] == 16 for e in events) == 3 and
@@ -198,15 +151,21 @@ def main():
                         sum(e['kind'] == 'invalid_map' and e['case'] == 6 and e['expected_mask'] == 3 for e in events) == 3,
                         'admission or mixed-invalid status checks incomplete')
                 guards.require(all(e['inputs_immutable'] for e in events if e['kind'] in
-                                   ('correctness','invalid_map','sample')), 'input immutability not checked')
+                                   ('correctness','invalid_map','sample','selected_route')), 'input immutability not checked')
                 result['passed'] = True; persist()
             if mode == 'perf':
-                samples = [e for c in record['checks'] if c['mode'] == 'perf' for e in c['events'] if e['round'] >= 0]
+                samples = [e for c in record['checks'] if c['mode'] == 'perf' for e in c['events'] if e['kind'] == 'sample' and e['round'] >= 0]
+                guards.require(len(samples) == 504 and
+                    {(e['rows'], e['irregular'], e['process'], e['round'], e['arm']) for e in samples} ==
+                    {(r, i, p, n, a) for r in (64, 160, 2333, 2334, 2335, 5963, 8192)
+                     for i in (0, 1) for p in range(3) for n in range(6) for a in (0, 1)} and
+                    all(e['fused_route'] == bool(e['arm'] and e['rows'] >= 2334) for e in samples),
+                    'selected timing/process/route coverage incomplete')
                 summary = []
-                for rows in (64, 160, 2334, 5963, 8192):
+                for rows in (64, 160, 2333, 2334, 2335, 5963, 8192):
                     for irregular in (0, 1):
                         arms = []
-                        for arm in (0, 1, 2):
+                        for arm in (0, 1):
                             group = [e for e in samples if (e['rows'], e['irregular'], e['arm']) == (rows, irregular, arm)]
                             values = [e['queue_interval_ms'] for e in group]
                             guards.require(len(values) == 18 and all(v > 0 for v in values) and all(e['window_rows'] == 78451 and e['accumulator_bytes'] == 78451 * 2560 * 4 for e in group), 'missing samples or wrong working set')
@@ -214,14 +173,13 @@ def main():
                                 sample_sd_ms=statistics.stdev(values), process_medians_ms=[statistics.median(
                                     e['queue_interval_ms'] for e in group if e['process'] == process) for process in range(3)]))
                         summary.append(dict(rows=rows, irregular=irregular, arms=arms,
-                            ratio=arms[2]['median_ms'] / arms[0]['median_ms'],
-                            raw_control_ratio=arms[1]['median_ms'] / arms[0]['median_ms']))
+                            ratio=arms[1]['median_ms'] / arms[0]['median_ms']))
                 ratio = statistics.geometric_mean(s['ratio'] for s in summary)
                 record['resident_summary'] = dict(shapes=summary, geometric_mean_latency_ratio=ratio,
-                    advance_to_model=ratio <= .95 and all(s['ratio'] <= 1.05 for s in summary) and all(
+                    advance_to_model=ratio <= .97 and all(s['ratio'] <= 1.05 for s in summary) and all(
                         a < b for s in summary if s['rows'] >= 2334 for a, b in zip(
-                            s['arms'][2]['process_medians_ms'], s['arms'][0]['process_medians_ms'])),
-                    prospective_gate='Row-cache/separate geometric mean ratio<=0.95 across10 fixed78451-window shapes; no shape median>1.05; each of3 process medians improves at2334/5963/8192 in both token placements. This only permits a later model experiment, not adoption.')
+                            s['arms'][1]['process_medians_ms'], s['arms'][0]['process_medians_ms'])),
+                    prospective_gate='New selective/separate geometric mean ratio<=0.97 across14 fixed78451-window shapes; no shape median>1.05; each of3 process medians improves at2334/2335/5963/8192 in both token placements. This only permits a later model experiment, not adoption.')
             record.update(complete=True, passed=True)
         except BaseException as error:
             record['error'] = str(error)
