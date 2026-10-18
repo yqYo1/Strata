@@ -160,9 +160,11 @@ The installed VTune2026.4 rejects GPU-hotspots on this Ryzen5600X host before
 starting the target; this is not an observed permission denial. The maintained
 `python3 tools/sycl/profile_attention.py resources` alternative ran the exact
 qualified fixture with `IGC_DumpZEInfoToConsole=1`. Traced launch identities map
-the executed prefix33 and row-publication kernels to128GRF/SIMD16, static SLM32B
+the executed prefix33 and row-publication kernels to128GRF/SIMD16, raw static `slm_size=32`
 plus28224B of dynamic-local arguments, and no emitted scratch descriptor.
 These are compiler/launch properties, not hardware utilization or bandwidth.
+The static field's unit/schema and physical allocation rounding remain unverified;
+the traced dynamic-local argument sizes are explicitly bytes.
 The unlaunched compiled score32 variant has1920B spill metadata and2048B scratch;
 it must not be attributed to the executed production prefix33.
 

@@ -302,6 +302,14 @@
         "report_bytes": 17391,
         "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/xe2-emitted-resources-review.json",
         "review_sha256": "87a943f492122bd607916ecb391a2656c103b2e73b8887f76475ec95502f737e"
+      },
+      {
+        "topic": "xe2-residency-contract",
+        "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/xe2-residency-contract.md",
+        "report_sha256": "feaaf6114b277c48f2a5a5d6df62b31bc4eb3b6f343a214a3417537f41f30102",
+        "report_bytes": 15502,
+        "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/xe2-residency-contract-review.json",
+        "review_sha256": "bd8254999bdbafa866aa1ec2a0f070f0e3c88c2f57aa7843bd30311dc0383fce"
       }
     ],
     "main_evidence": {
@@ -323,7 +331,14 @@
         "Runtime/compiler ELF hashes and versions pinned in tools/sycl/measurement_environment.json.",
         "Both default128GRF and auto256GRF have full oracle/physical262144 component and6 rotated samples/shape; auto regression despite no scratch established."
       ],
-      "question": "Explain what BMG/Xe2 SLM/GRF resource metadata can bound about residency, with actual runtime allocation rounding and its limits; no saturation inference."
-    }
+      "question": "Explain what BMG/Xe2 SLM/GRF resource metadata can bound about residency, with actual runtime allocation rounding and its limits; no saturation inference.",
+      "state": "Completed and native Luna-max reviewed; no newly schedulable research scope."
+    },
+    "residency_review_corrections": [
+      "Report cited20-core B580 for B570; no20-core B570 capacity claim accepted.",
+      "Report candidate local-argument breakdown mis-sums20096; Main actual traced8 local arguments total20032, verified directly.",
+      "Static slm_size field32 unit/schema and physical rounding need separate confirmation; dynamic arguments are explicitly in bytes.",
+      "Metadata and changed SDK functor do not prove occupancy or causal attribution. Main did not read the collection body."
+    ]
   }
 }
