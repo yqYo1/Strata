@@ -1105,3 +1105,12 @@ three clean independent processes measure the fixed78451-row window at
 process) remains prospective. The extra barrier or SLM accesses may regress;
 reject the variant if it fails. Component success alone permits only a later
 model trial, not adoption or a hardware-saturation claim.
+
+The independent source-contract review requires BF16 diagnostic capture to
+remain before the invalid-token skip, including invalid-map cases. Status is
+the final OR-ed bitmask, not an atomic-call count: a bad slot sets bit1 and
+suppresses that row's token-error branch; bit2 requires a valid slot. Add a
+combined bad-slot/bad-token case and require exactly bit1. This review found
+the cache conditionally legal; it provides no new runtime or speed evidence.
+Use the pinned TLA revision87f6850680a580654b9ea2c80dbc01aeb36ad231 when
+resolving its interface references.

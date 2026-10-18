@@ -1503,7 +1503,7 @@
       ],
       "maximum_bytes": 32768
     },
-    "state": "Orca succeeded; external worker released and owned terminal closed with ptyKilled=true; completion delivery acknowledged. Native Luna-max review pending.",
+    "state": "Orca and native Luna-max review complete; conditionally accepted decision support, no implementation/performance adoption.",
     "main_reads_body_on_arrival": false,
     "retention_consumer": "Main next Down component implementation after the GU cohort closes; native Luna-max review first, retire transactional report after decision.",
     "dispatch": "ctx_ab7111815d0c",
@@ -1514,7 +1514,59 @@
     "report_bytes": 13825,
     "delivery": "delivery_23effccf12c6",
     "review_task": "/root/review_down_row_cache_contract_20261018",
-    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/down-workgroup-row-cache-contract-native-review.json"
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/down-workgroup-row-cache-contract-native-review.json",
+    "review_sha256": "9f3d2634982e6353925593122324723b50571a66490af925fcfc751640e0a8be",
+    "reviewed_digest": [
+      "All five source pins match; workgroup-local cache is distinct from earlier per-thread/subgroup grouping.",
+      "Keep BF16 capture for invalid maps; preserve final OR bitmask and slot-first priority, not atomic invocation counts.",
+      "No runtime, compiled-code or performance evidence for the new cache; no follow-up research before a committed candidate leaves a concrete question."
+    ],
+    "retrieval_sections": [
+      "Scope and source identity",
+      "Execution and ownership proof",
+      "Holes and likely correctness traps",
+      "Alternatives and cost counterarguments",
+      "Decisions and Main-owned gates",
+      "Primary references and limits"
+    ],
+    "corrections": [
+      {
+        "id": "CAPTURE-1",
+        "severity": "required correctness contract",
+        "detail": "State explicitly that Capture remains before route validity handling. The current code writes the rounded BF16 value for every in-bounds logical cell even when its map is invalid. A cached invalid-token sentinel must not bypass this write. Require exact BF16 capture comparison for invalid-map cases as well as valid routes."
+      },
+      {
+        "id": "STATUS-1",
+        "severity": "status contract precision",
+        "detail": "Replace the tentative claim that fixtures must establish whether atomic multiplicity is observable. The API exposes a uint32 status bitmask (bit 1 invalid slot, bit 2 invalid token), and the implementation/reference use fetch_or; callers compare final bits, with no invocation counter. Preserve the final OR mask and same-row precedence: invalid slot yields bit 1 and suppresses the token-error branch; bit 2 applies only after a valid slot. A producer may OR once per logical row per workgroup, including repeated work across N-tile groups. Atomic-call count is not a correctness requirement; contention is only a performance effect."
+      },
+      {
+        "id": "STATUS-TEST-1",
+        "severity": "test-plan completeness",
+        "detail": "The existing fixture injects invalid slot and invalid token separately. Add a deterministic case where both are invalid for the same routed row and assert the final mask is exactly bit 1, locking the current slot-first else-if precedence."
+      },
+      {
+        "id": "PIN-1",
+        "severity": "source reproducibility",
+        "detail": "All indexed product-source hashes match, but the report's SYCL*TLA tutorial citation uses mutable main while the current manifest pins revision 87f6850680a580654b9ea2c80dbc01aeb36ad231. Replace it with the immutable commit URL and name the relevant header paths through the manifest hash. The recorded source commit 109aa7d08 was not ancestry-verified because Git inspection was outside this review scope."
+      }
+    ],
+    "retention": {
+      "consumer": "Main's next Down component implementation decision after the frozen GU cohort closes.",
+      "review_point": "Keep this transactional report/review through that decision. Then carry only reusable corrections and the selected decision into the existing compact result; retire these review artifacts if no concrete unresolved question still needs them.",
+      "no_adoption": true
+    },
+    "next_scope": {
+      "schedulable_now": false,
+      "scope": "At most one candidate-specific review of a remaining SYCL/TLA legality or emitted-code ambiguity; do not repeat the generic row-cache, barrier, tail or status survey.",
+      "prerequisites": [
+        "The frozen GU cohort has closed and Main has selected and committed exact candidate/control inputs and recipe.",
+        "Main has completed first-pass correctness and codegen review and can state one finite unresolved question.",
+        "Provide the candidate/source hash, pinned TLA revision and relevant header pins; for codegen questions provide compiler/device identity, relevant IR/disassembly and source mapping."
+      ],
+      "if_prerequisites_fail": "Do not dispatch a repeat session; Main proceeds with the existing report gates or records the unresolved blocker in the current compact result."
+    },
+    "review_source_commit": "109aa7d08"
   },
   "intel_tile_programming_collection_scope": {
     "classification": "knowledge_collection",
