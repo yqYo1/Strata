@@ -672,5 +672,60 @@
     "limits": "Does not qualify a model route or resolve the six separate legacy source holds.",
     "deletion_manifest_commit": "faa1b7030",
     "protected_current_hashes_verified": true
+  },
+  "closed_staged_bank_gates_cohort0_v1": {
+    "state": "performed; all153 manifested files removed, original results preserved",
+    "native_source_commit": "1222e27d01f32c5bb31f574ff4b143c489a3bcf1",
+    "native_source_input_count": 9812,
+    "native_recipe": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-entry-engine-build-v2.json",
+      "sha256": "9b7734387f0fc56f36afe9d7bca75e5f0bedcef479271e982025abe1d4334a1a"
+    },
+    "gate_recovery": [
+      {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-expert-bank-component-v3",
+        "source_commit": "cb74810ab2e7738d9c7c545727310a70c08c323f",
+        "input_count": 6,
+        "owner_closed": true,
+        "passed": true,
+        "recipe": "tools/sycl/check_expert_bank.py or tools/sycl/bench_engine.py at original source; generated model config/profile reconstructed and verified where applicable."
+      },
+      {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-expert-bank-gpu-v1",
+        "source_commit": "a3cc71f3d77c8ecf0a5d9ee035d6a818b322ba7f",
+        "input_count": 6,
+        "owner_closed": true,
+        "passed": true,
+        "recipe": "tools/sycl/check_expert_bank.py or tools/sycl/bench_engine.py at original source; generated model config/profile reconstructed and verified where applicable."
+      },
+      {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-check-v1",
+        "source_commit": "86aca92d80a6bf3259576a24a8d31e2ae56c5397",
+        "input_count": 110,
+        "owner_closed": true,
+        "passed": true,
+        "recipe": "tools/sycl/check_expert_bank.py or tools/sycl/bench_engine.py at original source; generated model config/profile reconstructed and verified where applicable."
+      },
+      {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-v1",
+        "source_commit": "48e13aaba6feca6bdc7c10767391747db6d4cb8a",
+        "input_count": 110,
+        "owner_closed": true,
+        "passed": true,
+        "recipe": "tools/sycl/check_expert_bank.py or tools/sycl/bench_engine.py at original source; generated model config/profile reconstructed and verified where applicable."
+      }
+    ],
+    "delete_roots": [
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-expert-bank-component-v3",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-expert-bank-gpu-v1",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-check-v1",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-v1"
+    ],
+    "file_count": 153,
+    "bytes": 26026069,
+    "protected": "Current source1222 native engine and4 fixtures, source034 validated fallback and same-build fixtures, all6 legacy source holds, both current research consumers.",
+    "next_consumer": "Independent clean cohorts1/2 use fresh roots and committed compact result; they do not reuse these raw files.",
+    "deletion_manifest_commit": "fb5c5f246",
+    "protected_current_and_fallback_hashes_verified": true
   }
 }
