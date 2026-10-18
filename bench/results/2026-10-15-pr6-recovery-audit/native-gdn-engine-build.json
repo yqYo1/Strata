@@ -198,5 +198,86 @@
     "three_process_timing_complete": true,
     "model_experiment_gate_passed": false,
     "production_selected": false
+  },
+  "existing_dense_native_text_comparison": {
+    "reference": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-down-scatter-v1/strata",
+      "bytes": 20573552,
+      "sha256": "bb8b3f097837026528699031de72b2fae5f779f095efda96161fce037847f5d0"
+    },
+    "candidate": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+      "bytes": 20960536,
+      "sha256": "d7a16fc294266a8bb817d53c154373114ecca259f79f42ce8bcae489d47d0dca"
+    },
+    "reference_images": 2,
+    "candidate_images": 2,
+    "reference_native_entries": 16,
+    "candidate_native_entries": 20,
+    "missing_existing_entries": [],
+    "changed_existing_text": [
+      ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tES5_LNS1_4TileE0EEE",
+      ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tES5_LNS1_4TileE1EEE",
+      ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tENS4_10bfloat16_tELNS1_4TileE0EEE",
+      ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tENS4_10bfloat16_tELNS1_4TileE1EEE",
+      ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tENS4_6half_tELNS1_4TileE0EEE",
+      ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tENS4_6half_tELNS1_4TileE1EEE",
+      ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE0EEE",
+      ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE1EEE"
+    ],
+    "matching_existing_entries": {
+      ".text._ZTSN4sycl3_V16detail19__pf_kernel_wrapperIZZN6compat6detailL6memcpyENS0_5queueEPvPKvNS0_5rangeILi3EEESA_NS0_2idILi3EEESC_SA_RKSt6vectorINS0_5eventESaISE_EEENKUlRNS0_7handlerEE_clESK_E16memcpy_3d_detailEE": {
+        "bytes": 3904,
+        "sha256": "fef3f9b36f21cda8f7d7c1ec35f1c3a1313a3e2e4c5153782b3075487e076257"
+      },
+      ".text._ZTSZZN6compat6detailL6memcpyEN4sycl3_V15queueEPvPKvNS2_5rangeILi3EEES8_NS2_2idILi3EEESA_S8_RKSt6vectorINS2_5eventESaISC_EEENKUlRNS2_7handlerEE_clESI_E16memcpy_3d_detail": {
+        "bytes": 2560,
+        "sha256": "4f68ff746610fea3422f87eace2233f4c90b4e72efb61b9bb4c9227986a7262f"
+      },
+      ".text._ZTSN4sycl3_V16detail18RoundedRangeKernelINS0_4itemILi1ELb1EEELi1EZNS0_7handler4fillItEEvPvRKT_mEUlNS0_2idILi1EEEE_EE": {
+        "bytes": 1088,
+        "sha256": "765f1ec4b9cc75fd0cf00b23789d9f083eab707e120aac86a0dbe9301dfebc0c"
+      },
+      ".text._ZTSZN4sycl3_V17handler4fillItEEvPvRKT_mEUlNS0_2idILi1EEEE_": {
+        "bytes": 704,
+        "sha256": "29fcac95d7ee5105134506e00af4ff2279212054c0e3b837bc37f421f64ef224"
+      },
+      ".text._ZTSN4sycl3_V16detail18RoundedRangeKernelINS0_4itemILi1ELb1EEELi1EZNS0_7handler4fillIjEEvPvRKT_mEUlNS0_2idILi1EEEE_EE": {
+        "bytes": 1088,
+        "sha256": "1a3163dcf16a82f208d86cf0e5e90e28842ad5cba5190e321aba5be0556cf7dc"
+      },
+      ".text._ZTSZN4sycl3_V17handler4fillIjEEvPvRKT_mEUlNS0_2idILi1EEEE_": {
+        "bytes": 704,
+        "sha256": "15ec3811a9601944b5cf9f5aafef3307fb0ff50ebbd75b42d6b6b25c8a2ccf98"
+      },
+      ".text._ZTSN4sycl3_V16detail18RoundedRangeKernelINS0_4itemILi1ELb1EEELi1EZNS0_7handler4fillIhEEvPvRKT_mEUlNS0_2idILi1EEEE_EE": {
+        "bytes": 1088,
+        "sha256": "2ad3a8619669a19c213bf73a38c56a0f906db84b4d5ded936f9ca9fb23364916"
+      },
+      ".text._ZTSZN4sycl3_V17handler4fillIhEEvPvRKT_mEUlNS0_2idILi1EEEE_": {
+        "bytes": 640,
+        "sha256": "6834d2171235274ae90e1b11ad714938abab0953c6884a84ad51b858574e8f83"
+      }
+    },
+    "added_native_entries": {
+      ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_117DownScatterKernelILNS1_4TileE0ELb0EEE": {
+        "bytes": 15680,
+        "sha256": "c1fbae8d0683fbbdc17cbc65d1d3b2e84521f8c720ec05fac5dc49f4d645a249"
+      },
+      ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_117DownScatterKernelILNS1_4TileE0ELb1EEE": {
+        "bytes": 17280,
+        "sha256": "4a130be92ea0db56432a8d02e2edd701fe6f9cf1f9219496e005ac40917dc909"
+      },
+      ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_117DownScatterKernelILNS1_4TileE1ELb0EEE": {
+        "bytes": 126912,
+        "sha256": "d9e3e013bbc47b28ff0cc28c7b1db494bea70c65dc45c4198890a7dec4ee9635"
+      },
+      ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_117DownScatterKernelILNS1_4TileE1ELb1EEE": {
+        "bytes": 141248,
+        "sha256": "dacc64374d1ab68a96c367ad0d65cbdba53738b64ab940448ae104abe04caf3d"
+      }
+    },
+    "scope": "Embedded .text bytes only; no runtime execution, metadata/ABI, quality, speed or occupancy claim.",
+    "inspector_source_commit": "4af35cd4773ae30d94af52f3856e122d87416100"
   }
 }

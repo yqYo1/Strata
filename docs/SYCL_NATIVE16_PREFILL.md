@@ -717,6 +717,15 @@ model.** The next question is whether the matrix-fragment output layout,
 conversion, memory messages or register use explains that shape dependence;
 logical byte removal and one fewer launch did not establish a speedup.
 The clean model reference remains867.1 tok/s. Keep all original outcome flags.
+Inspection of the actual retained and candidate engine ELFs also found changed
+text bytes in all eight existing dense native entries, while the other eight
+existing native entries matched and four new scatter entries were added.
+Text differences do not establish a speed regression, but the failed component
+does not authorize adopting them. Restore the original dense helper definition
+and isolate the experimental epilogue function before another build/default
+integration; compare actual native entries again. The current
+[build result](../bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json)
+records this narrow code-identity evidence without an ABI or speed claim.
 
 After recording those results, Main retired221 closed-run, CPU-fixture,
 consumed-review and old-fallback files (61,391,969bytes). Original run helpers
