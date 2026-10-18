@@ -221,8 +221,9 @@ loop`r=0..15` and element`j=0..3`, its map is
 `cell=t%32,d=4*(t/32)+16*r+j`; all8192 local destinations have one writer.
 Typed `vec<uint16_t,4>::load` avoids wider-pointer aliasing and needs only the
 existing two-byte alignment per [SYCL2020 vec members](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html).
-The installed SDK implements this API with typed element loads; an actual
-wide hardware transaction is not yet established. The oracle target also
+The installed SDK implements this API with typed element loads. Captured
+executed ISA lowers these four values to two32-bit A64 loads at offsets0/4,
+with align2 retained in LLVM IR; this is not one64-bit message. The oracle also
 uses a17-element scratch guard to exercise a pointer unaligned to eight bytes.
 BF16 bits, matrix arithmetic/strides and all barriers stay unchanged. Main
 authors this candidate independently. Six rotated samples per arm reduced
@@ -240,6 +241,18 @@ It uses the same prefix admission, scratch lease and cached-Q arithmetic as
 `qsa-kvec4-base` and `qsa-kvec4` with `tools/sycl/bench_engine.py` for a fresh
 same-binary comparison. The first run enables validation and trace; timing arms
 are clean processes. A successful model screen alone is not default adoption.
+
+The same-binary model screen (`23b0e7bb8`, engine source`52f047586`) read78,451
+fresh tokens per request, thinking on, four requests per process per arm.
+Cached-Q first PP was696.8 tok/s; subsequent samples756.4,750.7,756.3
+(median756.3, sample SD3.26). Kvec4 first PP was737.2; subsequent
+samples792.6,786.6,792.7 (median792.6, sample SD3.49), a4.80% median gain.
+Both native engines exited0 without fresh GPU faults. Exact workload hashes,
+engine/benchmark inputs, normalized configuration and private profiles matched;
+only the QSA math selector differed. Three subsequent requests are not three
+independent processes. The24-token output does not qualify sustained decode;
+model quality, agent/long-generation, physical262144 and RESTORE gates remain
+open, so this route stays opt-in.
 
 ## Optional GDN chunk64
 

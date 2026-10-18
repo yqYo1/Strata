@@ -275,20 +275,23 @@
   "hardware_resource_research": {
     "state": "Completed generic resource/profiler bodies and transaction reviews retired; current measured metadata remains in compact results.",
     "schedulable_now": false,
-    "current_metadata_commit": "e8de942dd",
+    "current_metadata_commit": "72bf7a555",
     "current_metadata_path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-hardware-profile-current.json",
     "verified_limits": [
       "VTune2026.4 gpu-hotspots rejects Ryzen5600X before target launch; no hardware counters, not an observed permission denial.",
       "Executed attention kernels128GRF/SIMD16, spill metadata2112B/scratch4096B, dynamic-local20032B in closed K-staging comparison.",
       "Compiler static slm_size32 unit/rounding not verified; dynamic-local values are bytes. No occupancy/saturation or physical bus/DRAM traffic proof.",
-      "Past report confused20coreB580 withB570; do not reuse that hardware capacity claim."
+      "Past report confused20coreB580 withB570; do not reuse that hardware capacity claim.",
+      "Kvec4 executed128GRF/SIMD16,2368B spill metadata and4096B scratch versus cached-Q2112B spill; K loads lower to two d32 A64 loads at align2. No hot-spill/occupancy/DRAM inference.",
+      "Cache/no-cache changes dynamic-local storage as well as fragment lifetimes; already measured model benefit is4.306% at6ae5b81a7. New Kvec4 model gain is4.800% at23b0e7bb8; no duplicate generic cache/GRF experiment without a new controlled question."
     ],
     "automatic_grf_rejection_commit": "b82207709",
     "primary_sources": [
       "https://github.com/intel/intel-graphics-compiler/blob/master/documentation/configuration_flags.md",
       "https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_intel_grf_size.asciidoc"
     ],
-    "retirement_manifest_commit": "761cd4c59a3ba178a9321af35e547206a5eae58c"
+    "retirement_manifest_commit": "761cd4c59a3ba178a9321af35e547206a5eae58c",
+    "consumed_gather_register_reports": "Retired with path/hash/reason manifest66980745b; useful corrections retained above and in committed results, not full bodies."
   },
   "current_operation_ceiling_scope": {
     "schedulable_now": false,
@@ -466,26 +469,6 @@
     },
     "retention": "Indexed conditional knowledge for measured long-prefill residency study; do not read or automatically commit the body."
   },
-  "gather_memory_parallelism_scope": {
-    "classification": "knowledge_collection",
-    "schedulable_now": false,
-    "eligible_at_dispatch": true,
-    "prerequisites_met": [
-      "Closed source2d4f24484 comparison shows row-coalesced latency regressions despite matching emitted resource/payload counts.",
-      "Installed typed vec::load implementation and newKvec4 source112071c5c provide a concrete lowering/MLP applicability question; literature study does not require a missing ISA dump."
-    ],
-    "question": "Sparse gather versus coalescing: outstanding memory parallelism, local stores and compiler lowering; distinguish hypotheses without inventing counters.",
-    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/gpu-gather-memory-parallelism.md",
-    "main_reads_body_on_arrival": false,
-    "state": "Orca report and native Luna-max review complete; researcher terminal closed after settled completion.",
-    "report_sha256": "1b3ecf45775414ca7c15aefa3f4f8e05c2679f201529c3179eb21f0541a89055",
-    "report_bytes": 18219,
-    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/gather-vmm-review.json",
-    "review_sha256": "6fefbbb0985bec982fa341a5304a57855a46dce3015db22482ded34118e8546c",
-    "retention_consumer": "Current Kvec4 model comparison and source/ISA lowering decision; retire after comparison evidence and method are extracted.",
-    "next_scope": "Conditional only; prerequisite evidence recorded in external review. Do not repeat the same generic scan.",
-    "main_decision_update": "Kvec4 clean component latency improved9.16/10.15/15.72% with bitwise/guard/alignment gates. Executed ISA72bf7a555 shows two32bit K loads (align2), not one64bit load; matched model screen active. No physical traffic/MLP/bank/occupancy counter claim."
-  },
   "vmm_graph_lifetime_scope": {
     "classification": "knowledge_collection",
     "schedulable_now": false,
@@ -505,33 +488,5 @@
     "retention_consumer": "Pinned decode placement owner/reader/binding census, then retention/rebuild decision; no VMM feature adoption.",
     "next_scope": "Conditional only; prerequisite evidence recorded in external review. Do not repeat the same generic scan.",
     "review_correction": "Optional SYCL graph native recording supports backend command submissions; it does not establish host VMM graph nodes or automatic remap ordering."
-  },
-  "qsa_register_lifetime_scope": {
-    "classification": "decision_support",
-    "schedulable_now": false,
-    "prerequisites_met": [
-      "Kvec4 source112071c5c and unchanged kernel in52f047586 have closed bitwise/guard/alignment/262144 component gates and six-sample gains.",
-      "Executed SIMD16 baseline/candidate ISA72bf7a555 is available with128GRF each,2112/2368spill bytes and4096scratch; this question needs source/ISA, not unavailable occupancy counters.",
-      "Prior automatic256GRF b82207709 regressed12.65-16.65%, with a confounded kernel-functor form; any simple bigger-GRF recommendation would repeat a rejected experiment."
-    ],
-    "question": "Attribute current sparse-QSA register lifetimes and static spill sources across cached-Q, PV accumulators and K staging; compare source scheduling alternatives and experimental controls without claiming occupancy or changing the kernel.",
-    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-register-lifetime.md",
-    "main_reads_body_on_arrival": false,
-    "state": "Orca Luna and native Luna-max review complete; exact settled researcher terminal closed. Main matched A/B remains active.",
-    "eligible_at_dispatch": true,
-    "dispatch": "ctx_499b25ba545a",
-    "task": "task_489a6e33d2a3",
-    "report_sha256": "f736255b37d9a1ecad8c755e8f20623081b851c942bf5e97c6dda0210e482dfa",
-    "report_bytes": 11910,
-    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-register-lifetime-review.json",
-    "review_sha256": "35b9109beedce8e09baf61988883505a893c7c38c1097bd99b41c9617ee7cb98",
-    "review_bytes": 7263,
-    "reviewed_digest": [
-      "PV accumulators are required persistent online state; cached-Q is an adjustable long-lived fragment set, but static spill metadata does not establish hot spill cost.",
-      "Qcache/no-cache model gain was already measured4.306% at6ae5b81a7; a duplicate toggle without a new question adds no evidence.",
-      "VectorK4 currently requires CacheQueries by static_assert; fixing K staging while toggling cache needs an explicit source change. Cache mode also changes dynamic-local requirements, so it is not a pure register-pressure experiment.",
-      "No code adoption or follow-on scope during frozen A/B."
-    ],
-    "retention_consumer": "Current Kvec4 decision only. After A/B, retain this compact correction and retire the overlapping body/review/launch transaction files."
   }
 }
