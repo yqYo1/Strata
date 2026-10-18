@@ -1476,5 +1476,39 @@
       "No occupancy/spills/I-cache/SFU/critical-path measurement is established. Follow-up remains conditional during current model cohort."
     ],
     "observed_failure_evidence": "bench/results/2026-10-15-pr6-recovery-audit/submission-acceptance-current.json; installed adapter ELF identity is pinned, exact source derivation remains unproven."
+  },
+  "down_workgroup_row_cache_contract_scope": {
+    "classification": "decision_support",
+    "schedulable_now": false,
+    "eligible_at_dispatch": true,
+    "prerequisites_met": [
+      "Main selected an explicit workgroup row-cache design in commit109aa7d08, retaining the published DPAS/rounding/scatter contract and all current controls.",
+      "Prior fixed-window Down comparison failed its gate; exact code size and source per-value metadata path are recorded, without a saturation claim.",
+      "This review changes no pinned input and needs no process inspection or hardware work during the frozen GU cohort."
+    ],
+    "question": "Assess the selected16/128-row workgroup-local token/weight cache against SYCL/TLA barriers, tails, lifetime, errors and exact arithmetic; compare static factoring and compile-time commoning counterarguments.",
+    "source_commit": "109aa7d08",
+    "source_files_sha256": {
+      "src/prefill/sycl/vllm_xe2/native16.cpp": "56f07930bfd201e17b419f34ee0ff1a3f7da06d8515f763f6cea907dab74308a",
+      "src/prefill/sycl/vllm_xe2/native16.hpp": "0591edc61d600139733ab131addf0b996aa76f86c6c0eebaeb5f66cdaf4e1152",
+      "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp": "84fb1251c2f9f93bd7774fb2a5a6c928df9ac8e86d1c7f6cf1a6cec058403fa6",
+      "bench/sycl/moe_down_scatter.cpp": "d6156021d39e065e76f2fb97b31866f390c8312d127ee0e7bfb54ca01a9f76b6",
+      "docs/SYCL_NATIVE16_PREFILL.md": "430854c99f80838002039164210c0c1508ef12b7162e84c06c474c6ba3b12d3b"
+    },
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/down-workgroup-row-cache-contract.md",
+    "report_budget": {
+      "words": [
+        1600,
+        2300
+      ],
+      "maximum_bytes": 32768
+    },
+    "state": "Source-only review active; Main continues frozen GU model cohort without steering.",
+    "main_reads_body_on_arrival": false,
+    "retention_consumer": "Main next Down component implementation after the GU cohort closes; native Luna-max review first, retire transactional report after decision.",
+    "dispatch": "ctx_ab7111815d0c",
+    "task": "task_efb7c9ba8733",
+    "terminal": "term_4a395514-c73f-40af-a829-45dcb9c247af",
+    "model_evidence": "Custom gpt-6-luna/medium argv; tui-idle satisfied, worker-start input_accepted and turn_started observed."
   }
 }
