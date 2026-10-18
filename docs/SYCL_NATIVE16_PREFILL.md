@@ -1165,7 +1165,7 @@ same-build GU fixture are preserved before overwrite. These are prospective
 performance gates, not a new model performance result.
 
 At source`c9ad511e4f3ec8387327e6c86d8e6a9e02988eac`, the54 CPU ownership,
-33 traced small-check and78 full correctness events passed. Both policies,
+33 traced small-check and78 full correctness events passed. All three policies,
 tails, capture/non-capture, immutable inputs, invalid maps and checked exception
 retirement completed without a fresh driver fault. The current
 [component result](../bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json)
