@@ -1,5 +1,5 @@
 {
-  "source_commit": "7ad7aad7ad7399ba54ce3aaa5171b0298370e117",
+  "source_commit": "dc8ca3459414c409cc7f87c31c038f0f7ce5b02f",
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -80,21 +80,23 @@
   "production_selected": false,
   "model_quality_qualified": false,
   "replaces": {
-    "source_commit": "7fbe795cebbf898bf27b1e6ad7debe86cfa93a5f",
+    "source_commit": "7ad7aad7ad7399ba54ce3aaa5171b0298370e117",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-      "bytes": 20960536,
-      "sha256": "fa35ec33debd8f8262bf2b7f52171eaeaca545e9a009f27be9ffb02c34ac2927"
+      "bytes": 21345208,
+      "sha256": "bc1a9233fbfae30d245c11263e1034c77ea9525f30f657e3e6f399a73f9d1b8e"
     },
     "source_build_passed": true,
-    "retained_binary_source_commit": "7fbe795cebbf898bf27b1e6ad7debe86cfa93a5f",
+    "retained_binary_source_commit": "7ad7aad7ad7399ba54ce3aaa5171b0298370e117",
     "reason": "Closed unused comparison engine; original source/recipe recovered from Git. Reuse its cache for the immediate corrected build, not a retained old generation."
   },
   "targets": [
     "strata",
-    "sycl_moe_down_scatter_bench"
+    "sycl_qsa_bf16_prefix_kvvec4_test",
+    "sycl_qsa_bf16_prefix_ordered_exp_test",
+    "sycl_qsa_bf16_prefix_ordered_exp_bench"
   ],
-  "retention_consumer": "Known-good bb8 engine/GDN fallback plus current output-copy Down component candidate. Reuses previous comparison cache after Git source/recipe recovery; keep only these2 qualified/current comparison generations plus explicitly recorded legacy provenance holds. Candidate is not model-qualified.",
+  "retention_consumer": "Known-good bb8 engine/GDN fallback plus current ordered-exp QSA candidate. Prior output-copy generation/source recovered before cache reuse; obsolete Down fixture and closed logs retired. Keep only these2 qualified/current comparison generations plus explicitly recorded legacy provenance holds.",
   "retained_validation_reference": {
     "source_commit": "7829568c61f4a47e5c1b06497f59e41a3417a5fb",
     "binary": {
@@ -159,26 +161,32 @@
   },
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-    "bytes": 21345208,
-    "sha256": "bc1a9233fbfae30d245c11263e1034c77ea9525f30f657e3e6f399a73f9d1b8e"
+    "bytes": 21499072,
+    "sha256": "bfb9bf19fd93d2d5f4751d6ed97f62c9a4d684b1050b798c621971c39501090f"
   },
-  "compile_database_sha256": "14b196583de92fa05257e717b9de693316644cd53bea6d838e241bcfc8c23f05",
-  "configured_compile_entries": 215,
+  "compile_database_sha256": "6471b0cb0d11bae6a27f8c4bf3a50dc3b41eef4a9708cb27bcb8157cf59f4f0c",
+  "configured_compile_entries": 217,
   "fixtures": {
-    "sycl_moe_down_scatter_bench": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_down_scatter_bench",
-      "sha256": "497c33892c765988b2d2609ea474150ae7e455c690bc59b14e9cdb23111973a2",
-      "retired": true,
-      "retirement_reason": "Closed rejected component; source/recipe recovered and manifest committed before deletion. QSA comparison rebuild replaces this candidate; validated bb8 engine/GDN fallback remains."
+    "sycl_qsa_bf16_prefix_kvvec4_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_kvvec4_test",
+      "sha256": "bc6add39d091a6aa57ca7bf0330c4c269ce1dd7106d5d2a238eb3948adb6fa89"
+    },
+    "sycl_qsa_bf16_prefix_ordered_exp_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_ordered_exp_test",
+      "sha256": "7e84f4b821bd73336661262996f8f9434d937e600da410feb1b40e262296e0e9"
+    },
+    "sycl_qsa_bf16_prefix_ordered_exp_bench": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_ordered_exp_bench",
+      "sha256": "d06bf20eee697f0ed7b46d1fe6139d3cd2380bccb7eaa471f382dab9901fded9"
     }
   },
   "ownership_closed": true,
   "inputs": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "7ad7aad7ad7399ba54ce3aaa5171b0298370e117",
+      "revision": "dc8ca3459414c409cc7f87c31c038f0f7ce5b02f",
       "count": 492,
-      "aggregate_sha256": "9226c2e82975dcb063f40e4e9804d370b8ed8d6b7d447446baa8a5f80688f67c"
+      "aggregate_sha256": "7f0fc1b6d58734682961dfe91814519e67ad4b92f7e96c2d8a38c7c61551d0a4"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
@@ -193,16 +201,10 @@
       "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
     }
   ],
-  "down_component_qualification": {
-    "source_commit": "7ad7aad7ad7399ba54ce3aaa5171b0298370e117",
-    "state": "All36 ownership/14 traced/52 correctness cases passed. Three-process540-measured/90-warmup sample comparison completed without faults; output-copy/separate ratio1.175797 fails advance gate. No model dispatch adoption.",
-    "comparison": "Fixed78451-token accumulator; separate/raw/output-copy arms; matched tile and precision.",
-    "original_dense_definition_sha256": "9a4a8bb0ecfba41062626be271f894c2dab9dcd503bf138464a3bdf817082ccc",
-    "original_dense_definition_preserved_from": "7829568c61f4a47e5c1b06497f59e41a3417a5fb",
-    "model_adopted": false,
-    "correctness_result_commit": "37f3c641b",
-    "correctness_result_path": "bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json",
-    "performance_result_path": "bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json",
-    "advance_to_model": false
+  "qsa_ordered_exp_qualification": {
+    "source_commit": "dc8ca3459414c409cc7f87c31c038f0f7ce5b02f",
+    "state": "Build passed; traced smoke, component numerical/state and repeated performance gates pending. No model hook.",
+    "reviewed_prototype_commit": "36023af50c1fc1d4f1d6dc2a827a75bdbd0c3c8a",
+    "model_adopted": false
   }
 }
