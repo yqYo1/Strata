@@ -1027,5 +1027,33 @@
       "correction": "Schedule B zeros padded heads while the serial path updates their probabilities/normalizers for valid rows. A future bitwise contract must preserve that state or explicitly exclude it prospectively.",
       "next_scope": "Do not repeat the survey. First finish host attribution, select an exact QSA prototype and define observed-state/numerical/workload gates before implementation research."
     }
+  },
+  "moe_status_host_readback_scope": {
+    "classification": "decision_support",
+    "schedulable_now": false,
+    "question": "Distinguish runtime-internal blocking in pageable-host D2H memcpy from host work around the mode10 status check; compare host-USM and safely coalesced drain ownership without claiming a speedup.",
+    "prerequisites_met": [
+      "Completed39,260-token untraced gate at28a70b735 reports3.884880529s CPU in48 status regions outside explicit wait instrumentation, with exact work-count/accounting gates and no fresh fault.",
+      "Current status region contains cudaMemcpyAsync to owner.status_observed and cudaStreamSynchronize; compat forwards these to q.memcpy and explicit wait_and_throw respectively."
+    ],
+    "source_commit": "7829568c61f4a47e5c1b06497f59e41a3417a5fb",
+    "source_sha256": {
+      "src/sycl/compat.cpp": "bd5a664f9a0bd91b0e8e2e59f67d0a2c38c81599613831abbd6e16ad98c01689",
+      "src/prefill/moe_window.inc": "b2369ed8791c914d659fa4511ce815386d761b5d4181153485a43a204395345b",
+      "include/strata/sycl/cpu_wait_profile.hpp": "7adc16d85fdbe1dbd85cd6696652eb1c115d9dc9565e03622b97a3168b8ee123"
+    },
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/moe-status-host-readback.md",
+    "state": "Orca source/runtime investigation running; turn_started observed, no implementation.",
+    "report_budget": {
+      "words": [
+        1500,
+        2300
+      ],
+      "maximum_bytes": 28672
+    },
+    "retention_consumer": "Next Main decision after warm host attribution; validate whether status submission internally blocks before selecting a lifetime-safe optimization.",
+    "task_id": "task_1e92a95de99e",
+    "dispatch_id": "ctx_eee5b6edceab",
+    "terminal": "term_7817a47f-38dc-4b40-be2d-7ab82a7dccdc"
   }
 }
