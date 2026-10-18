@@ -1,5 +1,5 @@
 {
-  "source_commit": "dfba48ef52e1bd8df596ecda06ab4eae0c882359",
+  "source_commit": "b3e982d93ba92e8d4ec3e9415e57e51a7a7a9314",
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -80,21 +80,21 @@
   "production_selected": false,
   "model_quality_qualified": false,
   "replaces": {
-    "source_commit": "ce1e950a843953c7856382978f7993bcc848e366",
+    "source_commit": "dfba48ef52e1bd8df596ecda06ab4eae0c882359",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
       "bytes": 21499072,
       "sha256": "e400bbe545fcb13376812f353f89648a9924e2af1ff9c26b593c31a3e28be934"
     },
     "source_build_passed": true,
-    "retained_binary_source_commit": "ce1e950a843953c7856382978f7993bcc848e366",
+    "retained_binary_source_commit": "dfba48ef52e1bd8df596ecda06ab4eae0c882359",
     "reason": "Closed unused comparison engine; original source/recipe recovered from Git. Reuse its cache for the immediate corrected build, not a retained old generation."
   },
   "targets": [
     "strata",
-    "sycl_submission_test"
+    "sycl_moe_gu_swiglu_bench"
   ],
-  "retention_consumer": "Imminent GU/SwiGLU ownership/prototype qualification; choose the validated engine and retire the extra generation at comparison closure.",
+  "retention_consumer": "Current long-prefill comparison and its attention fixtures; retire when comparison closes.",
   "retained_validation_reference": {
     "source_commit": "ce1e950a843953c7856382978f7993bcc848e366",
     "binary": {
@@ -168,24 +168,24 @@
   },
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-    "bytes": 21499072,
-    "sha256": "e400bbe545fcb13376812f353f89648a9924e2af1ff9c26b593c31a3e28be934"
+    "bytes": 21507408,
+    "sha256": "57fe44b579123c1d085dfd485d131053ffe66dde2e1e4b4042001947eb9f3edc"
   },
-  "compile_database_sha256": "96397f97da5da135e169b0a4cae46df5b23b0a58c973d30573a60b4cfb7e69ec",
-  "configured_compile_entries": 218,
+  "compile_database_sha256": "0aacba49cb00933c4c1b159db95cde1647c51470c56db8970b36703912efee59",
+  "configured_compile_entries": 219,
   "fixtures": {
-    "sycl_submission_test": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_submission_test",
-      "sha256": "3582ff3453f0e757cb2f2ac20a194180dcb3553e15b65f0c174ae5ed1f20d0cd"
+    "sycl_moe_gu_swiglu_bench": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_gu_swiglu_bench",
+      "sha256": "61e1176400bee22225ed83961af5d4457c8e097da56e80a70f7070066c5431fe"
     }
   },
   "ownership_closed": true,
   "inputs": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "dfba48ef52e1bd8df596ecda06ab4eae0c882359",
-      "count": 493,
-      "aggregate_sha256": "52d94e2fd7fd9e0d9612a73ac015d4998bb949b57315fee3bb63e7426f992d5f"
+      "revision": "b3e982d93ba92e8d4ec3e9415e57e51a7a7a9314",
+      "count": 495,
+      "aggregate_sha256": "8132d6b98c1c4479c9c4776cc2b28b0980561af3a0ee939747f5b034b178e32b"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
@@ -199,11 +199,5 @@
       "count": 5703,
       "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
     }
-  ],
-  "submission_qualification": {
-    "source_commit": "dfba48ef52e1bd8df596ecda06ab4eae0c882359",
-    "state": "Immediate control passed10 cases; forced-batched candidate rejected at explicit-stream profiling with UR_RESULT_ERROR_PROFILING_INFO_NOT_AVAILABLE. Owner closed, no fresh GPU fault; no model measurement or adoption.",
-    "engine_binary_identical_to900_6_tps_reference": true,
-    "model_runtime_adopted": false
-  }
+  ]
 }
