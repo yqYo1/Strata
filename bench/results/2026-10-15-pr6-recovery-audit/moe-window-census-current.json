@@ -174,7 +174,7 @@
   },
   "config_sha256": "890c31588997c686d64534caef167947bc17f361f09705cacb5dd84c9f2835e5",
   "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
-  "complete": false,
+  "complete": true,
   "passed": false,
   "active": false,
   "model_quality_qualified": false,
@@ -188,5 +188,64 @@
     "retirement": "Extract compact phase samples and faults; retire normal full logs/JIT after source/recipe recovery. No implementation adoption."
   },
   "source_count": 102,
-  "source_aggregate_sha256": "bd95eec6d3b88cddc8bdab7b7f33bf82c89f2b32ec1a50fbd5f7d457e2d06ae3"
+  "source_aggregate_sha256": "bd95eec6d3b88cddc8bdab7b7f33bf82c89f2b32ec1a50fbd5f7d457e2d06ae3",
+  "exit_code": 1,
+  "requests": [
+    {
+      "run": 0,
+      "ok": false,
+      "eligible": false,
+      "actual_prompt_tokens": null,
+      "actual_read_tokens": null,
+      "actual_reused_tokens": null,
+      "generated_tokens": 0,
+      "thinking_requested": true,
+      "reasoning_observed": false,
+      "stream_complete": false,
+      "request_sha256": "1fd63b8c67a1888e443800b5c6d339ca116df2cb91941e6f332b6adf74275b3a",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasoning_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ttft_s": null,
+      "total_s": 1.56,
+      "prompt_tps": null,
+      "prompt_ms": null,
+      "decode_tps": null,
+      "decode_ms": null,
+      "prompt_tps_source": null,
+      "decode_tps_source": null,
+      "drafts_offered": null,
+      "drafts_accepted": null,
+      "finish_reason": null,
+      "err": "{'type': 'server_error', 'message': 'prefill layer-major: unsupported observer/legacy option STRATA_PREFILL_TIMING'}; usage.prompt_tokens must report >= 32768, got None; timings.prompt_n must report >= 32768, got None; every reported reuse count must be zero, got []; completion usage outside 1..24; actual prompt lacks verified context/output headroom; missing finite positive engine prompt_per_second",
+      "eligibility_errors": [
+        "{'type': 'server_error', 'message': 'prefill layer-major: unsupported observer/legacy option STRATA_PREFILL_TIMING'}",
+        "usage.prompt_tokens must report >= 32768, got None",
+        "timings.prompt_n must report >= 32768, got None",
+        "every reported reuse count must be zero, got []",
+        "completion usage outside 1..24",
+        "actual prompt lacks verified context/output headroom",
+        "missing finite positive engine prompt_per_second"
+      ]
+    }
+  ],
+  "engine_exit_code": 1,
+  "native_identity": {
+    "pid": 3930665,
+    "start_ticks": 64388468,
+    "sid": 3930609
+  },
+  "route_selection": [],
+  "error": "native engine exit",
+  "error_excerpt": "k failed (raise ulimit -l); SYCL ordinary host arena; MAP_HUGETLB unavailable (needed 23983 2 MiB pages, vm.nr_hugepages=0); using 4 KB pages\nstrata generate: loaded 46.84 GiB at 1.17 GiB/s\nstrata trace: 3764 MiB free after the weights, the session and the drafter\nstrata generate: experimental native Q5_K head, 521472000 bytes\nstrata generate: expert cache 128 slots, 0.26 GiB of VRAM; policy is\nstrata trace: 2998 MiB free after opening the expert cache\nstrata generate: SYCL cached experts use native Q8_1 arithmetic; logits can differ from CPU experts.\n                 R4.2g PER-LAYER: each layer owns 2 slots (0..1).\nstrata trace: 2998 MiB free after the profile fill\nstrata generate: pre-filled 128 of 128 slots from the profile; slot 0 verified\nstrata generate: native GPU hit kernels captured at session setup\nstrata trace: 2984 MiB free after the R4 hit path\nstrata generate: R4 hit path ON - resident experts are computed on the GPU\nstrata generate: 5 expert-pool workers + the host thread\nstrata trace: 2984 MiB free after the expert cache and the graphs\nstrata generate: session is up (engine 0.1.38)\nstrata generate: token graph hit path: 128 resident experts, decided on the device\nstrata serve: the prompt path allocates its own buffers (too few cache slots to borrow)\n[native16-route] engine=bf16 backend=vllm tile=auto(T<128:compact;else:wide) aot=bmg-g21-a0 isolated=1 experimental\nstrata prefill: FP16 MoE compact requested=1 effective=1, chunk=8192, scratch rows=8192, accounted=2311569920, shared region=1180698624 bytes\nstrata trace: 773 MiB free after the head and the prompt path\nstrata verify: window up to 4 tokens, 63.3 MiB of device buffers\nstrata mtp: draft head over 106299 tokens (212.9 MiB)\nstrata trace: 493 MiB free after the verifier and the drafter's binding\nstrata serve: 493 MiB of VRAM free with everything loaded\nstrata trace: request 74 0\nstrata trace: prompt start 73 -1\nstrata trace: prompt chunk 0 of 73\nstrata trace: prefill issuer threaded=0 stream_all=0 ring=8 chunk=73 entries=0\nstrata trace: prefill skip releases=0 after-open-group=0\nstrata prefill timing: 73 tokens, GPU timeline 25631 ms, wall 25878 ms, host staging 3059 ms: embed+steps 6791 (26.5%) hc read 81 (0.3%) gdn 165 (0.6%) qsa proj 502 (2.0%) qsa indexer 143 (0.6%) qsa select 441 (1.7%) qsa attn 11489 (44.8%) router+shared 118 (0.5%) host grouping 356 (1.4%) gather 324 (1.3%) wait copy 35 (0.1%) dequant 1826 (7.1%) gemm gate/up 211 (0.8%) gemm down 2596 (10.1%) combine 4 (0.0%) ple 280 (1.1%) gdn conv+gates 183 (0.7%) gdn recurrence 9 (0.0%) gdn out proj 74 (0.3%)\nstrata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 6791 ms, waiting for each chunk 11 ms, after each chunk (the draft layer, progress) 238 ms, PLE 293 ms\nstrata trace: read 73 tokens (batched) in 25878.6 ms\nstrata trace: prompt done (slots refilled) -1 -1\nstrata trace: window 73 1\nstrata verify: captured the 1-token window in 49 event-completed segments\nstrata verify: capture 1 tokens 3784.347 ms, free VRAM 232.9 MiB\nstrata verify: 48 shared/hit graphs can overlap CPU experts\nstrata trace: window 74 4\nstrata verify: captured the 4-token window in 49 event-completed segments\nstrata verify: capture 4 tokens 76.429 ms, free VRAM 100.2 MiB\nstrata verify: 48 shared/hit graphs can overlap CPU experts\nstrata trace: window 78 4\nstrata trace: window 82 4\nstrata trace: window 86 4\nstrata trace: window 90 4\nstrata trace: window 94 4\nstrata serve: prompt 74 tokens = 0 reused + 74 read in 25883 ms (2.9 tok/s), 24 generated in 6428 ms (3.7 tok/s), drafts accepted 18 of 18, 0 checkpoints\nstrata serve: decode expert cache hit rate: 3.6% (427 hits / 12000 lookups)\nstrata trace: request 39260 0\nstrata trace: prompt start 39259 -1\nstrata prefill dense: phase=retired residency=Full activations=0 full_bytes=2116951040 bank_bytes=50918400 snapshot_bytes=2116951040 overlay_rows=0 session_recapture=0 verifier=1 free_bytes=1482973184 total_bytes=10666115072\nstrata prefill dense: phase=bank residency=Bank activations=0 full_bytes=2116951040 bank_bytes=50918400 snapshot_bytes=2116951040 overlay_rows=0 session_recapture=0 verifier=1 free_bytes=3549380608 total_bytes=10666115072\nstrata mtp: prompt expert phase=before-detach free_bytes=3549380608 total_bytes=10666115072\nstrata mtp: prompt expert phase=after-detach free_bytes=4257173504 total_bytes=10666115072\nstrata prefill cpu wait: version=3 available=1 complete=0 clock_or_accounting_error=0 open_waits=0 wait_throws=0 wall_s=0.000045575 main_cpu_s=0.000044874 wait_cpu_s=0.000000000 wait_wall_s=0.000000000 outside_wait_cpu_s=0.000044874 wait_count=0 compute_count=0 transfer_count=0 event_count=0 compat_count=0 direct_count=0 compute_cpu_s=0.000000000 transfer_cpu_s=0.000000000 event_cpu_s=0.000000000 compat_cpu_s=0.000000000 direct_cpu_s=0.000000000 compute_wall_s=0.000000000 transfer_wall_s=0.000000000 event_wall_s=0.000000000 compat_wall_s=0.000000000 direct_wall_s=0.000000000\nstrata prefill cpu host: version=3 available=1 open_regions=0 unclassified_cpu_s=0.000044874 unclassified_wall_s=0.000045575 source_copy_count=0 source_copy_throws=0 source_copy_cpu_s=0.000000000 source_copy_wall_s=0.000000000 source_copy_outside_wait_cpu_s=0.000000000 source_copy_outside_wait_wall_s=0.000000000 host_group_count=0 host_group_throws=0 host_group_cpu_s=0.000000000 host_group_wall_s=0.000000000 host_group_outside_wait_cpu_s=0.000000000 host_group_outside_wait_wall_s=0.000000000 gemm_submit_count=0 gemm_submit_throws=0 gemm_submit_cpu_s=0.000000000 gemm_submit_wall_s=0.000000000 gemm_submit_outside_wait_cpu_s=0.000000000 gemm_submit_outside_wait_wall_s=0.000000000 route_exchange_count=0 route_exchange_throws=0 route_exchange_cpu_s=0.000000000 route_exchange_wall_s=0.000000000 route_exchange_outside_wait_cpu_s=0.000000000 route_exchange_outside_wait_wall_s=0.000000000 upload_submit_count=0 upload_submit_throws=0 upload_submit_cpu_s=0.000000000 upload_submit_wall_s=0.000000000 upload_submit_outside_wait_cpu_s=0.000000000 upload_submit_outside_wait_wall_s=0.000000000 residual_input_host_count=0 residual_input_host_throws=0 residual_input_host_cpu_s=0.000000000 residual_input_host_wall_s=0.000000000 residual_input_host_outside_wait_cpu_s=0.000000000 residual_input_host_outside_wait_wall_s=0.000000000 residual_input_device_count=0 residual_input_device_throws=0 residual_input_device_cpu_s=0.000000000 residual_input_device_wall_s=0.000000000 residual_input_device_outside_wait_cpu_s=0.000000000 residual_input_device_outside_wait_wall_s=0.000000000 residual_store_host_count=0 residual_store_host_throws=0 residual_store_host_cpu_s=0.000000000 residual_store_host_wall_s=0.000000000 residual_store_host_outside_wait_cpu_s=0.000000000 residual_store_host_outside_wait_wall_s=0.000000000 residual_store_device_count=0 residual_store_device_throws=0 residual_store_device_cpu_s=0.000000000 residual_store_device_wall_s=0.000000000 residual_store_device_outside_wait_cpu_s=0.000000000 residual_store_device_outside_wait_wall_s=0.000000000\nstrata mtp: prompt expert phase=after-prompt-before-restore free_bytes=4257173504 total_bytes=10666115072\nstrata mtp: expert source original=0 bytes=707788800 source=owned-RAM\nstrata mtp: experts restored bytes=707788800, cumulative detach=0.986 ms reload=127.110 ms decode graph recapture=0.000 ms (lazy, later captures accumulate)\nstrata mtp: prompt expert phase=after-restore free_bytes=3549376512 total_bytes=10666115072\nstrata prefill dense: phase=restored residency=Full activations=0 full_bytes=2116951040 bank_bytes=50918400 snapshot_bytes=2116951040 overlay_rows=0 session_recapture=0 verifier=1 free_bytes=179781632 total_bytes=10666115072\nstrata native dense host profile: v=2 complete=1 outcome=run_false entry_ms=390.962 run_ms=128.877 restore_ms=837.793 entry_done=1 run_returned=1 restored=1 intervals=NONEXCLUSIVE entry_scope=boundary_entry_through_Bank run_scope=MTP_release_prompt_callbacks_MTP_restore restore_scope=restore_drain_through_owner_PLE_graph_verifier_restore outer_startup_snapshot_unmeasured=1\nstrata trace: read 39259 tokens (batched) in 1357.7 ms\nstrata serve: prefill layer-major: unsupported observer/legacy option STRATA_PREFILL_TIMING\n",
+  "ownership_closed": true,
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  }
 }
