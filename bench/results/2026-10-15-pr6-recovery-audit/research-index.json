@@ -302,7 +302,7 @@
     ],
     "question": "Derive source-grounded logical FLOP/data-volume bounds per current prefill stage and identify which hardware-ceiling measurements would change the next optimization decision. No repeated generic hardware/profiler survey.",
     "ownership": "Orca Luna read-only source/literature; Main continues owned A/B, no extra execution.",
-    "state": "Orca report and native Luna-max review complete; Main is finishing active A/B before any ceiling execution.",
+    "state": "Reviewed reference retained for Main-owned production-shaped GEMM ceiling measurement; both Qcache and Kvec4 matched model screens are now closed.",
     "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/current-operation-ceilings.md",
     "report_sha256": "d38d995cb764e4baa1ae5cf609facb977b5ed801cb44716adf4b268f9eee4ed3",
     "report_bytes": 12481,
@@ -325,7 +325,8 @@
       "prerequisites_met": [
         "Matched Qcache A/B closed with exact actual request/binary/config parity at6ae5b81a7.",
         "Recovered3361-bin histogram from66d5c545 and reverified canonical SHA4aa422bcaddb00220f44ca5ad931328df36425f226cc5d49f21aca1e0f39d0b3.",
-        "Current source gemm16.cpp selects compact16x64 forM<128, wide128x128 otherwise; native16.cpp confirms complete M/N/K tile geometry."
+        "Current source gemm16.cpp selects compact16x64 forM<128, wide128x128 otherwise; native16.cpp confirms complete M/N/K tile geometry.",
+        "Kvec4 same-binary78K A/B also closed at23b0e7bb8: baseline756.3 versus candidate792.6median; all owners closed and consumed raw artifacts retired. Measure production FP16 operands/BF16 outputs, not a generic matrix peak."
       ]
     },
     "retention": "Keep report/review until Main records ceiling measurement decision; no automatic full-report commit.",
