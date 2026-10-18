@@ -147,7 +147,7 @@
       "candidate_path": "bench/results/2026-10-15-pr6-recovery-audit/own-qsa-kpitch-v1",
       "decision": "Reuse the existing source-audited pitch proposal after the current comparison; no new duplicate survey. Recheck immutable source/provenance and wire maintained API/tests before compiling.",
       "candidate": "Fixed score33,Cells32,WG128,SG16; K36/V260 shared tile needs9216 BF16 values,30272B requested local payload,34368B admission minimum. No hardware occupancy/bank map or performance result.",
-      "do_not_repeat": "Old global K span256 schedule regressed10.35–29.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
+      "do_not_repeat": "Old global K span256 schedule regressed10.35\u201329.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
     },
     "reviewed_base_source_sha256": "fa505d02e2b24f7cb6948033921fa697c8aeb58e6f4df6d873f13e5a7918e36b",
     "source_sha256": "c3ad8326f097050ff9ab1859e116f2cad3709a8464162143f752bc294cbe1e01",
@@ -208,7 +208,7 @@
         "bytes": 19144,
         "source_commit": "fbc7f56d7b0ddb5db5f3722ef33ca044c3f8a5c8",
         "reason": "Its conditional consumer is a selected-cell stable-reduction split. The closed QSA screen and pending pitch candidate select no split or reduction bottleneck.",
-        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report’s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
+        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report\u2019s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
       },
       {
         "path": "bench/results/2026-10-15-pr6-recovery-audit/research-matrix-register-reuse-20261018.md",
@@ -943,46 +943,6 @@
       "Any implementation needs committed independent source plus component arithmetic/bounds/collective and codegen gates before model execution."
     ]
   },
-  "warm_host_submission_scope_audit": {
-    "classification": "decision_support",
-    "schedulable_now": false,
-    "question": "Audit source ownership and counter boundaries for classifying warmed16.63s unclassified host CPU: current MoE Tag lifetimes for non-GEMM dispatch versus existing GEMM/transfer scopes, nested Host accounting and safe optional scope ownership. No implementation, timing claims or generic validation survey.",
-    "prerequisites_met": [
-      "Two fresh78K requests show warm wall89.508s, GPU-wait CPU59.184s, outside-wait CPU29.622s and unclassified CPU16.630s at7ff786a27.",
-      "VTune software CPU collection refused launch with ptrace-scope restriction; explicit source counters are an available next path.",
-      "Existing tag/native CPU observer source is unchanged and readable; review does not require missing device counters or runtime execution."
-    ],
-    "source_sha256": {
-      "src/prefill/moe_window.inc": "f96629ab0b9850d3d7636cc7bd8b4142e028116f1e1679772b611d8475580da6",
-      "src/sycl/command_profile.cpp": "480139608ebad117634cfe98a4e30c12926757ef026f23da3e66b7c78f6adf2b",
-      "include/strata/sycl/command_profile.hpp": "0b0a2a875be247f8598ecd1052604236c240ab4c08bc5567c068ea6ae117aba4",
-      "include/strata/sycl/cpu_wait_profile.hpp": "f29b86702df27fa6510cfc31d13d0442f9386cdae491952fefbcfa7b0816567d"
-    },
-    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/warm-host-submission-scope-audit.md",
-    "state": "Orca source audit and native Luna-max review complete; worker released, PTY closed and delivery acknowledged. Main has received only the short review digest; instrumentation remains unimplemented.",
-    "retention_consumer": "Immediate Main-owned disjoint CPU timing instrumentation and its entry-gate checks; review body need at qualification closure.",
-    "report_budget": {
-      "words": [
-        1500,
-        2400
-      ],
-      "maximum_bytes": 28672
-    },
-    "report_bytes": 16051,
-    "report_sha256": "380342261b4f2b23100192cb0e7ce9740f61723ac87b29f0ca28ffd3fb448828",
-    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/warm-host-submission-scope-native-review.json",
-    "review_bytes": 7481,
-    "review_sha256": "7e019014db502c4a2350ee24a4f734ad634610efd8cdccf88ace19b7fb5e3bdd",
-    "review_digest": {
-      "accounting": "Host inside a whole expert job would overlap internal GEMM Host regions and invalidate accounting. Instrument disjoint non-GEMM segments only; Wait inside Host remains subtractable.",
-      "ownership": "Current null-Trace Tag is a no-op; a future independent host phase can time when CPU Scope is active with command GPU tracing off. No host instrumentation is implemented today.",
-      "gates": [
-        "Standalone CPU fixture checks disabled/enabled scopes, nested-region failure, exceptions and destruction/elision.",
-        "Bounded model diagnostics with command tracing off/on in separate processes; zero clock/region/throw errors and exact counter conservation."
-      ],
-      "limits": "Source feasibility/accounting only; no measured new counters, speedup or hardware-bottleneck proof."
-    }
-  },
   "closed_warm_resource_collector_review": {
     "original_source_commit": "f0861e51bc72ef6534e2146ea6708a7ffee094ae",
     "accepted_guard_commit": "468c93c8acd1c3ea92e8878cf064b7f2908523db",
@@ -994,5 +954,81 @@
       "scope_limit": "Profiled requests, not clean speed or independent process repetitions; selected GPU service is not full-window coverage or physical hardware saturation."
     },
     "retention": "Detailed report/review have no remaining consumer after original-log checks; retire under the current deletion manifest. Useful corrections are in code and this compact decision."
+  },
+  "qsa_ordered_parallel_softmax_scope": {
+    "classification": "knowledge_collection",
+    "schedulable_now": false,
+    "question": "For the current cached-query K/Vvec4 QSA kernel, compare subgroup/SLM schedules that parallelize 32 exponentials per head while retaining the existing ascending FP32 normalizer sum, and distinguish them from the historical segmented tree-reduction proposal.",
+    "prerequisites_met": [
+      "Current QSA source is available and pinned; the warm78K profile at7ff786a27 records attention20.8568s without claiming hardware saturation.",
+      "Historical R9548-lane segmented reduction exists; this task must isolate order-preserving alternatives rather than repeat that survey."
+    ],
+    "source_commit": "016ae608038f706c8baf1d598cfae6c2a2d882f2",
+    "source_sha256": {
+      "src/kernels/sycl/qsa_bf16_prefix.cpp": "787853d89c98b345b5d036c25ade23d0d5bcee52dc11e435dc22902a3336f5cd"
+    },
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-ordered-parallel-softmax.md",
+    "state": "Orca report and native gpt-6-luna max review complete; worker released, owned external terminal positively closed and delivery acknowledged. Main received only the short review digest.",
+    "retention_consumer": "Optional QSA order-preserving parallel-exp design reference after host attribution selects a GPU candidate; review need at that selection boundary.",
+    "report_budget": {
+      "words": [
+        1300,
+        2000
+      ],
+      "maximum_bytes": 24576
+    },
+    "report_bytes": 14290,
+    "report_sha256": "3ef9a3d9f8f8df6b9e0e570506475511e5552d55a83dd17b1d5f46cbaa110f4d",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-ordered-parallel-softmax-native-review.json",
+    "review_bytes": 8914,
+    "review_sha256": "467df282bdbcaa78d7de4f69550ff0958fee535da70c27b0d2378e1c86be19f0",
+    "review_digest": {
+      "decision": "Substantive source-specific design reference; conditional only, no implementation/codegen/speed evidence.",
+      "correction": "Schedule B zeros padded heads while the serial path updates their probabilities/normalizers for valid rows. A future bitwise contract must preserve that state or explicitly exclude it prospectively.",
+      "next_scope": "Do not repeat the survey. First finish host attribution, select an exact QSA prototype and define observed-state/numerical/workload gates before implementation research."
+    }
+  },
+  "moe_status_host_readback_scope": {
+    "classification": "decision_support",
+    "schedulable_now": false,
+    "question": "Distinguish runtime-internal blocking in pageable-host D2H memcpy from host work around the mode10 status check; compare host-USM and safely coalesced drain ownership without claiming a speedup.",
+    "prerequisites_met": [
+      "Completed39,260-token untraced gate at28a70b735 reports3.884880529s CPU in48 status regions outside explicit wait instrumentation, with exact work-count/accounting gates and no fresh fault.",
+      "Current status region contains cudaMemcpyAsync to owner.status_observed and cudaStreamSynchronize; compat forwards these to q.memcpy and explicit wait_and_throw respectively."
+    ],
+    "source_commit": "7829568c61f4a47e5c1b06497f59e41a3417a5fb",
+    "source_sha256": {
+      "src/sycl/compat.cpp": "bd5a664f9a0bd91b0e8e2e59f67d0a2c38c81599613831abbd6e16ad98c01689",
+      "src/prefill/moe_window.inc": "b2369ed8791c914d659fa4511ce815386d761b5d4181153485a43a204395345b",
+      "include/strata/sycl/cpu_wait_profile.hpp": "7adc16d85fdbe1dbd85cd6696652eb1c115d9dc9565e03622b97a3168b8ee123"
+    },
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/moe-status-host-readback.md",
+    "state": "Orca source audit and native gpt-6-luna max review complete; released worker, positively closed external terminal and acknowledged delivery. Main read short review digest only.",
+    "report_budget": {
+      "words": [
+        1500,
+        2300
+      ],
+      "maximum_bytes": 28672
+    },
+    "retention_consumer": "Reference for any status-wait discrimination or host-USM/deferred-drain change; no implementation selected. Review when that concrete question is closed or superseded.",
+    "report_bytes": 15611,
+    "report_sha256": "be2ab806210ce8173d52266caf3a0f706e5f253cc45f85764cd200dd7c99f82d",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/moe-status-host-readback-native-review.json",
+    "review_bytes": 16305,
+    "review_sha256": "dd3c7a68f9e9c290107cb3074e3a05cb98b9b2f964b6f69e7e94924060f8c6ff",
+    "review_digest": {
+      "correction": "attempt() preflight calls runtime_for()->check before both API bodies. Split preflight, queue lookup, copy enqueue, observer, explicit wait and post-check before attributing cost to memcpy. Both39K gates and final78K profile have now passed.",
+      "contract": "SYCL permits ordinary host pointers for memcpy; that does not prove deployed-adapter blocking or a host-USM speedup. Preserve checked owner/exception/error-status lifetimes.",
+      "next_scope": "No repeat survey. A bounded Main-owned split-wrapper or matched backlog microprobe is needed to establish cause; prioritise measured MoE fusion candidate without calling status CPU removable."
+    }
+  },
+  "closed_host_submission_scope_audit": {
+    "state": "Consumed and retired after CPU/off-on39K/warm78K gates; useful source/accounting decisions retained in maintained code and compact results.",
+    "implementation_source": "fd0c38e7119c74c6c0d16782e2ad69460dfcb4f0",
+    "qualification_record": "bench/results/2026-10-15-pr6-recovery-audit/prefill-host-attribution-current.json",
+    "retained_digest": "Time narrow non-GEMM call segments across all layers; preserve internal GEMM timers and subtract explicit Wait. Whole-job nested Host invalidates accounting.",
+    "retired_report_sha256": "380342261b4f2b23100192cb0e7ce9740f61723ac87b29f0ca28ffd3fb448828",
+    "retired_review_sha256": "7e019014db502c4a2350ee24a4f734ad634610efd8cdccf88ace19b7fb5e3bdd"
   }
 }

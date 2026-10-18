@@ -64,7 +64,64 @@ def compact_command_service(profile):
     return profile
 
 
-def extract_resource_profile(log, phase_profile, command_profile, limits):
+def selected_service_screen(profile):
+    """Descriptive per-stratum sample-mean expansion; never a hardware ceiling."""
+    kinds = {}
+    windows = set()
+    for values in profile['groups']:
+        group = dict(zip(profile['group_columns'], values))
+        windows.add(group['window'])
+        item = kinds.setdefault(group['kind'], dict(eligible_commands=0, sampled_commands=0,
+            expanded_sample_mean_service_ns=0.0))
+        item['eligible_commands'] += group['eligible']
+        item['sampled_commands'] += group['service_samples']
+        item['expanded_sample_mean_service_ns'] += (group['eligible'] *
+            group['sample_service_ns'] / group['service_samples'])
+    return dict(window_ids=sorted(windows), per_kind=kinds,
+        method='Within each selected window/kind/row-bin, multiply the sample mean service by eligible command count, then sum by kind.',
+        limits='Deterministic sparse samples in four selected windows; descriptive screening assumes within-stratum representativeness. Not full-model service, statistical confidence, GPU utilization, critical path, physical bytes or a hardware ceiling.')
+
+
+CPU_HOST_BASE = ('source_copy', 'host_group', 'gemm_submit', 'route_exchange',
+    'upload_submit', 'residual_input_host', 'residual_input_device',
+    'residual_store_host', 'residual_store_device')
+CPU_HOST_MOE = ('moe_map_upload', 'moe_job_weights', 'moe_dequant_gu',
+    'moe_dequant_down', 'moe_gather', 'moe_swiglu', 'moe_accumulate', 'moe_status')
+
+
+def extract_cpu_observers(log, expected_version=None):
+    """A complete accounting partition is distinct from a successful request."""
+    result = []
+    for prefix in ('strata prefill cpu wait:', 'strata prefill cpu host:'):
+        lines = [x for x in log.splitlines() if x.startswith(prefix)]
+        guards.require(len(lines) == 1, 'missing or duplicate CPU observer')
+        result.append(dict(part.split('=', 1) for part in lines[0][len(prefix):].split()))
+    wait, host = result
+    version = int(wait['version'])
+    guards.require(version in (3, 4) and int(host['version']) == version and
+                   (expected_version is None or version == expected_version), 'CPU observer version mismatch')
+    guards.require(wait['available'] == host['available'] == wait['complete'] == '1' and
+                   wait['clock_or_accounting_error'] == wait['open_waits'] == host['open_regions'] == '0',
+                   'incomplete or invalid CPU accounting')
+    names = CPU_HOST_BASE + (CPU_HOST_MOE if version == 4 else ())
+    for fields in result:
+        throws = [int(v) for k, v in fields.items() if k.endswith('_throws')]
+        guards.require(throws and not any(throws), 'CPU attribution includes thrown wait/host regions')
+        guards.require(all(math.isfinite(float(v)) and float(v) >= 0 for k, v in fields.items()
+                           if k.endswith('_s') or k.endswith('_count')), 'invalid CPU interval/count')
+    for name in names:
+        guards.require(all(name + suffix in host for suffix in
+            ('_count', '_throws', '_cpu_s', '_wall_s', '_outside_wait_cpu_s', '_outside_wait_wall_s')),
+            'incomplete host category: ' + name)
+    cpu_sum = sum(float(host[name + '_outside_wait_cpu_s']) for name in names)
+    wall_sum = sum(float(host[name + '_outside_wait_wall_s']) for name in names)
+    guards.require(abs(float(wait['outside_wait_cpu_s']) - float(host['unclassified_cpu_s']) - cpu_sum) < 1e-7 and
+        abs(float(wait['wall_s']) - float(wait['wait_wall_s']) - float(host['unclassified_wall_s']) - wall_sum) < 1e-7,
+        'CPU partition conservation mismatch')
+    return dict(version=version, wait=wait, host=host, partition_qualified=True)
+
+
+def extract_resource_profile(log, phase_profile, command_profile, limits, cpu_version=None):
     """Validate one long-request interval; never aggregate across requests."""
     record = {}
     prefix = 'strata MoE planned job census: '
@@ -85,17 +142,18 @@ def extract_resource_profile(log, phase_profile, command_profile, limits):
     record['resource_diagnostics'] = [x for x in log.splitlines() if x.startswith(
         ('strata lm profile:', 'strata lm qsa profile:', 'strata prefill cpu wait:', 'strata prefill cpu host:'))]
     coarse_prefix = 'strata lm profile: v=' + ('3' if phase_profile else '2') + ' complete=1 errors=0'
-    for prefix in (coarse_prefix,
-                   'strata lm qsa profile: v=1 complete=1 errors=0',
-                   'strata prefill cpu wait: version=3 available=1 complete=1',
-                   'strata prefill cpu host: version=3 available=1 open_regions=0'):
+    for prefix in (coarse_prefix, 'strata lm qsa profile: v=1 complete=1 errors=0'):
         guards.require(sum(x.startswith(prefix) for x in record['resource_diagnostics']) == 1,
                        'missing or duplicate complete resource observer: ' + prefix)
-    for prefix in ('strata prefill cpu wait:', 'strata prefill cpu host:'):
-        line = next(x for x in record['resource_diagnostics'] if x.startswith(prefix))
-        fields = dict(part.split('=', 1) for part in line[len(prefix):].split())
-        throws = [int(v) for k, v in fields.items() if k.endswith('_throws')]
-        guards.require(throws and not any(throws), 'CPU attribution includes thrown wait/host regions')
+    cpu = extract_cpu_observers(log, cpu_version)
+    if cpu_version == 4:
+        expected = dict(zip(CPU_HOST_MOE, [48, 48, 0, 0, total_jobs, total_jobs, total_jobs, 48]))
+        experts = sum(n for window in record['planned_moe_windows']
+                      for m, n in window['jobs_per_expert_histogram'] if m > 0)
+        expected.update(moe_dequant_gu=experts, moe_dequant_down=experts)
+        guards.require(all(int(cpu['host'][name + '_count']) == count for name, count in expected.items()),
+                       'MoE host category/work census mismatch')
+        record['host_counter_conservation'] = expected
     record['cpu_attribution_qualified'] = True
     record['census_scope'] = 'Planned host metadata reconciled with completed window issuer totals; profiler/validation enabled, not clean speed or physical hardware saturation.'
     if phase_profile:
@@ -174,6 +232,7 @@ def extract_resource_profile(log, phase_profile, command_profile, limits):
 def main():
     modes = ('check', 'base', 'candidate', 'qsa-check', 'qsa-base', 'qsa-direct', 'qsa-census',
              'qsa-gdncols4-warm-census',
+             'qsa-gdncols4-host-check', 'qsa-gdncols4-host-traced-check', 'qsa-gdncols4-host-census',
              'qsa-qcache-check', 'qsa-qcache-base', 'qsa-qcache',
              'qsa-kvec4-check', 'qsa-kvec4-base', 'qsa-kvec4', 'qsa-kvec4-census',
              'qsa-kvvec4-check', 'qsa-kvvec4-base', 'qsa-kvvec4',
@@ -182,14 +241,16 @@ def main():
     guards.require(len(sys.argv) == 3 and sys.argv[1] in ('prepare', 'run') and
                    sys.argv[2] in modes, 'use prepare|run ' + '|'.join(modes))
     action, mode = sys.argv[1:]
-    column_mode = re.fullmatch(r'qsa-gdncols(2|4|8)-(check|base|candidate|warm-census)', mode)
-    warm_profile = mode == 'qsa-gdncols4-warm-census'
+    column_mode = re.fullmatch(r'qsa-gdncols(2|4|8)-(check|base|candidate|warm-census|host-check|host-traced-check|host-census)', mode)
+    host_profile = mode.startswith('qsa-gdncols4-host-')
+    warm_profile = mode in ('qsa-gdncols4-warm-census', 'qsa-gdncols4-host-census')
     column_trial = column_mode is not None
     column_check = column_trial and column_mode[2] == 'check'
     column_partitions = int(column_mode[1]) if column_trial and column_mode[2] != 'base' else 0
     qsa = mode.startswith('qsa-')
-    short_profile = mode == 'qsa-kvvec4-timing-check'
-    phase_profile = warm_profile or short_profile or mode == 'qsa-kvvec4-census'
+    short_profile = mode == 'qsa-kvvec4-timing-check' or (host_profile and not warm_profile)
+    phase_profile = host_profile or warm_profile or short_profile or mode == 'qsa-kvvec4-census'
+    command_profile = (phase_profile and mode != 'qsa-gdncols4-host-check') or mode in ('qsa-kvec4-check', 'qsa-kvec4-census')
     census = phase_profile or mode in ('qsa-census', 'qsa-kvec4-census')
     qcache = mode.startswith('qsa-qcache')
     kvvec4 = column_trial or mode.startswith('qsa-kvvec4')
@@ -200,7 +261,8 @@ def main():
     generation = 'v2' if short_profile or mode == 'qsa-kvec4-check' else 'v1'
     root = B / (('qsa-attention-model-' + mode[4:] + '-' + generation) if qsa else
                 ('native-gdn-model-' + mode + '-v2'))
-    result_path = (A / 'moe-window-census-current.json' if census else
+    result_path = (A / 'prefill-host-attribution-current.json' if host_profile else
+                   A / 'moe-window-census-current.json' if census else
                    A / 'gdn-columns-model-current.json' if column_trial else
                    A / 'qsa-kvvec4-model-current.json' if kvvec4 else
                    A / 'qsa-kvec4-model-current.json' if kvec4 else
@@ -216,6 +278,23 @@ def main():
             build = json.loads(BUILD.read_text())
             guards.require(build['passed'] and build['complete'] and build['ownership_closed'] and not build['active'],
                            'qualified closed engine build required')
+            if host_profile:
+                cpu_check = json.loads((A / 'prefill-host-cpu-current.json').read_text())
+                guards.require(cpu_check['passed'] and cpu_check['ownership_closed'] and
+                    cpu_check['source_sha256']['include/strata/sycl/cpu_wait_profile.hpp'] ==
+                        digest(P / 'include/strata/sycl/cpu_wait_profile.hpp'), 'matching CPU accounting gates required')
+                qualification = []
+                if mode != 'qsa-gdncols4-host-check':
+                    prior_bytes = subprocess.check_output(['git', 'show',
+                        'HEAD:' + str(result_path.relative_to(P))], cwd=P)
+                    guards.require(prior_bytes == result_path.read_bytes(), 'commit the previous host model gate')
+                    prior = json.loads(result_path.read_text())
+                    required = ('qsa-gdncols4-host-traced-check' if warm_profile else 'qsa-gdncols4-host-check')
+                    guards.require(prior['mode'] == required and prior['passed'] and prior['ownership_closed'] and
+                                   prior['binary'] == build['binary'], 'matching previous host model gate required')
+                    qualification = prior.get('host_qualification', []) + [dict(
+                        source_commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=P, text=True).strip(),
+                        path=str(result_path.relative_to(P)), mode=prior['mode'], binary=prior['binary'], passed=True)]
             for path, expected in reference['model_identity'].items():
                 info = Path(path).stat()
                 guards.require(info.st_size == expected['bytes'] and info.st_mtime_ns == expected['mtime_ns'], 'model changed')
@@ -253,7 +332,7 @@ def main():
                            STRATA_PREFILL_CPU_WAIT_PROFILE='1')
             if phase_profile:
                 env['STRATA_PREFILL_LAYER_MAJOR_GDN_PROFILE'] = '1'
-            if phase_profile or mode in ('qsa-kvec4-check', 'qsa-kvec4-census'):
+            if command_profile:
                 env['STRATA_SYCL_PREFILL_COMMAND_PROFILE'] = '1'
             config = dict(reference['config'])
             flags = list(config['args'])
@@ -283,9 +362,13 @@ def main():
                         source_sha256=pins, config_sha256=digest(config_path), profile_sha256=digest(profile),
                         complete=False, passed=False, active=False, model_quality_qualified=False,
                         physical262144_RESTORE_qualified=False, performance_adopted=False)
+            if host_profile:
+                plan.update(host_qualification=qualification, cpu_observer_version=4,
+                            cpu_fixture_receipt_sha256=digest(A / 'prefill-host-cpu-current.json'))
             if phase_profile:
                 plan['phase_profile_scope'] = {
-                    'question': ('Compare first-use and subsequent78K CPU/queue-stage observations on the faster screened route before identifying the next limiting resource.' if warm_profile else
+                    'question': ('Classify non-GEMM MoE host CPU with disjoint version4 regions and exact planned-work counts; command tracing off/on gates precede the two-request warm profile.' if host_profile else
+                        'Compare first-use and subsequent78K CPU/queue-stage observations on the faster screened route before identifying the next limiting resource.' if warm_profile else
                         'Separate current GDN input projection, conv/gates, recurrence and output projection before selecting a topology change.'),
                     'route': f'GDN columns={column_partitions}, chunk64 disabled; qualified opt-in QSA K/Vvec4.',
                     'coverage': 'Checked coarse observer v3, four extra event pairs retired only after existing checked drains; per-layer expected counts for all36GDN layers, with zero GDN samples on12QSA layers. Legacy STRATA_PREFILL_TIMING remains prohibited.',
@@ -401,8 +484,8 @@ def main():
                         'resource observer before first long-request marker')
                     request_logs = [log[a:b] for a, b in zip(starts, starts[1:] + [len(log)])]
                 profiles = [extract_resource_profile(part, phase_profile,
-                    phase_profile or mode in ('qsa-kvec4-check', 'qsa-kvec4-census'),
-                    plan.get('phase_profile_scope', {}).get('limits', '')) for part in request_logs]
+                    command_profile, plan.get('phase_profile_scope', {}).get('limits', ''),
+                    4 if host_profile else None) for part in request_logs]
                 record.update(profiles[-1])
                 if warm_profile:
                     cold = profiles[0]
@@ -417,11 +500,21 @@ def main():
                         'detail_not_retained': 'Cold per-command/per-layer timing and detailed job histogram are not used by this aggregate first-use comparison.'}
                     record['window_census'] = compact_window_census(record.pop('planned_moe_windows'))
                     record['command_service_profile'] = compact_command_service(record['command_service_profile'])
+                    if host_profile:
+                        record['selected_service_screen'] = selected_service_screen(record['command_service_profile'])
                     record['resource_profile_request_index'] = 1
                     record['request_separation'] = {
                         'method': 'Exact long layer-major GDN route markers delimit two requests; each interval independently passes complete census/coarse/QSA/CPU/command gates.',
                         'first_request': 'First-use profiled warmup, not an independent process repetition.',
                         'second_request': 'Subsequent fresh78K request with the same immutable observer environment; profiled speed is not a clean speed sample.'}
+                if host_profile and not warm_profile:
+                    # The short off/on gates need checked work totals, not a
+                    # second copy of every planned per-layer row distribution.
+                    record['window_census'] = {k: v for k, v in
+                        compact_window_census(record.pop('planned_moe_windows')).items()
+                        if k != 'aggregate_job_rows_histogram'}
+                    if 'command_service_profile' in record:
+                        record['command_service_profile'] = compact_command_service(record['command_service_profile'])
             guards.require(not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|retirement failed|Strata SYCL cleanup:', log), 'runtime failure')
             record['passed'] = bool(record['complete'] and entry.get('exit_code') == 0)
         except BaseException as error:

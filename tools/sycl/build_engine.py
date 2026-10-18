@@ -98,9 +98,12 @@ def main():
             guards.require(committed == RESULT.read_bytes(), 'commit the previous build identity first')
             old = json.loads((ROOT / 'record.json').read_text())
             retained_reference = json.loads(committed).get('retained_validation_reference')
-            if retained_reference:
-                guards.require(digest(retained_reference['binary']['path']) ==
-                               retained_reference['binary']['sha256'], 'retained known-good engine changed')
+            guards.require(retained_reference is not None,
+                           'preserve and commit the qualified fallback before reusing this build directory')
+            for item in [retained_reference['binary'], *retained_reference.get('fixtures', {}).values()]:
+                guards.require(not Path(item['path']).resolve().is_relative_to(ROOT.resolve()),
+                               'fallback would be overwritten by the rebuild')
+                guards.require(digest(item['path']) == item['sha256'], 'retained known-good binary changed')
             guards.require(old['ownership_closed'] and not old['active'] and not old['GPU_executed'],
                            'previous build ownership not closed')
             # A failed compile is terminal, not a qualified binary. Preserve its
@@ -124,6 +127,7 @@ def main():
                           'third_party', 'bench/sycl',
                           'tools/sycl/build_engine.py', 'tools/sycl/measurement_owner.py',
                           'tools/sycl/check_attention.py',
+                          'tools/sycl/check_host_profile.py',
                           'tools/sycl/measure_gemm.py',
                           'tools/sycl/measure_gdn_columns.py',
                           'tools/sycl/measurement_guards.py', str(SETTINGS.relative_to(P)),

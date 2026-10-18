@@ -122,11 +122,15 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
         std::fputs("]}\n",stderr);
     }
     namespace cp = sycl_backend::command_profile;
+    namespace hp = sycl_backend::cpu_wait_profile;
+    // Disjoint CPU regions cover every layer even when command tracing is off.
+    // GU/down already time GEMM internally; do not wrap a whole job or add waits.
     auto command_trace = owner.command_trace ? owner.command_trace->begin(layer, first_row) : cp::Frame{};
     if (command_trace)
         for (const auto& job : owner.routes->jobs())
             command_trace.consider(job.expert, job.global_row, job.rows);
     {
+        hp::Host host(hp::moe_map_upload);
         auto tag = command_trace.tag(cp::Kind::upload, -1, 0, rows, K, 4);
         if (cudaMemcpyAsync(inverse, owner.routes->original_slots().data(), size_t(rows * K * 4), cudaMemcpyHostToDevice, m.cs) != cudaSuccess ||
             cudaMemcpyAsync(source, owner.routes->source_rows().data(), size_t(rows * K * 4), cudaMemcpyHostToDevice, m.cs) != cudaSuccess) {
@@ -134,6 +138,7 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
         }
     }
     {
+        hp::Host host(hp::moe_job_weights);
         auto tag = command_trace.tag(cp::Kind::job_weights, -1, 0, rows, K);
         native16::moe_job_weights(*owner.routes, weights, inverse, job_weights, status, m.cs);
     }
@@ -151,12 +156,14 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
             sycl_backend::validate_device_span(m.dq_gu[0], size_t(2 * 640 * N * 2), queue);
             sycl_backend::validate_device_span(m.dq_d[0], size_t(N * 640 * 2), queue);
             {
+                hp::Host host(hp::moe_dequant_gu);
                 auto tag = command_trace.tag(cp::Kind::dequant_gu, job.expert, job.global_row, job.rows,
                     2 * format.n_ff, format.n_embd, format.gu_type);
                 strata::kernels::iq_dequant_gu_f16(format.gu_type, blob, blob + format.up_off,
                     format.n_ff, format.n_embd, m.dq_gu[0], m.cs);
             }
             {
+                hp::Host host(hp::moe_dequant_down);
                 auto tag = command_trace.tag(cp::Kind::dequant_down, job.expert, job.global_row, job.rows,
                     format.n_embd, format.n_ff, format.d_type);
                 strata::kernels::iq_dequant_f16(format.d_type, blob + format.down_off,
@@ -168,6 +175,7 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
             throw std::invalid_argument("prefill MoE accumulator: job bounds");
         sycl_backend::validate_device_span(source + job.global_row, size_t(job.rows * 4), queue);
         {
+            hp::Host host(hp::moe_gather);
             auto tag = command_trace.tag(cp::Kind::gather, job.expert, job.global_row, job.rows, N);
             gather_rows16(mixed, source + job.global_row, gathered, job.rows, N, m.cs);
         }
@@ -176,6 +184,7 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
             m.gemm.f16_out16(gathered, m.dq_gu[0], gu, job.rows, 2 * 640, N, true);
         }
         {
+            hp::Host host(hp::moe_swiglu);
             auto tag = command_trace.tag(cp::Kind::swiglu, job.expert, job.global_row, job.rows, 640);
             native16::swiglu(gu, hidden, job.rows, m.cs);
         }
@@ -184,6 +193,7 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
             m.gemm.f16_out16(hidden, m.dq_d[0], down, job.rows, N, 640, true);
         }
         {
+            hp::Host host(hp::moe_accumulate);
             auto tag = command_trace.tag(cp::Kind::accumulate, job.expert, job.global_row, job.rows, N);
             native16::moe_accumulate(*owner.routes, index, down, source, inverse, job_weights, accumulator, status, m.cs);
         }
@@ -192,6 +202,7 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
     // The host status destination belongs to the outer checked lease, even if DMA fails.
     owner.status_observed = ~uint32_t(0);
     {
+        hp::Host host(hp::moe_status);
         auto tag = command_trace.tag(cp::Kind::status, -1, 0, rows);
         if (cudaMemcpyAsync(&owner.status_observed, status, sizeof(uint32_t), cudaMemcpyDeviceToHost, m.cs) != cudaSuccess ||
             cudaStreamSynchronize(m.cs) != cudaSuccess) {

@@ -559,10 +559,113 @@ policy (`ptrace_scope=1`); it produced no qualified CPU samples. Preserve the
 [failed capability receipt](../bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json).
 The reviewed next path is disjoint non-GEMM host timing around existing launch
 segments, preserving internal GEMM/transfer scopes. The current Host accounting
-rejects nested Host regions, so a whole-job outer timer is invalid. Instrumentation
-is not implemented yet: qualify its CPU-only lifetime/exception/accounting cases,
-then separate traced and untraced bounded model diagnostics. No speedup follows
+rejects nested Host regions, so a whole-job outer timer is invalid. That review
+requires CPU-only lifetime/exception/accounting cases before separate traced
+and untraced bounded model diagnostics. No speedup follows
 from this source review.
+
+The next diagnostic revision adds version4 CPU categories only to the mode10
+expert window: map upload, job-weight preparation, gate/up and down dequantization,
+gather, SwiGLU, accumulation and status readback. Each wraps an existing disjoint
+host segment; internal GEMM accounting remains unchanged. Explicit GPU waits
+inside a category are subtracted. These regions cover all layers with command
+tracing off or on; no device kernel, transfer, synchronization or inference order
+is added. Pre-job span/layout checks and other engine work remain unclassified.
+Version3 and version4 unclassified time therefore describe different partitions.
+
+Before the engine rebuild, `tools/sycl/check_host_profile.py` compiles and runs
+the CPU-only fixture from committed inputs. It checks disabled/TLS ownership,
+all17 region counters, nested wait subtraction, idempotent closure, exceptions
+and invalid nesting. The parser must reject incomplete, duplicate, wrong-version,
+nonzero-throw and inconsistent-partition receipts. Preserve the known-good engine
+and same-library fixture outside the reused build root; the builder now requires
+that hashed fallback before overwriting outputs.
+
+The model sequence is `bench_engine.py prepare|run` with
+`qsa-gdncols4-host-check`, then `qsa-gdncols4-host-traced-check`, then
+`qsa-gdncols4-host-census`. The first two each use one32K nominal input
+(actual token count recorded), thinking on, parameter validation and CPU/coarse
+observers, with command tracing off then on in separate processes. The last
+uses two fresh78K requests to distinguish first-use and subsequent CPU costs.
+Every version4 category count must match the48-layer planned-work census:
+one map/job-weight/status region per window, one dequant pair per active expert,
+and one gather/SwiGLU/accumulation per job. Retain compact qualification receipts
+and retire successful full logs/CPU fixture binaries once their consumer closes.
+The model counters have not yet run; this is not a speedup, hardware saturation,
+task-quality, physical262144 or RESTORE qualification. Observer overhead remains
+unqualified until compared with a matched clean cohort.
+
+The CPU-only gates passed at`fd0c38e71`: six lifetime/accounting cases and eight
+invalid-case/parser rejections, with all owned processes closed. This does not
+execute the model. The current qualified engine and GDN fixture were hash-checked
+and copied before reusing the build root; all488 project,3608ggml and5703TLA
+original source inputs were recovered and verified from their recorded commits.
+The global inventory also still contains legacy artifacts under an unfinished
+provenance audit. They are not qualified comparison builds; the current build
+receipt records that exception and its next review after bounded model admission.
+No global storage-cleanup completion is claimed.
+
+Both command-tracing off/on model gates passed at39,260 fresh tokens, thinking
+on,24 generated tokens, with no fresh fault and every owner closed. Per request,
+48 map/job-weight/status regions,17,580 dequant pairs and18,796 gather/SwiGLU/
+accumulation jobs matched the actual census. Off/on status-region CPU outside
+explicit waits was3.884881/3.886876s; unclassified CPU was5.282371/5.341875s.
+The status segment includes SYCL memcpy submission and runtime checking, so
+this does not establish3.9s of host arithmetic: an API can wait internally.
+First-use profiled PP was575.2/614.9; differing cold wall gaps prevent a speed
+claim. The traced run qualified668 service intervals, but17 submit-clock
+inversions prevent an absolute submit-to-start timing claim. Full per-layer
+histograms are verified then reduced to conserved work totals for these admission
+checks. Next use the committed two-request78K plan for warm attribution.
+
+The final two-request check passed at78,451 fresh tokens per request, with
+profiled PP796.0 first-use and865.1 subsequently, zero fresh GPU faults and
+all ownership closed. The workload hashes match the earlier warm resource run.
+Warm main-thread CPU was88.805216s over89.659797s wall, with59.173520s inside
+explicit waits and29.631696s outside. Version4 attributes12.441650s to the new
+MoE categories, leaving4.204023s unclassified; the same request's version3
+definition would leave16.645674s. This is attribution, not time saved.
+
+| Warm CPU outside explicit waits | Seconds |
+| --- | ---: |
+| Source copy | 4.769362 |
+| Upload submission | 4.803936 |
+| GEMM submission | 3.240548 |
+| Dequant GU/down, gather, SwiGLU and accumulation submission | 6.845040 |
+| Status wrapper | 5.567415 |
+| Unclassified | 4.204023 |
+
+The table omits smaller categories and overlaps device execution. The status
+wrapper includes `attempt()` preflight runtime checks before both memcpy and
+synchronize, queue/context lookup, submission, observer and post-check work.
+Its5.567s cannot be attributed solely to memcpy or to host arithmetic. Ordinary
+host pointers are legal SYCL memcpy arguments; the contract alone does not prove
+whether the loaded adapter blocks internally. A future discriminating probe
+must time those pieces separately and preserve all asynchronous error checks.
+
+Warm QSA attention, MoE, GDN recurrence and upload queue intervals were20.8553,
+21.0035,6.52502 and8.40041s. Requested layer-weight upload payload was50,292,326,400
+bytes; payload divided by this nonexclusive upload interval is5.987GB/s,
+not a physical PCIe counter measurement. GPU saturation and full critical-path
+coverage remain unproven. The clean867.1 tok/s median remains the speed reference.
+
+For the four sampled expert windows only, expanding each row-bin sample mean
+by its eligible command count gives0.149864s Down and0.265763s accumulation
+service, with0.205840s gather and0.278878s GU. These are descriptive screening
+estimates, not full-model totals or statistical bounds. The next component
+candidate is a Down scatter/FP32 accumulation epilogue using the existing
+reviewed contract: retain the actual BF16 Down rounding before FP32 FMA, unique
+writers, legal element/tail ownership and checked event/owner retirement. Do not
+change inference order or treat it as adopted before same-library correctness
+and matched component/model timing pass. Existing source-specific fusion and
+indexed-A references are available; no repeat generic survey is needed.
+
+After recording those results, Main retired221 closed-run, CPU-fixture,
+consumed-review and old-fallback files (61,391,969bytes). Original run helpers
+and the fallback's9799 source inputs were retrieved and hash-verified from Git
+before deletion. Keep the new runtime-qualified engine and its current GDN
+fixture. Older legacy build provenance remains an explicit separate exception;
+a six-root review is in progress, so this is not a global cleanup claim.
 
 ## Optional GDN chunk64
 

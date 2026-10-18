@@ -1,5 +1,5 @@
 {
-  "source_commit": "016ae608038f706c8baf1d598cfae6c2a2d882f2",
+  "source_commit": "7829568c61f4a47e5c1b06497f59e41a3417a5fb",
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -79,42 +79,31 @@
   "GPU_executed": false,
   "production_selected": false,
   "model_quality_qualified": false,
-  "replaces": {
-    "source_commit": "f4afb7e58592ccf68849d2a36447fa830ceb8196",
-    "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-gdn-columns-v1/strata",
-      "bytes": 20515304,
-      "sha256": "96a3f5ccde5650ce7e072540218eab60ff480b9078494c327941b209a47a2894"
-    },
-    "source_build_passed": false,
-    "retained_binary_source_commit": "799953bd2dbd065936a3e5178539de4ed9c133cb",
-    "reason": "Closed unused comparison engine; original source/recipe recovered from Git. Reuse its cache for the immediate corrected build, not a retained old generation."
-  },
   "targets": [
     "strata",
     "sycl_gdn_columns_bench"
   ],
-  "retention_consumer": "Single latest known-good engine and same-library GDN fixture. Warmed attribution is closed; preserve this qualified fallback through the next host-counter engine build and its CPU/traced-model qualification. Do not overwrite the last qualified executable before retaining its explicit fallback. Review at that qualification boundary.",
+  "retention_consumer": "Single latest runtime-qualified engine and same-library GDN fixture for the next Down-scatter component prototype. Before reusing the output path, preserve a new hashed explicit fallback; retire the extra at comparison closure. Full task/physical-context/RESTORE remains unqualified.",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
     "bytes": 20573552,
-    "sha256": "8a345b0c56bde695eaa72faaceae68c005a1533eee491558134b597004b6064a"
+    "sha256": "bb8b3f097837026528699031de72b2fae5f779f095efda96161fce037847f5d0"
   },
   "compile_database_sha256": "dbc7953a4bfbe2263930892adbd50bb7939156fee5ebe620e06f889017739018",
   "configured_compile_entries": 214,
   "fixtures": {
     "sycl_gdn_columns_bench": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_gdn_columns_bench",
-      "sha256": "124bf03346caf2da0df753a49d576e4a1ffd4d8074b109f5514de6ac5545ad51"
+      "sha256": "5b4d1714f89e4dd6e1c6c93d6e76b276f081f74a5b7694c3c8c326accf0be0f9"
     }
   },
   "ownership_closed": true,
   "inputs": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "016ae608038f706c8baf1d598cfae6c2a2d882f2",
-      "count": 488,
-      "aggregate_sha256": "4edb2aa6b851fb80ece5dfbe99a998087e2bbd880ac7d1d7544f6d6ef6b592c6"
+      "revision": "7829568c61f4a47e5c1b06497f59e41a3417a5fb",
+      "count": 490,
+      "aggregate_sha256": "3ded773a552a642e60b8daf3cbc6d8cc53ede0946768d877790d842cddc8beb2"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
@@ -129,12 +118,46 @@
       "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
     }
   ],
-  "partitioned_model_runtime_qualification": {
-    "revision": "1f3e0f60b51fa16d5880056b8bb0b567a62da4d5",
-    "path": "bench/results/2026-10-15-pr6-recovery-audit/gdn-columns-model-current.json",
-    "actual_read_tokens": 39260,
-    "partitions": 4,
-    "passed": true,
-    "limits": "Runtime admission only; model quality and full model physical-context/RESTORE remain unqualified."
+  "legacy_provenance_exception": {
+    "state": "Unresolved legacy cleanup; not qualified comparison generations.",
+    "observed_engine_and_fixture_paths": 41,
+    "scope": "Prebuild rg inventory across project worktrees and post-reboot state; includes current/CPU fixtures and legacy artifacts.",
+    "evidence": [
+      "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/component-binary-provenance-review-v2.json",
+      "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/binary-source-recovery-review.json"
+    ],
+    "reason": "Previous exact-source audit is incomplete, with missing/mismatched receipt inputs and unmatched artifacts. Do not delete original measured inputs or call global cleanup complete.",
+    "next_review": "Before the next engine generation, use the six-root report review to recover exact original Git inputs and retire any proved obsolete roots; keep only explicit unresolved source holds. This221-file retirement does not clear legacy holds.",
+    "current_review": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/legacy-six-build-native-review.json"
+  },
+  "host_counter_model_runtime_qualification": {
+    "command_off": {
+      "revision": "5c03cd43c329645e0e978f1a557c5435ecf19cae",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-host-attribution-current.json",
+      "actual_read_tokens": 39260,
+      "passed": true
+    },
+    "command_on": {
+      "revision": "b285f25899bfb6d885e070134098e20af63e0f61",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-host-attribution-current.json",
+      "actual_read_tokens": 39260,
+      "passed": true
+    },
+    "limits": "Disjoint counter/runtime admission; clean speed, model quality and full model physical262144/RESTORE are not newly qualified.",
+    "warm78K": {
+      "revision": "80c867368c3a0b7a898cde1afa2dda43e3fb9246",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-host-attribution-current.json",
+      "actual_read_tokens": [
+        78451,
+        78451
+      ],
+      "passed": true
+    }
+  },
+  "last_validation_reference_retirement": {
+    "source_commit": "016ae608038f706c8baf1d598cfae6c2a2d882f2",
+    "binary_sha256": "8a345b0c56bde695eaa72faaceae68c005a1533eee491558134b597004b6064a",
+    "manifest": "bench/results/2026-10-15-pr6-recovery-audit/build-retirement-20261018.json",
+    "state": "retired_after_CPU_off_on39K_and_warm78K_qualification"
   }
 }
