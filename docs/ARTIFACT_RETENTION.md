@@ -55,7 +55,9 @@ Keep one current known-good engine build by default. Retain an additional
 baseline/candidate generation only for a named, imminent comparison; normally
 this means at most two generations. Record their consumer and remove the extra
 build when the comparison closes. A separate latest build for every old
-experiment is not a retention policy. This applies to project executables,
+experiment is not a retention policy. Count retained generations across project
+worktrees and local output directories; copying or renaming a binary does not
+create a separate allowance. This applies to project executables,
 static libraries, object files, JIT/native dumps and their disposable build trees;
 installed toolchains, runtime dependencies and model weights are separate assets.
 

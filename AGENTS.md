@@ -38,9 +38,19 @@ Pass the applicable rules and report-index location to each delegated task;
 delegation does not transfer Main's responsibility for integration and testing.
 
 Use the following checks at the point of action, with details in the sections below:
+Treat them as prerequisites: complete a missing check before the action, rather
+than recording after the fact that it was skipped. Keep an explicit unresolved
+exception pending until its recorded condition is met; a context change or a
+new experiment does not clear it.
 
 - Before a build or measurement, verify committed inputs, the existing job's
   ownership and the comparison plan. Do not measure uncommitted engine changes.
+- Before integration, check provenance and decide each inference component
+  separately, including prefill and decode. Preserve required non-inference
+  functions; merging history or a report alone does not integrate an implementation.
+- When research arrives, check its classification and delegate report review.
+  Main reads the short review digest, and retrieves collection report sections
+  only for a concrete question; arrival alone is not a reason to load them.
 - Before deletion, verify the current consumer has ended and useful evidence is
   preserved. For a build, recover and compare the original source/recipe from Git;
   an assumed ability to rebuild is insufficient.
@@ -308,7 +318,9 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   generations (normally one build, at most two for A/B). Record the comparison
   consumer and retirement point in the current compact results. An unnamed
   possible future comparison does not justify another generation. Do not keep
-  one build for each closed experiment.
+  one build for each closed experiment. Count generations across this project's
+  worktrees, output directories and renamed copies, rather than allowing the
+  same quota separately for each location.
   A newer build becomes the retained known-good build only after its applicable
   validation passes; a failed or unfinished build does not replace it.
   Retire the extra generation when its comparison ends; creating a new build
