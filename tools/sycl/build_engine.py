@@ -71,8 +71,8 @@ def pin(root, prefixes):
 
 def main():
     guards.require(len(sys.argv) == 1 or sys.argv[1:] in
-                   (['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn'], ['rebuild-down']),
-                   'use build_engine.py [rebuild|rebuild-attention|rebuild-gemm|rebuild-gdn|rebuild-down]')
+                   (['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn'], ['rebuild-down'], ['rebuild-ordered']),
+                   'use build_engine.py [rebuild|rebuild-attention|rebuild-gemm|rebuild-gdn|rebuild-down|rebuild-ordered]')
     rebuild = len(sys.argv) == 2
     attention = sys.argv[1:] == ['rebuild-attention']
     targets = ['strata']
@@ -87,6 +87,10 @@ def main():
         targets += ['sycl_gdn_columns_bench']
     if sys.argv[1:] == ['rebuild-down']:
         targets += ['sycl_moe_down_scatter_bench']
+    if sys.argv[1:] == ['rebuild-ordered']:
+        targets += ['sycl_qsa_bf16_prefix_kvvec4_test',
+                    'sycl_qsa_bf16_prefix_ordered_exp_test',
+                    'sycl_qsa_bf16_prefix_ordered_exp_bench']
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])

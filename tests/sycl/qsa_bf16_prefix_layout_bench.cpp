@@ -1,5 +1,5 @@
 // Authored for Strata; repository LICENSE (MIT) applies.
-// Same numerical operations: four-value K versus four-value K/V staging.
+// Matched component pairs selected at compile time; original K/KV or ordered exp.
 // Wall timing includes admission, prefix refresh, attention and checked drain;
 // uploads/readbacks/checks are outside timing. No physical-bandwidth claim.
 #include "strata/kernels/qsa_bf16_prefix.hpp"
@@ -19,7 +19,17 @@
 using namespace strata;
 using namespace strata::kernels;
 namespace {
+#if defined(STRATA_QSA_BENCH_ORDERED_EXP)
+constexpr auto baseline_attention=qsa_bf16_prefix_kvvec4_batch;
+constexpr auto candidate_attention=qsa_bf16_prefix_ordered_exp_batch;
+constexpr const char *baseline_name="kvvec4", *candidate_name="ordered_exp";
+#else
+constexpr auto baseline_attention=qsa_bf16_prefix_kvec4_batch;
+constexpr auto candidate_attention=qsa_bf16_prefix_kvvec4_batch;
+constexpr const char *baseline_name="kvec4", *candidate_name="kvvec4";
+#endif
 std::shared_ptr<sycl_backend::Runtime> rt;
+int process_id=0;
 void require(bool x,const char *s) { if (!x) throw std::runtime_error(s); }
 void drain() noexcept {
   sycl_backend::checked_cleanup([] { if (rt) rt->wait(); },[] {},"QSA pitch performance fixture drain");
@@ -93,7 +103,7 @@ void run(int cells,int queries,int cap,bool clustered) {
   const QsaBf16PackedScratch scratch{pk.data()+16,pv.data()+16,pb.data()+16};
   auto invoke=[&](int variant) {
     rt->wait();const auto start=std::chrono::steady_clock::now();
-    require((variant ? qsa_bf16_prefix_kvvec4_batch : qsa_bf16_prefix_kvec4_batch)(dq.data(),pools,di.data(),ds.data(),cap,shape,
+    require((variant ? candidate_attention : baseline_attention)(dq.data(),pools,di.data(),ds.data(),cap,shape,
         out.data()+16,queries,{pages,pages},cells,scratch,&rt->compute()),"matrix admission");
     rt->wait();return std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count();
   };
@@ -111,11 +121,11 @@ void run(int cells,int queries,int cap,bool clustered) {
     invoke(variant);guards();require(out.get()==reference,"warm full-output bit comparison");
   }
   for (int round=0;round<6;++round) for (int index=0;index<2;++index) {
-    const int variant=variants[(round+index)%2];const double ms=invoke(variant);
+    const int variant=variants[(process_id+round+index)%2];const double ms=invoke(variant);
     guards();require(out.get()==reference,"timed full-output bit comparison");
-    std::cout<<"sample cells="<<cells<<" queries="<<queries<<" cap="<<cap
+    std::cout<<"sample process="<<process_id<<" cells="<<cells<<" queries="<<queries<<" cap="<<cap
         <<" pattern="<<(clustered ? "clustered" : "gather")<<" round="<<round
-        <<" order="<<index<<" variant="<<variant<<" implementation="<<(variant ? "kvvec4" : "kvec4")
+        <<" order="<<index<<" variant="<<variant<<" implementation="<<(variant ? candidate_name : baseline_name)
         <<" milliseconds="<<std::setprecision(12)<<ms
         <<" compared="<<q.size()<<" exact_bits=PASS guards=PASS status=PASS\n";
   }
@@ -128,7 +138,9 @@ void run(int cells,int queries,int cap,bool clustered) {
 int main(int argc,char **argv) {
   try {
     std::cout.setf(std::ios::unitbuf);
-    require(argc==2 && (std::string(argv[1])=="--smoke" || std::string(argv[1])=="--component"),"--smoke|--component required");
+    require((argc==2 || argc==3) && (std::string(argv[1])=="--smoke" ||
+        std::string(argv[1])=="--component"),"--smoke|--component [PROCESS] required");
+    if (argc==3) { process_id=std::stoi(argv[2]);require(process_id>=0 && process_id<3,"process ordinal"); }
     const char *g=std::getenv("STRATA_TEST_MAIN_GATES");const bool gated=g && std::string(g)=="1";
     gate(gated,"before-runtime");rt=sycl_backend::runtime_for();
     std::cout<<"device="<<rt->device().get_info<sycl::info::device::name>()

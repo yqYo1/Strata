@@ -495,6 +495,20 @@ if(STRATA_SYCL_TESTS)
   target_compile_features(sycl_qsa_bf16_prefix_qcache_bench PRIVATE cxx_std_20)
   target_compile_options(sycl_qsa_bf16_prefix_qcache_bench PRIVATE -fno-fast-math -ffp-contract=off)
 
+  # Parallel exp2 with strict ascending FP32 normalizer sum; no model dispatch.
+  add_executable(sycl_qsa_bf16_prefix_ordered_exp_test EXCLUDE_FROM_ALL tests/sycl/qsa_bf16_prefix.cpp)
+  target_link_libraries(sycl_qsa_bf16_prefix_ordered_exp_test PRIVATE strata_kernels)
+  target_compile_features(sycl_qsa_bf16_prefix_ordered_exp_test PRIVATE cxx_std_20)
+  target_compile_options(sycl_qsa_bf16_prefix_ordered_exp_test PRIVATE -fno-fast-math -ffp-contract=off)
+  target_compile_definitions(sycl_qsa_bf16_prefix_ordered_exp_test PRIVATE
+    qsa_bf16_prefix_batch=qsa_bf16_prefix_ordered_exp_batch STRATA_QSA_COMPARE_PREFIX33=1
+    STRATA_QSA_COMPARE_PREFIX_STATE=1 STRATA_QSA_PACKED_GUARD=17)
+  add_executable(sycl_qsa_bf16_prefix_ordered_exp_bench EXCLUDE_FROM_ALL tests/sycl/qsa_bf16_prefix_layout_bench.cpp)
+  target_link_libraries(sycl_qsa_bf16_prefix_ordered_exp_bench PRIVATE strata_kernels)
+  target_compile_features(sycl_qsa_bf16_prefix_ordered_exp_bench PRIVATE cxx_std_20)
+  target_compile_options(sycl_qsa_bf16_prefix_ordered_exp_bench PRIVATE -fno-fast-math -ffp-contract=off)
+  target_compile_definitions(sycl_qsa_bf16_prefix_ordered_exp_bench PRIVATE STRATA_QSA_BENCH_ORDERED_EXP=1)
+
   add_executable(sycl_qsa_bf16_prefix_subgroup_test EXCLUDE_FROM_ALL tests/sycl/qsa_bf16_prefix.cpp)
   target_link_libraries(sycl_qsa_bf16_prefix_subgroup_test PRIVATE strata_kernels)
   target_compile_features(sycl_qsa_bf16_prefix_subgroup_test PRIVATE cxx_std_20)
