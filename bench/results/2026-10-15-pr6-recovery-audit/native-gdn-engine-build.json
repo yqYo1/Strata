@@ -1,5 +1,5 @@
 {
-  "source_commit": "dc8ca3459414c409cc7f87c31c038f0f7ce5b02f",
+  "source_commit": "9d000172f53c399453a0662c3eac2b0771114e7e",
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -80,14 +80,14 @@
   "production_selected": false,
   "model_quality_qualified": false,
   "replaces": {
-    "source_commit": "7ad7aad7ad7399ba54ce3aaa5171b0298370e117",
+    "source_commit": "dc8ca3459414c409cc7f87c31c038f0f7ce5b02f",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-      "bytes": 21345208,
-      "sha256": "bc1a9233fbfae30d245c11263e1034c77ea9525f30f657e3e6f399a73f9d1b8e"
+      "bytes": 21499072,
+      "sha256": "bfb9bf19fd93d2d5f4751d6ed97f62c9a4d684b1050b798c621971c39501090f"
     },
     "source_build_passed": true,
-    "retained_binary_source_commit": "7ad7aad7ad7399ba54ce3aaa5171b0298370e117",
+    "retained_binary_source_commit": "dc8ca3459414c409cc7f87c31c038f0f7ce5b02f",
     "reason": "Closed unused comparison engine; original source/recipe recovered from Git. Reuse its cache for the immediate corrected build, not a retained old generation."
   },
   "targets": [
@@ -96,7 +96,7 @@
     "sycl_qsa_bf16_prefix_ordered_exp_test",
     "sycl_qsa_bf16_prefix_ordered_exp_bench"
   ],
-  "retention_consumer": "Known-good bb8 engine/GDN fallback plus current ordered-exp QSA candidate. Prior output-copy generation/source recovered before cache reuse; obsolete Down fixture and closed logs retired. Keep only these2 qualified/current comparison generations plus explicitly recorded legacy provenance holds.",
+  "retention_consumer": "Known-good bb8 engine/GDN fallback plus current ordered-exp QSA candidate. Preserve only these2 qualified/current comparison generations, apart from explicitly recorded legacy provenance holds; review candidate/fallback selection after QSA qualification.",
   "retained_validation_reference": {
     "source_commit": "7829568c61f4a47e5c1b06497f59e41a3417a5fb",
     "binary": {
@@ -173,7 +173,7 @@
     },
     "sycl_qsa_bf16_prefix_ordered_exp_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_ordered_exp_test",
-      "sha256": "7e84f4b821bd73336661262996f8f9434d937e600da410feb1b40e262296e0e9"
+      "sha256": "aae503f30434e6f424f6dbfe26dd070eeed4f71e2ef54bb0fafbe927bc12cefe"
     },
     "sycl_qsa_bf16_prefix_ordered_exp_bench": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_ordered_exp_bench",
@@ -184,9 +184,9 @@
   "inputs": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "dc8ca3459414c409cc7f87c31c038f0f7ce5b02f",
+      "revision": "9d000172f53c399453a0662c3eac2b0771114e7e",
       "count": 492,
-      "aggregate_sha256": "7f0fc1b6d58734682961dfe91814519e67ad4b92f7e96c2d8a38c7c61551d0a4"
+      "aggregate_sha256": "07abb8ad35a6d9192768f1f4347a05e8ae25ba106fa8526f93a83a00c640dead"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
@@ -202,9 +202,10 @@
     }
   ],
   "qsa_ordered_exp_qualification": {
-    "source_commit": "dc8ca3459414c409cc7f87c31c038f0f7ce5b02f",
-    "state": "Build passed; traced smoke, component numerical/state and repeated performance gates pending. No model hook.",
+    "source_commit": "9d000172f53c399453a0662c3eac2b0771114e7e",
+    "state": "Corrected fixture build passed; fresh v2 traced smoke, numerical/state and repeated performance gates pending. No model hook.",
     "reviewed_prototype_commit": "36023af50c1fc1d4f1d6dc2a827a75bdbd0c3c8a",
+    "original_failed_smoke_commit": "963d387698f8b30b8fff9229449775000bdef4b8",
     "model_adopted": false
   }
 }
