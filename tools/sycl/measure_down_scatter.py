@@ -8,6 +8,7 @@ import re
 import statistics
 import subprocess
 import sys
+from collections import Counter
 
 sys.dont_write_bytecode = True
 import measurement_guards as guards
@@ -27,14 +28,86 @@ def digest(path):
         return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
+def compact_result():
+    """Retain every measured timing and verified outcome after owned closure."""
+    r = json.loads(RESULT.read_text())
+    raw = json.loads((ROOT / 'record.json').read_text())
+    guards.require(r['mode'] == 'perf' and r['complete'] and r['passed'] and
+                   r['ownership_closed'] and not r['active'] and
+                   all(raw.get(k) == v for k, v in r.items()), 'require the original closed result')
+    guards.require(all(c['passed'] and c['ownership_closed'] and c['exit_code'] == 0
+                       for c in r['checks']), 'incomplete phase')
+    by_mode = {m: [e for c in r['checks'] if c['mode'] == m for e in c['events']]
+               for m in ('ownership', 'smoke', 'validate', 'perf')}
+    guards.require([len(by_mode[m]) for m in by_mode] == [54, 33, 78, 630] and
+                   all(e['status'] == 'PASS' for es in by_mode.values() for e in es), 'missing evidence')
+    measured = [e for e in by_mode['perf'] if e['round'] >= 0]
+    guards.require(len(measured) == 540, 'missing individual speed samples')
+    samples = []
+    for shape in r['resident_summary']['shapes']:
+        for arm in shape['arms']:
+            group = [e for e in measured if (e['rows'], e['irregular'], e['arm']) ==
+                     (shape['rows'], shape['irregular'], arm['arm'])]
+            values = [e['queue_interval_ms'] for e in group]
+            guards.require(len(values) == 18 and statistics.median(values) == arm['median_ms'] and
+                           statistics.stdev(values) == arm['sample_sd_ms'], 'summary does not reproduce')
+        for process in range(3):
+            arms = []
+            for arm in shape['arms']:
+                group = sorted((e for e in measured if (e['rows'], e['irregular'], e['arm'], e['process']) ==
+                    (shape['rows'], shape['irregular'], arm['arm'], process)), key=lambda e: e['round'])
+                guards.require([e['round'] for e in group] == list(range(6)) and
+                    statistics.median(e['queue_interval_ms'] for e in group) == arm['process_medians_ms'][process],
+                    'process samples do not reproduce')
+                arms.append(dict(arm=arm['arm'], queue_interval_ms=[e['queue_interval_ms'] for e in group],
+                                 wall_ms=[e['wall_ms'] for e in group]))
+            samples.append(dict(rows=shape['rows'], irregular=shape['irregular'], process=process, arms=arms))
+    guards.require(statistics.geometric_mean(s['ratio'] for s in r['resident_summary']['shapes']) ==
+                   r['resident_summary']['geometric_mean_latency_ratio'], 'aggregate changed')
+    before_bytes = RESULT.stat().st_size
+    r['evidence_extraction'] = dict(source_raw_sha256=digest(RESULT),
+        controller_commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=P, text=True).strip(),
+        individual_measured_samples=540, excluded_warmup_samples=90,
+        retention='Keep all measured queue/wall samples and original decision. Warmup durations are unused by selection and have no next consumer; retain their successful count, not their repeated payloads. Completed nominal case detail is recoverable from the pinned fixture and preceding committed phase results.')
+    ownership, smoke, validation = (by_mode[m] for m in ('ownership', 'smoke', 'validate'))
+    r['validation_evidence'] = dict(ownership_cases=len(ownership),
+        ownership_max_errors={k: max(e[k] for e in ownership) for k in
+            ('missing', 'multiple') if all(k in e for e in ownership)},
+        metadata_max_errors={k: max(e[k] for e in ownership) for k in
+            ('metadata_missing', 'metadata_multiple', 'metadata_outside_tile')},
+        traced_smoke_events=len(smoke), admission_rejects=[e['rejected'] for e in smoke if e['kind'] == 'admissions'],
+        invalid_map_cases=[dict(mapping=e['mapping'], case=e['case'], expected_mask=e['expected_mask'])
+                           for e in smoke if e['kind'] == 'invalid_map'],
+        checked_exception_cases=[e for e in smoke if e['kind'] == 'exception_unwind'],
+        correctness_cases=len(validation),
+        mapping_tile_case_counts=sorted([list(k) + [v] for k, v in Counter(
+            (e['mapping'], e['tile']) for e in validation).items()]),
+        case_columns=['tokens', 'irregular', 'edges', 'target_rows'],
+        cases=sorted({tuple(e[k] for k in ('tokens', 'irregular', 'edges', 'target_rows')) for e in validation}),
+        inputs_immutable=all(e['inputs_immutable'] for es in (smoke, validation, by_mode['perf'])
+                             for e in es if e['kind'] in ('correctness', 'invalid_map', 'sample')),
+        all_case_status_passed=True)
+    r['timing_samples'] = dict(window_rows=78451, accumulator_bytes=78451 * 2560 * 4,
+        rounds=list(range(6)), order='arm=(process+round+3+order)%3, order=0..2',
+        repeat=16, groups=samples, limits='Marker intervals include host submission gaps; not physical traffic or GPU-busy time.')
+    for c in r['checks']:
+        c['successful_events'] = len(c.pop('events'))
+    RESULT.write_text(json.dumps(r, indent=2) + '\n')
+    print(json.dumps(dict(compacted=True, before_bytes=before_bytes, after_bytes=RESULT.stat().st_size,
+                          individual_measured_samples=540, original_advance_to_model=r['resident_summary']['advance_to_model'])))
+    return 0
+
+
 def main():
-    guards.require(len(sys.argv) == 2 and sys.argv[1] in ('ownership', 'smoke', 'validate', 'perf'),
-                   'use measure_down_scatter.py ownership|smoke|validate|perf')
+    guards.require(len(sys.argv) == 2 and sys.argv[1] in ('ownership', 'smoke', 'validate', 'perf', 'compact'),
+                   'use measure_down_scatter.py ownership|smoke|validate|perf|compact')
     mode = sys.argv[1]
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
         guards.driver_guard()
+        if mode == 'compact':
+            return compact_result()
         build = json.loads(BUILD.read_text())
         guards.require(build['complete'] and build['passed'] and build['ownership_closed'] and
                        not build['active'], 'closed successful build required')
