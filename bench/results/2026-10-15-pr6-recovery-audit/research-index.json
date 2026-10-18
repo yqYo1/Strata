@@ -622,7 +622,7 @@
   },
   "qsa_native_exp2_scope": {
     "classification": "decision_support",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "eligible_at_dispatch": true,
     "prerequisites_met": [
       "Current78K profile identifies29.933s attention; no softmax-only bottleneck claim.",
@@ -655,13 +655,14 @@
       "Mutable framework source is not selected-kernel evidence. Pin the actual reference revision/dispatch/lowering before claiming a shared numerical contract. No native-exp2 implementation or adoption."
     ],
     "next_scope_eligibility": {
-      "schedulable_now": true,
+      "schedulable_now": false,
       "prerequisites_met": [
         "Exact framework revision, CUDA QSA fresh/prefix branch and source hashes verified.",
         "PyTorch version pin resolves Triton and its LLVM revision; source lowering to approximate FP32 exp2 identified.",
         "Current local math-only seam and changed score/reduction boundaries named; no need for unavailable counters or a CUDA device to audit the source contract."
       ],
-      "question": "Pin the selected FP32 ex2.approx error/domain/FTZ contract and Intel native-exp2 API constraints, then specify the smallest legal math-only candidate and discriminating edge/state gates. Resolve exact source ambiguities; do not repeat generic native-math or dispatch surveys."
+      "question": "Pin the selected FP32 ex2.approx error/domain/FTZ contract and Intel native-exp2 API constraints, then specify the smallest legal math-only candidate and discriminating edge/state gates. Resolve exact source ambiguities; do not repeat generic native-math or dispatch surveys.",
+      "active_dispatch": "ctx_1a4c70297f89; no duplicate or repeat survey"
     },
     "temporary_prior_retired": {
       "source_commit": "8063aacc6749d18089f7a53db5d3e47b745f348c",
@@ -696,7 +697,7 @@
         "llvm_revision": "4611156032e1ebac68b2b8f6107b1475a7c60800",
         "llvm_nvptx_instrinfo_sha256": "dd048c313ae8a843a74361e002482bae3d6fa4df8f276f56a2b517e0cad74ef0"
       },
-      "observed_source_contract": "SGLang scales Q by scale*log2(e) then rounds back to Q dtype before dot; FP32 exp2/max/normalizer/PV accumulator, probabilities cast to V dtype, tree reduction. Triton emits math.exp2 then LLVM exp2; pinned NVPTX pattern selects ex2.approx.f32 with an FTZ flag whose deployed setting remains unproven. Local ordered-exp keeps a different score-rounding/reduction schedule.",
+      "observed_source_contract": "SGLang scales Q by scale*log2(e) then rounds back to Q dtype before dot; FP32 exp2/max/normalizer/PV accumulator, probabilities cast to V dtype, tl.sum reduction (its exact execution order is not proved here). Triton emits math.exp2 then LLVM exp2; pinned NVPTX pattern selects ex2.approx.f32 with an FTZ flag whose deployed setting remains unproven. Local ordered-exp keeps a different score-rounding/reduction schedule.",
       "verification": "Main retrieved and byte-compared all listed SGLang files against Git blobs; retrieved immutable PyTorch/Triton/LLVM primary-source blobs and pins. This is source evidence, not installed CUDA artifacts, PTX/SASS or observed framework outputs.",
       "consumer": "One math-only native-exp2 candidate decision for current QSA; review at its source-contract/first component gate. No global fast-math or whole-path equivalence claim."
     },
@@ -705,7 +706,22 @@
       "path": "src/kernels/sycl/qsa_bf16_prefix.cpp",
       "sha256": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192"
     },
-    "next_research_state": "eligible; not dispatched yet"
+    "next_research_state": "Orca decision-support source audit running; do not steer. Main continues the existing owned Down comparison.",
+    "pinned_contract_dispatch": {
+      "task": "task_5a8bdd6c7c16",
+      "dispatch": "ctx_1a4c70297f89",
+      "terminal": "term_2822b640-891c-4093-9518-ae44099a02cd",
+      "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-pinned-native-exp2-contract.md",
+      "model_evidence": "Fresh custom terminal argv codex --model gpt-6-luna -c model_reasoning_effort=medium -c check_for_update_on_startup=false; tui-idle satisfied and worker-start observed turn_started. Existing-terminal launch metadata has null model fields; no inferred launcher override.",
+      "report_budget": {
+        "words": [
+          1500,
+          2300
+        ],
+        "maximum_bytes": 32768
+      },
+      "next_consumer": "Native Codex gpt-6-luna max scope/source review; Main consumes only its short operational digest before selecting one prototype."
+    }
   },
   "warmed_gemm_reference_scope": {
     "classification": "decision_support",
