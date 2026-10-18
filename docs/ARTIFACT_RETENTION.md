@@ -91,6 +91,10 @@ copy. Do not claim reproducibility from a binary hash alone.
 Include benchmark/controller changes and generated workloads among the pinned
 inputs. A later commit does not qualify a different snapshot retroactively;
 preserve the original inputs and resolve any mismatch explicitly.
+Controllers must check the pinned inputs, build record and actual executable
+before launch, and stop if evidence is missing or inconsistent. Scope this check
+to the complete measurement inputs; unrelated worktree edits need not be added
+to that commit. Do not update hashes to make an inconsistent run pass admission.
 
 Before removing an old build, verify that its measured source and recipe can be
 retrieved from the recorded commits and that no current comparison needs the

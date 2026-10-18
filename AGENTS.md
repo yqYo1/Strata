@@ -55,7 +55,8 @@ historical logs or the research library wholesale.
 
 | Action | Required check | Detailed rules |
 | --- | --- | --- |
-| Build or measure | Exact engine, benchmark, controller, generated inputs and recipe are already committed and match the run. Verify job ownership and the comparison plan; identify retained generations across worktrees and preserve the validated fallback before overwriting it. | [Measurement](#measurement-and-gpu-execution), [artifacts](#measurement-and-diagnostic-artifacts) |
+| Build | Commit the exact engine, benchmark, controller, generated inputs and recipe first; pin compiler, dependencies and environment. Identify retained generations across worktrees and preserve the validated fallback before overwriting it. | [Measurement](#measurement-and-gpu-execution), [artifacts](#measurement-and-diagnostic-artifacts) |
+| Run or compare | Verify committed inputs against the build record and actual executable hash. Check job ownership and the frozen comparison plan; keep first-use, subsequent-request and independent-process samples distinct. | [Measurement](#measurement-and-gpu-execution), [artifacts](#measurement-and-diagnostic-artifacts) |
 | Integrate | Check provenance and decide inference parts individually, including prefill and decode. Preserve required non-inference functions. History preservation and component success alone do not qualify a model route. | [Scope](#this-forks-scope), [integration](#git-integration-and-tuning) |
 | Receive research | Check its classification and delegate review to native Codex gpt-6-luna with max reasoning. Main reads the short review digest; retrieve collection-report sections only for a concrete question. | [Parallel research](#parallel-research) |
 | Retain a file or build | Name the realistic next consumer and review point; check compact results and reachable Git history first. Preserve individual comparison samples without automatically retaining raw logs, reports or another build generation. | [Artifacts](#measurement-and-diagnostic-artifacts), [retention policy](docs/ARTIFACT_RETENTION.md) |
@@ -68,6 +69,13 @@ alone does not prove recoverable source. Keep an unresolved exception pending
 with its concrete remaining action and next review point in the existing compact
 result; a new experiment or context change does not clear it. Do not report a
 boundary complete from a local commit or history-only merge alone.
+
+Measurement controllers must enforce the source/build/executable checks before
+launch, and stop on missing evidence or a mismatch. Check all measurement inputs,
+including helpers and generated workloads; unrelated pending edits outside those
+inputs do not belong in the measurement commit. Never bypass a failed check by
+refreshing recorded hashes. Close the affected run and commit the changed inputs
+and plan before building or running again.
 
 When the user changes a durable operating rule, update its affected section and
 relevant maintained policy document before the next action it governs. If the
