@@ -94,7 +94,7 @@
     "strata",
     "sycl_moe_down_scatter_bench"
   ],
-  "retention_consumer": "Current long-prefill comparison and its attention fixtures; retire when comparison closes.",
+  "retention_consumer": "Known-good bb8 model fallback plus one unqualified-model Down component generation for imminent matrix-layout versus coalesced-layout comparison. Replace/reuse candidate cache after original source/recipe verification; keep at most these2 generations and select a model-validated engine before retiring the fallback.",
   "retained_validation_reference": {
     "source_commit": "7829568c61f4a47e5c1b06497f59e41a3417a5fb",
     "binary": {
@@ -190,5 +190,13 @@
       "count": 5703,
       "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
     }
-  ]
+  ],
+  "down_component_qualification": {
+    "source_commit": "853535ed58dd01c9d535874eefda5b623a1dad09",
+    "result": "bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json",
+    "correctness_passed": true,
+    "three_process_timing_complete": true,
+    "model_experiment_gate_passed": false,
+    "production_selected": false
+  }
 }
