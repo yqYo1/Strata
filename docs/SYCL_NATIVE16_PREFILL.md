@@ -1261,4 +1261,16 @@ clean four-request processes. Keep first use separate from each process's
 three subsequent samples; the target is a subsequent median>=1000tok/s in each
 process. This measures longer-input amortization rather than a same-input
 kernel improvement. Capacity/admission and actual route/token checks remain
-required; no long-input model run has started.
+required. The first parameter-validated117489-token request closed with native
+exit0, thinking observed,24 generated tokens and no fresh fault. Its750.2tok/s
+first-use reading is diagnostic only: the frozen route gate failed. At admission
+only4257304576B were free; fixed reservations including512MiB headroom needed
+4154841216B and the mixed bank needed419430400B, a316967040B shortfall.
+Mode10 safely fell back to mode2, with98304 GPU residual rows and392888320B
+host residual storage; the accumulator/GU fusion counters were absent. The
+[failed screen](../bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json)
+keeps its original failure and individual sample. Do not call this a matched
+route comparison or a clean speed regression. Before a new configuration
+probe, audit/test existing output-head release and restore, or explicitly
+compare residual-prefix/window placement; preserve safety headroom and guards.
+Selective Down timing remains the next pending component comparison.

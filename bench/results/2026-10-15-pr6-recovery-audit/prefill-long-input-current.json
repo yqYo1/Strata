@@ -176,7 +176,7 @@
   },
   "config_sha256": "957e078b37a648eab0fe87ce174d8c9529c1ae731920c23dd1f529fdf9b80d3f",
   "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
-  "complete": false,
+  "complete": true,
   "passed": false,
   "active": false,
   "model_quality_qualified": false,
@@ -215,5 +215,75 @@
     "qualification": "One validated long request, then3 independent clean processes with4 fresh requests each. Separate first use and3 subsequent requests; target each independent subsequent median>=1000tok/s. Not sustained decode, model-quality or physical262144 qualification."
   },
   "source_count": 108,
-  "source_aggregate_sha256": "d03ff0cfbfbae944f6bc206d148da06a55f92c7d656a2c8f2bb711a623485a76"
+  "source_aggregate_sha256": "d03ff0cfbfbae944f6bc206d148da06a55f92c7d656a2c8f2bb711a623485a76",
+  "exit_code": 0,
+  "requests": [
+    {
+      "run": 0,
+      "ok": true,
+      "eligible": true,
+      "actual_prompt_tokens": 117489,
+      "actual_read_tokens": 117489,
+      "actual_reused_tokens": 0,
+      "generated_tokens": 24,
+      "thinking_requested": true,
+      "reasoning_observed": true,
+      "stream_complete": true,
+      "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
+      "ttft_s": 157.3,
+      "total_s": 158.94,
+      "prompt_tps": 750.2,
+      "prompt_ms": 156613.4,
+      "decode_tps": 13.8,
+      "decode_ms": 1741.5,
+      "prompt_tps_source": "engine",
+      "decode_tps_source": "engine",
+      "drafts_offered": 21,
+      "drafts_accepted": 16,
+      "finish_reason": "length",
+      "err": null,
+      "eligibility_errors": []
+    }
+  ],
+  "engine_exit_code": 0,
+  "native_identity": {
+    "pid": 1097643,
+    "start_ticks": 67906911,
+    "sid": 1097618
+  },
+  "route_selection": [],
+  "error": "actual GU route coverage mismatch",
+  "ownership_closed": true,
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  },
+  "route_admission_diagnosis": {
+    "classification": "Explained effective-route mismatch, not GPU fault or a qualified speed comparison.",
+    "evidence": [
+      "strata MoE accumulator admission: requested_mode=10 rows=81920 gpu_prefix_rows=98304 shared_arena_bytes=1180698624 free_gpu_bytes=4257304576 fixed_including_headroom_bytes=4154841216 mixed_fp16_bytes=419430400",
+      "strata prefill: MoE window10 not admitted by remaining VRAM/GPU-prefix budget; effective_mode=2",
+      "strata MoE window configuration: requested_mode=10 effective_mode=2 maximum_rows=16384 mixed_fp16_bytes=0",
+      "strata prefill: layer-major candidate, tokens=117488 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=2406154240 residual_gpu_rows=98304 residual_gpu=2013265920 residual_host=392888320 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592"
+    ],
+    "missing_budget_bytes": 316967040,
+    "requested_mode": 10,
+    "effective_mode": 2,
+    "engine_layer_major_rows": 117488,
+    "actual_api_read_tokens": 117489,
+    "first_use_parameter_validated_prompt_tps": 750.2,
+    "GPU_prefix_rows": 98304,
+    "host_residual_bytes": 392888320,
+    "source_commit": "45c387d11f20579e2f4a96511497fa7a5fb6e4ce",
+    "source_path": "src/prefill/layer_major.inc",
+    "next_action": "Keep the failed status. Audit/test the existing output-head release/restore path before a fresh configuration probe, or compare an explicitly budgeted residual-prefix/window placement. Do not relax route guards, lower safety headroom silently or rerun the same failed plan."
+  }
 }
