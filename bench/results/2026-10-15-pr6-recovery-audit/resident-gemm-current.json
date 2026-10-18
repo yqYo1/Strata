@@ -941,10 +941,248 @@
           "logical_wall_TFLOPs": 4.047188691079269
         }
       ]
+    },
+    {
+      "phase": "diagnostic",
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_native16_paired_gemm_bench",
+        "--resident",
+        "8",
+        "fp16",
+        "--process",
+        "0"
+      ],
+      "plan": {
+        "kind": "plan",
+        "mode": "measure",
+        "resident_only": true,
+        "submits_per_sample": 8,
+        "shape": 8,
+        "T": 5963,
+        "N": 1280,
+        "K": 2560,
+        "ldy": 1280,
+        "beta": 0,
+        "input_type": "fp16",
+        "device_tensor_bytes": 128678336,
+        "input_fnv1a64": "4834186686110060261",
+        "initial_pageable_upload_bytes": 37084800,
+        "initial_pageable_upload_wall_seconds": 0.011159899,
+        "initial_pageable_upload_thread_cpu_seconds": 0.008574619000000006,
+        "weight_fnv1a64": "10777993185871135461",
+        "oracle": "rank2_binary_exact_v1",
+        "process_index": 0,
+        "warmups_per_route": 3,
+        "timed_submits_per_route": 3,
+        "pid": 3718565,
+        "rotation_base": 0,
+        "route_order": [
+          "vllm_compact16x64_bf16_output",
+          "vllm_wide128x128_bf16_output"
+        ]
+      },
+      "process": 0,
+      "exit_code": 1,
+      "ownership_closed": true,
+      "passed": false,
+      "validation_count": 8,
+      "native_result": {
+        "kind": "result",
+        "status": "FAIL",
+        "error": "invalid or unordered device timestamps (see emitted tuples)"
+      },
+      "samples": [
+        {
+          "kind": "sample",
+          "status": "pending_validation",
+          "ordinal": 6,
+          "route": "vllm_wide128x128_bf16_output",
+          "implementation": "R810::Gemm::beta0(wide_128x128,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 0,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.008496106,
+          "thread_cpu_submit_seconds": 0.00036372199999989974,
+          "thread_cpu_wait_check_seconds": 0.008113003000000063,
+          "logical_flop_per_submit": 39079116800,
+          "kernel_total_seconds": 0.008354584,
+          "profiling_contract_valid": true,
+          "profiling_duration_positive": true,
+          "profiling_cross_event_ordered": true,
+          "device_timestamps_ns": [
+            [
+              638904941871696,
+              638904941904583,
+              638904942943854
+            ],
+            [
+              638904941939363,
+              638904942948750,
+              638904943996145
+            ],
+            [
+              638904941983406,
+              638904944000416,
+              638904945051979
+            ],
+            [
+              638904942030704,
+              638904945055937,
+              638904946118229
+            ],
+            [
+              638904942072984,
+              638904946122291,
+              638904947170312
+            ],
+            [
+              638904942114562,
+              638904947174375,
+              638904948214062
+            ],
+            [
+              638904942156520,
+              638904948218020,
+              638904949298229
+            ],
+            [
+              638904942206334,
+              638904949302187,
+              638904950288333
+            ]
+          ]
+        },
+        {
+          "kind": "sample",
+          "status": "pending_validation",
+          "ordinal": 7,
+          "route": "vllm_compact16x64_bf16_output",
+          "implementation": "R810::Gemm::beta0(compact_16x64,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 0,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.026080812,
+          "thread_cpu_submit_seconds": 0.00035637999999971193,
+          "thread_cpu_wait_check_seconds": 0.025626675000000265,
+          "logical_flop_per_submit": 39079116800,
+          "kernel_total_seconds": 0.025934479000000003,
+          "profiling_contract_valid": true,
+          "profiling_duration_positive": true,
+          "profiling_cross_event_ordered": true,
+          "device_timestamps_ns": [
+            [
+              638905157501747,
+              638905157525937,
+              638905161062083
+            ],
+            [
+              638905157568582,
+              638905161067187,
+              638905164598750
+            ],
+            [
+              638905157613136,
+              638905164603333,
+              638905167795520
+            ],
+            [
+              638905157656186,
+              638905167799375,
+              638905170950520
+            ],
+            [
+              638905157698366,
+              638905170954270,
+              638905174087395
+            ],
+            [
+              638905157740905,
+              638905174091145,
+              638905177223437
+            ],
+            [
+              638905157782443,
+              638905177227187,
+              638905180323750
+            ],
+            [
+              638905157827798,
+              638905180327500,
+              638905183488958
+            ]
+          ]
+        },
+        {
+          "kind": "sample",
+          "status": "pending_validation",
+          "ordinal": 8,
+          "route": "vllm_compact16x64_bf16_output",
+          "implementation": "R810::Gemm::beta0(compact_16x64,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 1,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.016382384,
+          "thread_cpu_submit_seconds": 0.00035522600000037485,
+          "thread_cpu_wait_check_seconds": 0.01600373899999985,
+          "logical_flop_per_submit": 39079116800,
+          "kernel_total_seconds": null,
+          "profiling_contract_valid": false,
+          "profiling_duration_positive": true,
+          "profiling_cross_event_ordered": true,
+          "device_timestamps_ns": [
+            [
+              638905389707622,
+              638905389707291,
+              638905391813854
+            ],
+            [
+              638905389771472,
+              638905391817395,
+              638905393942187
+            ],
+            [
+              638905389815805,
+              638905393945312,
+              638905396060416
+            ],
+            [
+              638905389858265,
+              638905396063229,
+              638905398120833
+            ],
+            [
+              638905389899933,
+              638905398123541,
+              638905400083645
+            ],
+            [
+              638905389944597,
+              638905400086250,
+              638905402049270
+            ],
+            [
+              638905389986826,
+              638905402051875,
+              638905404024166
+            ],
+            [
+              638905390029055,
+              638905404026770,
+              638905405992916
+            ]
+          ]
+        }
+      ]
     }
   ],
-  "complete": true,
-  "passed": true,
+  "complete": false,
+  "passed": false,
   "active": false,
   "model_performance_measured": false,
   "model_quality_qualified": false,
@@ -963,7 +1201,7 @@
     "Initial uploads use pageable fixture memory, not the production pinned-weight pipeline or a PCIe ceiling.",
     "Event timestamps share a device timebase; never subtract them from host clocks. Profiling does not guarantee exact timing accuracy."
   ],
-  "mode": "smoke",
+  "mode": "diagnostic",
   "environment": {
     "PATH": "/usr/bin:/bin",
     "HOME": "/home/yayoi",
@@ -998,5 +1236,15 @@
     "device": "0xe20c",
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
+  },
+  "error": "resident-8-0: {\"kind\": \"result\", \"status\": \"FAIL\", \"error\": \"invalid or unordered device timestamps (see emitted tuples)\"}ueueRelease\n   <--- urQueueRelease(.hQueue = 0x1bf120a0) -> UR_RESULT_SUCCESS;\n   ---> urContextRelease\n   <--- urContextRelease(.hContext = 0x1bf0cb80) -> UR_RESULT_SUCCESS;\n   ---> urProgramRelease\n   <--- urProgramRelease(.hProgram = 0x1bf381f0) -> UR_RESULT_SUCCESS;\n   ---> urKernelRelease\n   <--- urKernelRelease(.hKernel = 0x1c5ecbe0) -> UR_RESULT_SUCCESS;\n   ---> urProgramRelease\n   <--- urProgramRelease(.hProgram = 0x1bf381f0) -> UR_RESULT_SUCCESS;\n   ---> urKernelRelease\n   <--- urKernelRelease(.hKernel = 0x1bf0bb90) -> UR_RESULT_SUCCESS;\n   ---> urKernelRelease\n   <--- urKernelRelease(.hKernel = 0x1c5ecbe0) -> UR_RESULT_SUCCESS;\n   ---> urKernelRelease\n   <--- urKernelRelease(.hKernel = 0x1bf0bb90) -> UR_RESULT_SUCCESS;\n   ---> urProgramRelease\n   <--- urProgramRelease(.hProgram = 0x1bf381f0) -> UR_RESULT_SUCCESS;\n   ---> urDeviceRelease\n   <--- urDeviceRelease(.hDevice = 0x1bf0aa50) -> UR_RESULT_SUCCESS;\n   ---> urAdapterRelease\n   <--- urAdapterRelease(.hAdapter = 0x1bd0f6f0) -> UR_RESULT_SUCCESS;\n",
+  "timestamp_failure_analysis": {
+    "first_event_start_minus_submit_ns": -331,
+    "GPU_start_end_pairs_positive": true,
+    "GPU_cross_event_ordered": true,
+    "host_wall_seconds": 0.016382384,
+    "all_GPU_kernel_durations_seconds": 0.016265624,
+    "numerical_validation_of_rejected_burst": "UNRUN; original early assertion preserved",
+    "decision": "Retain full profiling-contract failure. A new prospectively documented service-only metric may use positive ordered device start/end pairs without mixing submission-clock calibration; validate output afterward. No model/kernel change."
   }
 }
