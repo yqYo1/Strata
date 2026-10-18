@@ -704,7 +704,7 @@ prospective gate failed. That gate requires ratio<=0.95, no shape ratio>1.05,
 and every process to improve at2334/5963/8192 for both layouts. Irregular8192
 improves15.67%, but160 and2334 regress in every process. **Do not connect this
 variant to the model.** Individual samples, process medians and limits are in
-the [current result](../bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json).
+the [original raw-fragment result](https://github.com/yqYo1/Strata/blob/16b697d9c2c5a699c8e7250e7a04d2b5cfbf15b0/bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json).
 The clean model reference remains867.1 tok/s; this component did not change it.
 Physical262144, model quality, RESTORE and decode remain separate gates.
 
@@ -760,3 +760,24 @@ thinking on, four requests per process. Existing versus chunk64 first PP was
 Keep the existing GDN selected for performance. The new route remains opt-in;
 its full64 solve differs from the SGLang XPU block16 contract, and numerical/task
 quality, sustained generation, physical262144 and RESTORE are still unqualified.
+
+The next source candidate adds an explicit `ScatterLayout::output_copy` parameter
+without a model hook. It constructs the pinned TLA public
+`make_block_2d_copy_D<cutlass::bfloat16_t>(mma, stride)` layout without a global
+output pointer. Values use `partition_sg_fragment_S`, paired coordinates use
+`partition_S`, and the same TLA reorder as dense BF16 output precedes the
+unchanged scalar FP32 scatter/FMA. The original matrix mapping remains a
+diagnostic arm. No tile, metadata-hoisting or alias-policy change is combined.
+
+Before measurement, the new plan requires36 host ownership cases,14 traced
+small checks and52 GPU correctness cases across both layouts and tiles,
+including fixed78451-token windows. Only after those pass, three independent
+processes compare separate, raw-fragment and output-copy arms at64/160/2334/5963/8192
+expert rows, contiguous or evenly distributed over the same78451-row accumulator.
+Six rotated measured rounds and one warmup use16 repeats; every timed sample
+gets a full bitwise reference comparison outside timing. Allocations, resets
+and readback stay outside marker intervals. Main supervises each process for
+900seconds (other phases600),6GiB host RSS and128MiB raw output. The prospective
+advance gate remains geometric-mean latency ratio<=0.95 against the separate
+reference, no shape>1.05, and each process improves at2334/5963/8192 in both
+placements. Passing permits a later model experiment, not inference adoption.

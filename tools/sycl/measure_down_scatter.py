@@ -15,7 +15,7 @@ import measurement_owner as supervision
 
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'moe-down-scatter-component-v2'
+ROOT = B / 'moe-down-scatter-component-v3'
 BUILD = B / 'main-native-gdn-engine/record.json'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json'
 SETTINGS = P / 'tools/sycl/measurement_environment.json'
@@ -50,8 +50,10 @@ def main():
                 complete=False, passed=False, active=False, model_performance_adopted=False,
                 model_quality_qualified=False, physical262144_model_RESTORE_qualified=False,
                 consumer='One Down/scatter component comparison; retire raw logs/JIT after extracting samples.',
-                prospective_gates='18 exhaustive host tile-ownership cases; traced small7-event correctness/admission/map gate;22 tail/split/irregular/rounding checks;3 independent resident processes with6 rotated rounds per shape/arm.',
-                limits='FP16 Down2560x640, BF16-round then explicit FP32 FMA. Component only; existing engine route unchanged. Marker intervals include host submission gaps. No physical VRAM/PCIe traffic, occupancy, saturation or model speed is inferred.')
+                prospective_gates='36 exhaustive host ownership cases across both mappings/tiles; traced14-event small gate;52 tail/split/irregular/rounding and78451-window checks;3 independent resident processes with6 rotated rounds of3 arms per shape. Advance only against separate reference, not against rejected raw scatter.',
+                limits='FP16 Down2560x640, BF16-round then explicit FP32 FMA. Component only; no model dispatch. Fixed78451-token FP32 accumulator, contiguous-prefix or evenly distributed token rows. Arm0 separate;1 raw MMA mapping;2 BF16 output-copy mapping. Same tile: compact below128, wide otherwise. Marker intervals include host submission gaps; no physical traffic, occupancy, saturation or model speed inferred.',
+                previous_result=dict(commit='16b697d9c2c5a699c8e7250e7a04d2b5cfbf15b0', path=str(RESULT.relative_to(P)), geometric_mean_latency_ratio=1.1480799185774464, advance_to_model=False),
+                retention='Keep original individual samples in this result; retire successful API traces, routine logs and JIT caches after comparison closure and verified extraction. Preserve known-good fallback; do not retain another closed component binary.')
         else:
             record = json.loads(RESULT.read_text())
             previous = {'smoke': 'ownership', 'validate': 'smoke', 'perf': 'validate'}[mode]
@@ -92,7 +94,7 @@ def main():
         try:
             for ordinal, args in enumerate(jobs):
                 command = [fixture['path'], *args]
-                entry, out, err = owner.run(str(ordinal), command, env, P, wall=360, cpu=1200,
+                entry, out, err = owner.run(str(ordinal), command, env, P, wall=900 if mode == 'perf' else 600, cpu=2400 if mode == 'perf' else 1800,
                     rss_cap=6 << 30, file_cap=64 << 20, text_cap=64 << 20, total_cap=128 << 20)
                 stdout, stderr = out.read_text(errors='replace'), err.read_text(errors='replace')
                 events = [json.loads(line) for line in stdout.splitlines() if line.startswith('{')]
@@ -103,7 +105,7 @@ def main():
                     'fixture_status=PASS' in stdout and not re.search(
                         r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed|CHECKED_DRAIN_FAILED', stderr),
                     'fixture failed: ' + (stderr or stdout)[-4096:])
-                expected = {'ownership': 18, 'smoke': 7, 'validate': 22, 'perf': 140}[mode]
+                expected = {'ownership': 36, 'smoke': 14, 'validate': 52, 'perf': 210}[mode]
                 guards.require(len(events) == expected and all(e['status'] == 'PASS' for e in events),
                                'incomplete fixture results')
                 result['passed'] = True; persist()
@@ -113,21 +115,22 @@ def main():
                 for rows in (64, 160, 2334, 5963, 8192):
                     for irregular in (0, 1):
                         arms = []
-                        for arm in (0, 1):
+                        for arm in (0, 1, 2):
                             group = [e for e in samples if (e['rows'], e['irregular'], e['arm']) == (rows, irregular, arm)]
                             values = [e['queue_interval_ms'] for e in group]
-                            guards.require(len(values) == 18 and all(v > 0 for v in values), 'missing samples')
+                            guards.require(len(values) == 18 and all(v > 0 for v in values) and all(e['window_rows'] == 78451 and e['accumulator_bytes'] == 78451 * 2560 * 4 for e in group), 'missing samples or wrong working set')
                             arms.append(dict(arm=arm, sample_count=len(values), median_ms=statistics.median(values),
                                 sample_sd_ms=statistics.stdev(values), process_medians_ms=[statistics.median(
                                     e['queue_interval_ms'] for e in group if e['process'] == process) for process in range(3)]))
                         summary.append(dict(rows=rows, irregular=irregular, arms=arms,
-                            ratio=arms[1]['median_ms'] / arms[0]['median_ms']))
+                            ratio=arms[2]['median_ms'] / arms[0]['median_ms'],
+                            raw_control_ratio=arms[1]['median_ms'] / arms[0]['median_ms']))
                 ratio = statistics.geometric_mean(s['ratio'] for s in summary)
                 record['resident_summary'] = dict(shapes=summary, geometric_mean_latency_ratio=ratio,
                     advance_to_model=ratio <= .95 and all(s['ratio'] <= 1.05 for s in summary) and all(
                         a < b for s in summary if s['rows'] >= 2334 for a, b in zip(
-                            s['arms'][1]['process_medians_ms'], s['arms'][0]['process_medians_ms'])),
-                    prospective_gate='Geometric mean ratio<=0.95 across10 matched shapes; no shape median>1.05; each of3 process medians improves at2334/5963/8192 in both layouts. This only permits a later model experiment, not adoption.')
+                            s['arms'][2]['process_medians_ms'], s['arms'][0]['process_medians_ms'])),
+                    prospective_gate='Output-copy/separate geometric mean ratio<=0.95 across10 fixed78451-window shapes; no shape median>1.05; each of3 process medians improves at2334/5963/8192 in both layouts. This only permits a later model experiment, not adoption.')
             record.update(complete=True, passed=True)
         except BaseException as error:
             record['error'] = str(error)
