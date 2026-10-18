@@ -2237,8 +2237,8 @@
   },
   "source_view_analysis_candidate_scope": {
     "classification": "decision support",
-    "schedulable_now": true,
-    "status": "eligible_committed_offline_analyzer_source",
+    "schedulable_now": false,
+    "status": "source_audit_running",
     "question": "Audit the frozen six-process source-view analyzer: source/receipt recovery, matched inputs, independent-unit statistics, cold/warm separation, unchanged prospective gates, and incomplete/malformed evidence rejection. Identify concrete false-positive/false-negative paths and useful bounded negative tests.",
     "candidate_source": {
       "commit": "cf86b5716e1800f4ea6c00bc0e395851d43f065b",
@@ -2264,6 +2264,13 @@
       "maximum_bytes": 18432
     },
     "consumer": "Main checks this source before merging/executing the offline six-process aggregate after B2 closure.",
-    "next_review": "After report and native Luna-max review; Main owns all fixes and tests, retire transaction paperwork at consumer closure."
+    "next_review": "After report and native Luna-max review; Main owns all fixes and tests, retire transaction paperwork at consumer closure.",
+    "task_id": "task_0cb228e4ceec",
+    "dispatch_id": "ctx_f84a6ca90021",
+    "worker_terminal": "term_92683d1a-f842-4cf9-8022-2ed87985ab4b",
+    "dispatch_turn_start_observed": true,
+    "worker_process_owner": "Main-created custom terminal; accepted dispatch via Orca; verify settlement and release then close this exact owned terminal.",
+    "collector_model_requested": "gpt-6-luna",
+    "collector_model_observed": null
   }
 }
