@@ -545,6 +545,15 @@ Next check software call-stack collection for the remaining host cost. The
 keeps all673 selected warm command intervals. Review added exact frame/stratum
 and zero-throw guards; both original log intervals passed those CPU-only checks.
 
+Before another model run, Main checks unprivileged VTune CPU stack collection
+with `profile_attention.py cpu-smoke`. It runs the installed OpenSSL SHA256
+workload for3s under software sampling, with hardware characterization disabled,
+then requires positive target-module CPU samples in a finite hotspot table.
+Source/helpers and installed tool hashes are pinned; collection/report processes
+have180s deadlines,64MiB raw-text and256MiB total budgets. This is a capability
+probe, without model execution or a GPU-counter/compute-ceiling claim. No sysctl,
+driver or privilege changes are part of it.
+
 ## Optional GDN chunk64
 
 `STRATA_SYCL_PREFILL_GDN_CHUNK64=1` adds a separate experimental long-prefill
