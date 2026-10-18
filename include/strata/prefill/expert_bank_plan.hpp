@@ -9,6 +9,7 @@ namespace strata::prefill::detail {
 
 struct ExpertBankPlan {
     static constexpr int64_t experts = 512;
+    static constexpr int64_t window_rows = 81920; // mode10, chunk8192
     enum class Selection { original, unsupported, explicit_prefix, insufficient, staged };
     Selection selection = Selection::original;
     int64_t slots = experts;
@@ -30,8 +31,13 @@ struct ExpertBankPlan {
         const uint64_t fixed = layer_major_add(other_reserved, headroom);
         if (requested_slots) {
             p.selection = Selection::unsupported;
-            if (supported && dtype == LayerMajorResidualDtype::bf16 && chunk == 8192 &&
-                width == 10240 && n > chunk) {
+            // An all-GPU residual is insufficient when its final window is
+            // <=one chunk: that scheduler branch uses normal FFN, whose
+            // expert pointers still require the full512-slot cache.
+            const int64_t tail = n > 0 ? n % window_rows : 0;
+            const bool short_tail = n > window_rows && tail > 0 && tail <= chunk;
+            if (supported && !short_tail && dtype == LayerMajorResidualDtype::bf16 &&
+                chunk == 8192 && width == 10240 && n > chunk) {
                 p.selection = Selection::explicit_prefix;
                 if (requested_rows == -1 || requested_rows == n) {
                     p.selection = Selection::insufficient;

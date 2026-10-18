@@ -40,6 +40,12 @@ int main() try {
     need(plan(1).staged() && plan(1).device_bytes == Stride);
     need(plan(512).selection == Selection::insufficient);
     need(plan(384, Free, 117488, -1, false).selection == Selection::unsupported);
+    for (int64_t rows : {81921, 81937, 90112}) {
+        const auto short_tail = plan(384, Free, rows);
+        need(short_tail.selection == Selection::unsupported && short_tail.slots == 512);
+        need(short_tail.residual.gpu_rows == rows); // all GPU, but normal FFN tail
+    }
+    need(plan(384, Free, 90113).staged()); //81920+8193: both accumulator windows
     const auto full_context = plan(384, Free, 262144);
     need(!full_context.staged() && full_context.slots == 512);
     need(full_context.residual.rows == 262144 && full_context.residual.gpu_rows == 98304);
@@ -52,7 +58,7 @@ int main() try {
         -1,LayerMajorResidualDtype::bf16,384,true); });
     rejects<std::overflow_error>([] { (void)ExpertBankPlan::make(117488,8192,10240,
         uint64_t(1)<<63,Free,Other,Headroom,-1,LayerMajorResidualDtype::bf16,384,true); });
-    std::puts("expert_bank_capacity full117488=GPU partial_request=preserved fallback262144=original exact_boundary=PASS");
+    std::puts("expert_bank_capacity full117488=GPU partial_request=preserved fallback262144=original exact_boundary=PASS short_tail_fallback_cases=3");
 
     // A host oracle models complete slot contents; accepted enqueue updates it.
     // Two ascending scans must retain three permanent hits without scan eviction.
