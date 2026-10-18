@@ -767,6 +767,16 @@ The next source-backed candidate is UR V2 submission batching, conditional on
 bounded queue/event/profiling acceptance and preservation of the existing
 copy-offload avoidance path; the indexed review does not qualify running it.
 
+At comparison closure, all component samples and nine official model requests
+were checked against raw output, and the original build inputs were recovered
+from Git before retirement. The current ce1 engine and three qualified QSA
+fixtures remain. The older bb8 fallback/GDN fixture, closed QSA logs/caches and
+four completed audit report/review payloads were retired under the
+[deletion manifest](../bench/results/2026-10-15-pr6-recovery-audit/build-retirement-20261018.json).
+Before another rebuild overwrites this selected engine, preserve and hash-check
+it outside the reused cache and commit a new fallback reference. The six legacy
+provenance holds remain unresolved; this is not global storage cleanup.
+
 ## MoE Down/scatter component
 
 `Gemm::down_scatter` is an explicit component API with no model dispatch hook.
