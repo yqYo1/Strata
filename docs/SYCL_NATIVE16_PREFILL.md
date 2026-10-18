@@ -1286,3 +1286,15 @@ RAM, so their extra transfer cost must be included. The new check must prove
 actual mode10,81920 GPU rows,GU-large and Down0; it links the original failed
 screen in Git. Prioritize this measured VRAM cliff before spending another
 clean timing cohort on the still-unqualified selective Down candidate.
+
+The balanced validation request closed normally at117489 actual read tokens,
+with mode10 and81920 GPU rows confirmed. Its first-use parameter-validated
+reading is756.8tok/s, compared with the original diagnostic750.2; one sample
+per configuration does not establish a speed gain. The mixed bank fits with
+18581376B beyond the unchanged512MiB allowance, and the host residual is
+728432640B. GU counters show5240 fused jobs/35581471 rows and16172 separate
+jobs; Down remains separate for21412 jobs. No fresh fault occurred.
+Next collect the clean four-request cohort. Prospectively stop the configuration
+if a process's subsequent median is below950 and all3 samples are below975,
+because it is far from the1000 target; keep those samples without claiming
+three-process qualification. Otherwise continue the independent repetitions.

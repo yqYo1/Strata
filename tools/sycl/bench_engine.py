@@ -475,6 +475,9 @@ def main():
                     prior['mode'] == required and prior.get('cohort_index', 0) == max(0, cohort - 1) and
                     prior['passed'] and prior['ownership_closed'] and prior['binary'] == build['binary'],
                     'commit matching preceding long-input model phase')
+                if cohort:
+                    guards.require(not prior.get('long_input_process_summary', {}).get('futility_stop', False),
+                        'preceding clean process missed the prospective futility bound; select a new configuration')
                 preceding_long = dict(commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=P, text=True).strip(),
                                       path=str(result_path.relative_to(P)), mode=prior['mode'])
             if ordered_trial or long_trial:
@@ -607,7 +610,7 @@ def main():
                 plan['long_input_screen'] = dict(minimum_actual_tokens=98304, generated_token_cap=24,
                     context_capacity=131072, required_client_context=123160,
                     question='Amortization at longer input on fixed placement/chunk/GU/QSA routes; not a same-workload kernel gain.',
-                    qualification='One validated long request, then3 independent clean processes with4 fresh requests each. Separate first use and3 subsequent requests; target each independent subsequent median>=1000tok/s. Not sustained decode, model-quality or physical262144 qualification.')
+                    qualification='One validated long request, then up to3 independent clean processes with4 fresh requests each. Separate first use and3 subsequent requests; target each independent subsequent median>=1000tok/s. Stop this configuration early if a process median<950 and all3 subsequent samples<975; retain the failed screen and do not claim3-process qualification. Not sustained decode, model-quality or physical262144 qualification.')
                 if balanced_placement:
                     plan['long_input_screen'].update(residual_GPU_rows=81920,
                         question='Test the explicit81920-row residual prefix against the diagnosed automatic-placement cliff; preserve512MiB headroom and head retention. Additional RAM transfers are part of total cost; no same-placement kernel claim.')
@@ -737,6 +740,17 @@ def main():
                     guards.require(len(placement) == request_count and all('residual_gpu_rows=81920 ' in x for x in placement),
                         'wrong balanced residual placement')
                     record['residual_placement'] = placement
+                if not check:
+                    values = [float(q['prompt_tps']) for q in requests[1:]]
+                    guards.require(len(values) == 3 and all(0 < v < float('inf') for v in values),
+                        'missing finite subsequent-request timings')
+                    median = statistics.median(values)
+                    record['long_input_process_summary'] = dict(first_use_request_index=0,
+                        subsequent_request_indices=[1, 2, 3], median_prompt_tps=median,
+                        sample_sd_prompt_tps=statistics.stdev(values), min_prompt_tps=min(values),
+                        max_prompt_tps=max(values), process_target_passed=median >= 1000,
+                        futility_stop=median < 950 and max(values) < 975,
+                        limits='One process only; no3-process target/adoption or decode qualification.')
             if column_trial:
                 selected = [x for x in log.splitlines() if x.startswith('strata prefill: GDN columns=')]
                 expected_column_route = (f'strata prefill: GDN columns={column_partitions} '
