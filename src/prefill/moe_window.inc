@@ -16,17 +16,53 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
     if (!owner.bank || offset > owner.bank_bytes || bytes > owner.bank_bytes - offset ||
         !owner.mixed || !m.region || !m.emb || reinterpret_cast<uintptr_t>(m.region) % 256)
         throw std::invalid_argument("prefill MoE accumulator: backing bank/arena bounds");
-    const auto plan = detail::MoeAccumPlan::make_contiguous(rows, owner.mixed_bytes, m.region_bytes);
+    const auto plan = owner.scratch_mixed ? detail::MoeAccumPlan::make(rows, owner.mixed_bytes,
+        owner.mixed_tail_bytes, owner.mixed_tail_offset) :
+        detail::MoeAccumPlan::make_contiguous(rows, owner.mixed_bytes, m.region_bytes);
     auto* residual = reinterpret_cast<uint16_t*>(reinterpret_cast<uint8_t*>(owner.bank) + offset);
     auto* mixed = owner.mixed;
     auto* bo = reinterpret_cast<uint16_t*>(m.emb);
-    const size_t mixed_bytes = size_t(detail::layer_major_mul(uint64_t(rows), N * 2));
+    const size_t mixed_bytes = size_t(plan.primary_bytes);
     sycl_backend::validate_device_span(residual, size_t(bytes), queue);
     sycl_backend::validate_device_span(m.region, size_t(plan.region_bytes), queue);
     sycl_backend::validate_device_span(mixed, mixed_bytes, queue);
     sycl_backend::validate_device_span(bo, size_t(m.T * N * 2), queue);
     sycl_backend::validate_spans({{m.region, size_t(plan.region_bytes)}, {mixed, mixed_bytes},
                                  {bo, size_t(m.T * N * 2)}}, {{residual, size_t(bytes)}});
+    auto* mixed_tail = plan.tail_bytes ? owner.mixed_tail : nullptr;
+    if (owner.scratch_mixed) {
+        auto owns = [&](const void* pointer) {
+            return std::find(m.owned.begin(), m.owned.end(), pointer) != m.owned.end();
+        };
+        if (m.borrowed || !owns(m.R) || !owns(m.region) || !owns(m.emb) ||
+            mixed != reinterpret_cast<uint16_t*>(m.R) ||
+            owner.mixed_bytes > detail::layer_major_mul(uint64_t(m.T), D * 4) ||
+            owner.mixed_tail_offset < plan.region_bytes || owner.mixed_tail_offset > m.region_bytes ||
+            owner.mixed_tail_bytes > m.region_bytes - owner.mixed_tail_offset ||
+            (owner.mixed_tail_bytes && owner.mixed_tail !=
+                reinterpret_cast<uint16_t*>(m.region + size_t(owner.mixed_tail_offset))))
+            throw std::invalid_argument("prefill mixed scratch: owner/phase layout mismatch");
+        if (plan.tail_bytes) {
+            sycl_backend::validate_device_span(mixed_tail, size_t(plan.tail_bytes), queue);
+            sycl_backend::validate_spans({{mixed_tail, size_t(plan.tail_bytes)}},
+                {{m.region, size_t(plan.region_bytes)}, {mixed, mixed_bytes},
+                 {bo, size_t(m.T * N * 2)}, {residual, size_t(bytes)}});
+        }
+        if (std::getenv("STRATA_TRACE"))
+            std::fprintf(stderr, "strata MoE mixed owners: phase=entry layer=%lld first=%lld rows=%lld primary=%p primary_bytes=%llu region=%p region_bytes=%llu tail=%p tail_offset=%llu tail_bytes=%llu residual=%p residual_bytes=%llu bo=%p queue=%p direct_owners=1 previous_attention=checked_drain\n",
+                (long long)layer, (long long)first_row, (long long)rows,
+                static_cast<void*>(mixed), (unsigned long long)plan.primary_bytes,
+                static_cast<void*>(m.region), (unsigned long long)m.region_bytes,
+                static_cast<void*>(mixed_tail), (unsigned long long)owner.mixed_tail_offset,
+                (unsigned long long)plan.tail_bytes, static_cast<void*>(residual),
+                (unsigned long long)bytes, static_cast<void*>(bo), m.cs);
+    }
+    auto mixed_piece = [&](int64_t at, int64_t count) {
+        const auto span = plan.mixed_piece(at, count);
+        auto* base = span.tail ? mixed_tail : mixed;
+        if (!base) throw std::invalid_argument("prefill mixed scratch: missing logical bank");
+        return reinterpret_cast<uint16_t*>(reinterpret_cast<uint8_t*>(base) + size_t(span.offset));
+    };
     using Plane = detail::MoeAccumPlan::Plane;
     auto view = [&](Plane plane) -> void* {
         const auto span = plan.span(plane);
@@ -83,7 +119,7 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
         if (!bf16_proj16(m.gemm, wu, m.lo16, m.gated_b16, count, v.name("hc_ffn_up.weight"), err) ||
             !bf16_proj(m.gemm, wi, m.xn16, injection + at * HC, count, v.name("hc_ffn_inject.weight"), err)) return false;
         native16::mix(r, m.grs, static_cast<const float*>(wn->data), m.gated_b16,
-                      m.mixed_bf, mixed + at * N, count, m.cs);
+                      m.mixed_bf, mixed_piece(at, count), count, m.cs);
         if (!bf16_proj(m.gemm, wr, m.mixed_bf, logits, count, v.name("ffn_gate_inp.weight"), err)) return false;
         route(logits, inverse + at * K, weights + at * K, count, NE, m.cs);
         // Never reconstruct this BF16 producer from its already-rounded FP16 sibling.
@@ -177,7 +213,10 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
         {
             hp::Host host(hp::moe_gather);
             auto tag = command_trace.tag(cp::Kind::gather, job.expert, job.global_row, job.rows, N);
-            gather_rows16(mixed, source + job.global_row, gathered, job.rows, N, m.cs);
+            if (owner.scratch_mixed)
+                native16::moe_gather_mixed(*owner.routes, index, mixed, mixed_tail,
+                    plan.primary_rows, source, gathered, status, m.cs);
+            else gather_rows16(mixed, source + job.global_row, gathered, job.rows, N, m.cs);
         }
         bool fused_gu = false;
         {
@@ -227,8 +266,9 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
     for (int64_t at = 0; at < rows; at += m.T) {
         if (should_stop && should_stop()) { err = "cancelled"; return false; }
         const int64_t count = std::min(m.T, rows - at);
-        if (!native_proj16(m.gemm, wsg, mixed + at * N, sgate, count, v.name("ffn_gate_shexp.weight"), err) ||
-            !native_proj16(m.gemm, wsu, mixed + at * N, sup, count, v.name("ffn_up_shexp.weight"), err)) return false;
+        auto* input = mixed_piece(at, count);
+        if (!native_proj16(m.gemm, wsg, input, sgate, count, v.name("ffn_gate_shexp.weight"), err) ||
+            !native_proj16(m.gemm, wsu, input, sup, count, v.name("ffn_up_shexp.weight"), err)) return false;
         native16::swiglu_pair(sgate, sup, sh, count, m.cs);
         if (!native_proj16(m.gemm, wsd, sh, shared, count, v.name("ffn_down_shexp.weight"), err)) return false;
         native16::moe_finish(accumulator + at * N, shared, shared_gate + at, bo, count, m.cs);
@@ -236,6 +276,9 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
     }
     if (m.layer_major_profile) m.layer_major_profile->end(detail::LayerMajorCoarseProfile::moe, m.cs);
     if (cudaStreamSynchronize(m.cs) != cudaSuccess) { err = "prefill MoE accumulator: HC writes drain"; return false; }
+    if (owner.scratch_mixed && std::getenv("STRATA_TRACE"))
+        std::fprintf(stderr, "strata MoE mixed owners: phase=retired layer=%lld first=%lld rows=%lld route_status=0 shared_HC=checked_drain callbacks=after_return\n",
+            (long long)layer, (long long)first_row, (long long)rows);
     ++owner.windows; owner.source_bytes += uint64_t(rows * K * 4);
     owner.routes.reset();
     return true;

@@ -1326,3 +1326,24 @@ with phase/owner validation before a traced component/model check. Keep PLE,
 short-input fallback and final callbacks intact. Separately audit the newly
 observed early-error teardown fault. Selective Down remains off and its clean
 component timing is still pending.
+
+`STRATA_SYCL_PREFILL_MIXED_SCRATCH=1` is the new default-off implementation of
+this capacity option, initially restricted to mode10, native16, owned chunk8192
+scratch and the existing single queue. It checks direct Prefill allocation
+owners and registered device spans, retains every mixed row through shared
+projection/HC completion, and uses the existing final checked drain before any
+callback may reuse m.R or the arena. Preparation and shared consumers use the
+same chunk/bank plan; a new GPU gather validates every row before loading either
+bank and sets sticky status bit4 for invalid rows. No numerical conversion or
+accumulation order changes. This is Main-authored Strata code, based on the
+existing local planner/route interfaces and the reviewed source lifetime map;
+no XeStrata implementation is used.
+
+The prospective sequence is `check_mixed_scratch.py plan`, commit the result,
+then `build_engine.py rebuild-mixed`, followed by committed `smoke` and
+`validate` phases of `check_mixed_scratch.py`. Compare full gathered bits with
+the contiguous kernel and an independent host lookup, including banks crossed
+within one job,65536/65537 boundaries, partial windows, invalid maps, rejected
+spans, guards and immutable inputs. These component checks do not qualify
+whole-helper alias ownership, callbacks, short prefill, physical262144/RESTORE
+or model throughput; those remain required before adoption.

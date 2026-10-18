@@ -33,6 +33,12 @@ void combine(const uint16_t* down, const int32_t* slot, const float* weight,
 void moe_job_weights(const detail::MoeWindowRoutes& plan, const float* weights,
                      const int32_t* original_slots, float* job_weights,
                      uint32_t* status, void* stream);
+// Two logical FP16 banks, with checked per-device-row routing. Invalid maps
+// write zero and set sticky status bit4 before any operand load. No early bank
+// reuse: all routed and shared consumers must retire before either owner moves.
+void moe_gather_mixed(const detail::MoeWindowRoutes& plan, size_t job_index,
+                      const uint16_t* primary, const uint16_t* tail, int64_t primary_rows,
+                      const int32_t* source, uint16_t* gathered, uint32_t* status, void* stream);
 void moe_accumulate(const detail::MoeWindowRoutes& plan, size_t job_index,
                     const uint16_t* down, const int32_t* source,
                     const int32_t* original_slots, const float* job_weights,

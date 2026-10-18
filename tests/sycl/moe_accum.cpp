@@ -3,6 +3,7 @@
 #include "strata/kernels/bf16_bits.hpp"
 #include "strata/prefill/moe_window_routes.hpp"
 #include "strata/prefill/native16.hpp"
+#include "strata/prefill/kernels.hpp"
 #include "strata/sycl/checked_cleanup.hpp"
 #include "strata/sycl/launch.hpp"
 #include <algorithm>
@@ -167,6 +168,75 @@ void refused(const std::string& mode) {
     need(rejected,"invalid span/plan was not refused before enqueue");
     std::cout<<"refusal="<<mode<<" expected_kernels=0 PASS\n";
 }
+// Isolated copy contract: arbitrary logical rows intentionally test both banks
+// within one expert job. This is not an accumulator route/slot validity oracle.
+void mixed_gather(int rows, int primary_rows) {
+    const size_t cells=size_t(rows)*N, routes=size_t(rows)*K;
+    std::vector<uint16_t> input(cells),observed(J*N),reference(J*N),capture;
+    std::vector<int32_t> ids(routes),map(routes),observed_map(routes);
+    for (size_t r=0;r<size_t(rows);++r) {
+        for(size_t col=0;col<N;++col)input[r*N+col]=uint16_t((r*31337+col*97+(r>>3))&65535);
+        for(size_t slot=0;slot<K;++slot)ids[r*K+slot]=int32_t(slot);
+    }
+    const auto plan=pd::MoeWindowRoutes::build_accum(rows,ids.data(),ids.size());
+    const auto& job=plan->jobs().front();need(job.rows==int(J),"full gather job required");
+    map=plan->source_rows();
+    for(size_t i=0;i<J;++i) {
+        const int edge[4]={0,primary_rows-1,std::min(primary_rows,rows-1),rows-1};
+        map[size_t(job.global_row)+i]=i%5?edge[i%4]:int((i*193+17)%size_t(rows));
+    }
+    auto& q=runtime->compute();
+    Buffer<uint16_t> contiguous(cells),primary(size_t(primary_rows)*N),tail(size_t(rows-primary_rows)*N),out(J*N),old(J*N);
+    Buffer<int32_t> source(routes);Buffer<uint32_t> status(1);Pending pending;
+    contiguous.poison(q);primary.poison(q);tail.poison(q);out.poison(q);old.poison(q);source.poison(q);status.poison(q);
+    q.memcpy(contiguous.data(),input.data(),cells*2);
+    q.memcpy(primary.data(),input.data(),size_t(primary_rows)*N*2);
+    if(rows>primary_rows)q.memcpy(tail.data(),input.data()+size_t(primary_rows)*N,size_t(rows-primary_rows)*N*2);
+    q.memcpy(source.data(),map.data(),routes*4);q.memset(status.data(),0,4);runtime->wait();
+    auto launch=[&](const uint16_t* p,const uint16_t* t,int split,const int32_t* s,uint16_t* dst) {
+        pn::moe_gather_mixed(*plan,0,p,t,split,s,dst,status.data(),&q);
+    };
+    const auto* second=rows>primary_rows?tail.data():nullptr;
+    launch(primary.data(),second,primary_rows,source.data(),out.data());
+    strata::prefill::gather_rows16(contiguous.data(),source.data()+job.global_row,old.data(),job.rows,N,&q);
+    uint32_t observed_status=~uint32_t(0);
+    q.memcpy(observed.data(),out.data(),observed.size()*2);q.memcpy(reference.data(),old.data(),reference.size()*2);
+    q.memcpy(&observed_status,status.data(),4);runtime->wait();
+    need(!observed_status && observed==reference,"two-bank/contiguous full-output mismatch");
+    for(size_t i=0;i<observed.size();++i)
+        need(observed[i]==input[size_t(map[size_t(job.global_row)+i/N])*N+i%N],"independent gather copy oracle");
+    size_t rejects=0;
+    auto reject=[&](auto call) {
+        bool refused=false;try{call();}catch(const std::invalid_argument&){refused=true;}
+        need(refused,"mixed gather bad admission submitted");++rejects;
+    };
+    reject([&]{launch(primary.data(),second,0,source.data(),out.data());});
+    reject([&]{launch(primary.data(),second,rows+1,source.data(),out.data());});
+    reject([&]{launch(primary.data()+size_t(primary_rows)*N-2,second,primary_rows,source.data(),out.data());});
+    reject([&]{launch(primary.data(),second,primary_rows,source.data()+routes-2,out.data());});
+    reject([&]{launch(primary.data(),second,primary_rows,source.data(),primary.data());});
+    if(second)reject([&]{launch(primary.data(),tail.data()+size_t(rows-primary_rows)*N-2,primary_rows,source.data(),out.data());});
+    else reject([&]{launch(primary.data(),tail.data(),primary_rows,source.data(),out.data());});
+    const int bad[4]={-1,rows,INT32_MAX,INT32_MIN};
+    for(size_t i=0;i<4;++i)map[size_t(job.global_row)+i]=bad[i];
+    q.memcpy(source.data(),map.data(),routes*4);q.memset(status.data(),0,4);
+    launch(primary.data(),second,primary_rows,source.data(),out.data());
+    q.memcpy(observed.data(),out.data(),observed.size()*2);q.memcpy(&observed_status,status.data(),4);runtime->wait();
+    need(observed_status==4,"invalid row sticky gather status");
+    for(size_t i=0;i<observed.size();++i) {
+        const int row=map[size_t(job.global_row)+i/N];
+        need(observed[i]==(row<0 || row>=rows?0:input[size_t(row)*N+i%N]),"invalid row accessed source memory");
+    }
+    // Whole logical input banks and maps, not only guards, must be unchanged.
+    capture.resize(size_t(primary_rows)*N);q.memcpy(capture.data(),primary.data(),capture.size()*2);runtime->wait();
+    need(std::equal(capture.begin(),capture.end(),input.begin()),"primary bank mutated");
+    if(second){capture.resize(size_t(rows-primary_rows)*N);q.memcpy(capture.data(),tail.data(),capture.size()*2);runtime->wait();need(std::equal(capture.begin(),capture.end(),input.begin()+size_t(primary_rows)*N),"tail bank mutated");}
+    q.memcpy(observed_map.data(),source.data(),routes*4);runtime->wait();need(observed_map==map,"source map mutated");
+    contiguous.guards();primary.guards();tail.guards();out.guards();old.guards();source.guards();status.guards();
+    need(rejects==6,"mixed gather admission coverage");
+    std::cout<<"mixed_gather rows="<<rows<<" primary_rows="<<primary_rows<<" compared_values="<<observed.size()
+             <<" admission_rejects="<<rejects<<" invalid_rows=4 status=4 inputs_immutable=1 guards=PASS PASS\n";
+}
 } // namespace
 int main(int argc,char** argv) {
     try {
@@ -175,7 +245,12 @@ int main(int argc,char** argv) {
         gate("before-runtime");runtime=sb::runtime_for();
         std::cout<<"device="<<runtime->device().get_info<sycl::info::device::name>()<<" driver="<<runtime->device().get_info<sycl::info::device::driver_version>()<<'\n';
         gate("runtime-ready");
-        if (mode=="short-weights" || mode=="short-down" || mode=="legacy-plan") refused(mode);
+        if(mode=="mixed-gather-smoke")mixed_gather(8193,8192);
+        else if(mode=="mixed-gather-contiguous")mixed_gather(16384,16384);
+        else if(mode=="mixed-gather-65537")mixed_gather(65537,65536);
+        else if(mode=="mixed-gather-partial")mixed_gather(78452,65536);
+        else if(mode=="mixed-gather-full")mixed_gather(81920,65536);
+        else if (mode=="short-weights" || mode=="short-down" || mode=="legacy-plan") refused(mode);
         else {
             need(mode=="smoke" || mode=="numeric" || mode=="hot65536" || mode=="balanced65536" || mode=="hot81920" || mode=="balanced81920" || mode=="partial78452" || mode=="negative-source" || mode=="negative-slot" || mode=="unwind","unsupported case");
             const int rows=mode=="smoke"?3:mode=="numeric"?37:(mode=="hot65536" || mode=="balanced65536")?65536:(mode=="hot81920" || mode=="balanced81920")?81920:mode=="partial78452"?78452:17;

@@ -72,6 +72,31 @@ int main() {
         rejects<std::overflow_error>([] { (void)Plan::multiply(std::numeric_limits<uint64_t>::max(), 2); });
         need(negative_checks == 34);
         std::printf("negative_checks=%zu PASS\n", negative_checks);
+        size_t borrowed_cases = 0;
+        for (int64_t rows : {8193, 16384, 65536, 65537, 78452, 81920}) {
+            const auto p = Plan::make_scratch_borrowed(rows, Legacy, Region);
+            need(p.primary_bytes <= Legacy && p.region_bytes <= Region &&
+                 p.tail_bytes <= Region - p.region_bytes);
+            need(p.primary_rows == std::min<int64_t>(rows, 65536));
+            need(p.primary_bytes + p.tail_bytes == uint64_t(rows) * 5120);
+            uint64_t consumed = 0;
+            for (int64_t at = 0; at < rows; at += Plan::chunk) {
+                const auto s = p.mixed_piece(at, std::min(Plan::chunk, rows - at));
+                need(s.tail == (at >= p.primary_rows));
+                consumed += s.bytes;
+            }
+            need(consumed == uint64_t(rows) * 5120);
+            ++borrowed_cases;
+        }
+        const auto borrowed = Plan::make_scratch_borrowed(81920, Legacy, Region);
+        need(borrowed.region_bytes == 1059131904 && borrowed.tail_bytes == 83886080);
+        need(Region - borrowed.region_bytes == 121566720);
+        const auto exact = borrowed.region_bytes + borrowed.tail_bytes;
+        (void)Plan::make_scratch_borrowed(81920, Legacy, exact);
+        rejects([&] { (void)Plan::make_scratch_borrowed(81920, Legacy, exact - 1); });
+        rejects([] { (void)Plan::make_scratch_borrowed(81920, 0, Region); });
+        need(borrowed_cases == 6 && negative_checks == 36);
+        std::printf("borrowed_cases=%zu borrowed_negative_checks=2 PASS\n", borrowed_cases);
         std::puts("moe_accum_plan PASS GPU=UNRUN numeric=UNQUALIFIED lifetime=EXTERNAL_REQUIRED");
         return 0;
     } catch (const std::exception& error) {
