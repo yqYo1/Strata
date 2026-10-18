@@ -1353,7 +1353,7 @@ reading includes validation/logging and is not a clean speed comparison.
 The clean cohort0 then closed with795.0tok/s on first use and845.9,846.1,845.8
 on its three subsequent requests (median845.9, sample SD0.1528). All four actual
 117489-token request hashes match the81920-row screen at commit0dc815171;
-its802.1tok/s subsequent median is5.46% lower in this capacity comparison.
+the new placement gains5.46% over its802.1tok/s subsequent median.
 Each placement has one independent process; this is not a repeated-process
 gain or an isolated kernel change. No fresh fault occurred. The prospective
 futility rule stops this configuration without cohorts1/2;1000tok/s is not met.

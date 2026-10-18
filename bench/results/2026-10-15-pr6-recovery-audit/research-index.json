@@ -1652,5 +1652,36 @@
       "retrieval": "After the frozen comparison closes and a measured transfer/active-set bottleneck is selected, retrieve only its relevant sections. No new follow-up scope currently eligible."
     },
     "review_point": "At the next concrete transfer or active-set scheduling selection; retire if superseded or no realistic consumer remains."
+  },
+  "bounded_expert_window_staging_scope": {
+    "classification": "decision support",
+    "schedulable_now": false,
+    "state": "running",
+    "question": "Audit a bounded per-layer expert bank for all-GPU mode10 windows:383 fixed admission slots plus one scratch slot, immutable512-expert RAM slab, same queue; use the existing512-slot path whenever full GPU residual residency is not admitted.",
+    "prerequisites_met": [
+      "Borrowed-scratch model owner/phase check passed at dc0fc0f9c; the matched117K clean screen closed at b6d90afa7 with median845.9 and committed futility stop.",
+      "Current code allocates1363148800B for512 GPU slots but consumes/dequantizes one expert at a time; a full immutable512-slot RAM upload slab already survives the checked outer lease.",
+      "With max stride2662400B,384 slots use1022361600B and release340787200B; observed remaining budget plus this saving admits the392888320B residual host tail without head release, pending exact runtime qualification.",
+      "This is a new capacity/scheduling design, not another grouping/row-metadata/precision survey. Main will keep supplied existing files immutable until the report returns."
+    ],
+    "source_commit": "034bddff8393e8c1c9cee89e9235807230a81ad2",
+    "source_files_sha256": {
+      "src/prefill/layer_major.inc": "61413caf069c1f6893af98603824da596bb5ba340a84e989a31674f3fcbd9aad",
+      "src/prefill/moe_window.inc": "43b9d5e4b86def6289eb1f45006b3ed147aef22b627548d931eebc9f434a6cb5",
+      "src/prefill/prefill.cpp": "7472160303b0a975cc68554bfcbbed85673b5a39509d880664fd0967addbf332",
+      "include/strata/core/expert_cache.hpp": "50f26589b6488e677ac6675b824c56d143dea081b46722508d332c58d9799b41",
+      "src/core/expert_cache.cpp": "7d9a7fe0c54e8d55addcc9e9d7117d0b3addd3da294feb3b78b0fde735ce806e",
+      "include/strata/prefill/layer_major_plan.hpp": "67bc25500ae777bfb387944a2415325868602b9da82aa945464b64b0a2b8b9fd",
+      "src/sycl/compat.cpp": "bd5a664f9a0bd91b0e8e2e59f67d0a2c38c81599613831abbd6e16ad98c01689"
+    },
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/expert-window-staging-contract.md",
+    "report_budget": "12KiB target,20KiB maximum",
+    "main_reads_body_on_arrival": false,
+    "retention_consumer": "Main next bounded expert-window implementation and qualification; review at its closure.",
+    "eligible_at_dispatch": true,
+    "task": "task_662adf0874a3",
+    "dispatch": "ctx_a5ed3bf1d394",
+    "terminal": "term_f92754a8-4719-405a-ab47-09b4eca46b53",
+    "model_evidence": "Reused settled explicit gpt-6-luna medium terminal for one second bounded related task; no new implementation worker."
   }
 }
