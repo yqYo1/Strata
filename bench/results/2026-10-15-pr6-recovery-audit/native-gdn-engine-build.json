@@ -94,7 +94,7 @@
     "strata",
     "sycl_moe_down_scatter_bench"
   ],
-  "retention_consumer": "Current long-prefill comparison and its attention fixtures; retire when comparison closes.",
+  "retention_consumer": "Known-good bb8 engine/GDN fallback plus the current unqualified-model Down component generation, retained only for the imminent copy-layout/representative-working-set comparison. Replace candidate cache after original-input verification; retain at most these2 generations. Keep fallback until model-qualified replacement is selected.",
   "retained_validation_reference": {
     "source_commit": "7829568c61f4a47e5c1b06497f59e41a3417a5fb",
     "binary": {
@@ -354,12 +354,75 @@
         "_ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE0EEE": "140c1f166b173971934ae0bb02dc1afecf2fe4a370214638f30f3a537b9d22c9",
         "_ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE1EEE": "1c6e7ea7538249f591656c982ff11321fd9c1009569cd2d51d5be648d6a5e43a"
       },
-      "conclusion": "All8 dense instruction streams through their single EOT and complete per-kernel ze_info blocks match. Raw text-byte differences lie after EOT in null-destination marker immediates/padding; explicit branch targets remain below that region and indirect transfers were not found. This resolves the raw code difference for these native kernels, not model quality, runtime timing or total host executable equivalence."
+      "conclusion": "All8 dense instruction streams through their single EOT and complete per-kernel ze_info blocks match. Raw text-byte differences lie after EOT in null-destination marker immediates/padding; explicit branch targets remain below that region and indirect transfers were not found. This resolves the raw code difference for these native kernels, not model quality, runtime timing or total host executable equivalence.",
+      "extractor_source_commit": "ff5a9e784b6fa5d2c57845469d7330ffe23a638c",
+      "disassembler_sha256": "76593e79a6a24277305ef6f2ad9fb042028205a0b028cd2beddd98a9681ce9b1",
+      "inputs": [
+        {
+          "label": "reference",
+          "binary_sha256": "bb8b3f097837026528699031de72b2fae5f779f095efda96161fce037847f5d0",
+          "native_image": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/inspect-existing-dense-v1/reference/image-0.bin",
+            "bytes": 162616,
+            "sha256": "b00f74ec86404be55d19ff3b827eba4a5cf4ec7ce1785e00b188bcb8cac15808"
+          }
+        },
+        {
+          "label": "candidate",
+          "binary_sha256": "fa35ec33debd8f8262bf2b7f52171eaeaca545e9a009f27be9ffb02c34ac2927",
+          "native_image": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/inspect-existing-dense-v1/candidate/image-0.bin",
+            "bytes": 526816,
+            "sha256": "8e5b33ace812c17512d72e579971b441a724c7c15fdaafae42f18f1c622d6232"
+          }
+        }
+      ],
+      "effective_commands": [
+        {
+          "argv": [
+            "/usr/bin/ocloc",
+            "disasm",
+            "-file",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/inspect-existing-dense-v1/reference/image-0.bin",
+            "-dump",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/inspect-existing-dense-v1/reference/disasm"
+          ],
+          "environment": {
+            "PATH": "/usr/bin:/bin",
+            "LANG": "C.UTF-8"
+          },
+          "exit_code": 0
+        },
+        {
+          "argv": [
+            "/usr/bin/ocloc",
+            "disasm",
+            "-file",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/inspect-existing-dense-v1/candidate/image-0.bin",
+            "-dump",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/inspect-existing-dense-v1/candidate/disasm"
+          ],
+          "environment": {
+            "PATH": "/usr/bin:/bin",
+            "LANG": "C.UTF-8"
+          },
+          "exit_code": 0
+        }
+      ],
+      "extraction_rule": "inspect_native_sections.inspect(binary,private_directory); select image containing DenseKernel text; disassemble offline; compare instructions through the unique EOT, direct branch destinations and complete per-kernel ze_info blocks."
     }
   },
   "dense_helper_source_restoration": {
     "original_source": "7829568c61f4a47e5c1b06497f59e41a3417a5fb",
     "path": "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp",
     "original_definition_restored_verbatim": true
+  },
+  "down_component_qualification": {
+    "source_commit": "7fbe795cebbf898bf27b1e6ad7debe86cfa93a5f",
+    "result": "bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json",
+    "correctness_passed": true,
+    "three_process_timing_complete": true,
+    "model_experiment_gate_passed": false,
+    "production_selected": false
   }
 }
