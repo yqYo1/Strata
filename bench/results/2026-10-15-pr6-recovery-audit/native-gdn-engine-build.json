@@ -1,5 +1,5 @@
 {
-  "source_commit": "034bddff8393e8c1c9cee89e9235807230a81ad2",
+  "source_commit": "db71e718f5275c6db58e2f762cd54850b1aaa7dc",
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -73,30 +73,31 @@
     "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-entry-engine-build-v2.json",
     "sha256": "9b7734387f0fc56f36afe9d7bca75e5f0bedcef479271e982025abe1d4334a1a"
   },
-  "complete": true,
-  "passed": true,
+  "complete": false,
+  "passed": false,
   "active": false,
   "GPU_executed": false,
   "production_selected": false,
   "model_quality_qualified": false,
   "replaces": {
-    "source_commit": "45c387d11f20579e2f4a96511497fa7a5fb6e4ce",
+    "source_commit": "034bddff8393e8c1c9cee89e9235807230a81ad2",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-      "bytes": 22039520,
-      "sha256": "4b7ea4883c0df2d5f973a08b22b0efc3ee7bdbed560828d2e221683ff986bcf0"
+      "bytes": 22065872,
+      "sha256": "5338945aa6fb7a6df6c482da4b802046af856c4340a2a644deecfb8a32a2d01f"
     },
     "source_build_passed": true,
-    "retained_binary_source_commit": "45c387d11f20579e2f4a96511497fa7a5fb6e4ce",
+    "retained_binary_source_commit": "034bddff8393e8c1c9cee89e9235807230a81ad2",
     "reason": "Closed unused comparison engine; original source/recipe recovered from Git. Reuse its cache for the immediate corrected build, not a retained old generation."
   },
   "targets": [
     "strata",
     "sycl_moe_accum_test",
     "sycl_moe_gu_swiglu_bench",
-    "sycl_moe_down_scatter_bench"
+    "sycl_moe_down_scatter_bench",
+    "sycl_expert_bank_test"
   ],
-  "retention_consumer": "Retain current validated source034 and fixtures for the imminent bounded expert-bank comparison. Source45 fallback retired after exact source/recipe recovery; preserve source034 externally and commit it before any overwrite.",
+  "retention_consumer": "Current comparison engine and requested fixtures: strata, sycl_moe_accum_test, sycl_moe_gu_swiglu_bench, sycl_moe_down_scatter_bench, sycl_expert_bank_test; select the validated generation and retire the extra after qualification/comparison closure.",
   "retained_validation_reference": {
     "source_commit": "034bddff8393e8c1c9cee89e9235807230a81ad2",
     "binary": {
@@ -183,34 +184,14 @@
       "scope": "Does not resolve the separate six legacy roots."
     }
   },
-  "binary": {
-    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-    "bytes": 22065872,
-    "sha256": "5338945aa6fb7a6df6c482da4b802046af856c4340a2a644deecfb8a32a2d01f"
-  },
-  "compile_database_sha256": "0dd5024d998ba0e2d89f0a29b86028ad6d21f70e19f64570c222ef3560ecc253",
-  "configured_compile_entries": 220,
-  "fixtures": {
-    "sycl_moe_accum_test": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_accum_test",
-      "sha256": "35de609c81091c9ce2e87f9b28742466e5f21356570396cc45e7ee83e7b4432b"
-    },
-    "sycl_moe_gu_swiglu_bench": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_gu_swiglu_bench",
-      "sha256": "7dc7b336b920e25b205d0f3f0b6fb5a08475ac3d08a7d7e71141ccb7d2bcc659"
-    },
-    "sycl_moe_down_scatter_bench": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_down_scatter_bench",
-      "sha256": "ddaf0ad94be379f8c601a3226641c52c4c42478054f1ec42f4daa563f1d51dd4"
-    }
-  },
+  "error": "compile-link failed: [1/8] Building CXX object CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o\nFAILED: CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o \n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++ -DSTRATA_ENABLE_SYCL=1 -DSTRATA_NATIVE_EXPERTS=1 -DSTRATA_PREFILL_FUSED=1 -DSTRATA_PREFILL_MMQ=1 -DSTRATA_SYCL_VLLM_XE2_NATIVE16=1 -DSTRATA_VERSION=\\\"0.1.38\\\" -I/home/yayoi/orca/workspaces/Strata/sycl/include -I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat -I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include -isystem /opt/intel/oneapi/mkl/2026.1/include -O3 -DNDEBUG -std=c++20 -fno-fast-math -ffp-contract=off -fsycl -fsycl-id-queries-range=size_t -Wall -Wextra -Werror -DMKL_ILP64 -MD -MT CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o -MF CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o.d -o CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o -c /home/yayoi/orca/workspaces/Strata/sycl/src/prefill/prefill.cpp\nIn file included from /home/yayoi/orca/workspaces/Strata/sycl/src/prefill/prefill.cpp:1785:\n/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/moe_window.inc:194:84: error: binding reference of type 'core::ExpertCache' to value of type 'const core::ExpertCache' drops 'const' qualifier\n  194 |                 const auto ticket = detail::stage_expert_bank(*owner.expert_slots, *m.cache,\n      |                                                                                    ^~~~~~~~\n/home/yayoi/orca/workspaces/Strata/sycl/include/strata/prefill/expert_bank_upload.hpp:12:28: note: passing argument to parameter 'cache' here\n   12 |         core::ExpertCache& cache, const uint8_t* slab, uint64_t slab_bytes,\n      |                            ^\n1 error generated.\n[2/8] Building CXX object CMakeFiles/sycl_expert_bank_test.dir/tests/sycl/expert_bank.cpp.o\nninja: build stopped: subcommand failed.\n",
   "ownership_closed": true,
   "inputs": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "034bddff8393e8c1c9cee89e9235807230a81ad2",
-      "count": 496,
-      "aggregate_sha256": "df2207b2f53080aef535b9a8a311d7b50856f8b1042262803545da78f3147658"
+      "revision": "db71e718f5275c6db58e2f762cd54850b1aaa7dc",
+      "count": 501,
+      "aggregate_sha256": "d57a516ce9b3f09824cf34ab6619bc8a04b8cfc5b60cbd385e8bd58098cd86f4"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
@@ -224,35 +205,5 @@
       "count": 5703,
       "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
     }
-  ],
-  "retained_current_selection": {
-    "source_commit": "034bddff8393e8c1c9cee89e9235807230a81ad2",
-    "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-      "bytes": 22065872,
-      "sha256": "5338945aa6fb7a6df6c482da4b802046af856c4340a2a644deecfb8a32a2d01f"
-    },
-    "fixtures": {
-      "sycl_moe_accum_test": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_accum_test",
-        "sha256": "35de609c81091c9ce2e87f9b28742466e5f21356570396cc45e7ee83e7b4432b"
-      },
-      "sycl_moe_gu_swiglu_bench": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_gu_swiglu_bench",
-        "sha256": "7dc7b336b920e25b205d0f3f0b6fb5a08475ac3d08a7d7e71141ccb7d2bcc659"
-      },
-      "sycl_moe_down_scatter_bench": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_down_scatter_bench",
-        "sha256": "ddaf0ad94be379f8c601a3226641c52c4c42478054f1ec42f4daa563f1d51dd4"
-      }
-    },
-    "qualification_references": {
-      "mixed_capacity_gather": "398767398",
-      "current_GU_perf": "86631a894",
-      "model_owner_phase": "dc0fc0f9c",
-      "clean117K": "b6d90afa7"
-    },
-    "scope": "Current head0 native16/GU-large/mode10 mixed-scratch opt-in tuning reference. Short health request completed; full quality, physical262144 and RESTORE/default adoption remain unqualified.",
-    "next_consumer": "Bounded expert-bank implementation/GPU comparison; preserve this validated engine and required fixtures before its build directory is reused."
-  }
+  ]
 }
