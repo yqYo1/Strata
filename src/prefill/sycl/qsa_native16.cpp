@@ -56,9 +56,10 @@ AttentionMath attention_math() {
         if (!std::strcmp(value, "bf16-prefix-qcache")) return AttentionMath::bf16_prefix_qcache;
         if (!std::strcmp(value, "bf16-prefix-kvec4")) return AttentionMath::bf16_prefix_kvec4;
         if (!std::strcmp(value, "bf16-prefix-kvvec4")) return AttentionMath::bf16_prefix_kvvec4;
+        if (!std::strcmp(value, "bf16-prefix-ordered-exp")) return AttentionMath::bf16_prefix_ordered_exp;
         if (!std::strcmp(value, "bf16-prefix-tilepack")) return AttentionMath::bf16_prefix_tilepack;
         if (!std::strcmp(value, "bf16-prefix-subgroup")) return AttentionMath::bf16_prefix_subgroup;
-        throw std::invalid_argument("STRATA_SYCL_PREFILL_QSA_MATH must be existing, bf16, bf16-prefix, bf16-prefix-optimized, bf16-prefix-qcache, bf16-prefix-kvec4, bf16-prefix-kvvec4, bf16-prefix-tilepack or bf16-prefix-subgroup");
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_QSA_MATH must be existing, bf16, bf16-prefix, bf16-prefix-optimized, bf16-prefix-qcache, bf16-prefix-kvec4, bf16-prefix-kvvec4, bf16-prefix-ordered-exp, bf16-prefix-tilepack or bf16-prefix-subgroup");
     }();
     return result;
 }

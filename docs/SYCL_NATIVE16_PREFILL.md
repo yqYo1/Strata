@@ -726,6 +726,57 @@ retain spread and process medians. Proceed to an explicit opt-in long-prefill
 model route and a matched official78K comparison; no new model throughput or
 sustained decode, task-quality, full-context or RESTORE qualification is claimed.
 
+`STRATA_SYCL_PREFILL_QSA_MATH=bf16-prefix-ordered-exp` explicitly selects the
+qualified kernel in dedicated long prefill. It uses the same prefix allocation,
+resident-pool admission, strides and owner lifetime as KVvec4; the component
+kernel and default selector are unchanged. Startup logs identify parallel exp
+with ascending sum, cached Q and typed4 K/V. Short prefill and decode keep their
+existing route.
+
+Main rebuilds from committed inputs, then prepares/commits/runs
+`qsa-ordered-exp-check`, `qsa-ordered-exp-base` and
+`qsa-ordered-exp-candidate` using `tools/sycl/bench_engine.py`. Preparation
+requires the recorded component gate and unchanged kernel source. The first
+model gate uses validation/trace on a32K nominal input. Both clean speed arms
+use the same binary, GDN columns4, thinking enabled and four fresh78K requests;
+only the startup QSA selector differs after normalizing private paths/ports.
+Each later plan requires its matching completed predecessor committed. Retain
+all requests, separate first-use from subsequent speed and archive prior gates
+by immutable commit. This is a model screen, not independent-process variance,
+sustained generation or default-adoption qualification.
+
+The opt-in source`ce1e950a843953c7856382978f7993bcc848e366` passed its
+39,260-input validated model admission, thinking enabled, without fresh GPU
+faults. The subsequent same-binary clean screen used78,451 fresh tokens on
+every request and matched benchmark source, request hashes, profile seed and
+normalized environment/configuration. Both processes exited normally.
+
+| QSA route, GDN columns4 | First-use tok/s | Subsequent tok/s | Subsequent median / sample SD |
+| --- | ---: | --- | ---: |
+| KVvec4 | 789.4 | 867.8, 859.5, 867.4 | 867.4 / 4.68 |
+| Ordered-exp | 816.9 | 902.9, 893.5, 900.6 | 900.6 / 4.90 |
+
+The matched subsequent-median gain is3.83%. Keep ordered-exp as an explicit
+long-prefill tuning candidate. This is one process per arm with three subsequent
+requests, not independent-process variance. All individual requests and the
+immutable baseline reference are in the
+[current model comparison](../bench/results/2026-10-15-pr6-recovery-audit/qsa-ordered-exp-model-current.json).
+The24 generated tokens do not qualify sustained decode; quality, full-model
+262144 context and RESTORE remain open. Neither1000 PP nor70 TG is achieved.
+The next source-backed candidate is UR V2 submission batching, conditional on
+bounded queue/event/profiling acceptance and preservation of the existing
+copy-offload avoidance path; the indexed review does not qualify running it.
+
+At comparison closure, all component samples and nine official model requests
+were checked against raw output, and the original build inputs were recovered
+from Git before retirement. The current ce1 engine and three qualified QSA
+fixtures remain. The older bb8 fallback/GDN fixture, closed QSA logs/caches and
+four completed audit report/review payloads were retired under the
+[deletion manifest](../bench/results/2026-10-15-pr6-recovery-audit/build-retirement-20261018.json).
+Before another rebuild overwrites this selected engine, preserve and hash-check
+it outside the reused cache and commit a new fallback reference. The six legacy
+provenance holds remain unresolved; this is not global storage cleanup.
+
 ## MoE Down/scatter component
 
 `Gemm::down_scatter` is an explicit component API with no model dispatch hook.
@@ -869,7 +920,8 @@ fails. **Keep the separate engine route; do not connect either fusion variant.**
 The [current individual results](../bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json)
 preserve the raw control, spread and every sample. This repeated same-buffer
 component regime does not identify physical traffic, saturation or model speed.
-The clean model reference remains867.1 tok/s; no new model speed was measured.
+At the close of this Down comparison, the clean model reference was867.1 tok/s;
+the later ordered-exp model screen above reaches900.6 tok/s.
 
 Bounded offline ELF inspection of the actual7ad engine also found125504/126912
 byte native wide no-capture scatter sections, versus8128 bytes for dense
@@ -879,5 +931,5 @@ evidence, not proof of instruction-cache pressure, occupancy or a slowdown
 mechanism. Before another fusion variant, investigate grouping repeated row
 metadata/predicates while preserving static fragment access; a dynamic register
 index or restricted pointer must not be assumed faster or legal without checks.
-The QSA ordered-exp component now passed its gate; the next serialized experiment
-is its opt-in long-prefill model comparison described above.
+The QSA ordered-exp component and opt-in model screen subsequently passed their
+gates as described above. Neither Down fusion variant is selected.

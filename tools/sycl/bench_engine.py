@@ -236,17 +236,20 @@ def main():
              'qsa-qcache-check', 'qsa-qcache-base', 'qsa-qcache',
              'qsa-kvec4-check', 'qsa-kvec4-base', 'qsa-kvec4', 'qsa-kvec4-census',
              'qsa-kvvec4-check', 'qsa-kvvec4-base', 'qsa-kvvec4',
+             'qsa-ordered-exp-check', 'qsa-ordered-exp-base', 'qsa-ordered-exp-candidate',
              'qsa-kvvec4-timing-check', 'qsa-kvvec4-census') + tuple(
                  f'qsa-gdncols{n}-{phase}' for n in (2, 4, 8) for phase in ('check', 'base', 'candidate'))
     guards.require(len(sys.argv) == 3 and sys.argv[1] in ('prepare', 'run') and
                    sys.argv[2] in modes, 'use prepare|run ' + '|'.join(modes))
     action, mode = sys.argv[1:]
     column_mode = re.fullmatch(r'qsa-gdncols(2|4|8)-(check|base|candidate|warm-census|host-check|host-traced-check|host-census)', mode)
+    ordered_trial = mode.startswith('qsa-ordered-exp-')
+    ordered_candidate = ordered_trial and mode != 'qsa-ordered-exp-base'
     host_profile = mode.startswith('qsa-gdncols4-host-')
     warm_profile = mode in ('qsa-gdncols4-warm-census', 'qsa-gdncols4-host-census')
-    column_trial = column_mode is not None
-    column_check = column_trial and column_mode[2] == 'check'
-    column_partitions = int(column_mode[1]) if column_trial and column_mode[2] != 'base' else 0
+    column_trial = column_mode is not None or ordered_trial
+    column_check = mode == 'qsa-ordered-exp-check' or (column_mode is not None and column_mode[2] == 'check')
+    column_partitions = 4 if ordered_trial else int(column_mode[1]) if column_mode is not None and column_mode[2] != 'base' else 0
     qsa = mode.startswith('qsa-')
     short_profile = mode == 'qsa-kvvec4-timing-check' or (host_profile and not warm_profile)
     phase_profile = host_profile or warm_profile or short_profile or mode == 'qsa-kvvec4-census'
@@ -262,6 +265,7 @@ def main():
     root = B / (('qsa-attention-model-' + mode[4:] + '-' + generation) if qsa else
                 ('native-gdn-model-' + mode + '-v2'))
     result_path = (A / 'prefill-host-attribution-current.json' if host_profile else
+                   A / 'qsa-ordered-exp-model-current.json' if ordered_trial else
                    A / 'moe-window-census-current.json' if census else
                    A / 'gdn-columns-model-current.json' if column_trial else
                    A / 'qsa-kvvec4-model-current.json' if kvvec4 else
@@ -278,6 +282,30 @@ def main():
             build = json.loads(BUILD.read_text())
             guards.require(build['passed'] and build['complete'] and build['ownership_closed'] and not build['active'],
                            'qualified closed engine build required')
+            ordered_qualification = None
+            if ordered_trial:
+                component_path = A / 'qsa-ordered-exp-current.json'
+                component = json.loads(component_path.read_text())
+                guards.require(component['passed'] and component['complete'] and component['ownership_closed'] and
+                    component['component_summary']['advance_to_model'], 'ordered-exp component gate required')
+                source_pins = {}
+                for name in ('src/kernels/sycl/qsa_bf16_prefix.cpp', 'include/strata/kernels/qsa_bf16_prefix.hpp'):
+                    original = subprocess.check_output(['git', 'show', component['source_commit'] + ':' + name], cwd=P)
+                    source_pins[name] = hashlib.sha256(original).hexdigest()
+                    guards.require(digest(P / name) == source_pins[name], 'qualified QSA kernel source changed: ' + name)
+                ordered_qualification = dict(component_path=str(component_path.relative_to(P)),
+                    component_sha256=digest(component_path), kernel_source_sha256=source_pins,
+                    component_source_commit=component['source_commit'], component_gate_passed=True)
+                if mode != 'qsa-ordered-exp-check':
+                    prior = json.loads(result_path.read_text())
+                    committed_prior = subprocess.check_output(['git', 'show', 'HEAD:' + str(result_path.relative_to(P))], cwd=P)
+                    required = 'qsa-ordered-exp-check' if mode.endswith('-base') else 'qsa-ordered-exp-base'
+                    guards.require(committed_prior == result_path.read_bytes() and prior['mode'] == required and
+                        prior['passed'] and prior['ownership_closed'] and prior['binary'] == build['binary'],
+                        'commit the matching preceding ordered-exp model gate')
+                    ordered_qualification['preceding_result'] = dict(
+                        commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=P, text=True).strip(),
+                        path=str(result_path.relative_to(P)), mode=prior['mode'], passed=True)
             if host_profile:
                 cpu_check = json.loads((A / 'prefill-host-cpu-current.json').read_text())
                 guards.require(cpu_check['passed'] and cpu_check['ownership_closed'] and
@@ -322,6 +350,7 @@ def main():
                        STRATA_SYCL_PREFILL_GDN_CHUNK64='1' if chunk64 else '0')
             if qsa:
                 env['STRATA_SYCL_PREFILL_QSA_MATH'] = (
+                    'bf16-prefix-ordered-exp' if ordered_candidate else
                     'bf16-prefix-kvvec4' if column_trial or phase_profile or mode in ('qsa-kvvec4-check', 'qsa-kvvec4') else
                     'bf16-prefix-kvec4' if mode in ('qsa-kvec4-check', 'qsa-kvec4', 'qsa-kvec4-census', 'qsa-kvvec4-base') else
                     'bf16-prefix-qcache' if mode in ('qsa-qcache-check', 'qsa-qcache', 'qsa-kvec4-base') else
@@ -365,6 +394,8 @@ def main():
             if host_profile:
                 plan.update(host_qualification=qualification, cpu_observer_version=4,
                             cpu_fixture_receipt_sha256=digest(A / 'prefill-host-cpu-current.json'))
+            if ordered_trial:
+                plan['ordered_exp_qualification'] = ordered_qualification
             if phase_profile:
                 plan['phase_profile_scope'] = {
                     'question': ('Classify non-GEMM MoE host CPU with disjoint version4 regions and exact planned-work counts; command tracing off/on gates precede the two-request warm profile.' if host_profile else
@@ -456,6 +487,10 @@ def main():
                 expected = 'KV=active-logical-prefix' if mode in ('qsa-base', 'qsa-census') or qcache or kvec4 else 'KV=on-the-fly'
                 guards.require(record['qsa_route'] and all(expected in x for x in record['qsa_route']),
                                'wrong QSA operand route')
+                if ordered_trial:
+                    label = 'softmax=parallel-exp-ascending-sum' if ordered_candidate else 'softmax=serial'
+                    guards.require(all(label in x and 'score_pitch=33' in x for x in record['qsa_route']),
+                                   'wrong ordered-exp or baseline softmax selection')
                 if qcache or kvec4:
                     selected = [x for x in log.splitlines() if x.startswith('strata prefill: QSA cached_query=')]
                     wanted = kvec4 or mode in ('qsa-qcache-check', 'qsa-qcache')
