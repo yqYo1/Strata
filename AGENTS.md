@@ -1,9 +1,28 @@
 # AGENTS.md
 
 Strata runs the Qwen3.8-Flash-Next mixture-of-experts model (and its Coder, Swift 1.5 and Unsloth variants) on a
-normal PC: one NVIDIA or AMD graphics card plus system RAM, on Windows or Linux. It has a C++/CUDA/HIP engine
-(`src/`, `include/`), a Python server with an OpenAI- and Anthropic-compatible API and a web app (`serve/`), and a
-one-click installer (`setup.py`, started by `START-HERE.bat` / `setup.sh`).
+normal PC with one graphics card and system RAM, on Windows or Linux. Its C++ GPU engine (`src/`, `include/`)
+has CUDA/HIP backends and this fork's SYCL backend. The project also has a Python server with an OpenAI- and
+Anthropic-compatible API and a web app (`serve/`), and a one-click installer (`setup.py`, started by
+`START-HERE.bat` / `setup.sh`).
+
+## This fork's scope
+
+This is a personal fork based on **Niko1221/Strata**, optimized for this PC's
+Intel GPU, CPU and RAM. Niko1221/Strata is the only upstream. Because of the
+user's license constraint, **XeStrata is a performance reference only**. Do not
+copy, port, adapt, or use XeStrata code as the basis for a reimplementation,
+including helpers, diagnostics, tests and archived source proposals. Audit
+existing derived code and remove it from the active tree while preserving
+independent safety fixes and compact provenance/results in Git. Changing names
+or removing copyright notices does not remove a derivation. Other engines may
+be implementation references only after their provenance and license are checked.
+Record source provenance for delegated proposals before integration, including
+helpers and tests. Newly authored project files follow the repository's `LICENSE`;
+do not introduce another license through a copied header or template. Hold an
+uncertain proposal out of the active implementation until its origin is resolved.
+Upstream contributions are not currently planned. CUDA/HIP implementation and
+validation are outside this work's scope.
 
 ## Installing Strata for a user
 
@@ -13,6 +32,13 @@ start and verify the server, and connect the user's apps. Never expose the serve
 offers the same steps as tools.
 
 ## Working on the code
+
+### Session and action checks
+
+These are durable operating rules for Main and delegated work. Use the
+`git-workflow` skill for Git operations and the project-only upstream sync skill
+for upstream evaluation; the user's project-specific rules here take precedence
+over generic workflow examples.
 
 At session start, resume and after context compaction, reread this file and the
 current committed decisions relevant to the task before launching work. Check
@@ -48,42 +74,37 @@ than recording after the fact that it was skipped. Keep an explicit unresolved
 exception pending until its recorded condition is met; a context change or a
 new experiment does not clear it.
 
-- Before a build or measurement, verify committed inputs, the existing job's
-  ownership and the comparison plan. Identify the retained known-good build and
+- Before a build or measurement, verify the exact committed engine, benchmark,
+  controller, generated inputs and recipe, the existing job's ownership and the
+  comparison plan. Identify the retained known-good build and
   any imminent comparison build across all project worktrees before creating
   another generation. Preserve the validated fallback before a rebuild can
-  overwrite its output path. Do not measure uncommitted engine changes.
+  overwrite its output path. Do not measure uncommitted changes or assume that
+  committing them after measurement makes the original executable reproducible.
 - Before integration, check provenance and decide each inference component
   separately, including prefill and decode. Preserve required non-inference
   functions; merging history or a report alone does not integrate an implementation.
 - When research arrives, check its classification and delegate report review.
   Main reads the short review digest, and retrieves collection report sections
   only for a concrete question; arrival alone is not a reason to load them.
+- Before keeping a log, report or binary, name its realistic next consumer and
+  review point. Check whether the necessary information is already in compact
+  results or recoverable Git history. A completed debug step does not justify
+  another permanent file; all individual comparison samples can be retained
+  without retaining every raw log.
 - Before deletion, verify the current consumer has ended and useful evidence is
   preserved. For a build, recover and compare the original source/recipe from Git;
   an assumed ability to rebuild is insufficient. Match the exact final binary
   and its build inputs; a similarly named root, seed build or intermediate
   receipt does not establish the final executable's provenance.
 - At each work boundary, commit and push the useful changes, integrate completed
-  work into `feature/sycl` and the fork default, and retire finished branches,
-  comparison builds and raw output. Record any exception and its next review point.
+  work into `feature/sycl` and the fork default through a PR, then verify the
+  remote refs and pull the clean ghq default mirror. Retire finished branches,
+  comparison builds and raw output. Record any exception, its concrete remaining
+  action and its next review point in the existing compact result. Do not report
+  this boundary complete from a local commit or history-only merge alone.
 
-This is a personal fork based on **Niko1221/Strata**, optimized for this PC's
-Intel GPU, CPU and RAM. Niko1221/Strata is the only upstream. Because of the
-user's license constraint, **XeStrata is a performance reference only**. Do not
-copy, port, adapt, or use XeStrata code as the basis for a reimplementation,
-including helpers, diagnostics, tests and archived source proposals. Audit
-existing derived code and remove it from the active tree while preserving
-independent safety fixes and compact provenance/results in Git. Changing names
-or removing copyright notices does not remove a derivation. Other engines may
-be implementation references only after their provenance and license are checked.
-Record source provenance for delegated proposals before integration, including
-helpers and tests. Newly authored project files follow the repository's `LICENSE`;
-do not introduce another license through a copied header or template. Hold an
-uncertain proposal out of the active implementation until its origin is resolved.
-Upstream
-contributions are not currently planned. CUDA/HIP implementation and validation
-are outside this work's scope.
+### Git, integration and tuning
 
 - The primary branch is **`feature/sycl`**. Use its existing worktree. Create a
   child from its current commit only when isolation is needed; read-only research
@@ -299,6 +320,8 @@ are outside this work's scope.
   research and native **gpt-6-luna max** report review; do not substitute another
   expensive implementation model.
 
+### Project references
+
 Use the project-only [strata-upstream-sync skill](.agents/skills/strata-upstream-sync/SKILL.md).
 Its files live in `.claude/skills/strata-upstream-sync`, exposed by the relative
 `.agents/skills` link. Do not install it in user-wide skill directories.
@@ -376,6 +399,9 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   Reconcile any uncommitted measured inputs first; do not delete their last copy
   while claiming Git can restore them. Record a temporary provenance hold and
   review point if recovery is unresolved; do not present it as a reusable build.
+  Name the exact missing inputs, current consumer and next bounded recovery
+  action. A hold is not a reason to keep unrelated logs, caches or duplicate
+  outputs, and retaining an orphan binary does not resolve its missing source.
   Remove comparison generations when the comparison closes.
   Installed toolchains/runtime dependencies and model weights
   are separate assets, outside this old-build cleanup rule.
