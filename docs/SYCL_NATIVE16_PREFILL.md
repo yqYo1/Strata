@@ -1425,20 +1425,34 @@ three-process gain or isolated kernel improvement. The1000tok/s target remains
 unmet. The individual process evidence is preserved at commits1b3b92d93,
 1f302e6e4 and7f6d7c0fe; the compact current result records their parity checks.
 
-The next finite configuration screen requests65536 minimum actual tokens through
-the same official benchmark extension, retaining131072 resident INT8 context,
+The65536-minimum configuration screen used the same official benchmark
+extension, retaining131072 resident INT8 context,
 chunk8192,384 expert slots,borrowed mixed scratch,GU-large and Down0.
-The fixed prompt generator is expected to produce78451 actual read tokens and
-78450 engine rows: all residuals must be on GPU and all48 layers must use one
-78450-row accumulator window. The validated owner/extent check precedes up to
-three independent clean processes with the same1000tok/s target and futility
-rule. This tests removal of the second MoE window and its repeated expert
-dequantizations/launches at a different input size; it is not a same-input speedup
-or a claim that a hardware resource is saturated. Record actual admission and
-cost counters before drawing that conclusion.
+The fixed generator produced78451 actual read tokens and78450 engine rows.
+The validation passed full GPU residency and all48 single-window owner/extent
+pairs, with1606656000B residuals, zero extra mixed allocation,18484 weight
+uploads/dequantizations and21514 jobs. Requested expert H2D was37750041600B;
+there were no permanent hits because every expert is visited only once per layer.
+Its833.8tok/s first-use reading includes validation and is diagnostic.
+The clean process then measured835.0 on first use and930.9,921.6,930.4
+subsequently (median930.4, sample SD5.2310), with normal closure and no fresh
+fault. The prospective median<950/all samples<975 futility rule stops this
+configuration without the other two processes. The1000tok/s target is unmet.
+This different input size does not establish a same-input kernel regression.
+
+Return to the validated117K route for current resource attribution. A bounded
+single-request observer check precedes a separate first-use/warm pair. Check
+all96 windows, GU fused/separate counts and disjoint CPU regions, including
+the512-expert source copy after each checked layer drain. Measure its current
+cost before selecting CPU-only next-layer slab preparation. Keep the compiled
+fine command sampler off: it lacks a staged-expert-copy tag and would reject
+those untagged events. Coarse event intervals include host submission gaps and
+do not establish physical PCIe traffic or arithmetic saturation. The reviewed
+double-slab source contract also requires audited providers, exclusive source
+calls and join/error/RAM-admission qualification; no implementation is adopted.
 The old47 intermediate residual stores plus47 inputs requested36931502080B
 of host transfers; the new route replaces those with GPU-local copies. Staged
-expert payload is39.95..40.10GB/request versus the old bulk50.29GB. This does
+expert payload at117K is39.95..40.10GB/request versus the old bulk50.29GB. This does
 not measure wire traffic or assign the speed gain to transfers alone: the
 remaining FFN window also changes from16384 plus host chunks to35568 GPU rows.
 Physical262144, production failure/session/RESTORE and default adoption remain

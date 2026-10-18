@@ -122,13 +122,19 @@ def extract_cpu_observers(log, expected_version=None):
     return dict(version=version, wait=wait, host=host, partition_qualified=True)
 
 
-def extract_resource_profile(log, phase_profile, command_profile, limits, cpu_version=None):
+def extract_resource_profile(log, phase_profile, command_profile, limits, cpu_version=None,
+                             expected_window_pairs=None):
     """Validate one long-request interval; never aggregate across requests."""
     record = {}
     prefix = 'strata MoE planned job census: '
     record['planned_moe_windows'] = [json.loads(x[len(prefix):]) for x in log.splitlines() if x.startswith(prefix)]
-    guards.require(len(record['planned_moe_windows']) == 48 and
-        [x['layer'] for x in record['planned_moe_windows']] == list(range(48)), 'missing window census')
+    if expected_window_pairs is None:
+        guards.require(len(record['planned_moe_windows']) == 48 and
+            [x['layer'] for x in record['planned_moe_windows']] == list(range(48)), 'missing window census')
+    else:
+        guards.require([(w['layer'], w['first_row'], w['rows']) for w in record['planned_moe_windows']] ==
+            [(layer, first, rows) for layer in range(48) for first, rows in expected_window_pairs],
+            'missing, reordered or changed multi-window census')
     total_jobs = total_rows = 0
     for window in record['planned_moe_windows']:
         guards.require(sum(n for m, n in window['job_rows_histogram']) == window['jobs'] and
@@ -148,10 +154,21 @@ def extract_resource_profile(log, phase_profile, command_profile, limits, cpu_ve
                        'missing or duplicate complete resource observer: ' + prefix)
     cpu = extract_cpu_observers(log, cpu_version)
     if cpu_version == 4:
-        expected = dict(zip(CPU_HOST_MOE, [48, 48, 0, 0, total_jobs, total_jobs, total_jobs, 48]))
+        window_count = len(record['planned_moe_windows'])
+        expected = dict(zip(CPU_HOST_MOE, [window_count, window_count, 0, 0,
+                                         total_jobs, total_jobs, total_jobs, window_count]))
+        gu = [dict(x.split('=', 1) for x in line.split(': ', 1)[1].split())
+              for line in log.splitlines() if line.startswith('strata MoE GU fusion:')]
+        guards.require(len(gu) <= 1, 'duplicate request GU totals')
+        if gu:
+            guards.require(int(gu[0]['fused_jobs']) + int(gu[0]['separate_jobs']) == total_jobs,
+                           'GU fusion/work census differs')
+            expected['moe_swiglu'] = int(gu[0]['separate_jobs'])
         experts = sum(n for window in record['planned_moe_windows']
                       for m, n in window['jobs_per_expert_histogram'] if m > 0)
         expected.update(moe_dequant_gu=experts, moe_dequant_down=experts)
+        if expected_window_pairs is not None:
+            expected.update(source_copy=48, upload_submit=48 + experts)
         guards.require(all(int(cpu['host'][name + '_count']) == count for name, count in expected.items()),
                        'MoE host category/work census mismatch')
         record['host_counter_conservation'] = expected
@@ -369,6 +386,8 @@ def main():
              'qsa-long-input-balanced-check', 'qsa-long-input-balanced',
              'qsa-long-input-scratch-check', 'qsa-long-input-scratch',
              'qsa-long-input-expert-bank-check', 'qsa-long-input-expert-bank',
+             'qsa-long-input-expert-bank-64k-check', 'qsa-long-input-expert-bank-64k',
+             'qsa-long-input-expert-bank-host-check', 'qsa-long-input-expert-bank-host-census',
              'qsa-kvvec4-timing-check', 'qsa-kvvec4-census') + tuple(
                  f'qsa-gdncols{n}-{phase}' for n in (2, 4, 8) for phase in ('check', 'base', 'candidate'))
     guards.require(len(sys.argv) in (3, 4) and sys.argv[1] in ('prepare', 'run') and
@@ -376,28 +395,38 @@ def main():
     action, mode = sys.argv[1:3]
     cohort = int(sys.argv[3]) if len(sys.argv) == 4 else 0
     guards.require(cohort in (0, 1, 2) and (len(sys.argv) == 3 or
-        mode in ('qsa-gu-fusion-base', 'qsa-gu-fusion-candidate', 'qsa-long-input', 'qsa-long-input-balanced', 'qsa-long-input-scratch', 'qsa-long-input-expert-bank')),
+        mode in ('qsa-gu-fusion-base', 'qsa-gu-fusion-candidate', 'qsa-long-input', 'qsa-long-input-balanced', 'qsa-long-input-scratch', 'qsa-long-input-expert-bank', 'qsa-long-input-expert-bank-64k')),
         'optional cohort0|1|2 is for GU paired arms or independent long-input processes')
     column_mode = re.fullmatch(r'qsa-gdncols(2|4|8)-(check|base|candidate|warm-census|host-check|host-traced-check|host-census)', mode)
     ordered_trial = mode.startswith('qsa-ordered-exp-')
     long_trial = mode.startswith('qsa-long-input')
     balanced_placement = mode in ('qsa-long-input-balanced-check', 'qsa-long-input-balanced')
-    staged_bank = mode in ('qsa-long-input-expert-bank-check', 'qsa-long-input-expert-bank')
+    staged_host = mode in ('qsa-long-input-expert-bank-host-check', 'qsa-long-input-expert-bank-host-census')
+    single_window = mode in ('qsa-long-input-expert-bank-64k-check', 'qsa-long-input-expert-bank-64k')
+    staged_bank = staged_host or single_window or mode in ('qsa-long-input-expert-bank-check', 'qsa-long-input-expert-bank')
+    long_minimum = 65536 if single_window else 98304
+    bank_residual_rows = 78450 if single_window else 117488
+    bank_window_rows = (78450,) if single_window else (81920, 35568)
+    mixed_tail_offset = 1022974976 if single_window else 1059131904
+    mixed_tail_bytes = 66119680 if single_window else 83886080
     scratch_mixed = staged_bank or mode in ('qsa-long-input-scratch-check', 'qsa-long-input-scratch')
-    long_clean_mode = ('qsa-long-input-expert-bank' if staged_bank else 'qsa-long-input-scratch' if scratch_mixed else
+    long_clean_mode = ('qsa-long-input-expert-bank-64k' if single_window else
+                      'qsa-long-input-expert-bank' if staged_bank else 'qsa-long-input-scratch' if scratch_mixed else
                        'qsa-long-input-balanced' if balanced_placement else 'qsa-long-input')
     gu_trial = mode.startswith('qsa-gu-fusion-')
     gu_candidate = long_trial or (gu_trial and mode != 'qsa-gu-fusion-base')
     ordered_candidate = long_trial or gu_trial or (ordered_trial and mode != 'qsa-ordered-exp-base')
-    host_profile = mode.startswith('qsa-gdncols4-host-')
-    warm_profile = mode in ('qsa-gdncols4-warm-census', 'qsa-gdncols4-host-census')
+    host_profile = staged_host or mode.startswith('qsa-gdncols4-host-')
+    warm_profile = mode in ('qsa-gdncols4-warm-census', 'qsa-gdncols4-host-census',
+                           'qsa-long-input-expert-bank-host-census')
     column_trial = column_mode is not None or ordered_trial or gu_trial or long_trial
-    column_check = mode in ('qsa-long-input-expert-bank-check', 'qsa-long-input-scratch-check', 'qsa-long-input-balanced-check', 'qsa-long-input-check', 'qsa-ordered-exp-check', 'qsa-gu-fusion-check') or (column_mode is not None and column_mode[2] == 'check')
+    column_check = staged_host or mode in ('qsa-long-input-expert-bank-64k-check', 'qsa-long-input-expert-bank-check', 'qsa-long-input-scratch-check', 'qsa-long-input-balanced-check', 'qsa-long-input-check', 'qsa-ordered-exp-check', 'qsa-gu-fusion-check') or (column_mode is not None and column_mode[2] == 'check')
     column_partitions = 4 if ordered_trial or gu_trial or long_trial else int(column_mode[1]) if column_mode is not None and column_mode[2] != 'base' else 0
     qsa = mode.startswith('qsa-')
     short_profile = mode == 'qsa-kvvec4-timing-check' or (host_profile and not warm_profile)
     phase_profile = host_profile or warm_profile or short_profile or mode == 'qsa-kvvec4-census'
-    command_profile = (phase_profile and mode != 'qsa-gdncols4-host-check') or mode in ('qsa-kvec4-check', 'qsa-kvec4-census')
+    command_profile = not staged_host and ((phase_profile and mode != 'qsa-gdncols4-host-check') or
+        mode in ('qsa-kvec4-check', 'qsa-kvec4-census'))
     census = phase_profile or mode in ('qsa-census', 'qsa-kvec4-census')
     qcache = mode.startswith('qsa-qcache')
     kvvec4 = column_trial or mode.startswith('qsa-kvvec4')
@@ -430,6 +459,19 @@ def main():
             build = json.loads(BUILD.read_text())
             guards.require(build['passed'] and build['complete'] and build['ownership_closed'] and not build['active'],
                            'qualified closed engine build required')
+            profile_route_qualification = None
+            if staged_host:
+                revision = subprocess.check_output(['git', 'rev-parse', '692e2658d'], cwd=P, text=True).strip()
+                path = 'bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json'
+                data = subprocess.check_output(['git', 'show', revision + ':' + path], cwd=P)
+                qualified = json.loads(data)
+                comparison = qualified.get('independent_process_comparison', {})
+                guards.require(qualified['complete'] and qualified['passed'] and qualified['ownership_closed'] and
+                    qualified['binary'] == build['binary'] and qualified['build_source_commit'] == build['source_commit'] and
+                    comparison.get('source_binary_configuration_parity') and len(comparison.get('cohorts', [])) == 3,
+                    'current117K source/binary no longer matches the closed three-process route')
+                profile_route_qualification = dict(commit=revision, path=path,
+                    sha256=hashlib.sha256(data).hexdigest(), limits='Validated opt-in117K route, not1000tok/s or full-model adoption.')
             ordered_qualification = None
             gu_qualification = None
             mixed_qualification = None
@@ -556,12 +598,13 @@ def main():
                     cpu_check['source_sha256']['include/strata/sycl/cpu_wait_profile.hpp'] ==
                         digest(P / 'include/strata/sycl/cpu_wait_profile.hpp'), 'matching CPU accounting gates required')
                 qualification = []
-                if mode != 'qsa-gdncols4-host-check':
+                if mode not in ('qsa-gdncols4-host-check', 'qsa-long-input-expert-bank-host-check'):
                     prior_bytes = subprocess.check_output(['git', 'show',
                         'HEAD:' + str(result_path.relative_to(P))], cwd=P)
                     guards.require(prior_bytes == result_path.read_bytes(), 'commit the previous host model gate')
                     prior = json.loads(result_path.read_text())
-                    required = ('qsa-gdncols4-host-traced-check' if warm_profile else 'qsa-gdncols4-host-check')
+                    required = ('qsa-long-input-expert-bank-host-check' if staged_host else
+                                'qsa-gdncols4-host-traced-check' if warm_profile else 'qsa-gdncols4-host-check')
                     guards.require(prior['mode'] == required and prior['passed'] and prior['ownership_closed'] and
                                    prior['binary'] == build['binary'], 'matching previous host model gate required')
                     qualification = prior.get('host_qualification', []) + [dict(
@@ -618,6 +661,10 @@ def main():
                 env['STRATA_PREFILL_LAYER_MAJOR_GDN_PROFILE'] = '1'
             if command_profile:
                 env['STRATA_SYCL_PREFILL_COMMAND_PROFILE'] = '1'
+            if staged_host:
+                # The existing command sampler has no staged-expert-copy tag.
+                # Keep it off: an untagged staged copy would invalidate its frame.
+                env['STRATA_SYCL_PREFILL_COMMAND_PROFILE'] = '0'
             config = dict(reference['config'])
             flags = list(config['args'])
             flags[flags.index('--expert-profile') + 1] = str(root / 'expert-profile.bin')
@@ -625,7 +672,7 @@ def main():
                 guards.require(int(flags[flags.index('--max-context') + 1]) == 131072 and
                     flags[flags.index('--kv') + 1] == 'int8' and
                     int(flags[flags.index('--kv-resident') + 1]) == 131072,
-                    '98K screen requires the recorded131072 resident INT8 context placement')
+                    'long-input screen requires the recorded131072 resident INT8 context placement')
             config.update(exe=str(P / 'tools/sycl/engine_once.py'), args=flags,
                           log=str(root / 'engine.stderr'), env={})
             with socket.socket() as sock:
@@ -634,7 +681,7 @@ def main():
             config_path.write_text(json.dumps(config, indent=2) + '\n')
             command = ['/bin/sh', str(P / 'bench.sh'), '--config', str(config_path), '--port', str(port),
                        '--runs', str(request_count), '--prefill-only', '--prefill-tokens',
-                       '98304' if long_trial else '32768' if short_profile or (check and not census) else '65536', '--workload-id', 'native_gdn_20261018',
+                       str(long_minimum) if long_trial else '32768' if short_profile or (check and not census) else '65536', '--workload-id', 'native_gdn_20261018',
                        '--think', '--fail-fast-engine-error', '--ready-timeout', '600', '--out', str(root / 'bench')]
             revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=P, text=True).strip()
             files = subprocess.check_output(['git', 'ls-files', '-z', '--', 'serve', 'tools', 'bench.sh'], cwd=P).decode().strip('\0').split('\0')
@@ -654,14 +701,16 @@ def main():
             if host_profile:
                 plan.update(host_qualification=qualification, cpu_observer_version=4,
                             cpu_fixture_receipt_sha256=digest(A / 'prefill-host-cpu-current.json'))
+                if staged_host:
+                    plan['profile_route_qualification'] = profile_route_qualification
             if ordered_trial or long_trial:
                 plan['ordered_exp_qualification'] = ordered_qualification
             if gu_trial or long_trial:
                 plan['gu_qualification'] = gu_qualification
                 plan['cohort_index'] = cohort
             if long_trial:
-                plan['long_input_screen'] = dict(minimum_actual_tokens=98304, generated_token_cap=24,
-                    context_capacity=131072, required_client_context=123160,
+                plan['long_input_screen'] = dict(minimum_actual_tokens=long_minimum, generated_token_cap=24,
+                    context_capacity=131072, required_client_context=long_minimum * 5 // 4 + 280,
                     question='Amortization at longer input on fixed placement/chunk/GU/QSA routes; not a same-workload kernel gain.',
                     qualification='One validated long request, then up to3 independent clean processes with4 fresh requests each. Separate first use and3 subsequent requests; target each independent subsequent median>=1000tok/s. Stop this configuration early if a process median<950 and all3 subsequent samples<975; retain the failed screen and do not claim3-process qualification. Not sustained decode, model-quality or physical262144 qualification.')
                 if balanced_placement:
@@ -673,8 +722,13 @@ def main():
                         question='Borrow idle R/shared-arena spans for mixed input, with zero extra mixed allocation and16384 more GPU residual rows than the81920 screen. Preserve512MiB headroom and existing dense banking; heads remain resident. Placement plus storage comparison, not a kernel-only speed claim.')
                 if staged_bank:
                     plan['expert_bank_qualification'] = bank_qualification
-                    plan['long_input_screen'].update(residual_GPU_rows=117488,expert_slots=384,
+                    plan['long_input_screen'].update(residual_GPU_rows=bank_residual_rows,expert_slots=384,
                         question='Matched117489-token workload: smaller temporary expert GPU bank admits all117488 engine residual rows, eliminating the host-tail FFN path. Preserve512-expert host slab,512MiB allowance, dense banking and heads. Count extra requested H2D bytes/hits; compare total latency, not capacity arithmetic.')
+                    if single_window:
+                        plan['long_input_screen'].update(
+                            expected_actual_read_tokens=bank_residual_rows + 1,
+                            expected_windows_per_layer=list(bank_window_rows),
+                            question='65536-minimum official workload, expected78451 fresh read tokens: unchanged1222 engine/384 slots/auto GPU residency with one78450-row MoE window per layer. Compare total latency and requested weight/dequant/job counts; different input size, not a same-input kernel gain or measured hardware saturation.')
                 if previous_screen:
                     plan['previous_screen'] = previous_screen
                 if not check:
@@ -694,6 +748,12 @@ def main():
                     'coverage': 'Checked coarse observer v3, four extra event pairs retired only after existing checked drains; per-layer expected counts for all36GDN layers, with zero GDN samples on12QSA layers. Legacy STRATA_PREFILL_TIMING remains prohibited.',
                     'limits': 'Event-marker intervals include host submit gaps and queue dependencies, not isolated kernel service, measured occupancy, physical traffic or a clean speed cohort. Host submit wall intervals are not thread CPU time.',
                     'retirement': 'Extract compact phase samples and faults; retire normal full logs/JIT after source/recipe recovery. No implementation adoption.'}
+                if staged_host:
+                    plan['phase_profile_scope'].update(
+                        question='Attribute the current validated117K staged-bank route: disjoint main CPU source preparation/upload submission/explicit waits and complete96-window work counts. A checked single request precedes a separate two-request first-use/warm profile.',
+                        route='Unchanged1222 engine,117488 all-GPU rows,384 slots,borrowed mixed scratch,GU-large,Down0;81920+35568 rows in each of48 layers.',
+                        limits='No fine command sampler: staged expert H2D is not tagged by that compiled sampler. Coarse GPU intervals include host gaps; CPU time in waits is separate from source preparation. No physical PCIe/VRAM traffic, arithmetic saturation or clean speed claim.',
+                        source_copy_hypothesis='The512-expert CPU slab copy follows a checked layer drain before activation; quantify its current wall/CPU cost before selecting CPU-only next-layer preparation overlap. Historical4.856s is not a current measurement.')
             (root / 'plan.json').write_text(json.dumps(plan, indent=2) + '\n')
             compact = {k: v for k, v in plan.items() if k != 'source_sha256'}
             compact['source_count'] = len(pins)
@@ -789,8 +849,11 @@ def main():
                     limits='Actual submitted/completed route counts; removed logical bytes are not physical VRAM traffic.')
             if long_trial:
                 guards.require(all(q['actual_prompt_tokens'] == q['actual_read_tokens'] and
-                    q['actual_read_tokens'] >= 98304 and q['reasoning_observed'] for q in requests),
+                    q['actual_read_tokens'] >= long_minimum and q['reasoning_observed'] for q in requests),
                     'long-input actual-token or thinking evidence missing')
+                if single_window:
+                    guards.require(all(q['actual_read_tokens'] == bank_residual_rows + 1 for q in requests),
+                        'single-window workload differs from the prospectively pinned78451-token shape')
                 selected = [x for x in log.splitlines() if x.startswith('[native16-down]')]
                 counts = [dict(x.split('=', 1) for x in line.split(': ', 1)[1].split())
                     for line in log.splitlines() if line.startswith('strata MoE Down fusion:')]
@@ -804,14 +867,14 @@ def main():
                     'long screen requires actual accumulator mode10')
                 if balanced_placement or scratch_mixed:
                     placement = [x for x in log.splitlines() if x.startswith('strata prefill: layer-major candidate,')]
-                    expected_rows = 117488 if staged_bank else 98304 if scratch_mixed else 81920
+                    expected_rows = bank_residual_rows if staged_bank else 98304 if scratch_mixed else 81920
                     guards.require(len(placement) == request_count and all(
                         f'residual_gpu_rows={expected_rows} ' in x for x in placement), 'wrong explicit residual placement')
                     record['residual_placement'] = placement
                 if scratch_mixed:
                     banks = [x for x in log.splitlines() if x.startswith('strata MoE mixed banks:')]
                     guards.require(len(banks) == request_count and all(
-                        'storage=scratch primary_bytes=335544320 tail_bytes=83886080 tail_offset=1059131904 extra_allocation_bytes=0' in x
+                        f'storage=scratch primary_bytes=335544320 tail_bytes={mixed_tail_bytes} tail_offset={mixed_tail_offset} extra_allocation_bytes=0' in x
                         for x in banks), 'wrong mixed scratch backing or extra allocation')
                     guards.require('strata prefill heads:' not in log, 'scratch trial unexpectedly retired output heads')
                     record['mixed_scratch_route'] = dict(backing=banks)
@@ -823,17 +886,34 @@ def main():
                         guards.require(len(selections)==len(totals)==request_count and all(
                             int(s['requested_slots'])==int(s['effective_slots'])==384 and int(s['staged'])==1 and
                             int(s['host_slab_bytes'])==1363148800 and int(s['device_bytes'])==1022361600 and
-                            int(s['residual_gpu_rows'])==117488 and int(s['allocation_limit_bytes'])>=2406154240
+                            int(s['residual_gpu_rows'])==bank_residual_rows and
+                            int(s['allocation_limit_bytes'])>=bank_residual_rows*20480
                             for s in selections) and all(0<int(s['uploads'])<=48*1024 and
                             int(s['requested_H2D_bytes'])>0 and int(s['permanent_hits'])>=0 and
                             0<int(s['permanent_slots'])<=383 and int(s['total_slots'])==384 and
                             s['final_drain']=='checked' for s in totals), 'incomplete staged-bank model route/cost')
                         record['expert_bank_route'] = dict(selections=selections,per_request_totals=totals,
                             limits='Requested raw expert H2D payload, not measured PCIe wire traffic; helper/full-request checked drains qualify this bounded model route only.')
+                        if single_window:
+                            work = [dict(t.split('=', 1) for t in line.split(': ', 1)[1].split())
+                                for line in log.splitlines() if line.startswith('strata MoE accumulator window:')]
+                            guards.require(len(work) == request_count and all(
+                                int(w['windows']) == 48 and int(w['maximum_rows']) == bank_residual_rows and
+                                int(w['operator_max']) == 8192 and int(w['GPU_resident_windows_only']) == 1 and
+                                0 < int(w['dequants']) <= 48 * 512 and
+                                int(w['dequants']) <= int(w['jobs']) == int(d['separate_jobs']) and
+                                int(w['jobs']) == int(g['fused_jobs']) + int(g['separate_jobs']) and
+                                int(w['source_H2D_bytes']) == bank_residual_rows * 10 * 4 * 48 and
+                                int(t['uploads']) == int(w['dequants']) and int(t['permanent_hits']) == 0
+                                for w, d, g, t in zip(work, record['down_route']['per_request_counts'],
+                                    record['gu_route']['per_request_counts'], totals)),
+                                'single-window work/upload/route counts do not conserve')
+                            record['moe_window_work'] = dict(per_request_totals=work,
+                                limits='Completed work counts and requested source-map H2D bytes; not physical traffic, arithmetic saturation or additive wall time.')
                     if check:
                         entries = [x for x in log.splitlines() if x.startswith('strata MoE mixed owners: phase=entry')]
                         retired = [x for x in log.splitlines() if x.startswith('strata MoE mixed owners: phase=retired')]
-                        expected_windows = 48 * 2  #81920 then16384, all48 layers
+                        expected_windows = 48 * (len(bank_window_rows) if staged_bank else 2)
                         guards.require(len(entries) == len(retired) == expected_windows and all(
                             'direct_owners=1 previous_attention=checked_drain' in x for x in entries) and all(
                             'route_status=0 shared_HC=checked_drain callbacks=after_return' in x for x in retired),
@@ -843,14 +923,16 @@ def main():
                                    'tail_offset', 'tail_bytes', 'residual_bytes')
                         samples = [dict(field.split('=', 1) for field in x.split()[4:]) for x in entries]
                         retired_samples = [dict(field.split('=', 1) for field in x.split()[4:]) for x in retired]
+                        window_pairs = ((0, bank_window_rows[0]),) if single_window else (
+                            (0, 81920), (81920, 35568 if staged_bank else 16384))
                         expected_keys = [(layer, first, rows) for layer in range(48)
-                                         for first, rows in ((0, 81920), (81920, 35568 if staged_bank else 16384))]
+                                         for first, rows in window_pairs]
                         keys = lambda items: [tuple(int(x[k]) for k in ('layer', 'first', 'rows')) for x in items]
                         guards.require(keys(samples) == keys(retired_samples) == expected_keys,
                             'mixed owner census has duplicate, missing or reordered windows')
                         guards.require(all(int(x['primary_bytes']) == min(int(x['rows']), 65536) * 2560 * 2 and
                             int(x['tail_bytes']) == max(0, int(x['rows']) - 65536) * 2560 * 2 and
-                            int(x['region_bytes']) == 1180698624 and int(x['tail_offset']) == 1059131904 and
+                            int(x['region_bytes']) == 1180698624 and int(x['tail_offset']) == mixed_tail_offset and
                             int(x['residual_bytes']) == int(x['rows']) * 4 * 2560 * 2 for x in samples),
                             'mixed owner census has unexpected logical extents')
                         record['mixed_scratch_route'].update(owner_columns=columns,
@@ -914,7 +996,8 @@ def main():
                     request_logs = [log[a:b] for a, b in zip(starts, starts[1:] + [len(log)])]
                 profiles = [extract_resource_profile(part, phase_profile,
                     command_profile, plan.get('phase_profile_scope', {}).get('limits', ''),
-                    4 if host_profile else None) for part in request_logs]
+                    4 if host_profile else None,
+                    ((0, 81920), (81920, 35568)) if staged_host else None) for part in request_logs]
                 record.update(profiles[-1])
                 if warm_profile:
                     cold = profiles[0]
@@ -923,19 +1006,21 @@ def main():
                         'resource_diagnostics': [x for x in cold['resource_diagnostics'] if
                             'layer=' not in x or 'layer=-1 ' in x],
                         'gdn_phase_aggregate': cold['gdn_phase_queue_intervals']['aggregate'],
-                        'command_service_summary': cold['command_service_profile']['summaries'],
+                        'command_service_summary': cold.get('command_service_profile', {}).get('summaries'),
                         'window_census': {k: v for k, v in compact_window_census(cold['planned_moe_windows']).items()
                                           if k != 'aggregate_job_rows_histogram'},
                         'detail_not_retained': 'Cold per-command/per-layer timing and detailed job histogram are not used by this aggregate first-use comparison.'}
                     record['window_census'] = compact_window_census(record.pop('planned_moe_windows'))
-                    record['command_service_profile'] = compact_command_service(record['command_service_profile'])
-                    if host_profile:
+                    if command_profile:
+                        record['command_service_profile'] = compact_command_service(record['command_service_profile'])
+                    if host_profile and command_profile:
                         record['selected_service_screen'] = selected_service_screen(record['command_service_profile'])
                     record['resource_profile_request_index'] = 1
                     record['request_separation'] = {
                         'method': 'Exact long layer-major GDN route markers delimit two requests; each interval independently passes complete census/coarse/QSA/CPU/command gates.',
                         'first_request': 'First-use profiled warmup, not an independent process repetition.',
-                        'second_request': 'Subsequent fresh78K request with the same immutable observer environment; profiled speed is not a clean speed sample.'}
+                        'second_request': ('Subsequent fresh117K request with the same immutable observer environment; no fine command sampler or clean speed claim.' if staged_host else
+                            'Subsequent fresh78K request with the same immutable observer environment; profiled speed is not a clean speed sample.')}
                 if host_profile and not warm_profile:
                     # The short off/on gates need checked work totals, not a
                     # second copy of every planned per-layer row distribution.

@@ -98,44 +98,6 @@
     "sycl_expert_bank_test"
   ],
   "retention_consumer": "Current comparison engine and requested fixtures: strata, sycl_moe_accum_test, sycl_moe_gu_swiglu_bench, sycl_moe_down_scatter_bench, sycl_expert_bank_test; select the validated generation and retire the extra after qualification/comparison closure.",
-  "retained_validation_reference": {
-    "source_commit": "034bddff8393e8c1c9cee89e9235807230a81ad2",
-    "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-expert-bank-v1/strata",
-      "bytes": 22065872,
-      "sha256": "5338945aa6fb7a6df6c482da4b802046af856c4340a2a644deecfb8a32a2d01f"
-    },
-    "fixtures": {
-      "sycl_moe_accum_test": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-expert-bank-v1/sycl_moe_accum_test",
-        "bytes": 2302728,
-        "sha256": "35de609c81091c9ce2e87f9b28742466e5f21356570396cc45e7ee83e7b4432b"
-      },
-      "sycl_moe_gu_swiglu_bench": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-expert-bank-v1/sycl_moe_gu_swiglu_bench",
-        "bytes": 1927960,
-        "sha256": "7dc7b336b920e25b205d0f3f0b6fb5a08475ac3d08a7d7e71141ccb7d2bcc659"
-      },
-      "sycl_moe_down_scatter_bench": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-expert-bank-v1/sycl_moe_down_scatter_bench",
-        "bytes": 13179056,
-        "sha256": "ddaf0ad94be379f8c601a3226641c52c4c42478054f1ec42f4daa563f1d51dd4"
-      }
-    },
-    "recipe_reference": {
-      "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-entry-engine-build-v2.json",
-      "sha256": "9b7734387f0fc56f36afe9d7bca75e5f0bedcef479271e982025abe1d4334a1a"
-    },
-    "source_input_count": 9807,
-    "consumer": "Known-good source034 fallback for bounded expert-bank candidate component/model comparison. Retain through actual model qualification, or retire candidate on rejection; at closure select one validated generation.",
-    "model_quality_qualified": false,
-    "physical262144_RESTORE_qualified": false,
-    "build_record": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-expert-bank-v1/source-build.json",
-      "bytes": 1297186,
-      "sha256": "90fc2273711b96d2586e72164a5916eba79a8bec16cbb3ef03e51d64c02860cc"
-    }
-  },
   "legacy_provenance_exception": {
     "state": "Unresolved legacy cleanup; not qualified comparison generations.",
     "observed_engine_and_fixture_paths": 41,
@@ -229,5 +191,12 @@
       "count": 5703,
       "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
     }
-  ]
+  ],
+  "retained_current_selection": {
+    "source_commit": "1222e27d01f32c5bb31f574ff4b143c489a3bcf1",
+    "evidence_commit": "692e2658d8b455044c3705ba8c0fa10f26d4d5ab",
+    "retention_decision": "bench/results/2026-10-15-pr6-recovery-audit/build-retirement-20261018.json",
+    "qualification": "Opt-in117K route: component/model ownership and12 clean requests passed;1000tok/s, broad model quality, physical262144/RESTORE and failure paths remain unqualified.",
+    "consumer": "Current engine and four same-build fixtures for the next65536-minimum single-window placement screen; preserve a verified external fallback before any future rebuild."
+  }
 }
