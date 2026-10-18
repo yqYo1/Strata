@@ -1694,8 +1694,8 @@
   },
   "implemented_expert_bank_scope": {
     "classification": "decision support",
-    "schedulable_now": true,
-    "state": "eligible for one actual-code audit",
+    "schedulable_now": false,
+    "state": "running; Main continues independently without steering",
     "source_commit": "1222e27d0",
     "source_files_sha256": {
       "include/strata/prefill/expert_bank_plan.hpp": "1c3b9157f64c4e1c3aede95017ba17ad3c10d433946b5efa25d0c073c5f8c3a9",
@@ -1715,6 +1715,11 @@
     "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/implemented-expert-bank-audit.md",
     "report_budget": "10KiB target,16KiB maximum; one finite actual-code audit",
     "main_reads_body_on_arrival": false,
-    "retention_consumer": "Main next staged-bank component/model qualification; native Luna-max review first, review retention at comparison closure."
+    "retention_consumer": "Main next staged-bank component/model qualification; native Luna-max review first, review retention at comparison closure.",
+    "task": "task_23f8455bddae",
+    "dispatch": "ctx_ab723838e1d5",
+    "terminal": "term_57cd822c-e033-4c96-b8a7-27e0666873db",
+    "model_evidence": "Explicit terminal argv gpt-6-luna medium with startup update check disabled. Existing-terminal worker-start preference fields are null and do not independently verify model selection.",
+    "startup_recovery": "Normal supervised start ctx_a14c04d9bc20 failed at update-prompt readiness before task execution; worker-release closed its created terminal. Retry used the same task and one fresh explicitly configured ready terminal."
   }
 }

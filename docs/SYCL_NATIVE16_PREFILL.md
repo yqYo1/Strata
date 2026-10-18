@@ -1394,5 +1394,14 @@ engine and shared-helper GPU fixture. The initial attempt rejected the const
 cache view at compile time, before any execution; the implementation now owns
 an explicit mutable upload target rather than casting away const. The source034
 validated engine/fixtures are retained externally for this immediate comparison.
-GPU checks and model performance are pending. Do not report this candidate as
-a speedup or default adoption before those gates.
+The traced three-case GPU smoke and four-case validation passed with no fresh
+fault. They cover383/384/512 slots, two-layer resets, scratch-only capacity1,
+actual2662400B stride, all512 host experts, two queued readers per selection,
+immutable source/slot guards, seven admission rejections per case and caller
+unwind after queued work. Three old math/gather fixtures rebuild to identical
+SHA256 bytes, so their existing checks remain component evidence; this does not
+claim a fresh run or qualify the changed model orchestration.
+Next use the pinned117K model check with R_GPU=auto and384 slots, then separate
+clean timing under the same prospective futility rule. Require all117488 engine
+rows and both81920+35568 windows on GPU plus completed upload/hit counters.
+Model performance, physical262144 and RESTORE remain unqualified.
