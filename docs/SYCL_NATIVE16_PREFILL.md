@@ -660,6 +660,48 @@ change inference order or treat it as adopted before same-library correctness
 and matched component/model timing pass. Existing source-specific fusion and
 indexed-A references are available; no repeat generic survey is needed.
 
+## Ordered parallel exponentials for QSA
+
+A separate component candidate adds `qsa_bf16_prefix_ordered_exp_batch` beside
+KVvec4, without a model dispatch hook. It keeps cached BF16 Q, typed K/V loads,
+score pitch33, probability rounding and FP32 recurrent updates. SIMD16 lanes
+compute two exponentials each. Every lane executes32 uniform indexed exchanges;
+lane0 sums cells0..31 in the original ascending FP32 order. The existing subgroup
+max/invalid-score reduction supplies the maximum. No additional workgroup
+barrier, SLM array, host arithmetic or transfer is added to the normal route.
+Shuffle latency, register effects and speed remain unmeasured.
+
+The implementation follows the independently authored existing Strata kernel
+and the reviewed order-preserving QSA design indexed under
+`qsa_ordered_parallel_softmax_scope`; no third-party implementation is copied.
+The pinned compiler's public `select_from_group` API supplies lane exchange.
+The diagnostic-only `QsaPrefixStateProbe` records one query/KV group/head's
+maximum, alpha, normalizer and tile sum per32-cell tile, including padded heads.
+Its full device extent, alignment and disjointness are checked before either
+kernel submits. Non-probe entrypoints have no capture writes. Captured outputs
+must match normal outputs before interpreting state differences.
+
+Main first closes the frozen Down comparison; this source was prepared in an
+isolated child of `feature/sycl`, without another build/GPU job. After integration,
+reuse the closed candidate cache with `build_engine.py rebuild-ordered`, preserve
+the validated fallback, and run `check_attention.py smoke|component|perf ordered-exp`
+one phase at a time, committing each result before advancing. The first small
+GPU phase uses tracing and parameter validation. Require complete BF16 output,
+FP32 state/guard and input-preservation comparisons, invalid state-span/coordinate
+rejections, width/tail/missing/duplicate/page-alias diagnostics and physical262144
+component addressing. A component check does not qualify full-context model,
+RESTORE, numerical quality or sustained generation.
+
+The prospective clean timing compares actual KVvec4 and ordered-exp exports in
+three independent processes, six rotated measured samples per arm/shape, at
+78453 cells/8192 queries with cap33 gather and cap2051 gather/clustered patterns.
+Timing includes admission, pack, attention and checked drain, with checks/copies
+outside. Main's finite budget is180seconds,360CPU-seconds,4GiB RSS and64MiB output
+per child. Advance only for geometric-mean candidate/base ratio<=0.95, no shape
+ratio>1.05, and every process faster in both cap2051 patterns. Passing permits a
+later matched official long-input model A/B; it is not inference adoption or a
+hardware saturation claim.
+
 ## MoE Down/scatter component
 
 `Gemm::down_scatter` is an explicit component API with no model dispatch hook.

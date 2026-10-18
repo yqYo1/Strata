@@ -69,16 +69,19 @@ bool matrix_available(const sycl::device &device, size_t local_payload) {
 } // namespace
 
 template<int ScoreStride, bool TilePacked = false, bool SubgroupSoftmax = false,
-         bool CacheQueries = false, bool VectorK4 = false, bool VectorV4 = false>
+         bool CacheQueries = false, bool VectorK4 = false, bool VectorV4 = false,
+         bool OrderedExp = false, bool CaptureState = false>
 static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
                              const int32_t *ids, const int32_t *steps,
                              int64_t cap, const QsaShapes &shape, uint16_t *output,
                              int64_t queries, const QsaPromptBf16Bounds &bounds,
-                             int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream) {
+                             int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream,
+                             QsaPrefixStateProbe probe = {}) {
   static_assert(!SubgroupSoftmax || !TilePacked);
   static_assert(!CacheQueries || !TilePacked);
   static_assert(!VectorK4 || (CacheQueries && !TilePacked));
   static_assert(!VectorV4 || (VectorK4 && !TilePacked));
+  static_assert(!OrderedExp || (VectorV4 && !SubgroupSoftmax && !TilePacked));
   static_assert(Dim % 4 == 0);
   // Reuse the qualified admission contract; it never enqueues or waits.
   if (!qsa_prompt_attn_bf16_validate(query, pools, ids, steps, cap, shape,
@@ -108,6 +111,24 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
        {pools.v_scale, checked_count(checked_count(rows_count, 4), 2)}}, 1);
   validate_spans({}, {pk, pv}, 2); validate_spans({}, {bad}, 4);
   for (auto span : {pk, pv, bad}) validate_device_span(span.pointer, span.bytes, queue);
+  if constexpr (CaptureState) {
+    if (probe.query < 0 || probe.query >= queries || probe.kv_head < 0 ||
+        probe.kv_head >= 2 || probe.head < 0 || probe.head >= 16)
+      throw std::invalid_argument("QSA prefix state probe coordinate");
+    const size_t state_bytes = checked_count(checked_count((uint64_t(cap) + Cells - 1) / Cells, 4), 4);
+    // Capture output must be disjoint from all input, pack and final-output
+    // spans, not merely registered device memory. Check before either launch.
+    validate_spans({{probe.states, state_bytes}},
+        {pk, pv, bad, {output, query_bytes}, {query, query_bytes},
+         {ids, checked_count(checked_count(queries, cap), 4)},
+         {steps, checked_count(checked_count(queries, kStepCount), 4)},
+         {pools.page_table, checked_count(bounds.logical_pages, 4)},
+         {pools.k_q, checked_count(rows_count, Dim)}, {pools.v_q, checked_count(rows_count, Dim)},
+         {pools.k_scale, checked_count(checked_count(rows_count, 4), 2)},
+         {pools.v_scale, checked_count(checked_count(rows_count, 4), 2)}}, 1);
+    validate_spans({}, {{probe.states, state_bytes}}, 4);
+    validate_device_span(probe.states, state_bytes, queue);
+  }
   const auto packed = scratch;
   // A row in scratch is logical. The page table is consulted before ANY
   // source code/scale read, and final-page padding never reads an input row.
@@ -278,7 +299,7 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
           });
         }
         item.barrier(sycl::access::fence_space::local_space);
-        if constexpr (SubgroupSoftmax) {
+        if constexpr (SubgroupSoftmax || OrderedExp) {
           // Each SIMD16 subgroup owns two head rows. Every lane participates,
           // including missing cells and padded heads; FP32 state stays local.
           for (int h = subgroup; h < 16; h += 8) {
@@ -298,7 +319,16 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
             const float m = sycl::fmax(old_m, tile_max);
             const float p0 = valid0 ? sycl::exp2(s0 - m) : 0.f;
             const float p1 = valid1 ? sycl::exp2(s1 - m) : 0.f;
-            const float sum = sycl::reduce_over_group(sg, p0 + p1, sycl::plus<float>());
+            float sum = 0.f;
+            if constexpr (OrderedExp) {
+              // Every lane executes every exchange with a uniform source ID.
+              // Lane0 alone adds c=0..31 in the original ascending FP32 order.
+              // Keeping p0/p1 in FP32 precedes the BF16 probability store.
+              for (int c = 0; c < Cells; ++c) {
+                const float p = sycl::select_from_group(sg, c < 16 ? p0 : p1, c % 16);
+                if (!lane) sum += p;
+              }
+            } else sum = sycl::reduce_over_group(sg, p0 + p1, sycl::plus<float>());
             probability[h * Cells + c0] = BFloat(p0);
             probability[h * Cells + c1] = BFloat(p1);
             if (!lane) {
@@ -307,6 +337,13 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
               bad_head[h] |= score_bad;
               maximum[h] = m; alpha[h] = a;
               normalizer[h] = sycl::fma(old_norm, a, sum);
+              if constexpr (CaptureState) {
+                if (batch == probe.query && kv_head == probe.kv_head && h == probe.head) {
+                  const size_t at = size_t(first / Cells) * 4;
+                  probe.states[at] = m; probe.states[at + 1] = a;
+                  probe.states[at + 2] = normalizer[h]; probe.states[at + 3] = sum;
+                }
+              }
             }
           }
         } else if (tid < 16) {
@@ -329,6 +366,13 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
           }
           maximum[tid] = m; alpha[tid] = a;
           normalizer[tid] = sycl::fma(normalizer[tid], a, sum);
+          if constexpr (CaptureState) {
+            if (batch == probe.query && kv_head == probe.kv_head && tid == probe.head) {
+              const size_t at = size_t(first / Cells) * 4;
+              probe.states[at] = m; probe.states[at + 1] = a;
+              probe.states[at + 2] = normalizer[tid]; probe.states[at + 3] = sum;
+            }
+          }
         }
         if constexpr (VectorV4) {
           for (int i = tid; i < Cells * (Dim / 4); i += Workgroup) {
@@ -428,6 +472,25 @@ bool qsa_bf16_prefix_kvvec4_batch(const uint16_t *query, const QsaAttnPools &poo
     int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream) {
   return prefix_batch_impl<Cells + 1, false, false, true, true, true>(query,
       pools, ids, steps, cap, shape, output, queries, bounds, live_cells, scratch, stream);
+}
+// Parallel exponentials with an order-preserving scalar FP32 gather-sum.
+bool qsa_bf16_prefix_ordered_exp_batch(const uint16_t *query, const QsaAttnPools &pools,
+    const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
+    uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
+    int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream) {
+  return prefix_batch_impl<Cells + 1, false, false, true, true, true, true>(query,
+      pools, ids, steps, cap, shape, output, queries, bounds, live_cells, scratch, stream);
+}
+bool qsa_bf16_prefix_state_probe_batch(const uint16_t *query, const QsaAttnPools &pools,
+    const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
+    uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
+    int64_t live_cells, const QsaBf16PackedScratch &scratch,
+    bool ordered_exp, const QsaPrefixStateProbe &probe, void *stream) {
+  if (ordered_exp)
+    return prefix_batch_impl<Cells + 1, false, false, true, true, true, true, true>(query,
+        pools, ids, steps, cap, shape, output, queries, bounds, live_cells, scratch, stream, probe);
+  return prefix_batch_impl<Cells + 1, false, false, true, true, true, false, true>(query,
+      pools, ids, steps, cap, shape, output, queries, bounds, live_cells, scratch, stream, probe);
 }
 // FP32 subgroup max/sum; current score33 row-major operands and state layout.
 bool qsa_bf16_prefix_subgroup_batch(const uint16_t *query, const QsaAttnPools &pools,

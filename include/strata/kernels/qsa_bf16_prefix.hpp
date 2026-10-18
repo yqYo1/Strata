@@ -39,6 +39,32 @@ bool qsa_bf16_prefix_kvvec4_batch(const uint16_t *q, const QsaAttnPools &pools,
     const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
     uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
     int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream);
+// Experimental cached-Q/KVvec4 route: parallel exp2, ascending FP32 sum.
+// All SIMD16 lanes execute each indexed exchange; no tree-sum reassociation,
+// extra workgroup barrier, local memory or CPU arithmetic is introduced.
+bool qsa_bf16_prefix_ordered_exp_batch(const uint16_t *q, const QsaAttnPools &pools,
+    const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
+    uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
+    int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream);
+
+// Diagnostic-only online state for one query, KV group and head row. Includes
+// padded head rows12..15; they follow the original state update too. Each
+// ceil(cap/32) row stores FP32 [maximum, alpha, normalizer, tile_sum]. Caller
+// owns the registered disjoint device span through checked completion.
+struct QsaPrefixStateProbe {
+  int64_t query = 0;
+  int kv_head = 0, head = 0;
+  float *states = nullptr;
+};
+// Explicit bool selects matched serial or ordered-exp diagnostic kernels.
+// It does not mutate environment or enable a model dispatch route. Compare
+// instrumented output to each corresponding normal export before interpreting
+// these additional state stores. Performance uses the non-probe exports only.
+bool qsa_bf16_prefix_state_probe_batch(const uint16_t *q, const QsaAttnPools &pools,
+    const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
+    uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
+    int64_t live_cells, const QsaBf16PackedScratch &scratch,
+    bool ordered_exp, const QsaPrefixStateProbe &probe, void *stream);
 // Score33 row-major storage; subgroup FP32 max/sum changes sum association.
 // BF16 probability rounding and FP32 online state/accumulation are preserved.
 bool qsa_bf16_prefix_subgroup_batch(const uint16_t *q, const QsaAttnPools &pools,
