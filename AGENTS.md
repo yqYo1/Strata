@@ -40,13 +40,24 @@ These are durable operating rules for Main and delegated work. Use the
 for upstream evaluation; the user's project-specific rules here take precedence
 over generic workflow examples.
 
-At session start, resume and after context compaction, reread this file before
-launching work. Use [the maintained prefill decisions](docs/SYCL_NATIVE16_PREFILL.md)
-and their linked compact results to recover the validated build, clean speed
-reference, selected experiment, pending validation and provenance holds. Verify
-them against the actual branch, worktree, pending changes and owned in-flight
-jobs. Inspect the existing job's receipt and process handle before starting or
-resuming a measurement. Conversational memory and a stale receipt are insufficient.
+At session start, resume and after context compaction, perform these checks in
+order before launching work:
+
+1. Reread this file and [the artifact retention policy](docs/ARTIFACT_RETENTION.md).
+   Apply the latest user instructions; a conversation summary is not a substitute
+   for the maintained rules.
+2. Recover the validated build, clean speed reference, selected experiment,
+   pending validation and provenance holds from
+   [the maintained prefill decisions](docs/SYCL_NATIVE16_PREFILL.md) and their
+   linked compact committed results. Use Git for older evidence; do not load the
+   full session log or research library unless a concrete question requires it.
+3. Verify that state against the actual branch, worktree, pending changes and
+   owned in-flight jobs. Inspect an existing job's receipt and process handle
+   before starting or resuming a measurement. Resume a live job through its
+   existing handle; conversational memory and a stale receipt are insufficient.
+4. Choose the next action from the table below. Check the last actual upstream
+   check time and eligible research scopes as part of the recurring work loop,
+   while keeping Main's implementation and serialized measurement moving.
 
 **Repeat the applicable check immediately before each action.** These are
 prerequisites, not items to explain away in a later report. A startup read does
@@ -55,6 +66,7 @@ historical logs or the research library wholesale.
 
 | Action | Required check | Detailed rules |
 | --- | --- | --- |
+| Choose an optimization | Identify the measured limiting resource, proposed mechanism and comparison that can accept or reject it. Distinguish an attribution improvement from a throughput gain. | [Tuning](#git-integration-and-tuning), [measurement](#measurement-and-gpu-execution) |
 | Build | Commit the exact engine, benchmark, controller, generated inputs and recipe first; pin compiler, dependencies and environment. Identify retained generations across worktrees and preserve the validated fallback before overwriting it. | [Measurement](#measurement-and-gpu-execution), [artifacts](#measurement-and-diagnostic-artifacts) |
 | Run or compare | Verify committed inputs against the build record and actual executable hash. Check job ownership and the frozen comparison plan; keep first-use, subsequent-request and independent-process samples distinct. | [Measurement](#measurement-and-gpu-execution), [artifacts](#measurement-and-diagnostic-artifacts) |
 | Integrate | Check provenance and decide inference parts individually, including prefill and decode. Preserve required non-inference functions. History preservation and component success alone do not qualify a model route. | [Scope](#this-forks-scope), [integration](#git-integration-and-tuning) |
@@ -84,7 +96,15 @@ the file at the first safe boundary. Later user instructions supersede older
 ones; replace contradictory rules instead of appending a second version.
 Keep durable rules here and per-run state in compact committed results, without
 a chronological policy log, separate resume checkpoint or duplicate policy copy.
-Apply retention rules to existing artifacts as well as new ones.
+Update the existing rule and its canonical detail document together; do not
+append another checklist or report for each reminder. Apply retention rules to
+existing artifacts as well as new ones.
+
+At each work boundary, check the latest instructions against these rules and
+the actual completed work before reporting completion. Carry pending validation,
+unfinished upstream ports and provenance holds forward in their existing
+maintained results with a concrete next action. A status request, policy edit or
+context compaction does not complete or abandon the ongoing tuning experiment.
 
 Preserve the distinction between a proposal, a tested component and a qualified
 model route when resuming or reporting. An unfinished experiment or research
