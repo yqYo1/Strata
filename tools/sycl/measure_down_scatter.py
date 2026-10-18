@@ -3,6 +3,8 @@
 import fcntl
 import hashlib
 import json
+import math
+from collections import Counter
 from pathlib import Path
 import re
 import statistics
@@ -15,7 +17,7 @@ import measurement_owner as supervision
 
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'moe-down-scatter-component-v5'
+ROOT = B / 'moe-down-scatter-component-v6'
 BUILD = B / 'main-native-gdn-engine/record.json'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json'
 SETTINGS = P / 'tools/sycl/measurement_environment.json'
@@ -27,9 +29,74 @@ def digest(path):
         return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
+def git(*args):
+    return subprocess.check_output(['git', *args], cwd=P)
+
+
+def controller_inputs(revision):
+    """Pin the complete local Python/control inputs, separately from the build."""
+    names = ('tools/sycl/measure_down_scatter.py', 'tools/sycl/measurement_owner.py',
+             'tools/sycl/measurement_guards.py', 'tools/sycl/measurement_environment.json')
+    pins = {}
+    for name in names:
+        original = git('show', revision + ':' + name)
+        guards.require((P / name).read_bytes() == original,
+                       'uncommitted or changed controller input: ' + name)
+        pins[name] = hashlib.sha256(original).hexdigest()
+    return pins
+
+
+def compact_result(record):
+    """Keep checked totals and all used timings; raw events stay in owned output."""
+    result = dict(record)
+    checks, samples = [], []
+    columns = ('process', 'rows', 'irregular', 'round', 'order', 'arm', 'wall_ms', 'queue_interval_ms')
+    for check in record['checks']:
+        row = {k: v for k, v in check.items() if k != 'events'}
+        events = check.get('events', [])
+        if 'events' in check:
+            counts = Counter((e.get('kind', 'missing'), e.get('status', 'missing')) for e in events)
+            row['event_totals'] = [[kind, status, count] for (kind, status), count in sorted(counts.items())]
+            row['event_count'] = len(events)
+            row['immutable_input_failures'] = sum(e.get('inputs_immutable') is False for e in events)
+            for event in events:
+                if (event.get('kind') == 'sample' and isinstance(event.get('round'), int)
+                        and event['round'] >= 0):
+                    samples.append([event.get(name) for name in columns])
+        checks.append(row)
+    result['checks'] = checks
+    if samples:
+        result.update(timing_sample_columns=list(columns), timing_samples=samples,
+            timing_sample_scope='Every measured sample, including unsuccessful gates; warmup durations and repeated shape/guard fields omitted only after validation. Full raw output is temporary.')
+    return result
+
+
+def postchecks(record, boot, cursor):
+    """A missing fault observation is failed qualification, never a clean run."""
+    record.update(postchecks_complete=False, postcheck_errors=[], fresh_faults=None,
+                  boot_unchanged=False, driver_after=None)
+    try:
+        after = subprocess.check_output(['journalctl', '-k', '-b', '--after-cursor', cursor, '--no-pager'], text=True)
+        record['fresh_faults'] = [line for line in after.splitlines() if re.search(
+            r'(?i)(gpu.*(?:hang|fault|reset|wedg)|xe.*(?:error|fault|reset|timeout))', line)]
+    except Exception as error:
+        record['postcheck_errors'].append(dict(check='kernel_journal', error=str(error)))
+    try:
+        record['boot_unchanged'] = boot == Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+    except Exception as error:
+        record['postcheck_errors'].append(dict(check='boot_identity', error=str(error)))
+    try:
+        record['driver_after'] = guards.driver_guard()
+    except Exception as error:
+        record['postcheck_errors'].append(dict(check='driver_guard', error=str(error)))
+    record['postchecks_complete'] = not record['postcheck_errors']
+    record['passed'] = bool(record['passed'] and record['postchecks_complete'] and
+        record['ownership_closed'] and record['boot_unchanged'] and not record['fresh_faults'])
+
+
 def main():
-    guards.require(len(sys.argv) == 2 and sys.argv[1] in ('ownership', 'smoke', 'validate', 'perf'),
-                   'use measure_down_scatter.py ownership|smoke|validate|perf')
+    guards.require(len(sys.argv) == 2 and sys.argv[1] in ('plan', 'ownership', 'smoke', 'validate', 'perf'),
+                   'use measure_down_scatter.py plan|ownership|smoke|validate|perf')
     mode = sys.argv[1]
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -38,37 +105,58 @@ def main():
         build = json.loads(BUILD.read_text())
         guards.require(build['complete'] and build['passed'] and build['ownership_closed'] and
                        not build['active'], 'closed successful build required')
+        guards.require(Path(build['project']['root']).resolve() == P,
+                       'run from the measured engine worktree after integration')
         for source in [build['project'], *build['dependencies']]:
             for name, expected in source['source_sha256'].items():
                 guards.require(digest(Path(source['root']) / name) == expected, 'build input changed: ' + name)
         fixture = build['fixtures'][TARGET]
         guards.require(digest(fixture['path']) == fixture['sha256'], 'fixture changed')
-        if mode == 'ownership':
+        if mode == 'plan':
             guards.require(not ROOT.exists(), 'inspect existing job; do not restart')
-            prior_bytes = subprocess.check_output(['git','show','HEAD:' + str(RESULT.relative_to(P))],cwd=P)
+            prior_bytes = git('show', 'HEAD:' + str(RESULT.relative_to(P)))
             guards.require(prior_bytes == RESULT.read_bytes(), 'commit the preceding Down result before replacement')
             prior = json.loads(prior_bytes)
-            guards.require(prior['mode'] == 'perf' and prior['passed'] and prior['ownership_closed'],
-                           'closed original Down comparison required')
+            guards.require(prior['ownership_closed'] and not prior['active'] and prior['mode'] != 'plan',
+                           'closed original Down result required; preserve its status')
+            revision = git('rev-parse', 'HEAD').decode().strip()
+            pins = controller_inputs(revision)
             ROOT.mkdir(mode=0o700)
             record = dict(source_commit=build['source_commit'], fixture=fixture, checks=[],
+                controller_source_commit=revision, controller_sha256=pins,
+                build_record_sha256=digest(BUILD), run_root=str(ROOT), mode='plan',
+                ownership_closed=True, GPU_executed=False,
                 complete=False, passed=False, active=False, model_performance_adopted=False,
                 model_quality_qualified=False, physical262144_model_RESTORE_qualified=False,
                 consumer='One Down/scatter component comparison; retire raw logs/JIT after extracting samples.',
                 prospective_gates='New selective candidate, not a revision of the rejected uniform gate:54 exhaustive host ownership cases;33 legacy traced smoke plus6 actual-route events in each of separate processes with flag0/large;78 legacy correctness plus16 selected-route cases per flag. Exact BF16 capture/FP32 FMA, inputs/guards/status, false-route no-write,2333/2334/2335 threshold, split8191/8192 and mixed invalid masks.3 independent clean processes,6 rotated two-arm rounds over14 shapes. Advance only with selected/separate geomean<=0.97, no shape>1.05 and every >=2334-row shape improves in every process. A3% component gain warrants only a subsequent same-workload model experiment.',
                 limits='FP16 Down2560x640, BF16-round then explicit FP32 FMA. Fixed78451-token FP32 accumulator; contiguous/distributed maps. Arm0 separate low-level dense+accumulation;1 actual production startup-selected hook plus its public dense+accumulation fallback. Both use compact below128,wide otherwise; hook uses cached-wide only at>=2334. The public wrapper adds binding/dispatch checks. Marker intervals include submission gaps; no physical traffic, occupancy, saturation or model speed inferred. No model route adoption.',
-                previous_result=dict(commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip(),
-                    path=str(RESULT.relative_to(P)), geometric_mean_latency_ratio=prior['resident_summary']['geometric_mean_latency_ratio'],
-                    advance_to_model=prior['resident_summary']['advance_to_model']),
+                previous_result=dict(commit=revision, path=str(RESULT.relative_to(P)),
+                    sha256=hashlib.sha256(prior_bytes).hexdigest(), source_commit=prior['source_commit'],
+                    mode=prior['mode'], passed=prior['passed'], complete=prior['complete'],
+                    timing_status=prior.get('timing_status'),
+                    advance_to_model=prior.get('resident_summary', {}).get('advance_to_model')),
                 retention='Keep original individual samples in this result; retire successful API traces, routine logs and JIT caches after comparison closure and verified extraction. Preserve known-good fallback; do not retain another closed component binary.')
+            (ROOT / 'plan.json').write_text(json.dumps(record, indent=2) + '\n')
+            RESULT.write_text(json.dumps(record, indent=2) + '\n')
+            print('Prepared fresh current-fixture qualification. Commit ' + str(RESULT.relative_to(P)) + ' before ownership.')
+            return 0
         else:
             record = json.loads(RESULT.read_text())
-            previous = {'smoke': 'ownership', 'validate': 'smoke', 'perf': 'validate'}[mode]
-            guards.require(record['passed'] and record['ownership_closed'] and record['mode'] == previous and
+            previous = {'ownership': 'plan', 'smoke': 'ownership', 'validate': 'smoke', 'perf': 'validate'}[mode]
+            guards.require((mode == 'ownership' or (record['passed'] and record['complete'])) and
+                record['ownership_closed'] and not record['active'] and record['mode'] == previous and
                 record['source_commit'] == build['source_commit'] and record['fixture'] == fixture,
                 'require matching successful preceding phase')
-            committed = subprocess.check_output(['git', 'show', 'HEAD:' + str(RESULT.relative_to(P))], cwd=P)
+            committed = git('show', 'HEAD:' + str(RESULT.relative_to(P)))
             guards.require(committed == RESULT.read_bytes(), 'commit preceding result first')
+            plan = json.loads((ROOT / 'plan.json').read_text())
+            guards.require(record['run_root'] == str(ROOT) and
+                all(record[key] == plan[key] for key in ('source_commit', 'fixture', 'controller_source_commit',
+                    'controller_sha256', 'build_record_sha256', 'previous_result',
+                    'prospective_gates', 'limits', 'retention', 'consumer')) and
+                controller_inputs(record['controller_source_commit']) == record['controller_sha256'] and
+                digest(BUILD) == record['build_record_sha256'], 'frozen component plan/input identity changed')
         guards.require(not (ROOT / ('owned-' + mode)).exists(), 'phase already started; inspect owner')
         settings = json.loads(SETTINGS.read_text())
         for path, info in settings['runtime_elfs'].items():
@@ -112,11 +200,17 @@ def main():
                     child_env['STRATA_SYCL_PREFILL_DOWN_SCATTER'] = 'large' if args[1] == '1' else '0'
                 entry, out, err = owner.run(str(ordinal), command, child_env, P, wall=1200 if mode == 'perf' else 600, cpu=2400 if mode == 'perf' else 1800,
                     rss_cap=6 << 30, file_cap=64 << 20, text_cap=64 << 20, total_cap=128 << 20)
+                result = dict(mode=mode, command=command, exit_code=entry.get('exit_code'),
+                    ownership_closed=supervision.closed(entry), events=[], passed=False,
+                    closure=dict(observation_complete=entry.get('observation_complete'),
+                        direct_child_reaped=entry.get('direct_child_reaped'), session_empty=entry.get('session_empty'),
+                        owner_error=bool(entry.get('error') or entry.get('errors')),
+                        cleanup_attempted=bool(entry.get('cleanup'))))
+                record['checks'].append(result)
+                persist()  # Retain closure even when stdout is truncated or parsing fails.
                 stdout, stderr = out.read_text(errors='replace'), err.read_text(errors='replace')
                 events = [json.loads(line) for line in stdout.splitlines() if line.startswith('{')]
-                result = dict(mode=mode, command=command, exit_code=entry.get('exit_code'),
-                    ownership_closed=supervision.closed(entry), events=events, passed=False)
-                record['checks'].append(result)
+                result['events'] = events
                 guards.require(result['ownership_closed'] and result['exit_code'] == 0 and
                     'fixture_status=PASS' in stdout and not re.search(
                         r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed|CHECKED_DRAIN_FAILED', stderr),
@@ -159,7 +253,10 @@ def main():
                     {(e['rows'], e['irregular'], e['process'], e['round'], e['arm']) for e in samples} ==
                     {(r, i, p, n, a) for r in (64, 160, 2333, 2334, 2335, 5963, 8192)
                      for i in (0, 1) for p in range(3) for n in range(6) for a in (0, 1)} and
-                    all(e['fused_route'] == bool(e['arm'] and e['rows'] >= 2334) for e in samples),
+                    all(e['fused_route'] == bool(e['arm'] and e['rows'] >= 2334) and
+                        e['order'] in (0, 1) and e['arm'] == (e['process'] + e['round'] + 2 + e['order']) % 2 and
+                        e['repeat'] == 16 and all(math.isfinite(e[k]) and e[k] > 0
+                            for k in ('wall_ms', 'queue_interval_ms')) for e in samples),
                     'selected timing/process/route coverage incomplete')
                 summary = []
                 for rows in (64, 160, 2333, 2334, 2335, 5963, 8192):
@@ -185,15 +282,8 @@ def main():
             record['error'] = str(error)
         finally:
             record['ownership_closed'] = owner.active is None and all(supervision.closed(c) for c in owner.commands)
-            after = subprocess.check_output(['journalctl', '-k', '-b', '--after-cursor', cursor, '--no-pager'], text=True)
-            record['fresh_faults'] = [line for line in after.splitlines() if re.search(
-                r'(?i)(gpu.*(?:hang|fault|reset|wedg)|xe.*(?:error|fault|reset|timeout))', line)]
-            record['boot_unchanged'] = boot == Path('/proc/sys/kernel/random/boot_id').read_text().strip()
-            try: record['driver_after'] = guards.driver_guard()
-            except Exception as error:
-                record['driver_error'] = str(error); record['passed'] = False
-            record['passed'] = bool(record['passed'] and record['ownership_closed'] and record['boot_unchanged'] and not record['fresh_faults'])
-            persist(); RESULT.write_text(json.dumps(record, indent=2) + '\n')
+            postchecks(record, boot, cursor)
+            persist(); RESULT.write_text(json.dumps(compact_result(record), indent=2) + '\n')
         print(json.dumps({k: record.get(k) for k in ('mode', 'complete', 'passed', 'ownership_closed', 'error', 'resident_summary')}))
         return 0 if record['passed'] else 1
 
