@@ -1,0 +1,113 @@
+{
+  "source_commit": "cc6e596c638f108af2e50f229ea88ee6496792cf",
+  "input_sha256": {
+    "tools/sycl/profile_attention.py": "4c1e3509b71b9cefb0653549de10346577ecc20f46349d03be870aa93b4a7575",
+    "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+    "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+    "tools/sycl/measurement_environment.json": "637cc6f8f410cf8400fd7b4598182e2e91d1c5cf907ef428e73321faf0aa47fa",
+    "bench/results/2026-10-15-pr6-recovery-audit/qsa-attention-current.json": "a68a0e954660d5a484703c1596e218556c4a8b9234d700ef6fc690ffef436c86"
+  },
+  "fixture": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_rows_bench",
+    "sha256": "681bba084425237a312b87e26a66e7dbae8bc52c4d6a31dab3f5e6fd0884ffde"
+  },
+  "build_source_commit": "51a6f70aa98acca2f733b9569514afe9ed6350d2",
+  "driver": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  },
+  "checks": [
+    {
+      "mode": "smoke",
+      "command": [
+        "/opt/intel/oneapi/vtune/latest/bin64/vtune",
+        "-collect",
+        "gpu-hotspots",
+        "-knob",
+        "gpu-profiling-mode=characterization",
+        "-knob",
+        "characterization-mode=overview",
+        "-knob",
+        "dump-compute-task-binaries=false",
+        "-knob",
+        "collect-programming-api=true",
+        "-knob",
+        "gpu-sampling-interval=1",
+        "-data-limit=16",
+        "-user-data-dir",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-hardware-profile-current/smoke/user",
+        "-result-dir",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-hardware-profile-current/smoke/vtune",
+        "--",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_rows_bench",
+        "--smoke"
+      ],
+      "collector_exit_code": 1,
+      "collector_ok": false,
+      "target_reported_pass": false,
+      "ownership_closed": true,
+      "target_cases": [],
+      "collector_diagnostics": [
+        "vtune: Error: This analysis type is not applicable to the system because VTune Profiler cannot recognize the processor. If this is an old Intel processor, please refer to the minimum hardware requirements in the release note. If this is a new Intel processor, please check for an updated version of VTune Profiler. If this is an unreleased Intel processor, please contact Online Service Center for an NDA product package.",
+        "vtune: Error: This analysis type is not applicable to the current machine microarchitecture."
+      ],
+      "owner_error": null
+    }
+  ],
+  "consumer": "Current QSA hardware resource attribution; retire raw collector output after extraction.",
+  "model_performance_measured": false,
+  "hardware_metrics_qualified": false,
+  "mode": "smoke",
+  "complete": true,
+  "passed": false,
+  "active": false,
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+    "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "ZES_ENABLE_SYSMAN": "0",
+    "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+    "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+    "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-hardware-profile-current/smoke/tmp",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-hardware-profile-current/smoke/cache"
+  },
+  "permissions": {
+    "dev/xe/observation_paranoid": "1",
+    "kernel/perf_event_paranoid": "4",
+    "kernel/kptr_restrict": "1"
+  },
+  "profiler": {
+    "path": "/opt/intel/oneapi/vtune/2026.4/bin64/vtune",
+    "sha256": "7987d63d0e8ed24fdad6572d8f0873e709831463d202a7fb71c59b6709e9a05d",
+    "version": "Intel(R) VTune(TM) Profiler 2026.4.0 (build 632893) Command Line Tool\nCopyright (C) 2009 Intel Corporation. All rights reserved."
+  },
+  "ownership_closed": true,
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  }
+}
