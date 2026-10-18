@@ -3,6 +3,7 @@
 import fcntl
 import hashlib
 import json
+import math
 from pathlib import Path
 import re
 import shutil
@@ -46,7 +47,7 @@ def main():
     kvec4 = kvvec4 or mode.startswith('qsa-kvec4')
     check = census or mode in ('check', 'qsa-check', 'qsa-qcache-check', 'qsa-kvec4-check', 'qsa-kvvec4-check')
     chunk64 = mode in ('check', 'candidate')
-    generation = 'v2' if mode == 'qsa-kvec4-check' else 'v1'
+    generation = 'v2' if short_profile or mode == 'qsa-kvec4-check' else 'v1'
     root = B / (('qsa-attention-model-' + mode[4:] + '-' + generation) if qsa else
                 ('native-gdn-model-' + mode + '-v2'))
     result_path = (A / 'moe-window-census-current.json' if census else
@@ -99,7 +100,7 @@ def main():
                            STRATA_PREFILL_LAYER_MAJOR_QSA_PROFILE='1',
                            STRATA_PREFILL_CPU_WAIT_PROFILE='1')
             if phase_profile:
-                env['STRATA_PREFILL_TIMING'] = '1'
+                env['STRATA_PREFILL_LAYER_MAJOR_GDN_PROFILE'] = '1'
             if phase_profile or mode in ('qsa-kvec4-check', 'qsa-kvec4-census'):
                 env['STRATA_SYCL_PREFILL_COMMAND_PROFILE'] = '1'
             config = dict(reference['config'])
@@ -134,8 +135,8 @@ def main():
                 plan['phase_profile_scope'] = {
                     'question': 'Separate current GDN input projection, conv/gates, recurrence and output projection before selecting a topology change.',
                     'route': 'Existing GDN recurrence, chunk64 disabled; qualified opt-in QSA K/Vvec4.',
-                    'coverage': 'One rounded marker-interval summary per layer; GDN36/QSA12. Original checked coarse/CPU and selected MoE service observers remain separate.',
-                    'limits': 'Marker intervals include host submit gaps and queue dependencies, not isolated kernel service, measured occupancy, physical traffic or a clean speed cohort. Legacy PfTimer skips failed event queries; require expected emitted phase coverage and retain this limitation.',
+                    'coverage': 'Checked coarse observer v3, four extra event pairs retired only after existing checked drains; per-layer expected counts for all36GDN layers, with zero GDN samples on12QSA layers. Legacy STRATA_PREFILL_TIMING remains prohibited.',
+                    'limits': 'Event-marker intervals include host submit gaps and queue dependencies, not isolated kernel service, measured occupancy, physical traffic or a clean speed cohort. Host submit wall intervals are not thread CPU time.',
                     'retirement': 'Extract compact phase samples and faults; retire normal full logs/JIT after source/recipe recovery. No implementation adoption.'}
             (root / 'plan.json').write_text(json.dumps(plan, indent=2) + '\n')
             compact = {k: v for k, v in plan.items() if k != 'source_sha256'}
@@ -247,7 +248,8 @@ def main():
                 record['retired_moe_totals'] = totals
                 record['resource_diagnostics'] = [x for x in log.splitlines() if x.startswith(
                     ('strata lm profile:', 'strata lm qsa profile:', 'strata prefill cpu wait:', 'strata prefill cpu host:'))]
-                for prefix in ('strata lm profile: v=2 complete=1 errors=0',
+                coarse_prefix = 'strata lm profile: v=' + ('3' if phase_profile else '2') + ' complete=1 errors=0'
+                for prefix in (coarse_prefix,
                                'strata lm qsa profile: v=1 complete=1 errors=0',
                                'strata prefill cpu wait: version=3 available=1 complete=1',
                                'strata prefill cpu host: version=3 available=1 open_regions=0'):
@@ -255,29 +257,37 @@ def main():
                                    'missing complete resource observer: ' + prefix)
                 record['census_scope'] = 'Planned host metadata reconciled with completed window issuer totals; profiler/validation enabled, not clean speed or physical hardware saturation.'
             if phase_profile:
-                # PfTimer reports rounded stream-marker intervals, not GPU-only
-                # service. Source run_layer_major visits layers in order and
-                # calls run_impl with the full request's prefill row count.
-                expected_rows = record['planned_moe_windows'][0]['rows']
-                expected_phases = ('gdn', 'gdn conv+gates', 'gdn recurrence', 'gdn out proj')
-                layers = []
+                # The supported coarse observer checks every event/query and
+                # expected stage count. Nested intervals are nonexclusive.
+                expected_phases = ('GDN_projections', 'GDN_conv_gates', 'GDN_recurrence', 'GDN_output')
+                layers, aggregate = [], None
                 for line in log.splitlines():
-                    match = re.fullmatch(r'strata prefill timing: (\d+) tokens, GPU timeline (\d+) ms, '
-                                         r'wall (\d+) ms, host staging (\d+) ms:(.*)', line)
-                    if not match or int(match[1]) != expected_rows:
+                    if not line.startswith('strata lm profile: layer='):
                         continue
-                    fields = dict((name.strip(), int(ms)) for name, ms in re.findall(
-                        r' ([a-z+ ]+) (\d+) \([0-9.]+%\)', match[5]))
-                    row = dict(layer=len(layers), rows=expected_rows, timeline_ms=int(match[2]),
-                               wall_ms=int(match[3]), gdn_marker_ms={k:fields[k] for k in expected_phases if k in fields})
-                    layers.append(row)
-                gdn = [x for x in layers if x['gdn_marker_ms']]
-                record['gdn_phase_marker_intervals'] = dict(layers=layers,
-                    totals_ms={k:sum(x['gdn_marker_ms'].get(k, 0) for x in gdn) for k in expected_phases},
+                    fields = dict(part.split('=', 1) for part in line[len('strata lm profile: '):].split())
+                    queue = [float(v) for v in fields['queue_ms'].split(',')]
+                    samples = [int(v) for v in fields['samples'].split(',')]
+                    host = [float(v) for v in fields['gdn_submit_wall_ms'].split(',')]
+                    guards.require(len(queue) == len(samples) == 10 and len(host) == 4,
+                                   'wrong coarse v3 vector extent')
+                    guards.require(all(math.isfinite(v) and v >= 0 for v in queue + host) and
+                                   all(v >= 0 for v in samples), 'invalid coarse v3 interval/sample')
+                    row = dict(layer=int(fields['layer']), expected_chunks=int(fields['gdn_expected_chunks']),
+                               gdn_parent_queue_ms=queue[2], queue_ms=queue[6:],
+                               samples=samples[6:], host_submit_wall_ms=host)
+                    guards.require(all(n == row['expected_chunks'] for n in samples[6:]) and
+                                   samples[2] == row['expected_chunks'], 'GDN stage/parent count mismatch')
+                    if row['layer'] == -1:
+                        guards.require(aggregate is None, 'duplicate aggregate')
+                        aggregate = row
+                    else:
+                        layers.append(row)
+                record['gdn_phase_queue_intervals'] = dict(order=expected_phases, layers=layers, aggregate=aggregate,
                     limits=plan['phase_profile_scope']['limits'])
-                guards.require(len(layers) == 48 and len(gdn) == 36 and
-                    all(set(x['gdn_marker_ms']) == set(expected_phases) for x in gdn),
-                    'incomplete per-layer GDN marker coverage')
+                guards.require([x['layer'] for x in layers] == list(range(48)) and
+                    sum(x['expected_chunks'] > 0 for x in layers) == 36 and aggregate is not None and
+                    aggregate['expected_chunks'] == sum(x['expected_chunks'] for x in layers),
+                    'incomplete per-layer GDN stage coverage')
             if phase_profile or mode in ('qsa-kvec4-check', 'qsa-kvec4-census'):
                 def rows(prefix):
                     return [dict(part.split('=', 1) for part in line[len(prefix):].split())

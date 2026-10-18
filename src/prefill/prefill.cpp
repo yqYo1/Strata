@@ -2399,6 +2399,9 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                                           *wsa = need(v, "ssm_a", err);
                     if (!wqkv || !wg || !wo || !wa || !wb || !wc || !wnm || !wdt || !wsa) return false;
                     if (m.layer_major_profile) m.layer_major_profile->begin(detail::LayerMajorCoarseProfile::gdn, m.cs);
+                    auto* gp = m.layer_major_profile && m.layer_major_profile->gdn_detail ? m.layer_major_profile : nullptr;
+                    using GdnProfile = detail::LayerMajorCoarseProfile;
+                    if (gp) gp->begin(GdnProfile::gdn_projections, m.cs);
                     pt.mark(kPfGdn, cs);
                     float* state = ss.gdn_state + (size_t) (gdn_index - ss.gdn_ord0) * gdn_floats;
                     float* conv = state + (uint64_t) g.ssm_state_size * g.ssm_v_heads * g.ssm_state_size;
@@ -2411,14 +2414,17 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                            !native_proj16(m.gemm,wg,m.mixed_h,b.z,T,v.name("attn_gate.weight"),err))return false;
                         if(!bf16_proj(m.gemm,wa,m.mixed_bf,b.ab,T,v.name("ssm_alpha.weight"),err,2*HV) ||
                            !bf16_proj(m.gemm,wb,m.mixed_bf,b.ab+HV,T,v.name("ssm_beta.weight"),err,2*HV))return false;
+                        if (gp) { gp->end(GdnProfile::gdn_projections, m.cs); gp->begin(GdnProfile::gdn_conv_gates, m.cs); }
                         pt.mark(kPfGdnConv,cs);
                         gdn_gates(b.ab,static_cast<const float*>(wdt->data),static_cast<const float*>(wsa->data),
                                   b.gate,b.beta,T,m.cs);
                         strata::gdn_chunk64::conv_bf16(conv,b.qkv,static_cast<const float*>(wc->data),
                                                       b.normalized,int(T),EPS,m.cs);
+                        if (gp) { gp->end(GdnProfile::gdn_conv_gates, m.cs); gp->begin(GdnProfile::gdn_recurrence, m.cs); }
                         pt.mark(kPfGdnRec,cs);
                         strata::gdn_chunk64::run(state,b.normalized,b.gate,b.beta,b.z,
                             static_cast<const float*>(wnm->data),EPS,b.output,int(T),b.workspace,m.cs);
+                        if (gp) { gp->end(GdnProfile::gdn_recurrence, m.cs); gp->begin(GdnProfile::gdn_output, m.cs); }
                         pt.mark(kPfGdnOut,cs);
                         if(!native_proj16(m.gemm,wo,b.output,m.bo_b16,T,v.name("ssm_out.weight"),err))return false;
                     } else {
@@ -2427,11 +2433,14 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     if (!native_proj(m.gemm, wg, m.mixed_h, m.z, T, v.name("attn_gate.weight"), err)) return false;
                     if (!bf16_proj(m.gemm, wa, m.mixed_bf, m.ab, T, v.name("ssm_alpha.weight"), err, 2 * HV, m.mixed_bf_lo)) return false;
                     if (!bf16_proj(m.gemm, wb, m.mixed_bf, m.ab + HV, T, v.name("ssm_beta.weight"), err, 2 * HV, m.mixed_bf_lo)) return false;
+                    if (gp) { gp->end(GdnProfile::gdn_projections, m.cs); gp->begin(GdnProfile::gdn_conv_gates, m.cs); }
                     pt.mark(kPfGdnConv, cs);   // "gdn" is the projections in; the rest on their own lines
                     gdn_gates(m.ab, (const float*) wdt->data, (const float*) wsa->data, m.gate, m.beta, T, m.cs);
                     gdn_conv(conv, m.qkv, (const float*) wc->data, m.hbuf, T, EPS, m.cs);
+                    if (gp) { gp->end(GdnProfile::gdn_conv_gates, m.cs); gp->begin(GdnProfile::gdn_recurrence, m.cs); }
                     pt.mark(kPfGdnRec, cs);
                     gdn_recurrence(state, m.hbuf, m.gate, m.beta, m.z, (const float*) wnm->data, EPS, m.y, m.y_h, T, m.cs);
+                    if (gp) { gp->end(GdnProfile::gdn_recurrence, m.cs); gp->begin(GdnProfile::gdn_output, m.cs); }
                     pt.mark(kPfGdnOut, cs);
 #if defined(STRATA_ENABLE_SYCL)
                     if (m.native16_active) {
@@ -2442,6 +2451,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
 #if defined(STRATA_ENABLE_SYCL)
                     }
 #endif
+                    if (gp) gp->end(GdnProfile::gdn_output, m.cs);
                     if (m.layer_major_profile) m.layer_major_profile->end(detail::LayerMajorCoarseProfile::gdn, m.cs);
                     if (m.layer26_phase_audit && !m.layer26_phase_audit->capture(
                             detail::Layer26PhaseAudit::gdn_out, l, c0, T, m.bo, m.layer_major_audit_copy)) {

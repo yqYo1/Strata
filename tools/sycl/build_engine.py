@@ -89,15 +89,22 @@ def main():
         boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
         guards.require(ROOT.exists() == rebuild, 'use rebuild only for the closed comparison cache')
         previous = None
+        retained_reference = None
         if rebuild:
             committed = git(P, 'show', 'HEAD:' + str(RESULT.relative_to(P)))
             guards.require(committed == RESULT.read_bytes(), 'commit the previous build identity first')
             old = json.loads((ROOT / 'record.json').read_text())
+            retained_reference = json.loads(committed).get('retained_validation_reference')
+            if retained_reference:
+                guards.require(digest(retained_reference['binary']['path']) ==
+                               retained_reference['binary']['sha256'], 'retained known-good engine changed')
             guards.require(old['ownership_closed'] and not old['active'] and not old['GPU_executed'],
                            'previous build ownership not closed')
             # A failed compile is terminal, not a qualified binary. Preserve its
             # receipt and recover the separately pinned retained executable.
             old_binary = old.get('binary') if old['passed'] else (old.get('replaces') or {}).get('binary')
+            if not old['passed'] and retained_reference:
+                old_binary = retained_reference['binary']
             guards.require(old_binary is not None, 'no pinned retained executable after failed build')
             guards.require(digest(old_binary['path']) == old_binary['sha256'], 'previous executable changed')
             for source in [old['project'], *old['dependencies']]:
@@ -142,6 +149,8 @@ def main():
                       production_selected=False, model_quality_qualified=False, replaces=previous,
                       targets=targets,
                       retention_consumer='Current long-prefill comparison and its attention fixtures; retire when comparison closes.')
+        if retained_reference:
+            record['retained_validation_reference'] = retained_reference
         owner = None
 
         def persist():

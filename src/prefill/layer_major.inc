@@ -378,16 +378,25 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     detail::LayerMajorShapeBorrow census_borrow(m.layer_major_census, census.get());
     const char* profile_switch = std::getenv("STRATA_PREFILL_LAYER_MAJOR_PROFILE");
     const bool profile_requested = profile_switch && std::strcmp(profile_switch, "1") == 0;
+    const char* gdn_profile_switch = std::getenv("STRATA_PREFILL_LAYER_MAJOR_GDN_PROFILE");
+    const bool gdn_profile_requested = gdn_profile_switch && std::strcmp(gdn_profile_switch, "1") == 0;
+    if (gdn_profile_requested && !profile_requested) {
+        err = "prefill GDN profile: requires STRATA_PREFILL_LAYER_MAJOR_PROFILE=1"; return false;
+    }
     std::unique_ptr<detail::LayerMajorCoarseProfile> profile;
     if (profile_requested) {
         uint64_t need = detail::layer_major_add(host_need, audit ? 4ull << 20 : 0);
         need = detail::layer_major_add(need, phase_audit ? detail::Layer26PhaseAudit::host_reservation : 0);
         need = detail::layer_major_add(need, census ? sizeof(detail::LayerMajorShapeCensus) : 0);
-        need = detail::layer_major_add(need, 1ull << 20); // fixed rows and twelve small compat event owners
+        need = detail::layer_major_add(need, 1ull << 20); // fixed rows, at most twenty small compat event owners
         if (!core::conversation_memory_admit(core::conversation_available_memory(), need, host_headroom)) {
             err = "prefill layer-major profile: diagnostic storage exceeds RAM headroom"; return false;
         }
         profile.reset(new detail::LayerMajorCoarseProfile);
+        profile->gdn_detail = gdn_profile_requested;
+        if (gdn_profile_requested)
+            for (int l = 0; l < 48; ++l)
+                if (!core::is_qsa_layer(g, l)) profile->rows[l].gdn_expected = uint64_t(1 + (n - 1) / m.T);
     }
     detail::LayerMajorCoarseBorrow profile_borrow(m.layer_major_profile, profile.get());
     // Read only: callers configure the native process environment before exec.

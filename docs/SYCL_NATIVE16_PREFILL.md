@@ -408,16 +408,24 @@ screening route opt-in as the next prefill tuning baseline.
 
 Before selecting a GDN scheduling change, Main prepares/commits/runs
 `qsa-kvvec4-timing-check`, then `qsa-kvvec4-census` with the existing model
-controller. They use the qualified K/Vvec4 engine and existing GDN path
+controller. They use the K/Vvec4 engine and existing GDN path
 (`GDN_CHUNK64=0`), first32K-class then78K input, thinking on. Both enable
 parameter validation, existing coarse/CPU/MoE observers and
-`STRATA_PREFILL_TIMING=1`. The latter separates input projections, conv/gates,
-recurrence and output projection, with expected per-layer coverage36GDN/12QSA.
-Its rounded event-marker intervals include host submission gaps and queue
-dependencies; the legacy timer also skips failed elapsed-time queries. Coverage
-and runtime-error checks do not turn these into pure GPU service or hardware
-occupancy measurements. Keep sampled MoE command service and clean853.2 tok/s
-evidence separate; observer-enabled PP is not a new speed comparison.
+`STRATA_PREFILL_LAYER_MAJOR_GDN_PROFILE=1`. Coarse observer v3 adds four fixed
+event pairs for input projections, conv/gates, recurrence and output projection.
+They retire only after the existing checked chunk drain. Every event status and
+expected per-layer count is checked (36GDN/12QSA); observation failure remains
+incomplete while the existing lease/Restore still owns retirement. The original
+coarse v2 output and twelve event owners remain when GDN detail is off.
+These nested intervals include host submission gaps and queue dependencies;
+host-submit wall time is separate from thread CPU time. Neither establishes
+pure GPU service or hardware occupancy. Keep sampled MoE service and clean853.2
+tok/s evidence separate; observer-enabled PP is not a new speed comparison.
+
+The first attempt (`95aec2914`) enabled legacy `STRATA_PREFILL_TIMING` and was
+rejected by long-prefill admission before long-model arithmetic, exit1 with no
+new GPU fault. Preserve that failed receipt. Its prohibition remains in place;
+the supported coarse observer supplies the new substages instead.
 
 ## Optional GDN chunk64
 

@@ -772,5 +772,37 @@
       ],
       "limits": "Static feasibility is not speed or correctness qualification; no new generic GDN research is eligible."
     }
+  },
+  "validated_launch_ownership_scope": {
+    "classification": "knowledge_collection",
+    "schedulable_now": false,
+    "eligible_at_dispatch": true,
+    "question": "Ownership-safe validated launch descriptors or batched span admission for repeated SYCL GPU submissions: compare current registry checks, lifetime/generation guarantees and graph/capture constraints without weakening public validation.",
+    "prerequisites_met": [
+      "Current source has registered Allocation ownership and runtime_for_device_span mutex/map/domain checks; validate_device_span already avoids raw zeMem allocation queries.",
+      "Existing whole-GEMM submit CPU observation3.36387s/57334calls is a context fact, not an isolated validation cost or critical-path proof.",
+      "Finite source/literature safety/method comparison does not require a missing physical counter capture."
+    ],
+    "source_sha256": {
+      "src/sycl/runtime.cpp": "e6c20e148bc7ceec250ad9a58ddfc851c1476aaab3d68982d2aee2897e572b83",
+      "include/strata/sycl/runtime.hpp": "a0e0687886e09c50922d01f7023ba3b51e8ac2dbe43f461a798ba82438b2a074",
+      "include/strata/sycl/launch.hpp": "4eb1888057ef6ae34f2bbb9d2545321061ee116659e54907047732544d589d95",
+      "src/prefill/sycl/vllm_xe2/native16.cpp": "d8b361cabea29344b48aff5a9db41303f3ea715de47f27bc57f29f85c5f3aa2d"
+    },
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/validated-launch-ownership-methods.md",
+    "main_reads_body_on_arrival": false,
+    "state": "Orca knowledge collection active; Main does not read the body on arrival.",
+    "retention_consumer": "Source-grounded launch ownership reference for a future measured host-submission cost decision; review after the next CPU-attribution decision.",
+    "task": "task_980662247e65",
+    "dispatch": "ctx_499cc9585192",
+    "terminal": "term_fbc6d220-b4bb-4931-a791-ef17d9e8efb1",
+    "model_evidence": "Custom argv gpt-6-luna medium; TUI-idle satisfied, worker-start observed turn_started.",
+    "report_budget": {
+      "words": [
+        1800,
+        2600
+      ],
+      "maximum_bytes": 30720
+    }
   }
 }
