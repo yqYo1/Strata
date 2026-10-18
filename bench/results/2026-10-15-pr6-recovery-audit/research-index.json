@@ -814,6 +814,11 @@
       "Allocation::release drains Runtime compute/transfer queues; additional make_queue users require an ownership audit, including compatibility-layer stream retirement, before claiming a production lifetime defect.",
       "No implementation or reduced validation selected. Pin branch-relative Intel graph references before using them as deployment evidence."
     ],
-    "next_scope": "No repeat survey; first resolve actual queue ownership and isolate any relevant host validation cost."
+    "next_scope": "No repeat survey; first resolve actual queue ownership and isolate any relevant host validation cost.",
+    "main_followup": {
+      "checked_source": "src/sycl/compat.cpp:133 release -> wait_all -> all registered streams, then Allocation destruction; cudaStreamDestroy also waits its owned stream.",
+      "conclusion": "The suspected extra-queue release gap is not established for compatibility cudaFree. Native Runtime::make_queue callers still require explicit queue ownership; no runtime change selected.",
+      "measurement_limit": "No isolated validation cost or host critical-path attribution; do not select a reduced-validation optimization."
+    }
   }
 }
