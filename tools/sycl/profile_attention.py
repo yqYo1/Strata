@@ -20,7 +20,7 @@ BUILD = B / 'main-native-gdn-engine/record.json'
 QUALIFIED = P / 'bench/results/2026-10-15-pr6-recovery-audit/qsa-attention-current.json'
 SETTINGS = P / 'tools/sycl/measurement_environment.json'
 VTUNE = Path('/opt/intel/oneapi/vtune/latest/bin64/vtune')
-BENCH = 'sycl_qsa_bf16_prefix_rows_bench'
+BENCH = 'sycl_qsa_bf16_prefix_qcache_bench'
 
 
 def digest(path):
@@ -96,7 +96,7 @@ def main():
         settings = json.loads(SETTINGS.read_text())
         for path, item in settings['runtime_elfs'].items():
             guards.require(digest(path) == item['sha256'], 'runtime changed: ' + path)
-        if mode == 'smoke':
+        if mode == 'smoke' or (mode == 'resources' and not ROOT.exists()):
             guards.require(not ROOT.exists(), 'inspect/close the existing profile; no automatic replacement')
             ROOT.mkdir(mode=0o700)
             record = dict(source_commit=revision, input_sha256=inputs, fixture=fixture,

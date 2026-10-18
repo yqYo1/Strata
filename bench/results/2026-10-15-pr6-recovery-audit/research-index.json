@@ -101,7 +101,7 @@
     "report_sha256": "4e4e89f035e9f3c8cd3767af59caf5517df5da5799c094c6890ee6dc5f71a4b1",
     "review_sha256": "9f787293e3c498e0cc8a195eab97585967027201ca8ac177f5f0c981ef087a2a",
     "source": "src/kernels/sycl/qsa_bf16_prefix.cpp",
-    "current_main_work": "Both independently authored local candidates closed without a broad component win: pitch mixed subpercent and row-publication mixed subpercent. All oracle/exact-bit, partial/invalid/alias/late-diagnostic and physical262144 component gates passed, no fresh faults. Production still uses existing prefix. Next decision needs current emitted-resource/global-gather evidence; not another generic survey.",
+    "current_main_work": "Baseline hardware-resource evidence captured. Main implements a fixture-only cached-Q candidate with unchanged BF16/DPAS order, then compiles and runs traced smoke, exact-bit/full component gates, emitted-resource comparison and clean rotated samples. No occupancy or speed gain assumed.",
     "production_fixture_correction": "CMake already defines sycl_qsa_bf16_prefix_optimized_test, mapping the default fixture function to the actual pitch33 function. At build source d72c8ac3, Main ran this exact target and directQ8 through traced smoke and component tests, including physical262144 component extent. This corrects the review default-target observation, not full-model qualification.",
     "resource_limits": "37.078s is prior device service, not utilization/critical-path proof. Requested SLM payload28224B; padding/residency/GRF/spills need device/compiler evidence.",
     "next_implementation": [
@@ -121,7 +121,7 @@
       },
       {
         "question": "Preload16 Q joint_matrix fragments per QK subgroup and reuse the Q/KV SLM arena.",
-        "schedulable_now": false,
+        "schedulable_now": true,
         "prerequisites": [
           "Establish prefix as a useful model route.",
           "Same BF16 slices, uniform subgroup participation and a workgroup barrier before K overwrite.",
@@ -133,7 +133,7 @@
           "Prefix model route retained after matched model comparison.",
           "Actual emitted baseline128GRF and absence of scratch descriptor captured; dynamic local28224B traced separately from static32B."
         ],
-        "status": "Main may implement a bounded cached-Q component candidate, then measure its emitted GRF/spill/local arguments before clean performance. No assumed occupancy gain."
+        "status": "Main implementation written, pending compile and qualification; no researcher implementation delegation."
       }
     ],
     "research_dispatch": "No repeated generic QSA research while these Main-owned measurements/prerequisites remain pending.",
@@ -150,7 +150,7 @@
       "do_not_repeat": "Old global K span256 schedule regressed10.35–29.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
     },
     "reviewed_base_source_sha256": "fa505d02e2b24f7cb6948033921fa697c8aeb58e6f4df6d873f13e5a7918e36b",
-    "source_sha256": "0f70c6caf55829f301af3ac97d21d0cedfdf05d237f7a63d421909878e8981df",
+    "source_sha256": "c3ad8326f097050ff9ab1859e116f2cad3709a8464162143f752bc294cbe1e01",
     "closed_pitch_result": {
       "commit": "ee14c50d404e04aa30424a5c5b33346c583842df",
       "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-attention-current.json",
@@ -171,7 +171,9 @@
         "source_sha256": "0f70c6caf55829f301af3ac97d21d0cedfdf05d237f7a63d421909878e8981df",
         "verdict": "Independent Orca Luna review plus native Luna-max review found no source-ordering blocker. This is not runtime or adoption proof.",
         "required_gate_corrections": "Add explicit duplicate IDs, two logical pages aliasing one physical page, and first-/later-tile-only K/V invalid scales with recovery; implemented in maintained fixture, pending build/execution."
-      }
+      },
+      "retired_source_commit": "51a6f70aa98acca2f733b9569514afe9ed6350d2",
+      "status": "Retired callable/targets after negative timing and resource comparison; exact source/result reachable from default history."
     }
   },
   "gdn_runtime_contract_review": {
