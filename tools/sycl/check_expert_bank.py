@@ -25,7 +25,7 @@ def digest(path):
 
 def query_limits():
     """Reuse the maintained query-only probe; submit no work or allocations."""
-    root = B / 'moe-expert-bank-limits-v1'
+    root = B / 'moe-expert-bank-limits-v2'
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
@@ -61,6 +61,9 @@ def query_limits():
             complete=False,passed=False,ownership_closed=False,driver_before=before,
             allocation_and_kernel_submission=False,
             limits='Device properties only. Capacity is not an allocation, owner, performance or physical-context qualification.')
+        if 'device_limits' in record:
+            query['previous_query'] = dict(commit=revision,path=str(RESULT.relative_to(P)),
+                source_commit=record['device_limits']['source_commit'],passed=record['device_limits']['passed'])
         owner = None
 
         def persist():
@@ -84,11 +87,11 @@ def query_limits():
                         if sep and key in ('device','driver','global_mem_size','max_mem_alloc_size'):
                             guards.require(key not in properties, 'duplicate device property')
                             properties[key] = int(value) if key.endswith('_size') else value
+                    query['properties'] = properties
                     guards.require(set(properties) == {'device','driver','global_mem_size','max_mem_alloc_size'}
-                        and properties['device'] == 'Intel Arc B570 Graphics'
+                        and properties['device'] in ('Intel Arc B570 Graphics','Intel(R) Arc(TM) B570 Graphics')
                         and 0 < properties['max_mem_alloc_size'] <= properties['global_mem_size'],
                         'unexpected or incomplete device limits')
-                    query['properties'] = properties
             guards.require(all(digest(P/n)==h for n,h in pins.items()), 'limit-query inputs changed')
             query.update(complete=True,passed=True,binary=dict(path=str(binary),
                 bytes=binary.stat().st_size,sha256=digest(binary)))
