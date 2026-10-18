@@ -1339,11 +1339,19 @@ accumulation order changes. This is Main-authored Strata code, based on the
 existing local planner/route interfaces and the reviewed source lifetime map;
 no XeStrata implementation is used.
 
-The prospective sequence is `check_mixed_scratch.py plan`, commit the result,
-then `build_engine.py rebuild-mixed`, followed by committed `smoke` and
-`validate` phases of `check_mixed_scratch.py`. Compare full gathered bits with
-the contiguous kernel and an independent host lookup, including banks crossed
-within one job,65536/65537 boundaries, partial windows, invalid maps, rejected
-spans, guards and immutable inputs. These component checks do not qualify
-whole-helper alias ownership, callbacks, short prefill, physical262144/RESTORE
-or model throughput; those remain required before adoption.
+Source034bddff8393 passed the CPU capacity plan and all five GPU gather cases,
+including banks crossed within one job,65536/65537 boundaries, partial windows,
+invalid maps, rejected spans, guards and immutable inputs. The same-build GU
+ownership, traced smoke,18-case validation and three-process timing also passed;
+the fused/separate wall-time ratio geomean was0.95335. This is component evidence.
+
+The first parameter-validated117489-token borrowed-scratch model request then
+closed normally, with mode10,98304 GPU residual rows, zero extra mixed allocation,
+thinking observed and no fresh GPU fault. All96 entry/retirement windows matched
+the48-layer81920+16384 schedule and expected extents. Its794.2tok/s first-use
+reading includes validation/logging and is not a clean speed comparison.
+Next run `qsa-long-input-scratch` clean cohort0; retain first use separately from
+its three subsequent requests and apply the committed target/futility criteria.
+Short prefill, broader numerical/task quality, full physical262144 context and
+RESTORE remain unqualified; this check does not establish default adoption or
+sustained decode performance.
