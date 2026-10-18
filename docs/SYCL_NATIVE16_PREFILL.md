@@ -804,3 +804,13 @@ The [current individual results](../bench/results/2026-10-15-pr6-recovery-audit/
 preserve the raw control, spread and every sample. This repeated same-buffer
 component regime does not identify physical traffic, saturation or model speed.
 The clean model reference remains867.1 tok/s; no new model speed was measured.
+
+Bounded offline ELF inspection of the actual7ad engine also found125504/126912
+byte native wide no-capture scatter sections, versus8128 bytes for dense
+FP16-to-BF16 wide GEMM. Compact scatter sections were15936/15680 versus3072
+bytes dense. Raw and output-copy code hashes differ. This is compiled code-size
+evidence, not proof of instruction-cache pressure, occupancy or a slowdown
+mechanism. Before another fusion variant, investigate grouping repeated row
+metadata/predicates while preserving static fragment access; a dynamic register
+index or restricted pointer must not be assumed faster or legal without checks.
+The prepared QSA ordered-exp candidate is the next serialized GPU experiment.
