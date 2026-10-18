@@ -147,7 +147,7 @@
       "candidate_path": "bench/results/2026-10-15-pr6-recovery-audit/own-qsa-kpitch-v1",
       "decision": "Reuse the existing source-audited pitch proposal after the current comparison; no new duplicate survey. Recheck immutable source/provenance and wire maintained API/tests before compiling.",
       "candidate": "Fixed score33,Cells32,WG128,SG16; K36/V260 shared tile needs9216 BF16 values,30272B requested local payload,34368B admission minimum. No hardware occupancy/bank map or performance result.",
-      "do_not_repeat": "Old global K span256 schedule regressed10.35\u201329.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
+      "do_not_repeat": "Old global K span256 schedule regressed10.35–29.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
     },
     "reviewed_base_source_sha256": "fa505d02e2b24f7cb6948033921fa697c8aeb58e6f4df6d873f13e5a7918e36b",
     "source_sha256": "c3ad8326f097050ff9ab1859e116f2cad3709a8464162143f752bc294cbe1e01",
@@ -208,7 +208,7 @@
         "bytes": 19144,
         "source_commit": "fbc7f56d7b0ddb5db5f3722ef33ca044c3f8a5c8",
         "reason": "Its conditional consumer is a selected-cell stable-reduction split. The closed QSA screen and pending pitch candidate select no split or reduction bottleneck.",
-        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report\u2019s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
+        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report’s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
       },
       {
         "path": "bench/results/2026-10-15-pr6-recovery-audit/research-matrix-register-reuse-20261018.md",
@@ -741,6 +741,26 @@
       "reason": "Exact worker transcript ends in a final agent turn after its worker_done could not reach Orca. Following bundled recovery guide, coordinator fenced the finished attempt; no successful worker receipt was fabricated.",
       "process_action": "none; externally created terminal retained, not reported stopped or deleted",
       "technical_report_and_native_review_unchanged": true
+    },
+    "main_source_followup": {
+      "IGC_version_matched_public_revision": "f05f218e6f0b888823c5678e1f64e91e597ea2dc",
+      "tag": "v2.41.5",
+      "primary_sources": [
+        {
+          "url": "https://github.com/intel/intel-graphics-compiler/blob/f05f218e6f0b888823c5678e1f64e91e597ea2dc/IGC/BiFModule/Implementation/Math/exp2.cl",
+          "sha256": "44584b8edcaff1ff2484e234536e5e02ec9bea83c079947f48fc67f053a2d185",
+          "license": "MIT"
+        },
+        {
+          "url": "https://github.com/intel/intel-graphics-compiler/blob/f05f218e6f0b888823c5678e1f64e91e597ea2dc/IGC/BiFModule/Implementation/Native/native_exp2.cl",
+          "sha256": "17ef33fe246ae449b22ee936779a44e06b307e3fcaef8ca1092bd5e9d2f3c09f",
+          "license": "MIT"
+        }
+      ],
+      "installed_IGC_ELF_sha256": "40badd8f1ee80ac844a8947f5e91e5654fbcd851caefe343b0e5ec4ce4d1b123",
+      "finding": "The version-matched IGC FP32 standard exp2 source directly forwards to native_exp2. A mere SYCL API rename currently has no demonstrated different implementation or speed mechanism.",
+      "limits": "Official tag/source verified, but exact deployed binary-to-source identity and final JIT ISA are not established by version matching. Do not claim emitted-code equivalence, an error bound or a measured speedup.",
+      "next_action": "No repeat generic survey or rename-only prototype; require actual emitted code showing a distinction before selecting this seam."
     }
   },
   "warmed_gemm_reference_scope": {
@@ -1359,8 +1379,8 @@
         "Retrieval map for a later concrete question"
       ],
       "paper_sections": [
-        "SyclKittens \u00a7\u00a73.2\u20133.3 and Appendix D for operand layouts, subgroup prefetch and the measured ablation.",
-        "Xe-Forge \u00a7\u00a7IV\u2013V, VI-A, VI-D\u2013VI-E for search/validation workflow, hardware, baseline and kernel results."
+        "SyclKittens §§3.2–3.3 and Appendix D for operand layouts, subgroup prefetch and the measured ablation.",
+        "Xe-Forge §§IV–V, VI-A, VI-D–VI-E for search/validation workflow, hardware, baseline and kernel results."
       ]
     }
   },
@@ -1575,5 +1595,127 @@
     "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/native-early-rejection-teardown-native-review.json",
     "review_sha256": "57354c9662ae2fbb0d8090787bde7430fe8716efc3cad1f93da9a5bbb1e0a846",
     "reviewed_decision": "No-subset NativeHead/MTP graph teardown-order gap is source-backed, but the raw-USM graph destroy contract and causation of this driver SIGSEGV are unproven. The observed failing run had a106299-token MTP head subset. Keep rejection/head-disabled path; bounded phase/status markers and pointer/drain/destroy evidence precede any fail-closed teardown candidate."
+  },
+  "implemented_mixed_scratch_lifetime_scope": {
+    "classification": "decision support",
+    "schedulable_now": false,
+    "state": "reviewed; no concrete defect established",
+    "prerequisites_met": [
+      "New default-off implementation is committed at 6b3ee1e35 and built from 034bddff8393e8c1c9cee89e9235807230a81ad2.",
+      "CPU capacity and all five GPU gather gates passed in moe-mixed-scratch-current.json; no new fault.",
+      "Prior two-bank report mapped source45 lifetimes before this actual implementation; this scope audits the newly implemented consumers, not another storage survey."
+    ],
+    "question": "Audit the implemented borrowed mixed banks across the complete FFN and callback lifetime, window/tail/status boundaries and failure paths; distinguish concrete defects from still-open model qualification.",
+    "source_commit": "034bddff8393e8c1c9cee89e9235807230a81ad2",
+    "source_files_sha256": {
+      "include/strata/prefill/moe_accum_plan.hpp": "1fa1618eaf96a6ec50bc948f7c6750fc33f463c702cfbf36cd57e928597ca1aa",
+      "include/strata/prefill/native16.hpp": "efc7e1eae1ed5995f5a408693ccbd503755487de85b9a4d345692ce181a9b4b5",
+      "src/prefill/layer_major.inc": "61413caf069c1f6893af98603824da596bb5ba340a84e989a31674f3fcbd9aad",
+      "src/prefill/moe_window.inc": "43b9d5e4b86def6289eb1f45006b3ed147aef22b627548d931eebc9f434a6cb5",
+      "src/prefill/prefill.cpp": "7472160303b0a975cc68554bfcbbed85673b5a39509d880664fd0967addbf332",
+      "src/prefill/sycl/native16.cpp": "c88f2d7ae06c63dbfb04b0bb777be03284a402f90a7b714eddecd9ede1b72cc4",
+      "tests/sycl/moe_accum.cpp": "36f2710360117c0812bc586c3db2a9db71c3033df6d9fa92cf28616ed1a665eb"
+    },
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/implemented-mixed-scratch-lifetime-audit.md",
+    "report_budget": "12 KiB target, 20 KiB maximum; one coherent actual-code audit",
+    "main_reads_body_on_arrival": false,
+    "retention_consumer": "Main current borrowed-scratch model qualification; review after that consumer closes.",
+    "eligible_at_dispatch": true,
+    "task": "task_c01b2a59d061",
+    "dispatch": "ctx_82c1da94d7d4",
+    "terminal": "term_f92754a8-4719-405a-ab47-09b4eca46b53",
+    "model_evidence": "Explicit terminal argv gpt-6-luna, medium; worker-start existing-terminal effective preference fields are null, not independent provider verification.",
+    "report_sha256": "b7bcf0083048eabbc8942686f444f65c8328e2d8508b12d9468e5dba53609b99",
+    "report_bytes": 8229,
+    "completion_delivery": "delivery_4dc6273330c1",
+    "lifecycle_state": "accepted succeeded worker_done; worker-release retains this externally launched terminal without asserting process closure",
+    "review_task": "/root/review_implemented_mixed_scratch_20261019",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/implemented-mixed-scratch-native-review.json",
+    "review_sha256": "c42ab509662be7394ca0a25ff70b2e5ea337e64cbfd24760109f1b2555052438",
+    "reviewed_digest": [
+      "All seven supplied source hashes match; no concrete bounds/alias/USM/queue/lifetime defect established.",
+      "Gather fixtures do not qualify whole-helper failure paths, physical262144 context or RESTORE.",
+      "Main subsequently completed the117489-token owner/phase check at dc0fc0f9c and the closed clean cohort0 at b6d90afa7 (median845.9); the review itself did not verify those new results or Git ancestry."
+    ],
+    "review_point": "After current clean screen, retain only findings needed for short/full-context/failure/RESTORE qualification."
+  },
+  "out_of_core_sycl_hpc_scheduling_scope": {
+    "classification": "knowledge collection",
+    "schedulable_now": false,
+    "state": "reviewed conditional knowledge reference",
+    "question": "Transferable discrete-GPU out-of-core scheduling from non-LLM SYCL/HPC graph and sparse workloads: ownership-safe pipelining, batching and memory-pressure tradeoffs, beyond already indexed LLM tensor-byte or resident-GEMM surveys.",
+    "novelty": "The active topic index covers LLM-specific tile reuse, logical traffic, cache representation, lifetime and burst/reference methodology; this finite survey targets external-memory algorithm scheduling and original non-LLM implementation evidence.",
+    "prerequisites_met": [
+      "Current source/build and compact model resource/placement evidence are committed and available.",
+      "This knowledge-collection question needs published algorithm/source evidence, not unavailable GPU counters or an unselected local candidate.",
+      "The prior-report index and historical archive lookup are shared to reject duplicate mechanisms before writing a reference."
+    ],
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/out-of-core-sycl-hpc-scheduling.md",
+    "report_budget": "12 KiB target, 20 KiB maximum; finite coherent survey, not broad tile tuning",
+    "main_reads_body_on_arrival": false,
+    "retention_consumer": "Reusable scheduling knowledge only if native Luna-max review finds substantive nonduplicated applicability; Main retrieves sections only for a concrete future question.",
+    "eligible_at_dispatch": true,
+    "task": "task_f7242131cd8c",
+    "dispatch": "ctx_fdf2eff1f10a",
+    "terminal": "term_21383564-e3ab-4bff-981e-e0bf00ef11a1",
+    "model_evidence": "Explicit terminal argv gpt-6-luna medium; existing-terminal launch preference fields null, not independent provider verification.",
+    "report_sha256": "0ecae220bee94daf30237f8a32db36a9b48ea878c5f6e0be09dd3d4756245306",
+    "report_bytes": 20041,
+    "completion_delivery": "delivery_684679e687e6",
+    "lifecycle_state": "accepted succeeded worker_done; worker-release retains externally launched terminal without claiming process closure",
+    "review_task": "/root/review_out_of_core_sycl_20261019",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/out-of-core-sycl-native-review.json",
+    "review_sha256": "cd9b8ba5984db1467154aa8ea2d1e55a210f216437ebd574d4f754477cd9be48",
+    "reviewed_digest": {
+      "novelty": "Native review finds substantive independent external knowledge; Main has not read the collection body.",
+      "correction": "Grapin61% denotes graph accesses eliminated, not transfer bytes; NVIDIA measurements do not establish Intel performance.",
+      "retrieval": "After the frozen comparison closes and a measured transfer/active-set bottleneck is selected, retrieve only its relevant sections. No new follow-up scope currently eligible."
+    },
+    "review_point": "At the next concrete transfer or active-set scheduling selection; retire if superseded or no realistic consumer remains."
+  },
+  "bounded_expert_window_staging_scope": {
+    "classification": "decision support",
+    "schedulable_now": false,
+    "state": "reviewed; source-specific constraints carried into the prospective planner",
+    "question": "Audit a bounded per-layer expert bank for all-GPU mode10 windows:383 fixed admission slots plus one scratch slot, immutable512-expert RAM slab, same queue; use the existing512-slot path whenever full GPU residual residency is not admitted.",
+    "prerequisites_met": [
+      "Borrowed-scratch model owner/phase check passed at dc0fc0f9c; the matched117K clean screen closed at b6d90afa7 with median845.9 and committed futility stop.",
+      "Current code allocates1363148800B for512 GPU slots but consumes/dequantizes one expert at a time; a full immutable512-slot RAM upload slab already survives the checked outer lease.",
+      "With max stride2662400B,384 slots use1022361600B and release340787200B; observed remaining budget plus this saving admits the392888320B residual host tail without head release, pending exact runtime qualification.",
+      "This is a new capacity/scheduling design, not another grouping/row-metadata/precision survey. Main will keep supplied existing files immutable until the report returns."
+    ],
+    "source_commit": "034bddff8393e8c1c9cee89e9235807230a81ad2",
+    "source_files_sha256": {
+      "src/prefill/layer_major.inc": "61413caf069c1f6893af98603824da596bb5ba340a84e989a31674f3fcbd9aad",
+      "src/prefill/moe_window.inc": "43b9d5e4b86def6289eb1f45006b3ed147aef22b627548d931eebc9f434a6cb5",
+      "src/prefill/prefill.cpp": "7472160303b0a975cc68554bfcbbed85673b5a39509d880664fd0967addbf332",
+      "include/strata/core/expert_cache.hpp": "50f26589b6488e677ac6675b824c56d143dea081b46722508d332c58d9799b41",
+      "src/core/expert_cache.cpp": "7d9a7fe0c54e8d55addcc9e9d7117d0b3addd3da294feb3b78b0fde735ce806e",
+      "include/strata/prefill/layer_major_plan.hpp": "67bc25500ae777bfb387944a2415325868602b9da82aa945464b64b0a2b8b9fd",
+      "src/sycl/compat.cpp": "bd5a664f9a0bd91b0e8e2e59f67d0a2c38c81599613831abbd6e16ad98c01689"
+    },
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/expert-window-staging-contract.md",
+    "report_budget": "12KiB target,20KiB maximum",
+    "main_reads_body_on_arrival": false,
+    "retention_consumer": "Main next bounded expert-window implementation and qualification; review at its closure.",
+    "eligible_at_dispatch": true,
+    "task": "task_662adf0874a3",
+    "dispatch": "ctx_a5ed3bf1d394",
+    "terminal": "term_f92754a8-4719-405a-ab47-09b4eca46b53",
+    "model_evidence": "Reused settled explicit gpt-6-luna medium terminal for one second bounded related task; no new implementation worker.",
+    "report_sha256": "705ee8532eb613a7b838283bbe9c1d8378eb3f02f7c3234892c1ca863911c628",
+    "report_bytes": 11929,
+    "completion_delivery": "delivery_a3d723a2ff87",
+    "lifecycle_state": "accepted succeeded worker_done; externally launched terminal retained by worker-release, processAction none",
+    "review_task": "/root/review_implemented_mixed_scratch_20261019",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/expert-window-staging-native-review.json",
+    "review_sha256": "df94ed89de5ebffb67dca53a7ea2a109af2b5b97694fb056bd42670c4074b797",
+    "reviewed_digest": [
+      "Bank has384 total slots:383 permanent first-demand entries plus scratch slot383; retain the full512-expert immutable RAM slab.",
+      "The measured98304-row prefix remains partial and must keep512 slots. A new R_GPU=auto run is prospective; capacity arithmetic does not qualify it.",
+      "All-GPU placement alone is insufficient when the final window has1..8192 rows: normal FFN needs full residency. The subsequent CPU planner adds shape fallback; this reviewer did not inspect that later source.",
+      "Same-queue enqueue ordering and checked outer lease are required; actual staged DMA, failure retirement, model speed, physical262144 and RESTORE remain untested."
+    ],
+    "main_followup": "Query-only device properties at source8f5233059 report max_mem_alloc_size10132807680B, above the2406154240B proposed residual. CPU planner at cb74810ab now respects an explicit allocation cap and passes stricter hypothetical cap fallbacks. Engine staging, actual allocation/queue retirement, model speed, full-context/RESTORE remain untested."
   }
 }

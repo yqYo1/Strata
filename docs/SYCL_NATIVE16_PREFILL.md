@@ -1339,11 +1339,49 @@ accumulation order changes. This is Main-authored Strata code, based on the
 existing local planner/route interfaces and the reviewed source lifetime map;
 no XeStrata implementation is used.
 
-The prospective sequence is `check_mixed_scratch.py plan`, commit the result,
-then `build_engine.py rebuild-mixed`, followed by committed `smoke` and
-`validate` phases of `check_mixed_scratch.py`. Compare full gathered bits with
-the contiguous kernel and an independent host lookup, including banks crossed
-within one job,65536/65537 boundaries, partial windows, invalid maps, rejected
-spans, guards and immutable inputs. These component checks do not qualify
-whole-helper alias ownership, callbacks, short prefill, physical262144/RESTORE
-or model throughput; those remain required before adoption.
+Source034bddff8393 passed the CPU capacity plan and all five GPU gather cases,
+including banks crossed within one job,65536/65537 boundaries, partial windows,
+invalid maps, rejected spans, guards and immutable inputs. The same-build GU
+ownership, traced smoke,18-case validation and three-process timing also passed;
+the fused/separate wall-time ratio geomean was0.95335. This is component evidence.
+
+The first parameter-validated117489-token borrowed-scratch model request then
+closed normally, with mode10,98304 GPU residual rows, zero extra mixed allocation,
+thinking observed and no fresh GPU fault. All96 entry/retirement windows matched
+the48-layer81920+16384 schedule and expected extents. Its794.2tok/s first-use
+reading includes validation/logging and is not a clean speed comparison.
+The clean cohort0 then closed with795.0tok/s on first use and845.9,846.1,845.8
+on its three subsequent requests (median845.9, sample SD0.1528). All four actual
+117489-token request hashes match the81920-row screen at commit0dc815171;
+the new placement gains5.46% over its802.1tok/s subsequent median.
+Each placement has one independent process; this is not a repeated-process
+gain or an isolated kernel change. No fresh fault occurred. The prospective
+futility rule stops this configuration without cohorts1/2;1000tok/s is not met.
+Keep this opt-in capacity reference. Next measure remaining exact VRAM owners
+and the changed route/resource costs. The target-cache startup0.26GiB is rounded
+and cannot justify a release budget; head/dense composition remains excluded.
+Short prefill, broader numerical/task quality, full physical262144 context and
+RESTORE remain unqualified; this check does not establish default adoption or
+sustained decode performance.
+
+The selected next prototype reduces the temporary compressed-expert GPU bank
+from512 slots (1363148800B) to384 (1022361600B), while retaining the existing
+immutable512-expert RAM upload slab. Cache383 experts on first demand and use
+one scratch slot for remaining experts on the same in-order queue. This saves
+340787200B and admits all117488 residual rows in the pinned total-budget example,
+without releasing heads or reducing the512MiB allowance. Extra weight uploads
+between windows and their CPU/PCIe cost remain to be measured.
+The committed CPU admission/ticket planner passes exact-budget, explicit-prefix,
+stale-ticket and three short-tail fallback cases. It selects the original512-slot
+path when full GPU residency is unavailable or a final1..8192-row window would
+take normal FFN. Its262144-row case is capacity arithmetic, not physical-context
+qualification. The query-only check reports10132807680B as the B570
+max_mem_alloc_size, above the2406154240B residual. It submits no allocations or
+kernels, so actual allocation success remains untested. The planner now accepts
+an explicit per-allocation cap and must preserve it independently of total budget;
+CPU cap-boundary/fallback checks passed at sourcecb74810ab, including stricter
+hypothetical2GiB/1.5GiB devices, the exact residual-size boundary, invalid caps
+and explicit full-prefix rejection. These remain CPU planning checks.
+The planner is not yet connected to the engine; GPU staging and
+model performance are untested. Implement and qualify those before measuring
+this candidate or reporting a speedup.
