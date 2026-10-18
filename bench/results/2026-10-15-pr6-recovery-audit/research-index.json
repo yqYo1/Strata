@@ -350,5 +350,15 @@
     ],
     "question": "Derive source-grounded logical FLOP/data-volume bounds per current prefill stage and identify which hardware-ceiling measurements would change the next optimization decision. No repeated generic hardware/profiler survey.",
     "ownership": "Orca Luna read-only source/literature; Main continues owned A/B, no extra execution."
+  },
+  "decode_vram_rebuild_scope": {
+    "schedulable_now": true,
+    "prerequisites_met": [
+      "Current model long-prefill admission logs4.25-4.33GB free after MTP expert detach,1.36GB layer cache,1.61GB BF16 residual at78K.",
+      "Current source explicitly preserves decode cache/graphs while allocating additional long-prefill storage.",
+      "Hardware1000tok/s goal accepts longer>=64K input, but156K+ residual growth risks PCIe spill; release/rebuild feasibility affects placement tuning."
+    ],
+    "question": "Source-audit substantial decode-only owners and RAM-backed reconstructibility, including captured-pointer/graph lifetimes and partial-retention choices; no code/proposal import.",
+    "ownership": "Orca Luna read-only current src/include/configured entrypoint; exclude protected proposals and all XeStrata sources."
   }
 }
