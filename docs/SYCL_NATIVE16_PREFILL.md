@@ -1169,13 +1169,30 @@ At source`c9ad511e4f3ec8387327e6c86d8e6a9e02988eac`, the54 CPU ownership,
 tails, capture/non-capture, immutable inputs, invalid maps and checked exception
 retirement completed without a fresh driver fault. The current
 [component result](../bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json)
-records these gates. Three independent clean timing processes are running
-through `measure_down_scatter.py perf`; do not infer their closure from the
-preceding committed validation result. Inspect the owned job at
-`moe-down-scatter-component-v4/record.json` under the existing external
-measurement root before resuming. Reuse its process handle rather than launch
-a duplicate. Each process has a900s wall/2400s CPU deadline. Source and fixture
-inputs remain frozen until closure. No model route selects the cache.
+records these gates. Three independent clean timing processes subsequently
+closed normally, with630 successful timing events (90 warmup,540 measured),
+no fresh driver fault and unchanged boot. The original all-shape advance gate
+failed: the geometric-mean latency ratio is0.987055, above the required0.95,
+and160-row shapes exceed1.05. No model route selects the cache.
+
+| Expert rows | Row-cache/separate ratio, contiguous | Distributed |
+| --- | ---: | ---: |
+| 64 | 0.99792 | 0.86405 |
+| 160 | 1.37682 | 1.37339 |
+| 2334 | 0.95136 | 0.98721 |
+| 5963 | 0.87003 | 0.91436 |
+| 8192 | 0.83246 | 0.86564 |
+
+Every2334/5963/8192-row shape improves in each of the three processes. Their
+exploratory six-shape geometric mean is0.901956; it does not turn the failed
+all-shape gate into a pass. The next candidate should retain separate Down
+and accumulation below2334 rows and use the cache only for larger jobs.
+Commit that routing and its threshold/tail/diagnostic checks, then define a
+fresh component/model qualification plan before execution. This is a new
+candidate, not a retrospective threshold or a selected model route.
+The compact result retains every measured queue and wall sample, spread,
+original decision, checked outcomes and exact source/fixture identity; nominal
+case payloads and unused warmup durations are retired after verified extraction.
 
 Offline AOT inspection of engine`f004aabae84dbea46db59bdf98ec0413a8bf93b53c13e9b5b28e5c2ed045fc86`
 and fixture`e28d402742cfceca3d238142e2de1065b8bd1d6c0ca553ad87feb3052b8186e3`
@@ -1185,13 +1202,17 @@ policies/tiles. Scalar matrix versus row-cache text is15680/11648 bytes
 256GRF/SIMD16/eu_thread_count4, barrier_count2 and no per-thread memory-buffer
 descriptor. Code size and static metadata do not establish JIT behavior,
 complete ABI equivalence, occupancy, instruction-cache pressure or speed.
-Use the pending timing cohort to decide this candidate; raw logs/JIT and any
-extra comparison generation are reviewed only after owned work closes.
+The timing cohort above decides the uniform candidate; code-size reduction
+alone did not avoid its small-job regression. Review raw logs/JIT after this
+owned closure. The candidate build has one immediate consumer: the forthcoming
+selective-routing comparison; retain the validated8989 engine/fixture fallback
+until replacement qualification or explicit comparison closure.
 
 While this cohort is frozen, the benchmark client adds minimum actual-input
 sizes98304 and131072 in source`10a18c2e7`; its source files are outside this
-component build/run's pinned inputs. Run the maintained client/evidence tests
-after the owned GPU cohort closes, before using either size. The first longer
+component build/run's pinned inputs. After closure, the maintained client,
+evidence and fail-fast suites passed6+14+7 tests, including the new sizes'
+context boundary and actual-count checks. The first longer
 screen should use98304 with the current131072 context/resident-KV setting,
 keeping the selected engine route, chunk and other placement settings fixed.
 This asks whether amortizing fixed work over more input improves throughput;

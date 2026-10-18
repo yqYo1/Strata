@@ -71,8 +71,6 @@ def compact_result():
         retention='Keep all measured queue/wall samples and original decision. Warmup durations are unused by selection and have no next consumer; retain their successful count, not their repeated payloads. Completed nominal case detail is recoverable from the pinned fixture and preceding committed phase results.')
     ownership, smoke, validation = (by_mode[m] for m in ('ownership', 'smoke', 'validate'))
     r['validation_evidence'] = dict(ownership_cases=len(ownership),
-        ownership_max_errors={k: max(e[k] for e in ownership) for k in
-            ('missing', 'multiple') if all(k in e for e in ownership)},
         metadata_max_errors={k: max(e[k] for e in ownership) for k in
             ('metadata_missing', 'metadata_multiple', 'metadata_outside_tile')},
         traced_smoke_events=len(smoke), admission_rejects=[e['rejected'] for e in smoke if e['kind'] == 'admissions'],
