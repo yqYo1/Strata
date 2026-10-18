@@ -230,7 +230,7 @@
       "prerequisite": "QSA comparison closed; current-path profile and exact planned-job census are next, with source/config frozen before build/run.",
       "observer": "Use existing coarse/QSA/CPU-wait profiles. New per-window host metadata census adds no tensor readback or GPU work and reconciles planned jobs with final retired totals.",
       "limitations": "Diagnostic timing and requested DMA bytes, not clean speed, physical bandwidth/saturation or an additive critical-path partition.",
-      "state": "Prepared committed official64K-minimum/actual78K diagnostic, source51a6f70a, running with owned finite budgets; inspect the existing handle/receipt, do not launch another."
+      "state": "Closed successfully:48 windows/21514 planned and retired jobs, source51a6f70a; no fresh faults. See moe-window-census-current.json."
     },
     "grouped_candidate": {
       "schedulable_now": false,
@@ -243,7 +243,20 @@
     "retention": "Keep report/review pair only through this census and ensuing grouping decision; no further generic grouped-GEMM survey.",
     "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/moe-grouped-native16-feasibility.md",
     "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/moe-grouped-native16-feasibility-review.json",
-    "retained_report_bytes": 19397
+    "retained_report_bytes": 19397,
+    "census_evidence": {
+      "result": "moe-window-census-current.json",
+      "jobs": 21514,
+      "small_jobs_below128": 11764,
+      "small_job_percent": 54.68067305010691,
+      "small_arithmetic_row_percent": 0.6272891438283408,
+      "extra_split_jobs": 3030,
+      "GEMM_submit_cpu_s": 3.361248519,
+      "main_CPU_s": 108.695958514,
+      "explicit_wait_CPU_s": 76.885899749,
+      "outside_wait_CPU_s": 31.810058765,
+      "decision": "Grouping stays conditional. Removing only all counted GEMM submit CPU costs at most2.95% of this114s diagnostic wall under no-overlap/other-cost-fixed assumptions; this does not bound grouped device-kernel gains. Prioritize current QSA global-memory/resource attribution over another grouping survey."
+    }
   },
   "closed_gdn_decision": {
     "implementation": "../../../src/prefill/sycl/gdn_chunk64.cpp",
