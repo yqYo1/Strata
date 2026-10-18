@@ -71,8 +71,8 @@ def pin(root, prefixes):
 
 def main():
     guards.require(len(sys.argv) == 1 or sys.argv[1:] in
-                   (['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn'], ['rebuild-down'], ['rebuild-ordered'], ['rebuild-submission'], ['rebuild-gu'], ['rebuild-mixed']),
-                   'use build_engine.py [rebuild|rebuild-attention|rebuild-gemm|rebuild-gdn|rebuild-down|rebuild-ordered|rebuild-submission|rebuild-gu|rebuild-mixed]')
+                   (['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn'], ['rebuild-down'], ['rebuild-ordered'], ['rebuild-submission'], ['rebuild-gu'], ['rebuild-mixed'], ['rebuild-expert-bank']),
+                   'use build_engine.py [rebuild|rebuild-attention|rebuild-gemm|rebuild-gdn|rebuild-down|rebuild-ordered|rebuild-submission|rebuild-gu|rebuild-mixed|rebuild-expert-bank]')
     rebuild = len(sys.argv) == 2
     attention = sys.argv[1:] == ['rebuild-attention']
     targets = ['strata']
@@ -95,8 +95,10 @@ def main():
         targets += ['sycl_submission_test']
     if sys.argv[1:] == ['rebuild-gu']:
         targets += ['sycl_moe_gu_swiglu_bench']
-    if sys.argv[1:] == ['rebuild-mixed']:
+    if sys.argv[1:] in (['rebuild-mixed'], ['rebuild-expert-bank']):
         targets += ['sycl_moe_accum_test', 'sycl_moe_gu_swiglu_bench', 'sycl_moe_down_scatter_bench']
+    if sys.argv[1:] == ['rebuild-expert-bank']:
+        targets += ['sycl_expert_bank_test']
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
@@ -148,6 +150,7 @@ def main():
                           'tools/sycl/measure_down_scatter.py',
                           'tools/sycl/measure_gu_swiglu.py',
                           'tools/sycl/check_mixed_scratch.py',
+                          'tools/sycl/check_expert_bank.py',
                           'tools/sycl/measurement_guards.py', str(SETTINGS.relative_to(P)),
                           str(BASELINE.relative_to(P))])
         baseline = json.loads(BASELINE.read_text())

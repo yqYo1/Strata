@@ -185,7 +185,21 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
         if (should_stop && should_stop()) { err = "cancelled"; return false; }
         const auto& job = owner.routes->jobs()[index];
         if (job.expert != loaded) {
-            const int32_t slot = m.host_res[size_t(layer * NE + job.expert)];
+            int32_t slot = -1;
+            if (owner.expert_slots) {
+                if (m.layer_major_residual.gpu_rows != m.layer_major_residual.rows ||
+                    !owner.scratch_mixed || m.copy != m.cs)
+                    throw std::invalid_argument("prefill expert bank: incomplete residual or queue contract");
+                hp::Host host(hp::upload_submit);
+                const auto ticket = detail::stage_expert_bank(*owner.expert_slots, *m.cache,
+                    owner.expert_slab, owner.expert_slab_bytes, owner.expert_stride,
+                    layout.blob_bytes(layer), job.expert, m.cs);
+                slot = ticket.slot;
+                if (ticket.upload) {
+                    ++owner.staged_uploads; ++stats_.experts_streamed;
+                    owner.staged_upload_bytes += layout.blob_bytes(layer);
+                } else ++owner.staged_hits;
+            } else slot = m.host_res[size_t(layer * NE + job.expert)];
             if (slot < 0) { err = "prefill MoE accumulator: missing layer expert"; return false; }
             const auto* blob = m.cache->device_slot(slot);
             sycl_backend::validate_device_span(blob, size_t(layout.blob_bytes(layer)), queue);

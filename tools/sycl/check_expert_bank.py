@@ -23,6 +23,113 @@ def digest(path):
         return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
+def gpu_check(mode):
+    root = B/'moe-expert-bank-gpu-v1'
+    with (B/'owned-v0141-measurement.lock').open('a+') as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        guards.no_model_owners([])
+        raw = subprocess.check_output(['git','show','HEAD:'+str(RESULT.relative_to(P))],cwd=P)
+        record = json.loads(raw)
+        guards.require(raw == RESULT.read_bytes() and record['passed'] and record['complete'] and
+            record['ownership_closed'] and not record['active'], 'commit passed CPU gate first')
+        for name in ('include/strata/prefill/expert_bank_plan.hpp',
+                     'include/strata/prefill/layer_major_plan.hpp','tests/expert_bank_plan.cpp'):
+            guards.require(digest(P/name)==record['source_sha256'][name], 'CPU-tested planner changed: '+name)
+        build = json.loads((B/'main-native-gdn-engine/record.json').read_text())
+        guards.require(build['complete'] and build['passed'] and build['ownership_closed'] and
+            not build['active'], 'closed current build required')
+        for group in [build['project'],*build['dependencies']]:
+            for name,expected in group['source_sha256'].items():
+                guards.require(digest(Path(group['root'])/name)==expected, 'build input changed: '+name)
+        fixture = build['fixtures']['sycl_expert_bank_test']
+        guards.require(digest(fixture['path'])==fixture['sha256'], 'expert-bank fixture changed')
+        revision = subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip()
+        names = ('tools/sycl/check_expert_bank.py','tools/sycl/measurement_guards.py',
+            'tools/sycl/measurement_owner.py','tools/sycl/measurement_environment.json',
+            'include/strata/prefill/expert_bank_upload.hpp','tests/sycl/expert_bank.cpp')
+        pins = {}
+        for name in names:
+            raw = subprocess.check_output(['git','show',revision+':'+name],cwd=P)
+            guards.require(raw==(P/name).read_bytes(), 'commit exact GPU check input: '+name)
+            pins[name] = hashlib.sha256(raw).hexdigest()
+        if mode == 'smoke':
+            guards.require(not root.exists() and 'gpu' not in record, 'inspect existing bank GPU owner')
+            root.mkdir(mode=0o700)
+            for name in ('tmp','cache'): (root/name).mkdir()
+            gpu = dict(source_commit=revision,source_sha256=pins,build_source_commit=build['source_commit'],
+                fixture=fixture,CPU_gate_source=record['source_commit'],checks=[],
+                limits='Production upload helper/cache, synthetic byte readers, private maps and caller unwind only. No real provider enqueue fault injection, model arithmetic, speed, session rollback or physical262144/RESTORE qualification.')
+        else:
+            gpu = record['gpu']
+            guards.require(gpu['mode']=='smoke' and gpu['passed'] and gpu['ownership_closed'] and
+                gpu['build_source_commit']==build['source_commit'] and gpu['fixture']==fixture and
+                gpu['source_sha256']==pins, 'same-source passed smoke required')
+        guards.require(not (root/('owned-'+mode)).exists(), 'inspect existing GPU command')
+        settings = json.loads((P/'tools/sycl/measurement_environment.json').read_text())
+        for name,item in settings['runtime_elfs'].items():
+            guards.require(digest(name)==item['sha256'], 'runtime changed: '+name)
+        env = dict(settings['environment'],TMPDIR=str(root/'tmp'),XDG_CACHE_HOME=str(root/'cache'))
+        if mode == 'validate':
+            env['UR_ENABLE_LAYERS'] = 'UR_LAYER_PARAMETER_VALIDATION'
+            env.pop('UR_LOG_TRACING',None)
+        guards.driver_guard()
+        boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+        journal = subprocess.check_output(['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True)
+        cursor = next(s.split(': ',1)[1] for s in journal.splitlines() if s.startswith('-- cursor: '))
+        gpu.update(mode=mode,complete=False,passed=False,GPU_executed=True,
+            environment_reference='tools/sycl/measurement_environment.json',
+            environment_overrides={k:v for k,v in env.items() if settings['environment'].get(k)!=v},
+            removed_environment_keys=[k for k in settings['environment'] if k not in env])
+        owner = None
+
+        def persist():
+            (root/'record.json').write_text(json.dumps(dict(gpu,
+                active=bool(owner and owner.active is not None),
+                owned_commands=owner.commands if owner else []),indent=2)+'\n')
+
+        owner = supervision.Owner(root/('owned-'+mode),persist)
+        try:
+            entry,out,err = owner.run('expert-bank-'+mode,[fixture['path'],'--'+mode],env,P,
+                wall=180,cpu=600,rss_cap=8<<30,file_cap=64<<20,text_cap=64<<20,total_cap=128<<20)
+            stdout,stderr = out.read_text(),err.read_text()
+            guards.require(supervision.closed(entry) and entry.get('exit_code')==0 and
+                not re.search('UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed',stderr),
+                'GPU fixture failed: '+(stderr+stdout)[-5000:])
+            cases = [dict(token.split('=',1) for token in line.split()[1:])
+                for line in stdout.splitlines() if line.startswith('expert_bank_case ')]
+            expected = ([(4,256,6,2,18,6,48,0),(1,256,6,1,12,0,24,0),(4,256,6,1,5,0,10,1)]
+                if mode=='smoke' else [(383,256,512,1,642,382,2048,0),
+                (384,256,512,2,1282,766,4096,0),(512,256,512,1,513,511,2048,0),
+                (384,2662400,512,1,641,383,2048,0)])
+            guards.require(len(cases)==len(expected) and 'expert_bank_fixture PASS' in stdout,
+                'incomplete bank fixture cases')
+            for case,values in zip(cases,expected):
+                keys=('slots','stride','experts','layers','uploads','hits','consumers','unwind')
+                guards.require(tuple(int(case[k]) for k in keys)==values and
+                    int(case['status'])==0 and int(case['admission_rejections'])==7 and all(
+                    case[k]=='PASS' for k in ('immutable_slab','guards','private_map','checked_drain')),
+                    'wrong bank case evidence: '+str(case))
+            gpu['checks'].append(dict(mode=mode,cases=cases,passed=True))
+            guards.require(all(digest(P/n)==h for n,h in pins.items()), 'GPU-check inputs changed')
+            gpu.update(complete=True,passed=True)
+        except BaseException as error:
+            gpu['error'] = str(error)
+        finally:
+            gpu['ownership_closed'] = owner.active is None and all(supervision.closed(c) for c in owner.commands)
+            gpu['boot_unchanged'] = boot == Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+            after = subprocess.check_output(['journalctl','-k','-b','--after-cursor',cursor,'--no-pager'],text=True)
+            gpu['fresh_faults'] = [s for s in after.splitlines() if re.search(
+                r'(?i)(gpu.*(?:hang|fault|reset|wedg)|xe.*(?:error|fault|reset|timeout))',s)]
+            try: gpu['driver_after'] = guards.driver_guard()
+            except Exception as error:
+                gpu['driver_error'] = str(error);gpu['passed'] = False
+            gpu['passed'] = bool(gpu['passed'] and gpu['ownership_closed'] and gpu['boot_unchanged'] and not gpu['fresh_faults'])
+            persist();record['gpu'] = gpu
+            RESULT.write_text(json.dumps(record,indent=2)+'\n')
+        print(json.dumps({k:gpu.get(k) for k in ('mode','complete','passed','ownership_closed','error')}))
+        return 0 if gpu['passed'] else 1
+
+
 def query_limits():
     """Reuse the maintained query-only probe; submit no work or allocations."""
     root = B / 'moe-expert-bank-limits-v2'
@@ -118,6 +225,8 @@ def query_limits():
 
 
 def main():
+    if sys.argv[1:] in (['smoke'],['validate']):
+        return gpu_check(sys.argv[1])
     if sys.argv[1:] == ['limits']:
         return query_limits()
     guards.require(sys.argv[1:] == ['plan'], 'use check_expert_bank.py plan')

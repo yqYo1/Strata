@@ -1382,6 +1382,12 @@ an explicit per-allocation cap and must preserve it independently of total budge
 CPU cap-boundary/fallback checks passed at sourcecb74810ab, including stricter
 hypothetical2GiB/1.5GiB devices, the exact residual-size boundary, invalid caps
 and explicit full-prefix rejection. These remain CPU planning checks.
-The planner is not yet connected to the engine; GPU staging and
-model performance are untested. Implement and qualify those before measuring
-this candidate or reporting a speedup.
+The default-off STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS=384 route now connects
+that plan to the engine. Production and the new synthetic GPU fixture share
+the same checked upload helper. Its private map is published after accepted
+enqueue, with source/cache/status owners retained through the existing checked
+lease. The original path still publishes all512 experts after its initial drain.
+Staged requested H2D bytes/hits are counted separately: its uploads occur inside
+the MoE dependency path, not the initial bulk-upload interval.
+Compilation and GPU checks are pending; model performance is untested. Do not
+report this candidate as a speedup or default adoption before those gates.
