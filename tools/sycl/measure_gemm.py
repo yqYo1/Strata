@@ -115,9 +115,18 @@ def main():
                 plans = [e for e in events if e.get('kind') == 'plan']
                 samples = [e for e in events if e.get('kind') == 'sample']
                 validations = [e for e in events if e.get('kind') == 'validation']
+                validated = {v['ordinal']: v for v in validations}
+                for sample in samples:
+                    v = validated.get(sample['ordinal'])
+                    sample['status'] = ('PASS' if v and v['route'] == sample['route'] and v['status'] == 'PASS'
+                        and all(v.get(k) for k in ('all_finite', 'closed_form_oracle', 'guards', 'inputs_immutable'))
+                        else 'UNVALIDATED')
                 checked = dict(phase=mode, command=command, plan=plans[0] if plans else None, process=process,
                     exit_code=entry.get('exit_code'), ownership_closed=supervision.closed(entry), passed=False,
                     validation_count=len(validations), native_result=result[-1] if result else None,
+                    submit_clock_inversions=[dict(ordinal=s['ordinal'], warmup=s['warmup'], event_index=i,
+                        timestamps_ns=v, start_minus_submit_ns=v[1]-v[0])
+                        for s in samples for i,v in enumerate(s['device_timestamps_ns']) if v[0]>v[1]],
                     samples=[s for s in samples if not s['warmup'] or entry.get('exit_code') != 0])
                 record['checks'].append(checked)
                 persist()
@@ -151,8 +160,7 @@ def main():
                             production_selected=(('compact' in route) == (plan['T'] < 128)),
                             per_process_median_kernel_TFLOPs=medians, median_kernel_TFLOPs=statistics.median(medians),
                             sample_stdev_process_medians=statistics.stdev(medians)))
-            record['full_submit_clock_order_qualified'] = all(s['profiling_contract_valid']
-                for c in record['checks'] for s in c['samples'])
+            record['full_submit_clock_order_qualified'] = not any(c['submit_clock_inversions'] for c in record['checks'])
             record.update(complete=True, passed=True)
         except BaseException as error:
             record['error'] = str(error)
