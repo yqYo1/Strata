@@ -46,7 +46,8 @@ new experiment does not clear it.
 - Before a build or measurement, verify committed inputs, the existing job's
   ownership and the comparison plan. Identify the retained known-good build and
   any imminent comparison build across all project worktrees before creating
-  another generation. Do not measure uncommitted engine changes.
+  another generation. Preserve the validated fallback before a rebuild can
+  overwrite its output path. Do not measure uncommitted engine changes.
 - Before integration, check provenance and decide each inference component
   separately, including prefill and decode. Preserve required non-inference
   functions; merging history or a report alone does not integrate an implementation.
@@ -175,6 +176,15 @@ are outside this work's scope.
   the actual layer operations, tensor shapes, precision and data movement.
   Device-specific compiler flags and binaries are allowed for this PC; record
   them with the measured source and build recipe.
+- For host-side attribution, use disjoint accounting regions and report CPU
+  time inside GPU waits, transfer preparation, submission and unclassified
+  time separately. Check nesting, completeness and exception/error counts;
+  an invalid or incomplete profile does not qualify an attribution. Report
+  observer settings and overhead limits, and collect clean speed separately.
+  If a profiler cannot collect under the current permissions, preserve that
+  failed capability result and use bounded source instrumentation where useful.
+  Keep unavailable hardware metrics unknown; a profiler refusal does not resolve
+  the bottleneck or justify stopping independent tuning work.
 - Follow [docs/BENCHMARKS.md](docs/BENCHMARKS.md). Use the pinned upstream
   `bench.sh` for standard comparisons and the same maintained extension on both
   engines for added workloads. Adoption evidence includes the long-input and
@@ -328,6 +338,12 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   source, recipe and compact measurement evidence instead.
   A newer build becomes the retained known-good build only after its applicable
   validation passes; a failed or unfinished build does not replace it.
+  Before reusing its build directory or output filename, preserve and hash-check
+  the last validated executable and any required same-build fixture at a named
+  external fallback path. Count this retained generation in the same quota;
+  record its source/recipe and qualification consumer in the existing result.
+  Retire the fallback only after replacement qualification or comparison closure
+  explicitly selects the validated generation to keep.
   Retire the extra generation when its comparison ends; creating a new build
   must not silently extend the lifetime of every previous experiment's binary.
 - Before building a measurement executable or running a fixture, commit the

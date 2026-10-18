@@ -71,6 +71,14 @@ extra after verifying provenance. Record this in the existing compact result;
 do not create a separate build archive or progress backup. An unresolved source
 recovery problem remains an explicit provenance hold until reconciled.
 
+A rebuild that reuses the current output path must not overwrite the last
+validated build before a fallback is preserved. Hash-check the retained
+executable and required same-build fixtures at a named external path, record
+their source/recipe and next qualification consumer in the current result, and
+count that generation in the same retention quota. A successful compilation
+alone does not qualify the replacement. At qualification or comparison closure,
+explicitly select the validated generation to keep and retire the extra.
+
 **Commit the measured code before treating a binary as disposable.** Before
 building a measurement executable or running a fixture, pin a reachable source
 commit, all local changes and generated source inputs, compiler/dependency
