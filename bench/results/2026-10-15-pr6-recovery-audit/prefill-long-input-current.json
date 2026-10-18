@@ -1,6 +1,6 @@
 {
-  "mode": "qsa-long-input-expert-bank-64k-check",
-  "source_commit": "333a9768aba15c758397e760e4afeae0e0124157",
+  "mode": "qsa-long-input-expert-bank-64k",
+  "source_commit": "ca2ee80eb794f619d958a3d358be3a9628fbdcfe",
   "build_source_commit": "1222e27d01f32c5bb31f574ff4b143c489a3bcf1",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
@@ -61,7 +61,7 @@
     "STRATA_SYCL_SELECT_CYCLIC": "0",
     "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
     "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-64k-check-v1/cache",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-64k-v1/cache",
     "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
     "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
     "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
@@ -74,14 +74,8 @@
     "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
     "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
     "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
-    "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
-    "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
-    "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
-    "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-    "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
-    "STRATA_TRACE": "1",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-64k-check-v1/tmp",
-    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-64k-check-v1",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-64k-v1/tmp",
+    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-64k-v1",
     "ZES_ENABLE_SYSMAN": "0",
     "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
     "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
@@ -106,7 +100,7 @@
       "--expert-cache",
       "128",
       "--expert-profile",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-64k-check-v1/expert-profile.bin",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-64k-v1/expert-profile.bin",
       "--expert-cache-per-layer",
       "--pool-workers",
       "5",
@@ -145,7 +139,7 @@
       "strata"
     ],
     "host": "127.0.0.1",
-    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-64k-check-v1/engine.stderr",
+    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-64k-v1/engine.stderr",
     "engine_silence_s": 480,
     "parallel": 1,
     "open_browser": false,
@@ -155,11 +149,11 @@
     "/bin/sh",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
     "--config",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-64k-check-v1/config.json",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-64k-v1/config.json",
     "--port",
-    "48683",
+    "51085",
     "--runs",
-    "1",
+    "4",
     "--prefill-only",
     "--prefill-tokens",
     "65536",
@@ -170,16 +164,16 @@
     "--ready-timeout",
     "600",
     "--out",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-64k-check-v1/bench"
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-64k-v1/bench"
   ],
   "reference": {
     "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-softmax-measurement-inputs-v1.json",
     "sha256": "3792c36462e333816ce5d5d9ac39f3dcc13809939d8d3133c570d8945257d1dd"
   },
-  "config_sha256": "c3a541e04dee45e83e08de8072463fcac952486b3a54a842ae857c5c33cd1aad",
+  "config_sha256": "2ca75b7a13e764f702ee6bf745c450be0a4dfb5c4e914f2581ac7eab0166fe02",
   "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
-  "complete": true,
-  "passed": true,
+  "complete": false,
+  "passed": false,
   "active": false,
   "model_quality_qualified": false,
   "physical262144_RESTORE_qualified": false,
@@ -248,648 +242,11 @@
     "build_source_commit": "1222e27d01f32c5bb31f574ff4b143c489a3bcf1",
     "limits": "Production upload helper/cache, synthetic byte readers, private maps and caller unwind only. No real provider enqueue fault injection, model arithmetic, speed, session rollback or physical262144/RESTORE qualification."
   },
-  "previous_screen": {
-    "commit": "333a9768aba15c758397e760e4afeae0e0124157",
+  "preceding_long_input_result": {
+    "commit": "ca2ee80eb794f619d958a3d358be3a9628fbdcfe",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json",
-    "mode": "qsa-long-input-expert-bank",
-    "passed": true,
-    "error": null
+    "mode": "qsa-long-input-expert-bank-64k-check"
   },
   "source_count": 110,
-  "source_aggregate_sha256": "a7a57376655645833abfee48f470b7b4284c574ffbcf01074f4d142073adffdf",
-  "exit_code": 0,
-  "requests": [
-    {
-      "run": 0,
-      "ok": true,
-      "eligible": true,
-      "actual_prompt_tokens": 78451,
-      "actual_read_tokens": 78451,
-      "actual_reused_tokens": 0,
-      "generated_tokens": 24,
-      "thinking_requested": true,
-      "reasoning_observed": true,
-      "stream_complete": true,
-      "request_sha256": "b592f434eb31230e4aaadcc163951732a26b553480a4411e6eb2bc82bcb9b827",
-      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
-      "ttft_s": 94.573,
-      "total_s": 96.285,
-      "prompt_tps": 833.8,
-      "prompt_ms": 94086.6,
-      "decode_tps": 13.3,
-      "decode_ms": 1808.1,
-      "prompt_tps_source": "engine",
-      "decode_tps_source": "engine",
-      "drafts_offered": 21,
-      "drafts_accepted": 16,
-      "finish_reason": "length",
-      "err": null,
-      "eligibility_errors": []
-    }
-  ],
-  "engine_exit_code": 0,
-  "native_identity": {
-    "pid": 1765181,
-    "start_ticks": 69592485,
-    "sid": 1765154
-  },
-  "route_selection": [],
-  "gu_route": {
-    "selection": [
-      "[native16-gu] fusion=large min_rows=2334"
-    ],
-    "per_request_counts": [
-      {
-        "fused_jobs": "4985",
-        "fused_rows": "33892825",
-        "separate_jobs": "16529",
-        "min_rows": "2334"
-      }
-    ],
-    "limits": "Actual submitted/completed route counts; removed logical bytes are not physical VRAM traffic."
-  },
-  "down_route": {
-    "selection": [
-      "[native16-down] fusion=0 min_rows=2334"
-    ],
-    "per_request_counts": [
-      {
-        "fused_jobs": "0",
-        "fused_rows": "0",
-        "separate_jobs": "21514",
-        "min_rows": "2334"
-      }
-    ]
-  },
-  "moe_window_admission": [
-    "strata MoE window configuration: requested_mode=10 effective_mode=10 maximum_rows=78450 mixed_fp16_bytes=0"
-  ],
-  "residual_placement": [
-    "strata prefill: layer-major candidate, tokens=78450 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=1606656000 residual_gpu_rows=78450 residual_gpu=1606656000 residual_host=0 residual_staging=0 layer_cache=1022361600; extra allocations, GPU headroom=536870912, RAM headroom=8589934592"
-  ],
-  "mixed_scratch_route": {
-    "backing": [
-      "strata MoE mixed banks: storage=scratch primary_bytes=335544320 tail_bytes=66119680 tail_offset=1022974976 extra_allocation_bytes=0 phase=FFN_only_after_attention_drain"
-    ],
-    "owner_columns": [
-      "layer",
-      "first",
-      "rows",
-      "primary_bytes",
-      "region_bytes",
-      "tail_offset",
-      "tail_bytes",
-      "residual_bytes"
-    ],
-    "owner_samples": [
-      [
-        0,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        1,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        2,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        3,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        4,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        5,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        6,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        7,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        8,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        9,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        10,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        11,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        12,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        13,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        14,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        15,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        16,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        17,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        18,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        19,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        20,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        21,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        22,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        23,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        24,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        25,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        26,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        27,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        28,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        29,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        30,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        31,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        32,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        33,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        34,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        35,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        36,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        37,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        38,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        39,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        40,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        41,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        42,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        43,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        44,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        45,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        46,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ],
-      [
-        47,
-        0,
-        78450,
-        335544320,
-        1180698624,
-        1022974976,
-        66119680,
-        1606656000
-      ]
-    ],
-    "retired_windows": 48,
-    "all_direct_owners_and_checked_drains": true
-  },
-  "expert_bank_route": {
-    "selections": [
-      {
-        "requested_slots": "384",
-        "effective_slots": "384",
-        "staged": "1",
-        "host_slab_bytes": "1363148800",
-        "device_bytes": "1022361600",
-        "residual_gpu_rows": "78450",
-        "allocation_limit_bytes": "10132807680",
-        "general_map": "private_scratch_never_published"
-      }
-    ],
-    "per_request_totals": [
-      {
-        "uploads": "18484",
-        "requested_H2D_bytes": "37750041600",
-        "permanent_hits": "0",
-        "permanent_slots": "261",
-        "total_slots": "384",
-        "final_drain": "checked"
-      }
-    ],
-    "limits": "Requested raw expert H2D payload, not measured PCIe wire traffic; helper/full-request checked drains qualify this bounded model route only."
-  },
-  "moe_window_work": {
-    "per_request_totals": [
-      {
-        "windows": "48",
-        "dequants": "18484",
-        "jobs": "21514",
-        "source_H2D_bytes": "150624000",
-        "GPU_resident_windows_only": "1",
-        "operator_max": "8192",
-        "maximum_rows": "78450"
-      }
-    ],
-    "limits": "Completed work counts and requested source-map H2D bytes; not physical traffic, arithmetic saturation or additive wall time."
-  },
-  "gdn_column_route": [
-    "strata prefill: GDN columns=4 workgroups=192 lanes=128 epilogue=GPU_FP32_same_order scratch=existing_y"
-  ],
-  "qsa_route": [
-    "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=161297312; source=resident-Mode0 score_pitch=33 operand_layout=row-major softmax=parallel-exp-ascending-sum"
-  ],
-  "cached_query_route": [
-    "strata prefill: QSA cached_query=1 grf_policy=default source=qualified-component"
-  ],
-  "k_staging_route": [
-    "strata prefill: QSA k_staging=typed4 parallel_rows=1 source=qualified-component"
-  ],
-  "v_staging_route": [
-    "strata prefill: QSA v_staging=typed4 layout=row-major source=qualified-component"
-  ],
-  "ownership_closed": true,
-  "fresh_faults": [],
-  "boot_unchanged": true,
-  "driver_after": {
-    "pci": "/sys/bus/pci/devices/0000:05:00.0",
-    "driver": "xe",
-    "vendor": "0x8086",
-    "device": "0xe20c",
-    "kernel": "7.0.0-38-generic",
-    "devcoredump": false
-  }
+  "source_aggregate_sha256": "a7a57376655645833abfee48f470b7b4284c574ffbcf01074f4d142073adffdf"
 }
