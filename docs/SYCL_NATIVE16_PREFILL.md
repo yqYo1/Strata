@@ -1241,4 +1241,8 @@ improvement at every>=2334-row shape in each process. A3% component gain warrant
 only a subsequent matched model experiment; the prior uniform candidate's
 failed5% gate is unchanged. Requalify the same-build GU fixture before the next
 model comparison because its shared adapter translation unit changed during
-the previous Down work. None of these new gates has executed yet.
+the previous Down work. Source45c387d11 built successfully;54 ownership,45
+traced smoke and110 full correctness events passed in closed owned processes,
+including startup flag0/large, threshold/tail/fallback checks and mixed map
+masks. No fresh driver fault occurred. Clean selective timing and same-build
+GU requalification remain pending; no new model speed or adoption is claimed.

@@ -1449,8 +1449,8 @@
   },
   "qsa_kv_cache_representation_long_context_scope": {
     "classification": "knowledge_collection",
-    "schedulable_now": true,
-    "state": "Eligible source/literature collection; separate from current Down audit and exp2 contract.",
+    "schedulable_now": false,
+    "state": "Orca knowledge collection active; Main does not read its body on arrival.",
     "question": "For Strata's QSA path with 2 KV heads, 24 query heads and dimension 256, compare supported long-context K/V representations around the current resident, unrotated INT8 cache. Examine grouped/per-channel and per-token scaling, sub-8-bit formats, scale/zero-point metadata cost, dequantization placement, rotary/layout constraints, and compatibility with the actual SGLang/vLLM numerical contract. Identify the strongest counterexamples and the source or measured evidence needed before any 262144-context implementation decision. Keep cache representation separate from cross-query sparsity, residual-state precision, and softmax math.",
     "novelty": "The sparse cross-query report studies selected-set ordering, union blocks and inverse schedules; the low-bit report studies persistent HC4 residual/hidden-state storage; QSA math reports cover exp2 and normalizer scheduling. None targets K/V cache representation and its metadata/dequantization tradeoff. The current tile-programming collection is a broader execution-method reference and explicitly says not to repeat a tile survey.",
     "prerequisites_met": [
@@ -1468,6 +1468,10 @@
     },
     "main_reads_body_on_arrival": false,
     "retention_consumer": "Retrieve only if Main later selects a QSA K/V representation, dequantization placement or long-context cache-capacity comparison. Use the report to frame the exact source contract and correctness/performance gates; do not read it on arrival or treat it as a candidate implementation.",
-    "review_point": "At the next Main decision that selects or rejects a K/V cache representation for QSA/full-context work. Then retain only reusable findings in the existing compact result and retire transactional report/review material if no current consumer remains."
+    "review_point": "At the next Main decision that selects or rejects a K/V cache representation for QSA/full-context work. Then retain only reusable findings in the existing compact result and retire transactional report/review material if no current consumer remains.",
+    "task": "task_58f846b4c165",
+    "dispatch": "ctx_876800e9149b",
+    "terminal": "term_344908d0-3a3c-4132-9b50-2248f383b86c",
+    "model_evidence": "Custom gpt-6-luna medium terminal, updates disabled and named report directory writable; tui-idle satisfied and worker-start observed turn_started."
   }
 }
