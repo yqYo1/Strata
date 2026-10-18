@@ -1676,7 +1676,7 @@
   "bounded_expert_window_staging_scope": {
     "classification": "decision support",
     "schedulable_now": false,
-    "state": "completed awaiting native review",
+    "state": "reviewed; source-specific constraints carried into the prospective planner",
     "question": "Audit a bounded per-layer expert bank for all-GPU mode10 windows:383 fixed admission slots plus one scratch slot, immutable512-expert RAM slab, same queue; use the existing512-slot path whenever full GPU residual residency is not admitted.",
     "prerequisites_met": [
       "Borrowed-scratch model owner/phase check passed at dc0fc0f9c; the matched117K clean screen closed at b6d90afa7 with median845.9 and committed futility stop.",
@@ -1707,6 +1707,15 @@
     "report_bytes": 11929,
     "completion_delivery": "delivery_a3d723a2ff87",
     "lifecycle_state": "accepted succeeded worker_done; externally launched terminal retained by worker-release, processAction none",
-    "review_task": "/root/review_implemented_mixed_scratch_20261019"
+    "review_task": "/root/review_implemented_mixed_scratch_20261019",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/expert-window-staging-native-review.json",
+    "review_sha256": "df94ed89de5ebffb67dca53a7ea2a109af2b5b97694fb056bd42670c4074b797",
+    "reviewed_digest": [
+      "Bank has384 total slots:383 permanent first-demand entries plus scratch slot383; retain the full512-expert immutable RAM slab.",
+      "The measured98304-row prefix remains partial and must keep512 slots. A new R_GPU=auto run is prospective; capacity arithmetic does not qualify it.",
+      "All-GPU placement alone is insufficient when the final window has1..8192 rows: normal FFN needs full residency. The subsequent CPU planner adds shape fallback; this reviewer did not inspect that later source.",
+      "Same-queue enqueue ordering and checked outer lease are required; actual staged DMA, failure retirement, model speed, physical262144 and RESTORE remain untested."
+    ],
+    "main_followup": "Before engine integration, query actual max_mem_alloc_size: proposed single BF16 residual is2406154240B. The current planner only checks total budget, so its full-residency arithmetic is conditional on single-allocation admission."
   }
 }
