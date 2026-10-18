@@ -406,6 +406,19 @@ establish independent-process variability;24 generated tokens do not qualify
 sustained decode, task quality or physical262144/RESTORE. Keep this faster
 screening route opt-in as the next prefill tuning baseline.
 
+Before selecting a GDN scheduling change, Main prepares/commits/runs
+`qsa-kvvec4-timing-check`, then `qsa-kvvec4-census` with the existing model
+controller. They use the qualified K/Vvec4 engine and existing GDN path
+(`GDN_CHUNK64=0`), first32K-class then78K input, thinking on. Both enable
+parameter validation, existing coarse/CPU/MoE observers and
+`STRATA_PREFILL_TIMING=1`. The latter separates input projections, conv/gates,
+recurrence and output projection, with expected per-layer coverage36GDN/12QSA.
+Its rounded event-marker intervals include host submission gaps and queue
+dependencies; the legacy timer also skips failed elapsed-time queries. Coverage
+and runtime-error checks do not turn these into pure GPU service or hardware
+occupancy measurements. Keep sampled MoE command service and clean853.2 tok/s
+evidence separate; observer-enabled PP is not a new speed comparison.
+
 ## Optional GDN chunk64
 
 `STRATA_SYCL_PREFILL_GDN_CHUNK64=1` adds a separate experimental long-prefill

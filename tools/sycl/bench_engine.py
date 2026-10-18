@@ -32,12 +32,15 @@ def main():
     modes = ('check', 'base', 'candidate', 'qsa-check', 'qsa-base', 'qsa-direct', 'qsa-census',
              'qsa-qcache-check', 'qsa-qcache-base', 'qsa-qcache',
              'qsa-kvec4-check', 'qsa-kvec4-base', 'qsa-kvec4', 'qsa-kvec4-census',
-             'qsa-kvvec4-check', 'qsa-kvvec4-base', 'qsa-kvvec4')
+             'qsa-kvvec4-check', 'qsa-kvvec4-base', 'qsa-kvvec4',
+             'qsa-kvvec4-timing-check', 'qsa-kvvec4-census')
     guards.require(len(sys.argv) == 3 and sys.argv[1] in ('prepare', 'run') and
                    sys.argv[2] in modes, 'use prepare|run ' + '|'.join(modes))
     action, mode = sys.argv[1:]
     qsa = mode.startswith('qsa-')
-    census = mode in ('qsa-census', 'qsa-kvec4-census')
+    short_profile = mode == 'qsa-kvvec4-timing-check'
+    phase_profile = short_profile or mode == 'qsa-kvvec4-census'
+    census = phase_profile or mode in ('qsa-census', 'qsa-kvec4-census')
     qcache = mode.startswith('qsa-qcache')
     kvvec4 = mode.startswith('qsa-kvvec4')
     kvec4 = kvvec4 or mode.startswith('qsa-kvec4')
@@ -87,7 +90,7 @@ def main():
                        STRATA_SYCL_PREFILL_GDN_CHUNK64='1' if chunk64 else '0')
             if qsa:
                 env['STRATA_SYCL_PREFILL_QSA_MATH'] = (
-                    'bf16-prefix-kvvec4' if mode in ('qsa-kvvec4-check', 'qsa-kvvec4') else
+                    'bf16-prefix-kvvec4' if phase_profile or mode in ('qsa-kvvec4-check', 'qsa-kvvec4') else
                     'bf16-prefix-kvec4' if mode in ('qsa-kvec4-check', 'qsa-kvec4', 'qsa-kvec4-census', 'qsa-kvvec4-base') else
                     'bf16-prefix-qcache' if mode in ('qsa-qcache-check', 'qsa-qcache', 'qsa-kvec4-base') else
                     'bf16' if mode in ('qsa-check', 'qsa-direct') else 'bf16-prefix-optimized')
@@ -95,7 +98,9 @@ def main():
                 env.update(STRATA_PREFILL_LAYER_MAJOR_PROFILE='1',
                            STRATA_PREFILL_LAYER_MAJOR_QSA_PROFILE='1',
                            STRATA_PREFILL_CPU_WAIT_PROFILE='1')
-            if mode in ('qsa-kvec4-check', 'qsa-kvec4-census'):
+            if phase_profile:
+                env['STRATA_PREFILL_TIMING'] = '1'
+            if phase_profile or mode in ('qsa-kvec4-check', 'qsa-kvec4-census'):
                 env['STRATA_SYCL_PREFILL_COMMAND_PROFILE'] = '1'
             config = dict(reference['config'])
             flags = list(config['args'])
@@ -108,7 +113,7 @@ def main():
             config_path.write_text(json.dumps(config, indent=2) + '\n')
             command = ['/bin/sh', str(P / 'bench.sh'), '--config', str(config_path), '--port', str(port),
                        '--runs', '1' if check else '4', '--prefill-only', '--prefill-tokens',
-                       '32768' if check and not census else '65536', '--workload-id', 'native_gdn_20261018',
+                       '32768' if short_profile or (check and not census) else '65536', '--workload-id', 'native_gdn_20261018',
                        '--think', '--fail-fast-engine-error', '--ready-timeout', '600', '--out', str(root / 'bench')]
             revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=P, text=True).strip()
             files = subprocess.check_output(['git', 'ls-files', '-z', '--', 'serve', 'tools', 'bench.sh'], cwd=P).decode().strip('\0').split('\0')
@@ -125,6 +130,13 @@ def main():
                         source_sha256=pins, config_sha256=digest(config_path), profile_sha256=digest(profile),
                         complete=False, passed=False, active=False, model_quality_qualified=False,
                         physical262144_RESTORE_qualified=False, performance_adopted=False)
+            if phase_profile:
+                plan['phase_profile_scope'] = {
+                    'question': 'Separate current GDN input projection, conv/gates, recurrence and output projection before selecting a topology change.',
+                    'route': 'Existing GDN recurrence, chunk64 disabled; qualified opt-in QSA K/Vvec4.',
+                    'coverage': 'One rounded marker-interval summary per layer; GDN36/QSA12. Original checked coarse/CPU and selected MoE service observers remain separate.',
+                    'limits': 'Marker intervals include host submit gaps and queue dependencies, not isolated kernel service, measured occupancy, physical traffic or a clean speed cohort. Legacy PfTimer skips failed event queries; require expected emitted phase coverage and retain this limitation.',
+                    'retirement': 'Extract compact phase samples and faults; retire normal full logs/JIT after source/recipe recovery. No implementation adoption.'}
             (root / 'plan.json').write_text(json.dumps(plan, indent=2) + '\n')
             compact = {k: v for k, v in plan.items() if k != 'source_sha256'}
             compact['source_count'] = len(pins)
@@ -169,7 +181,7 @@ def main():
         owner = supervision.Owner(root / 'owned', persist)
         try:
             entry, out, err = owner.run('bench', plan['command'], plan['environment'], P,
-                wall=900 if check and not census else 1800, cpu=21600, rss_cap=96 << 30,
+                wall=900 if short_profile or (check and not census) else 1800, cpu=21600, rss_cap=96 << 30,
                 text_cap=64 << 20, file_cap=64 << 20, total_cap=64 << 20)
             record.update(complete=supervision.closed(entry), exit_code=entry.get('exit_code'))
             results = list((root / 'bench').glob('*/results.json'))
@@ -213,7 +225,7 @@ def main():
                     record['k_staging_route'] = selected
                 if kvvec4:
                     selected = [x for x in log.splitlines() if x.startswith('strata prefill: QSA v_staging=')]
-                    wanted = mode in ('qsa-kvvec4-check', 'qsa-kvvec4')
+                    wanted = phase_profile or mode in ('qsa-kvvec4-check', 'qsa-kvvec4')
                     guards.require(bool(selected) == wanted and all('v_staging=typed4 layout=row-major' in x for x in selected),
                         'wrong four-value V kernel selection')
                     record['v_staging_route'] = selected
@@ -242,7 +254,31 @@ def main():
                     guards.require(any(x.startswith(prefix) for x in record['resource_diagnostics']),
                                    'missing complete resource observer: ' + prefix)
                 record['census_scope'] = 'Planned host metadata reconciled with completed window issuer totals; profiler/validation enabled, not clean speed or physical hardware saturation.'
-            if mode in ('qsa-kvec4-check', 'qsa-kvec4-census'):
+            if phase_profile:
+                # PfTimer reports rounded stream-marker intervals, not GPU-only
+                # service. Source run_layer_major visits layers in order and
+                # calls run_impl with the full request's prefill row count.
+                expected_rows = record['planned_moe_windows'][0]['rows']
+                expected_phases = ('gdn', 'gdn conv+gates', 'gdn recurrence', 'gdn out proj')
+                layers = []
+                for line in log.splitlines():
+                    match = re.fullmatch(r'strata prefill timing: (\d+) tokens, GPU timeline (\d+) ms, '
+                                         r'wall (\d+) ms, host staging (\d+) ms:(.*)', line)
+                    if not match or int(match[1]) != expected_rows:
+                        continue
+                    fields = dict((name.strip(), int(ms)) for name, ms in re.findall(
+                        r' ([a-z+ ]+) (\d+) \([0-9.]+%\)', match[5]))
+                    row = dict(layer=len(layers), rows=expected_rows, timeline_ms=int(match[2]),
+                               wall_ms=int(match[3]), gdn_marker_ms={k:fields[k] for k in expected_phases if k in fields})
+                    layers.append(row)
+                gdn = [x for x in layers if x['gdn_marker_ms']]
+                record['gdn_phase_marker_intervals'] = dict(layers=layers,
+                    totals_ms={k:sum(x['gdn_marker_ms'].get(k, 0) for x in gdn) for k in expected_phases},
+                    limits=plan['phase_profile_scope']['limits'])
+                guards.require(len(layers) == 48 and len(gdn) == 36 and
+                    all(set(x['gdn_marker_ms']) == set(expected_phases) for x in gdn),
+                    'incomplete per-layer GDN marker coverage')
+            if phase_profile or mode in ('qsa-kvec4-check', 'qsa-kvec4-census'):
                 def rows(prefix):
                     return [dict(part.split('=', 1) for part in line[len(prefix):].split())
                             for line in log.splitlines() if line.startswith(prefix)]
