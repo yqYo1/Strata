@@ -147,7 +147,7 @@
       "candidate_path": "bench/results/2026-10-15-pr6-recovery-audit/own-qsa-kpitch-v1",
       "decision": "Reuse the existing source-audited pitch proposal after the current comparison; no new duplicate survey. Recheck immutable source/provenance and wire maintained API/tests before compiling.",
       "candidate": "Fixed score33,Cells32,WG128,SG16; K36/V260 shared tile needs9216 BF16 values,30272B requested local payload,34368B admission minimum. No hardware occupancy/bank map or performance result.",
-      "do_not_repeat": "Old global K span256 schedule regressed10.35\u201329.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
+      "do_not_repeat": "Old global K span256 schedule regressed10.35–29.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
     },
     "reviewed_base_source_sha256": "fa505d02e2b24f7cb6948033921fa697c8aeb58e6f4df6d873f13e5a7918e36b",
     "source_sha256": "c3ad8326f097050ff9ab1859e116f2cad3709a8464162143f752bc294cbe1e01",
@@ -208,7 +208,7 @@
         "bytes": 19144,
         "source_commit": "fbc7f56d7b0ddb5db5f3722ef33ca044c3f8a5c8",
         "reason": "Its conditional consumer is a selected-cell stable-reduction split. The closed QSA screen and pending pitch candidate select no split or reduction bottleneck.",
-        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report\u2019s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
+        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report’s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
       },
       {
         "path": "bench/results/2026-10-15-pr6-recovery-audit/research-matrix-register-reuse-20261018.md",
@@ -1359,8 +1359,8 @@
         "Retrieval map for a later concrete question"
       ],
       "paper_sections": [
-        "SyclKittens \u00a7\u00a73.2\u20133.3 and Appendix D for operand layouts, subgroup prefetch and the measured ablation.",
-        "Xe-Forge \u00a7\u00a7IV\u2013V, VI-A, VI-D\u2013VI-E for search/validation workflow, hardware, baseline and kernel results."
+        "SyclKittens §§3.2–3.3 and Appendix D for operand layouts, subgroup prefetch and the measured ablation.",
+        "Xe-Forge §§IV–V, VI-A, VI-D–VI-E for search/validation workflow, hardware, baseline and kernel results."
       ]
     }
   },
@@ -1575,5 +1575,35 @@
     "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/native-early-rejection-teardown-native-review.json",
     "review_sha256": "57354c9662ae2fbb0d8090787bde7430fe8716efc3cad1f93da9a5bbb1e0a846",
     "reviewed_decision": "No-subset NativeHead/MTP graph teardown-order gap is source-backed, but the raw-USM graph destroy contract and causation of this driver SIGSEGV are unproven. The observed failing run had a106299-token MTP head subset. Keep rejection/head-disabled path; bounded phase/status markers and pointer/drain/destroy evidence precede any fail-closed teardown candidate."
+  },
+  "implemented_mixed_scratch_lifetime_scope": {
+    "classification": "decision support",
+    "schedulable_now": false,
+    "state": "running",
+    "prerequisites_met": [
+      "New default-off implementation is committed at 6b3ee1e35 and built from 034bddff8393e8c1c9cee89e9235807230a81ad2.",
+      "CPU capacity and all five GPU gather gates passed in moe-mixed-scratch-current.json; no new fault.",
+      "Prior two-bank report mapped source45 lifetimes before this actual implementation; this scope audits the newly implemented consumers, not another storage survey."
+    ],
+    "question": "Audit the implemented borrowed mixed banks across the complete FFN and callback lifetime, window/tail/status boundaries and failure paths; distinguish concrete defects from still-open model qualification.",
+    "source_commit": "034bddff8393e8c1c9cee89e9235807230a81ad2",
+    "source_files_sha256": {
+      "include/strata/prefill/moe_accum_plan.hpp": "1fa1618eaf96a6ec50bc948f7c6750fc33f463c702cfbf36cd57e928597ca1aa",
+      "include/strata/prefill/native16.hpp": "efc7e1eae1ed5995f5a408693ccbd503755487de85b9a4d345692ce181a9b4b5",
+      "src/prefill/layer_major.inc": "61413caf069c1f6893af98603824da596bb5ba340a84e989a31674f3fcbd9aad",
+      "src/prefill/moe_window.inc": "43b9d5e4b86def6289eb1f45006b3ed147aef22b627548d931eebc9f434a6cb5",
+      "src/prefill/prefill.cpp": "7472160303b0a975cc68554bfcbbed85673b5a39509d880664fd0967addbf332",
+      "src/prefill/sycl/native16.cpp": "c88f2d7ae06c63dbfb04b0bb777be03284a402f90a7b714eddecd9ede1b72cc4",
+      "tests/sycl/moe_accum.cpp": "36f2710360117c0812bc586c3db2a9db71c3033df6d9fa92cf28616ed1a665eb"
+    },
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/implemented-mixed-scratch-lifetime-audit.md",
+    "report_budget": "12 KiB target, 20 KiB maximum; one coherent actual-code audit",
+    "main_reads_body_on_arrival": false,
+    "retention_consumer": "Main current borrowed-scratch model qualification; review after that consumer closes.",
+    "eligible_at_dispatch": true,
+    "task": "task_c01b2a59d061",
+    "dispatch": "ctx_82c1da94d7d4",
+    "terminal": "term_f92754a8-4719-405a-ab47-09b4eca46b53",
+    "model_evidence": "Explicit terminal argv gpt-6-luna, medium; worker-start existing-terminal effective preference fields are null, not independent provider verification."
   }
 }

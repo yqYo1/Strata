@@ -788,6 +788,17 @@ def main():
                         columns = ('layer', 'first', 'rows', 'primary_bytes', 'region_bytes',
                                    'tail_offset', 'tail_bytes', 'residual_bytes')
                         samples = [dict(field.split('=', 1) for field in x.split()[4:]) for x in entries]
+                        retired_samples = [dict(field.split('=', 1) for field in x.split()[4:]) for x in retired]
+                        expected_keys = [(layer, first, rows) for layer in range(48)
+                                         for first, rows in ((0, 81920), (81920, 16384))]
+                        keys = lambda items: [tuple(int(x[k]) for k in ('layer', 'first', 'rows')) for x in items]
+                        guards.require(keys(samples) == keys(retired_samples) == expected_keys,
+                            'mixed owner census has duplicate, missing or reordered windows')
+                        guards.require(all(int(x['primary_bytes']) == min(int(x['rows']), 65536) * 2560 * 2 and
+                            int(x['tail_bytes']) == max(0, int(x['rows']) - 65536) * 2560 * 2 and
+                            int(x['region_bytes']) == 1180698624 and int(x['tail_offset']) == 1059131904 and
+                            int(x['residual_bytes']) == int(x['rows']) * 4 * 2560 * 2 for x in samples),
+                            'mixed owner census has unexpected logical extents')
                         record['mixed_scratch_route'].update(owner_columns=columns,
                             owner_samples=[[int(x[k]) for k in columns] for x in samples],
                             retired_windows=len(retired), all_direct_owners_and_checked_drains=True)
