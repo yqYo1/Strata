@@ -338,5 +338,84 @@
     "device": "0xe20c",
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
+  },
+  "comparison": {
+    "baseline_record": {
+      "revision": "09d4365720b45551aeea68dbc80951542550b858",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/gdn-columns-model-current.json"
+    },
+    "candidate_original_record": {
+      "revision": "5268c94b52b59a797503a8c90db17bebe014b39d",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/gdn-columns-model-current.json"
+    },
+    "identity_checks": {
+      "build_source_commit": true,
+      "binary": true,
+      "reference": true,
+      "source_count": true,
+      "source_aggregate_sha256": true,
+      "profile_sha256": true,
+      "driver_after": true,
+      "normalized_config": true,
+      "normalized_command": true,
+      "only_meaningful_environment_difference": true,
+      "same_workload_per_request": true,
+      "both_closed_pass_no_faults": true
+    },
+    "normalization": "Only each private root and benchmark port are normalized; source/helper aggregates, binary, original profile and per-request workload hashes match.",
+    "meaningful_environment_difference": {
+      "STRATA_SYCL_PREFILL_GDN_COLUMNS": [
+        "0",
+        "4"
+      ]
+    },
+    "baseline": {
+      "first_use_prompt_tps": 786.9,
+      "subsequent_prompt_tps": [
+        854.3,
+        845.7,
+        853.7
+      ],
+      "subsequent_median_tps": 853.7,
+      "subsequent_sample_sd_tps": 4.801388688008195,
+      "prompt_ms": [
+        99691.0,
+        91829.6,
+        92759.1,
+        91891.0
+      ]
+    },
+    "candidate": {
+      "first_use_prompt_tps": 795.7,
+      "subsequent_prompt_tps": [
+        867.2,
+        858.7,
+        867.1
+      ],
+      "subsequent_median_tps": 867.1,
+      "subsequent_sample_sd_tps": 4.878865988458104,
+      "prompt_ms": [
+        98589.8,
+        90463.0,
+        91355.4,
+        90475.3
+      ]
+    },
+    "first_use_speed_gain_percent": 1.1183123649765037,
+    "subsequent_median_speed_gain_percent": 1.5696380461520443,
+    "subsequent_median_prompt_time_reduction_ms": 1415.699999999997,
+    "baseline_short_decode_tps": [
+      13.9,
+      14.1,
+      14.1,
+      14.2
+    ],
+    "decision": "Use four-column partitions as the next opt-in long-prefill resource-profile baseline. Preserve default0; this screen is not production/model-quality adoption.",
+    "limits": [
+      "One independent process per arm, with one first-use and three subsequent requests; these are not three independent-process repetitions.",
+      "24 generated tokens including thinking per request do not qualify sustained decode, task quality, agent session, or MTP-friendly/weak long-generation performance.",
+      "Component262144/restore and actual39260-token model admission passed earlier; full-model262144, conversation RESTORE and task quality remain unqualified.",
+      "All source and binary identities are preserved; original failed receipts remain failures."
+    ]
   }
 }
