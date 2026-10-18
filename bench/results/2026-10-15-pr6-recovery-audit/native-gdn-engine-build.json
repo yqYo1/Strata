@@ -1,5 +1,5 @@
 {
-  "source_commit": "034bddff8393e8c1c9cee89e9235807230a81ad2",
+  "source_commit": "1222e27d01f32c5bb31f574ff4b143c489a3bcf1",
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -80,24 +80,62 @@
   "production_selected": false,
   "model_quality_qualified": false,
   "replaces": {
-    "source_commit": "45c387d11f20579e2f4a96511497fa7a5fb6e4ce",
+    "source_commit": "db71e718f5275c6db58e2f762cd54850b1aaa7dc",
     "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-      "bytes": 22039520,
-      "sha256": "4b7ea4883c0df2d5f973a08b22b0efc3ee7bdbed560828d2e221683ff986bcf0"
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-expert-bank-v1/strata",
+      "bytes": 22065872,
+      "sha256": "5338945aa6fb7a6df6c482da4b802046af856c4340a2a644deecfb8a32a2d01f"
     },
-    "source_build_passed": true,
-    "retained_binary_source_commit": "45c387d11f20579e2f4a96511497fa7a5fb6e4ce",
+    "source_build_passed": false,
+    "retained_binary_source_commit": "034bddff8393e8c1c9cee89e9235807230a81ad2",
     "reason": "Closed unused comparison engine; original source/recipe recovered from Git. Reuse its cache for the immediate corrected build, not a retained old generation."
   },
   "targets": [
     "strata",
     "sycl_moe_accum_test",
     "sycl_moe_gu_swiglu_bench",
-    "sycl_moe_down_scatter_bench"
+    "sycl_moe_down_scatter_bench",
+    "sycl_expert_bank_test"
   ],
-  "retention_consumer": "Retain current validated source034 and fixtures for the imminent bounded expert-bank comparison. Source45 fallback retired after exact source/recipe recovery; preserve source034 externally and commit it before any overwrite.",
-  "retained_validation_reference": null,
+  "retention_consumer": "Current comparison engine and requested fixtures: strata, sycl_moe_accum_test, sycl_moe_gu_swiglu_bench, sycl_moe_down_scatter_bench, sycl_expert_bank_test; select the validated generation and retire the extra after qualification/comparison closure.",
+  "retained_validation_reference": {
+    "source_commit": "034bddff8393e8c1c9cee89e9235807230a81ad2",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-expert-bank-v1/strata",
+      "bytes": 22065872,
+      "sha256": "5338945aa6fb7a6df6c482da4b802046af856c4340a2a644deecfb8a32a2d01f"
+    },
+    "fixtures": {
+      "sycl_moe_accum_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-expert-bank-v1/sycl_moe_accum_test",
+        "bytes": 2302728,
+        "sha256": "35de609c81091c9ce2e87f9b28742466e5f21356570396cc45e7ee83e7b4432b"
+      },
+      "sycl_moe_gu_swiglu_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-expert-bank-v1/sycl_moe_gu_swiglu_bench",
+        "bytes": 1927960,
+        "sha256": "7dc7b336b920e25b205d0f3f0b6fb5a08475ac3d08a7d7e71141ccb7d2bcc659"
+      },
+      "sycl_moe_down_scatter_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-expert-bank-v1/sycl_moe_down_scatter_bench",
+        "bytes": 13179056,
+        "sha256": "ddaf0ad94be379f8c601a3226641c52c4c42478054f1ec42f4daa563f1d51dd4"
+      }
+    },
+    "recipe_reference": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-entry-engine-build-v2.json",
+      "sha256": "9b7734387f0fc56f36afe9d7bca75e5f0bedcef479271e982025abe1d4334a1a"
+    },
+    "source_input_count": 9807,
+    "consumer": "Known-good source034 fallback for bounded expert-bank candidate component/model comparison. Retain through actual model qualification, or retire candidate on rejection; at closure select one validated generation.",
+    "model_quality_qualified": false,
+    "physical262144_RESTORE_qualified": false,
+    "build_record": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-expert-bank-v1/source-build.json",
+      "bytes": 1297186,
+      "sha256": "90fc2273711b96d2586e72164a5916eba79a8bec16cbb3ef03e51d64c02860cc"
+    }
+  },
   "legacy_provenance_exception": {
     "state": "Unresolved legacy cleanup; not qualified comparison generations.",
     "observed_engine_and_fixture_paths": 41,
@@ -138,30 +176,21 @@
       "archive_searched": "8063aacc6749d18089f7a53db5d3e47b745f348c"
     },
     "unselected_current_tree_executables": {
-      "count": 9,
-      "bytes": 21890888,
-      "paths": [
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_native16_paired_gemm_bench",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_late_flags_test",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_kvec4_test",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_kvvec4_test",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_optimized_test",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_ordered_exp_bench",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_ordered_exp_test",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_qcache_bench",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_qcache_test"
-      ],
-      "state": "Held pending exact final-input mapping, not qualified comparison generations.",
-      "next_action": "Recover their original source/recipe from the maintained fixture receipts and matching historical build, then retire unused executables; review before the next native build."
+      "state": "retired after9 exact binary/build matches and Git input/recipe recovery",
+      "count": 0,
+      "deleted_count": 9,
+      "deleted_bytes": 21890888,
+      "retirement_manifest_commit": "faa1b7030",
+      "scope": "Does not resolve the separate six legacy roots."
     }
   },
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-    "bytes": 22065872,
-    "sha256": "5338945aa6fb7a6df6c482da4b802046af856c4340a2a644deecfb8a32a2d01f"
+    "bytes": 22070744,
+    "sha256": "ce19688e2788b13e5f61258f4d16b5f27da3d9d78e3f96a46fd2e06c873bb670"
   },
-  "compile_database_sha256": "0dd5024d998ba0e2d89f0a29b86028ad6d21f70e19f64570c222ef3560ecc253",
-  "configured_compile_entries": 220,
+  "compile_database_sha256": "b9a5ef0d9b0aafb7deef3c00745083d73b7cddc59b6391d8b3a9dcde64a179df",
+  "configured_compile_entries": 221,
   "fixtures": {
     "sycl_moe_accum_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_accum_test",
@@ -174,15 +203,19 @@
     "sycl_moe_down_scatter_bench": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_down_scatter_bench",
       "sha256": "ddaf0ad94be379f8c601a3226641c52c4c42478054f1ec42f4daa563f1d51dd4"
+    },
+    "sycl_expert_bank_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_expert_bank_test",
+      "sha256": "f2f3df7eb393f4de6c7f900f6cd25e6edacaf00c2fb3bcec6c3e3edab0c03b88"
     }
   },
   "ownership_closed": true,
   "inputs": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "034bddff8393e8c1c9cee89e9235807230a81ad2",
-      "count": 496,
-      "aggregate_sha256": "df2207b2f53080aef535b9a8a311d7b50856f8b1042262803545da78f3147658"
+      "revision": "1222e27d01f32c5bb31f574ff4b143c489a3bcf1",
+      "count": 501,
+      "aggregate_sha256": "777ea6fb5048bdea01fc4c64896ccd089694ee27763c4f935981710e54460121"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
@@ -196,35 +229,5 @@
       "count": 5703,
       "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
     }
-  ],
-  "retained_current_selection": {
-    "source_commit": "034bddff8393e8c1c9cee89e9235807230a81ad2",
-    "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-      "bytes": 22065872,
-      "sha256": "5338945aa6fb7a6df6c482da4b802046af856c4340a2a644deecfb8a32a2d01f"
-    },
-    "fixtures": {
-      "sycl_moe_accum_test": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_accum_test",
-        "sha256": "35de609c81091c9ce2e87f9b28742466e5f21356570396cc45e7ee83e7b4432b"
-      },
-      "sycl_moe_gu_swiglu_bench": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_gu_swiglu_bench",
-        "sha256": "7dc7b336b920e25b205d0f3f0b6fb5a08475ac3d08a7d7e71141ccb7d2bcc659"
-      },
-      "sycl_moe_down_scatter_bench": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_down_scatter_bench",
-        "sha256": "ddaf0ad94be379f8c601a3226641c52c4c42478054f1ec42f4daa563f1d51dd4"
-      }
-    },
-    "qualification_references": {
-      "mixed_capacity_gather": "398767398",
-      "current_GU_perf": "86631a894",
-      "model_owner_phase": "dc0fc0f9c",
-      "clean117K": "b6d90afa7"
-    },
-    "scope": "Current head0 native16/GU-large/mode10 mixed-scratch opt-in tuning reference. Short health request completed; full quality, physical262144 and RESTORE/default adoption remain unqualified.",
-    "next_consumer": "Bounded expert-bank implementation/GPU comparison; preserve this validated engine and required fixtures before its build directory is reused."
-  }
+  ]
 }

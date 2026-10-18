@@ -67,6 +67,9 @@ message(STATUS "Strata: opt-in vLLM Xe2 native16; isolated BMG G21 AOT object; e
 
 function(strata_add_vllm_native16_tests)
   add_executable(sycl_moe_accum_test EXCLUDE_FROM_ALL tests/sycl/moe_accum.cpp)
+  add_executable(sycl_expert_bank_test EXCLUDE_FROM_ALL tests/sycl/expert_bank.cpp)
+  target_link_libraries(sycl_expert_bank_test PRIVATE strata_prefill)
+  target_compile_options(sycl_expert_bank_test PRIVATE -fno-fast-math -ffp-contract=off)
   target_link_libraries(sycl_moe_accum_test PRIVATE strata_prefill)
   target_compile_options(sycl_moe_accum_test PRIVATE -fno-fast-math -ffp-contract=off)
   add_executable(sycl_vllm_native16_test EXCLUDE_FROM_ALL tests/sycl/vllm_native16.cpp)

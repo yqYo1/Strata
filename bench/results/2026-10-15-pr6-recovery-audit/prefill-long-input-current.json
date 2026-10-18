@@ -1,11 +1,11 @@
 {
-  "mode": "qsa-long-input-scratch",
-  "source_commit": "dc0fc0f9c6b48e9f396e8ae0f33e3f138ee2132e",
-  "build_source_commit": "034bddff8393e8c1c9cee89e9235807230a81ad2",
+  "mode": "qsa-long-input-expert-bank",
+  "source_commit": "48e13aaba6feca6bdc7c10767391747db6d4cb8a",
+  "build_source_commit": "1222e27d01f32c5bb31f574ff4b143c489a3bcf1",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-    "bytes": 22065872,
-    "sha256": "5338945aa6fb7a6df6c482da4b802046af856c4340a2a644deecfb8a32a2d01f"
+    "bytes": 22070744,
+    "sha256": "ce19688e2788b13e5f61258f4d16b5f27da3d9d78e3f96a46fd2e06c873bb670"
   },
   "environment": {
     "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
@@ -38,7 +38,7 @@
     "STRATA_SYCL_PROMPT_DIRECT": "1",
     "STRATA_PREFILL_LAYER_MAJOR": "1",
     "STRATA_PREFILL_LAYER_MAJOR_R_DTYPE": "bf16",
-    "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "98304",
+    "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "auto",
     "STRATA_PREFILL_RELEASE_MTP_EXPERTS": "1",
     "STRATA_PREFILL_PHASE_AUDIT": "0",
     "STRATA_PREFILL_BOUNDARY_AUDIT": "0",
@@ -61,7 +61,7 @@
     "STRATA_SYCL_SELECT_CYCLIC": "0",
     "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
     "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-scratch-v1/cache",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-v1/cache",
     "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
     "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
     "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
@@ -74,14 +74,15 @@
     "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
     "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
     "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-scratch-v1/tmp",
-    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-scratch-v1",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-v1/tmp",
+    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-v1",
     "ZES_ENABLE_SYSMAN": "0",
     "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
     "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
     "STRATA_SYCL_PREFILL_GU_SWIGLU": "large",
     "STRATA_SYCL_PREFILL_DOWN_SCATTER": "0",
-    "STRATA_SYCL_PREFILL_MIXED_SCRATCH": "1"
+    "STRATA_SYCL_PREFILL_MIXED_SCRATCH": "1",
+    "STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS": "384"
   },
   "config": {
     "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
@@ -99,7 +100,7 @@
       "--expert-cache",
       "128",
       "--expert-profile",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-scratch-v1/expert-profile.bin",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-v1/expert-profile.bin",
       "--expert-cache-per-layer",
       "--pool-workers",
       "5",
@@ -138,7 +139,7 @@
       "strata"
     ],
     "host": "127.0.0.1",
-    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-scratch-v1/engine.stderr",
+    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-v1/engine.stderr",
     "engine_silence_s": 480,
     "parallel": 1,
     "open_browser": false,
@@ -148,9 +149,9 @@
     "/bin/sh",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
     "--config",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-scratch-v1/config.json",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-v1/config.json",
     "--port",
-    "51101",
+    "41953",
     "--runs",
     "4",
     "--prefill-only",
@@ -163,13 +164,13 @@
     "--ready-timeout",
     "600",
     "--out",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-scratch-v1/bench"
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-v1/bench"
   ],
   "reference": {
     "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-softmax-measurement-inputs-v1.json",
     "sha256": "3792c36462e333816ce5d5d9ac39f3dcc13809939d8d3133c570d8945257d1dd"
   },
-  "config_sha256": "04681adb7369d635555ae127fc256fce02eb368da3341ae3f7bc917a4e959fbe",
+  "config_sha256": "2ecc626a50ee0e11b073e62e7f4c1bf01c9056b8f01b41010fcf032cc54d77e5",
   "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
   "complete": true,
   "passed": true,
@@ -179,7 +180,7 @@
   "performance_adopted": false,
   "ordered_exp_qualification": {
     "component_path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-ordered-exp-current.json",
-    "component_sha256": "c49332c4b1ef8b390ce0f18577f90366a5ec735c37728135a99cafdfbc517af7",
+    "component_sha256": "d6af7daf82a4485eb86279b42114149ed8374188f8823764b608817c07c7b3ae",
     "kernel_source_sha256": {
       "src/kernels/sycl/qsa_bf16_prefix.cpp": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192",
       "include/strata/kernels/qsa_bf16_prefix.hpp": "8d180de01ec1afecac278cb9919ddeacc2f7a159ecacd5d593ed5a57b9a2b159"
@@ -206,9 +207,10 @@
     "generated_token_cap": 24,
     "context_capacity": 131072,
     "required_client_context": 123160,
-    "question": "Borrow idle R/shared-arena spans for mixed input, with zero extra mixed allocation and16384 more GPU residual rows than the81920 screen. Preserve512MiB headroom and existing dense banking; heads remain resident. Placement plus storage comparison, not a kernel-only speed claim.",
+    "question": "Matched117489-token workload: smaller temporary expert GPU bank admits all117488 engine residual rows, eliminating the host-tail FFN path. Preserve512-expert host slab,512MiB allowance, dense banking and heads. Count extra requested H2D bytes/hits; compare total latency, not capacity arithmetic.",
     "qualification": "One validated long request, then up to3 independent clean processes with4 fresh requests each. Separate first use and3 subsequent requests; target each independent subsequent median>=1000tok/s. Stop this configuration early if a process median<950 and all3 subsequent samples<975; retain the failed screen and do not claim3-process qualification. Not sustained decode, model-quality or physical262144 qualification.",
-    "residual_GPU_rows": 98304
+    "residual_GPU_rows": 117488,
+    "expert_slots": 384
   },
   "mixed_qualification": {
     "component_path": "bench/results/2026-10-15-pr6-recovery-audit/moe-mixed-scratch-current.json",
@@ -217,15 +219,32 @@
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_accum_test",
       "sha256": "35de609c81091c9ce2e87f9b28742466e5f21356570396cc45e7ee83e7b4432b"
     },
+    "current_fixture": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_accum_test",
+      "sha256": "35de609c81091c9ce2e87f9b28742466e5f21356570396cc45e7ee83e7b4432b"
+    },
+    "kernel_source_sha256": {
+      "include/strata/prefill/moe_accum_plan.hpp": "1fa1618eaf96a6ec50bc948f7c6750fc33f463c702cfbf36cd57e928597ca1aa",
+      "include/strata/prefill/native16.hpp": "efc7e1eae1ed5995f5a408693ccbd503755487de85b9a4d345692ce181a9b4b5",
+      "src/prefill/sycl/native16.cpp": "c88f2d7ae06c63dbfb04b0bb777be03284a402f90a7b714eddecd9ede1b72cc4",
+      "tests/sycl/moe_accum.cpp": "36f2710360117c0812bc586c3db2a9db71c3033df6d9fa92cf28616ed1a665eb"
+    },
+    "evidence": "Prior completed numerical/bit-copy checks reused for identical executable bytes and unchanged tested kernel/plan source; this is not a new GPU run.",
     "limits": "Component capacity/gather only; this model check must establish actual Prefill owners, bank phases and callback retirement."
   },
-  "preceding_long_input_result": {
-    "commit": "dc0fc0f9c6b48e9f396e8ae0f33e3f138ee2132e",
-    "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json",
-    "mode": "qsa-long-input-scratch-check"
+  "expert_bank_qualification": {
+    "component_path": "bench/results/2026-10-15-pr6-recovery-audit/moe-expert-bank-current.json",
+    "component_sha256": "cca08a1204ac60987276dfc997458a4e60dbdd2b103443a02e2783a64810ad23",
+    "build_source_commit": "1222e27d01f32c5bb31f574ff4b143c489a3bcf1",
+    "limits": "Production upload helper/cache, synthetic byte readers, private maps and caller unwind only. No real provider enqueue fault injection, model arithmetic, speed, session rollback or physical262144/RESTORE qualification."
   },
-  "source_count": 109,
-  "source_aggregate_sha256": "0c6c46f54491a23ff4690a15fd1dac785e28ffef871a8586e0456266255c115f",
+  "preceding_long_input_result": {
+    "commit": "48e13aaba6feca6bdc7c10767391747db6d4cb8a",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json",
+    "mode": "qsa-long-input-expert-bank-check"
+  },
+  "source_count": 110,
+  "source_aggregate_sha256": "8958a9a79c5afa9038991ce501a6fe2b9b202d9b78eb1e2d7a103b288e6970a0",
   "exit_code": 0,
   "requests": [
     {
@@ -242,12 +261,12 @@
       "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
-      "ttft_s": 148.46,
-      "total_s": 150.185,
-      "prompt_tps": 795.0,
-      "prompt_ms": 147784.3,
-      "decode_tps": 13.2,
-      "decode_ms": 1823.1,
+      "ttft_s": 132.564,
+      "total_s": 134.288,
+      "prompt_tps": 890.8,
+      "prompt_ms": 131889.1,
+      "decode_tps": 13.1,
+      "decode_ms": 1827.8,
       "prompt_tps_source": "engine",
       "decode_tps_source": "engine",
       "drafts_offered": 21,
@@ -270,12 +289,12 @@
       "request_sha256": "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
-      "ttft_s": 139.653,
-      "total_s": 141.289,
-      "prompt_tps": 845.9,
-      "prompt_ms": 138899.8,
-      "decode_tps": 13.8,
-      "decode_ms": 1736.3,
+      "ttft_s": 123.35,
+      "total_s": 125.054,
+      "prompt_tps": 957.8,
+      "prompt_ms": 122668.8,
+      "decode_tps": 13.3,
+      "decode_ms": 1801.4,
       "prompt_tps_source": "engine",
       "decode_tps_source": "engine",
       "drafts_offered": 21,
@@ -298,12 +317,12 @@
       "request_sha256": "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
-      "ttft_s": 139.58,
-      "total_s": 141.217,
-      "prompt_tps": 846.1,
-      "prompt_ms": 138858.2,
-      "decode_tps": 13.8,
-      "decode_ms": 1738.6,
+      "ttft_s": 124.037,
+      "total_s": 127.07,
+      "prompt_tps": 953.4,
+      "prompt_ms": 123234.5,
+      "decode_tps": 7.4,
+      "decode_ms": 3242.2,
       "prompt_tps_source": "engine",
       "decode_tps_source": "engine",
       "drafts_offered": 21,
@@ -326,12 +345,12 @@
       "request_sha256": "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
-      "ttft_s": 139.601,
-      "total_s": 141.235,
-      "prompt_tps": 845.8,
-      "prompt_ms": 138915.0,
-      "decode_tps": 13.8,
-      "decode_ms": 1735.3,
+      "ttft_s": 123.706,
+      "total_s": 126.119,
+      "prompt_tps": 955.8,
+      "prompt_ms": 122919.0,
+      "decode_tps": 9.3,
+      "decode_ms": 2579.6,
       "prompt_tps_source": "engine",
       "decode_tps_source": "engine",
       "drafts_offered": 21,
@@ -343,9 +362,9 @@
   ],
   "engine_exit_code": 0,
   "native_identity": {
-    "pid": 1428300,
-    "start_ticks": 68730775,
-    "sid": 1428258
+    "pid": 1634343,
+    "start_ticks": 69243849,
+    "sid": 1634315
   },
   "route_selection": [],
   "gu_route": {
@@ -354,27 +373,27 @@
     ],
     "per_request_counts": [
       {
-        "fused_jobs": "6241",
-        "fused_rows": "40909060",
-        "separate_jobs": "27583",
+        "fused_jobs": "7485",
+        "fused_rows": "49290450",
+        "separate_jobs": "29868",
         "min_rows": "2334"
       },
       {
-        "fused_jobs": "6237",
-        "fused_rows": "40910887",
-        "separate_jobs": "27671",
+        "fused_jobs": "7476",
+        "fused_rows": "49282122",
+        "separate_jobs": "29850",
         "min_rows": "2334"
       },
       {
-        "fused_jobs": "6247",
-        "fused_rows": "40897497",
-        "separate_jobs": "27565",
+        "fused_jobs": "7479",
+        "fused_rows": "49245415",
+        "separate_jobs": "29839",
         "min_rows": "2334"
       },
       {
-        "fused_jobs": "6246",
-        "fused_rows": "40880699",
-        "separate_jobs": "27624",
+        "fused_jobs": "7489",
+        "fused_rows": "49249286",
+        "separate_jobs": "29809",
         "min_rows": "2334"
       }
     ],
@@ -388,25 +407,25 @@
       {
         "fused_jobs": "0",
         "fused_rows": "0",
-        "separate_jobs": "33824",
+        "separate_jobs": "37353",
         "min_rows": "2334"
       },
       {
         "fused_jobs": "0",
         "fused_rows": "0",
-        "separate_jobs": "33908",
+        "separate_jobs": "37326",
         "min_rows": "2334"
       },
       {
         "fused_jobs": "0",
         "fused_rows": "0",
-        "separate_jobs": "33812",
+        "separate_jobs": "37318",
         "min_rows": "2334"
       },
       {
         "fused_jobs": "0",
         "fused_rows": "0",
-        "separate_jobs": "33870",
+        "separate_jobs": "37298",
         "min_rows": "2334"
       }
     ]
@@ -418,10 +437,10 @@
     "strata MoE window configuration: requested_mode=10 effective_mode=10 maximum_rows=81920 mixed_fp16_bytes=0"
   ],
   "residual_placement": [
-    "strata prefill: layer-major candidate, tokens=117488 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=2406154240 residual_gpu_rows=98304 residual_gpu=2013265920 residual_host=392888320 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
-    "strata prefill: layer-major candidate, tokens=117488 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=2406154240 residual_gpu_rows=98304 residual_gpu=2013265920 residual_host=392888320 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
-    "strata prefill: layer-major candidate, tokens=117488 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=2406154240 residual_gpu_rows=98304 residual_gpu=2013265920 residual_host=392888320 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
-    "strata prefill: layer-major candidate, tokens=117488 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=2406154240 residual_gpu_rows=98304 residual_gpu=2013265920 residual_host=392888320 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592"
+    "strata prefill: layer-major candidate, tokens=117488 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=2406154240 residual_gpu_rows=117488 residual_gpu=2406154240 residual_host=0 residual_staging=0 layer_cache=1022361600; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
+    "strata prefill: layer-major candidate, tokens=117488 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=2406154240 residual_gpu_rows=117488 residual_gpu=2406154240 residual_host=0 residual_staging=0 layer_cache=1022361600; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
+    "strata prefill: layer-major candidate, tokens=117488 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=2406154240 residual_gpu_rows=117488 residual_gpu=2406154240 residual_host=0 residual_staging=0 layer_cache=1022361600; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
+    "strata prefill: layer-major candidate, tokens=117488 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=2406154240 residual_gpu_rows=117488 residual_gpu=2406154240 residual_host=0 residual_staging=0 layer_cache=1022361600; extra allocations, GPU headroom=536870912, RAM headroom=8589934592"
   ],
   "mixed_scratch_route": {
     "backing": [
@@ -431,6 +450,85 @@
       "strata MoE mixed banks: storage=scratch primary_bytes=335544320 tail_bytes=83886080 tail_offset=1059131904 extra_allocation_bytes=0 phase=FFN_only_after_attention_drain"
     ]
   },
+  "expert_bank_route": {
+    "selections": [
+      {
+        "requested_slots": "384",
+        "effective_slots": "384",
+        "staged": "1",
+        "host_slab_bytes": "1363148800",
+        "device_bytes": "1022361600",
+        "residual_gpu_rows": "117488",
+        "allocation_limit_bytes": "10132807680",
+        "general_map": "private_scratch_never_published"
+      },
+      {
+        "requested_slots": "384",
+        "effective_slots": "384",
+        "staged": "1",
+        "host_slab_bytes": "1363148800",
+        "device_bytes": "1022361600",
+        "residual_gpu_rows": "117488",
+        "allocation_limit_bytes": "10132807680",
+        "general_map": "private_scratch_never_published"
+      },
+      {
+        "requested_slots": "384",
+        "effective_slots": "384",
+        "staged": "1",
+        "host_slab_bytes": "1363148800",
+        "device_bytes": "1022361600",
+        "residual_gpu_rows": "117488",
+        "allocation_limit_bytes": "10132807680",
+        "general_map": "private_scratch_never_published"
+      },
+      {
+        "requested_slots": "384",
+        "effective_slots": "384",
+        "staged": "1",
+        "host_slab_bytes": "1363148800",
+        "device_bytes": "1022361600",
+        "residual_gpu_rows": "117488",
+        "allocation_limit_bytes": "10132807680",
+        "general_map": "private_scratch_never_published"
+      }
+    ],
+    "per_request_totals": [
+      {
+        "uploads": "19631",
+        "requested_H2D_bytes": "40102860800",
+        "permanent_hits": "13594",
+        "permanent_slots": "267",
+        "total_slots": "384",
+        "final_drain": "checked"
+      },
+      {
+        "uploads": "19601",
+        "requested_H2D_bytes": "40032153600",
+        "permanent_hits": "13595",
+        "permanent_slots": "261",
+        "total_slots": "384",
+        "final_drain": "checked"
+      },
+      {
+        "uploads": "19572",
+        "requested_H2D_bytes": "39965158400",
+        "permanent_hits": "13616",
+        "permanent_slots": "267",
+        "total_slots": "384",
+        "final_drain": "checked"
+      },
+      {
+        "uploads": "19558",
+        "requested_H2D_bytes": "39945267200",
+        "permanent_hits": "13611",
+        "permanent_slots": "264",
+        "total_slots": "384",
+        "final_drain": "checked"
+      }
+    ],
+    "limits": "Requested raw expert H2D payload, not measured PCIe wire traffic; helper/full-request checked drains qualify this bounded model route only."
+  },
   "long_input_process_summary": {
     "first_use_request_index": 0,
     "subsequent_request_indices": [
@@ -438,12 +536,12 @@
       2,
       3
     ],
-    "median_prompt_tps": 845.9,
-    "sample_sd_prompt_tps": 0.1527525231652294,
-    "min_prompt_tps": 845.8,
-    "max_prompt_tps": 846.1,
+    "median_prompt_tps": 955.8,
+    "sample_sd_prompt_tps": 2.203028218914429,
+    "min_prompt_tps": 953.4,
+    "max_prompt_tps": 957.8,
     "process_target_passed": false,
-    "futility_stop": true,
+    "futility_stop": false,
     "limits": "One process only; no3-process target/adoption or decode qualification."
   },
   "gdn_column_route": [
@@ -487,41 +585,40 @@
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
   },
-  "same_workload_capacity_comparison": {
-    "baseline_commit": "0dc815171aa53e2098565075e45f904568fb47d5",
+  "matched_capacity_comparison": {
+    "baseline_commit": "b6d90afa7",
     "baseline_path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json",
-    "baseline_build_source_commit": "45c387d11f20579e2f4a96511497fa7a5fb6e4ce",
-    "baseline_binary_sha256": "4b7ea4883c0df2d5f973a08b22b0efc3ee7bdbed560828d2e221683ff986bcf0",
-    "baseline_first_use_tps": 755.3,
-    "baseline_subsequent_tps": [
-      802.1,
-      802.1,
-      802.0
-    ],
-    "candidate_first_use_tps": 795.0,
-    "candidate_subsequent_tps": [
+    "baseline_build_source_commit": "034bddff8393e8c1c9cee89e9235807230a81ad2",
+    "baseline_binary_sha256": "5338945aa6fb7a6df6c482da4b802046af856c4340a2a644deecfb8a32a2d01f",
+    "baseline_residual_GPU_rows": 98304,
+    "candidate_residual_GPU_rows": 117488,
+    "baseline_temporary_expert_slots": 512,
+    "candidate_temporary_expert_slots": 384,
+    "baseline_first_prompt_tps": 795.0,
+    "candidate_first_prompt_tps": 890.8,
+    "baseline_subsequent_prompt_tps": [
       845.9,
       846.1,
       845.8
     ],
-    "matched_request_hashes": true,
-    "actual_read_tokens_each": 117489,
-    "baseline_GPU_residual_rows": 81920,
-    "candidate_GPU_residual_rows": 98304,
-    "baseline_host_residual_bytes": 728432640,
-    "candidate_host_residual_bytes": 392888320,
-    "extra_mixed_allocation_bytes_before_after": [
-      419430400,
-      0
+    "candidate_subsequent_prompt_tps": [
+      957.8,
+      953.4,
+      955.8
     ],
-    "subsequent_median_gain_percent": 5.46066575239994,
-    "same_input_ratios": [
-      1.0546066575239994,
-      1.0548560029921457,
-      1.0546134663341646
-    ],
-    "decision": "Keep the default-off borrowed-scratch implementation as the improved117K capacity reference; the committed futility rule ends this configuration after cohort0. Do not run cohorts1/2 or claim the1000tok/s goal.",
-    "limits": "One independently launched process per placement, with3 sequential subsequent samples each. Changes storage/gather and GPU/RAM placement, not an isolated kernel improvement, repeated independent-process gain, full-context/task or sustained-decode qualification."
+    "baseline_median_prompt_tps": 845.9,
+    "candidate_median_prompt_tps": 955.8,
+    "median_gain_percent": 12.992079442014415,
+    "all_four_request_hashes_match": true,
+    "limits": "One independent process per placement so far; no repeated-process gain/target or isolated kernel claim."
   },
-  "next_action": "Implement and qualify the CPU-planned384-slot compressed-expert bank: retain512 experts in immutable RAM, use383 first-demand slots plus one staging slot, and select only full-GPU/all-accumulator requests. Existing512-slot path handles unsupported/short-tail/partial-GPU requests; head release remains0. Measure upload counts/bytes, CPU/queue costs and clean matched117K throughput; no physical bus/compute saturation claim."
+  "requested_payload_comparison": {
+    "baseline_bulk_expert_H2D_bytes_per_request": 50292326400,
+    "baseline_host_residual_bytes": 392888320,
+    "candidate_host_residual_bytes": 0,
+    "intermediate_residual_host_payload_eliminated_bytes_per_request": 36931502080,
+    "expert_metadata_sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d",
+    "limits": "Baseline bulk-copy loop and47 intermediate stores/inputs source arithmetic, compared with candidate submitted upload counters. These are requested payloads, not PCIe wire traffic or additive critical-path savings; GPU job shapes also change."
+  },
+  "next_action": "Continue committed independent-process cohorts1/2 for stability/selection; cohort0 already misses1000tok/s. Do not claim the3-process target, full-context/RESTORE/default adoption or decode qualification."
 }

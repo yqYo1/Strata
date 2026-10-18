@@ -41,6 +41,7 @@
 #include "strata/prefill/native16.hpp"
 #include "strata/prefill/moe_window_routes.hpp"
 #include "strata/prefill/moe_accum_plan.hpp"
+#include "strata/prefill/expert_bank_upload.hpp"
 #include "strata/prefill/qsa_native16.hpp"
 #include "strata/prefill/qsa_score_gemm.hpp"
 #include "strata/prefill/gdn_chunk64.hpp"
@@ -464,6 +465,11 @@ struct PeerPrefill {
 // Request owner, declared before the outer checked lease. A failed drain aborts
 // while this object and all raw upload pointers remain alive.
 struct MoeWindowContext {
+    std::unique_ptr<detail::ExpertBankSlots> expert_slots;
+    core::ExpertCache* expert_cache = nullptr; // outer-owned mutable upload target
+    const uint8_t* expert_slab = nullptr;
+    uint64_t expert_slab_bytes = 0, expert_stride = 0;
+    uint64_t staged_uploads = 0, staged_upload_bytes = 0, staged_hits = 0;
     uint16_t* bank = nullptr;
     uint64_t bank_bytes = 0;
     uint16_t* mixed = nullptr;

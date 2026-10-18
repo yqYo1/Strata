@@ -368,6 +368,7 @@ def main():
              'qsa-long-input-check', 'qsa-long-input',
              'qsa-long-input-balanced-check', 'qsa-long-input-balanced',
              'qsa-long-input-scratch-check', 'qsa-long-input-scratch',
+             'qsa-long-input-expert-bank-check', 'qsa-long-input-expert-bank',
              'qsa-kvvec4-timing-check', 'qsa-kvvec4-census') + tuple(
                  f'qsa-gdncols{n}-{phase}' for n in (2, 4, 8) for phase in ('check', 'base', 'candidate'))
     guards.require(len(sys.argv) in (3, 4) and sys.argv[1] in ('prepare', 'run') and
@@ -375,14 +376,15 @@ def main():
     action, mode = sys.argv[1:3]
     cohort = int(sys.argv[3]) if len(sys.argv) == 4 else 0
     guards.require(cohort in (0, 1, 2) and (len(sys.argv) == 3 or
-        mode in ('qsa-gu-fusion-base', 'qsa-gu-fusion-candidate', 'qsa-long-input', 'qsa-long-input-balanced', 'qsa-long-input-scratch')),
+        mode in ('qsa-gu-fusion-base', 'qsa-gu-fusion-candidate', 'qsa-long-input', 'qsa-long-input-balanced', 'qsa-long-input-scratch', 'qsa-long-input-expert-bank')),
         'optional cohort0|1|2 is for GU paired arms or independent long-input processes')
     column_mode = re.fullmatch(r'qsa-gdncols(2|4|8)-(check|base|candidate|warm-census|host-check|host-traced-check|host-census)', mode)
     ordered_trial = mode.startswith('qsa-ordered-exp-')
     long_trial = mode.startswith('qsa-long-input')
     balanced_placement = mode in ('qsa-long-input-balanced-check', 'qsa-long-input-balanced')
-    scratch_mixed = mode in ('qsa-long-input-scratch-check', 'qsa-long-input-scratch')
-    long_clean_mode = ('qsa-long-input-scratch' if scratch_mixed else
+    staged_bank = mode in ('qsa-long-input-expert-bank-check', 'qsa-long-input-expert-bank')
+    scratch_mixed = staged_bank or mode in ('qsa-long-input-scratch-check', 'qsa-long-input-scratch')
+    long_clean_mode = ('qsa-long-input-expert-bank' if staged_bank else 'qsa-long-input-scratch' if scratch_mixed else
                        'qsa-long-input-balanced' if balanced_placement else 'qsa-long-input')
     gu_trial = mode.startswith('qsa-gu-fusion-')
     gu_candidate = long_trial or (gu_trial and mode != 'qsa-gu-fusion-base')
@@ -390,7 +392,7 @@ def main():
     host_profile = mode.startswith('qsa-gdncols4-host-')
     warm_profile = mode in ('qsa-gdncols4-warm-census', 'qsa-gdncols4-host-census')
     column_trial = column_mode is not None or ordered_trial or gu_trial or long_trial
-    column_check = mode in ('qsa-long-input-scratch-check', 'qsa-long-input-balanced-check', 'qsa-long-input-check', 'qsa-ordered-exp-check', 'qsa-gu-fusion-check') or (column_mode is not None and column_mode[2] == 'check')
+    column_check = mode in ('qsa-long-input-expert-bank-check', 'qsa-long-input-scratch-check', 'qsa-long-input-balanced-check', 'qsa-long-input-check', 'qsa-ordered-exp-check', 'qsa-gu-fusion-check') or (column_mode is not None and column_mode[2] == 'check')
     column_partitions = 4 if ordered_trial or gu_trial or long_trial else int(column_mode[1]) if column_mode is not None and column_mode[2] != 'base' else 0
     qsa = mode.startswith('qsa-')
     short_profile = mode == 'qsa-kvvec4-timing-check' or (host_profile and not warm_profile)
@@ -438,13 +440,40 @@ def main():
                     ['git', 'show', 'HEAD:' + str(component_path.relative_to(P))], cwd=P) and
                     component['mode'] == 'validate' and component['passed'] and component['complete'] and
                     component['ownership_closed'] and component['GPU_executed'] and
-                    component['build_source_commit'] == build['source_commit'] and
                     {x['case'] for x in component['checks']} ==
                         {'plan', 'smoke', 'contiguous', '65537', 'partial', 'full'},
                     'matching committed two-bank capacity and bit-copy gates required')
+                fixture = build['fixtures']['sycl_moe_accum_test']
+                guards.require(fixture['sha256'] == component['fixture']['sha256'] and
+                    digest(fixture['path']) == fixture['sha256'], 'qualified mixed fixture bytes changed')
+                source_pins = {}
+                for name in ('include/strata/prefill/moe_accum_plan.hpp',
+                             'include/strata/prefill/native16.hpp','src/prefill/sycl/native16.cpp',
+                             'tests/sycl/moe_accum.cpp'):
+                    data = subprocess.check_output(['git','show',component['build_source_commit']+':'+name],cwd=P)
+                    source_pins[name] = hashlib.sha256(data).hexdigest()
+                    guards.require(digest(P/name)==source_pins[name], 'qualified mixed implementation changed: '+name)
                 mixed_qualification = dict(component_path=str(component_path.relative_to(P)),
                     component_sha256=digest(component_path), fixture=component['fixture'],
+                    current_fixture=fixture, kernel_source_sha256=source_pins,
+                    evidence='Prior completed numerical/bit-copy checks reused for identical executable bytes and unchanged tested kernel/plan source; this is not a new GPU run.',
                     limits='Component capacity/gather only; this model check must establish actual Prefill owners, bank phases and callback retirement.')
+            bank_qualification = None
+            if staged_bank:
+                component_path = A/'moe-expert-bank-current.json'
+                component = json.loads(component_path.read_text())
+                gpu = component.get('gpu',{})
+                guards.require(component_path.read_bytes()==subprocess.check_output(
+                    ['git','show','HEAD:'+str(component_path.relative_to(P))],cwd=P) and
+                    component['complete'] and component['passed'] and component['ownership_closed'] and
+                    gpu.get('mode')=='validate' and gpu.get('complete') and gpu.get('passed') and
+                    gpu.get('ownership_closed') and gpu['build_source_commit']==build['source_commit'] and
+                    gpu['fixture']==build['fixtures']['sycl_expert_bank_test'],
+                    'matching committed production expert-bank upload/byte/unwind gates required')
+                guards.require(digest(gpu['fixture']['path'])==gpu['fixture']['sha256'],'bank fixture changed')
+                bank_qualification = dict(component_path=str(component_path.relative_to(P)),
+                    component_sha256=digest(component_path),build_source_commit=gpu['build_source_commit'],
+                    limits=gpu['limits'])
             if gu_trial or long_trial:
                 component_path = A / 'moe-gu-swiglu-current.json'
                 component = json.loads(component_path.read_text())
@@ -571,6 +600,9 @@ def main():
                 if scratch_mixed:
                     env.update(STRATA_SYCL_PREFILL_MIXED_SCRATCH='1',
                         STRATA_PREFILL_LAYER_MAJOR_R_GPU='98304', STRATA_PREFILL_RELEASE_HEADS='0')
+                if staged_bank:
+                    env.update(STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS='384',
+                        STRATA_PREFILL_LAYER_MAJOR_R_GPU='auto')
             if qsa:
                 env['STRATA_SYCL_PREFILL_QSA_MATH'] = (
                     'bf16-prefix-ordered-exp' if ordered_candidate else
@@ -639,6 +671,10 @@ def main():
                     plan['mixed_qualification'] = mixed_qualification
                     plan['long_input_screen'].update(residual_GPU_rows=98304,
                         question='Borrow idle R/shared-arena spans for mixed input, with zero extra mixed allocation and16384 more GPU residual rows than the81920 screen. Preserve512MiB headroom and existing dense banking; heads remain resident. Placement plus storage comparison, not a kernel-only speed claim.')
+                if staged_bank:
+                    plan['expert_bank_qualification'] = bank_qualification
+                    plan['long_input_screen'].update(residual_GPU_rows=117488,expert_slots=384,
+                        question='Matched117489-token workload: smaller temporary expert GPU bank admits all117488 engine residual rows, eliminating the host-tail FFN path. Preserve512-expert host slab,512MiB allowance, dense banking and heads. Count extra requested H2D bytes/hits; compare total latency, not capacity arithmetic.')
                 if previous_screen:
                     plan['previous_screen'] = previous_screen
                 if not check:
@@ -699,6 +735,9 @@ def main():
         if scratch_mixed:
             guards.require(digest(P / plan['mixed_qualification']['component_path']) ==
                            plan['mixed_qualification']['component_sha256'], 'mixed component evidence changed')
+        if staged_bank:
+            guards.require(digest(P/plan['expert_bank_qualification']['component_path'])==
+                plan['expert_bank_qualification']['component_sha256'], 'expert-bank component evidence changed')
         boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
         journal = subprocess.check_output(['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True)
         cursor = next(x.split(': ', 1)[1] for x in journal.splitlines() if x.startswith('-- cursor: '))
@@ -765,7 +804,7 @@ def main():
                     'long screen requires actual accumulator mode10')
                 if balanced_placement or scratch_mixed:
                     placement = [x for x in log.splitlines() if x.startswith('strata prefill: layer-major candidate,')]
-                    expected_rows = 98304 if scratch_mixed else 81920
+                    expected_rows = 117488 if staged_bank else 98304 if scratch_mixed else 81920
                     guards.require(len(placement) == request_count and all(
                         f'residual_gpu_rows={expected_rows} ' in x for x in placement), 'wrong explicit residual placement')
                     record['residual_placement'] = placement
@@ -776,6 +815,21 @@ def main():
                         for x in banks), 'wrong mixed scratch backing or extra allocation')
                     guards.require('strata prefill heads:' not in log, 'scratch trial unexpectedly retired output heads')
                     record['mixed_scratch_route'] = dict(backing=banks)
+                    if staged_bank:
+                        selections = [dict(t.split('=',1) for t in line.split(': ',1)[1].split())
+                            for line in log.splitlines() if line.startswith('strata MoE expert bank:')]
+                        totals = [dict(t.split('=',1) for t in line.split(': ',1)[1].split())
+                            for line in log.splitlines() if line.startswith('strata MoE expert bank complete:')]
+                        guards.require(len(selections)==len(totals)==request_count and all(
+                            int(s['requested_slots'])==int(s['effective_slots'])==384 and int(s['staged'])==1 and
+                            int(s['host_slab_bytes'])==1363148800 and int(s['device_bytes'])==1022361600 and
+                            int(s['residual_gpu_rows'])==117488 and int(s['allocation_limit_bytes'])>=2406154240
+                            for s in selections) and all(0<int(s['uploads'])<=48*1024 and
+                            int(s['requested_H2D_bytes'])>0 and int(s['permanent_hits'])>=0 and
+                            0<int(s['permanent_slots'])<=383 and int(s['total_slots'])==384 and
+                            s['final_drain']=='checked' for s in totals), 'incomplete staged-bank model route/cost')
+                        record['expert_bank_route'] = dict(selections=selections,per_request_totals=totals,
+                            limits='Requested raw expert H2D payload, not measured PCIe wire traffic; helper/full-request checked drains qualify this bounded model route only.')
                     if check:
                         entries = [x for x in log.splitlines() if x.startswith('strata MoE mixed owners: phase=entry')]
                         retired = [x for x in log.splitlines() if x.startswith('strata MoE mixed owners: phase=retired')]
@@ -790,7 +844,7 @@ def main():
                         samples = [dict(field.split('=', 1) for field in x.split()[4:]) for x in entries]
                         retired_samples = [dict(field.split('=', 1) for field in x.split()[4:]) for x in retired]
                         expected_keys = [(layer, first, rows) for layer in range(48)
-                                         for first, rows in ((0, 81920), (81920, 16384))]
+                                         for first, rows in ((0, 81920), (81920, 35568 if staged_bank else 16384))]
                         keys = lambda items: [tuple(int(x[k]) for k in ('layer', 'first', 'rows')) for x in items]
                         guards.require(keys(samples) == keys(retired_samples) == expected_keys,
                             'mixed owner census has duplicate, missing or reordered windows')

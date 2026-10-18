@@ -2168,7 +2168,7 @@
   "physical262144_model_RESTORE_qualified": false,
   "baseline": "qsa_bf16_prefix_kvvec4_batch",
   "candidate": "qsa_bf16_prefix_ordered_exp_batch",
-  "consumer": "Immediate same-binary component comparison; preserve individual samples and retire raw checks after closure.",
+  "consumer": "Historical component evidence for current inference decisions; no imminent reuse of these original executables.",
   "prospective_gate": "For ordered-exp:3 independent processes,6 rotated samples per arm/shape. Geomean candidate/base<=0.95 across3 matched shapes; no shape>1.05; each process improves for both cap2051 patterns. Component advance only, no model or decode adoption.",
   "limits": "Complete wrapper wall includes admission, pack, attention and checked drain. No hardware saturation, physical traffic, occupancy or model speed inference.",
   "previous_attempt": {
@@ -2301,5 +2301,10 @@
     ],
     "geometric_mean_latency_ratio": 0.9126921954333398,
     "advance_to_model": true
+  },
+  "fixture_retirement": {
+    "state": "historical executable retired; useful individual samples and original identities preserved",
+    "manifest_commit": "faa1b7030",
+    "source_recovery": "Exact original build matched by executable SHA256; source/dependency aggregate hashes and recipe recovered from Git."
   }
 }

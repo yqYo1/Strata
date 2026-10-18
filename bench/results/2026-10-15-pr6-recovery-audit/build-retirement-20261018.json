@@ -518,7 +518,7 @@
     "retained_binaries_verified_before_after": true
   },
   "superseded_expert_plan_and_consumed_audit_v1": {
-    "state": "planned; await default-branch reachability before deletion",
+    "state": "performed; all8 manifested files removed after original source reached default",
     "source_commit": "cb01e64fe16dcf6eef93f3922a16e5bbae3941a1",
     "source_recovery_count": 6,
     "source_recipe_reference": "tools/sycl/check_expert_bank.py at the measured source commit; original result retained at3fdbb810a.",
@@ -527,56 +527,150 @@
     ],
     "file_count": 8,
     "bytes": 43920,
-    "files": [
+    "report_retention_decision": "Actual-code audit found no concrete defect; its short digest and source hashes are indexed. The117K owner/phase screen is committed; full-context/RESTORE/failure gates remain open. The new expert-bank design report and substantive non-LLM collection remain with their named consumers.",
+    "deletion_manifest_commit": "eca80c081743ce2a0f9e6a43e8cc6d7e9601335c",
+    "verified_default_commit": "e3d408736fb3b30fa13642e1a72895d85ceee970",
+    "protected_current_hashes_verified": true
+  },
+  "closed_fixture_and_limit_queries_v1": {
+    "state": "performed;27 files removed after exact source/recipe recovery and original default reachability",
+    "fixtures_recovery": [
       {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-expert-bank-component-v1/owned-plan/compile-plan.stderr",
-        "bytes": 0,
-        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "reason": "Superseded CPU-plan output or consumed successful audit/review transaction; source/recipe/results or useful digest preserved, no current raw consumer."
+        "build_record_commit": "c51a20f20e07fcb87dc7809e4028cb81a8e0393a",
+        "source_commit": "ce1e950a843953c7856382978f7993bcc848e366",
+        "recovered_groups": [
+          {
+            "root": "/home/yayoi/orca/workspaces/Strata/sycl",
+            "revision": "ce1e950a843953c7856382978f7993bcc848e366",
+            "count": 492,
+            "aggregate_sha256": "8daaa86a3ef0b7d5955198c6eb5f2a44eec56cb6abc8c4ecc28c3b8e199fb235"
+          },
+          {
+            "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+            "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+            "count": 3608,
+            "aggregate_sha256": "322862d213ed722d6500da0b58a1b7fffff53aa0de77d7f2e8ba685c653a0d9f"
+          },
+          {
+            "root": "/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+            "revision": "87f6850680a580654b9ea2c80dbc01aeb36ad231",
+            "count": 5703,
+            "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
+          }
+        ],
+        "recipe": {
+          "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-entry-engine-build-v2.json",
+          "sha256": "9b7734387f0fc56f36afe9d7bca75e5f0bedcef479271e982025abe1d4334a1a"
+        },
+        "matching_executables": [
+          "sycl_qsa_bf16_prefix_kvvec4_test",
+          "sycl_qsa_bf16_prefix_ordered_exp_test",
+          "sycl_qsa_bf16_prefix_ordered_exp_bench"
+        ]
       },
       {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-expert-bank-component-v1/owned-plan/compile-plan.stdout",
-        "bytes": 0,
-        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "reason": "Superseded CPU-plan output or consumed successful audit/review transaction; source/recipe/results or useful digest preserved, no current raw consumer."
+        "build_record_commit": "eba95e58ae08a81e0cdc27d53896cb8b3d9b4e63",
+        "source_commit": "4b961807161cae025d5318bb271216b6241b9aa1",
+        "recovered_groups": [
+          {
+            "root": "/home/yayoi/orca/workspaces/Strata/sycl",
+            "revision": "4b961807161cae025d5318bb271216b6241b9aa1",
+            "count": 486,
+            "aggregate_sha256": "858e8ed009cd64f4d16fd40bd1a74bc414ab1fb5f158b6d13a9de97d64380c46"
+          },
+          {
+            "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+            "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+            "count": 3608,
+            "aggregate_sha256": "322862d213ed722d6500da0b58a1b7fffff53aa0de77d7f2e8ba685c653a0d9f"
+          },
+          {
+            "root": "/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+            "revision": "87f6850680a580654b9ea2c80dbc01aeb36ad231",
+            "count": 5703,
+            "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
+          }
+        ],
+        "recipe": {
+          "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-entry-engine-build-v2.json",
+          "sha256": "9b7734387f0fc56f36afe9d7bca75e5f0bedcef479271e982025abe1d4334a1a"
+        },
+        "matching_executables": [
+          "sycl_qsa_bf16_late_flags_test",
+          "sycl_qsa_bf16_prefix_optimized_test",
+          "sycl_qsa_bf16_prefix_qcache_test",
+          "sycl_qsa_bf16_prefix_kvec4_test",
+          "sycl_qsa_bf16_prefix_qcache_bench"
+        ]
       },
       {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-expert-bank-component-v1/owned-plan/plan.stderr",
-        "bytes": 0,
-        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "reason": "Superseded CPU-plan output or consumed successful audit/review transaction; source/recipe/results or useful digest preserved, no current raw consumer."
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-expert-bank-component-v1/owned-plan/plan.stdout",
-        "bytes": 244,
-        "sha256": "84e6764b0355c276dd57a370d70de7ef14cbd2ce3121ce41f1be23a9bd753932",
-        "reason": "Superseded CPU-plan output or consumed successful audit/review transaction; source/recipe/results or useful digest preserved, no current raw consumer."
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-expert-bank-component-v1/plan-test",
-        "bytes": 22368,
-        "sha256": "a32f85404f96e7fa7425f8224ca0d367f4df3a8c4b71a29aa932c12e15c09f4c",
-        "reason": "Superseded CPU-plan output or consumed successful audit/review transaction; source/recipe/results or useful digest preserved, no current raw consumer."
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-expert-bank-component-v1/record.json",
-        "bytes": 5568,
-        "sha256": "3f37c0a6ca0411d09ca0c7a0ba1bf44eae28ec0c317ecfe7c87a2fd7d02e7b7a",
-        "reason": "Superseded CPU-plan output or consumed successful audit/review transaction; source/recipe/results or useful digest preserved, no current raw consumer."
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/implemented-mixed-scratch-lifetime-audit.md",
-        "bytes": 8229,
-        "sha256": "b7bcf0083048eabbc8942686f444f65c8328e2d8508b12d9468e5dba53609b99",
-        "reason": "Superseded CPU-plan output or consumed successful audit/review transaction; source/recipe/results or useful digest preserved, no current raw consumer."
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/implemented-mixed-scratch-native-review.json",
-        "bytes": 7511,
-        "sha256": "c42ab509662be7394ca0a25ff70b2e5ea337e64cbfd24760109f1b2555052438",
-        "reason": "Superseded CPU-plan output or consumed successful audit/review transaction; source/recipe/results or useful digest preserved, no current raw consumer."
+        "build_record_commit": "105cb8b738838f0bf42f2b8210b691fdba4af582",
+        "source_commit": "5eb48ed4fce7d0fb8f52afdacc4bf074a2f9e96f",
+        "recovered_groups": [
+          {
+            "root": "/home/yayoi/orca/workspaces/Strata/sycl",
+            "revision": "5eb48ed4fce7d0fb8f52afdacc4bf074a2f9e96f",
+            "count": 486,
+            "aggregate_sha256": "15a1aef0ca2b89352f8bb4234879e811e7e6104bc704b2a9d731c1b221474304"
+          },
+          {
+            "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+            "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+            "count": 3608,
+            "aggregate_sha256": "322862d213ed722d6500da0b58a1b7fffff53aa0de77d7f2e8ba685c653a0d9f"
+          },
+          {
+            "root": "/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+            "revision": "87f6850680a580654b9ea2c80dbc01aeb36ad231",
+            "count": 5703,
+            "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
+          }
+        ],
+        "recipe": {
+          "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-entry-engine-build-v2.json",
+          "sha256": "9b7734387f0fc56f36afe9d7bca75e5f0bedcef479271e982025abe1d4334a1a"
+        },
+        "matching_executables": [
+          "sycl_native16_paired_gemm_bench"
+        ]
       }
     ],
-    "report_retention_decision": "Actual-code audit found no concrete defect; its short digest and source hashes are indexed. The117K owner/phase screen is committed; full-context/RESTORE/failure gates remain open. The new expert-bank design report and substantive non-LLM collection remain with their named consumers."
+    "standalone_recovery": [
+      {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-expert-bank-component-v2",
+        "source_commit": "a66bd86ffeef2643250a1c99a6b119775152cef3",
+        "source_count": 6,
+        "recipe": "tools/sycl/check_expert_bank.py at source_commit",
+        "passed": true,
+        "reason": "CPU admission superseded by capped v3, or completed query-only property check; useful result preserved in Git."
+      },
+      {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-expert-bank-limits-v1",
+        "source_commit": "e567f08328de1a645a86a49b5338a0103e379741",
+        "source_count": 5,
+        "recipe": "tools/sycl/check_expert_bank.py at source_commit",
+        "passed": false,
+        "reason": "CPU admission superseded by capped v3, or completed query-only property check; useful result preserved in Git."
+      },
+      {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-expert-bank-limits-v2",
+        "source_commit": "8f5233059092ac3835e0444dd9be9aa3b7789db8",
+        "source_count": 5,
+        "recipe": "tools/sycl/check_expert_bank.py at source_commit",
+        "passed": true,
+        "reason": "CPU admission superseded by capped v3, or completed query-only property check; useful result preserved in Git."
+      }
+    ],
+    "delete_roots": [
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-expert-bank-component-v2",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-expert-bank-limits-v1",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-expert-bank-limits-v2"
+    ],
+    "file_count": 27,
+    "bytes": 22162582,
+    "protected": "Current source034 engine and its3 selected fixtures; capped CPU plan v3; all6 legacy holds remain untouched.",
+    "limits": "Does not qualify a model route or resolve the six separate legacy source holds.",
+    "deletion_manifest_commit": "faa1b7030",
+    "protected_current_hashes_verified": true
   }
 }

@@ -1382,6 +1382,42 @@ an explicit per-allocation cap and must preserve it independently of total budge
 CPU cap-boundary/fallback checks passed at sourcecb74810ab, including stricter
 hypothetical2GiB/1.5GiB devices, the exact residual-size boundary, invalid caps
 and explicit full-prefix rejection. These remain CPU planning checks.
-The planner is not yet connected to the engine; GPU staging and
-model performance are untested. Implement and qualify those before measuring
-this candidate or reporting a speedup.
+The default-off STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS=384 route now connects
+that plan to the engine. Production and the new synthetic GPU fixture share
+the same checked upload helper. Its private map is published after accepted
+enqueue, with source/cache/status owners retained through the existing checked
+lease. The original path still publishes all512 experts after its initial drain.
+Staged requested H2D bytes/hits are counted separately: its uploads occur inside
+the MoE dependency path, not the initial bulk-upload interval.
+The corrected source1222e27d0 compiles successfully, including the production
+engine and shared-helper GPU fixture. The initial attempt rejected the const
+cache view at compile time, before any execution; the implementation now owns
+an explicit mutable upload target rather than casting away const. The source034
+validated engine/fixtures are retained externally for this immediate comparison.
+The traced three-case GPU smoke and four-case validation passed with no fresh
+fault. They cover383/384/512 slots, two-layer resets, scratch-only capacity1,
+actual2662400B stride, all512 host experts, two queued readers per selection,
+immutable source/slot guards, seven admission rejections per case and caller
+unwind after queued work. Three old math/gather fixtures rebuild to identical
+SHA256 bytes, so their existing checks remain component evidence; this does not
+claim a fresh run or qualify the changed model orchestration.
+The parameter-validated117489-token model request then passed, with all117488
+engine rows on GPU, zero host residual,96 exact entry/retirement window pairs
+and normal process closure. Requested expert H2D payload was40102860800B across
+19631 uploads, with13594 permanent hits; unused experts are not bulk-uploaded.
+The final layer used267 permanent slots. No fresh fault occurred. Its874.6tok/s
+first-use reading includes validation/logging and is diagnostic.
+Clean cohort0 then passed with890.8tok/s first use and957.8,953.4,955.8
+subsequently (median955.8, sample SD2.2030). All four request hashes match the
+98304-row placement, whose subsequent median was845.9; this is a12.9921%
+improvement in one process per configuration, not an isolated kernel or a
+repeated-process gain. All four requests closed normally with no fresh fault.
+The1000tok/s process target fails, but the prospective futility rule does not
+trigger. Continue independent processes1/2 under the frozen plan.
+The old47 intermediate residual stores plus47 inputs requested36931502080B
+of host transfers; the new route replaces those with GPU-local copies. Staged
+expert payload is39.95..40.10GB/request versus the old bulk50.29GB. This does
+not measure wire traffic or assign the speed gain to transfers alone: the
+remaining FFN window also changes from16384 plus host chunks to35568 GPU rows.
+Physical262144, production failure/session/RESTORE and default adoption remain
+unqualified; this bounded screen does not establish sustained decode speed.

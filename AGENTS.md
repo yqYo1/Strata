@@ -146,7 +146,10 @@ integration and testing.
   FP16 is universally better. Preserve the existing FP32 reference.
 - Plan long-prefill VRAM separately from decode placement. Account for the
   largest resident layer and kernel workspace before budgeting KV and hidden
-  states. Compare releasing decode-only weights/cache, partial retention and
+  states. Check both the total free-memory budget and the device's maximum
+  single-allocation size; a budget calculation does not prove that the planned
+  allocations succeed. Record actual admission before claiming GPU residency.
+  Compare releasing decode-only weights/cache, partial retention and
   rebuilding from RAM by their total transfer, synchronization and reconstruction
   cost; do not assume keeping decode allocations resident is always cheaper.
 - Implement native 16-bit hidden-state

@@ -271,7 +271,12 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     // All new allocations are additional. Headroom is finite and explicit.
     constexpr uint64_t gpu_headroom = 512ull << 20, host_headroom = 8ull << 30;
     const uint64_t stride = detail::layer_major_add(layout.max_blob, 255) / 256 * 256;
-    const uint64_t cache_bytes = detail::layer_major_mul(NE, stride);
+    const uint64_t host_slab_bytes = detail::layer_major_mul(NE, stride);
+    const char* bank_option = std::getenv("STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS");
+    const int64_t requested_slots = bank_option ? detail::layer_major_requested_rows(bank_option) : 0;
+    if (requested_slots < 0 || requested_slots > NE) {
+        err = "prefill expert bank: slots must be decimal0..512"; return false;
+    }
     const uint64_t map_bytes = detail::layer_major_mul(detail::layer_major_mul(g.n_layers, NE), sizeof(int32_t));
     // Exact transient live-prefix storage: two BF16 tensors plus one INT32
     // diagnostic per [logical cell,KV head]. Reserve cumulatively with the
@@ -287,20 +292,25 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     // Half/head scratch borrows attn_h only BEFORE gate overwrites it. Qf is
     // still a gate INPUT and must not be reused. Only sticky status is additional.
     const uint64_t score_status_bytes = score_gemm_on ? 256 : 0;
-    const uint64_t gpu_reserved = detail::layer_major_add(
-        detail::layer_major_add(cache_bytes, prefix_bytes), score_status_bytes);
+    const uint64_t other_reserved = detail::layer_major_add(prefix_bytes, score_status_bytes);
     size_t free_gpu = 0, total_gpu = 0;
     const cudaError_t memory_status = cudaMemGetInfo(&free_gpu, &total_gpu);
-    if (memory_status != cudaSuccess || free_gpu > total_gpu ||
-        free_gpu < detail::layer_major_add(gpu_reserved, gpu_headroom)) {
-        err = "prefill layer-major: extra expert cache (" + std::to_string(cache_bytes) +
+    if (memory_status != cudaSuccess || free_gpu > total_gpu) {
+        err = "prefill layer-major: extra expert cache (" + std::to_string(host_slab_bytes) +
               " bytes), BF16 prefix (" + std::to_string(prefix_bytes) + " bytes), score status (" +
               std::to_string(score_status_bytes) + " bytes) plus 512 MiB headroom exceeds known free VRAM (" + std::to_string(free_gpu) + ")";
         return false;
     }
-    const auto plan = detail::LayerMajorResidualPlan::make(n, m.T, D,
-        free_gpu - gpu_reserved - gpu_headroom,
-        detail::layer_major_requested_rows(std::getenv("STRATA_PREFILL_LAYER_MAJOR_R_GPU")), residual_dtype);
+    const auto max_alloc = sycl_backend::queue_for(m.cs).get_device()
+        .get_info<sycl::info::device::max_mem_alloc_size>();
+    const auto bank_plan = detail::ExpertBankPlan::make(n, m.T, D, stride, free_gpu,
+        other_reserved, gpu_headroom, max_alloc,
+        detail::layer_major_requested_rows(std::getenv("STRATA_PREFILL_LAYER_MAJOR_R_GPU")),
+        residual_dtype, requested_slots,
+        window_on && window_requested == 10 && native16_on && scratch_mixed_on);
+    const auto& plan = bank_plan.residual;
+    const uint64_t cache_bytes = bank_plan.device_bytes;
+    const uint64_t gpu_reserved = detail::layer_major_add(cache_bytes, other_reserved);
     // Keep residual placement fixed for the first comparison. Admit an owned
     // FP16 mixed bank only from the remaining budget, retaining 512 MiB.
     int64_t accumulation_rows = 0;
@@ -339,9 +349,13 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     if (command_profile_on && window_requested >= 8 && !accumulation_rows) {
         err = "prefill command profile: requested accumulator window was not admitted"; return false;
     }
+    if (bank_plan.staged() && (!accumulation_rows || plan.gpu_rows != n ||
+        accumulation_rows != std::min<int64_t>(detail::ExpertBankPlan::window_rows, n))) {
+        err = "prefill expert bank: every FFN piece must use the all-GPU accumulator"; return false;
+    }
     // One owned host upload slab removes every source pointer lease before DMA.
     // Also count the cache's small blocking staging allocation and two maps.
-    uint64_t host_need = detail::layer_major_add(plan.host_bytes, cache_bytes);
+    uint64_t host_need = detail::layer_major_add(plan.host_bytes, host_slab_bytes);
     host_need = detail::layer_major_add(host_need, stride);
     host_need = detail::layer_major_add(host_need, detail::layer_major_mul(2, map_bytes));
     if (window_on) host_need = detail::layer_major_add(host_need,
@@ -353,7 +367,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     }
     if (should_stop && should_stop()) { err = "cancelled"; return false; }
     core::ExpertCache layer_cache;
-    std::unique_ptr<uint8_t[]> upload(new uint8_t[size_t(cache_bytes)]);
+    std::unique_ptr<uint8_t[]> upload(new uint8_t[size_t(host_slab_bytes)]);
     std::unique_ptr<uint8_t[]> rows(plan.host_bytes ? new uint8_t[size_t(plan.host_bytes)] : nullptr);
     std::vector<int32_t> residency(size_t(g.n_layers * NE), -1);
     auto free_device = [](uint8_t* p) { if (p) (void) cudaFree(p); };
@@ -535,7 +549,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     }
     // Allocation-only cache opening is essential: no memset may fail and free
     // its allocation before the outer checked lease has retired its readers.
-    if (!layer_cache.open_uninitialized(NE, 1, NE, int64_t(stride), err)) return false;
+    if (!layer_cache.open_uninitialized(bank_plan.slots, 1, NE, int64_t(stride), err)) return false;
     if (score_gemm_on) {
         uint8_t* storage = nullptr;
         if (cudaMalloc(reinterpret_cast<void**>(&storage), size_t(score_status_bytes)) != cudaSuccess) {
@@ -636,6 +650,13 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     m.native16_active = native16_on;
     m.layer_major_residual = plan;
     if (window_context) {
+        if (bank_plan.staged()) {
+            window_context->expert_slots.reset(new detail::ExpertBankSlots(int32_t(bank_plan.slots)));
+            window_context->expert_cache = &layer_cache;
+            window_context->expert_slab = upload.get();
+            window_context->expert_slab_bytes = host_slab_bytes;
+            window_context->expert_stride = stride;
+        }
         window_context->bank = reinterpret_cast<uint16_t*>(device_rows.get());
         window_context->bank_bytes = plan.gpu_bytes;
         window_context->mixed = reinterpret_cast<uint16_t*>(mixed_storage.get());
@@ -662,6 +683,11 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     }
     m.cache = &layer_cache;
     m.host_res = residency.data();
+    if (requested_slots)
+        std::fprintf(stderr, "strata MoE expert bank: requested_slots=%lld effective_slots=%lld staged=%d host_slab_bytes=%llu device_bytes=%llu residual_gpu_rows=%lld allocation_limit_bytes=%llu general_map=private_scratch_never_published\n",
+            (long long)requested_slots, (long long)bank_plan.slots, int(bank_plan.staged()),
+            (unsigned long long)host_slab_bytes, (unsigned long long)cache_bytes,
+            (long long)plan.gpu_rows, (unsigned long long)max_alloc);
     std::fprintf(stderr, "strata prefill: layer-major candidate, tokens=%lld chunk=%lld residual_dtype=%s "
                          "residual_element_bytes=%llu residual_total=%llu residual_gpu_rows=%lld "
                          "residual_gpu=%llu residual_host=%llu residual_staging=%llu layer_cache=%llu; "
@@ -693,6 +719,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             std::fflush(stderr);
         }
         std::fill(residency.begin(), residency.end(), -1);
+        if (bank_plan.staged()) window_context->expert_slots->reset(); // previous layer checked above
         const auto load_start = Clock::now();
         const uint64_t bytes = layout.blob_bytes(layer);
         // Resolve/copy on the main thread. copy_blob may itself call blob(),
@@ -709,7 +736,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         const auto upload_start = profile ? LmProfile::Clock::now() : LmProfile::Clock::time_point{};
         if (profile) profile->begin(LmProfile::upload, m.cs);
         sycl_backend::cpu_wait_profile::Host upload_cpu_profile(sycl_backend::cpu_wait_profile::upload_submit);
-        for (int32_t e = 0; e < NE; ++e) {
+        for (int32_t e = 0; !bank_plan.staged() && e < NE; ++e) {
             if (!layer_cache.fill_slot(e, upload.get() + size_t(e) * size_t(stride), m.copy, err, int64_t(bytes)))
                 return false;
             ++stats_.experts_streamed;
@@ -718,7 +745,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         if (profile) {
             profile->end(LmProfile::upload, m.cs);
             profile->add(LmProfile::upload_submit, upload_start);
-            profile->rows[layer].upload_bytes += uint64_t(NE) * bytes;
+            if (!bank_plan.staged()) profile->rows[layer].upload_bytes += uint64_t(NE) * bytes;
         }
         const auto upload_drain_start = profile ? LmProfile::Clock::now() : LmProfile::Clock::time_point{};
         if (!drain()) { err = "prefill layer-major: expert upload drain failed"; return false; }
@@ -729,7 +756,8 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         stats_.ms_experts_host += ms_since(load_start);
         // Publish all 512 only after the upload wait succeeds. No Stager/issuer
         // job can reference upload, rows, this map, or this temporary cache.
-        for (int32_t e = 0; e < NE; ++e) residency[size_t(layer * NE + e)] = e;
+        if (!bank_plan.staged())
+            for (int32_t e = 0; e < NE; ++e) residency[size_t(layer * NE + e)] = e;
         if (census) {
             const auto& f = layout.fmt[size_t(layer)];
             // run_impl stream_all is !layer_major_active && ...; therefore its
@@ -908,6 +936,12 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     stats_.chunks = old_stats.chunks + logical_chunks;
     stats_.ms_total = old_stats.ms_total + ms_since(started);
     if (window_context && window_context->accumulation) {
+        if (window_context->expert_slots)
+            std::fprintf(stderr, "strata MoE expert bank complete: uploads=%llu requested_H2D_bytes=%llu permanent_hits=%llu permanent_slots=%d total_slots=%d final_drain=checked\n",
+                (unsigned long long)window_context->staged_uploads,
+                (unsigned long long)window_context->staged_upload_bytes,
+                (unsigned long long)window_context->staged_hits,
+                window_context->expert_slots->permanent_used(), window_context->expert_slots->slots());
         std::fprintf(stderr, "strata MoE GU fusion: fused_jobs=%llu fused_rows=%llu separate_jobs=%llu min_rows=2334\n",
             (unsigned long long)window_context->gu_fused_jobs,
             (unsigned long long)window_context->gu_fused_rows,

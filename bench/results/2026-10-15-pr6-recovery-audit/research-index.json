@@ -1599,45 +1599,19 @@
   "implemented_mixed_scratch_lifetime_scope": {
     "classification": "decision support",
     "schedulable_now": false,
-    "state": "reviewed; no concrete defect established",
-    "prerequisites_met": [
-      "New default-off implementation is committed at 6b3ee1e35 and built from 034bddff8393e8c1c9cee89e9235807230a81ad2.",
-      "CPU capacity and all five GPU gather gates passed in moe-mixed-scratch-current.json; no new fault.",
-      "Prior two-bank report mapped source45 lifetimes before this actual implementation; this scope audits the newly implemented consumers, not another storage survey."
-    ],
-    "question": "Audit the implemented borrowed mixed banks across the complete FFN and callback lifetime, window/tail/status boundaries and failure paths; distinguish concrete defects from still-open model qualification.",
     "source_commit": "034bddff8393e8c1c9cee89e9235807230a81ad2",
-    "source_files_sha256": {
-      "include/strata/prefill/moe_accum_plan.hpp": "1fa1618eaf96a6ec50bc948f7c6750fc33f463c702cfbf36cd57e928597ca1aa",
-      "include/strata/prefill/native16.hpp": "efc7e1eae1ed5995f5a408693ccbd503755487de85b9a4d345692ce181a9b4b5",
-      "src/prefill/layer_major.inc": "61413caf069c1f6893af98603824da596bb5ba340a84e989a31674f3fcbd9aad",
-      "src/prefill/moe_window.inc": "43b9d5e4b86def6289eb1f45006b3ed147aef22b627548d931eebc9f434a6cb5",
-      "src/prefill/prefill.cpp": "7472160303b0a975cc68554bfcbbed85673b5a39509d880664fd0967addbf332",
-      "src/prefill/sycl/native16.cpp": "c88f2d7ae06c63dbfb04b0bb777be03284a402f90a7b714eddecd9ede1b72cc4",
-      "tests/sycl/moe_accum.cpp": "36f2710360117c0812bc586c3db2a9db71c3033df6d9fa92cf28616ed1a665eb"
-    },
-    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/implemented-mixed-scratch-lifetime-audit.md",
-    "report_budget": "12 KiB target, 20 KiB maximum; one coherent actual-code audit",
-    "main_reads_body_on_arrival": false,
-    "retention_consumer": "Main current borrowed-scratch model qualification; review after that consumer closes.",
-    "eligible_at_dispatch": true,
-    "task": "task_c01b2a59d061",
-    "dispatch": "ctx_82c1da94d7d4",
-    "terminal": "term_f92754a8-4719-405a-ab47-09b4eca46b53",
-    "model_evidence": "Explicit terminal argv gpt-6-luna, medium; worker-start existing-terminal effective preference fields are null, not independent provider verification.",
-    "report_sha256": "b7bcf0083048eabbc8942686f444f65c8328e2d8508b12d9468e5dba53609b99",
-    "report_bytes": 8229,
-    "completion_delivery": "delivery_4dc6273330c1",
-    "lifecycle_state": "accepted succeeded worker_done; worker-release retains this externally launched terminal without asserting process closure",
-    "review_task": "/root/review_implemented_mixed_scratch_20261019",
-    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/implemented-mixed-scratch-native-review.json",
-    "review_sha256": "c42ab509662be7394ca0a25ff70b2e5ea337e64cbfd24760109f1b2555052438",
     "reviewed_digest": [
       "All seven supplied source hashes match; no concrete bounds/alias/USM/queue/lifetime defect established.",
       "Gather fixtures do not qualify whole-helper failure paths, physical262144 context or RESTORE.",
       "Main subsequently completed the117489-token owner/phase check at dc0fc0f9c and the closed clean cohort0 at b6d90afa7 (median845.9); the review itself did not verify those new results or Git ancestry."
     ],
-    "review_point": "After current clean screen, retain only findings needed for short/full-context/failure/RESTORE qualification."
+    "state": "closed; no concrete defect established; consumed report/review retired",
+    "model_checks": {
+      "owner_phase_commit": "dc0fc0f9c",
+      "clean117K_commit": "b6d90afa7"
+    },
+    "retirement_manifest_commit": "eca80c081743ce2a0f9e6a43e8cc6d7e9601335c",
+    "remaining": "Full physical262144, RESTORE and whole-helper failure/session rollback remain unqualified; no full audit document is retained for an unnamed consumer."
   },
   "out_of_core_sycl_hpc_scheduling_scope": {
     "classification": "knowledge collection",
@@ -1717,5 +1691,87 @@
       "Same-queue enqueue ordering and checked outer lease are required; actual staged DMA, failure retirement, model speed, physical262144 and RESTORE remain untested."
     ],
     "main_followup": "Query-only device properties at source8f5233059 report max_mem_alloc_size10132807680B, above the2406154240B proposed residual. CPU planner at cb74810ab now respects an explicit allocation cap and passes stricter hypothetical cap fallbacks. Engine staging, actual allocation/queue retirement, model speed, full-context/RESTORE remain untested."
+  },
+  "implemented_expert_bank_scope": {
+    "classification": "decision support",
+    "schedulable_now": false,
+    "state": "reviewed; no immediate source blocker established",
+    "source_commit": "1222e27d0",
+    "source_files_sha256": {
+      "include/strata/prefill/expert_bank_plan.hpp": "1c3b9157f64c4e1c3aede95017ba17ad3c10d433946b5efa25d0c073c5f8c3a9",
+      "include/strata/prefill/expert_bank_upload.hpp": "8a8e117f7b73aa32621cbfeb959b091b19456af2ffab2cc99e7af2a42a8f14ad",
+      "src/prefill/layer_major.inc": "8ec7c5550c26c76c3d93cef4b011a4fc5673f200082469530c2900cde4218129",
+      "src/prefill/moe_window.inc": "ea2a5b20006827a9173d4588de0061ed0845307dc8ea58c2d72422841a11936c",
+      "src/prefill/prefill.cpp": "94a0bd84d40e2e826b259d511221a195d4569ae30171e8eabd9c8c7b2a22a7f6",
+      "src/core/expert_cache.cpp": "7d9a7fe0c54e8d55addcc9e9d7117d0b3addd3da294feb3b78b0fde735ce806e",
+      "tests/sycl/expert_bank.cpp": "5b32f7e18b2aba1cc18cc70a985cc906f8b59eb454badc9317e1558c27fb893c"
+    },
+    "prerequisites_met": [
+      "The default-off384-slot production path and shared upload helper/fixture are committed at e0620e260 plus explicit mutable-owner correction1222e27d0.",
+      "CPU allocation-cap and short-tail fallbacks passed at cb74810ab; current build is in progress under Main ownership.",
+      "The previous source034 design audit did not inspect this implemented staging code."
+    ],
+    "question": "Audit the actual staged expert-bank integration, especially private scratch publication, shared production upload helper, host-slab/queue lifetime, normal-FFN shape fallback and error teardown. Distinguish concrete bugs from untested model/session gates.",
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/implemented-expert-bank-audit.md",
+    "report_budget": "10KiB target,16KiB maximum; one finite actual-code audit",
+    "main_reads_body_on_arrival": false,
+    "retention_consumer": "Main next staged-bank component/model qualification; native Luna-max review first, review retention at comparison closure.",
+    "task": "task_23f8455bddae",
+    "dispatch": "ctx_ab723838e1d5",
+    "terminal": "term_57cd822c-e033-4c96-b8a7-27e0666873db",
+    "model_evidence": "Explicit terminal argv gpt-6-luna medium with startup update check disabled. Existing-terminal worker-start preference fields are null and do not independently verify model selection.",
+    "startup_recovery": "Normal supervised start ctx_a14c04d9bc20 failed at update-prompt readiness before task execution; worker-release closed its created terminal. Retry used the same task and one fresh explicitly configured ready terminal.",
+    "report_sha256": "8229b0942312a870a0961458d90c32f3d85f6e3dcf8ded420597e2c774414454",
+    "report_bytes": 6660,
+    "completion_delivery": "delivery_1b2b4b2a9546",
+    "lifecycle_state": "Accepted succeeded worker_done; worker-release retains the externally launched terminal, processAction none, delivery acknowledged.",
+    "review_task": "/root/review_expert_bank_20261019",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/implemented-expert-bank-native-review.json",
+    "review_sha256": "733c59b13524ff92c5c24c534e96a71b079e3d0e0a603699e9201129de121b45",
+    "reviewed_digest": [
+      "All seven source hashes match; no immediate source blocker established.",
+      "383 permanent plus scratch383, shape fallback, same in-order queue and checked owner lifetime are supported by source.",
+      "Actual enqueue/drain fault injection and production session/physical262144/RESTORE remain unqualified. Component passes do not establish model speed."
+    ],
+    "review_point": "After current staged-bank model comparison closes, retain only concrete remaining correctness findings; no duplicate source audit while unchanged inputs are frozen."
+  },
+  "staged_copy_resource_contract_scope": {
+    "classification": "decision support",
+    "schedulable_now": false,
+    "state": "reviewed; actual loaded-adapter branch and physical counters remain unqualified",
+    "prerequisites_met": [
+      "Source1222e27d0 stages compressed raw expert blobs on the compute in-order stream through stage_expert_bank -> ExpertCache::fill_slot -> cudaMemcpyAsync -> SYCL queue.memcpy.",
+      "The validated117K model at48e13aaba completed19631 uploads/40102860800 requested expert bytes and13594 permanent hits. Clean speed is being measured separately.",
+      "Qualified runtime environment pins UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD=1 and EnableDirectSubmission=0. Previous host-submission audit addressed CPU accounting, not this actual copy engine/metric mapping."
+    ],
+    "question": "Trace the qualified UR Level Zero V2 copy-offload-disabled path and distinguish DMA/copy-kernel/host staging resources and which device metrics can classify them. Explain what a GPU compute utilization percentage can and cannot mean for this staged-copy path, and recommend a bounded safe attribution plan without changing the avoidance settings.",
+    "source_references": [
+      "tools/sycl/measurement_environment.json",
+      "include/strata/prefill/expert_bank_upload.hpp",
+      "src/core/expert_cache.cpp",
+      "src/sycl/compat.cpp"
+    ],
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/staged-copy-resource-contract.md",
+    "report_budget": "10KiB target,16KiB maximum; one coherent runtime path/metric investigation",
+    "main_reads_body_on_arrival": false,
+    "retention_consumer": "Main resource attribution for the current staged-bank long-prefill route after clean timing; review at attribution closure.",
+    "task": "task_50b55ae3e929",
+    "dispatch": "ctx_d40fcdfe8573",
+    "terminal": "term_57cd822c-e033-4c96-b8a7-27e0666873db",
+    "model_evidence": "Reused settled explicit gpt-6-luna medium terminal for a second finite scope; existing-terminal preferences are null, not independent model verification.",
+    "report_sha256": "139892394384ee983582dc7222a11c0028714635bfc89cff2b411161c0d756b2",
+    "report_bytes": 12953,
+    "completion_delivery": "delivery_79a53708dc81",
+    "review_task": "/root/review_staged_copy_resources_20261019",
+    "lifecycle_state": "Accepted succeeded worker_done; worker-release retains the external terminal, processAction none; completion delivery acknowledged.",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/staged-copy-resource-native-review.json",
+    "review_sha256": "806df2e95746a52a3e8205f2dc5600771454bae1b06bd10c43e035019e9ecf2e",
+    "reviewed_digest": [
+      "The offload/direct-submission interpretations are sound as source contracts; actual runtime branch, arithmetic activity and physical traffic remain unknown.",
+      "XPU Manager2.0 overall GPU utilization is defined by the busiest engine; a compute utilization percentage is not an arithmetic saturation result.",
+      "Review records two missing source-file hashes and an unproved loaded adapter ELF-to-official-source mapping. The toolchain asset path containing a fork name is not evidence of derived project code."
+    ],
+    "next_action": "Reconcile exact source hashes and loaded official UR adapter provenance before claiming actual branch/metric attribution. Current clean cohort0 is now closed and Orca worker_done/release/ack reconciled; no avoidance flags changed.",
+    "review_point": "After current staged-bank resource-attribution question closes; keep the useful contract/limits, not duplicate transaction reports."
   }
 }
