@@ -532,12 +532,13 @@
     "geomean_gain_percent": 0.5667234797691378,
     "all_nine_matched_inputs_faster": true,
     "exact_committed_source_recovered": true,
-    "matched_configuration_workloads_and_runtime": true,
     "allowed_cross_cohort_source_change": [
       "tools/sycl/bench_engine.py"
     ],
     "performance_selection_gate_passed": true,
     "decision": "Retain explicit large-job fusion for further qualification; default stays off.",
-    "limits": "Three independent process pairs, four fresh78451-token requests each. First use excluded from selection. Individual full receipts remain at the original reachable commits.24-token generation does not qualify sustained decode, broad task quality or physical262144/RESTORE."
+    "limits": "Three independent process pairs, four fresh78451-token requests each. First use excluded from selection. Individual full receipts remain at the original reachable commits.24-token generation does not qualify sustained decode, broad task quality or physical262144/RESTORE.",
+    "matched_config_workloads_and_pinned_runtime_set": true,
+    "runtime_verification_scope": "Each launch verified the then-configured runtime_elfs and matched environment/paths. That historical set omitted the engine-linked MKL libraries; complete loaded-library equivalence was not measured. Future settings also pin the four engine-linked MKL libraries and libdl/libpthread."
   }
 }

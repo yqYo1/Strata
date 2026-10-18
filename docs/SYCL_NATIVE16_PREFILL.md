@@ -930,6 +930,12 @@ selector stays off:24-token generation does not qualify sustained decode,
 broad task quality or physical262144/RESTORE. The1000tok/s prefill and70tok/s
 decode goals remain unmet.
 
+The historical runtime check covers the then-configured `runtime_elfs`, not
+a complete loaded-library census. A later offline dependency check found the
+four linked MKL libraries absent from that set; subsequent settings pin them
+and the libdl/libpthread shims as well. This does not retroactively add per-launch
+hash evidence to the six finished processes or change their original status.
+
 ## MoE Down/scatter component
 
 `Gemm::down_scatter` is an explicit component API with no model dispatch hook.

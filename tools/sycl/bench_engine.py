@@ -341,7 +341,8 @@ def summarize_gu():
         current['independent_process_comparison'] = dict(arms=arms,pairs=pairs,
             matched_subsequent_speed_geomean=geomean,geomean_gain_percent=100*(geomean-1),
             all_nine_matched_inputs_faster=all(x>1 for x in ratios),
-            exact_committed_source_recovered=True,matched_configuration_workloads_and_runtime=True,
+            exact_committed_source_recovered=True,matched_config_workloads_and_pinned_runtime_set=True,
+            runtime_verification_scope='Matches only the runtime_elfs guarded by each historical launch, not a complete loaded-library census.',
             allowed_cross_cohort_source_change=varying,performance_selection_gate_passed=passed,
             decision='Retain explicit large-job fusion for further qualification; default stays off.' if passed else
                      'Retain separate route; prospective independent performance gate failed.',
