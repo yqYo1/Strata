@@ -1,5 +1,5 @@
 {
-  "source_commit": "a57611b9c52f5d1cf2f5281b3cc7eb4087b5cd12",
+  "source_commit": "7e2cb2604aaff8013e4a5016e264d4742f1438e4",
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -80,14 +80,14 @@
   "production_selected": false,
   "model_quality_qualified": false,
   "replaces": {
-    "source_commit": "2033bae8424ea22dfa81fc21ad9bd0852cfbd808",
+    "source_commit": "a57611b9c52f5d1cf2f5281b3cc7eb4087b5cd12",
     "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-source-view-v1/strata",
-      "bytes": 22070744,
-      "sha256": "ce19688e2788b13e5f61258f4d16b5f27da3d9d78e3f96a46fd2e06c873bb670"
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+      "bytes": 22079288,
+      "sha256": "570b65ddfd88e3955b58634b361bb13e12a4bd713ac6e5ae396d47265a76fd46"
     },
-    "source_build_passed": false,
-    "retained_binary_source_commit": "1222e27d01f32c5bb31f574ff4b143c489a3bcf1",
+    "source_build_passed": true,
+    "retained_binary_source_commit": "a57611b9c52f5d1cf2f5281b3cc7eb4087b5cd12",
     "reason": "Closed unused comparison engine; original source/recipe recovered from Git. Reuse its cache for the immediate corrected build, not a retained old generation."
   },
   "targets": [
@@ -329,13 +329,31 @@
       "sha256": "b484ba5461f6b3de0deac892810580724ebc7237253ca5478368fb348e9b209e"
     }
   },
+  "binary_origin_source_commit": "a57611b9c52f5d1cf2f5281b3cc7eb4087b5cd12",
+  "previous_output_comparison": {
+    "changed_project_inputs": [
+      "tools/sycl/build_engine.py",
+      "tools/sycl/measure_down_scatter.py"
+    ],
+    "native_and_recipe_inputs_match": true,
+    "engine_bytes_match": true,
+    "fixture_bytes_match": {
+      "sycl_moe_accum_test": true,
+      "sycl_moe_gu_swiglu_bench": true,
+      "sycl_moe_down_scatter_bench": true,
+      "sycl_expert_bank_test": true,
+      "file_expert_source_test": true
+    },
+    "controller_only_admission": true,
+    "interpretation": "A real configure/build invocation admits the recorded inputs. Identical output bytes and unchanged native inputs preserve their original source identity; this does not claim fresh compilation or a new speed result."
+  },
   "ownership_closed": true,
   "inputs": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "a57611b9c52f5d1cf2f5281b3cc7eb4087b5cd12",
+      "revision": "7e2cb2604aaff8013e4a5016e264d4742f1438e4",
       "count": 502,
-      "aggregate_sha256": "3d9980aadf14eadd67253b04ff608fc754aaa9950b1edea660e415d64d711966"
+      "aggregate_sha256": "fb6e80d48b9f9257e71548090eb96b9812262cd07d19727a839b3e783cfc68e0"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
@@ -349,32 +367,5 @@
       "count": 5703,
       "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
     }
-  ],
-  "fallback_selection_before_selective_down": {
-    "selected_source_commit": "a57611b9c52f5d1cf2f5281b3cc7eb4087b5cd12",
-    "source_view_result_commit": "55ebf62f7",
-    "source_view_default_merge": "8f274972db5c715b14bd6b9633a8651e927ef9a4",
-    "retired_source_commit": "1222e27d01f32c5bb31f574ff4b143c489a3bcf1",
-    "retired_source_proofs": [
-      {
-        "revision": "1222e27d01f32c5bb31f574ff4b143c489a3bcf1",
-        "count": 501,
-        "aggregate_sha256": "777ea6fb5048bdea01fc4c64896ccd089694ee27763c4f935981710e54460121"
-      },
-      {
-        "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
-        "count": 3608,
-        "aggregate_sha256": "322862d213ed722d6500da0b58a1b7fffff53aa0de77d7f2e8ba685c653a0d9f"
-      },
-      {
-        "revision": "87f6850680a580654b9ea2c80dbc01aeb36ad231",
-        "count": 5703,
-        "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
-      }
-    ],
-    "manifest": {
-      "path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/selective-down-fallback-and-legacy-product-retirement-20261019.json",
-      "sha256": "3fab4a1979d89f3577791f62aa3671f9291b484f4550289ede60de45499e363e"
-    }
-  }
+  ]
 }
