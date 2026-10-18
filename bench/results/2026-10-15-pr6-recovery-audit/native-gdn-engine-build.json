@@ -1,5 +1,5 @@
 {
-  "source_commit": "9d000172f53c399453a0662c3eac2b0771114e7e",
+  "source_commit": "ce1e950a843953c7856382978f7993bcc848e366",
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -80,14 +80,14 @@
   "production_selected": false,
   "model_quality_qualified": false,
   "replaces": {
-    "source_commit": "dc8ca3459414c409cc7f87c31c038f0f7ce5b02f",
+    "source_commit": "9d000172f53c399453a0662c3eac2b0771114e7e",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
       "bytes": 21499072,
       "sha256": "bfb9bf19fd93d2d5f4751d6ed97f62c9a4d684b1050b798c621971c39501090f"
     },
     "source_build_passed": true,
-    "retained_binary_source_commit": "dc8ca3459414c409cc7f87c31c038f0f7ce5b02f",
+    "retained_binary_source_commit": "9d000172f53c399453a0662c3eac2b0771114e7e",
     "reason": "Closed unused comparison engine; original source/recipe recovered from Git. Reuse its cache for the immediate corrected build, not a retained old generation."
   },
   "targets": [
@@ -96,7 +96,7 @@
     "sycl_qsa_bf16_prefix_ordered_exp_test",
     "sycl_qsa_bf16_prefix_ordered_exp_bench"
   ],
-  "retention_consumer": "Known-good bb8 engine/GDN fallback plus current ordered-exp QSA candidate. Preserve only these2 qualified/current comparison generations, apart from explicitly recorded legacy provenance holds; review candidate/fallback selection after QSA qualification.",
+  "retention_consumer": "Current long-prefill comparison and its attention fixtures; retire when comparison closes.",
   "retained_validation_reference": {
     "source_commit": "7829568c61f4a47e5c1b06497f59e41a3417a5fb",
     "binary": {
@@ -162,7 +162,7 @@
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
     "bytes": 21499072,
-    "sha256": "bfb9bf19fd93d2d5f4751d6ed97f62c9a4d684b1050b798c621971c39501090f"
+    "sha256": "e400bbe545fcb13376812f353f89648a9924e2af1ff9c26b593c31a3e28be934"
   },
   "compile_database_sha256": "6471b0cb0d11bae6a27f8c4bf3a50dc3b41eef4a9708cb27bcb8157cf59f4f0c",
   "configured_compile_entries": 217,
@@ -184,9 +184,9 @@
   "inputs": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "9d000172f53c399453a0662c3eac2b0771114e7e",
+      "revision": "ce1e950a843953c7856382978f7993bcc848e366",
       "count": 492,
-      "aggregate_sha256": "07abb8ad35a6d9192768f1f4347a05e8ae25ba106fa8526f93a83a00c640dead"
+      "aggregate_sha256": "8daaa86a3ef0b7d5955198c6eb5f2a44eec56cb6abc8c4ecc28c3b8e199fb235"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
@@ -202,10 +202,9 @@
     }
   ],
   "qsa_ordered_exp_qualification": {
-    "source_commit": "9d000172f53c399453a0662c3eac2b0771114e7e",
-    "state": "Traced smoke, all11 cases/arm and3-process clean component performance gate passed (ratio0.912692). No model hook or model adoption yet.",
-    "reviewed_prototype_commit": "36023af50c1fc1d4f1d6dc2a827a75bdbd0c3c8a",
-    "original_failed_smoke_commit": "963d387698f8b30b8fff9229449775000bdef4b8",
+    "component_source_commit": "9d000172f53c399453a0662c3eac2b0771114e7e",
+    "component_result": "bench/results/2026-10-15-pr6-recovery-audit/qsa-ordered-exp-current.json",
+    "state": "Component gate passed; explicit opt-in model hook builds. Bounded model admission and matched78K screen pending.",
     "model_adopted": false
   }
 }
