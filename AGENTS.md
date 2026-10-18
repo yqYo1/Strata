@@ -185,6 +185,8 @@ are outside this work's scope.
   insufficient. Record fresh driver faults and process closure. Keep recovery
   actions separate from inference tests and consider other GPU clients before
   any reset/unbind; a headless process is not proof that it is independent.
+  Keep the human-facing recovery entrypoint a shell script with a short, direct
+  invocation; normal recovery must not require a long list of options.
   Once the trigger is sufficiently understood and a verified avoidance path
   allows safe execution, return to tuning rather than extending the incident
   investigation without a concrete unresolved question. Keep the separate Orca
