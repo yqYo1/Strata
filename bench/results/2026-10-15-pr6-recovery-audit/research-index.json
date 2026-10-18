@@ -264,5 +264,19 @@
     "fixture": "../../sycl/gdn_chunk64",
     "result": "native-gdn-model-current.json",
     "decision": "No material model gain: existing GDN retained. New GDN research remains conditional on a concrete adoption/mismatch question and actual framework runtime evidence."
+  },
+  "hardware_resource_research": {
+    "schedulable_now": true,
+    "prerequisites_met": [
+      "Matched prefix/direct model comparison closed; existing prefix retained.",
+      "Local pitch and row-publication candidates closed with mixed subpercent gains.",
+      "Current MoE/CPU census closed; QSA attention remains largest observed queue interval.",
+      "VTune2026.4 installed; B570 xe driver and qualified exact fixture available."
+    ],
+    "scopes": [
+      "Xe2 profiler metric coverage and permission interpretation",
+      "Exact emitted GRF/SLM/spill extraction without hardware counters"
+    ],
+    "question": "Obtain hardware evidence before choosing another QSA candidate; no repeat generic attention or grouped-GEMM survey."
   }
 }
