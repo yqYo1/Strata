@@ -943,44 +943,9 @@
       "Any implementation needs committed independent source plus component arithmetic/bounds/collective and codegen gates before model execution."
     ]
   },
-  "warm_resource_collector_review_scope": {
-    "classification": "decision_support",
-    "schedulable_now": false,
-    "question": "Audit the new two-request warm resource collector: exact request segmentation, independent completion/conservation gates, parser extraction compatibility and information retained for first-use versus subsequent attribution. No GPU math or implementation changes.",
-    "prerequisites_met": [
-      "Source change exists and CPU checks preserve previously retained48-layer GDN/678 command observations.",
-      "Six malformed/mixed input cases are rejected; actual model execution remains Main-owned.",
-      "Previous reports audit different kernels/resources; this is the first review of this two-request collector delta."
-    ],
-    "source_sha256": {
-      "tools/sycl/bench_engine.py": "8ad07fba52086447e2dcca370b1bd32fa869464ac2b05e6498baa45161f321a5"
-    },
-    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/warm-resource-collector-review.md",
-    "main_reads_body_on_arrival": false,
-    "state": "Orca review completed and released; PTY positively closed and delivery acknowledged. Native gpt-6-luna/max review complete; Main received its short digest. The two-request measurement is closed and passed, with zero CPU throw counters.",
-    "retention_consumer": "One current resource-attribution integrity decision, reviewed at its closure.",
-    "report_budget": {
-      "words": [
-        1500,
-        2200
-      ],
-      "maximum_bytes": 24576
-    },
-    "report_sha256": "69dcea9472661527a4f3da62520759a8a84a8db77b811591d1bc1c60d868cd42",
-    "report_bytes": 12562,
-    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/warm-resource-collector-native-review.json",
-    "review_sha256": "73a37f75aa3171d1d4fe15583060ed4bcce10c6dd43d4b1bae4aad4588fa1faa",
-    "review_bytes": 6754,
-    "review_digest": {
-      "request_segmentation": "Fits declared coarse first-use/subsequent attribution; detailed cold command/per-layer timing is not required by that question.",
-      "accepted_guard_followup": "Explicit command frame/stratum reconciliation and CPU wait/host throw checks; both original closed intervals pass the added guards, four malformed cases are rejected.",
-      "corrections": "Pinned coarse/QSA complete gates already validate their expected counts. CPU available=1 entails valid accounting/no open waits, but does not alone rule out throw counters. No evidence the original result was wrong.",
-      "scope_limit": "Profiled requests, not clean speed or independent process repetitions; selected GPU service is not full-window coverage or physical hardware saturation."
-    }
-  },
   "warm_host_submission_scope_audit": {
     "classification": "decision_support",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "question": "Audit source ownership and counter boundaries for classifying warmed16.63s unclassified host CPU: current MoE Tag lifetimes for non-GEMM dispatch versus existing GEMM/transfer scopes, nested Host accounting and safe optional scope ownership. No implementation, timing claims or generic validation survey.",
     "prerequisites_met": [
       "Two fresh78K requests show warm wall89.508s, GPU-wait CPU59.184s, outside-wait CPU29.622s and unclassified CPU16.630s at7ff786a27.",
@@ -994,7 +959,7 @@
       "include/strata/sycl/cpu_wait_profile.hpp": "f29b86702df27fa6510cfc31d13d0442f9386cdae491952fefbcfa7b0816567d"
     },
     "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/warm-host-submission-scope-audit.md",
-    "state": "Eligible finite source-only ownership/accounting audit; Main exclusively implements and measures.",
+    "state": "Orca source audit running; frozen C++/observer hashes remain unchanged. Main manages integration and all execution. This task is not implementation.",
     "retention_consumer": "Next named host-attribution instrumentation decision; review at its closure.",
     "report_budget": {
       "words": [
@@ -1002,6 +967,25 @@
         2400
       ],
       "maximum_bytes": 28672
+    },
+    "active_attempt": {
+      "task": "task_87e4c5f19b6a",
+      "dispatch": "ctx_1fe3bcb60382",
+      "terminal": "term_8d43c9ba-4c64-4845-8db6-3b50a360a6d5",
+      "incarnation": "c799c854-652e-4c52-b0b0-ff358ed073b4",
+      "run": "run_fb41872974e9"
     }
+  },
+  "closed_warm_resource_collector_review": {
+    "original_source_commit": "f0861e51bc72ef6534e2146ea6708a7ffee094ae",
+    "accepted_guard_commit": "468c93c8acd1c3ea92e8878cf064b7f2908523db",
+    "evidence_commit": "7ff786a272f1f9716242c789063dea947ae51555",
+    "outcome": {
+      "request_segmentation": "Fits declared coarse first-use/subsequent attribution; detailed cold command/per-layer timing is not required by that question.",
+      "accepted_guard_followup": "Explicit command frame/stratum reconciliation and CPU wait/host throw checks; both original closed intervals pass the added guards, four malformed cases are rejected.",
+      "corrections": "Pinned coarse/QSA complete gates already validate their expected counts. CPU available=1 entails valid accounting/no open waits, but does not alone rule out throw counters. No evidence the original result was wrong.",
+      "scope_limit": "Profiled requests, not clean speed or independent process repetitions; selected GPU service is not full-window coverage or physical hardware saturation."
+    },
+    "retention": "Detailed report/review have no remaining consumer after original-log checks; retire under the current deletion manifest. Useful corrections are in code and this compact decision."
   }
 }
