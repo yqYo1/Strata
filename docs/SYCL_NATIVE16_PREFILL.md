@@ -427,6 +427,26 @@ rejected by long-prefill admission before long-model arithmetic, exit1 with no
 new GPU fault. Preserve that failed receipt. Its prohibition remains in place;
 the supported coarse observer supplies the new substages instead.
 
+Both supported observer checks passed. The full check read78,451 fresh tokens,
+thinking on, with360 checked intervals per new GDN section across36 layers;
+all owners closed, boot unchanged and no fresh GPU faults. On the Arc B570,
+the GDN input projections, conv/gates, recurrence and output projection intervals
+were6.27625,0.879437,7.99004 and2.94327 seconds. Recurrence host-submit wall
+was15.4556ms. QSA and MoE intervals were31.1534 and20.9776 seconds. These
+nonexclusive queue intervals identify a recurrence scheduling experiment,
+not measured occupancy, a hardware ceiling or an additive wall-time breakdown.
+The profiled785.0PP sample does not replace the clean853.2 median.
+
+The next candidate partitions the independent value columns of each persistent
+GDN state across2/4/8 workgroups, then performs the existing RMS/gating on the
+GPU. Keep the FP32 per-column recurrence and reduction order, FP16 consumer,
+shared state layout and decode/verify paths. Use the existing FP32 y buffer as
+an explicitly owned intermediate, with ordered kernels and no host readback.
+One partition with the separate epilogue is the control for its traffic/launch
+cost. Require exact output/state/FP16 images, guards, chunk boundaries and
+streamed262144/restore continuity before model speed comparisons. Recurrence
+is only part of the remaining cost; this candidate alone cannot qualify1000PP.
+
 ## Optional GDN chunk64
 
 `STRATA_SYCL_PREFILL_GDN_CHUNK64=1` adds a separate experimental long-prefill
