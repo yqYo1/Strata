@@ -1,5 +1,5 @@
 {
-  "mode": "smoke",
+  "mode": "validate",
   "source_commit": "6b3ee1e35d3f08bf23e9cd85268e31b18dde1502",
   "capacity_source_sha256": {
     "include/strata/prefill/moe_accum_plan.hpp": "1fa1618eaf96a6ec50bc948f7c6750fc33f463c702cfbf36cd57e928597ca1aa",
@@ -22,6 +22,26 @@
     {
       "case": "smoke",
       "result": "mixed_gather rows=8193 primary_rows=8192 compared_values=20971520 admission_rejects=6 invalid_rows=4 status=4 inputs_immutable=1 guards=PASS PASS",
+      "passed": true
+    },
+    {
+      "case": "contiguous",
+      "result": "mixed_gather rows=16384 primary_rows=16384 compared_values=20971520 admission_rejects=6 invalid_rows=4 status=4 inputs_immutable=1 guards=PASS PASS",
+      "passed": true
+    },
+    {
+      "case": "65537",
+      "result": "mixed_gather rows=65537 primary_rows=65536 compared_values=20971520 admission_rejects=6 invalid_rows=4 status=4 inputs_immutable=1 guards=PASS PASS",
+      "passed": true
+    },
+    {
+      "case": "partial",
+      "result": "mixed_gather rows=78452 primary_rows=65536 compared_values=20971520 admission_rejects=6 invalid_rows=4 status=4 inputs_immutable=1 guards=PASS PASS",
+      "passed": true
+    },
+    {
+      "case": "full",
+      "result": "mixed_gather rows=81920 primary_rows=65536 compared_values=20971520 admission_rejects=6 invalid_rows=4 status=4 inputs_immutable=1 guards=PASS PASS",
       "passed": true
     }
   ],
