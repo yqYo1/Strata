@@ -8,7 +8,7 @@ namespace strata::experimental::vllm_xe2_native16 {
 
 enum class Storage { fp16, bf16 };
 enum class Tile { compact_16x64, wide_128x128 };
-enum class ScatterLayout { matrix, output_copy };
+enum class ScatterLayout { matrix, output_copy, matrix_row_cache };
 enum class GuLayout { matrix, output_copy };
 
 struct Problem {
@@ -40,6 +40,8 @@ struct DownScatterProblem {
 
 struct DownOwnership {
   size_t cells = 0, missing = 0, multiple = 0, masked = 0;
+  size_t metadata_slots = 0, metadata_missing = 0, metadata_multiple = 0;
+  size_t metadata_outside_tile = 0;
 };
 // Host-only inspection of the selected epilogue's actual TLA coordinates.
 // Exhaustively counts every tile/lane/fragment element, including M tails.
@@ -91,7 +93,7 @@ public:
   sycl::event down_scatter(const DownScatterProblem &problem,
                          Tile tile = Tile::wide_128x128,
                          ScatterLayout layout = ScatterLayout::matrix);
-  // Explicit component candidate; no model dispatch hook.
+  // Explicit large-job long-prefill hook; default off pending model qualification.
   sycl::event gu_swiglu(const GuSwiGLUProblem &problem,
                        Tile tile = Tile::wide_128x128);
   sycl::queue &queue() const { return queue_; }
@@ -101,6 +103,7 @@ private:
   sycl::queue &queue_;
   // Immutable per-object query result; constructor either succeeds or throws.
   const bool has_fp16_;
+  const size_t local_mem_bytes_;
 };
 
 } // namespace strata::experimental::vllm_xe2_native16

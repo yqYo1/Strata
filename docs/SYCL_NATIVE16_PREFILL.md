@@ -1128,3 +1128,22 @@ combined bad-slot/bad-token case and require exactly bit1. This review found
 the cache conditionally legal; it provides no new runtime or speed evidence.
 Use the pinned TLA revision87f6850680a580654b9ea2c80dbc01aeb36ad231 when
 resolving its interface references.
+
+The component implementation exposes `ScatterLayout::matrix_row_cache`; no
+engine route selects it. The original matrix and output-copy kernels remain
+separate specializations. Its host ownership check also counts every local
+metadata slot and checks each actual TLA coordinate against its workgroup's M
+interval. The published plan, maps and weights stay immutable through the
+checked drain. Typed metadata/output alignment is rejected before submission.
+
+The new fixture requires54 host ownership cases,30 traced small-check events
+(including16 admission rejects per policy and7 invalid-map cases), and78 full
+correctness events across the three policies and both tiles. It verifies full
+input bits/guards, diagnostic M tails, null-capture non-writes, combined
+bad-slot/bad-token precedence and a mixed-row error mask of3. Clean timing
+retains three arms: separate, scalar matrix fusion and row-cached matrix fusion;
+output-copy remains a correctness diagnostic. All checking/readback is outside
+the reported bursts. `rebuild-down` also rebuilds the GU fixture because the
+component shares its adapter translation unit; the validated prior engine and
+same-build GU fixture are preserved before overwrite. These are prospective
+checks, not completed validation or a new performance result.

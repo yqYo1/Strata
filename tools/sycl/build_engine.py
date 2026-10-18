@@ -86,7 +86,7 @@ def main():
     if sys.argv[1:] == ['rebuild-gdn']:
         targets += ['sycl_gdn_columns_bench']
     if sys.argv[1:] == ['rebuild-down']:
-        targets += ['sycl_moe_down_scatter_bench']
+        targets += ['sycl_moe_down_scatter_bench', 'sycl_moe_gu_swiglu_bench']
     if sys.argv[1:] == ['rebuild-ordered']:
         targets += ['sycl_qsa_bf16_prefix_kvvec4_test',
                     'sycl_qsa_bf16_prefix_ordered_exp_test',

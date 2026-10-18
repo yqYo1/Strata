@@ -63,6 +63,9 @@ template <class T> void equal(const Buffer<T> &a, const Buffer<T> &b) {
   need(x.size() == y.size() && std::memcmp(x.data(), y.data(), x.size() * sizeof(T)) == 0,
        "separate/fused bitwise mismatch");
 }
+template <class T> bool same_bytes(const std::vector<T> &a, const std::vector<T> &b) {
+  return a.size() == b.size() && std::memcmp(a.data(), b.data(), a.size() * sizeof(T)) == 0;
+}
 uint16_t half(float value) { return sycl::bit_cast<uint16_t>(sycl::half(value)); }
 std::shared_ptr<const Routes> plan(int tokens, bool irregular, int target_rows = 0) {
   std::vector<int32_t> ids(size_t(tokens) * 10);
@@ -79,6 +82,11 @@ std::shared_ptr<const Routes> plan(int tokens, bool irregular, int target_rows =
   return Routes::build_accum(tokens, ids.data(), ids.size());
 }
 struct Case {
+  struct Inputs {
+    std::vector<uint16_t> x, w;
+    std::vector<int32_t> source, original;
+    std::vector<float> weights;
+  };
   std::shared_ptr<const Routes> routes;
   sycl::queue &q;
   xe::Gemm gemm;
@@ -122,6 +130,13 @@ struct Case {
     reference.set(initial); candidate.set(initial);
     reference_status.set({0}); candidate_status.set({0});
   }
+  Inputs input_snapshot() const { return {x.get(), w.get(), source.get(), original.get(), weights.get()}; }
+  void inputs_unchanged(const Inputs &before) const {
+    const auto after = input_snapshot();
+    need(same_bytes(before.x, after.x) && same_bytes(before.w, after.w) &&
+         same_bytes(before.source, after.source) && same_bytes(before.original, after.original) &&
+         same_bytes(before.weights, after.weights), "input bits changed");
+  }
   xe::DownScatterProblem problem(size_t job, bool observe = false) {
     return {routes.get(), job, x.data(), w.data(), source.data(), original.data(), weights.data(),
             candidate.data(), candidate_status.data(), observe ? capture.data() : nullptr};
@@ -138,6 +153,9 @@ struct Case {
         weights.data(), reference.data(), reference_status.data(), &q);
   }
   void check(size_t index, xe::Tile tile, xe::ScatterLayout mapping, uint32_t expected = 0) {
+    const auto inputs = input_snapshot();
+    down.set(std::vector<uint16_t>(down.n, marker<uint16_t>()));
+    capture.set(std::vector<uint16_t>(capture.n, marker<uint16_t>()));
     separate(index, tile);
     wait(q, fused(index, tile, true, mapping));
     equal(reference, candidate); equal(reference_status, candidate_status);
@@ -146,6 +164,8 @@ struct Case {
     const int job_rows = routes->jobs().at(index).rows;
     const auto cells = size_t(job_rows) * N;
     need(std::memcmp(a.data(), b.data(), cells * 2) == 0, "BF16 rounding/cell mapping differs");
+    for (size_t i = cells; i < a.size(); ++i)
+      need(a[i] == marker<uint16_t>() && b[i] == marker<uint16_t>(), "logical M tail overwritten");
     if (!edge_inputs && job_rows <= 3) {
       // Independent exact integer dot product and host RNE BF16 encoder.
       // Every finite test product is a multiple of2^-11; these sums are
@@ -164,17 +184,26 @@ struct Case {
     separate(index, tile);
     wait(q, fused(index, tile, false, mapping));
     equal(reference, candidate); equal(reference_status, candidate_status);
+    need(same_bytes(b, capture.get()), "no-capture kernel wrote diagnostic storage");
+    inputs_unchanged(inputs);
   }
 };
 
 void ownership() {
-  for (auto mapping : {xe::ScatterLayout::matrix, xe::ScatterLayout::output_copy})
+  for (auto mapping : {xe::ScatterLayout::matrix, xe::ScatterLayout::output_copy,
+                       xe::ScatterLayout::matrix_row_cache})
    for (auto tile : {xe::Tile::compact_16x64, xe::Tile::wide_128x128})
     for (int rows : {1, 3, 17, 33, 129, 2334, 5963, 8191, 8192}) {
       const auto r = xe::inspect_down_ownership(rows, tile, mapping);
       need(r.cells == size_t(rows) * N && !r.missing && !r.multiple, "tile ownership is not bijective");
+      need(!r.metadata_missing && !r.metadata_multiple && !r.metadata_outside_tile &&
+           (mapping != xe::ScatterLayout::matrix_row_cache || r.metadata_slots > 0),
+           "local row metadata ownership or coordinate bounds");
       std::cout << "{\"kind\":\"ownership\",\"tile\":" << int(tile) << ",\"rows\":" << rows
-                << ",\"mapping\":" << int(mapping) << ",\"cells\":" << r.cells << ",\"masked\":" << r.masked << ",\"status\":\"PASS\"}\n";
+                << ",\"mapping\":" << int(mapping) << ",\"cells\":" << r.cells << ",\"masked\":" << r.masked
+                << ",\"metadata_slots\":" << r.metadata_slots << ",\"metadata_missing\":" << r.metadata_missing
+                << ",\"metadata_multiple\":" << r.metadata_multiple << ",\"metadata_outside_tile\":" << r.metadata_outside_tile
+                << ",\"status\":\"PASS\"}\n";
     }
 }
 void admissions(Case &c, xe::ScatterLayout mapping) {
@@ -193,13 +222,22 @@ void admissions(Case &c, xe::ScatterLayout mapping) {
   p = c.problem(0); p.accumulator = reinterpret_cast<float *>(c.x.data()); rejects(p);
   Buffer<uint16_t> tiny(1, c.q); p = c.problem(0); p.x = tiny.data(); rejects(p);
   p = c.problem(0, true); p.rounded_diagnostic = reinterpret_cast<uint16_t *>(c.candidate.data()); rejects(p);
+  const auto unaligned = [](auto *pointer) {
+    return reinterpret_cast<decltype(pointer)>(reinterpret_cast<uintptr_t>(pointer) + 1);
+  };
+  p = c.problem(0); p.source = unaligned(p.source); rejects(p);
+  p = c.problem(0); p.original = unaligned(p.original); rejects(p);
+  p = c.problem(0); p.job_weights = unaligned(p.job_weights); rejects(p);
+  p = c.problem(0); p.accumulator = unaligned(p.accumulator); rejects(p);
+  p = c.problem(0); p.status = unaligned(p.status); rejects(p);
+  p = c.problem(0, true); p.rounded_diagnostic = unaligned(p.rounded_diagnostic); rejects(p);
   std::vector<int32_t> duplicate(10, 0);
   try { (void)Routes::build_accum(1, duplicate.data(), duplicate.size()); }
   catch (const std::invalid_argument &) { ++rejected; }
   try { (void)c.gemm.down_scatter(c.problem(0), xe::Tile::wide_128x128,
                                   static_cast<xe::ScatterLayout>(99)); }
   catch (const std::invalid_argument &) { ++rejected; }
-  need(rejected == 10, "admission checks incomplete");
+  need(rejected == 16, "admission checks incomplete");
   std::cout << "{\"kind\":\"admissions\",\"rejected\":" << rejected << ",\"mapping\":" << int(mapping) << ",\"status\":\"PASS\"}\n";
 }
 void correctness(int tokens, bool irregular, bool edges, xe::Tile tile, sycl::queue &q,
@@ -212,7 +250,7 @@ void correctness(int tokens, bool irregular, bool edges, xe::Tile tile, sycl::qu
   std::cout << "{\"kind\":\"correctness\",\"tokens\":" << tokens << ",\"irregular\":" << irregular
             << ",\"target_rows\":" << target_rows << ",\"mapping\":" << int(mapping)
             << ",\"edges\":" << edges << ",\"tile\":" << int(tile) << ",\"jobs\":" << jobs.size()
-            << ",\"status\":\"PASS\"}\n";
+            << ",\"inputs_immutable\":true,\"capture_and_no_capture\":true,\"status\":\"PASS\"}\n";
 }
 class Marker;
 sycl::event mark(sycl::queue &q) { return q.single_task<Marker>([] {}); }
@@ -222,11 +260,12 @@ void benchmark(int process, sycl::queue &q) {
     Case c(78451, irregular, false, q, rows);
     need(c.routes->jobs().front().rows == rows, "timing job shape");
     c.check(0, tile, xe::ScatterLayout::matrix);
-    c.check(0, tile, xe::ScatterLayout::output_copy);
+    c.check(0, tile, xe::ScatterLayout::matrix_row_cache);
+    const auto inputs = c.input_snapshot();
     constexpr int repeat = 16;
     for (int round = -1; round < 6; ++round) for (int order = 0; order < 3; ++order) {
       const int arm = (process + round + 3 + order) % 3;
-      const auto mapping = arm == 1 ? xe::ScatterLayout::matrix : xe::ScatterLayout::output_copy;
+      const auto mapping = arm == 2 ? xe::ScatterLayout::matrix_row_cache : xe::ScatterLayout::matrix;
       c.reset();
       const auto start = mark(q);
       const auto wall = std::chrono::steady_clock::now();
@@ -242,14 +281,16 @@ void benchmark(int process, sycl::queue &q) {
         for (int i = 0; i < repeat; ++i) (void)c.fused(0, tile, false, mapping);
       }
       q.wait_and_throw(); runtime->check(); equal(c.reference, c.candidate);
+      c.inputs_unchanged(inputs);
       need(c.reference_status.get()[0] == 0 && c.candidate_status.get()[0] == 0, "timed route status");
       need(std::isfinite(wall_ms) && wall_ms > 0 && std::isfinite(queue_ms) && queue_ms > 0, "invalid timing");
       std::cout << "{\"kind\":\"sample\",\"process\":" << process << ",\"rows\":" << rows
                 << ",\"window_rows\":" << c.routes->rows() << ",\"accumulator_bytes\":" << c.reference.n * sizeof(float)
                 << ",\"source_first\":" << c.host_source.front() << ",\"source_last\":" << c.host_source[size_t(rows - 1)]
                 << ",\"irregular\":" << irregular << ",\"round\":" << round << ",\"order\":" << order
-                << ",\"arm\":" << arm << ",\"repeat\":" << repeat << ",\"wall_ms\":" << wall_ms
-                << ",\"queue_interval_ms\":" << queue_ms << ",\"status\":\"PASS\"}\n";
+                << ",\"arm\":" << arm << ",\"mapping\":" << int(mapping)
+                << ",\"repeat\":" << repeat << ",\"wall_ms\":" << wall_ms
+                << ",\"queue_interval_ms\":" << queue_ms << ",\"inputs_immutable\":true,\"status\":\"PASS\"}\n";
     }
   }
 }
@@ -265,25 +306,32 @@ int main(int argc, char **argv) {
       runtime = sb::runtime_for();
       auto q = runtime->make_queue(true);
       if (mode == "--smoke") {
-        for (auto mapping : {xe::ScatterLayout::matrix, xe::ScatterLayout::output_copy}) {
+        for (auto mapping : {xe::ScatterLayout::matrix, xe::ScatterLayout::output_copy,
+                             xe::ScatterLayout::matrix_row_cache}) {
           correctness(3, false, false, xe::Tile::wide_128x128, q, mapping);
           correctness(3, true, true, xe::Tile::compact_16x64, q, mapping);
           Case c(3, false, false, q); admissions(c, mapping);
-          for (int kind = 0; kind < 4; ++kind) {
+          for (int kind = 0; kind < 7; ++kind) {
             c.reset(); auto src = c.host_source, original = c.host_original;
             const auto at = size_t(c.routes->jobs()[0].global_row);
             if (kind == 0) original[at] = -1;
             if (kind == 1) original[at] = int(original.size());
             if (kind == 2) src[at] = -1;
             if (kind == 3) src[at] = c.routes->rows();
+            if (kind == 4) { original[at] = -1; src[at] = -1; }
+            if (kind == 5) src[at] = (src[at] + 1) % c.routes->rows();
+            if (kind == 6) { original[at] = -1; src[at + 1] = -1; }
             c.source.set(src); c.original.set(original);
-            c.check(0, xe::Tile::wide_128x128, mapping, kind < 2 ? 1 : 2);
+            const uint32_t expected = kind == 6 ? 3 : (kind < 2 || kind == 4) ? 1 : 2;
+            c.check(0, xe::Tile::wide_128x128, mapping, expected);
             std::cout << "{\"kind\":\"invalid_map\",\"case\":" << kind
-                      << ",\"mapping\":" << int(mapping) << ",\"status\":\"PASS\"}\n";
+                      << ",\"mapping\":" << int(mapping) << ",\"expected_mask\":" << expected
+                      << ",\"inputs_immutable\":true,\"capture_and_no_capture\":true,\"status\":\"PASS\"}\n";
           }
         }
       } else if (mode == "--validate") {
-        for (auto mapping : {xe::ScatterLayout::matrix, xe::ScatterLayout::output_copy})
+        for (auto mapping : {xe::ScatterLayout::matrix, xe::ScatterLayout::output_copy,
+                             xe::ScatterLayout::matrix_row_cache})
           for (auto tile : {xe::Tile::compact_16x64, xe::Tile::wide_128x128}) {
             for (int tokens : {1, 17, 33, 129, 2334, 5963, 8191, 8192, 8193})
               correctness(tokens, false, false, tile, q, mapping);
