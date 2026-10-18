@@ -60,9 +60,12 @@ from those and Git; do not create external resume checkpoints.
 Keep one current known-good engine build by default. Retain an additional
 baseline/candidate generation only for a named, imminent comparison; normally
 this means at most two generations. Record their consumer and remove the extra
-build when the comparison closes. A separate latest build for every old
-experiment is not a retention policy. Count retained generations across project
-worktrees and local output directories; copying or renaming a binary does not
+build when the comparison closes, rather than waiting for storage pressure.
+Close in this order: commit useful results, select the validated generation to
+keep, verify recovery of the old build's inputs, then retire the extra build.
+A separate latest build for every old experiment is not a retention policy.
+Count retained generations across project worktrees and local output directories;
+copying or renaming a binary does not
 create a separate allowance. This applies to project executables,
 static libraries, object files, JIT/native dumps and their disposable build trees;
 installed toolchains, runtime dependencies and model weights are separate assets.
@@ -94,6 +97,9 @@ the measured executable, and record its hash. A nearby commit or a source path
 alone is insufficient. If a measurement used an uncommitted snapshot, reconcile
 and commit its necessary original inputs before deleting its last build/source
 copy. Do not claim reproducibility from a binary hash alone.
+Record the tested source revision separately from later result/documentation
+commits. A newly committed report or the current HEAD does not change the source
+identity of an existing executable.
 Include benchmark/controller changes and generated workloads among the pinned
 inputs. A later commit does not qualify a different snapshot retroactively;
 preserve the original inputs and resolve any mismatch explicitly.
