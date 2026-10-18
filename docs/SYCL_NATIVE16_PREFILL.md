@@ -709,7 +709,7 @@ was recorded. This qualifies the component's tested cases, not the model route.
 These are pooled queue-marker medians in the resident component fixture,
 with16 repetitions per sample; marker intervals include host gaps. Individual
 samples and process medians are in the
-[current result](../bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json).
+[archived three-process result](https://github.com/yqYo1/Strata/blob/915ed0053/bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json).
 The ten-shape geometric mean latency ratio is1.140866, so the prospective
 model-experiment gate failed. The irregular8192 shape improves15.80%, but
 160 and2334 regress in every process. **Do not connect this variant to the
@@ -721,11 +721,17 @@ Inspection of the actual retained and candidate engine ELFs also found changed
 text bytes in all eight existing dense native entries, while the other eight
 existing native entries matched and four new scatter entries were added.
 Text differences do not establish a speed regression, but the failed component
-does not authorize adopting them. Restore the original dense helper definition
-and isolate the experimental epilogue function before another build/default
-integration; compare actual native entries again. The current
+does not authorize adopting them. The original dense helper definition has now
+been restored verbatim from`7829568c6`; the prototype has a separately named
+final-fragment sibling. Rebuild, compare actual native entries and requalify the
+component before interpreting measurements against this restored control. The current
 [build result](../bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json)
 records this narrow code-identity evidence without an ABI or speed claim.
+The reviewed next design question remains a BF16 output-copy ownership layout.
+The current Down descriptor is an identity tensor, so that layout must be
+constructed explicitly; the existing `partition_C` proof does not establish
+value/coordinate pairing after a different reorder. Keep the separate two-stage
+path as the performance anchor. No copy-layout variant is implemented yet.
 
 After recording those results, Main retired221 closed-run, CPU-fixture,
 consumed-review and old-fallback files (61,391,969bytes). Original run helpers

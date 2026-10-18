@@ -15,7 +15,7 @@ import measurement_owner as supervision
 
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'moe-down-scatter-component-v1'
+ROOT = B / 'moe-down-scatter-component-v2'
 BUILD = B / 'main-native-gdn-engine/record.json'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json'
 SETTINGS = P / 'tools/sycl/measurement_environment.json'

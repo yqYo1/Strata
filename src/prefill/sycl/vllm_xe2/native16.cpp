@@ -180,7 +180,7 @@ sycl::event enqueue_down(sycl::queue &q, DownScatterProblem p, Geometry g,
       // A shape/coordinate view, without a fabricated uint16_t output pointer.
       auto c = make_identity_tensor(make_shape(g.t, g.n));
       const auto coord = make_coord(int(item.get_group(0)), int(item.get_group(1)), _, 0);
-      derived::xe_gemm_beta0<void, void, void>(a, b, c, coord, MMA{},
+      derived::xe_gemm_epilogue<void, void, void>(a, b, c, coord, MMA{},
           DownEpilogue<Capture>{p, g.t, token_rows, routes, offset});
     });
   });
