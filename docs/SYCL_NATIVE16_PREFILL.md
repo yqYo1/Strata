@@ -691,6 +691,33 @@ across the ten shapes, no shape ratio>1.05, and every process improves at
 experiment; it does not qualify model quality, physical262144/RESTORE or decode.
 Main uses `tools/sycl/measure_down_scatter.py` for finite owned phase execution.
 
+Source`853535ed5` completed all18 host ownership cases, the traced small gate
+and22 GPU cases, with exact BF16 captures and FP32 accumulation matching the
+existing separate path, including exceptional inputs and invalid-map status.
+Three independent processes then measured six rotated rounds per arm/shape.
+All processes closed normally, the boot stayed unchanged and no fresh GPU fault
+was recorded. This qualifies the component's tested cases, not the model route.
+
+| Routed rows | Contiguous separate/fused ms | Every-other-token separate/fused ms |
+| --- | ---: | ---: |
+| 64 | 0.045814 /0.046836 | 0.026663 /0.024652 |
+| 160 | 0.028405 /0.051576 | 0.028324 /0.051546 |
+| 2334 | 0.338017 /0.397803 | 0.370303 /0.418060 |
+| 5963 | 0.809213 /0.880625 | 0.929453 /0.854971 |
+| 8192 | 1.116505 /1.192400 | 1.337415 /1.126100 |
+
+These are pooled queue-marker medians in the resident component fixture,
+with16 repetitions per sample; marker intervals include host gaps. Individual
+samples and process medians are in the
+[current result](../bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json).
+The ten-shape geometric mean latency ratio is1.140866, so the prospective
+model-experiment gate failed. The irregular8192 shape improves15.80%, but
+160 and2334 regress in every process. **Do not connect this variant to the
+model.** The next question is whether the matrix-fragment output layout,
+conversion, memory messages or register use explains that shape dependence;
+logical byte removal and one fewer launch did not establish a speedup.
+The clean model reference remains867.1 tok/s. Keep all original outcome flags.
+
 After recording those results, Main retired221 closed-run, CPU-fixture,
 consumed-review and old-fallback files (61,391,969bytes). Original run helpers
 and the fallback's9799 source inputs were retrieved and hash-verified from Git

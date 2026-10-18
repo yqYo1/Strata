@@ -117,7 +117,7 @@ def main():
                             group = [e for e in samples if (e['rows'], e['irregular'], e['arm']) == (rows, irregular, arm)]
                             values = [e['queue_interval_ms'] for e in group]
                             guards.require(len(values) == 18 and all(v > 0 for v in values), 'missing samples')
-                            arms.append(dict(arm=arm, samples=values, median_ms=statistics.median(values),
+                            arms.append(dict(arm=arm, sample_count=len(values), median_ms=statistics.median(values),
                                 sample_sd_ms=statistics.stdev(values), process_medians_ms=[statistics.median(
                                     e['queue_interval_ms'] for e in group if e['process'] == process) for process in range(3)]))
                         summary.append(dict(rows=rows, irregular=irregular, arms=arms,
