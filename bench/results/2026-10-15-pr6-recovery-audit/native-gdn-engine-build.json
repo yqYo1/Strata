@@ -1,5 +1,5 @@
 {
-  "source_commit": "89e9c58131790ea283e9c105ef2c12d31b8b4b1d",
+  "source_commit": "117b899d72ed48a3677b4d3b67426a728c8438e4",
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -80,12 +80,14 @@
   "production_selected": false,
   "model_quality_qualified": false,
   "replaces": {
-    "source_commit": "0ddd14719211b6ddf8a09737c3bc2e6b3402c1cb",
+    "source_commit": "89e9c58131790ea283e9c105ef2c12d31b8b4b1d",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
       "bytes": 20418848,
       "sha256": "ea944a5c87e8dd23f92b233630f645f3192b7848bb72f676695d0c5d2a140eee"
     },
+    "source_build_passed": false,
+    "retained_binary_source_commit": "0ddd14719211b6ddf8a09737c3bc2e6b3402c1cb",
     "reason": "Closed unused comparison engine; original source/recipe recovered from Git. Reuse its cache for the immediate corrected build, not a retained old generation."
   },
   "targets": [
@@ -96,14 +98,14 @@
     "sycl_qsa_bf16_prefix_qcache_bench"
   ],
   "retention_consumer": "Current long-prefill comparison and its attention fixtures; retire when comparison closes.",
-  "error": "compile-link failed: ",
+  "error": "compile-link failed: launch_config rejects compile-time kernel-effect properties.",
   "ownership_closed": true,
   "inputs": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "89e9c58131790ea283e9c105ef2c12d31b8b4b1d",
+      "revision": "117b899d72ed48a3677b4d3b67426a728c8438e4",
       "count": 476,
-      "aggregate_sha256": "974687bd5a38c5946e81f75b643b15e2e25539bd9ef32e1d3e88f525157ac8c7"
+      "aggregate_sha256": "ab1a6d7167262e7f2c7df9a939b1f75da70220d46f747cb9330bc6fbe2a82f85"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
@@ -118,10 +120,8 @@
       "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
     }
   ],
+  "failure_class": "Installed SDK requires kernel functor get(properties_tag) for compile-time subgroup/GRF properties; no GPU execution.",
   "failure_diagnostics": [
-    "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_bf16_prefix.cpp:162:13: error: 'parallel_for' is deprecated: To specify properties, use a launch configuration object of type launch_config or a kernel functor with a get(sycl::ext::oneapi::experimental::properties_tag) member function instead. [-Werror,-Wdeprecated-declarations]",
-    "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_bf16_prefix.cpp:162:13: error: 'parallel_for<sycl::detail::auto_name, (lambda at /home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_bf16_prefix.cpp:164:9), sycl::ext::oneapi::experimental::properties<detail::properties_type_list<>>, 1>' is deprecated: To specify properties, use a launch configuration object of type launch_config or a kernel functor with a get(sycl::ext::oneapi::experimental::properties_tag) member function instead. [-Werror,-Wdeprecated-declarations]",
-    "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_bf16_prefix.cpp:162:13: error: 'parallel_for' is deprecated: To specify properties, use a launch configuration object of type launch_config or a kernel functor with a get(sycl::ext::oneapi::experimental::properties_tag) member function instead. [-Werror,-Wdeprecated-declarations]"
-  ],
-  "failure_class": "Compile-time deprecated property overload and mixed subgroup attribute/property diagnostics promoted by Werror; no GPU execution."
+    "error: static assertion failed: launch_config does not allow properties with compile-time kernel effects."
+  ]
 }
