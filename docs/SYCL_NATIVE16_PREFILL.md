@@ -1475,6 +1475,15 @@ GPU byte/guard/queue-unwind checks for both strides. Clean same-binary117K
 off/on model comparisons follow only after these pass. The current engine and
 same-build fixtures remain the validated fallback through qualification.
 
+The independent source audit and native Luna-max review found the private-Arena
+caller/stride/queue contract sound, while flagging externally mutable shared
+file backing. Main disables resident views for every nonempty shared-arena path;
+those sources keep the original synchronous copy. The next bounded gate also
+uses the real Arena provider to check blob identity, later source calls, invalid
+layers, close/reopen, File fallback and Linux shared exclusion, before synthetic
+GPU upload/guard/unwind cases. Initial compilation and the14 CPU view extent
+checks passed; revised provider/GPU/model qualification remains pending.
+
 Keep the compiled
 fine command sampler off: it lacks a staged-expert-copy tag and would reject
 those untagged events. Coarse event intervals include host submission gaps and

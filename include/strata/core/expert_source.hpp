@@ -695,7 +695,7 @@ private:
     std::vector<const uint8_t*> dev_slice_;   ///< device alias of each registered slice (or of the whole range)
     uint64_t slice_bytes_ = 0;
     const uint8_t* base_ = nullptr;
-    std::vector<ResidentExpertLayer> resident_layers_; ///< immutable loaded-layout snapshot, until close
+    std::vector<ResidentExpertLayer> resident_layers_; ///< private backing only; loaded-layout snapshot, until close
     int64_t blobs_ = 0;
     int64_t n_expert_ = 0;
     int64_t reads_ = 0;

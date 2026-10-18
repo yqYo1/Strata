@@ -2837,7 +2837,7 @@ bool ArenaExpertSource::open(const std::string& pack_dir, int64_t n_layers, int6
     }
     bounds.push_back(want);
     std::vector<ResidentExpertLayer> resident_layers;
-    resident_layers.reserve(size_t(n_layers)); // before the raw arena owner is acquired
+    if (shared_arena_file.empty()) resident_layers.reserve(size_t(n_layers));
     PinnedArena* a = new PinnedArena(want + (uint64_t) blob, bounds, max_pinned_bytes,
                                      shared_arena_file, pack_hash);
     if (!a->valid()) {
@@ -2883,7 +2883,9 @@ bool ArenaExpertSource::open(const std::string& pack_dir, int64_t n_layers, int6
         err = "ArenaExpertSource: the load read " + std::to_string(st.bytes) + " B of " + std::to_string(want);
         return false;
     }
-    for (int64_t l = 0; l < n_layers; ++l) {
+    // An external process can mutate MAP_SHARED backing. Do not promise an
+    // immutable async view for it; the original synchronous copy remains usable.
+    for (int64_t l = 0; shared_arena_file.empty() && l < n_layers; ++l) {
         const auto view = ResidentExpertLayer::make(a->data(), want, loff[size_t(l)],
                                                    n_expert, lay.blob_bytes(l));
         if (!view.data) {

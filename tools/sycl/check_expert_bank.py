@@ -44,10 +44,14 @@ def gpu_check(mode):
                 guards.require(digest(Path(group['root'])/name)==expected, 'build input changed: '+name)
         fixture = build['fixtures']['sycl_expert_bank_test']
         guards.require(digest(fixture['path'])==fixture['sha256'], 'expert-bank fixture changed')
+        provider_fixture = build['fixtures']['file_expert_source_test']
+        guards.require(digest(provider_fixture['path'])==provider_fixture['sha256'], 'provider fixture changed')
         revision = subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip()
         names = ('tools/sycl/check_expert_bank.py','tools/sycl/measurement_guards.py',
             'tools/sycl/measurement_owner.py','tools/sycl/measurement_environment.json',
-            'include/strata/prefill/expert_bank_upload.hpp','tests/sycl/expert_bank.cpp')
+            'include/strata/prefill/expert_bank_upload.hpp','tests/sycl/expert_bank.cpp',
+            'include/strata/core/expert_layer_view.hpp','include/strata/core/expert_source.hpp',
+            'src/core/expert_source.cpp','tests/core/file_expert_source_test.cpp')
         pins = {}
         for name in names:
             raw = subprocess.check_output(['git','show',revision+':'+name],cwd=P)
@@ -58,12 +62,13 @@ def gpu_check(mode):
             root.mkdir(mode=0o700)
             for name in ('tmp','cache'): (root/name).mkdir()
             gpu = dict(source_commit=revision,source_sha256=pins,build_source_commit=build['source_commit'],
-                fixture=fixture,CPU_gate_source=record['source_commit'],checks=[],
+                fixture=fixture,provider_fixture=provider_fixture,CPU_gate_source=record['source_commit'],checks=[],
                 limits='Production upload helper/cache, synthetic byte readers, private maps and caller unwind only. No real provider enqueue fault injection, model arithmetic, speed, session rollback or physical262144/RESTORE qualification.')
         else:
             gpu = record['gpu']
             guards.require(gpu['mode']=='smoke' and gpu['passed'] and gpu['ownership_closed'] and
                 gpu['build_source_commit']==build['source_commit'] and gpu['fixture']==fixture and
+                gpu['provider_fixture']==provider_fixture and gpu.get('provider_checks_passed') is True and
                 gpu['source_sha256']==pins, 'same-source passed smoke required')
         guards.require(not (root/('owned-'+mode)).exists(), 'inspect existing GPU command')
         settings = json.loads((P/'tools/sycl/measurement_environment.json').read_text())
@@ -90,6 +95,16 @@ def gpu_check(mode):
 
         owner = supervision.Owner(root/('owned-'+mode),persist)
         try:
+            if mode == 'smoke':
+                entry,out,err = owner.run('arena-provider-smoke',[provider_fixture['path']],env,P,
+                    wall=60,cpu=180,rss_cap=2<<30,file_cap=64<<20,text_cap=64<<20,total_cap=128<<20)
+                stdout,stderr = out.read_text(),err.read_text()
+                guards.require(supervision.closed(entry) and entry.get('exit_code')==0 and
+                    'arena_resident_layer_test private=PASS file_fallback=PASS shared_exclusion=PASS blob_identity=PASS bounds=PASS close_reopen=PASS' in stdout and
+                    'file_expert_source_test: PASS' in stdout and not re.search(
+                    'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed',stderr),
+                    'Arena provider fixture failed: '+(stderr+stdout)[-5000:])
+                gpu['provider_checks_passed'] = True
             entry,out,err = owner.run('expert-bank-'+mode,[fixture['path'],'--'+mode],env,P,
                 wall=180,cpu=600,rss_cap=8<<30,file_cap=64<<20,text_cap=64<<20,total_cap=128<<20)
             stdout,stderr = out.read_text(),err.read_text()
