@@ -1268,7 +1268,7 @@ only4257304576B were free; fixed reservations including512MiB headroom needed
 4154841216B and the mixed bank needed419430400B, a316967040B shortfall.
 Mode10 safely fell back to mode2, with98304 GPU residual rows and392888320B
 host residual storage; the accumulator/GU fusion counters were absent. The
-[failed screen](../bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json)
+[failed screen](https://github.com/yqYo1/Strata/blob/2e83c15f6d4cc62ddaa65a99719dfb76bb3344bd/bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json)
 keeps its original failure and individual sample. Do not call this a matched
 route comparison or a clean speed regression. Before a new configuration
 probe, audit/test existing output-head release and restore, or explicitly
@@ -1294,7 +1294,20 @@ per configuration does not establish a speed gain. The mixed bank fits with
 18581376B beyond the unchanged512MiB allowance, and the host residual is
 728432640B. GU counters show5240 fused jobs/35581471 rows and16172 separate
 jobs; Down remains separate for21412 jobs. No fresh fault occurred.
-Next collect the clean four-request cohort. Prospectively stop the configuration
-if a process's subsequent median is below950 and all3 samples are below975,
-because it is far from the1000 target; keep those samples without claiming
-three-process qualification. Otherwise continue the independent repetitions.
+The clean four-request process then closed normally, with117489 fresh read
+tokens per request, thinking on, mode10 and81920 GPU rows throughout. First
+use was755.3tok/s; subsequent samples were802.1,802.1 and802.0 (median802.1,
+sample SD0.0577). Ownership closed, boot unchanged and no fresh fault occurred.
+The prospective futility rule (median<950 and all3 subsequent samples<975)
+stops this configuration without the other two independent processes. The
+route/correctness screen passed; the1000tok/s target did not. Keep all samples
+in the [current result](../bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json).
+This is a different input size from the earlier78K~903tok/s reference and does
+not establish a same-input regression or sustained decode performance.
+
+Before another model run, check native16 scratch allocation/readers against the
+existing indexed memory-lifetime findings, and audit/test existing output-head
+release/restore as a separate capacity option. Hold the GPU residual prefix
+explicitly in a head-release comparison: automatic placement could consume the
+freed memory before mixed-bank admission. Selective Down remains off in this
+model route and its clean component timing is still pending.
