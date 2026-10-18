@@ -1407,13 +1407,35 @@ and normal process closure. Requested expert H2D payload was40102860800B across
 19631 uploads, with13594 permanent hits; unused experts are not bulk-uploaded.
 The final layer used267 permanent slots. No fresh fault occurred. Its874.6tok/s
 first-use reading includes validation/logging and is diagnostic.
-Clean cohort0 then passed with890.8tok/s first use and957.8,953.4,955.8
-subsequently (median955.8, sample SD2.2030). All four request hashes match the
-98304-row placement, whose subsequent median was845.9; this is a12.9921%
-improvement in one process per configuration, not an isolated kernel or a
-repeated-process gain. All four requests closed normally with no fresh fault.
-The1000tok/s process target fails, but the prospective futility rule does not
-trigger. Continue independent processes1/2 under the frozen plan.
+All three clean independent processes then closed on the same frozen engine,
+configuration and four request hashes, with117489 fresh read tokens per request:
+
+| Process | First use, tok/s | Subsequent individual samples, tok/s | Subsequent median | Sample SD |
+| --- | ---: | --- | ---: | ---: |
+| 0 | 890.8 | 957.8,953.4,955.8 | 955.8 | 2.2030 |
+| 1 | 888.2 | 956.6,957.9,957.9 | 957.9 | 0.7506 |
+| 2 | 891.9 | 956.9,955.4,954.0 | 955.4 | 1.4503 |
+
+All12 requests closed normally, with actual full-GPU residual placement,
+normal native exits and no fresh fault. The median of the three process medians
+is955.8; the pooled median of the nine subsequent samples is956.6.
+The matched98304-row baseline has one process with median845.9, so the12.9921%
+ratio to955.8 is still a screen against one baseline process, not a paired
+three-process gain or isolated kernel improvement. The1000tok/s target remains
+unmet. The individual process evidence is preserved at commits1b3b92d93,
+1f302e6e4 and7f6d7c0fe; the compact current result records their parity checks.
+
+The next finite configuration screen requests65536 minimum actual tokens through
+the same official benchmark extension, retaining131072 resident INT8 context,
+chunk8192,384 expert slots,borrowed mixed scratch,GU-large and Down0.
+The fixed prompt generator is expected to produce78451 actual read tokens and
+78450 engine rows: all residuals must be on GPU and all48 layers must use one
+78450-row accumulator window. The validated owner/extent check precedes up to
+three independent clean processes with the same1000tok/s target and futility
+rule. This tests removal of the second MoE window and its repeated expert
+dequantizations/launches at a different input size; it is not a same-input speedup
+or a claim that a hardware resource is saturated. Record actual admission and
+cost counters before drawing that conclusion.
 The old47 intermediate residual stores plus47 inputs requested36931502080B
 of host transfers; the new route replaces those with GPU-local copies. Staged
 expert payload is39.95..40.10GB/request versus the old bulk50.29GB. This does

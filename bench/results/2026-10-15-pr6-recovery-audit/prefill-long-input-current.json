@@ -1,6 +1,6 @@
 {
   "mode": "qsa-long-input-expert-bank",
-  "source_commit": "087fad116ae1abea44f88dbf29901045c6282a37",
+  "source_commit": "ff5768f0c5677668b38dee6351bf9e9d3b205a11",
   "build_source_commit": "1222e27d01f32c5bb31f574ff4b143c489a3bcf1",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
@@ -61,7 +61,7 @@
     "STRATA_SYCL_SELECT_CYCLIC": "0",
     "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
     "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-v1-repeat1/cache",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-v1-repeat2/cache",
     "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
     "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
     "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
@@ -74,8 +74,8 @@
     "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
     "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
     "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-v1-repeat1/tmp",
-    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-v1-repeat1",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-v1-repeat2/tmp",
+    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-v1-repeat2",
     "ZES_ENABLE_SYSMAN": "0",
     "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
     "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
@@ -100,7 +100,7 @@
       "--expert-cache",
       "128",
       "--expert-profile",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-v1-repeat1/expert-profile.bin",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-v1-repeat2/expert-profile.bin",
       "--expert-cache-per-layer",
       "--pool-workers",
       "5",
@@ -139,7 +139,7 @@
       "strata"
     ],
     "host": "127.0.0.1",
-    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-v1-repeat1/engine.stderr",
+    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-v1-repeat2/engine.stderr",
     "engine_silence_s": 480,
     "parallel": 1,
     "open_browser": false,
@@ -149,9 +149,9 @@
     "/bin/sh",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
     "--config",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-v1-repeat1/config.json",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-v1-repeat2/config.json",
     "--port",
-    "44995",
+    "60137",
     "--runs",
     "4",
     "--prefill-only",
@@ -164,13 +164,13 @@
     "--ready-timeout",
     "600",
     "--out",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-v1-repeat1/bench"
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-v1-repeat2/bench"
   ],
   "reference": {
     "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-softmax-measurement-inputs-v1.json",
     "sha256": "3792c36462e333816ce5d5d9ac39f3dcc13809939d8d3133c570d8945257d1dd"
   },
-  "config_sha256": "5288137803a4e39dc70ee82ca47202d28c25afa7613f231c98fd544f80e2607f",
+  "config_sha256": "792747fad8461b15efab577f105e6d8e6dace807b464ee88d2331d3a3914c54b",
   "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
   "complete": true,
   "passed": true,
@@ -201,7 +201,7 @@
     "component_gate_passed": true,
     "selector": "large: matrix-wide jobs>=2334 rows; smaller jobs retain separate GU/SwiGLU"
   },
-  "cohort_index": 1,
+  "cohort_index": 2,
   "long_input_screen": {
     "minimum_actual_tokens": 98304,
     "generated_token_cap": 24,
@@ -239,7 +239,7 @@
     "limits": "Production upload helper/cache, synthetic byte readers, private maps and caller unwind only. No real provider enqueue fault injection, model arithmetic, speed, session rollback or physical262144/RESTORE qualification."
   },
   "preceding_long_input_result": {
-    "commit": "087fad116ae1abea44f88dbf29901045c6282a37",
+    "commit": "ff5768f0c5677668b38dee6351bf9e9d3b205a11",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json",
     "mode": "qsa-long-input-expert-bank"
   },
@@ -261,12 +261,12 @@
       "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
-      "ttft_s": 133.105,
-      "total_s": 135.192,
-      "prompt_tps": 888.2,
-      "prompt_ms": 132277.5,
-      "decode_tps": 10.5,
-      "decode_ms": 2292.4,
+      "ttft_s": 132.411,
+      "total_s": 134.161,
+      "prompt_tps": 891.9,
+      "prompt_ms": 131724.9,
+      "decode_tps": 13.0,
+      "decode_ms": 1852.7,
       "prompt_tps_source": "engine",
       "decode_tps_source": "engine",
       "drafts_offered": 21,
@@ -289,12 +289,12 @@
       "request_sha256": "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
-      "ttft_s": 123.507,
-      "total_s": 125.165,
-      "prompt_tps": 956.6,
-      "prompt_ms": 122824.3,
-      "decode_tps": 13.7,
-      "decode_ms": 1756.2,
+      "ttft_s": 123.472,
+      "total_s": 125.65,
+      "prompt_tps": 956.9,
+      "prompt_ms": 122779.9,
+      "decode_tps": 10.5,
+      "decode_ms": 2285.0,
       "prompt_tps_source": "engine",
       "decode_tps_source": "engine",
       "drafts_offered": 21,
@@ -317,12 +317,12 @@
       "request_sha256": "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
-      "ttft_s": 123.367,
-      "total_s": 125.083,
-      "prompt_tps": 957.9,
-      "prompt_ms": 122657.0,
-      "decode_tps": 13.0,
-      "decode_ms": 1844.2,
+      "ttft_s": 123.708,
+      "total_s": 125.463,
+      "prompt_tps": 955.4,
+      "prompt_ms": 122978.6,
+      "decode_tps": 12.9,
+      "decode_ms": 1858.1,
       "prompt_tps_source": "engine",
       "decode_tps_source": "engine",
       "drafts_offered": 21,
@@ -345,12 +345,12 @@
       "request_sha256": "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1",
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
-      "ttft_s": 123.342,
-      "total_s": 124.988,
-      "prompt_tps": 957.9,
-      "prompt_ms": 122653.4,
-      "decode_tps": 13.7,
-      "decode_ms": 1745.7,
+      "ttft_s": 123.857,
+      "total_s": 125.616,
+      "prompt_tps": 954.0,
+      "prompt_ms": 123159.6,
+      "decode_tps": 12.9,
+      "decode_ms": 1862.3,
       "prompt_tps_source": "engine",
       "decode_tps_source": "engine",
       "drafts_offered": 21,
@@ -362,9 +362,9 @@
   ],
   "engine_exit_code": 0,
   "native_identity": {
-    "pid": 1694200,
-    "start_ticks": 69402850,
-    "sid": 1694169
+    "pid": 1723670,
+    "start_ticks": 69483561,
+    "sid": 1723642
   },
   "route_selection": [],
   "gu_route": {
@@ -536,10 +536,10 @@
       2,
       3
     ],
-    "median_prompt_tps": 957.9,
-    "sample_sd_prompt_tps": 0.7505553499464872,
-    "min_prompt_tps": 956.6,
-    "max_prompt_tps": 957.9,
+    "median_prompt_tps": 955.4,
+    "sample_sd_prompt_tps": 1.4502873278537949,
+    "min_prompt_tps": 954.0,
+    "max_prompt_tps": 956.9,
     "process_target_passed": false,
     "futility_stop": false,
     "limits": "One process only; no3-process target/adoption or decode qualification."
@@ -584,5 +584,99 @@
     "device": "0xe20c",
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
+  },
+  "independent_process_comparison": {
+    "method": "Three independent native processes, four matched fresh requests each. Separate first use; report each process and all subsequent individual samples. Normalize only per-process private output paths.",
+    "cohorts": [
+      {
+        "cohort_index": 0,
+        "evidence": {
+          "commit": "1b3b92d93a05ff6252aa9c916efcaa6ac43a233c",
+          "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json"
+        },
+        "first_use_prompt_tps": 890.8,
+        "subsequent_prompt_tps": [
+          957.8,
+          953.4,
+          955.8
+        ],
+        "subsequent_median": 955.8,
+        "sample_sd": 2.203028218914429,
+        "requested_expert_H2D_bytes": [
+          40102860800,
+          40032153600,
+          39965158400,
+          39945267200
+        ],
+        "complete_route_and_ownership_passed": true,
+        "no_fresh_faults": true
+      },
+      {
+        "cohort_index": 1,
+        "evidence": {
+          "commit": "1f302e6e4473358371f1f08276b8ab751c3eac53",
+          "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json"
+        },
+        "first_use_prompt_tps": 888.2,
+        "subsequent_prompt_tps": [
+          956.6,
+          957.9,
+          957.9
+        ],
+        "subsequent_median": 957.9,
+        "sample_sd": 0.7505553499464872,
+        "requested_expert_H2D_bytes": [
+          40102860800,
+          40032153600,
+          39965158400,
+          39945267200
+        ],
+        "complete_route_and_ownership_passed": true,
+        "no_fresh_faults": true
+      },
+      {
+        "cohort_index": 2,
+        "evidence": {
+          "commit": "7f6d7c0fe03c594c8de7096cc2d93f1f184ec0f3",
+          "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json"
+        },
+        "first_use_prompt_tps": 891.9,
+        "subsequent_prompt_tps": [
+          956.9,
+          955.4,
+          954.0
+        ],
+        "subsequent_median": 955.4,
+        "sample_sd": 1.4502873278537949,
+        "requested_expert_H2D_bytes": [
+          40102860800,
+          40032153600,
+          39965158400,
+          39945267200
+        ],
+        "complete_route_and_ownership_passed": true,
+        "no_fresh_faults": true
+      }
+    ],
+    "request_sha256": [
+      "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+      "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
+      "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
+      "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1"
+    ],
+    "source_binary_configuration_parity": true,
+    "process_median_range": [
+      955.4,
+      957.9
+    ],
+    "median_of_process_medians": 955.8,
+    "all_subsequent_range": [
+      953.4,
+      957.9
+    ],
+    "pooled_subsequent_median": 956.6,
+    "each_process_target_passed": false,
+    "decision": "Stable opt-in117K route;1000tok/s unmet. Next prospectively evaluate65536-minimum input under the unchanged engine/placement, with a single<=81920-row GPU MoE window.",
+    "limits": "No paired three-process baseline cohort, hardware saturation/physical PCIe traffic, sustained decode, model-quality, physical262144 or RESTORE qualification. Earlier845.9 baseline is one matched process, not three."
   }
 }

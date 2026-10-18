@@ -727,5 +727,62 @@
     "next_consumer": "Independent clean cohorts1/2 use fresh roots and committed compact result; they do not reuse these raw files.",
     "deletion_manifest_commit": "fb5c5f246",
     "protected_current_and_fallback_hashes_verified": true
+  },
+  "closed_expert_bank_repeats_v1": {
+    "state": "planned; no deletion yet",
+    "manifest_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/closed-expert-bank-repeat-retirement.json",
+    "manifest_sha256": "f4733620e32b95dd4d326ae73c12f615dbcccf7ddeeefc2e0ea10d5ecad5ce44",
+    "files": 149,
+    "bytes": 66440272,
+    "source_recovery": [
+      {
+        "root": "/home/yayoi/orca/workspaces/Strata/sycl",
+        "revision": "034bddff8393e8c1c9cee89e9235807230a81ad2",
+        "recovered_and_hash_verified": 496,
+        "source_aggregate_sha256": "df2207b2f53080aef535b9a8a311d7b50856f8b1042262803545da78f3147658"
+      },
+      {
+        "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+        "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+        "recovered_and_hash_verified": 3608,
+        "source_aggregate_sha256": "322862d213ed722d6500da0b58a1b7fffff53aa0de77d7f2e8ba685c653a0d9f"
+      },
+      {
+        "root": "/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+        "revision": "87f6850680a580654b9ea2c80dbc01aeb36ad231",
+        "recovered_and_hash_verified": 5703,
+        "source_aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
+      }
+    ],
+    "closed_run_recovery": [
+      {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-v1-repeat1",
+        "source_commit": "087fad116ae1abea44f88dbf29901045c6282a37",
+        "benchmark_sources_recovered": 110,
+        "generated_config_and_profile_recovered": true,
+        "original_complete_and_ownership_closed": true
+      },
+      {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-v1-repeat2",
+        "source_commit": "ff5768f0c5677668b38dee6351bf9e9d3b205a11",
+        "benchmark_sources_recovered": 110,
+        "generated_config_and_profile_recovered": true,
+        "original_complete_and_ownership_closed": true
+      }
+    ],
+    "recipe_reference": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-entry-engine-build-v2.json",
+      "sha256": "9b7734387f0fc56f36afe9d7bca75e5f0bedcef479271e982025abe1d4334a1a"
+    },
+    "selected_source": "1222e27d01f32c5bb31f574ff4b143c489a3bcf1",
+    "selected_binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+      "bytes": 22070744,
+      "sha256": "ce19688e2788b13e5f61258f4d16b5f27da3d9d78e3f96a46fd2e06c873bb670"
+    },
+    "selected_qualification": "Expert-bank GPU component and validated117K request, plus12 clean requests in3 independent processes passed. Opt-in bounded route only; physical262144/RESTORE, production failure paths and broader model quality remain unqualified.",
+    "evidence_commit": "692e2658d8b455044c3705ba8c0fa10f26d4d5ab",
+    "decision": "Retain current1222 engine and4 same-build fixtures; retire old034 fallback, closed repeats1/2 raw output and consumed bank audit bodies. Keep useful independent samples/route costs in Git;6 legacy source holds remain untouched.",
+    "pending": "Verify source/result commits reachable from fork default before deletion; then reconcile active references. No new engine build or default adoption."
   }
 }
