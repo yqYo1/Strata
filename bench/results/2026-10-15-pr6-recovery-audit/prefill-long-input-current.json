@@ -1,11 +1,11 @@
 {
-  "mode": "qsa-long-input-heads-check",
-  "source_commit": "7130475f90a0d08c1e9d90b8c1ddf7b07404061a",
-  "build_source_commit": "45c387d11f20579e2f4a96511497fa7a5fb6e4ce",
+  "mode": "qsa-long-input-scratch-check",
+  "source_commit": "86631a894e31b7b8a6b5061780dcff971df7d4f6",
+  "build_source_commit": "034bddff8393e8c1c9cee89e9235807230a81ad2",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-    "bytes": 22039520,
-    "sha256": "4b7ea4883c0df2d5f973a08b22b0efc3ee7bdbed560828d2e221683ff986bcf0"
+    "bytes": 22065872,
+    "sha256": "5338945aa6fb7a6df6c482da4b802046af856c4340a2a644deecfb8a32a2d01f"
   },
   "environment": {
     "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
@@ -38,7 +38,7 @@
     "STRATA_SYCL_PROMPT_DIRECT": "1",
     "STRATA_PREFILL_LAYER_MAJOR": "1",
     "STRATA_PREFILL_LAYER_MAJOR_R_DTYPE": "bf16",
-    "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "106496",
+    "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "98304",
     "STRATA_PREFILL_RELEASE_MTP_EXPERTS": "1",
     "STRATA_PREFILL_PHASE_AUDIT": "0",
     "STRATA_PREFILL_BOUNDARY_AUDIT": "0",
@@ -47,7 +47,7 @@
     "STRATA_SYCL_PARALLEL_IQ_DEQUANT": "1",
     "STRATA_PREFILL_LAYER_MAJOR_SHAPE_CENSUS": "0",
     "STRATA_IQ_TIMING_PROGRESS": "0",
-    "STRATA_PREFILL_RELEASE_HEADS": "1",
+    "STRATA_PREFILL_RELEASE_HEADS": "0",
     "STRATA_PREFILL_NATIVE_DENSE_BANK": "1",
     "STRATA_SYCL_PREFILL_SCRATCH_ALIAS": "1",
     "STRATA_SYCL_QSA_INDEXER_DEVICE_BATCH": "1",
@@ -61,7 +61,7 @@
     "STRATA_SYCL_SELECT_CYCLIC": "0",
     "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
     "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-heads-check-v1/cache",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-scratch-check-v1/cache",
     "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
     "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
     "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
@@ -80,13 +80,14 @@
     "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
     "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
     "STRATA_TRACE": "1",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-heads-check-v1/tmp",
-    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-heads-check-v1",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-scratch-check-v1/tmp",
+    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-scratch-check-v1",
     "ZES_ENABLE_SYSMAN": "0",
     "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
     "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
     "STRATA_SYCL_PREFILL_GU_SWIGLU": "large",
-    "STRATA_SYCL_PREFILL_DOWN_SCATTER": "0"
+    "STRATA_SYCL_PREFILL_DOWN_SCATTER": "0",
+    "STRATA_SYCL_PREFILL_MIXED_SCRATCH": "1"
   },
   "config": {
     "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
@@ -104,7 +105,7 @@
       "--expert-cache",
       "128",
       "--expert-profile",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-heads-check-v1/expert-profile.bin",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-scratch-check-v1/expert-profile.bin",
       "--expert-cache-per-layer",
       "--pool-workers",
       "5",
@@ -143,7 +144,7 @@
       "strata"
     ],
     "host": "127.0.0.1",
-    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-heads-check-v1/engine.stderr",
+    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-scratch-check-v1/engine.stderr",
     "engine_silence_s": 480,
     "parallel": 1,
     "open_browser": false,
@@ -153,9 +154,9 @@
     "/bin/sh",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
     "--config",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-heads-check-v1/config.json",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-scratch-check-v1/config.json",
     "--port",
-    "41929",
+    "36481",
     "--runs",
     "1",
     "--prefill-only",
@@ -168,15 +169,15 @@
     "--ready-timeout",
     "600",
     "--out",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-heads-check-v1/bench"
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-scratch-check-v1/bench"
   ],
   "reference": {
     "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-softmax-measurement-inputs-v1.json",
     "sha256": "3792c36462e333816ce5d5d9ac39f3dcc13809939d8d3133c570d8945257d1dd"
   },
-  "config_sha256": "199e3fd9dd22632da195be2a692b8d7da1116b10bee7f1c3265e4e69ad7a0ff1",
+  "config_sha256": "2b6ffb975d583626bfefe80647086fb2850bae823884ab02eac0dc0d70318392",
   "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
-  "complete": true,
+  "complete": false,
   "passed": false,
   "active": false,
   "model_quality_qualified": false,
@@ -194,13 +195,13 @@
   },
   "gu_qualification": {
     "component_path": "bench/results/2026-10-15-pr6-recovery-audit/moe-gu-swiglu-current.json",
-    "component_sha256": "79ef356a38fe9439e07f2974ace27b9065860f84381cb5f3fd1b28e73ae6bb87",
-    "component_source_commit": "45c387d11f20579e2f4a96511497fa7a5fb6e4ce",
+    "component_sha256": "01f9687d9a652035ad860ff46924b07e56fcaa931a344ec7d98349a47d4b2998",
+    "component_source_commit": "034bddff8393e8c1c9cee89e9235807230a81ad2",
     "kernel_source_sha256": {
       "src/prefill/sycl/vllm_xe2/native16.cpp": "2a6b9b4532f9be50a2bb697cd120fc31f84d2c200fa5ed81f77d4b5f152af684",
       "src/prefill/sycl/vllm_xe2/native16.hpp": "e8cb0ade560d37f0ff7ab6f1a0e9debdf25f6af1f36463799f0c02b15e4610b7",
       "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp": "84fb1251c2f9f93bd7774fb2a5a6c928df9ac8e86d1c7f6cf1a6cec058403fa6",
-      "src/prefill/sycl/native16.cpp": "7567f607b4b564c21c8fc4ee21ed41ae7f419a3f0a23a866836f1a85e658627c"
+      "src/prefill/sycl/native16.cpp": "c88f2d7ae06c63dbfb04b0bb777be03284a402f90a7b714eddecd9ede1b72cc4"
     },
     "component_gate_passed": true,
     "selector": "large: matrix-wide jobs>=2334 rows; smaller jobs retain separate GU/SwiGLU"
@@ -211,125 +212,26 @@
     "generated_token_cap": 24,
     "context_capacity": 131072,
     "required_client_context": 123160,
-    "question": "Retire existing target/draft output heads during long prefill and retain24576 more residual rows on GPU than the81920-row screen. Include snapshot/restore and graph recapture in total latency; no changed kernel or head-release-only speed claim. Preserve512MiB headroom.",
+    "question": "Borrow idle R/shared-arena spans for mixed input, with zero extra mixed allocation and16384 more GPU residual rows than the81920 screen. Preserve512MiB headroom and existing dense banking; heads remain resident. Placement plus storage comparison, not a kernel-only speed claim.",
     "qualification": "One validated long request, then up to3 independent clean processes with4 fresh requests each. Separate first use and3 subsequent requests; target each independent subsequent median>=1000tok/s. Stop this configuration early if a process median<950 and all3 subsequent samples<975; retain the failed screen and do not claim3-process qualification. Not sustained decode, model-quality or physical262144 qualification.",
-    "residual_GPU_rows": 106496
+    "residual_GPU_rows": 98304
   },
-  "head_qualification": {
-    "component_path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-head-current.json",
-    "component_sha256": "1d6ed1f32a506264da97196906111f94bf7e70bf40daf3f1afbb027337950307",
-    "source_commit": "5e8612f370c379028044307b9325fe7ce4fb866b",
+  "mixed_qualification": {
+    "component_path": "bench/results/2026-10-15-pr6-recovery-audit/moe-mixed-scratch-current.json",
+    "component_sha256": "ec41f2690a1ff97dd2aa5762c325ca031241d214de8af8c515fffa9b9e379311",
     "fixture": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-head-roundtrip-v2/head-roundtrip",
-      "bytes": 11280176,
-      "sha256": "4e7a06e9f27c97796db5b8cc07e09b8c8531b560e017273ee719ba4ef3f44c51"
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_accum_test",
+      "sha256": "35de609c81091c9ce2e87f9b28742466e5f21356570396cc45e7ee83e7b4432b"
     },
-    "limits": "Standalone exact packed-byte/logit restoration only; this model check must additionally cover target/MTP/verifier graph retirement and decode resumption."
+    "limits": "Component capacity/gather only; this model check must establish actual Prefill owners, bank phases and callback retirement."
   },
   "previous_screen": {
-    "commit": "7130475f90a0d08c1e9d90b8c1ddf7b07404061a",
+    "commit": "86631a894e31b7b8a6b5061780dcff971df7d4f6",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json",
-    "mode": "qsa-long-input-balanced",
-    "passed": true,
-    "error": null
+    "mode": "qsa-long-input-heads-check",
+    "passed": false,
+    "error": "native engine exit"
   },
   "source_count": 109,
-  "source_aggregate_sha256": "6e3b9241ced454482746d9576a0e335ff271a733d9a315f574b9b93f8aac7f2f",
-  "exit_code": 1,
-  "requests": [
-    {
-      "run": 0,
-      "ok": false,
-      "eligible": false,
-      "actual_prompt_tokens": null,
-      "actual_read_tokens": null,
-      "actual_reused_tokens": null,
-      "generated_tokens": 0,
-      "thinking_requested": true,
-      "reasoning_observed": false,
-      "stream_complete": false,
-      "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
-      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "reasoning_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "ttft_s": null,
-      "total_s": 0.577,
-      "prompt_tps": null,
-      "prompt_ms": null,
-      "decode_tps": null,
-      "decode_ms": null,
-      "prompt_tps_source": null,
-      "decode_tps_source": null,
-      "drafts_offered": null,
-      "drafts_accepted": null,
-      "finish_reason": null,
-      "err": "{'type': 'server_error', 'message': 'prefill dense bank: unsupported request/reader state (head-release combination excluded)'}; usage.prompt_tokens must report >= 98304, got None; timings.prompt_n must report >= 98304, got None; every reported reuse count must be zero, got []; completion usage outside 1..24; actual prompt lacks verified context/output headroom; missing finite positive engine prompt_per_second",
-      "eligibility_errors": [
-        "{'type': 'server_error', 'message': 'prefill dense bank: unsupported request/reader state (head-release combination excluded)'}",
-        "usage.prompt_tokens must report >= 98304, got None",
-        "timings.prompt_n must report >= 98304, got None",
-        "every reported reuse count must be zero, got []",
-        "completion usage outside 1..24",
-        "actual prompt lacks verified context/output headroom",
-        "missing finite positive engine prompt_per_second"
-      ]
-    }
-  ],
-  "engine_exit_code": -11,
-  "native_identity": {
-    "pid": 1263678,
-    "start_ticks": 68380117,
-    "sid": 1263654
-  },
-  "route_selection": [],
-  "error": "native engine exit",
-  "error_excerpt": "strata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)\nstrata generate: native pack: /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s experts (largest blob 2.66 MB), token embedding IQ4_XS in mapped host memory (322 MiB)\nstrata generate: 1466 MiB of weights loaded from /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s (302 canonical tensors skipped: served natively)\nstrata generate: 300 native projection matrices, 2018.88 MiB of weights\nstrata generate: the SSD is kept awake while rows are read: one page of the table after 100 ms without a read, until 60 s after the last request (STRATA_SSD_KEEPALIVE=0 turns it off)\nstrata generate: profile /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-heads-check-v1/expert-profile.bin: 24576 ranked pairs, built for 24576 slots\nstrata generate: PLE on, table 320001536 rows of /home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf\nstrata mtp: expert source original=1 bytes=707788800 source=owned-RAM sha256=09398406be61f1f54c93861f449e48b8df0bfccbc9ec9b2b7636775a6ea9244f\nstrata mtp: draft layer loaded, 834 MiB of VRAM (experts 675, dense 111), files read in 3.32 s (237 MiB/s)\nstrata generate: GPU 0: Intel(R) Arc(TM) B570 Graphics (SYCL)\nstrata generate: expert arena read through the file cache (buffered (not Windows))\nstrata generate: expert arena: mlock failed (raise ulimit -l); SYCL ordinary host arena; MAP_HUGETLB unavailable (needed 23983 2 MiB pages, vm.nr_hugepages=0); using 4 KB pages\nstrata generate: loaded 46.84 GiB at 1.06 GiB/s\nstrata trace: 3764 MiB free after the weights, the session and the drafter\nstrata generate: experimental native Q5_K head, 521472000 bytes\nstrata generate: expert cache 128 slots, 0.26 GiB of VRAM; policy is\nstrata trace: 2998 MiB free after opening the expert cache\nstrata generate: SYCL cached experts use native Q8_1 arithmetic; logits can differ from CPU experts.\n                 R4.2g PER-LAYER: each layer owns 2 slots (0..1).\nstrata trace: 2998 MiB free after the profile fill\nstrata generate: pre-filled 128 of 128 slots from the profile; slot 0 verified\nstrata generate: native GPU hit kernels captured at session setup\nstrata trace: 2984 MiB free after the R4 hit path\nstrata generate: R4 hit path ON - resident experts are computed on the GPU\nstrata generate: 5 expert-pool workers + the host thread\nstrata trace: 2984 MiB free after the expert cache and the graphs\nstrata generate: session is up (engine 0.1.38)\nstrata generate: token graph hit path: 128 resident experts, decided on the device\nstrata serve: the prompt path allocates its own buffers (too few cache slots to borrow)\n[native16-route] engine=bf16 backend=vllm tile=auto(T<128:compact;else:wide) aot=bmg-g21-a0 isolated=1 experimental\n[native16-gu] fusion=large min_rows=2334\n[native16-down] fusion=0 min_rows=2334\nstrata prefill: FP16 MoE compact requested=1 effective=1, chunk=8192, scratch rows=8192, accounted=2311569920, shared region=1180698624 bytes\nstrata trace: 773 MiB free after the head and the prompt path\nstrata verify: window up to 4 tokens, 63.3 MiB of device buffers\nstrata mtp: draft head over 106299 tokens (212.9 MiB)\nstrata trace: 493 MiB free after the verifier and the drafter's binding\nstrata serve: 493 MiB of VRAM free with everything loaded\nstrata trace: request 74 0\nstrata trace: prompt start 73 -1\nstrata trace: prompt chunk 0 of 73\nstrata trace: prefill issuer threaded=0 stream_all=0 ring=8 chunk=73 entries=0\nstrata trace: prefill skip releases=0 after-open-group=0\nstrata trace: read 73 tokens (batched) in 25362.7 ms\nstrata trace: prompt done (slots refilled) -1 -1\nstrata trace: window 73 1\nstrata verify: captured the 1-token window in 49 event-completed segments\nstrata verify: capture 1 tokens 3952.742 ms, free VRAM 233.1 MiB\nstrata verify: 48 shared/hit graphs can overlap CPU experts\nstrata trace: window 74 4\nstrata verify: captured the 4-token window in 49 event-completed segments\nstrata verify: capture 4 tokens 83.827 ms, free VRAM 100.5 MiB\nstrata verify: 48 shared/hit graphs can overlap CPU experts\nstrata trace: window 78 4\nstrata trace: window 82 4\nstrata trace: window 86 4\nstrata trace: window 90 4\nstrata trace: window 94 4\nstrata serve: prompt 74 tokens = 0 reused + 74 read in 25370 ms (2.9 tok/s), 24 generated in 6744 ms (3.6 tok/s), drafts accepted 18 of 18, 0 checkpoints\nstrata serve: decode expert cache hit rate: 3.6% (427 hits / 12000 lookups)\nstrata trace: request 117489 0\nstrata trace: prompt start 117488 -1\nstrata trace: read 117488 tokens (batched) in 0.0 ms\nstrata serve: prefill dense bank: unsupported request/reader state (head-release combination excluded)\n",
-  "ownership_closed": true,
-  "fresh_faults": [],
-  "boot_unchanged": true,
-  "driver_after": {
-    "pci": "/sys/bus/pci/devices/0000:05:00.0",
-    "driver": "xe",
-    "vendor": "0x8086",
-    "device": "0xe20c",
-    "kernel": "7.0.0-38-generic",
-    "devcoredump": false
-  },
-  "failure_analysis": {
-    "admission_failure": "prefill dense bank: unsupported request/reader state (head-release combination excluded)",
-    "native_exit_signal": "SIGSEGV (-11), after the explicit rejection; not a normal exit1",
-    "kernel_diagnostic": "strata[1263678]: segfault at c ip 00007de87db77b08 sp 00007fff3d11ee88 error4 in libze_intel_gpu.so.1.17.39395[1f9b08,7de87d97e000+b5f000], CPU0",
-    "driver_elf": {
-      "path": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
-      "sha256": "dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c"
-    },
-    "observed_head_detach_count": 0,
-    "long_prefill_submitted": false,
-    "preceding_health_request": {
-      "read_tokens": 74,
-      "generated_tokens": 24,
-      "outcome": "completed before long-request admission"
-    },
-    "limitations": "No stack/core: owned jobs deliberately set RLIMIT_CORE=0; coredumpctl absent and apport has no strata capture. addr2line on the stripped installed driver resolves no function. No root cause inferred from instruction bytes or signal alone.",
-    "source_incompatibility": "NativeDensePhase explicitly rejects head release; Verifier dense/head leases also reject nesting. Disabling native/canonical banking would discard existing capacity savings, so that is not selected as an optimization.",
-    "next_action": "Retire the unsupported head model prototype and successful standalone fixture output after preserving exact sources/results. Keep this CPU-teardown failure unresolved. Source-audit early-error graph/queue teardown before any reproducer; continue the selected two-bank mixed-scratch path with heads disabled.",
-    "same_configuration_rerun_allowed": false,
-    "native_review": {
-      "path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/native-early-rejection-teardown-native-review.json",
-      "sha256": "57354c9662ae2fbb0d8090787bde7430fe8716efc3cad1f93da9a5bbb1e0a846",
-      "causation": "Unproven. No-subset teardown-order concern is conditional; observed run has106299-token draft subset. No phase/peek/stack evidence yet.",
-      "next_diagnostic": "After serialized GPU work, pin bounded failure and normal-close phase/status markers, pointer ownership and checked drain/destroy order; no unreviewed reproduction or guard bypass."
-    }
-  },
-  "raw_retirement": {
-    "manifest_path": "bench/results/2026-10-15-pr6-recovery-audit/build-retirement-20261018.json",
-    "manifest_section": "closed_head_capacity_probe_v2",
-    "state": "performed",
-    "original_result_status_unchanged": true,
-    "component_source_archive_commit": "5e8612f370c379028044307b9325fe7ce4fb866b"
-  },
-  "retained_original_engine": {
-    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-mixed-scratch-v1/strata",
-    "bytes": 22039520,
-    "sha256": "4b7ea4883c0df2d5f973a08b22b0efc3ee7bdbed560828d2e221683ff986bcf0"
-  }
+  "source_aggregate_sha256": "0c6c46f54491a23ff4690a15fd1dac785e28ffef871a8586e0456266255c115f"
 }
