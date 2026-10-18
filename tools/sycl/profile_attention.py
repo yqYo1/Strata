@@ -97,7 +97,8 @@ def main():
         boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
         journal = subprocess.check_output(['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True)
         cursor = next(x.split(': ', 1)[1] for x in journal.splitlines() if x.startswith('-- cursor: '))
-        record.update(mode=mode, complete=False, passed=False, active=False, environment=env)
+        record.update(mode=mode, complete=False, passed=False, active=False, environment=env,
+                      current_recipe_commit=revision)
         record['permissions'] = {p: Path('/proc/sys', p).read_text().strip() for p in
                                  ('dev/xe/observation_paranoid', 'kernel/perf_event_paranoid', 'kernel/kptr_restrict')}
         record['profiler'] = dict(path=str(VTUNE.resolve()), sha256=digest(VTUNE),
@@ -121,7 +122,8 @@ def main():
                 r'^\s*(?:-\s*)?(?:name|execution_env|grf_count|simd_size|slm_size|barrier_count|has_barrier|'
                 r'required_work_group_size|private_size|spill_size|scratch_size|per_thread_memory_buffers|'
                 r'allocation_type|memory_usage|size|is_fixed_size|slot):', s)]
-            record['checks'].append(dict(mode=mode, command=command, collector_exit_code=entry.get('exit_code'),
+            record['checks'].append(dict(mode=mode, command=command, recipe_commit=revision,
+                input_sha256=inputs, environment=env, collector_exit_code=entry.get('exit_code'),
                 collector_ok=collector_ok, target_reported_pass=native_pass,
                 ownership_closed=supervision.closed(entry),
                 emitted_resource_lines=resource_lines if mode == 'resources' else [],
