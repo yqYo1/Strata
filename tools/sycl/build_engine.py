@@ -251,6 +251,7 @@ def main():
                     record['binary_origin_source_commit'] = old.get('binary_origin_source_commit', old['source_commit'])
         except BaseException as error:
             record['error'] = str(error)
+            record['passed'] = False
         finally:
             record['ownership_closed'] = owner.active is None and all(supervision.closed(c) for c in owner.commands)
             if not record['ownership_closed']:
