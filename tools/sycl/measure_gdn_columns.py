@@ -60,6 +60,9 @@ def main():
                 'require matching successful preceding phase')
             committed = subprocess.check_output(['git', 'show', 'HEAD:' + str(RESULT.relative_to(P))], cwd=P)
             guards.require(committed == RESULT.read_bytes(), 'commit preceding result first')
+        if mode == 'context':
+            guards.require(record['resident_summary']['advance_to_context'],
+                           'candidate did not meet the prospective resident advancement threshold')
         guards.require(not (ROOT / ('owned-' + mode)).exists(), 'phase already started; inspect its owner')
         settings = json.loads(SETTINGS.read_text())
         for path, info in settings['runtime_elfs'].items():
@@ -121,8 +124,12 @@ def main():
                         process_medians_ms=[statistics.median(e['queue_interval_ms'] for e in samples
                             if e['partitions'] == partitions and e['process'] == process) for process in range(3)]))
                 winner = min((s for s in summary if s['partitions'] in (2, 4, 8)), key=lambda s: s['median_ms'])
+                change = (winner['median_ms'] / summary[0]['median_ms'] - 1) * 100
                 record['resident_summary'] = dict(arms=summary, winner=winner['partitions'],
-                    winner_latency_change_percent=(winner['median_ms'] / summary[0]['median_ms'] - 1) * 100,
+                    winner_latency_change_percent=change,
+                    advance_to_context=change <= -5 and all(a < b for a, b in zip(
+                        winner['process_medians_ms'], summary[0]['process_medians_ms'])),
+                    prospective_advance_gate='Pooled resident median at least5% faster and each of3 independent-process medians faster; not model adoption.',
                     scope='Three independent resident processes, six rotating measured rounds plus first-use round per arm; not model throughput or a saturation ceiling.')
             record.update(complete=True, passed=True)
         except BaseException as error:

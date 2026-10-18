@@ -464,6 +464,19 @@ run outside timing. It measures both kernels and launch gaps and excludes
 initial transfer. The separate physical-extent recurrence check includes saved
 FP32 carry restoration and the unchanged single-token decode consumer at the
 last position; it does not qualify a full model conversation RESTORE.
+Advance from resident timing only if the pooled median is at least5% faster
+and each of the three independent-process medians beats the original. This is
+a screening threshold, not model adoption. The first fixture compile failed
+on a mixed-type`auto` declaration at`4720519ca`; the corrected build must retain
+that failed identity rather than relabel it.
+
+For the78,450 long-prefill rows over36GDN layers, the explicit recurrence
+dot/state/output/delta arithmetic is15.5993444352TFLOP, excluding exponentials,
+normalization and reductions. Dividing by the observed7.99004s interval gives
+1.95235TFLOP/s of this logical work, not measured FP32 saturation. Separating
+the RMS adds138,815,078,400 logical FP32 intermediate bytes over these layers;
+actual DRAM traffic depends on caching. Column partitioning also repeats Q/K
+loads, so the unchanged arithmetic count does not imply an unchanged memory cost.
 
 ## Optional GDN chunk64
 

@@ -110,7 +110,8 @@ struct Case {
   void compare(Trial &a, Trial &b, int active_tokens = -1) {
     if (active_tokens < 0) active_tokens = capacity;
     equal(a.state, b.state); equal(a.y, b.y); equal(a.y16, b.y16);
-    auto values = b.y.get(), image = b.y16.get();
+    auto values = b.y.get();
+    auto image = b.y16.get();
     for (size_t i = 0; i < size_t(active_tokens) * V; ++i)
       need(std::isfinite(values[Pad + i]) &&
            image[Pad + i] == strata::kernels::f16_from_f32(values[Pad + i]), "finite output or FP16 image");
