@@ -702,6 +702,30 @@ ratio>1.05, and every process faster in both cap2051 patterns. Passing permits a
 later matched official long-input model A/B; it is not inference adoption or a
 hardware saturation claim.
 
+Source`9d000172f53c399453a0662c3eac2b0771114e7e` passed the traced smoke and
+all11 numerical/boundary cases per arm. Ordered-exp also matched the serial
+FP32 maximum, alpha, normalizer and tile-sum bits, including padded heads and
+unused capture guards; all9 invalid probe admissions rejected. No fresh GPU
+fault or boot change was detected. The initial failed smoke remains archived
+at`963d387698f8b30b8fff9229449775000bdef4b8`: its invalid-overlap test pointed
+at the legal leading guard, and the corrected test points inside the output.
+This was a fixture error, not a relaxed kernel admission or numerical criterion.
+
+Three independent clean processes then completed all108 individual samples:
+
+| Cap / access | KVvec4 median ms | Ordered-exp median ms | Latency change |
+| --- | ---: | ---: | ---: |
+| 33 / gathered | 8.792280 | 8.618858 | -1.97% |
+| 2051 / gathered | 231.586801 | 224.028323 | -3.26% |
+| 2051 / clustered | 174.369835 | 139.799954 | -19.83% |
+
+Every process improved both cap2051 patterns. The geometric-mean latency ratio
+is0.912692, satisfying the prospective component gate. The
+[individual results](../bench/results/2026-10-15-pr6-recovery-audit/qsa-ordered-exp-current.json)
+retain spread and process medians. Proceed to an explicit opt-in long-prefill
+model route and a matched official78K comparison; no new model throughput or
+sustained decode, task-quality, full-context or RESTORE qualification is claimed.
+
 ## MoE Down/scatter component
 
 `Gemm::down_scatter` is an explicit component API with no model dispatch hook.
@@ -855,4 +879,5 @@ evidence, not proof of instruction-cache pressure, occupancy or a slowdown
 mechanism. Before another fusion variant, investigate grouping repeated row
 metadata/predicates while preserving static fragment access; a dynamic register
 index or restricted pointer must not be assumed faster or legal without checks.
-The prepared QSA ordered-exp candidate is the next serialized GPU experiment.
+The QSA ordered-exp component now passed its gate; the next serialized experiment
+is its opt-in long-prefill model comparison described above.
