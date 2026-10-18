@@ -1,5 +1,5 @@
 {
-  "source_commit": "ce1e950a843953c7856382978f7993bcc848e366",
+  "source_commit": "dfba48ef52e1bd8df596ecda06ab4eae0c882359",
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -80,23 +80,52 @@
   "production_selected": false,
   "model_quality_qualified": false,
   "replaces": {
-    "source_commit": "9d000172f53c399453a0662c3eac2b0771114e7e",
+    "source_commit": "ce1e950a843953c7856382978f7993bcc848e366",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
       "bytes": 21499072,
-      "sha256": "bfb9bf19fd93d2d5f4751d6ed97f62c9a4d684b1050b798c621971c39501090f"
+      "sha256": "e400bbe545fcb13376812f353f89648a9924e2af1ff9c26b593c31a3e28be934"
     },
     "source_build_passed": true,
-    "retained_binary_source_commit": "9d000172f53c399453a0662c3eac2b0771114e7e",
+    "retained_binary_source_commit": "ce1e950a843953c7856382978f7993bcc848e366",
     "reason": "Closed unused comparison engine; original source/recipe recovered from Git. Reuse its cache for the immediate corrected build, not a retained old generation."
   },
   "targets": [
     "strata",
-    "sycl_qsa_bf16_prefix_kvvec4_test",
-    "sycl_qsa_bf16_prefix_ordered_exp_test",
-    "sycl_qsa_bf16_prefix_ordered_exp_bench"
+    "sycl_submission_test"
   ],
-  "retention_consumer": "One known-good ce1 generation preserved outside the reused cache, plus only the upcoming submission-acceptance candidate. Legacy provenance holds remain distinct.",
+  "retention_consumer": "Current long-prefill comparison and its attention fixtures; retire when comparison closes.",
+  "retained_validation_reference": {
+    "source_commit": "ce1e950a843953c7856382978f7993bcc848e366",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-submission-v1/strata",
+      "bytes": 21499072,
+      "sha256": "e400bbe545fcb13376812f353f89648a9924e2af1ff9c26b593c31a3e28be934"
+    },
+    "fixtures": {
+      "sycl_qsa_bf16_prefix_kvvec4_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-submission-v1/sycl_qsa_bf16_prefix_kvvec4_test",
+        "bytes": 1390592,
+        "sha256": "bc6add39d091a6aa57ca7bf0330c4c269ce1dd7106d5d2a238eb3948adb6fa89"
+      },
+      "sycl_qsa_bf16_prefix_ordered_exp_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-submission-v1/sycl_qsa_bf16_prefix_ordered_exp_test",
+        "bytes": 1398936,
+        "sha256": "aae503f30434e6f424f6dbfe26dd070eeed4f71e2ef54bb0fafbe927bc12cefe"
+      },
+      "sycl_qsa_bf16_prefix_ordered_exp_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-submission-v1/sycl_qsa_bf16_prefix_ordered_exp_bench",
+        "bytes": 1369912,
+        "sha256": "d06bf20eee697f0ed7b46d1fe6139d3cd2380bccb7eaa471f382dab9901fded9"
+      }
+    },
+    "original_build_record": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-submission-v1/build-record.json",
+      "sha256": "f74e4e38f19c65e503844a7d84ea932649356682329d468cbade1460f30a15c5"
+    },
+    "qualification_reference": "Current qsa-ordered-exp-model-current.json, original paired receipt atcf2a622ae",
+    "consumer": "Preserved900.6tok/s qualified screening generation while submission acceptance is built/tested; retire after explicit replacement selection or comparison closure."
+  },
   "legacy_provenance_exception": {
     "state": "Unresolved legacy cleanup; not qualified comparison generations.",
     "observed_engine_and_fixture_paths": 41,
@@ -142,29 +171,21 @@
     "bytes": 21499072,
     "sha256": "e400bbe545fcb13376812f353f89648a9924e2af1ff9c26b593c31a3e28be934"
   },
-  "compile_database_sha256": "6471b0cb0d11bae6a27f8c4bf3a50dc3b41eef4a9708cb27bcb8157cf59f4f0c",
-  "configured_compile_entries": 217,
+  "compile_database_sha256": "96397f97da5da135e169b0a4cae46df5b23b0a58c973d30573a60b4cfb7e69ec",
+  "configured_compile_entries": 218,
   "fixtures": {
-    "sycl_qsa_bf16_prefix_kvvec4_test": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_kvvec4_test",
-      "sha256": "bc6add39d091a6aa57ca7bf0330c4c269ce1dd7106d5d2a238eb3948adb6fa89"
-    },
-    "sycl_qsa_bf16_prefix_ordered_exp_test": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_ordered_exp_test",
-      "sha256": "aae503f30434e6f424f6dbfe26dd070eeed4f71e2ef54bb0fafbe927bc12cefe"
-    },
-    "sycl_qsa_bf16_prefix_ordered_exp_bench": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_ordered_exp_bench",
-      "sha256": "d06bf20eee697f0ed7b46d1fe6139d3cd2380bccb7eaa471f382dab9901fded9"
+    "sycl_submission_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_submission_test",
+      "sha256": "3582ff3453f0e757cb2f2ac20a194180dcb3553e15b65f0c174ae5ed1f20d0cd"
     }
   },
   "ownership_closed": true,
   "inputs": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "ce1e950a843953c7856382978f7993bcc848e366",
-      "count": 492,
-      "aggregate_sha256": "8daaa86a3ef0b7d5955198c6eb5f2a44eec56cb6abc8c4ecc28c3b8e199fb235"
+      "revision": "dfba48ef52e1bd8df596ecda06ab4eae0c882359",
+      "count": 493,
+      "aggregate_sha256": "52d94e2fd7fd9e0d9612a73ac015d4998bb949b57315fee3bb63e7426f992d5f"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
@@ -179,71 +200,10 @@
       "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
     }
   ],
-  "qsa_ordered_exp_qualification": {
-    "component_source_commit": "9d000172f53c399453a0662c3eac2b0771114e7e",
-    "component_result": "bench/results/2026-10-15-pr6-recovery-audit/qsa-ordered-exp-current.json",
-    "state": "Component gate, validated39K model admission and matched78K clean screen passed. Subsequent median900.6 vs867.4tok/s; explicit opt-in only. Broader quality/context/RESTORE and sustained decode unqualified.",
-    "model_adopted": false
-  },
-  "retained_latest_selection": {
-    "source_commit": "ce1e950a843953c7856382978f7993bcc848e366",
-    "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-      "bytes": 21499072,
-      "sha256": "e400bbe545fcb13376812f353f89648a9924e2af1ff9c26b593c31a3e28be934"
-    },
-    "fixtures": {
-      "sycl_qsa_bf16_prefix_kvvec4_test": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_kvvec4_test",
-        "sha256": "bc6add39d091a6aa57ca7bf0330c4c269ce1dd7106d5d2a238eb3948adb6fa89"
-      },
-      "sycl_qsa_bf16_prefix_ordered_exp_test": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_ordered_exp_test",
-        "sha256": "aae503f30434e6f424f6dbfe26dd070eeed4f71e2ef54bb0fafbe927bc12cefe"
-      },
-      "sycl_qsa_bf16_prefix_ordered_exp_bench": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_ordered_exp_bench",
-        "sha256": "d06bf20eee697f0ed7b46d1fe6139d3cd2380bccb7eaa471f382dab9901fded9"
-      }
-    },
-    "evidence_commit": "cf2a622ae",
-    "scope": "Validated current long-prefill screening engine, including same-binary baseline and faster ordered-exp opt-in. No broader model/decode adoption.",
-    "next_rebuild_prerequisite": "Preserve/hash-check this selected generation and required same-build fixtures outside the reused build directory, then commit retained_validation_reference before calling rebuild. No old fallback remains."
-  },
-  "retired_previous_fallback": {
-    "source_commit": "7829568c61f4a47e5c1b06497f59e41a3417a5fb",
-    "source_inputs_recovered": 9801,
-    "retirement_manifest": "bench/results/2026-10-15-pr6-recovery-audit/build-retirement-20261018.json"
-  },
-  "retained_validation_reference": {
-    "source_commit": "ce1e950a843953c7856382978f7993bcc848e366",
-    "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-submission-v1/strata",
-      "bytes": 21499072,
-      "sha256": "e400bbe545fcb13376812f353f89648a9924e2af1ff9c26b593c31a3e28be934"
-    },
-    "fixtures": {
-      "sycl_qsa_bf16_prefix_kvvec4_test": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-submission-v1/sycl_qsa_bf16_prefix_kvvec4_test",
-        "bytes": 1390592,
-        "sha256": "bc6add39d091a6aa57ca7bf0330c4c269ce1dd7106d5d2a238eb3948adb6fa89"
-      },
-      "sycl_qsa_bf16_prefix_ordered_exp_test": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-submission-v1/sycl_qsa_bf16_prefix_ordered_exp_test",
-        "bytes": 1398936,
-        "sha256": "aae503f30434e6f424f6dbfe26dd070eeed4f71e2ef54bb0fafbe927bc12cefe"
-      },
-      "sycl_qsa_bf16_prefix_ordered_exp_bench": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-submission-v1/sycl_qsa_bf16_prefix_ordered_exp_bench",
-        "bytes": 1369912,
-        "sha256": "d06bf20eee697f0ed7b46d1fe6139d3cd2380bccb7eaa471f382dab9901fded9"
-      }
-    },
-    "original_build_record": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-submission-v1/build-record.json",
-      "sha256": "f74e4e38f19c65e503844a7d84ea932649356682329d468cbade1460f30a15c5"
-    },
-    "qualification_reference": "Current qsa-ordered-exp-model-current.json, original paired receipt atcf2a622ae",
-    "consumer": "Preserved900.6tok/s qualified screening generation while submission acceptance is built/tested; retire after explicit replacement selection or comparison closure."
+  "submission_qualification": {
+    "source_commit": "dfba48ef52e1bd8df596ecda06ab4eae0c882359",
+    "state": "Build passed; immediate control and forced-batched runtime compatibility gates pending. No runtime-mode model measurement.",
+    "engine_binary_identical_to900_6_tps_reference": true,
+    "model_runtime_adopted": false
   }
 }
