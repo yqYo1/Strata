@@ -1,17 +1,17 @@
 {
   "schema": "strata-artifact-retirement-v2",
-  "state": "retired",
+  "state": "prepared",
   "previous_decision_archive": {
-    "commit": "a6dc8b975",
+    "commit": "def15a4ff",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/build-retirement-20261018.json"
   },
-  "evidence_commit": "23b0e7bb8",
+  "evidence_commit": "860fdd6c0",
   "source_recovery": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "52f047586416444c07123374ee5a13550c2e6e40",
-      "count": 485,
-      "aggregate_sha256": "d9ec2232004548a9ef8512af2d99ede55eda06397f8b424bb3a8c662d8501414"
+      "revision": "5eb48ed4fce7d0fb8f52afdacc4bf074a2f9e96f",
+      "count": 486,
+      "aggregate_sha256": "15a1aef0ca2b89352f8bb4234879e811e7e6104bc704b2a9d731c1b221474304"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
@@ -27,29 +27,796 @@
     },
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "112071c5cb78e7b983272a734216f2081a946f96",
-      "count": 485,
-      "aggregate_sha256": "8a50780bb6d0ba0f7312b23980c99621af2100a234a91fb930152b6271fa05e3"
+      "revision": "5d92beecc81ab93fcd6c227c48a9b6769c0210a3",
+      "count": 486,
+      "aggregate_sha256": "40e090225407f7aad347f88986f6b60efddb4ee07cabed84c809b2bf7e3a6e2f",
+      "receipt_commit": "6e7cda88b",
+      "verification": "Recovered original project blobs; count/aggregate match original receipt. Dependencies individually verified above."
+    },
+    {
+      "root": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "revision": "7b02a499506dbd4dbf418ed65bb281d4d93beab9",
+      "count": 486,
+      "aggregate_sha256": "87a226287ce295e46cb37f4b96a4d1862d1e3fa7aa10b98418ad3fe9d770052e",
+      "receipt_commit": "afcd87f3d",
+      "verification": "Recovered original project blobs; count/aggregate match original receipt. Dependencies individually verified above."
     }
   ],
-  "source_recovery_note": "All current build inputs individually recovered/hash-verified; old112 project path set verified by its original count+aggregate, and dependencies equal the individually recovered current records. Benchmark helper inputs also recovered per arm.",
   "roots": [
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-kvec4-check-v1",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-kvec4-base-v1",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-kvec4-v1",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-current",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-hardware-profile-current"
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v2",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3"
   ],
-  "file_count": 327,
-  "bytes": 72073080,
+  "file_count": 127,
+  "bytes": 5807111,
   "retained_exceptions": [
     "Current known-good main-native-gdn-engine and its imminent comparison fixtures only; the unused extra generation is retired.",
     "Protected untracked provenance holds and legacy main-primary-native-build-root-v1 with unresolved missing source inputs.",
     "Active Orca research reports and review inputs."
   ],
-  "keep": "Current main-native-gdn-engine executable/fixtures and source/dependency worktrees; VMM report/review until placement owner census; existing unresolved provenance holds unchanged.",
-  "manifest_archive_commit": "66980745b",
-  "manifest_archive_path": "bench/results/2026-10-15-pr6-recovery-audit/build-retirement-20261018.json",
-  "deleted_count": 327,
-  "deleted_bytes": 72073080
+  "keep": "Current main-native-gdn-engine and protected unresolved provenance holds unchanged. Current research references retain their named consumers.",
+  "manifest": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-0-0.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-0-0.stdout",
+      "bytes": 22653,
+      "sha256": "50bfce7e8eff9009430d48dad25aaec28a65009b3db4d5e051311a1e30c73b07",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-0-1.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-0-1.stdout",
+      "bytes": 22638,
+      "sha256": "bc06e62efa5bea0eac9268b57ad27659026dce551443f7369c18a3145f2e82dc",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-0-2.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-0-2.stdout",
+      "bytes": 22702,
+      "sha256": "5b79f5df2e72cfe7a7e7a293f151527b7f9b4a66da5f61f17be5bb1ff3bc3cb7",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-1-0.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-1-0.stdout",
+      "bytes": 22694,
+      "sha256": "f9f9e07329a504d48fefd41ff7519c65227475b9bd224fefcdba15ec777174a9",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-1-1.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-1-1.stdout",
+      "bytes": 22663,
+      "sha256": "44cbe6a8029ec8898cb5a3c13af02dd0ff4ef25597955930c632ecf2bd2751cb",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-1-2.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-1-2.stdout",
+      "bytes": 22684,
+      "sha256": "1051343da51b1dd8e6e97d2479c33bc0b91531de14f8f96fe4aeebb5f511061a",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-4-0.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-4-0.stdout",
+      "bytes": 22672,
+      "sha256": "9c17526f21932c0dfe9b449d425636b987230a3a9b06793038a7ba000996019d",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-4-1.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-4-1.stdout",
+      "bytes": 22705,
+      "sha256": "31cee6abeeea59db85236d7179a861dbe5c2bb6311b417d5a122f70b0fc2f558",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-4-2.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-4-2.stdout",
+      "bytes": 22702,
+      "sha256": "3618f4aa4c23b83d2dece5233fd8bca1fee616b12c7e4f3558a0f8dfa46cf8e0",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-5-0.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-5-0.stdout",
+      "bytes": 22690,
+      "sha256": "1abd830c7315a3a10909c0ebfbae568b96bfe828e2537f4cb6d6905a5c6263d4",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-5-1.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-5-1.stdout",
+      "bytes": 22735,
+      "sha256": "9fdf358c15f51965c32250248380856b12acdd06974bc45b00869eb597c273df",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-5-2.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-5-2.stdout",
+      "bytes": 22689,
+      "sha256": "0894dbb37d07a9a7edc7043bfe960b882352b0734ba86415cb1a8c441c97d99e",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-6-0.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-6-0.stdout",
+      "bytes": 22677,
+      "sha256": "94b5f1407918264e17b5a25e4dac6b82756f4d2254ddcf6f0628483d53a5be15",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-6-1.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-6-1.stdout",
+      "bytes": 22685,
+      "sha256": "4482f910510a3db2c285d4ae2f088c29cc18e73e35c5c7b0ce2ba2f9a8b88bdf",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-6-2.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-6-2.stdout",
+      "bytes": 22640,
+      "sha256": "f1ff68687b66dd7d83d4a3609a3eeeb7707ad61abb6dfa9bce4e40ca8dee0f96",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-7-0.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-7-0.stdout",
+      "bytes": 22691,
+      "sha256": "70505a5ecaaddf146c28bcf47d4aac880a19b52a4c180fe61fbd5115bd228ef7",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-7-1.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-7-1.stdout",
+      "bytes": 22708,
+      "sha256": "7fdef04ba21fb421e540aa00349616c30a04be847f952d4e88ae5fd7edcf8855",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-7-2.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-7-2.stdout",
+      "bytes": 22718,
+      "sha256": "c5aeaf7672e767f9bc819199a068a53a06e8bec5327f4f3525fc276efea0d58c",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-8-0.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-perf/resident-8-0.stdout",
+      "bytes": 15549,
+      "sha256": "ebd17cb8db3b7226319e804706ac944ef4c839ebcc3ffa0386205788159e77b6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-smoke/resident-4-0.stderr",
+      "bytes": 297944,
+      "sha256": "128cfe3ca3af1e5dc5438ba88658251ac656eef595546ea398500527e81a9160",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-smoke/resident-4-0.stdout",
+      "bytes": 22705,
+      "sha256": "e81a3a5d5d6a10daf9425783c4e40f67dfdc8d395df27ece5f3e0c0a42dbd0e5",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-smoke/resident-5-0.stderr",
+      "bytes": 297922,
+      "sha256": "083d2fcfe95d01ec685605613e0280a6e73060ab606749d806945c9269012b0b",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-smoke/resident-5-0.stdout",
+      "bytes": 22737,
+      "sha256": "73cc9c6fd6b72e3177a0599c8af14f4da14f1ae5508d2ae7fcfe0ad6a94dc504",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-smoke/smoke-None-0.stderr",
+      "bytes": 167499,
+      "sha256": "6a1ae4f9886edbc15b949d6ff06543d6ca7a95f927188405d0e90727f3c62fa0",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/owned-smoke/smoke-None-0.stdout",
+      "bytes": 20200,
+      "sha256": "4c2aad7aed53cf104b88217ba50ddb9efd559788b2750108f0d28ff5f9216275",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/record.json",
+      "bytes": 302287,
+      "sha256": "425fcfd7410cdb6e33e40501e7af3e71c5ee0e2d9707c43800eb65b4a0307ff7",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v2/owned-diagnostic/resident-8-0.stderr",
+      "bytes": 228162,
+      "sha256": "20ac3cd8937524bdc99e8a43307160d68c1ee9691f2f820c6945f6adcf4d5631",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v2/owned-diagnostic/resident-8-0.stdout",
+      "bytes": 17452,
+      "sha256": "27fe205f8b8e756deb16738421f758dde69fba05cf004a6ed13d5fe16142ebb9",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v2/owned-smoke/resident-4-0.stderr",
+      "bytes": 298167,
+      "sha256": "1714a6537347300e5387eb1609d2f6a24460a4fc78d617050c724ad6c7cd4d02",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v2/owned-smoke/resident-4-0.stdout",
+      "bytes": 24006,
+      "sha256": "69cd15fded87b9c2c7d6091b2593cccfa8e9d725677353f7cc52517691fce2b2",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v2/owned-smoke/resident-5-0.stderr",
+      "bytes": 298145,
+      "sha256": "20f127d5cb109f77f2d8c8a2bedd525ac85412a83c9249538d6bb937b1c03491",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v2/owned-smoke/resident-5-0.stdout",
+      "bytes": 23954,
+      "sha256": "c430b8f4da006a0030a0d9e9dd3eb9c91f19891bde730bfd44697ade89fb3939",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v2/owned-smoke/smoke-None-0.stderr",
+      "bytes": 167722,
+      "sha256": "5b6743cdd6045b38f79f4ab08b278b459c9b0adff0ac0fb88aec9d28370d6edd",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v2/owned-smoke/smoke-None-0.stdout",
+      "bytes": 21803,
+      "sha256": "0a746d86abddf94c05cf5007d68d7c4526b471f0cf96ceebb7f1ac082433dee6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v2/record.json",
+      "bytes": 43163,
+      "sha256": "0209559392ce87d6b9f1eb8780b00ec42722af118d0119ec43a2c000818f8963",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-diagnostic/resident-8-0.stderr",
+      "bytes": 298259,
+      "sha256": "a2b9f09fb850205d766ef5bc7587733c9914a9b3802fd623ec176c1fb9cdd178",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-diagnostic/resident-8-0.stdout",
+      "bytes": 24325,
+      "sha256": "575f87589d5c96ad62fec66f3526cdeebbfa49e3639ec840d0a07c2534681bf2",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-diagnostic/resident-8-1.stderr",
+      "bytes": 298259,
+      "sha256": "6661151eeece8fe50ca03f085c21b531427439b705a4f91463d70db1c9313497",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-diagnostic/resident-8-1.stdout",
+      "bytes": 24320,
+      "sha256": "aa0a3ecc4de315d52d11aaa3f4555c5150e0b62400b7bd6c3f50004bcd738f09",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-diagnostic/resident-8-2.stderr",
+      "bytes": 298259,
+      "sha256": "e4b51539d19619e9a3cf8512580dcb41302045da6192e22236e8e6f2cc4fe26d",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-diagnostic/resident-8-2.stdout",
+      "bytes": 24346,
+      "sha256": "cfba05f3e71b46c544ec2f9d9c8d3da81e98ef1aff657fc0c03b923b6d78a639",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-0-0.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-0-0.stdout",
+      "bytes": 24364,
+      "sha256": "cb72521cd58423233ffdc1bc36e08bc38dca2940abdba509a6f7d2cf9de0e905",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-0-1.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-0-1.stdout",
+      "bytes": 24318,
+      "sha256": "b37e474c5978f82cff6b8208e3fddd6c11e5f236d3c977f112aa4ab0a1806947",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-0-2.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-0-2.stdout",
+      "bytes": 24361,
+      "sha256": "60a6ff4982f3d95c5061497f0bbfdbcc980190950cc8d4e657e1c46c09740725",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-1-0.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-1-0.stdout",
+      "bytes": 24327,
+      "sha256": "18328ebc9109950bb0806971cef55cc3ad22a3f4bf06830a67230a37271ed89d",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-1-1.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-1-1.stdout",
+      "bytes": 24328,
+      "sha256": "c6acd2f1a15c26177d576976f6a4cad91282cf7219457b9b473be52a4f0ed2ac",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-1-2.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-1-2.stdout",
+      "bytes": 24348,
+      "sha256": "e3760496213eb211d165dd0666b1c87f43a75975b73974ddfc224131945a71a0",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-2-0.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-2-0.stdout",
+      "bytes": 24371,
+      "sha256": "c71ba37f6eb9d81c1e71e404ee17d1acb58bbbb4b6e6056fb9c74d5107c7e21a",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-2-1.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-2-1.stdout",
+      "bytes": 24357,
+      "sha256": "a974656f0a599e458ac923f39661007648273b4f0e6d790b72218319052dc169",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-2-2.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-2-2.stdout",
+      "bytes": 24345,
+      "sha256": "18b3ee2c50ae3f1a330d2583b9473189ccc318b22269c5ee01a8f47af045e78a",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-3-0.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-3-0.stdout",
+      "bytes": 24338,
+      "sha256": "6e2b7b2e2fa246e08a47347382a9699bcc0dbc5ac715436756a37c46844a9c70",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-3-1.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-3-1.stdout",
+      "bytes": 24327,
+      "sha256": "55d48f30ebe23a1a2f14754cad2f49340e8a5ea60a109362217e4a6ac0fd8a70",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-3-2.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-3-2.stdout",
+      "bytes": 24347,
+      "sha256": "c763329db3e1848f8f88c5a761ac7e12f33b8c4ca8bee0bc1e8f4ca1961a9655",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-4-0.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-4-0.stdout",
+      "bytes": 24357,
+      "sha256": "4de251ed0692e4823c36976a762bd5f0aa0f17b773d9d428d4af47ebc546d084",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-4-1.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-4-1.stdout",
+      "bytes": 24348,
+      "sha256": "8170e8b692b627ca627ab3cc0bba3a74cfc4bb9827911983194bdfd2a22ebc4b",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-4-2.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-4-2.stdout",
+      "bytes": 24346,
+      "sha256": "49322a2565211d7eae92e1bcac6821a7490e40bcbd47afdc2f7ed6e7930295a8",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-5-0.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-5-0.stdout",
+      "bytes": 24387,
+      "sha256": "5e2dd70af1c1e38851007e43f4b5cb2dc26ca7b24e24cc4a1880b4e65dabbdda",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-5-1.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-5-1.stdout",
+      "bytes": 24346,
+      "sha256": "c40809f8292f42e8135f8eb889acb02ca10599e83b6751c1c381d1b81e1e366b",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-5-2.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-5-2.stdout",
+      "bytes": 24313,
+      "sha256": "3ffe3be3e0d7e1a385e252a6fb8e36fd487b21fee4e9df9e2ae34b642567a56a",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-6-0.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-6-0.stdout",
+      "bytes": 24281,
+      "sha256": "f5e96195f7a4c337c0ebb0b12c94e65dccf4695f0bd55713737688c28cd28ee7",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-6-1.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-6-1.stdout",
+      "bytes": 24329,
+      "sha256": "065ed9c970fd92cb8e3c4d3f73d2b6a59fbf161912b0ea5af33745e688163d0a",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-6-2.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-6-2.stdout",
+      "bytes": 24309,
+      "sha256": "37c0951ec4b30c98e13e35c0e191f1c40192a28cc6a9d8a6ddb7ca2ef8a9e3c4",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-7-0.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-7-0.stdout",
+      "bytes": 24323,
+      "sha256": "b9ef41f8b9b1c5946de44c45ae82da8d60e7740224c2c803c48192d3ad19769f",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-7-1.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-7-1.stdout",
+      "bytes": 24311,
+      "sha256": "dd6118f6f4a79b5e2e64d12d9dd4d66f664b4f655e588d69aa6c8a6e899e61db",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-7-2.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-7-2.stdout",
+      "bytes": 24331,
+      "sha256": "415b0f5c256983f71bc60b08f1c798c93aa7d3148007bb736970b1b052271e4c",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-8-0.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-8-0.stdout",
+      "bytes": 24346,
+      "sha256": "d7695e382f8f346ca2d0f3b2594f046cb720814b367625a9f660482a5363662b",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-8-1.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-8-1.stdout",
+      "bytes": 24331,
+      "sha256": "94ddad1ddce23797959ed8ddbede7bc6d50ed6959362d69e8575342bccdf6a65",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-8-2.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-8-2.stdout",
+      "bytes": 24288,
+      "sha256": "a7f77f28aa9cb416de0cdf18bebcf8fdcd3e1e09366f4c0e32b81dad65c234a7",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-9-0.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-9-0.stdout",
+      "bytes": 24342,
+      "sha256": "27b39beb524cac940dba65eb9cfb9cc89597967f38eed5e452ee563d04b0358f",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-9-1.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-9-1.stdout",
+      "bytes": 24352,
+      "sha256": "35273ee3a8a0f4b88d85d25e0c426d48664ad77003f06075c1791f56d7376db5",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-9-2.stderr",
+      "bytes": 47,
+      "sha256": "0d7a5bac775883eef8ee6d41830ed92d3bdd642edc985f45b02f29d35eb741c6",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-perf/resident-9-2.stdout",
+      "bytes": 24339,
+      "sha256": "1e2c145ed976828142d0287933214f4ba9c13983b00af0f58514b08bcad32e4e",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-smoke/resident-4-0.stderr",
+      "bytes": 298167,
+      "sha256": "31ea89d24b3ca54b2a8a4c56dd833777914925e9afad6d8bf926a3c7eae815fa",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-smoke/resident-4-0.stdout",
+      "bytes": 24392,
+      "sha256": "1e2b3de2b04cfe4331374885478de77c9fb9fe00d316d78962ccfd463e89c3db",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-smoke/resident-5-0.stderr",
+      "bytes": 298145,
+      "sha256": "b663a3f992cb2f757a95619dfd3c4d08c7bbb646cff4052476c53e5a8df1028e",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-smoke/resident-5-0.stdout",
+      "bytes": 24365,
+      "sha256": "c35ab853ad94428b334910d04d571f08fe0c6722cdba81f7f40e7a330a9ab5bd",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-smoke/smoke-None-0.stderr",
+      "bytes": 166609,
+      "sha256": "7b5d960a0c839f3f5e2a5187036f0c34cb75fcf69923df6535e01b582b28e0e0",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/owned-smoke/smoke-None-0.stdout",
+      "bytes": 22283,
+      "sha256": "155cc83d095a2c9234c92ceb38f8cbc8823fb37d5d65f43e1500bbb8953c7ce8",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-v3/record.json",
+      "bytes": 595206,
+      "sha256": "3d0c720278a92b06bfb629344817a5e39b97976e373df58f8dc7100eea9fa8f4",
+      "reason": "Closed resident GEMM transcript/transaction/cache; compact samples and original clock failures are preserved in reachable Git."
+    }
+  ]
 }
