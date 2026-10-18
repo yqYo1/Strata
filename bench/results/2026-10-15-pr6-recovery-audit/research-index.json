@@ -508,7 +508,7 @@
   },
   "qsa_register_lifetime_scope": {
     "classification": "decision_support",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "prerequisites_met": [
       "Kvec4 source112071c5c and unchanged kernel in52f047586 have closed bitwise/guard/alignment/262144 component gates and six-sample gains.",
       "Executed SIMD16 baseline/candidate ISA72bf7a555 is available with128GRF each,2112/2368spill bytes and4096scratch; this question needs source/ISA, not unavailable occupancy counters.",
@@ -517,6 +517,9 @@
     "question": "Attribute current sparse-QSA register lifetimes and static spill sources across cached-Q, PV accumulators and K staging; compare source scheduling alternatives and experimental controls without claiming occupancy or changing the kernel.",
     "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-register-lifetime.md",
     "main_reads_body_on_arrival": false,
-    "state": "Eligible fresh finite scope; Main continues frozen matched model run."
+    "state": "Orca Luna read-only running; Main continues frozen matched model comparison without steering.",
+    "eligible_at_dispatch": true,
+    "dispatch": "ctx_499b25ba545a",
+    "task": "task_489a6e33d2a3"
   }
 }
