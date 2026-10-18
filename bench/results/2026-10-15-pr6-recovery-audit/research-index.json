@@ -315,6 +315,15 @@
     "primary_sources": [
       "https://github.com/intel/intel-graphics-compiler/blob/master/documentation/configuration_flags.md",
       "https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_intel_grf_size.asciidoc"
-    ]
+    ],
+    "residency_scope": {
+      "schedulable_now": true,
+      "prerequisites_met": [
+        "Main captured exact launched kernel identities and complete emitted resource metadata at db810b58/9560eb4b5/a1b9c4cff.",
+        "Runtime/compiler ELF hashes and versions pinned in tools/sycl/measurement_environment.json.",
+        "Both default128GRF and auto256GRF have full oracle/physical262144 component and6 rotated samples/shape; auto regression despite no scratch established."
+      ],
+      "question": "Explain what BMG/Xe2 SLM/GRF resource metadata can bound about residency, with actual runtime allocation rounding and its limits; no saturation inference."
+    }
   }
 }
