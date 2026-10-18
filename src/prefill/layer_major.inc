@@ -51,8 +51,8 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     const int window_requested = moe_window_requested();
     const bool window_on = window_requested && !requires_prefix_checkpoints;
     const bool command_profile_on = sycl_backend::command_profile::requested();
-    if (command_profile_on && (!window_on || window_requested != 2 || g.n_layers != 48)) {
-        err = "prefill command profile requires window2 and48 layers"; return false;
+    if (command_profile_on && (!window_on || g.n_layers != 48)) {
+        err = "prefill command profile requires an admitted MoE window and48 layers"; return false;
     }
     if (window_on && (!native16_on || m.T != 8192 || !m.scratch_alias)) {
         err = "prefill MoE window: requires native16 BF16, chunk8192 and scratch alias"; return false;
@@ -306,6 +306,9 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     }
     if (window_on && window_requested >= 8 && !accumulation_rows)
         std::fprintf(stderr, "strata prefill: MoE window%d not admitted by remaining VRAM/GPU-prefix budget; effective_mode=2\n", window_requested);
+    if (command_profile_on && window_requested >= 8 && !accumulation_rows) {
+        err = "prefill command profile: requested accumulator window was not admitted"; return false;
+    }
     // One owned host upload slab removes every source pointer lease before DMA.
     // Also count the cache's small blocking staging allocation and two maps.
     uint64_t host_need = detail::layer_major_add(plan.host_bytes, cache_bytes);
@@ -313,6 +316,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     host_need = detail::layer_major_add(host_need, detail::layer_major_mul(2, map_bytes));
     if (window_on) host_need = detail::layer_major_add(host_need,
         accumulation_rows ? 16ull << 20 : 2ull << 20); // IDs, immutable routes/jobs/inverse
+    if (command_profile_on) host_need = detail::layer_major_add(host_need, 128ull << 10);
     if (!core::conversation_memory_admit(core::conversation_available_memory(), host_need, host_headroom)) {
         err = "prefill layer-major: residual/upload storage exceeds known available RAM minus 8 GiB headroom";
         return false;

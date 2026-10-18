@@ -147,7 +147,7 @@
       "candidate_path": "bench/results/2026-10-15-pr6-recovery-audit/own-qsa-kpitch-v1",
       "decision": "Reuse the existing source-audited pitch proposal after the current comparison; no new duplicate survey. Recheck immutable source/provenance and wire maintained API/tests before compiling.",
       "candidate": "Fixed score33,Cells32,WG128,SG16; K36/V260 shared tile needs9216 BF16 values,30272B requested local payload,34368B admission minimum. No hardware occupancy/bank map or performance result.",
-      "do_not_repeat": "Old global K span256 schedule regressed10.35\u201329.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
+      "do_not_repeat": "Old global K span256 schedule regressed10.35–29.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
     },
     "reviewed_base_source_sha256": "fa505d02e2b24f7cb6948033921fa697c8aeb58e6f4df6d873f13e5a7918e36b",
     "source_sha256": "c3ad8326f097050ff9ab1859e116f2cad3709a8464162143f752bc294cbe1e01",
@@ -208,7 +208,7 @@
         "bytes": 19144,
         "source_commit": "fbc7f56d7b0ddb5db5f3722ef33ca044c3f8a5c8",
         "reason": "Its conditional consumer is a selected-cell stable-reduction split. The closed QSA screen and pending pitch candidate select no split or reduction bottleneck.",
-        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report\u2019s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
+        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report’s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
       },
       {
         "path": "bench/results/2026-10-15-pr6-recovery-audit/research-matrix-register-reuse-20261018.md",
@@ -237,7 +237,7 @@
       "prerequisite": "QSA comparison closed; current-path profile and exact planned-job census are next, with source/config frozen before build/run.",
       "observer": "Use existing coarse/QSA/CPU-wait profiles. New per-window host metadata census adds no tensor readback or GPU work and reconciles planned jobs with final retired totals.",
       "limitations": "Diagnostic timing and requested DMA bytes, not clean speed, physical bandwidth/saturation or an additive critical-path partition.",
-      "state": "Closed successfully:48 windows/21514 planned and retired jobs, source51a6f70a; no fresh faults. See moe-window-census-current.json."
+      "state": "CurrentKvec4 census also closed atf111b5ff6:48 windows/21514 jobs/37656000rows, exact historical M histogram hash reproduced; four-window service sample and CPU/coarse profiles atf97d3dc9b."
     },
     "grouped_candidate": {
       "schedulable_now": false,
@@ -315,7 +315,7 @@
       "B570380GB/s is advertised, not sustainable measured bandwidth; compatible compute peak remains unknown."
     ],
     "next_main_measurement": {
-      "schedulable_now": true,
+      "schedulable_now": false,
       "prerequisites": [
         "Close frozen Qcache A/B and record source/workload parity/outcome.",
         "Recover/hash-verify exact M histogram from66d5c545 or use explicitly unweighted M sweep.",
@@ -327,7 +327,8 @@
         "Recovered3361-bin histogram from66d5c545 and reverified canonical SHA4aa422bcaddb00220f44ca5ad931328df36425f226cc5d49f21aca1e0f39d0b3.",
         "Current source gemm16.cpp selects compact16x64 forM<128, wide128x128 otherwise; native16.cpp confirms complete M/N/K tile geometry.",
         "Kvec4 same-binary78K A/B also closed at23b0e7bb8: baseline756.3 versus candidate792.6median; all owners closed and consumed raw artifacts retired. Measure production FP16 operands/BF16 outputs, not a generic matrix peak."
-      ]
+      ],
+      "state": "Resident sweep and streamed78K comparison closed:860fdd6c0/f97d3dc9b. Resident short bursts do not bound warmed model service; no duplicate generic ceiling survey."
     },
     "retention": "Keep report/review until Main records ceiling measurement decision; no automatic full-report commit.",
     "tile_geometry_accounting": {
@@ -342,7 +343,8 @@
       "geometry_padding_overhead_percent": 1.5049500743573363,
       "formula": "sum(job_count*ceil(M/tileM)*tileM);tileM=16 ifM<128 else128;both N andK dimensions fill their tile extents;2*(1280*2560+2560*640)FLOP/row",
       "limits": "Source/geometry accounting, not observed instruction or hardware-counter work; no compatible measured compute ceiling yet. Small-M jobs contain0.6273%logical arithmetic and total geometric padding adds only1.505%, so counts/padding alone do not explain the stage cost."
-    }
+    },
+    "review_limit": "Prior report QSA source hash predates current kernel. Its verified MoE dimensions/370.174TFLOP remain relevant; do not reuse QSA code identity as current."
   },
   "decode_vram_rebuild_scope": {
     "schedulable_now": false,
@@ -489,5 +491,133 @@
     "retention_consumer": "Pinned decode placement owner/reader/binding census, then retention/rebuild decision; no VMM feature adoption.",
     "next_scope": "Conditional only; prerequisite evidence recorded in external review. Do not repeat the same generic scan.",
     "review_correction": "Optional SYCL graph native recording supports backend command submissions; it does not establish host VMM graph nodes or automatic remap ordering."
+  },
+  "resident_ceiling_methods_scope": {
+    "classification": "knowledge_collection",
+    "schedulable_now": false,
+    "prerequisites_met": [
+      "Committed5d92beecc fixture has explicit eight-kernel reused-operand bursts, GPU profiling timestamps and independent host intervals.",
+      "Exact78K histogram recovered; M8192 accounts for24829952/37656000rows. Current compatible compute/DRAM ceiling remains unmeasured.",
+      "Literature/method comparison does not depend on a missing hardware-counter capture."
+    ],
+    "question": "Interpret resident/burst GEMM service rates versus model-streamed weights: cache working sets, clock state and event/host intervals; define discriminating follow-up measurements.",
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/resident-gemm-ceiling-methods.md",
+    "main_reads_body_on_arrival": false,
+    "state": "Orca and native Luna-max review complete; Main reads short corrections only.",
+    "eligible_at_dispatch": true,
+    "dispatch": "ctx_9d64d3187bdf",
+    "task": "task_9a3b6ec1ea41",
+    "report_bytes": 24136,
+    "report_sha256": "7f04948daf4f94650a8a32ca54f784298d0fb4d61a6b0fd261b36cfcc60005f5",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/gemm-methods-traffic-review.json",
+    "review_sha256": "e1146b45d1e128cfde0e7b5b16307e391075d7ecd114a41d4f1f834bc6e212a9",
+    "reviewed_digest": [
+      "Reused-address bursts are warmed operator references; no streamed-model, cache-residency, physical DRAM or occupancy proof.",
+      "next.start-minus-previous.end is an event timestamp gap, not a measured idle-device interval.",
+      "Original source5d sweep is incomplete with rejected final-burst validation UNRUN. Subsequent observer policy preserves failure and explicitly separates estimated submit clock from GPU-only service intervals."
+    ],
+    "retention_consumer": "One prospective controlled warmed-reference correction, reviewed at its closure; no generic repeat or hardware-peak claim.",
+    "current_decision": "Streamed model M8192 GU exceeds the eight-submit resident reference; clock/cache/duty-cycle explanation is unproven. Preserve individual samples and this methods reference only through one controlled warmed-reference correction."
+  },
+  "moe_native16_traffic_scope": {
+    "classification": "decision_support",
+    "schedulable_now": false,
+    "prerequisites_met": [
+      "Production native16 pipeline and exact row histogram are pinned and readable; no product edits or runtime census are needed for logical byte formulas.",
+      "Current stage profile and370.174TFLOP logical expert volume are known, while physical memory traffic is unknown."
+    ],
+    "question": "Incremental producer/consumer byte accounting and avoidable intermediates in the production FP16/BF16 MoE pipeline, distinguishing logical tensor traffic from physical memory/bus traffic.",
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/moe-native16-traffic-accounting.md",
+    "main_reads_body_on_arrival": false,
+    "state": "Orca and native Luna-max review complete; Main reads short corrections only.",
+    "eligible_at_dispatch": true,
+    "dispatch": "ctx_a4e795c76ad1",
+    "task": "task_ed1810322fff",
+    "report_bytes": 18081,
+    "report_sha256": "5a7e132b5fd5503a01d587c9d89babf183a5c2fe2344bd8511fee173393accca",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/gemm-methods-traffic-review.json",
+    "review_sha256": "e1146b45d1e128cfde0e7b5b16307e391075d7ecd114a41d4f1f834bc6e212a9",
+    "reviewed_digest": [
+      "Correct GU weight formula to(2FF)*N*2B=6553600B; the report leading2* mismatches its value.",
+      "GU GEMM input reads are a distinct192798720000logical bytes at37656000rows,N2560,FP16; do not omit or conflate with gather reads/writes.",
+      "FP16 weights/FP32 accumulation/BF16 outputs and reviewed MoE source hashes match; dequant-write and J*pair formulas remain logical/requested, not observed traffic."
+    ],
+    "retention_consumer": "Current source-grounded resource accounting and next concrete fusion/placement decision; refresh physical evidence before adopting any change."
+  },
+  "moe_down_scatter_epilogue_scope": {
+    "classification": "decision_support",
+    "schedulable_now": false,
+    "eligible_at_dispatch": true,
+    "prerequisites_met": [
+      "Source/adapter contracts pinned at f111b5ff6c84797bff2139355cb6b1b4500f165f; production shapes and exact row-mass histogram known.",
+      "Finite design/provenance/numerical feasibility question independent of missing physical counters; no claim of measured bottleneck or adoption.",
+      "Complete resident service sweep860fdd6c0; actual model service qualification runs under Main ownership."
+    ],
+    "question": "Prove exact BF16-rounding/FP32-fma, unique-writer and tile/event/owner contract for a fused Down scatter epilogue against the actual adapter; no performance adoption claim.",
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/moe-down-scatter-epilogue-contract.md",
+    "main_reads_body_on_arrival": false,
+    "state": "Orca and native Luna-max review complete; external owned terminal positively closed.",
+    "dispatch": "ctx_b8849d9031f2",
+    "task": "task_b8d2185f8fee",
+    "terminal": "term_9b9cc410-60c4-4849-9ba5-ffae3585293d",
+    "model_evidence": "Custom terminal argv gpt-6-luna,medium; TUI-idle satisfied before worker-start, observed turn_started.",
+    "shared_prior_index": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/historical-index.json",
+    "retention_consumer": "Concrete Down epilogue or indexed-A/permutation design decision; no new generic survey. Review again when the selected component comparison closes.",
+    "report_bytes": 19388,
+    "report_sha256": "f68990baaf975de1ec3d99c5d96b5c81968dc0bdf0ecddf6834f95155f04e915",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/moe-fusion-methods-review.json",
+    "review_sha256": "cfabeaa10a6455f78aa3ca7418c8ea37e0b8b4d5d04576f215df27d8ec320b38",
+    "report_budget": {
+      "words": [
+        1800,
+        2600
+      ],
+      "maximum_bytes": 30720,
+      "actual_bytes": 19388,
+      "note": "Budgets were in original task specs; native reviewer could not verify them from inspected metadata. Actual body size and reported word counts fit."
+    },
+    "reviewed_digest": [
+      "Exact BF16 rounding then FP32 FMA and conditional unique-writer reasoning checked; current fused path still needs explicit adapter/kernel extension and element-owner/tail proof.",
+      "R1008 is the closest archived prior; this report narrows it to the current accumulator route.",
+      "Public adapter permitsG21/G31; production hook gatesG21. This B570 isG21.",
+      "Bounded functional feasibility needs no hardware-counter prerequisite; clean matched timing gates performance, physical evidence gates saturation/physical-byte claims."
+    ]
+  },
+  "moe_indexed_gemm_a_scope": {
+    "classification": "knowledge_collection",
+    "schedulable_now": false,
+    "eligible_at_dispatch": true,
+    "prerequisites_met": [
+      "Source/adapter contracts pinned at f111b5ff6c84797bff2139355cb6b1b4500f165f; production shapes and exact row-mass histogram known.",
+      "Finite design/provenance/numerical feasibility question independent of missing physical counters; no claim of measured bottleneck or adoption.",
+      "Complete resident service sweep860fdd6c0; actual model service qualification runs under Main ownership."
+    ],
+    "question": "Compare indexed A-vector loads, contiguous2D-load gather and GPU permutation in actual MoE/TLA implementations; pin feasibility barriers and counterexamples, not a generic grouped survey.",
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/moe-gather-gemm-prologue-methods.md",
+    "main_reads_body_on_arrival": false,
+    "state": "Orca and native Luna-max review complete; external owned terminal positively closed.",
+    "dispatch": "ctx_3e40107d79d6",
+    "task": "task_d32c6997afd6",
+    "terminal": "term_c7fe515e-b723-4254-8ac8-6563683320d9",
+    "model_evidence": "Custom terminal argv gpt-6-luna,medium; TUI-idle satisfied before worker-start, observed turn_started.",
+    "shared_prior_index": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/historical-index.json",
+    "retention_consumer": "Concrete Down epilogue or indexed-A/permutation design decision; no new generic survey. Review again when the selected component comparison closes.",
+    "report_bytes": 17118,
+    "report_sha256": "81d9e81a8ccac4c460e75d92cf9ab342f58bc453441e9f0f0cbf51e3e72a23f7",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/moe-fusion-methods-review.json",
+    "review_sha256": "cfabeaa10a6455f78aa3ca7418c8ea37e0b8b4d5d04576f215df27d8ec320b38",
+    "report_budget": {
+      "words": [
+        1800,
+        2600
+      ],
+      "maximum_bytes": 30720,
+      "actual_bytes": 17118,
+      "note": "Budgets were in original task specs; native reviewer could not verify them from inspected metadata. Actual body size and reported word counts fit."
+    },
+    "reviewed_digest": [
+      "Substantive A-prologue API and safety analysis beyond prior traffic ledger; retain for concrete indexed-A/permutation choice.",
+      "Current adapter accepts affine rectangular A; irregular row maps need a custom prologue or explicit permutation. No adoption or guessed speed gain."
+    ]
   }
 }

@@ -70,8 +70,8 @@ def pin(root, prefixes):
 
 
 def main():
-    guards.require(len(sys.argv) == 1 or sys.argv[1:] in (['rebuild'], ['rebuild-attention']),
-                   'use build_engine.py [rebuild|rebuild-attention]')
+    guards.require(len(sys.argv) == 1 or sys.argv[1:] in (['rebuild'], ['rebuild-attention'], ['rebuild-gemm']),
+                   'use build_engine.py [rebuild|rebuild-attention|rebuild-gemm]')
     rebuild = len(sys.argv) == 2
     attention = sys.argv[1:] == ['rebuild-attention']
     targets = ['strata']
@@ -79,6 +79,8 @@ def main():
         targets += ['sycl_qsa_bf16_late_flags_test', 'sycl_qsa_bf16_prefix_optimized_test',
                     'sycl_qsa_bf16_prefix_qcache_test', 'sycl_qsa_bf16_prefix_kvec4_test',
                     'sycl_qsa_bf16_prefix_qcache_bench']
+    if sys.argv[1:] == ['rebuild-gemm']:
+        targets += ['sycl_native16_paired_gemm_bench']
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
@@ -111,6 +113,7 @@ def main():
                           'third_party', 'bench/sycl',
                           'tools/sycl/build_engine.py', 'tools/sycl/measurement_owner.py',
                           'tools/sycl/check_attention.py',
+                          'tools/sycl/measure_gemm.py',
                           'tools/sycl/measurement_guards.py', str(SETTINGS.relative_to(P)),
                           str(BASELINE.relative_to(P))])
         baseline = json.loads(BASELINE.read_text())

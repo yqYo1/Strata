@@ -254,6 +254,113 @@ independent processes. The24-token output does not qualify sustained decode;
 model quality, agent/long-generation, physical262144 and RESTORE gates remain
 open, so this route stays opt-in.
 
+## Resident MoE service reference
+
+The maintained `sycl_native16_paired_gemm_bench --resident` fixture calls the
+same vLLM Xe2 `beta0` implementation as production, with FP16 operands/weights,
+BF16 outputs and FP32 accumulation. The shape sweep retains the original IDs
+and adds Down8192, compact64 and exact M2334/M5963 row-mass quantiles from
+`66d5c545` (histogram SHA`4aa422bcaddb00220f44ca5ad931328df36425f226cc5d49f21aca1e0f39d0b3`).
+M8192 contains24,829,952 of37,656,000 routed rows; job counts alone are misleading.
+Production selects compact16x64 below128 rows and wide128x128 otherwise.
+
+Each resident sample submits eight identical beta0 kernels on one in-order
+profiling queue, with all owners alive and no intervening transfer. It checks
+the final full output against the independent closed-form oracle, all guards
+and input immutability. Three warmups precede three timed bursts per route;
+Main uses three independent processes per shape. Reset/readback/checking are
+outside the reported burst interval. Record GPU event submit/start/end,
+CPU submit/wait and host submit-to-completion wall time separately. Event
+nanoseconds share a backend timebase per the [SYCL profiling contract](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html#sec:event-profiling);
+do not subtract them from host clocks or claim exact hardware-cycle accuracy.
+
+Build committed inputs with `tools/sycl/build_engine.py rebuild-gemm`, commit
+the build receipt, then use Main-owned `tools/sycl/measure_gemm.py smoke` and
+`perf`, committing the smoke before clean timing. The small first checks use
+trace/parameter validation, and the clean sweep uses separate untraced children.
+The source and all planned inputs stay frozen through the sweep.
+
+The original sweep stopped at a profiling assertion, not a GPU fault
+(`543ab5e28`). A bounded logged repeat (`0f6356d12`) found submit331ns after
+the first GPU start while all GPU start/end intervals were positive and ordered.
+The compiler's reported source revision, Intel LLVM`504366f4`, documents an
+estimated submit clock in `sycl/source/detail/event_impl.cpp`; device start/end
+are separate queries. This source corroborates a clock-domain explanation, but
+does not prove every installed runtime byte came from that revision. The new
+prospective service metric uses only positive ordered GPU start/end pairs;
+submit-clock inversions remain recorded and disqualify submit-to-start latency
+claims. No timestamp is clamped or sample silently excluded. Original failed
+receipts stay failed in Git; all numerical, guard and lifetime checks remain.
+
+This is a resident, reused-operand implementation reference. It excludes IQ3
+weight dequantization, routing, SwiGLU, scatter and model transfers. Cold/warm
+GPU clocks and cache reuse can differ from model execution. It is neither a
+hardware peak nor a weighted prediction of model latency. Initial pageable
+fixture uploads are recorded separately and do not qualify the production
+pinned-memory PCIe ceiling. No model route or default is changed by this fixture.
+
+The complete sweep at source`5eb48ed4` passed all435 invocation validations
+across smoke, traced diagnostics and30 clean timing processes. Selected M8192
+GU service was52.210 TFLOP/s (process medians51.896/63.963/52.210); Down was
+45.668 (44.489/45.668/46.013). Keep the GU spread rather than treating its
+best process as the hardware limit. The individual timed bursts and shapes
+remain in [the compact result](../bench/results/2026-10-15-pr6-recovery-audit/resident-gemm-current.json).
+This evidence justifies comparing resident service with actual model commands;
+it does not establish that GPU arithmetic is the whole-model bottleneck.
+
+Main's next model observation reuses the existing bounded command sampler.
+Version2 qualifies positive, ordered GPU start/end service independently of the
+estimated submit clock. Every retained tuple contributes its signed
+start-minus-submit diagnostic; inverted samples never contribute queue-delay
+sums. Group counts state how many service and queue-delay samples qualified.
+Query delays, incomplete events, invalid duration/order and capacity failures
+still invalidate service. Original version1 rejected receipts remain failed.
+The sampler adds no GPU commands or readbacks and queries only completed events
+after the existing checked drain; it samples first windows in layers0/15/31/47,
+not all device work. Timestamp gaps alone do not prove device idle.
+
+The first model check at`d9f3e91d9` exited1 before long-model arithmetic: the
+legacy collector admitted only window2 and explicitly refused the production
+window10 accumulator path. No fresh GPU fault occurred. The corrected route
+tags its map upload, job-weight preparation, dequant, gather, GU, SwiGLU, Down,
+FP32 accumulation and existing status readback, retiring the sampled events
+at that existing status drain. It excludes initial router preparation and final
+shared-expert/writes. Accumulation adds a fifth sampled command per selected
+job; the finite cap is192 events/frame (maximum172 from32 selected jobs,
+four experts and four non-job commands), with total host storage checked
+against128KiB and included in admission. Requested window8/10 must really be
+admitted; the observer cannot silently measure a window2 fallback. The existing
+window2 collector remains separate. No arithmetic or synchronization is added.
+
+With source and recipe committed, build using`tools/sycl/build_engine.py rebuild`.
+Prepare/commit/run`qsa-kvec4-check` for the traced/validated32K-class input,
+then prepare/commit/run`qsa-kvec4-census` for one official78K request with the
+existing coarse, CPU, route-histogram and command observers. These profiled
+requests support resource attribution; use separate clean processes for speed
+comparisons. Neither run qualifies sustained generation, model task quality or
+the full physical262144-context/RESTORE paths.
+
+Both corrected model checks passed at`f111b5ff6`:39,260 and78,451 actual read
+tokens, all four frames complete, peaks172/192 retained events, no fresh GPU
+faults. The78K request retained678 qualified command samples and reconciled
+21,514 jobs/37,656,000 routed rows with the exact historical histogram hash.
+Its five matched8192-row jobs had median GU+Down service0.989792ms and
+gather+FP32 accumulation1.240625ms. These are selected jobs, not a whole-model
+time partition. Sampled model GU service is faster than the reused-operand
+fixture, so that fixture cannot serve as a warmed hardware ceiling. Clock/cache
+or duty-cycle attribution needs a separate controlled test.
+
+The same diagnostic's nonexclusive queue intervals were QSA37.733s
+(attention29.933s), MoE20.976s and weight upload8.412s. CPU time was99.944s,
+of which67.579s was inside explicit waits; host grouping took0.161s. Do not
+equate one busy host thread with a CPU arithmetic bottleneck. Neither queue
+intervals nor requested transfer bytes establish physical saturation. Remaining
+QSA attention and MoE intermediate traffic are the next tuning targets; the
+actual Down epilogue and indexed-input feasibility reports are separately
+reviewed candidates. Keep the [structured resource evidence](../bench/results/2026-10-15-pr6-recovery-audit/moe-window-census-current.json)
+and the existing clean792.6 tok/s result distinct: this first profiled request's
+735.2 tok/s is not a new clean speed comparison or inference adoption.
+
 ## Optional GDN chunk64
 
 `STRATA_SYCL_PREFILL_GDN_CHUNK64=1` adds a separate experimental long-prefill

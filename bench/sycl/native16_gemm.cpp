@@ -1,4 +1,4 @@
-// Authored for Strata; repository LICENSE applies. Source proposal: UNRUN.
+// Authored for Strata; repository LICENSE applies.
 // One process, one shape, one input format, one Runtime and one in-order queue.
 #include "strata/prefill/gemm.hpp"
 #include "native16.hpp"
@@ -16,6 +16,7 @@
 #include <iomanip>
 #include <iostream>
 #include <limits>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
@@ -28,7 +29,12 @@ constexpr size_t Guard = 64;
 constexpr uint16_t Mark16 = 0xa55a, Poison16 = 0x7fc1;
 constexpr uint32_t Mark32 = 0x4a55a55a, Poison32 = 0x7fc12345;
 struct Shape { int t, n, k; };
-constexpr std::array<Shape, 3> Shapes{{{160,1280,2560}, {160,2560,640}, {8192,1280,2560}}};
+// Keep original shape IDs; add Down8192 and exact row-mass quantiles from the
+// committed 78K MoE census. These are a sweep, not an interpolated model cost.
+constexpr std::array<Shape, 10> Shapes{{
+  {160,1280,2560}, {160,2560,640}, {8192,1280,2560}, {8192,2560,640},
+  {64,1280,2560}, {64,2560,640}, {2334,1280,2560}, {2334,2560,640},
+  {5963,1280,2560}, {5963,2560,640}}};
 constexpr Shape Small{3,128,64}; // All routes satisfy the R810 public contract.
 namespace xe = strata::experimental::vllm_xe2_native16;
 enum class Route { Direct, Cast, Native, Compact, Wide };
@@ -46,7 +52,7 @@ const char *name(Route r) {
 const char *implementation(Route r, bool bf) {
   if (r == Route::Compact) return "R810::Gemm::beta0(compact_16x64,output=bf16);local_fp32_acc";
   if (r == Route::Wide) return "R810::Gemm::beta0(wide_128x128,output=bf16);local_fp32_acc";
-  if (r == Route::Native) return bf ? "Gemm::bf16_out16(output_bf16=true);native_joint_matrix_fp32_acc" : "Gemm::f16_out16(output_bf16=true);native_joint_matrix_fp32_acc";
+  if (r == Route::Native) return bf ? "Gemm::bf16_out16(configured_backend,output_bf16=true);fp32_acc" : "Gemm::f16_out16(configured_backend,output_bf16=true);fp32_acc";
   if (r == Route::Cast) return bf ? "Gemm::bf16;oneMKL_then_one_gpu_RNE_BF16_kernel" : "Gemm::f16;oneMKL_then_one_gpu_RNE_BF16_kernel";
   return bf ? "Gemm::bf16;oneMKL_FP32_output" : "Gemm::f16;oneMKL_FP32_output";
 }
@@ -189,6 +195,7 @@ void device_record(const Runtime &rt) {
     << ",\"vendor\":" << quote(dev.get_info<sycl::info::device::vendor>())
     << ",\"vendor_id\":" << dev.get_info<sycl::info::device::vendor_id>()
     << ",\"driver\":" << quote(dev.get_info<sycl::info::device::driver_version>())
+    << ",\"profiling_timer_resolution_ns\":" << dev.get_info<sycl::info::device::profiling_timer_resolution>()
     << ",\"platform\":" << quote(dev.get_platform().get_info<sycl::info::platform::name>())
     << ",\"platform_version\":" << quote(dev.get_platform().get_info<sycl::info::platform::version>())
     << ",\"in_order\":true,\"one_runtime_one_compute_queue\":true,\"matrix_tuples\":[";
@@ -203,9 +210,11 @@ void device_record(const Runtime &rt) {
   }
   std::cout << "]}" << std::endl;
 }
-void run(std::shared_ptr<Runtime> rt, Shape s, int shape_id, bool bf, bool smoke, int process_index) {
+void run(std::shared_ptr<Runtime> rt, Shape s, int shape_id, bool bf, bool smoke, int process_index,
+         bool resident = false) {
   auto &q = rt->compute();
   require(q.has_property<sycl::property::queue::in_order>(), "in-order queue required");
+  require(q.has_property<sycl::property::queue::enable_profiling>(), "profiling queue required");
   Gemm g;
   xe::Gemm vllm(*rt,q);
   std::string error;
@@ -237,7 +246,11 @@ void run(std::shared_ptr<Runtime> rt, Shape s, int shape_id, bool bf, bool smoke
       catch (...) { std::cerr << "R816_CHECKED_DRAIN_FAILED" << std::endl; std::_Exit(86); }
     }
   } drain{*rt};
+  const auto upload_start = std::chrono::steady_clock::now();
+  const double upload_cpu_start = r816::thread_cpu_seconds();
   upload(q,x,hx); upload(q,w,hw);
+  const double upload_seconds = std::chrono::duration<double>(std::chrono::steady_clock::now()-upload_start).count();
+  const double upload_cpu_seconds = r816::thread_cpu_seconds()-upload_cpu_start;
   std::fill(reset32.begin()+y32.prefix,reset32.begin()+y32.prefix+y32.count,Poison32);
   upload(q,y32,reset32); upload(q,cast16,reset_cast); upload(q,native16,reset_native);
   upload(q,compact16,reset_compact); upload(q,wide16,reset_wide);
@@ -245,14 +258,20 @@ void run(std::shared_ptr<Runtime> rt, Shape s, int shape_id, bool bf, bool smoke
                     Span{native16.data(),outputs*2}, Span{compact16.data(),outputs*2}, Span{wide16.data(),outputs*2}, Span{y32.data(),outputs*4}})
     validate_device_span(span.pointer,span.bytes,q);
   std::cout << "{\"kind\":\"plan\",\"mode\":" << quote(smoke?"smoke":"measure")
+    << ",\"resident_only\":" << (resident?"true":"false")
+    << ",\"submits_per_sample\":" << (resident?8:1)
     << ",\"shape\":" << shape_id << ",\"T\":" << s.t << ",\"N\":" << s.n << ",\"K\":" << s.k
     << ",\"ldy\":" << s.n << ",\"beta\":0,\"input_type\":" << quote(bf?"bf16":"fp16")
     << ",\"device_tensor_bytes\":" << bytes << ",\"input_fnv1a64\":" << quote(std::to_string(fingerprint(hx)))
+    << ",\"initial_pageable_upload_bytes\":" << (hx.size()+hw.size())*2
+    << ",\"initial_pageable_upload_wall_seconds\":" << upload_seconds
+    << ",\"initial_pageable_upload_thread_cpu_seconds\":" << upload_cpu_seconds
     << ",\"weight_fnv1a64\":" << quote(std::to_string(fingerprint(hw)))
     << ",\"oracle\":\"rank2_binary_exact_v1\",\"process_index\":" << process_index
     << ",\"warmups_per_route\":3,\"timed_submits_per_route\":" << (smoke?0:3)
     << ",\"pid\":" << getpid() << ",\"rotation_base\":" << process_index << ",\"route_order\":";
-  order_json(0);
+  if (resident) std::cout << "[\"vllm_compact16x64_bf16_output\",\"vllm_wide128x128_bf16_output\"]";
+  else order_json(0);
   std::cout << "}" << std::endl;
   int ordinal = 0;
   auto one = [&](Route route, bool warmup, int sample) {
@@ -268,11 +287,18 @@ void run(std::shared_ptr<Runtime> rt, Shape s, int shape_id, bool bf, bool smoke
       << ",\"warmup\":" << (warmup?"true":"false") << ",\"sample\":" << sample << "}" << std::endl;
     const double cpu_start=r816::thread_cpu_seconds();
     const auto start = std::chrono::steady_clock::now();
+    std::array<std::optional<sycl::event>,8> events;
+    const int submits = resident ? 8 : 1;
     if (route == Route::Native) native(g,bf,x.data(),w.data(),native16.data(),s);
     else if (route == Route::Compact || route == Route::Wide) {
       const xe::Problem p{x.data(),w.data(),out16.data(),s.t,s.n,s.k,s.n,
         bf?xe::Storage::bf16:xe::Storage::fp16,xe::Storage::bf16,0.f};
-      (void)vllm.beta0(p,route==Route::Compact?xe::Tile::compact_16x64:xe::Tile::wide_128x128);
+      // Same resident operands and beta0 output, one in-order queue. All
+      // owners remain live through completion; no transfer or host callback
+      // occurs between these submissions. Validate the final output and all
+      // guards after the burst, without resetting them between submissions.
+      for (int i=0;i<submits;++i)
+        events[size_t(i)] = vllm.beta0(p,route==Route::Compact?xe::Tile::compact_16x64:xe::Tile::wide_128x128);
     } else {
       direct(g,bf,x.data(),w.data(),reinterpret_cast<float*>(y32.data()),s);
       if (route == Route::Cast) gpu_cast(q,reinterpret_cast<const float*>(y32.data()),cast16.data(),outputs);
@@ -282,6 +308,20 @@ void run(std::shared_ptr<Runtime> rt, Shape s, int shape_id, bool bf, bool smoke
     const double elapsed = std::chrono::duration<double>(std::chrono::steady_clock::now()-start).count();
     const double cpu_completed=r816::thread_cpu_seconds();
     require(std::isfinite(elapsed) && elapsed > 0, "invalid wall sample");
+    std::array<std::array<uint64_t,3>,8> timestamps{};
+    uint64_t kernel_ns = 0;
+    bool contract_valid = true, cross_event_ordered = true, duration_positive = true;
+    if (events[0]) for (int i=0;i<submits;++i) {
+      const auto &event = *events[size_t(i)];
+      auto &v = timestamps[size_t(i)];
+      v = {event.get_profiling_info<sycl::info::event_profiling::command_submit>(),
+           event.get_profiling_info<sycl::info::event_profiling::command_start>(),
+           event.get_profiling_info<sycl::info::event_profiling::command_end>()};
+      contract_valid &= v[0]<=v[1] && v[1]<=v[2];
+      duration_positive &= v[1]<v[2];
+      cross_event_ordered &= !i || timestamps[size_t(i-1)][2]<=v[1];
+      if (v[1]<=v[2]) kernel_ns += v[2]-v[1];
+    }
     // Flush the individual measurement before readback/validation so failed
     // comparisons retain their timing and explicit unvalidated status.
     std::cout << "{\"kind\":\"sample\",\"status\":\"pending_validation\",\"ordinal\":" << ordinal
@@ -289,10 +329,31 @@ void run(std::shared_ptr<Runtime> rt, Shape s, int shape_id, bool bf, bool smoke
       << ",\"stored_output_type\":" << quote(route==Route::Direct?"fp32":"bf16")
       << ",\"global_fp32_intermediate\":" << (route==Route::Cast?"true":"false")
       << ",\"warmup\":" << (warmup?"true":"false") << ",\"sample\":" << sample
+      << ",\"submits\":" << submits
       << ",\"submit_to_completion_wall_seconds\":" << elapsed
       << ",\"thread_cpu_submit_seconds\":" << cpu_submitted-cpu_start
       << ",\"thread_cpu_wait_check_seconds\":" << cpu_completed-cpu_submitted
-      << "}" << std::endl;
+      << ",\"logical_flop_per_submit\":" << uint64_t(2)*s.t*s.n*s.k
+      << ",\"kernel_total_seconds\":";
+    if (events[0] && duration_positive && cross_event_ordered) std::cout << double(kernel_ns)*1e-9;
+    else std::cout << "null";
+    std::cout << ",\"profiling_contract_valid\":" << (contract_valid?"true":"false")
+      << ",\"profiling_service_valid\":" << (duration_positive && cross_event_ordered?"true":"false")
+      << ",\"profiling_duration_positive\":" << (duration_positive?"true":"false")
+      << ",\"profiling_cross_event_ordered\":" << (cross_event_ordered?"true":"false");
+    std::cout << ",\"device_timestamps_ns\":[";
+    if (events[0]) for (int i=0;i<submits;++i) {
+      if (i) std::cout << ',';
+      const auto &v = timestamps[size_t(i)];
+      std::cout << '[' << v[0] << ',' << v[1] << ',' << v[2] << ']';
+    }
+    std::cout << "]}" << std::endl;
+    // Prospectively revised service metric after 0f6356d12: submit can use an
+    // estimated clock and invert against GPU start. Preserve that diagnostic,
+    // but derive service only from positive ordered GPU start/end pairs.
+    // No clamping, removal of samples, or relaxed numerical/guard criteria.
+    require(duration_positive && cross_event_ordered,
+            "invalid or unordered GPU service timestamps (see emitted tuples)");
     uint64_t hash = 0;
     if (use32) {
       const auto got = download(q,y32); guards(got,y32,Mark32);
@@ -322,23 +383,26 @@ void run(std::shared_ptr<Runtime> rt, Shape s, int shape_id, bool bf, bool smoke
   };
   // Rotate the five-route order across warmup rounds, timed rounds and
   // independent processes. Inner submissions are never process replicates.
+  const std::vector<Route> routes = resident ? std::vector<Route>{Route::Compact,Route::Wide}
+                                           : std::vector<Route>(Routes.begin(),Routes.end());
   for (int round=0; round<3; ++round)
-    for (int j=0; j<5; ++j) one(Routes[size_t((j+round+process_index)%5)],true,round);
+    for (size_t j=0; j<routes.size(); ++j) one(routes[(j+round+process_index)%routes.size()],true,round);
   if (!smoke) for (int round=0; round<3; ++round)
-    for (int j=0; j<5; ++j) one(Routes[size_t((j+round+3+process_index)%5)],false,round);
+    for (size_t j=0; j<routes.size(); ++j) one(routes[(j+round+3+process_index)%routes.size()],false,round);
   rt->wait();
   std::cout << "{\"kind\":\"result\",\"status\":\"PASS\",\"validated_invocations\":" << ordinal
     << ",\"warmups_per_route\":3,\"process_index\":" << process_index
     << ",\"samples_per_route\":" << (smoke?0:3)
-    << ",\"scope\":\"operator_sanity_and_wall_only;not_model_quality_or_speed;not_adversarial_accumulator_gate\"}" << std::endl;
+    << ",\"scope\":\"resident_operator_reference;not_hardware_peak_or_model_quality_or_speed;not_adversarial_accumulator_gate\"}" << std::endl;
 }
 } // namespace
 int main(int argc, char **argv) {
   try {
     std::cout << std::setprecision(17);
     const bool smoke = argc==5 && std::string(argv[1])=="--smoke";
-    require(smoke || (argc==6 && std::string(argv[1])=="--measure"),
-            "usage: paired_gemm --smoke fp16|bf16 --process 0|1|2 | --measure 0|1|2 fp16|bf16 --process 0|1|2");
+    const bool resident = argc==6 && std::string(argv[1])=="--resident";
+    require(smoke || resident || (argc==6 && std::string(argv[1])=="--measure"),
+            "usage: paired_gemm --smoke fp16|bf16 --process 0|1|2 | --measure|--resident 0..9 fp16|bf16 --process 0|1|2");
     const std::string format = argv[smoke?2:3];
     require(format=="fp16" || format=="bf16", "bounded input format");
     require(std::string(argv[smoke?3:4])=="--process", "explicit process index required");
@@ -348,14 +412,14 @@ int main(int argc, char **argv) {
     int shape = -1;
     if (!smoke) {
       const std::string token = argv[2];
-      require(token=="0" || token=="1" || token=="2", "bounded shape id");
+      require(token.size()==1 && token[0]>='0' && token[0]<='9', "bounded shape id");
       shape = token[0]-'0';
     }
     // Main supplies the entire fixed environment before exec. No mutation here.
     r816::libraries("before_runtime");
     auto rt = runtime_for(0); // Main explicitly qualified ordinal 0 (B570).
     device_record(*rt);
-    run(rt,smoke?Small:Shapes[size_t(shape)],shape,format=="bf16",smoke,process_index);
+    run(rt,smoke?Small:Shapes[size_t(shape)],shape,format=="bf16",smoke,process_index,resident);
     rt->wait();
     r816::libraries("after_checked_drain");
     return 0;

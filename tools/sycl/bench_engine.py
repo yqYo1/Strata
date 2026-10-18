@@ -31,17 +31,18 @@ def digest(path):
 def main():
     modes = ('check', 'base', 'candidate', 'qsa-check', 'qsa-base', 'qsa-direct', 'qsa-census',
              'qsa-qcache-check', 'qsa-qcache-base', 'qsa-qcache',
-             'qsa-kvec4-check', 'qsa-kvec4-base', 'qsa-kvec4')
+             'qsa-kvec4-check', 'qsa-kvec4-base', 'qsa-kvec4', 'qsa-kvec4-census')
     guards.require(len(sys.argv) == 3 and sys.argv[1] in ('prepare', 'run') and
                    sys.argv[2] in modes, 'use prepare|run ' + '|'.join(modes))
     action, mode = sys.argv[1:]
     qsa = mode.startswith('qsa-')
-    census = mode == 'qsa-census'
+    census = mode in ('qsa-census', 'qsa-kvec4-census')
     qcache = mode.startswith('qsa-qcache')
     kvec4 = mode.startswith('qsa-kvec4')
-    check = mode in ('check', 'qsa-check', 'qsa-census', 'qsa-qcache-check', 'qsa-kvec4-check')
+    check = census or mode in ('check', 'qsa-check', 'qsa-qcache-check', 'qsa-kvec4-check')
     chunk64 = mode in ('check', 'candidate')
-    root = B / (('qsa-attention-model-' + mode[4:] + '-v1') if qsa else
+    generation = 'v2' if mode == 'qsa-kvec4-check' else 'v1'
+    root = B / (('qsa-attention-model-' + mode[4:] + '-' + generation) if qsa else
                 ('native-gdn-model-' + mode + '-v2'))
     result_path = (A / 'moe-window-census-current.json' if census else
                    A / 'qsa-kvec4-model-current.json' if kvec4 else
@@ -83,13 +84,15 @@ def main():
                        STRATA_SYCL_PREFILL_GDN_CHUNK64='1' if chunk64 else '0')
             if qsa:
                 env['STRATA_SYCL_PREFILL_QSA_MATH'] = (
-                    'bf16-prefix-kvec4' if mode in ('qsa-kvec4-check', 'qsa-kvec4') else
+                    'bf16-prefix-kvec4' if mode in ('qsa-kvec4-check', 'qsa-kvec4', 'qsa-kvec4-census') else
                     'bf16-prefix-qcache' if mode in ('qsa-qcache-check', 'qsa-qcache', 'qsa-kvec4-base') else
                     'bf16' if mode in ('qsa-check', 'qsa-direct') else 'bf16-prefix-optimized')
             if census:
                 env.update(STRATA_PREFILL_LAYER_MAJOR_PROFILE='1',
                            STRATA_PREFILL_LAYER_MAJOR_QSA_PROFILE='1',
                            STRATA_PREFILL_CPU_WAIT_PROFILE='1')
+            if mode in ('qsa-kvec4-check', 'qsa-kvec4-census'):
+                env['STRATA_SYCL_PREFILL_COMMAND_PROFILE'] = '1'
             config = dict(reference['config'])
             flags = list(config['args'])
             flags[flags.index('--expert-profile') + 1] = str(root / 'expert-profile.bin')
@@ -200,7 +203,7 @@ def main():
                     record['cached_query_route'] = selected
                 if kvec4:
                     selected = [x for x in log.splitlines() if x.startswith('strata prefill: QSA k_staging=')]
-                    wanted = mode in ('qsa-kvec4-check', 'qsa-kvec4')
+                    wanted = mode in ('qsa-kvec4-check', 'qsa-kvec4', 'qsa-kvec4-census')
                     guards.require(bool(selected) == wanted and all('k_staging=typed4 parallel_rows=1' in x for x in selected),
                                    'wrong four-value K kernel selection')
                     record['k_staging_route'] = selected
@@ -229,6 +232,35 @@ def main():
                     guards.require(any(x.startswith(prefix) for x in record['resource_diagnostics']),
                                    'missing complete resource observer: ' + prefix)
                 record['census_scope'] = 'Planned host metadata reconciled with completed window issuer totals; profiler/validation enabled, not clean speed or physical hardware saturation.'
+            if mode in ('qsa-kvec4-check', 'qsa-kvec4-census'):
+                def rows(prefix):
+                    return [dict(part.split('=', 1) for part in line[len(prefix):].split())
+                            for line in log.splitlines() if line.startswith(prefix)]
+                summaries = rows('strata command profile: ')
+                groups = rows('strata command group: ')
+                samples = rows('strata command sample: ')
+                invalid = rows('strata command invalid: ')
+                # Keep service intervals and signed clock diagnostics, not a
+                # permanent raw absolute timeline. All samples remain present.
+                for sample in samples:
+                    submit, start, end = (int(sample.pop(key)) for key in ('submit', 'start', 'end'))
+                    sample.update(service_ns=end-start, start_minus_submit_ns=start-submit)
+                record['command_service_profile'] = dict(version=2, summaries=summaries,
+                    groups=groups, samples=samples, invalid=invalid,
+                    scope='Deterministic samples in first accumulator expert phases of layers0,15,31,47; initial router/shared/final writes excluded; no device-busy or physical-traffic claim.')
+                guards.require('strata MoE window configuration: requested_mode=10 effective_mode=10 ' in log,
+                    'command service must sample the admitted production accumulator route')
+                guards.require(len(summaries) == 1 and summaries[0]['version'] == '2' and
+                    summaries[0]['service_complete'] == '1' and summaries[0]['invalid'] == '0' and
+                    summaries[0]['windows'] == summaries[0]['expected'] == '4' and not invalid and
+                    len(samples) == int(summaries[0]['records']) and groups and
+                    all(int(g['selected']) == int(g['service_samples']) and int(g['selected']) > 0 for g in groups) and
+                    sum(int(g['service_samples']) for g in groups) == len(samples) and
+                    sum(int(g['queue_delay_samples']) for g in groups) +
+                        int(summaries[0]['submit_clock_inversions']) == len(samples) and
+                    sum(s['start_minus_submit_ns'] < 0 for s in samples) == int(summaries[0]['submit_clock_inversions']) and
+                    all(s['service_ns'] >= int(summaries[0]['timer_resolution_ns']) for s in samples),
+                    'incomplete GPU-only command service profile')
             guards.require(not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|retirement failed|Strata SYCL cleanup:', log), 'runtime failure')
             record['passed'] = bool(record['complete'] and entry.get('exit_code') == 0)
         except BaseException as error:

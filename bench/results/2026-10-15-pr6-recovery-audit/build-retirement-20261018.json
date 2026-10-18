@@ -2,16 +2,16 @@
   "schema": "strata-artifact-retirement-v2",
   "state": "retired",
   "previous_decision_archive": {
-    "commit": "a6dc8b975",
+    "commit": "e3c54faa6",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/build-retirement-20261018.json"
   },
-  "evidence_commit": "23b0e7bb8",
+  "evidence_commit": "f97d3dc9b",
   "source_recovery": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "52f047586416444c07123374ee5a13550c2e6e40",
-      "count": 485,
-      "aggregate_sha256": "d9ec2232004548a9ef8512af2d99ede55eda06397f8b424bb3a8c662d8501414"
+      "revision": "f111b5ff6c84797bff2139355cb6b1b4500f165f",
+      "count": 486,
+      "aggregate_sha256": "5ea8619fd240c4278724b8fb1489b9a7b89668c708303af0d79d89c1dd96d410"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
@@ -27,29 +27,47 @@
     },
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "112071c5cb78e7b983272a734216f2081a946f96",
-      "count": 485,
-      "aggregate_sha256": "8a50780bb6d0ba0f7312b23980c99621af2100a234a91fb930152b6271fa05e3"
+      "revision": "e3c54faa687a1d64efb960a546f4d912098af06c",
+      "count": 486,
+      "aggregate_sha256": "58244187d0be9e649ed0cea6920fee8d713cdfb12463b30c36594ef7f071f0ec"
+    },
+    {
+      "kind": "benchmark_helpers",
+      "revision": "3e2637d50c5645a411f243cfaeb9a60c97c3c506",
+      "count": 102,
+      "aggregate_sha256": "563a0582f3bebfca66a36802b38605ccfd184a252b38588d5c02bd431a4617f4",
+      "shared_profile_retained_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+    },
+    {
+      "kind": "benchmark_helpers",
+      "revision": "0b52c95af29e0e1988617065e26be9562bd4c2b2",
+      "count": 102,
+      "aggregate_sha256": "b0145811d988da0924ecfca48f37841f5142a2392ab7ee3943e8c30d286967e9",
+      "shared_profile_retained_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+    },
+    {
+      "kind": "benchmark_helpers",
+      "revision": "9cc22d971cea3d8f5eee679c4278b1db4e087aa4",
+      "count": 102,
+      "aggregate_sha256": "b0145811d988da0924ecfca48f37841f5142a2392ab7ee3943e8c30d286967e9",
+      "shared_profile_retained_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
     }
   ],
-  "source_recovery_note": "All current build inputs individually recovered/hash-verified; old112 project path set verified by its original count+aggregate, and dependencies equal the individually recovered current records. Benchmark helper inputs also recovered per arm.",
   "roots": [
     "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-kvec4-check-v1",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-kvec4-base-v1",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-kvec4-v1",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-current",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-hardware-profile-current"
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-kvec4-check-v2",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-kvec4-census-v1"
   ],
-  "file_count": 327,
-  "bytes": 72073080,
+  "file_count": 211,
+  "bytes": 39213672,
   "retained_exceptions": [
     "Current known-good main-native-gdn-engine and its imminent comparison fixtures only; the unused extra generation is retired.",
     "Protected untracked provenance holds and legacy main-primary-native-build-root-v1 with unresolved missing source inputs.",
     "Active Orca research reports and review inputs."
   ],
-  "keep": "Current main-native-gdn-engine executable/fixtures and source/dependency worktrees; VMM report/review until placement owner census; existing unresolved provenance holds unchanged.",
-  "manifest_archive_commit": "66980745b",
+  "keep": "Current main-native-gdn-engine plus maintained fixture/cache targets; original shared expert-profile; named MoE fusion/gather reports and warm-reference methods; protected provenance holds unchanged.",
+  "manifest_archive_commit": "92511210b598bbe0a7a64e010064ad15a0e927ad",
   "manifest_archive_path": "bench/results/2026-10-15-pr6-recovery-audit/build-retirement-20261018.json",
-  "deleted_count": 327,
-  "deleted_bytes": 72073080
+  "deleted_count": 211,
+  "deleted_bytes": 39213672
 }
