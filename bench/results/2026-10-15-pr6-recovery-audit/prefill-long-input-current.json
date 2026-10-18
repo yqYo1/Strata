@@ -584,5 +584,99 @@
     "device": "0xe20c",
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
+  },
+  "independent_process_comparison": {
+    "method": "Three independent native processes, four matched fresh requests each. Separate first use; report each process and all subsequent individual samples. Normalize only per-process private output paths.",
+    "cohorts": [
+      {
+        "cohort_index": 0,
+        "evidence": {
+          "commit": "1b3b92d93a05ff6252aa9c916efcaa6ac43a233c",
+          "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json"
+        },
+        "first_use_prompt_tps": 890.8,
+        "subsequent_prompt_tps": [
+          957.8,
+          953.4,
+          955.8
+        ],
+        "subsequent_median": 955.8,
+        "sample_sd": 2.203028218914429,
+        "requested_expert_H2D_bytes": [
+          40102860800,
+          40032153600,
+          39965158400,
+          39945267200
+        ],
+        "complete_route_and_ownership_passed": true,
+        "no_fresh_faults": true
+      },
+      {
+        "cohort_index": 1,
+        "evidence": {
+          "commit": "1f302e6e4473358371f1f08276b8ab751c3eac53",
+          "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json"
+        },
+        "first_use_prompt_tps": 888.2,
+        "subsequent_prompt_tps": [
+          956.6,
+          957.9,
+          957.9
+        ],
+        "subsequent_median": 957.9,
+        "sample_sd": 0.7505553499464872,
+        "requested_expert_H2D_bytes": [
+          40102860800,
+          40032153600,
+          39965158400,
+          39945267200
+        ],
+        "complete_route_and_ownership_passed": true,
+        "no_fresh_faults": true
+      },
+      {
+        "cohort_index": 2,
+        "evidence": {
+          "commit": "7f6d7c0fe03c594c8de7096cc2d93f1f184ec0f3",
+          "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json"
+        },
+        "first_use_prompt_tps": 891.9,
+        "subsequent_prompt_tps": [
+          956.9,
+          955.4,
+          954.0
+        ],
+        "subsequent_median": 955.4,
+        "sample_sd": 1.4502873278537949,
+        "requested_expert_H2D_bytes": [
+          40102860800,
+          40032153600,
+          39965158400,
+          39945267200
+        ],
+        "complete_route_and_ownership_passed": true,
+        "no_fresh_faults": true
+      }
+    ],
+    "request_sha256": [
+      "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+      "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
+      "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
+      "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1"
+    ],
+    "source_binary_configuration_parity": true,
+    "process_median_range": [
+      955.4,
+      957.9
+    ],
+    "median_of_process_medians": 955.8,
+    "all_subsequent_range": [
+      953.4,
+      957.9
+    ],
+    "pooled_subsequent_median": 956.6,
+    "each_process_target_passed": false,
+    "decision": "Stable opt-in117K route;1000tok/s unmet. Next prospectively evaluate65536-minimum input under the unchanged engine/placement, with a single<=81920-row GPU MoE window.",
+    "limits": "No paired three-process baseline cohort, hardware saturation/physical PCIe traffic, sustained decode, model-quality, physical262144 or RESTORE qualification. Earlier845.9 baseline is one matched process, not three."
   }
 }
