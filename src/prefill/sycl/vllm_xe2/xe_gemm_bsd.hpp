@@ -158,7 +158,7 @@ CUTE_DEVICE void xe_gemm_beta0(
     // Therefore the per-thread fragment and these logical coordinates have
     // the same element order. No guessed lane/subgroup-to-M/N arithmetic.
     auto coordinates = thr_mma.partition_C(gC);
-    static_assert(decltype(size(coordinates))::value == decltype(size(tCrC))::value);
+    static_assert(decltype(size(coordinates))::value == decltype(size(tCrC.tensor()))::value);
     epilogue(tCrC, coordinates);
   }
 }

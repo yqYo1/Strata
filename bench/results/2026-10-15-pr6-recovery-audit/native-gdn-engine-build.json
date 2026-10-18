@@ -1,5 +1,5 @@
 {
-  "source_commit": "7829568c61f4a47e5c1b06497f59e41a3417a5fb",
+  "source_commit": "ec73e1271126de0964c2a9aa929e4e8c99ca61ae",
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -73,51 +73,50 @@
     "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-entry-engine-build-v2.json",
     "sha256": "9b7734387f0fc56f36afe9d7bca75e5f0bedcef479271e982025abe1d4334a1a"
   },
-  "complete": true,
-  "passed": true,
+  "complete": false,
+  "passed": false,
   "active": false,
   "GPU_executed": false,
   "production_selected": false,
   "model_quality_qualified": false,
+  "replaces": {
+    "source_commit": "7829568c61f4a47e5c1b06497f59e41a3417a5fb",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+      "bytes": 20573552,
+      "sha256": "bb8b3f097837026528699031de72b2fae5f779f095efda96161fce037847f5d0"
+    },
+    "source_build_passed": true,
+    "retained_binary_source_commit": "7829568c61f4a47e5c1b06497f59e41a3417a5fb",
+    "reason": "Closed unused comparison engine; original source/recipe recovered from Git. Reuse its cache for the immediate corrected build, not a retained old generation."
+  },
   "targets": [
     "strata",
-    "sycl_gdn_columns_bench"
+    "sycl_moe_down_scatter_bench"
   ],
-  "retention_consumer": "Single latest runtime-qualified engine and same-library GDN fixture for the next Down-scatter component prototype. Before reusing the output path, preserve a new hashed explicit fallback; retire the extra at comparison closure. Full task/physical-context/RESTORE remains unqualified.",
-  "binary": {
-    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-    "bytes": 20573552,
-    "sha256": "bb8b3f097837026528699031de72b2fae5f779f095efda96161fce037847f5d0"
-  },
-  "compile_database_sha256": "dbc7953a4bfbe2263930892adbd50bb7939156fee5ebe620e06f889017739018",
-  "configured_compile_entries": 214,
-  "fixtures": {
-    "sycl_gdn_columns_bench": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_gdn_columns_bench",
-      "sha256": "5b4d1714f89e4dd6e1c6c93d6e76b276f081f74a5b7694c3c8c326accf0be0f9"
-    }
-  },
-  "ownership_closed": true,
-  "inputs": [
-    {
-      "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "7829568c61f4a47e5c1b06497f59e41a3417a5fb",
-      "count": 490,
-      "aggregate_sha256": "3ded773a552a642e60b8daf3cbc6d8cc53ede0946768d877790d842cddc8beb2"
+  "retention_consumer": "Current long-prefill comparison and its attention fixtures; retire when comparison closes.",
+  "retained_validation_reference": {
+    "source_commit": "7829568c61f4a47e5c1b06497f59e41a3417a5fb",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-down-scatter-v1/strata",
+      "bytes": 20573552,
+      "sha256": "bb8b3f097837026528699031de72b2fae5f779f095efda96161fce037847f5d0"
     },
-    {
-      "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
-      "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
-      "count": 3608,
-      "aggregate_sha256": "322862d213ed722d6500da0b58a1b7fffff53aa0de77d7f2e8ba685c653a0d9f"
+    "fixtures": {
+      "sycl_gdn_columns_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-down-scatter-v1/sycl_gdn_columns_bench",
+        "bytes": 255752,
+        "sha256": "5b4d1714f89e4dd6e1c6c93d6e76b276f081f74a5b7694c3c8c326accf0be0f9"
+      }
     },
-    {
-      "root": "/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
-      "revision": "87f6850680a580654b9ea2c80dbc01aeb36ad231",
-      "count": 5703,
-      "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
-    }
-  ],
+    "original_build_record": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-down-scatter-v1/build-record.json",
+      "sha256": "5a0430556e8c32b81ce835653ce4997175602bcdd277b4a390481ac97bb3a054"
+    },
+    "input_blobs_recovered_and_verified": 9801,
+    "qualification_reference": "bench/results/2026-10-15-pr6-recovery-audit/prefill-host-attribution-current.json at80c867368c3a0b7a898cde1afa2dda43e3fb9246",
+    "consumer": "Known-good engine/GDN fallback while the isolated Down/scatter component and any later model route are qualified; counts as one retained generation. Retire only after replacement selection."
+  },
   "legacy_provenance_exception": {
     "state": "Unresolved legacy cleanup; not qualified comparison generations.",
     "observed_engine_and_fixture_paths": 41,
@@ -158,56 +157,34 @@
       "archive_searched": "8063aacc6749d18089f7a53db5d3e47b745f348c"
     }
   },
-  "host_counter_model_runtime_qualification": {
-    "command_off": {
-      "revision": "5c03cd43c329645e0e978f1a557c5435ecf19cae",
-      "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-host-attribution-current.json",
-      "actual_read_tokens": 39260,
-      "passed": true
+  "error": "compile-link failed: xe_gemm_bsd.hpp:161 queried size(SubgroupTensor), whose pinned TLA overload returns void; query its Tensor view instead. Four undefined-device-function diagnostics are secondary instantiation errors. No GPU execution.",
+  "ownership_closed": true,
+  "inputs": [
+    {
+      "root": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "revision": "ec73e1271126de0964c2a9aa929e4e8c99ca61ae",
+      "count": 492,
+      "aggregate_sha256": "3dd0937213077564d57b884eb4b85ec2fd1178202db63d8a443f3e06618d18ed"
     },
-    "command_on": {
-      "revision": "b285f25899bfb6d885e070134098e20af63e0f61",
-      "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-host-attribution-current.json",
-      "actual_read_tokens": 39260,
-      "passed": true
+    {
+      "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+      "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+      "count": 3608,
+      "aggregate_sha256": "322862d213ed722d6500da0b58a1b7fffff53aa0de77d7f2e8ba685c653a0d9f"
     },
-    "limits": "Disjoint counter/runtime admission; clean speed, model quality and full model physical262144/RESTORE are not newly qualified.",
-    "warm78K": {
-      "revision": "80c867368c3a0b7a898cde1afa2dda43e3fb9246",
-      "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-host-attribution-current.json",
-      "actual_read_tokens": [
-        78451,
-        78451
-      ],
-      "passed": true
+    {
+      "root": "/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+      "revision": "87f6850680a580654b9ea2c80dbc01aeb36ad231",
+      "count": 5703,
+      "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
     }
-  },
-  "last_validation_reference_retirement": {
-    "source_commit": "016ae608038f706c8baf1d598cfae6c2a2d882f2",
-    "binary_sha256": "8a345b0c56bde695eaa72faaceae68c005a1533eee491558134b597004b6064a",
-    "manifest": "bench/results/2026-10-15-pr6-recovery-audit/build-retirement-20261018.json",
-    "state": "retired_after_CPU_off_on39K_and_warm78K_qualification"
-  },
-  "retained_validation_reference": {
-    "source_commit": "7829568c61f4a47e5c1b06497f59e41a3417a5fb",
-    "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-down-scatter-v1/strata",
-      "bytes": 20573552,
-      "sha256": "bb8b3f097837026528699031de72b2fae5f779f095efda96161fce037847f5d0"
-    },
-    "fixtures": {
-      "sycl_gdn_columns_bench": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-down-scatter-v1/sycl_gdn_columns_bench",
-        "bytes": 255752,
-        "sha256": "5b4d1714f89e4dd6e1c6c93d6e76b276f081f74a5b7694c3c8c326accf0be0f9"
-      }
-    },
-    "original_build_record": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-down-scatter-v1/build-record.json",
-      "sha256": "5a0430556e8c32b81ce835653ce4997175602bcdd277b4a390481ac97bb3a054"
-    },
-    "input_blobs_recovered_and_verified": 9801,
-    "qualification_reference": "bench/results/2026-10-15-pr6-recovery-audit/prefill-host-attribution-current.json at80c867368c3a0b7a898cde1afa2dda43e3fb9246",
-    "consumer": "Known-good engine/GDN fallback while the isolated Down/scatter component and any later model route are qualified; counts as one retained generation. Retire only after replacement selection."
+  ],
+  "compile_failure_diagnostic": {
+    "source_commit": "ec73e1271126de0964c2a9aa929e4e8c99ca61ae",
+    "mechanism": "CuTe size overload requires tCrC.tensor() for the static ownership assertion",
+    "compile_stdout_sha256": "1500b353793149104ed1a9fad96e5eb8064a5833801665807f81a81d1d72532d",
+    "compile_stdout_bytes": 66918,
+    "GPU_executed": false,
+    "original_status": "complete=false,passed=false,ownership_closed=true; preserved"
   }
 }
