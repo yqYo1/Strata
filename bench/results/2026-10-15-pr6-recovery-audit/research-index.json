@@ -349,7 +349,29 @@
       "Dense-model speed comparison and active-parameter ratios remain unqualified as ceilings; current operation-specific accounting is needed."
     ],
     "question": "Derive source-grounded logical FLOP/data-volume bounds per current prefill stage and identify which hardware-ceiling measurements would change the next optimization decision. No repeated generic hardware/profiler survey.",
-    "ownership": "Orca Luna read-only source/literature; Main continues owned A/B, no extra execution."
+    "ownership": "Orca Luna read-only source/literature; Main continues owned A/B, no extra execution.",
+    "state": "Orca report and native Luna-max review complete; Main is finishing active A/B before any ceiling execution.",
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/current-operation-ceilings.md",
+    "report_sha256": "d38d995cb764e4baa1ae5cf609facb977b5ed801cb44716adf4b268f9eee4ed3",
+    "report_bytes": 12481,
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/current-operation-ceilings-review.json",
+    "review_sha256": "82880b225940db3ed3a9af13ef832ae1a1094bfed34f9d72cb62462f176fdcb1",
+    "reviewed_facts": [
+      "Routed expert logical GEMMs total370.174TFLOP for measured37,656,000rows and current GU/Down dimensions. Issued padded work requires archived3361-bin M histogram.",
+      "Routed weights/inputs are FP16; FP32 accumulation; GU/Down outputs BF16; SwiGLU reads BF16 and stores FP16 hidden. Measure the actual mixed-format path.",
+      "QSA work must sum selected widths across all12 QSA layers; a cap-only estimate is insufficient.",
+      "B570380GB/s is advertised, not sustainable measured bandwidth; compatible compute peak remains unknown."
+    ],
+    "next_main_measurement": {
+      "schedulable_now": false,
+      "prerequisites": [
+        "Close frozen Qcache A/B and record source/workload parity/outcome.",
+        "Recover/hash-verify exact M histogram from66d5c545 or use explicitly unweighted M sweep.",
+        "Use same production backend/tile mode, FP16 operands/weights and BF16 outputs with correctness and finite owned budgets."
+      ],
+      "question": "Current-shaped MoE GU/Down throughput ceiling, separating explicit transfers and host submit from timed kernel/whole-call evidence."
+    },
+    "retention": "Keep report/review until Main records ceiling measurement decision; no automatic full-report commit."
   },
   "decode_vram_rebuild_scope": {
     "schedulable_now": true,
