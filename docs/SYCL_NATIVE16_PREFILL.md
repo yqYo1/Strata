@@ -726,6 +726,25 @@ retain spread and process medians. Proceed to an explicit opt-in long-prefill
 model route and a matched official78K comparison; no new model throughput or
 sustained decode, task-quality, full-context or RESTORE qualification is claimed.
 
+`STRATA_SYCL_PREFILL_QSA_MATH=bf16-prefix-ordered-exp` explicitly selects the
+qualified kernel in dedicated long prefill. It uses the same prefix allocation,
+resident-pool admission, strides and owner lifetime as KVvec4; the component
+kernel and default selector are unchanged. Startup logs identify parallel exp
+with ascending sum, cached Q and typed4 K/V. Short prefill and decode keep their
+existing route.
+
+Main rebuilds from committed inputs, then prepares/commits/runs
+`qsa-ordered-exp-check`, `qsa-ordered-exp-base` and
+`qsa-ordered-exp-candidate` using `tools/sycl/bench_engine.py`. Preparation
+requires the recorded component gate and unchanged kernel source. The first
+model gate uses validation/trace on a32K nominal input. Both clean speed arms
+use the same binary, GDN columns4, thinking enabled and four fresh78K requests;
+only the startup QSA selector differs after normalizing private paths/ports.
+Each later plan requires its matching completed predecessor committed. Retain
+all requests, separate first-use from subsequent speed and archive prior gates
+by immutable commit. This is a model screen, not independent-process variance,
+sustained generation or default-adoption qualification.
+
 ## MoE Down/scatter component
 
 `Gemm::down_scatter` is an explicit component API with no model dispatch hook.
