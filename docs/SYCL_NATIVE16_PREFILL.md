@@ -895,6 +895,27 @@ only the GU selector changes. Each arm records first-use plus3 subsequent
 fresh>=64K requests and actual fused/separate job counts. Repeated independent
 cohorts are still required if variability prevents an adoption decision.
 
+The first matched78,451-token pilot used engine`89895909e04a811b2b34ba2f9eca957718086c13df2f669726b8182368482e02`
+at source`3d8708758`, with identical benchmark source, request hashes, profile,
+configuration and observer state except the GU selector. Separate first-use
+was814.8tok/s and subsequent samples898.2/891.8/899.0 (median898.2, sampleSD3.95).
+Fusion was819.2 first-use and904.4/896.2/903.5 subsequently (median903.5, SD4.50).
+The pilot median gain is0.5901%; all three matched subsequent inputs improved,
+but these are within-process samples, so do not adopt from this pilot alone.
+Both processes closed without a fresh GPU fault. At78K, the selected kernel
+handled about5,000 jobs and33.9million rows per request; smaller jobs stayed
+separate. This does not qualify long generation or physical262144/RESTORE.
+
+For independent qualification, the GU model controller accepts a final cohort
+index0/1/2. Keep the engine and underlying`bench.sh`/workloads fixed. After the
+completed A0/B0 pilot, use`prepare`/commit/`run` for candidate1, base1, base2,
+candidate2, in that order. Each process still has a separate first-use request
+and three subsequent matched inputs. Require all three independent paired
+subsequent medians to favor fusion and the geometric mean of per-input paired
+ratios to exceed1.002, with all normal eligibility, ownership and fault gates.
+Keep every sample regardless of the decision. The default selector stays off
+pending broader numerical/task/context gates.
+
 ## MoE Down/scatter component
 
 `Gemm::down_scatter` is an explicit component API with no model dispatch hook.

@@ -1349,13 +1349,62 @@
       ],
       "maximum_bytes": 32768
     },
-    "state": "Orca knowledge collection dispatched; Main does not read body on arrival.",
+    "state": "Orca and native Luna-max review complete; external worker released/closed and delivery acknowledged.",
     "main_reads_body_on_arrival": false,
     "retention_consumer": "Indexed substantive knowledge for a named later implementation question; native review determines novelty and retrieval sections after completion.",
     "dispatch": "ctx_eeff26a5e252",
     "task": "task_10ab22fd152b",
     "terminal": "term_e7f3fbdf-2b08-4d9e-9a71-92d0a99a431b",
-    "model_evidence": "Custom gpt-6-luna/medium terminal; tui-idle satisfied and turn_started observed."
+    "model_evidence": "Custom gpt-6-luna/medium terminal; tui-idle satisfied and turn_started observed.",
+    "report_sha256": "9b11ad64b3ae2e143e285ba9737547baa85b10bb73cc78a1df28c0b5e4c05fae",
+    "report_bytes": 19206,
+    "review_task": "/root/review_gu_queue_collections_20261018",
+    "delivery": "delivery_1fd1355ff5c8",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/gu-queue-collections-native-review.json",
+    "review_sha256": "9b796ae6a82d3cf5ee4d5dcc717f937a985bbca13b703d06b82b874de2472c97",
+    "retrieval_sections": [
+      "Subgroup packing and pair ownership alternatives",
+      "Conversion placement and arithmetic order",
+      "Hidden output layout and coalescing",
+      "Special-function work and GEMM overlap",
+      "What a Main-owned codegen audit would need"
+    ],
+    "reuse_corrections": [
+      {
+        "id": "GU-C1",
+        "severity": "material measurement provenance clarification",
+        "finding": "The shape ratios match `bench/results/2026-10-15-pr6-recovery-audit/moe-gu-swiglu-current.json` (SHA-256 `7803949ea68db226635731271c50279e6484881ceb14f9633d00b30c4d43a329`), whose source_commit is `5ca094afc633d55cf67b126820987549bcf4fc1a`; the collection scope is pinned at `f6f6714f7eab7c2d8681f3c9925ac185a1eeca29`. The three overlapping GU source hashes match, but these are distinct source commits. The report should cite the compact result and call the numbers component measurements from that receipt, not imply a new measurement of the collection's full source snapshot. The receipt itself states no model-performance, quality, or physical-262144/RESTORE qualification.",
+        "additional_unpinned_result": "The 39,260-token production-admission figures and associated 2,519-job/15,829,095-row counts have no receipt path/hash in the report. Add the exact compact admission receipt reference before those figures are reused for production-weighted shape decisions."
+      },
+      {
+        "id": "GU-C2",
+        "severity": "citation precision and mutable reference",
+        "finding": "CUTLASS's cited `gemm_api_3x.md` supports a separate collective epilogue abstraction and the cited arguments page supports a custom fused transformation over the accumulator. The cited pages do not establish a dedicated epilogue tile or an epilogue fusion visitor as phrased in the report. Replace those terms with the documented API concepts, or cite the exact visitor/tile API that is meant. The report's CUTLASS `main` and `latest` links are mutable; pin the revision and verify its license before any implementation reference is used. Current CUTLASS LICENSE.txt says BSD-3-Clause, but that is not a historical pin for the report's URLs."
+      }
+    ],
+    "retention": {
+      "decision": "retain_conditionally_in_indexed_library",
+      "consumer": "A future Main-selected, source-pinned comparison of one concrete GU alternative, such as partial unrolling or a pair-local destination layout, with compiler resource/code-size artifacts and the numerical contract fixed.",
+      "review_point": "After the current clean model cohort closes and Main identifies a specific codegen question; if no candidate is selected, retire the full body and retain only compact provenance/retrieval metadata."
+    },
+    "next_scope": {
+      "schedulable_now": false,
+      "missing_prerequisites": [
+        "The active Main-owned clean whole-model cohort has not closed.",
+        "No exact production tile/row-frequency distribution and no pinned generated-code/resource record were supplied for this review.",
+        "No single candidate variant and frozen component A/B plan is selected."
+      ],
+      "future_gate": "After those prerequisites close, compare at most one candidate against the packed XOR baseline, preserve exact numerical/ownership gates, use at least three independent process samples by shape, and keep component evidence separate from model-route adoption."
+    },
+    "reviewed_digest": [
+      "Source hashes and report hash match; substantive nonduplicated source guidance accepted conditionally.",
+      "No occupancy/spills/I-cache/SFU/critical-path measurement is established. Follow-up remains conditional during current model cohort."
+    ],
+    "evidence_links": {
+      "component_commit": "33a7d854c",
+      "admission_commit": "001723bd8",
+      "admission_path": "bench/results/2026-10-15-pr6-recovery-audit/moe-gu-swiglu-model-current.json"
+    }
   },
   "prefill_queue_profiling_collection_scope": {
     "classification": "knowledge_collection",
@@ -1381,12 +1430,51 @@
       ],
       "maximum_bytes": 32768
     },
-    "state": "Orca knowledge collection dispatched; Main does not read body on arrival.",
+    "state": "Orca and native Luna-max review complete; external worker released/closed and delivery acknowledged.",
     "main_reads_body_on_arrival": false,
     "retention_consumer": "Indexed substantive knowledge for a named later implementation question; native review determines novelty and retrieval sections after completion.",
     "dispatch": "ctx_0b4e5338e746",
     "task": "task_fdfaee9cd6a1",
     "terminal": "term_e563a032-ef9f-4179-9573-012e03ff834e",
-    "model_evidence": "Custom gpt-6-luna/medium terminal; tui-idle satisfied and turn_started observed."
+    "model_evidence": "Custom gpt-6-luna/medium terminal; tui-idle satisfied and turn_started observed.",
+    "report_sha256": "1e1f4c853e220fcd779c9af674c9d5b5d122d27ed851e3ac909dce12e1747c32",
+    "report_bytes": 18102,
+    "review_task": "/root/review_gu_queue_collections_20261018",
+    "delivery": "delivery_1fd1355ff5c8",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/gu-queue-collections-native-review.json",
+    "review_sha256": "9b796ae6a82d3cf5ee4d5dcc717f937a985bbca13b703d06b82b874de2472c97",
+    "retrieval_sections": [
+      "Caller inventory and cuts",
+      "Current queue topology and invariants",
+      "Profiling contract and provider evidence",
+      "Architecture options",
+      "Acceptance gates for a future independent prototype"
+    ],
+    "reuse_corrections": [
+      {
+        "id": "QUEUE-C1",
+        "severity": "material source/runtime attribution and result path correction",
+        "finding": "`ur-v2-submission-batching.md` is a source survey and explicitly proposes acceptance work; it does not record the actual forced-batched runtime rejection. The separate compact result is `bench/results/2026-10-15-pr6-recovery-audit/submission-acceptance-current.json` (SHA-256 `96c198a45163a77a68eb163c4840c51e1b4ca2dd8fba55feb133d67848603f58`). Control passed ten cases; candidate passed only `stream_copy_ordering` and then failed at explicit-stream `cudaEventElapsedTime` with `UR_RESULT_ERROR_PROFILING_INFO_NOT_AVAILABLE`. Replace the malformed backticked reference `actual submission-acceptance-current.json` with the exact filename/path, and attribute source semantics to pinned Intel LLVM revision `504366f4b82ff00bbac7b0c956635eed8bc599d8` while attributing the observed failure to this result. The installed adapter ELF was not source-matched, so do not claim the pinned source proves that ELF's provenance."
+      }
+    ],
+    "retention": {
+      "decision": "retain_conditionally_in_indexed_library",
+      "consumer": "A later Main-owned source cut map and bounded evaluation of a dedicated long-prefill non-profiling queue, if a concrete call site and measured overhead make that seam active.",
+      "review_point": "After the current clean model cohort closes and Main either selects a queue-boundary prototype or rules it out; if no prototype is selected, retire the full body and leave only compact retrieval metadata."
+    },
+    "next_scope": {
+      "schedulable_now": false,
+      "missing_prerequisites": [
+        "The current Main-owned clean model cohort is active.",
+        "No committed prototype or complete source cut map covering launches, callbacks, graph/replay, calibration/decode exclusions, dependencies, and final drains exists in the reviewed inputs.",
+        "No bounded small queue/stream/event/error/lifetime acceptance plan for a selected seam is ready."
+      ],
+      "future_gate": "Do not rerun forced-batched profiling. If Main later chooses a separate queue, pin and commit the prototype and fallback, first qualify queue semantics on a bounded traced path, then compare clean matched long-prefill model samples."
+    },
+    "reviewed_digest": [
+      "Source hashes and report hash match; substantive nonduplicated source guidance accepted conditionally.",
+      "No occupancy/spills/I-cache/SFU/critical-path measurement is established. Follow-up remains conditional during current model cohort."
+    ],
+    "observed_failure_evidence": "bench/results/2026-10-15-pr6-recovery-audit/submission-acceptance-current.json; installed adapter ELF identity is pinned, exact source derivation remains unproven."
   }
 }

@@ -1,6 +1,6 @@
 {
-  "mode": "qsa-gu-fusion-base",
-  "source_commit": "001723bd88d72cea35569813063af894f61cb86c",
+  "mode": "qsa-gu-fusion-candidate",
+  "source_commit": "099d624fb232ea85d7fb13d99512bf247b3e2ce7",
   "build_source_commit": "3d8708758477338512ee7bc662163fed7a23938a",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
@@ -61,7 +61,7 @@
     "STRATA_SYCL_SELECT_CYCLIC": "0",
     "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
     "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gu-fusion-base-v1/cache",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gu-fusion-candidate-v1-repeat1/cache",
     "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
     "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
     "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
@@ -74,12 +74,12 @@
     "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
     "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
     "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gu-fusion-base-v1/tmp",
-    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gu-fusion-base-v1",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gu-fusion-candidate-v1-repeat1/tmp",
+    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gu-fusion-candidate-v1-repeat1",
     "ZES_ENABLE_SYSMAN": "0",
     "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
     "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
-    "STRATA_SYCL_PREFILL_GU_SWIGLU": "0"
+    "STRATA_SYCL_PREFILL_GU_SWIGLU": "large"
   },
   "config": {
     "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
@@ -97,7 +97,7 @@
       "--expert-cache",
       "128",
       "--expert-profile",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gu-fusion-base-v1/expert-profile.bin",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gu-fusion-candidate-v1-repeat1/expert-profile.bin",
       "--expert-cache-per-layer",
       "--pool-workers",
       "5",
@@ -136,7 +136,7 @@
       "strata"
     ],
     "host": "127.0.0.1",
-    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gu-fusion-base-v1/engine.stderr",
+    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gu-fusion-candidate-v1-repeat1/engine.stderr",
     "engine_silence_s": 480,
     "parallel": 1,
     "open_browser": false,
@@ -146,9 +146,9 @@
     "/bin/sh",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
     "--config",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gu-fusion-base-v1/config.json",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gu-fusion-candidate-v1-repeat1/config.json",
     "--port",
-    "43589",
+    "56803",
     "--runs",
     "4",
     "--prefill-only",
@@ -161,13 +161,13 @@
     "--ready-timeout",
     "600",
     "--out",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gu-fusion-base-v1/bench"
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-gu-fusion-candidate-v1-repeat1/bench"
   ],
   "reference": {
     "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-softmax-measurement-inputs-v1.json",
     "sha256": "3792c36462e333816ce5d5d9ac39f3dcc13809939d8d3133c570d8945257d1dd"
   },
-  "config_sha256": "9ac18fcb2ac5c4b833191e211c1c7cdecc92cb287f34f6bb2a98833e019173b3",
+  "config_sha256": "e18558d796f60b2f4b6c9f68963732e108c76c4215bbfecc661abbd6824be3ef",
   "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
   "complete": false,
   "passed": false,
@@ -188,11 +188,27 @@
     "component_gate_passed": true,
     "selector": "large: matrix-wide jobs>=2334 rows; smaller jobs retain separate GU/SwiGLU",
     "preceding_result": {
-      "commit": "001723bd88d72cea35569813063af894f61cb86c",
+      "commit": "099d624fb232ea85d7fb13d99512bf247b3e2ce7",
       "path": "bench/results/2026-10-15-pr6-recovery-audit/moe-gu-swiglu-model-current.json",
-      "mode": "qsa-gu-fusion-check"
+      "mode": "qsa-gu-fusion-candidate"
     }
   },
+  "cohort_index": 1,
+  "independent_process_plan": {
+    "order": [
+      "A0",
+      "B0",
+      "B1",
+      "A1",
+      "A2",
+      "B2"
+    ],
+    "target_pairs": 3,
+    "requests_per_process": 4,
+    "first_use_separate": true,
+    "prospective_selection": "All three independent paired subsequent-request medians favor fusion; geometric mean of per-input paired ratios>1.002, no new faults or eligibility/ownership failures.",
+    "limits": "Default remains disabled pending broader quality/context gates. Metadata-only controller extension after cohort0 does not change bench.sh/workload/engine."
+  },
   "source_count": 108,
-  "source_aggregate_sha256": "71c30cc6011bff02eec2a369c22e3fda4b483bc05f9ca0782ec6b60ecc8e5f98"
+  "source_aggregate_sha256": "3d0ee295b464a21095c67f593db813ee667653c755dca2473590de05fe4315a7"
 }
