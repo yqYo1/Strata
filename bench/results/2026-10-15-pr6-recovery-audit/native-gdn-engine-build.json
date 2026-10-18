@@ -1,5 +1,5 @@
 {
-  "source_commit": "f4afb7e58592ccf68849d2a36447fa830ceb8196",
+  "source_commit": "016ae608038f706c8baf1d598cfae6c2a2d882f2",
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -73,20 +73,20 @@
     "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-entry-engine-build-v2.json",
     "sha256": "9b7734387f0fc56f36afe9d7bca75e5f0bedcef479271e982025abe1d4334a1a"
   },
-  "complete": false,
-  "passed": false,
+  "complete": true,
+  "passed": true,
   "active": false,
   "GPU_executed": false,
   "production_selected": false,
   "model_quality_qualified": false,
   "replaces": {
-    "source_commit": "799953bd2dbd065936a3e5178539de4ed9c133cb",
+    "source_commit": "f4afb7e58592ccf68849d2a36447fa830ceb8196",
     "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-gdn-columns-v1/strata",
       "bytes": 20515304,
       "sha256": "96a3f5ccde5650ce7e072540218eab60ff480b9078494c327941b209a47a2894"
     },
-    "source_build_passed": true,
+    "source_build_passed": false,
     "retained_binary_source_commit": "799953bd2dbd065936a3e5178539de4ed9c133cb",
     "reason": "Closed unused comparison engine; original source/recipe recovered from Git. Reuse its cache for the immediate corrected build, not a retained old generation."
   },
@@ -110,14 +110,26 @@
     "consumer": "Known-good fallback while the new GDN scheduling engine is compiled and qualified.",
     "retirement_point": "After the new engine passes the traced component gates and selected32K-class model check; recover exact original inputs/recipe and retire this extra generation at that closed boundary."
   },
-  "error": "compile-link failed: [1/10] Building CXX object CMakeFiles/sycl_gdn_columns_bench.dir/bench/sycl/gdn_columns.cpp.o\nFAILED: CMakeFiles/sycl_gdn_columns_bench.dir/bench/sycl/gdn_columns.cpp.o \n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++ -DSTRATA_ENABLE_SYCL=1 -DSTRATA_VERSION=\\\"0.1.38\\\" -I/home/yayoi/orca/workspaces/Strata/sycl/include -I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat -O3 -DNDEBUG -std=c++20 -fno-fast-math -ffp-contract=off -fsycl -fsycl-id-queries-range=size_t -Wall -Wextra -Werror -MD -MT CMakeFiles/sycl_gdn_columns_bench.dir/bench/sycl/gdn_columns.cpp.o -MF CMakeFiles/sycl_gdn_columns_bench.dir/bench/sycl/gdn_columns.cpp.o.d -o CMakeFiles/sycl_gdn_columns_bench.dir/bench/sycl/gdn_columns.cpp.o -c /home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/gdn_columns.cpp\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/gdn_columns.cpp:113:5: error: 'auto' deduced as 'std::vector<float>' in declaration of 'values' and deduced as 'std::vector<unsigned short>' in declaration of 'image'\n  113 |     auto values = b.y.get(), image = b.y16.get();\n      |     ^             ~~~~~~~~~          ~~~~~~~~~~~\n1 error generated.\n[2/10] Building CXX object CMakeFiles/strata_kernels.dir/src/kernels/sycl/fused_gdn.cpp.o\n[3/10] Building CXX object CMakeFiles/strata_kernels.dir/src/kernels/sycl/kv.cpp.o\n[4/10] Building CXX object CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o\nninja: build stopped: subcommand failed.\n",
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 20573552,
+    "sha256": "8a345b0c56bde695eaa72faaceae68c005a1533eee491558134b597004b6064a"
+  },
+  "compile_database_sha256": "dbc7953a4bfbe2263930892adbd50bb7939156fee5ebe620e06f889017739018",
+  "configured_compile_entries": 214,
+  "fixtures": {
+    "sycl_gdn_columns_bench": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_gdn_columns_bench",
+      "sha256": "124bf03346caf2da0df753a49d576e4a1ffd4d8074b109f5514de6ac5545ad51"
+    }
+  },
   "ownership_closed": true,
   "inputs": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "f4afb7e58592ccf68849d2a36447fa830ceb8196",
+      "revision": "016ae608038f706c8baf1d598cfae6c2a2d882f2",
       "count": 488,
-      "aggregate_sha256": "f0b8ad97de6215817c41043eb049efe0cf82705bdd01ba03333092585ce3f51d"
+      "aggregate_sha256": "4edb2aa6b851fb80ece5dfbe99a998087e2bbd880ac7d1d7544f6d6ef6b592c6"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
