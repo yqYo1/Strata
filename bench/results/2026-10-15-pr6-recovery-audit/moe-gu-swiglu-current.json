@@ -1,5 +1,5 @@
 {
-  "mode": "ownership",
+  "mode": "smoke",
   "source_commit": "034bddff8393e8c1c9cee89e9235807230a81ad2",
   "fixture": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_gu_swiglu_bench",
@@ -8,7 +8,7 @@
   "complete": true,
   "passed": true,
   "active": false,
-  "GPU_executed": false,
+  "GPU_executed": true,
   "model_performance_measured": false,
   "model_quality_qualified": false,
   "physical262144_RESTORE_qualified": false,
@@ -568,6 +568,74 @@
       "stdout_sha256": "5c40dd0a74fda42ea109c732ed5e39a798dfab27837271d8e24e178b8519665d",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "events": []
+    },
+    {
+      "mode": "smoke",
+      "process": 0,
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_gu_swiglu_bench",
+        "--smoke"
+      ],
+      "exit_code": 0,
+      "ownership_closed": true,
+      "stdout_sha256": "f277731b1ef0471d285756335929052ce2771564e0ee341294dcf864cb1fb06c",
+      "stderr_sha256": "76a2842591b8bf82a8609b0c08f49d0cecbf3ec402367cbede98d6fc11630d90",
+      "events": [
+        {
+          "kind": "topology",
+          "work_items": 384,
+          "status": "PASS"
+        },
+        {
+          "kind": "correctness",
+          "rows": 3,
+          "tile": 0,
+          "edges": 0,
+          "max_half_ulp": 0,
+          "BF16_capture_exact": true,
+          "guards": true,
+          "inputs_immutable": true,
+          "status": "PASS"
+        },
+        {
+          "kind": "correctness",
+          "rows": 3,
+          "tile": 0,
+          "edges": 1,
+          "max_half_ulp": 0,
+          "BF16_capture_exact": true,
+          "guards": true,
+          "inputs_immutable": true,
+          "status": "PASS"
+        },
+        {
+          "kind": "correctness",
+          "rows": 3,
+          "tile": 1,
+          "edges": 0,
+          "max_half_ulp": 0,
+          "BF16_capture_exact": true,
+          "guards": true,
+          "inputs_immutable": true,
+          "status": "PASS"
+        },
+        {
+          "kind": "correctness",
+          "rows": 3,
+          "tile": 1,
+          "edges": 1,
+          "max_half_ulp": 0,
+          "BF16_capture_exact": true,
+          "guards": true,
+          "inputs_immutable": true,
+          "status": "PASS"
+        },
+        {
+          "kind": "admissions",
+          "rejected": 13,
+          "status": "PASS"
+        }
+      ]
     }
   ],
   "prospective_gate": "All36 ownership cases complete. Packed matrix ownership and actual SG16/local-index topology required. Exact BF16 capture, independent small finite integer dot oracle, finite saturation/NaN classification, maximum1 FP16 ULP, guards and immutable inputs for capture/no-capture kernels;13 invalid admissions. Only after traced smoke and full validation:3 independent rotated clean timing processes. Consider model integration only if wall-time ratio geomean<0.98 and each large shape/process ratio<=1.02.",
@@ -635,5 +703,13 @@
   ],
   "ownership_closed": true,
   "fresh_faults": [],
-  "boot_unchanged": true
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  }
 }
