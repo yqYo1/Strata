@@ -531,6 +531,20 @@ merged requests, missing windows/samples, incomplete or duplicate CPU headers,
 and a missing GDN aggregate. The reconstructed check used synthetic census
 distributions and absolute clock origins for already-retired raw logs.
 
+The two-request check passed at78,451 fresh tokens each, with no new GPU fault
+and every owner closed. Profiled PP was778.9 first-use and866.6 subsequently;
+the clean867.1 median remains the speed reference. Warm QSA attention, MoE,
+GDN recurrence and upload queue intervals were20.8568,20.9974,6.52363 and8.38669s.
+Main-thread CPU was88.806s over89.508s wall:59.184s inside GPU waits and29.622s
+outside them. The latter includes4.720s source copy,4.823s upload submission,
+3.277s GEMM submission and16.630s unclassified CPU. These overlap device work
+and are not an additive hardware-bottleneck breakdown. First-use unclassified
+CPU/wall was19.490/26.745s versus warm16.630/16.971s; the cause remains unknown.
+Next check software call-stack collection for the remaining host cost. The
+[compact profile](../bench/results/2026-10-15-pr6-recovery-audit/moe-window-census-current.json)
+keeps all673 selected warm command intervals. Review added exact frame/stratum
+and zero-throw guards; both original log intervals passed those CPU-only checks.
+
 ## Optional GDN chunk64
 
 `STRATA_SYCL_PREFILL_GDN_CHUNK64=1` adds a separate experimental long-prefill
