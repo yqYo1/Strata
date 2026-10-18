@@ -273,76 +273,25 @@
     "decision": "No material model gain: existing GDN retained. New GDN research remains conditional on a concrete adoption/mismatch question and actual framework runtime evidence."
   },
   "hardware_resource_research": {
-    "schedulable_now": true,
-    "prerequisites_met": [
-      "Matched prefix/direct model comparison closed; existing prefix retained.",
-      "Local pitch and row-publication candidates closed with mixed subpercent gains.",
-      "Current MoE/CPU census closed; QSA attention remains largest observed queue interval.",
-      "VTune2026.4 installed; B570 xe driver and qualified exact fixture available."
+    "state": "Completed generic resource/profiler bodies and transaction reviews retired; current measured metadata remains in compact results.",
+    "schedulable_now": false,
+    "current_metadata_commit": "e8de942dd",
+    "current_metadata_path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-hardware-profile-current.json",
+    "verified_limits": [
+      "VTune2026.4 gpu-hotspots rejects Ryzen5600X before target launch; no hardware counters, not an observed permission denial.",
+      "Executed attention kernels128GRF/SIMD16, spill metadata2112B/scratch4096B, dynamic-local20032B in closed K-staging comparison.",
+      "Compiler static slm_size32 unit/rounding not verified; dynamic-local values are bytes. No occupancy/saturation or physical bus/DRAM traffic proof.",
+      "Past report confused20coreB580 withB570; do not reuse that hardware capacity claim."
     ],
-    "scopes": [
-      "Xe2 profiler metric coverage and permission interpretation",
-      "Exact emitted GRF/SLM/spill extraction without hardware counters"
-    ],
-    "question": "Obtain hardware evidence before choosing another QSA candidate; no repeat generic attention or grouped-GEMM survey.",
-    "state": "Both Orca Luna reports completed and native Luna-max reviews completed; Main extracted exact installed-stack metadata.",
-    "reviews": [
-      {
-        "topic": "xe2-profiler-coverage",
-        "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/xe2-profiler-coverage.md",
-        "report_sha256": "b8b760a40059c4867c9362d6e516855c8e7eee064ec398bbbe0a8ca83d8941aa",
-        "report_bytes": 15180,
-        "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/xe2-profiler-coverage-review.json",
-        "review_sha256": "9a62323d0e4f7d693ec6118569618c0c7bfb62682ddf09f7aed5a7646341fcc0"
-      },
-      {
-        "topic": "xe2-emitted-resources",
-        "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/xe2-emitted-resources.md",
-        "report_sha256": "748f6d5c76f60f2495a542bd44077204e04e0ffe5368068598e9f43608c26daa",
-        "report_bytes": 17391,
-        "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/xe2-emitted-resources-review.json",
-        "review_sha256": "87a943f492122bd607916ecb391a2656c103b2e73b8887f76475ec95502f737e"
-      },
-      {
-        "topic": "xe2-residency-contract",
-        "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/xe2-residency-contract.md",
-        "report_sha256": "feaaf6114b277c48f2a5a5d6df62b31bc4eb3b6f343a214a3417537f41f30102",
-        "report_bytes": 15502,
-        "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/xe2-residency-contract-review.json",
-        "review_sha256": "bd8254999bdbafa866aa1ec2a0f070f0e3c88c2f57aa7843bd30311dc0383fce"
-      }
-    ],
-    "main_evidence": {
-      "result": "qsa-hardware-profile-current.json",
-      "VTune": "2026.4 GPU-hotspots rejects Ryzen5600X CPU microarchitecture before target launch; not a permission denial. No hardware counters.",
-      "emitted": "IGC_DumpZEInfoToConsole=1 on qualified exact fixture: executed prefix33 and row variant128GRF/SIMD16, static SLM32 plus28224 dynamic-local arguments, no scratch descriptor. Unused compiled score32 variant spills1920 with2048scratch; not executed evidence.",
-      "limits": "No occupancy/saturation/physical bandwidth proof. Compiler static SLM excludes dynamic arguments. Battlemage media support does not prove compute counters. VTune docs describe XMX metrics but B570 availability unverified.",
-      "automatic_grf": "Actual256GRF/no scratch/eu_thread_count4, but component slower. Emitted resource improvement is not a speed or measured occupancy improvement."
-    },
-    "retention": "Current emitted-resource decision only; reassess report/review bodies after Q-fragment candidate qualification. Main did not read collection body.",
+    "automatic_grf_rejection_commit": "b82207709",
     "primary_sources": [
       "https://github.com/intel/intel-graphics-compiler/blob/master/documentation/configuration_flags.md",
       "https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_intel_grf_size.asciidoc"
     ],
-    "residency_scope": {
-      "schedulable_now": true,
-      "prerequisites_met": [
-        "Main captured exact launched kernel identities and complete emitted resource metadata at db810b58/9560eb4b5/a1b9c4cff.",
-        "Runtime/compiler ELF hashes and versions pinned in tools/sycl/measurement_environment.json.",
-        "Both default128GRF and auto256GRF have full oracle/physical262144 component and6 rotated samples/shape; auto regression despite no scratch established."
-      ],
-      "question": "Explain what BMG/Xe2 SLM/GRF resource metadata can bound about residency, with actual runtime allocation rounding and its limits; no saturation inference.",
-      "state": "Completed and native Luna-max reviewed; no newly schedulable research scope."
-    },
-    "residency_review_corrections": [
-      "Report cited20-core B580 for B570; no20-core B570 capacity claim accepted.",
-      "Report candidate local-argument breakdown mis-sums20096; Main actual traced8 local arguments total20032, verified directly.",
-      "Static slm_size field32 unit/schema and physical rounding need separate confirmation; dynamic arguments are explicitly in bytes.",
-      "Metadata and changed SDK functor do not prove occupancy or causal attribution. Main did not read the collection body."
-    ]
+    "retirement_manifest_commit": "761cd4c59a3ba178a9321af35e547206a5eae58c"
   },
   "current_operation_ceiling_scope": {
-    "schedulable_now": true,
+    "schedulable_now": false,
     "prerequisites_met": [
       "Current-source78K MoE census has48 windows and exact GU/down tensor dimensions, dtypes and job-row totals.",
       "Current QSA kernel/source and per-query geometry are immutable during active matched model run.",
@@ -392,7 +341,7 @@
     }
   },
   "decode_vram_rebuild_scope": {
-    "schedulable_now": true,
+    "schedulable_now": false,
     "prerequisites_met": [
       "Current model long-prefill admission logs4.25-4.33GB free after MTP expert detach,1.36GB layer cache,1.61GB BF16 residual at78K.",
       "Current source explicitly preserves decode cache/graphs while allocating additional long-prefill storage.",
@@ -424,41 +373,22 @@
     "retention": "Keep report/review through immediate cache-owner decision, then prune. Main read only review digest and next-step metadata, not collection body."
   },
   "qsa_operand_staging_scope": {
-    "classification": "decision_support",
-    "schedulable_now": true,
-    "prerequisites_met": [
-      "Pinned selected cached-query source and SIMD16/128thread/32cell staging geometry.",
-      "Existing gather/cluster component measurements and nonexclusive QSA stage diagnostic; no physical traffic or saturation claim."
+    "state": "Closed: row-coalesced K rejected; external body/review retired.",
+    "schedulable_now": false,
+    "source_commit": "2d4f2448404cd500dbb5e5137dda171d27bda1b6",
+    "result_commit": "eb9b0469c",
+    "latency_increase_percent": [
+      12.43967550042897,
+      27.975547323363514,
+      7.748234521326203
     ],
-    "question": "Compare coalesced K gather/local transpose, subgroup or padded staging, and prefix prepacking with matrix layout/barrier/resource constraints.",
-    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-coalesced-k-staging.md",
-    "state": "First Main component comparison closed and rejected at eb9b0469c; report/review consumer resolved.",
-    "report_bytes": 18922,
-    "report_sha256": "9df0736e111b2b2264d7a1c0083ce654cfdb0a77517242e9d89c5c058e864152",
-    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-layout-research-review.json",
-    "review_sha256": "be6de6a60b154cf82214477ff502963b688731365a46dc672c4177c79d348852",
-    "reviewed_decision": "The report matches TilePacked=false. Evaluate row-coalesced K loads scattering unchanged BF16 bits into the existing transposed local layout; preserve V staging, matrix stride and uniform barriers. Physical traffic, SLM banks, occupancy and speed remain unmeasured.",
-    "main_ownership_map": {
-      "scope": "Hypothetical simple staging candidate, not implemented or measured. Workgroup128,Dim256,Cells32,tid0..127,iteration r0..63.",
-      "current": "cell=tid%32;d=tid/32+4*r; global=packedK[rows[cell]*256+d];local=kv[d*32+cell].",
-      "candidate": "cell=r/2;d=tid+128*(r%2);global uses same element;local=kv[d*32+cell]. Invalid rows write zero; both maps cover8192destinations exactly once.",
-      "constraints": "Keep cached-Q retirement barrier, K publication barrier, row lifetime and QK-before-V arena overwrite unchanged. Coalesced global addresses may trade for slower local stores; benchmark rather than assuming a gain."
-    },
-    "next_step": {
-      "schedulable_now": false,
-      "owner": "Main implementation/measurement, not another research worker",
-      "prerequisites": [
-        "Commit independently authored candidate plus same-binary fixtures/recipe and source pins.",
-        "Audit exact local destinations, duplicate/aliased/invalid rows and all collective/barrier lifetimes.",
-        "Bounded traced correctness then same-binary component timing; inspect emitted lowering/resource cost before clean model comparison."
-      ]
-    },
-    "retention": "Retire external staging body and transaction review after extracting rejection; keep shared cross-query knowledge and its conditional gates.",
-    "comparison_commit": "eb9b0469c"
+    "resource_result_commit": "e8de942dd",
+    "conclusion": "Same requested payload and emitted128GRF/SLM/scratch do not make row-coalescing faster. Local-store mapping and memory-level parallelism not isolated. Next Main experiment may preserve original parallel row mapping with4adjacent typed values per lane.",
+    "retirement_manifest_commit": "761cd4c59a3ba178a9321af35e547206a5eae58c"
   },
   "sparse_cross_query_reuse_scope": {
     "classification": "knowledge_collection",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "prerequisites_met": [
       "Current independent sparse selected-set attention,2KV/24Qheads/Dim256, gives a concrete architectural applicability question.",
       "Knowledge comparison requires source/literature rather than missing runtime locality statistics."
@@ -469,7 +399,6 @@
     "state": "Orca completed, native Luna-max reviewed, worker released and terminal positively closed.",
     "report_bytes": 14404,
     "report_sha256": "a46e07e6ff978218cf2161c40ee5c2fcd5b6bb2b95fe4073e9462e67f09e0279",
-    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-layout-research-review.json",
     "review_sha256": "be6de6a60b154cf82214477ff502963b688731365a46dc672c4177c79d348852",
     "next_step": {
       "schedulable_now": false,
@@ -479,11 +408,12 @@
       ],
       "owner": "Main measurement/retrieval when a concrete scheduling decision arises; no duplicate architectural survey."
     },
-    "retention": "Indexed knowledge reference conditional on actual locality evidence; Main has not read the body."
+    "retention": "Indexed knowledge reference conditional on actual locality evidence; Main has not read the body.",
+    "transaction_review_retired": true
   },
   "activation_vram_lifetime_scope": {
     "classification": "decision_support",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "prerequisites_met": [
       "Mode10 route observed withBF16HC4 residual20,480bytes/token andFP16mixed5,120bytes/token.",
       "Pinned layer_major.inc/moe_window.inc/prefill.cpp source unchanged during active QSA component experiment."
@@ -508,7 +438,7 @@
   },
   "low_bit_residual_storage_scope": {
     "classification": "knowledge_collection",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "prerequisites_met": [
       "Current persistent HC4 residual alreadyBF16; longer156K-262144 GPU residency is a concrete capacity question.",
       "Published evidence comparison does not depend on a new numerical failure or runtime locality measurement."
