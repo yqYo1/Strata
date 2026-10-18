@@ -618,6 +618,48 @@ inversions prevent an absolute submit-to-start timing claim. Full per-layer
 histograms are verified then reduced to conserved work totals for these admission
 checks. Next use the committed two-request78K plan for warm attribution.
 
+The final two-request check passed at78,451 fresh tokens per request, with
+profiled PP796.0 first-use and865.1 subsequently, zero fresh GPU faults and
+all ownership closed. The workload hashes match the earlier warm resource run.
+Warm main-thread CPU was88.805216s over89.659797s wall, with59.173520s inside
+explicit waits and29.631696s outside. Version4 attributes12.441650s to the new
+MoE categories, leaving4.204023s unclassified; the same request's version3
+definition would leave16.645674s. This is attribution, not time saved.
+
+| Warm CPU outside explicit waits | Seconds |
+| --- | ---: |
+| Source copy | 4.769362 |
+| Upload submission | 4.803936 |
+| GEMM submission | 3.240548 |
+| Dequant GU/down, gather, SwiGLU and accumulation submission | 6.845040 |
+| Status wrapper | 5.567415 |
+| Unclassified | 4.204023 |
+
+The table omits smaller categories and overlaps device execution. The status
+wrapper includes `attempt()` preflight runtime checks before both memcpy and
+synchronize, queue/context lookup, submission, observer and post-check work.
+Its5.567s cannot be attributed solely to memcpy or to host arithmetic. Ordinary
+host pointers are legal SYCL memcpy arguments; the contract alone does not prove
+whether the loaded adapter blocks internally. A future discriminating probe
+must time those pieces separately and preserve all asynchronous error checks.
+
+Warm QSA attention, MoE, GDN recurrence and upload queue intervals were20.8553,
+21.0035,6.52502 and8.40041s. Requested layer-weight upload payload was50,292,326,400
+bytes; payload divided by this nonexclusive upload interval is5.987GB/s,
+not a physical PCIe counter measurement. GPU saturation and full critical-path
+coverage remain unproven. The clean867.1 tok/s median remains the speed reference.
+
+For the four sampled expert windows only, expanding each row-bin sample mean
+by its eligible command count gives0.149864s Down and0.265763s accumulation
+service, with0.205840s gather and0.278878s GU. These are descriptive screening
+estimates, not full-model totals or statistical bounds. The next component
+candidate is a Down scatter/FP32 accumulation epilogue using the existing
+reviewed contract: retain the actual BF16 Down rounding before FP32 FMA, unique
+writers, legal element/tail ownership and checked event/owner retirement. Do not
+change inference order or treat it as adopted before same-library correctness
+and matched component/model timing pass. Existing source-specific fusion and
+indexed-A references are available; no repeat generic survey is needed.
+
 ## Optional GDN chunk64
 
 `STRATA_SYCL_PREFILL_GDN_CHUNK64=1` adds a separate experimental long-prefill
