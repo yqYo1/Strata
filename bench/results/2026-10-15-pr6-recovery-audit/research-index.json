@@ -1737,8 +1737,8 @@
   },
   "staged_copy_resource_contract_scope": {
     "classification": "decision support",
-    "schedulable_now": true,
-    "state": "eligible; actual staged model route introduces a concrete copy-resource attribution question",
+    "schedulable_now": false,
+    "state": "running; actual runtime path and metric attribution review",
     "prerequisites_met": [
       "Source1222e27d0 stages compressed raw expert blobs on the compute in-order stream through stage_expert_bank -> ExpertCache::fill_slot -> cudaMemcpyAsync -> SYCL queue.memcpy.",
       "The validated117K model at48e13aaba completed19631 uploads/40102860800 requested expert bytes and13594 permanent hits. Clean speed is being measured separately.",
@@ -1754,6 +1754,10 @@
     "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/staged-copy-resource-contract.md",
     "report_budget": "10KiB target,16KiB maximum; one coherent runtime path/metric investigation",
     "main_reads_body_on_arrival": false,
-    "retention_consumer": "Main resource attribution for the current staged-bank long-prefill route after clean timing; review at attribution closure."
+    "retention_consumer": "Main resource attribution for the current staged-bank long-prefill route after clean timing; review at attribution closure.",
+    "task": "task_50b55ae3e929",
+    "dispatch": "ctx_d40fcdfe8573",
+    "terminal": "term_57cd822c-e033-4c96-b8a7-27e0666873db",
+    "model_evidence": "Reused settled explicit gpt-6-luna medium terminal for a second finite scope; existing-terminal preferences are null, not independent model verification."
   }
 }
