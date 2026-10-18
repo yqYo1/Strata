@@ -83,7 +83,7 @@ historical logs or the research library wholesale.
 | Integrate | Check provenance and decide inference parts individually, including prefill and decode. Preserve required non-inference functions. History preservation and component success alone do not qualify a model route. | [Scope](#this-forks-scope), [integration](#git-integration-and-tuning) |
 | Delegate research | Check scope eligibility, available capacity, the required Orca/model choice, report budget and previous-report index. Pass the current rules and keep Main's work moving. | [Parallel research](#parallel-research) |
 | Receive research | Check its classification and delegate review to native Codex gpt-6-luna with max reasoning. Main reads the short review digest; retrieve collection-report sections only for a concrete question. | [Parallel research](#parallel-research) |
-| Retain a file or build | Name the realistic next consumer and review point; check reachable Git history first. Keep one validated build, with another only for a named imminent comparison. Preserve useful individual samples without automatically retaining their raw logs or reports. | [Artifacts](#measurement-and-diagnostic-artifacts), [retention policy](docs/ARTIFACT_RETENTION.md) |
+| Write or retain a result/build | Decide the realistic next consumer, required fields and review point before producing permanent output; check reachable Git history first. Keep one validated build, with another only for a named imminent comparison. Preserve useful individual samples without automatically retaining their raw logs or reports. | [Artifacts](#measurement-and-diagnostic-artifacts), [retention policy](docs/ARTIFACT_RETENTION.md) |
 | Delete artifacts | Confirm the consumer ended and useful evidence is preserved. For a build, retrieve and compare its original source/recipe from Git against the exact final executable's inputs. Check active ownership and the last required fixture. | [Artifacts](#measurement-and-diagnostic-artifacts), [deletion records](docs/ARTIFACT_RETENTION.md#cleanup-and-deletion-records) |
 | Close a work boundary | Commit and push useful changes; integrate completed work into feature/sycl and the fork default through a PR. Verify remote refs and pull the clean ghq default mirror. Check actual retained paths/generations, retire finished branches, comparison builds and raw output, and record concrete remaining holds. | [Git workflow](#git-integration-and-tuning), [artifacts](#measurement-and-diagnostic-artifacts) |
 
@@ -111,6 +111,12 @@ a chronological policy log, separate resume checkpoint or duplicate policy copy.
 Update the existing rule and its canonical detail document together; do not
 append another checklist or report for each reminder. Apply retention rules to
 existing artifacts as well as new ones.
+
+Before each commit, inspect the intended paths, staged diff and change size.
+Stage explicit task files; do not sweep pending experiments, generated results
+or unrelated untracked files into a policy/source commit. Apply retention review
+before staging generated output, not after it has already entered Git. Keep
+ongoing work's original inputs and outcome intact when committing a separate task.
 
 At each work boundary, check the latest instructions against these rules and
 the actual completed work before reporting completion. Carry pending validation,
@@ -388,6 +394,12 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   resume from committed decisions without separate checkpoints or progress backups.
   Promote reusable fixtures/tooling into maintained source locations instead of
   retaining duplicate proposals or one-run controllers beside results.
+- Decide the minimum retained result fields before collection. A single large
+  JSON or report containing full parser output, per-layer arrays, repeated
+  diagnostics or full histograms is still raw evidence; combining it into one
+  file does not establish a need to keep it. Retain those details only for a
+  named question needing the actual values; otherwise record the useful samples,
+  conservation checks, conclusions and limits, with a pinned source/history link.
 - Keep **one latest known-good engine build** by default; retain another only for
   a **named imminent comparison**, normally at most two generations for A/B.
   Count generations across all project worktrees, output paths and renamed copies.

@@ -5,6 +5,14 @@ debugging step, a successful command, a report review, or an unresolved question
 alone does not justify another permanent file. Apply this policy to Git, the
 working tree and local state directories at each experiment boundary.
 
+Decide the minimum permanent result fields before collection and review them
+again before staging. Full parser output, repeated diagnostic strings, per-layer
+arrays and complete histograms remain raw evidence even when placed in a single
+JSON file or report. Keep the original values only when a named question needs
+them; otherwise retain useful individual comparison samples, conservation
+checks, conclusions, limitations and pinned source/history references. A larger
+file is not a substitute for deciding which information has a realistic use.
+
 ## Active files and Git history
 
 The working tree is for maintained code, current decisions and reusable
