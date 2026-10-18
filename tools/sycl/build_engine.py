@@ -78,6 +78,7 @@ def main():
     if attention:
         targets += ['sycl_qsa_bf16_late_flags_test', 'sycl_qsa_bf16_prefix_optimized_test',
                     'sycl_qsa_bf16_prefix_qcache_test', 'sycl_qsa_bf16_prefix_kvec4_test',
+                    'sycl_qsa_bf16_prefix_kvvec4_test',
                     'sycl_qsa_bf16_prefix_qcache_bench']
     if sys.argv[1:] == ['rebuild-gemm']:
         targets += ['sycl_native16_paired_gemm_bench']

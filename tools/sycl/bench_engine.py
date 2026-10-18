@@ -31,20 +31,23 @@ def digest(path):
 def main():
     modes = ('check', 'base', 'candidate', 'qsa-check', 'qsa-base', 'qsa-direct', 'qsa-census',
              'qsa-qcache-check', 'qsa-qcache-base', 'qsa-qcache',
-             'qsa-kvec4-check', 'qsa-kvec4-base', 'qsa-kvec4', 'qsa-kvec4-census')
+             'qsa-kvec4-check', 'qsa-kvec4-base', 'qsa-kvec4', 'qsa-kvec4-census',
+             'qsa-kvvec4-check', 'qsa-kvvec4-base', 'qsa-kvvec4')
     guards.require(len(sys.argv) == 3 and sys.argv[1] in ('prepare', 'run') and
                    sys.argv[2] in modes, 'use prepare|run ' + '|'.join(modes))
     action, mode = sys.argv[1:]
     qsa = mode.startswith('qsa-')
     census = mode in ('qsa-census', 'qsa-kvec4-census')
     qcache = mode.startswith('qsa-qcache')
-    kvec4 = mode.startswith('qsa-kvec4')
-    check = census or mode in ('check', 'qsa-check', 'qsa-qcache-check', 'qsa-kvec4-check')
+    kvvec4 = mode.startswith('qsa-kvvec4')
+    kvec4 = kvvec4 or mode.startswith('qsa-kvec4')
+    check = census or mode in ('check', 'qsa-check', 'qsa-qcache-check', 'qsa-kvec4-check', 'qsa-kvvec4-check')
     chunk64 = mode in ('check', 'candidate')
     generation = 'v2' if mode == 'qsa-kvec4-check' else 'v1'
     root = B / (('qsa-attention-model-' + mode[4:] + '-' + generation) if qsa else
                 ('native-gdn-model-' + mode + '-v2'))
     result_path = (A / 'moe-window-census-current.json' if census else
+                   A / 'qsa-kvvec4-model-current.json' if kvvec4 else
                    A / 'qsa-kvec4-model-current.json' if kvec4 else
                    A / 'qsa-cached-query-model-current.json' if qcache else
                    A / 'qsa-attention-model-current.json' if qsa else RESULT)
@@ -84,7 +87,8 @@ def main():
                        STRATA_SYCL_PREFILL_GDN_CHUNK64='1' if chunk64 else '0')
             if qsa:
                 env['STRATA_SYCL_PREFILL_QSA_MATH'] = (
-                    'bf16-prefix-kvec4' if mode in ('qsa-kvec4-check', 'qsa-kvec4', 'qsa-kvec4-census') else
+                    'bf16-prefix-kvvec4' if mode in ('qsa-kvvec4-check', 'qsa-kvvec4') else
+                    'bf16-prefix-kvec4' if mode in ('qsa-kvec4-check', 'qsa-kvec4', 'qsa-kvec4-census', 'qsa-kvvec4-base') else
                     'bf16-prefix-qcache' if mode in ('qsa-qcache-check', 'qsa-qcache', 'qsa-kvec4-base') else
                     'bf16' if mode in ('qsa-check', 'qsa-direct') else 'bf16-prefix-optimized')
             if census:
@@ -203,10 +207,16 @@ def main():
                     record['cached_query_route'] = selected
                 if kvec4:
                     selected = [x for x in log.splitlines() if x.startswith('strata prefill: QSA k_staging=')]
-                    wanted = mode in ('qsa-kvec4-check', 'qsa-kvec4', 'qsa-kvec4-census')
+                    wanted = kvvec4 or mode in ('qsa-kvec4-check', 'qsa-kvec4', 'qsa-kvec4-census')
                     guards.require(bool(selected) == wanted and all('k_staging=typed4 parallel_rows=1' in x for x in selected),
                                    'wrong four-value K kernel selection')
                     record['k_staging_route'] = selected
+                if kvvec4:
+                    selected = [x for x in log.splitlines() if x.startswith('strata prefill: QSA v_staging=')]
+                    wanted = mode in ('qsa-kvvec4-check', 'qsa-kvvec4')
+                    guards.require(bool(selected) == wanted and all('v_staging=typed4 layout=row-major' in x for x in selected),
+                        'wrong four-value V kernel selection')
+                    record['v_staging_route'] = selected
             if census:
                 prefix = 'strata MoE planned job census: '
                 record['planned_moe_windows'] = [json.loads(x[len(prefix):]) for x in log.splitlines() if x.startswith(prefix)]

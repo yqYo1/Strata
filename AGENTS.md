@@ -20,9 +20,12 @@ the actual branch, worktree, pending changes and owned in-flight jobs; do not
 rely on conversational memory or create a separate resume checkpoint. Check the
 existing job's receipt before resuming a measurement or starting another one.
 Apply the retention rules below to existing artifacts as well as newly generated
-ones. At a work boundary, reconcile new user instructions with this file and the
-relevant maintained policy document. Keep durable rules here and per-run state
-in compact committed results; do not turn this file into a chronological log.
+ones. When the user changes a durable operating rule, update the affected section
+and relevant maintained policy document before the next action it governs. If a
+policy file is itself frozen by an active run, apply the instruction immediately
+and update that file at the first safe boundary. Keep durable rules here and
+per-run state in compact committed results; do not turn this file into a
+chronological log or create a second policy copy in a resume note.
 Later user instructions supersede older rules; update the affected policy rather
 than keeping contradictory versions. Do not infer that an unfinished experiment,
 unverified feature or research proposal became adopted during a context change.
@@ -33,6 +36,17 @@ the applicable sections below again against the actual inputs and current
 consumer. A startup read alone does not replace these action-time checks.
 Pass the applicable rules and report-index location to each delegated task;
 delegation does not transfer Main's responsibility for integration and testing.
+
+Use the following checks at the point of action, with details in the sections below:
+
+- Before a build or measurement, verify committed inputs, the existing job's
+  ownership and the comparison plan. Do not measure uncommitted engine changes.
+- Before deletion, verify the current consumer has ended and useful evidence is
+  preserved. For a build, recover and compare the original source/recipe from Git;
+  an assumed ability to rebuild is insufficient.
+- At each work boundary, commit and push the useful changes, integrate completed
+  work into `feature/sycl` and the fork default, and retire finished branches,
+  comparison builds and raw output. Record any exception and its next review point.
 
 This is a personal fork based on **Niko1221/Strata**, optimized for this PC's
 Intel GPU, CPU and RAM. Niko1221/Strata is the only upstream. Because of the
@@ -107,7 +121,9 @@ are outside this work's scope.
   at each completed boundary; the ghq root remains the default mirror and only pulls.
   Use a merge commit for PRs containing original source revisions referenced by
   measurements, and verify those revisions remain reachable from the retained
-  default branch before retiring their branches.
+  default branch before retiring their branches. Do not squash, rebase away or
+  force-push measured source revisions that retained results reference; preserve
+  their original commit identities and recoverable inputs.
 - Pin delegated source proposals to an immutable commit or a fully hashed source
   snapshot. Generate the patch against that same base, even if the main worktree
   changes during implementation. Review the complete patch and preservation of
@@ -293,6 +309,8 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   consumer and retirement point in the current compact results. An unnamed
   possible future comparison does not justify another generation. Do not keep
   one build for each closed experiment.
+  A newer build becomes the retained known-good build only after its applicable
+  validation passes; a failed or unfinished build does not replace it.
   Retire the extra generation when its comparison ends; creating a new build
   must not silently extend the lifetime of every previous experiment's binary.
 - Before building a measurement executable or running a fixture, commit the
@@ -306,8 +324,10 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   Read the recorded revisions and compare the recovered inputs with the build's
   source identities; the existence of a commit or report alone is insufficient.
   Reconcile any uncommitted measured inputs first; do not delete their last copy
-  while claiming Git can restore them. Remove comparison generations when the
-  comparison closes. Installed toolchains/runtime dependencies and model weights
+  while claiming Git can restore them. Record a temporary provenance hold and
+  review point if recovery is unresolved; do not present it as a reusable build.
+  Remove comparison generations when the comparison closes.
+  Installed toolchains/runtime dependencies and model weights
   are separate assets, outside this old-build cleanup rule.
 - After a run closes, delete successful full API traces, repeated polling/synchronization logs, raw
   profiler timelines and duplicate kernel windows once their useful evidence is recorded and verified.
