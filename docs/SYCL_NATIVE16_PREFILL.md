@@ -478,6 +478,33 @@ the RMS adds138,815,078,400 logical FP32 intermediate bytes over these layers;
 actual DRAM traffic depends on caching. Column partitioning also repeats Q/K
 loads, so the unchanged arithmetic count does not imply an unchanged memory cost.
 
+The corrected same-library fixture passed traced17-token/split cases,24 cases
+at1/33/65/129/8191/8192 tokens across all four partitions, and the selected
+4-partition262144-token recurrence/state-restore/decode continuity check. FP32
+output/carry and FP16 images matched the existing kernel bit for bit; guards,
+input immutability and invalid admission checks passed with no fresh GPU fault.
+This is recurrence-component evidence, not full model context/RESTORE coverage.
+
+The three clean resident processes each measured six rotating8192-token samples
+per arm after a first-use round. Pooled queue-interval medians were:
+
+| Schedule | Median ms |
+| --- | ---: |
+| Existing fused recurrence | 23.693646 |
+| Separate RMS,1 partition | 17.994375 |
+| Separate RMS,2 partitions | 19.077656 |
+| Separate RMS,4 partitions | 17.675782 |
+| Separate RMS,8 partitions | 19.388281 |
+
+The4-partition candidate reduced this interval25.40%; the1-partition control
+already reduced it24.05%, so most of the gain is attributable to separating
+the RMS rather than increased column parallelism. All three4-partition process
+medians beat their original controls. The retained
+[individual component samples](../bench/results/2026-10-15-pr6-recovery-audit/gdn-columns-current.json)
+include first-use results and spread. The next gate is the parameter-validated
+`qsa-gdncols4-check`, followed by matched clean`qsa-gdncols4-base` and
+`qsa-gdncols4-candidate` official benchmark screens at78K actual input.
+
 ## Optional GDN chunk64
 
 `STRATA_SYCL_PREFILL_GDN_CHUNK64=1` adds a separate experimental long-prefill

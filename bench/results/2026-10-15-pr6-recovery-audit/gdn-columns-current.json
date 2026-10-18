@@ -1305,6 +1305,27 @@
         }
       ],
       "passed": true
+    },
+    {
+      "mode": "context",
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_gdn_columns_bench",
+        "--context",
+        "4"
+      ],
+      "exit_code": 0,
+      "ownership_closed": true,
+      "events": [
+        {
+          "kind": "context",
+          "tokens": 262144,
+          "partitions": 4,
+          "state_restore": true,
+          "existing_decode_tail": true,
+          "status": "PASS"
+        }
+      ],
+      "passed": true
     }
   ],
   "complete": true,
@@ -1316,7 +1337,7 @@
   "consumer": "One exact-math GDN scheduling comparison; retire full logs/JIT after extracting needed samples.",
   "prospective_gates": "smoke with8 exact cases/6 invalid admissions,24 full-size/tail exact cases,3 rotated clean resident processes, then262144 recurrence/state-restore/decode continuity for the measured winner.",
   "limits": "Resident FP32 GDN128/16/48 only, no projection/conv/PCIe. Queue markers include host launch gaps and both candidate kernels, not isolated GPU service, occupancy or a hardware ceiling. Benchmark outputs are validated after the continuous train; correctness/context modes check each compared chunk. Full model quality/context/RESTORE remain separate gates.",
-  "mode": "perf",
+  "mode": "context",
   "environment": {
     "PATH": "/usr/bin:/bin",
     "HOME": "/home/yayoi",
@@ -1333,6 +1354,10 @@
     "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
     "SYCL_CACHE_PERSISTENT": "0",
     "ZES_ENABLE_SYSMAN": "0",
+    "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+    "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
     "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-columns-component-v1/tmp",
     "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-columns-component-v1/cache"
   },
