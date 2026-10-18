@@ -48,7 +48,9 @@ over generic workflow examples.
 At session start, resume and after context compaction, perform these checks in
 order before launching work:
 
-1. Reread this file and [the artifact retention policy](docs/ARTIFACT_RETENTION.md).
+1. Reread the checked-out version of this file and
+   [the artifact retention policy](docs/ARTIFACT_RETENTION.md), rather than a
+   pasted earlier copy or conversation summary.
    Check the latest durable user instructions against the affected sections and
    update any missing or contradictory rule before its next governed action.
    Keep the existing canonical section current rather than appending another
@@ -81,7 +83,7 @@ historical logs or the research library wholesale.
 | Integrate | Check provenance and decide inference parts individually, including prefill and decode. Preserve required non-inference functions. History preservation and component success alone do not qualify a model route. | [Scope](#this-forks-scope), [integration](#git-integration-and-tuning) |
 | Delegate research | Check scope eligibility, available capacity, the required Orca/model choice, report budget and previous-report index. Pass the current rules and keep Main's work moving. | [Parallel research](#parallel-research) |
 | Receive research | Check its classification and delegate review to native Codex gpt-6-luna with max reasoning. Main reads the short review digest; retrieve collection-report sections only for a concrete question. | [Parallel research](#parallel-research) |
-| Retain a file or build | Name the realistic next consumer and review point; check compact results and reachable Git history first. Preserve individual comparison samples without automatically retaining raw logs, reports or another build generation. | [Artifacts](#measurement-and-diagnostic-artifacts), [retention policy](docs/ARTIFACT_RETENTION.md) |
+| Retain a file or build | Name the realistic next consumer and review point; check reachable Git history first. Keep one validated build, with another only for a named imminent comparison. Preserve useful individual samples without automatically retaining their raw logs or reports. | [Artifacts](#measurement-and-diagnostic-artifacts), [retention policy](docs/ARTIFACT_RETENTION.md) |
 | Delete artifacts | Confirm the consumer ended and useful evidence is preserved. For a build, retrieve and compare its original source/recipe from Git against the exact final executable's inputs. Check active ownership and the last required fixture. | [Artifacts](#measurement-and-diagnostic-artifacts), [deletion records](docs/ARTIFACT_RETENTION.md#cleanup-and-deletion-records) |
 | Close a work boundary | Commit and push useful changes; integrate completed work into feature/sycl and the fork default through a PR. Verify remote refs and pull the clean ghq default mirror. Check actual retained paths/generations, retire finished branches, comparison builds and raw output, and record concrete remaining holds. | [Git workflow](#git-integration-and-tuning), [artifacts](#measurement-and-diagnostic-artifacts) |
 
@@ -274,6 +276,13 @@ integration and testing.
   edits against those inputs first; documentation outside the pinned inputs may
   proceed. If an input must change, close the existing run honestly and commit
   a new plan before using it. Never update hashes to disguise a changed arm.
+- Set SYCL, Level Zero, driver, profiler and experiment environment variables in
+  the native child's environment before `exec`. Keep the process environment
+  immutable after runtime/provider initialization. For comparisons, use separate
+  owned processes or an explicit test parameter; do not switch arms with
+  `setenv`/`unsetenv` while runtime or collector threads may read the environment.
+  Review legacy fixtures that switch variables before reusing them. Floating-point
+  state operations such as `std::fesetenv` are separate from process environment variables.
 - Before rerunning code implicated in a GPU hang, audit its bounds, USM/context
   lifetime, queue/event dependencies, collective participation and graph replay
   assumptions against the actual SYCL/Level Zero contract. Correct or isolate
@@ -367,54 +376,27 @@ Its files live in `.claude/skills/strata-upstream-sync`, exposed by the relative
 Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measurement and investigation.
 
 - Apply retention rules to tracked files, untracked files, external state,
-  build outputs and project caches. Before keeping information, name its
-  realistic future consumer and review point, and check whether reachable Git
-  history already supplies it. Completing a run, producing a debug output or
-  reviewing a report does not by itself justify keeping another active file.
-  Reduce unnecessary information rather than bundling, compressing or moving
-  it elsewhere to make a directory look smaller.
-  At each work boundary, check the actual retained paths against these rules;
-  writing a policy or deletion plan alone does not complete cleanup. Record
-  remaining consumers, missing recovery evidence and the next bounded action
-  in the existing compact result. Remove stale paths/index entries after
-  verified deletion, without creating another progress or inventory file.
-- Set SYCL, Level Zero, driver, profiler and experiment environment variables in
-  the native child's environment before `exec`. Keep the process environment
-  immutable after runtime/provider initialization. For comparisons, use separate
-  owned processes or an explicit test parameter; do not switch arms with
-  `setenv`/`unsetenv` while runtime or collector threads may read the environment.
-  Review legacy fixtures that switch variables before reusing them. Floating-point
-  state operations such as `std::fesetenv` are separate from process environment variables.
-
-- Commit maintained source and compact decisions with the configuration,
-  individual samples and correctness/fault evidence actually needed to assess
-  them. Do not commit every debug output, build receipt or process lifecycle.
-  Retire superseded active files to reachable Git history. Resume from current
-  documentation and committed decisions, without separate progress backups.
-  Promote reusable fixtures and tooling into maintained source locations;
-  do not keep duplicate source proposals and one-run controllers beside results.
-- Keep the latest known-good engine build, plus only named imminent comparison
-  generations (normally one build, at most two for A/B). Record the comparison
-  consumer and retirement point in the current compact results. An unnamed
-  possible future comparison does not justify another generation. Do not keep
-  one build for each closed experiment or wait for storage pressure to retire
-  them. Close a comparison by recording the useful evidence, selecting the
-  validated generation, verifying Git recovery and removing the extra build.
-  Count generations across this project's worktrees, output directories and
-  renamed copies, rather than allowing the same quota separately for each location.
-  Keep project-generated executables, libraries, objects and JIT/native dumps
-  outside Git, including the retained latest generation. Commit their necessary
-  source, recipe and compact measurement evidence instead.
-  A newer build becomes the retained known-good build only after its applicable
-  validation passes; a failed or unfinished build does not replace it.
-  Before reusing its build directory or output filename, preserve and hash-check
-  the last validated executable and any required same-build fixture at a named
-  external fallback path. Count this retained generation in the same quota;
-  record its source/recipe and qualification consumer in the existing result.
-  Retire the fallback only after replacement qualification or comparison closure
-  explicitly selects the validated generation to keep.
-  Retire the extra generation when its comparison ends; creating a new build
-  must not silently extend the lifetime of every previous experiment's binary.
+  build outputs and project caches, including everything under `bench/`.
+  Retain information only for a named realistic future consumer and review point;
+  check whether reachable Git history already supplies it. Completing a run,
+  producing debug output or reviewing a report does not justify retaining it.
+  Delete unnecessary information rather than bundling, compressing or moving it.
+- Keep maintained source and compact current decisions: exact configuration,
+  source/binary identity, useful individual samples, correctness/fault outcomes
+  and limitations. Do not commit every measurement file, debug output, build
+  receipt or process lifecycle. Retire superseded files to reachable Git history;
+  resume from committed decisions without separate checkpoints or progress backups.
+  Promote reusable fixtures/tooling into maintained source locations instead of
+  retaining duplicate proposals or one-run controllers beside results.
+- Keep **one latest known-good engine build** by default; retain another only for
+  a **named imminent comparison**, normally at most two generations for A/B.
+  Count generations across all project worktrees, output paths and renamed copies.
+  Record the consumer and retirement point in the existing compact result.
+  An unspecified future comparison, closed experiment or new build does not
+  extend an old generation's lifetime. Do not wait for storage pressure.
+  Keep project-generated executables, libraries, objects, JIT/native dumps and
+  disposable build trees outside Git, including the current generation.
+  Installed toolchains/runtime dependencies and model weights are separate assets.
 - Before building a measurement executable or running a fixture, commit the
   exact source, local changes, generated inputs and build recipe/options; pin
   compiler/dependency versions and environment.
@@ -427,52 +409,45 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   Include benchmark/controller changes and generated workloads in this check;
   committing them later does not retroactively qualify a different measured
   snapshot. Preserve and reconcile the original inputs when a mismatch is found.
-- Before retiring an old executable, library, object/native dump or build tree,
-  retrieve and verify its required source/recipe from reachable Git history.
-  Read the recorded revisions and compare the recovered inputs with the build's
-  source identities; the existence of a commit or report alone is insufficient.
-  Commit the useful measurement evidence and recovery decision before deleting
-  the last executable used for that result. Preserve the original tested source
-  commit and its referenced inputs through branch integration and cleanup.
-  A receipt hash matching a binary proves artifact continuity, not recoverable
-  source. Review eligibility labels and cross-root links against that exact
-  final build; do not transfer proof from a seed, similarly named or later build.
-  Reconcile any uncommitted measured inputs first; do not delete their last copy
-  while claiming Git can restore them. Record a temporary provenance hold and
-  review point if recovery is unresolved; do not present it as a reusable build.
-  Name the exact missing inputs, current consumer and next bounded recovery
-  action. A hold is not a reason to keep unrelated logs, caches or duplicate
-  outputs, and retaining an orphan binary does not resolve its missing source.
-  Remove comparison generations when the comparison closes.
-  Installed toolchains/runtime dependencies and model weights
-  are separate assets, outside this old-build cleanup rule.
-- After a run closes, delete successful full API traces, repeated polling/synchronization logs, raw
-  profiler timelines and duplicate kernel windows once their useful evidence is recorded and verified.
-- Keep one representative diagnostic per distinct unresolved failure mechanism, with the relevant
-  error, progress, stack/registers and driver dump. Keep a new instance only when it adds evidence;
-  a failure status or the same signal name alone does not decide retention.
-- Keep full traces only when a recorded question requires the complete history. Record the owner,
-  byte budget, consumer and next review point. Review again when that question is resolved or superseded.
-- Keep raw tensor/session files only for an explicitly named current comparison/RESTORE consumer or
-  unresolved numerical failure. Retire superseded captures after recording comparisons and hashes.
-- Cleanup must not change original result status, weaken validation, touch an active run or remove the
-  last currently required fixture. For tracked deletions record the reachable
-  source commit and selection reasons; use Git's diff for paths/blob hashes
-  instead of duplicating the file list. Record explicit path/hash/reason for
-  untracked/external deletions. Serialize cleanup with tests/builds/GPU work.
-  Store compact useful evidence in Git, and necessary large captures outside Git.
-- At each work boundary, reconcile the actual files with these rules, retire
-  closed comparisons and transient output, and commit the useful results and
-  deletion decisions. Record any retained exception's current consumer and next
-  review point; do not report cleanup complete while silently carrying old
-  comparisons forward. Check file counts and bytes as well as individual sizes;
-  benchmark directories must remain browsable. A large directory is a reason
-  to review information value, not to split the same unnecessary files.
-  Closing a comparison includes deciding which validated build remains and
-  retiring the extra generation after provenance verification. Use the existing
-  compact result for this decision; do not create a separate progress backup,
-  build archive or permanent cleanup inventory. If source recovery is blocked,
-  keep an explicit provenance hold rather than deleting the last original copy.
-  Distinguish such unresolved legacy holds from qualified comparison builds.
-  Record review findings and missing recovery steps in the current result;
-  retaining the latest engine does not establish that older roots were retired.
+- Before overwriting a validated build's directory or filename, preserve and
+  hash-check its executable and required same-build fixtures at a named external
+  fallback path. Record their source/recipe and qualification consumer; count
+  this generation in the same quota. Successful compilation alone does not
+  qualify its replacement. Keep the fallback until applicable validation or
+  comparison closure explicitly selects the validated generation to retain.
+- Close comparisons in this order: **commit useful results, select the validated
+  generation, verify original inputs are recoverable, retire the extra build**.
+  Retrieve the recorded source/recipe from reachable Git history and compare it
+  with the exact final build's source identities before deleting its last copy.
+  Preserve original measured commits and referenced inputs through integration
+  into the fork default. A matching binary/receipt hash proves artifact continuity,
+  not source recovery; a seed, similarly named or later build is not proof.
+  Reconcile uncommitted measured inputs before removing their last source/build copy.
+  If recovery remains unresolved, record a temporary provenance hold with exact
+  missing inputs, current consumer, next bounded action and review point in the
+  existing result. Keep it distinct from qualified comparison builds. An orphan
+  binary does not recover its source or justify unrelated logs/caches/duplicates.
+- After closure and evidence verification, retire successful full API traces,
+  repeated polling/synchronization logs, raw profiler timelines and duplicate
+  kernel windows. Keep one useful diagnostic per distinct unresolved mechanism,
+  with relevant error, progress, stack/registers and driver dump; retain another
+  instance only if it adds evidence. Failure status or signal name alone does
+  not decide retention. Do not change original outcomes or weaken validation.
+- Keep full traces only for a question requiring complete history, with an owner,
+  finite byte budget, consumer and review point. Keep raw tensors/sessions only
+  for a named current comparison/RESTORE consumer or unresolved numerical failure.
+  Retire superseded captures after recording useful comparisons and hashes, and
+  review the exception again when its question is resolved or superseded.
+- Serialize cleanup with builds/tests/GPU work/profiling; never touch an active
+  run or its last required fixture. For tracked deletions, record the reachable
+  source commit and reasons; Git's diff supplies paths/blob hashes. For untracked
+  or external deletions, record explicit path/hash/reason beforehand. Keep compact
+  useful evidence in Git and necessary large captures outside it.
+- At each work boundary inspect actual paths, generations, file counts and bytes;
+  a policy, deletion plan or current-build-only inventory is not completed cleanup.
+  Retire closed output, remove stale index/path references after verified deletion
+  and carry concrete remaining holds in the existing result. Do not create another
+  progress backup, build archive or permanent cleanup inventory. Keep benchmark
+  directories browsable by removing unnecessary information, rather than splitting
+  it into more directories. Retaining the latest engine does not establish that
+  older roots were retired.
