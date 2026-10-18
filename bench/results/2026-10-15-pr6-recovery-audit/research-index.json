@@ -765,12 +765,9 @@
     ],
     "next_main_step": {
       "schedulable_now": false,
-      "question": "Measure current GDN substages with the qualified V4 route before selecting a column-partition implementation.",
-      "prerequisites": [
-        "Commit a bounded profile plan with explicit nonexclusive event-interval semantics and current route proof.",
-        "Retain clean V4 speed separately from observer-enabled runs."
-      ],
-      "limits": "Static feasibility is not speed or correctness qualification; no new generic GDN research is eligible."
+      "state": "Implemented exact candidate, traced smoke/24tail-size cases and3-process resident comparison closed. Selected4-partition streamed262144/state-restore/decode component check passed. Main next owns32K model admission and clean78K matched model screen; no new duplicate research.",
+      "component_evidence": "bench/results/2026-10-15-pr6-recovery-audit/gdn-columns-current.json",
+      "limits": "Most of the25.40% resident reduction also appears in the one-partition separate-RMS control (24.05%); no measured occupancy/saturation or model gain yet."
     }
   },
   "validated_launch_ownership_scope": {
@@ -814,6 +811,85 @@
       "Allocation::release drains Runtime compute/transfer queues; additional make_queue users require an ownership audit, including compatibility-layer stream retirement, before claiming a production lifetime defect.",
       "No implementation or reduced validation selected. Pin branch-relative Intel graph references before using them as deployment evidence."
     ],
-    "next_scope": "No repeat survey; first resolve actual queue ownership and isolate any relevant host validation cost."
+    "next_scope": "No repeat survey; first resolve actual queue ownership and isolate any relevant host validation cost.",
+    "main_followup": {
+      "checked_source": "src/sycl/compat.cpp:133 release -> wait_all -> all registered streams, then Allocation destruction; cudaStreamDestroy also waits its owned stream.",
+      "conclusion": "The suspected extra-queue release gap is not established for compatibility cudaFree. Native Runtime::make_queue callers still require explicit queue ownership; no runtime change selected.",
+      "measurement_limit": "No isolated validation cost or host critical-path attribution; do not select a reduced-validation optimization."
+    }
+  },
+  "gdn_columns_implementation_review_scope": {
+    "classification": "decision_support",
+    "schedulable_now": false,
+    "question": "Audit the exact-math column-partition implementation, collective/barrier/state ownership and fixture/controller coverage; identify concrete correctness or measurement defects without implementation changes.",
+    "prerequisites_met": [
+      "Full78451-token recurrence phase7.99004s with15.4556ms host-submit wall is recorded; current source differs from the reviewed static proposal by an actual Main-authored candidate.",
+      "Finite source review can close without missing GPU counters; Main owns all builds/tests/GPU work.",
+      "Review the new candidate delta against the previous column-partition feasibility report and current research index, rather than repeating a general GDN survey."
+    ],
+    "source_sha256": {
+      "src/kernels/sycl/fused_gdn.cpp": "70af09035947bbe99de512edb1a1c1c7374f8e2e0fb78a5629b3d460eea72e29",
+      "src/prefill/prefill.cpp": "0a6c8abfc82c498458a92409c4c83c6d6054c86315cd19cdcaafc1c2c0d7ccbb",
+      "src/prefill/layer_major.inc": "5f4067a5a9239f134b651c34c486dd7c9278551dc2d00f8cee6418b197148b19",
+      "include/strata/prefill/kernels.hpp": "b1bd910785d1a0c543182be6a076a711dce9827dce3aaf6250474c4ba18967c7",
+      "bench/sycl/gdn_columns.cpp": "f4aa4a8ceb2f13e4bba2b01dd46e5b48fbe84eec539aa39ad602ea4f017abacc",
+      "tools/sycl/measure_gdn_columns.py": "430a6c443f746f5554488c09017773c34ff24ba7e2cad4245a37d77f7b708429"
+    },
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/gdn-columns-implementation-review.md",
+    "main_reads_body_on_arrival": false,
+    "retention_consumer": "Current exact-math scheduling integration and test-coverage decision; review after candidate correctness/model screen closes.",
+    "state": "Orca report and native gpt-6-luna max review complete; worker released, PTY positively closed and delivery acknowledged.",
+    "report_budget": {
+      "words": [
+        1800,
+        2600
+      ],
+      "maximum_bytes": 30720
+    },
+    "task": "task_d6108d59d7f2",
+    "dispatch": "ctx_ad3a08ebfced",
+    "terminal": "term_e4df2122-c501-4ed8-9754-b2e466d557ca",
+    "model_evidence": "Custom argv gpt-6-luna medium, satisfied TUI-idle, observed turn_started.",
+    "report_sha256": "ef552e9de5478f815594f94a678a4370509199e9d3b307b2f8a634b96bfc184c",
+    "report_bytes": 14992,
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/gdn-columns-implementation-review-review.json",
+    "review_sha256": "b658d33966063d129282306d4b5380e5dc9f3f54e53e1f361cbbcbc5316a7a52",
+    "review_bytes": 13095,
+    "reviewed_digest": [
+      "The report opening benchmark diagnosis is wrong: all5arms execute once per round for7rounds, and final comparisons follow equal counts. Keep this correction with retrieval metadata.",
+      "The original controller lacked a performance advance gate; current code requires>=5% pooled median improvement and each of3 process medians faster. This is screening, not statistical/model adoption.",
+      "Kernel,prefill,admission and header source hashes still match the original f4afb7e identity; fixture/controller differ by the preserved compile correction and advancement gate.",
+      "No source-level collective/state-ownership blocker identified; actual model quality/full-context/conversation RESTORE remain open. No repeated generic review scope eligible."
+    ]
+  },
+  "gdn_epilogue_separation_scope": {
+    "classification": "knowledge_collection",
+    "schedulable_now": false,
+    "question": "Explain and discriminate why splitting recurrent GPU math and RMS can beat fusion despite more device-memory traffic: current1-partition control improves24.05% with unchanged48workgroups; compare liveness/GRF/spills, barrier cadence, redundant subgroup work and math lowering using Intel/HPC evidence.",
+    "prerequisites_met": [
+      "Exact GDN output/state/FP16 and tails passed, three resident processes measured original23.693646ms vs separate1partition17.9943745ms and4partition17.6757815ms.",
+      "The result does not require a missing counter to motivate a finite source/literature methods comparison; actual hardware cause remains unmeasured.",
+      "Previous static partition feasibility and implementation reports preceded this measured separation control; do not repeat those reviews."
+    ],
+    "source_sha256": {
+      "src/kernels/sycl/fused_gdn.cpp": "70af09035947bbe99de512edb1a1c1c7374f8e2e0fb78a5629b3d460eea72e29",
+      "bench/sycl/gdn_columns.cpp": "0ddba81ed8c26fae2a3a4788a2a5356675eec4b5e0f4176a599dbdd20da16b4c",
+      "cmake/sycl_backend.cmake": "986fb6e08104887080110b6360f370476765f7e75644db23b120f48771e1a591"
+    },
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/gdn-epilogue-separation-methods.md",
+    "main_reads_body_on_arrival": false,
+    "state": "Orca knowledge collection active; Main continues frozen model checks and does not read body on arrival.",
+    "retention_consumer": "One compiler/resource-attribution decision after the GDN model screen; retain only novel reusable methods or facts, otherwise retire to compact corrections.",
+    "report_budget": {
+      "words": [
+        1800,
+        2600
+      ],
+      "maximum_bytes": 30720
+    },
+    "task": "task_8f5b5fe8ebcb",
+    "dispatch": "ctx_8e392ac8d8cd",
+    "terminal": "term_f5578bcd-ac60-4923-8549-bc9b4e32d5cc",
+    "model_evidence": "Custom argv gpt-6-luna medium; satisfied TUI-idle and worker-start observed turn_started."
   }
 }

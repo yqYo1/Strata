@@ -427,6 +427,84 @@ rejected by long-prefill admission before long-model arithmetic, exit1 with no
 new GPU fault. Preserve that failed receipt. Its prohibition remains in place;
 the supported coarse observer supplies the new substages instead.
 
+Both supported observer checks passed. The full check read78,451 fresh tokens,
+thinking on, with360 checked intervals per new GDN section across36 layers;
+all owners closed, boot unchanged and no fresh GPU faults. On the Arc B570,
+the GDN input projections, conv/gates, recurrence and output projection intervals
+were6.27625,0.879437,7.99004 and2.94327 seconds. Recurrence host-submit wall
+was15.4556ms. QSA and MoE intervals were31.1534 and20.9776 seconds. These
+nonexclusive queue intervals identify a recurrence scheduling experiment,
+not measured occupancy, a hardware ceiling or an additive wall-time breakdown.
+The profiled785.0PP sample does not replace the clean853.2 median.
+
+The next candidate partitions the independent value columns of each persistent
+GDN state across2/4/8 workgroups, then performs the existing RMS/gating on the
+GPU. Keep the FP32 per-column recurrence and reduction order, FP16 consumer,
+shared state layout and decode/verify paths. Use the existing FP32 y buffer as
+an explicitly owned intermediate, with ordered kernels and no host readback.
+One partition with the separate epilogue is the control for its traffic/launch
+cost. Require exact output/state/FP16 images, guards, chunk boundaries and
+streamed262144/restore continuity before model speed comparisons. Recurrence
+is only part of the remaining cost; this candidate alone cannot qualify1000PP.
+
+`STRATA_SYCL_PREFILL_GDN_COLUMNS=1|2|4|8` selects this experiment only during
+long layer-major prefill; unset/0 keeps the original. It cannot combine with
+chunk64. For2/4/8 partitions the scan launches96/192/384 groups of256/128/64
+lanes; each lane still owns32 FP32 state elements. No occupancy gain is assumed.
+The intermediate adds two FP32 reads/writes per output element compared with
+the fused path, before considering cache behavior. Public admission checks
+registered device spans and the queue's context/device before submission.
+
+Main builds the engine and the same-library manual fixture with
+`tools/sycl/build_engine.py rebuild-gdn`, then runs
+`tools/sycl/measure_gdn_columns.py smoke`, `validate`, `perf` and `context`,
+committing each result before the next phase. The continuous resident timing
+train rotates all five arms over three independent processes; full comparisons
+run outside timing. It measures both kernels and launch gaps and excludes
+initial transfer. The separate physical-extent recurrence check includes saved
+FP32 carry restoration and the unchanged single-token decode consumer at the
+last position; it does not qualify a full model conversation RESTORE.
+Advance from resident timing only if the pooled median is at least5% faster
+and each of the three independent-process medians beats the original. This is
+a screening threshold, not model adoption. The first fixture compile failed
+on a mixed-type`auto` declaration at`4720519ca`; the corrected build must retain
+that failed identity rather than relabel it.
+
+For the78,450 long-prefill rows over36GDN layers, the explicit recurrence
+dot/state/output/delta arithmetic is15.5993444352TFLOP, excluding exponentials,
+normalization and reductions. Dividing by the observed7.99004s interval gives
+1.95235TFLOP/s of this logical work, not measured FP32 saturation. Separating
+the RMS adds138,815,078,400 logical FP32 intermediate bytes over these layers;
+actual DRAM traffic depends on caching. Column partitioning also repeats Q/K
+loads, so the unchanged arithmetic count does not imply an unchanged memory cost.
+
+The corrected same-library fixture passed traced17-token/split cases,24 cases
+at1/33/65/129/8191/8192 tokens across all four partitions, and the selected
+4-partition262144-token recurrence/state-restore/decode continuity check. FP32
+output/carry and FP16 images matched the existing kernel bit for bit; guards,
+input immutability and invalid admission checks passed with no fresh GPU fault.
+This is recurrence-component evidence, not full model context/RESTORE coverage.
+
+The three clean resident processes each measured six rotating8192-token samples
+per arm after a first-use round. Pooled queue-interval medians were:
+
+| Schedule | Median ms |
+| --- | ---: |
+| Existing fused recurrence | 23.693646 |
+| Separate RMS,1 partition | 17.994375 |
+| Separate RMS,2 partitions | 19.077656 |
+| Separate RMS,4 partitions | 17.675782 |
+| Separate RMS,8 partitions | 19.388281 |
+
+The4-partition candidate reduced this interval25.40%; the1-partition control
+already reduced it24.05%, so most of the gain is attributable to separating
+the RMS rather than increased column parallelism. All three4-partition process
+medians beat their original controls. The retained
+[individual component samples](../bench/results/2026-10-15-pr6-recovery-audit/gdn-columns-current.json)
+include first-use results and spread. The next gate is the parameter-validated
+`qsa-gdncols4-check`, followed by matched clean`qsa-gdncols4-base` and
+`qsa-gdncols4-candidate` official benchmark screens at78K actual input.
+
 ## Optional GDN chunk64
 
 `STRATA_SYCL_PREFILL_GDN_CHUNK64=1` adds a separate experimental long-prefill
