@@ -121,7 +121,7 @@
       },
       {
         "question": "Preload16 Q joint_matrix fragments per QK subgroup and reuse the Q/KV SLM arena.",
-        "schedulable_now": true,
+        "schedulable_now": false,
         "prerequisites": [
           "Establish prefix as a useful model route.",
           "Same BF16 slices, uniform subgroup participation and a workgroup barrier before K overwrite.",
@@ -233,7 +233,7 @@
       "Fixed residency was a bounded research question, not a user prohibition on memory/performance tradeoffs."
     ],
     "main_census": {
-      "schedulable_now": true,
+      "schedulable_now": false,
       "prerequisite": "QSA comparison closed; current-path profile and exact planned-job census are next, with source/config frozen before build/run.",
       "observer": "Use existing coarse/QSA/CPU-wait profiles. New per-window host metadata census adds no tensor readback or GPU work and reconciles planned jobs with final retired totals.",
       "limitations": "Diagnostic timing and requested DMA bytes, not clean speed, physical bandwidth/saturation or an additive critical-path partition.",
@@ -1446,5 +1446,28 @@
     "dispatch": "ctx_b4e5a89c7a73",
     "terminal": "term_b7019021-1843-4ddb-97da-8c5213cc9636",
     "model_evidence": "Custom terminal argv gpt-6-luna medium, updates disabled and named report directory writable; tui-idle satisfied, worker-start observed turn_started."
+  },
+  "qsa_kv_cache_representation_long_context_scope": {
+    "classification": "knowledge_collection",
+    "schedulable_now": true,
+    "state": "Eligible source/literature collection; separate from current Down audit and exp2 contract.",
+    "question": "For Strata's QSA path with 2 KV heads, 24 query heads and dimension 256, compare supported long-context K/V representations around the current resident, unrotated INT8 cache. Examine grouped/per-channel and per-token scaling, sub-8-bit formats, scale/zero-point metadata cost, dequantization placement, rotary/layout constraints, and compatibility with the actual SGLang/vLLM numerical contract. Identify the strongest counterexamples and the source or measured evidence needed before any 262144-context implementation decision. Keep cache representation separate from cross-query sparsity, residual-state precision, and softmax math.",
+    "novelty": "The sparse cross-query report studies selected-set ordering, union blocks and inverse schedules; the low-bit report studies persistent HC4 residual/hidden-state storage; QSA math reports cover exp2 and normalizer scheduling. None targets K/V cache representation and its metadata/dequantization tradeoff. The current tile-programming collection is a broader execution-method reference and explicitly says not to repeat a tile survey.",
+    "prerequisites_met": [
+      "docs/SYCL_NATIVE16_PREFILL.md identifies the optional typed QSA path as resident, unrotated INT8 K/V and says streaming/host mirrors and rotated/Q4/hybrid KV are refused.",
+      "The indexed sparse-QSA scope records the concrete 2KV/24Qhead/Dim256 geometry; the maintained tuning policy requires physical 262144-context correctness.",
+      "The existing source and literature question can be answered without a new profiler, GPU run or missing numerical incident. It must remain a reference collection and may not claim that K/V capacity or traffic currently limits throughput."
+    ],
+    "scope_review_sha256": "c940d799696a27a8479eecf02cda51a1483786b7788ad7191dbfa0651aff8ce3",
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-long-context-kv-representation.md",
+    "report_budget": {
+      "words_min": 1500,
+      "words_max": 2100,
+      "maximum_bytes": 30000,
+      "requirements": "Compare alternatives, applicability and counterevidence; pin framework/repository revisions and per-file provenance/license where relevant; separate published claims, source-visible behavior and hardware/model evidence; state numerical, rotary, layout and metadata limits. Do not author code, recommend adoption from literature alone, or claim measured local speed/capacity."
+    },
+    "main_reads_body_on_arrival": false,
+    "retention_consumer": "Retrieve only if Main later selects a QSA K/V representation, dequantization placement or long-context cache-capacity comparison. Use the report to frame the exact source contract and correctness/performance gates; do not read it on arrival or treat it as a candidate implementation.",
+    "review_point": "At the next Main decision that selects or rejects a K/V cache representation for QSA/full-context work. Then retain only reusable findings in the existing compact result and retire transactional report/review material if no current consumer remains."
   }
 }
