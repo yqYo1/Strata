@@ -206,6 +206,18 @@ opt-in candidate for further tuning; default adoption and the broader gates
 above remain open. Short-output decode medians14.2 versus14.0 tok/s do not
 decide sustained decode performance. See the [individual samples and comparison](../bench/results/2026-10-15-pr6-recovery-audit/qsa-cached-query-model-current.json).
 
+The next component-only candidate changes K staging ownership, preserving
+cached Q, BF16 bits, local `kv[d*32+cell]`, matrix strides and barriers. With
+thread `t=0..127` and loop `r=0..63`, the old map is `cell=t%32,d=t/32+4*r`;
+the candidate uses `cell=r/2,d=t+128*(r%2)`. Both cover8192 destinations once.
+The new global loads are contiguous within each row; local stores become
+strided. Physical transactions, SLM conflicts and speed are unmeasured.
+Main authored the index change independently; the reviewed staging report is
+decision support only. No model dispatch selects it. The existing oracle,
+full-bit/guard/physical262144 component checks precede rotated same-binary
+cached-Q versus coalesced-K timings. Build pins now also cover project
+`third_party` and maintained `bench/sycl` inputs.
+
 ## Optional GDN chunk64
 
 `STRATA_SYCL_PREFILL_GDN_CHUNK64=1` adds a separate experimental long-prefill

@@ -69,7 +69,7 @@ bool matrix_available(const sycl::device &device, size_t local_payload) {
 } // namespace
 
 template<int ScoreStride, bool TilePacked = false, bool SubgroupSoftmax = false,
-         bool CacheQueries = false>
+         bool CacheQueries = false, bool CoalescedK = false>
 static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
                              const int32_t *ids, const int32_t *steps,
                              int64_t cap, const QsaShapes &shape, uint16_t *output,
@@ -77,6 +77,7 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
                              int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream) {
   static_assert(!SubgroupSoftmax || !TilePacked);
   static_assert(!CacheQueries || !TilePacked);
+  static_assert(!CoalescedK || (CacheQueries && !TilePacked));
   // Reuse the qualified admission contract; it never enqueues or waits.
   if (!qsa_prompt_attn_bf16_validate(query, pools, ids, steps, cap, shape,
                                     output, queries, bounds, stream)) return false;
@@ -224,12 +225,18 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
         publish_rows(first);
         item.barrier(sycl::access::fence_space::local_space);
         for (int i = tid; i < Cells * Dim; i += Workgroup) {
-          const int cell = i % Cells, d = i / Cells;
+          // The optional schedule changes only ownership of the same BF16
+          // copies. For i=tid+128*r, it loads cell=r/2 and
+          // d=tid+128*(r%2), then scatters into the unchanged QK layout.
+          // All 8192 destinations have one writer, including masked rows.
+          const int cell = CoalescedK ? i / Dim : i % Cells;
+          const int d = CoalescedK ? i % Dim : i / Cells;
           const int64_t row = rows[cell];
           const uint16_t bits = row >= 0 ? packed.k[row * Dim + d] : uint16_t(0);
           if constexpr (TilePacked)
             kv[((d / 16) * 2 + cell / 16) * 256 + (d % 16 / 2) * 32 +
                (cell % 16) * 2 + d % 2] = sycl::bit_cast<BFloat>(bits);
+          else if constexpr (CoalescedK) kv[d * Cells + cell] = sycl::bit_cast<BFloat>(bits);
           else kv[i] = sycl::bit_cast<BFloat>(bits);
         }
         if (tid < Cells) local_live |= rows[tid] >= 0;
@@ -375,6 +382,13 @@ bool qsa_bf16_prefix_qcache_batch(const uint16_t *query, const QsaAttnPools &poo
     int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream) {
   return prefix_batch_impl<Cells + 1, false, false, true>(query, pools, ids, steps,
       cap, shape, output, queries, bounds, live_cells, scratch, stream);
+}
+bool qsa_bf16_prefix_kcoalesced_batch(const uint16_t *query, const QsaAttnPools &pools,
+    const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
+    uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
+    int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream) {
+  return prefix_batch_impl<Cells + 1, false, false, true, true>(query, pools, ids,
+      steps, cap, shape, output, queries, bounds, live_cells, scratch, stream);
 }
 // FP32 subgroup max/sum; current score33 row-major operands and state layout.
 bool qsa_bf16_prefix_subgroup_batch(const uint16_t *query, const QsaAttnPools &pools,
