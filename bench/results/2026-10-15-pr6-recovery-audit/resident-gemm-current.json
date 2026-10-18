@@ -1,0 +1,939 @@
+{
+  "source_commit": "5d92beecc81ab93fcd6c227c48a9b6769c0210a3",
+  "fixture": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_native16_paired_gemm_bench",
+    "sha256": "8794becd73d52885b85627e78e8ac269dfcf946011a4df0da8e3970052506e68"
+  },
+  "checks": [
+    {
+      "phase": "smoke",
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_native16_paired_gemm_bench",
+        "--smoke",
+        "fp16",
+        "--process",
+        "0"
+      ],
+      "plan": {
+        "kind": "plan",
+        "mode": "smoke",
+        "resident_only": false,
+        "submits_per_sample": 1,
+        "shape": -1,
+        "T": 3,
+        "N": 128,
+        "K": 64,
+        "ldy": 128,
+        "beta": 0,
+        "input_type": "fp16",
+        "device_tensor_bytes": 23872,
+        "input_fnv1a64": "6638105146750739685",
+        "initial_pageable_upload_bytes": 17408,
+        "initial_pageable_upload_wall_seconds": 0.004009683,
+        "initial_pageable_upload_thread_cpu_seconds": 0.0018530760000000021,
+        "weight_fnv1a64": "18263907186522231141",
+        "oracle": "rank2_binary_exact_v1",
+        "process_index": 0,
+        "warmups_per_route": 3,
+        "timed_submits_per_route": 0,
+        "pid": 3697135,
+        "rotation_base": 0,
+        "route_order": [
+          "old_f32_direct",
+          "old_f32_plus_gpu_bf16_cast",
+          "native_bf16_output",
+          "vllm_compact16x64_bf16_output",
+          "vllm_wide128x128_bf16_output"
+        ]
+      },
+      "process": 0,
+      "exit_code": 0,
+      "ownership_closed": true,
+      "passed": true,
+      "validation_count": 15,
+      "samples": []
+    },
+    {
+      "phase": "smoke",
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_native16_paired_gemm_bench",
+        "--resident",
+        "4",
+        "fp16",
+        "--process",
+        "0"
+      ],
+      "plan": {
+        "kind": "plan",
+        "mode": "measure",
+        "resident_only": true,
+        "submits_per_sample": 8,
+        "shape": 4,
+        "T": 64,
+        "N": 1280,
+        "K": 2560,
+        "ldy": 1280,
+        "beta": 0,
+        "input_type": "fp16",
+        "device_tensor_bytes": 7866816,
+        "input_fnv1a64": "16669166520643708645",
+        "initial_pageable_upload_bytes": 6881920,
+        "initial_pageable_upload_wall_seconds": 0.006248195,
+        "initial_pageable_upload_thread_cpu_seconds": 0.004105321000000009,
+        "weight_fnv1a64": "10777993185871135461",
+        "oracle": "rank2_binary_exact_v1",
+        "process_index": 0,
+        "warmups_per_route": 3,
+        "timed_submits_per_route": 3,
+        "pid": 3697166,
+        "rotation_base": 0,
+        "route_order": [
+          "vllm_compact16x64_bf16_output",
+          "vllm_wide128x128_bf16_output"
+        ]
+      },
+      "process": 0,
+      "exit_code": 0,
+      "ownership_closed": true,
+      "passed": true,
+      "validation_count": 12,
+      "samples": [
+        {
+          "kind": "sample",
+          "status": "PASS",
+          "ordinal": 6,
+          "route": "vllm_wide128x128_bf16_output",
+          "implementation": "R810::Gemm::beta0(wide_128x128,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 0,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.000597754,
+          "thread_cpu_submit_seconds": 0.0003570599999999924,
+          "thread_cpu_wait_check_seconds": 0.00022185700000001973,
+          "logical_flop_per_submit": 419430400,
+          "kernel_total_seconds": 0.000474895,
+          "device_timestamps_ns": [
+            [
+              638497569105420,
+              638497569176458,
+              638497569239062
+            ],
+            [
+              638497569159150,
+              638497569242812,
+              638497569302083
+            ],
+            [
+              638497569208283,
+              638497569305833,
+              638497569364791
+            ],
+            [
+              638497569252886,
+              638497569368645,
+              638497569427395
+            ],
+            [
+              638497569296247,
+              638497569431250,
+              638497569490208
+            ],
+            [
+              638497569340240,
+              638497569494062,
+              638497569552916
+            ],
+            [
+              638497569383561,
+              638497569556666,
+              638497569615625
+            ],
+            [
+              638497569427203,
+              638497569619479,
+              638497569678020
+            ]
+          ],
+          "logical_kernel_TFLOPs": 7.065652828519989,
+          "logical_wall_TFLOPs": 5.613418228903528
+        },
+        {
+          "kind": "sample",
+          "status": "PASS",
+          "ordinal": 7,
+          "route": "vllm_compact16x64_bf16_output",
+          "implementation": "R810::Gemm::beta0(compact_16x64,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 0,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.000481005,
+          "thread_cpu_submit_seconds": 0.00034455599999999587,
+          "thread_cpu_wait_check_seconds": 0.00011816100000000551,
+          "logical_flop_per_submit": 419430400,
+          "kernel_total_seconds": 0.000358439,
+          "device_timestamps_ns": [
+            [
+              638497574840264,
+              638497574911666,
+              638497574960625
+            ],
+            [
+              638497574890348,
+              638497574964479,
+              638497575009687
+            ],
+            [
+              638497574935152,
+              638497575013437,
+              638497575057812
+            ],
+            [
+              638497574979195,
+              638497575061666,
+              638497575106562
+            ],
+            [
+              638497575022676,
+              638497575110416,
+              638497575153333
+            ],
+            [
+              638497575066198,
+              638497575157187,
+              638497575202708
+            ],
+            [
+              638497575109549,
+              638497575206562,
+              638497575247812
+            ],
+            [
+              638497575157028,
+              638497575251666,
+              638497575296979
+            ]
+          ],
+          "logical_kernel_TFLOPs": 9.361267049623505,
+          "logical_wall_TFLOPs": 6.975900874211287
+        },
+        {
+          "kind": "sample",
+          "status": "PASS",
+          "ordinal": 8,
+          "route": "vllm_compact16x64_bf16_output",
+          "implementation": "R810::Gemm::beta0(compact_16x64,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 1,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.000476266,
+          "thread_cpu_submit_seconds": 0.000346228000000004,
+          "thread_cpu_wait_check_seconds": 0.00011136800000000058,
+          "logical_flop_per_submit": 419430400,
+          "kernel_total_seconds": 0.000358543,
+          "device_timestamps_ns": [
+            [
+              638497580375484,
+              638497580442291,
+              638497580490625
+            ],
+            [
+              638497580423635,
+              638497580494479,
+              638497580539791
+            ],
+            [
+              638497580473578,
+              638497580543541,
+              638497580587708
+            ],
+            [
+              638497580518523,
+              638497580591562,
+              638497580636250
+            ],
+            [
+              638497580564829,
+              638497580640000,
+              638497580682812
+            ],
+            [
+              638497580608421,
+              638497580686562,
+              638497580732187
+            ],
+            [
+              638497580651282,
+              638497580736041,
+              638497580777916
+            ],
+            [
+              638497580694693,
+              638497580781770,
+              638497580827500
+            ]
+          ],
+          "logical_kernel_TFLOPs": 9.35855169393908,
+          "logical_wall_TFLOPs": 7.045313333305338
+        },
+        {
+          "kind": "sample",
+          "status": "PASS",
+          "ordinal": 9,
+          "route": "vllm_wide128x128_bf16_output",
+          "implementation": "R810::Gemm::beta0(wide_128x128,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 1,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.000602874,
+          "thread_cpu_submit_seconds": 0.00035995300000002395,
+          "thread_cpu_wait_check_seconds": 0.00022420099999997944,
+          "logical_flop_per_submit": 419430400,
+          "kernel_total_seconds": 0.00047531200000000003,
+          "device_timestamps_ns": [
+            [
+              638497585957202,
+              638497586031979,
+              638497586094479
+            ],
+            [
+              638497586014910,
+              638497586098229,
+              638497586157395
+            ],
+            [
+              638497586061788,
+              638497586161666,
+              638497586220729
+            ],
+            [
+              638497586104608,
+              638497586224479,
+              638497586283437
+            ],
+            [
+              638497586163058,
+              638497586287291,
+              638497586346041
+            ],
+            [
+              638497586207491,
+              638497586350000,
+              638497586408750
+            ],
+            [
+              638497586249590,
+              638497586412604,
+              638497586471354
+            ],
+            [
+              638497586291539,
+              638497586475104,
+              638497586534479
+            ]
+          ],
+          "logical_kernel_TFLOPs": 7.0594540007405655,
+          "logical_wall_TFLOPs": 5.5657454128059936
+        },
+        {
+          "kind": "sample",
+          "status": "PASS",
+          "ordinal": 10,
+          "route": "vllm_wide128x128_bf16_output",
+          "implementation": "R810::Gemm::beta0(wide_128x128,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 2,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.000597013,
+          "thread_cpu_submit_seconds": 0.0003546949999999882,
+          "thread_cpu_wait_check_seconds": 0.00022365999999998665,
+          "logical_flop_per_submit": 419430400,
+          "kernel_total_seconds": 0.000475001,
+          "device_timestamps_ns": [
+            [
+              638497591820337,
+              638497591890000,
+              638497591952812
+            ],
+            [
+              638497591872685,
+              638497591956666,
+              638497592016041
+            ],
+            [
+              638497591916457,
+              638497592019791,
+              638497592078750
+            ],
+            [
+              638497591959578,
+              638497592082604,
+              638497592141354
+            ],
+            [
+              638497592001457,
+              638497592145208,
+              638497592204062
+            ],
+            [
+              638497592043505,
+              638497592207916,
+              638497592266562
+            ],
+            [
+              638497592089682,
+              638497592270416,
+              638497592329479
+            ],
+            [
+              638497592132252,
+              638497592333333,
+              638497592391875
+            ]
+          ],
+          "logical_kernel_TFLOPs": 7.064076075629314,
+          "logical_wall_TFLOPs": 5.620385485743191
+        },
+        {
+          "kind": "sample",
+          "status": "PASS",
+          "ordinal": 11,
+          "route": "vllm_compact16x64_bf16_output",
+          "implementation": "R810::Gemm::beta0(compact_16x64,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 2,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.000473501,
+          "thread_cpu_submit_seconds": 0.0003382040000000086,
+          "thread_cpu_wait_check_seconds": 0.00011683899999997971,
+          "logical_flop_per_submit": 419430400,
+          "kernel_total_seconds": 0.00035448,
+          "device_timestamps_ns": [
+            [
+              638497597573115,
+              638497597640208,
+              638497597688750
+            ],
+            [
+              638497597622828,
+              638497597692708,
+              638497597736979
+            ],
+            [
+              638497597666961,
+              638497597740833,
+              638497597785000
+            ],
+            [
+              638497597710533,
+              638497597788750,
+              638497597833437
+            ],
+            [
+              638497597756459,
+              638497597837291,
+              638497597880104
+            ],
+            [
+              638497597799269,
+              638497597883958,
+              638497597928437
+            ],
+            [
+              638497597841729,
+              638497597932291,
+              638497597973437
+            ],
+            [
+              638497597884569,
+              638497597977291,
+              638497598021666
+            ]
+          ],
+          "logical_kernel_TFLOPs": 9.465818099751749,
+          "logical_wall_TFLOPs": 7.086454305270739
+        }
+      ]
+    },
+    {
+      "phase": "smoke",
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_native16_paired_gemm_bench",
+        "--resident",
+        "5",
+        "fp16",
+        "--process",
+        "0"
+      ],
+      "plan": {
+        "kind": "plan",
+        "mode": "measure",
+        "resident_only": true,
+        "submits_per_sample": 8,
+        "shape": 5,
+        "T": 64,
+        "N": 2560,
+        "K": 640,
+        "ldy": 2560,
+        "beta": 0,
+        "input_type": "fp16",
+        "device_tensor_bytes": 5327296,
+        "input_fnv1a64": "14739519724620044005",
+        "initial_pageable_upload_bytes": 3359360,
+        "initial_pageable_upload_wall_seconds": 0.0050872,
+        "initial_pageable_upload_thread_cpu_seconds": 0.002638908999999995,
+        "weight_fnv1a64": "11317224156872055269",
+        "oracle": "rank2_binary_exact_v1",
+        "process_index": 0,
+        "warmups_per_route": 3,
+        "timed_submits_per_route": 3,
+        "pid": 3697190,
+        "rotation_base": 0,
+        "route_order": [
+          "vllm_compact16x64_bf16_output",
+          "vllm_wide128x128_bf16_output"
+        ]
+      },
+      "process": 0,
+      "exit_code": 0,
+      "ownership_closed": true,
+      "passed": true,
+      "validation_count": 12,
+      "samples": [
+        {
+          "kind": "sample",
+          "status": "PASS",
+          "ordinal": 6,
+          "route": "vllm_wide128x128_bf16_output",
+          "implementation": "R810::Gemm::beta0(wide_128x128,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 0,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.000396967,
+          "thread_cpu_submit_seconds": 0.00033178400000000163,
+          "thread_cpu_wait_check_seconds": 4.6826999999999286e-05,
+          "logical_flop_per_submit": 209715200,
+          "kernel_total_seconds": 0.00018104000000000001,
+          "device_timestamps_ns": [
+            [
+              638497857533208,
+              638497857601458,
+              638497857625937
+            ],
+            [
+              638497857583011,
+              638497857641041,
+              638497857665416
+            ],
+            [
+              638497857626843,
+              638497857712500,
+              638497857736875
+            ],
+            [
+              638497857671226,
+              638497857740729,
+              638497857761458
+            ],
+            [
+              638497857713947,
+              638497857765416,
+              638497857786145
+            ],
+            [
+              638497857755775,
+              638497857831979,
+              638497857856562
+            ],
+            [
+              638497857797283,
+              638497857860312,
+              638497857881145
+            ],
+            [
+              638497857838981,
+              638497857885000,
+              638497857905937
+            ]
+          ],
+          "logical_kernel_TFLOPs": 9.267132125497128,
+          "logical_wall_TFLOPs": 4.226350301158535
+        },
+        {
+          "kind": "sample",
+          "status": "PASS",
+          "ordinal": 7,
+          "route": "vllm_compact16x64_bf16_output",
+          "implementation": "R810::Gemm::beta0(compact_16x64,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 0,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.000464033,
+          "thread_cpu_submit_seconds": 0.0003441839999999974,
+          "thread_cpu_wait_check_seconds": 0.00010121999999998521,
+          "logical_flop_per_submit": 209715200,
+          "kernel_total_seconds": 0.00023812600000000002,
+          "device_timestamps_ns": [
+            [
+              638497864116654,
+              638497864186250,
+              638497864218125
+            ],
+            [
+              638497864164553,
+              638497864231562,
+              638497864262812
+            ],
+            [
+              638497864207614,
+              638497864307083,
+              638497864338541
+            ],
+            [
+              638497864249903,
+              638497864342395,
+              638497864368750
+            ],
+            [
+              638497864292123,
+              638497864372604,
+              638497864400208
+            ],
+            [
+              638497864333991,
+              638497864404062,
+              638497864431875
+            ],
+            [
+              638497864375459,
+              638497864435729,
+              638497864465625
+            ],
+            [
+              638497864420163,
+              638497864479270,
+              638497864511145
+            ]
+          ],
+          "logical_kernel_TFLOPs": 7.045520438759311,
+          "logical_wall_TFLOPs": 3.6155221719144977
+        },
+        {
+          "kind": "sample",
+          "status": "PASS",
+          "ordinal": 8,
+          "route": "vllm_compact16x64_bf16_output",
+          "implementation": "R810::Gemm::beta0(compact_16x64,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 1,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.000421743,
+          "thread_cpu_submit_seconds": 0.00034457599999998534,
+          "thread_cpu_wait_check_seconds": 5.81980000000093e-05,
+          "logical_flop_per_submit": 209715200,
+          "kernel_total_seconds": 0.00023802100000000002,
+          "device_timestamps_ns": [
+            [
+              638497870793124,
+              638497870859270,
+              638497870889479
+            ],
+            [
+              638497870839822,
+              638497870903125,
+              638497870934687
+            ],
+            [
+              638497870897109,
+              638497870952187,
+              638497870983437
+            ],
+            [
+              638497870941963,
+              638497871030104,
+              638497871060208
+            ],
+            [
+              638497870984443,
+              638497871064062,
+              638497871093541
+            ],
+            [
+              638497871028736,
+              638497871097395,
+              638497871125312
+            ],
+            [
+              638497871070504,
+              638497871129062,
+              638497871157083
+            ],
+            [
+              638497871112303,
+              638497871160833,
+              638497871190312
+            ]
+          ],
+          "logical_kernel_TFLOPs": 7.0486284823608,
+          "logical_wall_TFLOPs": 3.978066263103359
+        },
+        {
+          "kind": "sample",
+          "status": "PASS",
+          "ordinal": 9,
+          "route": "vllm_wide128x128_bf16_output",
+          "implementation": "R810::Gemm::beta0(wide_128x128,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 1,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.000410492,
+          "thread_cpu_submit_seconds": 0.00034606800000000493,
+          "thread_cpu_wait_check_seconds": 4.610700000001744e-05,
+          "logical_flop_per_submit": 209715200,
+          "kernel_total_seconds": 0.00018072900000000002,
+          "device_timestamps_ns": [
+            [
+              638497877460507,
+              638497877533229,
+              638497877557604
+            ],
+            [
+              638497877515370,
+              638497877573854,
+              638497877598125
+            ],
+            [
+              638497877561747,
+              638497877645416,
+              638497877669791
+            ],
+            [
+              638497877604046,
+              638497877673541,
+              638497877694270
+            ],
+            [
+              638497877645905,
+              638497877698020,
+              638497877718750
+            ],
+            [
+              638497877688074,
+              638497877763541,
+              638497877788020
+            ],
+            [
+              638497877729812,
+              638497877791875,
+              638497877812604
+            ],
+            [
+              638497877771721,
+              638497877816354,
+              638497877837395
+            ]
+          ],
+          "logical_kernel_TFLOPs": 9.28307908526025,
+          "logical_wall_TFLOPs": 4.0870993831792095
+        },
+        {
+          "kind": "sample",
+          "status": "PASS",
+          "ordinal": 10,
+          "route": "vllm_wide128x128_bf16_output",
+          "implementation": "R810::Gemm::beta0(wide_128x128,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 2,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.000410983,
+          "thread_cpu_submit_seconds": 0.00034085000000000365,
+          "thread_cpu_wait_check_seconds": 5.217799999998607e-05,
+          "logical_flop_per_submit": 209715200,
+          "kernel_total_seconds": 0.00018458300000000002,
+          "device_timestamps_ns": [
+            [
+              638497884073859,
+              638497884139166,
+              638497884163541
+            ],
+            [
+              638497884120216,
+              638497884179062,
+              638497884203437
+            ],
+            [
+              638497884162916,
+              638497884248645,
+              638497884273020
+            ],
+            [
+              638497884205035,
+              638497884276770,
+              638497884297500
+            ],
+            [
+              638497884246683,
+              638497884301458,
+              638497884322395
+            ],
+            [
+              638497884288642,
+              638497884336875,
+              638497884361354
+            ],
+            [
+              638497884330551,
+              638497884406250,
+              638497884430937
+            ],
+            [
+              638497884375405,
+              638497884434791,
+              638497884455416
+            ]
+          ],
+          "logical_kernel_TFLOPs": 9.089253073143245,
+          "logical_wall_TFLOPs": 4.082216539370242
+        },
+        {
+          "kind": "sample",
+          "status": "PASS",
+          "ordinal": 11,
+          "route": "vllm_compact16x64_bf16_output",
+          "implementation": "R810::Gemm::beta0(compact_16x64,output=bf16);local_fp32_acc",
+          "stored_output_type": "bf16",
+          "global_fp32_intermediate": false,
+          "warmup": false,
+          "sample": 2,
+          "submits": 8,
+          "submit_to_completion_wall_seconds": 0.000496604,
+          "thread_cpu_submit_seconds": 0.0004064520000000016,
+          "thread_cpu_wait_check_seconds": 6.858900000000778e-05,
+          "logical_flop_per_submit": 209715200,
+          "kernel_total_seconds": 0.000244271,
+          "device_timestamps_ns": [
+            [
+              638497890831953,
+              638497890905833,
+              638497890937187
+            ],
+            [
+              638497890897005,
+              638497890981041,
+              638497891012812
+            ],
+            [
+              638497890954723,
+              638497891017395,
+              638497891046666
+            ],
+            [
+              638497891011129,
+              638497891090833,
+              638497891122916
+            ],
+            [
+              638497891074037,
+              638497891127500,
+              638497891156458
+            ],
+            [
+              638497891128258,
+              638497891201562,
+              638497891233229
+            ],
+            [
+              638497891170337,
+              638497891237812,
+              638497891267604
+            ],
+            [
+              638497891212927,
+              638497891271354,
+              638497891300729
+            ]
+          ],
+          "logical_kernel_TFLOPs": 6.868279902239726,
+          "logical_wall_TFLOPs": 3.3783892195793834
+        }
+      ]
+    }
+  ],
+  "complete": true,
+  "passed": true,
+  "active": false,
+  "model_performance_measured": false,
+  "model_quality_qualified": false,
+  "physical262144_RESTORE_qualified": false,
+  "histogram": {
+    "commit": "66d5c545939ade5c6f1732d8a7b4d3a7fe5d1676",
+    "sha256": "4aa422bcaddb00220f44ca5ad931328df36425f226cc5d49f21aca1e0f39d0b3",
+    "bins": 3361,
+    "total_rows": 37656000,
+    "rows_at8192": 24829952
+  },
+  "consumer": "Current MoE resource reference; retain compact samples, retire raw logs/JIT after interpretation.",
+  "limits": [
+    "Resident reused FP16 operands/weights, BF16 output, FP32 accumulation; no IQ3 dequant, SwiGLU or routing/scatter.",
+    "Service reference for this implementation and shapes, not a hardware peak or a prediction of whole-model speed.",
+    "Initial uploads use pageable fixture memory, not the production pinned-weight pipeline or a PCIe ceiling.",
+    "Event timestamps share a device timebase; never subtract them from host clocks. Profiling does not guarantee exact timing accuracy."
+  ],
+  "mode": "smoke",
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+    "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "ZES_ENABLE_SYSMAN": "0",
+    "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+    "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+    "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/tmp",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/resident-gemm-current/cache"
+  },
+  "ownership_closed": true,
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  }
+}
