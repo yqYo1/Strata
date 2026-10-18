@@ -977,5 +977,31 @@
       "corrections": "Pinned coarse/QSA complete gates already validate their expected counts. CPU available=1 entails valid accounting/no open waits, but does not alone rule out throw counters. No evidence the original result was wrong.",
       "scope_limit": "Profiled requests, not clean speed or independent process repetitions; selected GPU service is not full-window coverage or physical hardware saturation."
     }
+  },
+  "warm_host_submission_scope_audit": {
+    "classification": "decision_support",
+    "schedulable_now": true,
+    "question": "Audit source ownership and counter boundaries for classifying warmed16.63s unclassified host CPU: current MoE Tag lifetimes for non-GEMM dispatch versus existing GEMM/transfer scopes, nested Host accounting and safe optional scope ownership. No implementation, timing claims or generic validation survey.",
+    "prerequisites_met": [
+      "Two fresh78K requests show warm wall89.508s, GPU-wait CPU59.184s, outside-wait CPU29.622s and unclassified CPU16.630s at7ff786a27.",
+      "VTune software CPU collection refused launch with ptrace-scope restriction; explicit source counters are an available next path.",
+      "Existing tag/native CPU observer source is unchanged and readable; review does not require missing device counters or runtime execution."
+    ],
+    "source_sha256": {
+      "src/prefill/moe_window.inc": "f96629ab0b9850d3d7636cc7bd8b4142e028116f1e1679772b611d8475580da6",
+      "src/sycl/command_profile.cpp": "480139608ebad117634cfe98a4e30c12926757ef026f23da3e66b7c78f6adf2b",
+      "include/strata/sycl/command_profile.hpp": "0b0a2a875be247f8598ecd1052604236c240ab4c08bc5567c068ea6ae117aba4",
+      "include/strata/sycl/cpu_wait_profile.hpp": "f29b86702df27fa6510cfc31d13d0442f9386cdae491952fefbcfa7b0816567d"
+    },
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/warm-host-submission-scope-audit.md",
+    "state": "Eligible finite source-only ownership/accounting audit; Main exclusively implements and measures.",
+    "retention_consumer": "Next named host-attribution instrumentation decision; review at its closure.",
+    "report_budget": {
+      "words": [
+        1500,
+        2400
+      ],
+      "maximum_bytes": 28672
+    }
   }
 }
