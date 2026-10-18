@@ -2105,7 +2105,7 @@
     "classification": "knowledge collection",
     "question": "For repeated same-queue SYCL/oneAPI kernel and copy command streams, compare mechanisms that amortize host submission work: per-command submission, supported command batching/list execution, and replayable command graphs with parameter updates. Using official Khronos/Intel/Unified Runtime sources and transferable non-LLM SYCL/HPC examples, determine what each mechanism actually amortizes, how it handles dynamic pointers/maps/shapes, dependencies, asynchronous errors, capture restrictions and replay/update costs, and where measured benefits fail to transfer. Map applicability to Strata’s repeated GEMM/upload submit pattern without proposing code or claiming local performance.",
     "schedulable_now": false,
-    "status": "report_complete_native_review_running",
+    "status": "native_reviewed_retrieval_reference",
     "eligibility_review": {
       "path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/next-research-scopes-review-20261019.json",
       "sha256": "64209345f03af9b142ff16dcdb25adf560a604feed5ef546638b40021dba1d68"
@@ -2163,6 +2163,25 @@
     "native_review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/sycl-command-submission-amortization-native-review.json",
     "main_read_collection_body": false,
     "collector_model_observed": "gpt-6-luna",
-    "worker_ownership_closed": true
+    "worker_ownership_closed": true,
+    "native_review_sha256": "86b9ff17600101d36ae366552a7006e9ea95f9d299bda70afd80143d5d053fd4",
+    "native_review_bytes": 19509,
+    "native_review_digest": {
+      "decision": "Substantive distinct knowledge collection,2129words; retain through the next concrete host-submission mechanism decision. No local speed,mechanism or adoption evidence.",
+      "corrections": [
+        "Queue-submit wording needs narrowing; submission regions can contain runtime-internal blocking.",
+        "Level Zero immediate appends may block synchronously; verify actual mode/version.",
+        "Cite or remove vague2026 host-task assertion; dynamic-map applicability remains conditional.",
+        "Use source-pinned local attribution when selecting an implementation; current categories alone do not isolate submit cost."
+      ],
+      "next_scope": {
+        "schedulable_now": false,
+        "prerequisites": [
+          "Close the frozen clean source-view comparison.",
+          "Complete source-pinned wrapper attribution and select a concrete batching/replay question."
+        ]
+      }
+    },
+    "main_index_reconciliation": "The new scope key is present. The prior eligibility-review index snapshot predates its addition; the native review lack-key observation is not accepted as current state."
   }
 }
