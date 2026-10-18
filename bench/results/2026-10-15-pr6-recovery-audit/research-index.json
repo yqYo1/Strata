@@ -432,7 +432,7 @@
     ],
     "question": "Compare coalesced K gather/local transpose, subgroup or padded staging, and prefix prepacking with matrix layout/barrier/resource constraints.",
     "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-coalesced-k-staging.md",
-    "state": "Orca completed, native Luna-max reviewed, worker released and terminal positively closed.",
+    "state": "First Main component comparison closed and rejected at eb9b0469c; report/review consumer resolved.",
     "report_bytes": 18922,
     "report_sha256": "9df0736e111b2b2264d7a1c0083ce654cfdb0a77517242e9d89c5c058e864152",
     "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-layout-research-review.json",
@@ -453,7 +453,8 @@
         "Bounded traced correctness then same-binary component timing; inspect emitted lowering/resource cost before clean model comparison."
       ]
     },
-    "retention": "Temporary external reference through first correctness/component comparison; no automatic full-report commit."
+    "retention": "Retire external staging body and transaction review after extracting rejection; keep shared cross-query knowledge and its conditional gates.",
+    "comparison_commit": "eb9b0469c"
   },
   "sparse_cross_query_reuse_scope": {
     "classification": "knowledge_collection",
@@ -489,7 +490,21 @@
     ],
     "question": "Reduce full-window mixed/accumulator residency by shortened lifetimes, early row consumption or safe aliasing without extra host transfer/weight reload.",
     "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/prefill-accumulator-liveness.md",
-    "state": "Orca Luna running; no steering, Main builds/tests serially."
+    "state": "Orca completed and released; terminal positively closed; native Luna-max reviewed.",
+    "report_bytes": 13366,
+    "report_sha256": "0ddbf75b8a1999407463a6f1ba692ecf348c8cef9e2eeee53640e54bfadd5768",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/activation-capacity-review.json",
+    "review_sha256": "7e451c7ed5324d0aa1aa9d8d68e53480aeb9f514a753983cb1ee1c5a9367a771",
+    "reviewed_decision": "Expert-major jobs read arbitrary mixed rows; no safe early piece retirement or alias schedule established. Requested tensor bytes are not simultaneous physical peak residency. A synchronized owner/last-reader census is required before a feature.",
+    "next_scope": {
+      "schedulable_now": false,
+      "prerequisites": [
+        "Close current K-staging comparison.",
+        "Provide source/binary-pinned allocation/owner events at prepare, expert jobs, status drain, finish/write and callback/RESTORE."
+      ],
+      "question": "Does a measured156K+ peak identify one reclaimable activation owner?"
+    },
+    "retention": "Keep decision support through the concrete owner census, then prune; no implementation adoption."
   },
   "low_bit_residual_storage_scope": {
     "classification": "knowledge_collection",
@@ -501,6 +516,24 @@
     "question": "Evidence and counterevidence for repeated below16bit residual/HC storage, distinct from transient GEMM activation quantization.",
     "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/low-bit-residual-storage.md",
     "main_reads_body_on_arrival": false,
-    "state": "Orca Luna running; native Luna-max reviews/indexes only after completion."
+    "state": "Orca completed and released; terminal positively closed; native Luna-max reviewed.",
+    "report_bytes": 20800,
+    "report_sha256": "b58025c2faa83d645f3764490355d8db8ed820ae1ff608a3a0c5189e997fc347",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/activation-capacity-review.json",
+    "review_sha256": "7e451c7ed5324d0aa1aa9d8d68e53480aeb9f514a753983cb1ee1c5a9367a771",
+    "reviewed_limits": [
+      "Persistent HC4 residual quantization differs from transient per-layer MoE mixed or GEMM operands.",
+      "Reviewer flags RDQ withdrawal, mutable vLLM/SGLang main links and generic XMX documentation as insufficient for this model/Battlemage quality or speed.",
+      "Main did not read knowledge body; no format or degradation tolerance selected."
+    ],
+    "next_scope": {
+      "schedulable_now": false,
+      "prerequisites": [
+        "Measured156K+ capacity result names the limiting state.",
+        "Main selects one exact storage/scale/rounding boundary and prospective numerical/task/performance criteria."
+      ],
+      "question": "No further generic low-bit survey; retrieve this reference only for the selected storage study."
+    },
+    "retention": "Indexed conditional knowledge for measured long-prefill residency study; do not read or automatically commit the body."
   }
 }
