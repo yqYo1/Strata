@@ -1872,5 +1872,38 @@
       ],
       "question": "Candidate-specific contract review only; no repeat generic routing survey."
     }
+  },
+  "host_layer_slab_prefetch_contract_scope": {
+    "classification": "decision support",
+    "schedulable_now": false,
+    "state": "Dispatched through Orca in a fresh finite gpt-6-luna medium session; Main continues the frozen78K clean process.",
+    "source_commit": "1222e27d01f32c5bb31f574ff4b143c489a3bcf1",
+    "source_files_sha256": {
+      "src/prefill/layer_major.inc": "8ec7c5550c26c76c3d93cef4b011a4fc5673f200082469530c2900cde4218129",
+      "src/prefill/prefill.cpp": "94a0bd84d40e2e826b259d511221a195d4569ae30171e8eabd9c8c7b2a22a7f6",
+      "include/strata/core/expert_source.hpp": "cf1462b078e8b373507acd7b2097c67f83438cb25a94e68da95530d0bebc15f2",
+      "src/core/expert_source.cpp": "fac2d982477f1ba76f202ef8aa0cf88b76b8de41c449e362f7405ddfa4151f2a",
+      "include/strata/prefill/expert_bank_upload.hpp": "8a8e117f7b73aa32621cbfeb959b091b19456af2ffab2cc99e7af2a42a8f14ad"
+    },
+    "question": "Can a CPU-only one-layer-ahead double host upload slab safely overlap existing full-layer ExpertSource::copy_blob preparation with current single-queue all-GPU native16 work? Audit actual source-provider/thread/lease/error contracts, compare bounded alternatives and state prerequisites before implementation.",
+    "prerequisites_met": [
+      "Current source copies all512 expert blobs after a checked layer drain and before GPU activation. Historical78K same source-copy region measured4.769CPU/4.856wall seconds; that is not current staged-route attribution or a speed prediction.",
+      "The implemented staged-bank route consumes an immutable whole512-expert host slab until its checked layer retirement; both117K repeated and78K single-window owner checks closed successfully.",
+      "Read-only actual provider/ownership/cancellation analysis can complete independently of the frozen clean78K process. No new implementation may be selected until current host/resource attribution confirms material critical-path cost."
+    ],
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/host-layer-slab-prefetch-contract.md",
+    "report_budget": {
+      "target_bytes": 10240,
+      "max_bytes": 16384
+    },
+    "main_reads_body_on_arrival": false,
+    "retention_consumer": "Main prospective CPU-only transfer-preparation overlap decision after current staged-route profiling; native Luna-max contract/depth review first.",
+    "review_point": "After source review and current staged-route CPU profile; retire if this option is rejected or the cost is immaterial.",
+    "eligible_at_dispatch": true,
+    "task": "task_6ca49284d1d3",
+    "dispatch": "ctx_d8e77188f4e0",
+    "terminal": "term_a901e685-7c76-4968-adc1-e86879fb612a",
+    "model_evidence": "Main created this fresh Codex terminal with explicit --model gpt-6-luna, model_reasoning_effort=medium and check_for_update_on_startup=false, verified tui-idle, then worker-start reported turn_started. Existing-terminal launch preference fields are null; no separate provider-effective model claim.",
+    "terminal_ownership": "Main-created external terminal for this finite task. After accepted completion/release, close this exact idle terminal; no live-worker intervention or unrelated-terminal cleanup."
   }
 }
