@@ -147,7 +147,7 @@
       "candidate_path": "bench/results/2026-10-15-pr6-recovery-audit/own-qsa-kpitch-v1",
       "decision": "Reuse the existing source-audited pitch proposal after the current comparison; no new duplicate survey. Recheck immutable source/provenance and wire maintained API/tests before compiling.",
       "candidate": "Fixed score33,Cells32,WG128,SG16; K36/V260 shared tile needs9216 BF16 values,30272B requested local payload,34368B admission minimum. No hardware occupancy/bank map or performance result.",
-      "do_not_repeat": "Old global K span256 schedule regressed10.35\u201329.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
+      "do_not_repeat": "Old global K span256 schedule regressed10.35–29.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
     },
     "reviewed_base_source_sha256": "fa505d02e2b24f7cb6948033921fa697c8aeb58e6f4df6d873f13e5a7918e36b",
     "source_sha256": "c3ad8326f097050ff9ab1859e116f2cad3709a8464162143f752bc294cbe1e01",
@@ -208,7 +208,7 @@
         "bytes": 19144,
         "source_commit": "fbc7f56d7b0ddb5db5f3722ef33ca044c3f8a5c8",
         "reason": "Its conditional consumer is a selected-cell stable-reduction split. The closed QSA screen and pending pitch candidate select no split or reduction bottleneck.",
-        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report\u2019s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
+        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report’s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
       },
       {
         "path": "bench/results/2026-10-15-pr6-recovery-audit/research-matrix-register-reuse-20261018.md",
@@ -697,7 +697,7 @@
         "llvm_revision": "4611156032e1ebac68b2b8f6107b1475a7c60800",
         "llvm_nvptx_instrinfo_sha256": "dd048c313ae8a843a74361e002482bae3d6fa4df8f276f56a2b517e0cad74ef0"
       },
-      "observed_source_contract": "SGLang scales Q by scale*log2(e) then rounds back to Q dtype before dot; FP32 exp2/max/normalizer/PV accumulator, probabilities cast to V dtype, tl.sum reduction (its exact execution order is not proved here). Triton emits math.exp2 then LLVM exp2; pinned NVPTX pattern selects ex2.approx.f32 with an FTZ flag whose deployed setting remains unproven. Local ordered-exp keeps a different score-rounding/reduction schedule.",
+      "observed_source_contract": "SGLang scales Q by scale*log2(e) then rounds back to Q dtype before dot; FP32 exp2/max/normalizer/PV accumulator, probabilities cast to V dtype, tl.sum reduction (its exact execution order is not proved here). The scaled-Q boundary may match local code when scale=1/16; its binding/lowering still needs verification. Triton emits math.exp2 then LLVM exp2; pinned NVPTX pattern selects ex2.approx.f32 with an FTZ flag whose deployed setting remains unproven. Local accumulation/reduction scheduling does not establish whole-kernel equivalence.",
       "verification": "Main retrieved and byte-compared all listed SGLang files against Git blobs; retrieved immutable PyTorch/Triton/LLVM primary-source blobs and pins. This is source evidence, not installed CUDA artifacts, PTX/SASS or observed framework outputs.",
       "consumer": "One math-only native-exp2 candidate decision for current QSA; review at its source-contract/first component gate. No global fast-math or whole-path equivalence claim."
     },
@@ -706,7 +706,7 @@
       "path": "src/kernels/sycl/qsa_bf16_prefix.cpp",
       "sha256": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192"
     },
-    "next_research_state": "Orca decision-support source audit running; do not steer. Main continues the existing owned Down comparison.",
+    "next_research_state": "Pinned source audit and native review complete. No repeat survey eligible; Main owns implementation. Original worker completion remains unconfirmed in the existing dispatch.",
     "pinned_contract_dispatch": {
       "task": "task_5a8bdd6c7c16",
       "dispatch": "ctx_1a4c70297f89",
@@ -720,7 +720,23 @@
         ],
         "maximum_bytes": 32768
       },
-      "next_consumer": "Native Codex gpt-6-luna max scope/source review; Main consumes only its short operational digest before selecting one prototype."
+      "next_consumer": "Main selects one guarded math-only prototype using the reviewed contract; retire report/review after that first discriminator or rejection. Reconcile existing Orca completion separately before claiming lifecycle closure.",
+      "report_bytes": 15515,
+      "report_sha256": "cbefc9baf2f907f55f06896557e21e975fa4c6331cac74ce18c833b73f275270",
+      "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-pinned-native-exp2-contract-native-review.json",
+      "review_bytes": 10552,
+      "review_sha256": "50a63c29bdd5c841c61cc42a649f53eb4c7ac2eef84417a1a364b510ce78ca02",
+      "technical_state": "Report and native Codex gpt-6-luna max review complete; accept with minor precision corrections.",
+      "lifecycle_state": "Completion receipt unconfirmed: worker reports runtime_unavailable from its original outcome-send; no durable worker_done delivered. Exact dispatch remains dispatched/in_progress with retained external terminal and idle prompt. No worker impersonation, release or duplicate task."
+    },
+    "pinned_contract_review_digest": {
+      "decision": "accept_with_minor_precision_corrections",
+      "corrections": [
+        "Scaled-Q BF16 conversion may match local code if the selected scale is 1/16 and lowering preserves its FP32 sequence; verify the binding before asserting a difference.",
+        "The invalid IEEE subtraction -inf - -inf produces NaN; this is not a language-level undefined-behavior finding."
+      ],
+      "limits": "Pinned source lowering selects approximate FP32 exp2 with FTZ-dependent spelling; deployed CUDA artifacts are not observed. SYCL native exp2 range/error/denormal behavior is implementation-defined. No full negative-domain legality, whole-kernel equivalence or speed gain established.",
+      "next_action": "Select one compile-time guarded math-only seam and establish the actual implementation domain, special/state behavior, isolated codegen and clean local numerical/performance gates. No generic repeat research until a concrete prototype leaves a finite unresolved question."
     }
   },
   "warmed_gemm_reference_scope": {
@@ -1339,8 +1355,8 @@
         "Retrieval map for a later concrete question"
       ],
       "paper_sections": [
-        "SyclKittens \u00a7\u00a73.2\u20133.3 and Appendix D for operand layouts, subgroup prefetch and the measured ablation.",
-        "Xe-Forge \u00a7\u00a7IV\u2013V, VI-A, VI-D\u2013VI-E for search/validation workflow, hardware, baseline and kernel results."
+        "SyclKittens §§3.2–3.3 and Appendix D for operand layouts, subgroup prefetch and the measured ablation.",
+        "Xe-Forge §§IV–V, VI-A, VI-D–VI-E for search/validation workflow, hardware, baseline and kernel results."
       ]
     }
   },
