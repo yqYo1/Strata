@@ -1,17 +1,17 @@
 {
-  "source_commit": "cc6e596c638f108af2e50f229ea88ee6496792cf",
+  "source_commit": "9621ef76f7e6db30c6faf1500a7d14d6756e8ad6",
   "input_sha256": {
-    "tools/sycl/profile_attention.py": "4c1e3509b71b9cefb0653549de10346577ecc20f46349d03be870aa93b4a7575",
+    "tools/sycl/profile_attention.py": "c7eda5e0663250382c67e72af0cd201728fd60dd79817e92736ad90d65de4310",
     "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
     "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
     "tools/sycl/measurement_environment.json": "637cc6f8f410cf8400fd7b4598182e2e91d1c5cf907ef428e73321faf0aa47fa",
-    "bench/results/2026-10-15-pr6-recovery-audit/qsa-attention-current.json": "a68a0e954660d5a484703c1596e218556c4a8b9234d700ef6fc690ffef436c86"
+    "bench/results/2026-10-15-pr6-recovery-audit/qsa-attention-current.json": "56268e4c03ce9e4dead5b779028ad3123187bf411bb0790eb237d5f8ad12f021"
   },
   "fixture": {
-    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_rows_bench",
-    "sha256": "681bba084425237a312b87e26a66e7dbae8bc52c4d6a31dab3f5e6fd0884ffde"
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_qcache_bench",
+    "sha256": "889fea241e43f80bca30c09567808252f7856690ea01cffe4869ddd3fc0637fe"
   },
-  "build_source_commit": "51a6f70aa98acca2f733b9569514afe9ed6350d2",
+  "build_source_commit": "0ddd14719211b6ddf8a09737c3bc2e6b3402c1cb",
   "driver": {
     "pci": "/sys/bus/pci/devices/0000:05:00.0",
     "driver": "xe",
@@ -22,54 +22,18 @@
   },
   "checks": [
     {
-      "mode": "smoke",
-      "command": [
-        "/opt/intel/oneapi/vtune/latest/bin64/vtune",
-        "-collect",
-        "gpu-hotspots",
-        "-knob",
-        "gpu-profiling-mode=characterization",
-        "-knob",
-        "characterization-mode=overview",
-        "-knob",
-        "dump-compute-task-binaries=false",
-        "-knob",
-        "collect-programming-api=true",
-        "-knob",
-        "gpu-sampling-interval=1",
-        "-data-limit=16",
-        "-user-data-dir",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-hardware-profile-current/smoke/user",
-        "-result-dir",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-hardware-profile-current/smoke/vtune",
-        "--",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_rows_bench",
-        "--smoke"
-      ],
-      "collector_exit_code": 1,
-      "collector_ok": false,
-      "target_reported_pass": false,
-      "ownership_closed": true,
-      "target_cases": [],
-      "collector_diagnostics": [
-        "vtune: Error: This analysis type is not applicable to the system because VTune Profiler cannot recognize the processor. If this is an old Intel processor, please refer to the minimum hardware requirements in the release note. If this is a new Intel processor, please check for an updated version of VTune Profiler. If this is an unreleased Intel processor, please contact Online Service Center for an NDA product package.",
-        "vtune: Error: This analysis type is not applicable to the current machine microarchitecture."
-      ],
-      "owner_error": null
-    },
-    {
       "mode": "resources",
       "command": [
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_rows_bench",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_qcache_bench",
         "--smoke"
       ],
-      "recipe_commit": "9b99c4a34fea6a4429cb07b36c81191037f2f123",
+      "recipe_commit": "9621ef76f7e6db30c6faf1500a7d14d6756e8ad6",
       "input_sha256": {
-        "tools/sycl/profile_attention.py": "09a365882d937bbfc361b0be0cfc558d4538c838315284e36bf6152310024ad9",
+        "tools/sycl/profile_attention.py": "c7eda5e0663250382c67e72af0cd201728fd60dd79817e92736ad90d65de4310",
         "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
         "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
         "tools/sycl/measurement_environment.json": "637cc6f8f410cf8400fd7b4598182e2e91d1c5cf907ef428e73321faf0aa47fa",
-        "bench/results/2026-10-15-pr6-recovery-audit/qsa-attention-current.json": "a68a0e954660d5a484703c1596e218556c4a8b9234d700ef6fc690ffef436c86"
+        "bench/results/2026-10-15-pr6-recovery-audit/qsa-attention-current.json": "56268e4c03ce9e4dead5b779028ad3123187bf411bb0790eb237d5f8ad12f021"
       },
       "environment": {
         "PATH": "/usr/bin:/bin",
@@ -140,6 +104,7 @@
     "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-hardware-profile-current/resources/cache",
     "IGC_DumpZEInfoToConsole": "1"
   },
+  "current_recipe_commit": "9621ef76f7e6db30c6faf1500a7d14d6756e8ad6",
   "permissions": {
     "dev/xe/observation_paranoid": "1",
     "kernel/perf_event_paranoid": "4",
@@ -150,18 +115,6 @@
     "sha256": "7987d63d0e8ed24fdad6572d8f0873e709831463d202a7fb71c59b6709e9a05d",
     "version": "Intel(R) VTune(TM) Profiler 2026.4.0 (build 632893) Command Line Tool\nCopyright (C) 2009 Intel Corporation. All rights reserved."
   },
-  "ownership_closed": true,
-  "fresh_faults": [],
-  "boot_unchanged": true,
-  "driver_after": {
-    "pci": "/sys/bus/pci/devices/0000:05:00.0",
-    "driver": "xe",
-    "vendor": "0x8086",
-    "device": "0xe20c",
-    "kernel": "7.0.0-38-generic",
-    "devcoredump": false
-  },
-  "current_recipe_commit": "9b99c4a34fea6a4429cb07b36c81191037f2f123",
   "emitted_metadata_observed": true,
   "emitted_resource_summary": {
     "kernels": [
@@ -296,29 +249,30 @@
           "has_dpas": "true",
           "has_no_stateless_write": "true",
           "require_disable_eufusion": "true",
-          "indirect_stateless_count": "6",
+          "indirect_stateless_count": "4",
           "inline_data_payload_size": "32",
           "offset_to_skip_per_thread_data_load": "192",
           "simd_size": "16",
           "slm_size": "32",
+          "spill_size": "2112",
           "subgroup_independent_forward_progress": "true",
           "eu_thread_count": "8"
         },
-        "per_thread_memory_buffers": null,
+        "per_thread_memory_buffers": "- type:            scratch\n        usage:           single_space\n        size:            4096",
         "observed_launches": {
           "launches": 7,
           "local_arguments": [
             {
               "index": 0,
-              "bytes": 8192
-            },
-            {
-              "index": 1,
               "bytes": 16384
             },
             {
-              "index": 2,
+              "index": 1,
               "bytes": 1024
+            },
+            {
+              "index": 3,
+              "bytes": 64
             },
             {
               "index": 4,
@@ -329,36 +283,53 @@
               "bytes": 64
             },
             {
-              "index": 6,
-              "bytes": 64
-            },
-            {
-              "index": 14,
+              "index": 13,
               "bytes": 256
             },
             {
-              "index": 16,
+              "index": 15,
               "bytes": 2112
             },
             {
-              "index": 17,
+              "index": 16,
               "bytes": 64
             }
           ],
-          "dynamic_local_bytes": 28224
+          "dynamic_local_bytes": 20032
         }
       }
     ],
     "raw_sha256": {
-      "vtune.stdout": "51b9cd4c533f8534f37f02f8b826e11e27e0f02c423a3c33be585598769f537e",
-      "vtune.stderr": "801dc460cc115996600d51628c0fa76353d76841b084fabf34e578b39dad6f78"
+      "vtune.stdout": "58232c03d21035b03533b67805c1e790aa8f1f08be37a436dbdd7dd01647098f",
+      "vtune.stderr": "cc82f2dd5737292c88f9f8b5bec301dff4ed87e9a9d0e248c4b72a7dc8074a84"
     },
     "limits": [
-      "Metadata describes all JIT-compiled template variants; trace launch identities distinguish the executed prefix33 and row-publication kernels.",
-      "GRF128 is emitted allocation metadata, not measured live occupancy or arithmetic utilization.",
-      "SLM32 is static compiler metadata; traced dynamic local arguments total28224B for both executed attention variants. Hardware rounded allocation/residency unmeasured.",
-      "No spill_size/per_thread scratch field emitted for either executed score33 variant. This is not a hardware traffic counter.",
-      "Unused score32 variant has spill_size1920 and per-thread scratch2048; it was compiled but not launched by this fixture."
+      "Compiler metadata and traced dynamic arguments, not hardware counters or measured occupancy.",
+      "Static slm_size excludes separately supplied dynamic-local arguments; hardware rounding is unmeasured.",
+      "Compiled variants without a successful traced launch are not executed-path evidence."
     ]
+  },
+  "ownership_closed": true,
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  },
+  "candidate_resource_comparison": {
+    "baseline_grf_count": 128,
+    "candidate_grf_count": 128,
+    "baseline_dynamic_local_bytes": 28224,
+    "candidate_dynamic_local_bytes": 20032,
+    "candidate_admission_budget_bytes": 20036,
+    "candidate_spill_size_metadata": 2112,
+    "candidate_scratch_allocation_metadata": 4096,
+    "baseline_scratch_descriptor_present": false,
+    "unused_four_byte_accessor_eliminated": true,
+    "decision": "Baseline metadata prerequisite met. Cached Q reduces dynamic local bytes but current128GRF JIT spills; qualify component correctness and measure the whole-call tradeoff. No occupancy or performance gain assumed."
   }
 }

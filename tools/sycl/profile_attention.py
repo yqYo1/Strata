@@ -50,11 +50,11 @@ def emitted_resources(text, trace):
     resources = []
     for block in re.split(r'(?m)^  - name:\s+', text)[1:]:
         name = block.splitlines()[0].strip()
-        execution = re.search(r'(?ms)^    execution_env:\n(.*?)(?=^    \S|\Z)', block)
+        execution = re.search(r'(?ms)^    execution_env:\n(.*?)(?=^ {0,4}\S|\Z)', block)
         if not execution:
             continue
         fields = dict(re.findall(r'^      (\w+):\s*(.*?)\s*$', execution[1], re.M))
-        scratch = re.search(r'(?ms)^    per_thread_memory_buffers:\n(.*?)(?=^    \S|\Z)', block)
+        scratch = re.search(r'(?ms)^    per_thread_memory_buffers:\n(.*?)(?=^ {0,4}\S|\Z)', block)
         # Keep executed kernels and distinct spill evidence, not every compiled template.
         if name not in launches and not scratch:
             continue
