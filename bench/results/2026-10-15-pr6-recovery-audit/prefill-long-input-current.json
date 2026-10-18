@@ -1,6 +1,6 @@
 {
-  "mode": "qsa-long-input-source-view-check",
-  "source_commit": "5e1a81b5d9af5043a5ad9d751f12564c5cd1507b",
+  "mode": "qsa-long-input-source-view-base",
+  "source_commit": "0e40a1e1652e362cf1c5b543f4fa549ae80cde04",
   "build_source_commit": "a57611b9c52f5d1cf2f5281b3cc7eb4087b5cd12",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
@@ -55,42 +55,35 @@
     "STRATA_PREFILL_BF16X2": "0",
     "STRATA_PF_FUSED": "0",
     "STRATA_PREFILL_CANONICAL_DENSE_BANK": "1",
-    "STRATA_PREFILL_LAYER_MAJOR_PROFILE": "1",
-    "STRATA_PREFILL_LAYER_MAJOR_QSA_PROFILE": "1",
+    "STRATA_PREFILL_LAYER_MAJOR_PROFILE": "0",
+    "STRATA_PREFILL_LAYER_MAJOR_QSA_PROFILE": "0",
     "STRATA_SYCL_SELECT_RADIX4": "1",
     "STRATA_SYCL_SELECT_CYCLIC": "0",
     "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
     "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-source-view-check-v2/cache",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-source-view-base-v1/cache",
     "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
     "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
     "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
     "STRATA_SYCL_PREFILL_NATIVE16_QSA": "1",
     "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
     "STRATA_ROPE_TABLE": "1",
-    "STRATA_PREFILL_CPU_WAIT_PROFILE": "1",
+    "STRATA_PREFILL_CPU_WAIT_PROFILE": "0",
     "STRATA_SYCL_PREFILL_MOE_WINDOW": "10",
     "STRATA_SYCL_SCORE_QUERY_TILE": "8",
     "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
     "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
     "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
-    "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
-    "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
-    "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
-    "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-    "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
-    "STRATA_TRACE": "1",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-source-view-check-v2/tmp",
-    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-source-view-check-v2",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-source-view-base-v1/tmp",
+    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-source-view-base-v1",
     "ZES_ENABLE_SYSMAN": "0",
     "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
     "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
     "STRATA_SYCL_PREFILL_GU_SWIGLU": "large",
-    "STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW": "1",
+    "STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW": "0",
     "STRATA_SYCL_PREFILL_DOWN_SCATTER": "0",
     "STRATA_SYCL_PREFILL_MIXED_SCRATCH": "1",
-    "STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS": "384",
-    "STRATA_PREFILL_LAYER_MAJOR_GDN_PROFILE": "1"
+    "STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS": "384"
   },
   "config": {
     "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
@@ -108,7 +101,7 @@
       "--expert-cache",
       "128",
       "--expert-profile",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-source-view-check-v2/expert-profile.bin",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-source-view-base-v1/expert-profile.bin",
       "--expert-cache-per-layer",
       "--pool-workers",
       "5",
@@ -147,7 +140,7 @@
       "strata"
     ],
     "host": "127.0.0.1",
-    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-source-view-check-v2/engine.stderr",
+    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-source-view-base-v1/engine.stderr",
     "engine_silence_s": 480,
     "parallel": 1,
     "open_browser": false,
@@ -157,11 +150,11 @@
     "/bin/sh",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
     "--config",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-source-view-check-v2/config.json",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-source-view-base-v1/config.json",
     "--port",
-    "52527",
+    "36375",
     "--runs",
-    "1",
+    "4",
     "--prefill-only",
     "--prefill-tokens",
     "98304",
@@ -172,13 +165,13 @@
     "--ready-timeout",
     "600",
     "--out",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-source-view-check-v2/bench"
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-source-view-base-v1/bench"
   ],
   "reference": {
     "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-softmax-measurement-inputs-v1.json",
     "sha256": "3792c36462e333816ce5d5d9ac39f3dcc13809939d8d3133c570d8945257d1dd"
   },
-  "config_sha256": "e16a9f6f7237df10270286185c38dea5fce0dd218a91f574e48a7dcb2f2be87c",
+  "config_sha256": "3c9c2752ded504aec4ecd5d4f41913d838bb7ac5db1904dd5e9ff0bfb7b68993",
   "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
   "complete": false,
   "passed": false,
@@ -186,10 +179,6 @@
   "model_quality_qualified": false,
   "physical262144_RESTORE_qualified": false,
   "performance_adopted": false,
-  "host_qualification": [],
-  "cpu_observer_version": 4,
-  "cpu_fixture_receipt_sha256": "6724506fcfd69ba81d7f035541d14eda6fe6a29b9ac92f05d8f85dae26223786",
-  "profile_route_qualification": null,
   "ordered_exp_qualification": {
     "component_path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-ordered-exp-current.json",
     "component_sha256": "d6af7daf82a4485eb86279b42114149ed8374188f8823764b608817c07c7b3ae",
@@ -250,12 +239,10 @@
     "build_source_commit": "a57611b9c52f5d1cf2f5281b3cc7eb4087b5cd12",
     "limits": "Production upload helper/cache, synthetic byte readers, private maps and caller unwind only. No real provider enqueue fault injection, model arithmetic, speed, session rollback or physical262144/RESTORE qualification."
   },
-  "previous_screen": {
-    "commit": "5e1a81b5d9af5043a5ad9d751f12564c5cd1507b",
+  "preceding_long_input_result": {
+    "commit": "0e40a1e1652e362cf1c5b543f4fa549ae80cde04",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json",
-    "mode": "qsa-long-input-expert-bank-64k",
-    "passed": true,
-    "error": null
+    "mode": "qsa-long-input-source-view-check"
   },
   "source_view_qualification": {
     "source_contract_cleared": true,
@@ -284,7 +271,7 @@
     "limits": "Real production Arena async readers, numerical/task quality,failure-session/RESTORE,physical262144 and sustained performance remain unqualified until subsequent model gates."
   },
   "source_view_comparison": {
-    "enabled": true,
+    "enabled": false,
     "expected_actual_read_tokens": 117489,
     "expected_borrowed_layer_span_bytes": 50292326400,
     "requested_only_change": "STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW=0|1",
@@ -299,14 +286,6 @@
     "requests_per_process": 4,
     "prospective_selection": "All3 independent paired subsequent medians favor the view; geometric mean of paired ratios>1.005, no fresh faults or eligibility/ownership failures. Target1000tok/s is checked separately, not assumed from source-copy removal.",
     "limits": "Opt-in117K scheduling comparison; default adoption still needs broad quality,physical262144,session/RESTORE and sustained-generation gates."
-  },
-  "phase_profile_scope": {
-    "question": "Validate the admitted immutable Arena view on117K input and quantify remaining preparation/upload/explicit-wait CPU before clean same-binary A/B.",
-    "route": "Current committed candidate engine,117488 all-GPU rows,384 slots,borrowed mixed scratch,GU-large,Down0;81920+35568 rows per layer; source_view=1.",
-    "coverage": "Checked coarse observer v3, four extra event pairs retired only after existing checked drains; per-layer expected counts for all36GDN layers, with zero GDN samples on12QSA layers. Legacy STRATA_PREFILL_TIMING remains prohibited.",
-    "limits": "No fine command sampler: staged expert H2D is not tagged by that compiled sampler. Coarse GPU intervals include host gaps; CPU time in waits is separate from source preparation. No physical PCIe/VRAM traffic, arithmetic saturation or clean speed claim.",
-    "retirement": "Extract compact phase samples and faults; retire normal full logs/JIT after source/recipe recovery. No implementation adoption.",
-    "source_copy_hypothesis": "Legacy source_copy category now measures preparation only: actual source marker must prove view admission, zero owned upload slab and no512-expert CPU repacking. A classification change is not a speedup; clean matched request latency decides."
   },
   "source_count": 110,
   "source_aggregate_sha256": "584647f7ba73beadd05f0aa476f8ddaff1e10c415b41603cae8078fb5353e5eb"
