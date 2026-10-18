@@ -128,7 +128,12 @@
           "Compile/JIT support and exact production-instance correctness; joint_matrix objects are noncopyable on this compiler.",
           "Measure actual GRF/spill/SLM metadata and model timing;28224->20032B is requested memory only.",
           "Pin emitted baseline register/SLM resources and choose a bounded Q-fragment variant; added GRF/spill/residency cost remains unknown."
-        ]
+        ],
+        "completed_prerequisites": [
+          "Prefix model route retained after matched model comparison.",
+          "Actual emitted baseline128GRF and absence of scratch descriptor captured; dynamic local28224B traced separately from static32B."
+        ],
+        "status": "Main may implement a bounded cached-Q component candidate, then measure its emitted GRF/spill/local arguments before clean performance. No assumed occupancy gain."
       }
     ],
     "research_dispatch": "No repeated generic QSA research while these Main-owned measurements/prerequisites remain pending.",
@@ -277,6 +282,32 @@
       "Xe2 profiler metric coverage and permission interpretation",
       "Exact emitted GRF/SLM/spill extraction without hardware counters"
     ],
-    "question": "Obtain hardware evidence before choosing another QSA candidate; no repeat generic attention or grouped-GEMM survey."
+    "question": "Obtain hardware evidence before choosing another QSA candidate; no repeat generic attention or grouped-GEMM survey.",
+    "state": "Both Orca Luna reports completed and native Luna-max reviews completed; Main extracted exact installed-stack metadata.",
+    "reviews": [
+      {
+        "topic": "xe2-profiler-coverage",
+        "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/xe2-profiler-coverage.md",
+        "report_sha256": "b8b760a40059c4867c9362d6e516855c8e7eee064ec398bbbe0a8ca83d8941aa",
+        "report_bytes": 15180,
+        "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/xe2-profiler-coverage-review.json",
+        "review_sha256": "9a62323d0e4f7d693ec6118569618c0c7bfb62682ddf09f7aed5a7646341fcc0"
+      },
+      {
+        "topic": "xe2-emitted-resources",
+        "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/xe2-emitted-resources.md",
+        "report_sha256": "748f6d5c76f60f2495a542bd44077204e04e0ffe5368068598e9f43608c26daa",
+        "report_bytes": 17391,
+        "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/xe2-emitted-resources-review.json",
+        "review_sha256": "87a943f492122bd607916ecb391a2656c103b2e73b8887f76475ec95502f737e"
+      }
+    ],
+    "main_evidence": {
+      "result": "qsa-hardware-profile-current.json",
+      "VTune": "2026.4 GPU-hotspots rejects Ryzen5600X CPU microarchitecture before target launch; not a permission denial. No hardware counters.",
+      "emitted": "IGC_DumpZEInfoToConsole=1 on qualified exact fixture: executed prefix33 and row variant128GRF/SIMD16, static SLM32 plus28224 dynamic-local arguments, no scratch descriptor. Unused compiled score32 variant spills1920 with2048scratch; not executed evidence.",
+      "limits": "No occupancy/saturation/physical bandwidth proof. Compiler static SLM excludes dynamic arguments. Battlemage media support does not prove compute counters. VTune docs describe XMX metrics but B570 availability unverified."
+    },
+    "retention": "Current emitted-resource decision only; reassess report/review bodies after Q-fragment candidate qualification. Main did not read collection body."
   }
 }
