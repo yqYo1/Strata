@@ -425,6 +425,29 @@ def summarize_gu():
     return 0
 
 
+def source_view_pair_statistics(arms):
+    """Each process contributes one subsequent median to its paired ratio."""
+    guards.require(len(arms) == 6 and {a['label'] for a in arms} ==
+                   {'A0', 'B0', 'A1', 'B1', 'A2', 'B2'}, 'six unique source-view arms required')
+    pairs = []
+    for cohort in range(3):
+        a = next(x for x in arms if x['label'] == 'A' + str(cohort))
+        b = next(x for x in arms if x['label'] == 'B' + str(cohort))
+        pairs.append(dict(cohort=cohort, base_median=a['subsequent_median'],
+            candidate_median=b['subsequent_median'], median_ratio=b['subsequent_median']/a['subsequent_median'],
+            first_use_ratio=b['first_use_tps']/a['first_use_tps'],
+            requested_payload_matches=a['requested_expert_H2D_bytes'] == b['requested_expert_H2D_bytes'],
+            output_hashes_match=a['output_hashes'] == b['output_hashes'],
+            reasoning_hashes_match=a['reasoning_hashes'] == b['reasoning_hashes']))
+    geomean = statistics.geometric_mean(p['median_ratio'] for p in pairs)
+    medians = [a['subsequent_median'] for a in arms if a['label'].startswith('B')]
+    return dict(pairs=pairs, paired_median_speed_geomean=geomean,
+        geomean_gain_percent=100*(geomean-1),
+        performance_selection_gate_passed=all(p['median_ratio'] > 1 for p in pairs) and geomean > 1.005,
+        requested_expert_payload_matches_in_all_pairs=all(p['requested_payload_matches'] for p in pairs),
+        candidate_process_medians=medians, prefill1000_target_passed=all(x >= 1000 for x in medians))
+
+
 def summarize_source_view():
     """Analyze three frozen process pairs; first use remains separate evidence."""
     from build_engine import blobs
@@ -564,25 +587,11 @@ def summarize_source_view():
                 requested_expert_H2D_bytes=[int(t['requested_H2D_bytes']) for t in totals],
                 output_hashes=[r['output_sha256'] for r in requests],
                 reasoning_hashes=[r['reasoning_sha256'] for r in requests]))
-        pairs = []
-        for cohort in range(3):
-            a = next(x for x in arms if x['label'] == 'A' + str(cohort))
-            b = next(x for x in arms if x['label'] == 'B' + str(cohort))
-            pairs.append(dict(cohort=cohort, base_median=a['subsequent_median'],
-                candidate_median=b['subsequent_median'], median_ratio=b['subsequent_median']/a['subsequent_median'],
-                first_use_ratio=b['first_use_tps']/a['first_use_tps'],
-                requested_payload_matches=a['requested_expert_H2D_bytes'] == b['requested_expert_H2D_bytes'],
-                output_hashes_match=a['output_hashes'] == b['output_hashes'],
-                reasoning_hashes_match=a['reasoning_hashes'] == b['reasoning_hashes']))
-        geomean = statistics.geometric_mean(p['median_ratio'] for p in pairs)
-        selected = all(p['median_ratio'] > 1 for p in pairs) and geomean > 1.005
-        candidate_medians = [a['subsequent_median'] for a in arms if a['label'].startswith('B')]
-        current['independent_source_view_comparison'] = dict(analyzer_source_commit=head, arms=arms, pairs=pairs,
+        statistics_result = source_view_pair_statistics(arms)
+        selected = statistics_result['performance_selection_gate_passed']
+        current['independent_source_view_comparison'] = dict(analyzer_source_commit=head, arms=arms,
             independent_units='Three process pairs; the three subsequent requests within a process are repeated samples, not independent processes.',
-            paired_median_speed_geomean=geomean, geomean_gain_percent=100*(geomean-1),
-            performance_selection_gate_passed=selected,
-            requested_expert_payload_matches_in_all_pairs=all(p['requested_payload_matches'] for p in pairs),
-            candidate_process_medians=candidate_medians, prefill1000_target_passed=all(x >= 1000 for x in candidate_medians),
+            **statistics_result,
             exact_original_benchmark_inputs_recovered=True, frozen_input_count=len(source_set),
             exact_original_build_inputs_recovered=recovered_build_inputs,
             original_build_source_commit=full_build['source_commit'], original_recipe=recipe,
