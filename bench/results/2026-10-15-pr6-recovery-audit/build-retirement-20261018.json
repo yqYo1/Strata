@@ -788,5 +788,80 @@
     "removed_bytes": 66440272,
     "original_outcomes_unchanged": true,
     "selected_current_and_four_fixtures_unchanged": true
+  },
+  "closed_source_preparation_diagnostics_v1": {
+    "performed": true,
+    "manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/closed-prefill-host-and-64k-retirement-20261019.json",
+      "sha256": "a2b07a2094aed132fbcde4fb387c027c025b0ba204b3366a8059db852c526e2b"
+    },
+    "file_count": 281,
+    "bytes": 52471406,
+    "roots": [
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-64k-check-v1",
+        "archive_commit": "ca2ee80eb",
+        "archive_path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json",
+        "original_passed": true,
+        "source_commit": "333a9768aba15c758397e760e4afeae0e0124157",
+        "benchmark_blobs_recovered": 110,
+        "file_count": 70,
+        "bytes": 12871658
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-64k-v1",
+        "archive_commit": "2c57e8ce8",
+        "archive_path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json",
+        "original_passed": true,
+        "source_commit": "ca2ee80eb794f619d958a3d358be3a9628fbdcfe",
+        "benchmark_blobs_recovered": 110,
+        "file_count": 70,
+        "bytes": 12815681
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-host-check-v2",
+        "archive_commit": "83e00989d4df1b1b45439606a1fdf8ce11ec2fe4",
+        "archive_path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-host-attribution-current.json",
+        "original_passed": true,
+        "source_commit": "949169b0c1ea0f63d25ff1ac083ab66dc008a25a",
+        "benchmark_blobs_recovered": 110,
+        "file_count": 70,
+        "bytes": 13232621
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-host-census-v1",
+        "archive_commit": "87d12f2f5",
+        "archive_path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-host-attribution-current.json",
+        "original_passed": false,
+        "source_commit": "83e00989d4df1b1b45439606a1fdf8ce11ec2fe4",
+        "benchmark_blobs_recovered": 110,
+        "file_count": 70,
+        "bytes": 13544254
+      }
+    ],
+    "build_source_proofs": [
+      {
+        "revision": "1222e27d01f32c5bb31f574ff4b143c489a3bcf1",
+        "blobs": 501
+      },
+      {
+        "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+        "blobs": 3608
+      },
+      {
+        "revision": "87f6850680a580654b9ea2c80dbc01aeb36ad231",
+        "blobs": 5703
+      }
+    ],
+    "recipe_recovered": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-entry-engine-build-v2.json",
+      "sha256": "9b7734387f0fc56f36afe9d7bca75e5f0bedcef479271e982025abe1d4334a1a"
+    },
+    "corrected_host_analysis": {
+      "commit": "159234242",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-host-attribution-current.json",
+      "original_failure_unchanged": true
+    },
+    "decision": "Retire rejected78K screen and consumed host-source-copy diagnostics after exact original source/controller/recipe and archived samples/status recovery. Current source-view comparison, validated fallback and six legacy provenance holds remain untouched."
   }
 }
