@@ -559,10 +559,41 @@ policy (`ptrace_scope=1`); it produced no qualified CPU samples. Preserve the
 [failed capability receipt](../bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json).
 The reviewed next path is disjoint non-GEMM host timing around existing launch
 segments, preserving internal GEMM/transfer scopes. The current Host accounting
-rejects nested Host regions, so a whole-job outer timer is invalid. Instrumentation
-is not implemented yet: qualify its CPU-only lifetime/exception/accounting cases,
-then separate traced and untraced bounded model diagnostics. No speedup follows
+rejects nested Host regions, so a whole-job outer timer is invalid. That review
+requires CPU-only lifetime/exception/accounting cases before separate traced
+and untraced bounded model diagnostics. No speedup follows
 from this source review.
+
+The next diagnostic revision adds version4 CPU categories only to the mode10
+expert window: map upload, job-weight preparation, gate/up and down dequantization,
+gather, SwiGLU, accumulation and status readback. Each wraps an existing disjoint
+host segment; internal GEMM accounting remains unchanged. Explicit GPU waits
+inside a category are subtracted. These regions cover all layers with command
+tracing off or on; no device kernel, transfer, synchronization or inference order
+is added. Pre-job span/layout checks and other engine work remain unclassified.
+Version3 and version4 unclassified time therefore describe different partitions.
+
+Before the engine rebuild, `tools/sycl/check_host_profile.py` compiles and runs
+the CPU-only fixture from committed inputs. It checks disabled/TLS ownership,
+all17 region counters, nested wait subtraction, idempotent closure, exceptions
+and invalid nesting. The parser must reject incomplete, duplicate, wrong-version,
+nonzero-throw and inconsistent-partition receipts. Preserve the known-good engine
+and same-library fixture outside the reused build root; the builder now requires
+that hashed fallback before overwriting outputs.
+
+The model sequence is `bench_engine.py prepare|run` with
+`qsa-gdncols4-host-check`, then `qsa-gdncols4-host-traced-check`, then
+`qsa-gdncols4-host-census`. The first two each use one32K nominal input
+(actual token count recorded), thinking on, parameter validation and CPU/coarse
+observers, with command tracing off then on in separate processes. The last
+uses two fresh78K requests to distinguish first-use and subsequent CPU costs.
+Every version4 category count must match the48-layer planned-work census:
+one map/job-weight/status region per window, one dequant pair per active expert,
+and one gather/SwiGLU/accumulation per job. Retain compact qualification receipts
+and retire successful full logs/CPU fixture binaries once their consumer closes.
+This instrumentation has not yet run; it is not a speedup, hardware saturation,
+task-quality, physical262144 or RESTORE qualification. Observer overhead remains
+unqualified until compared with a matched clean cohort.
 
 ## Optional GDN chunk64
 

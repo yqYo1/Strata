@@ -147,7 +147,7 @@
       "candidate_path": "bench/results/2026-10-15-pr6-recovery-audit/own-qsa-kpitch-v1",
       "decision": "Reuse the existing source-audited pitch proposal after the current comparison; no new duplicate survey. Recheck immutable source/provenance and wire maintained API/tests before compiling.",
       "candidate": "Fixed score33,Cells32,WG128,SG16; K36/V260 shared tile needs9216 BF16 values,30272B requested local payload,34368B admission minimum. No hardware occupancy/bank map or performance result.",
-      "do_not_repeat": "Old global K span256 schedule regressed10.35–29.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
+      "do_not_repeat": "Old global K span256 schedule regressed10.35\u201329.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
     },
     "reviewed_base_source_sha256": "fa505d02e2b24f7cb6948033921fa697c8aeb58e6f4df6d873f13e5a7918e36b",
     "source_sha256": "c3ad8326f097050ff9ab1859e116f2cad3709a8464162143f752bc294cbe1e01",
@@ -208,7 +208,7 @@
         "bytes": 19144,
         "source_commit": "fbc7f56d7b0ddb5db5f3722ef33ca044c3f8a5c8",
         "reason": "Its conditional consumer is a selected-cell stable-reduction split. The closed QSA screen and pending pitch candidate select no split or reduction bottleneck.",
-        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report’s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
+        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report\u2019s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
       },
       {
         "path": "bench/results/2026-10-15-pr6-recovery-audit/research-matrix-register-reuse-20261018.md",
@@ -994,5 +994,38 @@
       "scope_limit": "Profiled requests, not clean speed or independent process repetitions; selected GPU service is not full-window coverage or physical hardware saturation."
     },
     "retention": "Detailed report/review have no remaining consumer after original-log checks; retire under the current deletion manifest. Useful corrections are in code and this compact decision."
+  },
+  "qsa_ordered_parallel_softmax_scope": {
+    "classification": "knowledge_collection",
+    "schedulable_now": false,
+    "question": "For the current cached-query K/Vvec4 QSA kernel, compare subgroup/SLM schedules that parallelize 32 exponentials per head while retaining the existing ascending FP32 normalizer sum, and distinguish them from the historical segmented tree-reduction proposal.",
+    "prerequisites_met": [
+      "Current QSA source is available and pinned; the warm78K profile at7ff786a27 records attention20.8568s without claiming hardware saturation.",
+      "Historical R9548-lane segmented reduction exists; this task must isolate order-preserving alternatives rather than repeat that survey."
+    ],
+    "source_commit": "016ae608038f706c8baf1d598cfae6c2a2d882f2",
+    "source_sha256": {
+      "src/kernels/sycl/qsa_bf16_prefix.cpp": "787853d89c98b345b5d036c25ade23d0d5bcee52dc11e435dc22902a3336f5cd"
+    },
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-ordered-parallel-softmax.md",
+    "state": "Orca research running; turn_started observed. Main continues disjoint host instrumentation.",
+    "retention_consumer": "Indexed optional QSA design reference; native Luna-max review decides novelty and retention before Main retrieves any body.",
+    "report_budget": {
+      "words": [
+        1300,
+        2000
+      ],
+      "maximum_bytes": 24576
+    },
+    "task_id": "task_66d1c33851cf",
+    "dispatch_id": "ctx_77884c5c6497",
+    "terminal": "term_b606bd56-09b3-4078-b7d5-c550fc8173aa",
+    "launch": {
+      "model": "gpt-6-luna",
+      "reasoning": "medium",
+      "custom_argv_verified_at_creation": true,
+      "first_attempt": "ctx_f63a7e3621b4",
+      "first_attempt_result": "Task never ran: update prompt at readiness; owned terminal released before retry."
+    }
   }
 }
