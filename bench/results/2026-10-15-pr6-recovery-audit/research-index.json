@@ -825,5 +825,34 @@
       "conclusion": "The suspected extra-queue release gap is not established for compatibility cudaFree. Native Runtime::make_queue callers still require explicit queue ownership; no runtime change selected.",
       "measurement_limit": "No isolated validation cost or host critical-path attribution; do not select a reduced-validation optimization."
     }
+  },
+  "gdn_columns_implementation_review_scope": {
+    "classification": "decision_support",
+    "schedulable_now": true,
+    "question": "Audit the exact-math column-partition implementation, collective/barrier/state ownership and fixture/controller coverage; identify concrete correctness or measurement defects without implementation changes.",
+    "prerequisites_met": [
+      "Full78451-token recurrence phase7.99004s with15.4556ms host-submit wall is recorded; current source differs from the reviewed static proposal by an actual Main-authored candidate.",
+      "Finite source review can close without missing GPU counters; Main owns all builds/tests/GPU work.",
+      "Review the new candidate delta against the previous column-partition feasibility report and current research index, rather than repeating a general GDN survey."
+    ],
+    "source_sha256": {
+      "src/kernels/sycl/fused_gdn.cpp": "70af09035947bbe99de512edb1a1c1c7374f8e2e0fb78a5629b3d460eea72e29",
+      "src/prefill/prefill.cpp": "0a6c8abfc82c498458a92409c4c83c6d6054c86315cd19cdcaafc1c2c0d7ccbb",
+      "src/prefill/layer_major.inc": "5f4067a5a9239f134b651c34c486dd7c9278551dc2d00f8cee6418b197148b19",
+      "include/strata/prefill/kernels.hpp": "b1bd910785d1a0c543182be6a076a711dce9827dce3aaf6250474c4ba18967c7",
+      "bench/sycl/gdn_columns.cpp": "f4aa4a8ceb2f13e4bba2b01dd46e5b48fbe84eec539aa39ad602ea4f017abacc",
+      "tools/sycl/measure_gdn_columns.py": "430a6c443f746f5554488c09017773c34ff24ba7e2cad4245a37d77f7b708429"
+    },
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/gdn-columns-implementation-review.md",
+    "main_reads_body_on_arrival": false,
+    "retention_consumer": "Current exact-math scheduling integration and test-coverage decision; review after candidate correctness/model screen closes.",
+    "state": "Ready for bounded Orca source review after this source commit; no product adoption.",
+    "report_budget": {
+      "words": [
+        1800,
+        2600
+      ],
+      "maximum_bytes": 30720
+    }
   }
 }

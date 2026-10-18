@@ -447,6 +447,24 @@ cost. Require exact output/state/FP16 images, guards, chunk boundaries and
 streamed262144/restore continuity before model speed comparisons. Recurrence
 is only part of the remaining cost; this candidate alone cannot qualify1000PP.
 
+`STRATA_SYCL_PREFILL_GDN_COLUMNS=1|2|4|8` selects this experiment only during
+long layer-major prefill; unset/0 keeps the original. It cannot combine with
+chunk64. For2/4/8 partitions the scan launches96/192/384 groups of256/128/64
+lanes; each lane still owns32 FP32 state elements. No occupancy gain is assumed.
+The intermediate adds two FP32 reads/writes per output element compared with
+the fused path, before considering cache behavior. Public admission checks
+registered device spans and the queue's context/device before submission.
+
+Main builds the engine and the same-library manual fixture with
+`tools/sycl/build_engine.py rebuild-gdn`, then runs
+`tools/sycl/measure_gdn_columns.py smoke`, `validate`, `perf` and `context`,
+committing each result before the next phase. The continuous resident timing
+train rotates all five arms over three independent processes; full comparisons
+run outside timing. It measures both kernels and launch gaps and excludes
+initial transfer. The separate physical-extent recurrence check includes saved
+FP32 carry restoration and the unchanged single-token decode consumer at the
+last position; it does not qualify a full model conversation RESTORE.
+
 ## Optional GDN chunk64
 
 `STRATA_SYCL_PREFILL_GDN_CHUNK64=1` adds a separate experimental long-prefill

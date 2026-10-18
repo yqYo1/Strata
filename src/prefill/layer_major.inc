@@ -44,6 +44,13 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     auto& ss = *m.ss;
     const bool native16_on = native16::requested();
     const bool gdn_chunk_on=strata::gdn_chunk64::requested();
+    const int gdn_columns = gdn_column_partitions();
+    if (gdn_columns && (gdn_chunk_on || m.T > 8192)) {
+        err="prefill GDN columns requires chunk<=8192 and existing GDN (chunk64 off)"; return false;
+    }
+    if (gdn_columns)
+        std::fprintf(stderr, "strata prefill: GDN columns=%d workgroups=%d lanes=%d epilogue=GPU_FP32_same_order scratch=existing_y\n",
+                     gdn_columns, 48 * gdn_columns, 512 / gdn_columns);
     if(gdn_chunk_on && !native16_on) {
         err="prefill chunk64 GDN requires native16 BF16";return false;
     }

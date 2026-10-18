@@ -5,6 +5,7 @@
 #include "strata/kernels/verify_kernels.hpp"
 #include "strata/prefill/kernels.hpp"
 #include "strata/sycl/launch.hpp"
+#include <algorithm>
 #include <cmath>
 namespace strata::kernels {
 namespace {
@@ -167,6 +168,65 @@ void recurrence(float *state, const float *q, const float *k, const float *v,
   });
   finish(stream, e);
 }
+
+// Main-authored scheduling variant of this file's recurrence. A column owns
+// its complete128-row state, so partitions never communicate during the scan.
+// RMS is the only cross-column operation and runs after the ordered scan.
+template <int Partitions>
+void recurrence_columns(float *state, const float *h, const float *gate,
+                        const float *beta, float *raw, int T, void *stream) {
+  constexpr int Columns = 128 / Partitions, WG = 4 * Columns, HV = 48, C = 10240;
+  auto event = queue_for(stream).submit([&](sycl::handler &handler) {
+    sycl::local_accessor<float, 1> sk(128, handler), sq(128, handler), red(WG, handler);
+    handler.parallel_for(
+        sycl::nd_range<1>(size_t(HV * Partitions) * WG, WG),
+        [=](sycl::nd_item<1> it) [[sycl::reqd_sub_group_size(32)]] {
+          const int tid = it.get_local_linear_id(), group = it.get_group_linear_id();
+          const int head = group / Partitions, partition = group % Partitions;
+          const int rg = tid / Columns, local_col = tid % Columns;
+          const int col = partition * Columns + local_col;
+          const size_t rs = size_t(HV) * 128;
+          const size_t base = (size_t(rg * 32) * HV + head) * 128 + col;
+          float s[32];
+          for (int r = 0; r < 32; ++r)
+            s[r] = state[base + r * rs];
+          for (int t = 0; t < T; ++t) {
+            // All readers of the previous tile finish before local reuse.
+            it.barrier(sycl::access::fence_space::local_space);
+            for (int d = tid; d < 128; d += WG) {
+              sq[d] = h[size_t(t) * C + (head % 16) * 128 + d];
+              sk[d] = h[size_t(t) * C + 16 * 128 + (head % 16) * 128 + d];
+            }
+            it.barrier(sycl::access::fence_space::local_space);
+            const float decay = sycl::exp(gate[size_t(t) * HV + head]);
+            float kv = 0;
+            for (int r = 0; r < 32; ++r)
+              kv = sycl::fma(s[r], sk[rg * 32 + r], kv);
+            red[tid] = kv;
+            it.barrier(sycl::access::fence_space::local_space);
+            const float proj = ((red[local_col] + red[Columns + local_col]) +
+                                red[2 * Columns + local_col]) + red[3 * Columns + local_col];
+            const float delta = sycl::fma(-decay, proj,
+                h[size_t(t) * C + 32 * 128 + head * 128 + col]) * beta[size_t(t) * HV + head];
+            float o = 0;
+            for (int r = 0; r < 32; ++r) {
+              s[r] = sycl::fma(decay, s[r], sk[rg * 32 + r] * delta);
+              o = sycl::fma(s[r], sq[rg * 32 + r], o);
+            }
+            it.barrier(sycl::access::fence_space::local_space);
+            red[tid] = o;
+            it.barrier(sycl::access::fence_space::local_space);
+            if (rg == 0)
+              raw[(size_t(t) * HV + head) * 128 + col] =
+                  (((red[local_col] + red[Columns + local_col]) +
+                    red[2 * Columns + local_col]) + red[3 * Columns + local_col]) * sycl::rsqrt(128.f);
+          }
+          for (int r = 0; r < 32; ++r)
+            state[base + r * rs] = s[r];
+        });
+  });
+  finish(stream, event);
+}
 } // namespace
 void fused_gdn_conv_l2(float *hist, const float *x, const float *w, float *out,
                        int C, int qkh, float eps, void *stream) {
@@ -285,5 +345,62 @@ void gdn_recurrence(float *state, const float *h, const float *gate,
   strata::kernels::recurrence(state, h, h + 16 * 128, h + 32 * 128, 10240, gate,
                               beta, z, gamma, eps, y, 16, 48, int(T), nullptr,
                               true, 0, stream, y16);
+}
+
+void gdn_recurrence_partitioned(float *state, const float *h, const float *gate,
+                               const float *beta, const float *z, const float *gamma,
+                               float eps, float *y, uint16_t *y16, int64_t T,
+                               int partitions, void *stream) {
+  using namespace strata::sycl_backend;
+  constexpr size_t HV = 48, V = HV * 128, C = 10240;
+  strata::kernels::dims(T > 0 && T <= 8192 &&
+      (partitions == 1 || partitions == 2 || partitions == 4 || partitions == 8));
+  strata::kernels::eps_check(eps);
+  const std::initializer_list<Span> outputs = {
+      {state, V * 128 * sizeof(float)}, {y, size_t(T) * V * sizeof(float)},
+      {y16, size_t(T) * V * sizeof(uint16_t)}};
+  const std::initializer_list<Span> inputs = {
+      {h, size_t(T) * C * sizeof(float)}, {gate, size_t(T) * HV * sizeof(float)},
+      {beta, size_t(T) * HV * sizeof(float)}, {z, size_t(T) * V * sizeof(float)},
+      {gamma, 128 * sizeof(float)}};
+  validate_spans(outputs, inputs);
+  auto &queue = queue_for(stream);
+  const auto device = queue.get_device();
+  const size_t wg = 512 / partitions;
+  strata::kernels::dims(device.get_info<sycl::info::device::max_work_group_size>() >= std::max(wg, size_t(128)) &&
+      device.get_info<sycl::info::device::max_work_item_sizes<1>>()[0] >= std::max(wg, size_t(128)) &&
+      device.get_info<sycl::info::device::local_mem_size>() >= (256 + wg) * sizeof(float));
+  const auto subgroups = device.get_info<sycl::info::device::sub_group_sizes>();
+  strata::kernels::dims(std::find(subgroups.begin(), subgroups.end(), size_t(32)) != subgroups.end());
+  for (auto span : outputs) validate_device_span(span.pointer, span.bytes, queue);
+  for (auto span : inputs) validate_device_span(span.pointer, span.bytes, queue);
+  switch (partitions) {
+  case 1: strata::kernels::recurrence_columns<1>(state, h, gate, beta, y, int(T), stream); break;
+  case 2: strata::kernels::recurrence_columns<2>(state, h, gate, beta, y, int(T), stream); break;
+  case 4: strata::kernels::recurrence_columns<4>(state, h, gate, beta, y, int(T), stream); break;
+  case 8: strata::kernels::recurrence_columns<8>(state, h, gate, beta, y, int(T), stream); break;
+  }
+  // y's read/write role is admitted once above as an owned intermediate, not
+  // passed as an aliased input/output to a disjoint-span helper. The in-order
+  // queue publishes every raw column before the separate128-lane RMS kernel.
+  auto event = queue.submit([&](sycl::handler &handler) {
+    sycl::local_accessor<float, 1> part(4, handler);
+    handler.parallel_for(
+        sycl::nd_range<1>(size_t(T) * V, 128),
+        [=](sycl::nd_item<1> it) [[sycl::reqd_sub_group_size(32)]] {
+          const size_t idx = it.get_global_linear_id();
+          const int col = it.get_local_linear_id();
+          const float oc = y[idx];
+          const float sumsq = strata::kernels::xor_sum(it.get_sub_group(), oc * oc);
+          if (col % 32 == 0) part[col / 32] = sumsq;
+          it.barrier(sycl::access::fence_space::local_space);
+          const float ss = ((part[0] + part[1]) + part[2]) + part[3];
+          const float value = ((oc * sycl::rsqrt(ss / 128.f + eps)) * gamma[col]) *
+                             (1.f / (1.f + sycl::exp(-z[idx])));
+          y[idx] = value;
+          y16[idx] = strata::kernels::f16_from_f32(value);
+        });
+  });
+  finish(stream, event);
 }
 } // namespace strata::prefill

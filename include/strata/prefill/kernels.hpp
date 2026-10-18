@@ -47,6 +47,14 @@ void gdn_conv(float* history, const float* qkv, const float* conv_w, float* h, i
 /// out projection reads); y is FP32 scratch.
 void gdn_recurrence(float* state, const float* h, const float* gate, const float* beta, const float* z,
                     const float* gamma, float eps, float* y, uint16_t* y16, int64_t T, void* stream);
+#if defined(STRATA_ENABLE_SYCL)
+/// Long-prefill scheduling experiment, T<=8192, partitions=1/2/4/8. Keeps the
+/// existing FP32 state/arithmetic; y is owned read/write scratch between two
+/// ordered GPU kernels, then contains the same final FP32 output as the original.
+void gdn_recurrence_partitioned(float* state, const float* h, const float* gate, const float* beta,
+                               const float* z, const float* gamma, float eps, float* y, uint16_t* y16,
+                               int64_t T, int partitions, void* stream);
+#endif
 
 // ---- MoE
 /// softmax over 512, top-10 (ties to the lower id), weights renormalised over the ten (the native router).

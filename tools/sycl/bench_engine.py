@@ -34,23 +34,29 @@ def main():
              'qsa-qcache-check', 'qsa-qcache-base', 'qsa-qcache',
              'qsa-kvec4-check', 'qsa-kvec4-base', 'qsa-kvec4', 'qsa-kvec4-census',
              'qsa-kvvec4-check', 'qsa-kvvec4-base', 'qsa-kvvec4',
-             'qsa-kvvec4-timing-check', 'qsa-kvvec4-census')
+             'qsa-kvvec4-timing-check', 'qsa-kvvec4-census') + tuple(
+                 f'qsa-gdncols{n}-{phase}' for n in (2, 4, 8) for phase in ('check', 'base', 'candidate'))
     guards.require(len(sys.argv) == 3 and sys.argv[1] in ('prepare', 'run') and
                    sys.argv[2] in modes, 'use prepare|run ' + '|'.join(modes))
     action, mode = sys.argv[1:]
+    column_mode = re.fullmatch(r'qsa-gdncols(2|4|8)-(check|base|candidate)', mode)
+    column_trial = column_mode is not None
+    column_check = column_trial and column_mode[2] == 'check'
+    column_partitions = int(column_mode[1]) if column_trial and column_mode[2] != 'base' else 0
     qsa = mode.startswith('qsa-')
     short_profile = mode == 'qsa-kvvec4-timing-check'
     phase_profile = short_profile or mode == 'qsa-kvvec4-census'
     census = phase_profile or mode in ('qsa-census', 'qsa-kvec4-census')
     qcache = mode.startswith('qsa-qcache')
-    kvvec4 = mode.startswith('qsa-kvvec4')
+    kvvec4 = column_trial or mode.startswith('qsa-kvvec4')
     kvec4 = kvvec4 or mode.startswith('qsa-kvec4')
-    check = census or mode in ('check', 'qsa-check', 'qsa-qcache-check', 'qsa-kvec4-check', 'qsa-kvvec4-check')
+    check = census or column_check or mode in ('check', 'qsa-check', 'qsa-qcache-check', 'qsa-kvec4-check', 'qsa-kvvec4-check')
     chunk64 = mode in ('check', 'candidate')
     generation = 'v2' if short_profile or mode == 'qsa-kvec4-check' else 'v1'
     root = B / (('qsa-attention-model-' + mode[4:] + '-' + generation) if qsa else
                 ('native-gdn-model-' + mode + '-v2'))
-    result_path = (A / 'moe-window-census-current.json' if census else
+    result_path = (A / 'gdn-columns-model-current.json' if column_trial else
+                   A / 'moe-window-census-current.json' if census else
                    A / 'qsa-kvvec4-model-current.json' if kvvec4 else
                    A / 'qsa-kvec4-model-current.json' if kvec4 else
                    A / 'qsa-cached-query-model-current.json' if qcache else
@@ -88,10 +94,11 @@ def main():
             env.update(PATH='/home/yayoi/.local/share/strata-sycl/venv/bin:' + env['PATH'],
                        TMPDIR=str(root / 'tmp'), XDG_CACHE_HOME=str(root / 'cache'),
                        STRATA_MEASUREMENT_ROOT=str(root), ZES_ENABLE_SYSMAN='0',
+                       STRATA_SYCL_PREFILL_GDN_COLUMNS=str(column_partitions),
                        STRATA_SYCL_PREFILL_GDN_CHUNK64='1' if chunk64 else '0')
             if qsa:
                 env['STRATA_SYCL_PREFILL_QSA_MATH'] = (
-                    'bf16-prefix-kvvec4' if phase_profile or mode in ('qsa-kvvec4-check', 'qsa-kvvec4') else
+                    'bf16-prefix-kvvec4' if column_trial or phase_profile or mode in ('qsa-kvvec4-check', 'qsa-kvvec4') else
                     'bf16-prefix-kvec4' if mode in ('qsa-kvec4-check', 'qsa-kvec4', 'qsa-kvec4-census', 'qsa-kvvec4-base') else
                     'bf16-prefix-qcache' if mode in ('qsa-qcache-check', 'qsa-qcache', 'qsa-kvec4-base') else
                     'bf16' if mode in ('qsa-check', 'qsa-direct') else 'bf16-prefix-optimized')
@@ -206,6 +213,14 @@ def main():
             guards.require(all(q['ok'] and q['eligible'] and q['stream_complete'] and q['thinking_requested'] and
                                q['actual_reused_tokens'] == 0 for q in requests), 'ineligible samples')
             guards.require(bool(record['route_selection']) == chunk64, 'wrong GDN route')
+            if column_trial:
+                selected = [x for x in log.splitlines() if x.startswith('strata prefill: GDN columns=')]
+                expected_column_route = (f'strata prefill: GDN columns={column_partitions} '
+                    f'workgroups={48 * column_partitions} lanes={512 // column_partitions} '
+                    'epilogue=GPU_FP32_same_order scratch=existing_y') if column_partitions else None
+                guards.require(bool(selected) == bool(column_partitions) and
+                    all(x == expected_column_route for x in selected), 'wrong GDN column partition route')
+                record['gdn_column_route'] = selected
             if qsa:
                 record['qsa_route'] = [x for x in log.splitlines() if x.startswith(
                     'strata prefill: QSA BF16 operands, FP32 online state/accumulation;')]
@@ -226,7 +241,7 @@ def main():
                     record['k_staging_route'] = selected
                 if kvvec4:
                     selected = [x for x in log.splitlines() if x.startswith('strata prefill: QSA v_staging=')]
-                    wanted = phase_profile or mode in ('qsa-kvvec4-check', 'qsa-kvvec4')
+                    wanted = column_trial or phase_profile or mode in ('qsa-kvvec4-check', 'qsa-kvvec4')
                     guards.require(bool(selected) == wanted and all('v_staging=typed4 layout=row-major' in x for x in selected),
                         'wrong four-value V kernel selection')
                     record['v_staging_route'] = selected

@@ -114,6 +114,18 @@ using Clock = std::chrono::steady_clock;
 constexpr float EPS = 1e-6f;
 constexpr int64_t N = 2560, HC = 4, D = N * HC, LR = 320, K = 10, NE = 512;
 constexpr int64_t C = 10240, ZV = 6144, HV = 48;
+#if defined(STRATA_ENABLE_SYCL)
+int gdn_column_partitions() {
+    static const int partitions = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_GDN_COLUMNS");
+        if (!value || std::strcmp(value, "0") == 0) return 0;
+        for (int n : {1, 2, 4, 8})
+            if (value[0] == char('0' + n) && value[1] == '\0') return n;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_GDN_COLUMNS must be0,1,2,4 or8");
+    }();
+    return partitions;
+}
+#endif
 // plan v0.3 P6: staging holds the largest blob of the pack (a native pack's blobs differ per layer)
 inline int64_t MAXBLOB() { return (int64_t) strata::kernels::cpu::expert_layout().max_blob; }
 constexpr int STAGE = 8;           // host->device expert staging ring (chunks below stream_all_min())
@@ -2439,7 +2451,14 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     gdn_conv(conv, m.qkv, (const float*) wc->data, m.hbuf, T, EPS, m.cs);
                     if (gp) { gp->end(GdnProfile::gdn_conv_gates, m.cs); gp->begin(GdnProfile::gdn_recurrence, m.cs); }
                     pt.mark(kPfGdnRec, cs);
-                    gdn_recurrence(state, m.hbuf, m.gate, m.beta, m.z, (const float*) wnm->data, EPS, m.y, m.y_h, T, m.cs);
+#if defined(STRATA_ENABLE_SYCL)
+                    if (m.layer_major_active && gdn_column_partitions())
+                        gdn_recurrence_partitioned(state, m.hbuf, m.gate, m.beta, m.z,
+                            static_cast<const float*>(wnm->data), EPS, m.y, m.y_h, T,
+                            gdn_column_partitions(), m.cs);
+                    else
+#endif
+                        gdn_recurrence(state, m.hbuf, m.gate, m.beta, m.z, (const float*) wnm->data, EPS, m.y, m.y_h, T, m.cs);
                     if (gp) { gp->end(GdnProfile::gdn_recurrence, m.cs); gp->begin(GdnProfile::gdn_output, m.cs); }
                     pt.mark(kPfGdnOut, cs);
 #if defined(STRATA_ENABLE_SYCL)
