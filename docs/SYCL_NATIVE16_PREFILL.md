@@ -374,6 +374,24 @@ now compares Kvec4 (variant0) with K/Vvec4 (variant1), six rotated samples per
 arm on the same three8192-query shapes. No model dispatch selects K/Vvec4 yet;
 only a positive component result justifies a separate clean long-model screen.
 
+Source`4b9618071` passed those bit/oracle/diagnostic/alias/align2/boundary
+checks, including the physical262144 component extent. Six rotated samples
+per arm reduced median complete-call latency from11.0624 to8.7701ms
+(cap33 gathered),327.2740 to230.7490ms (cap2051 gathered), and223.0425 to
+174.0250ms (cap2051 clustered):20.72%,29.49%,21.98% reductions. Inputs were
+immutable, outputs/guards matched, and no fresh GPU faults occurred. Timing
+includes admission/prefix refresh/checked drain; it is not isolated attention
+service, a bandwidth measurement or a model speed result.
+
+For the separate model screen, startup selector
+`STRATA_SYCL_PREFILL_QSA_MATH=bf16-prefix-kvvec4` reaches that exact qualified
+export with the same prefix admission and scratch lifetime. Main prepares,
+commits and runs`qsa-kvvec4-check`, then`qsa-kvvec4-base` and`qsa-kvvec4`
+through the existing official benchmark controller. The base uses Kvec4;
+both clean arms use four78K-class fresh requests, thinking on. V-route logging
+must match the chosen arm. This remains opt-in pending long-model evidence
+and the existing task/generation/full-context/RESTORE gates.
+
 ## Optional GDN chunk64
 
 `STRATA_SYCL_PREFILL_GDN_CHUNK64=1` adds a separate experimental long-prefill

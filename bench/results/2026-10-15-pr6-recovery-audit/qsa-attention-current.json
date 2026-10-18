@@ -1094,5 +1094,37 @@
     "device": "0xe20c",
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
-  }
+  },
+  "comparison": [
+    {
+      "cap": 33,
+      "pattern": "gather",
+      "baseline": "kvec4",
+      "candidate": "kvvec4",
+      "baseline_median_ms": 11.062400499999999,
+      "candidate_median_ms": 8.770107,
+      "latency_change_percent": -20.721483551422672,
+      "samples_per_arm": 6
+    },
+    {
+      "cap": 2051,
+      "pattern": "gather",
+      "baseline": "kvec4",
+      "candidate": "kvvec4",
+      "baseline_median_ms": 327.2739835,
+      "candidate_median_ms": 230.748961,
+      "latency_change_percent": -29.49364366446806,
+      "samples_per_arm": 6
+    },
+    {
+      "cap": 2051,
+      "pattern": "clustered",
+      "baseline": "kvec4",
+      "candidate": "kvvec4",
+      "baseline_median_ms": 223.042464,
+      "candidate_median_ms": 174.02498350000002,
+      "latency_change_percent": -21.97674811375827,
+      "samples_per_arm": 6
+    }
+  ]
 }

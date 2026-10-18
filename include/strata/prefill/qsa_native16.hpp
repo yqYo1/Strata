@@ -19,7 +19,7 @@ bool requested();
 // Startup-only arithmetic selector. Default preserves the qualified typed path.
 // BF16 operands follow the pinned same-model SGLang prefill design; prefix
 // packing is transient and belongs to the dedicated long-prefill lease.
-enum class AttentionMath { existing, bf16, bf16_prefix, bf16_prefix_optimized, bf16_prefix_tilepack, bf16_prefix_subgroup, bf16_prefix_qcache, bf16_prefix_kvec4 };
+enum class AttentionMath { existing, bf16, bf16_prefix, bf16_prefix_optimized, bf16_prefix_tilepack, bf16_prefix_subgroup, bf16_prefix_qcache, bf16_prefix_kvec4, bf16_prefix_kvvec4 };
 AttentionMath attention_math();
 // No submit. Required before enabling this path for any layer.
 void validate_device(void* stream);
