@@ -147,7 +147,7 @@
       "candidate_path": "bench/results/2026-10-15-pr6-recovery-audit/own-qsa-kpitch-v1",
       "decision": "Reuse the existing source-audited pitch proposal after the current comparison; no new duplicate survey. Recheck immutable source/provenance and wire maintained API/tests before compiling.",
       "candidate": "Fixed score33,Cells32,WG128,SG16; K36/V260 shared tile needs9216 BF16 values,30272B requested local payload,34368B admission minimum. No hardware occupancy/bank map or performance result.",
-      "do_not_repeat": "Old global K span256 schedule regressed10.35–29.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
+      "do_not_repeat": "Old global K span256 schedule regressed10.35\u201329.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
     },
     "reviewed_base_source_sha256": "fa505d02e2b24f7cb6948033921fa697c8aeb58e6f4df6d873f13e5a7918e36b",
     "source_sha256": "c3ad8326f097050ff9ab1859e116f2cad3709a8464162143f752bc294cbe1e01",
@@ -208,7 +208,7 @@
         "bytes": 19144,
         "source_commit": "fbc7f56d7b0ddb5db5f3722ef33ca044c3f8a5c8",
         "reason": "Its conditional consumer is a selected-cell stable-reduction split. The closed QSA screen and pending pitch candidate select no split or reduction bottleneck.",
-        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report’s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
+        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report\u2019s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
       },
       {
         "path": "bench/results/2026-10-15-pr6-recovery-audit/research-matrix-register-reuse-20261018.md",
@@ -629,7 +629,7 @@
       "Main selected the exact prospective sycl::native::exp2 versus sycl::exp2 question at4b9618071, preserving original failures and current arithmetic; this is distinct from divergence diagnosis.",
       "R938 recovered by verified hash for worker-only selected retrieval; both indices shared to avoid a generic repeat."
     ],
-    "state": "Orca succeeded, accepted settlement/ack and owned-terminal positive closure; native Luna-max review active.",
+    "state": "Orca and native Luna-max review complete; accepted settlement/ack and owned-terminal positive closure.",
     "question": "Actual framework-selected exp2/FTZ and BF16-probability/FP32-state contract for one explicit native-exp2 candidate; targeted flags versus global side effects, counterexamples and finite numerical gates.",
     "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-native-exp2-contract.md",
     "main_reads_body_on_arrival": false,
@@ -645,14 +645,132 @@
       "maximum_bytes": 30720
     },
     "retention_consumer": "Native Luna-max novelty/depth review then exact math-intrinsic selection; no performance adoption or global fast-math change.",
-    "temporary_prior": {
-      "path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/math-contract-r938-reference.txt",
-      "commit": "8063aacc6749d18089f7a53db5d3e47b745f348c",
-      "sha256": "dde882d45c2100e6d13472cee30dfec671edbb025f0887f60aa2a8aa386d2637",
-      "consumer": "This finite researcher/reviewer retrieval only; retire afterward."
-    },
     "report_bytes": 15082,
     "report_sha256": "52f862fa849ef4e5f93b1d031b440a221d4568dcd2dcb805855385823ba78eeb",
-    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-native-exp2-review.json"
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-native-exp2-review.json",
+    "review_sha256": "5a19265cc9d871278b3b23c489032aa56bc7346bfe51eab3f77a00a75c83865e",
+    "reviewed_digest": [
+      "Useful current-QSA math-only feasibility gates; generic native-math/FTZ material already covered by R938.",
+      "When old maximum exceeds the current tile maximum, the old-state rescale supplies exp2(0), not the current tile maximum.",
+      "Mutable framework source is not selected-kernel evidence. Pin the actual reference revision/dispatch/lowering before claiming a shared numerical contract. No native-exp2 implementation or adoption."
+    ],
+    "next_scope_eligibility": {
+      "schedulable_now": false,
+      "prerequisites": [
+        "Main selects and pins the actual framework reference revision, dispatch and math lowering for a concrete native-exp2 candidate."
+      ],
+      "limits": "Bounded functional feasibility does not require physical counters; clean timing and physical resource claims have separate gates."
+    },
+    "temporary_prior_retired": {
+      "source_commit": "8063aacc6749d18089f7a53db5d3e47b745f348c",
+      "source_sha256": "dde882d45c2100e6d13472cee30dfec671edbb025f0887f60aa2a8aa386d2637",
+      "manifest_commit": "143b07d89820dfffcc8e79541ab456e669ee8e24",
+      "reason": "Finite historical retrieval/review ended; original text remains recoverable from Git."
+    }
+  },
+  "warmed_gemm_reference_scope": {
+    "classification": "decision_support",
+    "schedulable_now": false,
+    "prerequisites_met": [
+      "Complete resident production-shaped FP16/BF16 sweep at860fdd6c0 and compact3482adb14 with validated service timestamps.",
+      "Actual 78K streamed-model matched M8192 GU/Down service now available atf97d3dc9b; it exceeds the short resident burst rate.",
+      "Current kernel dispatch/shape and checked CPU oracle/readback duty-cycle are readable without runtime experiments."
+    ],
+    "question": "Design one controlled operationally warmed GEMM reference to discriminate the observed resident/model service discrepancy without assuming clocks, cache residency or device idle.",
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/warmed-gemm-reference-discrepancy.md",
+    "state": "Orca and native Luna-max review complete; accepted settlement/ack and owned-terminal positive closure.",
+    "main_reads_body_on_arrival": false,
+    "retention_consumer": "Main-owned controlled warmed reference decision; review at that comparison closure.",
+    "eligible_at_dispatch": true,
+    "task": "task_3646d6ca6607",
+    "dispatch": "ctx_5ad2b2de080c",
+    "terminal": "term_92c0e25a-16b3-4bbc-9e28-1fe483256b85",
+    "model_evidence": "Previously created custom argv gpt-6-luna medium, updates disabled; TUI-idle satisfied and worker-start observed turn_started.",
+    "shared_prior_index": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/historical-index.json",
+    "report_budget": {
+      "words": [
+        1800,
+        2600
+      ],
+      "maximum_bytes": 30720,
+      "actual_words": 2602
+    },
+    "report_bytes": 19500,
+    "report_sha256": "8c7c716dad52692e5270af427b1c8157c2cc73fffbc8a9ce737c9fc673e58cb0",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/warmed-gemm-reference-review.json",
+    "review_bytes": 18606,
+    "review_sha256": "27aadbc81b0a470c93c2aea10554daae3fac19cea9b4433f2dc8413892046bb7",
+    "reviewed_digest": [
+      "Cadence-by-address-reuse design is a concrete follow-up, not a cache/physical traffic/hardware ceiling proof.",
+      "Fixture/engine host binary hashes are separate identities; prove shared AOT device-image/module and exact dispatch/shape/dtypes.",
+      "Keep estimated submit-clock inversions as diagnostics; only ordered valid device start/end service qualifies.",
+      "No new generic research needed. Main may plan bounded functional/clean-speed comparison after the frozen model A/B closes; no counter prerequisite for functional feasibility."
+    ],
+    "next_main_step": {
+      "schedulable_now": false,
+      "prerequisites": [
+        "Close frozen V4 model A/B and preserve all individual results.",
+        "Commit one prospective cadence-by-address-reuse comparison with same AOT image/dispatch and complete correctness.",
+        "Pin read-only telemetry semantics/availability before interpreting it; no privilege or frequency changes."
+      ],
+      "question": "Correct the short resident reference with controlled warm state; retain independent service/wall samples and do not claim a hardware ceiling."
+    },
+    "main_verified_correction": {
+      "evidence": "moe-window-census-current.json:command_service_profile.sample_columns/samples",
+      "facts": "Current compact receipt includes separate GU/Down service for all five M8192 pairs, not only joint sums. Main reconstructed them by(window,expert,row) and verified the original five tuples. service_complete=1 with17 estimated-submit inversions; submit_clock_qualified=0 does not invalidate ordered GPU start/end service. No queue-delay or device-busy claim."
+    }
+  },
+  "gdn_column_partition_scope": {
+    "classification": "decision_support",
+    "schedulable_now": false,
+    "eligible_at_dispatch": true,
+    "question": "Static feasibility of partitioning the existing exact-FP32 persistent long-prefill GDN recurrence across value columns and moving RMS/gating to a separate GPU kernel; compare2/4/8 partitions with ordering, state ownership and exact reduction gates.",
+    "prerequisites_met": [
+      "Main identified a concrete scheduling-only candidate from current fused_gdn.cpp; no change to recurrence math, storage contract or shared state proposed.",
+      "Current long-prefill entrypoint calls S128,hk16,hv48 and original persistent kernel launches48 workgroups of512 lanes per chunk.",
+      "Current18.0893s GDN coarse interval includes projection/conv/recurrence/output and host gaps; recurrence cost and actual occupancy remain unknown, so no speed claim or adoption is permitted."
+    ],
+    "source_sha256": {
+      "src/kernels/sycl/fused_gdn.cpp": "70abf4fd1359477a2e170b54f2172ba148a2ae21306e8145e070ebd0db7d995f",
+      "src/prefill/prefill.cpp": "c838ba98c9a9a8d4d7e910a112de16e3676c0c65ce2406915a1178a961ac807f"
+    },
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/gdn-column-partition-feasibility.md",
+    "main_reads_body_on_arrival": false,
+    "retention_consumer": "One exact-math scheduling feasibility decision, reviewed after Main measures GDN substages; no generic GDN/framework survey.",
+    "state": "Orca and native Luna-max review complete; report source hashes checked; reported/actual hash discrepancy retained; owned terminal positively closed.",
+    "task": "task_3ce46d3702d2",
+    "dispatch": "ctx_2d69595a0c6f",
+    "terminal": "term_f0bae62e-973f-4369-b216-490ffc3751a5",
+    "model_evidence": "Custom argv gpt-6-luna medium, updates disabled; satisfied TUI-idle and observed turn_started.",
+    "report_budget": {
+      "words": [
+        1800,
+        2600
+      ],
+      "maximum_bytes": 30720,
+      "actual_words": 2341
+    },
+    "report_bytes": 17613,
+    "report_sha256": "9a2d1e2f3680761a9bd32509ff881d8626840e85ed5645983896dfcc6d4a9255",
+    "reported_report_sha256": "2ba856728d358f30900624881b8c33c455f070b0840a34f2177d0d9720c607c8",
+    "reported_hash_matches": false,
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/gdn-column-partition-review.json",
+    "review_bytes": 7422,
+    "review_sha256": "69b33451956e565690638891ae17ea10ed9ba8093e31b55912ed1b4ee074a8eb",
+    "reviewed_digest": [
+      "Per-value-column state independence is statically plausible with unchanged FP32 recurrence order; no runtime or occupancy evidence.",
+      "Account for validate_spans rejecting naive in-place y read/write admission; explicitly design the owned intermediate/epilogue contract.",
+      "Preserve the four SIMD32 xor reductions and synchronize partial stores before reads. Keep verify keep/begin and optional chunk64 outside this candidate.",
+      "Pin the actually selected GDN route and measure projection/conv/recurrence/output substages before implementing product tuning. Bounds, physical262144 and RESTORE remain Main gates."
+    ],
+    "next_main_step": {
+      "schedulable_now": false,
+      "question": "Measure current GDN substages with the qualified V4 route before selecting a column-partition implementation.",
+      "prerequisites": [
+        "Commit a bounded profile plan with explicit nonexclusive event-interval semantics and current route proof.",
+        "Retain clean V4 speed separately from observer-enabled runs."
+      ],
+      "limits": "Static feasibility is not speed or correctness qualification; no new generic GDN research is eligible."
+    }
   }
 }

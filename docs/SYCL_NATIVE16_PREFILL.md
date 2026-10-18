@@ -358,10 +358,10 @@ intervals nor requested transfer bytes establish physical saturation. Remaining
 QSA attention and MoE intermediate traffic are the next tuning targets; the
 actual Down epilogue and indexed-input feasibility reports are separately
 reviewed candidates. Keep the [structured resource evidence](../bench/results/2026-10-15-pr6-recovery-audit/moe-window-census-current.json)
-and the existing clean792.6 tok/s result distinct: this first profiled request's
+and the prior clean792.6 tok/s result distinct: this first profiled request's
 735.2 tok/s is not a new clean speed comparison or inference adoption.
 
-The next QSA component candidate keeps the qualified cached-Q/Kvec4 path fixed
+The opt-in QSA K/Vvec4 path keeps the qualified cached-Q/Kvec4 path fixed
 and loads four adjacent BF16 V words per lane through typed`vec<uint16_t,4>`.
 The existing two-byte scratch alignment is sufficient. Each vector stays in
 one256-value row; missing cells write four zero words, and each original V SLM
@@ -371,8 +371,8 @@ load-instruction efficiency, not fewer useful tensor bytes or physical bandwidth
 Use the shared oracle fixture with guard offset17 (align2), tails, alias/diagnostic
 cases and physical262144 component extent. Main's existing attention controller
 now compares Kvec4 (variant0) with K/Vvec4 (variant1), six rotated samples per
-arm on the same three8192-query shapes. No model dispatch selects K/Vvec4 yet;
-only a positive component result justifies a separate clean long-model screen.
+arm on the same three8192-query shapes. Its model screening selector is separate
+from the default dispatch and uses the qualified component export.
 
 Source`4b9618071` passed those bit/oracle/diagnostic/alias/align2/boundary
 checks, including the physical262144 component extent. Six rotated samples
@@ -391,6 +391,20 @@ through the existing official benchmark controller. The base uses Kvec4;
 both clean arms use four78K-class fresh requests, thinking on. V-route logging
 must match the chosen arm. This remains opt-in pending long-model evidence
 and the existing task/generation/full-context/RESTORE gates.
+
+The engine from`5b35bee71` passed the validated/traced39,260-token check.
+The clean same-binary screen then read78,451 new tokens per request, four
+requests in each arm, thinking on. Kvec4 first PP was733.7 tok/s; subsequent
+samples792.6,785.5,792.4 (median792.4, sample SD4.04). K/Vvec4 first PP
+was786.6; subsequent853.2,847.3,853.9 (median853.2, sample SD3.63), a7.67%
+median gain. Source/engine/workload/private-profile identities matched; only
+the startup QSA math selector differed after normalizing private paths/ports.
+Both processes exited0 with no fresh GPU faults. The
+[individual samples and comparison](../bench/results/2026-10-15-pr6-recovery-audit/qsa-kvvec4-model-current.json)
+retain the original baseline at`c728adad4`. One process per arm does not
+establish independent-process variability;24 generated tokens do not qualify
+sustained decode, task quality or physical262144/RESTORE. Keep this faster
+screening route opt-in as the next prefill tuning baseline.
 
 ## Optional GDN chunk64
 
