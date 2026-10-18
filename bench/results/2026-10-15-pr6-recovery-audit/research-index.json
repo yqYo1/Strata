@@ -101,7 +101,7 @@
     "report_sha256": "4e4e89f035e9f3c8cd3767af59caf5517df5da5799c094c6890ee6dc5f71a4b1",
     "review_sha256": "9f787293e3c498e0cc8a195eab97585967027201ca8ac177f5f0c981ef087a2a",
     "source": "src/kernels/sycl/qsa_bf16_prefix.cpp",
-    "current_main_work": "Both independently authored local candidates closed without a broad component win: pitch mixed subpercent and row-publication mixed subpercent. All oracle/exact-bit, partial/invalid/alias/late-diagnostic and physical262144 component gates passed, no fresh faults. Production still uses existing prefix. Next decision needs current emitted-resource/global-gather evidence; not another generic survey.",
+    "current_main_work": "Default128GRF cached Q11.81-13.24% component latency reduction; automatic256GRF removed scratch but regressed12.65-16.65%. Reject automatic variant. Original128GRF source restored exactly, now wiring opt-in model screen with matched >=78K inputs; no model improvement/adoption yet.",
     "production_fixture_correction": "CMake already defines sycl_qsa_bf16_prefix_optimized_test, mapping the default fixture function to the actual pitch33 function. At build source d72c8ac3, Main ran this exact target and directQ8 through traced smoke and component tests, including physical262144 component extent. This corrects the review default-target observation, not full-model qualification.",
     "resource_limits": "37.078s is prior device service, not utilization/critical-path proof. Requested SLM payload28224B; padding/residency/GRF/spills need device/compiler evidence.",
     "next_implementation": [
@@ -121,14 +121,19 @@
       },
       {
         "question": "Preload16 Q joint_matrix fragments per QK subgroup and reuse the Q/KV SLM arena.",
-        "schedulable_now": false,
+        "schedulable_now": true,
         "prerequisites": [
           "Establish prefix as a useful model route.",
           "Same BF16 slices, uniform subgroup participation and a workgroup barrier before K overwrite.",
           "Compile/JIT support and exact production-instance correctness; joint_matrix objects are noncopyable on this compiler.",
           "Measure actual GRF/spill/SLM metadata and model timing;28224->20032B is requested memory only.",
           "Pin emitted baseline register/SLM resources and choose a bounded Q-fragment variant; added GRF/spill/residency cost remains unknown."
-        ]
+        ],
+        "completed_prerequisites": [
+          "Prefix model route retained after matched model comparison.",
+          "Actual emitted baseline128GRF and absence of scratch descriptor captured; dynamic local28224B traced separately from static32B."
+        ],
+        "status": "Both component comparisons closed. Main advances default128GRF cached Q to traced model check and matched long-input A/B."
       }
     ],
     "research_dispatch": "No repeated generic QSA research while these Main-owned measurements/prerequisites remain pending.",
@@ -145,7 +150,7 @@
       "do_not_repeat": "Old global K span256 schedule regressed10.35–29.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
     },
     "reviewed_base_source_sha256": "fa505d02e2b24f7cb6948033921fa697c8aeb58e6f4df6d873f13e5a7918e36b",
-    "source_sha256": "0f70c6caf55829f301af3ac97d21d0cedfdf05d237f7a63d421909878e8981df",
+    "source_sha256": "c3ad8326f097050ff9ab1859e116f2cad3709a8464162143f752bc294cbe1e01",
     "closed_pitch_result": {
       "commit": "ee14c50d404e04aa30424a5c5b33346c583842df",
       "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-attention-current.json",
@@ -166,7 +171,9 @@
         "source_sha256": "0f70c6caf55829f301af3ac97d21d0cedfdf05d237f7a63d421909878e8981df",
         "verdict": "Independent Orca Luna review plus native Luna-max review found no source-ordering blocker. This is not runtime or adoption proof.",
         "required_gate_corrections": "Add explicit duplicate IDs, two logical pages aliasing one physical page, and first-/later-tile-only K/V invalid scales with recovery; implemented in maintained fixture, pending build/execution."
-      }
+      },
+      "retired_source_commit": "51a6f70aa98acca2f733b9569514afe9ed6350d2",
+      "status": "Retired callable/targets after negative timing and resource comparison; exact source/result reachable from default history."
     }
   },
   "gdn_runtime_contract_review": {
@@ -264,5 +271,74 @@
     "fixture": "../../sycl/gdn_chunk64",
     "result": "native-gdn-model-current.json",
     "decision": "No material model gain: existing GDN retained. New GDN research remains conditional on a concrete adoption/mismatch question and actual framework runtime evidence."
+  },
+  "hardware_resource_research": {
+    "schedulable_now": true,
+    "prerequisites_met": [
+      "Matched prefix/direct model comparison closed; existing prefix retained.",
+      "Local pitch and row-publication candidates closed with mixed subpercent gains.",
+      "Current MoE/CPU census closed; QSA attention remains largest observed queue interval.",
+      "VTune2026.4 installed; B570 xe driver and qualified exact fixture available."
+    ],
+    "scopes": [
+      "Xe2 profiler metric coverage and permission interpretation",
+      "Exact emitted GRF/SLM/spill extraction without hardware counters"
+    ],
+    "question": "Obtain hardware evidence before choosing another QSA candidate; no repeat generic attention or grouped-GEMM survey.",
+    "state": "Both Orca Luna reports completed and native Luna-max reviews completed; Main extracted exact installed-stack metadata.",
+    "reviews": [
+      {
+        "topic": "xe2-profiler-coverage",
+        "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/xe2-profiler-coverage.md",
+        "report_sha256": "b8b760a40059c4867c9362d6e516855c8e7eee064ec398bbbe0a8ca83d8941aa",
+        "report_bytes": 15180,
+        "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/xe2-profiler-coverage-review.json",
+        "review_sha256": "9a62323d0e4f7d693ec6118569618c0c7bfb62682ddf09f7aed5a7646341fcc0"
+      },
+      {
+        "topic": "xe2-emitted-resources",
+        "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/xe2-emitted-resources.md",
+        "report_sha256": "748f6d5c76f60f2495a542bd44077204e04e0ffe5368068598e9f43608c26daa",
+        "report_bytes": 17391,
+        "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/xe2-emitted-resources-review.json",
+        "review_sha256": "87a943f492122bd607916ecb391a2656c103b2e73b8887f76475ec95502f737e"
+      },
+      {
+        "topic": "xe2-residency-contract",
+        "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/xe2-residency-contract.md",
+        "report_sha256": "feaaf6114b277c48f2a5a5d6df62b31bc4eb3b6f343a214a3417537f41f30102",
+        "report_bytes": 15502,
+        "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/xe2-residency-contract-review.json",
+        "review_sha256": "bd8254999bdbafa866aa1ec2a0f070f0e3c88c2f57aa7843bd30311dc0383fce"
+      }
+    ],
+    "main_evidence": {
+      "result": "qsa-hardware-profile-current.json",
+      "VTune": "2026.4 GPU-hotspots rejects Ryzen5600X CPU microarchitecture before target launch; not a permission denial. No hardware counters.",
+      "emitted": "IGC_DumpZEInfoToConsole=1 on qualified exact fixture: executed prefix33 and row variant128GRF/SIMD16, static SLM32 plus28224 dynamic-local arguments, no scratch descriptor. Unused compiled score32 variant spills1920 with2048scratch; not executed evidence.",
+      "limits": "No occupancy/saturation/physical bandwidth proof. Compiler static SLM excludes dynamic arguments. Battlemage media support does not prove compute counters. VTune docs describe XMX metrics but B570 availability unverified.",
+      "automatic_grf": "Actual256GRF/no scratch/eu_thread_count4, but component slower. Emitted resource improvement is not a speed or measured occupancy improvement."
+    },
+    "retention": "Current emitted-resource decision only; reassess report/review bodies after Q-fragment candidate qualification. Main did not read collection body.",
+    "primary_sources": [
+      "https://github.com/intel/intel-graphics-compiler/blob/master/documentation/configuration_flags.md",
+      "https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_intel_grf_size.asciidoc"
+    ],
+    "residency_scope": {
+      "schedulable_now": true,
+      "prerequisites_met": [
+        "Main captured exact launched kernel identities and complete emitted resource metadata at db810b58/9560eb4b5/a1b9c4cff.",
+        "Runtime/compiler ELF hashes and versions pinned in tools/sycl/measurement_environment.json.",
+        "Both default128GRF and auto256GRF have full oracle/physical262144 component and6 rotated samples/shape; auto regression despite no scratch established."
+      ],
+      "question": "Explain what BMG/Xe2 SLM/GRF resource metadata can bound about residency, with actual runtime allocation rounding and its limits; no saturation inference.",
+      "state": "Completed and native Luna-max reviewed; no newly schedulable research scope."
+    },
+    "residency_review_corrections": [
+      "Report cited20-core B580 for B570; no20-core B570 capacity claim accepted.",
+      "Report candidate local-argument breakdown mis-sums20096; Main actual traced8 local arguments total20032, verified directly.",
+      "Static slm_size field32 unit/schema and physical rounding need separate confirmation; dynamic arguments are explicitly in bytes.",
+      "Metadata and changed SDK functor do not prove occupancy or causal attribution. Main did not read the collection body."
+    ]
   }
 }

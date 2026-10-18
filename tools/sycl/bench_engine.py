@@ -29,17 +29,19 @@ def digest(path):
 
 
 def main():
-    modes = ('check', 'base', 'candidate', 'qsa-check', 'qsa-base', 'qsa-direct', 'qsa-census')
+    modes = ('check', 'base', 'candidate', 'qsa-check', 'qsa-base', 'qsa-direct', 'qsa-census',
+             'qsa-qcache-check', 'qsa-qcache-base', 'qsa-qcache')
     guards.require(len(sys.argv) == 3 and sys.argv[1] in ('prepare', 'run') and
                    sys.argv[2] in modes, 'use prepare|run ' + '|'.join(modes))
     action, mode = sys.argv[1:]
     qsa = mode.startswith('qsa-')
     census = mode == 'qsa-census'
-    check = mode in ('check', 'qsa-check', 'qsa-census')
+    qcache = mode.startswith('qsa-qcache')
+    check = mode in ('check', 'qsa-check', 'qsa-census', 'qsa-qcache-check')
     chunk64 = mode in ('check', 'candidate')
     root = B / (('qsa-attention-model-' + mode[4:] + '-v1') if qsa else
                 ('native-gdn-model-' + mode + '-v2'))
-    result_path = A / 'moe-window-census-current.json' if census else A / 'qsa-attention-model-current.json' if qsa else RESULT
+    result_path = A / 'moe-window-census-current.json' if census else A / 'qsa-cached-query-model-current.json' if qcache else A / 'qsa-attention-model-current.json' if qsa else RESULT
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         reference = json.loads(BASE.read_text())
@@ -76,6 +78,7 @@ def main():
                        STRATA_SYCL_PREFILL_GDN_CHUNK64='1' if chunk64 else '0')
             if qsa:
                 env['STRATA_SYCL_PREFILL_QSA_MATH'] = (
+                    'bf16-prefix-qcache' if mode in ('qsa-qcache-check', 'qsa-qcache') else
                     'bf16' if mode in ('qsa-check', 'qsa-direct') else 'bf16-prefix-optimized')
             if census:
                 env.update(STRATA_PREFILL_LAYER_MAJOR_PROFILE='1',
@@ -147,7 +150,8 @@ def main():
 
         def persist():
             record['active'] = bool(owner and owner.active is not None)
-            (root / 'record.json').write_text(json.dumps(record, indent=2) + '\n')
+            (root / 'record.json').write_text(json.dumps(
+                dict(record, owned_commands=owner.commands if owner else []), indent=2) + '\n')
 
         owner = supervision.Owner(root / 'owned', persist)
         try:
@@ -179,9 +183,15 @@ def main():
             if qsa:
                 record['qsa_route'] = [x for x in log.splitlines() if x.startswith(
                     'strata prefill: QSA BF16 operands, FP32 online state/accumulation;')]
-                expected = 'KV=active-logical-prefix' if mode in ('qsa-base', 'qsa-census') else 'KV=on-the-fly'
+                expected = 'KV=active-logical-prefix' if mode in ('qsa-base', 'qsa-census') or qcache else 'KV=on-the-fly'
                 guards.require(record['qsa_route'] and all(expected in x for x in record['qsa_route']),
                                'wrong QSA operand route')
+                if qcache:
+                    selected = [x for x in log.splitlines() if x.startswith('strata prefill: QSA cached_query=')]
+                    wanted = mode in ('qsa-qcache-check', 'qsa-qcache')
+                    guards.require(bool(selected) == wanted and all('cached_query=1 grf_policy=default' in x for x in selected),
+                                   'wrong cached-query kernel selection')
+                    record['cached_query_route'] = selected
             if census:
                 prefix = 'strata MoE planned job census: '
                 record['planned_moe_windows'] = [json.loads(x[len(prefix):]) for x in log.splitlines() if x.startswith(prefix)]

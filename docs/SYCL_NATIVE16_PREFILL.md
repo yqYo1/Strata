@@ -125,13 +125,15 @@ clustered). These mixed subpercent results do not justify selection. Source
 and individual samples remain at commit`ee14c50d`; the experimental pitch code
 is retired from the active implementation.
 
-The independent `qsa_bf16_prefix_rows_batch` experiment retains score33,
+The closed `qsa_bf16_prefix_rows_batch` experiment retained score33,
 K32/V256 and28224 requested local bytes. It publishes first IDs with Q/state
 initialization, and next IDs during PV, using the existing final PV barrier.
 All current row readers finish before V/probability publication; PV reads no
 row IDs. The final barrier still protects V-to-K overwrite. This removes one
 workgroup barrier per32-cell tile without changing arithmetic or output order.
-Production dispatch is unchanged. Main's serialized qualification sequence is
+Its source and tests remain in Git at `51a6f70a`; the callable is retired after
+the negative timing result and emitted-resource comparison. Production dispatch
+is unchanged. Main's serialized qualification sequence for the current candidate is
 `python3 tools/sycl/build_engine.py rebuild-attention`, then
 `python3 tools/sycl/check_attention.py smoke`, `component`, and `perf`.
 The oracle fixture compares all output bits with prefix33, including diagnostics
@@ -146,13 +148,53 @@ shapes above. It is not selected. At cap2051, baseline gathered versus clustered
 reads took419.8 versus299.4ms with the same matrix work. This is locality
 sensitivity, not a physical-bandwidth or saturation measurement.
 
-For the next current-path MoE census, Main uses `python3 tools/sycl/bench_engine.py
+The current-path MoE census used `python3 tools/sycl/bench_engine.py
 prepare qsa-census`, commits its plan, then uses `run qsa-census`. This runs one
 official78K request with parameter validation, trace and existing coarse/QSA/CPU
 observers. The optional profile records exact planned job-size and jobs/expert
 histograms from already available host routes; final issuer totals must match.
 It adds no tensor readback or GPU submission. Requested DMA bytes and diagnostic
 timings must stay distinct from physical traffic and clean speed.
+
+The installed VTune2026.4 rejects GPU-hotspots on this Ryzen5600X host before
+starting the target; this is not an observed permission denial. The maintained
+`python3 tools/sycl/profile_attention.py resources` alternative ran the exact
+qualified fixture with `IGC_DumpZEInfoToConsole=1`. Traced launch identities map
+the executed prefix33 and row-publication kernels to128GRF/SIMD16, raw static `slm_size=32`
+plus28224B of dynamic-local arguments, and no emitted scratch descriptor.
+These are compiler/launch properties, not hardware utilization or bandwidth.
+The static field's unit/schema and physical allocation rounding remain unverified;
+the traced dynamic-local argument sizes are explicitly bytes.
+The unlaunched compiled score32 variant has1920B spill metadata and2048B scratch;
+it must not be attributed to the executed production prefix33.
+
+The next independently authored `qsa_bf16_prefix_qcache_batch` candidate loads
+the same16 BF16 Q fragments per QK subgroup once, preserves their DPAS order,
+and reuses their initial shared arena for K/V after a uniform workgroup barrier.
+It budgets20036 local bytes, including a nonzero four-byte unused accessor.
+The installed compiler removes that unused accessor: traced dynamic arguments
+total20032B. Default128GRF compilation adds2112B spill metadata and4096B scratch,
+yet six rotated samples per arm reduced median latency by11.81%,13.24%,11.83%
+for cap33 gather, cap2051 gather and cap2051 clustered. Exact-bit/oracle,
+diagnostic/alias and physical262144 component gates passed; no new GPU faults.
+Source`0ddd14719211` and individual results at`13976170f` preserve this variant.
+
+The separate comparison applied the installed compiler's
+[`grf_size_automatic` property](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_intel_grf_size.asciidoc)
+only to the cached-Q kernel through the SDK's functor property API. It selected
+256GRF, removed scratch and changed compiler thread-count metadata from8 to4.
+Its matched median latency nevertheless increased16.65%,16.20%,12.65%; reject
+this variant (`b82207709`). The comparison also changes the SDK functor form,
+so it does not isolate GRF mode as the sole cause. Occupancy remains unmeasured.
+
+The original default128GRF kernel source is restored byte-for-byte. The new
+explicit `STRATA_SYCL_PREFILL_QSA_MATH=bf16-prefix-qcache` model screening route
+uses the existing prefix allocation/admission and leaves default dispatch alone.
+Main prepares/commits/runs `qsa-qcache-check`, then matched `qsa-qcache-base` and
+`qsa-qcache` with `tools/sycl/bench_engine.py`. The check uses validation/trace;
+the two speed arms each use four fresh78K requests, thinking on and the same
+binary/configuration. These24-output screens cannot qualify sustained decode,
+full-model262144 context, RESTORE or task quality.
 
 ## Optional GDN chunk64
 

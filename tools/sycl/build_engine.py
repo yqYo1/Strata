@@ -77,7 +77,7 @@ def main():
     targets = ['strata']
     if attention:
         targets += ['sycl_qsa_bf16_late_flags_test', 'sycl_qsa_bf16_prefix_optimized_test',
-                    'sycl_qsa_bf16_prefix_rows_test', 'sycl_qsa_bf16_prefix_rows_bench']
+                    'sycl_qsa_bf16_prefix_qcache_test', 'sycl_qsa_bf16_prefix_qcache_bench']
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
@@ -89,13 +89,21 @@ def main():
             committed = git(P, 'show', 'HEAD:' + str(RESULT.relative_to(P)))
             guards.require(committed == RESULT.read_bytes(), 'commit the previous build identity first')
             old = json.loads((ROOT / 'record.json').read_text())
-            guards.require(old['passed'] and old['ownership_closed'] and not old['active'], 'previous build not closed')
-            guards.require(digest(old['binary']['path']) == old['binary']['sha256'], 'previous executable changed')
+            guards.require(old['ownership_closed'] and not old['active'] and not old['GPU_executed'],
+                           'previous build ownership not closed')
+            # A failed compile is terminal, not a qualified binary. Preserve its
+            # receipt and recover the separately pinned retained executable.
+            old_binary = old.get('binary') if old['passed'] else (old.get('replaces') or {}).get('binary')
+            guards.require(old_binary is not None, 'no pinned retained executable after failed build')
+            guards.require(digest(old_binary['path']) == old_binary['sha256'], 'previous executable changed')
             for source in [old['project'], *old['dependencies']]:
                 for name, data in blobs(Path(source['root']), source['revision'], source['source_sha256']):
                     guards.require(hashlib.sha256(data).hexdigest() == source['source_sha256'][name],
                                    'previous inputs not recoverable')
-            previous = dict(source_commit=old['source_commit'], binary=old['binary'],
+            previous = dict(source_commit=old['source_commit'], binary=old_binary,
+                            source_build_passed=old['passed'],
+                            retained_binary_source_commit=old['source_commit'] if old['passed'] else
+                                old['replaces'].get('retained_binary_source_commit', old['replaces']['source_commit']),
                             reason='Closed unused comparison engine; original source/recipe recovered from Git. '
                                    'Reuse its cache for the immediate corrected build, not a retained old generation.')
         project = pin(P, ['CMakeLists.txt', 'cmake', 'include', 'src', 'tests',
@@ -144,7 +152,8 @@ def main():
                 entry, out, err = owner.run(label, command, env, P, wall=1800, cpu=7200,
                     rss_cap=12 << 30, file_cap=256 << 20, text_cap=64 << 20, total_cap=4 << 30)
                 guards.require(supervision.closed(entry) and entry.get('exit_code') == 0,
-                               label + ' failed: ' + err.read_text(errors='replace')[-8192:])
+                               label + ' failed: ' + (err.read_text(errors='replace') +
+                                                      out.read_text(errors='replace'))[-8192:])
             # Detect input changes made while compilation was in progress.
             for source in [project, *dependencies]:
                 for name, expected in source['source_sha256'].items():

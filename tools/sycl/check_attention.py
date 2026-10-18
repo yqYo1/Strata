@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Main-owned direct/prefix/row-publication checks and a rotated same-binary row-publication timing."""
+"""Main-owned direct/prefix/cached-Q checks and a rotated same-binary cached-Q timing."""
 import fcntl
 import hashlib
 import json
@@ -19,8 +19,8 @@ ENGINE = B / 'main-native-gdn-engine'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/qsa-attention-current.json'
 SETTINGS = P / 'tools/sycl/measurement_environment.json'
 TARGETS = ('sycl_qsa_bf16_late_flags_test', 'sycl_qsa_bf16_prefix_optimized_test',
-           'sycl_qsa_bf16_prefix_rows_test')
-BENCH = 'sycl_qsa_bf16_prefix_rows_bench'
+           'sycl_qsa_bf16_prefix_qcache_test')
+BENCH = 'sycl_qsa_bf16_prefix_qcache_bench'
 
 
 def digest(path):
@@ -51,7 +51,7 @@ def main():
             record = dict(source_commit=build['source_commit'], fixtures=fixtures, checks=[],
                           passed=False, complete=False, active=False, model_performance_measured=False,
                           model_quality_qualified=False, physical262144_model_RESTORE_qualified=False,
-                          consumer='Immediate prefix33 versus fused row publication same-binary component comparison; retire raw checks afterward.')
+                          consumer='Immediate prefix33 versus cached-Q fragments same-binary component comparison; retire raw checks afterward.')
         else:
             record = json.loads(RESULT.read_text())
             guards.require(record['passed'] and record['ownership_closed'] and record['source_commit'] ==

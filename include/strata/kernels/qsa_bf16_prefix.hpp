@@ -21,9 +21,9 @@ bool qsa_bf16_prefix_optimized_batch(const uint16_t *q, const QsaAttnPools &pool
     const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
     uint16_t *out, int64_t queries, const QsaPromptBf16Bounds &bounds,
     int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream);
-// Experimental score33: first/next row-ID publication shares existing barriers.
-// Same arithmetic, local storage, K/V pitches and producer ownership.
-bool qsa_bf16_prefix_rows_batch(const uint16_t *q, const QsaAttnPools &pools,
+// Experimental score33: retain BF16 Q matrix fragments across all cell tiles,
+// then reuse their initial SLM arena for K/V. Unchanged DPAS/rounding order.
+bool qsa_bf16_prefix_qcache_batch(const uint16_t *q, const QsaAttnPools &pools,
     const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
     uint16_t *out, int64_t queries, const QsaPromptBf16Bounds &bounds,
     int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream);
