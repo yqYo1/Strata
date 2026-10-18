@@ -365,6 +365,7 @@ def main():
              'qsa-kvvec4-check', 'qsa-kvvec4-base', 'qsa-kvvec4',
              'qsa-ordered-exp-check', 'qsa-ordered-exp-base', 'qsa-ordered-exp-candidate',
              'qsa-gu-fusion-check', 'qsa-gu-fusion-base', 'qsa-gu-fusion-candidate',
+             'qsa-long-input-check', 'qsa-long-input',
              'qsa-kvvec4-timing-check', 'qsa-kvvec4-census') + tuple(
                  f'qsa-gdncols{n}-{phase}' for n in (2, 4, 8) for phase in ('check', 'base', 'candidate'))
     guards.require(len(sys.argv) in (3, 4) and sys.argv[1] in ('prepare', 'run') and
@@ -372,18 +373,19 @@ def main():
     action, mode = sys.argv[1:3]
     cohort = int(sys.argv[3]) if len(sys.argv) == 4 else 0
     guards.require(cohort in (0, 1, 2) and (len(sys.argv) == 3 or
-        mode in ('qsa-gu-fusion-base', 'qsa-gu-fusion-candidate')),
-        'optional cohort0|1|2 is only for GU base/candidate; use order A0/B0/B1/A1/A2/B2')
+        mode in ('qsa-gu-fusion-base', 'qsa-gu-fusion-candidate', 'qsa-long-input')),
+        'optional cohort0|1|2 is for GU paired arms or independent long-input processes')
     column_mode = re.fullmatch(r'qsa-gdncols(2|4|8)-(check|base|candidate|warm-census|host-check|host-traced-check|host-census)', mode)
     ordered_trial = mode.startswith('qsa-ordered-exp-')
+    long_trial = mode in ('qsa-long-input-check', 'qsa-long-input')
     gu_trial = mode.startswith('qsa-gu-fusion-')
-    gu_candidate = gu_trial and mode != 'qsa-gu-fusion-base'
-    ordered_candidate = gu_trial or (ordered_trial and mode != 'qsa-ordered-exp-base')
+    gu_candidate = long_trial or (gu_trial and mode != 'qsa-gu-fusion-base')
+    ordered_candidate = long_trial or gu_trial or (ordered_trial and mode != 'qsa-ordered-exp-base')
     host_profile = mode.startswith('qsa-gdncols4-host-')
     warm_profile = mode in ('qsa-gdncols4-warm-census', 'qsa-gdncols4-host-census')
-    column_trial = column_mode is not None or ordered_trial or gu_trial
-    column_check = mode in ('qsa-ordered-exp-check', 'qsa-gu-fusion-check') or (column_mode is not None and column_mode[2] == 'check')
-    column_partitions = 4 if ordered_trial or gu_trial else int(column_mode[1]) if column_mode is not None and column_mode[2] != 'base' else 0
+    column_trial = column_mode is not None or ordered_trial or gu_trial or long_trial
+    column_check = mode in ('qsa-long-input-check', 'qsa-ordered-exp-check', 'qsa-gu-fusion-check') or (column_mode is not None and column_mode[2] == 'check')
+    column_partitions = 4 if ordered_trial or gu_trial or long_trial else int(column_mode[1]) if column_mode is not None and column_mode[2] != 'base' else 0
     qsa = mode.startswith('qsa-')
     short_profile = mode == 'qsa-kvvec4-timing-check' or (host_profile and not warm_profile)
     phase_profile = host_profile or warm_profile or short_profile or mode == 'qsa-kvvec4-census'
@@ -401,6 +403,7 @@ def main():
     root = B / (('qsa-attention-model-' + mode[4:] + '-' + generation) if qsa else
                 ('native-gdn-model-' + mode + '-v2'))
     result_path = (A / 'prefill-host-attribution-current.json' if host_profile else
+                   A / 'prefill-long-input-current.json' if long_trial else
                    A / 'moe-gu-swiglu-model-current.json' if gu_trial else
                    A / 'qsa-ordered-exp-model-current.json' if ordered_trial else
                    A / 'moe-window-census-current.json' if census else
@@ -421,7 +424,7 @@ def main():
                            'qualified closed engine build required')
             ordered_qualification = None
             gu_qualification = None
-            if gu_trial:
+            if gu_trial or long_trial:
                 component_path = A / 'moe-gu-swiglu-current.json'
                 component = json.loads(component_path.read_text())
                 guards.require(component['mode'] == 'perf' and component['passed'] and component['ownership_closed'] and
@@ -435,7 +438,7 @@ def main():
                 gu_qualification = dict(component_path=str(component_path.relative_to(P)), component_sha256=digest(component_path),
                     component_source_commit=component['source_commit'], kernel_source_sha256=source_pins, component_gate_passed=True,
                     selector='large: matrix-wide jobs>=2334 rows; smaller jobs retain separate GU/SwiGLU')
-                if not mode.endswith('-check'):
+                if gu_trial and not mode.endswith('-check'):
                     prior = json.loads(result_path.read_text())
                     first, second = ('base', 'candidate') if cohort % 2 == 0 else ('candidate', 'base')
                     current = mode.rsplit('-', 1)[1]
@@ -452,7 +455,17 @@ def main():
                         'commit matching preceding GU model phase')
                     gu_qualification['preceding_result'] = dict(commit=subprocess.check_output(
                         ['git','rev-parse','HEAD'],cwd=P,text=True).strip(),path=str(result_path.relative_to(P)),mode=prior['mode'])
-            if ordered_trial:
+            if long_trial and not check:
+                prior = json.loads(result_path.read_text())
+                required = 'qsa-long-input-check' if cohort == 0 else 'qsa-long-input'
+                guards.require(result_path.read_bytes() == subprocess.check_output(
+                    ['git', 'show', 'HEAD:' + str(result_path.relative_to(P))], cwd=P) and
+                    prior['mode'] == required and prior.get('cohort_index', 0) == max(0, cohort - 1) and
+                    prior['passed'] and prior['ownership_closed'] and prior['binary'] == build['binary'],
+                    'commit matching preceding long-input model phase')
+                preceding_long = dict(commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=P, text=True).strip(),
+                                      path=str(result_path.relative_to(P)), mode=prior['mode'])
+            if ordered_trial or long_trial:
                 component_path = A / 'qsa-ordered-exp-current.json'
                 component = json.loads(component_path.read_text())
                 guards.require(component['passed'] and component['complete'] and component['ownership_closed'] and
@@ -465,7 +478,7 @@ def main():
                 ordered_qualification = dict(component_path=str(component_path.relative_to(P)),
                     component_sha256=digest(component_path), kernel_source_sha256=source_pins,
                     component_source_commit=component['source_commit'], component_gate_passed=True)
-                if mode != 'qsa-ordered-exp-check':
+                if ordered_trial and mode != 'qsa-ordered-exp-check':
                     prior = json.loads(result_path.read_text())
                     committed_prior = subprocess.check_output(['git', 'show', 'HEAD:' + str(result_path.relative_to(P))], cwd=P)
                     required = 'qsa-ordered-exp-check' if mode.endswith('-base') else 'qsa-ordered-exp-base'
@@ -518,6 +531,8 @@ def main():
                        STRATA_SYCL_PREFILL_GDN_COLUMNS=str(column_partitions),
                        STRATA_SYCL_PREFILL_GDN_CHUNK64='1' if chunk64 else '0')
             env['STRATA_SYCL_PREFILL_GU_SWIGLU'] = 'large' if gu_candidate else '0'
+            if long_trial:
+                env['STRATA_SYCL_PREFILL_DOWN_SCATTER'] = '0'
             if qsa:
                 env['STRATA_SYCL_PREFILL_QSA_MATH'] = (
                     'bf16-prefix-ordered-exp' if ordered_candidate else
@@ -536,6 +551,11 @@ def main():
             config = dict(reference['config'])
             flags = list(config['args'])
             flags[flags.index('--expert-profile') + 1] = str(root / 'expert-profile.bin')
+            if long_trial:
+                guards.require(int(flags[flags.index('--max-context') + 1]) == 131072 and
+                    flags[flags.index('--kv') + 1] == 'int8' and
+                    int(flags[flags.index('--kv-resident') + 1]) == 131072,
+                    '98K screen requires the recorded131072 resident INT8 context placement')
             config.update(exe=str(P / 'tools/sycl/engine_once.py'), args=flags,
                           log=str(root / 'engine.stderr'), env={})
             with socket.socket() as sock:
@@ -544,7 +564,7 @@ def main():
             config_path.write_text(json.dumps(config, indent=2) + '\n')
             command = ['/bin/sh', str(P / 'bench.sh'), '--config', str(config_path), '--port', str(port),
                        '--runs', str(request_count), '--prefill-only', '--prefill-tokens',
-                       '32768' if short_profile or (check and not census) else '65536', '--workload-id', 'native_gdn_20261018',
+                       '98304' if long_trial else '32768' if short_profile or (check and not census) else '65536', '--workload-id', 'native_gdn_20261018',
                        '--think', '--fail-fast-engine-error', '--ready-timeout', '600', '--out', str(root / 'bench')]
             revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=P, text=True).strip()
             files = subprocess.check_output(['git', 'ls-files', '-z', '--', 'serve', 'tools', 'bench.sh'], cwd=P).decode().strip('\0').split('\0')
@@ -564,11 +584,19 @@ def main():
             if host_profile:
                 plan.update(host_qualification=qualification, cpu_observer_version=4,
                             cpu_fixture_receipt_sha256=digest(A / 'prefill-host-cpu-current.json'))
-            if ordered_trial:
+            if ordered_trial or long_trial:
                 plan['ordered_exp_qualification'] = ordered_qualification
-            if gu_trial:
+            if gu_trial or long_trial:
                 plan['gu_qualification'] = gu_qualification
                 plan['cohort_index'] = cohort
+            if long_trial:
+                plan['long_input_screen'] = dict(minimum_actual_tokens=98304, generated_token_cap=24,
+                    context_capacity=131072, required_client_context=123160,
+                    question='Amortization at longer input on fixed placement/chunk/GU/QSA routes; not a same-workload kernel gain.',
+                    qualification='One validated long request, then3 independent clean processes with4 fresh requests each. Separate first use and3 subsequent requests; target each independent subsequent median>=1000tok/s. Not sustained decode, model-quality or physical262144 qualification.')
+                if not check:
+                    plan['preceding_long_input_result'] = preceding_long
+            if gu_trial:
                 plan['independent_process_plan'] = dict(order=['A0','B0','B1','A1','A2','B2'],
                     target_pairs=3, requests_per_process=4, first_use_separate=True,
                     prospective_selection='All three independent paired subsequent-request medians favor fusion; '
@@ -615,9 +643,12 @@ def main():
                 guards.require(digest(Path(source['root']) / name) == expected, 'engine source changed: ' + name)
         for path, item in json.loads(SETTINGS.read_text())['runtime_elfs'].items():
             guards.require(digest(path) == item['sha256'], 'runtime asset changed: ' + path)
-        if gu_trial:
+        if gu_trial or long_trial:
             guards.require(digest(P / plan['gu_qualification']['component_path']) ==
                            plan['gu_qualification']['component_sha256'], 'GU component evidence changed')
+        if ordered_trial or long_trial:
+            guards.require(digest(P / plan['ordered_exp_qualification']['component_path']) ==
+                           plan['ordered_exp_qualification']['component_sha256'], 'QSA component evidence changed')
         boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
         journal = subprocess.check_output(['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True)
         cursor = next(x.split(': ', 1)[1] for x in journal.splitlines() if x.startswith('-- cursor: '))
@@ -655,7 +686,7 @@ def main():
             guards.require(all(q['ok'] and q['eligible'] and q['stream_complete'] and q['thinking_requested'] and
                                q['actual_reused_tokens'] == 0 for q in requests), 'ineligible samples')
             guards.require(bool(record['route_selection']) == chunk64, 'wrong GDN route')
-            if gu_trial:
+            if gu_trial or long_trial:
                 selected = [x for x in log.splitlines() if x.startswith('[native16-gu]')]
                 guards.require(selected == ['[native16-gu] fusion=' + ('large' if gu_candidate else '0') + ' min_rows=2334'],
                                'wrong GU startup selection')
@@ -667,6 +698,17 @@ def main():
                     'actual GU route coverage mismatch')
                 record['gu_route'] = dict(selection=selected, per_request_counts=counts,
                     limits='Actual submitted/completed route counts; removed logical bytes are not physical VRAM traffic.')
+            if long_trial:
+                guards.require(all(q['actual_prompt_tokens'] == q['actual_read_tokens'] and
+                    q['actual_read_tokens'] >= 98304 and q['reasoning_observed'] for q in requests),
+                    'long-input actual-token or thinking evidence missing')
+                selected = [x for x in log.splitlines() if x.startswith('[native16-down]')]
+                counts = [dict(x.split('=', 1) for x in line.split(': ', 1)[1].split())
+                    for line in log.splitlines() if line.startswith('strata MoE Down fusion:')]
+                guards.require(selected == ['[native16-down] fusion=0 min_rows=2334'] and
+                    len(counts) == request_count and all(int(c['fused_jobs']) == int(c['fused_rows']) == 0 and
+                        int(c['separate_jobs']) > 0 for c in counts), 'long screen changed Down route')
+                record['down_route'] = dict(selection=selected, per_request_counts=counts)
             if column_trial:
                 selected = [x for x in log.splitlines() if x.startswith('strata prefill: GDN columns=')]
                 expected_column_route = (f'strata prefill: GDN columns={column_partitions} '
@@ -681,7 +723,7 @@ def main():
                 expected = 'KV=active-logical-prefix' if mode in ('qsa-base', 'qsa-census') or qcache or kvec4 else 'KV=on-the-fly'
                 guards.require(record['qsa_route'] and all(expected in x for x in record['qsa_route']),
                                'wrong QSA operand route')
-                if ordered_trial or gu_trial:
+                if ordered_trial or gu_trial or long_trial:
                     label = 'softmax=parallel-exp-ascending-sum' if ordered_candidate else 'softmax=serial'
                     guards.require(all(label in x and 'score_pitch=33' in x for x in record['qsa_route']),
                                    'wrong ordered-exp or baseline softmax selection')

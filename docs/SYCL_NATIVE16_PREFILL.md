@@ -1246,3 +1246,15 @@ traced smoke and110 full correctness events passed in closed owned processes,
 including startup flag0/large, threshold/tail/fallback checks and mixed map
 masks. No fresh driver fault occurred. Clean selective timing and same-build
 GU requalification remain pending; no new model speed or adoption is claimed.
+
+The maintained model controller now provides `prepare|run qsa-long-input-check`
+and `prepare|run qsa-long-input [0|1|2]`. Its prospective screen holds131072
+context/resident INT8 KV,8192 chunks,GU-large,ordered-exp QSA and GDN columns4
+fixed; Down fusion is explicitly off. Minimum actual input is98304 and the
+client's constructed122880-token budget plus24 output and256 guard requires
+123160 context. The validation request must close before three independent
+clean four-request processes. Keep first use separate from each process's
+three subsequent samples; the target is a subsequent median>=1000tok/s in each
+process. This measures longer-input amortization rather than a same-input
+kernel improvement. Capacity/admission and actual route/token checks remain
+required; no long-input model run has started.
