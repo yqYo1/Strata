@@ -1440,11 +1440,25 @@ fault. The prospective median<950/all samples<975 futility rule stops this
 configuration without the other two processes. The1000tok/s target is unmet.
 This different input size does not establish a same-input kernel regression.
 
-Return to the validated117K route for current resource attribution. A bounded
-single-request observer check precedes a separate first-use/warm pair. Check
-all96 windows, GU fused/separate counts and disjoint CPU regions, including
-the512-expert source copy after each checked layer drain. Measure its current
-cost before selecting CPU-only next-layer slab preparation. Keep the compiled
+The117K route's observer check passed, and the separate first-use/warm pair
+completed normally without a fresh fault. Its original controller result remains
+failed: a global owner count incorrectly compared192 windows against96.
+The corrected offline analyzer independently validates96 windows per request,
+complete CPU/coarse/work counts and four negative parser cases; it does not
+rerun the model or overwrite the original failure. First-use/warm source copying
+took5.15749/5.12719wall seconds (5.13619/5.06660CPU); warm frame wall was122.49556s.
+Warm host grouping took0.25367CPU seconds. The951.1tok/s warm reading is profiled,
+not a clean speed sample. Main keeps only aggregate attribution and checked
+work totals; the full layer arrays and exact job-size histogram are unnecessary.
+
+The next candidate is an opt-in immutable layer view from the already resident
+Arena source, eliminating the512-expert staging copy. This may avoid a second
+slab and worker without changing arithmetic or PCIe payload. It requires explicit
+bounded source lifetime through checked queue retirement; transient/custom
+providers keep synchronous copying. Ordinary host-pointer DMA may itself stage
+or behave differently, so no speedup or1000tok/s claim follows from byte removal.
+CPU-only next-layer double-buffering remains an alternative if direct borrowing
+fails its correctness/performance comparison. Keep the compiled
 fine command sampler off: it lacks a staged-expert-copy tag and would reject
 those untagged events. Coarse event intervals include host submission gaps and
 do not establish physical PCIe traffic or arithmetic saturation. The reviewed
