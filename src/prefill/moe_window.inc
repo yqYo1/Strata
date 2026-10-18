@@ -194,7 +194,7 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
                 hp::Host host(hp::upload_submit);
                 const auto ticket = detail::stage_expert_bank(*owner.expert_slots, *owner.expert_cache,
                     owner.expert_slab, owner.expert_slab_bytes, owner.expert_stride,
-                    layout.blob_bytes(layer), job.expert, m.cs);
+                    layout.blob_bytes(layer), job.expert, m.cs, owner.expert_source_stride);
                 slot = ticket.slot;
                 if (ticket.upload) {
                     ++owner.staged_uploads; ++stats_.experts_streamed;

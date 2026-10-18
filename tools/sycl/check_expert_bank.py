@@ -14,7 +14,7 @@ import measurement_owner as supervision
 
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'moe-expert-bank-component-v3'
+ROOT = B / 'moe-expert-bank-component-v4'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/moe-expert-bank-current.json'
 
 
@@ -24,7 +24,7 @@ def digest(path):
 
 
 def gpu_check(mode):
-    root = B/'moe-expert-bank-gpu-v1'
+    root = B/'moe-expert-bank-gpu-v2'
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
@@ -33,6 +33,7 @@ def gpu_check(mode):
         guards.require(raw == RESULT.read_bytes() and record['passed'] and record['complete'] and
             record['ownership_closed'] and not record['active'], 'commit passed CPU gate first')
         for name in ('include/strata/prefill/expert_bank_plan.hpp',
+                     'include/strata/core/expert_layer_view.hpp',
                      'include/strata/prefill/layer_major_plan.hpp','tests/expert_bank_plan.cpp'):
             guards.require(digest(P/name)==record['source_sha256'][name], 'CPU-tested planner changed: '+name)
         build = json.loads((B/'main-native-gdn-engine/record.json').read_text())
@@ -43,10 +44,14 @@ def gpu_check(mode):
                 guards.require(digest(Path(group['root'])/name)==expected, 'build input changed: '+name)
         fixture = build['fixtures']['sycl_expert_bank_test']
         guards.require(digest(fixture['path'])==fixture['sha256'], 'expert-bank fixture changed')
+        provider_fixture = build['fixtures']['file_expert_source_test']
+        guards.require(digest(provider_fixture['path'])==provider_fixture['sha256'], 'provider fixture changed')
         revision = subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip()
         names = ('tools/sycl/check_expert_bank.py','tools/sycl/measurement_guards.py',
             'tools/sycl/measurement_owner.py','tools/sycl/measurement_environment.json',
-            'include/strata/prefill/expert_bank_upload.hpp','tests/sycl/expert_bank.cpp')
+            'include/strata/prefill/expert_bank_upload.hpp','tests/sycl/expert_bank.cpp',
+            'include/strata/core/expert_layer_view.hpp','include/strata/core/expert_source.hpp',
+            'src/core/expert_source.cpp','tests/core/file_expert_source_test.cpp')
         pins = {}
         for name in names:
             raw = subprocess.check_output(['git','show',revision+':'+name],cwd=P)
@@ -57,12 +62,13 @@ def gpu_check(mode):
             root.mkdir(mode=0o700)
             for name in ('tmp','cache'): (root/name).mkdir()
             gpu = dict(source_commit=revision,source_sha256=pins,build_source_commit=build['source_commit'],
-                fixture=fixture,CPU_gate_source=record['source_commit'],checks=[],
+                fixture=fixture,provider_fixture=provider_fixture,CPU_gate_source=record['source_commit'],checks=[],
                 limits='Production upload helper/cache, synthetic byte readers, private maps and caller unwind only. No real provider enqueue fault injection, model arithmetic, speed, session rollback or physical262144/RESTORE qualification.')
         else:
             gpu = record['gpu']
             guards.require(gpu['mode']=='smoke' and gpu['passed'] and gpu['ownership_closed'] and
                 gpu['build_source_commit']==build['source_commit'] and gpu['fixture']==fixture and
+                gpu['provider_fixture']==provider_fixture and gpu.get('provider_checks_passed') is True and
                 gpu['source_sha256']==pins, 'same-source passed smoke required')
         guards.require(not (root/('owned-'+mode)).exists(), 'inspect existing GPU command')
         settings = json.loads((P/'tools/sycl/measurement_environment.json').read_text())
@@ -89,6 +95,16 @@ def gpu_check(mode):
 
         owner = supervision.Owner(root/('owned-'+mode),persist)
         try:
+            if mode == 'smoke':
+                entry,out,err = owner.run('arena-provider-smoke',[provider_fixture['path']],env,P,
+                    wall=60,cpu=180,rss_cap=2<<30,file_cap=64<<20,text_cap=64<<20,total_cap=128<<20)
+                stdout,stderr = out.read_text(),err.read_text()
+                guards.require(supervision.closed(entry) and entry.get('exit_code')==0 and
+                    'arena_resident_layer_test private=PASS file_fallback=PASS shared_exclusion=PASS blob_identity=PASS bounds=PASS close_reopen=PASS' in stdout and
+                    'file_expert_source_test: PASS' in stdout and not re.search(
+                    'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed',stderr),
+                    'Arena provider fixture failed: '+(stderr+stdout)[-5000:])
+                gpu['provider_checks_passed'] = True
             entry,out,err = owner.run('expert-bank-'+mode,[fixture['path'],'--'+mode],env,P,
                 wall=180,cpu=600,rss_cap=8<<30,file_cap=64<<20,text_cap=64<<20,total_cap=128<<20)
             stdout,stderr = out.read_text(),err.read_text()
@@ -97,16 +113,20 @@ def gpu_check(mode):
                 'GPU fixture failed: '+(stderr+stdout)[-5000:])
             cases = [dict(token.split('=',1) for token in line.split()[1:])
                 for line in stdout.splitlines() if line.startswith('expert_bank_case ')]
-            expected = ([(4,256,6,2,18,6,48,0),(1,256,6,1,12,0,24,0),(4,256,6,1,5,0,10,1)]
+            expected = ([(4,256,6,2,18,6,48,0),(1,256,6,1,12,0,24,0),(4,256,6,1,5,0,10,1),
+                (4,512,6,2,18,6,48,0),(1,512,6,1,12,0,24,0),(4,512,6,1,5,0,10,1)]
                 if mode=='smoke' else [(383,256,512,1,642,382,2048,0),
                 (384,256,512,2,1282,766,4096,0),(512,256,512,1,513,511,2048,0),
-                (384,2662400,512,1,641,383,2048,0)])
+                (384,2662400,512,1,641,383,2048,0),
+                (384,512,512,2,1282,766,4096,0),(384,2662400,512,1,641,383,2048,0)])
+            source_strides = ([256]*6 if mode=='smoke' else [256,256,256,2662400,256,1382400])
             guards.require(len(cases)==len(expected) and 'expert_bank_fixture PASS' in stdout,
                 'incomplete bank fixture cases')
-            for case,values in zip(cases,expected):
+            for case,values,source_stride in zip(cases,expected,source_strides):
                 keys=('slots','stride','experts','layers','uploads','hits','consumers','unwind')
                 guards.require(tuple(int(case[k]) for k in keys)==values and
-                    int(case['status'])==0 and int(case['admission_rejections'])==7 and all(
+                    int(case['source_stride'])==source_stride and int(case['status'])==0 and
+                    int(case['admission_rejections'])==7+2*(source_stride!=int(case['stride'])) and all(
                     case[k]=='PASS' for k in ('immutable_slab','guards','private_map','checked_drain')),
                     'wrong bank case evidence: '+str(case))
             gpu['checks'].append(dict(mode=mode,cases=cases,passed=True))
@@ -247,6 +267,7 @@ def main():
         revision = subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip()
         pins = {}
         for name in ('include/strata/prefill/expert_bank_plan.hpp',
+                     'include/strata/core/expert_layer_view.hpp',
                      'include/strata/prefill/layer_major_plan.hpp', 'tests/expert_bank_plan.cpp',
                      'tools/sycl/check_expert_bank.py', 'tools/sycl/measurement_guards.py',
                      'tools/sycl/measurement_owner.py'):
@@ -286,6 +307,7 @@ def main():
                 if label=='plan':
                     text=out.read_text()
                     guards.require('fallback262144=original exact_boundary=PASS' in text and
+                        'resident_layer_view valid_cases=4 rejected_extents=10 PASS' in text and
                         'short_tail_fallback_cases=3' in text and
                         'single_alloc_limit_cases=4' in text and
                         'uploads=9 hits=3 negative_checks=18 PASS' in text and

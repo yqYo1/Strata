@@ -1,11 +1,11 @@
 {
-  "mode": "qsa-long-input-expert-bank-64k",
-  "source_commit": "ca2ee80eb794f619d958a3d358be3a9628fbdcfe",
-  "build_source_commit": "1222e27d01f32c5bb31f574ff4b143c489a3bcf1",
+  "mode": "qsa-long-input-source-view-check",
+  "source_commit": "5e1a81b5d9af5043a5ad9d751f12564c5cd1507b",
+  "build_source_commit": "a57611b9c52f5d1cf2f5281b3cc7eb4087b5cd12",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-    "bytes": 22070744,
-    "sha256": "ce19688e2788b13e5f61258f4d16b5f27da3d9d78e3f96a46fd2e06c873bb670"
+    "bytes": 22079288,
+    "sha256": "570b65ddfd88e3955b58634b361bb13e12a4bd713ac6e5ae396d47265a76fd46"
   },
   "environment": {
     "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
@@ -55,34 +55,42 @@
     "STRATA_PREFILL_BF16X2": "0",
     "STRATA_PF_FUSED": "0",
     "STRATA_PREFILL_CANONICAL_DENSE_BANK": "1",
-    "STRATA_PREFILL_LAYER_MAJOR_PROFILE": "0",
-    "STRATA_PREFILL_LAYER_MAJOR_QSA_PROFILE": "0",
+    "STRATA_PREFILL_LAYER_MAJOR_PROFILE": "1",
+    "STRATA_PREFILL_LAYER_MAJOR_QSA_PROFILE": "1",
     "STRATA_SYCL_SELECT_RADIX4": "1",
     "STRATA_SYCL_SELECT_CYCLIC": "0",
     "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
     "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-64k-v1/cache",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-source-view-check-v2/cache",
     "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
     "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
     "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
     "STRATA_SYCL_PREFILL_NATIVE16_QSA": "1",
     "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
     "STRATA_ROPE_TABLE": "1",
-    "STRATA_PREFILL_CPU_WAIT_PROFILE": "0",
+    "STRATA_PREFILL_CPU_WAIT_PROFILE": "1",
     "STRATA_SYCL_PREFILL_MOE_WINDOW": "10",
     "STRATA_SYCL_SCORE_QUERY_TILE": "8",
     "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
     "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
     "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-64k-v1/tmp",
-    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-64k-v1",
+    "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+    "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+    "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+    "STRATA_TRACE": "1",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-source-view-check-v2/tmp",
+    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-source-view-check-v2",
     "ZES_ENABLE_SYSMAN": "0",
     "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
     "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
     "STRATA_SYCL_PREFILL_GU_SWIGLU": "large",
+    "STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW": "1",
     "STRATA_SYCL_PREFILL_DOWN_SCATTER": "0",
     "STRATA_SYCL_PREFILL_MIXED_SCRATCH": "1",
-    "STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS": "384"
+    "STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS": "384",
+    "STRATA_PREFILL_LAYER_MAJOR_GDN_PROFILE": "1"
   },
   "config": {
     "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
@@ -100,7 +108,7 @@
       "--expert-cache",
       "128",
       "--expert-profile",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-64k-v1/expert-profile.bin",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-source-view-check-v2/expert-profile.bin",
       "--expert-cache-per-layer",
       "--pool-workers",
       "5",
@@ -139,7 +147,7 @@
       "strata"
     ],
     "host": "127.0.0.1",
-    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-64k-v1/engine.stderr",
+    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-source-view-check-v2/engine.stderr",
     "engine_silence_s": 480,
     "parallel": 1,
     "open_browser": false,
@@ -149,14 +157,14 @@
     "/bin/sh",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
     "--config",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-64k-v1/config.json",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-source-view-check-v2/config.json",
     "--port",
-    "51085",
+    "52527",
     "--runs",
-    "4",
+    "1",
     "--prefill-only",
     "--prefill-tokens",
-    "65536",
+    "98304",
     "--workload-id",
     "native_gdn_20261018",
     "--think",
@@ -164,20 +172,24 @@
     "--ready-timeout",
     "600",
     "--out",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-expert-bank-64k-v1/bench"
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-source-view-check-v2/bench"
   ],
   "reference": {
     "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-softmax-measurement-inputs-v1.json",
     "sha256": "3792c36462e333816ce5d5d9ac39f3dcc13809939d8d3133c570d8945257d1dd"
   },
-  "config_sha256": "2ca75b7a13e764f702ee6bf745c450be0a4dfb5c4e914f2581ac7eab0166fe02",
+  "config_sha256": "e16a9f6f7237df10270286185c38dea5fce0dd218a91f574e48a7dcb2f2be87c",
   "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
-  "complete": true,
-  "passed": true,
+  "complete": false,
+  "passed": false,
   "active": false,
   "model_quality_qualified": false,
   "physical262144_RESTORE_qualified": false,
   "performance_adopted": false,
+  "host_qualification": [],
+  "cpu_observer_version": 4,
+  "cpu_fixture_receipt_sha256": "6724506fcfd69ba81d7f035541d14eda6fe6a29b9ac92f05d8f85dae26223786",
+  "profile_route_qualification": null,
   "ordered_exp_qualification": {
     "component_path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-ordered-exp-current.json",
     "component_sha256": "d6af7daf82a4485eb86279b42114149ed8374188f8823764b608817c07c7b3ae",
@@ -203,18 +215,14 @@
   },
   "cohort_index": 0,
   "long_input_screen": {
-    "minimum_actual_tokens": 65536,
+    "minimum_actual_tokens": 98304,
     "generated_token_cap": 24,
     "context_capacity": 131072,
-    "required_client_context": 82200,
-    "question": "65536-minimum official workload, expected78451 fresh read tokens: unchanged1222 engine/384 slots/auto GPU residency with one78450-row MoE window per layer. Compare total latency and requested weight/dequant/job counts; different input size, not a same-input kernel gain or measured hardware saturation.",
+    "required_client_context": 123160,
+    "question": "Same binary,117489 fresh tokens,384 expert slots and identical GPU placement: eliminate redundant CPU source repacking; include actual transfer/submission cost in full-request speed.",
     "qualification": "One validated long request, then up to3 independent clean processes with4 fresh requests each. Separate first use and3 subsequent requests; target each independent subsequent median>=1000tok/s. Stop this configuration early if a process median<950 and all3 subsequent samples<975; retain the failed screen and do not claim3-process qualification. Not sustained decode, model-quality or physical262144 qualification.",
-    "residual_GPU_rows": 78450,
-    "expert_slots": 384,
-    "expected_actual_read_tokens": 78451,
-    "expected_windows_per_layer": [
-      78450
-    ]
+    "residual_GPU_rows": 117488,
+    "expert_slots": 384
   },
   "mixed_qualification": {
     "component_path": "bench/results/2026-10-15-pr6-recovery-audit/moe-mixed-scratch-current.json",
@@ -238,396 +246,68 @@
   },
   "expert_bank_qualification": {
     "component_path": "bench/results/2026-10-15-pr6-recovery-audit/moe-expert-bank-current.json",
-    "component_sha256": "7bc98311fe412a7fdb7cc1ceb586b57e773ad81f5a044b19fd1759696a398eba",
-    "build_source_commit": "1222e27d01f32c5bb31f574ff4b143c489a3bcf1",
+    "component_sha256": "52cf6c5e8bb2414afbf7d753c79ddf2e238f6f7f57c9879e05b7a4760290b444",
+    "build_source_commit": "a57611b9c52f5d1cf2f5281b3cc7eb4087b5cd12",
     "limits": "Production upload helper/cache, synthetic byte readers, private maps and caller unwind only. No real provider enqueue fault injection, model arithmetic, speed, session rollback or physical262144/RESTORE qualification."
   },
-  "preceding_long_input_result": {
-    "commit": "ca2ee80eb794f619d958a3d358be3a9628fbdcfe",
+  "previous_screen": {
+    "commit": "5e1a81b5d9af5043a5ad9d751f12564c5cd1507b",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json",
-    "mode": "qsa-long-input-expert-bank-64k-check"
+    "mode": "qsa-long-input-expert-bank-64k",
+    "passed": true,
+    "error": null
+  },
+  "source_view_qualification": {
+    "source_contract_cleared": true,
+    "scope": "Bounded private-Arena117K model check only; not default/performance/quality/full-context/RESTORE adoption.",
+    "reviewed_candidate_source_commit": "8bd20575c",
+    "review_sha256": "64820c9a06ae789fe28c112ecd7472f205a55c62281e99a13f056e078988169a",
+    "main_resolution_source_commit": "2033bae8424ea22dfa81fc21ad9bd0852cfbd808",
+    "tested_build_source_commit": "a57611b9c52f5d1cf2f5281b3cc7eb4087b5cd12",
+    "source_files_sha256": {
+      "include/strata/core/expert_layer_view.hpp": "5b8c4a6c7a1a1d074fe35ed09c933c10b52e56e609eb86e5a4e7b506d0dc8c8f",
+      "include/strata/core/expert_source.hpp": "cf4b82b76adee8e4bc80173b280f511a04a01a43945c4814c50e8e5464f5aaa3",
+      "src/core/expert_source.cpp": "85fde09cdf17876157ae21ac2bcd5b4ad0aba8d43dc78f39ce3506a8c436e905",
+      "include/strata/prefill/expert_bank_upload.hpp": "3b81da8f15a89306cff9a46982d31fc10ad120a592cf7662c9c2c8b3a2fc7bfe",
+      "src/prefill/prefill.cpp": "dd175416802c1f007dc2dc0d62f60ae844f7d6a31db96d7bff301f4c87d3609f",
+      "src/prefill/layer_major.inc": "4aea46de2afcf85091d292597b00fdeed8f085523151a04bdb4131b736910ac8",
+      "src/prefill/moe_window.inc": "adb7e0c8f308abe5636a22191f53efee92d97b45e4ef3738efb58467ac6aeff9",
+      "tests/expert_bank_plan.cpp": "fe62bff89008f7ab1d3acb1a160295651c27544c74ff01d3a5eaa16b00366179",
+      "tests/sycl/expert_bank.cpp": "c390ac3c9300be9126fa800151d7a6a7d8634b067f452b1a849a7a7afba82322",
+      "tests/core/file_expert_source_test.cpp": "787d8a49765bdba276c950844bc27965870349a91abb3be7f3da8e279296b393",
+      "cmake/sycl_backend.cmake": "a746dcd6ee00ba257026f1a304a2cf22b508b29f16f0e0c6be68352b680226b0"
+    },
+    "caller_proof": "generate.cpp owns arena_src from line3229 through all CLI/server Prefill work; current source has no concurrent Arena close/reopen call. Caller must preserve that contract. No new worker or source-call concurrency is introduced.",
+    "provider_gate": "Real private Arena pointer/blob identity, bounds,later calls,close/reopen passed; File has no view; Linux shared Arena has no view and synchronous fallback still copies expected bytes.",
+    "upload_gate": "Six traced small and six full byte-reader cases passed with fixed/compact host strides, guards,immutable source,private maps,checked normal/unwind retirement; no fresh faults or boot change.",
+    "configuration_limit": "The measured config omits --shared-expert-arena and --mmap-experts; source code excludes all nonempty shared backing paths from view publication.",
+    "limits": "Real production Arena async readers, numerical/task quality,failure-session/RESTORE,physical262144 and sustained performance remain unqualified until subsequent model gates."
+  },
+  "source_view_comparison": {
+    "enabled": true,
+    "expected_actual_read_tokens": 117489,
+    "expected_borrowed_layer_span_bytes": 50292326400,
+    "requested_only_change": "STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW=0|1",
+    "order": [
+      "A0",
+      "B0",
+      "B1",
+      "A1",
+      "A2",
+      "B2"
+    ],
+    "requests_per_process": 4,
+    "prospective_selection": "All3 independent paired subsequent medians favor the view; geometric mean of paired ratios>1.005, no fresh faults or eligibility/ownership failures. Target1000tok/s is checked separately, not assumed from source-copy removal.",
+    "limits": "Opt-in117K scheduling comparison; default adoption still needs broad quality,physical262144,session/RESTORE and sustained-generation gates."
+  },
+  "phase_profile_scope": {
+    "question": "Validate the admitted immutable Arena view on117K input and quantify remaining preparation/upload/explicit-wait CPU before clean same-binary A/B.",
+    "route": "Current committed candidate engine,117488 all-GPU rows,384 slots,borrowed mixed scratch,GU-large,Down0;81920+35568 rows per layer; source_view=1.",
+    "coverage": "Checked coarse observer v3, four extra event pairs retired only after existing checked drains; per-layer expected counts for all36GDN layers, with zero GDN samples on12QSA layers. Legacy STRATA_PREFILL_TIMING remains prohibited.",
+    "limits": "No fine command sampler: staged expert H2D is not tagged by that compiled sampler. Coarse GPU intervals include host gaps; CPU time in waits is separate from source preparation. No physical PCIe/VRAM traffic, arithmetic saturation or clean speed claim.",
+    "retirement": "Extract compact phase samples and faults; retire normal full logs/JIT after source/recipe recovery. No implementation adoption.",
+    "source_copy_hypothesis": "Legacy source_copy category now measures preparation only: actual source marker must prove view admission, zero owned upload slab and no512-expert CPU repacking. A classification change is not a speedup; clean matched request latency decides."
   },
   "source_count": 110,
-  "source_aggregate_sha256": "a7a57376655645833abfee48f470b7b4284c574ffbcf01074f4d142073adffdf",
-  "exit_code": 0,
-  "requests": [
-    {
-      "run": 0,
-      "ok": true,
-      "eligible": true,
-      "actual_prompt_tokens": 78451,
-      "actual_read_tokens": 78451,
-      "actual_reused_tokens": 0,
-      "generated_tokens": 24,
-      "thinking_requested": true,
-      "reasoning_observed": true,
-      "stream_complete": true,
-      "request_sha256": "b592f434eb31230e4aaadcc163951732a26b553480a4411e6eb2bc82bcb9b827",
-      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
-      "ttft_s": 94.451,
-      "total_s": 96.107,
-      "prompt_tps": 835.0,
-      "prompt_ms": 93957.0,
-      "decode_tps": 13.7,
-      "decode_ms": 1753.9,
-      "prompt_tps_source": "engine",
-      "decode_tps_source": "engine",
-      "drafts_offered": 21,
-      "drafts_accepted": 16,
-      "finish_reason": "length",
-      "err": null,
-      "eligibility_errors": []
-    },
-    {
-      "run": 1,
-      "ok": true,
-      "eligible": true,
-      "actual_prompt_tokens": 78451,
-      "actual_read_tokens": 78451,
-      "actual_reused_tokens": 0,
-      "generated_tokens": 24,
-      "thinking_requested": true,
-      "reasoning_observed": true,
-      "stream_complete": true,
-      "request_sha256": "8530456cd33ae82d7e7aea5341796493f9442cfebbf87eede5e23695a72d47d8",
-      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
-      "ttft_s": 84.767,
-      "total_s": 86.407,
-      "prompt_tps": 930.9,
-      "prompt_ms": 84277.4,
-      "decode_tps": 13.8,
-      "decode_ms": 1735.0,
-      "prompt_tps_source": "engine",
-      "decode_tps_source": "engine",
-      "drafts_offered": 21,
-      "drafts_accepted": 16,
-      "finish_reason": "length",
-      "err": null,
-      "eligibility_errors": []
-    },
-    {
-      "run": 2,
-      "ok": true,
-      "eligible": true,
-      "actual_prompt_tokens": 78451,
-      "actual_read_tokens": 78451,
-      "actual_reused_tokens": 0,
-      "generated_tokens": 24,
-      "thinking_requested": true,
-      "reasoning_observed": true,
-      "stream_complete": true,
-      "request_sha256": "8ac504de3338c11bab99f2710c4923aeb2edd5879aec93bdcca5ec1b9867dc60",
-      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
-      "ttft_s": 85.614,
-      "total_s": 87.263,
-      "prompt_tps": 921.6,
-      "prompt_ms": 85120.8,
-      "decode_tps": 13.7,
-      "decode_ms": 1747.2,
-      "prompt_tps_source": "engine",
-      "decode_tps_source": "engine",
-      "drafts_offered": 21,
-      "drafts_accepted": 16,
-      "finish_reason": "length",
-      "err": null,
-      "eligibility_errors": []
-    },
-    {
-      "run": 3,
-      "ok": true,
-      "eligible": true,
-      "actual_prompt_tokens": 78451,
-      "actual_read_tokens": 78451,
-      "actual_reused_tokens": 0,
-      "generated_tokens": 24,
-      "thinking_requested": true,
-      "reasoning_observed": true,
-      "stream_complete": true,
-      "request_sha256": "7fddc7f387d219bf7547dba5443bb66d05dce49bd06b4ad3c05d0c2462897f3b",
-      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
-      "ttft_s": 84.809,
-      "total_s": 86.485,
-      "prompt_tps": 930.4,
-      "prompt_ms": 84317.3,
-      "decode_tps": 13.5,
-      "decode_ms": 1772.4,
-      "prompt_tps_source": "engine",
-      "decode_tps_source": "engine",
-      "drafts_offered": 21,
-      "drafts_accepted": 16,
-      "finish_reason": "length",
-      "err": null,
-      "eligibility_errors": []
-    }
-  ],
-  "engine_exit_code": 0,
-  "native_identity": {
-    "pid": 1774117,
-    "start_ticks": 69619567,
-    "sid": 1774092
-  },
-  "route_selection": [],
-  "gu_route": {
-    "selection": [
-      "[native16-gu] fusion=large min_rows=2334"
-    ],
-    "per_request_counts": [
-      {
-        "fused_jobs": "4985",
-        "fused_rows": "33892825",
-        "separate_jobs": "16529",
-        "min_rows": "2334"
-      },
-      {
-        "fused_jobs": "5000",
-        "fused_rows": "33910774",
-        "separate_jobs": "16513",
-        "min_rows": "2334"
-      },
-      {
-        "fused_jobs": "5006",
-        "fused_rows": "33918489",
-        "separate_jobs": "16485",
-        "min_rows": "2334"
-      },
-      {
-        "fused_jobs": "5000",
-        "fused_rows": "33892128",
-        "separate_jobs": "16519",
-        "min_rows": "2334"
-      }
-    ],
-    "limits": "Actual submitted/completed route counts; removed logical bytes are not physical VRAM traffic."
-  },
-  "down_route": {
-    "selection": [
-      "[native16-down] fusion=0 min_rows=2334"
-    ],
-    "per_request_counts": [
-      {
-        "fused_jobs": "0",
-        "fused_rows": "0",
-        "separate_jobs": "21514",
-        "min_rows": "2334"
-      },
-      {
-        "fused_jobs": "0",
-        "fused_rows": "0",
-        "separate_jobs": "21513",
-        "min_rows": "2334"
-      },
-      {
-        "fused_jobs": "0",
-        "fused_rows": "0",
-        "separate_jobs": "21491",
-        "min_rows": "2334"
-      },
-      {
-        "fused_jobs": "0",
-        "fused_rows": "0",
-        "separate_jobs": "21519",
-        "min_rows": "2334"
-      }
-    ]
-  },
-  "moe_window_admission": [
-    "strata MoE window configuration: requested_mode=10 effective_mode=10 maximum_rows=78450 mixed_fp16_bytes=0",
-    "strata MoE window configuration: requested_mode=10 effective_mode=10 maximum_rows=78450 mixed_fp16_bytes=0",
-    "strata MoE window configuration: requested_mode=10 effective_mode=10 maximum_rows=78450 mixed_fp16_bytes=0",
-    "strata MoE window configuration: requested_mode=10 effective_mode=10 maximum_rows=78450 mixed_fp16_bytes=0"
-  ],
-  "residual_placement": [
-    "strata prefill: layer-major candidate, tokens=78450 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=1606656000 residual_gpu_rows=78450 residual_gpu=1606656000 residual_host=0 residual_staging=0 layer_cache=1022361600; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
-    "strata prefill: layer-major candidate, tokens=78450 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=1606656000 residual_gpu_rows=78450 residual_gpu=1606656000 residual_host=0 residual_staging=0 layer_cache=1022361600; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
-    "strata prefill: layer-major candidate, tokens=78450 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=1606656000 residual_gpu_rows=78450 residual_gpu=1606656000 residual_host=0 residual_staging=0 layer_cache=1022361600; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
-    "strata prefill: layer-major candidate, tokens=78450 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=1606656000 residual_gpu_rows=78450 residual_gpu=1606656000 residual_host=0 residual_staging=0 layer_cache=1022361600; extra allocations, GPU headroom=536870912, RAM headroom=8589934592"
-  ],
-  "mixed_scratch_route": {
-    "backing": [
-      "strata MoE mixed banks: storage=scratch primary_bytes=335544320 tail_bytes=66119680 tail_offset=1022974976 extra_allocation_bytes=0 phase=FFN_only_after_attention_drain",
-      "strata MoE mixed banks: storage=scratch primary_bytes=335544320 tail_bytes=66119680 tail_offset=1022974976 extra_allocation_bytes=0 phase=FFN_only_after_attention_drain",
-      "strata MoE mixed banks: storage=scratch primary_bytes=335544320 tail_bytes=66119680 tail_offset=1022974976 extra_allocation_bytes=0 phase=FFN_only_after_attention_drain",
-      "strata MoE mixed banks: storage=scratch primary_bytes=335544320 tail_bytes=66119680 tail_offset=1022974976 extra_allocation_bytes=0 phase=FFN_only_after_attention_drain"
-    ]
-  },
-  "expert_bank_route": {
-    "selections": [
-      {
-        "requested_slots": "384",
-        "effective_slots": "384",
-        "staged": "1",
-        "host_slab_bytes": "1363148800",
-        "device_bytes": "1022361600",
-        "residual_gpu_rows": "78450",
-        "allocation_limit_bytes": "10132807680",
-        "general_map": "private_scratch_never_published"
-      },
-      {
-        "requested_slots": "384",
-        "effective_slots": "384",
-        "staged": "1",
-        "host_slab_bytes": "1363148800",
-        "device_bytes": "1022361600",
-        "residual_gpu_rows": "78450",
-        "allocation_limit_bytes": "10132807680",
-        "general_map": "private_scratch_never_published"
-      },
-      {
-        "requested_slots": "384",
-        "effective_slots": "384",
-        "staged": "1",
-        "host_slab_bytes": "1363148800",
-        "device_bytes": "1022361600",
-        "residual_gpu_rows": "78450",
-        "allocation_limit_bytes": "10132807680",
-        "general_map": "private_scratch_never_published"
-      },
-      {
-        "requested_slots": "384",
-        "effective_slots": "384",
-        "staged": "1",
-        "host_slab_bytes": "1363148800",
-        "device_bytes": "1022361600",
-        "residual_gpu_rows": "78450",
-        "allocation_limit_bytes": "10132807680",
-        "general_map": "private_scratch_never_published"
-      }
-    ],
-    "per_request_totals": [
-      {
-        "uploads": "18484",
-        "requested_H2D_bytes": "37750041600",
-        "permanent_hits": "0",
-        "permanent_slots": "261",
-        "total_slots": "384",
-        "final_drain": "checked"
-      },
-      {
-        "uploads": "18480",
-        "requested_H2D_bytes": "37746227200",
-        "permanent_hits": "0",
-        "permanent_slots": "262",
-        "total_slots": "384",
-        "final_drain": "checked"
-      },
-      {
-        "uploads": "18463",
-        "requested_H2D_bytes": "37707750400",
-        "permanent_hits": "0",
-        "permanent_slots": "260",
-        "total_slots": "384",
-        "final_drain": "checked"
-      },
-      {
-        "uploads": "18486",
-        "requested_H2D_bytes": "37757363200",
-        "permanent_hits": "0",
-        "permanent_slots": "259",
-        "total_slots": "384",
-        "final_drain": "checked"
-      }
-    ],
-    "limits": "Requested raw expert H2D payload, not measured PCIe wire traffic; helper/full-request checked drains qualify this bounded model route only."
-  },
-  "moe_window_work": {
-    "per_request_totals": [
-      {
-        "windows": "48",
-        "dequants": "18484",
-        "jobs": "21514",
-        "source_H2D_bytes": "150624000",
-        "GPU_resident_windows_only": "1",
-        "operator_max": "8192",
-        "maximum_rows": "78450"
-      },
-      {
-        "windows": "48",
-        "dequants": "18480",
-        "jobs": "21513",
-        "source_H2D_bytes": "150624000",
-        "GPU_resident_windows_only": "1",
-        "operator_max": "8192",
-        "maximum_rows": "78450"
-      },
-      {
-        "windows": "48",
-        "dequants": "18463",
-        "jobs": "21491",
-        "source_H2D_bytes": "150624000",
-        "GPU_resident_windows_only": "1",
-        "operator_max": "8192",
-        "maximum_rows": "78450"
-      },
-      {
-        "windows": "48",
-        "dequants": "18486",
-        "jobs": "21519",
-        "source_H2D_bytes": "150624000",
-        "GPU_resident_windows_only": "1",
-        "operator_max": "8192",
-        "maximum_rows": "78450"
-      }
-    ],
-    "limits": "Completed work counts and requested source-map H2D bytes; not physical traffic, arithmetic saturation or additive wall time."
-  },
-  "long_input_process_summary": {
-    "first_use_request_index": 0,
-    "subsequent_request_indices": [
-      1,
-      2,
-      3
-    ],
-    "median_prompt_tps": 930.4,
-    "sample_sd_prompt_tps": 5.230997355508131,
-    "min_prompt_tps": 921.6,
-    "max_prompt_tps": 930.9,
-    "process_target_passed": false,
-    "futility_stop": true,
-    "limits": "One process only; no3-process target/adoption or decode qualification."
-  },
-  "gdn_column_route": [
-    "strata prefill: GDN columns=4 workgroups=192 lanes=128 epilogue=GPU_FP32_same_order scratch=existing_y",
-    "strata prefill: GDN columns=4 workgroups=192 lanes=128 epilogue=GPU_FP32_same_order scratch=existing_y",
-    "strata prefill: GDN columns=4 workgroups=192 lanes=128 epilogue=GPU_FP32_same_order scratch=existing_y",
-    "strata prefill: GDN columns=4 workgroups=192 lanes=128 epilogue=GPU_FP32_same_order scratch=existing_y"
-  ],
-  "qsa_route": [
-    "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=161297312; source=resident-Mode0 score_pitch=33 operand_layout=row-major softmax=parallel-exp-ascending-sum",
-    "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=161297312; source=resident-Mode0 score_pitch=33 operand_layout=row-major softmax=parallel-exp-ascending-sum",
-    "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=161297312; source=resident-Mode0 score_pitch=33 operand_layout=row-major softmax=parallel-exp-ascending-sum",
-    "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=161297312; source=resident-Mode0 score_pitch=33 operand_layout=row-major softmax=parallel-exp-ascending-sum"
-  ],
-  "cached_query_route": [
-    "strata prefill: QSA cached_query=1 grf_policy=default source=qualified-component",
-    "strata prefill: QSA cached_query=1 grf_policy=default source=qualified-component",
-    "strata prefill: QSA cached_query=1 grf_policy=default source=qualified-component",
-    "strata prefill: QSA cached_query=1 grf_policy=default source=qualified-component"
-  ],
-  "k_staging_route": [
-    "strata prefill: QSA k_staging=typed4 parallel_rows=1 source=qualified-component",
-    "strata prefill: QSA k_staging=typed4 parallel_rows=1 source=qualified-component",
-    "strata prefill: QSA k_staging=typed4 parallel_rows=1 source=qualified-component",
-    "strata prefill: QSA k_staging=typed4 parallel_rows=1 source=qualified-component"
-  ],
-  "v_staging_route": [
-    "strata prefill: QSA v_staging=typed4 layout=row-major source=qualified-component",
-    "strata prefill: QSA v_staging=typed4 layout=row-major source=qualified-component",
-    "strata prefill: QSA v_staging=typed4 layout=row-major source=qualified-component",
-    "strata prefill: QSA v_staging=typed4 layout=row-major source=qualified-component"
-  ],
-  "ownership_closed": true,
-  "fresh_faults": [],
-  "boot_unchanged": true,
-  "driver_after": {
-    "pci": "/sys/bus/pci/devices/0000:05:00.0",
-    "driver": "xe",
-    "vendor": "0x8086",
-    "device": "0xe20c",
-    "kernel": "7.0.0-38-generic",
-    "devcoredump": false
-  }
+  "source_aggregate_sha256": "584647f7ba73beadd05f0aa476f8ddaff1e10c415b41603cae8078fb5353e5eb"
 }

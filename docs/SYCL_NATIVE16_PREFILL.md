@@ -1440,11 +1440,60 @@ fault. The prospective median<950/all samples<975 futility rule stops this
 configuration without the other two processes. The1000tok/s target is unmet.
 This different input size does not establish a same-input kernel regression.
 
-Return to the validated117K route for current resource attribution. A bounded
-single-request observer check precedes a separate first-use/warm pair. Check
-all96 windows, GU fused/separate counts and disjoint CPU regions, including
-the512-expert source copy after each checked layer drain. Measure its current
-cost before selecting CPU-only next-layer slab preparation. Keep the compiled
+The117K route's observer check passed, and the separate first-use/warm pair
+completed normally without a fresh fault. Its original controller result remains
+failed: a global owner count incorrectly compared192 windows against96.
+The corrected offline analyzer independently validates96 windows per request,
+complete CPU/coarse/work counts and four negative parser cases; it does not
+rerun the model or overwrite the original failure. First-use/warm source copying
+took5.15749/5.12719wall seconds (5.13619/5.06660CPU); warm frame wall was122.49556s.
+Warm host grouping took0.25367CPU seconds. The951.1tok/s warm reading is profiled,
+not a clean speed sample. Main keeps only aggregate attribution and checked
+work totals; the full layer arrays and exact job-size histogram are unnecessary.
+
+The next candidate is an opt-in immutable layer view from the already resident
+Arena source, eliminating the512-expert staging copy. This may avoid a second
+slab and worker without changing arithmetic or PCIe payload. It requires explicit
+bounded source lifetime through checked queue retirement; transient/custom
+providers keep synchronous copying. Ordinary host-pointer DMA may itself stage
+or behave differently, so no speedup or1000tok/s claim follows from byte removal.
+CPU-only next-layer double-buffering remains an alternative if direct borrowing
+fails its correctness/performance comparison.
+
+The prospective implementation is default-off under
+`STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW=1`. It applies only to the existing
+all-GPU staged expert bank. Arena publishes bounded immutable host views from
+its loaded-layout snapshot; the caller keeps the source open until checked
+queue retirement. Empty provider capability or an unsupported bank route retains
+the synchronous path. RAM admission counts an upload slab only when needed.
+The upload helper separates host blob stride from the fixed GPU-cache stride;
+each transfer still copies exactly that layer's blob bytes. No worker, GPU math,
+cache policy, decode layout or requested PCIe weight payload changes.
+Before any model run, require independent source-contract review,14 CPU view
+extent checks plus existing planner/ticket checks, then traced small and full
+GPU byte/guard/queue-unwind checks for both strides. Clean same-binary117K
+off/on model comparisons follow only after these pass. The current engine and
+same-build fixtures remain the validated fallback through qualification.
+
+The independent source audit and native Luna-max review found the private-Arena
+caller/stride/queue contract sound, while flagging externally mutable shared
+file backing. Main disables resident views for every nonempty shared-arena path;
+those sources keep the original synchronous copy. The next bounded gate also
+uses the real Arena provider to check blob identity, later source calls, invalid
+layers, close/reopen, File fallback and Linux shared exclusion, before synthetic
+GPU upload/guard/unwind cases. Initial compilation and the14 CPU view extent
+checks passed. The real provider checks and all six traced small/six full GPU
+cases subsequently passed at build source`a57611b9c`, without a fresh fault or
+boot change. These include fixed/compact source strides and checked unwind.
+An earlier build stopped before execution because the provider target was not
+registered in the separate SYCL CMake path; that failed receipt is preserved.
+Model qualification and speed remain pending. The next official117K check
+requires actual48-layer view admission, zero owned upload slab, unchanged
+384-slot/residual placement and full owner/work/CPU accounting. Clean0/1 pairs
+follow separately, with rotated A0/B0/B1/A1/A2/B2 order; do not equate disappearance
+of the source-copy category with a measured throughput gain.
+
+Keep the compiled
 fine command sampler off: it lacks a staged-expert-copy tag and would reject
 those untagged events. Coarse event intervals include host submission gaps and
 do not establish physical PCIe traffic or arithmetic saturation. The reviewed

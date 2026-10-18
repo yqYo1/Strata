@@ -2836,6 +2836,8 @@ bool ArenaExpertSource::open(const std::string& pack_dir, int64_t n_layers, int6
         lbytes.push_back(lay.blob_bytes(l) * (uint64_t) n_expert);
     }
     bounds.push_back(want);
+    std::vector<ResidentExpertLayer> resident_layers;
+    if (shared_arena_file.empty()) resident_layers.reserve(size_t(n_layers));
     PinnedArena* a = new PinnedArena(want + (uint64_t) blob, bounds, max_pinned_bytes,
                                      shared_arena_file, pack_hash);
     if (!a->valid()) {
@@ -2881,7 +2883,20 @@ bool ArenaExpertSource::open(const std::string& pack_dir, int64_t n_layers, int6
         err = "ArenaExpertSource: the load read " + std::to_string(st.bytes) + " B of " + std::to_string(want);
         return false;
     }
+    // An external process can mutate MAP_SHARED backing. Do not promise an
+    // immutable async view for it; the original synchronous copy remains usable.
+    for (int64_t l = 0; shared_arena_file.empty() && l < n_layers; ++l) {
+        const auto view = ResidentExpertLayer::make(a->data(), want, loff[size_t(l)],
+                                                   n_expert, lay.blob_bytes(l));
+        if (!view.data) {
+            delete a;
+            err = "ArenaExpertSource: resident layer exceeds loaded storage";
+            return false;
+        }
+        resident_layers.push_back(view);
+    }
     arena_ = a;
+    resident_layers_ = std::move(resident_layers);
     base_ = a->data();
     pinned_bytes_ = a->registered_bytes;
     // plan v0.3 P6: device aliases of the mapped registration, for the PCIe share of the misses
@@ -2911,6 +2926,7 @@ bool ArenaExpertSource::open(const std::string& pack_dir, int64_t n_layers, int6
 }
 
 void ArenaExpertSource::close() {
+    resident_layers_.clear();
     if (arena_ != nullptr) {
         delete (PinnedArena*) arena_;
         arena_ = nullptr;
@@ -2918,6 +2934,11 @@ void ArenaExpertSource::close() {
     base_ = nullptr;
     blobs_ = 0;
     n_expert_ = 0;
+}
+
+ResidentExpertLayer ArenaExpertSource::resident_layer(int64_t layer) const {
+    if (!base_ || layer < 0 || uint64_t(layer) >= resident_layers_.size()) return {};
+    return resident_layers_[size_t(layer)];
 }
 
 bool ArenaExpertSource::pinned(int64_t layer, int64_t expert) const {

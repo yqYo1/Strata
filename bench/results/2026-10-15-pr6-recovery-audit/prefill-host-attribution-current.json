@@ -480,5 +480,175 @@
       "sha256": "e00e1d49dce227955ba54f5e1fc06942350807a3eb64956e5dd49ab037c73cd9"
     }
   },
-  "read_only_reanalysis_plan": "Preserve original passed=false/error. Correct per-request owner-census count, validate both exact96-window intervals and complete version4 CPU/work/phase conservation from these closed immutable inputs. No new model/GPU execution. Negative parser checks must reject missing/reordered windows and changed GU work totals."
+  "read_only_reanalysis_plan": "Preserve original passed=false/error. Correct per-request owner-census count, validate both exact96-window intervals and complete version4 CPU/work/phase conservation from these closed immutable inputs. No new model/GPU execution. Negative parser checks must reject missing/reordered windows and changed GU work totals.",
+  "corrected_resource_analysis": {
+    "source_commit": "66602bee1e3cf607eeeb779e977c9fc79cfba8c3",
+    "original_failed_result": {
+      "commit": "66602bee1e3cf607eeeb779e977c9fc79cfba8c3",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-host-attribution-current.json"
+    },
+    "complete": true,
+    "passed": true,
+    "model_executed": false,
+    "GPU_executed": false,
+    "original_outcome_unchanged": true,
+    "negative_parser_checks": [
+      "combined_requests_are_not_one96_window_interval",
+      "missing_planned_window",
+      "missing_owner_entry",
+      "changed_GU_work_total"
+    ],
+    "per_request_owner_windows": [
+      96,
+      96
+    ],
+    "all_owner_keys_extents_and_retirements_checked": true,
+    "first_use": {
+      "resource_diagnostics": [
+        "strata lm profile: v=3 complete=1 errors=0 first_status=0 wrapper_ms=131093 denominator=started_through_checked_lease_retirement teardown_unmeasured=1 queue_intervals=NONEXCLUSIVE_including_host_submission_gaps bytes=REQUESTED_not_wire wall_order=source,upload_submit,upload_drain,activation,input_submit_host,input_submit_device,store_wall_host,store_wall_device,store_drain_host,store_drain_device,chunk_drain,wrapper_drain queue_order=input,QSA,GDN,MoE,upload,store,GDN_projections,GDN_conv_gates,GDN_recurrence,GDN_output",
+        "strata lm profile: layer=-1 wall_ms=5157.68,4.99628,6.59953,653.012,0,76.9596,0,0,0,0,0,30.2137 queue_ms=716.084,44488.4,24998.5,38664.7,0.655827,0,9479.71,1316.72,9771.58,4417.89 samples=705,180,540,96,48,0,540,540,540,540 gdn_expected_chunks=540 gdn_submit_wall_ms=143.133,45.0862,36.0601,33.7489 upload_bytes=0 input_bytes_host_device=0,113089249280 store_bytes_host_device=0,0 input_queue_host_device_ms=0,716.084 store_queue_host_device_ms=0,0",
+        "strata lm qsa profile: v=1 complete=1 errors=0 first_status=0 wrapper_ms=131093 denominator=started_through_checked_lease_retirement teardown_unmeasured=1 granularity=QSA_LAYER_CHUNK sections=projections,kv_stage,kv_append_query,indexer_append,selection,attention,output_projection queue_intervals=NONEXCLUSIVE_including_host_submission_gaps host_wall=NONEXCLUSIVE_submission_and_helper_waits_not_CPU_or_GPU_service markers_included=1 kv_stage_noop_sample=1 dispatch=ACTUAL_matrix_used_result queries=SUM_T_not_request_tokens",
+        "strata lm qsa profile: layer=-1 expected_chunks=180 queue_ms=3276.89,0.806254,793.352,9.25115,7994.98,30591.4,1815.1 host_wall_ms=245.185,4.03988,17.3762,11.8895,960.556,3513.95,52.7645 samples=180,180,180,180,180,180,180 cap=2051 expected_queries=1409856 dispatch_chunks=180 query_total=1409856 matrix_chunks=180 fallback_chunks=0 matrix_queries=1409856 fallback_queries=0 staged_chunks=0",
+        "strata prefill cpu wait: version=4 available=1 complete=1 clock_or_accounting_error=0 open_waits=0 wait_throws=0 wall_s=131.197326023 main_cpu_s=125.328608031 wait_cpu_s=78.904637199 wait_wall_s=79.138560145 outside_wait_cpu_s=46.423970832 wait_count=16648 compute_count=10 transfer_count=10 event_count=14980 compat_count=1648 direct_count=0 compute_cpu_s=0.000011090 transfer_cpu_s=0.000010096 event_cpu_s=0.015254494 compat_cpu_s=78.889361519 direct_cpu_s=0.000000000 compute_wall_s=0.000011051 transfer_wall_s=0.000009949 event_wall_s=0.015536874 compat_wall_s=79.123002271 direct_wall_s=0.000000000",
+        "strata prefill cpu host: version=4 available=1 open_regions=0 unclassified_cpu_s=10.401252009 unclassified_wall_s=15.264760575 source_copy_count=48 source_copy_throws=0 source_copy_cpu_s=5.136193388 source_copy_wall_s=5.157488008 source_copy_outside_wait_cpu_s=5.136193388 source_copy_outside_wait_wall_s=5.157488008 host_group_count=96 host_group_throws=0 host_group_cpu_s=0.254738530 host_group_wall_s=0.254823574 host_group_outside_wait_cpu_s=0.254738530 host_group_outside_wait_wall_s=0.254823574 gemm_submit_count=99306 gemm_submit_throws=0 gemm_submit_cpu_s=5.093179241 gemm_submit_wall_s=5.331298113 gemm_submit_outside_wait_cpu_s=5.093179241 gemm_submit_outside_wait_wall_s=5.331298113 route_exchange_count=0 route_exchange_throws=0 route_exchange_cpu_s=0.000000000 route_exchange_wall_s=0.000000000 route_exchange_outside_wait_cpu_s=0.000000000 route_exchange_outside_wait_wall_s=0.000000000 upload_submit_count=33273 upload_submit_throws=0 upload_submit_cpu_s=4.925048188 upload_submit_wall_s=5.014389214 upload_submit_outside_wait_cpu_s=4.925048188 upload_submit_outside_wait_wall_s=5.014389214 residual_input_host_count=0 residual_input_host_throws=0 residual_input_host_cpu_s=0.000000000 residual_input_host_wall_s=0.000000000 residual_input_host_outside_wait_cpu_s=0.000000000 residual_input_host_outside_wait_wall_s=0.000000000 residual_input_device_count=705 residual_input_device_throws=0 residual_input_device_cpu_s=0.023717785 residual_input_device_wall_s=0.025530038 residual_input_device_outside_wait_cpu_s=0.023717785 residual_input_device_outside_wait_wall_s=0.025530038 residual_store_host_count=0 residual_store_host_throws=0 residual_store_host_cpu_s=0.000000000 residual_store_host_wall_s=0.000000000 residual_store_host_outside_wait_cpu_s=0.000000000 residual_store_host_outside_wait_wall_s=0.000000000 residual_store_device_count=0 residual_store_device_throws=0 residual_store_device_cpu_s=0.000000000 residual_store_device_wall_s=0.000000000 residual_store_device_outside_wait_cpu_s=0.000000000 residual_store_device_outside_wait_wall_s=0.000000000 moe_map_upload_count=96 moe_map_upload_throws=0 moe_map_upload_cpu_s=0.050106911 moe_map_upload_wall_s=0.051032533 moe_map_upload_outside_wait_cpu_s=0.050106911 moe_map_upload_outside_wait_wall_s=0.051032533 moe_job_weights_count=96 moe_job_weights_throws=0 moe_job_weights_cpu_s=0.003716064 moe_job_weights_wall_s=0.003909774 moe_job_weights_outside_wait_cpu_s=0.003716064 moe_job_weights_outside_wait_wall_s=0.003909774 moe_dequant_gu_count=33225 moe_dequant_gu_throws=0 moe_dequant_gu_cpu_s=1.686639505 moe_dequant_gu_wall_s=1.754168522 moe_dequant_gu_outside_wait_cpu_s=1.686639505 moe_dequant_gu_outside_wait_wall_s=1.754168522 moe_dequant_down_count=33225 moe_dequant_down_throws=0 moe_dequant_down_cpu_s=1.812140936 moe_dequant_down_wall_s=1.883054244 moe_dequant_down_outside_wait_cpu_s=1.812140936 moe_dequant_down_outside_wait_wall_s=1.883054244 moe_gather_count=37353 moe_gather_throws=0 moe_gather_cpu_s=2.153137265 moe_gather_wall_s=2.233610663 moe_gather_outside_wait_cpu_s=2.153137265 moe_gather_outside_wait_wall_s=2.233610663 moe_swiglu_count=29868 moe_swiglu_throws=0 moe_swiglu_cpu_s=1.722694333 moe_swiglu_wall_s=1.793112983 moe_swiglu_outside_wait_cpu_s=1.722694333 moe_swiglu_outside_wait_wall_s=1.793112983 moe_accumulate_count=37353 moe_accumulate_throws=0 moe_accumulate_cpu_s=2.305579095 moe_accumulate_wall_s=2.393565307 moe_accumulate_outside_wait_cpu_s=2.305579095 moe_accumulate_outside_wait_wall_s=2.393565307 moe_status_count=96 moe_status_throws=0 moe_status_cpu_s=10.869189290 moe_status_wall_s=10.911456810 moe_status_outside_wait_cpu_s=10.855827582 moe_status_outside_wait_wall_s=10.898022330"
+      ],
+      "host_counter_conservation": {
+        "moe_map_upload": 96,
+        "moe_job_weights": 96,
+        "moe_dequant_gu": 33225,
+        "moe_dequant_down": 33225,
+        "moe_gather": 37353,
+        "moe_swiglu": 29868,
+        "moe_accumulate": 37353,
+        "moe_status": 96,
+        "source_copy": 48,
+        "upload_submit": 33273
+      },
+      "window_census": {
+        "window_count": 96,
+        "jobs": 37353,
+        "routed_rows": 56394240,
+        "gu_nk": [
+          1280,
+          2560
+        ],
+        "down_nk": [
+          2560,
+          640
+        ],
+        "gu_down_storage": "bf16",
+        "hidden_storage": "fp16",
+        "requested_router_D2H_bytes": 225576960,
+        "requested_map_H2D_bytes": 451153920,
+        "all_job_row_and_expert_conservation_checks_passed": true,
+        "planned_matches_retired": true,
+        "limits": "Requested/logical metadata; not physical PCIe or VRAM traffic, occupancy or additive wall time.",
+        "window_rows_counts": [
+          [
+            35568,
+            48
+          ],
+          [
+            81920,
+            48
+          ]
+        ],
+        "job_size_groups": [
+          {
+            "min_rows": 1,
+            "max_rows": 2333,
+            "jobs": 29868,
+            "routed_rows": 7103790
+          },
+          {
+            "min_rows": 2334,
+            "max_rows": 8192,
+            "jobs": 7485,
+            "routed_rows": 49290450
+          }
+        ]
+      },
+      "all_resource_gates_passed": true,
+      "detail_not_retained": "All per-layer/window conservation and ownership checks run before reduction. Full layer arrays and exact job-size histograms are not needed by the current aggregate host-source attribution question."
+    },
+    "subsequent": {
+      "resource_diagnostics": [
+        "strata lm profile: v=3 complete=1 errors=0 first_status=0 wrapper_ms=122392 denominator=started_through_checked_lease_retirement teardown_unmeasured=1 queue_intervals=NONEXCLUSIVE_including_host_submission_gaps bytes=REQUESTED_not_wire wall_order=source,upload_submit,upload_drain,activation,input_submit_host,input_submit_device,store_wall_host,store_wall_device,store_drain_host,store_drain_device,chunk_drain,wrapper_drain queue_order=input,QSA,GDN,MoE,upload,store,GDN_projections,GDN_conv_gates,GDN_recurrence,GDN_output",
+        "strata lm profile: layer=-1 wall_ms=5127.37,4.5332,9.30506,653.852,0,71.4076,0,0,0,0,0,32.8828 queue_ms=725.778,40642.2,25004.9,38719.5,3.07833,0,9480.05,1316.61,9772.3,4423.25 samples=705,180,540,96,48,0,540,540,540,540 gdn_expected_chunks=540 gdn_submit_wall_ms=104.67,38.0157,29.832,27.1272 upload_bytes=0 input_bytes_host_device=0,113089249280 store_bytes_host_device=0,0 input_queue_host_device_ms=0,725.778 store_queue_host_device_ms=0,0",
+        "strata lm qsa profile: v=1 complete=1 errors=0 first_status=0 wrapper_ms=122392 denominator=started_through_checked_lease_retirement teardown_unmeasured=1 granularity=QSA_LAYER_CHUNK sections=projections,kv_stage,kv_append_query,indexer_append,selection,attention,output_projection queue_intervals=NONEXCLUSIVE_including_host_submission_gaps host_wall=NONEXCLUSIVE_submission_and_helper_waits_not_CPU_or_GPU_service markers_included=1 kv_stage_noop_sample=1 dispatch=ACTUAL_matrix_used_result queries=SUM_T_not_request_tokens",
+        "strata lm qsa profile: layer=-1 expected_chunks=180 queue_ms=3099.19,0.817702,791.35,9.21105,7865.38,27052.1,1817.44 host_wall_ms=37.7252,3.39898,14.7407,10.0271,698.732,12.222,11.3874 samples=180,180,180,180,180,180,180 cap=2051 expected_queries=1409856 dispatch_chunks=180 query_total=1409856 matrix_chunks=180 fallback_chunks=0 matrix_queries=1409856 fallback_queries=0 staged_chunks=0",
+        "strata prefill cpu wait: version=4 available=1 complete=1 clock_or_accounting_error=0 open_waits=0 wait_throws=0 wall_s=122.495563322 main_cpu_s=121.302611354 wait_cpu_s=79.061935700 wait_wall_s=79.486612424 outside_wait_cpu_s=42.240675654 wait_count=16649 compute_count=10 transfer_count=10 event_count=14981 compat_count=1648 direct_count=0 compute_cpu_s=0.000010780 transfer_cpu_s=0.000009966 event_cpu_s=0.015085781 compat_cpu_s=79.046829173 direct_cpu_s=0.000000000 compute_wall_s=0.000010702 transfer_wall_s=0.000009867 event_wall_s=0.015367864 compat_wall_s=79.471223991 direct_wall_s=0.000000000",
+        "strata prefill cpu host: version=4 available=1 open_regions=0 unclassified_cpu_s=6.223122189 unclassified_wall_s=6.425957259 source_copy_count=48 source_copy_throws=0 source_copy_cpu_s=5.066596245 source_copy_wall_s=5.127189814 source_copy_outside_wait_cpu_s=5.066596245 source_copy_outside_wait_wall_s=5.127189814 host_group_count=96 host_group_throws=0 host_group_cpu_s=0.253665702 host_group_wall_s=0.253898511 host_group_outside_wait_cpu_s=0.253665702 host_group_outside_wait_wall_s=0.253898511 gemm_submit_count=99252 gemm_submit_throws=0 gemm_submit_cpu_s=5.070871445 gemm_submit_wall_s=5.214309772 gemm_submit_outside_wait_cpu_s=5.070871445 gemm_submit_outside_wait_wall_s=5.214309772 route_exchange_count=0 route_exchange_throws=0 route_exchange_cpu_s=0.000000000 route_exchange_wall_s=0.000000000 route_exchange_outside_wait_cpu_s=0.000000000 route_exchange_outside_wait_wall_s=0.000000000 upload_submit_count=33244 upload_submit_throws=0 upload_submit_cpu_s=4.819954359 upload_submit_wall_s=4.879530702 upload_submit_outside_wait_cpu_s=4.819954359 upload_submit_outside_wait_wall_s=4.879530702 residual_input_host_count=0 residual_input_host_throws=0 residual_input_host_cpu_s=0.000000000 residual_input_host_wall_s=0.000000000 residual_input_host_outside_wait_cpu_s=0.000000000 residual_input_host_outside_wait_wall_s=0.000000000 residual_input_device_count=705 residual_input_device_throws=0 residual_input_device_cpu_s=0.022629368 residual_input_device_wall_s=0.023658642 residual_input_device_outside_wait_cpu_s=0.022629368 residual_input_device_outside_wait_wall_s=0.023658642 residual_store_host_count=0 residual_store_host_throws=0 residual_store_host_cpu_s=0.000000000 residual_store_host_wall_s=0.000000000 residual_store_host_outside_wait_cpu_s=0.000000000 residual_store_host_outside_wait_wall_s=0.000000000 residual_store_device_count=0 residual_store_device_throws=0 residual_store_device_cpu_s=0.000000000 residual_store_device_wall_s=0.000000000 residual_store_device_outside_wait_cpu_s=0.000000000 residual_store_device_outside_wait_wall_s=0.000000000 moe_map_upload_count=96 moe_map_upload_throws=0 moe_map_upload_cpu_s=0.048351733 moe_map_upload_wall_s=0.072965580 moe_map_upload_outside_wait_cpu_s=0.048351733 moe_map_upload_outside_wait_wall_s=0.072965580 moe_job_weights_count=96 moe_job_weights_throws=0 moe_job_weights_cpu_s=0.003447828 moe_job_weights_wall_s=0.003548518 moe_job_weights_outside_wait_cpu_s=0.003447828 moe_job_weights_outside_wait_wall_s=0.003548518 moe_dequant_gu_count=33196 moe_dequant_gu_throws=0 moe_dequant_gu_cpu_s=1.754768621 moe_dequant_gu_wall_s=1.804479566 moe_dequant_gu_outside_wait_cpu_s=1.754768621 moe_dequant_gu_outside_wait_wall_s=1.804479566 moe_dequant_down_count=33196 moe_dequant_down_throws=0 moe_dequant_down_cpu_s=1.769924070 moe_dequant_down_wall_s=1.814521876 moe_dequant_down_outside_wait_cpu_s=1.769924070 moe_dequant_down_outside_wait_wall_s=1.814521876 moe_gather_count=37326 moe_gather_throws=0 moe_gather_cpu_s=2.156573643 moe_gather_wall_s=2.228013794 moe_gather_outside_wait_cpu_s=2.156573643 moe_gather_outside_wait_wall_s=2.228013794 moe_swiglu_count=29850 moe_swiglu_throws=0 moe_swiglu_cpu_s=1.729858007 moe_swiglu_wall_s=1.770689357 moe_swiglu_outside_wait_cpu_s=1.729858007 moe_swiglu_outside_wait_wall_s=1.770689357 moe_accumulate_count=37326 moe_accumulate_throws=0 moe_accumulate_cpu_s=2.384164885 moe_accumulate_wall_s=2.438798065 moe_accumulate_outside_wait_cpu_s=2.384164885 moe_accumulate_outside_wait_wall_s=2.438798065 moe_status_count=96 moe_status_throws=0 moe_status_cpu_s=10.954665190 moe_status_wall_s=10.969655908 moe_status_outside_wait_cpu_s=10.936747559 moe_status_outside_wait_wall_s=10.951389442"
+      ],
+      "host_counter_conservation": {
+        "moe_map_upload": 96,
+        "moe_job_weights": 96,
+        "moe_dequant_gu": 33196,
+        "moe_dequant_down": 33196,
+        "moe_gather": 37326,
+        "moe_swiglu": 29850,
+        "moe_accumulate": 37326,
+        "moe_status": 96,
+        "source_copy": 48,
+        "upload_submit": 33244
+      },
+      "window_census": {
+        "window_count": 96,
+        "jobs": 37326,
+        "routed_rows": 56394240,
+        "gu_nk": [
+          1280,
+          2560
+        ],
+        "down_nk": [
+          2560,
+          640
+        ],
+        "gu_down_storage": "bf16",
+        "hidden_storage": "fp16",
+        "requested_router_D2H_bytes": 225576960,
+        "requested_map_H2D_bytes": 451153920,
+        "all_job_row_and_expert_conservation_checks_passed": true,
+        "planned_matches_retired": true,
+        "limits": "Requested/logical metadata; not physical PCIe or VRAM traffic, occupancy or additive wall time.",
+        "window_rows_counts": [
+          [
+            35568,
+            48
+          ],
+          [
+            81920,
+            48
+          ]
+        ],
+        "job_size_groups": [
+          {
+            "min_rows": 1,
+            "max_rows": 2333,
+            "jobs": 29850,
+            "routed_rows": 7112118
+          },
+          {
+            "min_rows": 2334,
+            "max_rows": 8192,
+            "jobs": 7476,
+            "routed_rows": 49282122
+          }
+        ]
+      },
+      "all_resource_gates_passed": true,
+      "detail_not_retained": "All per-layer/window conservation and ownership checks run before reduction. Full layer arrays and exact job-size histograms are not needed by the current aggregate host-source attribution question."
+    },
+    "profiled_prompt_tps": [
+      886.3,
+      951.1
+    ],
+    "limits": "Offline accounting reanalysis only: original passed=false/parser error remain. Two completed requests, not independent processes or clean speed. No physical bus traffic, arithmetic saturation, model quality/full-context/RESTORE adoption.",
+    "decision": {
+      "selected_next_candidate": "Opt-in immutable Arena layer view: eliminate the full512-expert RAM staging copy while retaining checked queue retirement and existing synchronous copying for unsupported providers.",
+      "evidence": "Warm source_copy:48 calls,5.127189814 wall/5.066596245 CPU seconds of122.495563322 observer-frame wall seconds. Host grouping:0.253665702 CPU seconds. Arena startup positively observed; source is resident ordinary host memory.",
+      "alternative": "CPU-only double-slab preparation remains conditional; direct borrowing may remove the work without another thread, inherited CPU0 affinity, extra slab or source-call concurrency.",
+      "limits": "No direct-source implementation or speed evidence yet. Removing the measured source-copy time alone does not prove1000tok/s. Compare effective H2D cost, bounds, owner lifetime and full request speed; ordinary host-pointer transfer may add runtime staging."
+    }
+  }
 }

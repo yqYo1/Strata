@@ -290,6 +290,67 @@ void test_cgroup_memory_budget() {
 
 }  // namespace
 
+// Exercise the actual provider capability independently of synthetic GPU slabs.
+void test_arena_resident_layer() {
+    using namespace strata::core;
+    using namespace strata::kernels::cpu;
+    constexpr int64_t layers = 2, experts = 3;
+    TempDirectory dir;
+    std::vector<std::pair<uint64_t, char>> markers;
+    for (int64_t l = 0; l < layers; ++l) for (int64_t e = 0; e < experts; ++e) {
+        const uint64_t i = uint64_t(l * experts + e);
+        markers.emplace_back(i * BLOB, char('A' + i));
+        markers.emplace_back((i + 1) * BLOB - 1, char('a' + i));
+    }
+    create_pack(dir.path, uint64_t(layers * experts) * BLOB, markers);
+    std::string err;
+    require(expert_layout_load(dir.path.string(), layers, experts, err), err);
+    FileExpertSource file;
+    require(file.open(dir.path.string(), layers, experts, err), err);
+    require(!file.resident_layer(0).data, "file source unexpectedly promises an immutable view");
+    ArenaExpertSource arena;
+    require(arena.open(dir.path.string(), layers, experts, 2, err), err);
+    require(arena.reads() == 0, "loading/view setup changed blob read counters");
+    const auto first = arena.resident_layer(0);
+    require(!arena.resident_layer(-1).data && !arena.resident_layer(layers).data,
+            "invalid Arena view layer accepted");
+    for (int64_t l = 0; l < layers; ++l) {
+        const auto view = arena.resident_layer(l);
+        require(view.data && view.stride == BLOB && view.bytes == uint64_t(experts) * BLOB &&
+                view.experts == experts, "wrong private Arena view geometry");
+        for (int64_t e = 0; e < experts; ++e) {
+            const auto* pointer = view.data + uint64_t(e) * view.stride;
+            const int i = int(l * experts + e);
+            require(pointer == arena.blob(l, e) && pointer[0] == uint8_t('A' + i) &&
+                    pointer[BLOB - 1] == uint8_t('a' + i), "Arena view does not match loaded expert");
+        }
+    }
+    require(first.data[0] == 'A' && first.data[BLOB - 1] == 'a',
+            "later source calls invalidated a resident layer view");
+    arena.close();
+    require(!arena.resident_layer(0).data, "closed Arena still publishes views");
+    require(arena.open(dir.path.string(), layers, experts, 2, err), err);
+    require(arena.resident_layer(1).data && arena.resident_layer(1).data[0] == 'D',
+            "reopened Arena view snapshot is stale");
+#ifdef __linux__
+    arena.close();
+    require(arena.open(dir.path.string(), layers, experts, 2, err, 0,
+                       (dir.path / "shared-arena.bin").string()), err);
+    require(!arena.resident_layer(0).data && !arena.resident_layer(1).data,
+            "externally mutable MAP_SHARED Arena publishes immutable views");
+    std::vector<uint8_t> copied(size_t(BLOB), 0);
+    require(arena.copy_blob(1, 0, copied.data()) && copied.front() == 'D' && copied.back() == 'd',
+            "shared Arena synchronous copy fallback changed");
+#endif
+    std::cout << "arena_resident_layer_test private=PASS file_fallback=PASS shared_exclusion="
+#ifdef __linux__
+              << "PASS"
+#else
+              << "UNRUN"
+#endif
+              << " blob_identity=PASS bounds=PASS close_reopen=PASS\n";
+}
+
 int main() {
     try {
         test_complement_plan();
@@ -300,6 +361,7 @@ int main() {
 #if defined(STRATA_NATIVE_EXPERTS)
         test_native_variable_layout();
 #endif
+        test_arena_resident_layer();
         std::cout << "file_expert_source_test: PASS\n";
         return 0;
     } catch (const std::exception& error) {

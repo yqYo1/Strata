@@ -98,7 +98,7 @@ def main():
     if sys.argv[1:] in (['rebuild-mixed'], ['rebuild-expert-bank']):
         targets += ['sycl_moe_accum_test', 'sycl_moe_gu_swiglu_bench', 'sycl_moe_down_scatter_bench']
     if sys.argv[1:] == ['rebuild-expert-bank']:
-        targets += ['sycl_expert_bank_test']
+        targets += ['sycl_expert_bank_test', 'file_expert_source_test']
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
@@ -125,8 +125,11 @@ def main():
             # A failed compile is terminal, not a qualified binary. Preserve its
             # receipt and recover the separately pinned retained executable.
             old_binary = old.get('binary') if old['passed'] else (old.get('replaces') or {}).get('binary')
+            retained_source = old['source_commit'] if old['passed'] else (
+                old['replaces'].get('retained_binary_source_commit', old['replaces']['source_commit']))
             if not old['passed'] and retained_reference:
                 old_binary = retained_reference['binary']
+                retained_source = retained_reference['source_commit']
             guards.require(old_binary is not None, 'no pinned retained executable after failed build')
             guards.require(digest(old_binary['path']) == old_binary['sha256'], 'previous executable changed')
             for source in [old['project'], *old['dependencies']]:
@@ -135,8 +138,7 @@ def main():
                                    'previous inputs not recoverable')
             previous = dict(source_commit=old['source_commit'], binary=old_binary,
                             source_build_passed=old['passed'],
-                            retained_binary_source_commit=old['source_commit'] if old['passed'] else
-                                old['replaces'].get('retained_binary_source_commit', old['replaces']['source_commit']),
+                            retained_binary_source_commit=retained_source,
                             reason='Closed unused comparison engine; original source/recipe recovered from Git. '
                                    'Reuse its cache for the immediate corrected build, not a retained old generation.')
         project = pin(P, ['CMakeLists.txt', 'cmake', 'include', 'src', 'tests',
