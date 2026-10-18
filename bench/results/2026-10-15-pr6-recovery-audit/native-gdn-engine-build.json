@@ -1,5 +1,5 @@
 {
-  "source_commit": "1222e27d01f32c5bb31f574ff4b143c489a3bcf1",
+  "source_commit": "10127b142f72d5f718d1077daf08ffc27383e8e1",
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -80,14 +80,14 @@
   "production_selected": false,
   "model_quality_qualified": false,
   "replaces": {
-    "source_commit": "db71e718f5275c6db58e2f762cd54850b1aaa7dc",
+    "source_commit": "1222e27d01f32c5bb31f574ff4b143c489a3bcf1",
     "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-expert-bank-v1/strata",
-      "bytes": 22065872,
-      "sha256": "5338945aa6fb7a6df6c482da4b802046af856c4340a2a644deecfb8a32a2d01f"
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+      "bytes": 22070744,
+      "sha256": "ce19688e2788b13e5f61258f4d16b5f27da3d9d78e3f96a46fd2e06c873bb670"
     },
-    "source_build_passed": false,
-    "retained_binary_source_commit": "034bddff8393e8c1c9cee89e9235807230a81ad2",
+    "source_build_passed": true,
+    "retained_binary_source_commit": "1222e27d01f32c5bb31f574ff4b143c489a3bcf1",
     "reason": "Closed unused comparison engine; original source/recipe recovered from Git. Reuse its cache for the immediate corrected build, not a retained old generation."
   },
   "targets": [
@@ -98,6 +98,49 @@
     "sycl_expert_bank_test"
   ],
   "retention_consumer": "Current comparison engine and requested fixtures: strata, sycl_moe_accum_test, sycl_moe_gu_swiglu_bench, sycl_moe_down_scatter_bench, sycl_expert_bank_test; select the validated generation and retire the extra after qualification/comparison closure.",
+  "retained_validation_reference": {
+    "source_commit": "1222e27d01f32c5bb31f574ff4b143c489a3bcf1",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-source-view-v1/strata",
+      "bytes": 22070744,
+      "sha256": "ce19688e2788b13e5f61258f4d16b5f27da3d9d78e3f96a46fd2e06c873bb670"
+    },
+    "fixtures": {
+      "sycl_moe_accum_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-source-view-v1/sycl_moe_accum_test",
+        "bytes": 2302728,
+        "sha256": "35de609c81091c9ce2e87f9b28742466e5f21356570396cc45e7ee83e7b4432b"
+      },
+      "sycl_moe_gu_swiglu_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-source-view-v1/sycl_moe_gu_swiglu_bench",
+        "bytes": 1927960,
+        "sha256": "7dc7b336b920e25b205d0f3f0b6fb5a08475ac3d08a7d7e71141ccb7d2bcc659"
+      },
+      "sycl_moe_down_scatter_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-source-view-v1/sycl_moe_down_scatter_bench",
+        "bytes": 13179056,
+        "sha256": "ddaf0ad94be379f8c601a3226641c52c4c42478054f1ec42f4daa563f1d51dd4"
+      },
+      "sycl_expert_bank_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-source-view-v1/sycl_expert_bank_test",
+        "bytes": 1818152,
+        "sha256": "f2f3df7eb393f4de6c7f900f6cd25e6edacaf00c2fb3bcec6c3e3edab0c03b88"
+      }
+    },
+    "source_build_record": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-source-view-v1/source-build.json",
+      "sha256": "47fa6cab75b840ce7334678feeb0a73863076393ced902a0b01a81306278ade6"
+    },
+    "recipe_reference": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-entry-engine-build-v2.json",
+      "sha256": "9b7734387f0fc56f36afe9d7bca75e5f0bedcef479271e982025abe1d4334a1a"
+    },
+    "original_source_blobs_recovered_and_verified": 9812,
+    "qualification": "Current opt-in117K engine plus four same-build fixtures;12 clean model requests and component/ownership gates passed. Broad quality,physical262144/RESTORE and1000tok/s remain unqualified.",
+    "consumer": "Fallback and same-config comparison for opt-in immutable Arena source-view qualification; keep until a validated generation is explicitly selected, then retire the extra after original source/recipe reachability verification.",
+    "comparison_generations": 2,
+    "legacy_provenance_holds": "Six old unresolved roots remain separate; no global-retirement claim."
+  },
   "legacy_provenance_exception": {
     "state": "Unresolved legacy cleanup; not qualified comparison generations.",
     "observed_engine_and_fixture_paths": 41,
@@ -148,8 +191,8 @@
   },
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-    "bytes": 22070744,
-    "sha256": "ce19688e2788b13e5f61258f4d16b5f27da3d9d78e3f96a46fd2e06c873bb670"
+    "bytes": 22079288,
+    "sha256": "39833d56743ba813576960f7531e7c6b106763feb59ff3679d78696309462798"
   },
   "compile_database_sha256": "b9a5ef0d9b0aafb7deef3c00745083d73b7cddc59b6391d8b3a9dcde64a179df",
   "configured_compile_entries": 221,
@@ -168,16 +211,16 @@
     },
     "sycl_expert_bank_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_expert_bank_test",
-      "sha256": "f2f3df7eb393f4de6c7f900f6cd25e6edacaf00c2fb3bcec6c3e3edab0c03b88"
+      "sha256": "d57bab3a858a6ee4f75cd4b6083f465f31f0b9c5838756e37ae69ba201374f53"
     }
   },
   "ownership_closed": true,
   "inputs": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "1222e27d01f32c5bb31f574ff4b143c489a3bcf1",
-      "count": 501,
-      "aggregate_sha256": "777ea6fb5048bdea01fc4c64896ccd089694ee27763c4f935981710e54460121"
+      "revision": "10127b142f72d5f718d1077daf08ffc27383e8e1",
+      "count": 502,
+      "aggregate_sha256": "0bea72c1118fceadcf13c835e8421598b40880325743293a74b4ae541318bc13"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
@@ -191,48 +234,5 @@
       "count": 5703,
       "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
     }
-  ],
-  "retained_validation_reference": {
-    "source_commit": "1222e27d01f32c5bb31f574ff4b143c489a3bcf1",
-    "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-source-view-v1/strata",
-      "bytes": 22070744,
-      "sha256": "ce19688e2788b13e5f61258f4d16b5f27da3d9d78e3f96a46fd2e06c873bb670"
-    },
-    "fixtures": {
-      "sycl_moe_accum_test": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-source-view-v1/sycl_moe_accum_test",
-        "bytes": 2302728,
-        "sha256": "35de609c81091c9ce2e87f9b28742466e5f21356570396cc45e7ee83e7b4432b"
-      },
-      "sycl_moe_gu_swiglu_bench": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-source-view-v1/sycl_moe_gu_swiglu_bench",
-        "bytes": 1927960,
-        "sha256": "7dc7b336b920e25b205d0f3f0b6fb5a08475ac3d08a7d7e71141ccb7d2bcc659"
-      },
-      "sycl_moe_down_scatter_bench": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-source-view-v1/sycl_moe_down_scatter_bench",
-        "bytes": 13179056,
-        "sha256": "ddaf0ad94be379f8c601a3226641c52c4c42478054f1ec42f4daa563f1d51dd4"
-      },
-      "sycl_expert_bank_test": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-source-view-v1/sycl_expert_bank_test",
-        "bytes": 1818152,
-        "sha256": "f2f3df7eb393f4de6c7f900f6cd25e6edacaf00c2fb3bcec6c3e3edab0c03b88"
-      }
-    },
-    "source_build_record": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-before-source-view-v1/source-build.json",
-      "sha256": "47fa6cab75b840ce7334678feeb0a73863076393ced902a0b01a81306278ade6"
-    },
-    "recipe_reference": {
-      "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-entry-engine-build-v2.json",
-      "sha256": "9b7734387f0fc56f36afe9d7bca75e5f0bedcef479271e982025abe1d4334a1a"
-    },
-    "original_source_blobs_recovered_and_verified": 9812,
-    "qualification": "Current opt-in117K engine plus four same-build fixtures;12 clean model requests and component/ownership gates passed. Broad quality,physical262144/RESTORE and1000tok/s remain unqualified.",
-    "consumer": "Fallback and same-config comparison for opt-in immutable Arena source-view qualification; keep until a validated generation is explicitly selected, then retire the extra after original source/recipe reachability verification.",
-    "comparison_generations": 2,
-    "legacy_provenance_holds": "Six old unresolved roots remain separate; no global-retirement claim."
-  }
+  ]
 }
