@@ -1,5 +1,5 @@
 {
-  "source_commit": "117b899d72ed48a3677b4d3b67426a728c8438e4",
+  "source_commit": "feb927fa36b3432a64730a8fb12e8abed09ce310",
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -73,14 +73,14 @@
     "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-entry-engine-build-v2.json",
     "sha256": "9b7734387f0fc56f36afe9d7bca75e5f0bedcef479271e982025abe1d4334a1a"
   },
-  "complete": false,
-  "passed": false,
+  "complete": true,
+  "passed": true,
   "active": false,
   "GPU_executed": false,
   "production_selected": false,
   "model_quality_qualified": false,
   "replaces": {
-    "source_commit": "89e9c58131790ea283e9c105ef2c12d31b8b4b1d",
+    "source_commit": "117b899d72ed48a3677b4d3b67426a728c8438e4",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
       "bytes": 20418848,
@@ -98,14 +98,38 @@
     "sycl_qsa_bf16_prefix_qcache_bench"
   ],
   "retention_consumer": "Current long-prefill comparison and its attention fixtures; retire when comparison closes.",
-  "error": "compile-link failed: launch_config rejects compile-time kernel-effect properties.",
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 20427344,
+    "sha256": "181e1db7aa0397358b4024147a1427112497da1876e1ae784365989fd019f74b"
+  },
+  "compile_database_sha256": "9d15a81f6cae9051624fff75916708159dd7988217144007997f0c04530231b7",
+  "configured_compile_entries": 211,
+  "fixtures": {
+    "sycl_qsa_bf16_late_flags_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_late_flags_test",
+      "sha256": "70c62cb9d4f5da0f22d4bca3f32f4622ef1a48e266ad48b21a5d12e3de5875de"
+    },
+    "sycl_qsa_bf16_prefix_optimized_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_optimized_test",
+      "sha256": "8d0e423550eafd539642fb18109281d2a98b82e5db8aac0edba6475190120c80"
+    },
+    "sycl_qsa_bf16_prefix_qcache_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_qcache_test",
+      "sha256": "6de61821df91e0cc21d01b4c76f7aadc7c3cd75610dfa41b35077446831393e0"
+    },
+    "sycl_qsa_bf16_prefix_qcache_bench": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_qcache_bench",
+      "sha256": "d7d32e4b20e3824bd28c05469b47231d00f3e6c2e7899eb3baf264021930885e"
+    }
+  },
   "ownership_closed": true,
   "inputs": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "117b899d72ed48a3677b4d3b67426a728c8438e4",
+      "revision": "feb927fa36b3432a64730a8fb12e8abed09ce310",
       "count": 476,
-      "aggregate_sha256": "ab1a6d7167262e7f2c7df9a939b1f75da70220d46f747cb9330bc6fbe2a82f85"
+      "aggregate_sha256": "5c450dd9895518d0bd6e0c308a3df9b30f70e8f01f393e71346b10ca08d46c8f"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
@@ -119,9 +143,5 @@
       "count": 5703,
       "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
     }
-  ],
-  "failure_class": "Installed SDK requires kernel functor get(properties_tag) for compile-time subgroup/GRF properties; no GPU execution.",
-  "failure_diagnostics": [
-    "error: static assertion failed: launch_config does not allow properties with compile-time kernel effects."
   ]
 }
