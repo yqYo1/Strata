@@ -605,6 +605,19 @@ provenance audit. They are not qualified comparison builds; the current build
 receipt records that exception and its next review after bounded model admission.
 No global storage-cleanup completion is claimed.
 
+Both command-tracing off/on model gates passed at39,260 fresh tokens, thinking
+on,24 generated tokens, with no fresh fault and every owner closed. Per request,
+48 map/job-weight/status regions,17,580 dequant pairs and18,796 gather/SwiGLU/
+accumulation jobs matched the actual census. Off/on status-region CPU outside
+explicit waits was3.884881/3.886876s; unclassified CPU was5.282371/5.341875s.
+The status segment includes SYCL memcpy submission and runtime checking, so
+this does not establish3.9s of host arithmetic: an API can wait internally.
+First-use profiled PP was575.2/614.9; differing cold wall gaps prevent a speed
+claim. The traced run qualified668 service intervals, but17 submit-clock
+inversions prevent an absolute submit-to-start timing claim. Full per-layer
+histograms are verified then reduced to conserved work totals for these admission
+checks. Next use the committed two-request78K plan for warm attribution.
+
 ## Optional GDN chunk64
 
 `STRATA_SYCL_PREFILL_GDN_CHUNK64=1` adds a separate experimental long-prefill
