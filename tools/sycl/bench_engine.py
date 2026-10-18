@@ -367,6 +367,7 @@ def main():
              'qsa-gu-fusion-check', 'qsa-gu-fusion-base', 'qsa-gu-fusion-candidate',
              'qsa-long-input-check', 'qsa-long-input',
              'qsa-long-input-balanced-check', 'qsa-long-input-balanced',
+             'qsa-long-input-heads-check', 'qsa-long-input-heads',
              'qsa-kvvec4-timing-check', 'qsa-kvvec4-census') + tuple(
                  f'qsa-gdncols{n}-{phase}' for n in (2, 4, 8) for phase in ('check', 'base', 'candidate'))
     guards.require(len(sys.argv) in (3, 4) and sys.argv[1] in ('prepare', 'run') and
@@ -374,20 +375,22 @@ def main():
     action, mode = sys.argv[1:3]
     cohort = int(sys.argv[3]) if len(sys.argv) == 4 else 0
     guards.require(cohort in (0, 1, 2) and (len(sys.argv) == 3 or
-        mode in ('qsa-gu-fusion-base', 'qsa-gu-fusion-candidate', 'qsa-long-input', 'qsa-long-input-balanced')),
+        mode in ('qsa-gu-fusion-base', 'qsa-gu-fusion-candidate', 'qsa-long-input', 'qsa-long-input-balanced', 'qsa-long-input-heads')),
         'optional cohort0|1|2 is for GU paired arms or independent long-input processes')
     column_mode = re.fullmatch(r'qsa-gdncols(2|4|8)-(check|base|candidate|warm-census|host-check|host-traced-check|host-census)', mode)
     ordered_trial = mode.startswith('qsa-ordered-exp-')
     long_trial = mode.startswith('qsa-long-input')
     balanced_placement = mode in ('qsa-long-input-balanced-check', 'qsa-long-input-balanced')
-    long_clean_mode = 'qsa-long-input-balanced' if balanced_placement else 'qsa-long-input'
+    head_release = mode in ('qsa-long-input-heads-check', 'qsa-long-input-heads')
+    long_clean_mode = ('qsa-long-input-heads' if head_release else
+                       'qsa-long-input-balanced' if balanced_placement else 'qsa-long-input')
     gu_trial = mode.startswith('qsa-gu-fusion-')
     gu_candidate = long_trial or (gu_trial and mode != 'qsa-gu-fusion-base')
     ordered_candidate = long_trial or gu_trial or (ordered_trial and mode != 'qsa-ordered-exp-base')
     host_profile = mode.startswith('qsa-gdncols4-host-')
     warm_profile = mode in ('qsa-gdncols4-warm-census', 'qsa-gdncols4-host-census')
     column_trial = column_mode is not None or ordered_trial or gu_trial or long_trial
-    column_check = mode in ('qsa-long-input-balanced-check', 'qsa-long-input-check', 'qsa-ordered-exp-check', 'qsa-gu-fusion-check') or (column_mode is not None and column_mode[2] == 'check')
+    column_check = mode in ('qsa-long-input-heads-check', 'qsa-long-input-balanced-check', 'qsa-long-input-check', 'qsa-ordered-exp-check', 'qsa-gu-fusion-check') or (column_mode is not None and column_mode[2] == 'check')
     column_partitions = 4 if ordered_trial or gu_trial or long_trial else int(column_mode[1]) if column_mode is not None and column_mode[2] != 'base' else 0
     qsa = mode.startswith('qsa-')
     short_profile = mode == 'qsa-kvvec4-timing-check' or (host_profile and not warm_profile)
@@ -427,6 +430,20 @@ def main():
                            'qualified closed engine build required')
             ordered_qualification = None
             gu_qualification = None
+            head_qualification = None
+            if head_release:
+                component_path = A / 'prefill-head-current.json'
+                component = json.loads(component_path.read_text())
+                guards.require(component_path.read_bytes() == subprocess.check_output(
+                    ['git', 'show', 'HEAD:' + str(component_path.relative_to(P))], cwd=P) and
+                    component['mode'] == 'check' and component['passed'] and component['complete'] and
+                    component['ownership_closed'] and component['GPU_executed'] and
+                    component['engine'] == build['binary'] and len(component['cycles']) == 2,
+                    'matching committed exact head-roundtrip gate required')
+                head_qualification = dict(component_path=str(component_path.relative_to(P)),
+                    component_sha256=digest(component_path), source_commit=component['source_commit'],
+                    fixture=component['binary'],
+                    limits='Standalone exact packed-byte/logit restoration only; this model check must additionally cover target/MTP/verifier graph retirement and decode resumption.')
             if gu_trial or long_trial:
                 component_path = A / 'moe-gu-swiglu-current.json'
                 component = json.loads(component_path.read_text())
@@ -550,6 +567,9 @@ def main():
                 env['STRATA_SYCL_PREFILL_DOWN_SCATTER'] = '0'
                 if balanced_placement:
                     env['STRATA_PREFILL_LAYER_MAJOR_R_GPU'] = '81920'
+                if head_release:
+                    env.update(STRATA_PREFILL_RELEASE_HEADS='1',
+                               STRATA_PREFILL_LAYER_MAJOR_R_GPU='106496')
             if qsa:
                 env['STRATA_SYCL_PREFILL_QSA_MATH'] = (
                     'bf16-prefix-ordered-exp' if ordered_candidate else
@@ -614,6 +634,10 @@ def main():
                 if balanced_placement:
                     plan['long_input_screen'].update(residual_GPU_rows=81920,
                         question='Test the explicit81920-row residual prefix against the diagnosed automatic-placement cliff; preserve512MiB headroom and head retention. Additional RAM transfers are part of total cost; no same-placement kernel claim.')
+                if head_release:
+                    plan['head_qualification'] = head_qualification
+                    plan['long_input_screen'].update(residual_GPU_rows=106496,
+                        question='Retire existing target/draft output heads during long prefill and retain24576 more residual rows on GPU than the81920-row screen. Include snapshot/restore and graph recapture in total latency; no changed kernel or head-release-only speed claim. Preserve512MiB headroom.')
                 if previous_screen:
                     plan['previous_screen'] = previous_screen
                 if not check:
@@ -671,6 +695,9 @@ def main():
         if ordered_trial or long_trial:
             guards.require(digest(P / plan['ordered_exp_qualification']['component_path']) ==
                            plan['ordered_exp_qualification']['component_sha256'], 'QSA component evidence changed')
+        if head_release:
+            guards.require(digest(P / plan['head_qualification']['component_path']) ==
+                           plan['head_qualification']['component_sha256'], 'head component evidence changed')
         boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
         journal = subprocess.check_output(['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True)
         cursor = next(x.split(': ', 1)[1] for x in journal.splitlines() if x.startswith('-- cursor: '))
@@ -735,11 +762,20 @@ def main():
                 record['moe_window_admission'] = admission
                 guards.require(len(admission) == request_count and all('requested_mode=10 effective_mode=10 ' in x for x in admission),
                     'long screen requires actual accumulator mode10')
-                if balanced_placement:
+                if balanced_placement or head_release:
                     placement = [x for x in log.splitlines() if x.startswith('strata prefill: layer-major candidate,')]
-                    guards.require(len(placement) == request_count and all('residual_gpu_rows=81920 ' in x for x in placement),
-                        'wrong balanced residual placement')
+                    expected_rows = 106496 if head_release else 81920
+                    guards.require(len(placement) == request_count and all(
+                        f'residual_gpu_rows={expected_rows} ' in x for x in placement), 'wrong explicit residual placement')
                     record['residual_placement'] = placement
+                if head_release:
+                    target = [x for x in log.splitlines() if x.startswith('strata prefill heads: target detached')]
+                    draft = [x for x in log.splitlines() if x.startswith('strata prefill heads: draft detached')]
+                    guards.require(len(target) == len(draft) == request_count and all(
+                        'bytes=521472000 source=owned-RAM D2H=521472000 H2D-on-restore=521472000' in x for x in target),
+                        'target/draft head retirement was not observed for every request')
+                    record['head_route'] = dict(target_detach=target, draft_detach=draft,
+                        limits='Completed finite generation and normal checked teardown follow each scope. Not full model quality, physical262144/RESTORE or sustained decode qualification.')
                 if not check:
                     values = [float(q['prompt_tps']) for q in requests[1:]]
                     guards.require(len(values) == 3 and all(0 < v < float('inf') for v in values),
