@@ -741,6 +741,26 @@
       "reason": "Exact worker transcript ends in a final agent turn after its worker_done could not reach Orca. Following bundled recovery guide, coordinator fenced the finished attempt; no successful worker receipt was fabricated.",
       "process_action": "none; externally created terminal retained, not reported stopped or deleted",
       "technical_report_and_native_review_unchanged": true
+    },
+    "main_source_followup": {
+      "IGC_version_matched_public_revision": "f05f218e6f0b888823c5678e1f64e91e597ea2dc",
+      "tag": "v2.41.5",
+      "primary_sources": [
+        {
+          "url": "https://github.com/intel/intel-graphics-compiler/blob/f05f218e6f0b888823c5678e1f64e91e597ea2dc/IGC/BiFModule/Implementation/Math/exp2.cl",
+          "sha256": "44584b8edcaff1ff2484e234536e5e02ec9bea83c079947f48fc67f053a2d185",
+          "license": "MIT"
+        },
+        {
+          "url": "https://github.com/intel/intel-graphics-compiler/blob/f05f218e6f0b888823c5678e1f64e91e597ea2dc/IGC/BiFModule/Implementation/Native/native_exp2.cl",
+          "sha256": "17ef33fe246ae449b22ee936779a44e06b307e3fcaef8ca1092bd5e9d2f3c09f",
+          "license": "MIT"
+        }
+      ],
+      "installed_IGC_ELF_sha256": "40badd8f1ee80ac844a8947f5e91e5654fbcd851caefe343b0e5ec4ce4d1b123",
+      "finding": "The version-matched IGC FP32 standard exp2 source directly forwards to native_exp2. A mere SYCL API rename currently has no demonstrated different implementation or speed mechanism.",
+      "limits": "Official tag/source verified, but exact deployed binary-to-source identity and final JIT ISA are not established by version matching. Do not claim emitted-code equivalence, an error bound or a measured speedup.",
+      "next_action": "No repeat generic survey or rename-only prototype; require actual emitted code showing a distinction before selecting this seam."
     }
   },
   "warmed_gemm_reference_scope": {
