@@ -340,5 +340,144 @@
       "Static slm_size field32 unit/schema and physical rounding need separate confirmation; dynamic arguments are explicitly in bytes.",
       "Metadata and changed SDK functor do not prove occupancy or causal attribution. Main did not read the collection body."
     ]
+  },
+  "current_operation_ceiling_scope": {
+    "schedulable_now": true,
+    "prerequisites_met": [
+      "Current-source78K MoE census has48 windows and exact GU/down tensor dimensions, dtypes and job-row totals.",
+      "Current QSA kernel/source and per-query geometry are immutable during active matched model run.",
+      "Dense-model speed comparison and active-parameter ratios remain unqualified as ceilings; current operation-specific accounting is needed."
+    ],
+    "question": "Derive source-grounded logical FLOP/data-volume bounds per current prefill stage and identify which hardware-ceiling measurements would change the next optimization decision. No repeated generic hardware/profiler survey.",
+    "ownership": "Orca Luna read-only source/literature; Main continues owned A/B, no extra execution.",
+    "state": "Orca report and native Luna-max review complete; Main is finishing active A/B before any ceiling execution.",
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/current-operation-ceilings.md",
+    "report_sha256": "d38d995cb764e4baa1ae5cf609facb977b5ed801cb44716adf4b268f9eee4ed3",
+    "report_bytes": 12481,
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/current-operation-ceilings-review.json",
+    "review_sha256": "82880b225940db3ed3a9af13ef832ae1a1094bfed34f9d72cb62462f176fdcb1",
+    "reviewed_facts": [
+      "Routed expert logical GEMMs total370.174TFLOP for measured37,656,000rows and current GU/Down dimensions. Issued padded work requires archived3361-bin M histogram.",
+      "Routed weights/inputs are FP16; FP32 accumulation; GU/Down outputs BF16; SwiGLU reads BF16 and stores FP16 hidden. Measure the actual mixed-format path.",
+      "QSA work must sum selected widths across all12 QSA layers; a cap-only estimate is insufficient.",
+      "B570380GB/s is advertised, not sustainable measured bandwidth; compatible compute peak remains unknown."
+    ],
+    "next_main_measurement": {
+      "schedulable_now": true,
+      "prerequisites": [
+        "Close frozen Qcache A/B and record source/workload parity/outcome.",
+        "Recover/hash-verify exact M histogram from66d5c545 or use explicitly unweighted M sweep.",
+        "Use same production backend/tile mode, FP16 operands/weights and BF16 outputs with correctness and finite owned budgets."
+      ],
+      "question": "Current-shaped MoE GU/Down throughput ceiling, separating explicit transfers and host submit from timed kernel/whole-call evidence.",
+      "prerequisites_met": [
+        "Matched Qcache A/B closed with exact actual request/binary/config parity at6ae5b81a7.",
+        "Recovered3361-bin histogram from66d5c545 and reverified canonical SHA4aa422bcaddb00220f44ca5ad931328df36425f226cc5d49f21aca1e0f39d0b3.",
+        "Current source gemm16.cpp selects compact16x64 forM<128, wide128x128 otherwise; native16.cpp confirms complete M/N/K tile geometry."
+      ]
+    },
+    "retention": "Keep report/review until Main records ceiling measurement decision; no automatic full-report commit.",
+    "tile_geometry_accounting": {
+      "histogram_commit": "66d5c545939ade5c6f1732d8a7b4d3a7fe5d1676",
+      "histogram_path": "bench/results/2026-10-15-pr6-recovery-audit/moe-window-census-current.json",
+      "histogram_field": "window_census.aggregate_job_rows_histogram",
+      "histogram_canonical_sha256": "4aa422bcaddb00220f44ca5ad931328df36425f226cc5d49f21aca1e0f39d0b3",
+      "logical_rows": 37656000,
+      "geometry_padded_rows": 38222704,
+      "logical_flop": 370173542400000,
+      "geometry_padded_flop": 375744469401600,
+      "geometry_padding_overhead_percent": 1.5049500743573363,
+      "formula": "sum(job_count*ceil(M/tileM)*tileM);tileM=16 ifM<128 else128;both N andK dimensions fill their tile extents;2*(1280*2560+2560*640)FLOP/row",
+      "limits": "Source/geometry accounting, not observed instruction or hardware-counter work; no compatible measured compute ceiling yet. Small-M jobs contain0.6273%logical arithmetic and total geometric padding adds only1.505%, so counts/padding alone do not explain the stage cost."
+    }
+  },
+  "decode_vram_rebuild_scope": {
+    "schedulable_now": true,
+    "prerequisites_met": [
+      "Current model long-prefill admission logs4.25-4.33GB free after MTP expert detach,1.36GB layer cache,1.61GB BF16 residual at78K.",
+      "Current source explicitly preserves decode cache/graphs while allocating additional long-prefill storage.",
+      "Hardware1000tok/s goal accepts longer>=64K input, but156K+ residual growth risks PCIe spill; release/rebuild feasibility affects placement tuning."
+    ],
+    "question": "Source-audit substantial decode-only owners and RAM-backed reconstructibility, including captured-pointer/graph lifetimes and partial-retention choices; no code/proposal import.",
+    "ownership": "Orca Luna read-only current src/include/configured entrypoint; exclude protected proposals and all XeStrata sources.",
+    "state": "Orca report and native Luna-max review complete; source feasibility corrected before any implementation.",
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/decode-vram-rebuild-source.md",
+    "report_bytes": 21388,
+    "report_sha256": "47469da53aaae15558aaae754f2b1aa028aa050d373eb9845fda9c5c89b28740",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/decode-vram-rebuild-source-review.json",
+    "review_sha256": "2082f11644d8500b9a8a9a3f853c005506bba5b805ceb33c716030e0b2f28d24",
+    "reviewed_facts": [
+      "Current generate.cpp already banks NativeDense and canonical owners around long prompts; both switches are enabled. NativeDense projections are shared with native16 prefill, not an extra persistent BF16 duplicate. Do not reimplement the existing transaction.",
+      "Existing 78K clean baseline logs target expert cache128slots/0.26GiB and separate prompt buffers. This rounded startup value is not an exact runtime owner/reader census.",
+      "Existing compact39K diagnostic retains enabled bank switches but no bank phase/count telemetry; clean78K runs deliberately omit STRATA_TRACE. Their MTP free-byte delta does not quantify NativeDense/canonical savings.",
+      "Additional target ExpertCache release/refill from host expert source is conditional on exact bytes, resident slots and captured target/verifier bindings. Preserve shared QSA/GDN/MTP state. Head release currently D2H-saves."
+    ],
+    "next_main_step": {
+      "schedulable_now": false,
+      "question": "Exact target-cache allocation and reader/binding census before considering RAM rebuild versus retention.",
+      "prerequisites": [
+        "Close frozen cached-Q A/B and preserve individual samples.",
+        "Use the measured source/config; collect exact cache bytes/slot state, host source validity and every captured reader before proposing release.",
+        "Any feature follows same-binary on/off comparison, physical262144/RESTORE and sustained thinking-generation gates."
+      ]
+    },
+    "retention": "Keep report/review through immediate cache-owner decision, then prune. Main read only review digest and next-step metadata, not collection body."
+  },
+  "qsa_operand_staging_scope": {
+    "classification": "decision_support",
+    "schedulable_now": true,
+    "prerequisites_met": [
+      "Pinned selected cached-query source and SIMD16/128thread/32cell staging geometry.",
+      "Existing gather/cluster component measurements and nonexclusive QSA stage diagnostic; no physical traffic or saturation claim."
+    ],
+    "question": "Compare coalesced K gather/local transpose, subgroup or padded staging, and prefix prepacking with matrix layout/barrier/resource constraints.",
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-coalesced-k-staging.md",
+    "state": "Orca completed, native Luna-max reviewed, worker released and terminal positively closed.",
+    "report_bytes": 18922,
+    "report_sha256": "9df0736e111b2b2264d7a1c0083ce654cfdb0a77517242e9d89c5c058e864152",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-layout-research-review.json",
+    "review_sha256": "be6de6a60b154cf82214477ff502963b688731365a46dc672c4177c79d348852",
+    "reviewed_decision": "The report matches TilePacked=false. Evaluate row-coalesced K loads scattering unchanged BF16 bits into the existing transposed local layout; preserve V staging, matrix stride and uniform barriers. Physical traffic, SLM banks, occupancy and speed remain unmeasured.",
+    "main_ownership_map": {
+      "scope": "Hypothetical simple staging candidate, not implemented or measured. Workgroup128,Dim256,Cells32,tid0..127,iteration r0..63.",
+      "current": "cell=tid%32;d=tid/32+4*r; global=packedK[rows[cell]*256+d];local=kv[d*32+cell].",
+      "candidate": "cell=r/2;d=tid+128*(r%2);global uses same element;local=kv[d*32+cell]. Invalid rows write zero; both maps cover8192destinations exactly once.",
+      "constraints": "Keep cached-Q retirement barrier, K publication barrier, row lifetime and QK-before-V arena overwrite unchanged. Coalesced global addresses may trade for slower local stores; benchmark rather than assuming a gain."
+    },
+    "next_step": {
+      "schedulable_now": false,
+      "owner": "Main implementation/measurement, not another research worker",
+      "prerequisites": [
+        "Commit independently authored candidate plus same-binary fixtures/recipe and source pins.",
+        "Audit exact local destinations, duplicate/aliased/invalid rows and all collective/barrier lifetimes.",
+        "Bounded traced correctness then same-binary component timing; inspect emitted lowering/resource cost before clean model comparison."
+      ]
+    },
+    "retention": "Temporary external reference through first correctness/component comparison; no automatic full-report commit."
+  },
+  "sparse_cross_query_reuse_scope": {
+    "classification": "knowledge_collection",
+    "schedulable_now": true,
+    "prerequisites_met": [
+      "Current independent sparse selected-set attention,2KV/24Qheads/Dim256, gives a concrete architectural applicability question.",
+      "Knowledge comparison requires source/literature rather than missing runtime locality statistics."
+    ],
+    "question": "Cross-query sparse KV reuse: ordering, union blocks and inverse schedules, with index/workspace cost and numerical/causal limits.",
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/sparse-attention-cross-query-reuse.md",
+    "main_reads_body_on_arrival": false,
+    "state": "Orca completed, native Luna-max reviewed, worker released and terminal positively closed.",
+    "report_bytes": 14404,
+    "report_sha256": "a46e07e6ff978218cf2161c40ee5c2fcd5b6bb2b95fe4073e9462e67f09e0279",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-layout-research-review.json",
+    "review_sha256": "be6de6a60b154cf82214477ff502963b688731365a46dc672c4177c79d348852",
+    "next_step": {
+      "schedulable_now": false,
+      "prerequisites": [
+        "Measure current selector logical/physical page overlap, unions, duplicates and incidence skew at representative context strata.",
+        "Show reuse could pay for new mappings, workspace, synchronization and online-softmax ownership costs."
+      ],
+      "owner": "Main measurement/retrieval when a concrete scheduling decision arises; no duplicate architectural survey."
+    },
+    "retention": "Indexed knowledge reference conditional on actual locality evidence; Main has not read the body."
   }
 }
