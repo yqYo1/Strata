@@ -344,5 +344,62 @@
     "device": "0xe20c",
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
+  },
+  "matched_comparison": {
+    "baseline_commit": "c5442179d",
+    "candidate_commit": "31a03f3f913073249aa8386f47d21b796ec5955a",
+    "same_result_path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-cached-query-model-current.json",
+    "baseline": {
+      "prefill_samples": [
+        676.6,
+        725.0,
+        718.5,
+        724.5
+      ],
+      "first_prefill": 676.6,
+      "subsequent_prefill_median": 724.5,
+      "subsequent_prefill_sample_sd": 3.6170890690351176,
+      "short_decode_samples": [
+        14.0,
+        14.2,
+        14.0,
+        14.2
+      ],
+      "subsequent_short_decode_median": 14.2,
+      "subsequent_short_decode_sample_sd": 0.11547005383792475
+    },
+    "candidate": {
+      "prefill_samples": [
+        708.2,
+        756.6,
+        751.2,
+        755.7
+      ],
+      "first_prefill": 708.2,
+      "subsequent_prefill_median": 755.7,
+      "subsequent_prefill_sample_sd": 2.893095228297878,
+      "short_decode_samples": [
+        13.3,
+        14.0,
+        14.2,
+        13.9
+      ],
+      "subsequent_short_decode_median": 14.0,
+      "subsequent_short_decode_sample_sd": 0.15275252316519414
+    },
+    "prefill_median_improvement_percent": 4.306418219461694,
+    "first_prefill_improvement_percent": 4.670410877919018,
+    "actual_request_identity_equal": true,
+    "actual_read_tokens_per_request": 78451,
+    "reused_tokens_per_request": 0,
+    "same_binary": true,
+    "independent_processes_per_arm": 1,
+    "requests_per_arm": 4,
+    "decision": "Keep the opt-in default128GRF cached-Q route for further long-prefill tuning; this matched screen shows a model gain, not default adoption or full qualification.",
+    "limits": [
+      "Three subsequent requests share one process per arm; no alternating independent-process repetitions.",
+      "Each output has24tokens; short decode medians14.2 versus14.0 do not qualify sustained decode or establish a regression/no-regression decision.",
+      "Full-model physical262144 context, RESTORE, task quality, agent session and>=1K thinking-enabled MTP-friendly/weak generation remain open."
+    ]
   }
 }

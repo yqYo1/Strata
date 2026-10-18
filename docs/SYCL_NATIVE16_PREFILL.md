@@ -196,6 +196,16 @@ the two speed arms each use four fresh78K requests, thinking on and the same
 binary/configuration. These24-output screens cannot qualify sustained decode,
 full-model262144 context, RESTORE or task quality.
 
+The matched78K screen completed with78451 actual input tokens per request and
+no reused tokens. Prefix33 PP was676.6 on first use, then725.0/718.5/724.5 tok/s;
+cached-Q was708.2, then756.6/751.2/755.7. Subsequent medians724.5 versus755.7
+show a4.31% model gain; sample SDs were3.62 and2.89 tok/s. This is one process
+per arm, not repeated independent processes. Both exited normally without new
+GPU faults. Actual request hashes, binary and configuration match. Retain the
+opt-in candidate for further tuning; default adoption and the broader gates
+above remain open. Short-output decode medians14.2 versus14.0 tok/s do not
+decide sustained decode performance. See the [individual samples and comparison](../bench/results/2026-10-15-pr6-recovery-audit/qsa-cached-query-model-current.json).
+
 ## Optional GDN chunk64
 
 `STRATA_SYCL_PREFILL_GDN_CHUNK64=1` adds a separate experimental long-prefill
