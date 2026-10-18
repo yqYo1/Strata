@@ -361,6 +361,19 @@ reviewed candidates. Keep the [structured resource evidence](../bench/results/20
 and the existing clean792.6 tok/s result distinct: this first profiled request's
 735.2 tok/s is not a new clean speed comparison or inference adoption.
 
+The next QSA component candidate keeps the qualified cached-Q/Kvec4 path fixed
+and loads four adjacent BF16 V words per lane through typed`vec<uint16_t,4>`.
+The existing two-byte scratch alignment is sufficient. Each vector stays in
+one256-value row; missing cells write four zero words, and each original V SLM
+destination retains one writer. The row-major local layout, payload, barriers,
+DPAS order and FP32 online arithmetic remain the reference contract. This tests
+load-instruction efficiency, not fewer useful tensor bytes or physical bandwidth.
+Use the shared oracle fixture with guard offset17 (align2), tails, alias/diagnostic
+cases and physical262144 component extent. Main's existing attention controller
+now compares Kvec4 (variant0) with K/Vvec4 (variant1), six rotated samples per
+arm on the same three8192-query shapes. No model dispatch selects K/Vvec4 yet;
+only a positive component result justifies a separate clean long-model screen.
+
 ## Optional GDN chunk64
 
 `STRATA_SYCL_PREFILL_GDN_CHUNK64=1` adds a separate experimental long-prefill

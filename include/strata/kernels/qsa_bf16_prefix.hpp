@@ -33,6 +33,12 @@ bool qsa_bf16_prefix_kvec4_batch(const uint16_t *q, const QsaAttnPools &pools,
     const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
     uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
     int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream);
+// Cached Q and typed four-value K/V staging. Same scalar local layout,
+// arithmetic/barriers and two-byte packed-scratch alignment contract.
+bool qsa_bf16_prefix_kvvec4_batch(const uint16_t *q, const QsaAttnPools &pools,
+    const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
+    uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
+    int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream);
 // Score33 row-major storage; subgroup FP32 max/sum changes sum association.
 // BF16 probability rounding and FP32 online state/accumulation are preserved.
 bool qsa_bf16_prefix_subgroup_batch(const uint16_t *q, const QsaAttnPools &pools,
