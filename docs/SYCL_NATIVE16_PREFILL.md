@@ -895,26 +895,40 @@ only the GU selector changes. Each arm records first-use plus3 subsequent
 fresh>=64K requests and actual fused/separate job counts. Repeated independent
 cohorts are still required if variability prevents an adoption decision.
 
-The first matched78,451-token pilot used engine`89895909e04a811b2b34ba2f9eca957718086c13df2f669726b8182368482e02`
-at source`3d8708758`, with identical benchmark source, request hashes, profile,
-configuration and observer state except the GU selector. Separate first-use
-was814.8tok/s and subsequent samples898.2/891.8/899.0 (median898.2, sampleSD3.95).
-Fusion was819.2 first-use and904.4/896.2/903.5 subsequently (median903.5, SD4.50).
-The pilot median gain is0.5901%; all three matched subsequent inputs improved,
-but these are within-process samples, so do not adopt from this pilot alone.
-Both processes closed without a fresh GPU fault. At78K, the selected kernel
-handled about5,000 jobs and33.9million rows per request; smaller jobs stayed
-separate. This does not qualify long generation or physical262144/RESTORE.
+The matched78,451-token comparison used engine
+`89895909e04a811b2b34ba2f9eca957718086c13df2f669726b8182368482e02`
+at source`3d8708758`. Six independent native processes ran in the committed
+order A0/B0/B1/A1/A2/B2, with one first-use and three subsequent fresh inputs
+per process, thinking enabled. Every input/profile/configuration/runtime and
+executable matched after normalizing private output paths, ports and the GU
+selector. Recovering each original source snapshot also verified that the
+executed benchmark, server and workload helpers matched; the cohort0-to1
+extension changed only the owner/receipt controller.
 
-For independent qualification, the GU model controller accepts a final cohort
-index0/1/2. Keep the engine and underlying`bench.sh`/workloads fixed. After the
-completed A0/B0 pilot, use`prepare`/commit/`run` for candidate1, base1, base2,
-candidate2, in that order. Each process still has a separate first-use request
-and three subsequent matched inputs. Require all three independent paired
-subsequent medians to favor fusion and the geometric mean of per-input paired
-ratios to exceed1.002, with all normal eligibility, ownership and fault gates.
-Keep every sample regardless of the decision. The default selector stays off
-pending broader numerical/task/context gates.
+| Pair | Separate first-use / subsequent median tok/s | Fusion first-use / subsequent median tok/s | Subsequent median gain |
+| --- | ---: | ---: | ---: |
+| 0 | 814.8 /898.2 | 819.2 /903.5 | +0.5901% |
+| 1 (reversed) | 816.0 /899.8 | 819.0 /903.2 | +0.3779% |
+| 2 | 816.4 /900.0 | 816.3 /902.9 | +0.3222% |
+
+All nine matched subsequent inputs favored fusion. Their geometric-mean speed
+ratio was1.00566723 (+0.5667%), passing the prospective requirement of all three
+paired medians improving and geomean>1.002. Keep the original samples and spread:
+for example, A1's subsequent samples were900.3/883.6/899.8 with sampleSD9.50.
+First use is excluded from selection; the third pair did not improve first use.
+All six processes passed eligibility/closure checks without a fresh GPU fault
+or boot change. At78K, fusion handled about5,000 jobs and33.9million rows per
+request; smaller jobs remained separate.
+
+`python3 tools/sycl/bench_engine.py summarize-gu` verifies the six committed
+receipts, recovered source hashes, request bytes, normalized settings, actual
+route counts and independent native identities before recording the decision.
+The [current compact comparison](../bench/results/2026-10-15-pr6-recovery-audit/moe-gu-swiglu-model-current.json)
+keeps all24 prompt-speed samples and links the full original receipts in Git.
+Retain the explicit large-job candidate for further qualification. The default
+selector stays off:24-token generation does not qualify sustained decode,
+broad task quality or physical262144/RESTORE. The1000tok/s prefill and70tok/s
+decode goals remain unmet.
 
 ## MoE Down/scatter component
 

@@ -405,5 +405,139 @@
     "device": "0xe20c",
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
+  },
+  "independent_process_comparison": {
+    "arms": [
+      {
+        "label": "A0",
+        "receipt_commit": "f8687676fa8a0e25a8cea438bd6883eff64598f3",
+        "receipt_path": "bench/results/2026-10-15-pr6-recovery-audit/moe-gu-swiglu-model-current.json",
+        "source_commit": "001723bd88d72cea35569813063af894f61cb86c",
+        "first_use_tps": 814.8,
+        "subsequent_tps": [
+          898.2,
+          891.8,
+          899.0
+        ],
+        "subsequent_median": 898.2,
+        "subsequent_sample_SD": 3.9463062898530348
+      },
+      {
+        "label": "B0",
+        "receipt_commit": "099d624fb232ea85d7fb13d99512bf247b3e2ce7",
+        "receipt_path": "bench/results/2026-10-15-pr6-recovery-audit/moe-gu-swiglu-model-current.json",
+        "source_commit": "f8687676fa8a0e25a8cea438bd6883eff64598f3",
+        "first_use_tps": 819.2,
+        "subsequent_tps": [
+          904.4,
+          896.2,
+          903.5
+        ],
+        "subsequent_median": 903.5,
+        "subsequent_sample_SD": 4.497036060933137
+      },
+      {
+        "label": "B1",
+        "receipt_commit": "d744fa32d9112cd4903987ec141c5a259111ac9a",
+        "receipt_path": "bench/results/2026-10-15-pr6-recovery-audit/moe-gu-swiglu-model-current.json",
+        "source_commit": "099d624fb232ea85d7fb13d99512bf247b3e2ce7",
+        "first_use_tps": 819.0,
+        "subsequent_tps": [
+          903.2,
+          896.5,
+          903.6
+        ],
+        "subsequent_median": 903.2,
+        "subsequent_sample_SD": 3.988734135035845
+      },
+      {
+        "label": "A1",
+        "receipt_commit": "7611f2b6d772da2b786af1096b67b4961f24e9bb",
+        "receipt_path": "bench/results/2026-10-15-pr6-recovery-audit/moe-gu-swiglu-model-current.json",
+        "source_commit": "d744fa32d9112cd4903987ec141c5a259111ac9a",
+        "first_use_tps": 816.0,
+        "subsequent_tps": [
+          900.3,
+          883.6,
+          899.8
+        ],
+        "subsequent_median": 899.8,
+        "subsequent_sample_SD": 9.500701728468934
+      },
+      {
+        "label": "A2",
+        "receipt_commit": "8d9f6e6787fe28db293b564183ee222346789f82",
+        "receipt_path": "bench/results/2026-10-15-pr6-recovery-audit/moe-gu-swiglu-model-current.json",
+        "source_commit": "7611f2b6d772da2b786af1096b67b4961f24e9bb",
+        "first_use_tps": 816.4,
+        "subsequent_tps": [
+          900.0,
+          890.9,
+          900.2
+        ],
+        "subsequent_median": 900.0,
+        "subsequent_sample_SD": 5.3125637251080216
+      },
+      {
+        "label": "B2",
+        "receipt_commit": "b6764280c372498a422b0e04488163ed342e8113",
+        "receipt_path": "bench/results/2026-10-15-pr6-recovery-audit/moe-gu-swiglu-model-current.json",
+        "source_commit": "8d9f6e6787fe28db293b564183ee222346789f82",
+        "first_use_tps": 816.3,
+        "subsequent_tps": [
+          902.9,
+          896.2,
+          902.9
+        ],
+        "subsequent_median": 902.9,
+        "subsequent_sample_SD": 3.8682468035704534
+      }
+    ],
+    "pairs": [
+      {
+        "cohort": 0,
+        "base_median": 898.2,
+        "candidate_median": 903.5,
+        "median_gain_percent": 0.5900690269427633,
+        "matched_subsequent_speed_ratios": [
+          1.0069026942774437,
+          1.0049338416685356,
+          1.0050055617352613
+        ]
+      },
+      {
+        "cohort": 1,
+        "base_median": 899.8,
+        "candidate_median": 903.2,
+        "median_gain_percent": 0.3778617470549195,
+        "matched_subsequent_speed_ratios": [
+          1.0032211485060536,
+          1.0145993662290629,
+          1.0042231607023784
+        ]
+      },
+      {
+        "cohort": 2,
+        "base_median": 900.0,
+        "candidate_median": 902.9,
+        "median_gain_percent": 0.32222222222222374,
+        "matched_subsequent_speed_ratios": [
+          1.0032222222222222,
+          1.0059490402963296,
+          1.0029993334814484
+        ]
+      }
+    ],
+    "matched_subsequent_speed_geomean": 1.0056672347976914,
+    "geomean_gain_percent": 0.5667234797691378,
+    "all_nine_matched_inputs_faster": true,
+    "exact_committed_source_recovered": true,
+    "matched_configuration_workloads_and_runtime": true,
+    "allowed_cross_cohort_source_change": [
+      "tools/sycl/bench_engine.py"
+    ],
+    "performance_selection_gate_passed": true,
+    "decision": "Retain explicit large-job fusion for further qualification; default stays off.",
+    "limits": "Three independent process pairs, four fresh78451-token requests each. First use excluded from selection. Individual full receipts remain at the original reachable commits.24-token generation does not qualify sustained decode, broad task quality or physical262144/RESTORE."
   }
 }
