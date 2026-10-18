@@ -11,7 +11,7 @@ import struct
 import sys
 
 
-def inspect(path):
+def inspect(path, extract_to=None):
     path = Path(path)
     if not 0 < path.stat().st_size <= 256 << 20:
         raise ValueError('expected an artifact of at most256MiB')
@@ -50,7 +50,19 @@ def inspect(path):
                 blob = data[offset + section[4]:offset + section[4] + section[5]]
                 found[name] = dict(bytes=len(blob), sha256=hashlib.sha256(blob).hexdigest())
         if '.ze_info' in found:
-            images.append(dict(offset=offset, machine=header[1], sections=found))
+            image = dict(offset=offset, machine=header[1], sections=found)
+            if extract_to is not None:
+                end = max(shoff + count * 64, 64,
+                          *(s[4] + s[5] for s in sections if s[1] != 8))
+                blob = data[offset:offset + end]
+                if len(images) >= 16 or len(blob) > 32 << 20:
+                    raise ValueError('native extraction budget exceeded')
+                destination = Path(extract_to) / ('image-' + str(len(images)) + '.bin')
+                with destination.open('xb') as stream:
+                    stream.write(blob)
+                image['extracted'] = dict(path=str(destination), bytes=len(blob),
+                    sha256=hashlib.sha256(blob).hexdigest())
+            images.append(image)
     return dict(path=str(path), bytes=len(data), sha256=hashlib.sha256(data).hexdigest(), images=images)
 
 
