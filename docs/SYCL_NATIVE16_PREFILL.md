@@ -1363,3 +1363,18 @@ and cannot justify a release budget; head/dense composition remains excluded.
 Short prefill, broader numerical/task quality, full physical262144 context and
 RESTORE remain unqualified; this check does not establish default adoption or
 sustained decode performance.
+
+The selected next prototype reduces the temporary compressed-expert GPU bank
+from512 slots (1363148800B) to384 (1022361600B), while retaining the existing
+immutable512-expert RAM upload slab. Cache383 experts on first demand and use
+one scratch slot for remaining experts on the same in-order queue. This saves
+340787200B and admits all117488 residual rows in the pinned capacity example,
+without releasing heads or reducing the512MiB allowance. Extra weight uploads
+between windows and their CPU/PCIe cost remain to be measured.
+The committed CPU admission/ticket planner passes exact-budget, explicit-prefix,
+stale-ticket and three short-tail fallback cases. It selects the original512-slot
+path when full GPU residency is unavailable or a final1..8192-row window would
+take normal FFN. Its262144-row case is capacity arithmetic, not physical-context
+qualification. The planner is not yet connected to the engine; GPU staging and
+model performance are untested. Implement and qualify those before measuring
+this candidate or reporting a speedup.

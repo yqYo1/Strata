@@ -1,11 +1,11 @@
 {
   "mode": "plan",
-  "source_commit": "cb01e64fe16dcf6eef93f3922a16e5bbae3941a1",
+  "source_commit": "a66bd86ffeef2643250a1c99a6b119775152cef3",
   "source_sha256": {
-    "include/strata/prefill/expert_bank_plan.hpp": "4867fc1a6d9f110f4a19dd92db93b9f000f3716ada50945c2e3d6ed091432041",
+    "include/strata/prefill/expert_bank_plan.hpp": "632c7b732dc58b6754b30fcd8b101e0e87e6b21374619094c8798e6cc9655101",
     "include/strata/prefill/layer_major_plan.hpp": "67bc25500ae777bfb387944a2415325868602b9da82aa945464b64b0a2b8b9fd",
-    "tests/expert_bank_plan.cpp": "53147187600d590c6873cbccd4b7d29e1440db370df8cfb8afe6a0a9d88c63e2",
-    "tools/sycl/check_expert_bank.py": "5c696e9b910cb2466126ccf49b8dc6db022c13d1e051db949b9c1dfdf040969f",
+    "tests/expert_bank_plan.cpp": "2cc333b707357514829e400314982cdaf747e147fdff5d5d2cc3b43e09d20e89",
+    "tools/sycl/check_expert_bank.py": "fdb19d03a4c427ea0aefaf52d18098d2ccfb63be066132eff857e2fd69b476da",
     "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
     "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a"
   },
@@ -23,18 +23,25 @@
       "case": "admission_and_tickets",
       "passed": true,
       "result_lines": [
-        "expert_bank_capacity full117488=GPU partial_request=preserved fallback262144=original exact_boundary=PASS",
+        "expert_bank_capacity full117488=GPU partial_request=preserved fallback262144=original exact_boundary=PASS short_tail_fallback_cases=3",
         "expert_bank_slots uploads=9 hits=3 negative_checks=15 PASS",
         "expert_bank_plan PASS GPU=UNRUN model=UNRUN physical262144_RESTORE=UNQUALIFIED"
       ]
     }
   ],
   "limits": "CPU capacity/state planning only. No owner/queue/DMA completion, GPU staging, model speed, physical262144 or RESTORE qualification.",
+  "previous_result": {
+    "commit": "a66bd86ffeef2643250a1c99a6b119775152cef3",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/moe-expert-bank-current.json",
+    "source_commit": "cb01e64fe16dcf6eef93f3922a16e5bbae3941a1",
+    "passed": true
+  },
   "binary": {
-    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-expert-bank-component-v1/plan-test",
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-expert-bank-component-v2/plan-test",
     "bytes": 22368,
-    "sha256": "a32f85404f96e7fa7425f8224ca0d367f4df3a8c4b71a29aa932c12e15c09f4c"
+    "sha256": "be8c665064f121a46e152bd38c93a0dac8cca5afcc4f1ba5852b5372e09078d7"
   },
   "ownership_closed": true,
-  "scope_followup": "Before GPU integration, reject the smaller-bank selection when the final mode10 window has1..8192 rows: that tail takes normal FFN and requires the original512-slot layer cache. Capacity-only pass is not route admission or model qualification."
+  "implementation_status": "CPU planner only; engine not wired, GPU staging/model performance UNRUN.",
+  "next_action": "Implement bounded expert-bank slots in the single-queue all-GPU accumulator path, keeping the full512-expert immutable host slab and checked owner lease. Preserve original512-slot/host-tail dispatch for insufficient full-residual capacity and normal-FFN short windows. Then qualify actual upload/read ordering, guards, failure/lifetime and fallback before a model check and clean matched117K screen."
 }
