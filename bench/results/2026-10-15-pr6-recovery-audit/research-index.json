@@ -1149,7 +1149,7 @@
     ],
     "current_source_commit": "9d000172f53c399453a0662c3eac2b0771114e7e",
     "current_source_path": "/home/yayoi/orca/workspaces/Strata/sycl",
-    "current_consumer_note": "PR81 merged all original source commits into origin/main; finished child branch/worktree removed. Fresh v2 component gate passed. Main is adding an explicit model selector; kernel source remains the qualified9d source. Model quality/context/RESTORE and default adoption remain open.",
+    "current_consumer_note": "Original child integrated/retired viaPR81. Component gate and opt-in39K/78K model screen passed;900.6 vs867.4tok/s subsequent medians. Keep explicit tuning candidate, no default or broader quality/context/RESTORE/decode adoption.",
     "source_worktree_retired_after_default_integration": true,
     "original_source_reachable_from_default": "5e3635061"
   },
@@ -1243,6 +1243,18 @@
         "Frozen QSA model comparison closed.",
         "Main pins adapter and actual in-order queue creation, audits source lifetimes/waits, and commits a fresh bounded plan."
       ]
+    },
+    "main_source_preflight": {
+      "source_revision": "504366f4b82ff00bbac7b0c956635eed8bc599d8",
+      "copy_offload_avoidance": "Pinned command_list_cache.cpp lines88-110 overrides requested offload with the existing force-disable flag for both command-list kinds; batched constructor true hints alone do not bypass it.",
+      "runtime_queue_contract": "Current Runtime compute/transfer/make_queue all set in_order; compute also enables profiling.",
+      "profiling_question": "Batched regular events request EVENT_FLAGS_COUNTER without profiling; event.cpp rejects profiling unless the event has profiling or explicit timestamps. Audit/acceptance must cover actual barrier-event elapsed-time and direct event profiling before any long forced-batched model run. No forced-batched GPU work launched.",
+      "source_sha256": {
+        "command_list_cache.cpp": "94adf607a0280592b3d4ffdb83077386c3a0b257473a827ed268264403e9eac2",
+        "queue_batched.cpp": "1acaeb74da378f52786f561023d04bc49cc1fb140ac53ce4faf1c341e04332a2",
+        "event.cpp": "35cb322613492ac825ce2759c5c89a57df88eb5546c0d38ef28655d20aee10c2"
+      },
+      "source_url_prefix": "https://github.com/intel/llvm/blob/504366f4b82ff00bbac7b0c956635eed8bc599d8/unified-runtime/source/adapters/level_zero/v2/"
     }
   },
   "moe_gu_swiglu_epilogue_scope": {
