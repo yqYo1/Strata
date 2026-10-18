@@ -44,7 +44,9 @@ exception pending until its recorded condition is met; a context change or a
 new experiment does not clear it.
 
 - Before a build or measurement, verify committed inputs, the existing job's
-  ownership and the comparison plan. Do not measure uncommitted engine changes.
+  ownership and the comparison plan. Identify the retained known-good build and
+  any imminent comparison build across all project worktrees before creating
+  another generation. Do not measure uncommitted engine changes.
 - Before integration, check provenance and decide each inference component
   separately, including prefill and decode. Preserve required non-inference
   functions; merging history or a report alone does not integrate an implementation.
@@ -321,6 +323,9 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   one build for each closed experiment. Count generations across this project's
   worktrees, output directories and renamed copies, rather than allowing the
   same quota separately for each location.
+  Keep project-generated executables, libraries, objects and JIT/native dumps
+  outside Git, including the retained latest generation. Commit their necessary
+  source, recipe and compact measurement evidence instead.
   A newer build becomes the retained known-good build only after its applicable
   validation passes; a failed or unfinished build does not replace it.
   Retire the extra generation when its comparison ends; creating a new build
@@ -331,6 +336,9 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   Verify those committed inputs match the ones used for the measured executable.
   Record the source revision and binary hash with the result. A nearby commit,
   source path or binary hash alone does not establish recoverability.
+  Include benchmark/controller changes and generated workloads in this check;
+  committing them later does not retroactively qualify a different measured
+  snapshot. Preserve and reconcile the original inputs when a mismatch is found.
 - Before retiring an old executable, library, object/native dump or build tree,
   retrieve and verify its required source/recipe from reachable Git history.
   Read the recorded revisions and compare the recovered inputs with the build's
@@ -363,3 +371,8 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   comparisons forward. Check file counts and bytes as well as individual sizes;
   benchmark directories must remain browsable. A large directory is a reason
   to review information value, not to split the same unnecessary files.
+  Closing a comparison includes deciding which validated build remains and
+  retiring the extra generation after provenance verification. Use the existing
+  compact result for this decision; do not create a separate progress backup,
+  build archive or permanent cleanup inventory. If source recovery is blocked,
+  keep an explicit provenance hold rather than deleting the last original copy.

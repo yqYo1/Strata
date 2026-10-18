@@ -501,9 +501,21 @@ already reduced it24.05%, so most of the gain is attributable to separating
 the RMS rather than increased column parallelism. All three4-partition process
 medians beat their original controls. The retained
 [individual component samples](../bench/results/2026-10-15-pr6-recovery-audit/gdn-columns-current.json)
-include first-use results and spread. The next gate is the parameter-validated
-`qsa-gdncols4-check`, followed by matched clean`qsa-gdncols4-base` and
-`qsa-gdncols4-candidate` official benchmark screens at78K actual input.
+include first-use results and spread. The parameter-validated39,260-token model
+check passed. The clean official benchmark then read78,451 fresh tokens per
+request, thinking on, four requests per process. Existing versus4-partition
+first PP was786.9 versus795.7 tok/s. Subsequent samples were854.3,845.7,853.7
+(median853.7, sample SD4.80) versus867.2,858.7,867.1 (median867.1, sample
+SD4.88): a1.57% median gain, or1415.7ms less median prompt time. The same
+engine, helper hashes, original profile and request hashes matched; only the
+column selector differed after normalizing private roots/ports. Both processes
+closed without fresh GPU faults. The
+[individual model samples and comparison](../bench/results/2026-10-15-pr6-recovery-audit/gdn-columns-model-current.json)
+retain the original receipts in Git. Use4 partitions as the next opt-in profiling
+baseline, keeping default0. One process per arm does not establish independent
+process variability;24 generated tokens do not qualify sustained decode, task
+quality, agent workloads, full-model262144 or conversation RESTORE. The component
+gain therefore translates to a small model gain and does not qualify1000PP.
 
 ## Optional GDN chunk64
 

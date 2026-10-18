@@ -60,6 +60,16 @@ worktrees and local output directories; copying or renaming a binary does not
 create a separate allowance. This applies to project executables,
 static libraries, object files, JIT/native dumps and their disposable build trees;
 installed toolchains, runtime dependencies and model weights are separate assets.
+Keep these project-generated binaries and dumps outside Git, including the
+retained current generation. Commit the required source, recipe and useful
+measurement evidence instead.
+
+Before creating another build generation, identify the current known-good build
+and the named comparison that needs the extra one across all project worktrees.
+When the comparison closes, select the validated build to retain and retire the
+extra after verifying provenance. Record this in the existing compact result;
+do not create a separate build archive or progress backup. An unresolved source
+recovery problem remains an explicit provenance hold until reconciled.
 
 **Commit the measured code before treating a binary as disposable.** Before
 building a measurement executable or running a fixture, pin a reachable source
@@ -70,6 +80,9 @@ the measured executable, and record its hash. A nearby commit or a source path
 alone is insufficient. If a measurement used an uncommitted snapshot, reconcile
 and commit its necessary original inputs before deleting its last build/source
 copy. Do not claim reproducibility from a binary hash alone.
+Include benchmark/controller changes and generated workloads among the pinned
+inputs. A later commit does not qualify a different snapshot retroactively;
+preserve the original inputs and resolve any mismatch explicitly.
 
 Before removing an old build, verify that its measured source and recipe can be
 retrieved from the recorded commits and that no current comparison needs the
