@@ -265,7 +265,97 @@
       "revision": "9fc4bd7fcf99bbc554f72f3b451bd75ddc299743",
       "path": "bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json"
     },
-    "scope": "Embedded native .text identity only; no ABI/metadata, execution, quality, timing or occupancy claim."
+    "scope": "Embedded native .text identity only; no ABI/metadata, execution, quality, timing or occupancy claim.",
+    "offline_instruction_and_metadata_check": {
+      "tool": "/usr/bin/ocloc disasm",
+      "GPU_executed": false,
+      "passed": true,
+      "kernels": [
+        {
+          "kernel": ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tENS4_6half_tELNS1_4TileE0EEE",
+          "through_EOT_identical": true,
+          "post_EOT_offset": 2976,
+          "instruction_lines_through_EOT": 230,
+          "through_EOT_disassembly_sha256": "a48d3eb071d32553b6b172abeb9ed64eddeb096a36c6acc2fa5b515811ec92a7",
+          "explicit_branch_targets_below_post_EOT_region": true,
+          "no_unresolved_indirect_control_transfer": true
+        },
+        {
+          "kernel": ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tENS4_6half_tELNS1_4TileE1EEE",
+          "through_EOT_identical": true,
+          "post_EOT_offset": 9040,
+          "instruction_lines_through_EOT": 789,
+          "through_EOT_disassembly_sha256": "81e07a0fb35c21b358f47665f5f2eca5f9fcccf4e3df1850588071d43736224e",
+          "explicit_branch_targets_below_post_EOT_region": true,
+          "no_unresolved_indirect_control_transfer": true
+        },
+        {
+          "kernel": ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE0EEE",
+          "through_EOT_identical": true,
+          "post_EOT_offset": 2848,
+          "instruction_lines_through_EOT": 214,
+          "through_EOT_disassembly_sha256": "744eb565ee7bcabba6ce57c37c156b860a32bf06b6c2ab923f3f1693811bbd38",
+          "explicit_branch_targets_below_post_EOT_region": true,
+          "no_unresolved_indirect_control_transfer": true
+        },
+        {
+          "kernel": ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE1EEE",
+          "through_EOT_identical": true,
+          "post_EOT_offset": 7936,
+          "instruction_lines_through_EOT": 660,
+          "through_EOT_disassembly_sha256": "92ba8d21e120a76b0b4effd3c8d4cc43d43f57372c824fa1afd7b29c50f4c181",
+          "explicit_branch_targets_below_post_EOT_region": true,
+          "no_unresolved_indirect_control_transfer": true
+        },
+        {
+          "kernel": ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tENS4_10bfloat16_tELNS1_4TileE0EEE",
+          "through_EOT_identical": true,
+          "post_EOT_offset": 2848,
+          "instruction_lines_through_EOT": 214,
+          "through_EOT_disassembly_sha256": "d93e7de4c2fddd0fd144eff9d0283cdef9de859488b486468ca5d6f0ce8890fc",
+          "explicit_branch_targets_below_post_EOT_region": true,
+          "no_unresolved_indirect_control_transfer": true
+        },
+        {
+          "kernel": ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tENS4_10bfloat16_tELNS1_4TileE1EEE",
+          "through_EOT_identical": true,
+          "post_EOT_offset": 7936,
+          "instruction_lines_through_EOT": 660,
+          "through_EOT_disassembly_sha256": "0479e4031c3064fc768a60225baf902260405fcf44801b1628c091815b4e0153",
+          "explicit_branch_targets_below_post_EOT_region": true,
+          "no_unresolved_indirect_control_transfer": true
+        },
+        {
+          "kernel": ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tES5_LNS1_4TileE0EEE",
+          "through_EOT_identical": true,
+          "post_EOT_offset": 2976,
+          "instruction_lines_through_EOT": 230,
+          "through_EOT_disassembly_sha256": "6c874dfcaf2bc60a65c3981b72ff47b2b95455c3f7a33c9fde7143adaf0c3545",
+          "explicit_branch_targets_below_post_EOT_region": true,
+          "no_unresolved_indirect_control_transfer": true
+        },
+        {
+          "kernel": ".text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tES5_LNS1_4TileE1EEE",
+          "through_EOT_identical": true,
+          "post_EOT_offset": 9040,
+          "instruction_lines_through_EOT": 789,
+          "through_EOT_disassembly_sha256": "804a52c9f7f4265c4ad33646992483d32a1628812010a2061a799d40cf887a0b",
+          "explicit_branch_targets_below_post_EOT_region": true,
+          "no_unresolved_indirect_control_transfer": true
+        }
+      ],
+      "ze_info_kernel_blocks_identical": {
+        "_ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tES5_LNS1_4TileE0EEE": "44440eed770ef4076968626aa6cfa1f4334cfb8294476d6732cde4f6f7e958a1",
+        "_ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tES5_LNS1_4TileE1EEE": "411836015d3cd637b5c6e416eac8908b462dbd2c38070414f3a5ac0a22e599a6",
+        "_ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tENS4_10bfloat16_tELNS1_4TileE0EEE": "b893a0f0a07700c3da7e0d870217a2addfe2e6830e4b3fda36cf14ad7b794154",
+        "_ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass6half_tENS4_10bfloat16_tELNS1_4TileE1EEE": "f201d42b4ac0c9dd5fda6b25eff3b80d06c323cecc087a064939d93848fd82a0",
+        "_ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tENS4_6half_tELNS1_4TileE0EEE": "96437b5870b98dcdb95fa8c090b3e74788e2e2ce3932bf8c82f9fcaf96f1650b",
+        "_ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tENS4_6half_tELNS1_4TileE1EEE": "f7c8d43cf32667adf78dafc26c213e1119b5b5bce9f671ae42835fac76ce5b06",
+        "_ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE0EEE": "140c1f166b173971934ae0bb02dc1afecf2fe4a370214638f30f3a537b9d22c9",
+        "_ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_111DenseKernelIN7cutlass10bfloat16_tES5_LNS1_4TileE1EEE": "1c6e7ea7538249f591656c982ff11321fd9c1009569cd2d51d5be648d6a5e43a"
+      },
+      "conclusion": "All8 dense instruction streams through their single EOT and complete per-kernel ze_info blocks match. Raw text-byte differences lie after EOT in null-destination marker immediates/padding; explicit branch targets remain below that region and indirect transfers were not found. This resolves the raw code difference for these native kernels, not model quality, runtime timing or total host executable equivalence."
+    }
   },
   "dense_helper_source_restoration": {
     "original_source": "7829568c61f4a47e5c1b06497f59e41a3417a5fb",
