@@ -1,5 +1,5 @@
 {
-  "source_commit": "dc8ca3459414c409cc7f87c31c038f0f7ce5b02f",
+  "source_commit": "9d000172f53c399453a0662c3eac2b0771114e7e",
   "fixtures": {
     "sycl_qsa_bf16_prefix_kvvec4_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_kvvec4_test",
@@ -7,7 +7,7 @@
     },
     "sycl_qsa_bf16_prefix_ordered_exp_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_ordered_exp_test",
-      "sha256": "7e84f4b821bd73336661262996f8f9434d937e600da410feb1b40e262296e0e9"
+      "sha256": "aae503f30434e6f424f6dbfe26dd070eeed4f71e2ef54bb0fafbe927bc12cefe"
     },
     "sycl_qsa_bf16_prefix_ordered_exp_bench": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_ordered_exp_bench",
@@ -45,18 +45,237 @@
         "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_ordered_exp_test",
         "--smoke"
       ],
-      "binary_sha256": "7e84f4b821bd73336661262996f8f9434d937e600da410feb1b40e262296e0e9",
-      "passed": false,
-      "exit_code": 1,
+      "binary_sha256": "aae503f30434e6f424f6dbfe26dd070eeed4f71e2ef54bb0fafbe927bc12cefe",
+      "passed": true,
+      "exit_code": 0,
       "ownership_closed": true,
       "cases": [
-        "case explicit_duplicate_ids=PASS aliased_physical_pages=PASS first_later_KV_diagnostics=PASS status=PASS"
+        "case explicit_duplicate_ids=PASS aliased_physical_pages=PASS first_later_KV_diagnostics=PASS status=PASS",
+        "case state_admission_rejections=9 status=PASS",
+        "case cells=97 live_cells=49 active_rows=128 cap=33 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case exact_FP32_online_state=PASS real_padded_heads=PASS state_guards=PASS cells=97 cap=33",
+        "case exact_prefix33_bits=PASS cells=97 cap=33 queries=1",
+        "case cells=97 live_cells=71 active_rows=160 cap=33 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case exact_FP32_online_state=PASS real_padded_heads=PASS state_guards=PASS cells=97 cap=33",
+        "case exact_prefix33_bits=PASS cells=97 cap=33 queries=3",
+        "fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED"
       ],
       "samples": []
+    },
+    {
+      "mode": "smoke",
+      "target": "sycl_qsa_bf16_prefix_ordered_exp_bench",
+      "process": 0,
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_ordered_exp_bench",
+        "--smoke"
+      ],
+      "binary_sha256": "d06bf20eee697f0ed7b46d1fe6139d3cd2380bccb7eaa471f382dab9901fded9",
+      "passed": true,
+      "exit_code": 0,
+      "ownership_closed": true,
+      "cases": [
+        "case cells=97 queries=3 cap=33 pattern=gather samples=12 full_bits=PASS guards=PASS inputs=PASS status=PASS",
+        "fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED"
+      ],
+      "samples": [
+        {
+          "process": "0",
+          "cells": "97",
+          "queries": "3",
+          "cap": "33",
+          "pattern": "gather",
+          "round": "0",
+          "order": "0",
+          "variant": "0",
+          "implementation": "kvvec4",
+          "milliseconds": "0.542019",
+          "compared": "18432",
+          "exact_bits": "PASS",
+          "guards": "PASS",
+          "status": "PASS"
+        },
+        {
+          "process": "0",
+          "cells": "97",
+          "queries": "3",
+          "cap": "33",
+          "pattern": "gather",
+          "round": "0",
+          "order": "1",
+          "variant": "1",
+          "implementation": "ordered_exp",
+          "milliseconds": "0.699915",
+          "compared": "18432",
+          "exact_bits": "PASS",
+          "guards": "PASS",
+          "status": "PASS"
+        },
+        {
+          "process": "0",
+          "cells": "97",
+          "queries": "3",
+          "cap": "33",
+          "pattern": "gather",
+          "round": "1",
+          "order": "0",
+          "variant": "1",
+          "implementation": "ordered_exp",
+          "milliseconds": "0.43636",
+          "compared": "18432",
+          "exact_bits": "PASS",
+          "guards": "PASS",
+          "status": "PASS"
+        },
+        {
+          "process": "0",
+          "cells": "97",
+          "queries": "3",
+          "cap": "33",
+          "pattern": "gather",
+          "round": "1",
+          "order": "1",
+          "variant": "0",
+          "implementation": "kvvec4",
+          "milliseconds": "0.429857",
+          "compared": "18432",
+          "exact_bits": "PASS",
+          "guards": "PASS",
+          "status": "PASS"
+        },
+        {
+          "process": "0",
+          "cells": "97",
+          "queries": "3",
+          "cap": "33",
+          "pattern": "gather",
+          "round": "2",
+          "order": "0",
+          "variant": "0",
+          "implementation": "kvvec4",
+          "milliseconds": "0.427594",
+          "compared": "18432",
+          "exact_bits": "PASS",
+          "guards": "PASS",
+          "status": "PASS"
+        },
+        {
+          "process": "0",
+          "cells": "97",
+          "queries": "3",
+          "cap": "33",
+          "pattern": "gather",
+          "round": "2",
+          "order": "1",
+          "variant": "1",
+          "implementation": "ordered_exp",
+          "milliseconds": "0.398389",
+          "compared": "18432",
+          "exact_bits": "PASS",
+          "guards": "PASS",
+          "status": "PASS"
+        },
+        {
+          "process": "0",
+          "cells": "97",
+          "queries": "3",
+          "cap": "33",
+          "pattern": "gather",
+          "round": "3",
+          "order": "0",
+          "variant": "1",
+          "implementation": "ordered_exp",
+          "milliseconds": "0.408117",
+          "compared": "18432",
+          "exact_bits": "PASS",
+          "guards": "PASS",
+          "status": "PASS"
+        },
+        {
+          "process": "0",
+          "cells": "97",
+          "queries": "3",
+          "cap": "33",
+          "pattern": "gather",
+          "round": "3",
+          "order": "1",
+          "variant": "0",
+          "implementation": "kvvec4",
+          "milliseconds": "0.425239",
+          "compared": "18432",
+          "exact_bits": "PASS",
+          "guards": "PASS",
+          "status": "PASS"
+        },
+        {
+          "process": "0",
+          "cells": "97",
+          "queries": "3",
+          "cap": "33",
+          "pattern": "gather",
+          "round": "4",
+          "order": "0",
+          "variant": "0",
+          "implementation": "kvvec4",
+          "milliseconds": "0.43623",
+          "compared": "18432",
+          "exact_bits": "PASS",
+          "guards": "PASS",
+          "status": "PASS"
+        },
+        {
+          "process": "0",
+          "cells": "97",
+          "queries": "3",
+          "cap": "33",
+          "pattern": "gather",
+          "round": "4",
+          "order": "1",
+          "variant": "1",
+          "implementation": "ordered_exp",
+          "milliseconds": "0.441349",
+          "compared": "18432",
+          "exact_bits": "PASS",
+          "guards": "PASS",
+          "status": "PASS"
+        },
+        {
+          "process": "0",
+          "cells": "97",
+          "queries": "3",
+          "cap": "33",
+          "pattern": "gather",
+          "round": "5",
+          "order": "0",
+          "variant": "1",
+          "implementation": "ordered_exp",
+          "milliseconds": "0.443433",
+          "compared": "18432",
+          "exact_bits": "PASS",
+          "guards": "PASS",
+          "status": "PASS"
+        },
+        {
+          "process": "0",
+          "cells": "97",
+          "queries": "3",
+          "cap": "33",
+          "pattern": "gather",
+          "round": "5",
+          "order": "1",
+          "variant": "0",
+          "implementation": "kvvec4",
+          "milliseconds": "0.402306",
+          "compared": "18432",
+          "exact_bits": "PASS",
+          "guards": "PASS",
+          "status": "PASS"
+        }
+      ]
     }
   ],
-  "passed": false,
-  "complete": false,
+  "passed": true,
+  "complete": true,
   "active": false,
   "model_performance_measured": false,
   "model_quality_qualified": false,
@@ -66,6 +285,12 @@
   "consumer": "Immediate same-binary component comparison; preserve individual samples and retire raw checks after closure.",
   "prospective_gate": "For ordered-exp:3 independent processes,6 rotated samples per arm/shape. Geomean candidate/base<=0.95 across3 matched shapes; no shape>1.05; each process improves for both cap2051 patterns. Component advance only, no model or decode adoption.",
   "limits": "Complete wrapper wall includes admission, pack, attention and checked drain. No hardware saturation, physical traffic, occupancy or model speed inference.",
+  "previous_attempt": {
+    "commit": "963d387698f8b30b8fff9229449775000bdef4b8",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-ordered-exp-current.json",
+    "passed": false,
+    "reason": "Initial fixture case4 pointed at legal leading guard rather than actual output; corrected overlap address, unchanged numerical/admission gates."
+  },
   "ownership_closed": true,
   "mode": "smoke",
   "environment": {
@@ -89,11 +314,10 @@
     "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
     "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
     "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-ordered-exp-component-v1/tmp",
-    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-ordered-exp-component-v1/cache"
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-ordered-exp-component-v2/tmp",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-ordered-exp-component-v2/cache"
   },
   "GPU_executed": true,
-  "error": "sycl_qsa_bf16_prefix_ordered_exp_test: invalid state capture submitted work",
   "fresh_faults": [],
   "boot_unchanged": true,
   "driver_after": {
@@ -103,16 +327,5 @@
     "device": "0xe20c",
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
-  },
-  "controller_error_tail_sha256": "5aec5939293002650e5f054230725fe2876c8362deb1a4567af72dfceef7a539",
-  "diagnosis": {
-    "kind": "Fixture admission-example address error; original smoke remains failed.",
-    "source_commit": "dc8ca3459414c409cc7f87c31c038f0f7ce5b02f",
-    "fixture_error": "invalid state capture submitted work",
-    "stderr_sha256": "0b9b75042dffc666465e0c2a9ddc1f81620e8f1d8e73d1dbbf84ecfa9e2804dd",
-    "stderr_bytes": 2997668,
-    "explanation": "At cap33, state capture spans32bytes. Invalid case4 uses out.data(), which points to32bytes of leading guard. Actual output starts at out.data()+16 uint16 elements,32bytes later. These spans do not overlap, so capture was legal and wrote only allocated guard memory; the fixture incorrectly expected rejection.",
-    "correction": "Point case4 to out.data()+16, inside the actual output span. Keep all existing rejection, output/state bit and guard gates; use a fresh run root after rebuilding committed code.",
-    "runtime_outcome": "Processes closed normally; no fresh driver fault or boot change. Full ordered-exp fixture and performance remain unqualified."
   }
 }
