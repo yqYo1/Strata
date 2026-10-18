@@ -708,13 +708,14 @@ the [original raw-fragment result](https://github.com/yqYo1/Strata/blob/16b697d9
 The clean model reference remains867.1 tok/s; this component did not change it.
 Physical262144, model quality, RESTORE and decode remain separate gates.
 
-Offline inspection of the retained known-good and rebuilt engine native images
+For the earlier7fbe795ce build, offline inspection of the retained known-good
+and rebuilt engine native images
 found identical instruction streams through EOT and identical complete per-kernel
 `.ze_info` blocks for all eight existing dense entries. Nine bytes per entry
 differ after EOT in null-destination immediates/padding; no branch targets enter
 that region and no unresolved indirect transfer was found. The other eight
 existing native text entries matched directly; four new scatter entries were
-added. The [build result](../bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json)
+added. The [original build result](https://github.com/yqYo1/Strata/blob/16b697d9c2c5a699c8e7250e7a04d2b5cfbf15b0/bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json)
 records hashes and exact comparison scope. This checks those native calculations
 and recorded kernel argument information, not total host behavior or model speed.
 
