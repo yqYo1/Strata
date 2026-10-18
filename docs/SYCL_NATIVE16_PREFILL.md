@@ -1407,6 +1407,17 @@ and normal process closure. Requested expert H2D payload was40102860800B across
 19631 uploads, with13594 permanent hits; unused experts are not bulk-uploaded.
 The final layer used267 permanent slots. No fresh fault occurred. Its874.6tok/s
 first-use reading includes validation/logging and is diagnostic.
-Next collect separate clean timing under the same prospective futility rule.
+Clean cohort0 then passed with890.8tok/s first use and957.8,953.4,955.8
+subsequently (median955.8, sample SD2.2030). All four request hashes match the
+98304-row placement, whose subsequent median was845.9; this is a12.9921%
+improvement in one process per configuration, not an isolated kernel or a
+repeated-process gain. All four requests closed normally with no fresh fault.
+The1000tok/s process target fails, but the prospective futility rule does not
+trigger. Continue independent processes1/2 under the frozen plan.
+The old47 intermediate residual stores plus47 inputs requested36931502080B
+of host transfers; the new route replaces those with GPU-local copies. Staged
+expert payload is39.95..40.10GB/request versus the old bulk50.29GB. This does
+not measure wire traffic or assign the speed gain to transfers alone: the
+remaining FFN window also changes from16384 plus host chunks to35568 GPU rows.
 Physical262144, production failure/session/RESTORE and default adoption remain
-unqualified; this bounded check does not establish sustained decode speed.
+unqualified; this bounded screen does not establish sustained decode speed.
