@@ -1,5 +1,5 @@
 {
-  "source_commit": "77407e65f41b24cea19b9b63d44ea4355633672e",
+  "source_commit": "2d4f2448404cd500dbb5e5137dda171d27bda1b6",
   "fixtures": {
     "sycl_qsa_bf16_late_flags_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_late_flags_test",
@@ -7,15 +7,19 @@
     },
     "sycl_qsa_bf16_prefix_optimized_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_optimized_test",
-      "sha256": "4219d9ba660708c593076e8b770ab426f144f3df70545f9bf7ada43d8adb1e84"
+      "sha256": "8ecdb3454ead8d4b0ff79fbfc9642a8d56d061146dffc8de0ae4e7ba5bf01da3"
     },
     "sycl_qsa_bf16_prefix_qcache_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_qcache_test",
-      "sha256": "7a7863c2470026ac1618bcd98c739b1f0fbe7e954d9d4b6b8e39bc1b4d212cca"
+      "sha256": "ee765050b70b96f2fd84b6951791ef645278a851717f748063b503c1f71f0d31"
+    },
+    "sycl_qsa_bf16_prefix_kcoalesced_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_kcoalesced_test",
+      "sha256": "a5b67e8e06ff07dca29319ac122ebd00a95d3f6bdc1efc757fb64258629fa80e"
     },
     "sycl_qsa_bf16_prefix_qcache_bench": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_qcache_bench",
-      "sha256": "889fea241e43f80bca30c09567808252f7856690ea01cffe4869ddd3fc0637fe"
+      "sha256": "72f6fb6051a8629c3cd6c90f615268b58b90bfbb73825261fe6d50506de2cb3f"
     }
   },
   "checks": [
@@ -44,7 +48,7 @@
         "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_optimized_test",
         "--smoke"
       ],
-      "binary_sha256": "4219d9ba660708c593076e8b770ab426f144f3df70545f9bf7ada43d8adb1e84",
+      "binary_sha256": "8ecdb3454ead8d4b0ff79fbfc9642a8d56d061146dffc8de0ae4e7ba5bf01da3",
       "passed": true,
       "exit_code": 0,
       "ownership_closed": true,
@@ -62,7 +66,28 @@
         "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_qcache_test",
         "--smoke"
       ],
-      "binary_sha256": "7a7863c2470026ac1618bcd98c739b1f0fbe7e954d9d4b6b8e39bc1b4d212cca",
+      "binary_sha256": "ee765050b70b96f2fd84b6951791ef645278a851717f748063b503c1f71f0d31",
+      "passed": true,
+      "exit_code": 0,
+      "ownership_closed": true,
+      "cases": [
+        "case explicit_duplicate_ids=PASS aliased_physical_pages=PASS first_later_KV_diagnostics=PASS status=PASS",
+        "case cells=97 live_cells=49 active_rows=128 cap=33 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case exact_prefix33_bits=PASS cells=97 cap=33 queries=1",
+        "case cells=97 live_cells=71 active_rows=160 cap=33 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case exact_prefix33_bits=PASS cells=97 cap=33 queries=3",
+        "fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED"
+      ],
+      "samples": []
+    },
+    {
+      "mode": "smoke",
+      "target": "sycl_qsa_bf16_prefix_kcoalesced_test",
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_kcoalesced_test",
+        "--smoke"
+      ],
+      "binary_sha256": "a5b67e8e06ff07dca29319ac122ebd00a95d3f6bdc1efc757fb64258629fa80e",
       "passed": true,
       "exit_code": 0,
       "ownership_closed": true,
@@ -83,7 +108,7 @@
         "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_qcache_bench",
         "--smoke"
       ],
-      "binary_sha256": "889fea241e43f80bca30c09567808252f7856690ea01cffe4869ddd3fc0637fe",
+      "binary_sha256": "72f6fb6051a8629c3cd6c90f615268b58b90bfbb73825261fe6d50506de2cb3f",
       "passed": true,
       "exit_code": 0,
       "ownership_closed": true,
@@ -100,7 +125,7 @@
           "round": "0",
           "order": "0",
           "variant": "0",
-          "milliseconds": "0.433205",
+          "milliseconds": "0.449165",
           "compared": "18432",
           "exact_bits": "PASS",
           "guards": "PASS",
@@ -114,7 +139,7 @@
           "round": "0",
           "order": "1",
           "variant": "1",
-          "milliseconds": "0.461659",
+          "milliseconds": "0.445709",
           "compared": "18432",
           "exact_bits": "PASS",
           "guards": "PASS",
@@ -128,7 +153,7 @@
           "round": "1",
           "order": "0",
           "variant": "1",
-          "milliseconds": "0.440609",
+          "milliseconds": "0.449876",
           "compared": "18432",
           "exact_bits": "PASS",
           "guards": "PASS",
@@ -142,7 +167,7 @@
           "round": "1",
           "order": "1",
           "variant": "0",
-          "milliseconds": "0.449425",
+          "milliseconds": "0.440508",
           "compared": "18432",
           "exact_bits": "PASS",
           "guards": "PASS",
@@ -156,7 +181,7 @@
           "round": "2",
           "order": "0",
           "variant": "0",
-          "milliseconds": "0.459214",
+          "milliseconds": "0.436001",
           "compared": "18432",
           "exact_bits": "PASS",
           "guards": "PASS",
@@ -170,7 +195,7 @@
           "round": "2",
           "order": "1",
           "variant": "1",
-          "milliseconds": "0.444677",
+          "milliseconds": "0.436912",
           "compared": "18432",
           "exact_bits": "PASS",
           "guards": "PASS",
@@ -184,7 +209,7 @@
           "round": "3",
           "order": "0",
           "variant": "1",
-          "milliseconds": "0.443103",
+          "milliseconds": "0.441291",
           "compared": "18432",
           "exact_bits": "PASS",
           "guards": "PASS",
@@ -198,7 +223,7 @@
           "round": "3",
           "order": "1",
           "variant": "0",
-          "milliseconds": "0.447242",
+          "milliseconds": "0.435149",
           "compared": "18432",
           "exact_bits": "PASS",
           "guards": "PASS",
@@ -212,7 +237,7 @@
           "round": "4",
           "order": "0",
           "variant": "0",
-          "milliseconds": "0.442031",
+          "milliseconds": "0.435148",
           "compared": "18432",
           "exact_bits": "PASS",
           "guards": "PASS",
@@ -226,7 +251,7 @@
           "round": "4",
           "order": "1",
           "variant": "1",
-          "milliseconds": "0.443374",
+          "milliseconds": "0.424359",
           "compared": "18432",
           "exact_bits": "PASS",
           "guards": "PASS",
@@ -240,7 +265,7 @@
           "round": "5",
           "order": "0",
           "variant": "1",
-          "milliseconds": "0.448694",
+          "milliseconds": "0.432403",
           "compared": "18432",
           "exact_bits": "PASS",
           "guards": "PASS",
@@ -254,7 +279,7 @@
           "round": "5",
           "order": "1",
           "variant": "0",
-          "milliseconds": "0.443044",
+          "milliseconds": "0.438375",
           "compared": "18432",
           "exact_bits": "PASS",
           "guards": "PASS",
@@ -269,7 +294,7 @@
   "model_performance_measured": false,
   "model_quality_qualified": false,
   "physical262144_model_RESTORE_qualified": false,
-  "consumer": "Immediate prefix33 versus cached-Q fragments same-binary component comparison; retire raw checks afterward.",
+  "consumer": "Immediate cached-Q versus coalesced-K same-binary component comparison; retire raw checks afterward.",
   "mode": "smoke",
   "environment": {
     "PATH": "/usr/bin:/bin",
@@ -305,13 +330,5 @@
     "device": "0xe20c",
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
-  },
-  "unchanged_binary_qualification": {
-    "source_commit": "0ddd14719211b6ddf8a09737c3bc2e6b3402c1cb",
-    "result_commit": "13976170f",
-    "result_path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-attention-current.json",
-    "all_four_fixture_sha256_identical": true,
-    "full_component_and_36_rotated_samples_already_passed": true,
-    "reason": "Restored kernel source exactly; final change wires its opt-in model selector. Fresh traced smoke passed; identical fixture binaries need no duplicate component/perf run."
   }
 }
