@@ -652,6 +652,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     if (window_context) {
         if (bank_plan.staged()) {
             window_context->expert_slots.reset(new detail::ExpertBankSlots(int32_t(bank_plan.slots)));
+            window_context->expert_cache = &layer_cache;
             window_context->expert_slab = upload.get();
             window_context->expert_slab_bytes = host_slab_bytes;
             window_context->expert_stride = stride;

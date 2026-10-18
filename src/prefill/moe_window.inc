@@ -188,10 +188,11 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
             int32_t slot = -1;
             if (owner.expert_slots) {
                 if (m.layer_major_residual.gpu_rows != m.layer_major_residual.rows ||
-                    !owner.scratch_mixed || m.copy != m.cs)
+                    !owner.scratch_mixed || m.copy != m.cs || !owner.expert_cache ||
+                    owner.expert_cache != m.cache)
                     throw std::invalid_argument("prefill expert bank: incomplete residual or queue contract");
                 hp::Host host(hp::upload_submit);
-                const auto ticket = detail::stage_expert_bank(*owner.expert_slots, *m.cache,
+                const auto ticket = detail::stage_expert_bank(*owner.expert_slots, *owner.expert_cache,
                     owner.expert_slab, owner.expert_slab_bytes, owner.expert_stride,
                     layout.blob_bytes(layer), job.expert, m.cs);
                 slot = ticket.slot;

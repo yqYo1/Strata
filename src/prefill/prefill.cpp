@@ -466,6 +466,7 @@ struct PeerPrefill {
 // while this object and all raw upload pointers remain alive.
 struct MoeWindowContext {
     std::unique_ptr<detail::ExpertBankSlots> expert_slots;
+    core::ExpertCache* expert_cache = nullptr; // outer-owned mutable upload target
     const uint8_t* expert_slab = nullptr;
     uint64_t expert_slab_bytes = 0, expert_stride = 0;
     uint64_t staged_uploads = 0, staged_upload_bytes = 0, staged_hits = 0;
