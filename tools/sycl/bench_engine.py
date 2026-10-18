@@ -53,6 +53,27 @@ def compact_window_census(windows):
         all_job_row_and_expert_conservation_checks_passed=True, planned_matches_retired=True,
         limits='Requested/logical metadata; not physical PCIe or VRAM traffic, occupancy or additive wall time.')
 
+
+def compact_host_resource_profile(profile):
+    """Keep aggregate attribution after validating every request/layer/window."""
+    census = compact_window_census(profile['planned_moe_windows'])
+    histogram = census.pop('aggregate_job_rows_histogram')
+    census.pop('layer_rows_jobs')
+    census.pop('layer_rows_jobs_columns')
+    census['window_rows_counts'] = sorted(Counter(w['rows'] for w in profile['planned_moe_windows']).items())
+    census['job_size_groups'] = [dict(min_rows=lo, max_rows=hi,
+        jobs=sum(count for rows, count in histogram if lo <= rows <= hi),
+        routed_rows=sum(rows * count for rows, count in histogram if lo <= rows <= hi))
+        for lo, hi in ((1, 2333), (2334, 8192))]
+    guards.require(sum(group['jobs'] for group in census['job_size_groups']) == census['jobs'] and
+        sum(group['routed_rows'] for group in census['job_size_groups']) == census['routed_rows'],
+        'compact job groups lost work')
+    return dict(resource_diagnostics=[line for line in profile['resource_diagnostics']
+        if 'layer=' not in line or 'layer=-1 ' in line],
+        host_counter_conservation=profile['host_counter_conservation'],
+        window_census=census, all_resource_gates_passed=True,
+        detail_not_retained='All per-layer/window conservation and ownership checks run before reduction. Full layer arrays and exact job-size histograms are not needed by the current aggregate host-source attribution question.')
+
 def compact_command_service(profile):
     """Preserve every selected interval without repeated per-sample field names."""
     for name in ('sample', 'group'):
@@ -469,18 +490,14 @@ def reanalyze_staged_host():
         changed = re.sub(r'(?m)^(strata MoE GU fusion: fused_jobs=)(\d+)',
             lambda m: m[1] + str(int(m[2]) + 1), parts[0], count=1)
         reject('changed_GU_work_total', lambda: extract_resource_profile(changed, True, False, '', 4, pairs))
-        cold, warm = profiles
-        warm['window_census'] = compact_window_census(warm.pop('planned_moe_windows'))
-        cold_summary = dict(resource_diagnostics=[x for x in cold['resource_diagnostics']
-            if 'layer=' not in x or 'layer=-1 ' in x], host_counter_conservation=cold['host_counter_conservation'],
-            all_resource_gates_passed=True)
+        cold, warm = [compact_host_resource_profile(profile) for profile in profiles]
         record['corrected_resource_analysis'] = dict(source_commit=revision,
             original_failed_result=dict(commit=revision, path=str(path.relative_to(P))),
             complete=True, passed=True, model_executed=False, GPU_executed=False,
             original_outcome_unchanged=True, negative_parser_checks=negatives,
             per_request_owner_windows=[x['retired_windows'] for x in owners],
             all_owner_keys_extents_and_retirements_checked=True,
-            first_use=cold_summary, subsequent=warm,
+            first_use=cold, subsequent=warm,
             profiled_prompt_tps=[q['prompt_tps'] for q in requests],
             limits='Offline accounting reanalysis only: original passed=false/parser error remain. Two completed requests, not independent processes or clean speed. No physical bus traffic, arithmetic saturation, model quality/full-context/RESTORE adoption.')
         path.write_text(json.dumps(record, indent=2) + '\n')
@@ -1127,6 +1144,13 @@ def main():
                         if k != 'aggregate_job_rows_histogram'}
                     if 'command_service_profile' in record:
                         record['command_service_profile'] = compact_command_service(record['command_service_profile'])
+                if staged_host:
+                    # This route asks for aggregate host attribution, not a
+                    # permanent second copy of all parsed layer/histogram data.
+                    if warm_profile:
+                        record['first_use_resource_summary'] = compact_host_resource_profile(profiles[0])
+                    record.update(compact_host_resource_profile(profiles[-1]))
+                    record.pop('gdn_phase_queue_intervals', None)
             guards.require(not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|retirement failed|Strata SYCL cleanup:', log), 'runtime failure')
             record['passed'] = bool(record['complete'] and entry.get('exit_code') == 0)
         except BaseException as error:
