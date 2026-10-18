@@ -7037,7 +7037,7 @@
     "total_rows": 37656000,
     "rows_at8192": 24829952
   },
-  "consumer": "Current MoE resource reference; retain compact samples, retire raw logs/JIT after interpretation.",
+  "consumer": "Historical component evidence for current inference decisions; no imminent reuse of these original executables.",
   "limits": [
     "Resident reused FP16 operands/weights, BF16 output, FP32 accumulation; no IQ3 dequant, SwiGLU or routing/scatter.",
     "Service reference for this implementation and shapes, not a hardware peak or a prediction of whole-model speed.",
@@ -7399,5 +7399,10 @@
       "commit": "f97d3dc9b",
       "path": "bench/results/2026-10-15-pr6-recovery-audit/moe-window-census-current.json"
     }
+  },
+  "fixture_retirement": {
+    "state": "historical executable retired; useful individual samples and original identities preserved",
+    "manifest_commit": "faa1b7030",
+    "source_recovery": "Exact original build matched by executable SHA256; source/dependency aggregate hashes and recipe recovered from Git."
   }
 }

@@ -1063,7 +1063,7 @@
   "physical262144_model_RESTORE_qualified": false,
   "baseline": "qsa_bf16_prefix_kvec4_batch",
   "candidate": "qsa_bf16_prefix_kvvec4_batch",
-  "consumer": "Immediate four-value K versus K/V same-binary component comparison; retire raw checks afterward.",
+  "consumer": "Historical component evidence for current inference decisions; no imminent reuse of these original executables.",
   "mode": "perf",
   "environment": {
     "PATH": "/usr/bin:/bin",
@@ -1126,5 +1126,10 @@
       "latency_change_percent": -21.97674811375827,
       "samples_per_arm": 6
     }
-  ]
+  ],
+  "fixture_retirement": {
+    "state": "historical executable retired; useful individual samples and original identities preserved",
+    "manifest_commit": "faa1b7030",
+    "source_recovery": "Exact original build matched by executable SHA256; source/dependency aggregate hashes and recipe recovered from Git."
+  }
 }
