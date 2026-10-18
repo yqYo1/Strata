@@ -160,6 +160,61 @@
         }
       ],
       "passed": true
+    },
+    {
+      "mode": "smoke",
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_down_scatter_bench",
+        "--smoke"
+      ],
+      "exit_code": 0,
+      "ownership_closed": true,
+      "events": [
+        {
+          "kind": "correctness",
+          "tokens": 3,
+          "irregular": 0,
+          "edges": 0,
+          "tile": 1,
+          "jobs": 3,
+          "status": "PASS"
+        },
+        {
+          "kind": "correctness",
+          "tokens": 3,
+          "irregular": 1,
+          "edges": 1,
+          "tile": 0,
+          "jobs": 3,
+          "status": "PASS"
+        },
+        {
+          "kind": "admissions",
+          "rejected": 9,
+          "status": "PASS"
+        },
+        {
+          "kind": "invalid_map",
+          "case": 0,
+          "status": "PASS"
+        },
+        {
+          "kind": "invalid_map",
+          "case": 1,
+          "status": "PASS"
+        },
+        {
+          "kind": "invalid_map",
+          "case": 2,
+          "status": "PASS"
+        },
+        {
+          "kind": "invalid_map",
+          "case": 3,
+          "status": "PASS"
+        }
+      ],
+      "passed": true
     }
   ],
   "complete": true,
@@ -171,7 +226,7 @@
   "consumer": "One Down/scatter component comparison; retire raw logs/JIT after extracting samples.",
   "prospective_gates": "18 exhaustive host tile-ownership cases; traced small7-event correctness/admission/map gate;22 tail/split/irregular/rounding checks;3 independent resident processes with6 rotated rounds per shape/arm.",
   "limits": "FP16 Down2560x640, BF16-round then explicit FP32 FMA. Component only; existing engine route unchanged. Marker intervals include host submission gaps. No physical VRAM/PCIe traffic, occupancy, saturation or model speed is inferred.",
-  "mode": "ownership",
+  "mode": "smoke",
   "environment": {
     "PATH": "/usr/bin:/bin",
     "HOME": "/home/yayoi",
@@ -188,10 +243,15 @@
     "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
     "SYCL_CACHE_PERSISTENT": "0",
     "ZES_ENABLE_SYSMAN": "0",
+    "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+    "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+    "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
     "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-scatter-component-v1/tmp",
     "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-scatter-component-v1/cache"
   },
-  "GPU_executed": false,
+  "GPU_executed": true,
   "ownership_closed": true,
   "fresh_faults": [],
   "boot_unchanged": true,
