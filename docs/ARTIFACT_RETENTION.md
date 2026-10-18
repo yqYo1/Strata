@@ -105,6 +105,11 @@ duplicate source snapshots. Build reproducibility means recovering the correct
 inputs and recipe; byte-identical binaries may additionally require the original
 toolchain. Do not retain an unusable orphan binary as a substitute for source.
 
+For each temporary provenance hold, record the exact missing inputs, current
+consumer, next bounded recovery action and review point in the existing compact
+result. Preserve unique unreconciled source/recipe evidence; a hold does not
+justify retaining unrelated logs, caches or duplicate build outputs.
+
 ## Temporary diagnostic collection
 
 Before launch, use a private output directory, finite process deadline and a
