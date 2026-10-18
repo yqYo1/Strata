@@ -22,6 +22,7 @@
 #pragma once
 
 #include "strata/core/expert_cache.hpp"
+#include "strata/core/expert_layer_view.hpp"
 #include "strata/core/hit_hook.hpp"
 #include "strata/kernels/cpu/pool.hpp"
 
@@ -135,6 +136,14 @@ public:
     /// The blob's bytes into `dst` (blob_bytes(layer) of them).  Safe from several threads for a source whose
     /// `transient` can be true.
     virtual bool copy_blob(int64_t layer, int64_t expert, uint8_t* dst);
+    /// Optional immutable resident HOST layer, with no CPU repacking. Empty is
+    /// unsupported. Unlike blob(), the view survives subsequent source calls.
+    /// The caller must keep this source open and its layout/contents immutable
+    /// through checked completion of every asynchronous reader. No device alias
+    /// or pinning is implied. Only the audited Arena provider implements this;
+    /// transient/file/custom providers retain the copying path. Acquiring a view
+    /// does not call blob() or increment its reads() counter.
+    virtual ResidentExpertLayer resident_layer(int64_t layer) const { (void)layer; return {}; }
     /// The `n` experts of `layer` the CPU is about to ask `blob` for, all at once: a source that reads a file may
     /// fetch them in parallel.  The bytes `blob` then returns are the same.  Default: nothing.
     virtual void prefetch(int64_t layer, const int64_t* experts, int64_t n) { (void) layer; (void) experts; (void) n; }
@@ -665,6 +674,7 @@ public:
     bool mapped() const { return base_ != nullptr; }
     int64_t blobs() const { return blobs_; }
     const uint8_t* blob(int64_t layer, int64_t expert) override;
+    ResidentExpertLayer resident_layer(int64_t layer) const override;
     int64_t reads() const override { return reads_; }
     bool pinned(int64_t layer, int64_t expert) const override;
     const uint8_t* device_alias(int64_t layer, int64_t expert) const override;
@@ -685,6 +695,7 @@ private:
     std::vector<const uint8_t*> dev_slice_;   ///< device alias of each registered slice (or of the whole range)
     uint64_t slice_bytes_ = 0;
     const uint8_t* base_ = nullptr;
+    std::vector<ResidentExpertLayer> resident_layers_; ///< immutable loaded-layout snapshot, until close
     int64_t blobs_ = 0;
     int64_t n_expert_ = 0;
     int64_t reads_ = 0;

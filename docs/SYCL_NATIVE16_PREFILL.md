@@ -1458,7 +1458,24 @@ bounded source lifetime through checked queue retirement; transient/custom
 providers keep synchronous copying. Ordinary host-pointer DMA may itself stage
 or behave differently, so no speedup or1000tok/s claim follows from byte removal.
 CPU-only next-layer double-buffering remains an alternative if direct borrowing
-fails its correctness/performance comparison. Keep the compiled
+fails its correctness/performance comparison.
+
+The prospective implementation is default-off under
+`STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW=1`. It applies only to the existing
+all-GPU staged expert bank. Arena publishes bounded immutable host views from
+its loaded-layout snapshot; the caller keeps the source open until checked
+queue retirement. Empty provider capability or an unsupported bank route retains
+the synchronous path. RAM admission counts an upload slab only when needed.
+The upload helper separates host blob stride from the fixed GPU-cache stride;
+each transfer still copies exactly that layer's blob bytes. No worker, GPU math,
+cache policy, decode layout or requested PCIe weight payload changes.
+Before any model run, require independent source-contract review,14 CPU view
+extent checks plus existing planner/ticket checks, then traced small and full
+GPU byte/guard/queue-unwind checks for both strides. Clean same-binary117K
+off/on model comparisons follow only after these pass. The current engine and
+same-build fixtures remain the validated fallback through qualification.
+
+Keep the compiled
 fine command sampler off: it lacks a staged-expert-copy tag and would reject
 those untagged events. Coarse event intervals include host submission gaps and
 do not establish physical PCIe traffic or arithmetic saturation. The reviewed

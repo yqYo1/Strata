@@ -1,5 +1,6 @@
 // Authored for Strata; repository LICENSE applies. No GPU or runtime access.
 #include "strata/prefill/expert_bank_plan.hpp"
+#include "strata/core/expert_layer_view.hpp"
 #include <cstdio>
 
 using namespace strata::prefill::detail;
@@ -20,6 +21,24 @@ ExpertBankPlan plan(int slots, uint64_t free = Free, int64_t rows = 117488,
 }
 
 int main() try {
+    std::array<uint8_t, 128> source{};
+    using View = strata::core::ResidentExpertLayer;
+    const auto view = View::make(source.data(), 64, 16, 3, 16);
+    need(view.data == source.data() + 16 && view.bytes == 48 && view.stride == 16 && view.experts == 3);
+    need(View::make(source.data(), 64, 0, 4, 16).bytes == 64);
+    need(View::make(source.data(), 64, 63, 1, 1).data == source.data() + 63);
+    need(View::make(source.data(), 64, 1, 3, 7).bytes == 21); // host memcpy has no256B stride requirement
+    need(!View::make(source.data(), 64, 17, 3, 16).data);
+    need(!View::make(source.data(), 64, 65, 1, 1).data);
+    need(!View::make(source.data(), 64, 64, 1, 1).data);
+    need(!View::make(source.data(), 0, 0, 1, 1).data);
+    need(!View::make(nullptr, 64, 0, 1, 1).data);
+    need(!View::make(source.data(), 64, 0, -1, 1).data);
+    need(!View::make(source.data(), 64, 0, 0, 1).data);
+    need(!View::make(source.data(), 64, 0, 1, 0).data);
+    need(!View::make(source.data(), 64, 0, std::numeric_limits<int64_t>::max(), 3).data);
+    need(!View::make(source.data(), std::numeric_limits<uint64_t>::max(), 0, 1, 1).data);
+    std::puts("resident_layer_view valid_cases=4 rejected_extents=10 PASS");
     const auto original = plan(0);
     need(!original.staged() && original.slots == 512 && original.device_bytes == 1363148800);
     need(original.residual.gpu_rows == 98304 && original.residual.host_bytes == 392888320);

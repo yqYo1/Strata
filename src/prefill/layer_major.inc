@@ -353,9 +353,37 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         accumulation_rows != std::min<int64_t>(detail::ExpertBankPlan::window_rows, n))) {
         err = "prefill expert bank: every FFN piece must use the all-GPU accumulator"; return false;
     }
-    // One owned host upload slab removes every source pointer lease before DMA.
+    const char* source_view_option = std::getenv("STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW");
+    if (source_view_option && std::strcmp(source_view_option, "0") != 0 &&
+        std::strcmp(source_view_option, "1") != 0) {
+        err = "prefill expert source view: expected0 or1"; return false;
+    }
+    const bool source_view_requested = source_view_option && std::strcmp(source_view_option, "1") == 0;
+    bool source_view_on = source_view_requested && bank_plan.staged();
+    // Only a provider promising immutable resident HOST storage can bypass
+    // repacking. File/transient/custom providers return an empty capability.
+    // The caller owns m.src throughout Prefill::run; no close/reload/layout
+    // mutation may occur until its checked lease retires (also on exceptions).
+    std::vector<core::ResidentExpertLayer> source_views;
+    uint64_t borrowed_layer_span_bytes = 0;
+    if (source_view_on) {
+        for (int64_t l = 0; l < g.n_layers; ++l) {
+            const auto view = m.src->resident_layer(l);
+            if (!view.data && l == 0) { source_view_on = false; break; }
+            const uint64_t bytes = layout.blob_bytes(l);
+            if (!view.data || view.experts != NE || view.stride != bytes ||
+                view.bytes != detail::layer_major_mul(NE, bytes)) {
+                err = "prefill expert source view: inconsistent resident layer extent"; return false;
+            }
+            borrowed_layer_span_bytes = detail::layer_major_add(borrowed_layer_span_bytes, view.bytes);
+            source_views.push_back(view);
+        }
+    }
+    // Default copying isolates transient provider pointers. A qualified view
+    // borrows the loaded Arena until checked retirement and needs no upload slab.
     // Also count the cache's small blocking staging allocation and two maps.
-    uint64_t host_need = detail::layer_major_add(plan.host_bytes, host_slab_bytes);
+    const uint64_t owned_host_slab_bytes = source_view_on ? 0 : host_slab_bytes;
+    uint64_t host_need = detail::layer_major_add(plan.host_bytes, owned_host_slab_bytes);
     host_need = detail::layer_major_add(host_need, stride);
     host_need = detail::layer_major_add(host_need, detail::layer_major_mul(2, map_bytes));
     if (window_on) host_need = detail::layer_major_add(host_need,
@@ -367,7 +395,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     }
     if (should_stop && should_stop()) { err = "cancelled"; return false; }
     core::ExpertCache layer_cache;
-    std::unique_ptr<uint8_t[]> upload(new uint8_t[size_t(host_slab_bytes)]);
+    std::unique_ptr<uint8_t[]> upload(owned_host_slab_bytes ? new uint8_t[size_t(owned_host_slab_bytes)] : nullptr);
     std::unique_ptr<uint8_t[]> rows(plan.host_bytes ? new uint8_t[size_t(plan.host_bytes)] : nullptr);
     std::vector<int32_t> residency(size_t(g.n_layers * NE), -1);
     auto free_device = [](uint8_t* p) { if (p) (void) cudaFree(p); };
@@ -688,6 +716,10 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             (long long)requested_slots, (long long)bank_plan.slots, int(bank_plan.staged()),
             (unsigned long long)host_slab_bytes, (unsigned long long)cache_bytes,
             (long long)plan.gpu_rows, (unsigned long long)max_alloc);
+    std::fprintf(stderr, "strata prefill expert source: requested_view=%d effective_view=%d layers=%zu owned_slab_bytes=%llu borrowed_layer_span_bytes=%llu host_copy=%s source_pin=unspecified source_owner=caller_through_checked_retirement\n",
+        int(source_view_requested), int(source_view_on), source_views.size(),
+        (unsigned long long)owned_host_slab_bytes, (unsigned long long)borrowed_layer_span_bytes,
+        source_view_on ? "eliminated" : "synchronous");
     std::fprintf(stderr, "strata prefill: layer-major candidate, tokens=%lld chunk=%lld residual_dtype=%s "
                          "residual_element_bytes=%llu residual_total=%llu residual_gpu_rows=%lld "
                          "residual_gpu=%llu residual_host=%llu residual_staging=%llu layer_cache=%llu; "
@@ -722,13 +754,22 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         if (bank_plan.staged()) window_context->expert_slots->reset(); // previous layer checked above
         const auto load_start = Clock::now();
         const uint64_t bytes = layout.blob_bytes(layer);
-        // Resolve/copy on the main thread. copy_blob may itself call blob(),
-        // whose pointer need only survive until the next blob() call.
+        // Legacy source_copy observer measures preparation in either arm; the
+        // explicit source marker above distinguishes copying from a view.
         sycl_backend::cpu_wait_profile::Host source_copy_profile(sycl_backend::cpu_wait_profile::source_copy);
-        for (int32_t e = 0; e < NE; ++e) {
-            if ((e % 32) == 0 && should_stop && should_stop()) { err = "cancelled"; return false; }
-            if (!m.src->copy_blob(layer, e, upload.get() + size_t(e) * size_t(stride))) {
-                err = "prefill layer-major: expert source copy failed"; return false;
+        if (source_view_on) {
+            const auto& view = source_views[size_t(layer)];
+            window_context->expert_slab = view.data;
+            window_context->expert_slab_bytes = view.bytes;
+            window_context->expert_source_stride = view.stride;
+        } else {
+            // copy_blob may call blob(), whose pointer need only survive until
+            // the next blob() call. Keep the original ownership boundary.
+            for (int32_t e = 0; e < NE; ++e) {
+                if ((e % 32) == 0 && should_stop && should_stop()) { err = "cancelled"; return false; }
+                if (!m.src->copy_blob(layer, e, upload.get() + size_t(e) * size_t(stride))) {
+                    err = "prefill layer-major: expert source copy failed"; return false;
+                }
             }
         }
         source_copy_profile.finish();

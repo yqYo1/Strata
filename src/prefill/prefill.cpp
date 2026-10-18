@@ -468,7 +468,7 @@ struct MoeWindowContext {
     std::unique_ptr<detail::ExpertBankSlots> expert_slots;
     core::ExpertCache* expert_cache = nullptr; // outer-owned mutable upload target
     const uint8_t* expert_slab = nullptr;
-    uint64_t expert_slab_bytes = 0, expert_stride = 0;
+    uint64_t expert_slab_bytes = 0, expert_stride = 0, expert_source_stride = 0;
     uint64_t staged_uploads = 0, staged_upload_bytes = 0, staged_hits = 0;
     uint16_t* bank = nullptr;
     uint64_t bank_bytes = 0;
