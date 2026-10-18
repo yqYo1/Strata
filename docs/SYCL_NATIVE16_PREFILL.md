@@ -1379,7 +1379,9 @@ qualification. The query-only check reports10132807680B as the B570
 max_mem_alloc_size, above the2406154240B residual. It submits no allocations or
 kernels, so actual allocation success remains untested. The planner now accepts
 an explicit per-allocation cap and must preserve it independently of total budget;
-CPU cap-boundary/fallback checks are pending at this source revision.
+CPU cap-boundary/fallback checks passed at sourcecb74810ab, including stricter
+hypothetical2GiB/1.5GiB devices, the exact residual-size boundary, invalid caps
+and explicit full-prefix rejection. These remain CPU planning checks.
 The planner is not yet connected to the engine; GPU staging and
 model performance are untested. Implement and qualify those before measuring
 this candidate or reporting a speedup.
