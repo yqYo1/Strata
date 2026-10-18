@@ -340,6 +340,27 @@ requests support resource attribution; use separate clean processes for speed
 comparisons. Neither run qualifies sustained generation, model task quality or
 the full physical262144-context/RESTORE paths.
 
+Both corrected model checks passed at`f111b5ff6`:39,260 and78,451 actual read
+tokens, all four frames complete, peaks172/192 retained events, no fresh GPU
+faults. The78K request retained678 qualified command samples and reconciled
+21,514 jobs/37,656,000 routed rows with the exact historical histogram hash.
+Its five matched8192-row jobs had median GU+Down service0.989792ms and
+gather+FP32 accumulation1.240625ms. These are selected jobs, not a whole-model
+time partition. Sampled model GU service is faster than the reused-operand
+fixture, so that fixture cannot serve as a warmed hardware ceiling. Clock/cache
+or duty-cycle attribution needs a separate controlled test.
+
+The same diagnostic's nonexclusive queue intervals were QSA37.733s
+(attention29.933s), MoE20.976s and weight upload8.412s. CPU time was99.944s,
+of which67.579s was inside explicit waits; host grouping took0.161s. Do not
+equate one busy host thread with a CPU arithmetic bottleneck. Neither queue
+intervals nor requested transfer bytes establish physical saturation. Remaining
+QSA attention and MoE intermediate traffic are the next tuning targets; the
+actual Down epilogue and indexed-input feasibility reports are separately
+reviewed candidates. Keep the [structured resource evidence](../bench/results/2026-10-15-pr6-recovery-audit/moe-window-census-current.json)
+and the existing clean792.6 tok/s result distinct: this first profiled request's
+735.2 tok/s is not a new clean speed comparison or inference adoption.
+
 ## Optional GDN chunk64
 
 `STRATA_SYCL_PREFILL_GDN_CHUNK64=1` adds a separate experimental long-prefill
