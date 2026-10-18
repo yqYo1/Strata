@@ -1305,9 +1305,24 @@ in the [current result](../bench/results/2026-10-15-pr6-recovery-audit/prefill-l
 This is a different input size from the earlier78K~903tok/s reference and does
 not establish a same-input regression or sustained decode performance.
 
-Before another model run, check native16 scratch allocation/readers against the
-existing indexed memory-lifetime findings, and audit/test existing output-head
-release/restore as a separate capacity option. Hold the GPU residual prefix
-explicitly in a head-release comparison: automatic placement could consume the
-freed memory before mixed-bank admission. Selective Down remains off in this
-model route and its clean component timing is still pending.
+The current-library output-head fixture passed two exact521472000-byte
+detach/restore cycles, with all packed weights and projection logits unchanged
+and different GPU addresses in both cycles. No fresh GPU fault occurred. This
+isolated API result does not qualify the combined production transaction.
+The subsequent same-engine model check was rejected before long-prefill work:
+NativeDensePhase explicitly excludes head release, and the verifier's two
+leases also reject nesting. Worse, error teardown ended in CPU SIGSEGV inside
+the installed Level Zero driver; no new GPU fault was recorded. No head detach
+occurred. Preserve this failed result and its diagnostic limits, and do not
+repeat the configuration or remove the exclusion guard. Disabling existing
+dense banking to bypass it is not the selected optimization.
+
+The selected capacity path is bounded two-bank mixed storage using idle m.R
+and the unused shared-arena tail. Source review establishes335544320 and
+121566720 disjoint bytes, enough for the419430400-byte bank; it does not prove
+runtime ownership or release any allocation yet. Implement checked bank
+selection for preparation, arbitrary expert-major gathers and shared consumers,
+with phase/owner validation before a traced component/model check. Keep PLE,
+short-input fallback and final callbacks intact. Separately audit the newly
+observed early-error teardown fault. Selective Down remains off and its clean
+component timing is still pending.

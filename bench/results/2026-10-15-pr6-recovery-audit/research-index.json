@@ -1528,11 +1528,17 @@
     ],
     "question": "Audit a bounded borrowed m.R plus unused m.region tail layout against all current mode10 readers, phase transitions and routed gather bounds; identify implementable invariants and rejecting counterexamples.",
     "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/native16-scratch-two-bank-contract.md",
-    "state": "Orca Luna medium running; no steering",
+    "state": "Accepted succeeded worker_done and native Luna-max review complete; external terminal retained by Orca, no process closure claimed.",
     "retention": "Near-term capacity-option review; retire after the alias/keep decision.",
     "task": "task_9ff91338ac48",
     "dispatch": "ctx_33bb583a49ba",
-    "terminal": "term_d8b697ca-13f3-4730-a36a-e167153f56cc"
+    "terminal": "term_d8b697ca-13f3-4730-a36a-e167153f56cc",
+    "report_sha256": "86653914c82b23933f2e083af1d641c82b6a68643ea4780bf10810de03b4b0e4",
+    "report_bytes": 14585,
+    "completion_delivery": "delivery_d640a626cfb8",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/two-bank-and-intel-math-native-review.json",
+    "review_sha256": "79472c17fa965fba30c6718c69070645a191d38190fb92715b90862dfe887681",
+    "reviewed_decision": "Source pins and disjoint capacity match; these spans are already reserved. Production remains make_contiguous. Actual-run ownership and active-binary evidence are still required before borrowing."
   },
   "intel_native_exp2_contract_scope": {
     "classification": "knowledge_collection",
@@ -1543,10 +1549,29 @@
     ],
     "question": "Determine Intel SYCL native::exp2 lowering, usable range/error/denormal guarantees for pinned Intel LLVM and IGC/B570, comparing regular exp2 and identifying unsupported inferences.",
     "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/intel-native-exp2-implementation-contract.md",
-    "state": "Orca Luna medium running; no steering",
+    "state": "Accepted succeeded worker_done and native Luna-max review complete; external terminal retained by Orca, no process closure claimed.",
     "retention": "Knowledge collection; Main reads only native-review digest until an actual math candidate needs a section.",
     "task": "task_15f8eb2b9e38",
     "dispatch": "ctx_bbd70e73afab",
-    "terminal": "term_c1154786-eb22-4a2f-9d88-78a0734c0828"
+    "terminal": "term_c1154786-eb22-4a2f-9d88-78a0734c0828",
+    "report_sha256": "20f9b9dad8e33fb61d111310e58beda8d7f551d7e6d2d4284c20d63d2065bf8b",
+    "report_bytes": 15430,
+    "completion_delivery": "delivery_d640a626cfb8",
+    "review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/two-bank-and-intel-math-native-review.json",
+    "review_sha256": "79472c17fa965fba30c6718c69070645a191d38190fb92715b90862dfe887681",
+    "reviewed_decision": "No pinned Intel LLVM/IGC lowering trace supplied; public guarantees duplicate the existing gap. No repeat scope is eligible until Main supplies actual lowering/build evidence."
+  },
+  "native_early_rejection_teardown_scope": {
+    "classification": "decision_support",
+    "schedulable_now": true,
+    "prerequisites_met": [
+      "Exact closed head-model failure is preserved with source45c387d11, binary4b7ea488 and nativePID1263678.",
+      "Kernel reports CPU SIGSEGV in installed libze_intel_gpu after dense/head combination rejection, zero head detach and no fresh GPU fault.",
+      "No stack/core exists; scope is bounded source hypotheses and missing-evidence plan, not a claimed root cause."
+    ],
+    "question": "Audit graph/stream/allocation owner teardown on warm-server early-error return versus normal close, particularly verifier/MTP/native-head order; distinguish concrete defects from hypotheses and propose a bounded non-destructive diagnostic.",
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/native-early-rejection-teardown-audit.md",
+    "state": "eligible; fresh dispatch pending",
+    "retention": "Current distinct unresolved CPU teardown fault; retire superseded hypotheses after root cause is verified."
   }
 }
