@@ -2031,5 +2031,29 @@
       "source_contract_cleared": false,
       "pending": "Compile these exact committed changes, run bounded provider and bank byte/guard/unwind gates, then enable Main model admission; no new speed result yet."
     }
+  },
+  "speculative_moe_offload_reuse_collection_scope": {
+    "classification": "knowledge collection",
+    "schedulable_now": false,
+    "question": "Collect concrete speculative/MTP decode scheduling methods that reuse CPU/RAM or host-offloaded MoE expert weights across verification tokens; compare useful accepted-token throughput, expert-union overfetch and rollback/state costs.",
+    "prerequisites_met": [
+      "Long-prefill work continues independently toward1000tok/s; the full goal also retains70tok/s sustained decode. This collection does not select a new decode implementation.",
+      "The current library has placement/rebuild, routing and GPU kernel references; this scope focuses specifically on speculative verification weight reuse and accepted-token cost, not those surveys. External designs can be compared without missing local counters."
+    ],
+    "previous_scope_delta": "Check index topic hints and decode_vram_rebuild_scope, gpu_moe_routing_collection_scope and out_of_core_sycl_hpc_scheduling_scope; avoid repeating residency/recovery or generic speculative-decoding introductions.",
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/speculative-moe-offload-reuse.md",
+    "report_budget": {
+      "target_bytes": 12288,
+      "max_bytes": 18432
+    },
+    "main_reads_body_on_arrival": false,
+    "retention_consumer": "Reusable decode design reference after dedicated prefill optimization, retrieved only for a concrete MTP/CPU-offload question; native Luna-max review first.",
+    "review_point": "At the next decode weight-reuse/MTP candidate decision; prune if superseded or too generic.",
+    "state": "Fresh Orca Luna-medium research accepted turn_started; Main continues prefill component/model validation.",
+    "task": "task_51f0b8a8fd0f",
+    "dispatch": "ctx_79622e63ce4a",
+    "terminal": "term_61a079d8-3145-4adb-b696-9440769a8825",
+    "model_evidence": "Fresh Main-created Codex terminal explicitly gpt-6-luna/medium with update checks disabled; tui-idle before authoritative worker-start.",
+    "terminal_ownership": "Main-created external finite-task terminal; after accepted completion release then verify idle and close this exact terminal."
   }
 }
