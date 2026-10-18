@@ -179,8 +179,8 @@
   },
   "config_sha256": "c59bd3ae34a7e1092d5688895542468871d065b154d300050af1722021ffad25",
   "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
-  "complete": false,
-  "passed": false,
+  "complete": true,
+  "passed": true,
   "active": false,
   "model_quality_qualified": false,
   "physical262144_RESTORE_qualified": false,
@@ -270,5 +270,2899 @@
     "source_copy_hypothesis": "The512-expert CPU slab copy follows a checked layer drain before activation; quantify its current wall/CPU cost before selecting CPU-only next-layer preparation overlap. Historical4.856s is not a current measurement."
   },
   "source_count": 110,
-  "source_aggregate_sha256": "ede986e00b1ca23f9b6e69ed6f9eb567de348bb78c63b8f368c17c2d895ec02e"
+  "source_aggregate_sha256": "ede986e00b1ca23f9b6e69ed6f9eb567de348bb78c63b8f368c17c2d895ec02e",
+  "exit_code": 0,
+  "requests": [
+    {
+      "run": 0,
+      "ok": true,
+      "eligible": true,
+      "actual_prompt_tokens": 117489,
+      "actual_read_tokens": 117489,
+      "actual_reused_tokens": 0,
+      "generated_tokens": 24,
+      "thinking_requested": true,
+      "reasoning_observed": true,
+      "stream_complete": true,
+      "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
+      "ttft_s": 132.756,
+      "total_s": 134.502,
+      "prompt_tps": 889.7,
+      "prompt_ms": 132054.9,
+      "decode_tps": 13.0,
+      "decode_ms": 1847.0,
+      "prompt_tps_source": "engine",
+      "decode_tps_source": "engine",
+      "drafts_offered": 21,
+      "drafts_accepted": 16,
+      "finish_reason": "length",
+      "err": null,
+      "eligibility_errors": []
+    }
+  ],
+  "engine_exit_code": 0,
+  "native_identity": {
+    "pid": 1804634,
+    "start_ticks": 69694278,
+    "sid": 1804604
+  },
+  "route_selection": [],
+  "gu_route": {
+    "selection": [
+      "[native16-gu] fusion=large min_rows=2334"
+    ],
+    "per_request_counts": [
+      {
+        "fused_jobs": "7485",
+        "fused_rows": "49290450",
+        "separate_jobs": "29868",
+        "min_rows": "2334"
+      }
+    ],
+    "limits": "Actual submitted/completed route counts; removed logical bytes are not physical VRAM traffic."
+  },
+  "down_route": {
+    "selection": [
+      "[native16-down] fusion=0 min_rows=2334"
+    ],
+    "per_request_counts": [
+      {
+        "fused_jobs": "0",
+        "fused_rows": "0",
+        "separate_jobs": "37353",
+        "min_rows": "2334"
+      }
+    ]
+  },
+  "moe_window_admission": [
+    "strata MoE window configuration: requested_mode=10 effective_mode=10 maximum_rows=81920 mixed_fp16_bytes=0"
+  ],
+  "residual_placement": [
+    "strata prefill: layer-major candidate, tokens=117488 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=2406154240 residual_gpu_rows=117488 residual_gpu=2406154240 residual_host=0 residual_staging=0 layer_cache=1022361600; extra allocations, GPU headroom=536870912, RAM headroom=8589934592"
+  ],
+  "mixed_scratch_route": {
+    "backing": [
+      "strata MoE mixed banks: storage=scratch primary_bytes=335544320 tail_bytes=83886080 tail_offset=1059131904 extra_allocation_bytes=0 phase=FFN_only_after_attention_drain"
+    ],
+    "owner_columns": [
+      "layer",
+      "first",
+      "rows",
+      "primary_bytes",
+      "region_bytes",
+      "tail_offset",
+      "tail_bytes",
+      "residual_bytes"
+    ],
+    "owner_samples": [
+      [
+        0,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        0,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        1,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        1,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        2,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        2,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        3,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        3,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        4,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        4,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        5,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        5,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        6,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        6,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        7,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        7,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        8,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        8,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        9,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        9,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        10,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        10,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        11,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        11,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        12,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        12,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        13,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        13,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        14,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        14,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        15,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        15,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        16,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        16,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        17,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        17,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        18,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        18,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        19,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        19,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        20,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        20,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        21,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        21,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        22,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        22,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        23,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        23,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        24,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        24,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        25,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        25,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        26,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        26,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        27,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        27,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        28,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        28,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        29,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        29,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        30,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        30,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        31,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        31,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        32,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        32,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        33,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        33,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        34,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        34,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        35,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        35,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        36,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        36,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        37,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        37,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        38,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        38,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        39,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        39,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        40,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        40,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        41,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        41,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        42,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        42,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        43,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        43,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        44,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        44,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        45,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        45,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        46,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        46,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ],
+      [
+        47,
+        0,
+        81920,
+        335544320,
+        1180698624,
+        1059131904,
+        83886080,
+        1677721600
+      ],
+      [
+        47,
+        81920,
+        35568,
+        182108160,
+        1180698624,
+        1059131904,
+        0,
+        728432640
+      ]
+    ],
+    "retired_windows": 96,
+    "all_direct_owners_and_checked_drains": true
+  },
+  "expert_bank_route": {
+    "selections": [
+      {
+        "requested_slots": "384",
+        "effective_slots": "384",
+        "staged": "1",
+        "host_slab_bytes": "1363148800",
+        "device_bytes": "1022361600",
+        "residual_gpu_rows": "117488",
+        "allocation_limit_bytes": "10132807680",
+        "general_map": "private_scratch_never_published"
+      }
+    ],
+    "per_request_totals": [
+      {
+        "uploads": "19631",
+        "requested_H2D_bytes": "40102860800",
+        "permanent_hits": "13594",
+        "permanent_slots": "267",
+        "total_slots": "384",
+        "final_drain": "checked"
+      }
+    ],
+    "limits": "Requested raw expert H2D payload, not measured PCIe wire traffic; helper/full-request checked drains qualify this bounded model route only."
+  },
+  "gdn_column_route": [
+    "strata prefill: GDN columns=4 workgroups=192 lanes=128 epilogue=GPU_FP32_same_order scratch=existing_y"
+  ],
+  "qsa_route": [
+    "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=241555328; source=resident-Mode0 score_pitch=33 operand_layout=row-major softmax=parallel-exp-ascending-sum"
+  ],
+  "cached_query_route": [
+    "strata prefill: QSA cached_query=1 grf_policy=default source=qualified-component"
+  ],
+  "k_staging_route": [
+    "strata prefill: QSA k_staging=typed4 parallel_rows=1 source=qualified-component"
+  ],
+  "v_staging_route": [
+    "strata prefill: QSA v_staging=typed4 layout=row-major source=qualified-component"
+  ],
+  "retired_moe_totals": [
+    "strata MoE accumulator window: windows=96 dequants=33225 jobs=37353 source_H2D_bytes=225576960 GPU_resident_windows_only=1 operator_max=8192 maximum_rows=81920"
+  ],
+  "resource_diagnostics": [
+    "strata lm profile: v=3 complete=1 errors=0 first_status=0 wrapper_ms=130573 denominator=started_through_checked_lease_retirement teardown_unmeasured=1 queue_intervals=NONEXCLUSIVE_including_host_submission_gaps bytes=REQUESTED_not_wire wall_order=source,upload_submit,upload_drain,activation,input_submit_host,input_submit_device,store_wall_host,store_wall_device,store_drain_host,store_drain_device,chunk_drain,wrapper_drain queue_order=input,QSA,GDN,MoE,upload,store,GDN_projections,GDN_conv_gates,GDN_recurrence,GDN_output",
+    "strata lm profile: layer=0 wall_ms=452.484,0.086734,0.1644,13.4766,0,0,0,0,0,0,0,0.177645 queue_ms=0,0,698.739,826.716,0.004583,0,265.654,36.5629,271.37,124.806 samples=0,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=27.6977,1.07018,0.910288,0.84401 upload_bytes=0 input_bytes_host_device=0,0 store_bytes_host_device=0,0 input_queue_host_device_ms=0,0 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=1 wall_ms=65.0895,0.082035,0.161875,13.7646,0,1.42211,0,0,0,0,0,0.167044 queue_ms=15.1068,0,691.494,686.448,0.004896,0,257.702,36.5597,271.425,125.46 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.73915,1.05089,0.943206,0.7707 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,15.1068 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=2 wall_ms=87.8014,0.09018,0.130977,13.5502,0,0.954367,0,0,0,0,0,0.136287 queue_ms=14.9925,0,701.46,719.866,0.004687,0,267.708,36.5552,271.494,125.362 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.71183,1.05263,0.887854,0.7802 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,14.9925 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=3 wall_ms=85.4954,0.089899,0.129104,11.3759,0,1.34348,0,0,0,0,0,0.137358 queue_ms=15.1499,7141.89,0,715.195,0.004687,0,0,0,0,0 samples=15,15,0,2,1,0,0,0,0,0 gdn_expected_chunks=0 gdn_submit_wall_ms=0,0,0,0 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,15.1499 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=4 wall_ms=86.9204,0.091442,0.14849,14.4962,0,0.991542,0,0,0,0,0,0.153831 queue_ms=14.918,0,709.35,725.148,0.004479,0,276.128,36.5655,271.472,124.833 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.71454,1.09586,0.890059,0.793794 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,14.918 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=5 wall_ms=87.8089,0.091031,0.155373,13.1255,0,0.940774,0,0,0,0,0,0.161113 queue_ms=14.9709,0,683.844,756.409,0.004688,0,263.893,36.5583,271.471,111.579 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.6369,1.02831,0.866895,0.782517 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,14.9709 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=6 wall_ms=84.8088,0.083949,0.138992,13.8793,0,1.02004,0,0,0,0,0,0.144314 queue_ms=15.0756,0,700.831,778.802,0.004687,0,267.609,36.5592,271.512,124.811 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.74893,1.09452,0.877627,0.861684 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,15.0756 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=7 wall_ms=94.6417,0.086443,0.140254,12.1031,0,1.41165,0,0,0,0,0,0.148362 queue_ms=15.1229,3417.06,0,858.136,0.005208,0,0,0,0,0 samples=15,15,0,2,1,0,0,0,0,0 gdn_expected_chunks=0 gdn_submit_wall_ms=0,0,0,0 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,15.1229 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=8 wall_ms=65.3551,0.079681,0.143691,12.8589,0,0.924132,0,0,0,0,0,0.149132 queue_ms=14.9566,0,684.475,703.287,0.005209,0,263.938,36.5658,271.29,112.332 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.72692,1.04547,0.852034,0.786031 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,14.9566 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=9 wall_ms=87.5601,0.091192,0.12738,13.5787,0,0.964628,0,0,0,0,0,0.132368 queue_ms=14.9157,0,699.371,759.355,0.004896,0,265.336,36.5621,271.401,125.711 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.7758,1.05345,0.852864,0.787043 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,14.9157 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=10 wall_ms=67.1029,0.088947,0.134965,13.7627,0,0.922398,0,0,0,0,0,0.140034 queue_ms=14.9472,0,691.773,750.064,0.004687,0,258.955,36.6118,271.456,124.402 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.71358,1.06182,0.879049,0.787253 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,14.9472 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=11 wall_ms=86.0022,0.085771,0.139313,12.253,0,1.3705,0,0,0,0,0,0.147809 queue_ms=15.2016,3429.45,0,778.638,0.004792,0,0,0,0,0 samples=15,15,0,2,1,0,0,0,0,0 gdn_expected_chunks=0 gdn_submit_wall_ms=0,0,0,0 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,15.2016 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=12 wall_ms=72.6634,0.119194,0.126468,13.0819,0,1.02699,0,0,0,0,0,0.135174 queue_ms=14.9273,0,680.498,839.947,0.004791,0,247.414,36.5594,271.442,124.733 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=3.10129,1.22565,1.05084,0.954578 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,14.9273 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=13 wall_ms=66.7825,0.087435,0.134504,12.5698,0,1.09044,0,0,0,0,0,0.142397 queue_ms=14.9553,0,674.894,745.811,0.004688,0,241.425,36.5628,271.362,125.191 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.91116,1.11761,0.94367,0.865002 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,14.9553 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=14 wall_ms=100.403,0.087525,0.135426,13.607,0,0.936865,0,0,0,0,0,0.142199 queue_ms=14.9511,0,689.542,986.258,0.004687,0,269.439,36.5621,271.397,111.801 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.98121,1.17404,0.978585,0.894475 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,14.9511 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=15 wall_ms=86.2399,0.088096,0.134463,12.0685,0,1.30467,0,0,0,0,0,0.142609 queue_ms=15.152,3333.42,0,847.61,0.004792,0,0,0,0,0 samples=15,15,0,2,1,0,0,0,0,0 gdn_expected_chunks=0 gdn_submit_wall_ms=0,0,0,0 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,15.152 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=16 wall_ms=93.2359,0.09014,0.136027,13.88,0,0.986062,0,0,0,0,0,0.145453 queue_ms=15.084,0,701.092,979.786,0.004896,0,267.864,36.5618,271.414,124.902 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.76643,1.04428,0.880118,0.821259 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,15.084 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=17 wall_ms=125.631,0.088106,0.131097,14.4071,0,1.02067,0,0,0,0,0,0.137029 queue_ms=15.0564,0,711.226,868.036,0.004583,0,278.211,36.5622,271.36,124.746 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.67594,1.07326,0.864269,0.778626 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,15.0564 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=18 wall_ms=96.4322,0.088657,0.137078,13.5258,0,0.950224,0,0,0,0,0,0.14254 queue_ms=15.0228,0,691.661,894.104,0.004792,0,267.825,36.5668,271.434,115.476 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.68979,1.04054,0.878184,0.796403 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,15.0228 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=19 wall_ms=87.283,0.086403,0.139272,13.1068,0,1.42,0,0,0,0,0,0.150353 queue_ms=15.1336,3403.62,0,817.286,0.004896,0,0,0,0,0 samples=15,15,0,2,1,0,0,0,0,0 gdn_expected_chunks=0 gdn_submit_wall_ms=0,0,0,0 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,15.1336 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=20 wall_ms=74.4711,0.083066,0.138551,14.2454,0,0.911357,0,0,0,0,0,0.143871 queue_ms=14.9566,0,708.432,878.157,0.004479,0,274.272,36.5627,271.481,125.757 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.60362,1.00842,0.837926,0.777616 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,14.9566 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=21 wall_ms=80.5123,0.091342,0.133331,13.9271,0,0.927989,0,0,0,0,0,0.138491 queue_ms=14.9328,0,700.842,743.121,0.004583,0,277.489,36.5635,271.326,115.115 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.66204,1.05878,0.870512,0.777073 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,14.9328 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=22 wall_ms=94.4513,0.096953,0.126759,13.7588,0,0.93908,0,0,0,0,0,0.131818 queue_ms=14.919,0,699.076,895.779,0.004687,0,265.229,36.5632,271.415,125.519 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.65346,1.03557,0.861896,0.814035 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,14.919 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=23 wall_ms=85.4338,0.09013,0.136066,13.0193,0,1.40436,0,0,0,0,0,0.144232 queue_ms=15.1383,3386.43,0,814.444,0.004792,0,0,0,0,0 samples=15,15,0,2,1,0,0,0,0,0 gdn_expected_chunks=0 gdn_submit_wall_ms=0,0,0,0 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,15.1383 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=24 wall_ms=87.2548,0.087886,0.139593,14.3893,0,1.03325,0,0,0,0,0,0.145142 queue_ms=15.0832,0,710.915,740.408,0.004896,0,277.535,36.5599,271.307,125.163 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.90266,1.13694,0.957813,0.86003 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,15.0832 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=25 wall_ms=100.834,0.083959,0.143961,14.506,0,0.966674,0,0,0,0,0,0.149142 queue_ms=15.0027,0,709.121,844.979,0.004896,0,276.627,36.5657,271.448,124.119 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.74841,1.0537,0.855382,0.807292 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,15.0027 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=26 wall_ms=84.7292,0.093266,0.133732,13.5493,0,0.938448,0,0,0,0,0,0.138953 queue_ms=14.9134,0,682.84,791.158,0.004687,0,259.615,36.5645,271.491,114.812 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.65221,1.03116,0.850853,0.782664 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,14.9134 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=27 wall_ms=100.34,0.085431,0.13293,12.8211,0,1.44236,0,0,0,0,0,0.140805 queue_ms=15.2054,3423.93,0,811.916,0.004584,0,0,0,0,0 samples=15,15,0,2,1,0,0,0,0,0 gdn_expected_chunks=0 gdn_submit_wall_ms=0,0,0,0 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,15.2054 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=28 wall_ms=100.83,0.090781,0.134894,14.517,0,0.986779,0,0,0,0,0,0.140476 queue_ms=14.9475,0,709.688,816.406,0.004584,0,276.176,36.5705,271.465,125.123 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.74484,1.05571,0.880618,0.792402 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,14.9475 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=29 wall_ms=100.175,0.08478,0.139453,13.6518,0,0.984376,0,0,0,0,0,0.144341 queue_ms=14.9817,0,693.598,807.059,0.004687,0,260.467,36.5617,271.371,124.845 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.74335,1.05679,0.865162,0.795161 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,14.9817 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=30 wall_ms=75.689,0.08468,0.136667,13.7463,0,0.91061,0,0,0,0,0,0.141887 queue_ms=14.9098,0,695.775,897.37,0.004896,0,262.182,36.5632,271.497,125.17 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.67181,1.04076,0.849653,0.787916 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,14.9098 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=31 wall_ms=93.3622,0.086834,0.146176,13.5778,0,1.38539,0,0,0,0,0,0.15439 queue_ms=15.2173,3426.94,0,956.702,0.004896,0,0,0,0,0 samples=15,15,0,2,1,0,0,0,0,0 gdn_expected_chunks=0 gdn_submit_wall_ms=0,0,0,0 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,15.2173 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=32 wall_ms=85.5669,0.087715,0.136147,13.9225,0,0.909113,0,0,0,0,0,0.143059 queue_ms=14.9222,0,702.774,807.017,0.004584,0,268.763,36.566,271.451,125.637 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.6407,1.01257,0.849361,0.782728 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,14.9222 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=33 wall_ms=95.4057,0.087154,0.138701,12.9587,0,0.944667,0,0,0,0,0,0.143871 queue_ms=15.0457,0,691.859,927.624,0.004896,0,258.342,36.5629,271.348,125.26 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.74596,1.05077,0.882664,0.782035 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,15.0457 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=34 wall_ms=86.0366,0.091502,0.136267,13.1329,0,0.960521,0,0,0,0,0,0.141537 queue_ms=14.9519,0,683.735,770.923,0.005,0,251.284,36.5596,271.384,124.153 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.83294,1.10113,0.889165,0.853959 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,14.9519 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=35 wall_ms=100.427,0.089999,0.136177,13.5947,0,1.41039,0,0,0,0,0,0.144231 queue_ms=15.179,3378.36,0,776.589,0.004583,0,0,0,0,0 samples=15,15,0,2,1,0,0,0,0,0 gdn_expected_chunks=0 gdn_submit_wall_ms=0,0,0,0 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,15.179 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=36 wall_ms=64.7638,0.087846,0.13249,13.8148,0,1.01513,0,0,0,0,0,0.137999 queue_ms=15.091,0,695.595,709.286,0.004375,0,262.382,36.5653,271.528,124.766 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.72626,1.07588,0.898915,0.793155 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,15.091 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=37 wall_ms=94.1938,0.088446,0.135295,13.8012,0,1.0226,0,0,0,0,0,0.140535 queue_ms=15.017,0,698.704,827.498,0.005209,0,265.558,36.5619,271.356,124.874 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.97091,1.15808,0.942193,0.872663 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,15.017 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=38 wall_ms=95.1236,0.091072,0.134944,13.4352,0,0.969637,0,0,0,0,0,0.140204 queue_ms=15.1004,0,685.727,880.527,0.004896,0,251.979,36.5646,271.454,125.376 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.74371,1.05377,0.877463,0.785081 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,15.1004 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=39 wall_ms=85.0953,0.09003,0.130115,13.594,0,1.34301,0,0,0,0,0,0.138222 queue_ms=15.1182,3383.88,0,733.214,0.004583,0,0,0,0,0 samples=15,15,0,2,1,0,0,0,0,0 gdn_expected_chunks=0 gdn_submit_wall_ms=0,0,0,0 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,15.1182 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=40 wall_ms=101.502,0.09016,0.142188,14.3976,0,0.967793,0,0,0,0,0,0.14775 queue_ms=15.054,0,710.241,773.044,0.004479,0,277.679,36.5696,271.468,124.171 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.66851,1.08693,0.890607,0.788836 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,15.054 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=41 wall_ms=96.2701,0.088847,0.130947,12.6419,0,0.979246,0,0,0,0,0,0.136407 queue_ms=15.0836,0,678.621,871.191,0.004792,0,244.558,36.5675,271.43,125.719 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.71286,1.27241,0.900167,0.786732 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,15.0836 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=42 wall_ms=96.0559,0.087856,0.134944,13.2505,0,1.02613,0,0,0,0,0,0.139914 queue_ms=15.1108,0,683.107,822.237,0.004584,0,250.101,36.5616,271.353,124.74 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.92137,1.11092,0.937647,0.862406 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,15.1108 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=43 wall_ms=95.3025,0.095079,0.133451,13.7127,0,1.43563,0,0,0,0,0,0.136638 queue_ms=15.1946,3383.48,0,818.329,0.005,0,0,0,0,0 samples=15,15,0,2,1,0,0,0,0,0 gdn_expected_chunks=0 gdn_submit_wall_ms=0,0,0,0 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,15.1946 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=44 wall_ms=101.822,0.096422,0.125256,13.1391,0,1.12755,0,0,0,0,0,0.130716 queue_ms=15.0401,0,682.136,710.832,0.004583,0,249.39,36.561,271.547,124.292 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=3.11738,1.22371,1.04303,0.940812 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,15.0401 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=45 wall_ms=100.106,0.119686,0.110748,12.8136,0,0.946495,0,0,0,0,0,0.11724 queue_ms=14.9519,0,692.415,707.02,0.00448,0,257.951,36.5717,271.514,126.026 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.77766,1.07853,0.916437,0.840704 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,14.9519 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=46 wall_ms=93.7889,0.09578,0.128763,13.1949,0,0.989874,0,0,0,0,0,0.134152 queue_ms=14.9799,0,674.133,739.849,0.005208,0,250.555,36.6537,271.411,115.155 samples=15,0,15,2,1,0,15,15,15,15 gdn_expected_chunks=15 gdn_submit_wall_ms=2.739,1.07178,0.88087,0.793887 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,14.9799 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=47 wall_ms=178.64,0.097264,0.141547,13.2141,0,1.42625,0,0,0,0,0,23.375 queue_ms=15.1853,3385.67,0,682.911,0.004583,0,0,0,0,0 samples=15,15,0,2,1,0,0,0,0,0 gdn_expected_chunks=0 gdn_submit_wall_ms=0,0,0,0 upload_bytes=0 input_bytes_host_device=0,2406154240 store_bytes_host_device=0,0 input_queue_host_device_ms=0,15.1853 store_queue_host_device_ms=0,0",
+    "strata lm profile: layer=-1 wall_ms=4727.93,4.32683,6.55924,644.799,0,51.3063,0,0,0,0,0,30.0941 queue_ms=706.874,44494.1,24999.6,38592.5,0.228126,0,9477.24,1316.42,9771.35,4421.94 samples=705,180,540,96,48,0,540,540,540,540 gdn_expected_chunks=540 gdn_submit_wall_ms=124.571,39.0028,32.2939,29.3808 upload_bytes=0 input_bytes_host_device=0,113089249280 store_bytes_host_device=0,0 input_queue_host_device_ms=0,706.874 store_queue_host_device_ms=0,0",
+    "strata lm qsa profile: v=1 complete=1 errors=0 first_status=0 wrapper_ms=130573 denominator=started_through_checked_lease_retirement teardown_unmeasured=1 granularity=QSA_LAYER_CHUNK sections=projections,kv_stage,kv_append_query,indexer_append,selection,attention,output_projection queue_intervals=NONEXCLUSIVE_including_host_submission_gaps host_wall=NONEXCLUSIVE_submission_and_helper_waits_not_CPU_or_GPU_service markers_included=1 kv_stage_noop_sample=1 dispatch=ACTUAL_matrix_used_result queries=SUM_T_not_request_tokens",
+    "strata lm qsa profile: layer=0 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=1 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=2 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=3 expected_chunks=15 queue_ms=423.691,0.071145,68.6875,0.794685,785.37,5720.9,141.804 host_wall_ms=203.003,0.315776,1.34295,0.926724,201.78,3498.42,40.5601 samples=15,15,15,15,15,15,15 cap=2051 expected_queries=117488 dispatch_chunks=15 query_total=117488 matrix_chunks=15 fallback_chunks=0 matrix_queries=117488 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=4 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=5 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=6 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=7 expected_chunks=15 queue_ms=247.719,0.067086,66.3766,0.766772,655.821,2292.46,153.289 host_wall_ms=3.30561,0.302428,1.31724,0.999977,64.5156,1.09292,1.04948 samples=15,15,15,15,15,15,15 cap=2051 expected_queries=117488 dispatch_chunks=15 query_total=117488 matrix_chunks=15 fallback_chunks=0 matrix_queries=117488 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=8 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=9 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=10 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=11 expected_chunks=15 queue_ms=245.113,0.067188,66.2592,0.762499,656.884,2306.07,153.747 host_wall_ms=3.25591,0.322968,1.31927,0.944711,64.3571,1.14598,0.993664 samples=15,15,15,15,15,15,15 cap=2051 expected_queries=117488 dispatch_chunks=15 query_total=117488 matrix_chunks=15 fallback_chunks=0 matrix_queries=117488 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=12 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=13 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=14 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=15 expected_chunks=15 queue_ms=248.066,0.067293,66.1036,0.761665,655.807,2207.25,154.803 host_wall_ms=3.14006,0.292582,1.28426,0.883024,63.7028,1.04928,1.00725 samples=15,15,15,15,15,15,15 cap=2051 expected_queries=117488 dispatch_chunks=15 query_total=117488 matrix_chunks=15 fallback_chunks=0 matrix_queries=117488 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=16 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=17 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=18 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=19 expected_chunks=15 queue_ms=249.413,0.067812,65.974,0.765937,654.9,2277.53,154.419 host_wall_ms=3.19755,0.294729,1.33949,0.901419,63.9564,1.07684,1.02652 samples=15,15,15,15,15,15,15 cap=2051 expected_queries=117488 dispatch_chunks=15 query_total=117488 matrix_chunks=15 fallback_chunks=0 matrix_queries=117488 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=20 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=21 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=22 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=23 expected_chunks=15 queue_ms=249.273,0.067292,65.9193,0.763749,653.326,2263.33,153.198 host_wall_ms=3.1988,0.304986,1.29303,0.944539,64.0203,1.05549,1.03644 samples=15,15,15,15,15,15,15 cap=2051 expected_queries=117488 dispatch_chunks=15 query_total=117488 matrix_chunks=15 fallback_chunks=0 matrix_queries=117488 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=24 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=25 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=26 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=27 expected_chunks=15 queue_ms=249.829,0.068961,65.9901,0.764583,655.495,2298.84,152.39 host_wall_ms=3.33909,0.314971,1.35978,0.933178,65.2478,1.07067,1.03457 samples=15,15,15,15,15,15,15 cap=2051 expected_queries=117488 dispatch_chunks=15 query_total=117488 matrix_chunks=15 fallback_chunks=0 matrix_queries=117488 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=28 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=29 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=30 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=31 expected_chunks=15 queue_ms=272.139,0.067913,65.6109,0.764686,654.404,2280.35,153.034 host_wall_ms=3.17277,0.296039,1.2906,0.885466,63.1528,1.07145,0.999762 samples=15,15,15,15,15,15,15 cap=2051 expected_queries=117488 dispatch_chunks=15 query_total=117488 matrix_chunks=15 fallback_chunks=0 matrix_queries=117488 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=32 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=33 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=34 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=35 expected_chunks=15 queue_ms=271.729,0.067083,65.6856,0.766982,653.283,2232.93,153.346 host_wall_ms=3.18229,0.298387,1.32403,0.94001,62.4035,1.06921,0.987323 samples=15,15,15,15,15,15,15 cap=2051 expected_queries=117488 dispatch_chunks=15 query_total=117488 matrix_chunks=15 fallback_chunks=0 matrix_queries=117488 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=36 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=37 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=38 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=39 expected_chunks=15 queue_ms=272.248,0.068021,65.6185,0.766039,655.319,2236.68,152.626 host_wall_ms=3.18728,0.292412,1.29608,0.905717,63.4754,1.04892,1.03148 samples=15,15,15,15,15,15,15 cap=2051 expected_queries=117488 dispatch_chunks=15 query_total=117488 matrix_chunks=15 fallback_chunks=0 matrix_queries=117488 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=40 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=41 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=42 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=43 expected_chunks=15 queue_ms=272.139,0.068542,65.6195,0.763854,654.732,2237.26,152.339 host_wall_ms=3.36417,0.317458,1.38779,0.947616,69.21,1.12544,1.04941 samples=15,15,15,15,15,15,15 cap=2051 expected_queries=117488 dispatch_chunks=15 query_total=117488 matrix_chunks=15 fallback_chunks=0 matrix_queries=117488 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=44 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=45 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=46 expected_chunks=0 queue_ms=0,0,0,0,0,0,0 host_wall_ms=0,0,0,0,0,0,0 samples=0,0,0,0,0,0,0 cap=0 expected_queries=0 dispatch_chunks=0 query_total=0 matrix_chunks=0 fallback_chunks=0 matrix_queries=0 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=47 expected_chunks=15 queue_ms=272.251,0.068126,65.8195,0.765211,655.665,2236.24,154.312 host_wall_ms=3.1383,0.285708,1.29052,0.895206,63.8226,1.04165,0.998032 samples=15,15,15,15,15,15,15 cap=2051 expected_queries=117488 dispatch_chunks=15 query_total=117488 matrix_chunks=15 fallback_chunks=0 matrix_queries=117488 fallback_queries=0 staged_chunks=0",
+    "strata lm qsa profile: layer=-1 expected_chunks=180 queue_ms=3273.61,0.816462,793.664,9.20666,7991.01,30589.8,1829.31 host_wall_ms=238.484,3.63844,15.845,11.1076,909.644,3510.27,51.774 samples=180,180,180,180,180,180,180 cap=2051 expected_queries=1409856 dispatch_chunks=180 query_total=1409856 matrix_chunks=180 fallback_chunks=0 matrix_queries=1409856 fallback_queries=0 staged_chunks=0",
+    "strata prefill cpu wait: version=4 available=1 complete=1 clock_or_accounting_error=0 open_waits=0 wait_throws=0 wall_s=130.704049191 main_cpu_s=124.907812063 wait_cpu_s=79.067443706 wait_wall_s=79.317987285 outside_wait_cpu_s=45.840368357 wait_count=16648 compute_count=10 transfer_count=10 event_count=14980 compat_count=1648 direct_count=0 compute_cpu_s=0.000010260 transfer_cpu_s=0.000009808 event_cpu_s=0.013324378 compat_cpu_s=79.054099260 direct_cpu_s=0.000000000 compute_wall_s=0.000010219 transfer_wall_s=0.000009708 event_wall_s=0.013602602 compat_wall_s=79.304364756 direct_wall_s=0.000000000",
+    "strata prefill cpu host: version=4 available=1 open_regions=0 unclassified_cpu_s=10.193138800 unclassified_wall_s=15.134054809 source_copy_count=48 source_copy_throws=0 source_copy_cpu_s=4.722135680 source_copy_wall_s=4.727773744 source_copy_outside_wait_cpu_s=4.722135680 source_copy_outside_wait_wall_s=4.727773744 host_group_count=96 host_group_throws=0 host_group_cpu_s=0.244221607 host_group_wall_s=0.244606291 host_group_outside_wait_cpu_s=0.244221607 host_group_outside_wait_wall_s=0.244606291 gemm_submit_count=99306 gemm_submit_throws=0 gemm_submit_cpu_s=5.125134538 gemm_submit_wall_s=5.320640366 gemm_submit_outside_wait_cpu_s=5.125134538 gemm_submit_outside_wait_wall_s=5.320640366 route_exchange_count=0 route_exchange_throws=0 route_exchange_cpu_s=0.000000000 route_exchange_wall_s=0.000000000 route_exchange_outside_wait_cpu_s=0.000000000 route_exchange_outside_wait_wall_s=0.000000000 upload_submit_count=33273 upload_submit_throws=0 upload_submit_cpu_s=4.701951102 upload_submit_wall_s=4.770672681 upload_submit_outside_wait_cpu_s=4.701951102 upload_submit_outside_wait_wall_s=4.770672681 residual_input_host_count=0 residual_input_host_throws=0 residual_input_host_cpu_s=0.000000000 residual_input_host_wall_s=0.000000000 residual_input_host_outside_wait_cpu_s=0.000000000 residual_input_host_outside_wait_wall_s=0.000000000 residual_input_device_count=705 residual_input_device_throws=0 residual_input_device_cpu_s=0.016158952 residual_input_device_wall_s=0.017751552 residual_input_device_outside_wait_cpu_s=0.016158952 residual_input_device_outside_wait_wall_s=0.017751552 residual_store_host_count=0 residual_store_host_throws=0 residual_store_host_cpu_s=0.000000000 residual_store_host_wall_s=0.000000000 residual_store_host_outside_wait_cpu_s=0.000000000 residual_store_host_outside_wait_wall_s=0.000000000 residual_store_device_count=0 residual_store_device_throws=0 residual_store_device_cpu_s=0.000000000 residual_store_device_wall_s=0.000000000 residual_store_device_outside_wait_cpu_s=0.000000000 residual_store_device_outside_wait_wall_s=0.000000000 moe_map_upload_count=96 moe_map_upload_throws=0 moe_map_upload_cpu_s=0.039298256 moe_map_upload_wall_s=0.040050854 moe_map_upload_outside_wait_cpu_s=0.039298256 moe_map_upload_outside_wait_wall_s=0.040050854 moe_job_weights_count=96 moe_job_weights_throws=0 moe_job_weights_cpu_s=0.002561017 moe_job_weights_wall_s=0.002756190 moe_job_weights_outside_wait_cpu_s=0.002561017 moe_job_weights_outside_wait_wall_s=0.002756190 moe_dequant_gu_count=33225 moe_dequant_gu_throws=0 moe_dequant_gu_cpu_s=1.738551867 moe_dequant_gu_wall_s=1.800883860 moe_dequant_gu_outside_wait_cpu_s=1.738551867 moe_dequant_gu_outside_wait_wall_s=1.800883860 moe_dequant_down_count=33225 moe_dequant_down_throws=0 moe_dequant_down_cpu_s=1.856373064 moe_dequant_down_wall_s=1.917070219 moe_dequant_down_outside_wait_cpu_s=1.856373064 moe_dequant_down_outside_wait_wall_s=1.917070219 moe_gather_count=37353 moe_gather_throws=0 moe_gather_cpu_s=2.187877336 moe_gather_wall_s=2.258021658 moe_gather_outside_wait_cpu_s=2.187877336 moe_gather_outside_wait_wall_s=2.258021658 moe_swiglu_count=29868 moe_swiglu_throws=0 moe_swiglu_cpu_s=1.750000885 moe_swiglu_wall_s=1.806913247 moe_swiglu_outside_wait_cpu_s=1.750000885 moe_swiglu_outside_wait_wall_s=1.806913247 moe_accumulate_count=37353 moe_accumulate_throws=0 moe_accumulate_cpu_s=2.356797755 moe_accumulate_wall_s=2.431909091 moe_accumulate_outside_wait_cpu_s=2.356797755 moe_accumulate_outside_wait_wall_s=2.431909091 moe_status_count=96 moe_status_throws=0 moe_status_cpu_s=10.917909938 moe_status_wall_s=10.924777980 moe_status_outside_wait_cpu_s=10.906167498 moe_status_outside_wait_wall_s=10.912957342"
+  ],
+  "host_counter_conservation": {
+    "moe_map_upload": 96,
+    "moe_job_weights": 96,
+    "moe_dequant_gu": 33225,
+    "moe_dequant_down": 33225,
+    "moe_gather": 37353,
+    "moe_swiglu": 29868,
+    "moe_accumulate": 37353,
+    "moe_status": 96,
+    "source_copy": 48,
+    "upload_submit": 33273
+  },
+  "cpu_attribution_qualified": true,
+  "census_scope": "Planned host metadata reconciled with completed window issuer totals; profiler/validation enabled, not clean speed or physical hardware saturation.",
+  "gdn_phase_queue_intervals": {
+    "order": [
+      "GDN_projections",
+      "GDN_conv_gates",
+      "GDN_recurrence",
+      "GDN_output"
+    ],
+    "layers": [
+      {
+        "layer": 0,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 698.739,
+        "queue_ms": [
+          265.654,
+          36.5629,
+          271.37,
+          124.806
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          27.6977,
+          1.07018,
+          0.910288,
+          0.84401
+        ]
+      },
+      {
+        "layer": 1,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 691.494,
+        "queue_ms": [
+          257.702,
+          36.5597,
+          271.425,
+          125.46
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.73915,
+          1.05089,
+          0.943206,
+          0.7707
+        ]
+      },
+      {
+        "layer": 2,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 701.46,
+        "queue_ms": [
+          267.708,
+          36.5552,
+          271.494,
+          125.362
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.71183,
+          1.05263,
+          0.887854,
+          0.7802
+        ]
+      },
+      {
+        "layer": 3,
+        "expected_chunks": 0,
+        "gdn_parent_queue_ms": 0.0,
+        "queue_ms": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "samples": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "host_submit_wall_ms": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "layer": 4,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 709.35,
+        "queue_ms": [
+          276.128,
+          36.5655,
+          271.472,
+          124.833
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.71454,
+          1.09586,
+          0.890059,
+          0.793794
+        ]
+      },
+      {
+        "layer": 5,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 683.844,
+        "queue_ms": [
+          263.893,
+          36.5583,
+          271.471,
+          111.579
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.6369,
+          1.02831,
+          0.866895,
+          0.782517
+        ]
+      },
+      {
+        "layer": 6,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 700.831,
+        "queue_ms": [
+          267.609,
+          36.5592,
+          271.512,
+          124.811
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.74893,
+          1.09452,
+          0.877627,
+          0.861684
+        ]
+      },
+      {
+        "layer": 7,
+        "expected_chunks": 0,
+        "gdn_parent_queue_ms": 0.0,
+        "queue_ms": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "samples": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "host_submit_wall_ms": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "layer": 8,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 684.475,
+        "queue_ms": [
+          263.938,
+          36.5658,
+          271.29,
+          112.332
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.72692,
+          1.04547,
+          0.852034,
+          0.786031
+        ]
+      },
+      {
+        "layer": 9,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 699.371,
+        "queue_ms": [
+          265.336,
+          36.5621,
+          271.401,
+          125.711
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.7758,
+          1.05345,
+          0.852864,
+          0.787043
+        ]
+      },
+      {
+        "layer": 10,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 691.773,
+        "queue_ms": [
+          258.955,
+          36.6118,
+          271.456,
+          124.402
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.71358,
+          1.06182,
+          0.879049,
+          0.787253
+        ]
+      },
+      {
+        "layer": 11,
+        "expected_chunks": 0,
+        "gdn_parent_queue_ms": 0.0,
+        "queue_ms": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "samples": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "host_submit_wall_ms": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "layer": 12,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 680.498,
+        "queue_ms": [
+          247.414,
+          36.5594,
+          271.442,
+          124.733
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          3.10129,
+          1.22565,
+          1.05084,
+          0.954578
+        ]
+      },
+      {
+        "layer": 13,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 674.894,
+        "queue_ms": [
+          241.425,
+          36.5628,
+          271.362,
+          125.191
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.91116,
+          1.11761,
+          0.94367,
+          0.865002
+        ]
+      },
+      {
+        "layer": 14,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 689.542,
+        "queue_ms": [
+          269.439,
+          36.5621,
+          271.397,
+          111.801
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.98121,
+          1.17404,
+          0.978585,
+          0.894475
+        ]
+      },
+      {
+        "layer": 15,
+        "expected_chunks": 0,
+        "gdn_parent_queue_ms": 0.0,
+        "queue_ms": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "samples": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "host_submit_wall_ms": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "layer": 16,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 701.092,
+        "queue_ms": [
+          267.864,
+          36.5618,
+          271.414,
+          124.902
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.76643,
+          1.04428,
+          0.880118,
+          0.821259
+        ]
+      },
+      {
+        "layer": 17,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 711.226,
+        "queue_ms": [
+          278.211,
+          36.5622,
+          271.36,
+          124.746
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.67594,
+          1.07326,
+          0.864269,
+          0.778626
+        ]
+      },
+      {
+        "layer": 18,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 691.661,
+        "queue_ms": [
+          267.825,
+          36.5668,
+          271.434,
+          115.476
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.68979,
+          1.04054,
+          0.878184,
+          0.796403
+        ]
+      },
+      {
+        "layer": 19,
+        "expected_chunks": 0,
+        "gdn_parent_queue_ms": 0.0,
+        "queue_ms": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "samples": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "host_submit_wall_ms": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "layer": 20,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 708.432,
+        "queue_ms": [
+          274.272,
+          36.5627,
+          271.481,
+          125.757
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.60362,
+          1.00842,
+          0.837926,
+          0.777616
+        ]
+      },
+      {
+        "layer": 21,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 700.842,
+        "queue_ms": [
+          277.489,
+          36.5635,
+          271.326,
+          115.115
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.66204,
+          1.05878,
+          0.870512,
+          0.777073
+        ]
+      },
+      {
+        "layer": 22,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 699.076,
+        "queue_ms": [
+          265.229,
+          36.5632,
+          271.415,
+          125.519
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.65346,
+          1.03557,
+          0.861896,
+          0.814035
+        ]
+      },
+      {
+        "layer": 23,
+        "expected_chunks": 0,
+        "gdn_parent_queue_ms": 0.0,
+        "queue_ms": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "samples": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "host_submit_wall_ms": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "layer": 24,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 710.915,
+        "queue_ms": [
+          277.535,
+          36.5599,
+          271.307,
+          125.163
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.90266,
+          1.13694,
+          0.957813,
+          0.86003
+        ]
+      },
+      {
+        "layer": 25,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 709.121,
+        "queue_ms": [
+          276.627,
+          36.5657,
+          271.448,
+          124.119
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.74841,
+          1.0537,
+          0.855382,
+          0.807292
+        ]
+      },
+      {
+        "layer": 26,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 682.84,
+        "queue_ms": [
+          259.615,
+          36.5645,
+          271.491,
+          114.812
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.65221,
+          1.03116,
+          0.850853,
+          0.782664
+        ]
+      },
+      {
+        "layer": 27,
+        "expected_chunks": 0,
+        "gdn_parent_queue_ms": 0.0,
+        "queue_ms": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "samples": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "host_submit_wall_ms": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "layer": 28,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 709.688,
+        "queue_ms": [
+          276.176,
+          36.5705,
+          271.465,
+          125.123
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.74484,
+          1.05571,
+          0.880618,
+          0.792402
+        ]
+      },
+      {
+        "layer": 29,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 693.598,
+        "queue_ms": [
+          260.467,
+          36.5617,
+          271.371,
+          124.845
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.74335,
+          1.05679,
+          0.865162,
+          0.795161
+        ]
+      },
+      {
+        "layer": 30,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 695.775,
+        "queue_ms": [
+          262.182,
+          36.5632,
+          271.497,
+          125.17
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.67181,
+          1.04076,
+          0.849653,
+          0.787916
+        ]
+      },
+      {
+        "layer": 31,
+        "expected_chunks": 0,
+        "gdn_parent_queue_ms": 0.0,
+        "queue_ms": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "samples": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "host_submit_wall_ms": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "layer": 32,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 702.774,
+        "queue_ms": [
+          268.763,
+          36.566,
+          271.451,
+          125.637
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.6407,
+          1.01257,
+          0.849361,
+          0.782728
+        ]
+      },
+      {
+        "layer": 33,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 691.859,
+        "queue_ms": [
+          258.342,
+          36.5629,
+          271.348,
+          125.26
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.74596,
+          1.05077,
+          0.882664,
+          0.782035
+        ]
+      },
+      {
+        "layer": 34,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 683.735,
+        "queue_ms": [
+          251.284,
+          36.5596,
+          271.384,
+          124.153
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.83294,
+          1.10113,
+          0.889165,
+          0.853959
+        ]
+      },
+      {
+        "layer": 35,
+        "expected_chunks": 0,
+        "gdn_parent_queue_ms": 0.0,
+        "queue_ms": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "samples": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "host_submit_wall_ms": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "layer": 36,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 695.595,
+        "queue_ms": [
+          262.382,
+          36.5653,
+          271.528,
+          124.766
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.72626,
+          1.07588,
+          0.898915,
+          0.793155
+        ]
+      },
+      {
+        "layer": 37,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 698.704,
+        "queue_ms": [
+          265.558,
+          36.5619,
+          271.356,
+          124.874
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.97091,
+          1.15808,
+          0.942193,
+          0.872663
+        ]
+      },
+      {
+        "layer": 38,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 685.727,
+        "queue_ms": [
+          251.979,
+          36.5646,
+          271.454,
+          125.376
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.74371,
+          1.05377,
+          0.877463,
+          0.785081
+        ]
+      },
+      {
+        "layer": 39,
+        "expected_chunks": 0,
+        "gdn_parent_queue_ms": 0.0,
+        "queue_ms": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "samples": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "host_submit_wall_ms": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "layer": 40,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 710.241,
+        "queue_ms": [
+          277.679,
+          36.5696,
+          271.468,
+          124.171
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.66851,
+          1.08693,
+          0.890607,
+          0.788836
+        ]
+      },
+      {
+        "layer": 41,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 678.621,
+        "queue_ms": [
+          244.558,
+          36.5675,
+          271.43,
+          125.719
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.71286,
+          1.27241,
+          0.900167,
+          0.786732
+        ]
+      },
+      {
+        "layer": 42,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 683.107,
+        "queue_ms": [
+          250.101,
+          36.5616,
+          271.353,
+          124.74
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.92137,
+          1.11092,
+          0.937647,
+          0.862406
+        ]
+      },
+      {
+        "layer": 43,
+        "expected_chunks": 0,
+        "gdn_parent_queue_ms": 0.0,
+        "queue_ms": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "samples": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "host_submit_wall_ms": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "layer": 44,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 682.136,
+        "queue_ms": [
+          249.39,
+          36.561,
+          271.547,
+          124.292
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          3.11738,
+          1.22371,
+          1.04303,
+          0.940812
+        ]
+      },
+      {
+        "layer": 45,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 692.415,
+        "queue_ms": [
+          257.951,
+          36.5717,
+          271.514,
+          126.026
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.77766,
+          1.07853,
+          0.916437,
+          0.840704
+        ]
+      },
+      {
+        "layer": 46,
+        "expected_chunks": 15,
+        "gdn_parent_queue_ms": 674.133,
+        "queue_ms": [
+          250.555,
+          36.6537,
+          271.411,
+          115.155
+        ],
+        "samples": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "host_submit_wall_ms": [
+          2.739,
+          1.07178,
+          0.88087,
+          0.793887
+        ]
+      },
+      {
+        "layer": 47,
+        "expected_chunks": 0,
+        "gdn_parent_queue_ms": 0.0,
+        "queue_ms": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "samples": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "host_submit_wall_ms": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    ],
+    "aggregate": {
+      "layer": -1,
+      "expected_chunks": 540,
+      "gdn_parent_queue_ms": 24999.6,
+      "queue_ms": [
+        9477.24,
+        1316.42,
+        9771.35,
+        4421.94
+      ],
+      "samples": [
+        540,
+        540,
+        540,
+        540
+      ],
+      "host_submit_wall_ms": [
+        124.571,
+        39.0028,
+        32.2939,
+        29.3808
+      ]
+    },
+    "limits": "No fine command sampler: staged expert H2D is not tagged by that compiled sampler. Coarse GPU intervals include host gaps; CPU time in waits is separate from source preparation. No physical PCIe/VRAM traffic, arithmetic saturation or clean speed claim."
+  },
+  "window_census": {
+    "window_count": 96,
+    "layer_rows_jobs_columns": [
+      "layer",
+      "rows",
+      "jobs"
+    ],
+    "layer_rows_jobs": [
+      [
+        0,
+        81920,
+        416
+      ],
+      [
+        0,
+        35568,
+        252
+      ],
+      [
+        1,
+        81920,
+        409
+      ],
+      [
+        1,
+        35568,
+        246
+      ],
+      [
+        2,
+        81920,
+        397
+      ],
+      [
+        2,
+        35568,
+        243
+      ],
+      [
+        3,
+        81920,
+        386
+      ],
+      [
+        3,
+        35568,
+        272
+      ],
+      [
+        4,
+        81920,
+        394
+      ],
+      [
+        4,
+        35568,
+        276
+      ],
+      [
+        5,
+        81920,
+        435
+      ],
+      [
+        5,
+        35568,
+        322
+      ],
+      [
+        6,
+        81920,
+        451
+      ],
+      [
+        6,
+        35568,
+        343
+      ],
+      [
+        7,
+        81920,
+        444
+      ],
+      [
+        7,
+        35568,
+        303
+      ],
+      [
+        8,
+        81920,
+        416
+      ],
+      [
+        8,
+        35568,
+        291
+      ],
+      [
+        9,
+        81920,
+        437
+      ],
+      [
+        9,
+        35568,
+        336
+      ],
+      [
+        10,
+        81920,
+        462
+      ],
+      [
+        10,
+        35568,
+        357
+      ],
+      [
+        11,
+        81920,
+        448
+      ],
+      [
+        11,
+        35568,
+        350
+      ],
+      [
+        12,
+        81920,
+        452
+      ],
+      [
+        12,
+        35568,
+        337
+      ],
+      [
+        13,
+        81920,
+        455
+      ],
+      [
+        13,
+        35568,
+        358
+      ],
+      [
+        14,
+        81920,
+        507
+      ],
+      [
+        14,
+        35568,
+        444
+      ],
+      [
+        15,
+        81920,
+        498
+      ],
+      [
+        15,
+        35568,
+        433
+      ],
+      [
+        16,
+        81920,
+        491
+      ],
+      [
+        16,
+        35568,
+        424
+      ],
+      [
+        17,
+        81920,
+        492
+      ],
+      [
+        17,
+        35568,
+        420
+      ],
+      [
+        18,
+        81920,
+        467
+      ],
+      [
+        18,
+        35568,
+        350
+      ],
+      [
+        19,
+        81920,
+        490
+      ],
+      [
+        19,
+        35568,
+        406
+      ],
+      [
+        20,
+        81920,
+        475
+      ],
+      [
+        20,
+        35568,
+        384
+      ],
+      [
+        21,
+        81920,
+        435
+      ],
+      [
+        21,
+        35568,
+        328
+      ],
+      [
+        22,
+        81920,
+        472
+      ],
+      [
+        22,
+        35568,
+        342
+      ],
+      [
+        23,
+        81920,
+        475
+      ],
+      [
+        23,
+        35568,
+        391
+      ],
+      [
+        24,
+        81920,
+        428
+      ],
+      [
+        24,
+        35568,
+        314
+      ],
+      [
+        25,
+        81920,
+        475
+      ],
+      [
+        25,
+        35568,
+        400
+      ],
+      [
+        26,
+        81920,
+        477
+      ],
+      [
+        26,
+        35568,
+        372
+      ],
+      [
+        27,
+        81920,
+        451
+      ],
+      [
+        27,
+        35568,
+        376
+      ],
+      [
+        28,
+        81920,
+        472
+      ],
+      [
+        28,
+        35568,
+        366
+      ],
+      [
+        29,
+        81920,
+        457
+      ],
+      [
+        29,
+        35568,
+        391
+      ],
+      [
+        30,
+        81920,
+        497
+      ],
+      [
+        30,
+        35568,
+        395
+      ],
+      [
+        31,
+        81920,
+        491
+      ],
+      [
+        31,
+        35568,
+        413
+      ],
+      [
+        32,
+        81920,
+        481
+      ],
+      [
+        32,
+        35568,
+        401
+      ],
+      [
+        33,
+        81920,
+        488
+      ],
+      [
+        33,
+        35568,
+        384
+      ],
+      [
+        34,
+        81920,
+        477
+      ],
+      [
+        34,
+        35568,
+        341
+      ],
+      [
+        35,
+        81920,
+        447
+      ],
+      [
+        35,
+        35568,
+        324
+      ],
+      [
+        36,
+        81920,
+        437
+      ],
+      [
+        36,
+        35568,
+        301
+      ],
+      [
+        37,
+        81920,
+        434
+      ],
+      [
+        37,
+        35568,
+        291
+      ],
+      [
+        38,
+        81920,
+        461
+      ],
+      [
+        38,
+        35568,
+        332
+      ],
+      [
+        39,
+        81920,
+        418
+      ],
+      [
+        39,
+        35568,
+        306
+      ],
+      [
+        40,
+        81920,
+        431
+      ],
+      [
+        40,
+        35568,
+        310
+      ],
+      [
+        41,
+        81920,
+        456
+      ],
+      [
+        41,
+        35568,
+        323
+      ],
+      [
+        42,
+        81920,
+        419
+      ],
+      [
+        42,
+        35568,
+        293
+      ],
+      [
+        43,
+        81920,
+        424
+      ],
+      [
+        43,
+        35568,
+        277
+      ],
+      [
+        44,
+        81920,
+        390
+      ],
+      [
+        44,
+        35568,
+        238
+      ],
+      [
+        45,
+        81920,
+        387
+      ],
+      [
+        45,
+        35568,
+        215
+      ],
+      [
+        46,
+        81920,
+        375
+      ],
+      [
+        46,
+        35568,
+        193
+      ],
+      [
+        47,
+        81920,
+        335
+      ],
+      [
+        47,
+        35568,
+        177
+      ]
+    ],
+    "jobs": 37353,
+    "routed_rows": 56394240,
+    "gu_nk": [
+      1280,
+      2560
+    ],
+    "down_nk": [
+      2560,
+      640
+    ],
+    "gu_down_storage": "bf16",
+    "hidden_storage": "fp16",
+    "requested_router_D2H_bytes": 225576960,
+    "requested_map_H2D_bytes": 451153920,
+    "all_job_row_and_expert_conservation_checks_passed": true,
+    "planned_matches_retired": true,
+    "limits": "Requested/logical metadata; not physical PCIe or VRAM traffic, occupancy or additive wall time."
+  },
+  "ownership_closed": true,
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  },
+  "attribution_decision": {
+    "scope": "First-use qualified current117K profile only; separate warm pair still required.",
+    "main_thread_cpu_s": 124.907812063,
+    "explicit_wait_cpu_s": 79.067443706,
+    "outside_explicit_wait_cpu_s": 45.840368357,
+    "source_copy_cpu_s": 4.72213568,
+    "source_copy_wall_s": 4.727773744,
+    "source_copy_calls": 48,
+    "source_boundary": "Source copies follow a checked layer drain and precede GPU activation; this sequential preparation is on the current layer critical path.",
+    "status_wrapper_outside_wait_cpu_s": 10.906167498,
+    "status_limit": "Whole wrapper/preflight/queue/copy/explicit-drain boundary overhead; internal blocking is not isolated. Do not call it CPU inference math or a reducible compute cost.",
+    "host_affinity_observation": {
+      "observed_utc": "2026-10-18T18:33:17Z",
+      "native_identity": {
+        "pid": 1804634,
+        "start_ticks": 69694278,
+        "sid": 1804604
+      },
+      "source": "/proc/1804634/status after matching start_ticks",
+      "main_thread_allowed_cpus": "0",
+      "all_worker_affinities_measured": false,
+      "configured_source": "SessionLoopScratch::init pins the main host thread; no process/thread affinity was changed by this observation.",
+      "implication": "A future transfer worker must not silently inherit the restricted host mask. Preserve the original allowed mask and qualify placement on an available physical core; main-thread affinity is not proof of CPU arithmetic saturation."
+    },
+    "next_action": "Commit/launch the same two-request first-use/warm staged117K profile, then choose an implementation only from its current critical-path and ownership evidence.",
+    "limits": "No physical PCIe/VRAM byte counters or arithmetic saturation result; profiled889.7tok/s is not clean speed. The1000/70 targets and broad model/full-context/RESTORE qualification remain unmet."
+  }
 }
