@@ -864,7 +864,7 @@
   },
   "gdn_epilogue_separation_scope": {
     "classification": "knowledge_collection",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "question": "Explain and discriminate why splitting recurrent GPU math and RMS can beat fusion despite more device-memory traffic: current1-partition control improves24.05% with unchanged48workgroups; compare liveness/GRF/spills, barrier cadence, redundant subgroup work and math lowering using Intel/HPC evidence.",
     "prerequisites_met": [
       "Exact GDN output/state/FP16 and tails passed, three resident processes measured original23.693646ms vs separate1partition17.9943745ms and4partition17.6757815ms.",
@@ -878,7 +878,7 @@
     },
     "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/gdn-epilogue-separation-methods.md",
     "main_reads_body_on_arrival": false,
-    "state": "Eligible for bounded Orca knowledge collection; Main continues serialized model measurement.",
+    "state": "Orca knowledge collection active; Main continues frozen model checks and does not read body on arrival.",
     "retention_consumer": "One compiler/resource-attribution decision after the GDN model screen; retain only novel reusable methods or facts, otherwise retire to compact corrections.",
     "report_budget": {
       "words": [
@@ -886,6 +886,10 @@
         2600
       ],
       "maximum_bytes": 30720
-    }
+    },
+    "task": "task_8f5b5fe8ebcb",
+    "dispatch": "ctx_8e392ac8d8cd",
+    "terminal": "term_f5578bcd-ac60-4923-8549-bc9b4e32d5cc",
+    "model_evidence": "Custom argv gpt-6-luna medium; satisfied TUI-idle and worker-start observed turn_started."
   }
 }
