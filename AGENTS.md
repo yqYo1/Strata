@@ -29,7 +29,12 @@ chronological log or create a second policy copy in a resume note.
 Later user instructions supersede older rules; update the affected policy rather
 than keeping contradictory versions. Do not infer that an unfinished experiment,
 unverified feature or research proposal became adopted during a context change.
-Read relevant compact committed results before retrieving historical detail.
+Use [the maintained prefill decisions](docs/SYCL_NATIVE16_PREFILL.md) and their
+linked compact results to identify the current validated build, clean speed
+reference, selected next experiment, pending validation and provenance holds.
+Verify those against the actual files before acting. Preserve the distinction
+between a proposed change, a tested component and a qualified model route when
+resuming or reporting progress. Read historical detail only for a concrete gap.
 Do not load the research library or old raw logs wholesale as a resume procedure.
 Before launching a measurement, adopting a change or deleting artifacts, check
 the applicable sections below again against the actual inputs and current
@@ -56,7 +61,9 @@ new experiment does not clear it.
   only for a concrete question; arrival alone is not a reason to load them.
 - Before deletion, verify the current consumer has ended and useful evidence is
   preserved. For a build, recover and compare the original source/recipe from Git;
-  an assumed ability to rebuild is insufficient.
+  an assumed ability to rebuild is insufficient. Match the exact final binary
+  and its build inputs; a similarly named root, seed build or intermediate
+  receipt does not establish the final executable's provenance.
 - At each work boundary, commit and push the useful changes, integrate completed
   work into `feature/sycl` and the fork default, and retire finished branches,
   comparison builds and raw output. Record any exception and its next review point.
@@ -185,6 +192,10 @@ are outside this work's scope.
   failed capability result and use bounded source instrumentation where useful.
   Keep unavailable hardware metrics unknown; a profiler refusal does not resolve
   the bottleneck or justify stopping independent tuning work.
+  Adding counters or moving time from unclassified into a named category is
+  attribution progress, not a speedup. Trace the complete called wrapper,
+  including preflight checks, queue lookup, observers, internal waits and
+  post-checks, before assigning its time to the operation named in a log.
 - Follow [docs/BENCHMARKS.md](docs/BENCHMARKS.md). Use the pinned upstream
   `bench.sh` for standard comparisons and the same maintained extension on both
   engines for added workloads. Adoption evidence includes the long-input and
@@ -359,6 +370,9 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   retrieve and verify its required source/recipe from reachable Git history.
   Read the recorded revisions and compare the recovered inputs with the build's
   source identities; the existence of a commit or report alone is insufficient.
+  A receipt hash matching a binary proves artifact continuity, not recoverable
+  source. Review eligibility labels and cross-root links against that exact
+  final build; do not transfer proof from a seed, similarly named or later build.
   Reconcile any uncommitted measured inputs first; do not delete their last copy
   while claiming Git can restore them. Record a temporary provenance hold and
   review point if recovery is unresolved; do not present it as a reusable build.
@@ -392,3 +406,6 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   compact result for this decision; do not create a separate progress backup,
   build archive or permanent cleanup inventory. If source recovery is blocked,
   keep an explicit provenance hold rather than deleting the last original copy.
+  Distinguish such unresolved legacy holds from qualified comparison builds.
+  Record review findings and missing recovery steps in the current result;
+  retaining the latest engine does not establish that older roots were retired.

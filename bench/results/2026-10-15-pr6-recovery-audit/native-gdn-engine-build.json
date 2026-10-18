@@ -127,8 +127,17 @@
       "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/binary-source-recovery-review.json"
     ],
     "reason": "Previous exact-source audit is incomplete, with missing/mismatched receipt inputs and unmatched artifacts. Do not delete original measured inputs or call global cleanup complete.",
-    "next_review": "Before the next engine generation, use the six-root report review to recover exact original Git inputs and retire any proved obsolete roots; keep only explicit unresolved source holds. This221-file retirement does not clear legacy holds.",
-    "current_review": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/legacy-six-build-native-review.json"
+    "next_review": "Before the next engine generation, perform the completed review's per-root source, recipe, controller and dependency recovery checks against original Git inputs. Retire only proved obsolete roots; keep unresolved holds explicit. This six-root review and221-file retirement do not clear the wider legacy inventory.",
+    "current_review": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/legacy-six-build-native-review.json",
+    "current_review_sha256": "7bd4d500fa96209935103d1df1293bbb936375c3599f24d425a4676e421e8c96",
+    "current_review_result": {
+      "state": "review_complete_recovery_unresolved",
+      "roots_reviewed": 6,
+      "exact_final_build_source_proofs": 0,
+      "binary_receipt_hashes_match": true,
+      "retirement_authorized": false,
+      "limits": "Receipt integrity is not source recovery. Seed chains, similarly named build proofs and declared commits do not qualify these final binaries. All six roots retain provenance holds; detailed missing recovery steps remain in the hashed review."
+    }
   },
   "host_counter_model_runtime_qualification": {
     "command_off": {
