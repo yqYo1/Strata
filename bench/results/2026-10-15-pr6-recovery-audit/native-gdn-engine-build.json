@@ -1,5 +1,5 @@
 {
-  "source_commit": "0ddd14719211b6ddf8a09737c3bc2e6b3402c1cb",
+  "source_commit": "89e9c58131790ea283e9c105ef2c12d31b8b4b1d",
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -73,18 +73,18 @@
     "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-entry-engine-build-v2.json",
     "sha256": "9b7734387f0fc56f36afe9d7bca75e5f0bedcef479271e982025abe1d4334a1a"
   },
-  "complete": true,
-  "passed": true,
+  "complete": false,
+  "passed": false,
   "active": false,
   "GPU_executed": false,
   "production_selected": false,
   "model_quality_qualified": false,
   "replaces": {
-    "source_commit": "51a6f70aa98acca2f733b9569514afe9ed6350d2",
+    "source_commit": "0ddd14719211b6ddf8a09737c3bc2e6b3402c1cb",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-      "bytes": 20418840,
-      "sha256": "0ec53c9d02f12a0aa1579be2ae6b8e7cc31191657d901be0f4dea899a4130c08"
+      "bytes": 20418848,
+      "sha256": "ea944a5c87e8dd23f92b233630f645f3192b7848bb72f676695d0c5d2a140eee"
     },
     "reason": "Closed unused comparison engine; original source/recipe recovered from Git. Reuse its cache for the immediate corrected build, not a retained old generation."
   },
@@ -96,38 +96,14 @@
     "sycl_qsa_bf16_prefix_qcache_bench"
   ],
   "retention_consumer": "Current long-prefill comparison and its attention fixtures; retire when comparison closes.",
-  "binary": {
-    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-    "bytes": 20418848,
-    "sha256": "ea944a5c87e8dd23f92b233630f645f3192b7848bb72f676695d0c5d2a140eee"
-  },
-  "compile_database_sha256": "9d15a81f6cae9051624fff75916708159dd7988217144007997f0c04530231b7",
-  "configured_compile_entries": 211,
-  "fixtures": {
-    "sycl_qsa_bf16_late_flags_test": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_late_flags_test",
-      "sha256": "70c62cb9d4f5da0f22d4bca3f32f4622ef1a48e266ad48b21a5d12e3de5875de"
-    },
-    "sycl_qsa_bf16_prefix_optimized_test": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_optimized_test",
-      "sha256": "4219d9ba660708c593076e8b770ab426f144f3df70545f9bf7ada43d8adb1e84"
-    },
-    "sycl_qsa_bf16_prefix_qcache_test": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_qcache_test",
-      "sha256": "7a7863c2470026ac1618bcd98c739b1f0fbe7e954d9d4b6b8e39bc1b4d212cca"
-    },
-    "sycl_qsa_bf16_prefix_qcache_bench": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_qcache_bench",
-      "sha256": "889fea241e43f80bca30c09567808252f7856690ea01cffe4869ddd3fc0637fe"
-    }
-  },
+  "error": "compile-link failed: ",
   "ownership_closed": true,
   "inputs": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "0ddd14719211b6ddf8a09737c3bc2e6b3402c1cb",
+      "revision": "89e9c58131790ea283e9c105ef2c12d31b8b4b1d",
       "count": 476,
-      "aggregate_sha256": "c77965817d88b0a032fb89c45c44b549395ad99d05e14939e038165ad8183159"
+      "aggregate_sha256": "974687bd5a38c5946e81f75b643b15e2e25539bd9ef32e1d3e88f525157ac8c7"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
@@ -141,5 +117,11 @@
       "count": 5703,
       "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
     }
-  ]
+  ],
+  "failure_diagnostics": [
+    "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_bf16_prefix.cpp:162:13: error: 'parallel_for' is deprecated: To specify properties, use a launch configuration object of type launch_config or a kernel functor with a get(sycl::ext::oneapi::experimental::properties_tag) member function instead. [-Werror,-Wdeprecated-declarations]",
+    "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_bf16_prefix.cpp:162:13: error: 'parallel_for<sycl::detail::auto_name, (lambda at /home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_bf16_prefix.cpp:164:9), sycl::ext::oneapi::experimental::properties<detail::properties_type_list<>>, 1>' is deprecated: To specify properties, use a launch configuration object of type launch_config or a kernel functor with a get(sycl::ext::oneapi::experimental::properties_tag) member function instead. [-Werror,-Wdeprecated-declarations]",
+    "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_bf16_prefix.cpp:162:13: error: 'parallel_for' is deprecated: To specify properties, use a launch configuration object of type launch_config or a kernel functor with a get(sycl::ext::oneapi::experimental::properties_tag) member function instead. [-Werror,-Wdeprecated-declarations]"
+  ],
+  "failure_class": "Compile-time deprecated property overload and mixed subgroup attribute/property diagnostics promoted by Werror; no GPU execution."
 }
