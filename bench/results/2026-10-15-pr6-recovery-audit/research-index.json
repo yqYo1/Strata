@@ -147,7 +147,7 @@
       "candidate_path": "bench/results/2026-10-15-pr6-recovery-audit/own-qsa-kpitch-v1",
       "decision": "Reuse the existing source-audited pitch proposal after the current comparison; no new duplicate survey. Recheck immutable source/provenance and wire maintained API/tests before compiling.",
       "candidate": "Fixed score33,Cells32,WG128,SG16; K36/V260 shared tile needs9216 BF16 values,30272B requested local payload,34368B admission minimum. No hardware occupancy/bank map or performance result.",
-      "do_not_repeat": "Old global K span256 schedule regressed10.35\u201329.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
+      "do_not_repeat": "Old global K span256 schedule regressed10.35–29.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
     },
     "reviewed_base_source_sha256": "fa505d02e2b24f7cb6948033921fa697c8aeb58e6f4df6d873f13e5a7918e36b",
     "source_sha256": "c3ad8326f097050ff9ab1859e116f2cad3709a8464162143f752bc294cbe1e01",
@@ -208,7 +208,7 @@
         "bytes": 19144,
         "source_commit": "fbc7f56d7b0ddb5db5f3722ef33ca044c3f8a5c8",
         "reason": "Its conditional consumer is a selected-cell stable-reduction split. The closed QSA screen and pending pitch candidate select no split or reduction bottleneck.",
-        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report\u2019s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
+        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report’s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
       },
       {
         "path": "bench/results/2026-10-15-pr6-recovery-audit/research-matrix-register-reuse-20261018.md",
@@ -541,5 +541,45 @@
       "FP16 weights/FP32 accumulation/BF16 outputs and reviewed MoE source hashes match; dequant-write and J*pair formulas remain logical/requested, not observed traffic."
     ],
     "retention_consumer": "Current source-grounded resource accounting and next concrete fusion/placement decision; refresh physical evidence before adopting any change."
+  },
+  "moe_down_scatter_epilogue_scope": {
+    "classification": "decision_support",
+    "schedulable_now": false,
+    "eligible_at_dispatch": true,
+    "prerequisites_met": [
+      "Source/adapter contracts pinned at f111b5ff6c84797bff2139355cb6b1b4500f165f; production shapes and exact row-mass histogram known.",
+      "Finite design/provenance/numerical feasibility question independent of missing physical counters; no claim of measured bottleneck or adoption.",
+      "Complete resident service sweep860fdd6c0; actual model service qualification runs under Main ownership."
+    ],
+    "question": "Prove exact BF16-rounding/FP32-fma, unique-writer and tile/event/owner contract for a fused Down scatter epilogue against the actual adapter; no performance adoption claim.",
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/moe-down-scatter-epilogue-contract.md",
+    "main_reads_body_on_arrival": false,
+    "state": "Orca Luna research active; Main continues serialized measurement; no steering.",
+    "dispatch": "ctx_b8849d9031f2",
+    "task": "task_b8d2185f8fee",
+    "terminal": "term_9b9cc410-60c4-4849-9ba5-ffae3585293d",
+    "model_evidence": "Custom terminal argv gpt-6-luna,medium; TUI-idle satisfied before worker-start, observed turn_started.",
+    "shared_prior_index": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/historical-index.json",
+    "retention_consumer": "Native Luna-max novelty/depth review, then concrete MoE implementation decision or conditional retrieval; no automatic report-body commit."
+  },
+  "moe_indexed_gemm_a_scope": {
+    "classification": "knowledge_collection",
+    "schedulable_now": false,
+    "eligible_at_dispatch": true,
+    "prerequisites_met": [
+      "Source/adapter contracts pinned at f111b5ff6c84797bff2139355cb6b1b4500f165f; production shapes and exact row-mass histogram known.",
+      "Finite design/provenance/numerical feasibility question independent of missing physical counters; no claim of measured bottleneck or adoption.",
+      "Complete resident service sweep860fdd6c0; actual model service qualification runs under Main ownership."
+    ],
+    "question": "Compare indexed A-vector loads, contiguous2D-load gather and GPU permutation in actual MoE/TLA implementations; pin feasibility barriers and counterexamples, not a generic grouped survey.",
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/moe-gather-gemm-prologue-methods.md",
+    "main_reads_body_on_arrival": false,
+    "state": "Orca Luna research active; Main continues serialized measurement; no steering.",
+    "dispatch": "ctx_3e40107d79d6",
+    "task": "task_d32c6997afd6",
+    "terminal": "term_c7fe515e-b723-4254-8ac8-6563683320d9",
+    "model_evidence": "Custom terminal argv gpt-6-luna,medium; TUI-idle satisfied before worker-start, observed turn_started.",
+    "shared_prior_index": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/historical-index.json",
+    "retention_consumer": "Native Luna-max novelty/depth review, then concrete MoE implementation decision or conditional retrieval; no automatic report-body commit."
   }
 }
