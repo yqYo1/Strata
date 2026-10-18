@@ -830,6 +830,35 @@ USM allocation and submits no GPU work; its90s/120CPU-second/2GiB-RSS/64MiB-outp
 budget is independent of later numerical and performance gates. No model path
 selects a fused GU kernel at this stage.
 
+The original ownership gate at source`b3e982d93` passed all36 cases, with zero
+adjacent-pair mismatches for both layouts/policies (receipt at`3ea300e5d`). The
+next explicit component API uses the matrix layout and packs two already-rounded
+BF16 fragment values into one32-bit subgroup exchange. Adjacent lanes compute
+different fragment indices, balancing the hidden writers. A new host gate must
+prove this packed mapping before any GPU test, followed by a384-work-item check
+of the actual local/subgroup index relationship. This is newly authored Strata
+code using the existing licensed DPAS helper and public TLA/SYCL APIs.
+
+Run/commit `measure_gu_swiglu.py ownership`, then `smoke`, then `validate`, then
+`perf`. Smoke uses tracing/parameter validation and checks both tile policies,
+finite/rounding/NaN/saturation inputs and13 rejected admissions. Full validation
+adds1/17/33/129/2334/5963/8191/8192-row cases for both policies. BF16 diagnostic
+capture must match dense DPAS output exactly; hidden output preserves finite
+FP16 saturation and NaN classification, with a prospective maximum1 FP16 ULP
+bound across the existing JIT activation and new AOT epilogue. Small finite
+cases also use an independent integer dot-product oracle. Check guards and input
+immutability for both capture and no-capture specializations.
+
+Clean timing uses three independent processes, rotated separate/fused arms,
+five measured rounds plus warmup,16 submissions per burst, at64/160/2334/5963/8192
+rows. Keep every measured sample and both host wall time and queue intervals;
+an interval includes launch bubbles and does not establish GPU busy time.
+The prospective component gate is wall-ratio geomean<0.98 with every large
+shape/process ratio<=1.02. Any model integration still requires long-input
+matched measurements and the broader correctness gates. The eliminated logical
+GU write/read is5120bytes per row,40MiB for8192 rows; this is an operation count,
+not a measurement of physical VRAM traffic or a proof of a bandwidth bottleneck.
+
 ## MoE Down/scatter component
 
 `Gemm::down_scatter` is an explicit component API with no model dispatch hook.

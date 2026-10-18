@@ -50,12 +50,24 @@ struct GuPairOwnership {
   size_t gu_values = 0, hidden_values = 0, masked = 0;
   size_t gu_missing = 0, gu_multiple = 0, hidden_missing = 0, hidden_multiple = 0;
   size_t checked_pairs = 0, partner_mismatch = 0;
+  size_t packed_missing = 0, packed_multiple = 0, packed_orientation_mismatch = 0;
 };
 // Host-only proof for interleaved GU[N1280,K2560] -> H[N640]. Tests whether
 // each even column's adjacent odd column is held at the same fragment index
 // by local lane XOR1 in its SIMD16 subgroup, for both actual TLA layouts.
 // A nonzero partner_mismatch is evidence against that schedule, not a GPU run.
 GuPairOwnership inspect_gu_pair_ownership(int64_t rows, Tile tile, GuLayout layout);
+
+// Fixed interleaved GU shape: FP16 X[rows,2560], W[1280,2560], FP16 H[rows,640].
+// FP32 DPAS -> per-operand BF16 RNE -> FP32 SwiGLU -> finite FP16 saturation.
+// All pointers are disjoint registered device spans. The optional BF16 capture
+// is correctness-only [rows,1280]; the timed specialization does not store GU.
+struct GuSwiGLUProblem {
+  const uint16_t *x = nullptr, *w = nullptr;
+  uint16_t *y = nullptr;
+  int64_t rows = 0;
+  uint16_t *rounded_diagnostic = nullptr;
+};
 
 // Source proposal only. Does not alter Gemm::*_out16 or select a runtime/device.
 // Runtime, queue and all registered Allocation owners must outlive submitted
@@ -79,6 +91,9 @@ public:
   sycl::event down_scatter(const DownScatterProblem &problem,
                          Tile tile = Tile::wide_128x128,
                          ScatterLayout layout = ScatterLayout::matrix);
+  // Explicit component candidate; no model dispatch hook.
+  sycl::event gu_swiglu(const GuSwiGLUProblem &problem,
+                       Tile tile = Tile::wide_128x128);
   sycl::queue &queue() const { return queue_; }
 
 private:
