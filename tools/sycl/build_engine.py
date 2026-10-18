@@ -71,8 +71,8 @@ def pin(root, prefixes):
 
 def main():
     guards.require(len(sys.argv) == 1 or sys.argv[1:] in
-                   (['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn'], ['rebuild-down'], ['rebuild-ordered']),
-                   'use build_engine.py [rebuild|rebuild-attention|rebuild-gemm|rebuild-gdn|rebuild-down|rebuild-ordered]')
+                   (['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn'], ['rebuild-down'], ['rebuild-ordered'], ['rebuild-submission']),
+                   'use build_engine.py [rebuild|rebuild-attention|rebuild-gemm|rebuild-gdn|rebuild-down|rebuild-ordered|rebuild-submission]')
     rebuild = len(sys.argv) == 2
     attention = sys.argv[1:] == ['rebuild-attention']
     targets = ['strata']
@@ -91,6 +91,8 @@ def main():
         targets += ['sycl_qsa_bf16_prefix_kvvec4_test',
                     'sycl_qsa_bf16_prefix_ordered_exp_test',
                     'sycl_qsa_bf16_prefix_ordered_exp_bench']
+    if sys.argv[1:] == ['rebuild-submission']:
+        targets += ['sycl_submission_test']
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
@@ -135,6 +137,7 @@ def main():
                           'third_party', 'bench/sycl',
                           'tools/sycl/build_engine.py', 'tools/sycl/measurement_owner.py',
                           'tools/sycl/check_attention.py',
+                          'tools/sycl/check_submission.py',
                           'tools/sycl/check_host_profile.py',
                           'tools/sycl/measure_gemm.py',
                           'tools/sycl/measure_gdn_columns.py',

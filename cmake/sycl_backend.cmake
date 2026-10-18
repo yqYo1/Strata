@@ -108,6 +108,8 @@ set_source_files_properties(src/kernels/sycl/fused_gdn.cpp PROPERTIES
   COMPILE_OPTIONS "-fno-fast-math;-ffp-contract=off")
 
 # Manual component targets: no automatic GPU execution in CTest.
+add_executable(sycl_submission_test EXCLUDE_FROM_ALL tests/sycl/compat.cpp)
+target_link_libraries(sycl_submission_test PRIVATE strata_sycl_runtime)
 add_executable(kv_copy_groups_host_fixture EXCLUDE_FROM_ALL tools/sycl/kv_copy_groups_host.cpp)
 target_compile_features(kv_copy_groups_host_fixture PRIVATE cxx_std_17)
 target_include_directories(kv_copy_groups_host_fixture PRIVATE ${PROJECT_SOURCE_DIR}/include)

@@ -17,11 +17,14 @@ void require(bool v, const char *s) {
 }
 int main(int argc, char** argv) {
   const bool native = argc == 2 && std::string(argv[1]) == "--native";
+  const bool submission = argc == 2 && std::string(argv[1]) == "--submission";
   auto begin_capture = [native](cudaStream_t stream) {
     return native ? strata::sycl_backend::compat::stream_begin_capture_native(stream)
                   : cudaStreamBeginCapture(stream, cudaStreamCaptureModeThreadLocal);
   };
   try {
+    require(argc == 1 || native || submission,
+            "usage: sycl_compat_test [--native|--submission]");
     std::cout << std::unitbuf;
     std::cerr << "compat: create streams and USM owners\n";
     constexpr size_t n = 257, bytes = n * sizeof(int);
@@ -77,9 +80,13 @@ int main(int argc, char** argv) {
     for (size_t i = 0; i < n; ++i)
       require(out[i] == int(i) * 3, "same-device peer API copy");
     CHECK(cudaFree(same_device));
+    if (submission)
+      std::cout << "case stream_copy_ordering=PASS\n";
     float ms = -1;
     CHECK(cudaEventElapsedTime(&ms, begin, done));
     require(std::isfinite(ms) && ms >= 0, "profiling");
+    if (submission)
+      std::cout << "case explicit_stream_profiling=PASS\n";
     // Startup PCIe calibration uses the default stream, not an explicit one.
     // Its events must carry device timestamps as well as ordering semantics.
     CHECK(cudaEventRecord(begin));
@@ -89,6 +96,78 @@ int main(int argc, char** argv) {
     CHECK(cudaEventSynchronize(done));
     CHECK(cudaEventElapsedTime(&ms, begin, done));
     require(std::isfinite(ms) && ms > 0, "default-stream profiling");
+    if (submission) {
+      std::cout << "case default_stream_profiling=PASS\n";
+      require(a->has_property<sycl::property::queue::in_order>() &&
+                  b->has_property<sycl::property::queue::in_order>() &&
+                  a->has_property<sycl::property::queue::enable_profiling>() &&
+                  b->has_property<sycl::property::queue::enable_profiling>(),
+              "actual engine streams must be in-order and profiling-enabled");
+      constexpr size_t guard = 17, total = n + 2 * guard;
+      constexpr int sentinel = -1234567;
+      std::vector<int> source(total, sentinel), result(total, 0);
+      int *bulk{};
+      CHECK(cudaMalloc((void **)&bulk, total * sizeof(int)));
+      for (int queued : {1, 119, 120, 121, 241}) {
+        for (size_t i = 0; i < n; ++i)
+          source[guard + i] = int(i) - queued;
+        CHECK(cudaEventRecord(begin, a));
+        CHECK(cudaMemcpyAsync(bulk, source.data(), total * sizeof(int),
+                              cudaMemcpyHostToDevice, a));
+        sycl::event last;
+        for (int repeat = 0; repeat < queued; ++repeat)
+          last = a->parallel_for(sycl::range<1>(n),
+                                 [=](sycl::id<1> i) { bulk[guard + i[0]] += 1; });
+        CHECK(cudaEventRecord(done, a));
+        CHECK(cudaStreamWaitEvent(b, done));
+        CHECK(cudaMemcpyAsync(result.data(), bulk, total * sizeof(int),
+                              cudaMemcpyDeviceToHost, b));
+        CHECK(cudaStreamSynchronize(b));
+        CHECK(cudaEventQuery(done));
+        for (size_t i = 0; i < total; ++i)
+          require(result[i] == (i < guard || i >= guard + n
+                                    ? sentinel : int(i - guard)),
+                  "batched numerical result or guard mismatch");
+        CHECK(cudaEventElapsedTime(&ms, begin, done));
+        require(std::isfinite(ms) && ms >= 0, "batched event profiling");
+        const auto start = last.get_profiling_info<
+            sycl::info::event_profiling::command_start>();
+        const auto end = last.get_profiling_info<
+            sycl::info::event_profiling::command_end>();
+        require(end >= start, "direct kernel profiling order");
+        std::cout << "case queued_kernels=" << queued
+                  << " numerical=PASS guards=PASS event_timing=PASS kernel_profiling=PASS\n";
+      }
+      CHECK(cudaFree(bulk));
+      // The engine also submits copies from ordinary RAM. Keep both vectors
+      // alive and immutable until the checked readback; no implicit host pinning.
+      std::vector<int> ordinary_in(n), ordinary_out(n);
+      for (int iteration = 0; iteration < 3; ++iteration) {
+        for (size_t i = 0; i < n; ++i)
+          ordinary_in[i] = int(i) - iteration * 7;
+        CHECK(cudaMemcpyAsync(device, ordinary_in.data(), bytes,
+                              cudaMemcpyHostToDevice, a));
+        a->parallel_for(sycl::range<1>(n),
+                        [=](sycl::id<1> i) { device[i] = device[i] * 3 + 1; });
+        CHECK(cudaMemcpyAsync(ordinary_out.data(), device, bytes,
+                              cudaMemcpyDeviceToHost, a));
+        CHECK(cudaStreamSynchronize(a));
+        for (size_t i = 0; i < n; ++i)
+          require(ordinary_out[i] == ordinary_in[i] * 3 + 1,
+                  "ordinary RAM asynchronous copy lifetime");
+      }
+      std::cout << "case ordinary_host_roundtrips=3 status=PASS\n";
+      CHECK(cudaFree(device));
+      CHECK(cudaFreeHost(in));
+      CHECK(cudaFreeHost(out));
+      CHECK(cudaEventDestroy(begin));
+      CHECK(cudaEventDestroy(done));
+      CHECK(cudaEventDestroy(captured));
+      CHECK(cudaStreamDestroy(a));
+      CHECK(cudaStreamDestroy(b));
+      std::cout << "case teardown=PASS\nfixture_status=PASS mode=submission\n";
+      return 0;
+    }
     std::cerr << "compat: default stream copy/events complete; record graph\n";
     cudaStream_t recording{};
     CHECK(cudaStreamCreate(&recording));
