@@ -1481,6 +1481,14 @@ engine as the speed reference. It also completed the passive diagnostic below.
 The newer extra build has since been retired after source recovery and consumer
 migration; see the current [build decision](../bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json).
 No new inference optimization or runtime-baseline adoption follows.
+After the CPU-capacity comparison closed, the unused internal CPU observer's
+production hooks, header, two CPU fixtures and build mode were retired to
+`d50d31347cc8505a40181db8308735bfa0058427`. Before independent copy-safety changes,
+all maintained native/build files were restored byte-for-byte to the selected
+`396d0c91f301` source; only that observer delta existed in those paths.
+The external collector, original failed gates and compact observations remain
+distinct. This removes an unqualified experiment from the next candidate's
+baseline; it is not a new build, speed measurement or observer-overhead result.
 During process0, a read-only capability check of the owned native client's
 `/proc/<pid>/fdinfo` exposed xe `drm-cycles-ccs`, `drm-total-cycles-ccs` and
 memory residency fields on kernel7.0.0-38-generic. This is field availability,
