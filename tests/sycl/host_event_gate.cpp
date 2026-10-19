@@ -1,5 +1,5 @@
 #include "host_event_gate.hpp"
-#include <sycl/ext/oneapi/experimental/command_graph.hpp>
+#include <sycl/ext/oneapi/experimental/graph.hpp>
 
 #include <cstdio>
 #include <string>
