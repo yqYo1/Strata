@@ -104,6 +104,21 @@ because device global-timer stamps are unsupported. GPU attribution needs a
 separately qualified profiling-event path outside capture. Leave both observer
 variables absent in clean processes; setting either to `0` still enables it.
 
+`STRATA_DECODE_CPU_PROFILE` is a separate opt-in Linux CPU observer under
+validation. It has not been built or run yet. It records thread CPU inside
+expert row tasks, native hidden quantization and selected verifier sync calls,
+plus whole worker/main/native-process CPU intervals. Worker task writes precede
+their existing completion publication; snapshots require completed dispatches
+and parked workers. No counter is added to the park loop. One JSON line per
+request includes clock/counter failures, unexpected modes, quiescence and
+containment checks; an invalid observation cannot support attribution.
+The interval extends through the final commit wait. Job/quant/sync times are
+subsets of thread/process CPU, and CPU time includes stalls while scheduled.
+This observer does not measure physical RAM/PCIe traffic or GPU service and
+does not establish CPU arithmetic or RAM saturation. Before use require the
+clock negative cases, pool completion/output checks, bounded same-build small
+runtime check and an observer-overhead comparison. Keep it out of clean timing.
+
 For a prefill-only screen, `bench.sh --prefill-only --prefill-tokens N` accepts
 32768,65536,98304 or131072 as the minimum **actual prompt and read tokens**.
 Thinking stays on and output is capped at24 tokens; this does not qualify

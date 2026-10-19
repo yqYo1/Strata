@@ -1091,6 +1091,14 @@ if(STRATA_ENABLE_CUDA AND STRATA_BUILD_TESTS AND EXISTS "${CMAKE_CURRENT_SOURCE_
 endif()
 
 if(STRATA_BUILD_TESTS)
+  add_executable(cpu_clock_test tests/core/cpu_clock.cpp)
+  target_include_directories(cpu_clock_test PRIVATE include)
+  add_test(NAME cpu_clock_off COMMAND ${CMAKE_COMMAND} -E env --unset=STRATA_DECODE_CPU_PROFILE
+           $<TARGET_FILE:cpu_clock_test> off)
+  add_test(NAME cpu_clock_on COMMAND ${CMAKE_COMMAND} -E env STRATA_DECODE_CPU_PROFILE=1
+           $<TARGET_FILE:cpu_clock_test> on)
+  set_tests_properties(cpu_clock_off cpu_clock_on PROPERTIES TIMEOUT 10)
+
   # Plan v0.3 P6: one expert applied to several tokens, bitwise vs the single-token kernel (synthetic, CPU only).
   # plan v0.3 P5: the device dequantizers vs the artifact's CPU dequantizers on the real shards (not a ctest: needs
   # the 38 GB model; run it by hand or from tools/gpu_session.py)

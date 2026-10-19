@@ -23,6 +23,8 @@
 // selection, native indexer) and a profile-filled VRAM expert tier with its residency table on the device.
 #pragma once
 
+#include "strata/core/cpu_clock.hpp"
+
 #include <cstdio>
 #include "strata/core/watchdog_lifecycle.hpp"
 
@@ -181,6 +183,10 @@ public:
     /// the pool never plans a PCIe share (--pcie-frac 0): the window skips that path.  Before the first run.
 
     double ms_wait = 0, ms_pool = 0, ms_host = 0, ms_commit = 0;
+    // Calling-thread CPU inside selected run/commit synchronization calls.
+    // This is a subset of main-thread CPU, not GPU elapsed time. Main reads it
+    // between completed windows; cleanup/watchdog paths do not update it.
+    CpuTimeCounter cpu_sync_calls;
 #ifdef STRATA_ENABLE_SYCL
     int64_t work_ready_at_pool_return = 0, work_pending_at_pool_return = 0;
 #endif

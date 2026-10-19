@@ -6338,6 +6338,8 @@ int main(int argc, char** argv) {
                                drive.d.pcie_experts};
             };
             const DecSnap ds0 = dec_snap();
+            const auto cpu0 = pool.cpu_profile();
+            const auto sync_cpu0 = ver.cpu_sync_calls;
             double dt_run = 0, dt_commit = 0, dt_draft = 0;
             int64_t dec_windows = 0, dec_T = 0;
             const int64_t decode_hits0 = drive.d.cache_hits;
@@ -6457,6 +6459,69 @@ int main(int argc, char** argv) {
             if (!ver.wait_commit(err)) {
                 std::printf("ERR %s\n", err.c_str());
                 return 1;
+            }
+            if (cpu0.enabled) {
+                const auto wall_end = Clock::now();
+                const auto cpu1 = pool.cpu_profile();
+                using strata::core::CpuTimeCounter;
+                using strata::core::cpu_counter_delta;
+                using strata::core::cpu_time_delta;
+                const auto main_cpu = cpu_time_delta(cpu0.main_thread, cpu1.main_thread);
+                const auto process_cpu = cpu_time_delta(cpu0.process, cpu1.process);
+                const bool worker_clock_valid = cpu1.worker_thread_ns >= cpu0.worker_thread_ns;
+                const uint64_t workers_cpu = worker_clock_valid ? cpu1.worker_thread_ns - cpu0.worker_thread_ns : 0;
+                CpuTimeCounter worker0, worker1, host0, host1;
+                for (size_t i = 0; i < cpu0.worker_jobs.size(); ++i) {
+                    worker0.merge(cpu0.worker_jobs[i]); worker1.merge(cpu1.worker_jobs[i]);
+                    host0.merge(cpu0.host_jobs[i]); host1.merge(cpu1.host_jobs[i]);
+                }
+                const auto worker_jobs = cpu_counter_delta(worker0, worker1);
+                const auto host_jobs = cpu_counter_delta(host0, host1);
+                const auto quant_cpu = cpu_counter_delta(cpu0.native_quant, cpu1.native_quant);
+                const auto sync_cpu = cpu_counter_delta(sync_cpu0, ver.cpu_sync_calls);
+                const auto worker_gu = cpu_counter_delta(cpu0.worker_jobs[5], cpu1.worker_jobs[5]);
+                const auto worker_down = cpu_counter_delta(cpu0.worker_jobs[6], cpu1.worker_jobs[6]);
+                const auto host_gu = cpu_counter_delta(cpu0.host_jobs[5], cpu1.host_jobs[5]);
+                const auto host_down = cpu_counter_delta(cpu0.host_jobs[6], cpu1.host_jobs[6]);
+                CpuTimeCounter evidence, main_subsets;
+                evidence.merge(worker_jobs); evidence.merge(host_jobs); evidence.merge(quant_cpu); evidence.merge(sync_cpu);
+                main_subsets.merge(host_jobs); main_subsets.merge(quant_cpu); main_subsets.merge(sync_cpu);
+                const auto unexpected_worker = cpu_counter_delta(cpu0.worker_jobs[7], cpu1.worker_jobs[7]);
+                const auto unexpected_host = cpu_counter_delta(cpu0.host_jobs[7], cpu1.host_jobs[7]);
+                const bool valid = cpu0.quiescent && cpu1.quiescent && !cpu0.read_errors && !cpu1.read_errors &&
+                    main_cpu.valid && process_cpu.valid && worker_clock_valid && !evidence.errors && !evidence.unwound &&
+                    !main_subsets.errors && worker_jobs.ns <= workers_cpu && main_subsets.ns <= main_cpu.ns &&
+                    cpu0.worker_jobs[7].calls == cpu1.worker_jobs[7].calls &&
+                    cpu0.host_jobs[7].calls == cpu1.host_jobs[7].calls;
+                // Integer ns retain the actual readings. Job/quant/sync values
+                // are subsets of thread/process CPU; never sum those parents.
+                std::fprintf(stderr, "strata decode cpu: {\"schema\":1,\"valid\":%s,\"input_tokens\":%lld,"
+                    "\"generated_tokens\":%lld,\"windows\":%lld,\"wall_through_commit_ms\":%.3f,"
+                    "\"native_process_ns\":%llu,\"main_thread_ns\":%llu,\"worker_threads_ns\":%llu,"
+                    "\"worker_job_ns\":%llu,\"host_job_ns\":%llu,\"native_quant_main_ns\":%llu,"
+                    "\"sync_call_main_ns\":%llu,\"worker_native_gu_ns\":%llu,\"worker_native_down_ns\":%llu,"
+                    "\"host_native_gu_ns\":%llu,\"host_native_down_ns\":%llu,"
+                    "\"worker_job_calls\":%llu,\"host_job_calls\":%llu,\"native_quant_calls\":%llu,\"sync_calls\":%llu,"
+                    "\"counter_errors\":%llu,\"unwound\":%llu,\"snapshot_read_errors\":%llu,"
+                    "\"clock_deltas_valid\":%s,\"quiescent\":%s,\"worker_jobs_fit\":%s,\"main_subsets_fit\":%s,"
+                    "\"unexpected_mode_tasks\":%llu,\"workers\":%d,\"host_works\":%s}\n",
+                    valid ? "true" : "false", (long long) n, (long long) produced_n, (long long) dec_windows,
+                    std::chrono::duration<double, std::milli>(wall_end - d0).count(),
+                    (unsigned long long) process_cpu.ns, (unsigned long long) main_cpu.ns,
+                    (unsigned long long) workers_cpu, (unsigned long long) worker_jobs.ns,
+                    (unsigned long long) host_jobs.ns, (unsigned long long) quant_cpu.ns, (unsigned long long) sync_cpu.ns,
+                    (unsigned long long) worker_gu.ns, (unsigned long long) worker_down.ns,
+                    (unsigned long long) host_gu.ns, (unsigned long long) host_down.ns,
+                    (unsigned long long) worker_jobs.calls, (unsigned long long) host_jobs.calls,
+                    (unsigned long long) quant_cpu.calls, (unsigned long long) sync_cpu.calls,
+                    (unsigned long long) evidence.errors, (unsigned long long) evidence.unwound,
+                    (unsigned long long) (cpu0.read_errors + cpu1.read_errors),
+                    main_cpu.valid && process_cpu.valid && worker_clock_valid ? "true" : "false",
+                    cpu0.quiescent && cpu1.quiescent ? "true" : "false",
+                    worker_jobs.ns <= workers_cpu ? "true" : "false",
+                    !main_subsets.errors && main_subsets.ns <= main_cpu.ns ? "true" : "false",
+                    (unsigned long long) (unexpected_worker.calls + unexpected_host.calls),
+                    pool.workers(), pool.host_works() ? "true" : "false");
             }
             if (dec_timing && dec_windows > 0) {
                 const DecSnap d1 = dec_snap();

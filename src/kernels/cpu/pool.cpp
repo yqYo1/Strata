@@ -354,6 +354,8 @@ ExpertPool::ExpertPool(int n_workers, bool pin, bool host_works, PoolAffinity af
         n_ = (int) topo_.worker_cores.size();
     }
     if (n_ < 1) n_ = 1;
+    cpu_profile_enabled_ = core::decode_cpu_profile_enabled();
+    if (cpu_profile_enabled_) cpu_profile_slots_.reset(new CpuProfileSlot[(size_t) n_ + 1]);
     scratch_.resize((size_t) n_);
     wstate_.reset(new std::atomic<int32_t>[(size_t) n_]);
     for (int i = 0; i < n_; ++i) wstate_[(size_t) i].store(kParked);
@@ -379,6 +381,37 @@ ExpertPool::~ExpertPool() {
     // Bump the epoch so a PARKED worker notices the stop flag rather than sleeping through it.
     publish();
     for (auto& t : threads_) t.join();
+}
+
+ExpertPool::CpuProfile ExpertPool::cpu_profile() {
+    CpuProfile out;
+    out.enabled = cpu_profile_enabled_;
+    if (!out.enabled) return out;
+    out.main_thread = core::thread_cpu_time();
+    out.process = core::process_cpu_time();
+    out.quiescent = parked_.load(std::memory_order_acquire) == (uint32_t) n_ &&
+                    done_.load(std::memory_order_acquire) == (uint32_t) njobs_;
+    if (!out.quiescent) { ++out.read_errors; return out; }
+    for (int id = 0; id < n_; ++id) {
+        for (size_t mode = 0; mode < out.worker_jobs.size(); ++mode)
+            out.worker_jobs[mode].merge(cpu_profile_slots_[(size_t) id].jobs[mode]);
+#if defined(__linux__)
+        clockid_t clock{};
+        if (pthread_getcpuclockid(threads_[(size_t) id].native_handle(), &clock) != 0) {
+            ++out.read_errors;
+        } else {
+            const auto reading = core::read_cpu_clock(clock);
+            if (!reading.valid || reading.ns > UINT64_MAX - out.worker_thread_ns) ++out.read_errors;
+            else out.worker_thread_ns += reading.ns;
+        }
+#else
+        ++out.read_errors;
+#endif
+    }
+    out.host_jobs = cpu_profile_slots_[(size_t) n_].jobs;
+    out.native_quant = native_quant_cpu_;
+    if (!out.main_thread.valid || !out.process.valid) ++out.read_errors;
+    return out;
 }
 
 void ExpertPool::publish() {
@@ -521,6 +554,9 @@ void ExpertPool::drain(int id, ExpertScratch& scratch, uint32_t epoch) {
         const uint32_t i = (uint32_t) ci;
         if (id >= 0) wstate_[(size_t) id].store(ci, std::memory_order_relaxed);
         else { hstate_.store(ci, std::memory_order_relaxed); hstate_ms_.store(now_ms(), std::memory_order_relaxed); }
+        const size_t profile_mode = mode_ >= 0 && mode_ < 7 ? (size_t) mode_ : 7;
+        core::CpuTimeRegion cpu(cpu_profile_enabled_ ?
+            &cpu_profile_slots_[(size_t) (id < 0 ? n_ : id)].jobs[profile_mode] : nullptr);
         if (mode_ == 0) {
             const ExpertJob& j = jobs_[i];
             s2_expert_vnni_q(j.blob, *j.act, j.out, scratch);
@@ -589,6 +625,7 @@ void ExpertPool::drain(int id, ExpertScratch& scratch, uint32_t epoch) {
                 r += r1 - r0;
             }
         }
+        cpu.close(); // Publish all slot writes before this job's completion.
         done_.fetch_add(1, std::memory_order_release);
     }
 }
@@ -674,6 +711,7 @@ void ExpertPool::run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs
         const auto a = std::chrono::steady_clock::now();
         run_phase(5, mtasks_);
         const auto b = std::chrono::steady_clock::now();
+        core::CpuTimeRegion quant_cpu(cpu_profile_enabled_ ? &native_quant_cpu_ : nullptr);
         for (int e = 0; e < nb; ++e)
             for (int t = 0; t < mjobs_[e].nt; ++t)
                 if (f.d_type == 42) {
@@ -681,6 +719,7 @@ void ExpertPool::run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs
                 } else {
                     native_quant_h(f, split_multi_[(size_t) e].ff[t], split_multi_[(size_t) e].hq[t]);
                 }
+        quant_cpu.close();
         const auto c = std::chrono::steady_clock::now();
         mrows_ = (int64_t) nb * H;
         run_phase(6, mtasks_);
@@ -697,7 +736,10 @@ void ExpertPool::run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs
 void ExpertPool::run(ExpertJob* jobs, int n) {
     if (n <= 0) return;
     if (n_ == 1) {   // no workers: run inline, so a single-core machine still produces a token
-        for (int i = 0; i < n; ++i) s2_expert_vnni_q(jobs[i].blob, *jobs[i].act, jobs[i].out, scratch_[0]);
+        for (int i = 0; i < n; ++i) {
+            core::CpuTimeRegion cpu(cpu_profile_enabled_ ? &cpu_profile_slots_[(size_t) n_].jobs[0] : nullptr);
+            s2_expert_vnni_q(jobs[i].blob, *jobs[i].act, jobs[i].out, scratch_[0]);
+        }
         return;
     }
     // Wait for every worker to be parked BEFORE touching the batch, so the publish below is the only thing
@@ -734,7 +776,9 @@ void ExpertPool::run(ExpertJob* jobs, int n) {
             hstate_.store(ci, std::memory_order_relaxed);
             hstate_ms_.store(now_ms(), std::memory_order_relaxed);
             const ExpertJob& j = jobs_[ci];
+            core::CpuTimeRegion cpu(cpu_profile_enabled_ ? &cpu_profile_slots_[(size_t) n_].jobs[0] : nullptr);
             s2_expert_vnni_q(j.blob, *j.act, j.out, host_scratch_);
+            cpu.close();
             done_.fetch_add(1, std::memory_order_release);
         }
     }
