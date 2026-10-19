@@ -147,7 +147,7 @@
       "candidate_path": "bench/results/2026-10-15-pr6-recovery-audit/own-qsa-kpitch-v1",
       "decision": "Reuse the existing source-audited pitch proposal after the current comparison; no new duplicate survey. Recheck immutable source/provenance and wire maintained API/tests before compiling.",
       "candidate": "Fixed score33,Cells32,WG128,SG16; K36/V260 shared tile needs9216 BF16 values,30272B requested local payload,34368B admission minimum. No hardware occupancy/bank map or performance result.",
-      "do_not_repeat": "Old global K span256 schedule regressed10.35\u201329.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
+      "do_not_repeat": "Old global K span256 schedule regressed10.35–29.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
     },
     "reviewed_base_source_sha256": "fa505d02e2b24f7cb6948033921fa697c8aeb58e6f4df6d873f13e5a7918e36b",
     "source_sha256": "c3ad8326f097050ff9ab1859e116f2cad3709a8464162143f752bc294cbe1e01",
@@ -208,7 +208,7 @@
         "bytes": 19144,
         "source_commit": "fbc7f56d7b0ddb5db5f3722ef33ca044c3f8a5c8",
         "reason": "Its conditional consumer is a selected-cell stable-reduction split. The closed QSA screen and pending pitch candidate select no split or reduction bottleneck.",
-        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report\u2019s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
+        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report’s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
       },
       {
         "path": "bench/results/2026-10-15-pr6-recovery-audit/research-matrix-register-reuse-20261018.md",
@@ -1379,8 +1379,8 @@
         "Retrieval map for a later concrete question"
       ],
       "paper_sections": [
-        "SyclKittens \u00a7\u00a73.2\u20133.3 and Appendix D for operand layouts, subgroup prefetch and the measured ablation.",
-        "Xe-Forge \u00a7\u00a7IV\u2013V, VI-A, VI-D\u2013VI-E for search/validation workflow, hardware, baseline and kernel results."
+        "SyclKittens §§3.2–3.3 and Appendix D for operand layouts, subgroup prefetch and the measured ablation.",
+        "Xe-Forge §§IV–V, VI-A, VI-D–VI-E for search/validation workflow, hardware, baseline and kernel results."
       ]
     }
   },
@@ -2103,7 +2103,7 @@
   },
   "sycl_command_submission_amortization_collection_scope": {
     "classification": "knowledge collection",
-    "question": "For repeated same-queue SYCL/oneAPI kernel and copy command streams, compare mechanisms that amortize host submission work: per-command submission, supported command batching/list execution, and replayable command graphs with parameter updates. Using official Khronos/Intel/Unified Runtime sources and transferable non-LLM SYCL/HPC examples, determine what each mechanism actually amortizes, how it handles dynamic pointers/maps/shapes, dependencies, asynchronous errors, capture restrictions and replay/update costs, and where measured benefits fail to transfer. Map applicability to Strata\u2019s repeated GEMM/upload submit pattern without proposing code or claiming local performance.",
+    "question": "For repeated same-queue SYCL/oneAPI kernel and copy command streams, compare mechanisms that amortize host submission work: per-command submission, supported command batching/list execution, and replayable command graphs with parameter updates. Using official Khronos/Intel/Unified Runtime sources and transferable non-LLM SYCL/HPC examples, determine what each mechanism actually amortizes, how it handles dynamic pointers/maps/shapes, dependencies, asynchronous errors, capture restrictions and replay/update costs, and where measured benefits fail to transfer. Map applicability to Strata’s repeated GEMM/upload submit pattern without proposing code or claiming local performance.",
     "schedulable_now": false,
     "status": "native_reviewed_retrieval_reference",
     "eligibility_review": {
@@ -3369,7 +3369,7 @@
       "source": "src/kernels/cpu/iq_single_avx2.cpp",
       "reference": "docs/SYCL_IMPLEMENTATION.md:2475",
       "prior_evidence_commit": "8063aacc6749d18089f7a53db5d3e47b745f348c",
-      "prior_scope": "Short128-token,512-context tests on this machine; IQ3_XXS/IQ2_S opt-in improved decode medians1.13\u20132.20%, later IQ3_S addition had about0.20% aggregate effect. Not current32K evidence.",
+      "prior_scope": "Short128-token,512-context tests on this machine; IQ3_XXS/IQ2_S opt-in improved decode medians1.13–2.20%, later IQ3_S addition had about0.20% aggregate effect. Not current32K evidence.",
       "provenance": "Main-authored Zen3 adaptation of MIT GGML x86 quants, dated2026-10-04 before XeStrata evaluation; no XeStrata source used by this proposal.",
       "current_build_observation": "Selected original recipe sets Clang and STRATA_CPU_ARCH=znver3; actual engine exports a371-byte iq256_single_gu_rows symbol. This does not prove invocation or current numerical/performance qualification.",
       "prerequisite": "Resolve CPU pool-capacity diagnostic and qualify exact production source/dispatch and applicable parity before a separate immutable flag0/1 long-generation comparison. Do not alter the current six-process plan.",
@@ -3381,7 +3381,7 @@
     "status": "reviewed_conditional_runtime_reference",
     "schedulable_now": false,
     "prerequisite_evidence": "Exact libze-intel-gpu1 package14 to16 and libudev17 to18 identities are retained in client-resources-current.json runtime_asset_delta; the original smoke plan is recoverable at9a5fc5d17. The byte-identical small bank fixture passed on proposed assets at db11be131. This is neither unchanged-runtime evidence nor a retrospective speed claim.",
-    "question": "Trace official release/package provenance of installed Intel compute-runtime26.31.39395.14\u2192.16, identify relevant changes to Level Zero queues/events/host polling/graphs/USM and distinguish observed package changes from inferred fixes. Compare potential CPU submission/poll overhead and compatibility with this project pinned UR v2/compiler/IGC and qualified safety settings. Provide bounded follow-up checks, counterevidence and unresolved facts; no optimization without measured attribution.",
+    "question": "Trace official release/package provenance of installed Intel compute-runtime26.31.39395.14→.16, identify relevant changes to Level Zero queues/events/host polling/graphs/USM and distinguish observed package changes from inferred fixes. Compare potential CPU submission/poll overhead and compatibility with this project pinned UR v2/compiler/IGC and qualified safety settings. Provide bounded follow-up checks, counterevidence and unresolved facts; no optimization without measured attribution.",
     "novelty": "Newly observed package transition after closed clean model cohort, not a repeat of historical GPU-hang or general SYCL submission surveys.",
     "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/level-zero-package-39395-16-runtime-delta-review.md",
     "report_budget_bytes": 12288,
@@ -3402,7 +3402,7 @@
     "native_review_bytes": 6138,
     "native_review_sha256": "a558a947568f8b699ba466f70bb0e8ade1c38fe860cc0572cc328403fc2f327c",
     "review_digest": {
-      "novelty": "Specific .14\u2192.16 release/package provenance; decision support, not performance evidence.",
+      "novelty": "Specific .14→.16 release/package provenance; decision support, not performance evidence.",
       "corrections": [
         "Upstream .16 tag changes kernels_bin as well as its IGC dependency metadata.",
         "Installed IGC, DPC++ and UR remain unchanged; do not infer a local IGC upgrade or speed/fault effect.",
