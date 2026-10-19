@@ -1599,8 +1599,10 @@ no shape>1.05 and both cap2051 patterns improve in each process. Complete
 wrapper wall time includes admission, prefix preparation and checked drain;
 it does not prove arithmetic saturation or physical VRAM traffic. The proposed
 mechanism reduces subgroup dependency/exchange work, with unchanged PCIe
-payload. Source`bba952e33` compiled successfully; numerical validation and
-speed remain unrun.
+payload. Source`bba952e33` compiled successfully. The initial traced small check passed
+both two-case numerical fixtures and the small timing-fixture sanity check,
+including state-span rejection checks, with normal closure and no fresh fault.
+Full boundary validation and clean speed remain unrun.
 The a576 validated engine/fixtures remain the fallback while the new native
 build uses the existing comparison cache. Commands are
 `build_engine.py rebuild-parallel-sum`, followed by

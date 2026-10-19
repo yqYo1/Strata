@@ -1,0 +1,138 @@
+{
+  "source_commit": "bba952e333f0e0cf303f0e4d265ad7d50bd3504b",
+  "fixtures": {
+    "sycl_qsa_bf16_prefix_ordered_exp_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_ordered_exp_test",
+      "sha256": "c7ac62fe53d4a913a7626cf52398fb705f62bf62c938bfe2279c44c6f8ac8e40"
+    },
+    "sycl_qsa_bf16_prefix_parallel_sum_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_parallel_sum_test",
+      "sha256": "19e23e03f10268c02b0a44a7623e1e9b34f7276c3ad56ee00ec88e30f34f479f"
+    },
+    "sycl_qsa_bf16_prefix_parallel_sum_bench": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_parallel_sum_bench",
+      "sha256": "be9137609c6407043bd0645b6f9296ef5c4bf7965a1114d0eff2b18b1445c82a"
+    }
+  },
+  "checks": [
+    {
+      "mode": "smoke",
+      "target": "sycl_qsa_bf16_prefix_ordered_exp_test",
+      "process": 0,
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_ordered_exp_test",
+        "--smoke"
+      ],
+      "binary_sha256": "c7ac62fe53d4a913a7626cf52398fb705f62bf62c938bfe2279c44c6f8ac8e40",
+      "passed": true,
+      "exit_code": 0,
+      "ownership_closed": true,
+      "cases": [
+        "case explicit_duplicate_ids=PASS aliased_physical_pages=PASS first_later_KV_diagnostics=PASS status=PASS",
+        "case state_admission_rejections=9 status=PASS",
+        "case cells=97 live_cells=49 active_rows=128 cap=33 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case exact_FP32_online_state=PASS real_padded_heads=PASS state_guards=PASS cells=97 cap=33",
+        "case exact_prefix33_bits=PASS cells=97 cap=33 queries=1",
+        "case cells=97 live_cells=71 active_rows=160 cap=33 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case exact_FP32_online_state=PASS real_padded_heads=PASS state_guards=PASS cells=97 cap=33",
+        "case exact_prefix33_bits=PASS cells=97 cap=33 queries=3",
+        "fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED"
+      ]
+    },
+    {
+      "mode": "smoke",
+      "target": "sycl_qsa_bf16_prefix_parallel_sum_test",
+      "process": 0,
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_parallel_sum_test",
+        "--smoke"
+      ],
+      "binary_sha256": "19e23e03f10268c02b0a44a7623e1e9b34f7276c3ad56ee00ec88e30f34f479f",
+      "passed": true,
+      "exit_code": 0,
+      "ownership_closed": true,
+      "cases": [
+        "case explicit_duplicate_ids=PASS aliased_physical_pages=PASS first_later_KV_diagnostics=PASS status=PASS",
+        "case state_admission_rejections=9 status=PASS",
+        "case parallel_state_admission_rejections=9 status=PASS",
+        "case cells=97 live_cells=49 active_rows=128 cap=33 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case parallel_FP32_state_bound=PASS exact_max_alpha=PASS real_padded_heads=PASS state_guards=PASS cells=97 cap=33",
+        "case parallel_BF16_output_bound=PASS cells=97 cap=33 queries=1",
+        "case cells=97 live_cells=71 active_rows=160 cap=33 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case parallel_FP32_state_bound=PASS exact_max_alpha=PASS real_padded_heads=PASS state_guards=PASS cells=97 cap=33",
+        "case parallel_BF16_output_bound=PASS cells=97 cap=33 queries=3",
+        "fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED"
+      ]
+    },
+    {
+      "mode": "smoke",
+      "target": "sycl_qsa_bf16_prefix_parallel_sum_bench",
+      "process": 0,
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_parallel_sum_bench",
+        "--smoke"
+      ],
+      "binary_sha256": "be9137609c6407043bd0645b6f9296ef5c4bf7965a1114d0eff2b18b1445c82a",
+      "passed": true,
+      "exit_code": 0,
+      "ownership_closed": true,
+      "cases": [
+        "case cells=97 queries=3 cap=33 pattern=gather samples=12 BF16_output_bound=PASS guards=PASS inputs=PASS status=PASS",
+        "fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED"
+      ]
+    }
+  ],
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "model_performance_measured": false,
+  "model_quality_qualified": false,
+  "physical262144_model_RESTORE_qualified": false,
+  "baseline": "qsa_bf16_prefix_ordered_exp_batch",
+  "candidate": "qsa_bf16_prefix_parallel_sum_batch",
+  "consumer": "Immediate same-binary component comparison; preserve individual samples and retire raw checks after closure.",
+  "prospective_gate": "New cached-Q/KVvec4 parallel FP32 sum candidate; same exp2/max/alpha/BF16 probability storage. Baseline exact-bit/state tests unchanged. Candidate finite synthetic outputs within1BF16 ULP+2e-6; exact maximum/alpha, gamma31-based tile-sum and online recurrence bounds, unchanged guards/diagnostics/inputs and physical262144 addressing. Three independent clean processes,6 rotated rounds per arm/shape,108 timings. Advance only with latency geomean<=0.95 across cap33 gathered/cap2051 gathered/clustered, no shape>1.05 and every cap2051 shape faster in each process. No model adoption.",
+  "limits": "Complete wrapper wall includes admission, pack, attention and checked drain. No hardware saturation, physical traffic, occupancy or model speed inference.",
+  "previous_attempt": null,
+  "numerical_scope": "These are prospective component bounds on the named finite fixtures, not a general quality tolerance or proof of a particular SGLang reduction tree. Old ordered-exp bit/state requirements and historical failures remain unchanged.",
+  "ownership_closed": true,
+  "mode": "smoke",
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+    "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "ZES_ENABLE_SYSMAN": "0",
+    "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+    "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+    "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cached-parallel-sum-component-v1/tmp",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cached-parallel-sum-component-v1/cache"
+  },
+  "GPU_executed": true,
+  "postchecks_complete": true,
+  "postcheck_errors": [],
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  },
+  "retention": "Small-check timing samples are diagnostic and unused by the performance gate; omit them. Keep numerical case/error evidence and all later used clean timing samples; retire raw traces/JIT after comparison closure."
+}
