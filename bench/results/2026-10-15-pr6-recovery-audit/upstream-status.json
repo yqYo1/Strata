@@ -126,9 +126,28 @@
           "local_adaptation": "Preserve the fork renderer/plain-literal API, vision/FIFO and engine pathways; integrate exact encoding cache without importing native inference or replacing serve/server.py wholesale. No XeStrata source."
         },
         "validation_plan": [
-          "timeout 120s python3 -B -m unittest serve.test_prompt_encoder serve.test_server.IncrementalPrompts tools.test_tokenizer_plain_spans",
-          "timeout 180s python3 -B -m unittest serve.test_server"
-        ]
+          "timeout 120s /home/yayoi/.local/share/strata-sycl/venv/bin/python -B -m unittest serve.test_prompt_encoder serve.test_server.IncrementalPrompts tools.test_tokenizer_plain_spans",
+          "timeout 180s /home/yayoi/.local/share/strata-sycl/venv/bin/python -B -m unittest serve.test_server"
+        ],
+        "implementation_source_commit": "4f9495d8c",
+        "validation_attempts": [
+          {
+            "source_commit": "4f9495d8c",
+            "command": "flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock timeout 120s python3 -B -m unittest serve.test_prompt_encoder serve.test_server.IncrementalPrompts tools.test_tokenizer_plain_spans",
+            "tests_reported": 2,
+            "errors": 3,
+            "seconds": 0.028,
+            "exit_code": 1,
+            "error": "System python lacks the existing regex runtime dependency; modules/setup did not complete. No functional pass claimed."
+          }
+        ],
+        "validation_python": {
+          "executable": "/home/yayoi/.local/share/strata-sycl/venv/bin/python",
+          "python": "3.12.3",
+          "regex": "2026.9.29",
+          "jinja2": "3.1.6",
+          "meaning": "Existing benchmark/server environment; verified imports, no installs or package changes."
+        }
       },
       {
         "feature": "stream_parser_scan",
