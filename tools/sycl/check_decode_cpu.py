@@ -95,6 +95,9 @@ def runtime_smoke(old_engine=False):
     profile = plan['expert_profile']
     guards.require(digest(profile['path']) == profile['sha256'], 'expert profile changed')
     args = reference['config']['args'].copy()
+    # The Python server prepends --serve; config args alone are CLI generate mode.
+    if '--serve' not in args:
+        args.insert(0, '--serve')
     args[args.index('--expert-profile') + 1] = profile['path']
     command = [binary['path'], *args]
     guards.no_model_owners([])
@@ -159,7 +162,10 @@ def runtime_smoke(old_engine=False):
         record['exit_code'] = entry.get('exit_code')
         if entry.get('direct_identity'):
             record['native_identity'] = {k: entry['direct_identity'][k] for k in ('pid', 'start_ticks', 'sid')}
-        guards.require(supervision.closed(entry) and entry.get('exit_code') == 0, 'native smoke ownership/exit failed')
+        record['protocol_error'] = entry.get('error')
+        guards.require(supervision.closed(entry) and entry.get('exit_code') == 0,
+                       'native smoke protocol/exit failed: ' + str(entry.get('error')) +
+                       '; exit=' + str(entry.get('exit_code')))
         text = err.read_text(errors='replace')
         guards.require(not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|retirement failed|Strata SYCL cleanup:', text),
                        'native runtime failure; inspect the original bounded diagnostic')
@@ -184,8 +190,11 @@ def runtime_smoke(old_engine=False):
     except BaseException as error:
         record['error'] = str(error)
     finally:
-        record['ownership_closed'] = owner.active is None and all(supervision.closed(c) for c in owner.commands)
-        record['complete'] = record['ownership_closed']
+        record['ownership_closed'] = owner.active is None and all(c.get('direct_child_reaped') and
+            c.get('session_empty') and not c.get('survivors') and c.get('ownership_status') == 'observed'
+            for c in owner.commands)
+        record['complete'] = bool(len(record['requests']) == len(plan['input_ids']) and
+                                  all(supervision.closed(c) for c in owner.commands))
         record['boot_unchanged'] = boot == Path('/proc/sys/kernel/random/boot_id').read_text().strip()
         after = subprocess.check_output(['journalctl', '-k', '-b', '--after-cursor', cursor, '--no-pager'], text=True)
         record['fresh_faults'] = [s for s in after.splitlines() if re.search(
@@ -199,7 +208,8 @@ def runtime_smoke(old_engine=False):
                                 record['boot_unchanged'] and not record['fresh_faults'])
         persist()
         compact = {k: v for k, v in record.items() if k not in ('plan', 'driver_after')}
-        compact['GPU_executed'] = bool(owner.commands and owner.commands[0].get('pid'))
+        compact['native_process_started'] = bool(owner.commands and owner.commands[0].get('pid'))
+        compact['GPU_executed'] = bool(record['requests']) if record.get('ready') else None
         compact['limits'] = 'Two tiny native-protocol requests through final commit. Explicit runtime-delta diagnostic only; shared qualified runtime pins remain unchanged. No performance, overhead, quality, IQ numerical, long-context or RESTORE qualification.'
         scope['runtime_reference' if old_engine else 'runtime_smoke'] = compact
         if not old_engine:
