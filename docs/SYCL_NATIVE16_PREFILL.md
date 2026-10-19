@@ -1634,6 +1634,26 @@ arithmetic from RAM limits or prove saturation at the baseline. Small-check
 success establishes neither task quality nor a speed gain. Keep earlier clean
 speeds and all failed comparison gates separate; see
 the [current plan/check](../bench/results/2026-10-15-pr6-recovery-audit/decode-cpu-capacity-current.json).
+A separate original-source audit finds the selected SYCL ordinary Arena provider
+cannot admit nonresident GPU experts through the existing alias/pin gate,
+although SYCL forces explicit mode0 copy. A host-USM FileExpertSource complement
+is a separate conditional route. Before a new copy capability, check every
+enqueue result and require checked retirement or fail-stop with owners alive:
+current fetch ignores submit errors, and a query error is not completion.
+The [reviewed source requirements](../bench/results/2026-10-15-pr6-recovery-audit/research-index.json)
+do not qualify enabling the route or predict a gain.
+
+A conditional complete-blob copy budget also constrains that candidate.
+With at most2 resident experts per layer, top10 routing and at most4 emitted
+tokens/window, even identical routes and perfect acceptance require at least
+`(10-2)*98227200/4=196454400` requested miss bytes per emitted token if all misses
+go to GPU. At the observed upstream encoding-only7.877GB/s budget this corresponds
+to40.095tok/s; illustrative6GB/s gives30.541tok/s. This optimistic scenario is
+below70tok/s, so full miss offload alone under this placement cannot supply
+the target. CPU/GPU sharing, larger resident reuse and wider effective windows
+remain distinct possibilities. The [calculation](../bench/results/2026-10-15-pr6-recovery-audit/client-resources-current.json)
+records its assumptions; it is neither measured wire traffic nor a hybrid
+throughput ceiling, and unchanged-work CPU scaling is not established.
 Actual unprivileged perf `cycles` and `task-clock` command probes at`dea283917`
 both exited1 with the access-limited diagnostic under`perf_event_paranoid=4`.
 This preserves the earlier VTune ptrace refusal as a separate result; no host
