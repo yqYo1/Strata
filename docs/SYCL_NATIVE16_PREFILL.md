@@ -1456,14 +1456,14 @@ report individual samples and spread even if this gate fails. No inference
 optimization, runtime-baseline adoption or resource saturation follows from
 this single-workload comparison alone.
 Independent source audit and native Luna-max review found no technical reuse
-blocker. The automatic off-arm consumer lacks an explicit four-warmup phase
-assertion: process0–4's original journals contain all four successful warmups,
-but all six journals must pass that check before interpreting the comparison.
-Retain them for that closure check; `passed` alone does not satisfy it. Residual
+blocker. Main closed the missing automatic warmup assertion at`77f1ad644`;
+all18 offline evidence tests passed. The final reducer checked all six original
+hash-chained journals against their closed receipts, including the four
+successful warmups, request identities and order. Residual
 null-counter work is the intended old/new test subject, not proof of a defect.
-The audit worker is completed and its terminal is closed; the frozen research
-index will be reconciled after the comparison, without changing its input hash.
-The first five processes closed with the same33211 fresh input tokens,
+The audit worker is completed and its terminal is closed. The original frozen
+index remains recoverable at each measurement revision.
+All six processes closed with the same33211 fresh input tokens,
 2931 generated including thinking and2105 of2481 accepted drafts. All four
 warmups passed and native/benchmark owners closed normally without fresh faults.
 
@@ -1471,13 +1471,18 @@ warmups passed and native/benchmark owners closed normally without fresh faults.
 | --- | ---: | ---: |
 | 0 | 13.1 | 11.8 |
 | 1 | 11.5 | 14.4 |
-| 2 | 13.2 | pending |
+| 2 | 13.2 | 11.4 |
 
 Original closed receipts remain in Git at`c1e33bdf0`,`b6e70064d`,`4de041ebb`,
-`8a76c139e` and the current result. Pair0's new/old per-token latency ratio
-1.115806577 exceeds the unchanged1.10 per-pair limit. Preserve this failed gate
-and complete the final planned process. Pair1 reverses the faster arm; neither
-direction establishes a constant engine cost or qualifies an engine choice.
+`8a76c139e`,`12e0ac0a2` and`50315cbef`. New/old per-token latency ratios are
+1.115807,0.798233,1.156885, with geomean1.010035. The geomean meets1.05, but
+two pairs exceed the unchanged1.10 maximum; the diagnostic nonregression gate
+fails. Old/new medians are13.1/11.8tok/s with sample SD0.954/1.629. Preserve
+all samples and the failed decision. Pair1 reverses the faster arm; these data
+do not establish a constant engine cost or a hardware bottleneck. Keep the old
+engine as the speed reference. The next bounded passive diagnostic will use it;
+consumer migration and extra-build retirement remain pending before another
+native build. No new inference optimization or runtime-baseline adoption follows.
 During process0, a read-only capability check of the owned native client's
 `/proc/<pid>/fdinfo` exposed xe `drm-cycles-ccs`, `drm-total-cycles-ccs` and
 memory residency fields on kernel7.0.0-38-generic. This is field availability,
