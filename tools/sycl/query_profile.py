@@ -40,9 +40,14 @@ def runtime_assets_unchanged(record):
         'default-route-query-profile-long'), 'unknown query diagnostic mode')
     expected = {n:dict(qualified_sha256=v[0],candidate_sha256=v[1]) for n,v in DELTA.items()}
     component = gen.committed(COMPONENT)
+    def identities(delta):
+        # Older model receipts also carry package/version timestamps. Compare
+        # the complete asset set and both immutable hashes, not those labels.
+        return {n:{k:item[k] for k in ('qualified_sha256','candidate_sha256')}
+            for n,item in delta.items()}
     guards.require(component['passed'] and component['complete'] and component['ownership_closed'] and
         not component['active'] and not component['fresh_faults'] and
-        record['runtime_asset_delta'] == component['runtime_asset_delta'] == expected,
+        identities(record['runtime_asset_delta']) == identities(component['runtime_asset_delta']) == expected,
         'query diagnostic assets differ from the same-build component admission')
     settings = gen.committed(gen.SETTINGS)
     guards.require(set(expected) <= set(settings['runtime_elfs']), 'unknown runtime asset')

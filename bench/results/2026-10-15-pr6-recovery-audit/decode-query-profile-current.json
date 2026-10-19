@@ -25,5 +25,13 @@
       "sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
     }
   ],
-  "limits": "Full model hashing finished but its in-memory inventory was not written before the admission failure. No model or GPU test executed and no performance/fault qualification is implied."
+  "limits": "Full model hashing finished but its in-memory inventory was not written before the admission failure. No model or GPU test executed and no performance/fault qualification is implied.",
+  "followup_preparation_failure": {
+    "source_commit": "9fc95c6ccec9f8339e9ec0943f1fa7acdfd32f43",
+    "error": "RuntimeError: query diagnostic assets differ from the same-build component admission",
+    "cause": "Model receipt has package/version/time labels in addition to the same two immutable runtime hashes; strict whole-dict comparison incorrectly rejected these labels.",
+    "new_root_created": false,
+    "GPU_executed": false,
+    "ownership_closed": true
+  }
 }

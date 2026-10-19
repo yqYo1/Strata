@@ -65,6 +65,9 @@ class RuntimeAdmission(unittest.TestCase):
     def test_exact_component_assets_and_both_diagnostic_modes(self):
         for mode in ('default-route-query-profile-check','default-route-query-profile-long'):
             self.admit(dict(mode=mode,runtime_asset_delta=self.delta))
+        labeled=copy.deepcopy(self.delta)
+        for item in labeled.values():item.update(package='label',candidate_version='version',upgrade_utc='time')
+        self.admit(dict(mode='default-route-query-profile-check',runtime_asset_delta=labeled))
 
     def test_unknown_mode_and_changed_delta_refused(self):
         with self.assertRaises(RuntimeError):
