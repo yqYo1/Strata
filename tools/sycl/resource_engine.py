@@ -9,6 +9,7 @@ from pathlib import Path
 import re
 import shutil
 import socket
+import statistics
 import subprocess
 import sys
 
@@ -31,6 +32,21 @@ def require_journal_binding(requests, journal_rows):
     official=[{k:v for k,v in row.items() if k not in ('controller_eligible','reasoning_tokens')}
               for row in requests]
     guards.require(official==journal_rows, 'official work/client clocks differ from the verified journal')
+
+
+def collection_read_spans(samples, client_interval):
+    """Observed reader-call wall spans, not a causal observer-overhead bound."""
+    begin,first,end=(client_interval[k] for k in
+        ('request_begin_monotonic_ns','first_output_monotonic_ns','request_end_monotonic_ns'))
+    result={}
+    for name,lo,hi in [('before_first_output',begin,first),('after_first_output',first,end)]:
+        spans=sorted((s['end_monotonic_ns']-s['begin_monotonic_ns'])/1e9 for s in samples
+            if lo<=s['begin_monotonic_ns']<=s['end_monotonic_ns']<=hi)
+        guards.require(spans and hi>lo,'missing contained collector read spans')
+        result[name]=dict(contained_calls=len(spans),sum_wall_seconds=sum(spans),
+            median_wall_seconds=statistics.median(spans),max_wall_seconds=max(spans),
+            sum_fraction_of_client_window=sum(spans)/((hi-lo)/1e9))
+    return result
 
 
 def source_proof(record):
@@ -216,9 +232,13 @@ def summarize():
     native=json.loads((ROOT/'engine-exit.json').read_text())
     guards.require(native==record['native_exit'],'native closure receipt changed')
     capture=ROOT/'client-resources.jsonl'
-    resources=client_resources.summarize_capture([json.loads(line) for line in capture.read_text().splitlines()],
+    captured=[json.loads(line) for line in capture.read_text().splitlines()]
+    resources=client_resources.summarize_capture(captured,
         native['native'],native['boot_id'],rows[0]['client_interval'])
     guards.require(resources==record['resources'],'resource replay differs from original admitted values')
+    record['collector_read_spans']=dict(windows=collection_read_spans(
+        captured[1:-1],
+        rows[0]['client_interval']),limits='Inclusive synchronous reader-call wall time, including descheduling. Does not bound asynchronous driver/cache/clock effects or total model slowdown; only a prospectively matched collector-off/on comparison can measure that effect.')
     record['post_closure_admission']=dict(analyzer_source_commit=generation.git('rev-parse','HEAD').decode().strip(),
         original_execution_receipt_commit=generation.git('log','-1','--format=%H','--',str(RESULT.relative_to(P))).decode().strip(),
         official_result_sha256=generation.common.digest(path),capture_sha256=generation.common.digest(capture),
