@@ -212,8 +212,8 @@
     "file_cap": 67108864,
     "total_cap": 67108864
   },
-  "complete": false,
-  "passed": false,
+  "complete": true,
+  "passed": true,
   "active": false,
   "performance_adopted": false,
   "sustained_decode70_qualified": false,
@@ -284,5 +284,351 @@
     "build_source_commit": "d50d31347cc8505a40181db8308735bfa0058427",
     "provider_checks_passed": true,
     "full_bank_cases": 6
+  },
+  "exit_code": 0,
+  "requests": [
+    {
+      "ok": true,
+      "err": null,
+      "ttft_s": 51.44,
+      "total_s": 308.515,
+      "prompt_tokens": 33211,
+      "reused_tokens": 0,
+      "read_tokens": 33211,
+      "generated_tokens": 2931,
+      "prompt_tps": 649.2,
+      "prompt_tps_source": "engine",
+      "decode_tps": 11.4,
+      "decode_tps_source": "engine",
+      "prompt_ms": 51160.4,
+      "decode_ms": 257174.1,
+      "drafts_offered": 2481,
+      "drafts_accepted": 2105,
+      "finish_reason": "stop",
+      "request_sha256": "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9",
+      "stream_complete": true,
+      "truncated": false,
+      "generated_tokens_source": "usage",
+      "eligible": true,
+      "agreement_eligible": true,
+      "speed_eligible": true,
+      "speed_ineligible_reasons": [],
+      "ineligible_reasons": [],
+      "acceptance_rate": 0.8484482063683998,
+      "usage_generated_tokens": 2931,
+      "completion_includes_thinking": true,
+      "run": 0,
+      "order": 0,
+      "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
+      "reasoning_sha256": "c8661b9154a620a9ece19a429798939eb8ecc01da7ac261878e4494d6be0f340",
+      "output_chars": 5578,
+      "reasoning_chars": 2783,
+      "reasoning_tokens": null,
+      "workload": "regular-code",
+      "controller_eligible": true
+    }
+  ],
+  "client_classification": {
+    "qualified": false,
+    "strong_case_confirmed": false,
+    "weak_case_confirmed": false,
+    "minimum_runs": 3,
+    "strong_min_acceptance": 0.6,
+    "weak_max_acceptance": 0.4,
+    "scope": "Observed draft agreement only; prompts do not guarantee an MTP regime or prove speedup."
+  },
+  "client_failures": [],
+  "request_journal": {
+    "valid": true,
+    "complete": true,
+    "complete_prefix_rows": 11,
+    "last_sha256": "1e7e6ca23c7f5e9a336ab8ccb85642fb9f995a161684b1387d1f7bb5749cf391",
+    "pending": [],
+    "errors": []
+  },
+  "engine_exit_code": 0,
+  "native_identity": {
+    "pid": 188461,
+    "start_ticks": 76405425,
+    "sid": 188436
+  },
+  "observer_records_absent": true,
+  "observer_overhead_qualified": false,
+  "hardware_bottleneck_qualified": false,
+  "ownership_closed": true,
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  },
+  "engine_comparison_summary": {
+    "analyzer_source_commit": "77f1ad64420fbbd6854e2c735e8640b73d2d68e2",
+    "processes": [
+      {
+        "cohort": 0,
+        "arm": "old",
+        "receipt_commit": "c1e33bdf0eecd5c804ca6703da3e3787fd72cc06",
+        "source_commit": "601620f08f88bdba1248448f6e1b9448fa988894",
+        "request_sha256": "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9",
+        "prompt_tokens": 33211,
+        "read_tokens": 33211,
+        "generated_tokens": 2931,
+        "decode_ms": 223470.9,
+        "decode_tps": 13.1,
+        "drafts_offered": 2481,
+        "drafts_accepted": 2105,
+        "acceptance_rate": 0.8484482063683998
+      },
+      {
+        "cohort": 1,
+        "arm": "new",
+        "receipt_commit": "685975e9b26497c49b974bba0f0671770e063061",
+        "source_commit": "c1e33bdf0eecd5c804ca6703da3e3787fd72cc06",
+        "request_sha256": "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9",
+        "prompt_tokens": 33211,
+        "read_tokens": 33211,
+        "generated_tokens": 2931,
+        "decode_ms": 249350.3,
+        "decode_tps": 11.8,
+        "drafts_offered": 2481,
+        "drafts_accepted": 2105,
+        "acceptance_rate": 0.8484482063683998
+      },
+      {
+        "cohort": 2,
+        "arm": "new",
+        "receipt_commit": "595c2d62d7377e9c9090963ce49c945bef2f6b5e",
+        "source_commit": "685975e9b26497c49b974bba0f0671770e063061",
+        "request_sha256": "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9",
+        "prompt_tokens": 33211,
+        "read_tokens": 33211,
+        "generated_tokens": 2931,
+        "decode_ms": 204171.9,
+        "decode_tps": 14.4,
+        "drafts_offered": 2481,
+        "drafts_accepted": 2105,
+        "acceptance_rate": 0.8484482063683998
+      },
+      {
+        "cohort": 3,
+        "arm": "old",
+        "receipt_commit": "8a76c139ed2d350ef296a3e166dcf992a79728f8",
+        "source_commit": "595c2d62d7377e9c9090963ce49c945bef2f6b5e",
+        "request_sha256": "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9",
+        "prompt_tokens": 33211,
+        "read_tokens": 33211,
+        "generated_tokens": 2931,
+        "decode_ms": 255779.7,
+        "decode_tps": 11.5,
+        "drafts_offered": 2481,
+        "drafts_accepted": 2105,
+        "acceptance_rate": 0.8484482063683998
+      },
+      {
+        "cohort": 4,
+        "arm": "old",
+        "receipt_commit": "12e0ac0a2ceaed3090cf8797690dd5da13016136",
+        "source_commit": "8a76c139ed2d350ef296a3e166dcf992a79728f8",
+        "request_sha256": "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9",
+        "prompt_tokens": 33211,
+        "read_tokens": 33211,
+        "generated_tokens": 2931,
+        "decode_ms": 222298.7,
+        "decode_tps": 13.2,
+        "drafts_offered": 2481,
+        "drafts_accepted": 2105,
+        "acceptance_rate": 0.8484482063683998
+      },
+      {
+        "cohort": 5,
+        "arm": "new",
+        "receipt_commit": "77f1ad64420fbbd6854e2c735e8640b73d2d68e2",
+        "source_commit": "12e0ac0a2ceaed3090cf8797690dd5da13016136",
+        "request_sha256": "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9",
+        "prompt_tokens": 33211,
+        "read_tokens": 33211,
+        "generated_tokens": 2931,
+        "decode_ms": 257174.1,
+        "decode_tps": 11.4,
+        "drafts_offered": 2481,
+        "drafts_accepted": 2105,
+        "acceptance_rate": 0.8484482063683998
+      }
+    ],
+    "paired_per_token_latency_ratios": [
+      1.115806577053209,
+      0.7982334016342969,
+      1.1568853079212789
+    ],
+    "paired_latency_ratio_geomean": 1.010034883217471,
+    "paired_ratio_sample_sd": 0.19628693867170946,
+    "limits": "Observer-off retained old/new engine comparison on the same proposed runtime; regular-code only. No runtime adoption, hardware bottleneck, strong/weak or70tok/s qualification.",
+    "diagnostic_nonregression_gate_passed": false,
+    "arm_statistics": {
+      "old": {
+        "independent_process_tps": [
+          13.1,
+          11.5,
+          13.2
+        ],
+        "median_tps": 13.1,
+        "sample_sd_tps": 0.9539392014169453
+      },
+      "new": {
+        "independent_process_tps": [
+          11.8,
+          14.4,
+          11.4
+        ],
+        "median_tps": 11.8,
+        "sample_sd_tps": 1.6289055630494154
+      }
+    },
+    "original_benchmark_inputs_recovered": 115,
+    "warmup_reconciliation": [
+      {
+        "cohort": 0,
+        "successful_warmups": 4,
+        "successful_long_requests": 1,
+        "phase_order": [
+          "warm-up/chat",
+          "calibration",
+          "calibration",
+          "warm-up/prompt",
+          "long-generation/regular-code"
+        ],
+        "request_sha256": [
+          "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+          "48af7fbebcd5728e30cb2d9a1077477a8bba53ac3af17ee75e8450380ed2e346",
+          "3f92f8a68c7c71cec1f50355d30fb97744f44099673e8de1dabd46d12a61d7b6",
+          "f0d7df4ffaaf67dbf3ae26f8d77f0811d2bed00bbd2ed92912fd9d0649347eae",
+          "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9"
+        ],
+        "journal_sha256": "dc417d1fdf1d435c4e669006d78e9a3d7697f6fbc67bb944ad0e24932e925aca",
+        "journal_state_sha256": "f28665fde129f58db42bcd0b221a093dbb0247e5fa2df672693eb01c54b2be01"
+      },
+      {
+        "cohort": 1,
+        "successful_warmups": 4,
+        "successful_long_requests": 1,
+        "phase_order": [
+          "warm-up/chat",
+          "calibration",
+          "calibration",
+          "warm-up/prompt",
+          "long-generation/regular-code"
+        ],
+        "request_sha256": [
+          "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+          "48af7fbebcd5728e30cb2d9a1077477a8bba53ac3af17ee75e8450380ed2e346",
+          "3f92f8a68c7c71cec1f50355d30fb97744f44099673e8de1dabd46d12a61d7b6",
+          "f0d7df4ffaaf67dbf3ae26f8d77f0811d2bed00bbd2ed92912fd9d0649347eae",
+          "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9"
+        ],
+        "journal_sha256": "76ea18bfbfdcc30b6adc0e9008e9e6ca3b0eb08f1e25201591e1f6af96dfafbd",
+        "journal_state_sha256": "13c4d9506f248d6a8beecfe48bef6fce5a68debd28b4ab2714d1299eba4673d6"
+      },
+      {
+        "cohort": 2,
+        "successful_warmups": 4,
+        "successful_long_requests": 1,
+        "phase_order": [
+          "warm-up/chat",
+          "calibration",
+          "calibration",
+          "warm-up/prompt",
+          "long-generation/regular-code"
+        ],
+        "request_sha256": [
+          "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+          "48af7fbebcd5728e30cb2d9a1077477a8bba53ac3af17ee75e8450380ed2e346",
+          "3f92f8a68c7c71cec1f50355d30fb97744f44099673e8de1dabd46d12a61d7b6",
+          "f0d7df4ffaaf67dbf3ae26f8d77f0811d2bed00bbd2ed92912fd9d0649347eae",
+          "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9"
+        ],
+        "journal_sha256": "06d4092b3db4f06277e231baa2762aa402db7d1b383a6680a52926b17806baef",
+        "journal_state_sha256": "9f844eb976b85432abd9ca3e50d88a02cfe2dd42c0ce79f90be25f0a71173f77"
+      },
+      {
+        "cohort": 3,
+        "successful_warmups": 4,
+        "successful_long_requests": 1,
+        "phase_order": [
+          "warm-up/chat",
+          "calibration",
+          "calibration",
+          "warm-up/prompt",
+          "long-generation/regular-code"
+        ],
+        "request_sha256": [
+          "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+          "48af7fbebcd5728e30cb2d9a1077477a8bba53ac3af17ee75e8450380ed2e346",
+          "3f92f8a68c7c71cec1f50355d30fb97744f44099673e8de1dabd46d12a61d7b6",
+          "f0d7df4ffaaf67dbf3ae26f8d77f0811d2bed00bbd2ed92912fd9d0649347eae",
+          "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9"
+        ],
+        "journal_sha256": "d7ed269aa654f571f8e0709c0ecd7cdccf67a9936e6a3dd627bbd48be64f18ed",
+        "journal_state_sha256": "32b1699255a3ad41017b8594070f5439e0477d08b523880a4095462971aed86f"
+      },
+      {
+        "cohort": 4,
+        "successful_warmups": 4,
+        "successful_long_requests": 1,
+        "phase_order": [
+          "warm-up/chat",
+          "calibration",
+          "calibration",
+          "warm-up/prompt",
+          "long-generation/regular-code"
+        ],
+        "request_sha256": [
+          "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+          "48af7fbebcd5728e30cb2d9a1077477a8bba53ac3af17ee75e8450380ed2e346",
+          "3f92f8a68c7c71cec1f50355d30fb97744f44099673e8de1dabd46d12a61d7b6",
+          "f0d7df4ffaaf67dbf3ae26f8d77f0811d2bed00bbd2ed92912fd9d0649347eae",
+          "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9"
+        ],
+        "journal_sha256": "d36a9ca8115ae4026ea8cc460461057d79e8689c349d4893308a4ba092937a68",
+        "journal_state_sha256": "2b13d9b1cdfa1b31b6d178dde337448abb17848d1078ee034b8025147f626dfa"
+      },
+      {
+        "cohort": 5,
+        "successful_warmups": 4,
+        "successful_long_requests": 1,
+        "phase_order": [
+          "warm-up/chat",
+          "calibration",
+          "calibration",
+          "warm-up/prompt",
+          "long-generation/regular-code"
+        ],
+        "request_sha256": [
+          "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+          "48af7fbebcd5728e30cb2d9a1077477a8bba53ac3af17ee75e8450380ed2e346",
+          "3f92f8a68c7c71cec1f50355d30fb97744f44099673e8de1dabd46d12a61d7b6",
+          "f0d7df4ffaaf67dbf3ae26f8d77f0811d2bed00bbd2ed92912fd9d0649347eae",
+          "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9"
+        ],
+        "journal_sha256": "caae5964c04f72e4ef76f6a41a4e88d40675ce328fa2e65de7a609784be13ac1",
+        "journal_state_sha256": "5662a16eecd87a94cca783e0a0ed4cd5c1ae6ff0f745fd0e6ca1b8dca70c5600"
+      }
+    ],
+    "GPU_executed": false,
+    "original_outcomes_unchanged": true
+  },
+  "artifact_retirement": {
+    "complete": false,
+    "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-engine-comparison-and-source-audits-retirement-20261019.jsonl",
+    "manifest_sha256": "db01a0383b99961598ab349c445e8a316f8564a66b39c69c9cce8aaa8b9d4ccd",
+    "files": 435,
+    "bytes": 76862083,
+    "consumer": "Delete six closed raw comparison roots and completed audit reports/transactions after this summary/source is default-reachable.",
+    "extra_build_status": "Pending current-consumer migration and retirement before another native build; old engine remains speed reference.",
+    "original_outcomes_unchanged": true
   }
 }

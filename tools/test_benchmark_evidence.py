@@ -28,6 +28,31 @@ def raw(body="answer", offered=300):
 
 
 class EvidenceTests(unittest.TestCase):
+    def test_warmup_reconciliation_rejects_failed_missing_reordered_and_changed_requests(self):
+        phases = [('warm-up/chat',None,24,True),('calibration',200,1,False),
+                  ('calibration',800,1,False),('warm-up/prompt',None,8,True),
+                  ('long-generation/regular-code',0,16384,True)]
+        entries = [dict(kind='identity')]
+        for i,(phase,run,maximum,thinking) in enumerate(phases):
+            start = dict(kind='start',index=2*i+1,phase=phase,run=run,turn=None,
+                max_tokens=maximum,thinking=thinking,request_sha256=str(i)*64)
+            entries += [start,dict(kind='result',phase=phase,run=run,turn=None,
+                request_index=start['index'],sample=dict(ok=True,request_sha256=start['request_sha256']))]
+        proof = generation.warmup_reconciliation(entries)
+        self.assertEqual(proof['successful_warmups'],4)
+        self.assertEqual(proof['successful_long_requests'],1)
+        for variant in ('missing','extra','reordered','failed','thinking','hash','request_index'):
+            with self.subTest(variant=variant):
+                rows = copy.deepcopy(entries)
+                if variant=='missing': del rows[1:3]
+                if variant=='extra': rows += rows[1:3]
+                if variant=='reordered': rows[1:3],rows[3:5] = rows[3:5],rows[1:3]
+                if variant=='failed': rows[2]['sample']['ok']=False
+                if variant=='thinking': rows[1]['thinking']=False
+                if variant=='hash': rows[2]['sample']['request_sha256']='f'*64
+                if variant=='request_index': rows[2]['request_index']=123
+                with self.assertRaises(RuntimeError): generation.warmup_reconciliation(rows)
+
     def test_engine_comparison_rejects_wrong_build_observers_and_unmatched_work(self):
         builds = {arm: dict(binary=dict(path='/engines/'+arm, sha256=arm), build_source_commit=arm)
                   for arm in ('old', 'new')}
