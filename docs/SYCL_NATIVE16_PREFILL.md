@@ -1798,6 +1798,33 @@ This is execution/copy-conservation evidence, not native-output or task-quality
 qualification or a speed gain. Validate dispatched mixed-format expert outputs
 before advancing a long-generation candidate. Preserve the source396 fallback
 and default-off candidate for that imminent comparison.
+At build source`218561fc0`, all51 v5 component cases passed, including the16
+staged grouped-output cases. Engine and prior three fixture bytes remained
+unchanged; the added fixture supplies the new arithmetic evidence. Owners closed
+normally with unchanged boot and no fresh fault. Independent native Luna-max
+review confirmed that the omitted generic MMQ/IQ-dequant environment flags do
+not affect this grouped route; its relevant defaults match the model. This is
+the fixed tested contract, not a claim of bit identity for every optimized path.
+
+The next `arena_copy.py prepare check` uses official `bench.sh` for one
+parameter-validated, thinking-enabled regular-code request: at least32768 fresh
+input tokens,1024 generated tokens including thinking and actual answer body,
+with positive copied groups and exact copy conservation. Commit its generated
+plan before `run`. This is a diagnostic, not clean speed. After it closes, the
+same frozen source admits six independent clean processes via
+`arena_copy.py prepare clean N` for N0..5, each followed by a committed plan and
+`run`. Both arms use pool5/pcie-frac0.25 and the same binary, configuration and
+input; only `STRATA_SYCL_VERIFY_ARENA_COPY` changes in order0,1,1,0,0,1.
+Preserve qualified queue/safety settings, remove observers for clean speed and
+require strong MTP acceptance>=0.60. Generated text, output length and draft
+counts may differ; retain the actual values. Pairs0/1,3/2,4/5 signal faster only
+when all three candidate/base ratios exceed1 and their geomean exceeds1.02;
+signal slower only for the corresponding inverse condition, otherwise
+inconclusive. Stop on any failed or mismatched process without an automatic
+retry. Record completed logical bytes per emitted token and remaining CPU work;
+neither establishes wire traffic or saturation. This screen cannot adopt a
+candidate: weak-MTP, agent-session, broader task quality, long-prefill
+nonregression and physical262144/session/RESTORE checks remain pending.
 
 A conditional complete-blob copy budget also constrains that candidate.
 With at most2 resident experts per layer, top10 routing and at most4 emitted
