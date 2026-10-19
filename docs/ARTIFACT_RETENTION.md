@@ -199,6 +199,12 @@ UR_LOG_TRACING='level:info;flush:info;output:stderr'
 The layer list uses commas; logger options use semicolons. For a long model
 check prefer parameter validation, warning/error logging and `STRATA_TRACE=1`
 without the full API trace. Obtain speed samples from separate clean processes.
+Model initialization and decode polling can fill an API trace even when the
+token request is tiny. If that reaches the budget, preserve the incomplete
+outcome and compact evidence of the cause. Commit a new model-check plan using
+parameter validation and stage progress; collect a complete API trace with a
+small device fixture instead. Do not qualify a budget-stopped model or retain
+its repeated polling history merely to obtain a complete trace.
 
 After closure, retire successful API/synchronization logs, repeated profiler
 windows, raw timelines, duplicate kernel dumps and normal build output once

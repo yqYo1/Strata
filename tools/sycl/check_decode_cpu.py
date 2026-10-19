@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Main-owned bounded CPU-only qualification of the decode CPU observer.
+"""Main-owned bounded qualification of the decode CPU observer.
 
-Use the prospectively committed child source and recipe. This builds no engine,
-performs no GPU operation and never retries an existing output directory.
+CPU fixture modes build no engine and perform no GPU operation. Explicit runtime
+modes check a small device fixture or native protocol; they are not speed tests.
+Use committed inputs and never retry an existing output directory.
 """
 import fcntl
 import hashlib
@@ -40,7 +41,7 @@ def digest(path):
         return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
-def runtime_smoke(old_engine=False):
+def runtime_smoke(old_engine=False, bank=False):
     """Small native-protocol diagnostic; throughput evidence still uses bench.sh."""
     committed_source = git(P, 'show', 'HEAD:' + str(Path(__file__).relative_to(P)))
     guards.require(Path(__file__).read_bytes() == committed_source, 'commit smoke controller first')
@@ -52,7 +53,7 @@ def runtime_smoke(old_engine=False):
     reference = json.loads(git(P, 'show', base['commit'] + ':' + base['path']))
     guards.require(reference['complete'] and reference['passed'] and reference['ownership_closed'],
                    'closed configuration reference required')
-    run_root = plan['reference_output_root'] if old_engine else plan['output_root']
+    run_root = plan['bank_output_root'] if bank else plan['reference_output_root'] if old_engine else plan['output_root']
     environment = {k: v.replace(reference['environment']['STRATA_MEASUREMENT_ROOT'], run_root)
                    for k, v in reference['environment'].items()}
     environment.update(plan['environment_overrides'])
@@ -68,13 +69,19 @@ def runtime_smoke(old_engine=False):
     for group in [full['project'], *full['dependencies']]:
         for name, expected in group['source_sha256'].items():
             guards.require(digest(Path(group['root']) / name) == expected, 'native smoke input changed: ' + name)
-    binary = build['retained_validation_reference']['binary'] if old_engine else build['binary']
-    if old_engine:
+    binary = build['fixtures']['sycl_expert_bank_test'] if bank else build['retained_validation_reference']['binary'] if old_engine else build['binary']
+    if bank:
+        guards.require(binary['sha256'] == build['retained_validation_reference']['fixtures']['sycl_expert_bank_test']['sha256'],
+                       'runtime device probe must use byte-identical known bank fixture')
+    elif old_engine:
         guards.require(binary['sha256'] == reference['binary']['sha256'], 'fallback differs from measured reference')
     else:
         guards.require(binary['sha256'] == plan['binary_sha256'], 'native engine changed')
     guards.require(digest(binary['path']) == binary['sha256'], 'selected executable changed')
     settings = committed(P / 'tools/sycl/measurement_environment.json')
+    if bank:
+        environment = {**settings['environment'], **plan['bank_environment_overrides'],
+                       'TMPDIR': run_root + '/tmp', 'XDG_CACHE_HOME': run_root + '/cache'}
     delta = plan.get('runtime_asset_delta', {})
     guards.require(set(delta) <= set(settings['runtime_elfs']), 'unknown proposed runtime asset')
 
@@ -87,7 +94,11 @@ def runtime_smoke(old_engine=False):
             guards.require(digest(name) == expected, 'runtime asset changed: ' + name)
 
     runtime_assets_unchanged()
-    if delta and not old_engine:
+    if delta and old_engine:
+        qualified = scope['runtime_device_probe']
+        guards.require(qualified['passed'] and qualified['ownership_closed'] and
+                       qualified['runtime_asset_delta'] == delta, 'bounded device probe required before model reference')
+    if delta and not old_engine and not bank:
         qualified = scope['runtime_reference']
         guards.require(qualified['passed'] and qualified['ownership_closed'] and
                        qualified['runtime_asset_delta'] == delta,
@@ -99,7 +110,7 @@ def runtime_smoke(old_engine=False):
     if '--serve' not in args:
         args.insert(0, '--serve')
     args[args.index('--expert-profile') + 1] = profile['path']
-    command = [binary['path'], *args]
+    command = [binary['path'], '--smoke'] if bank else [binary['path'], *args]
     guards.no_model_owners([])
     guards.driver_guard()
     root = Path(run_root)
@@ -112,7 +123,7 @@ def runtime_smoke(old_engine=False):
     cursor = next(s.split(': ', 1)[1] for s in before.splitlines() if s.startswith('-- cursor: '))
     record = dict(source_commit=git(P, 'rev-parse', 'HEAD').decode().strip(),
                   build_source_commit=build['retained_validation_reference']['source_commit'] if old_engine else build['source_commit'],
-                  binary=binary, plan=plan, reference_engine=old_engine, runtime_asset_delta=delta,
+                  binary=binary, plan=plan, reference_engine=old_engine, device_probe=bank, runtime_asset_delta=delta,
                   complete=False, passed=False, active=False, requests=[])
     owner = None
 
@@ -170,7 +181,7 @@ def runtime_smoke(old_engine=False):
     owner = supervision.Owner(root / 'owned', persist)
     try:
         entry, out, err = owner.run('native-smoke', command, environment, P,
-            interaction=interact, **plan['budgets'])
+            interaction=None if bank else interact, **(plan['bank_budgets'] if bank else plan['budgets']))
         record['exit_code'] = entry.get('exit_code')
         if entry.get('direct_identity'):
             record['native_identity'] = {k: entry['direct_identity'][k] for k in ('pid', 'start_ticks', 'sid')}
@@ -183,9 +194,22 @@ def runtime_smoke(old_engine=False):
         guards.require(not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|retirement failed|Strata SYCL cleanup:', text),
                        'native runtime failure; inspect the original bounded diagnostic')
         observations = [json.loads(s.partition(': ')[2]) for s in text.splitlines() if s.startswith('strata decode cpu: ')]
-        guards.require(len(record['requests']) == len(plan['input_ids']) and
-                       len(observations) == (0 if old_engine else len(record['requests'])),
-                       'attempted/completed/CPU-record counts do not reconcile')
+        if bank:
+            cases = [dict(part.split('=', 1) for part in line.split()[1:])
+                     for line in out.read_text().splitlines() if line.startswith('expert_bank_case ')]
+            actual = [(int(c['slots']), int(c['stride']), int(c['source_stride']), int(c['layers']),
+                       int(c['unwind'])) for c in cases]
+            guards.require(actual == [(4, 256, 256, 2, 0), (1, 256, 256, 1, 0),
+                                      (4, 256, 256, 1, 1), (4, 512, 256, 2, 0),
+                                      (1, 512, 256, 1, 0), (4, 512, 256, 1, 1)] and
+                'expert_bank_fixture PASS' in out.read_text() and all(
+                c['status'] == '0' and all(c[k] == 'PASS' for k in
+                ('immutable_slab', 'guards', 'private_map', 'checked_drain')) for c in cases), 'device probe failed/incomplete')
+            record['device_cases_passed'] = len(cases)
+        else:
+            guards.require(len(record['requests']) == len(plan['input_ids']) and
+                           len(observations) == (0 if old_engine else len(record['requests'])),
+                           'attempted/completed/CPU-record counts do not reconcile')
         for request, observation in zip(record['requests'], observations):
             guards.require(observation['schema'] == 1 and all(observation.get(k) is True for k in
                 ('valid', 'single_stage', 'clock_deltas_valid', 'quiescent', 'worker_jobs_fit', 'main_subsets_fit')) and
@@ -206,7 +230,8 @@ def runtime_smoke(old_engine=False):
         record['ownership_closed'] = owner.active is None and all(c.get('direct_child_reaped') and
             c.get('session_empty') and not c.get('survivors') and c.get('ownership_status') == 'observed'
             for c in owner.commands)
-        record['complete'] = bool(len(record['requests']) == len(plan['input_ids']) and
+        record['complete'] = bool((record.get('device_cases_passed') == 6 if bank else
+                                  len(record['requests']) == len(plan['input_ids'])) and
                                   all(supervision.closed(c) for c in owner.commands))
         record['boot_unchanged'] = boot == Path('/proc/sys/kernel/random/boot_id').read_text().strip()
         after = subprocess.check_output(['journalctl', '-k', '-b', '--after-cursor', cursor, '--no-pager'], text=True)
@@ -222,11 +247,13 @@ def runtime_smoke(old_engine=False):
         persist()
         compact = {k: v for k, v in record.items() if k not in ('plan', 'driver_after')}
         compact['native_process_started'] = bool(owner.commands and owner.commands[0].get('pid'))
-        compact['GPU_initialization_observed'] = bool(record.get('ready'))
-        compact['GPU_executed'] = True if record['requests'] else None
+        compact['GPU_initialization_observed'] = bool(record.get('ready') or record.get('device_cases_passed'))
+        compact['GPU_executed'] = True if record['requests'] or record.get('device_cases_passed') else None
         compact['limits'] = 'Two tiny native-protocol requests through final commit. Explicit runtime-delta diagnostic only; shared qualified runtime pins remain unchanged. No performance, overhead, quality, IQ numerical, long-context or RESTORE qualification.'
-        scope['runtime_reference' if old_engine else 'runtime_smoke'] = compact
-        if not old_engine:
+        if bank:
+            compact['limits'] = 'Six small production upload/cache byte-reader cases with full API trace and parameter validation on proposed runtime assets. No model/throughput/quality/full-context qualification; shared runtime baseline remains unchanged.'
+        scope['runtime_device_probe' if bank else 'runtime_reference' if old_engine else 'runtime_smoke'] = compact
+        if not old_engine and not bank:
             scope['revised_candidate']['native_runtime_tested'] = compact['GPU_executed']
         INDEX.write_text(json.dumps(index, indent=2) + '\n')
     print(json.dumps({k: compact.get(k) for k in ('complete', 'passed', 'ownership_closed', 'error')}))
@@ -346,9 +373,9 @@ def run(native=False):
 
 
 if __name__ == '__main__':
-    guards.require(sys.argv[1:] in ([], ['native'], ['smoke'], ['runtime-reference']),
-                   'use check_decode_cpu.py [native|smoke|runtime-reference]')
+    guards.require(sys.argv[1:] in ([], ['native'], ['smoke'], ['runtime-reference'], ['runtime-device']),
+                   'use check_decode_cpu.py [native|smoke|runtime-reference|runtime-device]')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        sys.exit(runtime_smoke(old_engine=sys.argv[1:] == ['runtime-reference'])
-                 if sys.argv[1:] in (['smoke'], ['runtime-reference']) else run(native=sys.argv[1:] == ['native']))
+        sys.exit(runtime_smoke(old_engine=sys.argv[1:] == ['runtime-reference'], bank=sys.argv[1:] == ['runtime-device'])
+                 if sys.argv[1:] in (['smoke'], ['runtime-reference'], ['runtime-device']) else run(native=sys.argv[1:] == ['native']))
