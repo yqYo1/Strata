@@ -1828,6 +1828,25 @@ neither establishes wire traffic or saturation. This screen cannot adopt a
 candidate: weak-MTP, agent-session, broader task quality, long-prefill
 nonregression and physical262144/session/RESTORE checks remain pending.
 
+The frozen six-process ordinary-Arena copy screen then closed normally on the
+same source/binary, with33,211 fresh input tokens, complete copy conservation,
+unchanged boot/model/runtime and no fresh GPU fault. The matched clean pairs were:
+
+| Pair | Copy off, tok/s | Copy on, tok/s | Candidate/base |
+| --- | ---: | ---: | ---: |
+| 0 | 14.1 | 11.5 | 0.815603 |
+| 1 | 14.0 | 11.5 | 0.821429 |
+| 2 | 10.3 | 11.2 | 1.087379 |
+
+Their geometric mean is0.899794. The unchanged all-three-pairs decision rule
+returns **inconclusive**; it does not support adoption. Preserve the lower final
+control sample without excluding it or calling it noise; its cause is unknown.
+The work and acceptance remain different between arms as recorded in the
+[individual samples](../bench/results/2026-10-15-pr6-recovery-audit/decode-arena-generation-current.json).
+Ordinary-Arena copy remains default-off. The next separate scheduling experiment
+must qualify its exact source and event/owner behavior before model execution;
+the completed copy screen does not qualify that new implementation.
+
 The frozen long route diagnostic then passed33,211 fresh input tokens and3,177
 thinking-plus-answer tokens, with four successful official warmups, normal native
 and owner exits, unchanged boot and no fresh fault. MTP accepted2253/2775 drafts

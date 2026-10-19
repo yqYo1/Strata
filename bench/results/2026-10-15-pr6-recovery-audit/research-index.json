@@ -3936,7 +3936,6 @@
     "classification": "decision support",
     "question": "Audit new ordinary-Arena target-verifier CPU/GPU dependency DAG",
     "source_commit": "ecda3c9ec4366211382cbf1ff11a3efd1c94fae6",
-    "source_view": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/decode-copy-dag-cache-source-ecda3c9ec",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/decode-copy-dag-report.md",
     "report_budget_bytes": 16384,
     "schedulable_now": false,
@@ -3951,17 +3950,24 @@
       }
     ],
     "status": "native_reviewed_workers_and_terminals_closed",
-    "consumer": "Retrieve relevant report sections only for the post-screen scheduling/cache decision. Retire closed transaction/review paperwork after this digest is committed; recover source view from its original commit before retirement.",
+    "consumer": "Both substantive reports remain for the post-screen scheduling/cache decision. Original source is recoverable at the pinned fork-default ancestor; review/dispatch/snapshot transactions retired after digest consumption.",
     "ownership_closed": true,
     "report_sha256": "47efe676e03322c3575347002a6730ed355aba7508a20623d616253b3c15702e",
     "native_review_sha256": "607345ee87c32ef7233ecaa2a381328472607f99d2a1b3f06b90086d30a66c16",
-    "finding": "Current captured path defers PCIe-assigned GPU miss compute until CPU pool completion; an earlier event-gated enqueue requires router completion, plan publication and DMA submission. Existing shared/resident GPU work and copies already overlap CPU. No runtime overlap or speed claim."
+    "finding": "Current captured path defers PCIe-assigned GPU miss compute until CPU pool completion; an earlier event-gated enqueue requires router completion, plan publication and DMA submission. Existing shared/resident GPU work and copies already overlap CPU. No runtime overlap or speed claim.",
+    "transaction_retirement": {
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-decode-dag-cache-transactions-20261020.jsonl",
+      "sha256": "64a9b2f60fec542c3acb6ab61f041ea01b9e150c7c17260efc6032b0da8e294d",
+      "files": 48,
+      "bytes": 1701817,
+      "source_files_recovered": 29,
+      "source_commit": "ecda3c9ec4366211382cbf1ff11a3efd1c94fae6"
+    }
   },
   "decode_cache_reader_census_scope": {
     "classification": "decision support",
     "question": "Audit actual target/MTP cache owners and captured readers",
     "source_commit": "ecda3c9ec4366211382cbf1ff11a3efd1c94fae6",
-    "source_view": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/decode-copy-dag-cache-source-ecda3c9ec",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/decode-cache-reader-census-report.md",
     "report_budget_bytes": 16384,
     "schedulable_now": false,
@@ -3976,10 +3982,135 @@
       }
     ],
     "status": "native_reviewed_workers_and_terminals_closed",
-    "consumer": "Retrieve relevant report sections only for the post-screen scheduling/cache decision. Retire closed transaction/review paperwork after this digest is committed; recover source view from its original commit before retirement.",
+    "consumer": "Both substantive reports remain for the post-screen scheduling/cache decision. Original source is recoverable at the pinned fork-default ancestor; review/dispatch/snapshot transactions retired after digest consumption.",
     "ownership_closed": true,
     "report_sha256": "b949856d0736cba4c1cd6dbe65fd5a60c23f9bd54af1d57ce307fde64144bb18",
     "native_review_sha256": "607345ee87c32ef7233ecaa2a381328472607f99d2a1b3f06b90086d30a66c16",
-    "finding": "Actual MTP/cache sources add owner facts. Total128 slots with48 per-layer quotas yields2 for layers0-46 and34 for the last; variable native slots use open_sized and summed aligned layer sizes, not necessarily slots*max_blob. MTP vram_bytes omits head_logits and pf_dev. Static source proves neither free VRAM nor useful cache expansion; require actual allocation/profile/residency/reader census."
+    "finding": "Actual MTP/cache sources add owner facts. Total128 slots with48 per-layer quotas yields2 for layers0-46 and34 for the last; variable native slots use open_sized and summed aligned layer sizes, not necessarily slots*max_blob. MTP vram_bytes omits head_logits and pf_dev. Static source proves neither free VRAM nor useful cache expansion; require actual allocation/profile/residency/reader census.",
+    "transaction_retirement": {
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-decode-dag-cache-transactions-20261020.jsonl",
+      "sha256": "64a9b2f60fec542c3acb6ab61f041ea01b9e150c7c17260efc6032b0da8e294d",
+      "files": 48,
+      "bytes": 1701817,
+      "source_files_recovered": 29,
+      "source_commit": "ecda3c9ec4366211382cbf1ff11a3efd1c94fae6"
+    }
+  },
+  "early_pcie_event_lifetime_source_scope": {
+    "classification": "decision support",
+    "question": "Review early PCIe queue/event and failure ownership contract",
+    "source_commit": "d096cffbebb19d5f95c30809c87c31e488e9e28a",
+    "source_view": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/early-pcie-source-d096cffbe",
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/early-pcie-events-report.md",
+    "report_budget_bytes": 12288,
+    "schedulable_now": false,
+    "prerequisites": [
+      {
+        "met": true,
+        "evidence": "Concrete independent Main prototype and new fixture source are committed and pushed; original benchmark source remains frozen separately."
+      },
+      {
+        "met": true,
+        "evidence": "Earlier DAG/owner reports reviewed; this task audits the new patch, not a repeated generic survey or a runtime decision requiring the unfinished screen."
+      }
+    ],
+    "status": "native_reviewed_workers_and_terminals_closed",
+    "consumer": "Immediate source correction and early-copy component/model qualification; review external source snapshots and transaction output after source commits reach fork default and readers close.",
+    "report_sha256": "d39d8c04fbc35b3d071ba5ac75e41b8b81e8832504c6b3e35c5577703183f313",
+    "worker_closed": true,
+    "terminal_closed": true,
+    "operational_digest": "Fresh event follows DMA submission and gates the same in-order compute queue; source retirement still drains copies. No further source blocker verified; runtime behavior remains untested.",
+    "native_review": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/early-pcie-native-review.json",
+      "sha256": "0337f51defd56a10886d1963691b9d8ec7063294c45fe38f341bbbfe14cc5285",
+      "main_read_original_body": false
+    },
+    "pending_gate": "Compile exact corrected source and explicitly run51 existing plus6 early cases; source review is not compilation, runtime validation, speed or adoption.",
+    "source_followups": {
+      "namespace_fix": "b0db43721ec33935bf6ed0f7e807965baae8cae7",
+      "controlled_gate_source": "2243e83fc26f74ab82d459a6c48753b2ad4a982b",
+      "checked_release_source": "6bfebe2ebd9c02e8550c0be7dea354eb746144b3",
+      "checked_release_correction": "Gate timeout and manual release checked under the same mutex; automatic release cannot pass between a held check and explicit release.",
+      "build_or_gpu_execution": false
+    }
+  },
+  "early_pcie_projection_fixture_source_scope": {
+    "classification": "decision support",
+    "question": "Review unchanged copied projections and source fixture coverage",
+    "source_commit": "d096cffbebb19d5f95c30809c87c31e488e9e28a",
+    "source_view": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/early-pcie-source-d096cffbe",
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/early-pcie-projections-report.md",
+    "report_budget_bytes": 12288,
+    "schedulable_now": false,
+    "prerequisites": [
+      {
+        "met": true,
+        "evidence": "Concrete independent Main prototype and new fixture source are committed and pushed; original benchmark source remains frozen separately."
+      },
+      {
+        "met": true,
+        "evidence": "Earlier DAG/owner reports reviewed; this task audits the new patch, not a repeated generic survey or a runtime decision requiring the unfinished screen."
+      }
+    ],
+    "status": "native_reviewed_workers_and_terminals_closed",
+    "consumer": "Immediate source correction and early-copy component/model qualification; review external source snapshots and transaction output after source commits reach fork default and readers close.",
+    "report_sha256": "0266f644dd2809e27a31434f089e2867180b04fa37acc3aa7c55a68807551d63",
+    "worker_closed": true,
+    "terminal_closed": true,
+    "operational_digest": "Projection mapping remains the existing route by source inspection. Original synthetic tests did not deterministically exercise the DMA wait; the committed controlled gate addresses that source-level gap, not native math or measured overlap.",
+    "native_review": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/early-pcie-native-review.json",
+      "sha256": "0337f51defd56a10886d1963691b9d8ec7063294c45fe38f341bbbfe14cc5285",
+      "main_read_original_body": false
+    },
+    "pending_gate": "Compile exact corrected source and explicitly run51 existing plus6 early cases; source review is not compilation, runtime validation, speed or adoption."
+  },
+  "decode_moe_projection_payload_collection_scope": {
+    "classification": "knowledge collection",
+    "question": "Compare concrete CPU/GPU MoE offload designs that reduce GPU-bound bytes below a complete expert blob: gate/up versus down placement, projection/row/column partitioning, and activation/intermediate traffic. Focus on batch1..8 decode with CPU-resident quantized experts. Use vLLM/SGLang and other original implementations/papers/HPC methods where applicable. Do not repeat speculative acceptance/cache/window surveys; compare when projection partitioning wins or loses and what numerical/state contract changes. Current measured complete-blob candidate requests642680908800 logical bytes for3177 emitted tokens, about202MB/token. At unchanged work70TPS would request14.16GB/s; this is not measured wire traffic or saturation. Identify architectures capable of changing that logical-byte term and their additional CPU/GPU/RAM cost, rather than predicting a local gain.",
+    "source_commit": "5133b245d88acfb7a3d0d57d9e5a0309833cbc1c",
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/decode-moe-payload-sharding-report.md",
+    "report_budget_bytes": 12288,
+    "schedulable_now": false,
+    "prerequisites": [
+      {
+        "met": true,
+        "evidence": "Actual complete-blob transfer work conserved in32K+ model; earlier work/byte, cache and speculative-method surveys indexed."
+      },
+      {
+        "met": true,
+        "evidence": "New bounded projection-placement or actual native-format dispatch question, with no build/model prerequisite; read-only source paths remain frozen until this report settles."
+      }
+    ],
+    "status": "dispatched_read_only_research",
+    "consumer": "Review novelty and applicability via native Luna-max; retrieve only for the concrete next decode architecture decision.",
+    "task_id": "task_76ba4afa6b1a",
+    "dispatch_id": "ctx_6536c3df04b3",
+    "terminal": "term_1672cef1-790a-47c6-88b0-9937c81def34",
+    "process_incarnation": "5fe4e8ac-0321-449b-b256-ff777e405f1b::/home/yayoi/orca/workspaces/Strata/sycl@@d46105c3:105571b7-067f-4ef7-ac13-8ccd34a1001a"
+  },
+  "native_cpu_format_dispatch_source_scope": {
+    "classification": "decision support",
+    "question": "Audit the current target-verifier CPU native-format dispatch on this Zen3 machine: canonical versus native providers, activation quantizers and GU/Down routes for actual model-format families, single-row versus grouped1..4/8 tokens, AVX2 versus scalar/unsupported AVX512 paths, and useful existing multirow helpers reachable or unreachable from production. Do not repeat the previous zen3_small_multirow_mtp_kernel_methods_collection_scope survey or assume an IQ3_S down helper applies to a model whose down type differs. Explain native Q2_0/type42 versus canonical layouts precisely: an earlier canonical Q2_0 host fixture SIGILLed on AVX512 before GPU execution, whereas the actual long model runs normally. Identify concrete source-level performance or safety gaps, plus counterevidence where current dispatch is already optimized. No proposal code and no claim that CPU arithmetic or RAM saturation is established. Source inputs and hashes are in /home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/native-cpu-format-inputs.json; read those paths directly and hash-check them before/after, without Git. Avoid whole model assets and unrelated research bodies.",
+    "source_commit": "5133b245d88acfb7a3d0d57d9e5a0309833cbc1c",
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/native-cpu-format-dispatch-report.md",
+    "report_budget_bytes": 12288,
+    "schedulable_now": false,
+    "prerequisites": [
+      {
+        "met": true,
+        "evidence": "Actual complete-blob transfer work conserved in32K+ model; earlier work/byte, cache and speculative-method surveys indexed."
+      },
+      {
+        "met": true,
+        "evidence": "New bounded projection-placement or actual native-format dispatch question, with no build/model prerequisite; read-only source paths remain frozen until this report settles."
+      }
+    ],
+    "status": "dispatched_read_only_research",
+    "consumer": "Review novelty and applicability via native Luna-max; retrieve only for the concrete next decode architecture decision.",
+    "task_id": "task_9f0db0aa3a00",
+    "dispatch_id": "ctx_80e589e29840",
+    "terminal": "term_a757dd41-f973-40da-bba0-03a8e38029f4",
+    "process_incarnation": "5fe4e8ac-0321-449b-b256-ff777e405f1b::/home/yayoi/orca/workspaces/Strata/sycl@@e5d472ad:1c33b907-76c1-4846-865f-a1d5a825e61d"
   }
 }
