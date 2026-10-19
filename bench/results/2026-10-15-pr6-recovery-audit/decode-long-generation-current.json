@@ -355,5 +355,15 @@
       }
     ],
     "limits": "Logical target expert lookup outcomes, not physical RAM/PCIe bytes, CPU computation time or proof of a limiting hardware resource. Draft/MTP weights have separate ownership."
+  },
+  "pending_analysis": {
+    "command": "python3 tools/sycl/generation_engine.py summarize",
+    "attempt_exit_code": 1,
+    "reason": "Existing pre-analysis ownership guard found external llama-bench PID3641219; no reducer executed. Do not disturb that process or launch tests/builds while ownership guard remains occupied.",
+    "our_measurement_finished_utc": "2026-10-19T08:12:03.346930+00:00",
+    "external_process_start_ticks": 74632308,
+    "external_process_started_utc_approx": "2026-10-19T08:12:38.080000+00:00",
+    "timing_scope": "This observed external process began about35 seconds after our measurement closed; it does not overlap the third sample. Original successful process/request outcomes are unchanged.",
+    "next_action": "Verify current owners, then run the unchanged committed reducer; keep benchmark inputs frozen until it closes."
   }
 }
