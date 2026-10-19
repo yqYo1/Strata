@@ -1910,6 +1910,13 @@ runtime safety-setting change is introduced. The
 [SYCL queue contract](https://github.khronos.org/SYCL_Reference/iface/queue.html)
 supplies ordering and checked completion; timely API return and cross-queue
 progress remain measured requirements rather than assumed guarantees.
+The v7 source`b41fecbb8` compiled and again passed all51 existing cases. The
+first early case failed before resident/fetch assertions because the finite DMA
+reported complete on its initial query. The owner closed normally with no fresh
+GPU fault. No amount/budget adjustment or retry is admitted from that failure.
+The [current component result](../bench/results/2026-10-15-pr6-recovery-audit/verifier-copy-safety-current.json)
+preserves it. The next mechanism requires a separate bounded native-event
+import/submission/progress/teardown qualification before replacing the gate.
 Model execution remains blocked until the complete57-case gate passes.
 After all57 passes, use `tools/sycl/early_pcie.py prepare`, commit the generated
 plan, then `run`: two thinking-template requests with16 generated tokens each,
@@ -1921,7 +1928,12 @@ Run the separate parameter-validated long model check before clean speed.
 The model check needs32K+ fresh input,1024+ thinking-plus-answer tokens, positive
 actual early launches/groups matching completed copies, normal ownership and no
 fresh fault. Record audit readiness separately. A later committed six-process
-copy-enabled comparison changes only early0/1, with paired ratios>1 and geomean
+copy-enabled comparison uses `tools/sycl/arena_copy.py prepare check
+--early-scheduling` followed by its committed generated plan, then the six clean
+cohorts. It changes only early0/1; readiness queries are enabled in the diagnostic
+and disabled in clean timing. Every measured footer is bound to its actual input
+and generated work, and early groups must equal completed copied blobs. A faster
+screen requires paired ratios>1 and geomean
 >1.02 required for a faster screen. Weak-MTP/agent-session, task quality,
 prefill nonregression and physical262144/session/RESTORE remain adoption gates.
 Compilation and the51 existing passes do not qualify early model execution,

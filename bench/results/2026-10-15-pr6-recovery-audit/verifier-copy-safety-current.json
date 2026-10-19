@@ -1,5 +1,5 @@
 {
-  "source_commit": "246415bfc3f8d68242b067ca49723c23c3e96be7",
+  "source_commit": "b41fecbb8ba640f36bb7b5308494801a0248d4cf",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
     "bytes": 22079432,
@@ -8,7 +8,7 @@
   "fixtures": {
     "sycl_verifier_retirement_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_verifier_retirement_test",
-      "sha256": "bb6c2777140c7377d3c3558876734157dd57101d3cea5f15a575682328d9c397"
+      "sha256": "9d55c63a76c910bdd054025fd5bb4327308df1a64bb4f178fba61fb71f25b658"
     },
     "sycl_submission_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_submission_test",
@@ -66,7 +66,7 @@
       ],
       "passed": true,
       "stdout_sha256": "dadad801d8022f3b40ad3bdab3e29f65fc13e1f61d60b219406f04e9881bb5be",
-      "stderr_sha256": "f4cbe4e31b513fcd3f4e37121be7a49bab813d1366837833e36cc9a546905ab2"
+      "stderr_sha256": "86e805c7c91de3e5094250f406502cce12a8cd844d41b1f0932c6335c696c89f"
     },
     {
       "command": [
@@ -84,7 +84,7 @@
       ],
       "passed": true,
       "stdout_sha256": "148fbcc509e40ad207cfca2a47f0180d4a42c61ceee417648974ff573e3ba20c",
-      "stderr_sha256": "67a0ea013089f6bac3b53798202dc96b757c5265e4575582b63657b533e90f8f"
+      "stderr_sha256": "9acb47302c4e40c119ea36c182568a71706c564a27f27fc9eb7ea4e89b92fd60"
     },
     {
       "command": [
@@ -111,13 +111,19 @@
       ],
       "passed": true,
       "stdout_sha256": "9066714b8b575e061109b08415161365b8f2eb8e185bee2ba01f6499319eb79b",
-      "stderr_sha256": "b48c3ac03a490423ad42a996a6236ba9a7dc3b0f74ba7e9593a33994afdcd9ec"
+      "stderr_sha256": "9edb80cf80afc0e85129c3cd39b2261436b6dd19e91931e46aa88c6ed3fe9387"
     }
   ],
   "complete": false,
   "passed": false,
   "active": false,
   "model_performance_measured": false,
+  "previous_result_reference": {
+    "commit": "d6bf9766ff221f458ffb45bc00b02eafc16f2c61",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/verifier-copy-safety-current.json",
+    "sha256": "96b56fa8e3563ae7c5ec14a138bdb88df3ad3e5acc8cdfbe827e9710ea864f95",
+    "outcome": "Original v6 host-task gate failed after51 existing passes; this new finite-DMA plan does not change that outcome."
+  },
   "per_fixture_budgets": {
     "wall_seconds": 180,
     "cpu_seconds": 600,
@@ -129,21 +135,11 @@
   "model_route_executed": false,
   "ordinary_arena_copy_default_enabled": false,
   "consumer": "Prerequisite for the default-off event-gated early copied-expert model check. Retire normal traces after compact results are verified and committed.",
-  "gate": "Same-build native provider17, submission10, verifier8, staged grouped-arithmetic16 and early copied-graph6 cases. Require exact unchanged-Q8_1 arithmetic against separate GPU projections, finite/nonzero reference outputs, full-window/row mapping, copy payload and outer guards. Checked owners and unchanged boot/runtime/source, no fresh GPU fault. Any failure blocks advancement.",
+  "gate": "Same-build native provider17, submission10, verifier8, staged grouped-arithmetic16 and early copied-graph6 cases. The first early case uses32 warmed64MiB host-USM-to-device copies on the same in-order copy queue (2GiB total,128MiB scratch). Gate enqueue and production fetch must each return within100ms; independent resident work must finish, copied completion stay NotReady for50ms and an atomic probe see untouched output while the finite gate remains pending. Then require natural completion and full payload/guard/retirement checks. No resize/retry on a short gate. Require exact unchanged-Q8_1 arithmetic against separate GPU projections, finite/nonzero reference outputs, full-window/row mapping, checked owners and unchanged boot/runtime/source, no fresh GPU fault. Any failure blocks advancement.",
   "limits": "The six early cases check real-queue synthetic ordering, replay, source retirement and refusal, not native projection equivalence or model overlap. Grouped component covers all seven current model GU/Down pairs plus supported IQ4_XS/Q2_0 at H2560/FF640, windows1/4, groups10/16 and entries10/40, using two distinct blobs repeated in metadata. The oracle shares native scalar projection primitives; it isolates copy/grouping from separate execution, not common-mode projection defects or model quality. No invalid GPU address, stalled kernel, model, physical262144/session/RESTORE or throughput qualification.",
-  "last_fixture": {
-    "name": "sycl_verifier_retirement_test",
-    "command": [
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_verifier_retirement_test",
-      "--early"
-    ],
-    "exit_code": 1,
-    "ownership_closed": true,
-    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "stderr_sha256": "7689a4076e6cb536130be30633a0789143c93214e738e578167c7a7b1fbd0852"
-  },
+  "last_fixture": "early",
   "grouped_copy_projection_contract_passed": true,
-  "error": "early submission blocked until the copy gate expired; first early child exited1",
+  "error": "finite DMA gate completed before admission; first early child exited1",
   "ownership_closed": true,
   "fresh_faults": [],
   "boot_unchanged": true,
@@ -155,41 +151,14 @@
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
   },
-  "controller_error_excerpt_sha256": "03da8b6e04719b578f30894825f2249334a71bbdfad885c83a15d2551e793ea7",
+  "controller_error_excerpt_sha256": "39cedd9362f21006db1f5c39d58e98cfa11165b65d5f49ac0b69cebafb1a966d",
   "prior_component_cases_passed": 51,
   "early_pcie_copy_contract_passed": false,
   "diagnostic": {
-    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verifier-copy-safety-v6/owned/early.stderr",
-    "sha256": "7689a4076e6cb536130be30633a0789143c93214e738e578167c7a7b1fbd0852",
-    "bytes": 42141,
-    "consumer": "Resolve test-only host-task dependency blocking before first UR memcpy enqueue and replace the deterministic gate; no new model execution until a separately committed57-case gate passes.",
-    "limit": "Failure of the test gate is not proof of a production-path deadlock, wrong projection or GPU fault."
-  },
-  "normal_output_retirement": {
-    "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-early-gate-normal-output-20261020.jsonl",
-    "sha256": "a8932988f0449ac0611e120a899aef501550ef40ea49b8e5791b4af14ee6254b",
-    "files": 16,
-    "bytes": 6995181,
-    "complete": true,
-    "retained": "One42KiB failed host-gate trace and its closed original owner record; actual current engine/fixtures and396 fallback remain. No research inputs/reports removed."
-  },
-  "next_model_controller": {
-    "source_commit": "927a131e5be0d68e3471c5c97ede92e010475bac",
-    "path": "tools/sycl/early_pcie.py",
-    "offline_evidence_tests": {
-      "command": "timeout 30s python3 -Bu tools/sycl/test_generation_engine.py",
-      "passed": true,
-      "cases": 8
-    },
-    "actual_negative_admission": {
-      "passed": true,
-      "operation": "early_pcie.py prepare",
-      "observed": "Refused incomplete matching51+6 component gate before creating model root or result.",
-      "model_executed": false,
-      "root_created": false,
-      "result_created": false
-    },
-    "native_build_source_commit": "246415bfc3f8d68242b067ca49723c23c3e96be7",
-    "limit": "Controller-only checks do not qualify native early execution, projection math, model quality or throughput. All57 matching same-build component cases remain required."
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verifier-copy-safety-v7/owned/early.stderr",
+    "sha256": "13d970ebb7f1d2afc023e40108155015e0605fd2cc480b56b08bbff690d6988a",
+    "bytes": 56727,
+    "consumer": "One representative finite-DMA gate failure: the first completion query returned complete before resident/fetch/negative assertions. Resolve a suitable test mechanism under a separate committed native-event qualification plan; retire this full trace if it adds no evidence after the contract decision.",
+    "limit": "This is a failed synthetic gate admission, not a production deadlock, measured physical DMA bandwidth, projection error or GPU fault."
   }
 }
