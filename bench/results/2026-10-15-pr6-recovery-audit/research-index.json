@@ -3039,6 +3039,33 @@
         "cmake_path": "/usr/bin/cmake",
         "ninja_version": "1.11.1",
         "ninja_path": "/usr/bin/ninja"
+      },
+      "cpu_pool_fixture_source_review": {
+        "classification": "decision support",
+        "status": "eligible_new_fixture_contract_review",
+        "schedulable_now": true,
+        "source_commit": "5f91e79eca6af861e9d7001389d1e283d7dc5fd2",
+        "source_root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-decode-cpu-profile",
+        "source_sha256": {
+          "tests/core/pool_cpu_clock.cpp": "14b61575a812a3674e30732522d328d0cc966dcb1ee910728db218e6f20d4260",
+          "tests/core/cpu_clock.cpp": "677037e46ffbcc57512ba2705ab40313d796be5c004f95a78fd0212e933a8c3c",
+          "include/strata/core/cpu_clock.hpp": "6ce276314635c0b4adfa7ec507e5cb3134387240a408172c7fd1f611e4069bdf",
+          "include/strata/kernels/cpu/pool.hpp": "0122bead288ed6d783c8a93a16208c5613ebc985061c477670841641a0d8af04",
+          "src/kernels/cpu/pool.cpp": "c7fad11e48a0ce52a031a5b149b33a34f3a0daa7427be95ce88e0f738558ec16",
+          "src/kernels/cpu/native_expert.cpp": "fcb4a7c74ba45a13da162eed832860f9644f4544d3f269b9c8588f01b40fb106",
+          "src/kernels/cpu/expert.cpp": "9bcf5d889818ef3cb9619df6536e8844d151714803ac8930eada115a61b62e48",
+          "CMakeLists.txt": "a81c51a58b55c740b37afc94a5f753b9205913a33baa2704622963317e668050"
+        },
+        "question": "Audit the newly authored real ExpertPool CPU-clock fixture for valid synthetic inputs, Zen3 versus AVX512 execution safety, output/accounting conservation, sleep/wake and 97-expert batching coverage. Identify false-pass or unsupported qualification claims before Main executes the committed CPU-only plan.",
+        "prerequisites_met": [
+          "The 218-line real-pool fixture is new committed source; the previous audit covered its absence at 91a44ece7, not these bytes.",
+          "No build or CPU-critical-path measurement is needed for this source/test-contract audit; Main retains all execution ownership.",
+          "All 89 prior Orca tasks are settled; no active source reader or dispatch owns this scope."
+        ],
+        "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/decode-cpu-pool-fixture-source-review.md",
+        "maximum_report_bytes": 12288,
+        "consumer": "Main qualification of the new observer after the frozen clean-generation cohort/reducer; native Luna max reviews the report first.",
+        "next_review": "After fixture qualification, retain substantive corrections and prune redundant audit paperwork."
       }
     }
   },
