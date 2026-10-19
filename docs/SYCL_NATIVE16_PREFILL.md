@@ -1455,6 +1455,17 @@ latency geomean<=1.05 and maximum pair<=1.10 after request/work reconciliation;
 report individual samples and spread even if this gate fails. No inference
 optimization, runtime-baseline adoption or resource saturation follows from
 this single-workload comparison alone.
+During process0, a read-only capability check of the owned native client's
+`/proc/<pid>/fdinfo` exposed xe `drm-cycles-ccs`, `drm-total-cycles-ccs` and
+memory residency fields on kernel7.0.0-38-generic. This is field availability,
+not an interval utilization result. A subsequent bounded diagnostic can test
+client identity, duplicate descriptors, engine capacity, monotonic recovery and
+aligned request intervals before interpreting cycle deltas. The kernel's
+[generic contract](https://www.kernel.org/doc/html/latest/gpu/drm-usage-stats.html)
+and [xe implementation contract](https://www.kernel.org/doc/html/next/gpu/xe/xe-drm-usage-stats.html)
+describe these counters. Engine busy fraction still does not measure arithmetic
+efficiency, VRAM bandwidth or physical PCIe bytes. Preserve unknowns rather
+than converting the earlier GPU-reach wall percentage into device utilization.
 Keep model quality,agent-session,physical262144/session/RESTORE and matched
 no-MTP attribution as separate pending checks.
 
