@@ -6488,14 +6488,15 @@ int main(int argc, char** argv) {
                 main_subsets.merge(host_jobs); main_subsets.merge(quant_cpu); main_subsets.merge(sync_cpu);
                 const auto unexpected_worker = cpu_counter_delta(cpu0.worker_jobs[7], cpu1.worker_jobs[7]);
                 const auto unexpected_host = cpu_counter_delta(cpu0.host_jobs[7], cpu1.host_jobs[7]);
-                const bool valid = cpu0.quiescent && cpu1.quiescent && !cpu0.read_errors && !cpu1.read_errors &&
+                const bool single_stage = ver.cpu_profile_single_stage();
+                const bool valid = single_stage && cpu0.quiescent && cpu1.quiescent && !cpu0.read_errors && !cpu1.read_errors &&
                     main_cpu.valid && process_cpu.valid && worker_clock_valid && !evidence.errors && !evidence.unwound &&
                     !main_subsets.errors && worker_jobs.ns <= workers_cpu && main_subsets.ns <= main_cpu.ns &&
                     cpu0.worker_jobs[7].calls == cpu1.worker_jobs[7].calls &&
                     cpu0.host_jobs[7].calls == cpu1.host_jobs[7].calls;
                 // Integer ns retain the actual readings. Job/quant/sync values
                 // are subsets of thread/process CPU; never sum those parents.
-                std::fprintf(stderr, "strata decode cpu: {\"schema\":1,\"valid\":%s,\"input_tokens\":%lld,"
+                std::fprintf(stderr, "strata decode cpu: {\"schema\":1,\"valid\":%s,\"single_stage\":%s,\"input_tokens\":%lld,"
                     "\"generated_tokens\":%lld,\"windows\":%lld,\"wall_through_commit_ms\":%.3f,"
                     "\"native_process_ns\":%llu,\"main_thread_ns\":%llu,\"worker_threads_ns\":%llu,"
                     "\"worker_job_ns\":%llu,\"host_job_ns\":%llu,\"native_quant_main_ns\":%llu,"
@@ -6505,7 +6506,8 @@ int main(int argc, char** argv) {
                     "\"counter_errors\":%llu,\"unwound\":%llu,\"snapshot_read_errors\":%llu,"
                     "\"clock_deltas_valid\":%s,\"quiescent\":%s,\"worker_jobs_fit\":%s,\"main_subsets_fit\":%s,"
                     "\"unexpected_mode_tasks\":%llu,\"workers\":%d,\"host_works\":%s}\n",
-                    valid ? "true" : "false", (long long) n, (long long) produced_n, (long long) dec_windows,
+                    valid ? "true" : "false", single_stage ? "true" : "false",
+                    (long long) n, (long long) produced_n, (long long) dec_windows,
                     std::chrono::duration<double, std::milli>(wall_end - d0).count(),
                     (unsigned long long) process_cpu.ns, (unsigned long long) main_cpu.ns,
                     (unsigned long long) workers_cpu, (unsigned long long) worker_jobs.ns,

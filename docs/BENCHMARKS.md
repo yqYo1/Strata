@@ -110,14 +110,30 @@ expert row tasks, native hidden quantization and selected verifier sync calls,
 plus whole worker/main/native-process CPU intervals. Worker task writes precede
 their existing completion publication; snapshots require completed dispatches
 and parked workers. No counter is added to the park loop. One JSON line per
-request includes clock/counter failures, unexpected modes, quiescence and
-containment checks; an invalid observation cannot support attribution.
+successfully completed request includes clock/counter failures, unexpected modes,
+quiescence and containment checks; error returns can have no line. A consumer
+must reconcile attempted, successful and failed requests and require one valid
+line for every successful request; a failed request or missing line is ineligible.
+Head-only sync counters support one verifier stage. A downstream stage, including
+a split on the same device, sets `single_stage=false` and `valid=false` rather
+than silently undercounting. An invalid observation cannot support attribution.
 The interval extends through the final commit wait. Job/quant/sync times are
 subsets of thread/process CPU, and CPU time includes stalls while scheduled.
 This observer does not measure physical RAM/PCIe traffic or GPU service and
 does not establish CPU arithmetic or RAM saturation. Before use require the
 clock negative cases, pool completion/output checks, bounded same-build small
 runtime check and an observer-overhead comparison. Keep it out of clean timing.
+
+The prepared CPU-only `cpu_clock_off/on` and `pool_cpu_clock_off/on` CTests
+run enablement arms in separate processes. The real-pool fixture uses finite
+synthetic Q8_0 inputs, serial full-output references, one/two-worker and
+two-worker host-off/on dispatches, sleep/wake repeats, single/multi-token
+and 97-expert batch boundaries. It additionally exercises the legacy Q2_0
+inline/split paths only when their required AVX512 features are present;
+those paths are explicitly unqualified on this Ryzen5600X. It checks task/quantization counts, clock errors
+and CPU subset containment, and reports actual host participation. This is
+accounting coverage, not IQ-kernel/model qualification or a speed benchmark;
+the new tests have not yet been compiled or executed.
 
 For a prefill-only screen, `bench.sh --prefill-only --prefill-tokens N` accepts
 32768,65536,98304 or131072 as the minimum **actual prompt and read tokens**.

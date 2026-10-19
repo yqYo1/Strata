@@ -42,6 +42,8 @@ int main(int argc, char** argv) {
     require(!cpu_time_delta({10, true}, {9, true}).valid &&
             !cpu_time_delta({}, {10, true}).valid, "invalid lifetime readings rejected");
 #if defined(__linux__)
+    require(!read_cpu_clock(static_cast<clockid_t>(-1)).valid,
+            "invalid clock ID is not a successful zero reading");
     const auto thread0 = thread_cpu_time(), process0 = process_cpu_time();
     volatile uint64_t value = 19;
     for (int i = 0; i < 1000000; ++i) value = value * 6364136223846793005ULL + 1;

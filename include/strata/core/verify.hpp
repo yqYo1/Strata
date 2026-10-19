@@ -135,6 +135,9 @@ public:
     /// The next stage: `run` and `commit` continue into it (its pool calls get `next_user`); sampling settings
     /// and `final_R` are the last stage's.
     void set_next(Verifier* next, void* next_user) { next_ = next; next_user_ = next_user; }
+    /// Head-only CPU sync counters do not include downstream stages, even when
+    /// those stages use the same physical GPU. Observation must reject them.
+    bool cpu_profile_single_stage() const noexcept { return next_ == nullptr; }
     /// floats per token in a hand-off buffer
     static int64_t handoff_floats(const ModelGeometry& g) { return (int64_t) g.hc * g.n_embd + g.n_embd + g.hc; }
 
