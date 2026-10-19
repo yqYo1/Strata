@@ -1604,8 +1604,15 @@ both two-case numerical fixtures and the small timing-fixture sanity check,
 including state-span rejection checks, with normal closure and no fresh fault.
 Both full11-case numerical fixtures subsequently passed, including the
 physical262144 addressing cases, with normal ownership closure and no fresh
-fault. Clean speed remains unrun; physical-context model qualification is
-separate from these component checks.
+fault. All three clean timing processes then completed without a fresh fault.
+Candidate/base latency ratios were0.995263 for cap33 gathered,0.995479 for
+cap2051 gathered and0.990206 for cap2051 clustered. All cap2051 process medians
+improved, but the geomean0.993646 misses the prospective0.95 gate.
+**This candidate does not advance to a model trial.** The full108 samples remain
+in [the current component result](../bench/results/2026-10-15-pr6-recovery-audit/qsa-parallel-sum-current.json).
+This is evidence that this isolated reduction change has a small effect in
+these shapes, not a physical-bandwidth or occupancy measurement. Physical-context
+model qualification remains separate from the component checks.
 The a576 validated engine/fixtures remain the fallback while the new native
 build uses the existing comparison cache. Commands are
 `build_engine.py rebuild-parallel-sum`, followed by
