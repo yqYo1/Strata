@@ -2066,10 +2066,15 @@ reservations, and propagates failure before dependent prompt/verify work.
 The new host-only fixture injects first/middle/last-device failures for lend
 and refill, checks exact snapshots and stops fanout; it does not inject GPU
 faults. Newly authored helper and tests use no external implementation.
-The committed next check is a rebuild in the existing current-build cache,
-preserving the named qualified fallback, then normal51+query-observer1+
-residency-publication9 cases in a fresh v2 component root. Compilation or host
-failure-injection success alone does not exercise actual borrowing. A later
+The rebuild at source`126eda334` reused the current-build cache while
+preserving the named qualified fallback. Engine SHA256 is
+`5b10303034666b8e25b8c625511534a1e04ffddd0419e7221af90cb20b3d7708`.
+Normal51+query-observer1+residency-publication9 cases passed in the fresh v2
+component root, with unchanged boot, all owners closed and no fresh GPU fault.
+The six offline evidence/runtime-admission tests also passed. The injected
+failures test the shared host publication helper and fake table snapshots;
+production call-site returns were source-reviewed, not model-fault-injected.
+Compilation and these component passes do not exercise actual borrowing. A later
 bounded serve check must prove a positive loan, two different rounded prompt
 layouts, same-slot refill and verification after refill before any32K+ cache
 comparison. Actual admission and CPU-math/RAM/GPU resource attribution remain
