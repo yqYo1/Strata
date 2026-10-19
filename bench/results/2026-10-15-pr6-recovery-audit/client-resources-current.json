@@ -1,7 +1,13 @@
 {
   "schema": 1,
   "mode": "client-resources",
-  "source_commit": "d9ff684f1d559e37515c469b9df26a01561dc620",
+  "diagnostic_version": 2,
+  "source_commit": "a71b6214abea3f7fa7d9be2971a1703d0070d133",
+  "previous_capture": {
+    "commit": "113d8fd38fdc30b6ab3aea1767dd0e4fd3da8c2b",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/client-resources-current.json",
+    "sha256": "26226a2eb1d1dfa0a406e25d2119c9b0160deaafe6bee1a9fa6e1e2318dda4f8"
+  },
   "reference": {
     "commit": "12e0ac0a2ceaed3090cf8797690dd5da13016136",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/decode-long-generation-current.json",
@@ -46,8 +52,8 @@
   "clean_speed_qualified": false,
   "hardware_bottleneck_qualified": false,
   "model_quality_qualified": false,
-  "purpose": "First bounded passive xe/client CPU collection; measure client generation intervals on the old speed reference.",
-  "prospective_gates": "Normal official regular-code request after four successful warmups, thinking enabled, at least32768 fresh inputs and1024 generated tokens, answer and engine clocks. Exact source/recipe/runtime/binary binding, reader exit0 and explicit terminal, recomputed eligible CCS intervals inside the observed first-output-to-response-end span. Preserve incomplete/no-data/fault outcomes. No clean speed, engine choice, physical traffic, saturation or70tok/s qualification.",
+  "purpose": "Confirm the first admitted resource observation with only the external collector: remove parameter validation/stage progress, use the same selected old engine and official workload. Scheduled CPU and CCS cycles do not isolate useful arithmetic or physical traffic.",
+  "prospective_gates": "One diagnostic process, no automatic retry. Normal official regular-code request after four successful warmups, thinking enabled, at least32768 fresh inputs and1024 generated tokens, answer and engine clocks. Exact source/recipe/runtime/binary binding, immutable collector-only environment preserving qualified safety settings, journal-bound work/client clocks, reader exit0 and explicit terminal, recomputed eligible CCS intervals inside observed request windows. Preserve incomplete/no-data/fault outcomes. No clean-speed/observer-overhead, engine-choice, physical-traffic, saturation or70tok/s qualification. Review the original and new samples separately; elapsed-time differences are not a matched overhead estimate.",
   "budgets": {
     "wall": 1800,
     "cpu": 54000,
@@ -111,7 +117,7 @@
     "STRATA_SYCL_SELECT_CYCLIC": "0",
     "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
     "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-client-resources-v1/cache",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-client-resources-v2/cache",
     "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
     "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
     "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
@@ -124,8 +130,8 @@
     "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
     "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
     "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-client-resources-v1/tmp",
-    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-client-resources-v1",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-client-resources-v2/tmp",
+    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-client-resources-v2",
     "ZES_ENABLE_SYSMAN": "0",
     "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
     "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
@@ -133,12 +139,7 @@
     "STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW": "1",
     "STRATA_SYCL_PREFILL_DOWN_SCATTER": "large",
     "STRATA_SYCL_PREFILL_MIXED_SCRATCH": "1",
-    "STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS": "384",
-    "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
-    "STRATA_TRACE": "1",
-    "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
-    "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
-    "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+    "STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS": "384"
   },
   "config": {
     "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
@@ -156,7 +157,7 @@
       "--expert-cache",
       "128",
       "--expert-profile",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-client-resources-v1/expert-profile.bin",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-client-resources-v2/expert-profile.bin",
       "--expert-cache-per-layer",
       "--pool-workers",
       "5",
@@ -195,7 +196,7 @@
       "strata"
     ],
     "host": "127.0.0.1",
-    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-client-resources-v1/engine.stderr",
+    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-client-resources-v2/engine.stderr",
     "engine_silence_s": 480,
     "parallel": 1,
     "open_browser": false,
@@ -205,9 +206,9 @@
     "/bin/sh",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
     "--config",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-client-resources-v1/config.json",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-client-resources-v2/config.json",
     "--port",
-    "55347",
+    "45549",
     "--long-generation-only",
     "--think",
     "--runs",
@@ -218,15 +219,15 @@
     "--ready-timeout",
     "600",
     "--out",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-client-resources-v1/bench",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-client-resources-v2/bench",
     "--long-generation-workload",
     "regular-code"
   ],
-  "config_sha256": "134e64a59a5b10de37e171336f23a53d6f935917af12d4f91534365c4b9e76d2",
+  "config_sha256": "5761364cc27e4447dac3e39ef6fa1ae9ae990ba566b7efdeff931a9ede57e760",
   "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
   "settings_sha256": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
-  "source_count": 117,
-  "source_aggregate_sha256": "427b3deed11dd07d929f71200a6af84d790b4c88fa04b10f7f0f8c3f08c33ed9",
+  "source_count": 116,
+  "source_aggregate_sha256": "a9cbd164cdb48ef74acf3a66bd1c4bb78e54ca06c63ca0824aa0daf81fc0cc28",
   "resource_collection": {
     "source": {
       "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/client_resources.py",
@@ -240,18 +241,18 @@
     {
       "ok": true,
       "err": null,
-      "ttft_s": 51.532,
-      "total_s": 394.744,
+      "ttft_s": 52.91,
+      "total_s": 386.589,
       "prompt_tokens": 33211,
       "reused_tokens": 0,
       "read_tokens": 33211,
       "generated_tokens": 2931,
-      "prompt_tps": 648.9,
+      "prompt_tps": 632.0,
       "prompt_tps_source": "engine",
-      "decode_tps": 8.5,
+      "decode_tps": 8.8,
       "decode_tps_source": "engine",
-      "prompt_ms": 51180.7,
-      "decode_ms": 343385.6,
+      "prompt_ms": 52548.0,
+      "decode_ms": 333857.9,
       "drafts_offered": 2481,
       "drafts_accepted": 2105,
       "finish_reason": "stop",
@@ -260,9 +261,9 @@
       "truncated": false,
       "generated_tokens_source": "usage",
       "client_interval": {
-        "request_begin_monotonic_ns": 765638058392915,
-        "first_output_monotonic_ns": 765689590494434,
-        "request_end_monotonic_ns": 766032802413990
+        "request_begin_monotonic_ns": 768329412887348,
+        "first_output_monotonic_ns": 768382323263277,
+        "request_end_monotonic_ns": 768716002511687
       },
       "eligible": true,
       "agreement_eligible": true,
@@ -300,14 +301,14 @@
       "f0d7df4ffaaf67dbf3ae26f8d77f0811d2bed00bbd2ed92912fd9d0649347eae",
       "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9"
     ],
-    "journal_sha256": "0b9d5624d142b9349a6c021b0854163d0034f4d8a98e16c5c00d9e6760b605a1",
-    "journal_state_sha256": "8382572a222c0ea9a0c71986243df26e1677a18b2156bb31b7e64c0194de4bdd"
+    "journal_sha256": "a0d9ebcca58f85c7aff43d1e07680f0781ac8988c14a719b57c047de9406f258",
+    "journal_state_sha256": "bba326e0331f2a42100e82f5fa3ffcdd10623960ebf4df3f1aa6bff153a34a63"
   },
   "native_exit": {
     "wrapper": {
-      "pid": 245267,
-      "start_ticks": 76551215,
-      "sid": 245195
+      "pid": 358999,
+      "start_ticks": 76819954,
+      "sid": 358977
     },
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-396d0c91f301/strata",
@@ -329,7 +330,7 @@
       "--expert-cache",
       "128",
       "--expert-profile",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-client-resources-v1/expert-profile.bin",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-client-resources-v2/expert-profile.bin",
       "--expert-cache-per-layer",
       "--pool-workers",
       "5",
@@ -363,14 +364,14 @@
     ],
     "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
     "native": {
-      "pid": 245272,
-      "start_ticks": 76551229,
-      "sid": 245195
+      "pid": 359003,
+      "start_ticks": 76819968,
+      "sid": 358977
     },
     "resource_collector": {
-      "pid": 245273,
-      "start_ticks": 76551229,
-      "sid": 245195
+      "pid": 359004,
+      "start_ticks": 76819968,
+      "sid": 358977
     },
     "resource_collector_exit_code": 0,
     "exit_code": 0
@@ -378,30 +379,30 @@
   "resources": {
     "collector_complete": true,
     "request_coverage_verified": true,
-    "samples": 523,
+    "samples": 519,
     "final_sample_to_response_end_seconds": 0.0,
     "before_first_output": {
-      "window_begin_monotonic_ns": 765638058392915,
-      "window_end_monotonic_ns": 765689590494434,
-      "contained_CPU_wall_seconds": 50.16021320900001,
-      "process_cpu_seconds": 47.31,
-      "process_cpu_core_equivalents": 0.943177809130831,
+      "window_begin_monotonic_ns": 768329412887348,
+      "window_end_monotonic_ns": 768382323263277,
+      "contained_CPU_wall_seconds": 51.1859614435,
+      "process_cpu_seconds": 47.9,
+      "process_cpu_core_equivalents": 0.9358034634725557,
       "top_scheduled_threads": [
         {
-          "tid": 245272,
-          "start_ticks": 76551229,
-          "cpu_ticks": 4531,
+          "tid": 359003,
+          "start_ticks": 76819968,
+          "cpu_ticks": 4572,
           "observed_last_cpus": [
             0
           ],
-          "cpu_seconds": 45.31
+          "cpu_seconds": 45.72
         },
         {
-          "tid": 245783,
-          "start_ticks": 76551952,
-          "cpu_ticks": 44,
+          "tid": 359268,
+          "start_ticks": 76820638,
+          "cpu_ticks": 49,
           "observed_last_cpus": [
-            0,
+            1,
             2,
             3,
             4,
@@ -413,11 +414,11 @@
             10,
             11
           ],
-          "cpu_seconds": 0.44
+          "cpu_seconds": 0.49
         },
         {
-          "tid": 250769,
-          "start_ticks": 76563964,
+          "tid": 365654,
+          "start_ticks": 76833100,
           "cpu_ticks": 12,
           "observed_last_cpus": [
             0
@@ -425,9 +426,9 @@
           "cpu_seconds": 0.12
         },
         {
-          "tid": 245766,
-          "start_ticks": 76551947,
-          "cpu_ticks": 8,
+          "tid": 359256,
+          "start_ticks": 76820633,
+          "cpu_ticks": 9,
           "observed_last_cpus": [
             2,
             3,
@@ -439,184 +440,191 @@
             10,
             11
           ],
-          "cpu_seconds": 0.08
+          "cpu_seconds": 0.09
         },
         {
-          "tid": 245767,
-          "start_ticks": 76551947,
-          "cpu_ticks": 8,
+          "tid": 359257,
+          "start_ticks": 76820633,
+          "cpu_ticks": 9,
           "observed_last_cpus": [
+            0,
+            1,
+            2,
+            3,
             4,
-            6,
+            5,
             7,
-            8,
-            9,
             10,
             11
           ],
-          "cpu_seconds": 0.08
+          "cpu_seconds": 0.09
         },
         {
-          "tid": 245768,
-          "start_ticks": 76551947,
-          "cpu_ticks": 8,
+          "tid": 359260,
+          "start_ticks": 76820633,
+          "cpu_ticks": 9,
           "observed_last_cpus": [
             1,
             2,
+            3,
             4,
-            7,
-            9,
-            10,
-            11
-          ],
-          "cpu_seconds": 0.08
-        },
-        {
-          "tid": 245772,
-          "start_ticks": 76551947,
-          "cpu_ticks": 8,
-          "observed_last_cpus": [
-            2,
             5,
             6,
-            7,
+            8,
             9,
             10,
             11
           ],
-          "cpu_seconds": 0.08
+          "cpu_seconds": 0.09
         },
         {
-          "tid": 245773,
-          "start_ticks": 76551947,
+          "tid": 359262,
+          "start_ticks": 76820633,
+          "cpu_ticks": 9,
+          "observed_last_cpus": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            8,
+            9,
+            10,
+            11
+          ],
+          "cpu_seconds": 0.09
+        },
+        {
+          "tid": 359251,
+          "start_ticks": 76820633,
           "cpu_ticks": 8,
           "observed_last_cpus": [
-            0,
-            2,
+            1,
+            4,
             5,
             6,
             7,
             8,
-            9,
             10,
             11
           ],
           "cpu_seconds": 0.08
         }
       ],
-      "unmatched_thread_intervals": 3,
+      "unmatched_thread_intervals": 4,
       "engines": [
         {
           "pci": "0000:05:00.0",
-          "client_id": 40346,
+          "client_id": 40376,
           "engine": "bcs",
-          "eligible_intervals": 50,
+          "eligible_intervals": 51,
           "busy_cycles": 0,
-          "capacity_total_cycles": 963034099,
+          "capacity_total_cycles": 982725966,
           "busy_fraction": 0.0
         },
         {
           "pci": "0000:05:00.0",
-          "client_id": 40346,
+          "client_id": 40376,
           "engine": "ccs",
-          "eligible_intervals": 50,
-          "busy_cycles": 799188673,
-          "capacity_total_cycles": 963034099,
-          "busy_fraction": 0.8298653950362354
+          "eligible_intervals": 51,
+          "busy_cycles": 794752139,
+          "capacity_total_cycles": 982725966,
+          "busy_fraction": 0.808722030857583
         },
         {
           "pci": "0000:05:00.0",
-          "client_id": 40346,
+          "client_id": 40376,
           "engine": "rcs",
-          "eligible_intervals": 50,
+          "eligible_intervals": 51,
           "busy_cycles": 0,
-          "capacity_total_cycles": 963034099,
+          "capacity_total_cycles": 982725966,
           "busy_fraction": 0.0
         },
         {
           "pci": "0000:05:00.0",
-          "client_id": 40346,
+          "client_id": 40376,
           "engine": "vcs",
-          "eligible_intervals": 50,
+          "eligible_intervals": 51,
           "busy_cycles": 0,
-          "capacity_total_cycles": 1926068198,
+          "capacity_total_cycles": 1965451932,
           "busy_fraction": 0.0
         },
         {
           "pci": "0000:05:00.0",
-          "client_id": 40346,
+          "client_id": 40376,
           "engine": "vecs",
-          "eligible_intervals": 50,
+          "eligible_intervals": 51,
           "busy_cycles": 0,
-          "capacity_total_cycles": 1926068198,
+          "capacity_total_cycles": 1965451932,
           "busy_fraction": 0.0
         }
       ]
     },
     "after_first_output": {
-      "window_begin_monotonic_ns": 765689590494434,
-      "window_end_monotonic_ns": 766032802413990,
-      "contained_CPU_wall_seconds": 342.63648351899985,
-      "process_cpu_seconds": 1479.82,
-      "process_cpu_core_equivalents": 4.318921280074195,
+      "window_begin_monotonic_ns": 768382323263277,
+      "window_end_monotonic_ns": 768716002511687,
+      "contained_CPU_wall_seconds": 333.54134063249967,
+      "process_cpu_seconds": 1461.04,
+      "process_cpu_core_equivalents": 4.380386542877734,
       "top_scheduled_threads": [
         {
-          "tid": 245272,
-          "start_ticks": 76551229,
-          "cpu_ticks": 28333,
+          "tid": 359003,
+          "start_ticks": 76819968,
+          "cpu_ticks": 28453,
           "observed_last_cpus": [
             0
           ],
-          "cpu_seconds": 283.33
+          "cpu_seconds": 284.53
         },
         {
-          "tid": 247577,
-          "start_ticks": 76556389,
-          "cpu_ticks": 25655,
-          "observed_last_cpus": [
-            3
-          ],
-          "cpu_seconds": 256.55
-        },
-        {
-          "tid": 247578,
-          "start_ticks": 76556389,
-          "cpu_ticks": 24039,
-          "observed_last_cpus": [
-            4
-          ],
-          "cpu_seconds": 240.39
-        },
-        {
-          "tid": 247576,
-          "start_ticks": 76556389,
-          "cpu_ticks": 23371,
+          "tid": 361246,
+          "start_ticks": 76825299,
+          "cpu_ticks": 23757,
           "observed_last_cpus": [
             2
           ],
-          "cpu_seconds": 233.71
+          "cpu_seconds": 237.57
         },
         {
-          "tid": 247575,
-          "start_ticks": 76556389,
-          "cpu_ticks": 23283,
+          "tid": 361245,
+          "start_ticks": 76825299,
+          "cpu_ticks": 23701,
           "observed_last_cpus": [
             1
           ],
-          "cpu_seconds": 232.83
+          "cpu_seconds": 237.01
         },
         {
-          "tid": 247579,
-          "start_ticks": 76556389,
-          "cpu_ticks": 23188,
+          "tid": 361248,
+          "start_ticks": 76825299,
+          "cpu_ticks": 23521,
+          "observed_last_cpus": [
+            4
+          ],
+          "cpu_seconds": 235.21
+        },
+        {
+          "tid": 361247,
+          "start_ticks": 76825299,
+          "cpu_ticks": 23378,
+          "observed_last_cpus": [
+            3
+          ],
+          "cpu_seconds": 233.78
+        },
+        {
+          "tid": 361249,
+          "start_ticks": 76825299,
+          "cpu_ticks": 23186,
           "observed_last_cpus": [
             5
           ],
-          "cpu_seconds": 231.88
+          "cpu_seconds": 231.86
         },
         {
-          "tid": 245783,
-          "start_ticks": 76551952,
+          "tid": 359268,
+          "start_ticks": 76820638,
           "cpu_ticks": 24,
           "observed_last_cpus": [
             0,
@@ -635,8 +643,8 @@
           "cpu_seconds": 0.24
         },
         {
-          "tid": 245769,
-          "start_ticks": 76551947,
+          "tid": 359251,
+          "start_ticks": 76820633,
           "cpu_ticks": 6,
           "observed_last_cpus": [
             0,
@@ -659,53 +667,58 @@
       "engines": [
         {
           "pci": "0000:05:00.0",
-          "client_id": 40346,
+          "client_id": 40376,
           "engine": "bcs",
-          "eligible_intervals": 341,
+          "eligible_intervals": 332,
           "busy_cycles": 0,
-          "capacity_total_cycles": 6578312943,
+          "capacity_total_cycles": 6403691123,
           "busy_fraction": 0.0
         },
         {
           "pci": "0000:05:00.0",
-          "client_id": 40346,
+          "client_id": 40376,
           "engine": "ccs",
-          "eligible_intervals": 341,
-          "busy_cycles": 2139430799,
-          "capacity_total_cycles": 6578312943,
-          "busy_fraction": 0.3252248437460814
+          "eligible_intervals": 332,
+          "busy_cycles": 2140458320,
+          "capacity_total_cycles": 6403691123,
+          "busy_fraction": 0.3342538356217966
         },
         {
           "pci": "0000:05:00.0",
-          "client_id": 40346,
+          "client_id": 40376,
           "engine": "rcs",
-          "eligible_intervals": 341,
+          "eligible_intervals": 332,
           "busy_cycles": 0,
-          "capacity_total_cycles": 6578312943,
+          "capacity_total_cycles": 6403691123,
           "busy_fraction": 0.0
         },
         {
           "pci": "0000:05:00.0",
-          "client_id": 40346,
+          "client_id": 40376,
           "engine": "vcs",
-          "eligible_intervals": 341,
+          "eligible_intervals": 332,
           "busy_cycles": 0,
-          "capacity_total_cycles": 13156625886,
+          "capacity_total_cycles": 12807382246,
           "busy_fraction": 0.0
         },
         {
           "pci": "0000:05:00.0",
-          "client_id": 40346,
+          "client_id": 40376,
           "engine": "vecs",
-          "eligible_intervals": 341,
+          "eligible_intervals": 332,
           "busy_cycles": 0,
-          "capacity_total_cycles": 13156625886,
+          "capacity_total_cycles": 12807382246,
           "busy_fraction": 0.0
         }
       ]
     },
     "limits": "Client observation windows, not native kernel-stage boundaries. Scheduled CPU includes polling/stalls. Associated DRM clients may be shared; cycle busy fraction is not arithmetic efficiency, VRAM bandwidth, physical PCIe traffic or hardware saturation."
   },
+  "resource_evidence_sha256": {
+    "official_result": "cef5fcb657193b00db3069da2e7e587896b10164dfdc15fccd0406cc00836f07",
+    "capture": "8ec0fce4c54a5ce2a1af4273fa831f40db6541dd745f55c1c263288cd83005c9"
+  },
+  "resource_admission_qualified": true,
   "ownership_closed": true,
   "fresh_faults": [],
   "boot_unchanged": true,
@@ -717,25 +730,68 @@
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
   },
+  "collector_read_spans": {
+    "windows": {
+      "before_first_output": {
+        "contained_calls": 52,
+        "sum_wall_seconds": 0.160669194,
+        "median_wall_seconds": 0.0025213105000000003,
+        "max_wall_seconds": 0.014905992,
+        "sum_fraction_of_client_window": 0.003036629227802136
+      },
+      "after_first_output": {
+        "contained_calls": 333,
+        "sum_wall_seconds": 1.088184796,
+        "median_wall_seconds": 0.002691771,
+        "max_wall_seconds": 0.055876641,
+        "sum_fraction_of_client_window": 0.003261170124259331
+      }
+    },
+    "limits": "Inclusive synchronous reader-call wall time, including descheduling. Does not bound asynchronous driver/cache/clock effects or total model slowdown; only a prospectively matched collector-off/on comparison can measure that effect."
+  },
   "post_closure_admission": {
-    "analyzer_source_commit": "7d5a11afbcbad7dd7f41dda8142cad64f8a78b9f",
-    "original_execution_receipt_commit": "497311e01bce8c26b251f4890a8f5656dbffaea5",
-    "official_result_sha256": "beef9bd24db7376082222c6d3c047570fee3e970da85921cc792c90bd2f1cb10",
-    "capture_sha256": "04e73c0d8110a96edf08538fe1fd36c78c9ae84fcad18fb66f9dbf9ee7d83be6",
+    "analyzer_source_commit": "dc4acc8f8b6b17ab712ffb9fec116f86e6810a7d",
+    "original_execution_receipt_commit": "682d47f8bfb09f9b9279bfa84d40cc3f7a526f95",
+    "official_result_sha256": "cef5fcb657193b00db3069da2e7e587896b10164dfdc15fccd0406cc00836f07",
+    "capture_sha256": "8ec0fce4c54a5ce2a1af4273fa831f40db6541dd745f55c1c263288cd83005c9",
     "journal_bound_clocks_and_work": true,
     "original_resources_reproduced": true,
     "original_execution_outcome_unchanged": true,
     "GPU_executed": false
   },
-  "resource_admission_qualified": true,
-  "artifact_retirement": {
-    "complete": true,
-    "completed_utc": "2026-10-19T14:06:05.064408+00:00",
-    "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-passive-capture-and-extra-engine-retirement-20261019.jsonl",
-    "manifest_sha256": "8967d86fde70e561cda7c7a8627730cdbce40cf58c276b9545d3c8a614bca31b",
-    "files": 71,
-    "bytes": 15968523,
-    "original_outcomes_unchanged": true,
-    "consumer": "Raw capture, official output and normal traces retired after admitted journal-bound replay and default-reachable source/results. Compact request/resource windows and original outcomes remain; no raw consumer is open."
+  "post_closure_model_metadata": {
+    "scope": "Static configuration audit after execution, not an additional dynamic work counter or changed original measurement.",
+    "metadata_path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt",
+    "metadata_bytes": 3304,
+    "metadata_sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d",
+    "format_enum_source": {
+      "repository": "ggml-org/llama.cpp",
+      "commit": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+      "path": "ggml/include/ggml.h",
+      "sha256": "12ee71f99db7db9b353bc02b1fbb57c344ee17c01ac5fb7952b41a637a747ea9"
+    },
+    "geometry_source": {
+      "commit": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
+      "path": "include/strata/kernels/cpu/expert.hpp"
+    },
+    "hidden": 2560,
+    "expert_intermediate": 640,
+    "experts_per_layer": 512,
+    "layers": 48,
+    "gate_up_layers": {
+      "IQ3_XXS": 17,
+      "IQ3_S": 10,
+      "IQ2_S": 20,
+      "IQ4_XS": 1
+    },
+    "down_layers": {
+      "IQ4_NL": 39,
+      "Q2_0": 9
+    },
+    "one_expert_per_layer_packed_bytes": 98227200,
+    "all_expert_packed_bytes": 50292326400,
+    "largest_single_expert_blob_bytes": 2662400,
+    "decision": "No IQ3_S Down weights in this pack; do not select an IQ3_S Down optimization from the model filename. IQ4_NL multirow and Q2_0 production paths require their own evidence.",
+    "limits": "Pack geometry and logical packed payload only. Does not establish actual expert routes/reuse, physical DRAM/PCIe traffic, bandwidth or a limiting resource."
   }
 }

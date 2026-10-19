@@ -1,0 +1,105 @@
+{
+  "source_commit": "dc4acc8f8b6b17ab712ffb9fec116f86e6810a7d",
+  "input_sha256": {
+    "tools/sycl/profile_attention.py": "6a09b6aaa8dbe422c8c57376aa981bb20f79cd68eca801df879ef469b1bef75c",
+    "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+    "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+    "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
+    "bench/sycl/sysman_pcie_probe.cpp": "b51c460575a6e263ec70771a68c26403f5166c87872e02e1b0e9c2364dd5b63e"
+  },
+  "asset_sha256": {
+    "/usr/bin/x86_64-linux-gnu-g++-13": "1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769",
+    "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363",
+    "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395": "50adb6b727d027309039803033d41efeae4b248589ee363f321c0d538c7de3ff",
+    "/usr/include/level_zero/ze_api.h": "095a0eb442ae21946f29147c209f270b93dd0eb5b12a2d0c67e5f4138b533712",
+    "/usr/include/level_zero/zes_api.h": "7c31adb191736ee77fe518de488207c6c34920a22b5cef71320d99cbe9bd4044"
+  },
+  "compiler_version": "x86_64-linux-gnu-g++-13 (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "device": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  },
+  "compile_command": [
+    "/usr/bin/x86_64-linux-gnu-g++-13",
+    "-O2",
+    "-std=c++17",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/sysman_pcie_probe.cpp",
+    "-o",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/sysman-pcie-capability-v1/probe",
+    "-lze_loader",
+    "-pthread"
+  ],
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "ZES_ENABLE_SYSMAN": "0",
+    "ZEL_ENABLE_LOADER_LOGGING": "1",
+    "ZEL_LOADER_LOG_CONSOLE": "1",
+    "ZEL_LOADER_LOGGING_LEVEL": "trace",
+    "ZEL_LOADER_LOG_DIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/sysman-pcie-capability-v1/loader-logs",
+    "ZE_ENABLE_VALIDATION_LAYER": "1",
+    "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "1",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1"
+  },
+  "complete": true,
+  "passed": false,
+  "active": false,
+  "raw_counter_read_capability": false,
+  "traffic_calibrated": false,
+  "physical_byte_layer_qualified": false,
+  "model_executed": false,
+  "prospective_plan": "One owned compile then one idle-device Sysman read. Use zesInit, bind0000:05:00.0, require reported bandwidth capability, two successful snapshots150ms apart and monotonic own timestamps/counters. No queues, workload, reset, sysctl, privilege change, model bottleneck or physical wire-byte claim. Preserve unsupported, denied and invalid outcomes; no retry.",
+  "reference_docs": [
+    "https://github.com/oneapi-src/level-zero#logging-api-calls",
+    "https://github.com/intel/compute-runtime/blob/master/programmers-guide/SYSMAN.md"
+  ],
+  "compile_exit_code": 0,
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/sysman-pcie-capability-v1/probe",
+    "sha256": "9ce55c76209888b8aa449c1ca436cdb1a917ef245aacd833682018303b6c2bea"
+  },
+  "exit_code": 1,
+  "ownership_closed": true,
+  "boot_unchanged": true,
+  "fresh_faults": [],
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  },
+  "initialization_and_enumeration_succeeded": true,
+  "pci_properties": {
+    "pci": "0000:05:00.0",
+    "bandwidth_counters": 1,
+    "packet_counters": 1,
+    "replay_counters": 0
+  },
+  "counter_read_result": {
+    "api": "zesDevicePciGetStats",
+    "code": "0x70010000",
+    "name": "ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS",
+    "successful_snapshots": 0
+  },
+  "loader_evidence": {
+    "version": "1.32.0",
+    "validation_layer_enabled": true,
+    "api_trace_observed": true,
+    "error_observed": true
+  },
+  "decision": "Unavailable under current permissions. No retry or permission change. Keep physical PCIe traffic unknown; properties reporting counter support do not qualify access or wire-byte semantics.",
+  "retention_consumer": "Avoid repeating a closed local capability probe while permissions/runtime are unchanged; restore source dc4acc8f8 only for a distinct future access question. Retire temporary source mode, successful traces and probe build after source/results are default-reachable."
+}

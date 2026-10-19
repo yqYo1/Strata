@@ -1379,8 +1379,8 @@
         "Retrieval map for a later concrete question"
       ],
       "paper_sections": [
-        "SyclKittens \u00a7\u00a73.2\u20133.3 and Appendix D for operand layouts, subgroup prefetch and the measured ablation.",
-        "Xe-Forge \u00a7\u00a7IV\u2013V, VI-A, VI-D\u2013VI-E for search/validation workflow, hardware, baseline and kernel results."
+        "SyclKittens §§3.2–3.3 and Appendix D for operand layouts, subgroup prefetch and the measured ablation.",
+        "Xe-Forge §§IV–V, VI-A, VI-D–VI-E for search/validation workflow, hardware, baseline and kernel results."
       ]
     }
   },
@@ -3738,5 +3738,87 @@
     "consumer_migration_source_commit": "cf658844eb4f81e2a9144a75c66e2f80c87a10fe",
     "payload_retirement_manifest_sha256": "8967d86fde70e561cda7c7a8627730cdbce40cf58c276b9545d3c8a614bca31b",
     "next_review": "At the next named candidate build/comparison, verify fallback carry without widening old fixture or model qualification; no repeat audit is scheduled."
+  },
+  "decode_work_and_byte_model_source_scope": {
+    "classification": "decision support",
+    "schedulable_now": false,
+    "status": "native_reviewed_pool_capacity_discriminator_pending",
+    "source_commit": "540639c4258c41e60d8f0dfd9c408cfcd72f1d6d",
+    "source_sha256": {
+      "src/core/session.cpp": "4c1aa246e568f96b40b9f9e16000e1f1dc6d75c99168cb26baef56a43b4e4bce",
+      "src/core/layer.cpp": "4273fc8c08bb0c58ad471d963f232a457dbc96ea6bd20fa1b45d27fee3428cfb",
+      "src/core/verify.cpp": "8016e1a82277319323c42afd960be7e7b110c50feb13f73d0bd6ec2321a71b7d",
+      "src/core/mtp.cpp": "04cb9d86e2861877263dd2177fce893bd0dd7b17c045594292ee6d6625d09c1f",
+      "src/core/expert_cache.cpp": "7d9a7fe0c54e8d55addcc9e9d7117d0b3addd3da294feb3b78b0fde735ce806e",
+      "src/kernels/cpu/expert.cpp": "9bcf5d889818ef3cb9619df6536e8844d151714803ac8930eada115a61b62e48",
+      "src/kernels/cpu/native_expert.cpp": "fcb4a7c74ba45a13da162eed832860f9644f4544d3f269b9c8588f01b40fb106",
+      "src/kernels/cpu/expert_layout.cpp": "62a20856e50a955776cab30c293b2a5a03ad68cd08895fa1d984d14e791927d3",
+      "src/kernels/cpu/pool.cpp": "c7fad11e48a0ce52a031a5b149b33a34f3a0daa7427be95ce88e0f738558ec16",
+      "include/strata/core/expert_slot_sizes.hpp": "93ea194c1b4d63c71747d27fa6eda8d10ae4f1c308ba9ac8d6e026ce6a6b81b2"
+    },
+    "prerequisites_met": [
+      "First passive capture is closed and journal-bound: after first output CPU4.319 core equivalents and client CCS0.325; these are not arithmetic/traffic saturation evidence.",
+      "Observer-off old/new six-process comparison closed; selected old engine source396d0c91f301 remains.",
+      "Current model decode/MTP/expert source exists; source-only work can derive logical operations and bytes without requiring hardware counters."
+    ],
+    "question": "Derive a source-grounded work/byte model for actual SYCL decode with MTP4 on this fork: draft vs verifier vs accepted output, per-expert grouping, CPU/GPU residency and cache misses, quantized gate/up/down layouts, repeated versus shared weight reads, and activation/status transfers. Identify computable lower/upper bounds and missing dynamic counters. Use current actual32K long-generation samples and shapes; distinguish requested/logical/cache-line/physical bytes and never infer a bandwidth ceiling from active parameters alone. Compare source-derived expected limiting candidates without proposing implementation or repeating the existing Zen3 kernel-method survey.",
+    "prior_scope_ids": [
+      "zen3_small_multirow_mtp_kernel_methods_collection_scope",
+      "current_decode_mtp_verifier_reuse_source_audit",
+      "b570_pcie_wire_byte_measurement_methods_scope"
+    ],
+    "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261019/decode-source-work-and-bytes.md",
+    "maximum_report_bytes": 24576,
+    "worker_ownership_closed": true,
+    "next_review": "Before committing the pool-capacity comparison and at its closure; retire this report if no concrete follow-up needs it.",
+    "task_id": "task_4bc57c1c008d",
+    "terminal_handle": "term_08cf6410-b426-44df-8a66-14f5987000e8",
+    "collector_model_requested": "gpt-6-luna",
+    "launch_scope": "Explicit workspace-write sandbox; report is inside the existing project workspace. No new worktree/branch.",
+    "dispatch_id": "ctx_9ab4f6673dc6",
+    "terminal_incarnation": "7e7334c5-da90-4fdc-885b-e4fea6cf70bb",
+    "worker_closure": "Exact completed Task/Dispatch/incarnation accepted; external release returned no-owned-resource, tui-idle verified, original terminal closed with ptyKilled=true and completion delivery acknowledged.",
+    "report_bytes": 17911,
+    "report_sha256": "3891fc5050837e1aba407cc9ba2751b9d7eef033683a4e28563efa2b4b8b2799",
+    "native_review_sha256": "fb4fc568face825af4956c8a69ade2c410a0e8afbed35a5ce77943b6ae96bb8e",
+    "operational_digest": "Source-grounded at540639c; formulas transfer structurally to selected396d0c9, but are not a measured-input match for binary570b65dd. Cited runs have different source/builds and remain separate. Report adds MoE logical operations/bytes, omits complete non-MoE work and emitted-token totals. Next bounded discriminator is three independent clean processes per arm with only pool-workers5 versus1; commit order, work reconciliation, effect threshold and stopping rules first. Capacity sensitivity does not distinguish arithmetic from RAM or establish baseline saturation.",
+    "report_consumer": "Source-grounded logical-work model for the imminent CPU expert-pool capacity comparison; not measured physical traffic."
+  },
+  "zen3_counter_free_roofline_methods_collection_scope": {
+    "classification": "knowledge collection",
+    "schedulable_now": false,
+    "status": "native_reviewed_conditional_counter_free_reference",
+    "source_commit": "540639c4258c41e60d8f0dfd9c408cfcd72f1d6d",
+    "prerequisites_met": [
+      "Actual perf cycles/task-clock probes both refused under perf_event_paranoid4; VTune ptrace profile is separately refused.",
+      "Ryzen5600X/DDR4 memory and quantized small-multirow CPU expert workloads are the concrete target; counter-free controlled experiments are possible in principle."
+    ],
+    "question": "Compare defensible counter-free experiments that distinguish quantized CPU expert arithmetic, cache behavior and DRAM limits on Zen3/Linux: production-shape repetition/cache footprint, arithmetic intensity and multirow reuse, read-only bandwidth ceilings versus STREAM/triad, thread/affinity scaling and controlled memory traffic. Find original papers, official docs and original technical blogs. Explain observer/cache-warming/NUMA/OS confounders, byte definitions, which outcomes reject each mechanism and practical bounded follow-ups when PMU access is unavailable. This is experimental-method knowledge, not a request to rerun tests or infer that current CPU scheduled time proves math/DRAM saturation. Do not repeat the CPU-clock calibration or generic PCIe-counter surveys.",
+    "prior_scope_ids": [
+      "zen3_small_multirow_mtp_kernel_methods_collection_scope",
+      "cpu_observer_overhead_methods_scope",
+      "b570_pcie_wire_byte_measurement_methods_scope"
+    ],
+    "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261019/zen3-counter-free-memory-attribution.md",
+    "maximum_report_bytes": 22528,
+    "worker_ownership_closed": true,
+    "next_review": "After a qualified CPU critical-path discriminator, retrieve relevant method/correction sections for one fixed-shape hot/rotating experiment; do not launch that conditional experiment from scheduled CPU time alone.",
+    "task_id": "task_a16d90d7aac6",
+    "terminal_handle": "term_1047d6c2-db42-4042-a401-7576fd52c413",
+    "collector_model_requested": "gpt-6-luna",
+    "launch_scope": "Explicit workspace-write sandbox; report is inside the existing project workspace. No new worktree/branch.",
+    "dispatch_id": "ctx_60f5df3ac973",
+    "terminal_incarnation": "8e1ddc98-853e-45da-a647-1b638744e336",
+    "worker_closure": "Exact completed Task/Dispatch/incarnation accepted; release reported external/no-owned-resource, then tui-idle verified and original terminal closed with ptyKilled=true. Completion delivery acknowledged.",
+    "report_bytes": 20958,
+    "report_sha256": "b5c6a96bda795151b6f8e816e3f24f815296c7f911e57dac68d296f4da0e2817",
+    "native_review_sha256": "597a4b3ca77118f1176aff3ace779b30bcd8980572fde03a7ddaf0251d2b3dc1",
+    "operational_digest": "Accepted with minor clarifications: substantive counter-free cache, read-only/STREAM and pressure comparisons beyond the prior kernel survey. Primary sources support methods, not local Zen3 results. Clarify FLOP convention, touched working-set bytes versus cache residency and STREAM size per array. Retain until CPU critical-path qualification; only then plan a fixed-shape hot-versus-rotating-weight-set comparison.",
+    "report_consumer": "Conditional fixed-shape cache/locality experiment only after qualified CPU critical-path evidence; review at pool-capacity comparison closure.",
+    "review_corrections": [
+      "Count MN MACs or about2MN FLOPs per matrix-vector; define dimensions and units.",
+      "Packed in-memory working-set footprint does not measure cache residency.",
+      "STREAM sizing requirement applies per array, using actual exposed LLC topology."
+    ]
   }
 }
