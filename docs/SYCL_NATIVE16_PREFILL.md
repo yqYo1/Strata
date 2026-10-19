@@ -1303,7 +1303,9 @@ warmups, to last at least2ms. This screens granularity, not timer accuracy or
 noise. A shorter batch invalidates the comparison; retry requires a new
 committed plan. Main passed all16 offline fault/evidence tests at source7626a2fc5,
 including wrong timed-hook counts, duplicate preflight placement, warmup duration
-and inconsistent marker arithmetic. The corrected fixture rebuild is pending.
+and inconsistent marker arithmetic. Source396d0c91f built the corrected fixture;
+the engine remains byte-identical570b65dd with native origin9b6db2661 preserved.
+Compilation does not reuse qualification for the changed Down fixture.
 No v7 GPU execution has occurred; no model gain or adoption follows from correcting the
 benchmark. Keep the a576 fallback and
 reuse the closed QSA build cache for this named next comparison. The dedicated
