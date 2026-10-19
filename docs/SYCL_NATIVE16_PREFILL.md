@@ -1267,7 +1267,7 @@ public-wrapper candidate measure the same host dispatch work at fallback
 shapes. Any corrected comparison needs a separately committed plan and evidence;
 the current failure and all individual timing samples remain in the
 [current component result](../bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json).
-The validated a576 engine and its same-build fixtures are hash-checked at
+The validated a576 engine and its same-build fixtures were hash-checked at
 `known-good-before-selective-down-v1` before reusing the build cache. The old1222
 fallback's9812 original source blobs and recipe were recovered before retirement.
 A bounded lookup of3074 local source files and2307 Git blobs found both old
@@ -1314,8 +1314,12 @@ geomean is0.953898926 (4.61% shorter), the worst shape ratio is1.020361103,
 and every selected large shape improves in each of the three process pairs.
 The unchanged component gate permits the117K model comparison; it establishes
 neither a whole-model gain nor adoption. The original v6 failure stays failed.
-Keep the a576 fallback and
-reuse the closed QSA build cache for this named next comparison. The dedicated
+The a576 fallback protected that fixture/model comparison. Its six executable
+copies were retired after the completed cohort selected the current qualified
+generation and both original source inventories/recipes were recovered from Git.
+Only its `source-build.json` remains for the current scoped bank/provider
+admission proof; preserve the selected current generation before the next
+native rebuild. The dedicated
 `bench_engine.py summarize-down` analyzer preserves the frozen>1.002 model
 criterion, while `summarize-source-view` keeps>1.005. It rechecks original
 component qualification, exact117489-token requests, six-process order, paired
@@ -1341,9 +1345,36 @@ fresh read tokens, thinking on and24 generated tokens. All96 mixed windows
 retired; actual Down counters record7485 fused jobs/49290450 fused rows and
 29868 separate jobs. Native and benchmark owners closed normally, with no fresh
 fault. The profiled930.2tok/s is diagnostic; it is not a clean speed result.
-The next comparison keeps source-view enabled and changes only Down0/large
-across the frozen six-process order. Default adoption, broad quality,
-physical262144/session/RESTORE and sustained decode remain unqualified.
+The clean comparison kept source-view enabled and changed only Down0/large
+across the frozen six-process order. Each process completed four fresh117489-token
+requests, thinking on, with unchanged384-slot expert banking,117488 GPU residual
+rows,81920+35568 MoE windows and8192 operator chunks. All owners closed normally
+without fresh GPU faults. Each process's median of its three subsequent requests was:
+
+| Process pair | Down0 tok/s | Down-large tok/s | First use Down0 / Down-large tok/s |
+| --- | ---: | ---: | ---: |
+| 0 | 998.6 | 1005.8 | 926.2 / 933.1 |
+| 1 | 998.2 | 1005.8 | 925.9 / 931.0 |
+| 2 | 998.3 | 1005.5 | 925.6 / 933.2 |
+
+The three independent paired median ratios have geomean1.007345335
+(+0.7345%), passing the prospective>1.002 criterion with every pair faster.
+All three candidate medians exceed1000tok/s: this establishes the stated
+subsequent-request117K prefill speed milestone, with first-use costs separate.
+The committed reducer recovered9813 original native/dependency inputs and112
+frozen benchmark inputs, checked the original component gate, actual model
+dispatch/work conservation and matched request/configuration identities. See
+[all24 speed samples and the decision](../bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json).
+Retain selective Down as an opt-in for further qualification. Default adoption,
+broad quality,physical262144/session/RESTORE and sustained70tok/s decode remain
+unqualified;24 output tokens do not establish sustained generation speed.
+The next measurement consumer is an owned `bench.sh --long-generation-only
+--think --runs 1` screen on this selected engine, followed by independent clean
+processes if the workload is eligible. Commit its complete plan and finite
+budgets before launch. Reuse the reviewed current MTP call-chain and context
+gate maps; measure actual acceptance and resource use before selecting a decode
+change. Follow [the benchmark contract](BENCHMARKS.md) for the strong/weak
+classification, answer/output-length gates and required agent-session evidence.
 
 The maintained model controller now provides `prepare|run qsa-long-input-check`
 and `prepare|run qsa-long-input [0|1|2]`. Its prospective screen holds131072

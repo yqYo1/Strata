@@ -31,23 +31,6 @@ def digest(path):
         return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
-def qualified_build_source_matches(qualified, build):
-    """Reuse a native gate only across proved controller-only admission."""
-    if not (build.get('complete') and build.get('passed') and
-            build.get('ownership_closed') and not build.get('active')):
-        return False
-    if qualified == build['source_commit']:
-        return True
-    comparison = build.get('previous_output_comparison', {})
-    fixtures = comparison.get('fixture_bytes_match', {})
-    return (qualified == build.get('binary_origin_source_commit') and
-        comparison.get('controller_only_admission') is True and
-        comparison.get('native_and_recipe_inputs_match') is True and
-        comparison.get('engine_bytes_match') is True and
-        set(fixtures) == set(build.get('fixtures', {})) and bool(fixtures) and
-        all(value is True for value in fixtures.values()))
-
-
 def expert_bank_reuse_scope(qualified, current, previous):
     """Narrow bank/provider proof; never qualifies the changed Down fixture."""
     for record in (current, previous):
