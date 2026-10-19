@@ -93,6 +93,17 @@ after the standard client warmup/calibration, not repeated warm requests of the
 same workload. Source/plan commits precede execution; the controller does not
 build, retry an engine, adopt a default or qualify the broader model gates.
 
+For later decode attribution, use a separate observer process after the frozen
+cohort. `STRATA_DECODE_TIMING` reports wall-clock regions: its CPU label includes
+pool completion, and per-layer host time includes callbacks and GPU submission.
+These nested counters are not thread CPU time or measured RAM/PCIe traffic.
+The engine's decode clock also stops before the final `wait_commit`; record
+successful completion separately. Do not enable `STRATA_VERIFY_PROFILE` on the
+current SYCL backend: verifier capture calls `gpu_stamp`, which explicitly throws
+because device global-timer stamps are unsupported. GPU attribution needs a
+separately qualified profiling-event path outside capture. Leave both observer
+variables absent in clean processes; setting either to `0` still enables it.
+
 For a prefill-only screen, `bench.sh --prefill-only --prefill-tokens N` accepts
 32768,65536,98304 or131072 as the minimum **actual prompt and read tokens**.
 Thinking stays on and output is capped at24 tokens; this does not qualify
