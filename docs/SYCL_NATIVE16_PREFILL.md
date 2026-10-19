@@ -1862,9 +1862,18 @@ extent, fresh-event replay, and refusal of mismatched or unrecorded inputs.
 The separate `sycl_verifier_retirement_test --early` entry has six cases:
 small,16 largest blobs, empty, fresh-event replay, mismatched plan and unrecorded
 event. It uses production publication/fetch/launch/retirement with guarded device
-payloads and a resident-produced dependency byte. It proves queue/owner behavior,
-not native projection math or production overlap; retain the existing16 native
-projection cases. These new cases are source only until Main executes them.
+payloads and a resident-produced dependency byte. The small case holds the copy
+queue with a test-only host task, with a two-second automatic release counted
+as failure. Prewarmed resident work must complete while the gate is held;
+copied completion must remain not-ready for50ms and a separate queue must see
+untouched output before release. Both graph writes and the concurrent probe use
+32-bit device atomics, so a missing wait does not make the assertion a data race.
+The gate captures only standard C++ state, calls no runtime API and releases
+before checked owner destruction, following the
+[SYCL host-task contract](https://github.khronos.org/SYCL_Reference/iface/host-task-basic.html).
+These cases exercise queue/owner behavior, not native projection math or
+production overlap; retain the existing16 native projection cases. They remain
+source only until Main compiles and executes them against the exact candidate.
 Run a small traced check and parameter-validated model check before clean speed.
 The model check needs32K+ fresh input,1024+ thinking-plus-answer tokens, positive
 actual early launches/groups matching completed copies, normal ownership and no

@@ -3,13 +3,17 @@
 
 #include <array>
 #include <cerrno>
+#include <chrono>
+#include <condition_variable>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <memory>
 #include <limits>
+#include <mutex>
 #include <stdexcept>
 #include <string>
+#include <thread>
 #include <sys/wait.h>
 #include <unistd.h>
 #include <vector>
@@ -52,6 +56,8 @@ struct VerifierRetirementTestAccess {
         v.sink_.staging = reinterpret_cast<uintptr_t>(v.staging_) + offset;
     }
     static void prepare_early(Verifier& v, int count, size_t bytes, uint8_t* result) {
+        if (bytes % sizeof(uint32_t))
+            throw std::runtime_error("early test word alignment");
         if (cudaMallocHost(reinterpret_cast<void**>(&v.h_plan_), 4*sizeof(int32_t)) != cudaSuccess ||
             cudaMallocHost(reinterpret_cast<void**>(&v.h_flagA_), sizeof(uint32_t)) != cudaSuccess ||
             cudaEventCreateWithFlags(&v.work_done_, cudaEventDisableTiming) != cudaSuccess ||
@@ -80,8 +86,17 @@ struct VerifierRetirementTestAccess {
         if (cudaStreamBeginCapture(v.cs_, cudaStreamCaptureModeRelaxed) != cudaSuccess)
             throw std::runtime_error("early copied capture");
         auto* stage = v.staging_;
-        v.cs_->parallel_for(sycl::range<1>(bytes), [=](sycl::id<1> i) {
-            result[i[0]] = stage[i[0]] ^ result[bytes];
+        v.cs_->parallel_for(sycl::range<1>(bytes/sizeof(uint32_t)), [=](sycl::id<1> i) {
+            uint32_t value = 0;
+            for (unsigned j=0;j<sizeof(uint32_t);++j)
+                value |= uint32_t(stage[i[0]*sizeof(uint32_t)+j] ^ result[bytes]) << (8*j);
+            // A separate test queue can inspect these words while the copied
+            // graph is held. Atomic reads/writes keep that negative assertion
+            // defined even if a broken wait lets the copied graph start early.
+            sycl::atomic_ref<uint32_t, sycl::memory_order::relaxed,
+                sycl::memory_scope::device, sycl::access::address_space::global_space>
+                word(reinterpret_cast<uint32_t*>(result)[i[0]]);
+            word.store(value);
         });
         finalize(v.pcie_work_[1]);
         reset_early(v);
@@ -92,6 +107,14 @@ struct VerifierRetirementTestAccess {
         *v.h_flagA_ = *v.h_flagB_ = 0;
     }
     static void publish(Verifier& v) { Verifier::publish_plan(&v); }
+    static void warm_early(Verifier& v) {
+        if (cudaGraphLaunch(v.work_[1][0],v.cs_)!=cudaSuccess ||
+            cudaGraphLaunch(v.pcie_work_[1][0],v.cs_)!=cudaSuccess ||
+            cudaStreamSynchronize(v.cs_)!=cudaSuccess)
+            throw std::runtime_error("early test graph warmup");
+    }
+    static sycl::queue& copy_queue(Verifier& v) { return *v.copy_; }
+    static cudaError_t early_query(Verifier& v) { return cudaEventQuery(v.pcie_done_); }
     static void launch_unrecorded(Verifier& v, int groups) { v.launch_pcie(groups); }
     static cudaError_t early_status(const Verifier& v) { return v.pcie_status_; }
     static cudaError_t early_done(Verifier& v) { return cudaEventSynchronize(v.pcie_done_); }
@@ -120,6 +143,65 @@ void need(bool condition, const char* message) {
 }
 void check(cudaError_t code) { need(code == cudaSuccess, cudaGetErrorString(code)); }
 void mark(char value) { need(write(marker_fd, &value, 1) == 1, "marker write"); }
+
+// Test-only host gate: no runtime calls, device spin, or unbounded wait inside
+// the host task. Always release before the verifier drains its queues, including
+// exception paths. Automatic release is a failed assertion, never a pass.
+class CopyGate {
+    struct State {
+        std::mutex mutex;
+        std::condition_variable changed;
+        bool entered=false, open=false, expired=false;
+    };
+    std::shared_ptr<State> state_=std::make_shared<State>();
+public:
+    explicit CopyGate(sycl::queue& queue) {
+        const auto state=state_;
+        queue.submit([=](sycl::handler& h) {
+            h.host_task([=] {
+                std::unique_lock lock(state->mutex);
+                state->entered=true;
+                state->changed.notify_all();
+                if (!state->changed.wait_for(lock,std::chrono::seconds(2),[&] { return state->open; })) {
+                    state->expired=true;
+                    state->open=true;
+                }
+                state->changed.notify_all();
+            });
+        });
+    }
+    ~CopyGate() { release(); }
+    void wait_entered() {
+        std::unique_lock lock(state_->mutex);
+        need(state_->changed.wait_for(lock,std::chrono::seconds(2),[&] { return state_->entered; }),
+             "copy gate host task did not start");
+        need(!state_->open,"copy gate expired during admission");
+    }
+    bool held() const {
+        std::lock_guard lock(state_->mutex);
+        return state_->entered && !state_->open && !state_->expired;
+    }
+    void release() {
+        std::lock_guard lock(state_->mutex);
+        state_->open=true;
+        state_->changed.notify_all();
+    }
+};
+
+void require_untouched(sycl::queue& queue,uint8_t* output,size_t bytes,uint32_t* observed) {
+    auto event=queue.single_task([=] {
+        uint32_t untouched=1;
+        for (size_t i=0;i<bytes/sizeof(uint32_t);++i) {
+            sycl::atomic_ref<uint32_t, sycl::memory_order::relaxed,
+                sycl::memory_scope::device, sycl::access::address_space::global_space>
+                word(reinterpret_cast<uint32_t*>(output)[i]);
+            if (word.load()!=0xe7e7e7e7u) untouched=0;
+        }
+        *observed=untouched;
+    });
+    strata::sycl_backend::runtime_for()->wait(event);
+    need(*observed==1,"copied output changed while DMA gate was held");
+}
 
 void large_copy_case() {
     constexpr size_t slot=2662400, total=16*slot;
@@ -157,9 +239,28 @@ void early_case(const std::string& mode) {
     check(cudaMalloc(&output_raw, bytes+129));
     check(cudaMemset(output_raw, 0xe7, bytes+129));
     auto* result = static_cast<uint8_t*>(output_raw)+64;
+    uint32_t* probe_raw=nullptr;
+    check(cudaMallocHost(reinterpret_cast<void**>(&probe_raw),sizeof(uint32_t)));
+    const auto free_probe=[](uint32_t* p) { (void)cudaFreeHost(p); };
+    std::unique_ptr<uint32_t,decltype(free_probe)> probe(probe_raw,free_probe);
+    auto probe_queue=strata::sycl_backend::runtime_for()->make_queue(false);
     auto verifier = std::make_unique<V>();
     Access::prepare(*verifier, slot, 16);
     Access::prepare_early(*verifier, count, bytes, result);
+    if (mode=="early") {
+        // Compile/initialize both synthetic graphs before the finite gate.
+        // These direct warmups do not increment production early counters.
+        Access::warm_early(*verifier);
+        check(cudaMemset(output_raw,0xe7,bytes+129));
+        require_untouched(probe_queue,result,bytes,probe.get());
+    }
+    // Declared after the verifier so any exception releases the host gate
+    // before checked verifier destruction tries to drain the copy queue.
+    std::unique_ptr<CopyGate> gate;
+    if (mode=="early") {
+        gate=std::make_unique<CopyGate>(Access::copy_queue(*verifier));
+        gate->wait_entered();
+    }
     const int rounds = replay ? 2 : 1;
     for (int round=0;round<rounds;++round) {
         // The preceding graph and explicit source retirement completed before
@@ -167,6 +268,10 @@ void early_case(const std::string& mode) {
         for(size_t i=0;i<bytes;++i) source[i]=uint8_t(i*3+7+(i>>8)+round*31);
         if(round) Access::reset_early(*verifier);
         Access::publish(*verifier);
+        if (gate) {
+            check(Access::resident_done(*verifier));
+            need(gate->held(),"resident positive control consumed the copy gate deadline");
+        }
         if (unrecorded) Access::launch_unrecorded(*verifier, count);
         else Access::submit(*verifier, empty ? nullptr : inputs.data(), bad_plan ? count-1 : count,
                             empty ? 0 : slot);
@@ -174,6 +279,20 @@ void early_case(const std::string& mode) {
         if (!empty && !bad_plan && !unrecorded) {
             need(before.launches==uint64_t(round+1) && before.groups==uint64_t(count*(round+1)),
                  "early graph not submitted before CPU callback retirement");
+            if (gate) {
+                need(gate->held(),"early submission blocked until the copy gate expired");
+                const auto until=std::chrono::steady_clock::now()+std::chrono::milliseconds(50);
+                do {
+                    need(Access::early_query(*verifier)==cudaErrorNotReady,
+                         "early graph completed while DMA gate was held");
+                    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                } while (std::chrono::steady_clock::now()<until);
+                // Do not call cudaMemcpy here: that wrapper waits every stream
+                // and would release the gate only through its failure deadline.
+                require_untouched(probe_queue,result,bytes,probe.get());
+                need(gate->held(),"output probe consumed the copy gate deadline");
+                gate->release();
+            }
             check(Access::early_done(*verifier));
         } else {
             need(before.launches==0 && before.groups==0,"empty/refused plan launched a copied kernel");
