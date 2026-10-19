@@ -4,7 +4,39 @@
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_down_scatter_bench",
     "sha256": "93248e2799e154b785e025cdd87ae03ab9f18d0700eb2b9cb13a747d8035b802"
   },
-  "checks": [],
+  "checks": [
+    {
+      "mode": "ownership",
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_down_scatter_bench",
+        "--ownership"
+      ],
+      "exit_code": 0,
+      "startup_down_selector": "large",
+      "native_identity": {
+        "pid": 2896121,
+        "start_ticks": 72823700
+      },
+      "ownership_closed": true,
+      "passed": true,
+      "closure": {
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "owner_error": false,
+        "cleanup_attempted": false
+      },
+      "event_totals": [
+        [
+          "ownership",
+          "PASS",
+          54
+        ]
+      ],
+      "event_count": 54,
+      "immutable_input_failures": 0
+    }
+  ],
   "controller_source_commit": "0c22d0cc7a31af35a73553a0fb770cfede327c20",
   "controller_sha256": {
     "tools/sycl/measure_down_scatter.py": "6d92d7212c7cad9bb7fdee6ef6877528b6240f990c7f74d032394933387ed2de",
@@ -14,11 +46,11 @@
   },
   "build_record_sha256": "8779b7630658308aed00ad38cfef38c023f7d5875a7154f1d141b2c6f445d221",
   "run_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-scatter-component-v7",
-  "mode": "plan",
+  "mode": "ownership",
   "ownership_closed": true,
   "GPU_executed": false,
-  "complete": false,
-  "passed": false,
+  "complete": true,
+  "passed": true,
   "active": false,
   "model_performance_adopted": false,
   "model_quality_qualified": false,
@@ -37,5 +69,40 @@
     "timing_status": null,
     "advance_to_model": false
   },
-  "retention": "Keep original individual samples in this result; retire successful API traces, routine logs and JIT caches after comparison closure and verified extraction. Preserve known-good fallback; do not retain another closed component binary."
+  "retention": "Keep original individual samples in this result; retire successful API traces, routine logs and JIT caches after comparison closure and verified extraction. Preserve known-good fallback; do not retain another closed component binary.",
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+    "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "ZES_ENABLE_SYSMAN": "0",
+    "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+    "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
+    "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
+    "STRATA_SYCL_PREFILL_DOWN_SCATTER": "large",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-scatter-component-v7/tmp",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-scatter-component-v7/cache"
+  },
+  "postchecks_complete": true,
+  "postcheck_errors": [],
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  }
 }
