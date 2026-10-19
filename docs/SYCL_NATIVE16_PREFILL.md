@@ -1581,11 +1581,23 @@ IQ4_NL in39 layers and Q2_0 in9, with no IQ3_S Down. Gate/up uses17 IQ3_XXS,
 per-projection format contract. Its H2560/FF640/512-expert geometry and packed
 payload are recorded in the resource result; these do not measure physical
 traffic or dynamic reuse. Do not optimize an unused IQ3_S Down path.
-The next discriminator is a prospectively committed clean pool-workers5/1
-comparison with three independent processes per arm and identical long-generation
-work. It can test CPU-pool capacity sensitivity, not distinguish arithmetic from
-RAM limits or prove saturation at the baseline. Keep the earlier clean speeds
-and all failed comparison gates separate.
+The [CPU capacity controller](../tools/sycl/cpu_capacity.py) freezes a clean
+pool-workers5/1 comparison: six independent processes in5,1,1,5,5,1 order,
+three pairs, with four official warmups and identical long-generation input/work.
+Support directional sensitivity only if all three paired per-token latency
+ratios agree and their geomean exceeds1.10 in that direction. Failed/partial or
+mismatched-work cohorts remain ineligible. All7 offline negative-evidence tests
+passed. Controller source`5e7943d80` then passed the bounded one-worker check:
+two thinking-enabled small inputs,16 generated tokens each, actual one-worker
+plus host marker, normal owned closure and no fresh GPU fault. The generator
+uses Strata's actual tokenizer/template; an earlier optional-tokenizers import
+failed during preparation before any native launch and was corrected.
+The six clean long processes remain pending the independent Orca source audit
+and native Luna-max review. This diagnostic can test CPU-pool capacity
+sensitivity, not distinguish arithmetic from RAM limits or prove saturation at
+the baseline. Small-check success establishes neither task quality nor a speed
+gain. Keep earlier clean speeds and all failed comparison gates separate; see
+the [current plan/check](../bench/results/2026-10-15-pr6-recovery-audit/decode-cpu-capacity-current.json).
 Actual unprivileged perf `cycles` and `task-clock` command probes at`dea283917`
 both exited1 with the access-limited diagnostic under`perf_event_paranoid=4`.
 This preserves the earlier VTune ptrace refusal as a separate result; no host
