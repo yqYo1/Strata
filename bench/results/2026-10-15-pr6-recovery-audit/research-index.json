@@ -2489,7 +2489,7 @@
   "forced_compute_copy_overlap_collection_scope": {
     "classification": "knowledge collection",
     "schedulable_now": false,
-    "status": "collection_returned_native_review_running",
+    "status": "native_reviewed_conditional_reference",
     "question": "With UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD=1 and EnableDirectSubmission=0 retained, what overlap can explicit compute queues and command lists actually permit between host transfers, dequantization and XMX GEMM on Xe2? Compare documented UR/Level Zero engine selection, command-list execution, dependencies and possible serialization. Map safety requirements to the current same-in-order-queue expert bank without proposing a production change or claiming measured overlap.",
     "candidate_source": {
       "commit": "b432c30e758717ffb7aee0a7aa55f2f5bae8decd",
@@ -2520,7 +2520,7 @@
       "maximum_bytes": 24576
     },
     "consumer": "Indexed knowledge for a later source-safe overlap discriminator; Main retrieves only if that concrete candidate is selected.",
-    "next_review": "Native Luna-max reviews novelty/source mapping and chooses retention. No immediate implementation or GPU test is authorized for the worker.",
+    "next_review": "At current timing/candidate-selection closure. Any further source audit requires a measured opportunity and committed candidate; retain only as a concrete later overlap reference, not permission to launch the avoided route.",
     "task_id": "task_eda76ee7cafd",
     "dispatch_id": "ctx_7457cc624229",
     "terminal_handle": "term_4c4d29aa-7648-495b-b45c-344379b70e17",
@@ -2529,12 +2529,14 @@
     "report_bytes": 11089,
     "report_sha256": "a081092cd4572e685b42a535a38ec0e82e00c15e3830bcd9f347ecc98eef56e9",
     "worker_ownership_closed": true,
-    "native_review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/forced-compute-copy-overlap-native-review.json"
+    "native_review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/forced-compute-copy-overlap-native-review.json",
+    "native_review_sha256": "23b5ff3f04644e50416695881df0f0c8786f510afe8b52cc14ecb3c4ed1aa5e6",
+    "review_digest": "Source-grounded conditional reference, no local overlap/speed/safety proof. Level Zero v1.19.12 Core-guide queue-index text conflicts with the command-queue descriptor; immediate-list API is separate. Explicit copy-only group assignment is not clearly prohibited by the force-disable setting, but remains a different unproven route. Only independent inter-expert copy/dequant/GEMM could overlap; same-expert dependencies remain ordered."
   },
   "expert_bank_future_admission_source_scope": {
     "classification": "decision support",
     "schedulable_now": false,
-    "status": "source_report_returned_native_review_running",
+    "status": "native_reviewed_source_constraints_counter_only_conditional",
     "question": "Audit exact current routing/HC mixed-input availability across layer-major FFN windows. Can permanent383+scratch1 admission prefer experts reused in later windows while preserving actual expert execution and FP32 update order, without retaining a full additional mixed matrix? Compare first-seen residency, route precomputation/recomputation and bounded metadata options from actual source; derive data/lifetime/extra-work requirements and a discriminating compact counter plan. No generic cache/prefetch survey or implementation.",
     "candidate_source": {
       "commit": "e97393478a702c4e4db4029ec35c1c96d5ec4f0c",
@@ -2563,7 +2565,7 @@
       "maximum_bytes": 24576
     },
     "consumer": "Main decides whether a source-feasible routing/metadata discriminator merits selection after current timing. No candidate performance or adoption from source review.",
-    "next_review": "Native Luna-max reviews actual source/lifetime evidence; no implementation/tests/GPU delegated.",
+    "next_review": "After frozen Down timing closes, select a pinned counter-only census only if attribution warrants it. Capture window expert sets without extra GPU submissions;117K two-window data measures hindsight potential only. Online remapping needs>=3 windows. No further prerequisite-only source survey or immediate implementation adoption.",
     "task_id": "task_e8afee0f9e0f",
     "dispatch_id": "ctx_57bb71fa7ccb",
     "terminal_handle": "term_df27d44f-834b-4855-ab17-28840953930d",
@@ -2572,6 +2574,8 @@
     "worker_ownership_closed": true,
     "report_bytes": 14585,
     "report_sha256": "f31ce109b742fa3117f6975f9e4060947f9555da01d260f1e0a8fbc831fa8d16",
-    "native_review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/expert-bank-future-admission-native-review.json"
+    "native_review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/expert-bank-future-admission-native-review.json",
+    "native_review_sha256": "dbbec1a745f7aff5d38c964ad461aa141d3e9c7c41d4e6c8e6ae54ba79fffa28",
+    "review_digest": "Corrected: permanent residency persists across the layer, not first383 per window; a later window with<=383 experts need not fit after admission fills. Dequant is per distinct expert transition, not split job. Future routes require current-layer post-attention/PLE rows, so prior-layer residency alone is insufficient; prepass needs two-phase scheduling or extra storage/recomputation. Existing same-queue publication/error ownership remains required. No cache benefit measured."
   }
 }

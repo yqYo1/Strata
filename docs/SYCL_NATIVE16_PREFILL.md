@@ -1614,6 +1614,19 @@ remaining FFN window also changes from16384 plus host chunks to35568 GPU rows.
 Physical262144, production failure/session/RESTORE and default adoption remain
 unqualified; this bounded screen does not establish sustained decode speed.
 
+A read-only PCI topology check on2026-10-19 found16GT/s x4 at the card's
+03:00.0 upstream bridge and its AMD ancestors. The endpoint and internal04:01.0
+bridge instead report2.5GT/s x1, including as their maximum; interpreted as a
+payload limit that contradicts the earlier approximately6GB/s H2D measurement.
+The [retained topology readings](../bench/results/2026-10-15-pr6-recovery-audit/qsa-hardware-profile-current.json)
+preserve the discrepancy. The observed upstream encoding bound is
+16e9*4*128/130/8=7.877GB/s, using the [Linux encoding conversion](https://github.com/torvalds/linux/blob/master/drivers/pci/pci.h);
+the [B570 product specification](https://www.intel.com/content/www/us/en/products/sku/241676/intel-arc-b570-graphics/specifications.html)
+allows4.0x8. At that upstream bound,40GB would take5.08s if every requested byte
+crosses it. This is a conditional payload estimate, excluding protocol overhead
+and shared traffic; it is not measured wire bandwidth, additive model time or
+evidence of PCIe saturation. No recovery or device configuration was changed.
+
 
 ## Cached-Q/KVvec4 parallel FP32 sum candidate
 
