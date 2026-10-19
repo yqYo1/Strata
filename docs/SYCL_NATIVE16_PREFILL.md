@@ -1903,7 +1903,13 @@ in the [compact result](../bench/results/2026-10-15-pr6-recovery-audit/verifier-
 Replace the unsuitable host-task gate under a new committed bounded plan while
 preserving pending-completion, untouched-output and lifetime assertions.
 Model execution remains blocked until the complete57-case gate passes.
-Run a small traced check and parameter-validated model check before clean speed.
+After all57 passes, use `tools/sycl/early_pcie.py prepare`, commit the generated
+plan, then `run`: two thinking-template requests with16 generated tokens each,
+G1/T4 capture reached, positive copied/early groups, per-request group/copy and
+ready/pending conservation. Preparation refuses an incomplete component gate.
+This uses parameter validation and stage progress; full API tracing remains in
+the component fixture. No clean speed or task quality comes from this small run.
+Run the separate parameter-validated long model check before clean speed.
 The model check needs32K+ fresh input,1024+ thinking-plus-answer tokens, positive
 actual early launches/groups matching completed copies, normal ownership and no
 fresh fault. Record audit readiness separately. A later committed six-process

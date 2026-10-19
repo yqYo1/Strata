@@ -97,5 +97,32 @@ class ArenaScreenTests(unittest.TestCase):
         with self.assertRaises(RuntimeError):screen(altered)
 
 
+class EarlyPcieEvidenceTests(unittest.TestCase):
+    log = ('early PCIe expert graph enabled mode=0 audit=1\n'
+           'strata verify: captured the 1-token window\n'
+           'strata verify: captured the 4-token window\n'
+           'strata serve: SYCL_PCIE_EARLY launches=2 groups=16 '
+           'ready_at_pool_return=1 pending_at_pool_return=1\n'
+           'strata serve: SYCL_PCIE_EARLY launches=3 groups=20 '
+           'ready_at_pool_return=1 pending_at_pool_return=2\n')
+
+    def test_early_groups_bind_to_completed_copies_and_launch_audit(self):
+        from early_pcie import early_evidence
+        rows=early_evidence(self.log,[dict(completed_blobs=16),dict(completed_blobs=20)])
+        self.assertEqual([r['launches'] for r in rows],[2,3])
+        with self.assertRaises(RuntimeError):
+            early_evidence(self.log,[dict(completed_blobs=17),dict(completed_blobs=20)])
+
+    def test_missing_duplicated_or_unaccounted_early_work_is_rejected(self):
+        from early_pcie import early_evidence
+        copied=[dict(completed_blobs=16),dict(completed_blobs=20)]
+        for log in (self.log+self.log,self.log.replace('audit=1','audit=0'),
+                    self.log.replace('captured the 4-token window','capture not reached'),
+                    self.log.replace('pending_at_pool_return=2','pending_at_pool_return=0'),
+                    self.log.replace('launches=2','launches=0')):
+            with self.subTest(log=log):
+                with self.assertRaises(RuntimeError):early_evidence(log,copied)
+
+
 if __name__ == '__main__':
     unittest.main()
