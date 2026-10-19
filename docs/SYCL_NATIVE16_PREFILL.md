@@ -1495,7 +1495,7 @@ describe these counters. Engine busy fraction still does not measure arithmetic
 efficiency, VRAM bandwidth or physical PCIe bytes. Preserve unknowns rather
 than converting the earlier GPU-reach wall percentage into device utilization.
 The independent [client resource reader](../bench/sycl/client_resources.py)
-at`83c7d3c6e` passed all12 synthetic CPU-only tests with
+at`3743a3bd4` passed all14 synthetic CPU-only tests with
 `python3 -B tests/core/test_client_resources.py`. It binds the original receipt
 to the current boot and rechecks PID/start/SID,
 deduplicates descriptors, preserves raw cycle counters and recovery spans,
@@ -1505,10 +1505,25 @@ Collector completion requires an explicit terminal and at least two samples
 with eligible CCS intervals; empty or unsupported clients cannot pass. A
 confirmed process exit can close this process-bounded collector, but planned
 model-phase completion and coverage remain separate checks. The CLI has a900s/
-32MiB bound and opens no GPU device. No live collection has been qualified;
-its next consumer is the bounded resource diagnostic after this frozen cohort.
-The frozen native wrapper lacks the required receipt boot ID; update it after
-the six-process comparison closes, before any live collection.
+32MiB bound and opens no GPU device. No live collection has been qualified.
+The [resource controller](../tools/sycl/resource_engine.py) at`d9ff684f1`
+prepares a bounded official regular-code diagnostic on the old engine, recovering
+its9813 original native/dependency inputs and recipe. The original build path
+differs from the retained path; admission checks the original committed relocation
+record as well as source identity, byte size and actual executable SHA256.
+Its relocated-source regression test passed, along with the native-wrapper
+synthetic lifecycle test,7 HTTP/eligibility tests and18 evidence tests (41 total
+with the reader tests). No new native engine was built.
+The wrapper now records the boot ID and owns the passive reader beside the
+native child. The diagnostic preserves parameter validation, stage progress
+and the qualified safety environment; its observer-contaminated speed is not
+a clean result. Exact client clocks divide observations before and after the
+first content/reasoning output. These are client windows, not native prefill/
+decode boundaries. The reducer replays raw cycles, checks the terminal and
+contained spans, and records the unsampled final edge without extrapolation.
+The immediate consumer is the committed900s/1s/32MiB collection plan, supervised
+inside the1800s/64MiB official benchmark budget. Source integration is under an
+independent Orca Luna audit; Main owns all tests and GPU work.
 Recovered spans must fit the selected request interval. CPU ticks include
 polling, and a shared DRM client's counters are not exclusive process usage.
 Keep model quality,agent-session,physical262144/session/RESTORE and matched
