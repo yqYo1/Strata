@@ -147,7 +147,7 @@
       "candidate_path": "bench/results/2026-10-15-pr6-recovery-audit/own-qsa-kpitch-v1",
       "decision": "Reuse the existing source-audited pitch proposal after the current comparison; no new duplicate survey. Recheck immutable source/provenance and wire maintained API/tests before compiling.",
       "candidate": "Fixed score33,Cells32,WG128,SG16; K36/V260 shared tile needs9216 BF16 values,30272B requested local payload,34368B admission minimum. No hardware occupancy/bank map or performance result.",
-      "do_not_repeat": "Old global K span256 schedule regressed10.35–29.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
+      "do_not_repeat": "Old global K span256 schedule regressed10.35\u201329.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
     },
     "reviewed_base_source_sha256": "fa505d02e2b24f7cb6948033921fa697c8aeb58e6f4df6d873f13e5a7918e36b",
     "source_sha256": "c3ad8326f097050ff9ab1859e116f2cad3709a8464162143f752bc294cbe1e01",
@@ -208,7 +208,7 @@
         "bytes": 19144,
         "source_commit": "fbc7f56d7b0ddb5db5f3722ef33ca044c3f8a5c8",
         "reason": "Its conditional consumer is a selected-cell stable-reduction split. The closed QSA screen and pending pitch candidate select no split or reduction bottleneck.",
-        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report’s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
+        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report\u2019s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
       },
       {
         "path": "bench/results/2026-10-15-pr6-recovery-audit/research-matrix-register-reuse-20261018.md",
@@ -1379,8 +1379,8 @@
         "Retrieval map for a later concrete question"
       ],
       "paper_sections": [
-        "SyclKittens §§3.2–3.3 and Appendix D for operand layouts, subgroup prefetch and the measured ablation.",
-        "Xe-Forge §§IV–V, VI-A, VI-D–VI-E for search/validation workflow, hardware, baseline and kernel results."
+        "SyclKittens \u00a7\u00a73.2\u20133.3 and Appendix D for operand layouts, subgroup prefetch and the measured ablation.",
+        "Xe-Forge \u00a7\u00a7IV\u2013V, VI-A, VI-D\u2013VI-E for search/validation workflow, hardware, baseline and kernel results."
       ]
     }
   },
@@ -2103,7 +2103,7 @@
   },
   "sycl_command_submission_amortization_collection_scope": {
     "classification": "knowledge collection",
-    "question": "For repeated same-queue SYCL/oneAPI kernel and copy command streams, compare mechanisms that amortize host submission work: per-command submission, supported command batching/list execution, and replayable command graphs with parameter updates. Using official Khronos/Intel/Unified Runtime sources and transferable non-LLM SYCL/HPC examples, determine what each mechanism actually amortizes, how it handles dynamic pointers/maps/shapes, dependencies, asynchronous errors, capture restrictions and replay/update costs, and where measured benefits fail to transfer. Map applicability to Strata’s repeated GEMM/upload submit pattern without proposing code or claiming local performance.",
+    "question": "For repeated same-queue SYCL/oneAPI kernel and copy command streams, compare mechanisms that amortize host submission work: per-command submission, supported command batching/list execution, and replayable command graphs with parameter updates. Using official Khronos/Intel/Unified Runtime sources and transferable non-LLM SYCL/HPC examples, determine what each mechanism actually amortizes, how it handles dynamic pointers/maps/shapes, dependencies, asynchronous errors, capture restrictions and replay/update costs, and where measured benefits fail to transfer. Map applicability to Strata\u2019s repeated GEMM/upload submit pattern without proposing code or claiming local performance.",
     "schedulable_now": false,
     "status": "native_reviewed_retrieval_reference",
     "eligibility_review": {
@@ -2577,5 +2577,29 @@
     "native_review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/expert-bank-future-admission-native-review.json",
     "native_review_sha256": "dbbec1a745f7aff5d38c964ad461aa141d3e9c7c41d4e6c8e6ae54ba79fffa28",
     "review_digest": "Corrected: permanent residency persists across the layer, not first383 per window; a later window with<=383 experts need not fit after admission fills. Dequant is per distinct expert transition, not split job. Future routes require current-layer post-attention/PLE rows, so prior-layer residency alone is insufficient; prepass needs two-phase scheduling or extra storage/recomputation. Existing same-queue publication/error ownership remains required. No cache benefit measured."
+  },
+  "expert_bank_scoped_reuse_audit_scope": {
+    "classification": "decision support",
+    "schedulable_now": false,
+    "status": "source_audit_running_tests_deferred_until_live_timing_closes",
+    "candidate_source": {
+      "commit": "c4583093b",
+      "source_sha256": {
+        "tools/sycl/bench_engine.py": "acddeed07176d6fcd1c94af871723eff7c3bbb7ff42c1c6f1ea44587b179f78e",
+        "tools/sycl/test_source_view_statistics.py": "bd22665f9471cf04ad4eaef9c9f8c6a1f0a1aab3a00ae752bdacbf79b4be6245",
+        "tools/sycl/build_engine.py": "a905a557716042a2d4a74928e914c13e3bc025647ce60b9812cb41d9f67078fa"
+      }
+    },
+    "question": "Audit source/recipe/output receipt-chain admission for unchanged production bank/provider gates while the independent Down fixture changes; no weakened global qualification.",
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/expert-bank-scoped-reuse-audit.md",
+    "report_budget_bytes": 8192,
+    "task_id": "task_7f02c2ded44b",
+    "dispatch_id": "ctx_0803fa652f45",
+    "terminal_handle": "term_c60edba4-e1c8-4828-b10a-85d51e4a5352",
+    "run_id": "run_fb41872974e9",
+    "worker_ownership_closed": false,
+    "launch": "Main-created codex --model gpt-6-luna -c check_for_update_on_startup=false; ready and turn started. The ordinary launcher failed before running the task at its update prompt; that failed terminal was released/closed.",
+    "consumer": "Main must complete tests and resolve concrete audit defects before model preparation; no new native or GPU qualification.",
+    "next_review": "At report settlement, native gpt-6-luna max review; preserve only useful short findings/validation in the maintained controller result at model-plan closure."
   }
 }
