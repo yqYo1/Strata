@@ -1607,7 +1607,13 @@ timed observer and does not count exact routes or physical bytes. Ten offline
 negative-evidence tests passed. V2 source`7d9dce79a` pinned all15 model inputs
 (85989955827 bytes) and passed the revised one-worker check: both16-token
 requests, unchanged model/platform identity, normal owned closure and no fresh
-GPU fault. All six clean long processes remain pending.
+GPU fault. The first clean long process (five workers plus the host) then
+completed all four warmups and the33211-fresh-token request:2931 generated
+tokens including thinking,653.9 prefill tok/s and14.6 decode tok/s. Native and
+benchmark owners closed normally, model/platform identities stayed unchanged,
+and no fresh fault occurred. Its existing completion footer reports2.0% decode
+expert-cache hits, establishing CPU-pool work under the configuredpcie-frac0.
+Five independent processes remain; this single sample cannot decide sensitivity.
 This diagnostic can test CPU-pool capacity sensitivity, not distinguish
 arithmetic from RAM limits or prove saturation at the baseline. Small-check
 success establishes neither task quality nor a speed gain. Keep earlier clean
