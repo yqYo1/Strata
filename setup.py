@@ -1104,8 +1104,11 @@ def whole_shard(s: Path) -> bool:
     from gguf_reader import GGUFFile
     try:
         g = GGUFFile(s)
-        return s.stat().st_size >= g.data_start + max((t.offset + (t.expected_bytes() or 0) for t in g.tensors),
-                                                     default=0)
+        have = s.stat().st_size
+        need = g.data_start + max((t.offset + (t.expected_bytes() or 0) for t in g.tensors), default=0)
+        if not g.tensors:
+            need = min(need, have)   # metadata-only shards can end before alignment padding
+        return have >= need and (len(g.tensors) != 1 or have - need < max(64, g.alignment))
     except (OSError, ValueError, struct.error):
         return False
 
@@ -1246,9 +1249,16 @@ def check_shards(shards):
             fail(f"{s.name} is not a whole GGUF shard ({e})", "delete it and run setup again")
         need = g.data_start + max((t.offset + (t.expected_bytes() or 0) for t in g.tensors), default=0)
         have = s.stat().st_size
+        if not g.tensors:
+            # Niko #2346: a metadata-only shard may end at its unaligned header.
+            need = min(need, have)
         if have < need:
             fail(f"{s.name} is short: {have:,} of {need:,} bytes ({need - have:,} missing)",
                  "delete it and run setup again (or copy the whole file into --gguf-dir)")
+        if len(g.tensors) == 1 and have - need >= max(64, g.alignment):
+            # Niko #657, also respecting a larger declared GGUF alignment.
+            fail(f"{s.name} is longer than its tensor: {have:,} bytes, {need:,} expected ({have - need:,} extra)",
+                 f"delete {s.name} and its .done mark and run setup again")
 
 
 def get_llama_cpp():
