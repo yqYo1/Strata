@@ -1937,12 +1937,30 @@ gate-status check consumed that interval. No raw status/time sample exists to
 resolve this yet. The child closed, boot was unchanged and no fresh GPU fault
 was recorded. A new observation needs separate call timings; this failed run
 must not be relabelled as a device fault or a qualified gate.
-The next v4 observation adds flushed begin/end timestamps around the existing
+The v4 observation adds flushed begin/end timestamps around the existing
 gate-held checks and resident native queries, plus a window summary printed
 before the failure check. Enqueue order, native call count,20x5ms observation,
 200ms window,2s fallback and safety settings stay unchanged. Keep per-call
 counts/maxima and the last window even on failure. These text observers can
 change timing and provide no throughput or gate qualification.
+Source`174911063` built and the bounded child again failed, with normal closure,
+unchanged boot and no fresh GPU fault. Two calls started and returned: the
+gate-held check took5us and returned true; the first raw resident
+`zeEventQueryStatus` took1,998,861us and returned SUCCESS. The whole window
+was1,998,885us. No second query or post-window gate check was reached. This
+locates the latency inside the raw resident query, rather than the outer
+observation loop; it does not establish when the device kernel completed.
+`Runtime::make_queue(bool)` selects profiling, not in-order behavior: every
+queue it returns is in-order. This fixture explicitly profiles copy/compute
+and leaves the probe unprofiled. Compatible NEO26.31.39395.14 source's
+`queryCounterBasedEventStatus` calls timestamp-completion synchronization for a
+profiled counter-based event. Exact correspondence to installed26.31.39395.16
+remains unverified, so this is a testable source hypothesis, not attribution
+of the installed DSO or model latency. The next diagnostic changes only the
+compute queue to `make_queue(false)` while preserving the copy/probe queues,
+context/device, enqueue order, checks,2s fallback, tracing and safety settings.
+Queue profiling is a new explicit diagnostic variable; no production queue or
+model route is qualified by this comparison.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.
