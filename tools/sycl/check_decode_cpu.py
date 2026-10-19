@@ -48,6 +48,13 @@ def runtime_smoke():
     scope = index['current_decode_mtp_verifier_reuse_source_audit']['cpu_observer_source_audit']
     cpu = scope['native_cpu_qualification']
     plan = scope['runtime_smoke_plan']
+    base = plan['configuration_reference']
+    reference = json.loads(git(P, 'show', base['commit'] + ':' + base['path']))
+    guards.require(reference['complete'] and reference['passed'] and reference['ownership_closed'],
+                   'closed configuration reference required')
+    environment = {k: v.replace(reference['environment']['STRATA_MEASUREMENT_ROOT'], plan['output_root'])
+                   for k, v in reference['environment'].items()}
+    environment.update(plan['environment_overrides'])
     build = committed(INDEX.with_name('native-gdn-engine-build.json'))
     full = json.loads((B / 'main-native-gdn-engine/record.json').read_text())
     from bench_engine import compact_build_record
@@ -58,12 +65,16 @@ def runtime_smoke():
     for group in [full['project'], *full['dependencies']]:
         for name, expected in group['source_sha256'].items():
             guards.require(digest(Path(group['root']) / name) == expected, 'native smoke input changed: ' + name)
-    guards.require(digest(plan['command'][0]) == build['binary']['sha256'], 'native engine changed')
+    guards.require(build['binary']['sha256'] == plan['binary_sha256'] and
+                   digest(build['binary']['path']) == plan['binary_sha256'], 'native engine changed')
     settings = committed(P / 'tools/sycl/measurement_environment.json')
     for name, item in settings['runtime_elfs'].items():
         guards.require(digest(name) == item['sha256'], 'runtime asset changed: ' + name)
     profile = plan['expert_profile']
     guards.require(digest(profile['path']) == profile['sha256'], 'expert profile changed')
+    args = reference['config']['args'].copy()
+    args[args.index('--expert-profile') + 1] = profile['path']
+    command = [build['binary']['path'], *args]
     guards.no_model_owners([])
     guards.driver_guard()
     root = Path(plan['output_root'])
@@ -120,7 +131,7 @@ def runtime_smoke():
 
     owner = supervision.Owner(root / 'owned', persist)
     try:
-        entry, out, err = owner.run('native-smoke', plan['command'], plan['environment'], P,
+        entry, out, err = owner.run('native-smoke', command, environment, P,
             interaction=interact, **plan['budgets'])
         record['exit_code'] = entry.get('exit_code')
         if entry.get('direct_identity'):
