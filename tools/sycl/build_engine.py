@@ -91,10 +91,16 @@ def fresh_retained_reference(compact):
     guards.require(digest(receipt['path'])==receipt['sha256'], 'retained source receipt changed')
     full=json.loads(Path(receipt['path']).read_text())
     guards.require(full['source_commit']==reference['source_commit'], 'retained source identity differs')
+    guards.require(reference['fixtures'].keys()==full['fixtures'].keys(),
+        'retained fixture selection differs from the original build')
     for name,item in dict(strata=reference['binary'],**reference['fixtures']).items():
         original=full['binary'] if name=='strata' else full['fixtures'][name]
-        guards.require(all(item[k]==original[k] for k in ('bytes','sha256')) and
+        # Original fixture receipts pin hashes without sizes. The relocation
+        # receipt pins both; check its actual size without rewriting history.
+        guards.require(item['sha256']==original['sha256'] and
+            ('bytes' not in original or item['bytes']==original['bytes']) and
             not Path(item['path']).resolve().is_relative_to(ROOT.resolve()) and
+            Path(item['path']).stat().st_size==item['bytes'] and
             digest(item['path'])==item['sha256'], 'retained artifact identity or protected location differs')
     for source in [full['project'],*full['dependencies']]:
         recovered={n:hashlib.sha256(data).hexdigest() for n,data in
