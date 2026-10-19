@@ -93,17 +93,36 @@ int main(int argc,char** argv) {
                 event_need(native_resident!=native_gate && handle_us<=100000 && gate.held(),
                     "resident native handle materialization failed or exceeded100ms");
                 const auto query_begin=Clock::now();
+                auto held_observation=[&](const char* name,int index) {
+                    std::printf("event_gate_call phase=begin name=%s index=%d offset_us=%lld\n",
+                        name,index,micros(query_begin));std::fflush(stdout);
+                    const auto begin=Clock::now();
+                    const bool value=gate.held();
+                    const auto elapsed=micros(begin);
+                    std::printf("event_gate_call phase=end name=%s index=%d offset_us=%lld elapsed_us=%lld result=%u\n",
+                        name,index,micros(query_begin),elapsed,unsigned(value));std::fflush(stdout);
+                    return value;
+                };
                 bool ready=false;int queries=0;
-                for(;queries<20 && gate.held();) {
+                for(;queries<20 && held_observation("held-before-query",queries);) {
                     ++queries;
+                    std::printf("event_gate_call phase=begin name=resident-query index=%d offset_us=%lld\n",
+                        queries,micros(query_begin));std::fflush(stdout);
+                    const auto begin=Clock::now();
                     const auto status=zeEventQueryStatus(native_resident);
+                    const auto elapsed=micros(begin);
+                    std::printf("event_gate_call phase=end name=resident-query index=%d offset_us=%lld elapsed_us=%lld result=%u\n",
+                        queries,micros(query_begin),elapsed,unsigned(status));std::fflush(stdout);
                     if(status==ZE_RESULT_SUCCESS) {ready=true;break;}
                     strata::test::ze_check(status==ZE_RESULT_NOT_READY ? ZE_RESULT_SUCCESS : status,
                         "resident native status query");
                     std::this_thread::sleep_for(std::chrono::milliseconds(5));
                 }
                 const auto query_us=micros(query_begin);
-                event_need(query_us<=200000 && gate.held(),"native status query exceeded its bounded held window");
+                std::printf("event_gate_window query_us=%lld queries=%d native_ready=%d\n",
+                    query_us,queries,int(ready));std::fflush(stdout);
+                event_need(query_us<=200000 && held_observation("held-after-window",queries),
+                    "native status query exceeded its bounded held window");
                 // An unready event is released BEFORE waiting. A ready event is
                 // waited with the gate still held, separating wait latency from
                 // the already-observed native completion. Neither branch admits
