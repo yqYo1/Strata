@@ -1,6 +1,6 @@
 {
-  "mode": "qsa-long-input-down-candidate",
-  "source_commit": "f6306a58dfc2e3274d8965eb4ba11ee9ce4ee0ba",
+  "mode": "qsa-long-input-down-base",
+  "source_commit": "447bdcad8d4c82ce553fa05b4d699d18b6fe7daa",
   "build_source_commit": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
   "engine_build_receipts": {
     "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json": "a42bcb5732b1f6869b9232e4b85a2e1354187d03e47c71e7ce949b6b7601e94f",
@@ -65,7 +65,7 @@
     "STRATA_SYCL_SELECT_CYCLIC": "0",
     "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
     "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-down-candidate-v1-repeat1/cache",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-down-base-v1-repeat1/cache",
     "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
     "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
     "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
@@ -78,14 +78,14 @@
     "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
     "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
     "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-down-candidate-v1-repeat1/tmp",
-    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-down-candidate-v1-repeat1",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-down-base-v1-repeat1/tmp",
+    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-down-base-v1-repeat1",
     "ZES_ENABLE_SYSMAN": "0",
     "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
     "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
     "STRATA_SYCL_PREFILL_GU_SWIGLU": "large",
     "STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW": "1",
-    "STRATA_SYCL_PREFILL_DOWN_SCATTER": "large",
+    "STRATA_SYCL_PREFILL_DOWN_SCATTER": "0",
     "STRATA_SYCL_PREFILL_MIXED_SCRATCH": "1",
     "STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS": "384"
   },
@@ -105,7 +105,7 @@
       "--expert-cache",
       "128",
       "--expert-profile",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-down-candidate-v1-repeat1/expert-profile.bin",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-down-base-v1-repeat1/expert-profile.bin",
       "--expert-cache-per-layer",
       "--pool-workers",
       "5",
@@ -144,7 +144,7 @@
       "strata"
     ],
     "host": "127.0.0.1",
-    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-down-candidate-v1-repeat1/engine.stderr",
+    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-down-base-v1-repeat1/engine.stderr",
     "engine_silence_s": 480,
     "parallel": 1,
     "open_browser": false,
@@ -154,9 +154,9 @@
     "/bin/sh",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
     "--config",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-down-candidate-v1-repeat1/config.json",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-down-base-v1-repeat1/config.json",
     "--port",
-    "42033",
+    "39473",
     "--runs",
     "4",
     "--prefill-only",
@@ -169,13 +169,13 @@
     "--ready-timeout",
     "600",
     "--out",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-down-candidate-v1-repeat1/bench"
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-down-base-v1-repeat1/bench"
   ],
   "reference": {
     "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-softmax-measurement-inputs-v1.json",
     "sha256": "3792c36462e333816ce5d5d9ac39f3dcc13809939d8d3133c570d8945257d1dd"
   },
-  "config_sha256": "06579f03d82a272ee148bac8efc99af4a96c5e69f0002294290cf84cdc3677fb",
+  "config_sha256": "da6be8a41df6f65a72d4a723dc8d6bffebb6bec40d3517454e5a80b27da3052d",
   "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
   "complete": false,
   "passed": false,
@@ -282,7 +282,7 @@
     "limits": "Production upload helper/cache, synthetic byte readers, private maps and caller unwind only. No real provider enqueue fault injection, model arithmetic, speed, session rollback or physical262144/RESTORE qualification."
   },
   "preceding_long_input_result": {
-    "commit": "f6306a58dfc2e3274d8965eb4ba11ee9ce4ee0ba",
+    "commit": "447bdcad8d4c82ce553fa05b4d699d18b6fe7daa",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json",
     "mode": "qsa-long-input-down-candidate"
   },
@@ -323,7 +323,7 @@
     "limits": "Current-fixture component permits only this matched117K trial; no model adoption."
   },
   "down_comparison": {
-    "enabled": true,
+    "enabled": false,
     "requested_only_change": "STRATA_SYCL_PREFILL_DOWN_SCATTER=0|large",
     "order": [
       "A0",
