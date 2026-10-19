@@ -132,23 +132,35 @@ def runtime_smoke(old_engine=False):
         for ids in plan['input_ids']:
             io.send(('GEN ' + str(plan['max_new']) + ' ' + ','.join(map(str, ids)) + '\n').encode())
             tokens = []
+            marks = {}
             for _ in range(plan['max_new'] + 64):
                 line = io.line(180)
                 guards.require(not line.startswith('ERR'), line)
-                if line.startswith('T '):
+                if line.startswith(('RESUME ', 'REUSED ')):
+                    key, value = line.split()
+                    guards.require(key not in marks and int(value) == 0, 'unexpected reuse marker')
+                    marks[key] = int(value)
+                elif line.startswith('PP '):
+                    fields = line.split()
+                    guards.require(len(fields) == 5 and 0 <= int(fields[1]) <= int(fields[2]) <= len(ids),
+                                   'invalid native prefill progress')
+                elif line.startswith('T '):
                     tokens.append(int(line.split()[1]))
                 elif line.startswith('DONE '):
                     fields = line.split()
                     guards.require(len(fields) == 15 and int(fields[1]) == len(tokens) and
                         0 < len(tokens) <= plan['max_new'] and int(fields[2]) == len(ids) and
-                        fields[5] in ('stop', 'length') and int(fields[8]) == 0 and int(fields[14]) == len(ids),
+                        fields[5] in ('stop', 'length') and int(fields[8]) == 0 and int(fields[14]) == len(ids) and
+                        marks == {'RESUME': 0, 'REUSED': 0},
                         'smoke DONE/request counts or completion differ')
                     record['requests'].append(dict(input_tokens=len(ids), generated_tokens=len(tokens),
                         finish_reason=fields[5], decode_ms=float(fields[4]),
                         output_ids_sha256=hashlib.sha256(json.dumps(tokens).encode()).hexdigest()))
                     break
                 else:
-                    guards.require(line.startswith('P '), 'unexpected native request protocol: ' + line)
+                    # Drain through DONE and QUIT before rejecting an unknown
+                    # status: a harness omission must not kill an active JIT.
+                    record.setdefault('unexpected_protocol', []).append(line[:512])
             else:
                 raise RuntimeError('bounded request protocol lacks DONE')
         io.send(b'QUIT\n')
@@ -167,6 +179,7 @@ def runtime_smoke(old_engine=False):
                        'native smoke protocol/exit failed: ' + str(entry.get('error')) +
                        '; exit=' + str(entry.get('exit_code')))
         text = err.read_text(errors='replace')
+        guards.require(not record.get('unexpected_protocol'), 'unknown protocol status after graceful completion')
         guards.require(not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|retirement failed|Strata SYCL cleanup:', text),
                        'native runtime failure; inspect the original bounded diagnostic')
         observations = [json.loads(s.partition(': ')[2]) for s in text.splitlines() if s.startswith('strata decode cpu: ')]
@@ -209,7 +222,8 @@ def runtime_smoke(old_engine=False):
         persist()
         compact = {k: v for k, v in record.items() if k not in ('plan', 'driver_after')}
         compact['native_process_started'] = bool(owner.commands and owner.commands[0].get('pid'))
-        compact['GPU_executed'] = bool(record['requests']) if record.get('ready') else None
+        compact['GPU_initialization_observed'] = bool(record.get('ready'))
+        compact['GPU_executed'] = True if record['requests'] else None
         compact['limits'] = 'Two tiny native-protocol requests through final commit. Explicit runtime-delta diagnostic only; shared qualified runtime pins remain unchanged. No performance, overhead, quality, IQ numerical, long-context or RESTORE qualification.'
         scope['runtime_reference' if old_engine else 'runtime_smoke'] = compact
         if not old_engine:
