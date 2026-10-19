@@ -18,9 +18,9 @@ void require_pending(const sycl::event& event) {
 
 int main(int argc,char** argv) {
     try {
-        event_need(argc==2,"usage: sycl_host_event_gate_test import|copy|graph");
+        event_need(argc==2,"usage: sycl_host_event_gate_test import|copy|graph|copy-query");
         const std::string mode=argv[1];
-        event_need(mode=="import" || mode=="copy" || mode=="graph","unknown native event gate case");
+        event_need(mode=="import" || mode=="copy" || mode=="graph" || mode=="copy-query","unknown native event gate case");
         auto runtime=strata::sycl_backend::runtime_for();
         if(mode=="import") {
             // First qualification creates/imports only: no dependent command,
@@ -83,6 +83,47 @@ int main(int argc,char** argv) {
             else done=compute.single_task(kernel);
             submit_us=micros(begin);
             event_need(submit_us<=100000 && gate.held(),"native dependent submit exceeded100ms or timer expired");
+            if(mode=="copy-query") {
+                // Diagnostic only: query the earlier event without reading its
+                // non-atomic host payload or changing the production queue flags.
+                const auto handle_begin=Clock::now();
+                const auto native_resident=sycl::get_native<sycl::backend::ext_oneapi_level_zero>(resident_done);
+                const auto native_gate=sycl::get_native<sycl::backend::ext_oneapi_level_zero>(imported);
+                const auto handle_us=micros(handle_begin);
+                event_need(native_resident!=native_gate && handle_us<=100000 && gate.held(),
+                    "resident native handle materialization failed or exceeded100ms");
+                const auto query_begin=Clock::now();
+                bool ready=false;int queries=0;
+                for(;queries<20 && gate.held();) {
+                    ++queries;
+                    const auto status=zeEventQueryStatus(native_resident);
+                    if(status==ZE_RESULT_SUCCESS) {ready=true;break;}
+                    strata::test::ze_check(status==ZE_RESULT_NOT_READY ? ZE_RESULT_SUCCESS : status,
+                        "resident native status query");
+                    std::this_thread::sleep_for(std::chrono::milliseconds(5));
+                }
+                const auto query_us=micros(query_begin);
+                event_need(query_us<=200000 && gate.held(),"native status query exceeded its bounded held window");
+                // An unready event is released BEFORE waiting. A ready event is
+                // waited with the gate still held, separating wait latency from
+                // the already-observed native completion. Neither branch admits
+                // the failed ordering gate or model execution.
+                const bool release_before_wait=!ready;
+                bool manual=false;
+                if(release_before_wait) manual=gate.release();
+                const bool held_before_wait=gate.held();
+                const auto wait_begin=Clock::now();runtime->wait(resident_done);
+                const auto wait_us=micros(wait_begin);
+                const bool held_after_wait=gate.held();
+                if(!release_before_wait) manual=gate.release();
+                runtime->wait(*done);inspect();
+                event_need(*resident==0x3cu && *seen==(*input ^ *resident),"native query diagnostic payload differs");
+                std::printf("event_gate_query native_ready=%d queries=%d import_us=%lld submit_us=%lld handle_us=%lld query_us=%lld wait_us=%lld "
+                            "held_before_wait=%d held_after_wait=%d released_before_wait=%d marker=%u "
+                            "release=%s payload=PASS status=PASS\n",int(ready),queries,import_us,submit_us,handle_us,query_us,wait_us,
+                            int(held_before_wait),int(held_after_wait),int(release_before_wait),*resident,manual?"manual":"fallback");
+                return 0;
+            }
             const auto wait_begin=Clock::now();
             runtime->wait(resident_done);
             const auto wait_us=micros(wait_begin);

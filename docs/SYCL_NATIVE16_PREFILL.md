@@ -1917,8 +1917,28 @@ again failed: dependent submits returned in578us; the resident wait took1,999,49
 the resulting marker was60 (the correct0x3c), and the gate was already released.
 Normal closure/boot and no fresh GPU fault were confirmed. This does not establish
 when the kernel actually ran; the remaining question is host wait semantics versus
-queue/engine progress. A source review traces that exact UR-v2 boundary. Only a
-later qualified mechanism permits a fresh complete51+6-case plan. Preserve all pending-completion,
+queue/engine progress. The completed source review traces the version-aligned
+Intel LLVMv7.1.1 UR-v2 wait to the target native event's host synchronize; mapping
+the installed runtime DSO to that exact source commit remains unverified.
+The v3 diagnostic keeps the same enqueue order and safety settings. It
+materializes the resident native event and queries it at most20 times,5ms apart,
+with a200ms observation limit. If it remains unready, release the gate before
+the SYCL wait; if already ready, time that wait while the gate is held. Record
+native readiness, query/handle/wait times, gate state and the post-wait marker.
+Native-handle retrieval can flush/materialize an event, so this observation is
+not unchanged-work timing or proof of the original kernel completion time.
+No host marker is read before checked completion, and no host atomic capability
+is assumed. This diagnostic cannot qualify the replacement gate or model route,
+even if it completes successfully. Source`172b9f1e9` compiled, then the one
+`copy-query` child failed the bounded native-query observation before producing
+a readiness sample: its200ms limit was exceeded or the held gate expired.
+The combined check does not identify whether a resident native query or the
+gate-status check consumed that interval. No raw status/time sample exists to
+resolve this yet. The child closed, boot was unchanged and no fresh GPU fault
+was recorded. A new observation needs separate call timings; this failed run
+must not be relabelled as a device fault or a qualified gate.
+Only a later qualified mechanism permits a
+fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.
 Model execution remains blocked until the complete57-case gate passes.
 After all57 passes, use `tools/sycl/early_pcie.py prepare`, commit the generated

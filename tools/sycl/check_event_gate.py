@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bounded native-event import/copy/graph qualification; no model execution."""
+"""Bounded resident native-event query diagnostic; never model qualification."""
 import fcntl
 import json
 from pathlib import Path
@@ -12,7 +12,7 @@ import measurement_guards as guards
 import measurement_owner as supervision
 from check_verifier_retirement import DELTA, P, B, A, SETTINGS, digest
 
-ROOT=B/'native-event-gate-v2'
+ROOT=B/'native-event-gate-v3'
 RESULT=A/'native-event-gate-current.json'
 BUILD=A/'native-gdn-engine-build.json'
 
@@ -59,16 +59,16 @@ def main():
                     old,expected=DELTA[name]
                     guards.require(old==item['sha256'],'original runtime baseline differs')
                 guards.require(digest(name)==expected,'runtime asset changed: '+name)
-        record=dict(mode='native-event-gate-resident-diagnostic',source_commit=full['source_commit'],binary=full['binary'],
+        record=dict(mode='native-event-gate-resident-query-diagnostic',source_commit=full['source_commit'],binary=full['binary'],
             qualification_eligible=False,previous_result_reference=previous_reference,
             fixture=full['fixtures']['sycl_host_event_gate_test'],fixture_external_headers=full['fixture_external_headers'],
             environment_reference=str(SETTINGS.relative_to(P)),environment_sha256=digest(SETTINGS),
             per_case_budgets=dict(wall_seconds=30,cpu_seconds=60,rss_bytes=1<<30,text_bytes=64<<20,total_bytes=64<<20),
             runtime_asset_delta={n:dict(qualified_sha256=v[0],candidate_sha256=v[1]) for n,v in DELTA.items()},
             complete=False,passed=False,active=False,cases=[],model_executed=False,model_quality_qualified=False,
-            consumer='Diagnose the original resident-progress failure with unchanged enqueue order and thresholds, recording the marker, gate state and host wait time. This separate diagnostic cannot qualify a replacement gate even if it passes. Preserve the original v1 outcome; no model execution. Retire normal traces after compact metrics and closure are committed.',
-            gate='Three fresh owned processes in order import,copy,graph. Same native context/device, one regular host-visible event, keep ownership, HOST signal/wait scopes. Arm a2s fallback signaller before import. Import and dependent submits must each return within100ms; require50ms unsignalled/pending observation, independent resident/probe progress, untouched atomic output, checked manual release, exact payload and checked queue/wrapper/native-event/pool teardown. Any timeout/failure stops without retry or model execution.',
-            limits='Test-only runtime interoperability/progress qualification, not production projection math, physical wire traffic, model correctness, overlap gain or throughput.')
+            consumer='Separate native event completion from host EventWait latency under the unchanged enqueue order and safety settings. Native-handle retrieval may flush/materialize an event: this is diagnostic evidence, not unchanged-work speed or replacement-gate qualification. Preserve original v1/v2 failures; no model execution.',
+            gate='One fresh copy-query process. Arm a2s fallback before import. Import/dependent submits/native-handle materialization each within100ms. Query the resident native event at most20 times5ms apart while gate is held, with a200ms observation cap. If unready, release gate before SYCL event wait; if ready, wait with gate held. Record exact branch, wait time, gate state and post-wait marker; check payload and all owner drains. Never read the marker before checked completion. Diagnostic cannot qualify a model or57-case replacement gate even if it passes.',
+            limits='Test-only runtime progress observation. No qualification of the replacement gate, production projection math, physical wire traffic, model correctness, overlap gain or throughput.')
         runtime_unchanged()
         ROOT.mkdir(mode=0o700)
         for n in ('tmp','cache'):(ROOT/n).mkdir()
@@ -82,7 +82,7 @@ def main():
             (ROOT/'record.json').write_text(json.dumps(dict(record,commands=owner.commands if owner else []),indent=2)+'\n')
         owner=supervision.Owner(ROOT/'owned',persist);persist()
         try:
-            for mode in ('import','copy','graph'):
+            for mode in ('copy-query',):
                 entry,out,err=owner.run(mode,[record['fixture']['path'],mode],env,P,
                     wall=30,cpu=60,rss_cap=1<<30,text_cap=64<<20,file_cap=64<<20,total_cap=64<<20)
                 stdout,stderr=out.read_text(errors='replace'),err.read_text(errors='replace')
@@ -92,6 +92,21 @@ def main():
                     record['resident_observation']=dict(zip(('value','held','wait_us','submit_us'),map(int,observed[0])))
                 guards.require(supervision.closed(entry) and entry.get('exit_code')==0,
                     mode+' failed: '+stderr[-1024:])
+                if mode=='copy-query':
+                    query=re.findall(r'^event_gate_query native_ready=(\d+) queries=(\d+) import_us=(\d+) submit_us=(\d+) handle_us=(\d+) query_us=(\d+) wait_us=(\d+) held_before_wait=(\d+) held_after_wait=(\d+) released_before_wait=(\d+) marker=(\d+) release=(manual|fallback) payload=PASS status=PASS$',stdout,re.M)
+                    guards.require(len(query)==1,'missing native query diagnostic evidence')
+                    keys=('native_ready','queries','import_us','submit_us','handle_us','query_us','wait_us','held_before_wait','held_after_wait','released_before_wait','marker')
+                    observation=dict(zip(keys,map(int,query[0][:-1])),release=query[0][-1])
+                    guards.require(observation['native_ready'] in (0,1) and 1<=observation['queries']<=20 and
+                        observation['import_us']<=100000 and observation['submit_us']<=100000 and
+                        observation['handle_us']<=100000 and observation['query_us']<=200000 and observation['marker']==60 and
+                        observation['held_before_wait'] in (0,1) and observation['held_after_wait'] in (0,1) and
+                        observation['released_before_wait']==1-observation['native_ready'] and
+                        not re.search('UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed',stderr),
+                        'native query diagnostic bounds/branch/marker differ')
+                    record['native_query_observation']=observation
+                    record['cases'].append(dict(mode=mode,passed=True,stdout_sha256=digest(out),stderr_sha256=digest(err)))
+                    persist();continue
                 rows=re.findall(r'^event_gate_case=(\w+) import_us=(\d+) submit_us=(\d+) pending_us=(\d+) release=manual payload=PASS status=PASS$',stdout,re.M)
                 guards.require(len(rows)==1 and rows[0][0]==mode and
                     int(rows[0][1])<=100000 and int(rows[0][2])<=100000 and int(rows[0][3])>=50000 and

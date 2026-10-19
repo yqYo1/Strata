@@ -1,6 +1,6 @@
 {
-  "mode": "native-event-gate-resident-diagnostic",
-  "source_commit": "7cb121367185012f6508519a92d22c5466327a0a",
+  "mode": "native-event-gate-resident-query-diagnostic",
+  "source_commit": "172b9f1e96e6bf290793cd22555d27e1fdf76eea",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
     "bytes": 22079432,
@@ -8,13 +8,13 @@
   },
   "qualification_eligible": false,
   "previous_result_reference": {
-    "commit": "6a0aeaa03f833c1713bff24c4cd0195d01408159",
+    "commit": "6c86642ef8a223c9d87745372e902a9cbee9a50a",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/native-event-gate-current.json",
-    "sha256": "95140839e16f6f40163113bda5ff554f6e0c467f5de9acddc5752f347fb0a4af"
+    "sha256": "eb8ca208aa2c9be415430285eb1ce932849967c7d7cd75fd7b0c052c955564a8"
   },
   "fixture": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_host_event_gate_test",
-    "sha256": "9abc3642748572a3d50f954cd4336db01b56b23d7ef3982f0e51153250fe640a"
+    "sha256": "44e2c9ed1c265cc2f906bfb065eeb737cf7e5e95a3c1d5f3715f92f3d7a51cb1"
   },
   "fixture_external_headers": {
     "/usr/include/level_zero/ze_api.h": "095a0eb442ae21946f29147c209f270b93dd0eb5b12a2d0c67e5f4138b533712",
@@ -43,29 +43,13 @@
   "complete": false,
   "passed": false,
   "active": false,
-  "cases": [
-    {
-      "mode": "import",
-      "import_us": 56,
-      "submit_us": 0,
-      "pending_us": 50059,
-      "passed": true,
-      "stdout_sha256": "bd1eb4f0a8206e8a1d9b60337b62d7fd66633c6d5f7eb7c8619df4d6f1befa1f",
-      "stderr_sha256": "af67006e9bbcf9601ab649ca4bb243a6a655dcfe6fcf69235de57d59712ff578"
-    }
-  ],
+  "cases": [],
   "model_executed": false,
   "model_quality_qualified": false,
-  "consumer": "Diagnose the original resident-progress failure with unchanged enqueue order and thresholds, recording the marker, gate state and host wait time. This separate diagnostic cannot qualify a replacement gate even if it passes. Preserve the original v1 outcome; no model execution. Retire normal traces after compact metrics and closure are committed.",
-  "gate": "Three fresh owned processes in order import,copy,graph. Same native context/device, one regular host-visible event, keep ownership, HOST signal/wait scopes. Arm a2s fallback signaller before import. Import and dependent submits must each return within100ms; require50ms unsignalled/pending observation, independent resident/probe progress, untouched atomic output, checked manual release, exact payload and checked queue/wrapper/native-event/pool teardown. Any timeout/failure stops without retry or model execution.",
-  "limits": "Test-only runtime interoperability/progress qualification, not production projection math, physical wire traffic, model correctness, overlap gain or throughput.",
-  "resident_observation": {
-    "value": 60,
-    "held": 0,
-    "wait_us": 1999496,
-    "submit_us": 578
-  },
-  "error": "copy: resident marker60 observed after1999496us wait, gate already released by fallback; graph case not executed",
+  "consumer": "Separate native event completion from host EventWait latency under the unchanged enqueue order and safety settings. Native-handle retrieval may flush/materialize an event: this is diagnostic evidence, not unchanged-work speed or replacement-gate qualification. Preserve original v1/v2 failures; no model execution.",
+  "gate": "One fresh copy-query process. Arm a2s fallback before import. Import/dependent submits/native-handle materialization each within100ms. Query the resident native event at most20 times5ms apart while gate is held, with a200ms observation cap. If unready, release gate before SYCL event wait; if ready, wait with gate held. Record exact branch, wait time, gate state and post-wait marker; check payload and all owner drains. Never read the marker before checked completion. Diagnostic cannot qualify a model or57-case replacement gate even if it passes.",
+  "limits": "Test-only runtime progress observation. No qualification of the replacement gate, production projection math, physical wire traffic, model correctness, overlap gain or throughput.",
+  "error": "copy-query: native status query exceeded its200ms observation limit or the held gate expired; no native readiness observation was recorded",
   "ownership_closed": true,
   "fresh_faults": [],
   "boot_unchanged": true,
@@ -77,16 +61,20 @@
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
   },
-  "controller_error_excerpt_sha256": "fd8e1d88d064d5e13e95019146558ec57a5c45cebf0966479d6e23eb205117af",
-  "first_failed_case": "copy",
+  "controller_error_excerpt_sha256": "23652ff6ef70c727dd14a61902c759552711c1767716f46d462bce6f63788b60",
+  "first_failed_case": "copy-query",
   "not_executed": [
-    "graph"
+    "completed native query observation",
+    "57-case replacement gate",
+    "model execution"
   ],
   "diagnostic": {
-    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-event-gate-v2/owned/copy.stderr",
-    "sha256": "ee73b575aeae805141af84c8f477227e7306e79ff90eeea676919dd713e40e89",
-    "bytes": 27729,
-    "consumer": "Distinguish host EventWait semantics from actual queue/engine progress with the native wait source review. New marker/gate/wait observations supersede the less informative v1 instance after its active research consumer ends.",
-    "limit": "Correct marker after wait does not establish when the resident kernel ran. No GPU fault, production-path deadlock, model route or throughput conclusion."
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-event-gate-v3/owned/copy-query.stderr",
+    "bytes": 27908,
+    "sha256": "1891f25733957259b18f533757c8e19fb6314da33d668c6bb1cd8785367e5ff1",
+    "consumer": "Locate the boundary that violated the bounded native query observation. Current error cannot distinguish native query latency from gate-status check latency; retire after the next isolated call-level diagnostic resolves that distinction.",
+    "owner": "Main",
+    "byte_budget": 262144,
+    "next_review": "After the next committed bounded observation or abandonment of this gate mechanism"
   }
 }
