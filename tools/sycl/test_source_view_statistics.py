@@ -5,8 +5,9 @@ import sys
 import unittest
 
 sys.dont_write_bytecode = True
-from bench_engine import (FUSION_FIELDS, parse_counter_lines, qualified_build_source_matches,
+from bench_engine import (FUSION_FIELDS, down_pair_statistics, parse_counter_lines, qualified_build_source_matches,
                           source_view_pair_statistics, validate_window_work)
+from build_engine import binary_origin_source
 
 
 def arms(base, candidate):
@@ -63,6 +64,36 @@ class ProcessStatisticsTests(unittest.TestCase):
             source_view_pair_statistics(data)
 
 
+class DownStatisticsTests(unittest.TestCase):
+    def test_down_and_source_view_keep_different_prospective_gates(self):
+        data=arms([[1000]*3]*3,[[1003]*3]*3)
+        self.assertTrue(down_pair_statistics(data)['performance_selection_gate_passed'])
+        self.assertFalse(source_view_pair_statistics(data)['performance_selection_gate_passed'])
+
+    def test_exact_boundary_is_not_a_strict_gain(self):
+        self.assertFalse(down_pair_statistics(arms([[1000]*3]*3,[[1002]*3]*3))[
+            'performance_selection_gate_passed'])
+
+    def test_one_regressing_process_is_not_hidden_by_large_gains(self):
+        result=down_pair_statistics(arms([[1000]*3]*3,[[1200]*3,[1200]*3,[999]*3]))
+        self.assertGreater(result['paired_median_speed_geomean'],1.002)
+        self.assertFalse(result['performance_selection_gate_passed'])
+
+    def test_target_is_separate_and_each_candidate_process_matters(self):
+        result=down_pair_statistics(arms([[950]*3]*3,[[999.9]*3,[1001]*3,[1001]*3]))
+        self.assertTrue(result['performance_selection_gate_passed'])
+        self.assertFalse(result['prefill1000_target_passed'])
+
+    def test_median_cannot_override_original_samples(self):
+        data=arms([[1000]*3]*3,[[1001]*3]*3);data[1]['subsequent_median']=1100
+        with self.assertRaises(RuntimeError):down_pair_statistics(data)
+
+    def test_nonfinite_or_incomplete_samples_are_rejected(self):
+        for values in ([1003,float('nan'),1003],[1003,float('inf'),1003],[1003,1003]):
+            data=arms([[1000]*3]*3,[values,[1003]*3,[1003]*3])
+            with self.assertRaises(RuntimeError):down_pair_statistics(data)
+
+
 class WorkCounterTests(unittest.TestCase):
     def setUp(self):
         self.prefix = 'strata MoE Down fusion:'
@@ -113,6 +144,24 @@ class WorkCounterTests(unittest.TestCase):
         self.work['jobs']='1000';self.gu.update(fused_jobs='0',fused_rows='0',separate_jobs='1000')
         self.down['separate_jobs']='1000'
         with self.assertRaises(RuntimeError):self.check_work()
+
+
+class BinaryIdentityTests(unittest.TestCase):
+    def test_matching_engine_keeps_origin_after_fixture_or_controller_changes(self):
+        previous=dict(passed=True,source_commit='admission',binary_origin_source_commit='original-native',
+            binary=dict(sha256='same-engine'),previous_output_comparison=dict(controller_only_admission=False))
+        self.assertEqual(binary_origin_source(previous,'same-engine','new-fixture'),'original-native')
+
+    def test_changed_or_unproved_engine_gets_current_source(self):
+        previous=dict(passed=True,source_commit='old-native',binary=dict(sha256='old'))
+        self.assertEqual(binary_origin_source(previous,'new','current'),'current')
+        previous['passed']=False
+        self.assertEqual(binary_origin_source(previous,'old','current'),'current')
+
+    def test_original_legacy_identity_and_first_build(self):
+        previous=dict(passed=True,source_commit='old-native',binary=dict(sha256='same'))
+        self.assertEqual(binary_origin_source(previous,'same','current'),'old-native')
+        self.assertEqual(binary_origin_source(None,'new','current'),'current')
 
 
 class BuildQualificationTests(unittest.TestCase):

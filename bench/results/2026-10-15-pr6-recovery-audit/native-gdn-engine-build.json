@@ -1,5 +1,5 @@
 {
-  "source_commit": "bba952e333f0e0cf303f0e4d265ad7d50bd3504b",
+  "source_commit": "9b6db2661f6abb1ba560b466108cf60b2d594f4e",
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -80,28 +80,25 @@
   "production_selected": false,
   "model_quality_qualified": false,
   "replaces": {
-    "source_commit": "7e2cb2604aaff8013e4a5016e264d4742f1438e4",
+    "source_commit": "bba952e333f0e0cf303f0e4d265ad7d50bd3504b",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-      "bytes": 22079288,
-      "sha256": "570b65ddfd88e3955b58634b361bb13e12a4bd713ac6e5ae396d47265a76fd46"
+      "bytes": 22168048,
+      "sha256": "aba4d1ed08d41ad68e37a589e4e5940b3a5e9520c20fb874f9510e9cf903fd02"
     },
     "source_build_passed": true,
-    "retained_binary_source_commit": "7e2cb2604aaff8013e4a5016e264d4742f1438e4",
+    "retained_binary_source_commit": "bba952e333f0e0cf303f0e4d265ad7d50bd3504b",
     "reason": "Closed unused comparison engine; original source/recipe recovered from Git. Reuse its cache for the immediate corrected build, not a retained old generation."
   },
   "targets": [
     "strata",
-    "sycl_qsa_bf16_prefix_ordered_exp_test",
-    "sycl_qsa_bf16_prefix_parallel_sum_test",
-    "sycl_qsa_bf16_prefix_parallel_sum_bench",
     "sycl_moe_down_scatter_bench",
     "sycl_moe_gu_swiglu_bench",
     "sycl_moe_accum_test",
     "sycl_expert_bank_test",
     "file_expert_source_test"
   ],
-  "retention_consumer": "Retain validated a576 fallback. Reuse this closed experimental engine cache for the immediately planned production-matched Down fixture; rejected QSA fixtures are removed.",
+  "retention_consumer": "Current comparison engine and requested fixtures: strata, sycl_moe_down_scatter_bench, sycl_moe_gu_swiglu_bench, sycl_moe_accum_test, sycl_expert_bank_test, file_expert_source_test; select the validated generation and retire the extra after qualification/comparison closure.",
   "retained_validation_reference": {
     "source_commit": "a57611b9c52f5d1cf2f5281b3cc7eb4087b5cd12",
     "binary": {
@@ -305,27 +302,15 @@
   },
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-    "bytes": 22168048,
-    "sha256": "aba4d1ed08d41ad68e37a589e4e5940b3a5e9520c20fb874f9510e9cf903fd02"
+    "bytes": 22079288,
+    "sha256": "570b65ddfd88e3955b58634b361bb13e12a4bd713ac6e5ae396d47265a76fd46"
   },
-  "compile_database_sha256": "07a617669667bcd97dab71b4010cbe981785861bacc6974e119606195c1b2093",
-  "configured_compile_entries": 224,
+  "compile_database_sha256": "4e26fccaa245fc59c288a5bc49cb5f3d099af8dfa1f84e496b857fde4bd434ad",
+  "configured_compile_entries": 222,
   "fixtures": {
-    "sycl_qsa_bf16_prefix_ordered_exp_test": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_ordered_exp_test",
-      "sha256": "c7ac62fe53d4a913a7626cf52398fb705f62bf62c938bfe2279c44c6f8ac8e40"
-    },
-    "sycl_qsa_bf16_prefix_parallel_sum_test": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_parallel_sum_test",
-      "sha256": "19e23e03f10268c02b0a44a7623e1e9b34f7276c3ad56ee00ec88e30f34f479f"
-    },
-    "sycl_qsa_bf16_prefix_parallel_sum_bench": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_parallel_sum_bench",
-      "sha256": "be9137609c6407043bd0645b6f9296ef5c4bf7965a1114d0eff2b18b1445c82a"
-    },
     "sycl_moe_down_scatter_bench": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_down_scatter_bench",
-      "sha256": "ddaf0ad94be379f8c601a3226641c52c4c42478054f1ec42f4daa563f1d51dd4"
+      "sha256": "cf54c1e590a2b7b5ee2a9f78a9a975235ec7d6669a7408fa13a612192fe4c22d"
     },
     "sycl_moe_gu_swiglu_bench": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_gu_swiglu_bench",
@@ -344,24 +329,23 @@
       "sha256": "b484ba5461f6b3de0deac892810580724ebc7237253ca5478368fb348e9b209e"
     }
   },
-  "binary_origin_source_commit": "bba952e333f0e0cf303f0e4d265ad7d50bd3504b",
+  "binary_origin_source_commit": "9b6db2661f6abb1ba560b466108cf60b2d594f4e",
   "previous_output_comparison": {
     "changed_project_inputs": [
+      "bench/sycl/moe_down_scatter.cpp",
       "cmake/sycl_backend.cmake",
       "include/strata/kernels/qsa_bf16_prefix.hpp",
       "src/kernels/sycl/qsa_bf16_prefix.cpp",
       "tests/sycl/qsa_bf16_prefix.cpp",
       "tests/sycl/qsa_bf16_prefix_layout_bench.cpp",
       "tools/sycl/build_engine.py",
-      "tools/sycl/check_attention.py"
+      "tools/sycl/check_attention.py",
+      "tools/sycl/measure_down_scatter.py"
     ],
     "native_and_recipe_inputs_match": false,
     "engine_bytes_match": false,
     "fixture_bytes_match": {
-      "sycl_qsa_bf16_prefix_ordered_exp_test": false,
-      "sycl_qsa_bf16_prefix_parallel_sum_test": false,
-      "sycl_qsa_bf16_prefix_parallel_sum_bench": false,
-      "sycl_moe_down_scatter_bench": true,
+      "sycl_moe_down_scatter_bench": false,
       "sycl_moe_gu_swiglu_bench": true,
       "sycl_moe_accum_test": true,
       "sycl_expert_bank_test": true,
@@ -374,9 +358,9 @@
   "inputs": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "bba952e333f0e0cf303f0e4d265ad7d50bd3504b",
+      "revision": "9b6db2661f6abb1ba560b466108cf60b2d594f4e",
       "count": 502,
-      "aggregate_sha256": "15ab16d83dd03333e67e01aa0086cfb51936ff1b6e9e2bdcbd0b09ed6392d5a8"
+      "aggregate_sha256": "e76c9fef7387049ebf971d97211e4def9a98f2b2f88bbcce01e41bea308e3b54"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
@@ -390,11 +374,5 @@
       "count": 5703,
       "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
     }
-  ],
-  "closed_QSA_fixture_retirement": {
-    "manifest": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/closed-parallel-sum-fixture-product-retirement-20261019.json",
-    "sha256": "92493f4fe723c880ae43aee91e03de5029dbe8fa1f352e44e56b5daf73df7dc4",
-    "files": 6,
-    "bytes": 4718288
-  }
+  ]
 }

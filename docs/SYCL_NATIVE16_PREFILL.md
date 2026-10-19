@@ -1295,9 +1295,17 @@ checks full process order, unique PID/start ticks, route markers, effective
 startup selectors, timing granularity, shape coverage and closure. Its offline
 negative cases cover partial/duplicate/reordered evidence, reused identities,
 a low-level control, the old small-batch size and the wrong startup route.
-Compilation and execution of this new fixture are pending; no model gain or
-adoption follows from correcting the benchmark. Keep the a576 fallback and
-reuse the closed QSA build cache for this named next comparison.
+Source`9b6db2661` compiled the fixture; the engine SHA matches the validated
+a576 engine. Independent source review calls for observing timed dispatch
+returns and a prospective batch-duration floor before clean timing. No v7 GPU
+execution has occurred; no model gain or adoption follows from correcting the
+benchmark. Keep the a576 fallback and
+reuse the closed QSA build cache for this named next comparison. The dedicated
+`bench_engine.py summarize-down` analyzer preserves the frozen>1.002 model
+criterion, while `summarize-source-view` keeps>1.005. It rechecks original
+component qualification, exact117489-token requests, six-process order, paired
+inputs and clean work conservation; first-use and the1000tok/s target remain
+separate. Its new negative cases are awaiting Main's offline test run.
 
 The maintained model controller now provides `prepare|run qsa-long-input-check`
 and `prepare|run qsa-long-input [0|1|2]`. Its prospective screen holds131072

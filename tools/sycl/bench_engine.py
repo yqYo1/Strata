@@ -491,10 +491,14 @@ def summarize_gu():
     return 0
 
 
-def source_view_pair_statistics(arms):
+def paired_process_statistics(arms, minimum_ratio):
     """Each process contributes one subsequent median to its paired ratio."""
     guards.require(len(arms) == 6 and {a['label'] for a in arms} ==
-                   {'A0', 'B0', 'A1', 'B1', 'A2', 'B2'}, 'six unique source-view arms required')
+                   {'A0', 'B0', 'A1', 'B1', 'A2', 'B2'}, 'six unique paired arms required')
+    guards.require(all(len(a['subsequent_tps']) == 3 and
+        all(math.isfinite(x) and x > 0 for x in [a['first_use_tps'], *a['subsequent_tps']]) and
+        a['subsequent_median'] == statistics.median(a['subsequent_tps']) for a in arms),
+        'nonfinite, incomplete or inconsistent original process samples')
     pairs = []
     for cohort in range(3):
         a = next(x for x in arms if x['label'] == 'A' + str(cohort))
@@ -509,14 +513,29 @@ def source_view_pair_statistics(arms):
     medians = [a['subsequent_median'] for a in arms if a['label'].startswith('B')]
     return dict(pairs=pairs, paired_median_speed_geomean=geomean,
         geomean_gain_percent=100*(geomean-1),
-        performance_selection_gate_passed=all(p['median_ratio'] > 1 for p in pairs) and geomean > 1.005,
+        performance_selection_gate_passed=all(p['median_ratio'] > 1 for p in pairs) and geomean > minimum_ratio,
+        prospective_minimum_ratio=minimum_ratio,
         requested_expert_payload_matches_in_all_pairs=all(p['requested_payload_matches'] for p in pairs),
         candidate_process_medians=medians, prefill1000_target_passed=all(x >= 1000 for x in medians))
 
 
-def summarize_source_view():
+def source_view_pair_statistics(arms):
+    return paired_process_statistics(arms, 1.005)
+
+
+def down_pair_statistics(arms):
+    return paired_process_statistics(arms, 1.002)
+
+
+def summarize_paired_long(kind):
     """Analyze three frozen process pairs; first use remains separate evidence."""
     from build_engine import blobs
+    guards.require(kind in ('source-view','down'), 'unknown paired comparison')
+    down = kind == 'down'
+    mode_prefix = 'qsa-long-input-' + kind
+    comparison_key = kind.replace('-','_') + '_comparison'
+    summary_key = 'independent_' + comparison_key
+    selector = 'STRATA_SYCL_PREFILL_DOWN_SCATTER' if down else 'STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW'
     path = str((A / 'prefill-long-input-current.json').relative_to(P))
 
     def git(*args):
@@ -529,7 +548,7 @@ def summarize_source_view():
             return [canonical(x, root) for x in value]
         if isinstance(value, dict):
             return {k: canonical(v, root) for k, v in value.items()
-                    if k != 'STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW'}
+                    if k != selector}
         return value
 
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
@@ -540,9 +559,9 @@ def summarize_source_view():
             guards.require(item.read_bytes() == git('show', head + ':' + str(item.relative_to(P))),
                            'commit the analyzer and final cohort before summary')
         current = json.loads((P / path).read_text())
-        guards.require(current['mode'] == 'qsa-long-input-source-view-candidate' and
-            current['cohort_index'] == 2 and 'independent_source_view_comparison' not in current,
-            'summarize the completed final source-view cohort exactly once')
+        guards.require(current['mode'] == mode_prefix + '-candidate' and
+            current['cohort_index'] == 2 and summary_key not in current,
+            'summarize the completed final paired cohort exactly once')
         receipt_revision = git('log', '-1', '--format=%H', '--', path).decode().strip()
         guards.require(json.loads(git('show', receipt_revision + ':' + path)) == current,
                        'final cohort does not match its original result commit')
@@ -577,8 +596,7 @@ def summarize_source_view():
             guards.require(subprocess.run(['git', 'merge-base', '--is-ancestor', revision, head],
                 cwd=P, check=False).returncode == 0, 'unreachable original cohort')
             record = json.loads(git('show', revision + ':' + path))
-            guards.require(record['mode'] in ('qsa-long-input-source-view-base',
-                'qsa-long-input-source-view-candidate') and record['passed'] and record['complete'] and
+            guards.require(record['mode'] in (mode_prefix+'-base', mode_prefix+'-candidate') and record['passed'] and record['complete'] and
                 record['ownership_closed'] and not record['active'] and
                 record['exit_code'] == record['engine_exit_code'] == 0 and
                 not record['fresh_faults'] and record['boot_unchanged'], 'failed or incomplete source-view cohort')
@@ -596,18 +614,23 @@ def summarize_source_view():
         for receipt_commit, d in records:
             root = d['environment']['STRATA_MEASUREMENT_ROOT']
             candidate = d['mode'].endswith('-candidate')
+            view_enabled = down or candidate
             guards.require(d['environment']['STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW'] ==
-                           ('1' if candidate else '0'), 'wrong source-view selector')
+                           ('1' if view_enabled else '0'), 'wrong source-view selector')
+            if down:
+                guards.require(d['environment'][selector] == ('large' if candidate else '0'),
+                               'wrong Down selector')
             command = canonical(d['command'], root)
             command[command.index('--port') + 1] = '$PORT'
-            comparison = {k: v for k, v in d['source_view_comparison'].items() if k != 'enabled'}
+            comparison = {k: v for k, v in d[comparison_key].items() if k != 'enabled'}
             identity = dict(binary=d['binary'], build_source=d['build_source_commit'],
                 profile=d['profile_sha256'], reference=d['reference'],
                 environment=canonical(d['environment'], root), config=canonical(d['config'], root),
                 command=command, prospective_comparison=comparison,
-                prospective_long_input_screen=d['long_input_screen'])
+                prospective_long_input_screen=d['long_input_screen'],
+                component_qualification=d.get('down_qualification') if down else None)
             common = identity if common is None else common
-            guards.require(identity == common and d['source_view_comparison']['enabled'] == candidate,
+            guards.require(identity == common and d[comparison_key]['enabled'] == candidate,
                            'unmatched source-view inputs or prospective criteria')
             source = d['source_commit']
             guards.require(subprocess.run(['git', 'merge-base', '--is-ancestor', source, head],
@@ -632,13 +655,39 @@ def summarize_source_view():
                            [r['request_sha256'] for r in current['requests']], 'request bytes differ')
             routes = d['expert_source_route']
             guards.require(len(routes) == 4 and all(
-                int(r['requested_view']) == int(r['effective_view']) == int(candidate) and
-                int(r['layers']) == (48 if candidate else 0) and
-                int(r['owned_slab_bytes']) == (0 if candidate else 1363148800) and
-                int(r['borrowed_layer_span_bytes']) == (50292326400 if candidate else 0) and
-                r['host_copy'] == ('eliminated' if candidate else 'synchronous') and
+                int(r['requested_view']) == int(r['effective_view']) == int(view_enabled) and
+                int(r['layers']) == (48 if view_enabled else 0) and
+                int(r['owned_slab_bytes']) == (0 if view_enabled else 1363148800) and
+                int(r['borrowed_layer_span_bytes']) == (50292326400 if view_enabled else 0) and
+                r['host_copy'] == ('eliminated' if view_enabled else 'synchronous') and
                 r['source_owner'] == 'caller_through_checked_retirement' for r in routes),
                 'source-view route or original fallback differs')
+            if down:
+                qualification = d['down_qualification']
+                original_component = git('show', source + ':' + qualification['component_path'])
+                component = json.loads(original_component)
+                guards.require(hashlib.sha256(original_component).hexdigest() == qualification['component_sha256'] and
+                    component['passed'] and component['complete'] and component['ownership_closed'] and
+                    not component['active'] and component['postchecks_complete'] and
+                    not component['fresh_faults'] and component['boot_unchanged'] and
+                    component['source_commit'] == qualification['component_source_commit'] == d['build_source_commit'] and
+                    component['fixture'] == qualification['fixture'] ==
+                        full_build['fixtures']['sycl_moe_down_scatter_bench'] and
+                    len(component['timing_samples']) == 504 and component['resident_summary']['advance_to_model'],
+                    'original component qualification missing, failed or changed')
+                work = d['moe_window_work']['per_request_totals']
+                gu_counts = d['gu_route']['per_request_counts']
+                down_counts = d['down_route']['per_request_counts']
+                guards.require(len(work) == len(gu_counts) == len(down_counts) == 4 and
+                    d['gu_route']['selection'] == ['[native16-gu] fusion=large min_rows=2334'] and
+                    d['down_route']['selection'] == ['[native16-down] fusion=' +
+                        ('large' if candidate else '0') + ' min_rows=2334'], 'wrong completed model routes')
+                for w, g, dc in zip(work, gu_counts, down_counts):
+                    guards.require(set(w) == set(WINDOW_FIELDS) and
+                        set(g) == set(dc) == set(FUSION_FIELDS), 'unexpected work/route fields')
+                    validate_window_work(w, g, dc, 117489, (81920,35568))
+                    guards.require((int(dc['fused_jobs']) > 0) == candidate,
+                                   'Down fusion was not actually selected')
             values = [r['prompt_tps'] for r in requests]
             median = statistics.median(values[1:])
             guards.require(median == d['long_input_process_summary']['median_prompt_tps'],
@@ -653,9 +702,9 @@ def summarize_source_view():
                 requested_expert_H2D_bytes=[int(t['requested_H2D_bytes']) for t in totals],
                 output_hashes=[r['output_sha256'] for r in requests],
                 reasoning_hashes=[r['reasoning_sha256'] for r in requests]))
-        statistics_result = source_view_pair_statistics(arms)
+        statistics_result = down_pair_statistics(arms) if down else source_view_pair_statistics(arms)
         selected = statistics_result['performance_selection_gate_passed']
-        current['independent_source_view_comparison'] = dict(analyzer_source_commit=head, arms=arms,
+        current[summary_key] = dict(analyzer_source_commit=head, arms=arms,
             independent_units='Three process pairs; the three subsequent requests within a process are repeated samples, not independent processes.',
             **statistics_result,
             exact_original_benchmark_inputs_recovered=True, frozen_input_count=len(source_set),
@@ -663,11 +712,13 @@ def summarize_source_view():
             original_build_source_commit=full_build['source_commit'], original_recipe=recipe,
             matched_engine_configuration_workloads_and_guarded_runtime=True,
             original_outcomes_unchanged=True, GPU_executed=False, model_executed=False,
-            decision='Retain immutable source views as an opt-in for further qualification; default stays off.' if selected else
-                     'Retain synchronous source copying; prospective performance selection failed.',
+            decision=('Retain selective Down as an opt-in for further qualification; default stays off.' if selected else
+                      'Retain separate Down; prospective performance selection failed.') if down else
+                     ('Retain immutable source views as an opt-in for further qualification; default stays off.' if selected else
+                      'Retain synchronous source copying; prospective performance selection failed.'),
             limits='First-use samples, including regressions, remain separate and unfiltered. Requested bytes are not wire traffic. Output hashes are descriptive and not an exact-text acceptance criterion.24-token generation does not qualify sustained70tok/s decode, broad task quality,physical262144 or session/RESTORE.')
         (P / path).write_text(json.dumps(current, indent=2) + '\n')
-        print(json.dumps({k: current['independent_source_view_comparison'][k] for k in (
+        print(json.dumps({k: current[summary_key][k] for k in (
             'pairs', 'paired_median_speed_geomean', 'geomean_gain_percent', 'performance_selection_gate_passed',
             'candidate_process_medians', 'prefill1000_target_passed', 'decision')}))
     return 0
@@ -760,7 +811,9 @@ def main():
     if sys.argv[1:] == ['summarize-gu']:
         return summarize_gu()
     if sys.argv[1:] == ['summarize-source-view']:
-        return summarize_source_view()
+        return summarize_paired_long('source-view')
+    if sys.argv[1:] == ['summarize-down']:
+        return summarize_paired_long('down')
     modes = ('check', 'base', 'candidate', 'qsa-check', 'qsa-base', 'qsa-direct', 'qsa-census',
              'qsa-gdncols4-warm-census',
              'qsa-gdncols4-host-check', 'qsa-gdncols4-host-traced-check', 'qsa-gdncols4-host-census',
