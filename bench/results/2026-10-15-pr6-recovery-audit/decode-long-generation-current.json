@@ -394,5 +394,130 @@
     "device": "0xe20c",
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
+  },
+  "observer_overhead_summary": {
+    "analyzer_source_commit": "6be8202ba88d12f27bb170f87cbe349a08715e5d",
+    "processes": [
+      {
+        "cohort": 0,
+        "arm": "off",
+        "receipt_commit": "ede3ecd7721efa8a68f7bd40d063ceda47e1d855",
+        "source_commit": "6c31941945ae71e58cdd98f3f3381f833166280a",
+        "request_sha256": "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9",
+        "prompt_tokens": 33211,
+        "read_tokens": 33211,
+        "generated_tokens": 2931,
+        "decode_ms": 205144.9,
+        "decode_tps": 14.3,
+        "drafts_offered": 2481,
+        "drafts_accepted": 2105,
+        "acceptance_rate": 0.8484482063683998
+      },
+      {
+        "cohort": 1,
+        "arm": "on",
+        "receipt_commit": "b9ca29d280c9ce6bc4dc2b63a2e49bc0157e229d",
+        "source_commit": "ede3ecd7721efa8a68f7bd40d063ceda47e1d855",
+        "request_sha256": "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9",
+        "prompt_tokens": 33211,
+        "read_tokens": 33211,
+        "generated_tokens": 2931,
+        "decode_ms": 322848.5,
+        "decode_tps": 9.1,
+        "drafts_offered": 2481,
+        "drafts_accepted": 2105,
+        "acceptance_rate": 0.8484482063683998
+      },
+      {
+        "cohort": 2,
+        "arm": "on",
+        "receipt_commit": "cdd7f056b3443708d7ade04496d837b9e2541e9d",
+        "source_commit": "b9ca29d280c9ce6bc4dc2b63a2e49bc0157e229d",
+        "request_sha256": "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9",
+        "prompt_tokens": 33211,
+        "read_tokens": 33211,
+        "generated_tokens": 2931,
+        "decode_ms": 287400.1,
+        "decode_tps": 10.2,
+        "drafts_offered": 2481,
+        "drafts_accepted": 2105,
+        "acceptance_rate": 0.8484482063683998
+      },
+      {
+        "cohort": 3,
+        "arm": "off",
+        "receipt_commit": "805df158a04a75f9f1719af5d040d837f599bd5c",
+        "source_commit": "cdd7f056b3443708d7ade04496d837b9e2541e9d",
+        "request_sha256": "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9",
+        "prompt_tokens": 33211,
+        "read_tokens": 33211,
+        "generated_tokens": 2931,
+        "decode_ms": 285710.5,
+        "decode_tps": 10.3,
+        "drafts_offered": 2481,
+        "drafts_accepted": 2105,
+        "acceptance_rate": 0.8484482063683998
+      },
+      {
+        "cohort": 4,
+        "arm": "off",
+        "receipt_commit": "34d0b0a1cb619796ff6aa9be64d50a9d79956413",
+        "source_commit": "805df158a04a75f9f1719af5d040d837f599bd5c",
+        "request_sha256": "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9",
+        "prompt_tokens": 33211,
+        "read_tokens": 33211,
+        "generated_tokens": 2931,
+        "decode_ms": 327094.1,
+        "decode_tps": 9.0,
+        "drafts_offered": 2481,
+        "drafts_accepted": 2105,
+        "acceptance_rate": 0.8484482063683998
+      },
+      {
+        "cohort": 5,
+        "arm": "on",
+        "receipt_commit": "6be8202ba88d12f27bb170f87cbe349a08715e5d",
+        "source_commit": "34d0b0a1cb619796ff6aa9be64d50a9d79956413",
+        "request_sha256": "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9",
+        "prompt_tokens": 33211,
+        "read_tokens": 33211,
+        "generated_tokens": 2931,
+        "decode_ms": 279333.3,
+        "decode_tps": 10.5,
+        "drafts_offered": 2481,
+        "drafts_accepted": 2105,
+        "acceptance_rate": 0.8484482063683998
+      }
+    ],
+    "paired_per_token_latency_ratios": [
+      1.5737583532420254,
+      1.0059136783562381,
+      0.8539845261654063
+    ],
+    "paired_latency_ratio_geomean": 1.105731260465374,
+    "paired_ratio_sample_sd": 0.37938643540724476,
+    "observed_overhead_gate_passed": false,
+    "clean_tps": [
+      14.3,
+      10.3,
+      9.0
+    ],
+    "observed_tps": [
+      9.1,
+      10.2,
+      10.5
+    ],
+    "limits": "Three adjacent process pairs on regular-code only; observed bundle overhead, not a statistical upper bound or physical-resource attribution. No strong/weak pair adoption or current-runtime weak-workload clean speed.",
+    "original_benchmark_inputs_recovered": 115,
+    "GPU_executed": false,
+    "original_outcomes_unchanged": true
+  },
+  "observer_overhead_decision": {
+    "status": "original_observed_overhead_gate_failed",
+    "constant_overhead_correction_allowed": false,
+    "hardware_bottleneck_established": false,
+    "next_action": "Commit and run an isolated CPU-only same-API clock/counter-region calibration with disabled controls and one/six-thread cases. Preserve production comparison as failed; no new inference optimization selected.",
+    "remaining_checks": "Runtime-baseline adoption, current-runtime clean weak workload, thread-role/resource attribution, model quality, agent-session,physical262144/session/RESTORE and sustained70tok/s remain open.",
+    "retained_extra_build_consumer": "Observer-off old/new engine comparison on the same proposed runtime; retire the extra generation after that decision and before another native build."
   }
 }

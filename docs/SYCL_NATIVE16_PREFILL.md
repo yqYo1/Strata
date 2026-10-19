@@ -1403,11 +1403,33 @@ Its13.0/7.2tok/s readings include CPU/wall observers and parameter validation;
 they are not clean speed or a matched observer-overhead comparison. Worker CPU
 time includes scheduled memory stalls and pool polling; GPU-reach wall time
 does not isolate device service. No limiting hardware resource is established.
-The next gate is a committed matched observer-overhead plan on this same engine
-and runtime, with explicit runtime-baseline adoption still pending. The shared
-qualified asset hashes remain unchanged. The new single-workload benchmark
-selector permits shorter diagnostic repetitions; it does not replace the required
-strong/weak workload pair for adoption.
+The matched observer-bundle comparison then completed six independent processes
+in the committed off/on/on/off/off/on order on the same engine and proposed
+runtime. Every request read33211 fresh tokens, generated2931 including thinking,
+and accepted2105 of2481 drafts. The off samples were14.3,10.3,9.0tok/s; the
+on samples were9.1,10.2,10.5. All owners closed normally without fresh GPU faults.
+The three paired on/off per-token latency ratios were1.573758,1.005914,0.853985;
+their geomean1.105731 fails the unchanged1.05 aggregate/1.10 maximum-pair gate.
+The final pair reverses direction and the off arm itself varies widely. This
+does not identify a constant observer penalty, a CPU-clock cost or a hardware
+bottleneck. Do not compensate profiles by dividing by the observed geomean.
+The reducer recovered all115 original benchmark inputs; all six predecessor
+receipt hashes were also checked against their original Git blobs.
+
+Next isolate the cost of the actual CPU-clock/counter region in a bounded
+CPU-only control comparison before choosing lighter accounting. This is a
+diagnostic, not an inference optimization or a production-overhead estimate.
+A separate read-only placement observation found the native leader on CPU0,
+expert workers on CPUs1–5,19 earlier threads allowed on0–11 and five later
+threads on0. Their roles/activity and any latency effect remain unknown.
+The host pin occurs in `SessionLoopScratch::init`, not the pool constructor;
+Linux inheritance is a hypothesis for those later masks, not a demonstrated
+cause. Do not change affinity during an active comparison.
+Explicit runtime-baseline adoption remains pending and the shared qualified
+asset hashes remain unchanged. Keep the current8c5d799f engine and570b65dd
+fallback only for the next same-runtime observer-off old/new engine comparison;
+retire the extra after that decision, before another native build. The new
+single-workload selector does not replace the required strong/weak pair for adoption.
 Keep model quality,agent-session,physical262144/session/RESTORE and matched
 no-MTP attribution as separate pending checks.
 
