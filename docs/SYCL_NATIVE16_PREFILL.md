@@ -1753,6 +1753,12 @@ uses the actual native IQ3_XXS/IQ2_S GU and IQ4_NL Down formats on two different
 sized layers, retaining all grouping/fallback/refusal assertions. The revised
 17+10+8 gate uses a fresh v4 root; the native engine code is unchanged by this
 fixture/controller correction. This is not canonical-pack support or a GPU fix.
+At`3ef95537a398`, the rebuilt native provider17, submission10 and verifier8 cases
+all passed, including the16 largest-size copies and byte/outer-guard checks.
+All owners closed normally; source/runtime/boot stayed unchanged and no fresh
+GPU fault appeared. Engine bytes remained those of`189e5163d`; only the fixture
+and controller were corrected. The positive grouped GPU model route is still
+unexecuted and the independent producer/consumer source review is pending.
 
 A conditional complete-blob copy budget also constrains that candidate.
 With at most2 resident experts per layer, top10 routing and at most4 emitted

@@ -1,5 +1,5 @@
 {
-  "source_commit": "189e5163d6aae138235ed1d8c16f7e65c885b2e7",
+  "source_commit": "3ef95537a398dd6bb7cd8bed4d15ef147b672f84",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
     "bytes": 22075256,
@@ -16,7 +16,7 @@
     },
     "file_expert_source_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/file_expert_source_test",
-      "sha256": "2b033a07016bcd8b086700da8ad461234ef3b1b15927a45c8dfdcefe18bf469f"
+      "sha256": "e7e06781856b10cd45fb5e5d281d2a18a34b7cf7b1756caf97ed9dea9226d950"
     }
   },
   "environment_reference": "tools/sycl/measurement_environment.json",
@@ -31,18 +31,78 @@
       "candidate_sha256": "0d6934adafb2ef3c640382440c14d6bd60f391e688c000796ffcea0c72849269"
     }
   },
-  "checks": [],
-  "complete": false,
-  "passed": false,
+  "checks": [
+    {
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/file_expert_source_test"
+      ],
+      "cases": [
+        "arena_copy_dispatch_test cases=17 native_variable_stride=PASS source_bounds=PASS grouping=PASS limits=PASS cpu_fallback=PASS alias_exclusion=PASS callbacks=PASS"
+      ],
+      "passed": true,
+      "stdout_sha256": "525c53f5832c332c7e503c860dcbcdaa77583c5ccba8ca187bb5bade0e6229dc",
+      "stderr_sha256": "96cd9605779b5c9cd8b24a55d4742becdedd168f603a9f10a07d15cd6a0aca90"
+    },
+    {
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_submission_test",
+        "--submission"
+      ],
+      "cases": [
+        "case stream_copy_ordering=PASS",
+        "case explicit_stream_profiling=PASS",
+        "case default_stream_profiling=PASS",
+        "case queued_kernels=1 numerical=PASS guards=PASS event_timing=PASS kernel_profiling=PASS",
+        "case queued_kernels=119 numerical=PASS guards=PASS event_timing=PASS kernel_profiling=PASS",
+        "case queued_kernels=120 numerical=PASS guards=PASS event_timing=PASS kernel_profiling=PASS",
+        "case queued_kernels=121 numerical=PASS guards=PASS event_timing=PASS kernel_profiling=PASS",
+        "case queued_kernels=241 numerical=PASS guards=PASS event_timing=PASS kernel_profiling=PASS",
+        "case ordinary_host_roundtrips=3 status=PASS",
+        "case teardown=PASS"
+      ],
+      "passed": true,
+      "stdout_sha256": "dadad801d8022f3b40ad3bdab3e29f65fc13e1f61d60b219406f04e9881bb5be",
+      "stderr_sha256": "c4c02da37d8ede9f40b557c5b648cf1c6ed6cf62cc1291a5c4fe02ec8d2e9a52"
+    },
+    {
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_verifier_retirement_test"
+      ],
+      "cases": [
+        "case=success expected_exit=0 markers=S PASS",
+        "case=large expected_exit=0 markers=L PASS",
+        "case=empty expected_exit=0 markers=Z PASS",
+        "case=partial expected_exit=0 markers=P PASS",
+        "case=bounds expected_exit=0 markers=B PASS",
+        "case=query expected_exit=0 markers=Q PASS",
+        "case=destructor expected_exit=1 markers=D PASS",
+        "case=copy-error expected_exit=1 markers=E PASS"
+      ],
+      "passed": true,
+      "stdout_sha256": "148fbcc509e40ad207cfca2a47f0180d4a42c61ceee417648974ff573e3ba20c",
+      "stderr_sha256": "1a40d60513f106a5c4610974a969d002e7d1178049937122f19ed3433bc61c8e"
+    }
+  ],
+  "complete": true,
+  "passed": true,
   "active": false,
   "model_performance_measured": false,
   "model_quality_qualified": false,
   "model_route_executed": false,
   "ordinary_arena_copy_default_enabled": false,
   "consumer": "Prerequisite for the default-off ordinary-Arena explicit-copy model check. Retire normal traces after compact results are verified and committed.",
-  "gate": "Same-build provider14 cases, submission10 cases and verifier8 isolated cases (including16 largest-size ordinary-host copies with outer guards and accounting), checked owners and unchanged boot/runtime/source, no fresh GPU fault. Any failure blocks advancement.",
+  "gate": "Same-build native-variable-stride provider17 cases, submission10 cases and verifier8 isolated cases (including16 largest-size ordinary-host copies with outer guards and accounting), checked owners and unchanged boot/runtime/source, no fresh GPU fault. Any failure blocks advancement.",
   "limits": "Production host planner/CPU fallback with a host-reader sink, bounded real queue copies and intentional host-only async failures. Malformed host views are refused before copying. No invalid GPU address, stalled kernel, GPU expert arithmetic, model, physical262144/session/RESTORE or throughput qualification.",
-  "error": "fixture failed: strata generate: expert arena read through the file cache (buffered (not Windows))\nstrata generate: expert arena read through the file cache (buffered (not Windows))\nstrata generate: expert arena read through the file cache (buffered (not Windows))\nstrata generate: expert arena read through the file cache (buffered (not Windows))\n",
+  "last_fixture": {
+    "name": "sycl_verifier_retirement_test",
+    "command": [
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_verifier_retirement_test"
+    ],
+    "exit_code": 0,
+    "ownership_closed": true,
+    "stdout_sha256": "148fbcc509e40ad207cfca2a47f0180d4a42c61ceee417648974ff573e3ba20c",
+    "stderr_sha256": "1a40d60513f106a5c4610974a969d002e7d1178049937122f19ed3433bc61c8e"
+  },
   "ownership_closed": true,
   "fresh_faults": [],
   "boot_unchanged": true,
@@ -53,14 +113,5 @@
     "device": "0xe20c",
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
-  },
-  "failed_fixture": {
-    "name": "file_expert_source_test",
-    "exit_code": -4,
-    "signal": "SIGILL",
-    "complete": false,
-    "ownership_closed": true,
-    "attribution": "New synthetic dispatch test chose the canonical Q2_0 pack. It reaches act_quant_q8_1 in expert.cpp, compiled with explicit AVX512 flags. CPU exposes AVX2/FMA/F16C but no AVX512F/VNNI/VBMI; disassembly confirms unconditional zmm broadcasts on the non-oracle path. Existing native model path uses a different AVX2-compatible quantizer. No GPU fault observed.",
-    "next_action": "Correct the fixture to the actual native IQ3/IQ2 GU and IQ4 Down formats with variable layer strides; commit revised source/plan before another component check. No model launch is admitted."
   }
 }
