@@ -2012,6 +2012,26 @@ are a committed, bounded two-request default-route model check, followed by a
 separate32K+ thinking-enabled diagnostic and independent observer-overhead
 qualification. No throughput improvement or new model validation is established
 by adding the observer.
+The observer engine at source`ce8dd0e94` then passed all51 existing normal
+cases and the completed-event observer case. The six offline evidence/runtime
+admission tests passed at`8d4e53937`. Two earlier preparation refusals (unknown
+diagnostic mode, then receipt package labels compared with identity-only
+metadata) occurred before native launch and remain recorded in Git. The new
+controller admits only the exact same-build component-qualified runtime hashes;
+it does not relabel the mode or update the shared runtime baseline.
+The bounded normal-route model check subsequently completed both16-token
+thinking-template requests, with no fresh GPU fault and all owners closed.
+Resident launch queries were240/288 calls, all pending, with1.065699/0.973088ms
+wrapper intervals; their matching pool-return queries were all ready, with
+1.240609/1.513645ms. The second request's combined2.486733ms is about0.21% of
+its1185ms rounded decode time. The first request includes graph capture and is
+not a steady decode comparison. The four-point observer saw no2s query delay
+on these requests; short safety checks do not establish long-generation cost,
+observer overhead, a limiting hardware resource or a speed improvement.
+Use the separately committed official32K+ thinking-enabled regular-code
+diagnostic next, with only this narrow observer and the established validation/
+safety settings. Query intervals remain diagnostic until independent overhead
+qualification, and clean speed remains separate.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.

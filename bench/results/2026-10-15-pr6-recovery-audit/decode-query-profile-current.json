@@ -567,13 +567,28 @@
   "config_sha256": "1e78283649d62e35361d077ce35e70c90d097c96c4809a5f4bbcbed993178bb0",
   "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
   "settings_sha256": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
-  "complete": false,
-  "passed": false,
+  "complete": true,
+  "passed": true,
   "active": false,
   "model_quality_qualified": false,
   "model_performance_measured": false,
-  "model_route_executed": false,
-  "small_requests": [],
+  "model_route_executed": true,
+  "small_requests": [
+    {
+      "done": "DONE 16 66 25416.0 6080.6 length 12 12 0 294 8160 0 0 0.0 66",
+      "input_tokens": 66,
+      "generated": 16,
+      "finish_reason": "length",
+      "output_sha256": "5d8477a38a285d9e59a9799e80e913b705bc3b1832da936b7ca77ddc0677bd0c"
+    },
+    {
+      "done": "DONE 16 64 4858.8 1184.9 length 13 15 0 351 10080 0 0 0.0 64",
+      "input_tokens": 64,
+      "generated": 16,
+      "finish_reason": "length",
+      "output_sha256": "8930a67a5f29564d4cc6984edf20c3c20c83bdb4696089c6b4d8b74b71d28230"
+    }
+  ],
   "budgets": {
     "wall": 900,
     "cpu": 54000,
@@ -584,5 +599,119 @@
   },
   "gate": "One owned native process, two thinking-template questions,16 generated tokens each, G1/T4 configured and capture reached, pcie-frac0/pool5/arena-copy0/early0. Four query records per decode request: nonzero resident launch and pool-return calls/time, zero inactive PCIe counters, calls=ready+pending+errors, zero errors/clock failures, max<=sum. Zero copied expert bytes/groups, positive CPU jobs. No protocol/runtime/fresh-driver fault; unchanged source/model/tokenizer/runtime/boot. No automatic retry.",
   "limits": "Tiny safety/actual-route check only. No task quality, speed comparison, physical PCIe bytes, saturation, physical262144/session/RESTORE or70tok/s qualification.",
-  "consumer": "Prerequisite for a separately committed32K+ thinking-enabled production query-cost diagnostic and independent overhead qualification. No early-route or speed admission. Retire successful raw logs after compact evidence is committed."
+  "consumer": "Prerequisite for a separately committed32K+ thinking-enabled production query-cost diagnostic and independent overhead qualification. No early-route or speed admission. Retire successful raw logs after compact evidence is committed.",
+  "exit_code": 0,
+  "copy_route_requests": [
+    {
+      "submitted_blobs": 0,
+      "submitted_bytes": 0,
+      "completed_blobs": 0,
+      "completed_bytes": 0,
+      "host_view_groups": 0,
+      "gpu_miss_groups": 0,
+      "cpu_unique_misses": 5596,
+      "cpu_entries": 7866
+    },
+    {
+      "submitted_blobs": 0,
+      "submitted_bytes": 0,
+      "completed_blobs": 0,
+      "completed_bytes": 0,
+      "host_view_groups": 0,
+      "gpu_miss_groups": 0,
+      "cpu_unique_misses": 6388,
+      "cpu_entries": 9729
+    }
+  ],
+  "query_requests": [
+    {
+      "resident_launch": {
+        "calls": 240,
+        "ready": 0,
+        "pending": 240,
+        "errors": 0,
+        "clock_errors": 0,
+        "wall_ns": 1065699,
+        "max_wall_ns": 205067
+      },
+      "resident_pool_return": {
+        "calls": 240,
+        "ready": 240,
+        "pending": 0,
+        "errors": 0,
+        "clock_errors": 0,
+        "wall_ns": 1240609,
+        "max_wall_ns": 156675
+      },
+      "pcie_launch": {
+        "calls": 0,
+        "ready": 0,
+        "pending": 0,
+        "errors": 0,
+        "clock_errors": 0,
+        "wall_ns": 0,
+        "max_wall_ns": 0
+      },
+      "pcie_pool_return": {
+        "calls": 0,
+        "ready": 0,
+        "pending": 0,
+        "errors": 0,
+        "clock_errors": 0,
+        "wall_ns": 0,
+        "max_wall_ns": 0
+      }
+    },
+    {
+      "resident_launch": {
+        "calls": 288,
+        "ready": 0,
+        "pending": 288,
+        "errors": 0,
+        "clock_errors": 0,
+        "wall_ns": 973088,
+        "max_wall_ns": 7414
+      },
+      "resident_pool_return": {
+        "calls": 288,
+        "ready": 288,
+        "pending": 0,
+        "errors": 0,
+        "clock_errors": 0,
+        "wall_ns": 1513645,
+        "max_wall_ns": 154000
+      },
+      "pcie_launch": {
+        "calls": 0,
+        "ready": 0,
+        "pending": 0,
+        "errors": 0,
+        "clock_errors": 0,
+        "wall_ns": 0,
+        "max_wall_ns": 0
+      },
+      "pcie_pool_return": {
+        "calls": 0,
+        "ready": 0,
+        "pending": 0,
+        "errors": 0,
+        "clock_errors": 0,
+        "wall_ns": 0,
+        "max_wall_ns": 0
+      }
+    }
+  ],
+  "actual_default_route_confirmed": true,
+  "query_observer_reached": true,
+  "ownership_closed": true,
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  }
 }
