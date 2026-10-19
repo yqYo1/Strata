@@ -2929,40 +2929,47 @@
     ],
     "cpu_observer_source_audit": {
       "classification": "decision support",
-      "status": "orca_source_audit_running",
+      "status": "reviewed_scoped_fixes_committed_qualification_pending",
       "schedulable_now": false,
-      "source_commit": "91a44ece772733eb3b6e7fd01a8874ce3e48021c",
+      "audited_source_commit": "91a44ece772733eb3b6e7fd01a8874ce3e48021c",
       "base_commit": "0326625e2785e87e8e960e07a678a8a237e57fb1",
-      "source_root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-decode-cpu-profile",
-      "source_sha256": {
-        "CMakeLists.txt": "bb7166e54fae144e605413e1b01b37e8592f7a24b8f6db1ad1eeb8b8f81a1881",
-        "docs/BENCHMARKS.md": "f39e3849be2262e05f13142416d7e8d9c7e8b115b543a7e08c11eb9c2e7d2345",
-        "include/strata/core/cpu_clock.hpp": "6ce276314635c0b4adfa7ec507e5cb3134387240a408172c7fd1f611e4069bdf",
-        "include/strata/core/verify.hpp": "f82422c29f079dcd12d3812e3107e8a2b78e931aff90245dada0ff43c4870d44",
-        "include/strata/kernels/cpu/pool.hpp": "0122bead288ed6d783c8a93a16208c5613ebc985061c477670841641a0d8af04",
-        "src/core/verify.cpp": "8016e1a82277319323c42afd960be7e7b110c50feb13f73d0bd6ec2321a71b7d",
-        "src/kernels/cpu/pool.cpp": "c7fad11e48a0ce52a031a5b149b33a34f3a0daa7427be95ce88e0f738558ec16",
-        "src/program/generate.cpp": "c7b51ec44f32629600ba9a85cce86d9405c46e5e6db00dbad79846bc89ef2bcb",
-        "tests/core/cpu_clock.cpp": "b8ddd36a7ccce8ecda45b99e0c5e42ead0f96c3e40e0a1f1a0cc4e74c159991f"
-      },
       "provenance": "Main-authored from the current Strata source and POSIX CPU-clock APIs; no XeStrata or protected proposal source used.",
-      "prerequisites_met": [
-        "Exact new source is committed and pushed; no prior report audits these bytes.",
-        "Primary measurement/native inputs remain unchanged; the read-only audit does not need CPU critical-path evidence.",
-        "Orca fleet has zero unsettled Dispatches; fresh worker explicitly uses gpt-6-luna."
+      "source_report": {
+        "path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/decode-cpu-clock-source-audit.md",
+        "bytes": 12311,
+        "sha256": "a4e777a5c23b73dd7b9302a7acf8133a03f7488c5fae8a6fa4fea8204e87dc79"
+      },
+      "native_review": {
+        "path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/decode-cpu-clock-native-review.json",
+        "bytes": 7421,
+        "sha256": "6d7a9fa81940720fc5bd0872d99441c52ba2aba18822740b7f61f6230b10baa6",
+        "model": "gpt-6-luna",
+        "reasoning": "max"
+      },
+      "worker_ownership_closed": true,
+      "worker_closure": "Verified successful exact Task/Dispatch, source/report pins, release, original terminal incarnation closure and delivery acknowledgement; original launch metadata is recoverable from 9dc27493f. Review ownership note refers to an earlier index snapshot.",
+      "decision": "Serialized completed-dispatch slot publication is sound. Head-only sync counters cannot qualify multiple verifier stages; successful-record consumers must reconcile all request outcomes. New clocks do not establish a speed gain or physical resource saturation.",
+      "revised_candidate": {
+        "commit": "5f91e79eca6af861e9d7001389d1e283d7dc5fd2",
+        "branch": "feature/decode-cpu-profile",
+        "source_root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-decode-cpu-profile",
+        "changes": [
+          "Reject multi-stage CPU evidence using single_stage=false and valid=false, including same-device splits.",
+          "Document successful completed requests and require consumer count reconciliation; failed/missing observations are ineligible.",
+          "Prepare invalid clock ID and real-pool CPU-only off/on accounting/output checks. Native Q8_0 modes5/6 run on this CPU; legacy Q2 modes0..4 require AVX512 and remain explicitly unqualified here."
+        ],
+        "built": false,
+        "tested": false
+      },
+      "remaining_gates": [
+        "Close frozen third clean-generation process and existing cohort reducer before any build/test.",
+        "Commit exact revised inputs, pinned CPU-only recipe and bounded qualification plan before execution.",
+        "Complete CPU clock and real-pool output/accounting checks; qualify revised same-build SYCL small request and final commit.",
+        "Reconcile attempted/succeeded/failed requests and one valid CPU record per success. Predeclare and measure observer overhead in independent off/on processes."
       ],
-      "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/decode-cpu-clock-source-audit.md",
-      "maximum_report_bytes": 22528,
-      "realistic_consumer": "Main before building/testing CPU observer after frozen clean-generation cohort closure.",
-      "next_review": "Native Codex gpt-6-luna max reviews returned report; Main reads its short decision digest, then manages fixes and serialized tests.",
-      "limits": "Unbuilt, untested candidate on a temporary child branch. No inference adoption, measured speed gain, resource saturation or new qualification.",
-      "task_id": "task_2896b15843a6",
-      "dispatch_id": "ctx_5a64594b7610",
-      "run_id": "run_fb41872974e9",
-      "terminal_handle": "term_1cb0497c-6d1c-4a2d-92e3-5febdcebbb73",
-      "terminal_incarnation": "2e3e7c04-ad27-407b-8905-afb855f35080",
-      "collector_model_observed": "gpt-6-luna",
-      "worker_ownership_closed": false
+      "realistic_consumer": "Main pre-build fixes and serialized observer qualification after frozen generation cohort closure.",
+      "next_review": "After source/CPU/runtime/overhead gates, retain useful decisions in current results and retire redundant source-audit/review paperwork.",
+      "limits": "Unbuilt/untested child candidate; clean baseline is unchanged. No inference adoption, speed gain, CPU/RAM saturation, physical-context or RESTORE qualification."
     }
   },
   "native16_full_context_session_gate_source_audit": {
