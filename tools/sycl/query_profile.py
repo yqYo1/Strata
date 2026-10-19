@@ -37,7 +37,7 @@ def runtime_assets_unchanged(record):
     # by the same-build normal51+observer fixture; never relabel a mode to pass
     # generation_engine's independently scoped admission check.
     guards.require(record['mode'] in ('default-route-query-profile-check',
-        'default-route-query-profile-long'), 'unknown query diagnostic mode')
+        'default-route-query-profile-long','cache-borrow-check'), 'unknown query diagnostic mode')
     expected = {n:dict(qualified_sha256=v[0],candidate_sha256=v[1]) for n,v in DELTA.items()}
     component = gen.committed(COMPONENT)
     def identities(delta):
@@ -68,14 +68,15 @@ def current_build():
     guards.require(component['passed'] and component['complete'] and component['ownership_closed'] and
         not component['active'] and not component['fresh_faults'] and component['binary']==full['binary'] and
         component['fixtures']==full['fixtures'] and component['source_commit']==full['source_commit'] and
-        len(component['checks'])==6 and 'cases=17 native_variable_stride=PASS' in component['checks'][0]['cases'][0]
+        len(component['checks'])==7 and 'cases=17 native_variable_stride=PASS' in component['checks'][0]['cases'][0]
         and len(component['checks'][1]['cases'])==10 and len(component['checks'][2]['cases'])==8
         and len(component['checks'][3]['cases'])==16 and len(component['checks'][4]['cases'])==1
         and len(component['checks'][5]['cases'])==9 and component.get('residency_publication_contract_passed') is True
+        and len(component['checks'][6]['cases'])==10 and component.get('cache_tail_contract_passed') is True
         and component.get('grouped_copy_projection_contract_passed') is True
         and component.get('query_profile_contract_passed') is True
         and component.get('mode')=='normal-route-query-profile-components',
-        'matching passed normal51+observer+residency9 cases required before model preparation')
+        'matching passed normal51+observer1+residency9+tail10 required before model preparation')
     count = 0
     for source in [full['project'], *full['dependencies']]:
         recovered = {n:hashlib.sha256(data).hexdigest() for n,data in

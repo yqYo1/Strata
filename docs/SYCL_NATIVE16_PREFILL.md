@@ -2074,11 +2074,25 @@ component root, with unchanged boot, all owners closed and no fresh GPU fault.
 The six offline evidence/runtime-admission tests also passed. The injected
 failures test the shared host publication helper and fake table snapshots;
 production call-site returns were source-reviewed, not model-fault-injected.
-Compilation and these component passes do not exercise actual borrowing. A later
-bounded serve check must prove a positive loan, two different rounded prompt
-layouts, same-slot refill and verification after refill before any32K+ cache
-comparison. Actual admission and CPU-math/RAM/GPU resource attribution remain
-unknown; physical262144/session/RESTORE and clean speed remain separate gates.
+Compilation and these component passes do not exercise actual borrowing.
+The next source check shares the exact sized/uniform tail calculation with ten
+host cases (boundaries, no-fit/overflow,128-slot floor and request rounding).
+A default-off single-GPU `STRATA_SYCL_CACHE_LOAN_AUDIT=1` checks the device
+residency table after lend/refill and compares every refilled and unlent-prefix
+resident expert against its immutable RAM bytes. It records actual loan bytes,
+chunk, offset and free VRAM without retaining tensor dumps. The helper, audit,
+fixture and controller are Main-authored from this fork's Strata path, with no
+external implementation or XeStrata source.
+Rebuild in the existing current cache, preserving the qualified fallback, then
+require the normal51+observer1+publication9+tail10 cases in a fresh v3 root.
+`tools/sycl/cache_borrow.py prepare` then freezes the1280-slot hypothesis,
+8194/257-token thinking-template inputs and qualified runtime/safety settings;
+commit its plan before `run`. It requires positive loans at two distinct
+rounded chunks/offsets, exact GPU maps and full resident payload agreement,
+same-slot refill, G1/T4 decode and configured MTP expert detach/restore. The
+readback audit is diagnostic work, not clean speed or a quality benchmark.
+Actual admission and CPU-math/RAM/GPU resource attribution remain unknown;
+physical262144/session/RESTORE and clean speed remain separate gates.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.

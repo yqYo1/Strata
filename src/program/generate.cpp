@@ -17,9 +17,7 @@
 #include "strata/core/device.hpp"
 #include "strata/core/expert_cache.hpp"
 #include "strata/core/residency_publication.hpp"
-#ifdef STRATA_ENABLE_SYCL
 #include "strata/core/expert_slot_sizes.hpp"
-#endif
 #include "strata/core/conversation_snapshot.hpp"
 #include "strata/core/conversation_memory.hpp"
 #include "strata/core/coupled_draft.hpp"
@@ -4597,23 +4595,13 @@ int main(int argc, char** argv) {
     }
     auto lend_slots = [&](int64_t c) -> int64_t {
         const uint64_t need = strata::prefill::Prefill::bytes_needed(g, ss, c);
-        const int64_t blob = (int64_t) strata::kernels::cpu::expert_layout().max_blob;
-        int64_t k = (int64_t) ((need + (uint64_t) blob - 1) / (uint64_t) blob);
-        if (xcache.slot_offsets() != nullptr) {   // sized slots: take slots from the end until they hold `need`
-            k = 0;
-            while (k < xcache.slots() &&
-                   (uint64_t) (xcache.bytes() - (int64_t) xcache.slot_offsets()[xcache.slots() - k]) < need) ++k;
-        }
-        return k;
+        return strata::core::ExpertCacheTail(xcache.slots(), xcache.bytes(), xcache.slot_offsets(),
+            strata::kernels::cpu::expert_layout().max_blob).slots_for(need);
     };
     // `lend_bytes` went with the single-cache serve loan: a participant's loan is priced by `part_bytes` from its
     // OWN cache, and the only other user of the old helper was the serve path's own relayout.
     auto request_chunk = [](int64_t tokens, int64_t max_chunk) -> int64_t {
-        if (tokens <= 0 || max_chunk <= 0) return 0;
-        const int64_t rounded = tokens > std::numeric_limits<int64_t>::max() - 255
-                                    ? tokens
-                                    : ((tokens + 255) / 256) * 256;
-        return std::min(max_chunk, rounded);
+        return strata::core::prefill_request_chunk(tokens, max_chunk);
     };
     // The prompt path's chunk and the slots it borrows for its buffers: the requested chunk halved until it fits,
     // or with --prefill auto the largest of kAutoChunks whose buffers take at most kAutoLendPct % of the slots (a
@@ -4747,21 +4735,59 @@ int main(int argc, char** argv) {
         auto part_slots = [&](const PfPart& p, int64_t c) -> int64_t {
             const uint64_t need = strata::prefill::Prefill::bytes_needed(g, *p.ses, c);
             strata::core::ExpertCache& xc = *p.cache;
-            if (xc.slot_offsets() != nullptr) {   // sized slots: from the end until they hold `need`
-                int64_t k = 0;
-                while (k < xc.slots() &&
-                       (uint64_t) (xc.bytes() - (int64_t) xc.slot_offsets()[xc.slots() - k]) < need) ++k;
-                return k;
-            }
-            const int64_t blob = (int64_t) strata::kernels::cpu::expert_layout().max_blob;
-            return (int64_t) ((need + (uint64_t) blob - 1) / (uint64_t) blob);
+            return strata::core::ExpertCacheTail(xc.slots(), xc.bytes(), xc.slot_offsets(),
+                strata::kernels::cpu::expert_layout().max_blob).slots_for(need);
         };
         auto part_bytes = [&](const PfPart& p, int32_t first) -> uint64_t {
             strata::core::ExpertCache& xc = *p.cache;
-            return xc.slot_offsets() ? (uint64_t) (xc.bytes() - (int64_t) xc.slot_offsets()[first])
-                                     : (uint64_t) (xc.slots() - first) *
-                                           (uint64_t) strata::kernels::cpu::expert_layout().max_blob;
+            return strata::core::ExpertCacheTail(xc.slots(), xc.bytes(), xc.slot_offsets(),
+                strata::kernels::cpu::expert_layout().max_blob).bytes_from(first);
         };
+#ifdef STRATA_ENABLE_SYCL
+        const char* loan_audit_env = std::getenv("STRATA_SYCL_CACHE_LOAN_AUDIT");
+        const bool loan_audit = loan_audit_env && std::strcmp(loan_audit_env, "1") == 0;
+        if (loan_audit && (multi_gpu || !pf_borrow || d_res == nullptr || host_res.empty())) {
+            std::fprintf(stderr, "strata serve: cache loan audit requires single-GPU profiled borrowing\n");
+            return 2;
+        }
+        auto audit_residency = [&](const char* phase, std::string& e) -> bool {
+            if (!loan_audit) return true;
+            std::vector<int32_t> actual(host_res.size());
+            size_t free_bytes = 0, total_bytes = 0;
+            if (cudaMemcpy(actual.data(), d_res, actual.size() * sizeof(int32_t), cudaMemcpyDeviceToHost) != cudaSuccess ||
+                actual != host_res || cudaMemGetInfo(&free_bytes, &total_bytes) != cudaSuccess) {
+                e = std::string("cache loan audit: residency/memory check failed at ") + phase; return false;
+            }
+            std::fprintf(stderr, "strata loan audit: phase=%s table_entries=%zu table_match=1 free_bytes=%zu total_bytes=%zu\n",
+                         phase, actual.size(), free_bytes, total_bytes);
+            return true;
+        };
+        auto audit_refilled = [&](const PfPart& p, std::string& e) -> bool {
+            if (!loan_audit) return true;
+            std::vector<uint8_t> actual(strata::kernels::cpu::expert_layout().max_blob);
+            uint64_t bytes = 0, rows = 0;
+            // Include the unlent prefix: carving into a neighbouring expert is
+            // an error even if all borrowed slots themselves refill correctly.
+            for (int64_t l = p.lb; l < p.le; ++l)
+                for (int64_t ex = 0; ex < g.n_expert; ++ex) {
+                    const auto slot = host_res[size_t(l * g.n_expert + ex)];
+                    if (slot < 0) continue;
+                    const auto nb = strata::kernels::cpu::expert_layout().blob_bytes(l);
+                    const auto* expected = srcp->blob(l, ex);
+                    if (slot >= p.cache->slots() || p.cache->slot_of(l, ex) != slot || !expected || nb > actual.size() ||
+                        cudaMemcpy(actual.data(), p.cache->device_slot(slot), nb, cudaMemcpyDeviceToHost) != cudaSuccess ||
+                        std::memcmp(actual.data(), expected, nb) != 0) {
+                        e = "cache loan audit: refilled/prefix expert payload mismatch"; return false;
+                    }
+                    bytes += nb; ++rows;
+                }
+            for (const auto& [i, slot] : p.lent)
+                if (host_res[size_t(i)] != slot) { e = "cache loan audit: refill changed the slot"; return false; }
+            std::fprintf(stderr, "strata loan audit: phase=payload rows=%llu bytes=%llu lent=%zu same_slots=1 payload_match=1\n",
+                         (unsigned long long) rows, (unsigned long long) bytes, p.lent.size());
+            return true;
+        };
+#endif
         // #340: a layer split whose caches already hold most experts streams few of them through the prompt path, so
         // the 384-slot ring (sized for a card that streams nearly every expert of a chunk) only makes every stage's
         // loan bigger: 96 slots (0.1.30's ring here) when >= 75% of the (layer, expert) pairs are resident.  One GPU
@@ -6115,6 +6141,9 @@ int main(int argc, char** argv) {
             auto refill_wait = [&](PfPart& p, std::string& e) -> bool {
                 const strata::core::OnDevice on(p.dev);
                 if (!p.cache->sync_queued(e)) return false;
+#ifdef STRATA_ENABLE_SYCL
+                if (!audit_refilled(p, e)) return false;
+#endif
                 p.lent.clear();
                 p.lent_chunk = 0;
                 return true;
@@ -6142,6 +6171,9 @@ int main(int argc, char** argv) {
                         if (!p.lent.empty() && !refill_one(p, e)) return false;
                 }
                 if (n_parts > 0 && !res_upload("serve cache refill", e)) return false;
+#ifdef STRATA_ENABLE_SYCL
+                if (n_parts > 0 && !audit_residency("refill", e)) return false;
+#endif
                 if (trace && n_parts > 0) {
                     std::fprintf(stderr, "strata trace: refilled %lld slots on %lld stage(s) in %.1f ms\n",
                                  (long long) n_lent, (long long) n_parts,
@@ -6192,8 +6224,30 @@ int main(int argc, char** argv) {
                             }
                         }
                     p.lent_chunk = want;
+#ifdef STRATA_ENABLE_SYCL
+                    if (loan_audit) {
+                        const auto bytes = part_bytes(p, first);
+                        const auto need = strata::prefill::Prefill::bytes_needed(g, *p.ses, want);
+                        if (first < 128 || first >= p.cache->slots() || bytes < need || p.lent.empty() ||
+                            p.sp->chunk() != want || p.first_now != first) {
+                            e = "cache loan audit: invalid/empty tail loan"; return false;
+                        }
+                        for (const auto& [i, slot] : p.lent)
+                            if (i < 0 || size_t(i) >= host_res.size() || slot < first || slot >= p.cache->slots() ||
+                                host_res[size_t(i)] != strata::core::kNotResident ||
+                                p.cache->slot_of(i / g.n_expert, i % g.n_expert) != slot) {
+                                e = "cache loan audit: invalid masked slot"; return false;
+                            }
+                        std::fprintf(stderr, "strata loan audit: phase=layout chunk=%lld first=%d slots=%lld bytes=%llu need=%llu lent=%zu mask_match=1\n",
+                                     (long long) want, first, (long long) p.cache->slots(), (unsigned long long) bytes,
+                                     (unsigned long long) need, p.lent.size());
+                    }
+#endif
                 }
                 if (any && !res_upload("serve cache lend", e)) return false;
+#ifdef STRATA_ENABLE_SYCL
+                if (any && !audit_residency("lend", e)) return false;
+#endif
                 if (trace) {
                     int64_t n_lent = 0;
                     for (const PfPart& p : pf_parts) n_lent += (int64_t) p.lent.size();

@@ -6,6 +6,48 @@
 #include <vector>
 
 namespace strata::core {
+// Host view of the actual cache allocation, including the sized arena's end
+// sentinel. Loans use the tail's real bytes rather than slots * largest blob.
+class ExpertCacheTail {
+public:
+    ExpertCacheTail(int64_t slots, uint64_t bytes, const uint64_t* offsets, uint64_t blob)
+        : slots_(slots), bytes_(bytes), offsets_(offsets), blob_(blob) {
+        if (slots < 0 || slots >= INT32_MAX)
+            throw std::invalid_argument("invalid cache tail slot count");
+        if (offsets) {
+            if (offsets[0] != 0 || offsets[slots] != bytes)
+                throw std::invalid_argument("invalid cache tail extent");
+            for (int64_t i = 1; i <= slots; ++i)
+                if (offsets[i] <= offsets[i - 1] || offsets[i] > bytes)
+                    throw std::invalid_argument("invalid cache tail offsets");
+        } else if (!blob || uint64_t(slots) > UINT64_MAX / blob || uint64_t(slots) * blob != bytes) {
+            throw std::invalid_argument("invalid uniform cache tail extent");
+        }
+    }
+    uint64_t bytes_from(int64_t first) const {
+        if (first < 0 || first > slots_) throw std::out_of_range("cache tail first slot");
+        return offsets_ ? bytes_ - offsets_[first] : uint64_t(slots_ - first) * blob_;
+    }
+    int64_t slots_for(uint64_t need) const {
+        if (need > bytes_) return slots_ + 1; // Explicit no-fit; never a truncated loan.
+        if (!offsets_) return int64_t(need / blob_ + (need % blob_ != 0));
+        int64_t k = 0;
+        while (bytes_from(slots_ - k) < need) ++k;
+        return k;
+    }
+private:
+    int64_t slots_;
+    uint64_t bytes_;
+    const uint64_t* offsets_;
+    uint64_t blob_;
+};
+
+inline int64_t prefill_request_chunk(int64_t tokens, int64_t maximum) {
+    if (tokens <= 0 || maximum <= 0) return 0;
+    const int64_t rounded = tokens > INT64_MAX - 255 ? tokens : ((tokens + 255) / 256) * 256;
+    return std::min(maximum, rounded);
+}
+
 // Match ExpertCache::layer_slot_range: equal counts, remainder on the last
 // layer. Every adaptive replacement therefore fits its layer's slot.
 inline uint64_t expert_slot_aligned_bytes(int64_t bytes) {

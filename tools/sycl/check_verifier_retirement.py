@@ -39,7 +39,7 @@ def digest(path):
 def main():
     profile = sys.argv[1:] == ['--query-profile']
     guards.require(len(sys.argv) == 1 or profile, 'use no options or --query-profile; never retry a closed root')
-    root = B / 'decode-query-profile-component-v2' if profile else ROOT
+    root = B / 'decode-query-profile-component-v3' if profile else ROOT
     result = A / 'decode-query-profile-component-current.json' if profile else RESULT
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -102,8 +102,8 @@ def main():
             limits='The six early cases check real-queue synthetic ordering, replay, source retirement and refusal, not native projection equivalence or model overlap. Grouped component covers all seven current model GU/Down pairs plus supported IQ4_XS/Q2_0 at H2560/FF640, windows1/4, groups10/16 and entries10/40, using two distinct blobs repeated in metadata. The oracle shares native scalar projection primitives; it isolates copy/grouping from separate execution, not common-mode projection defects or model quality. No invalid GPU address, stalled kernel, model, physical262144/session/RESTORE or throughput qualification.')
         if profile:
             record.update(mode='normal-route-query-profile-components', model_route_executed=False,
-                gate='Same-build provider17, submission10, normal verifier retirement8, grouped arithmetic16, one completed-event query observer case and9 host residency-publication cases. Lend/refill failure at each fanout target must stop publication and withhold reader admission; success preserves exact snapshots. Observer must preserve results, separate all four categories, conserve counts/times and leave counters zero when disabled/reset. Original failed early51+6 result stays unchanged. No early route, queue configuration or model/speed qualification.',
-                consumer='Prerequisite for the checked-residency engine small model check; normal51+observer+host9, never admission of early PCIe scheduling.')
+                gate='Same-build provider17, submission10, normal verifier retirement8, grouped arithmetic16, query observer1, residency publication9 and cache tail10. Tail tests use exact sized/uniform bytes, boundary/no-fit/overflow, the128-slot floor and request rounding. Lend/refill failure at each fanout target stops publication; success preserves snapshots. Observer preserves results and count/time conservation. Original failed early51+6 stays unchanged. No early route, queue change or model/speed qualification.',
+                consumer='Prerequisite for the bounded single-GPU positive-borrow model check; normal51+observer1+publication9+tail10, never admission of early PCIe scheduling.')
         owner = None
 
         def persist():
@@ -122,6 +122,7 @@ def main():
                      ('early', 'sycl_verifier_retirement_test', ['--early']))]
             if profile:
                 fixtures.append(('residency-publication', 'residency_publication_host_test', []))
+                fixtures.append(('cache-tail', 'cache_tail_host_test', []))
             for label, name, args in fixtures:
                 fixture = build['fixtures'][name]
                 command = [fixture['path'], *args]
@@ -138,6 +139,14 @@ def main():
                         not re.search('UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed', stderr),
                         'Arena provider/planner contracts failed: ' + (stdout + stderr)[-8192:])
                     cases = [expected]
+                elif name == 'cache_tail_host_test':
+                    cases = [x for x in stdout.splitlines() if x.startswith('cache_tail ')]
+                    expected = [f'cache_tail case={name} status=PASS' for name in
+                        ('sized_boundary','sized_cross_boundary','sized_all','zero_need','no_fit',
+                         'uniform_boundary','layer_tail_floor','bounds','invalid_layout','request_rounding')]
+                    guards.require(cases == expected and 'cache_tail_fixture cases=10 status=PASS' in stdout,
+                        'cache tail contract failed: '+(stdout+stderr)[-8192:])
+                    record['cache_tail_contract_passed'] = True
                 elif name == 'residency_publication_host_test':
                     cases = [x for x in stdout.splitlines() if x.startswith('residency_publication ')]
                     expected = [f'residency_publication phase={phase} fail_at={fail_at} status=PASS'
