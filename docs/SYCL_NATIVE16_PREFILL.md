@@ -1859,8 +1859,9 @@ conditional requested-payload calculations, not wire measurements or saturation.
 The11.4tok/s diagnostic reading includes validation/progress output and is excluded
 from clean speed. Continue the unchanged six-process screen; no adoption follows.
 
-The isolated Main-authored early-PCIe prototype starts from`52b9734b9` while
-that six-process screen remains frozen. It copies no XeStrata or other external
+The Main-authored early-PCIe prototype started from`52b9734b9` in an isolated
+child during that now-closed screen. Its original commits are merged into
+`feature/sycl` for qualification. It copies no XeStrata or other external
 implementation. `STRATA_SYCL_VERIFY_PCIE_EARLY=1` requires the native ordinary-Arena
 copy route, mode0 and existing shared/hit overlap. The unchanged copied-expert
 projection is captured separately. After DMA submission, a freshly recorded copy
@@ -1874,7 +1875,7 @@ counters prove submissions/readiness observations, not hardware saturation or
 quantified overlap. Default behavior remains the existing schedule.
 
 Before build/run, commit all source, fixtures and updated controller/recipe.
-After the frozen screen closes and source review, require the existing51 gates
+Following screen closure and source review, require the existing51 gates
 plus the new real-queue early-enqueue fixture: ordinary host copies, resident-to-
 copied scratch ordering, payload/output/outer guards, empty input, maximum copy
 extent, fresh-event replay, and refusal of mismatched or unrecorded inputs.
