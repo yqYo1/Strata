@@ -175,12 +175,12 @@ def retain_current():
 
 def main():
     guards.require(len(sys.argv) == 1 or sys.argv[1:] in
-                   (['retain-current'], ['build-copy-safety'], ['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn'], ['rebuild-down'], ['rebuild-ordered'], ['rebuild-submission'], ['rebuild-gu'], ['rebuild-mixed'], ['rebuild-expert-bank']),
+                   (['retain-current'], ['build-copy-safety'], ['rebuild-copy-safety'], ['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn'], ['rebuild-down'], ['rebuild-ordered'], ['rebuild-submission'], ['rebuild-gu'], ['rebuild-mixed'], ['rebuild-expert-bank']),
                    'use build_engine.py retain-current or a named rebuild mode')
     rebuild = len(sys.argv) == 2 and sys.argv[1] != 'build-copy-safety'
     attention = sys.argv[1:] == ['rebuild-attention']
     targets = ['strata']
-    if sys.argv[1:] == ['build-copy-safety']:
+    if sys.argv[1:] in (['build-copy-safety'], ['rebuild-copy-safety']):
         targets += ['sycl_verifier_retirement_test', 'sycl_submission_test']
     if attention:
         targets += ['sycl_qsa_bf16_late_flags_test', 'sycl_qsa_bf16_prefix_optimized_test',

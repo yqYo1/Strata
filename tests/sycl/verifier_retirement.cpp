@@ -27,6 +27,11 @@ struct VerifierRetirementTestAccess {
         v.staging_blob_bytes_ = 64;
         v.sink_.staging = reinterpret_cast<uintptr_t>(v.staging_);
         v.sink_.staging_cap = 2;
+        v.head_logits_ = reinterpret_cast<float*>(v.arena_);
+        v.R_ = reinterpret_cast<float*>(v.arena_);
+        v.n_vocab_ = 16;
+        v.max_t_ = 2;
+        v.last_t_ = 1;
         *v.h_flagB_ = 0;
     }
     static void submit(Verifier& v, const uint8_t* const* sources, int count, size_t bytes) {
@@ -35,6 +40,7 @@ struct VerifierRetirementTestAccess {
     static bool finish(Verifier& v, std::string& error) { return v.finish_expert_copies(error); }
     static cudaError_t status(const Verifier& v) { return v.copy_submit_status_; }
     static uint32_t flag(const Verifier& v) { return *v.h_flagB_; }
+    static bool failed(const Verifier& v) { return v.released_.load(); }
     static void* stage(Verifier& v) { return v.staging_; }
     static void shift_stage(Verifier& v, intptr_t offset) {
         v.sink_.staging = reinterpret_cast<uintptr_t>(v.staging_) + offset;
@@ -87,6 +93,14 @@ void mark(char value) { need(write(marker_fd, &value, 1) == 1, "marker write"); 
         need(output == source, "ordinary source copy payload/guards differ");
         verifier.reset();
         mark('S');
+    } else if (mode == "empty") {
+        Access::submit(*verifier, nullptr, 0, 0);
+        need(Access::status(*verifier) == cudaSuccess && Access::flag(*verifier) == 0,
+             "empty batch published before checked drain");
+        need(Access::finish(*verifier, error) && Access::flag(*verifier) == 1,
+             "empty batch did not publish after checked drain");
+        verifier.reset();
+        mark('Z');
     } else if (mode == "partial") {
         Access::submit(*verifier, inputs, 1, 64);
         // A failed follow-up leaves the earlier real copy borrowed until finish.
@@ -97,6 +111,20 @@ void mark(char value) { need(write(marker_fd, &value, 1) == 1, "marker write"); 
         need(Access::flag(*verifier) == 0, "failed batch published completion");
         check(cudaMemcpy(output.data(), Access::stage(*verifier), 64, cudaMemcpyDeviceToHost));
         need(std::memcmp(output.data(), source.data(), 64) == 0, "earlier copy not retired");
+        need(Access::failed(*verifier), "failed copy did not latch terminal state");
+        std::array<float, 16> logits; logits.fill(42.0f);
+        need(!verifier->copy_logits(0, logits.data()), "failed window exposed old logits");
+        for (auto value : logits) need(value == 42.0f, "refused logits copy changed output");
+        need(!verifier->final_R(0) && !verifier->final_R_all(), "failed window exposed residuals");
+        int32_t token = 0, result = -123;
+        need(!verifier->run(1, &token, 0, nullptr, nullptr, &result, error) &&
+             error.find("restart") != std::string::npos && result == -123, "failed verifier was reused");
+        need(!verifier->commit(1, error) && error.find("cannot commit") != std::string::npos,
+             "failed verifier accepted commit");
+        std::FILE* sink = std::tmpfile(); need(sink != nullptr, "temporary output");
+        const bool logged = verifier->window_logprobs(&token, 1, 0, -1, sink, error);
+        const auto written = std::ftell(sink); std::fclose(sink);
+        need(!logged && written == 0, "failed window exposed old logprobs");
         verifier.reset();
         mark('P');
     } else if (mode == "bounds") {
@@ -170,12 +198,13 @@ int main(int argc, char** argv) {
         need(argc == 1, "usage: sycl_verifier_retirement_test");
         // The coordinator initializes no SYCL runtime before fork+exec.
         isolated("success", "S", 0);
+        isolated("empty", "Z", 0);
         isolated("partial", "P", 0);
         isolated("bounds", "B", 0);
         isolated("query", "Q", 0);
         isolated("destructor", "D", EXIT_FAILURE);
         isolated("copy-error", "E", EXIT_FAILURE);
-        std::puts("fixture_status=PASS cases=6");
+        std::puts("fixture_status=PASS cases=7");
         return 0;
     } catch (const std::exception& error) {
         std::fprintf(stderr, "%s\n", error.what());

@@ -15,7 +15,7 @@ import measurement_owner as supervision
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
 ENGINE = B / 'main-native-gdn-engine'
-ROOT = B / 'verifier-copy-safety-v1'
+ROOT = B / 'verifier-copy-safety-v2'
 A = P / 'bench/results/2026-10-15-pr6-recovery-audit'
 SETTINGS = P / 'tools/sycl/measurement_environment.json'
 RESULT = A / 'verifier-copy-safety-current.json'
@@ -88,7 +88,7 @@ def main():
             checks=[], complete=False, passed=False, active=False, model_performance_measured=False,
             model_quality_qualified=False, nonresident_gpu_route_enabled=False,
             consumer='Prerequisite for an ordinary-Arena explicit-copy prototype. Retire normal traces after compact results are verified and committed.',
-            gate='Same-build submission10 cases and verifier6 isolated cases, checked owners and unchanged boot/runtime/source, no fresh GPU fault. Any failure blocks advancement.',
+            gate='Same-build submission10 cases and verifier7 isolated cases (including empty-batch ordering and failed-window reuse/output refusal), checked owners and unchanged boot/runtime/source, no fresh GPU fault. Any failure blocks advancement.',
             limits='Synthetic bounded copies and intentional host-only async failures. No invalid GPU address or stalled kernel. No model, physical262144/session/RESTORE or throughput qualification.')
         owner = None
 
@@ -114,10 +114,10 @@ def main():
                         'submission contracts failed: ' + (stdout + stderr)[-8192:])
                 else:
                     cases = [x for x in stdout.splitlines() if x.startswith('case=')]
-                    expected = [('success',0,'S'), ('partial',0,'P'), ('bounds',0,'B'),
+                    expected = [('success',0,'S'), ('empty',0,'Z'), ('partial',0,'P'), ('bounds',0,'B'),
                         ('query',0,'Q'), ('destructor',1,'D'), ('copy-error',1,'E')]
                     guards.require(cases == [f'case={n} expected_exit={e} markers={m} PASS' for n,e,m in expected]
-                        and 'fixture_status=PASS cases=6' in stdout, 'verifier contracts failed: ' + (stdout + stderr)[-8192:])
+                        and 'fixture_status=PASS cases=7' in stdout, 'verifier contracts failed: ' + (stdout + stderr)[-8192:])
                 record['checks'].append(dict(command=command, cases=cases, passed=True,
                     stdout_sha256=digest(out), stderr_sha256=digest(err)))
             unchanged(); runtime_unchanged()

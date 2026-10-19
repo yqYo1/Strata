@@ -1691,9 +1691,21 @@ the two fail-stop cases exited1 with only their pre-stop markers, without
 unwind/atexit markers. Source/runtime hashes remained unchanged, all owned
 processes closed, the boot stayed unchanged and no fresh GPU fault appeared.
 See the [small-check result](../bench/results/2026-10-15-pr6-recovery-audit/verifier-copy-safety-current.json).
-Independent delta source review remains pending. These component results do not
-enable the ordinary-Arena route, establish model correctness/nonregression or
-add a speed result.
+The independent delta audit identified a public failed-object reuse/output gap:
+the server exits on run failure, but the object did not itself refuse another
+window or old logits. It also noted early flag-B publication for an empty
+batch, although SYCL's next graph segment already waits for checked retirement.
+The follow-up latches failed copy submission as terminal and refuses subsequent
+run/commit/logits/logprobs/residual access; it publishes flagB only after checked
+retirement, including empty batches. The revised prospective gate adds a seventh
+isolated empty-batch case and strengthens the partial-failure case to exercise
+public reuse and output refusal. Build with
+`python3 tools/sycl/build_engine.py rebuild-copy-safety`, commit the build result,
+then run the same check controller with its fresh v2 root. All17 cases, source/
+runtime/boot identity, ownership and fault checks must pass; the original16-case
+pass remains a result of the earlier source only. Native review of the audit
+and the revised checks are pending. These component results do not enable the
+ordinary-Arena route, establish model correctness/nonregression or add speed.
 
 A conditional complete-blob copy budget also constrains that candidate.
 With at most2 resident experts per layer, top10 routing and at most4 emitted

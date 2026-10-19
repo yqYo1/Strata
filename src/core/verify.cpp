@@ -394,6 +394,7 @@ Verifier::~Verifier() {
 
 bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState& ss, const VerifyHits& hits,
                     const NativeHead* head, int max_t, std::string& err) {
+    if(released_.load()){err="verify: failed or released verifier; restart the engine";return false;}
     if(dense_retired_ || head_detached_){err="verify: init while head detached";return false;}
     cudaGetDevice(&device_);   // a layer split's stage on another GPU: its streams, graphs and buffers live there
     strata::kernels::fused_gr_check();   // once per card: which bitwise-equal hyper-connection read runs there
@@ -611,7 +612,9 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
     return true;
 }
 
-const float* Verifier::final_R(int t) const { return R_ + (size_t) t * (size_t) (g_->hc * g_->n_embd); }
+const float* Verifier::final_R(int t) const {
+    return released_.load() ? nullptr : R_ + (size_t) t * (size_t) (g_->hc * g_->n_embd);
+}
 
 // ================================ THE WINDOW, AS CAPTURED ================================
 //
@@ -1385,7 +1388,7 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
     const OnDevice on_device(device_);
     if(dense_retired_ || head_detached_){err="verify: run while head detached";return false;}
     if (T < 1 || T > max_t_) { err = "verify: window size out of range"; return false; }
-    if (released_.load()) { err = "verify: an earlier window never finished on the GPU (#267); restart the engine"; return false; }
+    if (released_.load()) { err = "verify: an earlier window failed or was released; restart the engine"; return false; }
     const ModelGeometry& g = *g_;
     SessionState& ss = *ss_;
     if (pos0 + T > ss.qsa_states[ss.qsa_primary()].max_cells) { err = "verify: the window runs past the context"; return false; }
@@ -1535,7 +1538,9 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
             sink_.start2[0] = 0;
             std::atomic_thread_fence(std::memory_order_seq_cst);
             host_flag_raise(h_flagA_, want);
+#ifndef STRATA_ENABLE_SYCL
             raise_flag(h_flagB_, want);
+#endif
         }
 #ifdef STRATA_ENABLE_SYCL
         // A pool without a publish callback still needs shared work and an
@@ -1705,12 +1710,11 @@ void Verifier::raise_flag(uint32_t* flag, uint32_t value) {
 // groups).  Staging is split between the two token groups of a split window.
 void Verifier::fetch_dma(void* ctx, const uint8_t* const* src, int n, size_t bytes) {
     Verifier* v = (Verifier*) ctx;
-    const uint32_t want = v->cur_layer_ + 1;
 #ifdef STRATA_ENABLE_SYCL
     if (v->copy_submit_status_ != cudaSuccess) return;
     auto invalid = [&] { v->copy_submit_status_ = cudaErrorInvalidValue; };
     if (n < 0 || n > v->sink_.staging_cap || n > kStagingBlobs) { invalid(); return; }
-    if (n == 0) { raise_flag(v->h_flagB_, want); return; }
+    if (n == 0) return; // Even an empty batch publishes only after a checked drain.
     if (!src || !bytes || !v->copy_ || !v->staging_ || !v->staging_blob_bytes_ ||
         v->staging_blob_bytes_ > std::numeric_limits<size_t>::max() / kStagingBlobs ||
         bytes > v->staging_blob_bytes_) { invalid(); return; }
@@ -1730,6 +1734,7 @@ void Verifier::fetch_dma(void* ctx, const uint8_t* const* src, int n, size_t byt
     // SYCL's next segment is gated by finish_expert_copies(), not a GPU spin
     // on flag B. Do not queue a host task borrowing an embedded FlagSet.
 #else
+    const uint32_t want = v->cur_layer_ + 1;
     if (n <= 0) { raise_flag(v->h_flagB_, want); return; }
     uint8_t* stage = (uint8_t*) v->sink_.staging;                  // this group's half in a split window
     for (int i = 0; i < n; ++i) cudaMemcpyAsync(stage + (size_t) i * bytes, src[i], bytes, cudaMemcpyHostToDevice, v->copy_);
@@ -1747,6 +1752,9 @@ bool Verifier::finish_expert_copies(std::string& err) {
     if (cudaStreamSynchronize(copy_) != cudaSuccess)
         strata::sycl_backend::cleanup_fail_stop("verify expert copy retirement");
     if (copy_submit_status_ != cudaSuccess) {
+        // The window may already have modified session storage. Refuse reuse,
+        // commits and old output even when the caller ignores run()'s error.
+        released_.store(true);
         err = std::string("verify: expert copy submission: ") + cudaGetErrorString(copy_submit_status_);
         return false;
     }
@@ -1786,6 +1794,7 @@ void Verifier::launch_work() {
 
 bool Verifier::window_logprobs(const int32_t* targets, int T, int64_t pos0, int32_t extra_id, std::FILE* out,
                                std::string& err) {
+    if(released_.load()){err="verify: failed or released verifier has no valid output";return false;}
     if(dense_retired_ || head_detached_){err="verify: logits while head detached";return false;}
     if (next_ != nullptr) return next_->window_logprobs(targets, T, pos0, extra_id, out, err);
     const OnDevice on_device(device_);
@@ -1845,6 +1854,7 @@ namespace { bool g_commit_async = false; }
 void Verifier::set_commit_async(bool on) { g_commit_async = on && std::getenv("STRATA_COMMIT_SYNC") == nullptr; }
 
 bool Verifier::commit(int n_keep, std::string& err) {
+    if(released_.load()){err="verify: failed or released verifier cannot commit";return false;}
     if(dense_retired_ || head_detached_){err="verify: commit while head detached";return false;}
     const OnDevice on_device(device_);
     if (n_keep < 1 || n_keep > last_t_) { err = "verify: commit count out of range"; return false; }
@@ -1893,6 +1903,7 @@ bool Verifier::wait_commit(std::string& err) {
 }
 
 bool Verifier::copy_logits(int t, float* host) const {
+    if(released_.load())return false;
     if(dense_retired_ || head_detached_)return false;
     if (next_ != nullptr) return next_->copy_logits(t, host);   // a layer split: the head is on the last stage
     if (head_logits_ == nullptr || host == nullptr || t < 0 || n_vocab_ <= 0) return false;
