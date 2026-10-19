@@ -1455,6 +1455,14 @@ latency geomean<=1.05 and maximum pair<=1.10 after request/work reconciliation;
 report individual samples and spread even if this gate fails. No inference
 optimization, runtime-baseline adoption or resource saturation follows from
 this single-workload comparison alone.
+Independent source audit and native Luna-max review found no technical reuse
+blocker. The automatic off-arm consumer lacks an explicit four-warmup phase
+assertion: process0's original journal contains all four successful warmups,
+but all six journals must pass that check before interpreting the comparison.
+Retain them for that closure check; `passed` alone does not satisfy it. Residual
+null-counter work is the intended old/new test subject, not proof of a defect.
+The audit worker is completed and its terminal is closed; the frozen research
+index will be reconciled after the comparison, without changing its input hash.
 During process0, a read-only capability check of the owned native client's
 `/proc/<pid>/fdinfo` exposed xe `drm-cycles-ccs`, `drm-total-cycles-ccs` and
 memory residency fields on kernel7.0.0-38-generic. This is field availability,
