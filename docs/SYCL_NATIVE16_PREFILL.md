@@ -1617,7 +1617,7 @@ Five independent processes remain; this single sample cannot decide sensitivity.
 After PR144 preserved the original controller and result commits on the fork
 default, Main verified closure and useful evidence, recovered the temporary
 native source views from396d0c91f301, and retired187 closed raw/audit files
-totalling37592380 bytes. The deletion manifest is pinned in the current result.
+totalling37592380 bytes. The deletion manifest is pinned in the result atf8a60975c.
 The selected engine and five same-build fixtures remain for the comparison.
 This diagnostic can test CPU-pool capacity sensitivity, not distinguish
 arithmetic from RAM limits or prove saturation at the baseline. Small-check
