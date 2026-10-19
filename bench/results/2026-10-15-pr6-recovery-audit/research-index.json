@@ -3166,6 +3166,25 @@
           "Predeclare and collect matched observer-off/on overhead evidence before hardware attribution; keep clean speed observer-free."
         ],
         "retirement": "Keep one validated fallback and the immediate candidate. Select the validated generation and retire the extra after qualification; old source-only receipt consumers remain explicit until replaced."
+      },
+      "native_cpu_qualification_plan": {
+        "controller": "python3 tools/sycl/check_decode_cpu.py native",
+        "build_source_commit": "d50d31347cc8505a40181db8308735bfa0058427",
+        "output_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-cpu-observer-native-cpu-tests-v1",
+        "test": [
+          "ctest",
+          "--test-dir",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build",
+          "--output-on-failure",
+          "--no-tests=error",
+          "-R",
+          "^(cpu_clock|pool_cpu_clock)_(off|on)$",
+          "--parallel",
+          "1"
+        ],
+        "budgets": "Reuse committed CPU-only plan budgets; one300-second test phase, each clock test10 seconds and each pool test120 seconds. No GPU execution.",
+        "prerequisites": "Native build closed normally, exact compact receipt committed, all native input and fixture hashes match; no concurrent model/build/test owner.",
+        "acceptance": "The same four exact off/on clock/pool tests pass using the native build fixtures; preserve original outcomes and host/unsupported-coverage evidence."
       }
     }
   },
