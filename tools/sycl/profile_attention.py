@@ -177,14 +177,20 @@ def perf_smoke():
         revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip()
         guards.require(require_source==subprocess.check_output(['git','show',revision+':tools/sycl/profile_attention.py'],cwd=P),
             'commit exact perf probe source first')
+        pins={}
+        for name in ('tools/sycl/profile_attention.py','tools/sycl/measurement_owner.py','tools/sycl/measurement_guards.py'):
+            data=subprocess.check_output(['git','show',revision+':'+name],cwd=P)
+            guards.require((P/name).read_bytes()==data,'uncommitted perf probe input: '+name)
+            pins[name]=hashlib.sha256(data).hexdigest()
         original=result.read_bytes()
         guards.require(original==subprocess.check_output(['git','show',revision+':'+str(result.relative_to(P))],cwd=P),
             'commit the original profiler outcome first')
         record=json.loads(original)
+        guards.require('perf_event_capability' not in record, 'closed event probe requires a new distinct committed plan')
         guards.require(not root.exists(),'inspect existing perf capability result; no automatic retry')
         root.mkdir(mode=0o700)
         env=dict(PATH='/usr/bin:/bin',HOME='/home/yayoi',LANG='C.UTF-8',LC_ALL='C.UTF-8')
-        probe=dict(source_commit=revision,source_sha256=hashlib.sha256(require_source).hexdigest(),
+        probe=dict(source_commit=revision,source_sha256=hashlib.sha256(require_source).hexdigest(),input_sha256=pins,
             perf=dict(path='/usr/bin/perf',sha256=digest('/usr/bin/perf')),
             target=dict(path='/usr/bin/true',sha256=digest('/usr/bin/true')),
             perf_event_paranoid=Path('/proc/sys/kernel/perf_event_paranoid').read_text().strip(),

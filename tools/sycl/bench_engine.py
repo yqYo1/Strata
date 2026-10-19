@@ -90,8 +90,10 @@ def committed_engine_build():
     guards.require(raw == subprocess.check_output(
         ['git', 'show', 'HEAD:' + str(BUILD.relative_to(P))], cwd=P),
         'commit the exact engine build receipt before preparing a model plan')
-    full_path = B / 'main-native-gdn-engine/record.json'
     build = json.loads(raw)
+    guards.require(not build.get('retirement'),
+        'comparison build retired; prepare a new candidate build with the retained validation reference')
+    full_path = B / 'main-native-gdn-engine/record.json'
     guards.require(compact_build_record(json.loads(full_path.read_text())) == build,
                    'full build differs from committed compact receipt')
     return build, {str(BUILD): digest(BUILD), str(full_path): digest(full_path)}

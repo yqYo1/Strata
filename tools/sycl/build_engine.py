@@ -82,11 +82,37 @@ def pin(root, prefixes):
     return dict(root=str(root), revision=revision, count=len(pins), source_sha256=pins, aggregate_sha256=aggregate)
 
 
+def fresh_retained_reference(compact):
+    """Carry the validated fallback across deletion of a closed candidate cache."""
+    guards.require(compact.get('retirement', {}).get('complete') is True,
+        'missing cache requires an explicit completed retirement decision')
+    reference=compact['retained_validation_reference']
+    receipt=reference['source_build_record']
+    guards.require(digest(receipt['path'])==receipt['sha256'], 'retained source receipt changed')
+    full=json.loads(Path(receipt['path']).read_text())
+    guards.require(full['source_commit']==reference['source_commit'], 'retained source identity differs')
+    for name,item in dict(strata=reference['binary'],**reference['fixtures']).items():
+        original=full['binary'] if name=='strata' else full['fixtures'][name]
+        guards.require(all(item[k]==original[k] for k in ('bytes','sha256')) and
+            not Path(item['path']).resolve().is_relative_to(ROOT.resolve()) and
+            digest(item['path'])==item['sha256'], 'retained artifact identity or protected location differs')
+    for source in [full['project'],*full['dependencies']]:
+        recovered={n:hashlib.sha256(data).hexdigest() for n,data in
+            blobs(Path(source['root']),source['revision'],source['source_sha256'])}
+        guards.require(recovered==source['source_sha256'],'retained original inputs cannot be recovered')
+    recipe=full['recipe_reference']
+    guards.require(hashlib.sha256(git(Path(full['project']['root']),'show',
+        full['project']['revision']+':'+recipe['path'])).hexdigest()==recipe['sha256'],
+        'retained original recipe cannot be recovered')
+    return reference
+
+
 def retain_current():
     """Preserve the validated generation before a native cache is overwritten."""
     raw = RESULT.read_bytes()
     guards.require(raw == git(P, 'show', 'HEAD:' + str(RESULT.relative_to(P))), 'commit current build identity first')
     compact = json.loads(raw)
+    guards.require(not compact.get('retirement'), 'closed candidate is retired; use an explicit fresh build plan')
     full_path = ROOT / 'record.json'
     old = json.loads(full_path.read_bytes())
     guards.require(old['passed'] and old['complete'] and old['ownership_closed'] and not old['active'] and
@@ -189,6 +215,12 @@ def main():
         old = None
         retained_reference = None
         legacy_exception = None
+        if not rebuild and RESULT.exists():
+            committed=git(P,'show','HEAD:'+str(RESULT.relative_to(P)))
+            guards.require(committed==RESULT.read_bytes(),'commit the retired build decision first')
+            compact=json.loads(committed)
+            retained_reference=fresh_retained_reference(compact)
+            legacy_exception=compact.get('legacy_provenance_exception')
         if rebuild:
             committed = git(P, 'show', 'HEAD:' + str(RESULT.relative_to(P)))
             guards.require(committed == RESULT.read_bytes(), 'commit the previous build identity first')

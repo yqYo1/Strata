@@ -14,6 +14,12 @@ import resource_engine as r
 
 
 class SourceProofTests(unittest.TestCase):
+    def test_closed_diagnostic_cannot_restart_after_raw_root_retirement(self):
+        with patch.object(r,'RESULT') as result,patch.object(r.generation,'committed') as load:
+            result.exists.return_value=True
+            with self.assertRaisesRegex(RuntimeError,'closed diagnostic cannot be retried'):r.prepare()
+            load.assert_not_called()
+
     def test_result_clocks_and_work_must_equal_the_verified_journal(self):
         journal=[dict(workload='regular-code',request_sha256='a'*64,read_tokens=33000,
             generated_tokens=1500,ok=True,client_interval=dict(request_begin_monotonic_ns=10,

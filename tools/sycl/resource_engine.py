@@ -60,6 +60,7 @@ def source_proof(record):
 
 
 def prepare():
+    guards.require(not RESULT.exists(), 'closed diagnostic cannot be retried; commit a new distinct plan')
     closed = generation.committed(generation.RESULT)
     summary = closed['engine_comparison_summary']
     guards.require(closed['complete'] and closed['passed'] and closed['ownership_closed'] and
@@ -182,6 +183,7 @@ def run():
 
 def summarize():
     record=generation.committed(RESULT)
+    guards.require(not record.get('post_closure_admission'), 'preserve the original admission; a new analysis requires a distinct plan')
     guards.require(record['complete'] and record['passed'] and record['ownership_closed'] and
         not record['active'] and not record['fresh_faults'] and record['boot_unchanged'],
         'closed successful execution required for strengthened resource admission')
