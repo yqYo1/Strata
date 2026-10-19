@@ -147,7 +147,7 @@
       "candidate_path": "bench/results/2026-10-15-pr6-recovery-audit/own-qsa-kpitch-v1",
       "decision": "Reuse the existing source-audited pitch proposal after the current comparison; no new duplicate survey. Recheck immutable source/provenance and wire maintained API/tests before compiling.",
       "candidate": "Fixed score33,Cells32,WG128,SG16; K36/V260 shared tile needs9216 BF16 values,30272B requested local payload,34368B admission minimum. No hardware occupancy/bank map or performance result.",
-      "do_not_repeat": "Old global K span256 schedule regressed10.35–29.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
+      "do_not_repeat": "Old global K span256 schedule regressed10.35\u201329.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
     },
     "reviewed_base_source_sha256": "fa505d02e2b24f7cb6948033921fa697c8aeb58e6f4df6d873f13e5a7918e36b",
     "source_sha256": "c3ad8326f097050ff9ab1859e116f2cad3709a8464162143f752bc294cbe1e01",
@@ -208,7 +208,7 @@
         "bytes": 19144,
         "source_commit": "fbc7f56d7b0ddb5db5f3722ef33ca044c3f8a5c8",
         "reason": "Its conditional consumer is a selected-cell stable-reduction split. The closed QSA screen and pending pitch candidate select no split or reduction bottleneck.",
-        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report’s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
+        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report\u2019s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
       },
       {
         "path": "bench/results/2026-10-15-pr6-recovery-audit/research-matrix-register-reuse-20261018.md",
@@ -1379,8 +1379,8 @@
         "Retrieval map for a later concrete question"
       ],
       "paper_sections": [
-        "SyclKittens §§3.2–3.3 and Appendix D for operand layouts, subgroup prefetch and the measured ablation.",
-        "Xe-Forge §§IV–V, VI-A, VI-D–VI-E for search/validation workflow, hardware, baseline and kernel results."
+        "SyclKittens \u00a7\u00a73.2\u20133.3 and Appendix D for operand layouts, subgroup prefetch and the measured ablation.",
+        "Xe-Forge \u00a7\u00a7IV\u2013V, VI-A, VI-D\u2013VI-E for search/validation workflow, hardware, baseline and kernel results."
       ]
     }
   },
@@ -2103,7 +2103,7 @@
   },
   "sycl_command_submission_amortization_collection_scope": {
     "classification": "knowledge collection",
-    "question": "For repeated same-queue SYCL/oneAPI kernel and copy command streams, compare mechanisms that amortize host submission work: per-command submission, supported command batching/list execution, and replayable command graphs with parameter updates. Using official Khronos/Intel/Unified Runtime sources and transferable non-LLM SYCL/HPC examples, determine what each mechanism actually amortizes, how it handles dynamic pointers/maps/shapes, dependencies, asynchronous errors, capture restrictions and replay/update costs, and where measured benefits fail to transfer. Map applicability to Strata’s repeated GEMM/upload submit pattern without proposing code or claiming local performance.",
+    "question": "For repeated same-queue SYCL/oneAPI kernel and copy command streams, compare mechanisms that amortize host submission work: per-command submission, supported command batching/list execution, and replayable command graphs with parameter updates. Using official Khronos/Intel/Unified Runtime sources and transferable non-LLM SYCL/HPC examples, determine what each mechanism actually amortizes, how it handles dynamic pointers/maps/shapes, dependencies, asynchronous errors, capture restrictions and replay/update costs, and where measured benefits fail to transfer. Map applicability to Strata\u2019s repeated GEMM/upload submit pattern without proposing code or claiming local performance.",
     "schedulable_now": false,
     "status": "native_reviewed_retrieval_reference",
     "eligibility_review": {
@@ -2485,5 +2485,141 @@
     "worker_ownership_closed": true,
     "native_review_sha256": "5141ba8b804baf97ff1b000a7c62cfcbeb8bb55f5bbf953d515317fd94584ef1",
     "main_digest": "Orca and independent native Luna-max review found no verified post-fix reducer defect. Distinct strict>1.002 Down/>1.005 source-view gates, all3 paired process medians, separate1000 target, original build/input recovery, component advancement, ownership/fault evidence and work conservation are enforced. Optional receipt-chain wiring tests do not replace actual cohort evidence. No execution, speed or adoption established."
+  },
+  "forced_compute_copy_overlap_collection_scope": {
+    "classification": "knowledge collection",
+    "schedulable_now": false,
+    "status": "native_reviewed_conditional_reference",
+    "question": "With UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD=1 and EnableDirectSubmission=0 retained, what overlap can explicit compute queues and command lists actually permit between host transfers, dequantization and XMX GEMM on Xe2? Compare documented UR/Level Zero engine selection, command-list execution, dependencies and possible serialization. Map safety requirements to the current same-in-order-queue expert bank without proposing a production change or claiming measured overlap.",
+    "candidate_source": {
+      "commit": "b432c30e758717ffb7aee0a7aa55f2f5bae8decd",
+      "source_sha256": {
+        "src/sycl/runtime.cpp": "e6c20e148bc7ceec250ad9a58ddfc851c1476aaab3d68982d2aee2897e572b83",
+        "include/strata/sycl/runtime.hpp": "a0e0687886e09c50922d01f7023ba3b51e8ac2dbe43f461a798ba82438b2a074",
+        "src/sycl/compat.cpp": "bd5a664f9a0bd91b0e8e2e59f67d0a2c38c81599613831abbd6e16ad98c01689",
+        "src/prefill/moe_window.inc": "adb7e0c8f308abe5636a22191f53efee92d97b45e4ef3738efb58467ac6aeff9",
+        "include/strata/prefill/expert_bank_plan.hpp": "1c3b9157f64c4e1c3aede95017ba17ad3c10d433946b5efa25d0c073c5f8c3a9",
+        "include/strata/prefill/expert_bank_upload.hpp": "3b81da8f15a89306cff9a46982d31fc10ad120a592cf7662c9c2c8b3a2fc7bfe",
+        "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c"
+      }
+    },
+    "prerequisite_evidence": "Existing old warm attribution identifies transfer/submission intervals but no physical saturation. Current expert bank explicitly requires m.copy==m.cs and queues all weight copies/dequant/GEMM there. UR copy-offload and DirectSubmission avoidance settings are mandatory. This source/documentation investigation does not require a new device run or a pending component result.",
+    "novelty_boundary": "Use old out-of-core scheduling and command-submission report metadata as exclusions. Study the forced-compute-copy engine mechanism specifically, not another generic pipelining/graph/profiler survey. No enabling previously avoided copy-offload path.",
+    "prior_scopes": [
+      "out_of_core_sycl_hpc_scheduling_scope",
+      "sycl_command_submission_amortization_collection_scope",
+      "bounded_expert_window_staging_scope",
+      "hardware_resource_research"
+    ],
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/forced-compute-copy-overlap-methods.md",
+    "report_budget": {
+      "target_words": [
+        1300,
+        2100
+      ],
+      "maximum_bytes": 24576
+    },
+    "consumer": "Indexed knowledge for a later source-safe overlap discriminator; Main retrieves only if that concrete candidate is selected.",
+    "next_review": "At current timing/candidate-selection closure. Any further source audit requires a measured opportunity and committed candidate; retain only as a concrete later overlap reference, not permission to launch the avoided route.",
+    "task_id": "task_eda76ee7cafd",
+    "dispatch_id": "ctx_7457cc624229",
+    "terminal_handle": "term_4c4d29aa-7648-495b-b45c-344379b70e17",
+    "run_id": "run_fb41872974e9",
+    "collector_model_observed": "gpt-6-luna",
+    "report_bytes": 11089,
+    "report_sha256": "a081092cd4572e685b42a535a38ec0e82e00c15e3830bcd9f347ecc98eef56e9",
+    "worker_ownership_closed": true,
+    "native_review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/forced-compute-copy-overlap-native-review.json",
+    "native_review_sha256": "23b5ff3f04644e50416695881df0f0c8786f510afe8b52cc14ecb3c4ed1aa5e6",
+    "review_digest": "Source-grounded conditional reference, no local overlap/speed/safety proof. Level Zero v1.19.12 Core-guide queue-index text conflicts with the command-queue descriptor; immediate-list API is separate. Explicit copy-only group assignment is not clearly prohibited by the force-disable setting, but remains a different unproven route. Only independent inter-expert copy/dequant/GEMM could overlap; same-expert dependencies remain ordered."
+  },
+  "expert_bank_future_admission_source_scope": {
+    "classification": "decision support",
+    "schedulable_now": false,
+    "status": "native_reviewed_source_constraints_counter_only_conditional",
+    "question": "Audit exact current routing/HC mixed-input availability across layer-major FFN windows. Can permanent383+scratch1 admission prefer experts reused in later windows while preserving actual expert execution and FP32 update order, without retaining a full additional mixed matrix? Compare first-seen residency, route precomputation/recomputation and bounded metadata options from actual source; derive data/lifetime/extra-work requirements and a discriminating compact counter plan. No generic cache/prefetch survey or implementation.",
+    "candidate_source": {
+      "commit": "e97393478a702c4e4db4029ec35c1c96d5ec4f0c",
+      "source_sha256": {
+        "src/prefill/moe_window.inc": "adb7e0c8f308abe5636a22191f53efee92d97b45e4ef3738efb58467ac6aeff9",
+        "src/prefill/layer_major.inc": "4aea46de2afcf85091d292597b00fdeed8f085523151a04bdb4131b736910ac8",
+        "include/strata/prefill/expert_bank_plan.hpp": "1c3b9157f64c4e1c3aede95017ba17ad3c10d433946b5efa25d0c073c5f8c3a9",
+        "include/strata/prefill/expert_bank_upload.hpp": "3b81da8f15a89306cff9a46982d31fc10ad120a592cf7662c9c2c8b3a2fc7bfe",
+        "include/strata/prefill/moe_accum_plan.hpp": "1fa1618eaf96a6ec50bc948f7c6750fc33f463c702cfbf36cd57e928597ca1aa"
+      }
+    },
+    "prerequisite_evidence": "Current source explicitly implements permanent slots plus one scratch slot and never LRU-evicts permanent entries. Staged all-GPU117K prefill uses81920+35568 FFN windows and384 slots; prior clean counters report about40GB requested H2D. Actual future expert-set coverage is unmeasured; the audit must establish source feasibility and counter invariants, not claim a cache or speed gain.",
+    "novelty_boundary": "Existing bounded_expert_window_staging_scope and implemented_expert_bank_scope audited current prefix residency safety, not future-window route availability/admission selection. Do not repeat those implementations or falsely diagnose existing residency as LRU thrashing.",
+    "prior_scopes": [
+      "bounded_expert_window_staging_scope",
+      "implemented_expert_bank_scope",
+      "gpu_moe_routing_collection_scope",
+      "activation_vram_lifetime_scope"
+    ],
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/expert-bank-future-admission-source.md",
+    "report_budget": {
+      "target_words": [
+        1400,
+        2200
+      ],
+      "maximum_bytes": 24576
+    },
+    "consumer": "Main decides whether a source-feasible routing/metadata discriminator merits selection after current timing. No candidate performance or adoption from source review.",
+    "next_review": "After frozen Down timing closes, select a pinned counter-only census only if attribution warrants it. Capture window expert sets without extra GPU submissions;117K two-window data measures hindsight potential only. Online remapping needs>=3 windows. No further prerequisite-only source survey or immediate implementation adoption.",
+    "task_id": "task_e8afee0f9e0f",
+    "dispatch_id": "ctx_57bb71fa7ccb",
+    "terminal_handle": "term_df27d44f-834b-4855-ab17-28840953930d",
+    "run_id": "run_fb41872974e9",
+    "collector_model_observed": "gpt-6-luna",
+    "worker_ownership_closed": true,
+    "report_bytes": 14585,
+    "report_sha256": "f31ce109b742fa3117f6975f9e4060947f9555da01d260f1e0a8fbc831fa8d16",
+    "native_review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/expert-bank-future-admission-native-review.json",
+    "native_review_sha256": "dbbec1a745f7aff5d38c964ad461aa141d3e9c7c41d4e6c8e6ae54ba79fffa28",
+    "review_digest": "Corrected: permanent residency persists across the layer, not first383 per window; a later window with<=383 experts need not fit after admission fills. Dequant is per distinct expert transition, not split job. Future routes require current-layer post-attention/PLE rows, so prior-layer residency alone is insufficient; prepass needs two-phase scheduling or extra storage/recomputation. Existing same-queue publication/error ownership remains required. No cache benefit measured."
+  },
+  "expert_bank_scoped_reuse_audit_scope": {
+    "classification": "decision support",
+    "schedulable_now": false,
+    "status": "report_reviewed_three_gaps_resolved_by_main_offline",
+    "candidate_source": {
+      "commit": "c4583093b",
+      "source_sha256": {
+        "tools/sycl/bench_engine.py": "acddeed07176d6fcd1c94af871723eff7c3bbb7ff42c1c6f1ea44587b179f78e",
+        "tools/sycl/test_source_view_statistics.py": "bd22665f9471cf04ad4eaef9c9f8c6a1f0a1aab3a00ae752bdacbf79b4be6245",
+        "tools/sycl/build_engine.py": "a905a557716042a2d4a74928e914c13e3bc025647ce60b9812cb41d9f67078fa"
+      }
+    },
+    "question": "Audit source/recipe/output receipt-chain admission for unchanged production bank/provider gates while the independent Down fixture changes; no weakened global qualification.",
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/expert-bank-scoped-reuse-audit.md",
+    "report_budget_bytes": 8192,
+    "task_id": "task_7f02c2ded44b",
+    "dispatch_id": "ctx_0803fa652f45",
+    "terminal_handle": "term_c60edba4-e1c8-4828-b10a-85d51e4a5352",
+    "run_id": "run_fb41872974e9",
+    "worker_ownership_closed": true,
+    "launch": "Main-created codex --model gpt-6-luna -c check_for_update_on_startup=false; ready and turn started. The ordinary launcher failed before running the task at its update prompt; that failed terminal was released/closed.",
+    "consumer": "Main must complete tests and resolve concrete audit defects before model preparation; no new native or GPU qualification.",
+    "next_review": "After matched Down model-plan admission, retire this completed audit/review/spec/launch transaction output; retain source/tests and this short resolution, not a research-library duplicate.",
+    "collector_model_observed": "gpt-6-luna",
+    "report_bytes": 7123,
+    "report_sha256": "50d6aad20ab3801e17746fbf8437f23c56881a9ba2754917291c78aa7d6b6ac5",
+    "native_review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/expert-bank-scoped-reuse-native-review.json",
+    "native_review_sha256": "835853b708c34c6f53e9899218cbb57a135fa51e4a08b617e74814c7aa2041c5",
+    "review_digest": "Three original admission gaps: same-source shortcut bypassed complete build/provider identity; prepare did not bind the committed compact/full/original qualification receipt; launch did not recheck fallback receipt/required fixtures. Keep the separate504-sample Down gate unchanged.",
+    "worker_lifecycle": "Report written/hash verified, but sandboxed collector could not reach Orca for check/worker_done. Provider turn was done and exact terminal idle. Dispatch explicitly abandoned, no worker success receipt invented. Release retained an unproven identity; Main separately verified its own original terminal incarnation unchanged and closed that exact terminal, ptyKilled=true.",
+    "main_resolution": {
+      "source_commit": "93257a29a",
+      "test_source_commit": "0c1632b10",
+      "offline_tests_passed": 37,
+      "actual_receipt_chain_verified": true,
+      "original_component_controller_commit": "78a119cf7a4ab01cc0cb8342886d5ba182e544b2",
+      "original_compact_build_sha256": "5c1192e322dc5323ee9cc32538ed8c7ea829c05cd4c2b1eb9bc8400037971a58",
+      "original_source_blobs_recovered": [
+        9813,
+        9813
+      ],
+      "limits": "Main fixes tested offline and exact historical receipt reconstructed; no new GPU validation, model speed or native implementation adoption."
+    }
   }
 }

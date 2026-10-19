@@ -1307,9 +1307,13 @@ and inconsistent marker arithmetic. Source396d0c91f built the corrected fixture;
 the engine remains byte-identical570b65dd with native origin9b6db2661 preserved.
 Compilation does not reuse qualification for the changed Down fixture.
 The exact93248e27 fixture passed54 CPU ownership,45 traced smoke and110 full
-numerical/admission events, all owners closed and no fresh GPU fault. The frozen
-six-process clean timing is now running; correctness does not decide its speed
-gate. No model gain or adoption follows from correcting the benchmark.
+numerical/admission events, all owners closed and no fresh GPU fault. All six
+clean timing processes then closed normally, with504 eligible used samples,
+checked actual dispatch counts and no fresh fault. The candidate/base latency
+geomean is0.953898926 (4.61% shorter), the worst shape ratio is1.020361103,
+and every selected large shape improves in each of the three process pairs.
+The unchanged component gate permits the117K model comparison; it establishes
+neither a whole-model gain nor adoption. The original v6 failure stays failed.
 Keep the a576 fallback and
 reuse the closed QSA build cache for this named next comparison. The dedicated
 `bench_engine.py summarize-down` analyzer preserves the frozen>1.002 model
@@ -1317,7 +1321,17 @@ criterion, while `summarize-source-view` keeps>1.005. It rechecks original
 component qualification, exact117489-token requests, six-process order, paired
 inputs and clean work conservation; first-use and the1000tok/s target remain
 separate. Main passed all26 model statistics, work-counter and build-identity
-tests; these are offline checks, not end-to-end model qualification. Independent
+tests; these are offline checks, not end-to-end model qualification. The later
+bank/provider-scoped build-proof change at sourcec4583093b passed all32 model
+statistics/build-proof tests after timing closed; all16 Down evidence tests also
+passed again. Independent receipt-chain review found three admission gaps.
+Main fixed the same-source shortcut, committed/full-receipt binding and launch
+rechecks in93257a29a; all37 offline tests passed at0c1632b10. The original GPU
+controller commit78a119cf7 contains the exact compact build receipt corresponding
+to the retained full a576 record. Both9813-input source inventories and original
+recipes were recovered, and current bank/provider bytes matched. This reuses
+only those component gates, without changing their original status or claiming
+a new GPU check. The Down fixture remains separately qualified. Independent
 Orca source audit and separate native Luna-max review found no verified reducer
 defect. Receipt-chain wiring tests remain optional strengthening; actual eligible
 model evidence is still required before a cohort decision.
@@ -1613,6 +1627,19 @@ not measure wire traffic or assign the speed gain to transfers alone: the
 remaining FFN window also changes from16384 plus host chunks to35568 GPU rows.
 Physical262144, production failure/session/RESTORE and default adoption remain
 unqualified; this bounded screen does not establish sustained decode speed.
+
+A read-only PCI topology check on2026-10-19 found16GT/s x4 at the card's
+03:00.0 upstream bridge and its AMD ancestors. The endpoint and internal04:01.0
+bridge instead report2.5GT/s x1, including as their maximum; interpreted as a
+payload limit that contradicts the earlier approximately6GB/s H2D measurement.
+The [retained topology readings](../bench/results/2026-10-15-pr6-recovery-audit/qsa-hardware-profile-current.json)
+preserve the discrepancy. The observed upstream encoding bound is
+16e9*4*128/130/8=7.877GB/s, using the [Linux encoding conversion](https://github.com/torvalds/linux/blob/master/drivers/pci/pci.h);
+the [B570 product specification](https://www.intel.com/content/www/us/en/products/sku/241676/intel-arc-b570-graphics/specifications.html)
+allows4.0x8. At that upstream bound,40GB would take5.08s if every requested byte
+crosses it. This is a conditional payload estimate, excluding protocol overhead
+and shared traffic; it is not measured wire bandwidth, additive model time or
+evidence of PCIe saturation. No recovery or device configuration was changed.
 
 
 ## Cached-Q/KVvec4 parallel FP32 sum candidate

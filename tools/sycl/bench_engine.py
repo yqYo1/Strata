@@ -48,6 +48,132 @@ def qualified_build_source_matches(qualified, build):
         all(value is True for value in fixtures.values()))
 
 
+def expert_bank_reuse_scope(qualified, current, previous):
+    """Narrow bank/provider proof; never qualifies the changed Down fixture."""
+    for record in (current, previous):
+        guards.require(record.get('complete') and record.get('passed') and
+            record.get('ownership_closed') and not record.get('active'),
+            'bank reuse requires two closed successful builds')
+        guards.require(record['project']['revision'] == record['source_commit'],
+                       'bank reuse source revision differs from build')
+    guards.require(qualified == previous['source_commit'] and
+        current['project']['root'] == previous['project']['root'],
+        'bank reuse must reference the qualified original source')
+    old, new = (r['project']['source_sha256'] for r in (previous, current))
+    guards.require(bool(old) and set(old) == set(new), 'bank reuse source inventory changed')
+    changed = sorted(n for n in old if old[n] != new[n])
+    # These inputs do not compile into strata or either required fixture.
+    # Any new native/header/build-system change requires a fresh qualification.
+    excluded = {'bench/sycl/moe_down_scatter.cpp', 'tools/sycl/build_engine.py',
+                'tools/sycl/check_attention.py', 'tools/sycl/measure_down_scatter.py'}
+    guards.require(set(changed) <= excluded, 'bank reuse production/native inputs changed')
+    guards.require(current['dependencies'] == previous['dependencies'],
+                   'bank reuse dependency inputs changed')
+    for field in ('compiler', 'configure_argv', 'environment', 'recipe_reference',
+                  'compile_database_sha256', 'configured_compile_entries', 'device'):
+        guards.require(current[field] == previous[field], 'bank reuse build setting changed: ' + field)
+    for record in (current, previous):
+        guards.require(len(record['targets']) == len(set(record['targets'])), 'duplicate build target')
+    guards.require(set(current['targets']) == set(previous['targets']), 'bank reuse build targets changed')
+    guards.require(current['binary']['sha256'] == previous['binary']['sha256'],
+                   'bank reuse engine bytes changed')
+    fixtures = ('sycl_expert_bank_test', 'file_expert_source_test')
+    for name in fixtures:
+        guards.require(name in current['targets'] and
+            current['fixtures'][name]['sha256'] == previous['fixtures'][name]['sha256'],
+            'bank reuse required fixture changed: ' + name)
+    return dict(scope='expert-bank upload and file-provider gates only',
+        qualified_source_commit=qualified, current_build_source_commit=current['source_commit'],
+        changed_excluded_inputs=changed, required_fixture_sha256={
+            name: current['fixtures'][name]['sha256'] for name in fixtures},
+        native_recipe_dependencies_and_engine_match=True,
+        limits='No reuse of the Down fixture qualification, new GPU validation, model quality or speed claim.')
+
+
+def compact_build_record(full):
+    compact = {k: v for k, v in full.items() if k not in ('project', 'dependencies', 'commands')}
+    compact['inputs'] = [{k: v for k, v in source.items() if k != 'source_sha256'}
+                         for source in [full['project'], *full['dependencies']]]
+    return compact
+
+
+def recorded_files_unchanged(files):
+    for path, expected in files.items():
+        guards.require(digest(path) == expected, 'qualification input changed: ' + path)
+
+
+def committed_engine_build():
+    raw = BUILD.read_bytes()
+    guards.require(raw == subprocess.check_output(
+        ['git', 'show', 'HEAD:' + str(BUILD.relative_to(P))], cwd=P),
+        'commit the exact engine build receipt before preparing a model plan')
+    full_path = B / 'main-native-gdn-engine/record.json'
+    build = json.loads(raw)
+    guards.require(compact_build_record(json.loads(full_path.read_text())) == build,
+                   'full build differs from committed compact receipt')
+    return build, {str(BUILD): digest(BUILD), str(full_path): digest(full_path)}
+
+
+def expert_bank_qualified_record(gpu, historical, previous):
+    """Recover the receipt from the original GPU controller's immutable commit."""
+    guards.require(historical == compact_build_record(previous) and
+        gpu['build_source_commit'] == historical['source_commit'],
+        'bank qualification is not bound to this original build receipt')
+    guards.require(gpu.get('provider_checks_passed') is True and
+        gpu['fixture'] == historical['fixtures']['sycl_expert_bank_test'] and
+        gpu.get('provider_fixture') == historical['fixtures']['file_expert_source_test'],
+        'qualified bank/provider outputs differ from their original committed build')
+
+
+def expert_bank_build_proof(gpu, build):
+    """Bind the scoped proof to committed receipts, recoverable inputs and bytes."""
+    from build_engine import blobs
+    full_path = B / 'main-native-gdn-engine/record.json'
+    current = json.loads(full_path.read_text())
+    guards.require(compact_build_record(current) == build, 'bank reuse full build differs from compact receipt')
+    qualified = gpu['build_source_commit']
+    if qualified == current['source_commit']:
+        receipt = dict(path=str(full_path), sha256=digest(full_path))
+    else:
+        reference = build['retained_validation_reference']
+        receipt = reference['source_build_record']
+        guards.require(reference['source_commit'] == qualified, 'qualified fallback source changed')
+    guards.require(digest(receipt['path']) == receipt['sha256'], 'qualified source-build receipt changed')
+    previous = json.loads(Path(receipt['path']).read_text())
+    historical_raw = subprocess.check_output(
+        ['git', 'show', gpu['source_commit'] + ':' + str(BUILD.relative_to(P))], cwd=P)
+    expert_bank_qualified_record(gpu, json.loads(historical_raw), previous)
+    proof = expert_bank_reuse_scope(qualified, current, previous)
+    recovered = []
+    for record in (previous, current):
+        count = 0
+        for source in [record['project'], *record['dependencies']]:
+            pins = source['source_sha256']
+            actual = {n: hashlib.sha256(data).hexdigest() for n, data in
+                      blobs(Path(source['root']), source['revision'], sorted(pins))}
+            guards.require(actual == pins and len(pins) == source['count'] and
+                hashlib.sha256(json.dumps(pins, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+                == source['aggregate_sha256'], 'bank reuse original source is not recoverable')
+            count += len(pins)
+        recipe = record['recipe_reference']
+        data = subprocess.check_output(['git', 'show', record['source_commit'] + ':' + recipe['path']], cwd=P)
+        guards.require(hashlib.sha256(data).hexdigest() == recipe['sha256'],
+                       'bank reuse original recipe is not recoverable')
+        recovered.append(count)
+    guards.require(digest(current['binary']['path']) == current['binary']['sha256'],
+                   'bank reuse executable changed')
+    for name, expected in proof['required_fixture_sha256'].items():
+        guards.require(digest(current['fixtures'][name]['path']) == expected, 'bank reuse fixture bytes changed')
+    proof.update(qualified_source_build_record_sha256=receipt['sha256'],
+                 current_source_build_record_sha256=digest(full_path),
+                 original_source_blobs_recovered=recovered, original_recipes_recovered=True,
+                 original_committed_build=dict(commit=gpu['source_commit'],
+                     path=str(BUILD.relative_to(P)), sha256=hashlib.sha256(historical_raw).hexdigest()),
+                 live_inputs={receipt['path']: receipt['sha256'], str(full_path): digest(full_path),
+                     **{current['fixtures'][n]['path']: h for n, h in proof['required_fixture_sha256'].items()}})
+    return proof
+
+
 def compact_window_census(windows):
     """Keep source-shaped work volume after checking every planned window."""
     histogram = Counter()
@@ -907,7 +1033,7 @@ def main():
         guards.driver_guard()
         if action == 'prepare':
             guards.require(not root.exists(), 'use a new committed measurement revision after closing this run')
-            build = json.loads(BUILD.read_text())
+            build, build_receipts = committed_engine_build()
             guards.require(build['passed'] and build['complete'] and build['ownership_closed'] and not build['active'],
                            'qualified closed engine build required')
             profile_route_qualification = None
@@ -960,15 +1086,20 @@ def main():
                     ['git','show','HEAD:'+str(component_path.relative_to(P))],cwd=P) and
                     component['complete'] and component['passed'] and component['ownership_closed'] and
                     gpu.get('mode')=='validate' and gpu.get('complete') and gpu.get('passed') and
-                    gpu.get('ownership_closed') and qualified_build_source_matches(gpu['build_source_commit'], build) and
+                    gpu.get('ownership_closed') and
                     gpu['fixture']==build['fixtures']['sycl_expert_bank_test'],
                     'matching committed production expert-bank upload/byte/unwind gates required')
                 guards.require(digest(gpu['fixture']['path'])==gpu['fixture']['sha256'],'bank fixture changed')
+                guards.require(gpu.get('provider_checks_passed') is True and
+                    gpu.get('provider_fixture') == build['fixtures'].get('file_expert_source_test'),
+                    'bank reuse requires the qualified production provider fixture')
+                reuse_proof = expert_bank_build_proof(gpu, build)
                 bank_qualification = dict(component_path=str(component_path.relative_to(P)),
                     component_sha256=digest(component_path),build_source_commit=gpu['build_source_commit'],
                     current_build_admission_commit=build['source_commit'],
                     native_origin_source_commit=build.get('binary_origin_source_commit', build['source_commit']),
                     evidence_reused_for_identical_native_outputs=True,
+                    scoped_build_reuse_proof=reuse_proof,
                     limits=gpu['limits'])
             source_view_qualification = None
             if paired_long_trial:
@@ -1190,6 +1321,7 @@ def main():
                 guards.require((P / name).read_bytes() == data, 'uncommitted benchmark input: ' + name)
                 pins[name] = hashlib.sha256(data).hexdigest()
             plan = dict(mode=mode, source_commit=revision, build_source_commit=build['source_commit'],
+                        engine_build_receipts=build_receipts,
                         binary=build['binary'], environment=env, config=config, command=command,
                         reference=dict(path=str(BASE.relative_to(P)), sha256=digest(BASE)),
                         source_sha256=pins, config_sha256=digest(config_path), profile_sha256=digest(profile),
@@ -1301,6 +1433,10 @@ def main():
             info = Path(path).stat()
             guards.require(info.st_size == expected['bytes'] and info.st_mtime_ns == expected['mtime_ns'], 'model changed')
         guards.require(digest(plan['binary']['path']) == plan['binary']['sha256'], 'binary changed')
+        if staged_bank:
+            guards.require(bool(plan.get('engine_build_receipts')), 'model plan lacks bound build receipts')
+        if plan.get('engine_build_receipts'):
+            recorded_files_unchanged(plan['engine_build_receipts'])
         guards.require(digest(root / 'config.json') == plan['config_sha256'] and
                        digest(root / 'expert-profile.bin') == plan['profile_sha256'], 'generated input changed')
         for name, expected in plan['source_sha256'].items():
@@ -1323,6 +1459,9 @@ def main():
         if staged_bank:
             guards.require(digest(P/plan['expert_bank_qualification']['component_path'])==
                 plan['expert_bank_qualification']['component_sha256'], 'expert-bank component evidence changed')
+            proof = plan['expert_bank_qualification'].get('scoped_build_reuse_proof')
+            guards.require(proof and proof.get('live_inputs'), 'model plan lacks bound bank proof')
+            recorded_files_unchanged(proof['live_inputs'])
         if down_trial:
             guards.require(digest(P / plan['down_qualification']['component_path']) ==
                            plan['down_qualification']['component_sha256'], 'Down component evidence changed')
