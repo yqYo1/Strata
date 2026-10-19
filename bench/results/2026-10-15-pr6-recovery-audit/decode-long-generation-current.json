@@ -1,16 +1,16 @@
 {
   "schema": 1,
   "mode": "engine-compare",
-  "cohort": 0,
-  "source_commit": "601620f08f88bdba1248448f6e1b9448fa988894",
+  "cohort": 1,
+  "source_commit": "c1e33bdf0eecd5c804ca6703da3e3787fd72cc06",
   "source_count": 115,
   "source_aggregate_sha256": "308aece280a1418d12c77a6fcf576e687ad98e5281081d73a9197d6c8c21d88d",
   "binary": {
-    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-396d0c91f301/strata",
-    "bytes": 22079288,
-    "sha256": "570b65ddfd88e3955b58634b361bb13e12a4bd713ac6e5ae396d47265a76fd46"
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 22085200,
+    "sha256": "8c5d799fa1150b13f33a7e0ee416f67466ae26c74444ee7a6079db62830aa2e5"
   },
-  "build_source_commit": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
+  "build_source_commit": "d50d31347cc8505a40181db8308735bfa0058427",
   "engine_build_receipts": {
     "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json": "30690de5696449c8da02fc3dbd9a2fee6bd2d6357c8fa2eea9334c77ed560147",
     "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json": "54058fa7f1061d267fcd5df864346de9f0acc7bd90153a13996524c600b2edd3",
@@ -48,7 +48,7 @@
       "--expert-cache",
       "128",
       "--expert-profile",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v4-engine-compare-0/expert-profile.bin",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v4-engine-compare-1/expert-profile.bin",
       "--expert-cache-per-layer",
       "--pool-workers",
       "5",
@@ -87,7 +87,7 @@
       "strata"
     ],
     "host": "127.0.0.1",
-    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v4-engine-compare-0/engine.stderr",
+    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v4-engine-compare-1/engine.stderr",
     "engine_silence_s": 480,
     "parallel": 1,
     "open_browser": false,
@@ -147,7 +147,7 @@
     "STRATA_SYCL_SELECT_CYCLIC": "0",
     "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
     "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v4-engine-compare-0/cache",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v4-engine-compare-1/cache",
     "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
     "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
     "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
@@ -160,8 +160,8 @@
     "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
     "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
     "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v4-engine-compare-0/tmp",
-    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v4-engine-compare-0",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v4-engine-compare-1/tmp",
+    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v4-engine-compare-1",
     "ZES_ENABLE_SYSMAN": "0",
     "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
     "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
@@ -175,9 +175,9 @@
     "/bin/sh",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
     "--config",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v4-engine-compare-0/config.json",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v4-engine-compare-1/config.json",
     "--port",
-    "54933",
+    "33877",
     "--long-generation-only",
     "--think",
     "--runs",
@@ -188,21 +188,21 @@
     "--ready-timeout",
     "600",
     "--out",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v4-engine-compare-0/bench",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v4-engine-compare-1/bench",
     "--long-generation-workload",
     "regular-code"
   ],
-  "config_sha256": "e6c5128ddfdb73ebc2223786a2890c865368c82ae5477d3359ec612c8fa43595",
+  "config_sha256": "31139381929c0f9e2b23c7a30e9358dea53ab69f474816afa8f4f4453e164208",
   "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
   "prefill_reference": {
-    "commit": "601620f08f88bdba1248448f6e1b9448fa988894",
+    "commit": "c1e33bdf0eecd5c804ca6703da3e3787fd72cc06",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json",
     "sha256": "207062c425b88f4a40a7f9d72338e2cbb20506da8e90b2ca5ff4c312f994f443"
   },
   "preceding_generation_result": {
-    "commit": "601620f08f88bdba1248448f6e1b9448fa988894",
+    "commit": "c1e33bdf0eecd5c804ca6703da3e3787fd72cc06",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/decode-long-generation-current.json",
-    "sha256": "8df1156c2752a939d65ce35d64bffce9d392e497b254266ac0c2d1eac5120bca"
+    "sha256": "52bc42abd9615534df30efa8243cc9862ae068c373b138cc7f87f4d204037d66"
   },
   "budgets": {
     "wall": 1800,
@@ -212,8 +212,8 @@
     "file_cap": 67108864,
     "total_cap": 67108864
   },
-  "complete": true,
-  "passed": true,
+  "complete": false,
+  "passed": false,
   "active": false,
   "performance_adopted": false,
   "sustained_decode70_qualified": false,
@@ -222,7 +222,7 @@
   "purpose": "Separate disabled-observer engine changes from run-to-run/runtime variation with three adjacent old/new process pairs.",
   "prospective_gates": "Six independent processes in old/new/new/old/old/new order. Same regular-code request and four official warmups; thinking on, fresh input>=32768, generated>=1024, answer and native clocks required. No internal observers. Match request hashes/read tokens; generated and offered-per-token ratios within10%, acceptance delta<=2 percentage points. New/old per-token latency geomean<=1.05 and maximum pair<=1.10 for the diagnostic nonregression decision. Preserve failures and spread; no gate changes or restarts.",
   "limits": "Observer-off retained old/new engine comparison on the same proposed runtime; regular-code only. No runtime adoption, hardware bottleneck, strong/weak or70tok/s qualification.",
-  "engine_arm": "old",
+  "engine_arm": "new",
   "comparison_builds": {
     "old": {
       "binary": {
@@ -284,86 +284,5 @@
     "build_source_commit": "d50d31347cc8505a40181db8308735bfa0058427",
     "provider_checks_passed": true,
     "full_bank_cases": 6
-  },
-  "exit_code": 0,
-  "requests": [
-    {
-      "ok": true,
-      "err": null,
-      "ttft_s": 52.499,
-      "total_s": 275.875,
-      "prompt_tokens": 33211,
-      "reused_tokens": 0,
-      "read_tokens": 33211,
-      "generated_tokens": 2931,
-      "prompt_tps": 635.8,
-      "prompt_tps_source": "engine",
-      "decode_tps": 13.1,
-      "decode_tps_source": "engine",
-      "prompt_ms": 52234.6,
-      "decode_ms": 223470.9,
-      "drafts_offered": 2481,
-      "drafts_accepted": 2105,
-      "finish_reason": "stop",
-      "request_sha256": "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9",
-      "stream_complete": true,
-      "truncated": false,
-      "generated_tokens_source": "usage",
-      "eligible": true,
-      "agreement_eligible": true,
-      "speed_eligible": true,
-      "speed_ineligible_reasons": [],
-      "ineligible_reasons": [],
-      "acceptance_rate": 0.8484482063683998,
-      "usage_generated_tokens": 2931,
-      "completion_includes_thinking": true,
-      "run": 0,
-      "order": 0,
-      "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
-      "reasoning_sha256": "c8661b9154a620a9ece19a429798939eb8ecc01da7ac261878e4494d6be0f340",
-      "output_chars": 5578,
-      "reasoning_chars": 2783,
-      "reasoning_tokens": null,
-      "workload": "regular-code",
-      "controller_eligible": true
-    }
-  ],
-  "client_classification": {
-    "qualified": false,
-    "strong_case_confirmed": false,
-    "weak_case_confirmed": false,
-    "minimum_runs": 3,
-    "strong_min_acceptance": 0.6,
-    "weak_max_acceptance": 0.4,
-    "scope": "Observed draft agreement only; prompts do not guarantee an MTP regime or prove speedup."
-  },
-  "client_failures": [],
-  "request_journal": {
-    "valid": true,
-    "complete": true,
-    "complete_prefix_rows": 11,
-    "last_sha256": "718c7091d0b00037c33f2d25806b59b2596662e100f3b536802e7ca27d2080bb",
-    "pending": [],
-    "errors": []
-  },
-  "engine_exit_code": 0,
-  "native_identity": {
-    "pid": 69421,
-    "start_ticks": 76104370,
-    "sid": 69390
-  },
-  "observer_records_absent": true,
-  "observer_overhead_qualified": false,
-  "hardware_bottleneck_qualified": false,
-  "ownership_closed": true,
-  "fresh_faults": [],
-  "boot_unchanged": true,
-  "driver_after": {
-    "pci": "/sys/bus/pci/devices/0000:05:00.0",
-    "driver": "xe",
-    "vendor": "0x8086",
-    "device": "0xe20c",
-    "kernel": "7.0.0-38-generic",
-    "devcoredump": false
   }
 }
