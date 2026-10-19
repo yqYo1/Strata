@@ -94,3 +94,16 @@ large input construction, alternating workload order and replay of real agent
 answers. They require no GPU or model. Supervised measurements still follow
 [ARTIFACT_RETENTION.md](ARTIFACT_RETENTION.md), including process ownership,
 finite budgets, source/config identity and fresh GPU fault checks.
+
+Component comparisons follow the same evidence rules. Time the production
+entrypoint and its dispatch/fallback in both arms unless the committed plan
+explicitly studies a different boundary. When dispatch can vary, check the
+actual outcomes in the timing batches rather than inferring them from startup
+flags or an earlier preflight. Keep reference calculations, resets and validation
+outside the timed region unless they are the subject of the measurement.
+
+Commit batch sizes, repetition order, timing eligibility and overhead checks
+before collection. A declared minimum batch duration screens timing granularity;
+it is not an accuracy or noise guarantee. A batch that fails the screen cannot
+qualify a comparison. Changing its repetition plan needs a new committed plan
+and new samples, with the original result preserved.

@@ -33,6 +33,17 @@ def digest(path):
         return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
+def binary_origin_source(previous, binary_sha256, current_revision):
+    """Preserve known byte identity; this alone does not reuse qualification.
+
+    main() recovers the previous build's exact source/recipe before this call.
+    Fixture-only edits can change native inputs without changing the engine.
+    """
+    if previous and previous['passed'] and previous['binary']['sha256'] == binary_sha256:
+        return previous.get('binary_origin_source_commit', previous['source_commit'])
+    return current_revision
+
+
 def blobs(root, revision, names):
     """Recover exact Git blobs in bounded batches, without one process per file."""
     names = list(names)
@@ -71,8 +82,8 @@ def pin(root, prefixes):
 
 def main():
     guards.require(len(sys.argv) == 1 or sys.argv[1:] in
-                   (['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn'], ['rebuild-down'], ['rebuild-ordered'], ['rebuild-parallel-sum'], ['rebuild-submission'], ['rebuild-gu'], ['rebuild-mixed'], ['rebuild-expert-bank']),
-                   'use build_engine.py [rebuild|rebuild-attention|rebuild-gemm|rebuild-gdn|rebuild-down|rebuild-ordered|rebuild-parallel-sum|rebuild-submission|rebuild-gu|rebuild-mixed|rebuild-expert-bank]')
+                   (['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn'], ['rebuild-down'], ['rebuild-ordered'], ['rebuild-submission'], ['rebuild-gu'], ['rebuild-mixed'], ['rebuild-expert-bank']),
+                   'use build_engine.py [rebuild|rebuild-attention|rebuild-gemm|rebuild-gdn|rebuild-down|rebuild-ordered|rebuild-submission|rebuild-gu|rebuild-mixed|rebuild-expert-bank]')
     rebuild = len(sys.argv) == 2
     attention = sys.argv[1:] == ['rebuild-attention']
     targets = ['strata']
@@ -86,17 +97,12 @@ def main():
     if sys.argv[1:] == ['rebuild-gdn']:
         targets += ['sycl_gdn_columns_bench']
     if sys.argv[1:] == ['rebuild-down']:
-        targets += ['sycl_moe_down_scatter_bench', 'sycl_moe_gu_swiglu_bench']
+        targets += ['sycl_moe_down_scatter_bench', 'sycl_moe_gu_swiglu_bench',
+                    'sycl_moe_accum_test', 'sycl_expert_bank_test', 'file_expert_source_test']
     if sys.argv[1:] == ['rebuild-ordered']:
         targets += ['sycl_qsa_bf16_prefix_kvvec4_test',
                     'sycl_qsa_bf16_prefix_ordered_exp_test',
                     'sycl_qsa_bf16_prefix_ordered_exp_bench']
-    if sys.argv[1:] == ['rebuild-parallel-sum']:
-        targets += ['sycl_qsa_bf16_prefix_ordered_exp_test',
-                    'sycl_qsa_bf16_prefix_parallel_sum_test',
-                    'sycl_qsa_bf16_prefix_parallel_sum_bench',
-                    'sycl_moe_down_scatter_bench', 'sycl_moe_gu_swiglu_bench',
-                    'sycl_moe_accum_test', 'sycl_expert_bank_test', 'file_expert_source_test']
     if sys.argv[1:] == ['rebuild-submission']:
         targets += ['sycl_submission_test']
     if sys.argv[1:] == ['rebuild-gu']:
@@ -143,6 +149,10 @@ def main():
                 for name, data in blobs(Path(source['root']), source['revision'], source['source_sha256']):
                     guards.require(hashlib.sha256(data).hexdigest() == source['source_sha256'][name],
                                    'previous inputs not recoverable')
+            recipe = old['recipe_reference']
+            guards.require(hashlib.sha256(git(Path(old['project']['root']), 'show',
+                old['project']['revision'] + ':' + recipe['path'])).hexdigest() == recipe['sha256'],
+                'previous build recipe not recoverable')
             previous = dict(source_commit=old['source_commit'], binary=old_binary,
                             source_build_passed=old['passed'],
                             retained_binary_source_commit=retained_source,
@@ -231,7 +241,8 @@ def main():
             record['fixtures'] = {
                 name: dict(path=str(ROOT / 'build' / name), sha256=digest(ROOT / 'build' / name))
                 for name in targets if name != 'strata'}
-            record['binary_origin_source_commit'] = project['revision']
+            record['binary_origin_source_commit'] = binary_origin_source(
+                old, record['binary']['sha256'], project['revision'])
             if old and old['passed']:
                 old_pins = old['project']['source_sha256']
                 new_pins = project['source_sha256']
@@ -252,9 +263,7 @@ def main():
                     native_and_recipe_inputs_match=native_match, engine_bytes_match=binary_match,
                     fixture_bytes_match=fixture_matches,
                     controller_only_admission=bool(native_match and binary_match and all(fixture_matches.values())),
-                    interpretation='A real configure/build invocation admits the recorded inputs. Identical output bytes and unchanged native inputs preserve their original source identity; this does not claim fresh compilation or a new speed result.')
-                if native_match and binary_match:
-                    record['binary_origin_source_commit'] = old.get('binary_origin_source_commit', old['source_commit'])
+                    interpretation='A real configure/build invocation admits the recorded inputs after original source/recipe recovery. Identical engine bytes preserve their known source identity even after fixture edits; qualification reuse separately requires the relevant native/recipe/fixture proof. No new speed result is implied.')
         except BaseException as error:
             record['error'] = str(error)
             record['passed'] = False

@@ -143,7 +143,11 @@ integration and testing.
 
 - The primary branch is **`feature/sycl`**. Use its existing worktree. Create a
   child from its current commit only when isolation is needed; read-only research
-  needs no branch.
+  needs no branch. Acquire repositories with `ghq`; keep the personal fork and
+  upstream as separate clones. The registered Orca worktree is the existing
+  primary worktree, not another clone or a reason to create a replacement branch.
+  Reuse `feature/sycl` across experiment phases rather than opening a branch for
+  each build, measurement or report.
 - Concentrate current tuning on the dedicated long-input prefill path toward
   **1000 tok/s**, with repeated long-input results above **600 tok/s** as the
   first milestone. Record milestone evidence in results, not as changing state
@@ -216,6 +220,11 @@ integration and testing.
   before deletion. Keep unfinished children only with a concrete task and review point.
 - History preservation is not code integration or inference adoption. Record
   candidate origin, actual implementation, measurements and per-component decisions.
+  After rejecting or superseding an experiment, remove its unused exports,
+  build targets, command modes and fixtures once no named current consumer needs
+  them. Recover closed candidates from their original Git commits; preserve
+  independent correctness fixes. A numerical pass alone does not justify keeping
+  an unused performance prototype in the active implementation.
 - Import all Niko non-inference functions, including server, API, CLI, web UI,
   settings and setup. Track any unfinished port explicitly. Choose inference changes
   per component, including prefill and decode separately; retain the faster
@@ -287,6 +296,14 @@ integration and testing.
   do not start a gated model trial when its component performance gate failed.
   A changed selection rule or acceptance threshold needs a new committed plan
   and new evidence; keep the original outcome intact.
+- Compare the actual production entrypoint in both arms, including its dispatch
+  and fallback costs, unless the committed plan explicitly isolates another
+  question. Validate actual timed dispatch outcomes when routing can vary;
+  startup flags and a successful preflight alone do not prove which path ran.
+  Predeclare timing-batch eligibility, repetition and timer-overhead checks.
+  A batch below its declared duration floor is ineligible; changing the batch
+  plan requires new committed evidence. Keep reference calculations, resets and
+  correctness checks outside the timed region unless they are the measured work.
 - Qualify the advertised **262144-token physical context**, including filling
   it completely, tail/boundary cases, prefill-to-decode state and RESTORE paths.
   No output room at a completely full context is expected; crashes, invalid
@@ -422,6 +439,8 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   conservation checks, conclusions and limits, with a pinned source/history link.
 - Keep **one latest known-good engine build** by default; retain another only for
   a **named imminent comparison**, normally at most two generations for A/B.
+  The newest build is not known-good merely because it compiled; select the
+  retained generation from completed applicable validation.
   Count generations across all project worktrees, output paths and renamed copies.
   Record the consumer and retirement point in the existing compact result.
   An unspecified future comparison, closed experiment or new build does not

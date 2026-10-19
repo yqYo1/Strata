@@ -10,6 +10,58 @@ sys.dont_write_bytecode = True
 import measure_down_scatter as down
 
 
+class PublicComparisonTests(unittest.TestCase):
+    def setUp(self):
+        self.checks=[]
+        for index,(arm,process) in enumerate(down.PERF_ORDER):
+            events=[]
+            for rows in (64,160,2333,2334,2335,5963,8192):
+                for irregular in (0,1):
+                    events.append(dict(kind='selected_route',enabled=arm,rows=rows,
+                        selected=bool(arm and rows>=2334),false_route_no_write=True,expected_mask=0))
+                    for round in range(-1,6):
+                        events.append(dict(kind='sample',rows=rows,irregular=irregular,process=process,
+                            round=round,arm=arm,order=0,public_dispatch=1,fused_route=bool(arm and rows>=2334),
+                            repeat=256 if rows<256 else 16,window_rows=78451,accumulator_bytes=78451*2560*4,
+                            inputs_immutable=True,status='PASS',wall_ms=1.,queue_interval_ms=.9))
+            self.checks.append(dict(mode='perf',command=['fixture','--bench-public',str(process),str(arm)],
+                startup_down_selector='large' if arm else '0',
+                passed=True,ownership_closed=True,exit_code=0,native_identity=dict(pid=100+index,start_ticks=1000+index),events=events))
+
+    def test_complete_six_process_comparison(self):
+        self.assertEqual(len(down.public_timing_samples(self.checks)),504)
+
+    def test_partial_cohort_and_changed_order_are_rejected(self):
+        with self.assertRaises(RuntimeError):down.public_timing_samples(self.checks[:2])
+        self.checks[1],self.checks[2]=self.checks[2],self.checks[1]
+        with self.assertRaises(RuntimeError):down.public_timing_samples(self.checks)
+
+    def test_reused_or_missing_process_identity_is_rejected(self):
+        self.checks[-1]['native_identity']=self.checks[0]['native_identity']
+        with self.assertRaises(RuntimeError):down.public_timing_samples(self.checks)
+        self.checks[-1]['native_identity']=dict(pid=None,start_ticks=None)
+        with self.assertRaises(RuntimeError):down.public_timing_samples(self.checks)
+
+    def test_low_level_arm_and_old_small_repeat_are_rejected(self):
+        sample=next(e for e in self.checks[0]['events'] if e['kind']=='sample' and e['round']==0)
+        sample['public_dispatch']=0
+        with self.assertRaises(RuntimeError):down.public_timing_samples(self.checks)
+        sample['public_dispatch']=1;sample['repeat']=16
+        with self.assertRaises(RuntimeError):down.public_timing_samples(self.checks)
+
+    def test_duplicate_measured_shape_and_missing_warmup_are_rejected(self):
+        events=self.checks[0]['events'];at=next(i for i,e in enumerate(events) if e['kind']=='sample' and e['round']==0)
+        original=events[at];events[at]=copy.deepcopy(events[at+1])
+        with self.assertRaises(RuntimeError):down.public_timing_samples(self.checks)
+        events[at]=original
+        events.remove(next(e for e in events if e['kind']=='sample' and e['round']==-1))
+        with self.assertRaises(RuntimeError):down.public_timing_samples(self.checks)
+
+    def test_wrong_startup_route_is_rejected(self):
+        self.checks[0]['events'][0]['enabled']=1
+        with self.assertRaises(RuntimeError):down.public_timing_samples(self.checks)
+
+
 class EvidenceTests(unittest.TestCase):
     def observe(self, *, journal='', driver_error=None, boot=None, **flags):
         record = dict(passed=True, ownership_closed=True)
