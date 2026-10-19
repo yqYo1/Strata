@@ -2000,8 +2000,11 @@ resident launch/pool-return and early-PCIe launch/pool-return, without adding
 queries or changing their status handling, arithmetic, queue properties or
 safety environment. Counters reset after prefill and report four constant-size
 rows after decode; disabled calls read no clock. Wrapper wall time includes
-registry/preflight checks and any completed-event wait, and is not device
-service time, CPU arithmetic or proof of resource saturation. The new
+runtime checks, EventState locking and any completed-event wait, plus effects
+of clock readings. There is no event registry-map lookup in this wrapper.
+These four points exclude direct event queries elsewhere in decode; their sum
+is not total request query time, device service time, CPU arithmetic or proof
+of resource saturation. The new
 `check_verifier_retirement.py --query-profile` result requires the normal51
 cases plus an isolated real completed-event observer check. It does not modify
 the failed early57-case outcome or admit early/arena-copy execution. Next gates

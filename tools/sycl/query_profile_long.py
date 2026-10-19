@@ -86,9 +86,9 @@ def prepare():
         budgets=dict(wall=1800, cpu=54000, rss_cap=96<<30, text_cap=64<<20,
             file_cap=64<<20, total_cap=64<<20),
         gate='One owned official bench.sh regular-code process after four successful warmups. Thinking on, at least32768 fresh input and1024 output tokens including an answer, journal-bound engine/client clocks and work, native/benchmark exit0. Exactly four ordered query categories per completed request, ready/pending/error conservation, zero errors/clock failures, nonzero resident calls/time, zero inactive early counters and expert-copy bytes/groups. Unchanged source/build/model/runtime/boot; no fresh fault. No automatic retry.',
-        limits='Wrapper wall time includes registry/preflight and completed-event waits. It is not native-query-only, GPU service, CPU arithmetic or hardware saturation. A diagnostic fraction does not qualify causal overhead, saved time, a production policy change or throughput. Physical262144/session/RESTORE, task quality, strong/weak adoption and70tok/s remain separate.',
+        limits='Four verifier query points only, not every request query. Wall interval includes runtime checks, event-state locking and completed-event waits, plus clock-reading effects. It is not native-query-only, GPU service, CPU arithmetic or hardware saturation. A diagnostic fraction does not qualify causal overhead, saved time, a production policy change or throughput. Physical262144/session/RESTORE, task quality, strong/weak adoption and70tok/s remain separate.',
         consumer='Choose the next measured synchronization/CPU/transfer discriminator from actual production query cost. Independently qualify observer overhead before adoption attribution; collect clean speed separately. Retire successful raw output after useful request samples and query aggregates are committed.')
-    gen.runtime_assets_unchanged(record)
+    query.runtime_assets_unchanged(record)
     (ROOT/'plan.json').write_text(json.dumps(record, indent=2)+'\n')
     RESULT.write_text(json.dumps(record, indent=2)+'\n')
     print('Prepared official32K+ query diagnostic; commit exact plan before run.')
@@ -111,7 +111,7 @@ def run():
             (ROOT/'config.json',record['config_sha256']),
             (ROOT/'expert-profile.bin',record['profile_sha256']), *record['tokenizer_assets'].items()]:
         guards.require(gen.common.digest(path) == sha, 'changed input: '+str(path))
-    gen.runtime_assets_unchanged(record)
+    query.runtime_assets_unchanged(record)
     guards.require(assets.model_pins(record['config'],record['model_assets']) == record['model_assets'] and
         assets.machine_identity() == record['machine_identity'], 'model/platform changed')
     import subprocess
@@ -162,7 +162,7 @@ def run():
             'early PCIe expert graph enabled' not in log, 'unqualified early route enabled')
         query.current_build()
         guards.require(gen.benchmark_pins(record['source_commit']) == pins, 'source changed during run')
-        gen.runtime_assets_unchanged(record)
+        query.runtime_assets_unchanged(record)
         guards.require(assets.machine_identity() == record['machine_identity'] and
             assets.model_pins(record['config'],record['model_assets']) == record['model_assets'],
             'model/platform changed during run')

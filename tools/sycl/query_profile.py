@@ -20,15 +20,38 @@ import generation_engine as gen
 import measurement_guards as guards
 import measurement_owner as supervision
 from build_engine import blobs
+from check_verifier_retirement import DELTA
 
 P, B, A = gen.P, gen.B, gen.A
-ROOT = B / 'decode-query-profile-check-v1'
+ROOT = B / 'decode-query-profile-check-v2'
 RESULT = A / 'decode-query-profile-current.json'
 BUILD = A / 'native-gdn-engine-build.json'
 COMPONENT = A / 'decode-query-profile-component-current.json'
 BUILD_RECORD = B / 'main-native-gdn-engine/record.json'
 COPY_KEYS = ('submitted_blobs','submitted_bytes','completed_blobs','completed_bytes',
              'host_view_groups','gpu_miss_groups','cpu_unique_misses','cpu_entries')
+
+
+def runtime_assets_unchanged(record):
+    # Admit only these new diagnostic modes and the exact assets already used
+    # by the same-build normal51+observer fixture; never relabel a mode to pass
+    # generation_engine's independently scoped admission check.
+    guards.require(record['mode'] in ('default-route-query-profile-check',
+        'default-route-query-profile-long'), 'unknown query diagnostic mode')
+    expected = {n:dict(qualified_sha256=v[0],candidate_sha256=v[1]) for n,v in DELTA.items()}
+    component = gen.committed(COMPONENT)
+    guards.require(component['passed'] and component['complete'] and component['ownership_closed'] and
+        not component['active'] and not component['fresh_faults'] and
+        record['runtime_asset_delta'] == component['runtime_asset_delta'] == expected,
+        'query diagnostic assets differ from the same-build component admission')
+    settings = gen.committed(gen.SETTINGS)
+    guards.require(set(expected) <= set(settings['runtime_elfs']), 'unknown runtime asset')
+    for name,item in settings['runtime_elfs'].items():
+        proposed = expected.get(name)
+        if proposed:
+            guards.require(proposed['qualified_sha256'] == item['sha256'], 'original runtime baseline changed')
+        sha = proposed['candidate_sha256'] if proposed else item['sha256']
+        guards.require(gen.common.digest(name) == sha, 'runtime asset changed: '+name)
 
 
 def current_build():
@@ -93,7 +116,15 @@ def prepare():
     guards.require(base['passed'] and base['complete'] and base['ownership_closed'] and
         not base['active'] and not base['fresh_faults'] and base['comparison_summary']['decision']=='reduced_capacity_slower',
         'closed capacity discriminator required')
-    guards.require(not ROOT.exists() and not RESULT.exists(), 'inspect existing plan/owner; no automatic retry')
+    previous = gen.committed(RESULT)
+    guards.require(previous['mode'] == 'default-route-query-profile-prepare-failure' and
+        previous['error'] == 'RuntimeError: proposed runtime is diagnostic-only' and
+        previous['ownership_closed'] and not previous['active'] and not previous['GPU_executed'] and
+        not ROOT.exists(), 'distinct root after the recorded pre-native admission failure required')
+    previous_reference = dict(commit=gen.git('rev-parse','HEAD').decode().strip(),
+        path=str(RESULT.relative_to(P)),sha256=gen.common.digest(RESULT))
+    runtime_assets_unchanged(dict(mode='default-route-query-profile-check',
+        runtime_asset_delta=base['runtime_asset_delta']))
     revision = gen.git('rev-parse','HEAD').decode().strip()
     pins = gen.benchmark_pins(revision)
     settings = gen.committed(gen.SETTINGS)
@@ -106,7 +137,9 @@ def prepare():
     flags[flags.index('--expert-profile')+1] = str(ROOT/'expert-profile.bin')
     config.update(log=str(ROOT/'engine.stderr'),env={})
     prompts = assets.check_prompts(config,base['environment'])
-    model = assets.model_pins(config,full=True)
+    # Reuse the committed original whole-model digests only after exact device,
+    # inode, size, mtime and ctime identity checks. This is not a new full hash.
+    model = assets.model_pins(config,base['model_assets'])
     ROOT.mkdir(mode=0o700)
     for name in ('cache','tmp'): (ROOT/name).mkdir()
     old_root = base['environment']['STRATA_MEASUREMENT_ROOT']
@@ -121,6 +154,9 @@ def prepare():
     guards.require(gen.common.digest(ROOT/'expert-profile.bin')==base['profile_sha256'], 'profile changed')
     (ROOT/'config.json').write_text(json.dumps(config,indent=2)+'\n')
     record = dict(mode='default-route-query-profile-check',source_commit=revision,build_source_commit=full['source_commit'],
+        previous_preparation_reference=previous_reference,
+        model_hash_reference=dict(commit=revision,path=str(assets.RESULT.relative_to(P)),
+            sha256=gen.common.digest(assets.RESULT),reuse='Original full digests, exact stat identities including ctime verified; no new full digest claim.'),
         binary_origin_source_commit=full.get('binary_origin_source_commit',full['source_commit']),
         binary=full['binary'],source_build_record=dict(path=str(BUILD_RECORD),sha256=gen.common.digest(BUILD_RECORD)),
         original_build_inputs_recovered=count,component_result_sha256=gen.common.digest(COMPONENT),
@@ -137,7 +173,7 @@ def prepare():
         gate='One owned native process, two thinking-template questions,16 generated tokens each, G1/T4 configured and capture reached, pcie-frac0/pool5/arena-copy0/early0. Four query records per decode request: nonzero resident launch and pool-return calls/time, zero inactive PCIe counters, calls=ready+pending+errors, zero errors/clock failures, max<=sum. Zero copied expert bytes/groups, positive CPU jobs. No protocol/runtime/fresh-driver fault; unchanged source/model/tokenizer/runtime/boot. No automatic retry.',
         limits='Tiny safety/actual-route check only. No task quality, speed comparison, physical PCIe bytes, saturation, physical262144/session/RESTORE or70tok/s qualification.',
         consumer='Prerequisite for a separately committed32K+ thinking-enabled production query-cost diagnostic and independent overhead qualification. No early-route or speed admission. Retire successful raw logs after compact evidence is committed.')
-    gen.runtime_assets_unchanged(record)
+    runtime_assets_unchanged(record)
     (ROOT/'plan.json').write_text(json.dumps(record,indent=2)+'\n')
     RESULT.write_text(json.dumps(record,indent=2)+'\n')
     print('Prepared bounded default-route query observer check; commit the exact generated plan before run.')
@@ -157,7 +193,7 @@ def run():
     for path, expected in [(gen.SETTINGS,record['settings_sha256']),(ROOT/'config.json',record['config_sha256']),
             (ROOT/'expert-profile.bin',record['profile_sha256']),*record['tokenizer_assets'].items()]:
         guards.require(gen.common.digest(path)==expected,'input changed: '+str(path))
-    gen.runtime_assets_unchanged(record)
+    runtime_assets_unchanged(record)
     guards.require(assets.model_pins(record['config'],record['model_assets'])==record['model_assets'] and
         assets.machine_identity()==record['machine_identity'], 'frozen model/platform differs')
     boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
@@ -207,7 +243,7 @@ def run():
         record['query_requests']=query_evidence(log,len(rows))
         current_build()
         guards.require(gen.benchmark_pins(record['source_commit'])==pins,'controller inputs changed during run')
-        gen.runtime_assets_unchanged(record)
+        runtime_assets_unchanged(record)
         guards.require(assets.machine_identity()==record['machine_identity'] and
             assets.model_pins(record['config'],record['model_assets'])==record['model_assets'],'model/platform changed')
         record.update(passed=True,actual_default_route_confirmed=True,query_observer_reached=True,model_route_executed=True)
