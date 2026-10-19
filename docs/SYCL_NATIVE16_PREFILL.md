@@ -1987,6 +1987,13 @@ in-order. Both calls returned, ownership closed and no fresh fault occurred.
 The override did not avoid the wait; installed key consumption and explicit UR
 counter-event selection remain unverified. Review the original UR event creation
 and native gate scheduling before another configuration or model experiment.
+The completed source review corrected confusion between v4/v6 timings. Neither
+receipt records the actual host signal timestamp, so a late SUCCESS does not
+establish post-fallback ordering or the earlier kernel completion time. The
+profiling-off NOT_READY samples also do not identify a scheduling cause. A new
+committed no-gate/held-gate diagnostic with joined query-thread and actual signal
+timestamps is a possible next discriminator; production query cost and the
+complete57-case/model gates remain separate unresolved questions.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.

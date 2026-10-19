@@ -128,7 +128,7 @@
     "model execution"
   ],
   "decision": "Disabling implicit regular-to-counter-event conversion did not avoid the2s profiled-query wait in this diagnostic. Both calls returned, owner closed, no fresh GPU fault. No gate, production configuration or performance qualification. Installed key consumption and explicit UR counter-event behavior remain unverified.",
-  "next_question": "Trace original version-compatible UR-v2 event construction and explicit/implicit counter-event selection, and distinguish hardware wait/queue scheduling caused by the gate from a production readiness-query cost. No blind flag-value search or model advancement.",
+  "next_question": "Separate production readiness-query cost from the artificial gate. A newly committed no-gate/held-gate profiling-on diagnostic with joined bounded query helper and actual host signal timestamps can distinguish observations; no further configuration search or model advancement is authorized by the existing results.",
   "diagnostic": {
     "files": [
       {
@@ -146,5 +146,6 @@
     "byte_budget": 262144,
     "consumer": "Original UR-v2 explicit/implicit event construction and imported-gate scheduling distinction after the documented conversion override failed. Review minimal required trace excerpt after source review; no full model trace.",
     "next_review": "At completion of the next original UR/event-scheduling source reviews; retain only the representative evidence that adds information."
-  }
+  },
+  "source_review_limit": "v4/v6 have no actual host-signal timestamp; neither lateSUCCESS establishes post-fallback ordering or original kernel completion time. Profiling-offNOT_READY does not identify a hardware scheduling cause. Preserve original failed outcomes and all57-case/model gates."
 }
