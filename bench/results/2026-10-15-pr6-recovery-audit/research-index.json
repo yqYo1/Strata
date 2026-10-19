@@ -2488,8 +2488,8 @@
   },
   "forced_compute_copy_overlap_collection_scope": {
     "classification": "knowledge collection",
-    "schedulable_now": true,
-    "status": "ready_source_contract_collection",
+    "schedulable_now": false,
+    "status": "orca_collection_running",
     "question": "With UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD=1 and EnableDirectSubmission=0 retained, what overlap can explicit compute queues and command lists actually permit between host transfers, dequantization and XMX GEMM on Xe2? Compare documented UR/Level Zero engine selection, command-list execution, dependencies and possible serialization. Map safety requirements to the current same-in-order-queue expert bank without proposing a production change or claiming measured overlap.",
     "candidate_source": {
       "commit": "b432c30e758717ffb7aee0a7aa55f2f5bae8decd",
@@ -2520,6 +2520,45 @@
       "maximum_bytes": 24576
     },
     "consumer": "Indexed knowledge for a later source-safe overlap discriminator; Main retrieves only if that concrete candidate is selected.",
-    "next_review": "Native Luna-max reviews novelty/source mapping and chooses retention. No immediate implementation or GPU test is authorized for the worker."
+    "next_review": "Native Luna-max reviews novelty/source mapping and chooses retention. No immediate implementation or GPU test is authorized for the worker.",
+    "task_id": "task_eda76ee7cafd",
+    "dispatch_id": "ctx_7457cc624229",
+    "terminal_handle": "term_4c4d29aa-7648-495b-b45c-344379b70e17",
+    "run_id": "run_fb41872974e9",
+    "collector_model_observed": "gpt-6-luna"
+  },
+  "expert_bank_future_admission_source_scope": {
+    "classification": "decision support",
+    "schedulable_now": true,
+    "status": "ready_source_audit",
+    "question": "Audit exact current routing/HC mixed-input availability across layer-major FFN windows. Can permanent383+scratch1 admission prefer experts reused in later windows while preserving actual expert execution and FP32 update order, without retaining a full additional mixed matrix? Compare first-seen residency, route precomputation/recomputation and bounded metadata options from actual source; derive data/lifetime/extra-work requirements and a discriminating compact counter plan. No generic cache/prefetch survey or implementation.",
+    "candidate_source": {
+      "commit": "e97393478a702c4e4db4029ec35c1c96d5ec4f0c",
+      "source_sha256": {
+        "src/prefill/moe_window.inc": "adb7e0c8f308abe5636a22191f53efee92d97b45e4ef3738efb58467ac6aeff9",
+        "src/prefill/layer_major.inc": "4aea46de2afcf85091d292597b00fdeed8f085523151a04bdb4131b736910ac8",
+        "include/strata/prefill/expert_bank_plan.hpp": "1c3b9157f64c4e1c3aede95017ba17ad3c10d433946b5efa25d0c073c5f8c3a9",
+        "include/strata/prefill/expert_bank_upload.hpp": "3b81da8f15a89306cff9a46982d31fc10ad120a592cf7662c9c2c8b3a2fc7bfe",
+        "include/strata/prefill/moe_accum_plan.hpp": "1fa1618eaf96a6ec50bc948f7c6750fc33f463c702cfbf36cd57e928597ca1aa"
+      }
+    },
+    "prerequisite_evidence": "Current source explicitly implements permanent slots plus one scratch slot and never LRU-evicts permanent entries. Staged all-GPU117K prefill uses81920+35568 FFN windows and384 slots; prior clean counters report about40GB requested H2D. Actual future expert-set coverage is unmeasured; the audit must establish source feasibility and counter invariants, not claim a cache or speed gain.",
+    "novelty_boundary": "Existing bounded_expert_window_staging_scope and implemented_expert_bank_scope audited current prefix residency safety, not future-window route availability/admission selection. Do not repeat those implementations or falsely diagnose existing residency as LRU thrashing.",
+    "prior_scopes": [
+      "bounded_expert_window_staging_scope",
+      "implemented_expert_bank_scope",
+      "gpu_moe_routing_collection_scope",
+      "activation_vram_lifetime_scope"
+    ],
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/expert-bank-future-admission-source.md",
+    "report_budget": {
+      "target_words": [
+        1400,
+        2200
+      ],
+      "maximum_bytes": 24576
+    },
+    "consumer": "Main decides whether a source-feasible routing/metadata discriminator merits selection after current timing. No candidate performance or adoption from source review.",
+    "next_review": "Native Luna-max reviews actual source/lifetime evidence; no implementation/tests/GPU delegated."
   }
 }
