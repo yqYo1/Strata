@@ -3936,7 +3936,6 @@
     "classification": "decision support",
     "question": "Audit new ordinary-Arena target-verifier CPU/GPU dependency DAG",
     "source_commit": "ecda3c9ec4366211382cbf1ff11a3efd1c94fae6",
-    "source_view": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/decode-copy-dag-cache-source-ecda3c9ec",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/decode-copy-dag-report.md",
     "report_budget_bytes": 16384,
     "schedulable_now": false,
@@ -3951,17 +3950,24 @@
       }
     ],
     "status": "native_reviewed_workers_and_terminals_closed",
-    "consumer": "Retrieve relevant report sections only for the post-screen scheduling/cache decision. Retire closed transaction/review paperwork after this digest is committed; recover source view from its original commit before retirement.",
+    "consumer": "Both substantive reports remain for the post-screen scheduling/cache decision. Original source is recoverable at the pinned fork-default ancestor; review/dispatch/snapshot transactions retired after digest consumption.",
     "ownership_closed": true,
     "report_sha256": "47efe676e03322c3575347002a6730ed355aba7508a20623d616253b3c15702e",
     "native_review_sha256": "607345ee87c32ef7233ecaa2a381328472607f99d2a1b3f06b90086d30a66c16",
-    "finding": "Current captured path defers PCIe-assigned GPU miss compute until CPU pool completion; an earlier event-gated enqueue requires router completion, plan publication and DMA submission. Existing shared/resident GPU work and copies already overlap CPU. No runtime overlap or speed claim."
+    "finding": "Current captured path defers PCIe-assigned GPU miss compute until CPU pool completion; an earlier event-gated enqueue requires router completion, plan publication and DMA submission. Existing shared/resident GPU work and copies already overlap CPU. No runtime overlap or speed claim.",
+    "transaction_retirement": {
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-decode-dag-cache-transactions-20261020.jsonl",
+      "sha256": "64a9b2f60fec542c3acb6ab61f041ea01b9e150c7c17260efc6032b0da8e294d",
+      "files": 48,
+      "bytes": 1701817,
+      "source_files_recovered": 29,
+      "source_commit": "ecda3c9ec4366211382cbf1ff11a3efd1c94fae6"
+    }
   },
   "decode_cache_reader_census_scope": {
     "classification": "decision support",
     "question": "Audit actual target/MTP cache owners and captured readers",
     "source_commit": "ecda3c9ec4366211382cbf1ff11a3efd1c94fae6",
-    "source_view": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/decode-copy-dag-cache-source-ecda3c9ec",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/decode-cache-reader-census-report.md",
     "report_budget_bytes": 16384,
     "schedulable_now": false,
@@ -3976,10 +3982,18 @@
       }
     ],
     "status": "native_reviewed_workers_and_terminals_closed",
-    "consumer": "Retrieve relevant report sections only for the post-screen scheduling/cache decision. Retire closed transaction/review paperwork after this digest is committed; recover source view from its original commit before retirement.",
+    "consumer": "Both substantive reports remain for the post-screen scheduling/cache decision. Original source is recoverable at the pinned fork-default ancestor; review/dispatch/snapshot transactions retired after digest consumption.",
     "ownership_closed": true,
     "report_sha256": "b949856d0736cba4c1cd6dbe65fd5a60c23f9bd54af1d57ce307fde64144bb18",
     "native_review_sha256": "607345ee87c32ef7233ecaa2a381328472607f99d2a1b3f06b90086d30a66c16",
-    "finding": "Actual MTP/cache sources add owner facts. Total128 slots with48 per-layer quotas yields2 for layers0-46 and34 for the last; variable native slots use open_sized and summed aligned layer sizes, not necessarily slots*max_blob. MTP vram_bytes omits head_logits and pf_dev. Static source proves neither free VRAM nor useful cache expansion; require actual allocation/profile/residency/reader census."
+    "finding": "Actual MTP/cache sources add owner facts. Total128 slots with48 per-layer quotas yields2 for layers0-46 and34 for the last; variable native slots use open_sized and summed aligned layer sizes, not necessarily slots*max_blob. MTP vram_bytes omits head_logits and pf_dev. Static source proves neither free VRAM nor useful cache expansion; require actual allocation/profile/residency/reader census.",
+    "transaction_retirement": {
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-decode-dag-cache-transactions-20261020.jsonl",
+      "sha256": "64a9b2f60fec542c3acb6ab61f041ea01b9e150c7c17260efc6032b0da8e294d",
+      "files": 48,
+      "bytes": 1701817,
+      "source_files_recovered": 29,
+      "source_commit": "ecda3c9ec4366211382cbf1ff11a3efd1c94fae6"
+    }
   }
 }
