@@ -729,5 +729,69 @@
     "device": "0xe20c",
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
+  },
+  "collector_read_spans": {
+    "windows": {
+      "before_first_output": {
+        "contained_calls": 52,
+        "sum_wall_seconds": 0.160669194,
+        "median_wall_seconds": 0.0025213105000000003,
+        "max_wall_seconds": 0.014905992,
+        "sum_fraction_of_client_window": 0.003036629227802136
+      },
+      "after_first_output": {
+        "contained_calls": 333,
+        "sum_wall_seconds": 1.088184796,
+        "median_wall_seconds": 0.002691771,
+        "max_wall_seconds": 0.055876641,
+        "sum_fraction_of_client_window": 0.003261170124259331
+      }
+    },
+    "limits": "Inclusive synchronous reader-call wall time, including descheduling. Does not bound asynchronous driver/cache/clock effects or total model slowdown; only a prospectively matched collector-off/on comparison can measure that effect."
+  },
+  "post_closure_admission": {
+    "analyzer_source_commit": "dc4acc8f8b6b17ab712ffb9fec116f86e6810a7d",
+    "original_execution_receipt_commit": "682d47f8bfb09f9b9279bfa84d40cc3f7a526f95",
+    "official_result_sha256": "cef5fcb657193b00db3069da2e7e587896b10164dfdc15fccd0406cc00836f07",
+    "capture_sha256": "8ec0fce4c54a5ce2a1af4273fa831f40db6541dd745f55c1c263288cd83005c9",
+    "journal_bound_clocks_and_work": true,
+    "original_resources_reproduced": true,
+    "original_execution_outcome_unchanged": true,
+    "GPU_executed": false
+  },
+  "post_closure_model_metadata": {
+    "scope": "Static configuration audit after execution, not an additional dynamic work counter or changed original measurement.",
+    "metadata_path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt",
+    "metadata_bytes": 3304,
+    "metadata_sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d",
+    "format_enum_source": {
+      "repository": "ggml-org/llama.cpp",
+      "commit": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+      "path": "ggml/include/ggml.h",
+      "sha256": "12ee71f99db7db9b353bc02b1fbb57c344ee17c01ac5fb7952b41a637a747ea9"
+    },
+    "geometry_source": {
+      "commit": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
+      "path": "include/strata/kernels/cpu/expert.hpp"
+    },
+    "hidden": 2560,
+    "expert_intermediate": 640,
+    "experts_per_layer": 512,
+    "layers": 48,
+    "gate_up_layers": {
+      "IQ3_XXS": 17,
+      "IQ3_S": 10,
+      "IQ2_S": 20,
+      "IQ4_XS": 1
+    },
+    "down_layers": {
+      "IQ4_NL": 39,
+      "Q2_0": 9
+    },
+    "one_expert_per_layer_packed_bytes": 98227200,
+    "all_expert_packed_bytes": 50292326400,
+    "largest_single_expert_blob_bytes": 2662400,
+    "decision": "No IQ3_S Down weights in this pack; do not select an IQ3_S Down optimization from the model filename. IQ4_NL multirow and Q2_0 production paths require their own evidence.",
+    "limits": "Pack geometry and logical packed payload only. Does not establish actual expert routes/reuse, physical DRAM/PCIe traffic, bandwidth or a limiting resource."
   }
 }

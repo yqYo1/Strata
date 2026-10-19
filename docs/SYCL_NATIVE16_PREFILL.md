@@ -1544,8 +1544,43 @@ after first output. Five other busy threads on CPUs1–5 used232.83,233.71,256.5
 CCS busy cycles include device stalls and are associated-client measurements.
 These observations do not show GPU arithmetic saturation or establish CPU
 arithmetic versus RAM/submission/synchronization as the limiting resource.
-Next confirm attribution with the lighter collector-only environment and resolve
-CPU/RAM work and transfer-counter availability before choosing an optimization.
+The second, collector-only diagnostic at`a71b6214a` removed parameter validation,
+stage progress and internal CPU/wall observers while preserving the selected
+engine, runtime and safety settings. Its committed plan at`ca84a06c5` completed
+with the same33211 fresh inputs,2931 generated tokens and2105/2481 accepted
+drafts, normal ownership closure and no fresh GPU fault. All519 snapshots passed
+journal-bound clock/work and resource replay checks. Before first output it
+observed51.186 contained CPU-wall seconds,0.936 process core equivalents and
+0.809 CCS busy fraction; after first output,333.541 seconds,4.380 core equivalents
+and0.334 CCS busy fraction. These are client windows, not native phase boundaries.
+The8.8tok/s reading still includes the external collector and is not a clean
+speed sample or a paired overhead comparison. The post-closure analyzer at
+`dc4acc8f8` reproduced the original`682d47f8b` result. Its333 contained reader
+calls after first output totalled1.088 seconds; this synchronous call duration
+does not bound indirect driver/cache/clock effects or total model slowdown.
+See the [current compact resource result](../bench/results/2026-10-15-pr6-recovery-audit/client-resources-current.json).
+
+An idle-device Sysman probe at`dc4acc8f8` successfully initialized the installed
+loader1.32.0 with validation and bound PCI0000:05:00.0. The device reported
+bandwidth-counter support, but the first`zesDevicePciGetStats` returned
+`ZE_RESULT_ERROR_INSUFFICIENT_PERMISSIONS` (`0x70010000`); no successful snapshot
+was obtained. The owned probe closed normally with no fresh fault, but the
+counter capability check failed. No permission setting changed. Keep physical
+PCIe traffic unknown and do not repeat the same probe under unchanged access;
+the [compact denial result](../bench/results/2026-10-15-pr6-recovery-audit/sysman-pcie-capability-current.json)
+preserves its source, actual assets, command and outcome.
+
+A static audit of the actual3304-byte`native_experts.txt` found Down weights
+IQ4_NL in39 layers and Q2_0 in9, with no IQ3_S Down. Gate/up uses17 IQ3_XXS,
+10 IQ3_S,20 IQ2_S and1 IQ4_XS layers. Thus the pack's IQ3_S filename is not a
+per-projection format contract. Its H2560/FF640/512-expert geometry and packed
+payload are recorded in the resource result; these do not measure physical
+traffic or dynamic reuse. Do not optimize an unused IQ3_S Down path.
+The next discriminator is a prospectively committed clean pool-workers5/1
+comparison with three independent processes per arm and identical long-generation
+work. It can test CPU-pool capacity sensitivity, not distinguish arithmetic from
+RAM limits or prove saturation at the baseline. Keep the earlier clean speeds
+and all failed comparison gates separate.
 Actual unprivileged perf `cycles` and `task-clock` command probes at`dea283917`
 both exited1 with the access-limited diagnostic under`perf_event_paranoid=4`.
 This preserves the earlier VTune ptrace refusal as a separate result; no host

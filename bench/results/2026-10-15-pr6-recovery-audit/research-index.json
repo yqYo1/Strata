@@ -1379,8 +1379,8 @@
         "Retrieval map for a later concrete question"
       ],
       "paper_sections": [
-        "SyclKittens \u00a7\u00a73.2\u20133.3 and Appendix D for operand layouts, subgroup prefetch and the measured ablation.",
-        "Xe-Forge \u00a7\u00a7IV\u2013V, VI-A, VI-D\u2013VI-E for search/validation workflow, hardware, baseline and kernel results."
+        "SyclKittens §§3.2–3.3 and Appendix D for operand layouts, subgroup prefetch and the measured ablation.",
+        "Xe-Forge §§IV–V, VI-A, VI-D–VI-E for search/validation workflow, hardware, baseline and kernel results."
       ]
     }
   },
@@ -3742,7 +3742,7 @@
   "decode_work_and_byte_model_source_scope": {
     "classification": "decision support",
     "schedulable_now": false,
-    "status": "report_returned_pending_native_review",
+    "status": "native_reviewed_pool_capacity_discriminator_pending",
     "source_commit": "540639c4258c41e60d8f0dfd9c408cfcd72f1d6d",
     "source_sha256": {
       "src/core/session.cpp": "4c1aa246e568f96b40b9f9e16000e1f1dc6d75c99168cb26baef56a43b4e4bce",
@@ -3770,18 +3770,19 @@
     "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261019/decode-source-work-and-bytes.md",
     "maximum_report_bytes": 24576,
     "worker_ownership_closed": true,
-    "next_review": "Native Luna-max review after accepted report; Main reads only a short digest and retrieves relevant sections for a concrete next measurement.",
+    "next_review": "Before committing the pool-capacity comparison and at its closure; retire this report if no concrete follow-up needs it.",
     "task_id": "task_4bc57c1c008d",
     "terminal_handle": "term_08cf6410-b426-44df-8a66-14f5987000e8",
     "collector_model_requested": "gpt-6-luna",
     "launch_scope": "Explicit workspace-write sandbox; report is inside the existing project workspace. No new worktree/branch.",
-    "dispatch_receipt": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261019/decode-work-dispatch.json",
     "dispatch_id": "ctx_9ab4f6673dc6",
     "terminal_incarnation": "7e7334c5-da90-4fdc-885b-e4fea6cf70bb",
     "worker_closure": "Exact completed Task/Dispatch/incarnation accepted; external release returned no-owned-resource, tui-idle verified, original terminal closed with ptyKilled=true and completion delivery acknowledged.",
     "report_bytes": 17911,
     "report_sha256": "3891fc5050837e1aba407cc9ba2751b9d7eef033683a4e28563efa2b4b8b2799",
-    "native_review_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261019/decode-source-work-native-review.json"
+    "native_review_sha256": "fb4fc568face825af4956c8a69ade2c410a0e8afbed35a5ce77943b6ae96bb8e",
+    "operational_digest": "Source-grounded at540639c; formulas transfer structurally to selected396d0c9, but are not a measured-input match for binary570b65dd. Cited runs have different source/builds and remain separate. Report adds MoE logical operations/bytes, omits complete non-MoE work and emitted-token totals. Next bounded discriminator is three independent clean processes per arm with only pool-workers5 versus1; commit order, work reconciliation, effect threshold and stopping rules first. Capacity sensitivity does not distinguish arithmetic from RAM or establish baseline saturation.",
+    "report_consumer": "Source-grounded logical-work model for the imminent CPU expert-pool capacity comparison; not measured physical traffic."
   },
   "zen3_counter_free_roofline_methods_collection_scope": {
     "classification": "knowledge collection",
@@ -3806,14 +3807,18 @@
     "terminal_handle": "term_1047d6c2-db42-4042-a401-7576fd52c413",
     "collector_model_requested": "gpt-6-luna",
     "launch_scope": "Explicit workspace-write sandbox; report is inside the existing project workspace. No new worktree/branch.",
-    "dispatch_receipt": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261019/zen3-methods-dispatch.json",
     "dispatch_id": "ctx_60f5df3ac973",
     "terminal_incarnation": "8e1ddc98-853e-45da-a647-1b638744e336",
     "worker_closure": "Exact completed Task/Dispatch/incarnation accepted; release reported external/no-owned-resource, then tui-idle verified and original terminal closed with ptyKilled=true. Completion delivery acknowledged.",
     "report_bytes": 20958,
     "report_sha256": "b5c6a96bda795151b6f8e816e3f24f815296c7f911e57dac68d296f4da0e2817",
-    "native_review_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261019/zen3-counter-free-memory-native-review.json",
     "native_review_sha256": "597a4b3ca77118f1176aff3ace779b30bcd8980572fde03a7ddaf0251d2b3dc1",
-    "operational_digest": "Accepted with minor clarifications: substantive counter-free cache, read-only/STREAM and pressure comparisons beyond the prior kernel survey. Primary sources support methods, not local Zen3 results. Clarify FLOP convention, touched working-set bytes versus cache residency and STREAM size per array. Retain until CPU critical-path qualification; only then plan a fixed-shape hot-versus-rotating-weight-set comparison."
+    "operational_digest": "Accepted with minor clarifications: substantive counter-free cache, read-only/STREAM and pressure comparisons beyond the prior kernel survey. Primary sources support methods, not local Zen3 results. Clarify FLOP convention, touched working-set bytes versus cache residency and STREAM size per array. Retain until CPU critical-path qualification; only then plan a fixed-shape hot-versus-rotating-weight-set comparison.",
+    "report_consumer": "Conditional fixed-shape cache/locality experiment only after qualified CPU critical-path evidence; review at pool-capacity comparison closure.",
+    "review_corrections": [
+      "Count MN MACs or about2MN FLOPs per matrix-vector; define dimensions and units.",
+      "Packed in-memory working-set footprint does not measure cache residency.",
+      "STREAM sizing requirement applies per array, using actual exposed LLC topology."
+    ]
   }
 }
