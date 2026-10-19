@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "mode": "clean",
-  "cohort": 1,
-  "source_commit": "e388edff4ebc46a00c5fc133cf67674311e6a552",
+  "cohort": 2,
+  "source_commit": "e3c64e305404352bd4e1a22700511db053e7e3b2",
   "source_count": 114,
   "source_aggregate_sha256": "e437d3bcce2b7ccab9e27a554e81f56753899a1943345aa76843576673702662",
   "binary": {
@@ -45,7 +45,7 @@
       "--expert-cache",
       "128",
       "--expert-profile",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v1-clean-1/expert-profile.bin",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v1-clean-2/expert-profile.bin",
       "--expert-cache-per-layer",
       "--pool-workers",
       "5",
@@ -84,7 +84,7 @@
       "strata"
     ],
     "host": "127.0.0.1",
-    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v1-clean-1/engine.stderr",
+    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v1-clean-2/engine.stderr",
     "engine_silence_s": 480,
     "parallel": 1,
     "open_browser": false,
@@ -144,7 +144,7 @@
     "STRATA_SYCL_SELECT_CYCLIC": "0",
     "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
     "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v1-clean-1/cache",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v1-clean-2/cache",
     "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
     "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
     "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
@@ -157,8 +157,8 @@
     "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
     "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
     "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v1-clean-1/tmp",
-    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v1-clean-1",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v1-clean-2/tmp",
+    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v1-clean-2",
     "ZES_ENABLE_SYSMAN": "0",
     "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
     "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
@@ -172,9 +172,9 @@
     "/bin/sh",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
     "--config",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v1-clean-1/config.json",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v1-clean-2/config.json",
     "--port",
-    "40799",
+    "49177",
     "--long-generation-only",
     "--think",
     "--runs",
@@ -185,19 +185,19 @@
     "--ready-timeout",
     "600",
     "--out",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v1-clean-1/bench"
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v1-clean-2/bench"
   ],
-  "config_sha256": "10c486f10ad3d7c159e6aebbfe65526a3ebeeea993744ecf3f7f5a0b6740f8b6",
+  "config_sha256": "64ec2515cc2fc769647c5422d0b7459a30cc403628004b8ed76251740e389357",
   "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
   "prefill_reference": {
-    "commit": "e388edff4ebc46a00c5fc133cf67674311e6a552",
+    "commit": "e3c64e305404352bd4e1a22700511db053e7e3b2",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json",
     "sha256": "207062c425b88f4a40a7f9d72338e2cbb20506da8e90b2ca5ff4c312f994f443"
   },
   "preceding_generation_result": {
-    "commit": "e388edff4ebc46a00c5fc133cf67674311e6a552",
+    "commit": "e3c64e305404352bd4e1a22700511db053e7e3b2",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/decode-long-generation-current.json",
-    "sha256": "feed85e7b40ae9e979ce81efaddd557d0b65ee2bbd4ec11244b69dd7b304313c"
+    "sha256": "65823fb8c227fe786c96efe2266c557789689cac0ef09a0d2e2aa4936670c6e9"
   },
   "budgets": {
     "wall": 5400,
@@ -222,18 +222,18 @@
     {
       "ok": true,
       "err": null,
-      "ttft_s": 51.208,
-      "total_s": 250.858,
+      "ttft_s": 51.183,
+      "total_s": 252.005,
       "prompt_tokens": 33211,
       "reused_tokens": 0,
       "read_tokens": 33211,
       "generated_tokens": 2931,
-      "prompt_tps": 651.9,
+      "prompt_tps": 652.2,
       "prompt_tps_source": "engine",
-      "decode_tps": 14.7,
+      "decode_tps": 14.6,
       "decode_tps_source": "engine",
-      "prompt_ms": 50947.4,
-      "decode_ms": 199744.1,
+      "prompt_ms": 50924.9,
+      "decode_ms": 200915.7,
       "drafts_offered": 2481,
       "drafts_accepted": 2105,
       "finish_reason": "stop",
@@ -262,18 +262,18 @@
     {
       "ok": true,
       "err": null,
-      "ttft_s": 42.791,
-      "total_s": 1177.761,
+      "ttft_s": 42.971,
+      "total_s": 1189.169,
       "prompt_tokens": 33285,
       "reused_tokens": 0,
       "read_tokens": 33285,
       "generated_tokens": 10805,
-      "prompt_tps": 782.7,
+      "prompt_tps": 779.3,
       "prompt_tps_source": "engine",
-      "decode_tps": 9.5,
+      "decode_tps": 9.4,
       "decode_tps_source": "engine",
-      "prompt_ms": 42526.3,
-      "decode_ms": 1135064.9,
+      "prompt_ms": 42711.9,
+      "decode_ms": 1146291.4,
       "drafts_offered": 14736,
       "drafts_accepted": 5892,
       "finish_reason": "stop",
@@ -314,15 +314,15 @@
     "valid": true,
     "complete": true,
     "complete_prefix_rows": 13,
-    "last_sha256": "b35bc337f27351826c381334df1b82f74cd9d9049b5f89d181bf064055f68068",
+    "last_sha256": "cfcd829adaf44c5b7013341a7e253227af6809fa4b44ccfc5746484f1b1621f6",
     "pending": [],
     "errors": []
   },
   "engine_exit_code": 0,
   "native_identity": {
-    "pid": 3503892,
-    "start_ticks": 74271622,
-    "sid": 3503848
+    "pid": 3579076,
+    "start_ticks": 74472107,
+    "sid": 3579049
   },
   "ownership_closed": true,
   "fresh_faults": [],
@@ -337,7 +337,7 @@
   },
   "decode_cache_observations": {
     "source": "Always-on target-cache summary immediately following each matched prompt/read/generated-token request summary; no observer enabled.",
-    "original_log_sha256": "8ef4d0615c60ec05dfff665571d9908c51955890bd453dd7229d982b9b78eab0",
+    "original_log_sha256": "60e278d2120e57541c738c25c1f96cb67d54329409a091ae408f5310e01b0b28",
     "samples": [
       {
         "workload": "regular-code",
@@ -356,12 +356,14 @@
     ],
     "limits": "Logical target expert lookup outcomes, not physical RAM/PCIe bytes, CPU computation time or proof of a limiting hardware resource. Draft/MTP weights have separate ownership."
   },
-  "raw_retirement": {
-    "manifest": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/closed-long-generation-clean1-20261019.json",
-    "sha256": "52a40a7fe9b46261a2fb5ac9678c803546c6f4ddcb9cb5308c7d8ea5e77d2caa",
-    "files": 71,
-    "bytes": 12861970,
-    "closed_run_removed": true,
-    "original_outcome_unchanged": true
+  "pending_analysis": {
+    "command": "python3 tools/sycl/generation_engine.py summarize",
+    "attempt_exit_code": 1,
+    "reason": "Existing pre-analysis ownership guard found external llama-bench PID3641219; no reducer executed. Do not disturb that process or launch tests/builds while ownership guard remains occupied.",
+    "our_measurement_finished_utc": "2026-10-19T08:12:03.346930+00:00",
+    "external_process_start_ticks": 74632308,
+    "external_process_started_utc_approx": "2026-10-19T08:12:38.080000+00:00",
+    "timing_scope": "This observed external process began about35 seconds after our measurement closed; it does not overlap the third sample. Original successful process/request outcomes are unchanged.",
+    "next_action": "Verify current owners, then run the unchanged committed reducer; keep benchmark inputs frozen until it closes."
   }
 }

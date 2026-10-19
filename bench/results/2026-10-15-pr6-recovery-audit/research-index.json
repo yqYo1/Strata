@@ -2929,40 +2929,148 @@
     ],
     "cpu_observer_source_audit": {
       "classification": "decision support",
-      "status": "orca_source_audit_running",
+      "status": "reviewed_scoped_fixes_committed_qualification_pending",
       "schedulable_now": false,
-      "source_commit": "91a44ece772733eb3b6e7fd01a8874ce3e48021c",
+      "audited_source_commit": "91a44ece772733eb3b6e7fd01a8874ce3e48021c",
       "base_commit": "0326625e2785e87e8e960e07a678a8a237e57fb1",
-      "source_root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-decode-cpu-profile",
-      "source_sha256": {
-        "CMakeLists.txt": "bb7166e54fae144e605413e1b01b37e8592f7a24b8f6db1ad1eeb8b8f81a1881",
-        "docs/BENCHMARKS.md": "f39e3849be2262e05f13142416d7e8d9c7e8b115b543a7e08c11eb9c2e7d2345",
-        "include/strata/core/cpu_clock.hpp": "6ce276314635c0b4adfa7ec507e5cb3134387240a408172c7fd1f611e4069bdf",
-        "include/strata/core/verify.hpp": "f82422c29f079dcd12d3812e3107e8a2b78e931aff90245dada0ff43c4870d44",
-        "include/strata/kernels/cpu/pool.hpp": "0122bead288ed6d783c8a93a16208c5613ebc985061c477670841641a0d8af04",
-        "src/core/verify.cpp": "8016e1a82277319323c42afd960be7e7b110c50feb13f73d0bd6ec2321a71b7d",
-        "src/kernels/cpu/pool.cpp": "c7fad11e48a0ce52a031a5b149b33a34f3a0daa7427be95ce88e0f738558ec16",
-        "src/program/generate.cpp": "c7b51ec44f32629600ba9a85cce86d9405c46e5e6db00dbad79846bc89ef2bcb",
-        "tests/core/cpu_clock.cpp": "b8ddd36a7ccce8ecda45b99e0c5e42ead0f96c3e40e0a1f1a0cc4e74c159991f"
-      },
       "provenance": "Main-authored from the current Strata source and POSIX CPU-clock APIs; no XeStrata or protected proposal source used.",
-      "prerequisites_met": [
-        "Exact new source is committed and pushed; no prior report audits these bytes.",
-        "Primary measurement/native inputs remain unchanged; the read-only audit does not need CPU critical-path evidence.",
-        "Orca fleet has zero unsettled Dispatches; fresh worker explicitly uses gpt-6-luna."
+      "source_report": {
+        "path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/decode-cpu-clock-source-audit.md",
+        "bytes": 12311,
+        "sha256": "a4e777a5c23b73dd7b9302a7acf8133a03f7488c5fae8a6fa4fea8204e87dc79"
+      },
+      "native_review": {
+        "path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/decode-cpu-clock-native-review.json",
+        "bytes": 7421,
+        "sha256": "6d7a9fa81940720fc5bd0872d99441c52ba2aba18822740b7f61f6230b10baa6",
+        "model": "gpt-6-luna",
+        "reasoning": "max"
+      },
+      "worker_ownership_closed": true,
+      "worker_closure": "Verified successful exact Task/Dispatch, source/report pins, release, original terminal incarnation closure and delivery acknowledgement; original launch metadata is recoverable from 9dc27493f. Review ownership note refers to an earlier index snapshot.",
+      "decision": "Serialized completed-dispatch slot publication is sound. Head-only sync counters cannot qualify multiple verifier stages; successful-record consumers must reconcile all request outcomes. New clocks do not establish a speed gain or physical resource saturation.",
+      "revised_candidate": {
+        "commit": "5f91e79eca6af861e9d7001389d1e283d7dc5fd2",
+        "branch": "feature/decode-cpu-profile",
+        "source_root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-decode-cpu-profile",
+        "changes": [
+          "Reject multi-stage CPU evidence using single_stage=false and valid=false, including same-device splits.",
+          "Document successful completed requests and require consumer count reconciliation; failed/missing observations are ineligible.",
+          "Prepare invalid clock ID and real-pool CPU-only off/on accounting/output checks. Native Q8_0 modes5/6 run on this CPU; legacy Q2 modes0..4 require AVX512 and remain explicitly unqualified here."
+        ],
+        "built": false,
+        "tested": false
+      },
+      "remaining_gates": [
+        "Close frozen third clean-generation process and existing cohort reducer before any build/test.",
+        "Commit exact revised inputs, pinned CPU-only recipe and bounded qualification plan before execution.",
+        "Complete CPU clock and real-pool output/accounting checks; qualify revised same-build SYCL small request and final commit.",
+        "Reconcile attempted/succeeded/failed requests and one valid CPU record per success. Predeclare and measure observer overhead in independent off/on processes."
       ],
-      "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/decode-cpu-clock-source-audit.md",
-      "maximum_report_bytes": 22528,
-      "realistic_consumer": "Main before building/testing CPU observer after frozen clean-generation cohort closure.",
-      "next_review": "Native Codex gpt-6-luna max reviews returned report; Main reads its short decision digest, then manages fixes and serialized tests.",
-      "limits": "Unbuilt, untested candidate on a temporary child branch. No inference adoption, measured speed gain, resource saturation or new qualification.",
-      "task_id": "task_2896b15843a6",
-      "dispatch_id": "ctx_5a64594b7610",
-      "run_id": "run_fb41872974e9",
-      "terminal_handle": "term_1cb0497c-6d1c-4a2d-92e3-5febdcebbb73",
-      "terminal_incarnation": "2e3e7c04-ad27-407b-8905-afb855f35080",
-      "collector_model_observed": "gpt-6-luna",
-      "worker_ownership_closed": false
+      "realistic_consumer": "Main pre-build fixes and serialized observer qualification after frozen generation cohort closure.",
+      "next_review": "After source/CPU/runtime/overhead gates, retain useful decisions in current results and retire redundant source-audit/review paperwork.",
+      "limits": "Unbuilt/untested child candidate; clean baseline is unchanged. No inference adoption, speed gain, CPU/RAM saturation, physical-context or RESTORE qualification.",
+      "cpu_only_qualification_plan": {
+        "source_commit": "5f91e79eca6af861e9d7001389d1e283d7dc5fd2",
+        "compiler_sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb",
+        "compiler_version": "DPC++ compiler 7.1.0 (pre-release) build based on:",
+        "ggml_commit": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+        "ggml_clean_tracked_inputs": true,
+        "configure": [
+          "cmake",
+          "-S",
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-decode-cpu-profile",
+          "-B",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-cpu-observer-cpu-tests-v1",
+          "-G",
+          "Ninja",
+          "-DCMAKE_BUILD_TYPE=Release",
+          "-DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+          "-DCMAKE_C_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang",
+          "-DSTRATA_ENABLE_CUDA=OFF",
+          "-DSTRATA_ENABLE_HIP=OFF",
+          "-DSTRATA_ENABLE_SYCL=OFF",
+          "-DSTRATA_SYCL_VLLM_XE2_NATIVE16=OFF",
+          "-DSTRATA_BUILD_TESTS=ON",
+          "-DSTRATA_NATIVE_EXPERTS=ON",
+          "-DSTRATA_PORTABLE=OFF",
+          "-DSTRATA_CPU_ARCH=znver3",
+          "-DSTRATA_GGML_DIR=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+          "-DFETCHCONTENT_FULLY_DISCONNECTED=ON"
+        ],
+        "build": [
+          "cmake",
+          "--build",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-cpu-observer-cpu-tests-v1",
+          "--parallel",
+          "2",
+          "--target",
+          "cpu_clock_test",
+          "pool_cpu_clock_test"
+        ],
+        "test": [
+          "ctest",
+          "--test-dir",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-cpu-observer-cpu-tests-v1",
+          "--output-on-failure",
+          "--no-tests=error",
+          "-R",
+          "^(cpu_clock|pool_cpu_clock)_(off|on)$",
+          "--parallel",
+          "1"
+        ],
+        "environment_unset": [
+          "STRATA_DECODE_CPU_PROFILE"
+        ],
+        "budgets": {
+          "configure_wall_seconds": 180,
+          "build_wall_seconds": 600,
+          "test_wall_seconds": 300,
+          "raw_log_bytes": 4194304,
+          "individual_test_timeouts_seconds": [
+            10,
+            120
+          ]
+        },
+        "acceptance": "All four selected CTests exist and pass in separate off/on processes; preserve failures. Record actual host participation and explicit unsupported Q2 coverage. No model or GPU execution, throughput claim or physical resource attribution.",
+        "retention": "This external CPU-only build is for immediate observer accounting qualification; retire after its compact outcomes and original source/recipe are verified and no same-build consumer remains. Current validated native engine and fixtures stay untouched.",
+        "launch_prerequisite": "Third frozen clean-generation process and existing summary reducer closed; verify source/compiler/dependency pins and serialized ownership before executing.",
+        "cmake_version": "cmake version 3.28.3",
+        "cmake_path": "/usr/bin/cmake",
+        "ninja_version": "1.11.1",
+        "ninja_path": "/usr/bin/ninja"
+      },
+      "cpu_pool_fixture_source_review": {
+        "classification": "decision support",
+        "status": "not_started_agent_readiness_failed",
+        "schedulable_now": false,
+        "source_commit": "5f91e79eca6af861e9d7001389d1e283d7dc5fd2",
+        "source_root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-decode-cpu-profile",
+        "source_sha256": {
+          "tests/core/pool_cpu_clock.cpp": "14b61575a812a3674e30732522d328d0cc966dcb1ee910728db218e6f20d4260",
+          "tests/core/cpu_clock.cpp": "677037e46ffbcc57512ba2705ab40313d796be5c004f95a78fd0212e933a8c3c",
+          "include/strata/core/cpu_clock.hpp": "6ce276314635c0b4adfa7ec507e5cb3134387240a408172c7fd1f611e4069bdf",
+          "include/strata/kernels/cpu/pool.hpp": "0122bead288ed6d783c8a93a16208c5613ebc985061c477670841641a0d8af04",
+          "src/kernels/cpu/pool.cpp": "c7fad11e48a0ce52a031a5b149b33a34f3a0daa7427be95ce88e0f738558ec16",
+          "src/kernels/cpu/native_expert.cpp": "fcb4a7c74ba45a13da162eed832860f9644f4544d3f269b9c8588f01b40fb106",
+          "src/kernels/cpu/expert.cpp": "9bcf5d889818ef3cb9619df6536e8844d151714803ac8930eada115a61b62e48",
+          "CMakeLists.txt": "a81c51a58b55c740b37afc94a5f753b9205913a33baa2704622963317e668050"
+        },
+        "question": "Audit the newly authored real ExpertPool CPU-clock fixture for valid synthetic inputs, Zen3 versus AVX512 execution safety, output/accounting conservation, sleep/wake and 97-expert batching coverage. Identify false-pass or unsupported qualification claims before Main executes the committed CPU-only plan.",
+        "prerequisites_met": [
+          "The 218-line real-pool fixture is new committed source; the previous audit covered its absence at 91a44ece7, not these bytes.",
+          "No build or CPU-critical-path measurement is needed for this source/test-contract audit; Main retains all execution ownership.",
+          "All 89 prior Orca tasks are settled; no active source reader or dispatch owns this scope."
+        ],
+        "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/decode-cpu-pool-fixture-source-review.md",
+        "maximum_report_bytes": 12288,
+        "consumer": "Main qualification of the new observer after the frozen clean-generation cohort/reducer; native Luna max reviews the report first.",
+        "next_review": "Do not duplicate or claim an audit pass. After launch readiness is resolved, retry this same failed Task with retry-of; Main can still manage the independent CPU-only qualification after the frozen cohort closes.",
+        "task_id": "task_35164b0712b3",
+        "dispatch_id": "ctx_108b21beacc2",
+        "worker_ownership_closed": true,
+        "attempt_outcome": "Orca positively reported failed at agent_readiness: Agent startup blocked: agent-update-prompt. Task never ran. Exact failed Dispatch released with state=released and processAction=closed_agent_terminal; no report or researcher execution exists."
+      }
     }
   },
   "native16_full_context_session_gate_source_audit": {
