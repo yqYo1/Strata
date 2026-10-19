@@ -1,5 +1,5 @@
 {
-  "source_commit": "3942175044d758da683d0ec9003db3e516196c9a",
+  "source_commit": "1dd3eef344c010593b006cbf3cbb01bcb195f8af",
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -73,21 +73,21 @@
     "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-entry-engine-build-v2.json",
     "sha256": "9b7734387f0fc56f36afe9d7bca75e5f0bedcef479271e982025abe1d4334a1a"
   },
-  "complete": false,
-  "passed": false,
+  "complete": true,
+  "passed": true,
   "active": false,
   "GPU_executed": false,
   "production_selected": false,
   "model_quality_qualified": false,
   "replaces": {
-    "source_commit": "b41fecbb8ba640f36bb7b5308494801a0248d4cf",
+    "source_commit": "3942175044d758da683d0ec9003db3e516196c9a",
     "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-      "bytes": 22079432,
-      "sha256": "1c84da96dfcbcb35efaaef8ce4bccc1d078f58bc36e697dd82b3485fcdab6d11"
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-396d0c91f301/strata",
+      "bytes": 22079288,
+      "sha256": "570b65ddfd88e3955b58634b361bb13e12a4bd713ac6e5ae396d47265a76fd46"
     },
-    "source_build_passed": true,
-    "retained_binary_source_commit": "b41fecbb8ba640f36bb7b5308494801a0248d4cf",
+    "source_build_passed": false,
+    "retained_binary_source_commit": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
     "reason": "Closed unused comparison engine; original source/recipe recovered from Git. Reuse its cache for the immediate corrected build, not a retained old generation."
   },
   "targets": [
@@ -317,14 +317,43 @@
       "next_review": "At selective Down comparison closure, review these remaining unique provenance receipts/source against realistic retrieval need; retire redundant transaction details without claiming source recovery."
     }
   },
-  "error": "compile-link failed: [1/2] Building CXX object CMakeFiles/sycl_host_event_gate_test.dir/tests/sycl/host_event_gate.cpp.o\nFAILED: CMakeFiles/sycl_host_event_gate_test.dir/tests/sycl/host_event_gate.cpp.o \n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++ -DSTRATA_ENABLE_SYCL=1 -DSTRATA_VERSION=\\\"0.1.38\\\" -I/home/yayoi/orca/workspaces/Strata/sycl/include -I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat -O3 -DNDEBUG -std=c++20 -fsycl -fsycl-id-queries-range=size_t -MD -MT CMakeFiles/sycl_host_event_gate_test.dir/tests/sycl/host_event_gate.cpp.o -MF CMakeFiles/sycl_host_event_gate_test.dir/tests/sycl/host_event_gate.cpp.o.d -o CMakeFiles/sycl_host_event_gate_test.dir/tests/sycl/host_event_gate.cpp.o -c /home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/host_event_gate.cpp\n/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/host_event_gate.cpp:2:10: fatal error: 'sycl/ext/oneapi/experimental/command_graph.hpp' file not found\n    2 | #include <sycl/ext/oneapi/experimental/command_graph.hpp>\n      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n1 error generated.\nninja: build stopped: subcommand failed.\n",
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 22079432,
+    "sha256": "1c84da96dfcbcb35efaaef8ce4bccc1d078f58bc36e697dd82b3485fcdab6d11"
+  },
+  "compile_database_sha256": "296c73b5139fbdc8c89fab4ee20d3ea985718c998f4ba707eca739ea9ee8fcf0",
+  "configured_compile_entries": 224,
+  "fixtures": {
+    "sycl_verifier_retirement_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_verifier_retirement_test",
+      "sha256": "9d55c63a76c910bdd054025fd5bb4327308df1a64bb4f178fba61fb71f25b658"
+    },
+    "sycl_submission_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_submission_test",
+      "sha256": "3582ff3453f0e757cb2f2ac20a194180dcb3553e15b65f0c174ae5ed1f20d0cd"
+    },
+    "file_expert_source_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/file_expert_source_test",
+      "sha256": "e7e06781856b10cd45fb5e5d281d2a18a34b7cf7b1756caf97ed9dea9226d950"
+    },
+    "sycl_mmvq_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_mmvq_test",
+      "sha256": "c320b9b6df08a52c2da2ca2c6eca49c1e37da8bca9a55556c0bf8b2fb718384d"
+    },
+    "sycl_host_event_gate_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_host_event_gate_test",
+      "sha256": "303201ed795fac310536fea3f0103b017ddcb084fe9904910e7ed82220d2ea52"
+    }
+  },
+  "binary_origin_source_commit": "246415bfc3f8d68242b067ca49723c23c3e96be7",
   "ownership_closed": true,
   "inputs": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "3942175044d758da683d0ec9003db3e516196c9a",
+      "revision": "1dd3eef344c010593b006cbf3cbb01bcb195f8af",
       "count": 513,
-      "aggregate_sha256": "1f3acfcfcfa36ed1e06be7a7f48e81138d8be70517cd3ecdeab6c48ce23a25f1"
+      "aggregate_sha256": "2a95ee4c57cdd3183e0b84032d944c0010c83f323a868f6726961550bac1d8a4"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
@@ -338,5 +367,12 @@
       "count": 5703,
       "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
     }
-  ]
+  ],
+  "binary_origin_identity_reference": {
+    "commit": "d6bf9766ff221f458ffb45bc00b02eafc16f2c61",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json",
+    "sha256": "10330308656c10ff75f7baebc6bcb5d74b5e870cb5840b637f02c19536060fdf",
+    "source_commit": "b41fecbb8ba640f36bb7b5308494801a0248d4cf",
+    "reason": "Recover known unchanged ELF origin after the intervening fixture-only compile failure; byte continuity alone does not qualify new fixture inputs or model execution."
+  }
 }
