@@ -1,6 +1,6 @@
 {
-  "mode": "native-event-gate-compute-profiling-diagnostic",
-  "source_commit": "51864e3790fde8fd8b0a1ad63ca02dd1040cc2ac",
+  "mode": "native-event-gate-counter-event-config-diagnostic",
+  "source_commit": "44253b63b0583d85f7fb1df87e4b4a08bfbf6862",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
     "bytes": 22079432,
@@ -8,13 +8,36 @@
   },
   "qualification_eligible": false,
   "previous_result_reference": {
-    "commit": "893c472051db516bdc9b4efb1902cd6d94c48cd3",
+    "commit": "19e6c68a174ec39ab0ee6e0171f81b49e06e4631",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/native-event-gate-current.json",
-    "sha256": "7775d3bff3528ad03efcba239d4af8095dc907585a83787300d5f18e59104390"
+    "sha256": "d9b3e1acc0c872bd8ea0ada2104e7efb58ea7118751c7e864fe747d41f29adb4"
+  },
+  "profiled_control_reference": {
+    "commit": "79eb60594a40d4915041d18d53286d3944064aa4",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/native-event-gate-current.json",
+    "sha256": "7775d3bff3528ad03efcba239d4af8095dc907585a83787300d5f18e59104390",
+    "source_commit": "174911063739da076ce8c41713c297c5fc7280a9"
+  },
+  "candidate_key_presence": {
+    "path": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+    "sha256": "50adb6b727d027309039803033d41efeae4b248589ee363f321c0d538c7de3ff",
+    "key": "EnableImplicitConvertionToCounterBasedEvents",
+    "present": true,
+    "source": "Nonexecuting exact ELF byte-string check plus compatible original NEO debug registry. Presence does not prove that the installed runtime consumes the key or identify its exact source."
+  },
+  "diagnostic_environment_override": {
+    "EnableImplicitConvertionToCounterBasedEvents": "0"
+  },
+  "key_source": {
+    "repository": "intel/compute-runtime",
+    "commit": "050536ff3b6f830199ec99cff8ffcac3d804c40a",
+    "registry": "shared/source/debug_settings/debug_variables_base.inl:282",
+    "consumer": "level_zero/core/source/cmdlist/cmdlist_hw.inl:5155",
+    "meaning": "0 disables implicit regular-to-counter-event conversion; explicit counter events need not change"
   },
   "fixture": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_host_event_gate_test",
-    "sha256": "121e751c0b242c9ce5967e7ad3a324522c56bfb81e6f9f809388caed4ed3488b"
+    "sha256": "3114ee03673971a4b753df62af49163de778b9863678f76a86edb072f14da8b9"
   },
   "fixture_external_headers": {
     "/usr/include/level_zero/ze_api.h": "095a0eb442ae21946f29147c209f270b93dd0eb5b12a2d0c67e5f4138b533712",
@@ -40,77 +63,52 @@
       "candidate_sha256": "0d6934adafb2ef3c640382440c14d6bd60f391e688c000796ffcea0c72849269"
     }
   },
-  "complete": true,
-  "passed": true,
+  "complete": false,
+  "passed": false,
   "active": false,
-  "cases": [
-    {
-      "mode": "copy-query",
-      "passed": true,
-      "stdout_sha256": "40548849e654fcd9e83a1d77a0984e4be27d29ae6ee8c1141ad7dd19f47509f6",
-      "stderr_sha256": "a6e1d9be297520472dc9caa0db4f56a0335fa2fd6906fe91fbd73b058148ad3c"
-    }
-  ],
+  "cases": [],
   "model_executed": false,
   "model_quality_qualified": false,
-  "consumer": "Contrast the committed v4 slow profiled native-query control by disabling only compute queue profiling in this test. Copy/probe properties, enqueue order, bounds, fallback, native calls, tracing and safety environment stay unchanged. Queue-property output is required. This explicit test-only queue-setting contrast never qualifies the replacement gate or a production/model route; preserve the profiled control failure.",
-  "gate": "One fresh copy-query process. Arm a2s fallback before import. Import/dependent submits/native-handle materialization each within100ms. Query the resident native event at most20 times5ms apart while gate is held, with a200ms observation cap. If unready, release gate before SYCL event wait; if ready, wait with gate held. Record exact branch, wait time, gate state and post-wait marker; check payload and all owner drains. Never read the marker before checked completion. Diagnostic cannot qualify a model or57-case replacement gate even if it passes.",
+  "consumer": "Restore the original v4 profiled compute queue and set only the documented original NEO implicit regular-to-counter-event conversion key to0 before native exec. Compare with the committed profiled v4 control, not solely the unprofiled v5 result. Preserve enqueue order, bounds, fallback, calls and runtime safety settings. Installed key presence does not prove effectiveness or exact source mapping; no model or replacement-gate qualification.",
+  "gate": "One fresh copy-query-profiled process. Require actual copy/compute/probe profiling1/1/0 and all queues in-order. Arm a2s fallback before import. Import/dependent submits/native-handle materialization each within100ms. Query the resident native event at most20 times5ms apart while gate is held, with a200ms observation cap. If unready, release gate before SYCL event wait; if ready, wait with gate held. Record exact branch, wait time, gate state and post-wait marker; check payload and all owner drains. Never read the marker before checked completion. Diagnostic cannot qualify a model or57-case replacement gate even if it passes.",
   "limits": "Test-only runtime progress observation. No qualification of the replacement gate, production projection math, physical wire traffic, model correctness, overlap gain or throughput.",
   "observed_queue_configuration": {
     "copy_profiling": 1,
-    "compute_profiling": 0,
+    "compute_profiling": 1,
     "probe_profiling": 0,
     "all_in_order": 1
   },
   "query_call_observation": {
-    "started": 41,
-    "completed": 41,
+    "started": 2,
+    "completed": 2,
     "by_call": {
-      "held-after-window": {
-        "completed": 1,
-        "max_us": 5,
-        "last_result": 1
-      },
       "held-before-query": {
-        "completed": 20,
-        "max_us": 6,
+        "completed": 1,
+        "max_us": 4,
         "last_result": 1
       },
       "resident-query": {
-        "completed": 20,
-        "max_us": 3,
-        "last_result": 1
+        "completed": 1,
+        "max_us": 1999034,
+        "last_result": 0
       }
     },
     "longest": {
-      "name": "held-before-query",
-      "index": 5,
-      "offset_us": 25335,
-      "elapsed_us": 6,
-      "result": 1
+      "name": "resident-query",
+      "index": 1,
+      "offset_us": 1999045,
+      "elapsed_us": 1999034,
+      "result": 0
     },
     "window": {
-      "query_us": 101429,
-      "queries": 20,
-      "native_ready": 0
+      "query_us": 1999052,
+      "queries": 1,
+      "native_ready": 1
     },
-    "stdout_sha256": "40548849e654fcd9e83a1d77a0984e4be27d29ae6ee8c1141ad7dd19f47509f6",
-    "stderr_sha256": "a6e1d9be297520472dc9caa0db4f56a0335fa2fd6906fe91fbd73b058148ad3c"
+    "stdout_sha256": "365f58792a937c37050c4e7e7c51992730aa708a0cb8c0c66837709495c9f564",
+    "stderr_sha256": "641f52e62e2c8909772033f53ab825abd669ff91ce7a441d73216106881fd8ef"
   },
-  "native_query_observation": {
-    "native_ready": 0,
-    "queries": 20,
-    "import_us": 56,
-    "submit_us": 997,
-    "handle_us": 24,
-    "query_us": 101429,
-    "wait_us": 52,
-    "held_before_wait": 0,
-    "held_after_wait": 0,
-    "released_before_wait": 1,
-    "marker": 60,
-    "release": "manual"
-  },
+  "error": "copy-query-profiled: resident zeEventQueryStatus took1999034us and returnedSUCCESS; the200ms observation bound failed",
   "ownership_closed": true,
   "fresh_faults": [],
   "boot_unchanged": true,
@@ -122,21 +120,31 @@
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
   },
-  "decision": "Diagnostic completed; disabling only compute profiling made all20resident native queries returnNOT_READY within3us. No resident completion was observed while the external gate was held, so no replacement-gate,57-case,production queue or model qualification follows.",
-  "next_question": "Check original NEO/UR support for preserving profiling while avoiding implicit counter-event timestamp waits, then commit a separate bounded configuration diagnostic. Keep production queue properties/safety settings unchanged until qualification.",
-  "candidate_key_presence": {
-    "path": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
-    "sha256": "50adb6b727d027309039803033d41efeae4b248589ee363f321c0d538c7de3ff",
-    "key": "EnableImplicitConvertionToCounterBasedEvents",
-    "present": true,
-    "source": "Nonexecuting exact ELF byte-string check plus compatible original NEO debug registry. Presence does not prove that the installed runtime consumes the key or identify its exact source."
-  },
-  "artifact_retirement": {
-    "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-profiling-diagnostics-20261020.jsonl",
-    "sha256": "57da21b6b9fee7c595e04e28022eb600cd88752cc2235a4407ab603caffb05b6",
-    "files": 44,
-    "bytes": 275197,
-    "original_outcomes_unchanged": true,
-    "limits": "Retired only closed v4/v5 successful build output, successful v5 diagnostic raw/cache and closed four-scope research transactions/source views. Current/fallback builds and distinct v4 failure evidence remain. Legacy provenance holds remain unresolved."
+  "controller_error_excerpt_sha256": "37c14e926786e27fdadc0784a8c895c0a4294481b44fdbd2440c4e413af609d5",
+  "first_failed_case": "copy-query-profiled",
+  "not_executed": [
+    "completed bounded native readiness observation",
+    "57-case replacement gate",
+    "model execution"
+  ],
+  "decision": "Disabling implicit regular-to-counter-event conversion did not avoid the2s profiled-query wait in this diagnostic. Both calls returned, owner closed, no fresh GPU fault. No gate, production configuration or performance qualification. Installed key consumption and explicit UR counter-event behavior remain unverified.",
+  "next_question": "Trace original version-compatible UR-v2 event construction and explicit/implicit counter-event selection, and distinguish hardware wait/queue scheduling caused by the gate from a production readiness-query cost. No blind flag-value search or model advancement.",
+  "diagnostic": {
+    "files": [
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-event-gate-v6/owned/copy-query-profiled.stdout",
+        "bytes": 473,
+        "sha256": "365f58792a937c37050c4e7e7c51992730aa708a0cb8c0c66837709495c9f564"
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-event-gate-v6/owned/copy-query-profiled.stderr",
+        "bytes": 27701,
+        "sha256": "641f52e62e2c8909772033f53ab825abd669ff91ce7a441d73216106881fd8ef"
+      }
+    ],
+    "owner": "Main",
+    "byte_budget": 262144,
+    "consumer": "Original UR-v2 explicit/implicit event construction and imported-gate scheduling distinction after the documented conversion override failed. Review minimal required trace excerpt after source review; no full model trace.",
+    "next_review": "At completion of the next original UR/event-scheduling source reviews; retain only the representative evidence that adds information."
   }
 }
