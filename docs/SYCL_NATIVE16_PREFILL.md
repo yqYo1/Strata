@@ -1714,6 +1714,37 @@ from the independent audit ofd207. These component results do not enable the
 ordinary-Arena route, establish model correctness/nonregression or add speed.
 Return to the bounded explicit-copy/CPU-share comparison next.
 
+The ordinary-Arena candidate is independently authored against this Strata
+provider/planner and verifier. `STRATA_SYCL_VERIFY_ARENA_COPY=1`, set before
+native exec, permits only explicit mode0 copies from the existing immutable
+private-Arena layer view. It rechecks expert count, stride, full size and
+address extent; shared/file/transient providers gain no new promise. Existing
+pin and device-alias predicates retain their meaning. The default remains off.
+The existing `pcie-frac` still selects a bounded share of distinct missed
+experts; this changes neither prefill placement nor model/KV precision.
+It uses the existing16-slot staging allocation, with exact admitted staging and
+window-arena bytes logged on opt-in, and adds no resident weight bank.
+Request-footer counters separate submitted/completed copy payload and blobs,
+immutable-view groups, GPU miss groups and CPU expert jobs/entries. These are
+requested/retired logical bytes, never measured physical PCIe traffic. Partial
+submissions count only accepted copies, including rejected draft work.
+
+Before any model launch, build with
+`python3 tools/sycl/build_engine.py rebuild-arena-copy`, commit its build result,
+then run `python3 tools/sycl/check_verifier_retirement.py`. The frozen component
+gate requires14 real provider/planner/pool cases covering grouping, share/capacity,
+disabled/direct modes, file/shared fallback, missing callbacks and malformed view refusal;10
+existing submission cases; and8 verifier cases, including all16 largest-model
+blobs (2662400B each) from ordinary RAM, payload/outer guards and copy counters.
+Require normal owned closure, unchanged source/runtime/boot and no fresh fault;
+retain the source396 validated fallback during this comparison. No component
+speed threshold is imposed: this is a capability/safety prerequisite, not a
+kernel-optimization claim. A separate committed model check must establish
+actual GPU expert dispatch before32K+ thinking-enabled strong/weak generation
+comparisons. Default/model/physical262144/session/RESTORE qualification and70
+tok/s remain pending. This candidate targets measured CPU-pool capacity
+sensitivity; it does not assume CPU arithmetic rather than RAM is saturated.
+
 A conditional complete-blob copy budget also constrains that candidate.
 With at most2 resident experts per layer, top10 routing and at most4 emitted
 tokens/window, even identical routes and perfect acceptance require at least

@@ -409,6 +409,8 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
         return false;
     }
     staging_blob_bytes_ = static_cast<size_t>(blob_bytes);
+    const char* host_copy = std::getenv("STRATA_SYCL_VERIFY_ARENA_COPY");
+    sink_.host_layer_copy = host_copy && std::strcmp(host_copy, "1") == 0;
 #endif
     head_ = head;
     max_t_ = max_t;
@@ -561,6 +563,11 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
     carve(real);
     sink_.staging = (unsigned long long) staging_;
     sink_.staging_cap = kStagingBlobs;
+#ifdef STRATA_ENABLE_SYCL
+    if (sink_.host_layer_copy)
+        std::fprintf(stderr, "strata verify: ordinary-Arena copy enabled mode=0 staging_bytes=%zu arena_bytes=%llu\n",
+                     staging_blob_bytes_ * kStagingBlobs, (unsigned long long)count.used);
+#endif
     (void) TS;
     if (cudaStreamCreateWithFlags(&copy_, cudaStreamNonBlocking) != cudaSuccess) {
         err = "verify: copy stream create failed";
@@ -1512,6 +1519,7 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
         work_launched_ = false;
         work_status_ = cudaSuccess;
         copy_submit_status_ = cudaSuccess;
+        pending_copy_blobs_ = pending_copy_bytes_ = 0;
 #endif
         const int tb = gtb[grp], n = gte[grp] - gtb[grp];
         progress_at("verify window: the CPU experts of layer", l);
@@ -1730,6 +1738,10 @@ void Verifier::fetch_dma(void* ctx, const uint8_t* const* src, int n, size_t byt
         const auto status = cudaMemcpyAsync(reinterpret_cast<uint8_t*>(stage) + size_t(i) * bytes,
                                              src[i], bytes, cudaMemcpyHostToDevice, v->copy_);
         if (status != cudaSuccess) { v->copy_submit_status_ = status; return; }
+        ++v->copy_stats_.submitted_blobs;
+        v->copy_stats_.submitted_bytes += bytes;
+        ++v->pending_copy_blobs_;
+        v->pending_copy_bytes_ += bytes;
     }
     // SYCL's next segment is gated by finish_expert_copies(), not a GPU spin
     // on flag B. Do not queue a host task borrowing an embedded FlagSet.
@@ -1751,6 +1763,9 @@ bool Verifier::finish_expert_copies(std::string& err) {
     // borrow provider memory. If a sticky error prevents proof, retain owners.
     if (cudaStreamSynchronize(copy_) != cudaSuccess)
         strata::sycl_backend::cleanup_fail_stop("verify expert copy retirement");
+    copy_stats_.completed_blobs += pending_copy_blobs_;
+    copy_stats_.completed_bytes += pending_copy_bytes_;
+    pending_copy_blobs_ = pending_copy_bytes_ = 0;
     if (copy_submit_status_ != cudaSuccess) {
         // The window may already have modified session storage. Refuse reuse,
         // commits and old output even when the caller ignores run()'s error.
