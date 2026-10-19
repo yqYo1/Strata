@@ -4446,7 +4446,6 @@
   "ur_v2_explicit_event_construction_scope": {
     "classification": "decision support",
     "question": "Trace original UR-v2 explicit/implicit counter-event creation and safe submission-flush semantics after the documented NEO conversion override failed.",
-    "source_manifest": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/query-v6-followup-inputs.json",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/ur-v2-explicit-event-construction-report.md",
     "report_budget_bytes": 14336,
     "schedulable_now": false,
@@ -4467,12 +4466,16 @@
       "sha256": "d70664ec0ca0c1be80522965ef3405af06df7a15398d9e758abeb30ebeff3acb",
       "main_read_original_body": false
     },
-    "accepted_digest": "UR-v2 explicit event pooling and NEO implicit conversion are separate; no effective replacement control or production latency was established. Native-handle/pool/adapter identity capture is conditional on a source-accessible committed small plan and source correspondence. Do not infer a portable flush from cudaEventQuery."
+    "accepted_digest": "UR-v2 explicit event pooling and NEO implicit conversion are separate; no effective replacement control or production latency was established. Native-handle/pool/adapter identity capture is conditional on a source-accessible committed small plan and source correspondence. Do not infer a portable flush from cudaEventQuery.",
+    "source_reference": {
+      "commit": "dc5d1bddf065b99d90e8183b159352b913cbb75c",
+      "restorable_source_files": 12,
+      "upstream_commit": "e88ee39d1d6be6e3364183af3b39b62a7ed6f211"
+    }
   },
   "native_gate_hardware_progress_scope": {
     "classification": "decision support",
     "question": "Distinguish imported-gate hardware/queue blocking from query latency, and compare bounded test designs preserving the51+6ordering and lifetime invariants.",
-    "source_manifest": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/query-v6-followup-inputs.json",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/native-gate-hardware-progress-report.md",
     "report_budget_bytes": 14336,
     "schedulable_now": false,
@@ -4499,12 +4502,17 @@
       "sha256": "326b37d0f8dc1bff51b69c8dc3b818628e3646d7eafe9f4019bb600119842392",
       "main_read_original_body": false
     },
-    "accepted_digest": "Source review corrected v4/v6 timing confusion. No signal timestamp was collected, so lateSUCCESS cannot be called post-fallback completion evidence. FastSUCCESS strictly before the actual sole host signal would be positive; NOT_READY does not identify blocking cause. A new committed bounded no-gate/held-gate pair with joined query-thread and actual host signal timestamps is conditional, never model admission. The original worker settlement remains failed."
+    "accepted_digest": "Source review corrected v4/v6 timing confusion. No signal timestamp was collected, so lateSUCCESS cannot be called post-fallback completion evidence. FastSUCCESS strictly before the actual sole host signal would be positive; NOT_READY does not identify blocking cause. A new committed bounded no-gate/held-gate pair with joined query-thread and actual host signal timestamps is conditional, never model admission. The original worker settlement remains failed.",
+    "source_reference": {
+      "commit": "dc5d1bddf065b99d90e8183b159352b913cbb75c",
+      "restorable_source_files": 12,
+      "upstream_commit": "e88ee39d1d6be6e3364183af3b39b62a7ed6f211"
+    },
+    "closed_raw_retirement_reference": "native-event-gate-current.json::artifact_retirement"
   },
   "upstream_e88_hardware_tuned_bench_scope": {
     "classification": "decision support",
     "question": "Prepare a source-supported finite hardware-tuned benchmark plan for unmodified Niko e88, including actual Arc capabilities, long input, agent sessions and strong/weak MTP.",
-    "source_manifest": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/query-v6-followup-inputs.json",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/upstream-e88-hardware-tuned-bench-report.md",
     "report_budget_bytes": 14336,
     "schedulable_now": false,
@@ -4525,6 +4533,11 @@
       "sha256": "d70664ec0ca0c1be80522965ef3405af06df7a15398d9e758abeb30ebeff3acb",
       "main_read_original_body": false
     },
-    "accepted_digest": "The actual e88 SYCL --prefill CHUNK requires --native. Freeze only supported/admitted arms after recovering the actual model/config and tiny route/API compatibility checks; vanilla performance remains unmeasured."
+    "accepted_digest": "The actual e88 SYCL --prefill CHUNK requires --native. Freeze only supported/admitted arms after recovering the actual model/config and tiny route/API compatibility checks; vanilla performance remains unmeasured.",
+    "source_reference": {
+      "commit": "dc5d1bddf065b99d90e8183b159352b913cbb75c",
+      "restorable_source_files": 12,
+      "upstream_commit": "e88ee39d1d6be6e3364183af3b39b62a7ed6f211"
+    }
   }
 }

@@ -130,22 +130,23 @@
   "decision": "Disabling implicit regular-to-counter-event conversion did not avoid the2s profiled-query wait in this diagnostic. Both calls returned, owner closed, no fresh GPU fault. No gate, production configuration or performance qualification. Installed key consumption and explicit UR counter-event behavior remain unverified.",
   "next_question": "Separate production readiness-query cost from the artificial gate. A newly committed no-gate/held-gate profiling-on diagnostic with joined bounded query helper and actual host signal timestamps can distinguish observations; no further configuration search or model advancement is authorized by the existing results.",
   "diagnostic": {
-    "files": [
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-event-gate-v6/owned/copy-query-profiled.stdout",
-        "bytes": 473,
-        "sha256": "365f58792a937c37050c4e7e7c51992730aa708a0cb8c0c66837709495c9f564"
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-event-gate-v6/owned/copy-query-profiled.stderr",
-        "bytes": 27701,
-        "sha256": "641f52e62e2c8909772033f53ab825abd669ff91ce7a441d73216106881fd8ef"
-      }
-    ],
-    "owner": "Main",
-    "byte_budget": 262144,
-    "consumer": "Original UR-v2 explicit/implicit event construction and imported-gate scheduling distinction after the documented conversion override failed. Review minimal required trace excerpt after source review; no full model trace.",
-    "next_review": "At completion of the next original UR/event-scheduling source reviews; retain only the representative evidence that adds information."
+    "error_excerpt": "native event gate: native status query exceeded its bounded held window",
+    "retained_raw": false,
+    "reason": "Committed call timings/statuses/queue properties and actual error suffice; no full-history consumer after source review. The missing signal/pool identity needs new collection.",
+    "representative_control_reference": {
+      "commit": "79eb60594a40d4915041d18d53286d3944064aa4",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/native-event-gate-current.json",
+      "sha256": "7775d3bff3528ad03efcba239d4af8095dc907585a83787300d5f18e59104390",
+      "source_commit": "174911063739da076ce8c41713c297c5fc7280a9"
+    }
   },
-  "source_review_limit": "v4/v6 have no actual host-signal timestamp; neither lateSUCCESS establishes post-fallback ordering or original kernel completion time. Profiling-offNOT_READY does not identify a hardware scheduling cause. Preserve original failed outcomes and all57-case/model gates."
+  "source_review_limit": "v4/v6 have no actual host-signal timestamp; neither lateSUCCESS establishes post-fallback ordering or original kernel completion time. Profiling-offNOT_READY does not identify a hardware scheduling cause. Preserve original failed outcomes and all57-case/model gates.",
+  "artifact_retirement": {
+    "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-v6-raw-after-source-review-20261020.jsonl",
+    "sha256": "a8c144ba6542662354a94ea1b96ff28b6f21d32b2666dee29b35b4fd4ce299c0",
+    "files": 6,
+    "bytes": 48293,
+    "original_outcomes_unchanged": true,
+    "limits": "Closed v6 raw/JIT/lifecycle output and obsolete reviewed-source manifest retired after compact evidence/source recovery. The empty root remains to prevent retry; v4 representative evidence and two current/fallback generations remain. Legacy source/recipe holds remain unresolved."
+  }
 }
