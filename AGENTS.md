@@ -85,7 +85,7 @@ historical logs or the research library wholesale.
 | Delegate research | Check scope eligibility, available capacity, the required Orca/model choice, report budget and previous-report index. Pass the current rules and keep Main's work moving. | [Parallel research](#parallel-research) |
 | Receive research | Check its classification and delegate review to native Codex gpt-6-luna with max reasoning. Main reads the short review digest; retrieve collection-report sections only for a concrete question. | [Parallel research](#parallel-research) |
 | Write or retain a result/build | Decide the realistic next consumer, required fields and review point before producing permanent output; check reachable Git history first. Keep one validated build, with another only for a named imminent comparison. Preserve useful individual samples without automatically retaining their raw logs or reports. | [Artifacts](#measurement-and-diagnostic-artifacts), [retention policy](docs/ARTIFACT_RETENTION.md) |
-| Delete artifacts | Confirm the consumer ended and useful evidence is preserved. For a build, retrieve and compare its original source/recipe from Git against the exact final executable's inputs. Check active ownership and the last required fixture. | [Artifacts](#measurement-and-diagnostic-artifacts), [deletion records](docs/ARTIFACT_RETENTION.md#cleanup-and-deletion-records) |
+| Delete artifacts | Confirm the consumer ended and useful evidence is preserved. For a build, retrieve and compare its original source/recipe from Git against the exact final executable's inputs. Check active ownership, live script dependencies and the last required fixture. | [Artifacts](#measurement-and-diagnostic-artifacts), [deletion records](docs/ARTIFACT_RETENTION.md#cleanup-and-deletion-records) |
 | Report progress or advance a candidate | Verify the actual job state, original samples and each predeclared gate. Distinguish execution success, numerical correctness, performance eligibility, model qualification and the throughput target. State the current limiting resource and next unresolved check. | [Measurement](#measurement-and-gpu-execution) |
 | Close a work boundary | Commit and push useful changes; integrate completed work into feature/sycl and the fork default through a PR. Verify remote refs and pull the clean ghq default mirror. Check actual retained paths/generations, retire finished branches, comparison builds and raw output, and record concrete remaining holds. | [Git workflow](#git-integration-and-tuning), [artifacts](#measurement-and-diagnostic-artifacts) |
 
@@ -497,6 +497,13 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   If bounded recovery establishes that the required original inputs cannot be
   recovered, preserve the compact provenance failure and retire the unusable
   binary; do not renew a hold indefinitely or count it as a validated reference.
+- Before retirement, trace current build, measurement and qualification scripts'
+  actual file dependencies. Distinguish required executable/fixture bytes from
+  a source receipt consumed only as provenance. Commit any necessary consumer
+  update to the selected validated generation before deleting its inputs, and
+  verify the affected admission check at a serialized safe boundary. A historical
+  path in a receipt alone is not a live dependency. Keep only the required
+  evidence; one consumed receipt does not justify retaining an entire old build.
 - After closure and evidence verification, retire successful full API traces,
   repeated polling/synchronization logs, raw profiler timelines and duplicate
   kernel windows. Keep one useful diagnostic per distinct unresolved mechanism,

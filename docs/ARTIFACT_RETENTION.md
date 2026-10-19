@@ -97,6 +97,15 @@ Keep these project-generated binaries and dumps outside Git, including the
 retained current generation. Commit the required source, recipe and useful
 measurement evidence instead.
 
+Before retirement, inspect the actual file dependencies of maintained build,
+measurement and qualification scripts. An executable, a same-build fixture and
+a source receipt used only for provenance have different consumers. Commit any
+necessary update to use the selected validated generation before removing its
+inputs, and verify the affected admission check at a serialized safe boundary.
+Preserve a still-consumed receipt without retaining unrelated old executables.
+A historical path recorded in a receipt alone does not establish a live
+dependency or justify keeping a whole generation.
+
 Before creating another build generation, identify the current known-good build
 and the named comparison that needs the extra one across all project worktrees.
 When the comparison closes, select the validated build to retain and retire the
