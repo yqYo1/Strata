@@ -4255,5 +4255,25 @@
     "closure_evidence": "Accepted matching worker_done, release no_owned_resource; exact incarnation and tui-idle verified, operator terminal closed with ptyKilled=true, delivery acknowledged.",
     "review_sha256": "c5630dd6a3892e395a643b1b12f3cd0be7fe7d35c3fdf29f7de5678363d9c0c4",
     "decision": "Native review rejects the claimed output race: both writer/probe use atomic_ref, setup/reset memset finishes beforehand. Actual compile blocker is the wrong graph include. Main uses graph.hpp from the installed original Intel LLVM v7.1.1 header and existing compat.cpp; corrected source needs a fresh build and runtime qualification."
+  },
+  "ur_v2_resident_event_wait_source_scope": {
+    "classification": "decision support",
+    "question": "Trace compatible original UR LevelZero-v2 EventWait/query event association and queue/engine scheduling for the concrete earlier-resident-event/later-pending-barrier failure. Distinguish host wait behavior, actual device progress and source-version mapping uncertainty; do not assume a driver bug.",
+    "source_manifest": ".cache/strata-research/20261020/ur-v2-resident-event-wait-inputs.json",
+    "report": ".cache/strata-research/20261020/ur-v2-resident-event-wait-report.md",
+    "report_budget_bytes": 12288,
+    "schedulable_now": false,
+    "prerequisites": [
+      {
+        "met": true,
+        "evidence": "Original native-event import passes; closed copy case fails its resident-progress criterion, with exact UR trace/enqueue order and pinned installed runtime identities. Previous reports do not trace this concrete UR EventWait implementation."
+      }
+    ],
+    "status": "dispatched_read_only_research",
+    "consumer": "Select a source-supported next gate/observation method; preserve failed qualification and all negative assertions. Main owns serialized tests.",
+    "task_id": "task_bab6db1449e3",
+    "dispatch_id": "ctx_3ed5f0a2dc33",
+    "terminal": "term_d2f26270-e550-4acd-8696-20030c617c26",
+    "process_incarnation": "5fe4e8ac-0321-449b-b256-ff777e405f1b::/home/yayoi/orca/workspaces/Strata/sycl@@3c6af2a4:e47dd584-0ef0-4fae-b2df-63ff3d4b3f18"
   }
 }

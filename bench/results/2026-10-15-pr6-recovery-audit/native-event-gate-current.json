@@ -1,14 +1,20 @@
 {
-  "mode": "native-event-gate",
-  "source_commit": "1dd3eef344c010593b006cbf3cbb01bcb195f8af",
+  "mode": "native-event-gate-resident-diagnostic",
+  "source_commit": "7cb121367185012f6508519a92d22c5466327a0a",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
     "bytes": 22079432,
     "sha256": "1c84da96dfcbcb35efaaef8ce4bccc1d078f58bc36e697dd82b3485fcdab6d11"
   },
+  "qualification_eligible": false,
+  "previous_result_reference": {
+    "commit": "6a0aeaa03f833c1713bff24c4cd0195d01408159",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/native-event-gate-current.json",
+    "sha256": "95140839e16f6f40163113bda5ff554f6e0c467f5de9acddc5752f347fb0a4af"
+  },
   "fixture": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_host_event_gate_test",
-    "sha256": "303201ed795fac310536fea3f0103b017ddcb084fe9904910e7ed82220d2ea52"
+    "sha256": "9abc3642748572a3d50f954cd4336db01b56b23d7ef3982f0e51153250fe640a"
   },
   "fixture_external_headers": {
     "/usr/include/level_zero/ze_api.h": "095a0eb442ae21946f29147c209f270b93dd0eb5b12a2d0c67e5f4138b533712",
@@ -40,20 +46,26 @@
   "cases": [
     {
       "mode": "import",
-      "import_us": 367,
+      "import_us": 56,
       "submit_us": 0,
-      "pending_us": 50100,
+      "pending_us": 50059,
       "passed": true,
-      "stdout_sha256": "ab6acd57df5ebcd3c4fd67b701153e1deda8528c62561fed5dfcbf8fe6a79771",
-      "stderr_sha256": "e101d770c3f61532d3ac04e94ba6878e661641c0cef82e453377bfe0efc14dd2"
+      "stdout_sha256": "bd1eb4f0a8206e8a1d9b60337b62d7fd66633c6d5f7eb7c8619df4d6f1befa1f",
+      "stderr_sha256": "af67006e9bbcf9601ab649ca4bb243a6a655dcfe6fcf69235de57d59712ff578"
     }
   ],
   "model_executed": false,
   "model_quality_qualified": false,
-  "consumer": "Only if all three pass, replace the unsuitable test gate under a separate committed57-case plan. Retire normal traces after compact metrics and closure are committed.",
+  "consumer": "Diagnose the original resident-progress failure with unchanged enqueue order and thresholds, recording the marker, gate state and host wait time. This separate diagnostic cannot qualify a replacement gate even if it passes. Preserve the original v1 outcome; no model execution. Retire normal traces after compact metrics and closure are committed.",
   "gate": "Three fresh owned processes in order import,copy,graph. Same native context/device, one regular host-visible event, keep ownership, HOST signal/wait scopes. Arm a2s fallback signaller before import. Import and dependent submits must each return within100ms; require50ms unsignalled/pending observation, independent resident/probe progress, untouched atomic output, checked manual release, exact payload and checked queue/wrapper/native-event/pool teardown. Any timeout/failure stops without retry or model execution.",
   "limits": "Test-only runtime interoperability/progress qualification, not production projection math, physical wire traffic, model correctness, overlap gain or throughput.",
-  "error": "copy: native gate blocked independent resident progress; graph case not executed",
+  "resident_observation": {
+    "value": 60,
+    "held": 0,
+    "wait_us": 1999496,
+    "submit_us": 578
+  },
+  "error": "copy: resident marker60 observed after1999496us wait, gate already released by fallback; graph case not executed",
   "ownership_closed": true,
   "fresh_faults": [],
   "boot_unchanged": true,
@@ -65,16 +77,16 @@
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
   },
-  "controller_error_excerpt_sha256": "8a907bb4f9a41cb763db4122e36fafc0e35dd302895bb1b2f4db56b04200f099",
+  "controller_error_excerpt_sha256": "fd8e1d88d064d5e13e95019146558ec57a5c45cebf0966479d6e23eb205117af",
   "first_failed_case": "copy",
   "not_executed": [
     "graph"
   ],
   "diagnostic": {
-    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-event-gate-v1/owned/copy.stderr",
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-event-gate-v2/owned/copy.stderr",
+    "sha256": "ee73b575aeae805141af84c8f477227e7306e79ff90eeea676919dd713e40e89",
     "bytes": 27729,
-    "sha256": "7184787e467f28b9a493aca44d4d888d126f773433ac65f14e6e802880f90d67",
-    "consumer": "Resolve the native gate/queue scheduling and observation sequence before a new prospective qualifier; one trace of the actual enqueue/wait order, not a new GPU fault.",
-    "limit": "Resident was enqueued after the artificial copy wait. This is not evidence that the production publish-before-fetch path cannot overlap CPU work."
+    "consumer": "Distinguish host EventWait semantics from actual queue/engine progress with the native wait source review. New marker/gate/wait observations supersede the less informative v1 instance after its active research consumer ends.",
+    "limit": "Correct marker after wait does not establish when the resident kernel ran. No GPU fault, production-path deadlock, model route or throughput conclusion."
   }
 }

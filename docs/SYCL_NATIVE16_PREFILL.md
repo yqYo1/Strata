@@ -1912,8 +1912,13 @@ preserves normal closure, unchanged boot and no fresh GPU fault.
 The next v2 run is a diagnostic with the same enqueue order and thresholds. It
 records the resident marker, whether the gate is still held, and host time in
 the resident event wait. This separates marker failure from deadline expiry;
-it cannot qualify a replacement gate even if it passes. Only a later qualified
-mechanism permits a fresh complete51+6-case plan. Preserve all pending-completion,
+it cannot qualify a replacement gate even if it passes. Its source`7cb121367`
+again failed: dependent submits returned in578us; the resident wait took1,999,496us,
+the resulting marker was60 (the correct0x3c), and the gate was already released.
+Normal closure/boot and no fresh GPU fault were confirmed. This does not establish
+when the kernel actually ran; the remaining question is host wait semantics versus
+queue/engine progress. A source review traces that exact UR-v2 boundary. Only a
+later qualified mechanism permits a fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.
 Model execution remains blocked until the complete57-case gate passes.
 After all57 passes, use `tools/sycl/early_pcie.py prepare`, commit the generated
