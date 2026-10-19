@@ -100,8 +100,8 @@
       },
       {
         "feature": "incremental_tokenization",
-        "status": "required_pending",
-        "meaning": "Exact special-token/plain-span prefix reuse; counts and refused prompts do not mutate cache.",
+        "status": "implemented_awaiting_serialized_focused_and_caller_tests",
+        "meaning": "Exact special-token/plain-span prefix reuse; token counting leaves kept prompts untouched and context-refused prompts are forgotten. Positive conversation-slot args take precedence over INFO, otherwise use the default.",
         "target_tests": [
           "serve/test_prompt_encoder.py",
           "serve/test_server.py",
@@ -111,7 +111,24 @@
           "serve/test_server.py::IncrementalPrompts.test_without_a_slot_setting_four_prompts_are_kept"
         ],
         "complement": "Amend the existing row: PromptEncoder.keep follows positive --conversation-cache-slots from spawn args before lazy startup, otherwise INFO; unknown/invalid values retain the encoder default. This prevents early prefix eviction when native cache slots exceed four.",
-        "complement_source": "serve/server.py::conversation_slots and Service initialization, diff around lines 8592-8600 and 8803-8810"
+        "complement_source": "serve/server.py::conversation_slots and Service initialization, diff around lines 8592-8600 and 8803-8810",
+        "port_source": {
+          "upstream": "Niko1221/Strata",
+          "revision": "e88ee39d1d6be6e3364183af3b39b62a7ed6f211",
+          "license": "MIT, identical root LICENSE checked before port",
+          "files": [
+            "tools/strata_tokenizer.py",
+            "serve/server.py::conversation_slots,ByteTokenizer,Service prompt init/encode/forget/context refusal,HTTP count_tokens",
+            "serve/test_prompt_encoder.py",
+            "serve/test_server.py::IncrementalPrompts(first6tests)",
+            "tools/test_tokenizer_plain_spans.py"
+          ],
+          "local_adaptation": "Preserve the fork renderer/plain-literal API, vision/FIFO and engine pathways; integrate exact encoding cache without importing native inference or replacing serve/server.py wholesale. No XeStrata source."
+        },
+        "validation_plan": [
+          "timeout 120s python3 -B -m unittest serve.test_prompt_encoder serve.test_server.IncrementalPrompts tools.test_tokenizer_plain_spans",
+          "timeout 180s python3 -B -m unittest serve.test_server"
+        ]
       },
       {
         "feature": "stream_parser_scan",
