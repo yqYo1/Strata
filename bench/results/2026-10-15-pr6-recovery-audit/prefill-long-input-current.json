@@ -1,6 +1,6 @@
 {
   "mode": "qsa-long-input-down-candidate",
-  "source_commit": "1be8de32d9b36818a9d160688aafcece24cdf697",
+  "source_commit": "f6306a58dfc2e3274d8965eb4ba11ee9ce4ee0ba",
   "build_source_commit": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
   "engine_build_receipts": {
     "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json": "a42bcb5732b1f6869b9232e4b85a2e1354187d03e47c71e7ce949b6b7601e94f",
@@ -65,7 +65,7 @@
     "STRATA_SYCL_SELECT_CYCLIC": "0",
     "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
     "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-down-candidate-v1/cache",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-down-candidate-v1-repeat1/cache",
     "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
     "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
     "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
@@ -78,8 +78,8 @@
     "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
     "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
     "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-down-candidate-v1/tmp",
-    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-down-candidate-v1",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-down-candidate-v1-repeat1/tmp",
+    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-down-candidate-v1-repeat1",
     "ZES_ENABLE_SYSMAN": "0",
     "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
     "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
@@ -105,7 +105,7 @@
       "--expert-cache",
       "128",
       "--expert-profile",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-down-candidate-v1/expert-profile.bin",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-down-candidate-v1-repeat1/expert-profile.bin",
       "--expert-cache-per-layer",
       "--pool-workers",
       "5",
@@ -144,7 +144,7 @@
       "strata"
     ],
     "host": "127.0.0.1",
-    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-down-candidate-v1/engine.stderr",
+    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-down-candidate-v1-repeat1/engine.stderr",
     "engine_silence_s": 480,
     "parallel": 1,
     "open_browser": false,
@@ -154,9 +154,9 @@
     "/bin/sh",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
     "--config",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-down-candidate-v1/config.json",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-down-candidate-v1-repeat1/config.json",
     "--port",
-    "52581",
+    "42033",
     "--runs",
     "4",
     "--prefill-only",
@@ -169,16 +169,16 @@
     "--ready-timeout",
     "600",
     "--out",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-down-candidate-v1/bench"
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-attention-model-long-input-down-candidate-v1-repeat1/bench"
   ],
   "reference": {
     "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-softmax-measurement-inputs-v1.json",
     "sha256": "3792c36462e333816ce5d5d9ac39f3dcc13809939d8d3133c570d8945257d1dd"
   },
-  "config_sha256": "a9c48c8e40b060c74051020e47d850b02faa625877b867b3d29bbad50a60c103",
+  "config_sha256": "06579f03d82a272ee148bac8efc99af4a96c5e69f0002294290cf84cdc3677fb",
   "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
-  "complete": true,
-  "passed": true,
+  "complete": false,
+  "passed": false,
   "active": false,
   "model_quality_qualified": false,
   "physical262144_RESTORE_qualified": false,
@@ -206,7 +206,7 @@
     "component_gate_passed": true,
     "selector": "large: matrix-wide jobs>=2334 rows; smaller jobs retain separate GU/SwiGLU"
   },
-  "cohort_index": 0,
+  "cohort_index": 1,
   "long_input_screen": {
     "minimum_actual_tokens": 98304,
     "generated_token_cap": 24,
@@ -282,9 +282,9 @@
     "limits": "Production upload helper/cache, synthetic byte readers, private maps and caller unwind only. No real provider enqueue fault injection, model arithmetic, speed, session rollback or physical262144/RESTORE qualification."
   },
   "preceding_long_input_result": {
-    "commit": "1be8de32d9b36818a9d160688aafcece24cdf697",
+    "commit": "f6306a58dfc2e3274d8965eb4ba11ee9ce4ee0ba",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json",
-    "mode": "qsa-long-input-down-base"
+    "mode": "qsa-long-input-down-candidate"
   },
   "source_view_qualification": {
     "source_contract_cleared": true,
@@ -338,436 +338,5 @@
     "limits": "Source-view stays enabled; unchanged117K workload/384 slots/GPU placement/GU/QSA/GDN. Not broad quality,physical262144,session/RESTORE or sustained70tok/s decode qualification."
   },
   "source_count": 112,
-  "source_aggregate_sha256": "c6b2a712a51efb97eb00f1a906ac71ad58f9258dfa7990cabd86d61b061cabb5",
-  "exit_code": 0,
-  "requests": [
-    {
-      "run": 0,
-      "ok": true,
-      "eligible": true,
-      "actual_prompt_tokens": 117489,
-      "actual_read_tokens": 117489,
-      "actual_reused_tokens": 0,
-      "generated_tokens": 24,
-      "thinking_requested": true,
-      "reasoning_observed": true,
-      "stream_complete": true,
-      "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
-      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
-      "ttft_s": 126.609,
-      "total_s": 128.267,
-      "prompt_tps": 933.1,
-      "prompt_ms": 125916.6,
-      "decode_tps": 13.6,
-      "decode_ms": 1770.7,
-      "prompt_tps_source": "engine",
-      "decode_tps_source": "engine",
-      "drafts_offered": 21,
-      "drafts_accepted": 16,
-      "finish_reason": "length",
-      "err": null,
-      "eligibility_errors": []
-    },
-    {
-      "run": 1,
-      "ok": true,
-      "eligible": true,
-      "actual_prompt_tokens": 117489,
-      "actual_read_tokens": 117489,
-      "actual_reused_tokens": 0,
-      "generated_tokens": 24,
-      "thinking_requested": true,
-      "reasoning_observed": true,
-      "stream_complete": true,
-      "request_sha256": "fd3ad8ad7033776ad749b22e62e910e5f47e3f7664705f48d9f1fe7349b65515",
-      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
-      "ttft_s": 117.495,
-      "total_s": 119.142,
-      "prompt_tps": 1005.8,
-      "prompt_ms": 116809.3,
-      "decode_tps": 13.7,
-      "decode_ms": 1753.6,
-      "prompt_tps_source": "engine",
-      "decode_tps_source": "engine",
-      "drafts_offered": 21,
-      "drafts_accepted": 16,
-      "finish_reason": "length",
-      "err": null,
-      "eligibility_errors": []
-    },
-    {
-      "run": 2,
-      "ok": true,
-      "eligible": true,
-      "actual_prompt_tokens": 117489,
-      "actual_read_tokens": 117489,
-      "actual_reused_tokens": 0,
-      "generated_tokens": 24,
-      "thinking_requested": true,
-      "reasoning_observed": true,
-      "stream_complete": true,
-      "request_sha256": "daabbef4775c3fbdbfd832339d80a5ae2f91025b66df79b92fb8f6905f33b041",
-      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
-      "ttft_s": 117.522,
-      "total_s": 119.179,
-      "prompt_tps": 1005.7,
-      "prompt_ms": 116819.8,
-      "decode_tps": 13.5,
-      "decode_ms": 1781.6,
-      "prompt_tps_source": "engine",
-      "decode_tps_source": "engine",
-      "drafts_offered": 21,
-      "drafts_accepted": 16,
-      "finish_reason": "length",
-      "err": null,
-      "eligibility_errors": []
-    },
-    {
-      "run": 3,
-      "ok": true,
-      "eligible": true,
-      "actual_prompt_tokens": 117489,
-      "actual_read_tokens": 117489,
-      "actual_reused_tokens": 0,
-      "generated_tokens": 24,
-      "thinking_requested": true,
-      "reasoning_observed": true,
-      "stream_complete": true,
-      "request_sha256": "8669c9ebe2747b1fc2d7c4806eeb66025c919981d81c51cfdbd64ba3ec3cc2b1",
-      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
-      "ttft_s": 117.497,
-      "total_s": 119.17,
-      "prompt_tps": 1005.8,
-      "prompt_ms": 116814.8,
-      "decode_tps": 13.5,
-      "decode_ms": 1771.6,
-      "prompt_tps_source": "engine",
-      "decode_tps_source": "engine",
-      "drafts_offered": 21,
-      "drafts_accepted": 16,
-      "finish_reason": "length",
-      "err": null,
-      "eligibility_errors": []
-    }
-  ],
-  "engine_exit_code": 0,
-  "native_identity": {
-    "pid": 3099981,
-    "start_ticks": 73330170,
-    "sid": 3099956
-  },
-  "route_selection": [],
-  "expert_source_route": [
-    {
-      "requested_view": "1",
-      "effective_view": "1",
-      "layers": "48",
-      "owned_slab_bytes": "0",
-      "borrowed_layer_span_bytes": "50292326400",
-      "host_copy": "eliminated",
-      "source_pin": "unspecified",
-      "source_owner": "caller_through_checked_retirement"
-    },
-    {
-      "requested_view": "1",
-      "effective_view": "1",
-      "layers": "48",
-      "owned_slab_bytes": "0",
-      "borrowed_layer_span_bytes": "50292326400",
-      "host_copy": "eliminated",
-      "source_pin": "unspecified",
-      "source_owner": "caller_through_checked_retirement"
-    },
-    {
-      "requested_view": "1",
-      "effective_view": "1",
-      "layers": "48",
-      "owned_slab_bytes": "0",
-      "borrowed_layer_span_bytes": "50292326400",
-      "host_copy": "eliminated",
-      "source_pin": "unspecified",
-      "source_owner": "caller_through_checked_retirement"
-    },
-    {
-      "requested_view": "1",
-      "effective_view": "1",
-      "layers": "48",
-      "owned_slab_bytes": "0",
-      "borrowed_layer_span_bytes": "50292326400",
-      "host_copy": "eliminated",
-      "source_pin": "unspecified",
-      "source_owner": "caller_through_checked_retirement"
-    }
-  ],
-  "gu_route": {
-    "selection": [
-      "[native16-gu] fusion=large min_rows=2334"
-    ],
-    "per_request_counts": [
-      {
-        "fused_jobs": "7485",
-        "fused_rows": "49290450",
-        "separate_jobs": "29868",
-        "min_rows": "2334"
-      },
-      {
-        "fused_jobs": "7476",
-        "fused_rows": "49282122",
-        "separate_jobs": "29850",
-        "min_rows": "2334"
-      },
-      {
-        "fused_jobs": "7479",
-        "fused_rows": "49245415",
-        "separate_jobs": "29839",
-        "min_rows": "2334"
-      },
-      {
-        "fused_jobs": "7489",
-        "fused_rows": "49249286",
-        "separate_jobs": "29809",
-        "min_rows": "2334"
-      }
-    ],
-    "limits": "Actual submitted/completed route counts; removed logical bytes are not physical VRAM traffic."
-  },
-  "down_route": {
-    "selection": [
-      "[native16-down] fusion=large min_rows=2334"
-    ],
-    "per_request_counts": [
-      {
-        "fused_jobs": "7485",
-        "fused_rows": "49290450",
-        "separate_jobs": "29868",
-        "min_rows": "2334"
-      },
-      {
-        "fused_jobs": "7476",
-        "fused_rows": "49282122",
-        "separate_jobs": "29850",
-        "min_rows": "2334"
-      },
-      {
-        "fused_jobs": "7479",
-        "fused_rows": "49245415",
-        "separate_jobs": "29839",
-        "min_rows": "2334"
-      },
-      {
-        "fused_jobs": "7489",
-        "fused_rows": "49249286",
-        "separate_jobs": "29809",
-        "min_rows": "2334"
-      }
-    ]
-  },
-  "moe_window_admission": [
-    "strata MoE window configuration: requested_mode=10 effective_mode=10 maximum_rows=81920 mixed_fp16_bytes=0",
-    "strata MoE window configuration: requested_mode=10 effective_mode=10 maximum_rows=81920 mixed_fp16_bytes=0",
-    "strata MoE window configuration: requested_mode=10 effective_mode=10 maximum_rows=81920 mixed_fp16_bytes=0",
-    "strata MoE window configuration: requested_mode=10 effective_mode=10 maximum_rows=81920 mixed_fp16_bytes=0"
-  ],
-  "residual_placement": [
-    "strata prefill: layer-major candidate, tokens=117488 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=2406154240 residual_gpu_rows=117488 residual_gpu=2406154240 residual_host=0 residual_staging=0 layer_cache=1022361600; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
-    "strata prefill: layer-major candidate, tokens=117488 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=2406154240 residual_gpu_rows=117488 residual_gpu=2406154240 residual_host=0 residual_staging=0 layer_cache=1022361600; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
-    "strata prefill: layer-major candidate, tokens=117488 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=2406154240 residual_gpu_rows=117488 residual_gpu=2406154240 residual_host=0 residual_staging=0 layer_cache=1022361600; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
-    "strata prefill: layer-major candidate, tokens=117488 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=2406154240 residual_gpu_rows=117488 residual_gpu=2406154240 residual_host=0 residual_staging=0 layer_cache=1022361600; extra allocations, GPU headroom=536870912, RAM headroom=8589934592"
-  ],
-  "mixed_scratch_route": {
-    "backing": [
-      "strata MoE mixed banks: storage=scratch primary_bytes=335544320 tail_bytes=83886080 tail_offset=1059131904 extra_allocation_bytes=0 phase=FFN_only_after_attention_drain",
-      "strata MoE mixed banks: storage=scratch primary_bytes=335544320 tail_bytes=83886080 tail_offset=1059131904 extra_allocation_bytes=0 phase=FFN_only_after_attention_drain",
-      "strata MoE mixed banks: storage=scratch primary_bytes=335544320 tail_bytes=83886080 tail_offset=1059131904 extra_allocation_bytes=0 phase=FFN_only_after_attention_drain",
-      "strata MoE mixed banks: storage=scratch primary_bytes=335544320 tail_bytes=83886080 tail_offset=1059131904 extra_allocation_bytes=0 phase=FFN_only_after_attention_drain"
-    ]
-  },
-  "expert_bank_route": {
-    "selections": [
-      {
-        "requested_slots": "384",
-        "effective_slots": "384",
-        "staged": "1",
-        "host_slab_bytes": "1363148800",
-        "device_bytes": "1022361600",
-        "residual_gpu_rows": "117488",
-        "allocation_limit_bytes": "10132807680",
-        "general_map": "private_scratch_never_published"
-      },
-      {
-        "requested_slots": "384",
-        "effective_slots": "384",
-        "staged": "1",
-        "host_slab_bytes": "1363148800",
-        "device_bytes": "1022361600",
-        "residual_gpu_rows": "117488",
-        "allocation_limit_bytes": "10132807680",
-        "general_map": "private_scratch_never_published"
-      },
-      {
-        "requested_slots": "384",
-        "effective_slots": "384",
-        "staged": "1",
-        "host_slab_bytes": "1363148800",
-        "device_bytes": "1022361600",
-        "residual_gpu_rows": "117488",
-        "allocation_limit_bytes": "10132807680",
-        "general_map": "private_scratch_never_published"
-      },
-      {
-        "requested_slots": "384",
-        "effective_slots": "384",
-        "staged": "1",
-        "host_slab_bytes": "1363148800",
-        "device_bytes": "1022361600",
-        "residual_gpu_rows": "117488",
-        "allocation_limit_bytes": "10132807680",
-        "general_map": "private_scratch_never_published"
-      }
-    ],
-    "per_request_totals": [
-      {
-        "uploads": "19631",
-        "requested_H2D_bytes": "40102860800",
-        "permanent_hits": "13594",
-        "permanent_slots": "267",
-        "total_slots": "384",
-        "final_drain": "checked"
-      },
-      {
-        "uploads": "19601",
-        "requested_H2D_bytes": "40032153600",
-        "permanent_hits": "13595",
-        "permanent_slots": "261",
-        "total_slots": "384",
-        "final_drain": "checked"
-      },
-      {
-        "uploads": "19572",
-        "requested_H2D_bytes": "39965158400",
-        "permanent_hits": "13616",
-        "permanent_slots": "267",
-        "total_slots": "384",
-        "final_drain": "checked"
-      },
-      {
-        "uploads": "19558",
-        "requested_H2D_bytes": "39945267200",
-        "permanent_hits": "13611",
-        "permanent_slots": "264",
-        "total_slots": "384",
-        "final_drain": "checked"
-      }
-    ],
-    "limits": "Requested raw expert H2D payload, not measured PCIe wire traffic; helper/full-request checked drains qualify this bounded model route only."
-  },
-  "moe_window_work": {
-    "per_request_totals": [
-      {
-        "windows": "96",
-        "dequants": "33225",
-        "jobs": "37353",
-        "source_H2D_bytes": "225576960",
-        "GPU_resident_windows_only": "1",
-        "operator_max": "8192",
-        "maximum_rows": "81920"
-      },
-      {
-        "windows": "96",
-        "dequants": "33196",
-        "jobs": "37326",
-        "source_H2D_bytes": "225576960",
-        "GPU_resident_windows_only": "1",
-        "operator_max": "8192",
-        "maximum_rows": "81920"
-      },
-      {
-        "windows": "96",
-        "dequants": "33188",
-        "jobs": "37318",
-        "source_H2D_bytes": "225576960",
-        "GPU_resident_windows_only": "1",
-        "operator_max": "8192",
-        "maximum_rows": "81920"
-      },
-      {
-        "windows": "96",
-        "dequants": "33169",
-        "jobs": "37298",
-        "source_H2D_bytes": "225576960",
-        "GPU_resident_windows_only": "1",
-        "operator_max": "8192",
-        "maximum_rows": "81920"
-      }
-    ],
-    "limits": "Completed aggregate job/row/source-map counts conserve; per-job threshold is enforced by the pinned native hook, not proved by an aggregate bound. Requested bytes are not physical traffic."
-  },
-  "long_input_process_summary": {
-    "first_use_request_index": 0,
-    "subsequent_request_indices": [
-      1,
-      2,
-      3
-    ],
-    "median_prompt_tps": 1005.8,
-    "sample_sd_prompt_tps": 0.05773502691891007,
-    "min_prompt_tps": 1005.7,
-    "max_prompt_tps": 1005.8,
-    "process_target_passed": true,
-    "futility_stop": false,
-    "limits": "One process only; no3-process target/adoption or decode qualification."
-  },
-  "gdn_column_route": [
-    "strata prefill: GDN columns=4 workgroups=192 lanes=128 epilogue=GPU_FP32_same_order scratch=existing_y",
-    "strata prefill: GDN columns=4 workgroups=192 lanes=128 epilogue=GPU_FP32_same_order scratch=existing_y",
-    "strata prefill: GDN columns=4 workgroups=192 lanes=128 epilogue=GPU_FP32_same_order scratch=existing_y",
-    "strata prefill: GDN columns=4 workgroups=192 lanes=128 epilogue=GPU_FP32_same_order scratch=existing_y"
-  ],
-  "qsa_route": [
-    "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=241555328; source=resident-Mode0 score_pitch=33 operand_layout=row-major softmax=parallel-exp-ascending-sum",
-    "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=241555328; source=resident-Mode0 score_pitch=33 operand_layout=row-major softmax=parallel-exp-ascending-sum",
-    "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=241555328; source=resident-Mode0 score_pitch=33 operand_layout=row-major softmax=parallel-exp-ascending-sum",
-    "strata prefill: QSA BF16 operands, FP32 online state/accumulation; KV=active-logical-prefix transient_bytes=241555328; source=resident-Mode0 score_pitch=33 operand_layout=row-major softmax=parallel-exp-ascending-sum"
-  ],
-  "cached_query_route": [
-    "strata prefill: QSA cached_query=1 grf_policy=default source=qualified-component",
-    "strata prefill: QSA cached_query=1 grf_policy=default source=qualified-component",
-    "strata prefill: QSA cached_query=1 grf_policy=default source=qualified-component",
-    "strata prefill: QSA cached_query=1 grf_policy=default source=qualified-component"
-  ],
-  "k_staging_route": [
-    "strata prefill: QSA k_staging=typed4 parallel_rows=1 source=qualified-component",
-    "strata prefill: QSA k_staging=typed4 parallel_rows=1 source=qualified-component",
-    "strata prefill: QSA k_staging=typed4 parallel_rows=1 source=qualified-component",
-    "strata prefill: QSA k_staging=typed4 parallel_rows=1 source=qualified-component"
-  ],
-  "v_staging_route": [
-    "strata prefill: QSA v_staging=typed4 layout=row-major source=qualified-component",
-    "strata prefill: QSA v_staging=typed4 layout=row-major source=qualified-component",
-    "strata prefill: QSA v_staging=typed4 layout=row-major source=qualified-component",
-    "strata prefill: QSA v_staging=typed4 layout=row-major source=qualified-component"
-  ],
-  "ownership_closed": true,
-  "fresh_faults": [],
-  "boot_unchanged": true,
-  "driver_after": {
-    "pci": "/sys/bus/pci/devices/0000:05:00.0",
-    "driver": "xe",
-    "vendor": "0x8086",
-    "device": "0xe20c",
-    "kernel": "7.0.0-38-generic",
-    "devcoredump": false
-  },
-  "retired_artifacts": {
-    "manifest_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/closed-down-B0-and-review-transactions-20261019.json",
-    "sha256": "daec1262fda06fe322a88b9a0caafab9c7079b9cd247b05e2a51eb5009471744",
-    "files": 74,
-    "bytes": 12859112,
-    "source_blobs_recovered": 9925,
-    "original_outcomes_unchanged": true
-  }
+  "source_aggregate_sha256": "c6b2a712a51efb97eb00f1a906ac71ad58f9258dfa7990cabd86d61b061cabb5"
 }
