@@ -150,6 +150,17 @@ overhead and longer workload attribution remain unqualified; see the current
 CPU observer entry in
 `bench/results/2026-10-15-pr6-recovery-audit/research-index.json`.
 
+`generation_engine.py prepare cpu-check`, followed by committing the plan and
+`run cpu-check`, uses the current observer build for both official long-output
+workloads. It requires the fresh same-build provider/full-bank checks and admits
+only the explicitly pinned proposed runtime files for this diagnostic, leaving
+the shared qualified hashes unchanged. It reconciles six CPU records against
+all four warmup/calibration requests and both long requests; only the two long
+observations remain in the compact result. Parameter validation, stage progress,
+CPU clocks and wall timing stay enabled. This does not qualify observer overhead,
+clean speed or a hardware bottleneck. The earlier clean baseline remains
+recoverable at commit`8fe6b1af6` from the same result path.
+
 For a prefill-only screen, `bench.sh --prefill-only --prefill-tokens N` accepts
 32768,65536,98304 or131072 as the minimum **actual prompt and read tokens**.
 Thinking stays on and output is capped at24 tokens; this does not qualify

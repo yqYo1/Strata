@@ -15,6 +15,8 @@ from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import strata_bench as b
 import long_generation_bench as lg
+sys.path.insert(0, str(Path(__file__).resolve().parent / 'sycl'))
+import generation_engine as generation
 
 
 def raw(body="answer", offered=300):
@@ -26,6 +28,46 @@ def raw(body="answer", offered=300):
 
 
 class EvidenceTests(unittest.TestCase):
+    def test_CPU_observation_reconciliation_rejects_missing_invalid_and_mismatched_requests(self):
+        phases = ['warm-up/chat', 'calibration', 'calibration', 'warm-up/prompt',
+                  'long-generation/regular-code', 'long-generation/varied-prose']
+        inputs, outputs = [19, 240, 900, 1080, 33000, 33285], [24, 1, 1, 8, 1500, 1800]
+        entries = [dict(kind='result', phase=phase, sample=dict(ok=True, prompt_tokens=n, generated_tokens=m))
+                   for phase, n, m in zip(phases, inputs, outputs)]
+        values = [dict(schema=1, input_tokens=n, generated_tokens=m, valid=True, single_stage=True,
+            clock_deltas_valid=True, quiescent=True, worker_jobs_fit=True, main_subsets_fit=True,
+            counter_errors=0, unwound=0, snapshot_read_errors=0, unexpected_mode_tasks=0,
+            wall_through_commit_ms=1000., windows=max(0, m-1), worker_job_calls=100,
+            native_quant_calls=10, sync_calls=10, main_thread_ns=10000, native_process_ns=20000)
+            for n, m in zip(inputs, outputs)]
+        rows = [dict(workload=phase.split('/', 1)[1], prompt_tokens=n, generated_tokens=m)
+                for phase, n, m in zip(phases[-2:], inputs[-2:], outputs[-2:])]
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td); journal = root/'bench'/'run'/'requests.jsonl'
+            journal.parent.mkdir(parents=True)
+
+            def observe(records, events=entries):
+                journal.write_text('\n'.join(json.dumps(e) for e in events)+'\n')
+                log = '\n'.join('strata decode cpu: '+json.dumps(v) for v in records)
+                return generation.cpu_observations(root, log, rows)
+
+            selected, counts = observe(values)
+            self.assertEqual([v['workload'] for v in selected], ['regular-code', 'varied-prose'])
+            self.assertEqual(counts['valid_CPU_records'], 6)
+            self.assertEqual(counts['warmup_and_calibration_records_excluded'], 4)
+            for variant in ('missing', 'duplicate', 'invalid_warmup', 'clock_error', 'no_work', 'bad_subset'):
+                with self.subTest(variant=variant):
+                    changed = copy.deepcopy(values)
+                    if variant == 'missing': changed.pop()
+                    if variant == 'duplicate': changed[-1] = changed[-2]
+                    if variant == 'invalid_warmup': changed[0]['valid'] = False
+                    if variant == 'clock_error': changed[-1]['counter_errors'] = 1
+                    if variant == 'no_work': changed[-1]['native_quant_calls'] = 0
+                    if variant == 'bad_subset': changed[-1]['main_subsets_fit'] = False
+                    with self.assertRaises(RuntimeError): observe(changed)
+            changed = copy.deepcopy(entries); changed[-1]['phase'] = 'unexpected'
+            with self.assertRaises(RuntimeError): observe(values, changed)
+
     def test_incomplete_standard_response_cannot_enter_speed_summary(self):
         for change in ({"usage": {}}, {"done_received": False}, {"finish_reason": None}):
             r = raw(); r.update(change)

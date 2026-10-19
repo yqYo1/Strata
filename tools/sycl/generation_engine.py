@@ -27,6 +27,7 @@ RESULT = A / 'decode-long-generation-current.json'
 PREFILL = A / 'prefill-long-input-current.json'
 SETTINGS = common.SETTINGS
 WORKLOAD_ID = 'native16_decode_long_20261019'
+RESEARCH = A / 'research-index.json'
 
 
 def git(*args):
@@ -111,6 +112,83 @@ def journal_evidence(root):
     return journal, rows
 
 
+def cpu_check_qualification(build):
+    """Use fresh same-build evidence; do not broaden the historical bank reuse proof."""
+    scope = committed(RESEARCH)['current_decode_mtp_verifier_reuse_source_audit']['cpu_observer_source_audit']
+    delta = scope['runtime_smoke_plan']['runtime_asset_delta']
+    for name in ('native_cpu_qualification', 'runtime_smoke', 'runtime_bank_validation'):
+        item = scope[name]
+        guards.require(item['complete'] and item['passed'] and item['ownership_closed'],
+                       'CPU check prerequisite incomplete: ' + name)
+    smoke, bank = scope['runtime_smoke'], scope['runtime_bank_validation']
+    guards.require(scope['native_cpu_qualification']['source_commit'] == build['source_commit'] and
+        smoke['binary'] == build['binary'] and
+        smoke['build_source_commit'] == bank['build_source_commit'] == build['source_commit'] and
+        smoke['runtime_asset_delta'] == bank['runtime_asset_delta'] == delta and
+        bank['device_cases_passed'] == 6 and bank['provider_checks_passed'] and
+        bank['provider_fixture'] == build['fixtures']['file_expert_source_test'] and
+        bank['binary'] == build['fixtures']['sycl_expert_bank_test'], 'same-build runtime/bank qualification differs')
+    fixtures = ('sycl_expert_bank_test', 'file_expert_source_test', 'sycl_moe_gu_swiglu_bench',
+                'sycl_moe_down_scatter_bench', 'sycl_moe_accum_test')
+    inputs = {}
+    for name in fixtures:
+        item = build['fixtures'][name]
+        if name != 'file_expert_source_test':
+            guards.require(item['sha256'] == build['retained_validation_reference']['fixtures'][name]['sha256'],
+                           'previously qualified arithmetic fixture changed: ' + name)
+        guards.require(common.digest(item['path']) == item['sha256'], 'CPU check fixture changed: ' + name)
+        inputs[item['path']] = item['sha256']
+    return delta, dict(live_inputs=inputs, source_commit=bank['source_commit'],
+                      build_source_commit=build['source_commit'], provider_checks_passed=True, full_bank_cases=6)
+
+
+def runtime_assets_unchanged(record):
+    delta = record.get('runtime_asset_delta', {})
+    guards.require(not delta or record['mode'] == 'cpu-check', 'proposed runtime is diagnostic-only')
+    settings = json.loads(SETTINGS.read_text())
+    guards.require(set(delta) <= set(settings['runtime_elfs']), 'unknown proposed runtime asset')
+    for name, item in settings['runtime_elfs'].items():
+        proposed = delta.get(name)
+        if proposed:
+            guards.require(proposed['qualified_sha256'] == item['sha256'], 'original runtime baseline changed')
+        expected = proposed['candidate_sha256'] if proposed else item['sha256']
+        guards.require(common.digest(name) == expected, 'runtime asset changed: ' + name)
+
+
+def cpu_observations(root, log, rows):
+    """Reconcile every successful native request, including unmeasured warmups."""
+    files = list((root / 'bench').glob('*/requests.jsonl'))
+    guards.require(len(files) == 1, 'missing CPU-observer request journal')
+    entries = [json.loads(line) for line in files[0].read_text().splitlines()]
+    results = [e for e in entries if e['kind'] == 'result']
+    observed = [json.loads(line.partition(': ')[2]) for line in log.splitlines()
+                if line.startswith('strata decode cpu: ')]
+    expected_phases = ['warm-up/chat', 'calibration', 'calibration', 'warm-up/prompt',
+                       'long-generation/regular-code', 'long-generation/varied-prose']
+    guards.require([e['phase'] for e in results] == expected_phases and len(observed) == len(results),
+                   'attempted/successful/native CPU-record counts do not reconcile')
+    selected = []
+    for entry, value in zip(results, observed):
+        sample = entry['sample']
+        guards.require(sample['ok'] and value.get('schema') == 1 and all(value.get(k) is True for k in
+            ('valid', 'single_stage', 'clock_deltas_valid', 'quiescent', 'worker_jobs_fit', 'main_subsets_fit')) and
+            all(type(value.get(k)) is int and value[k] == 0 for k in
+                ('counter_errors', 'unwound', 'snapshot_read_errors', 'unexpected_mode_tasks')) and
+            value['input_tokens'] == sample['prompt_tokens'] and
+            value['generated_tokens'] == sample['generated_tokens'] and
+            math.isfinite(value['wall_through_commit_ms']) and value['wall_through_commit_ms'] > 0,
+            'invalid or mismatched successful-request CPU record')
+        if entry['phase'].startswith('long-generation/'):
+            guards.require(value['windows'] > 0 and all(type(value.get(k)) is int and value[k] > 0 for k in
+                ('worker_job_calls', 'native_quant_calls', 'sync_calls', 'main_thread_ns', 'native_process_ns')),
+                'long-generation CPU observation has no work')
+            selected.append(dict(workload=entry['phase'].split('/', 1)[1], **value))
+    guards.require([(o['workload'], o['input_tokens'], o['generated_tokens']) for o in selected] ==
+        [(r['workload'], r['prompt_tokens'], r['generated_tokens']) for r in rows], 'CPU records differ from official rows')
+    return selected, dict(successful_requests=len(results), valid_CPU_records=len(observed),
+                          warmup_and_calibration_records_excluded=4, all_request_counts_reconciled=True)
+
+
 def prepare(mode, cohort, root):
     reference = committed(PREFILL)
     summary = reference['independent_down_comparison']
@@ -118,6 +196,11 @@ def prepare(mode, cohort, root):
         not reference['active'] and summary['performance_selection_gate_passed'] and
         summary['prefill1000_target_passed'], 'selected prefill cohort must close first')
     previous = committed(RESULT) if RESULT.exists() else None
+    cpu_check = mode == 'cpu-check'
+    if cpu_check:
+        guards.require(previous and previous['complete'] and previous['passed'] and previous['ownership_closed'] and
+            previous.get('independent_process_summary', {}).get('original_benchmark_inputs_recovered') == 114,
+            'close and summarize the original long-generation baseline first')
     if mode == 'clean':
         guards.require(previous and previous['complete'] and previous['passed'] and
             previous['ownership_closed'] and not previous['active'] and
@@ -125,11 +208,16 @@ def prepare(mode, cohort, root):
             previous['cohort'] == (0 if cohort == 0 else cohort - 1),
             'a completed eligible check/preceding clean process is required')
     build, build_receipts = common.committed_engine_build()
-    guards.require(build['binary'] == reference['binary'], 'selected engine changed')
-    component = committed(A / 'moe-expert-bank-current.json')
-    proof = common.expert_bank_build_proof(component['gpu'], build)
+    if cpu_check:
+        delta, proof = cpu_check_qualification(build)
+    else:
+        guards.require(build['binary'] == reference['binary'], 'selected engine changed')
+        component = committed(A / 'moe-expert-bank-current.json')
+        proof = common.expert_bank_build_proof(component['gpu'], build)
     committed(SETTINGS)
     qualifications = {str(SETTINGS): common.digest(SETTINGS)}
+    if cpu_check:
+        qualifications[str(RESEARCH)] = common.digest(RESEARCH)
     for key in ('ordered_exp_qualification', 'gu_qualification', 'mixed_qualification',
                 'expert_bank_qualification', 'down_qualification'):
         item = reference[key]
@@ -151,10 +239,12 @@ def prepare(mode, cohort, root):
     for key in list(env):
         if key.startswith('UR_LOG_') or key in ('UR_ENABLE_LAYERS', 'STRATA_TRACE'):
             del env[key]
-    if mode == 'check':
+    if mode in ('check', 'cpu-check'):
         env.update(UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION', STRATA_TRACE='1')
         env.update({k: v for k, v in json.loads(SETTINGS.read_text())['environment'].items()
                     if k.startswith('UR_LOG_') and k != 'UR_LOG_TRACING'})
+    if cpu_check:
+        env.update(STRATA_DECODE_CPU_PROFILE='1', STRATA_DECODE_TIMING='1')
     guards.require(all(env.get(k) == v for k, v in {
         'UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD': '1', 'NEOReadDebugKeys': '1',
         'EnableDirectSubmission': '0', 'STRATA_SYCL_PREFILL_SAME_QUEUE': '1'}.items()),
@@ -162,7 +252,7 @@ def prepare(mode, cohort, root):
     config = dict(reference['config'])
     flags = list(config['args'])
     flags[flags.index('--expert-profile') + 1] = str(root / 'expert-profile.bin')
-    config.update(args=flags, log=str(root / 'engine.stderr'), env={})
+    config.update(exe=build['binary']['path'], args=flags, log=str(root / 'engine.stderr'), env={})
     config_path = root / 'config.json'
     config_path.write_text(json.dumps(config, indent=2) + '\n')
     import socket
@@ -193,6 +283,12 @@ def prepare(mode, cohort, root):
         purpose='First validated long-generation screen, then three independent clean processes; no optimization comparison or bottleneck claim.',
         prospective_gates='Each of both workload rows must have >=32768 fresh actual input/read tokens, >=1024 actual generated tokens including thinking, >=512 answer characters, engine clocks, normal SSE and >=256 offered drafts. Preserve all failures. Three eligible clean independent processes are needed to assess throughput/spread and observed strong>=60%/weak<=40% acceptance. A single process or traced check cannot qualify70tok/s.',
         limits='Current decode placement, spec4, suffix0 and safety settings unchanged. Standard client warmup/calibration precedes regular-code then varied-prose; there are no repeated same-workload warm samples within a process. Requested payload/call counts are not physical traffic. Physical full-context, quality, agent-session and RESTORE gates remain open.')
+    if cpu_check:
+        plan.update(runtime_asset_delta=delta,
+            same_build_bank_qualification={k: v for k, v in proof.items() if k != 'live_inputs'},
+            purpose='First parameter-validated official long-generation CPU observation on the proposed runtime assets. Both original strong/weak workloads and all six successful native requests must reconcile. No clean speed or resource bottleneck attribution before matched observer-overhead evidence.',
+            prospective_gates=plan['prospective_gates'] + ' Exactly six valid native CPU records (four warmup/calibration and both long requests), no invalid clocks/counters, with matched input/output counts through final wait_commit. Preserve every failed/partial request. Runtime safety settings and qualified baseline hashes remain unchanged; only explicit proposed assets are admitted for this diagnostic.',
+            limits=plan['limits'] + ' Parameter validation, stage logging, CPU clocks and wall observers enabled: this is not clean throughput or observer-overhead evidence. RAM/PCIe bytes, GPU service, physical full context and broad quality remain unqualified. Previous clean samples belong to the older runtime and do not isolate observer overhead.')
     (root / 'plan.json').write_text(json.dumps(dict(plan, source_sha256=pins), indent=2) + '\n')
     RESULT.write_text(json.dumps(plan, indent=2) + '\n')
     print('Prepared ' + str(RESULT.relative_to(P)) + '; commit it before run.')
@@ -212,8 +308,7 @@ def run(mode, cohort, root):
     for source in [build['project'], *build['dependencies']]:
         for name, expected in source['source_sha256'].items():
             guards.require(common.digest(Path(source['root']) / name) == expected, 'native source changed: ' + name)
-    for name, item in json.loads(SETTINGS.read_text())['runtime_elfs'].items():
-        guards.require(common.digest(name) == item['sha256'], 'runtime asset changed: ' + name)
+    runtime_assets_unchanged(record)
     guards.require(common.digest(plan['binary']['path']) == plan['binary']['sha256'], 'native executable changed')
     boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
     before = subprocess.check_output(['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True)
@@ -247,6 +342,11 @@ def run(mode, cohort, root):
         guards.require(entry.get('exit_code') == end['exit_code'] == 0, 'benchmark/native process failed')
         log = (root / 'engine.stderr').read_text(errors='replace')
         guards.require(not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|retirement failed|Strata SYCL cleanup:', log), 'runtime failure')
+        if mode == 'cpu-check':
+            observations, counts = cpu_observations(root, log, record['requests'])
+            record.update(cpu_observations=observations, cpu_record_reconciliation=counts,
+                          observer_overhead_qualified=False, hardware_bottleneck_qualified=False)
+        runtime_assets_unchanged(record)
         record['passed'] = True
     except BaseException as error:
         record['error'] = str(error)
@@ -360,11 +460,12 @@ def summarize():
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('action', choices=('prepare', 'run', 'summarize'))
-    parser.add_argument('mode', choices=('check', 'clean'), nargs='?', default='check')
+    parser.add_argument('mode', choices=('check', 'clean', 'cpu-check'), nargs='?', default='check')
     parser.add_argument('cohort', type=int, choices=(0, 1, 2), nargs='?', default=0)
     args = parser.parse_args()
     guards.require(args.mode == 'clean' or args.cohort == 0, 'only one initial validation process')
-    root = B / ('decode-long-generation-v1-' + args.mode + '-' + str(args.cohort))
+    root = B / (('decode-long-generation-v2-' if args.mode == 'cpu-check' else 'decode-long-generation-v1-') +
+                args.mode + '-' + str(args.cohort))
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
