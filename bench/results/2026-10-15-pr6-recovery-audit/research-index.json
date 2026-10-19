@@ -3050,48 +3050,22 @@
       },
       "cpu_pool_fixture_source_review": {
         "classification": "decision support",
-        "status": "report_write_approval_pending",
-        "schedulable_now": false,
+        "status": "recovered_artifact_independently_reviewed",
         "source_commit": "5f91e79eca6af861e9d7001389d1e283d7dc5fd2",
-        "source_root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-decode-cpu-profile",
-        "source_sha256": {
-          "tests/core/pool_cpu_clock.cpp": "14b61575a812a3674e30732522d328d0cc966dcb1ee910728db218e6f20d4260",
-          "tests/core/cpu_clock.cpp": "677037e46ffbcc57512ba2705ab40313d796be5c004f95a78fd0212e933a8c3c",
-          "include/strata/core/cpu_clock.hpp": "6ce276314635c0b4adfa7ec507e5cb3134387240a408172c7fd1f611e4069bdf",
-          "include/strata/kernels/cpu/pool.hpp": "0122bead288ed6d783c8a93a16208c5613ebc985061c477670841641a0d8af04",
-          "src/kernels/cpu/pool.cpp": "c7fad11e48a0ce52a031a5b149b33a34f3a0daa7427be95ce88e0f738558ec16",
-          "src/kernels/cpu/native_expert.cpp": "fcb4a7c74ba45a13da162eed832860f9644f4544d3f269b9c8588f01b40fb106",
-          "src/kernels/cpu/expert.cpp": "9bcf5d889818ef3cb9619df6536e8844d151714803ac8930eada115a61b62e48",
-          "CMakeLists.txt": "a81c51a58b55c740b37afc94a5f753b9205913a33baa2704622963317e668050"
-        },
-        "question": "Audit the newly authored real ExpertPool CPU-clock fixture for valid synthetic inputs, Zen3 versus AVX512 execution safety, output/accounting conservation, sleep/wake and 97-expert batching coverage. Identify false-pass or unsupported qualification claims before Main executes the committed CPU-only plan.",
-        "prerequisites_met": [
-          "The 218-line real-pool fixture is new committed source; the previous audit covered its absence at 91a44ece7, not these bytes.",
-          "No build or CPU-critical-path measurement is needed for this source/test-contract audit; Main retains all execution ownership.",
-          "All 89 prior Orca tasks are settled; no active source reader or dispatch owns this scope."
+        "source_inputs_verified": 8,
+        "original_source_details_commit": "c5ec37e8ace3aee228c10bbb8a80c98ade3a26fa",
+        "collector_attempt_outcome": "failed; exact terminal exited, no accepted worker_done; independently reviewed artifact does not change the failed Orca Task",
+        "recovered_report_sha256": "d2c47fb37fda44f6d2f270b20be609ebeae571383da7128906232e9c440b4978",
+        "native_review_sha256": "2cf83a454845079432c943cae74926489745ba56cdade0a80207c6eee0b26bca",
+        "worker_ownership_closed": true,
+        "operational_digest": "All eight pinned sources match. No production source defect found.97 identical expert inputs cannot detect expert-index permutations; host-enabled evidence may contain zero host jobs; deterministic sleep/wake is not proved. These coverage limits remain separate from passed accounting checks and do not qualify production overhead.",
+        "coverage_limits": [
+          "Expert-index permutation detection is weak with identical blobs.",
+          "Host participation is observed but not required in every host-enabled case.",
+          "Sleep/wake behavior is not deterministically exercised."
         ],
-        "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/decode-cpu-pool-fixture-source-review.md",
-        "maximum_report_bytes": 12288,
-        "consumer": "Main qualification of the new observer after the frozen clean-generation cohort/reducer; native Luna max reviews the report first.",
-        "next_review": "Await this same active Dispatch without steering. Native Codex Luna max reviews its report; Main reads only the short actionable digest. Source5f91 in child stays unchanged through closure.",
-        "task_id": "task_35164b0712b3",
-        "dispatch_id": "ctx_108b21beacc2",
-        "worker_ownership_closed": false,
-        "attempt_outcome": "Orca positively reported failed at agent_readiness: Agent startup blocked: agent-update-prompt. Task never ran. Exact failed Dispatch released with state=released and processAction=closed_agent_terminal; no report or researcher execution exists.",
-        "launch_readiness": {
-          "terminal": "term_e78da67f-e8a9-49ca-812c-6df2d7b1743f",
-          "incarnation": "6132e9b4-a604-4f86-9fd4-8c4b06da6446",
-          "tui_idle_verified": true,
-          "model_observed": "GPT-6-Luna xhigh",
-          "command": "codex --model gpt-6-luna -c check_for_update_on_startup=false",
-          "configuration_scope": "Command invocation only; no global config or CLI update. The previous failed Dispatch remains released.",
-          "setting_source": "https://learn.chatgpt.com/docs/config-file/config-reference#check_for_update_on_startup"
-        },
-        "active_dispatch_id": "ctx_165fd1470aed",
-        "collector_model_observed": "gpt-6-luna",
-        "report_saved": false,
-        "operational_issue": "Live Dispatch reached its report-write tool call; terminal explicitly shows Yes, proceed approval for the named report outside the worker workspace. No report exists yet, no completion is claimed and Main did not steer or interrupt the worker.",
-        "future_launch": "Pass the report directory through --add-dir before a fresh Task; keep report-only mutation scope. Do not change the running worker or forge its report/receipt."
+        "source_child_retirement": "Review consumer ended; eight source hashes and all branch commits must be verified recoverable from default before removal.",
+        "next_review": "Strengthen these fixture coverage points before relying on them to qualify the corresponding behavior. No pending source reader needs the child; model/hardware gates remain separate."
       },
       "cpu_only_qualification": {
         "source_commit": "5f91e79eca6af861e9d7001389d1e283d7dc5fd2",
@@ -4031,15 +4005,15 @@
   "cpu_observer_overhead_methods_scope": {
     "classification": "decision support",
     "schedulable_now": false,
-    "status": "isolated_calibration_passed_production_variation_unresolved",
+    "status": "closed_isolated_calibration_no_accounting_rewrite",
     "prerequisite_evidence": "Current long CPU check passed with1.19million worker jobs in regular-code and6.99million in varied-prose; per-job thread CPU clocks and whole-thread accounting are present. Overhead is unknown. This question does not require CPU-critical-path evidence.",
     "novelty": "Compare clock-read calibration, whole-observer perturbation, amortized burst accounting and stratified sampling; exclude existing clock/source audits and expert-kernel optimization.",
     "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/cpu-observer-overhead-methods.md",
     "maximum_report_bytes": 20480,
     "collector_model_observed": "gpt-6-luna",
     "worker_ownership_closed": true,
-    "consumer": "Reference for the pending independent source/interpretation audit and any later accounting change; isolated region cost does not qualify production perturbation.",
-    "next_review": "After independent calibration review and the same-runtime observer-off old/new engine comparison. Retire report/code transaction artifacts when these consumers end.",
+    "consumer": "Closed diagnostic evidence for the next observer-off old/new build comparison and resource attribution; restore original calibration source only for a concrete new comparison.",
+    "next_review": "After the old/new comparison, retain only findings needed for actual resource attribution; no new clock-methods research is currently eligible.",
     "report_bytes": 14023,
     "report_sha256": "3461c92a3b784de5642f52e028f3403d5e29d747fbef3e06549accdf503c583a",
     "operational_digest": "The frozen six-process observer comparison failed its original overhead gate; off samples also vary and one pair reverses. Select only an isolated same-API CPU-region/control calibration as decomposition. Do not apply the report's2% proposal, infer production read-path/cost or use a constant throughput correction.",
@@ -4306,12 +4280,13 @@
         "commit": "1c35d2156",
         "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
         "reason": "Keep useful individual batch timings/totals in the active index; original per-thread/checksum vectors remain recoverable from Git. The frozen external receipt is retained only for the active source auditor."
-      }
+      },
+      "raw_retention_consumer": "Native review completed; no remaining raw/binary consumer. Original source/recipe/result are recoverable on default. Retirement is pending the serialized cleanup."
     },
     "calibration_source_audit": {
       "classification": "decision support",
-      "schedulable_now": true,
-      "status": "research_running",
+      "schedulable_now": false,
+      "status": "native_reviewed_no_reuse_blocker",
       "prerequisite_evidence": "New immutable calibration source227869de9;17 evidence tests and12 closed CPU-only batches; original production bundle gate failed. Scope is source/interpretation audit of this new calibrator, distinct from older ExpertPool fixture audit and general methods survey.",
       "source_commit": "227869de9743a53be76d2dbb13734ef9389b80de",
       "original_result_commit": "1c35d2156d14ecc830b2962510be01fd64398f97",
@@ -4326,9 +4301,14 @@
       "terminal_handle": "term_42babf4b-e0b6-4ec1-a51e-c16acaad3403",
       "terminal_incarnation": "afe33f4e-fd6f-4c67-bf16-0e2cbfeb79ff",
       "collector_model_requested": "gpt-6-luna",
-      "worker_ownership_closed": false,
+      "worker_ownership_closed": true,
       "consumer": "Main uses only native Luna-max review digest to decide whether calibration/gate corrections are required; no model optimization adopted.",
-      "next_review": "After accepted worker_done, delegate native Luna-max review; preserve frozen source/receipt until that review and retire ended raw/build consumers after original inputs are reachable from default."
+      "next_review": "Review complete. Retire the closed diagnostic code/raw/report transactions after preserving useful findings and original source/result commits. No new methods scope is currently schedulable.",
+      "collector_model_observed": "gpt-6-luna",
+      "report_bytes": 9182,
+      "report_sha256": "243a46192f1cf230eea28da1ff59bed8a21a34b192894349466971d3a974b9ce",
+      "operational_digest": "Independent review finds no calibration reuse blocker. The observed delta is active CpuTimeRegion cost over a null-counter wrapper control; it is not a production upper bound, pure clock latency, a speed correction or a CPU bottleneck. Keep accounting unchanged and compare old/new engines observer-off on the same runtime with separate host/wait attribution.",
+      "native_review_sha256": "ecb5b73aee9c37b28245007beabea7ad80e224c53ca4c3b9ee968197a687a430"
     }
   },
   "sycl_host_affinity_runtime_contract_scope": {

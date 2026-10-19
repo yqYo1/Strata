@@ -1429,6 +1429,11 @@ evidence of a syscall/vDSO path. Do not linearly correct model wall time from it
 No lighter-accounting rewrite is selected from these values. Next compare the
 retained old/new engines without observers on the same runtime, and collect
 bounded thread/resource attribution before selecting an inference optimization.
+Independent source/interpretation review found no calibration reuse blocker.
+The closed calibration export, standalone fixture and parser tests are retired;
+restore original source`227869de9` and its committed plan for a concrete new
+comparison. Individual batch timings/totals remain in the current index, with
+original per-thread vectors at`1c35d2156`.
 A separate read-only placement observation found the native leader on CPU0,
 expert workers on CPUs1–5,19 earlier threads allowed on0–11 and five later
 threads on0. Their roles/activity and any latency effect remain unknown.
