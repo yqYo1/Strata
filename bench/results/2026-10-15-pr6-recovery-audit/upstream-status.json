@@ -100,7 +100,7 @@
       },
       {
         "feature": "incremental_tokenization",
-        "status": "implemented_awaiting_serialized_focused_and_caller_tests",
+        "status": "ported_focused_and_caller_tests_passed",
         "meaning": "Exact special-token/plain-span prefix reuse; token counting leaves kept prompts untouched and context-refused prompts are forgotten. Positive conversation-slot args take precedence over INFO, otherwise use the default.",
         "target_tests": [
           "serve/test_prompt_encoder.py",
@@ -129,16 +129,30 @@
           "timeout 120s /home/yayoi/.local/share/strata-sycl/venv/bin/python -B -m unittest serve.test_prompt_encoder serve.test_server.IncrementalPrompts tools.test_tokenizer_plain_spans",
           "timeout 180s /home/yayoi/.local/share/strata-sycl/venv/bin/python -B -m unittest serve.test_server"
         ],
-        "implementation_source_commit": "4f9495d8c",
+        "implementation_source_commit": "4f9495d8c6adad9de245fd58c4f8bf7bbbf4e496",
         "validation_attempts": [
           {
-            "source_commit": "4f9495d8c",
+            "source_commit": "4f9495d8c6adad9de245fd58c4f8bf7bbbf4e496",
             "command": "flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock timeout 120s python3 -B -m unittest serve.test_prompt_encoder serve.test_server.IncrementalPrompts tools.test_tokenizer_plain_spans",
             "tests_reported": 2,
             "errors": 3,
             "seconds": 0.028,
             "exit_code": 1,
             "error": "System python lacks the existing regex runtime dependency; modules/setup did not complete. No functional pass claimed."
+          },
+          {
+            "source_commit": "3f6dcd89aec820dccd15bda3666f1c06edfe7790",
+            "command": "flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock timeout 120s /home/yayoi/.local/share/strata-sycl/venv/bin/python -B -m unittest serve.test_prompt_encoder serve.test_server.IncrementalPrompts tools.test_tokenizer_plain_spans",
+            "tests": 18,
+            "seconds": 4.383,
+            "exit_code": 0
+          },
+          {
+            "source_commit": "3f6dcd89aec820dccd15bda3666f1c06edfe7790",
+            "command": "flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock timeout 180s /home/yayoi/.local/share/strata-sycl/venv/bin/python -B -m unittest serve.test_server",
+            "tests": 145,
+            "seconds": 54.633,
+            "exit_code": 0
           }
         ],
         "validation_python": {
@@ -147,7 +161,8 @@
           "regex": "2026.9.29",
           "jinja2": "3.1.6",
           "meaning": "Existing benchmark/server environment; verified imports, no installs or package changes."
-        }
+        },
+        "validation": "18focused and145server cases passed,157unique (the6new server cases occur in both runs). Includes4800randomized prompt comparisons, edits/Unicode/protected spans, context-refused prompt removal, HTTP counting cache immutability and slot selection. Preserve the initial missing-regex import/setup failure. Existing proc-file/socket ResourceWarnings remain. Mock engine only; no real model speed, task quality or physical262144/RESTORE qualification."
       },
       {
         "feature": "stream_parser_scan",
@@ -362,7 +377,7 @@
     "host_ui_review_sha256": "2238c4922862c9cedbf623542faae49850cd5afbc8d7ae33e7a19c24fb63a895",
     "whole_function_ledger_complete": false,
     "performance_evaluation_complete": false,
-    "first_port": "Shard extent validation ported in158d1cd60 with test-only isolation correction166eed94e;83focused/caller tests passed. Next required host feature remains incremental tokenization; full feature ledger/vanilla performance remain incomplete.",
+    "first_port": "Shard extent validation ported and83setup cases passed. Exact incremental prompt encoding ported in4f9495d8c6adad9de245fd58c4f8bf7bbbf4e496 and157unique focused/server cases passed. Continue remaining native protocol and host/UI dependencies; whole feature ledger and unmodified hardware-tuned upstream performance remain incomplete.",
     "required_ui": "Desktop/terminal user-visible functions require integration through an Arc-compatible route; NVIDIA-only upstream packaging does not make shared functionality optional.",
     "source_scope": "All370native review paths matched the current manifest. BGEN/BGENI/BSTOP and disk SAVE/RESTORE handlers remain required native protocol ports; snapshot calls alone do not supply them. ESIMD/TQ held for provenance. No upstream inference adopted.",
     "native_review_sha256": "f76037e7b855e0ed82498e99e7d40ccf77da53aebc5400069ca0e8126d99c4ee"
