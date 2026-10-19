@@ -46,13 +46,6 @@ bool qsa_bf16_prefix_ordered_exp_batch(const uint16_t *q, const QsaAttnPools &po
     const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
     uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
     int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream);
-// Component-only cached-Q/KVvec4 variant: each lane adds cells lane/lane+16,
-// then SIMD16 reduces the FP32 sums. Reduction order is not a bitwise contract.
-// The maximum, exp2, alpha, BF16 probability and FP32 FMA update are unchanged.
-bool qsa_bf16_prefix_parallel_sum_batch(const uint16_t *q, const QsaAttnPools &pools,
-    const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
-    uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
-    int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream);
 
 // Diagnostic-only online state for one query, KV group and head row. Includes
 // padded head rows12..15; they follow the original state update too. Each
@@ -65,13 +58,6 @@ struct QsaPrefixStateProbe {
   int kv_head = 0, head = 0;
   float *states = nullptr;
 };
-// Diagnostic counterpart of parallel_sum; same state-span admission contract.
-// Do not collect performance from this specialization.
-bool qsa_bf16_prefix_parallel_sum_probe_batch(const uint16_t *q, const QsaAttnPools &pools,
-    const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
-    uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
-    int64_t live_cells, const QsaBf16PackedScratch &scratch,
-    const QsaPrefixStateProbe &probe, void *stream);
 // Explicit bool selects matched serial or ordered-exp diagnostic kernels.
 // It does not mutate environment or enable a model dispatch route. Compare
 // instrumented output to each corresponding normal export before interpreting

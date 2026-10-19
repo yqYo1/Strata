@@ -513,20 +513,6 @@ if(STRATA_SYCL_TESTS)
   target_compile_options(sycl_qsa_bf16_prefix_ordered_exp_bench PRIVATE -fno-fast-math -ffp-contract=off)
   target_compile_definitions(sycl_qsa_bf16_prefix_ordered_exp_bench PRIVATE STRATA_QSA_BENCH_ORDERED_EXP=1)
 
-  # Matched cached-Q/KVvec4 parallel sum; the original exact-bit tests stay strict.
-  add_executable(sycl_qsa_bf16_prefix_parallel_sum_test EXCLUDE_FROM_ALL tests/sycl/qsa_bf16_prefix.cpp)
-  target_link_libraries(sycl_qsa_bf16_prefix_parallel_sum_test PRIVATE strata_kernels)
-  target_compile_features(sycl_qsa_bf16_prefix_parallel_sum_test PRIVATE cxx_std_20)
-  target_compile_options(sycl_qsa_bf16_prefix_parallel_sum_test PRIVATE -fno-fast-math -ffp-contract=off)
-  target_compile_definitions(sycl_qsa_bf16_prefix_parallel_sum_test PRIVATE
-    qsa_bf16_prefix_batch=qsa_bf16_prefix_parallel_sum_batch STRATA_QSA_COMPARE_PARALLEL_SUM=1
-    STRATA_QSA_COMPARE_PREFIX_STATE=1 STRATA_QSA_PACKED_GUARD=17)
-  add_executable(sycl_qsa_bf16_prefix_parallel_sum_bench EXCLUDE_FROM_ALL tests/sycl/qsa_bf16_prefix_layout_bench.cpp)
-  target_link_libraries(sycl_qsa_bf16_prefix_parallel_sum_bench PRIVATE strata_kernels)
-  target_compile_features(sycl_qsa_bf16_prefix_parallel_sum_bench PRIVATE cxx_std_20)
-  target_compile_options(sycl_qsa_bf16_prefix_parallel_sum_bench PRIVATE -fno-fast-math -ffp-contract=off)
-  target_compile_definitions(sycl_qsa_bf16_prefix_parallel_sum_bench PRIVATE STRATA_QSA_BENCH_PARALLEL_SUM=1)
-
   add_executable(sycl_qsa_bf16_prefix_subgroup_test EXCLUDE_FROM_ALL tests/sycl/qsa_bf16_prefix.cpp)
   target_link_libraries(sycl_qsa_bf16_prefix_subgroup_test PRIVATE strata_kernels)
   target_compile_features(sycl_qsa_bf16_prefix_subgroup_test PRIVATE cxx_std_20)

@@ -1571,7 +1571,7 @@ unqualified; this bounded screen does not establish sustained decode speed.
 
 ## Cached-Q/KVvec4 parallel FP32 sum candidate
 
-This new component-only export retains the ordered-exp path's cached Q,
+The component-only experiment at source`bba952e33` retained the ordered-exp path's cached Q,
 vector K/V staging, maximum, ordinary `sycl::exp2`, alpha, BF16 probability
 operand and FP32 FMA normalizer update. Each SIMD16 lane adds probabilities
 for cells `lane` and `lane+16`; `reduce_over_group` then replaces the32 ordered
@@ -1614,9 +1614,14 @@ This is evidence that this isolated reduction change has a small effect in
 these shapes, not a physical-bandwidth or occupancy measurement. Physical-context
 model qualification remains separate from the component checks.
 The a576 validated engine/fixtures remain the fallback while the new native
-build uses the existing comparison cache. Commands are
+build used the existing comparison cache. At that pinned source, commands were
 `build_engine.py rebuild-parallel-sum`, followed by
 `check_attention.py smoke|component|perf parallel-sum`, committing each phase
 before the next. Native fixtures and all controlling inputs must be committed
 before the build. The exact current result is written to
 `bench/results/2026-10-15-pr6-recovery-audit/qsa-parallel-sum-current.json`.
+The rejected prototype exports, conditional tests and build/measurement modes
+are retired from the active tree; restore source`bba952e33` for a concrete new
+comparison. Keep the independent fault-observation robustness fix. Source and
+recipe recovery preceded retirement of closed raw logs and unused fixtures;
+the known-good a576 fallback is retained for the next Down comparison.

@@ -71,8 +71,8 @@ def pin(root, prefixes):
 
 def main():
     guards.require(len(sys.argv) == 1 or sys.argv[1:] in
-                   (['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn'], ['rebuild-down'], ['rebuild-ordered'], ['rebuild-parallel-sum'], ['rebuild-submission'], ['rebuild-gu'], ['rebuild-mixed'], ['rebuild-expert-bank']),
-                   'use build_engine.py [rebuild|rebuild-attention|rebuild-gemm|rebuild-gdn|rebuild-down|rebuild-ordered|rebuild-parallel-sum|rebuild-submission|rebuild-gu|rebuild-mixed|rebuild-expert-bank]')
+                   (['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn'], ['rebuild-down'], ['rebuild-ordered'], ['rebuild-submission'], ['rebuild-gu'], ['rebuild-mixed'], ['rebuild-expert-bank']),
+                   'use build_engine.py [rebuild|rebuild-attention|rebuild-gemm|rebuild-gdn|rebuild-down|rebuild-ordered|rebuild-submission|rebuild-gu|rebuild-mixed|rebuild-expert-bank]')
     rebuild = len(sys.argv) == 2
     attention = sys.argv[1:] == ['rebuild-attention']
     targets = ['strata']
@@ -91,12 +91,6 @@ def main():
         targets += ['sycl_qsa_bf16_prefix_kvvec4_test',
                     'sycl_qsa_bf16_prefix_ordered_exp_test',
                     'sycl_qsa_bf16_prefix_ordered_exp_bench']
-    if sys.argv[1:] == ['rebuild-parallel-sum']:
-        targets += ['sycl_qsa_bf16_prefix_ordered_exp_test',
-                    'sycl_qsa_bf16_prefix_parallel_sum_test',
-                    'sycl_qsa_bf16_prefix_parallel_sum_bench',
-                    'sycl_moe_down_scatter_bench', 'sycl_moe_gu_swiglu_bench',
-                    'sycl_moe_accum_test', 'sycl_expert_bank_test', 'file_expert_source_test']
     if sys.argv[1:] == ['rebuild-submission']:
         targets += ['sycl_submission_test']
     if sys.argv[1:] == ['rebuild-gu']:

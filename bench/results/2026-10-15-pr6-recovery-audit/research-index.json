@@ -2345,46 +2345,13 @@
   "qsa_cached_parallel_sum_contract_scope": {
     "classification": "decision support",
     "schedulable_now": false,
-    "status": "component_closed_failed_performance_gate",
-    "question": "For one new cached-Q,K/Vvec4 QSA variant, replace only ascending FP32 sum of32 probabilities by p0+p1 plus SIMD16 reduction. Pin actual SGLang/Triton reduction contract, derive finite state/output error checks and compare legal reduction schedules without copying code or assuming a speedup.",
-    "candidate_source": {
-      "commit": "b9f4c36ffbbbe8923b8ed0d4ef3545275a373de4",
-      "source_sha256": {
-        "src/kernels/sycl/qsa_bf16_prefix.cpp": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192",
-        "include/strata/kernels/qsa_bf16_prefix.hpp": "8d180de01ec1afecac278cb9919ddeacc2f7a159ecacd5d593ed5a57b9a2b159"
-      },
-      "proposed_template": "prefix_batch_impl<Cells+1,false,true,true,true,true,false>; a new component-only export, no model hook or default change."
-    },
-    "prerequisite_evidence": "Current ordered-exp kernel source and scope are pinned;117K profiled attention interval is a material stage but includes submission gaps. Ordered path executes32 lane exchanges per head/tile; subgroup sum already exists in another template branch. Existing source-pinned SGLang contract uses FP32 tl.sum with BF16 probability storage, while exact execution order remains unproven. No new runtime counter is needed for this source/numerical-contract question.",
-    "prior_scopes": [
-      "qsa_ordered_parallel_softmax_scope",
-      "qsa_native_exp2_scope",
-      "qsa_ordered_exp_prototype_contract_scope"
-    ],
-    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-cached-parallel-sum-contract.md",
-    "report_budget": {
-      "target_words": [
-        1400,
-        2200
-      ],
-      "maximum_bytes": 24576
-    },
-    "consumer": "Main selects a separately named component candidate and prospective numerical/performance gates after frozen Down timing; old ordered-exp and historical failures remain unchanged.",
-    "next_review": "Retire consumed report/spec/review after compact decision/source evidence is committed; next mechanism is the separately reviewed production-matched Down comparison.",
-    "task_id": "task_1a468b74c373",
-    "dispatch_id": "ctx_e665e3e97b2b",
-    "terminal_handle": "term_bed63e18-3648-453a-8f8b-7e76e52bca60",
-    "run_id": "run_fb41872974e9",
-    "collector_model_observed": "gpt-6-luna",
-    "worker_ownership_closed": true,
-    "report_bytes": 14061,
-    "report_sha256": "99a0ad91bc78c238e0344f52f5f53a6fe842852e12992ed41de1d1d77c389f42",
-    "native_review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-cached-parallel-sum-native-review.json",
-    "native_review_bytes": 8514,
-    "native_review_sha256": "f1bacecfccd1079e85184d94ae10fd01aaa8b7f047ef6611a8df411a611ef329",
-    "review_digest": "Accepted with source corrections: lane+lane16 pairing and single FP32 FMA normalizer update; require empty-zero/nonempty-positive finite state, prospective numerical/performance bounds. Sum order unspecified; no speed/adoption established.",
-    "decision": "All component numerical/admission gates pass;108 clean timings give latency geomean0.993646>0.95. No model trial or adoption. Do not repeat the same isolated sum question.",
-    "component_result": "bench/results/2026-10-15-pr6-recovery-audit/qsa-parallel-sum-current.json"
+    "status": "closed_component_failed_speed_gate",
+    "decision": "Candidate source bba952e33 passes numerical/admission gates but latency geomean0.993646 misses<=0.95; no model advancement. Keep the original ordered route; do not repeat this isolated sum experiment.",
+    "component_result": "bench/results/2026-10-15-pr6-recovery-audit/qsa-parallel-sum-current.json",
+    "source_and_contract": "docs/SYCL_NATIVE16_PREFILL.md#cached-qkvvec4-parallel-fp32-sum-candidate",
+    "historical_scope_commit": "0ef1b9640ccec3932ed28ece150252c70dad9abd",
+    "report_transaction_retired": true,
+    "next_review": "Only for a distinct combined mechanism or numerical question; current next mechanism is production-matched Down fallback."
   },
   "down_fallback_comparison_contract_scope": {
     "classification": "decision support",

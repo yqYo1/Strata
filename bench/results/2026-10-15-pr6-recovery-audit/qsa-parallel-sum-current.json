@@ -256,7 +256,7 @@
   "physical262144_model_RESTORE_qualified": false,
   "baseline": "qsa_bf16_prefix_ordered_exp_batch",
   "candidate": "qsa_bf16_prefix_parallel_sum_batch",
-  "consumer": "Immediate same-binary component comparison; preserve individual samples and retire raw checks after closure.",
+  "consumer": "Compact numerical/performance decision and original samples; raw comparison is closed. Model advancement gate remains failed.",
   "prospective_gate": "New cached-Q/KVvec4 parallel FP32 sum candidate; same exp2/max/alpha/BF16 probability storage. Baseline exact-bit/state tests unchanged. Candidate finite synthetic outputs within1BF16 ULP+2e-6; exact maximum/alpha, gamma31-based tile-sum and online recurrence bounds, unchanged guards/diagnostics/inputs and physical262144 addressing. Three independent clean processes,6 rotated rounds per arm/shape,108 timings. Advance only with latency geomean<=0.95 across cap33 gathered/cap2051 gathered/clustered, no shape>1.05 and every cap2051 shape faster in each process. No model adoption.",
   "limits": "Complete wrapper wall includes admission, pack, attention and checked drain. No hardware saturation, physical traffic, occupancy or model speed inference.",
   "previous_attempt": null,
@@ -1590,5 +1590,12 @@
       146.840343
     ]
   ],
-  "timing_sample_scope": "All108 used clean timings; omit repeated PASS/shape fields already checked against the frozen fixture. Original failed performance gate is unchanged."
+  "timing_sample_scope": "All108 used clean timings; omit repeated PASS/shape fields already checked against the frozen fixture. Original failed performance gate is unchanged.",
+  "closed_raw_retirement": {
+    "manifest": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/closed-down-v6-parallel-sum-retirement-20261019.json",
+    "manifest_sha256": "17d07880dc15b04e30d680a2c70faaecb5743f596ec4f7b0643a1aac383471f9",
+    "files": 45,
+    "bytes": 10031451,
+    "original_result_commit": "0ef1b9640ccec3932ed28ece150252c70dad9abd"
+  }
 }
