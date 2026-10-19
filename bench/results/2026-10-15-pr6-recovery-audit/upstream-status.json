@@ -232,12 +232,38 @@
           "license": "MIT, identical retained root LICENSE checked before port",
           "local_complement": "Main applies the extent policy to whole_shard copied-file recognition, respects max(64, general.alignment) for the upstream one-tensor tail check, and adds malformed/header/extent/alignment boundary coverage with automatic temporary-file cleanup. No XeStrata source."
         },
-        "validation": "Pending: Main runs the focused source-committed test module after the current native build/test closes. No model or GPU measurement is required for this setup-only behavior.",
+        "validation": "Seven new shard checks and35choices tests passed. Unsloth module initially failed one unmocked builder case; preserve the failed attempt, commit the test-only mock correction, then rerun Unsloth and the planned golden-config module. No native GPU job or package change.",
         "validation_plan": [
           "python3 -B tools/test_setup_shard_check.py",
           "python3 -B tools/test_setup_choices.py",
           "python3 -B tools/test_setup_unsloth.py",
           "python3 -B tools/test_setup_golden.py"
+        ],
+        "validation_attempts": [
+          {
+            "source_commit": "158d1cd60",
+            "command": "timeout120s python3 -B tools/test_setup_shard_check.py",
+            "tests": 7,
+            "seconds": 0.008,
+            "exit_code": 0
+          },
+          {
+            "source_commit": "158d1cd60",
+            "command": "timeout120s python3 -B tools/test_setup_choices.py",
+            "tests": 35,
+            "seconds": 0.042,
+            "exit_code": 0,
+            "limits": "Existing setup.py:414 unclosed /proc/cpuinfo ResourceWarning; unrelated to this port."
+          },
+          {
+            "source_commit": "158d1cd60",
+            "command": "timeout120s python3 -B tools/test_setup_unsloth.py",
+            "tests": 37,
+            "seconds": 0.076,
+            "exit_code": 1,
+            "errors": 1,
+            "error": "test_amd_is_not_asked reached the unmocked build_engine_hip -> rocm_root; PermissionError writing /usr/.strata-rocm.json. Shared test harness mock gap, identified by source inspection; no HIP inference/build validation claimed."
+          }
         ]
       },
       {
