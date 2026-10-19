@@ -2969,7 +2969,77 @@
       ],
       "realistic_consumer": "Main pre-build fixes and serialized observer qualification after frozen generation cohort closure.",
       "next_review": "After source/CPU/runtime/overhead gates, retain useful decisions in current results and retire redundant source-audit/review paperwork.",
-      "limits": "Unbuilt/untested child candidate; clean baseline is unchanged. No inference adoption, speed gain, CPU/RAM saturation, physical-context or RESTORE qualification."
+      "limits": "Unbuilt/untested child candidate; clean baseline is unchanged. No inference adoption, speed gain, CPU/RAM saturation, physical-context or RESTORE qualification.",
+      "cpu_only_qualification_plan": {
+        "source_commit": "5f91e79eca6af861e9d7001389d1e283d7dc5fd2",
+        "compiler_sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb",
+        "compiler_version": "DPC++ compiler 7.1.0 (pre-release) build based on:",
+        "ggml_commit": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+        "ggml_clean_tracked_inputs": true,
+        "configure": [
+          "cmake",
+          "-S",
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-decode-cpu-profile",
+          "-B",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-cpu-observer-cpu-tests-v1",
+          "-G",
+          "Ninja",
+          "-DCMAKE_BUILD_TYPE=Release",
+          "-DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+          "-DCMAKE_C_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang",
+          "-DSTRATA_ENABLE_CUDA=OFF",
+          "-DSTRATA_ENABLE_HIP=OFF",
+          "-DSTRATA_ENABLE_SYCL=OFF",
+          "-DSTRATA_SYCL_VLLM_XE2_NATIVE16=OFF",
+          "-DSTRATA_BUILD_TESTS=ON",
+          "-DSTRATA_NATIVE_EXPERTS=ON",
+          "-DSTRATA_PORTABLE=OFF",
+          "-DSTRATA_CPU_ARCH=znver3",
+          "-DSTRATA_GGML_DIR=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+          "-DFETCHCONTENT_FULLY_DISCONNECTED=ON"
+        ],
+        "build": [
+          "cmake",
+          "--build",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-cpu-observer-cpu-tests-v1",
+          "--parallel",
+          "2",
+          "--target",
+          "cpu_clock_test",
+          "pool_cpu_clock_test"
+        ],
+        "test": [
+          "ctest",
+          "--test-dir",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-cpu-observer-cpu-tests-v1",
+          "--output-on-failure",
+          "--no-tests=error",
+          "-R",
+          "^(cpu_clock|pool_cpu_clock)_(off|on)$",
+          "--parallel",
+          "1"
+        ],
+        "environment_unset": [
+          "STRATA_DECODE_CPU_PROFILE"
+        ],
+        "budgets": {
+          "configure_wall_seconds": 180,
+          "build_wall_seconds": 600,
+          "test_wall_seconds": 300,
+          "raw_log_bytes": 4194304,
+          "individual_test_timeouts_seconds": [
+            10,
+            120
+          ]
+        },
+        "acceptance": "All four selected CTests exist and pass in separate off/on processes; preserve failures. Record actual host participation and explicit unsupported Q2 coverage. No model or GPU execution, throughput claim or physical resource attribution.",
+        "retention": "This external CPU-only build is for immediate observer accounting qualification; retire after its compact outcomes and original source/recipe are verified and no same-build consumer remains. Current validated native engine and fixtures stay untouched.",
+        "launch_prerequisite": "Third frozen clean-generation process and existing summary reducer closed; verify source/compiler/dependency pins and serialized ownership before executing.",
+        "cmake_version": "cmake version 3.28.3",
+        "cmake_path": "/usr/bin/cmake",
+        "ninja_version": "1.11.1",
+        "ninja_path": "/usr/bin/ninja"
+      }
     }
   },
   "native16_full_context_session_gate_source_audit": {
