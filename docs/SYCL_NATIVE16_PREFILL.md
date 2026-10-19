@@ -1881,56 +1881,40 @@ copied scratch ordering, payload/output/outer guards, empty input, maximum copy
 extent, fresh-event replay, and refusal of mismatched or unrecorded inputs.
 The separate `sycl_verifier_retirement_test --early` entry has six cases:
 small,16 largest blobs, empty, fresh-event replay, mismatched plan and unrecorded
-event. It uses production publication/fetch/launch/retirement with guarded device
-payloads and a resident-produced dependency byte. The existing16 native
-projection cases remain required; synthetic graphs do not replace their math.
+event. They use production publication/fetch/launch/retirement with guarded device
+payloads and a resident-produced dependency byte. Retain all16 native projection
+cases: synthetic graph ordering does not replace their arithmetic checks.
 
-Source`246415bfc` compiled and passed all51 existing cases. Its first early case
-failed: submission reached the first UR memcpy only after the test-only host
-task's two-second deadline. The owner closed normally, with unchanged boot and
-no fresh GPU fault. That outcome remains in the original committed
-[failed gate](https://github.com/yqYo1/Strata/blob/b9a13287c/bench/results/2026-10-15-pr6-recovery-audit/verifier-copy-safety-current.json).
-It does not establish a production deadlock or a GPU failure. Native review of
-the two runtime-contract reports recommends finite ordinary DMA first; imported
-unsignalled Level Zero events would need separate qualification.
+Two closed test mechanisms remain failed. Source`246415bfc` passed all51 existing
+cases, then its host-task gate delayed arrival at the first UR memcpy until the
+two-second deadline. Source`b41fecbb8` again passed51, then its fixed32x64MiB finite
+DMA was complete before the first pending observation. Neither failure admitted
+model execution or a resize/retry. Both owners closed normally without fresh GPU
+faults. The [current57-case result](../bench/results/2026-10-15-pr6-recovery-audit/verifier-copy-safety-current.json)
+and its original Git references preserve these distinct outcomes. They do not
+establish production deadlock or physical transfer bandwidth.
 
-The fresh v7 plan replaces only that test mechanism. On the same in-order copy
-queue, prewarm64MiB host-USM/device scratch, then enqueue32 copies (2GiB logical
-work,128MiB scratch total). Both the gate enqueue and production fetch must
-return within100ms. Independent resident work must finish while the gate remains
-pending. Copied completion must stay NotReady for50ms, and a separate queue must
-atomically observe every output word unchanged before the finite DMA ends.
-Then let DMA finish naturally and check copied completion, exact payloads,
-source retirement and outer guards. Both graph writes and the concurrent probe
-use32-bit device atomics. A short gate, delayed submission or missing progress
-fails this plan without resizing or retrying it. The gate owner drains the copy
-queue before freeing scratch and before verifier teardown, including partial
-submission and exception paths. No host task, external signal, device spin or
-runtime safety-setting change is introduced. The
-[SYCL queue contract](https://github.khronos.org/SYCL_Reference/iface/queue.html)
-supplies ordering and checked completion; timely API return and cross-queue
-progress remain measured requirements rather than assumed guarantees.
-The v7 source`b41fecbb8` compiled and again passed all51 existing cases. The
-first early case failed before resident/fetch assertions because the finite DMA
-reported complete on its initial query. The owner closed normally with no fresh
-GPU fault. No amount/budget adjustment or retry is admitted from that failure.
-The [current component result](../bench/results/2026-10-15-pr6-recovery-audit/verifier-copy-safety-current.json)
-preserves it. The next mechanism requires a separate bounded native-event
-import/submission/progress/teardown qualification before replacing the gate.
-The next isolated qualification uses `tools/sycl/check_event_gate.py` and the
-manual `sycl_host_event_gate_test` target. Three fresh processes check native
-import only (no dependent command or kernel), then a copy/kernel dependency,
-then command-graph replay. The same selected native context/device owns one
-regular host-visible event, imported with keep ownership and HOST scopes. A
-host signaller is armed before import, with a two-second fallback counted as
-failure. Import and dependent submission each need to return within100ms;
-copy/graph cases require resident/probe progress,50ms pending completion,
-untouched atomic output, explicit release and exact post-release output.
-Cleanup signals and joins before draining consumers, dropping the SYCL wrapper,
-and destroying the native event then its pool. The three tests must pass before
-any separately committed replacement of the six early cases. This test-only
-loader/header dependency is pinned in the build and does not change production
-linkage or runtime safety settings.
+The current isolated native-event method uses `tools/sycl/check_event_gate.py`
+and the manual `sycl_host_event_gate_test` target. Three fresh processes check
+import only (no dependent command/kernel), then copy/kernel dependencies, then
+command-graph replay. The selected context/device owns one regular host-visible
+event, imported with keep ownership and HOST scopes. A host signaller is armed
+before import; its two-second fallback counts as failure. Import and dependent
+submission each need to return within100ms. The pending/output/progress window
+is50ms. Cleanup signals and joins before draining consumers, dropping the SYCL
+wrapper, and destroying the native event then its pool. Loader/header inputs
+are pinned test-only dependencies; production linkage and safety settings stay
+unchanged. Source`1dd3eef34` passed native import in367us with50,100us pending,
+then failed the copy case's resident-progress assertion; graph was not run.
+The [native-event result](../bench/results/2026-10-15-pr6-recovery-audit/native-event-gate-current.json)
+preserves normal closure, unchanged boot and no fresh GPU fault.
+
+The next v2 run is a diagnostic with the same enqueue order and thresholds. It
+records the resident marker, whether the gate is still held, and host time in
+the resident event wait. This separates marker failure from deadline expiry;
+it cannot qualify a replacement gate even if it passes. Only a later qualified
+mechanism permits a fresh complete51+6-case plan. Preserve all pending-completion,
+untouched-output, payload/guard and owner-lifetime requirements under that plan.
 Model execution remains blocked until the complete57-case gate passes.
 After all57 passes, use `tools/sycl/early_pcie.py prepare`, commit the generated
 plan, then `run`: two thinking-template requests with16 generated tokens each,

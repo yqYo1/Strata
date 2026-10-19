@@ -12,7 +12,7 @@ import measurement_guards as guards
 import measurement_owner as supervision
 from check_verifier_retirement import DELTA, P, B, A, SETTINGS, digest
 
-ROOT=B/'native-event-gate-v1'
+ROOT=B/'native-event-gate-v2'
 RESULT=A/'native-event-gate-current.json'
 BUILD=A/'native-gdn-engine-build.json'
 
@@ -44,7 +44,12 @@ def main():
                 guards.require(digest(name)==expected,'external header changed: '+name)
         unchanged()
         guards.require('tools/sycl/check_event_gate.py' in full['project']['source_sha256'],'controller not pinned by build')
-        guards.require(not ROOT.exists() and not RESULT.exists(),'inspect existing qualification; no automatic retry')
+        guards.require(not ROOT.exists(),'inspect existing qualification; no automatic retry')
+        previous=committed(RESULT)
+        guards.require(previous['ownership_closed'] and not previous['active'] and not previous['passed'] and
+            previous.get('first_failed_case')=='copy','closed original copy failure required')
+        previous_reference=dict(commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip(),
+            path=str(RESULT.relative_to(P)),sha256=digest(RESULT))
         settings=committed(SETTINGS)
         def runtime_unchanged():
             guards.require(set(DELTA)<=set(settings['runtime_elfs']),'unknown diagnostic runtime delta')
@@ -54,13 +59,14 @@ def main():
                     old,expected=DELTA[name]
                     guards.require(old==item['sha256'],'original runtime baseline differs')
                 guards.require(digest(name)==expected,'runtime asset changed: '+name)
-        record=dict(mode='native-event-gate',source_commit=full['source_commit'],binary=full['binary'],
+        record=dict(mode='native-event-gate-resident-diagnostic',source_commit=full['source_commit'],binary=full['binary'],
+            qualification_eligible=False,previous_result_reference=previous_reference,
             fixture=full['fixtures']['sycl_host_event_gate_test'],fixture_external_headers=full['fixture_external_headers'],
             environment_reference=str(SETTINGS.relative_to(P)),environment_sha256=digest(SETTINGS),
             per_case_budgets=dict(wall_seconds=30,cpu_seconds=60,rss_bytes=1<<30,text_bytes=64<<20,total_bytes=64<<20),
             runtime_asset_delta={n:dict(qualified_sha256=v[0],candidate_sha256=v[1]) for n,v in DELTA.items()},
             complete=False,passed=False,active=False,cases=[],model_executed=False,model_quality_qualified=False,
-            consumer='Only if all three pass, replace the unsuitable test gate under a separate committed57-case plan. Retire normal traces after compact metrics and closure are committed.',
+            consumer='Diagnose the original resident-progress failure with unchanged enqueue order and thresholds, recording the marker, gate state and host wait time. This separate diagnostic cannot qualify a replacement gate even if it passes. Preserve the original v1 outcome; no model execution. Retire normal traces after compact metrics and closure are committed.',
             gate='Three fresh owned processes in order import,copy,graph. Same native context/device, one regular host-visible event, keep ownership, HOST signal/wait scopes. Arm a2s fallback signaller before import. Import and dependent submits must each return within100ms; require50ms unsignalled/pending observation, independent resident/probe progress, untouched atomic output, checked manual release, exact payload and checked queue/wrapper/native-event/pool teardown. Any timeout/failure stops without retry or model execution.',
             limits='Test-only runtime interoperability/progress qualification, not production projection math, physical wire traffic, model correctness, overlap gain or throughput.')
         runtime_unchanged()
@@ -80,6 +86,10 @@ def main():
                 entry,out,err=owner.run(mode,[record['fixture']['path'],mode],env,P,
                     wall=30,cpu=60,rss_cap=1<<30,text_cap=64<<20,file_cap=64<<20,total_cap=64<<20)
                 stdout,stderr=out.read_text(errors='replace'),err.read_text(errors='replace')
+                observed=re.findall(r'^event_gate_resident value=(\d+) held=(\d+) wait_us=(\d+) submit_us=(\d+)$',stdout,re.M)
+                if observed:
+                    guards.require(len(observed)==1,'ambiguous resident diagnostic')
+                    record['resident_observation']=dict(zip(('value','held','wait_us','submit_us'),map(int,observed[0])))
                 guards.require(supervision.closed(entry) and entry.get('exit_code')==0,
                     mode+' failed: '+stderr[-1024:])
                 rows=re.findall(r'^event_gate_case=(\w+) import_us=(\d+) submit_us=(\d+) pending_us=(\d+) release=manual payload=PASS status=PASS$',stdout,re.M)

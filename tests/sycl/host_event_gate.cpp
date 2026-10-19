@@ -83,8 +83,14 @@ int main(int argc,char** argv) {
             else done=compute.single_task(kernel);
             submit_us=micros(begin);
             event_need(submit_us<=100000 && gate.held(),"native dependent submit exceeded100ms or timer expired");
+            const auto wait_begin=Clock::now();
             runtime->wait(resident_done);
-            event_need(*resident==0x3cu && gate.held(),"native gate blocked independent resident progress");
+            const auto wait_us=micros(wait_begin);
+            const bool still_held=gate.held();
+            std::printf("event_gate_resident value=%u held=%d wait_us=%lld submit_us=%lld\n",
+                *resident,int(still_held),wait_us,submit_us);
+            std::fflush(stdout);
+            event_need(*resident==0x3cu && still_held,"native gate blocked independent resident progress");
         }
         const auto begin=Clock::now();
         do {
