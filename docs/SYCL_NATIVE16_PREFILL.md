@@ -1613,7 +1613,12 @@ tokens including thinking,653.9 prefill tok/s and14.6 decode tok/s. Native and
 benchmark owners closed normally, model/platform identities stayed unchanged,
 and no fresh fault occurred. Its existing completion footer reports2.0% decode
 expert-cache hits, establishing CPU-pool work under the configuredpcie-frac0.
-Five independent processes remain; this single sample cannot decide sensitivity.
+The second process (one worker plus the host) also completed all four warmups,
+with identical fresh input,2931 generated tokens and2105/2481 accepted drafts.
+It measured647.6 prefill tok/s and8.7 decode tok/s, with normal native/benchmark
+closure and no fresh fault. The first one/five per-token decode latency ratio
+is1.684906196. Four independent processes remain; the first pair alone cannot
+decide the frozen three-pair sensitivity gate or CPU arithmetic versus RAM limits.
 After PR144 preserved the original controller and result commits on the fork
 default, Main verified closure and useful evidence, recovered the temporary
 native source views from396d0c91f301, and retired187 closed raw/audit files
