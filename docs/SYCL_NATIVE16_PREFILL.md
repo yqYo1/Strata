@@ -1301,7 +1301,9 @@ requires exactly repeat or zero fused dispatches, checks the14 preflight
 row/placement cases and prospectively requires every marker bracket, including
 warmups, to last at least2ms. This screens granularity, not timer accuracy or
 noise. A shorter batch invalidates the comparison; retry requires a new
-committed plan. The new negative tests and corrected fixture rebuild are pending.
+committed plan. Main passed all16 offline fault/evidence tests at source7626a2fc5,
+including wrong timed-hook counts, duplicate preflight placement, warmup duration
+and inconsistent marker arithmetic. The corrected fixture rebuild is pending.
 No v7 GPU execution has occurred; no model gain or adoption follows from correcting the
 benchmark. Keep the a576 fallback and
 reuse the closed QSA build cache for this named next comparison. The dedicated
@@ -1309,7 +1311,9 @@ reuse the closed QSA build cache for this named next comparison. The dedicated
 criterion, while `summarize-source-view` keeps>1.005. It rechecks original
 component qualification, exact117489-token requests, six-process order, paired
 inputs and clean work conservation; first-use and the1000tok/s target remain
-separate. Its new negative cases are awaiting Main's offline test run.
+separate. Main passed all26 model statistics, work-counter and build-identity
+tests; these are offline checks, not end-to-end model qualification. Independent
+Orca source audit of the fixed reducer is running while Main validates the fixture.
 
 The maintained model controller now provides `prepare|run qsa-long-input-check`
 and `prepare|run qsa-long-input [0|1|2]`. Its prospective screen holds131072
