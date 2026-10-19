@@ -4031,18 +4031,305 @@
   "cpu_observer_overhead_methods_scope": {
     "classification": "decision support",
     "schedulable_now": false,
-    "status": "native_reviewed_isolated_region_calibration_selected",
+    "status": "isolated_calibration_passed_production_variation_unresolved",
     "prerequisite_evidence": "Current long CPU check passed with1.19million worker jobs in regular-code and6.99million in varied-prose; per-job thread CPU clocks and whole-thread accounting are present. Overhead is unknown. This question does not require CPU-critical-path evidence.",
     "novelty": "Compare clock-read calibration, whole-observer perturbation, amortized burst accounting and stratified sampling; exclude existing clock/source audits and expert-kernel optimization.",
     "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/cpu-observer-overhead-methods.md",
     "maximum_report_bytes": 20480,
     "collector_model_observed": "gpt-6-luna",
     "worker_ownership_closed": true,
-    "consumer": "Main's next bounded CPU-only clock/counter calibration; preserve raw batches and disabled controls, with separate one/six-thread cases. No model speedup or hardware saturation follows from the microbenchmark.",
-    "next_review": "After the isolated calibration decides whether changing per-job accounting is warranted. Retire this report if no further concrete method is selected.",
+    "consumer": "Reference for the pending independent source/interpretation audit and any later accounting change; isolated region cost does not qualify production perturbation.",
+    "next_review": "After independent calibration review and the same-runtime observer-off old/new engine comparison. Retire report/code transaction artifacts when these consumers end.",
     "report_bytes": 14023,
     "report_sha256": "3461c92a3b784de5642f52e028f3403d5e29d747fbef3e06549accdf503c583a",
-    "operational_digest": "The frozen six-process observer comparison failed its original overhead gate; off samples also vary and one pair reverses. Select only an isolated same-API CPU-region/control calibration as decomposition. Do not apply the report's2% proposal, infer production read-path/cost or use a constant throughput correction."
+    "operational_digest": "The frozen six-process observer comparison failed its original overhead gate; off samples also vary and one pair reverses. Select only an isolated same-API CPU-region/control calibration as decomposition. Do not apply the report's2% proposal, infer production read-path/cost or use a constant throughput correction.",
+    "isolated_region_calibration_plan": {
+      "classification": "CPU-only diagnostic; no engine rebuild or GPU execution",
+      "output_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-region-calibration-v1",
+      "arms": [
+        "off",
+        "on",
+        "on",
+        "off",
+        "off",
+        "on"
+      ],
+      "independent_processes": 6,
+      "thread_counts": [
+        1,
+        6
+      ],
+      "thread_count_order": "even process1,6; odd6,1",
+      "jobs_per_thread": 500000,
+      "body_steps": 256,
+      "minimum_batch_wall_ns": 50000000,
+      "affinity": "Worker i on CPU i, using six distinct physical cores0..5; restore parent mask after each case. Fail a denied/incorrect mask.",
+      "compiler": {
+        "path": "/usr/bin/x86_64-linux-gnu-g++-13",
+        "sha256": "1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769"
+      },
+      "compiler_flags": [
+        "-std=c++20",
+        "-O3",
+        "-DNDEBUG",
+        "-march=znver3",
+        "-mtune=znver3",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-pthread"
+      ],
+      "source_paths": [
+        "include/strata/core/cpu_clock.hpp",
+        "tools/sycl/cpu_clock_calibration.cpp",
+        "tools/sycl/check_decode_cpu.py",
+        "tools/sycl/measurement_owner.py",
+        "tools/sycl/measurement_guards.py"
+      ],
+      "budgets": {
+        "wall_seconds": 120,
+        "cpu_seconds": 120,
+        "rss_bytes": 1073741824,
+        "raw_bytes": 67108864
+      },
+      "gates": "All12 batches must exceed50ms, match their exact fixed integer work and counts, have valid CPU clocks/counters and checked affinity, with six independent normally closed processes. Preserve signs and every original sample; no throughput or production-overhead adoption gate.",
+      "provenance": "New Main-authored diagnostic around existing project CpuTimeRegion; no external implementation code.",
+      "retention_consumer": "Decide whether per-job CPU-region cost warrants lighter accounting. Commit useful individual samples/source/recipe; retire the transient standalone CPU executable and successful raw logs at closure. Existing two engine generations remain untouched.",
+      "next_review": "At calibration closure, then same-runtime observer-off old/new engine comparison and resource/thread attribution.",
+      "runtime_elfs": {
+        "/usr/lib/x86_64-linux-gnu/libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+        "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+        "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+        "/usr/lib/x86_64-linux-gnu/libm.so.6": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+        "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da"
+      }
+    },
+    "isolated_region_calibration": {
+      "source_commit": "227869de9743a53be76d2dbb13734ef9389b80de",
+      "source_sha256": {
+        "include/strata/core/cpu_clock.hpp": "6ce276314635c0b4adfa7ec507e5cb3134387240a408172c7fd1f611e4069bdf",
+        "tools/sycl/cpu_clock_calibration.cpp": "81a116d44b6eb9798ade8176bad214220acd2da793b4b7dea10449c4811fc0b3",
+        "tools/sycl/check_decode_cpu.py": "4875fa2dc9b063d7947ae4632a5e0c2954d5fb4dfef8856115ff0faa594800eb",
+        "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+        "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8"
+      },
+      "samples": [
+        {
+          "sequence": 0,
+          "enabled": false,
+          "threads": 1,
+          "wall_ns": 122567137,
+          "scheduled_thread_cpu_ns": 122254853,
+          "region_cpu_ns": 0,
+          "region_calls": 0,
+          "errors": 0
+        },
+        {
+          "sequence": 0,
+          "enabled": false,
+          "threads": 6,
+          "wall_ns": 119342106,
+          "scheduled_thread_cpu_ns": 708815182,
+          "region_cpu_ns": 0,
+          "region_calls": 0,
+          "errors": 0
+        },
+        {
+          "sequence": 1,
+          "enabled": true,
+          "threads": 6,
+          "wall_ns": 721257985,
+          "scheduled_thread_cpu_ns": 4226576130,
+          "region_cpu_ns": 2441380437,
+          "region_calls": 3000000,
+          "errors": 0
+        },
+        {
+          "sequence": 1,
+          "enabled": true,
+          "threads": 1,
+          "wall_ns": 678325038,
+          "scheduled_thread_cpu_ns": 677848888,
+          "region_cpu_ns": 392235268,
+          "region_calls": 500000,
+          "errors": 0
+        },
+        {
+          "sequence": 2,
+          "enabled": true,
+          "threads": 1,
+          "wall_ns": 684427266,
+          "scheduled_thread_cpu_ns": 683713001,
+          "region_cpu_ns": 395093168,
+          "region_calls": 500000,
+          "errors": 0
+        },
+        {
+          "sequence": 2,
+          "enabled": true,
+          "threads": 6,
+          "wall_ns": 722974927,
+          "scheduled_thread_cpu_ns": 4250888083,
+          "region_cpu_ns": 2450021990,
+          "region_calls": 3000000,
+          "errors": 0
+        },
+        {
+          "sequence": 3,
+          "enabled": false,
+          "threads": 6,
+          "wall_ns": 123709818,
+          "scheduled_thread_cpu_ns": 715565685,
+          "region_cpu_ns": 0,
+          "region_calls": 0,
+          "errors": 0
+        },
+        {
+          "sequence": 3,
+          "enabled": false,
+          "threads": 1,
+          "wall_ns": 112234094,
+          "scheduled_thread_cpu_ns": 112206052,
+          "region_cpu_ns": 0,
+          "region_calls": 0,
+          "errors": 0
+        },
+        {
+          "sequence": 4,
+          "enabled": false,
+          "threads": 1,
+          "wall_ns": 118089147,
+          "scheduled_thread_cpu_ns": 118080768,
+          "region_cpu_ns": 0,
+          "region_calls": 0,
+          "errors": 0
+        },
+        {
+          "sequence": 4,
+          "enabled": false,
+          "threads": 6,
+          "wall_ns": 126236505,
+          "scheduled_thread_cpu_ns": 725233893,
+          "region_cpu_ns": 0,
+          "region_calls": 0,
+          "errors": 0
+        },
+        {
+          "sequence": 5,
+          "enabled": true,
+          "threads": 6,
+          "wall_ns": 718602134,
+          "scheduled_thread_cpu_ns": 4236724829,
+          "region_cpu_ns": 2447054745,
+          "region_calls": 3000000,
+          "errors": 0
+        },
+        {
+          "sequence": 5,
+          "enabled": true,
+          "threads": 1,
+          "wall_ns": 676434258,
+          "scheduled_thread_cpu_ns": 676075382,
+          "region_cpu_ns": 390767636,
+          "region_calls": 500000,
+          "errors": 0
+        }
+      ],
+      "kernel": "7.0.0-38-generic",
+      "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "complete": true,
+      "passed": true,
+      "GPU_executed": false,
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-region-calibration-v1/cpu_clock_calibration",
+        "sha256": "fef5d9ea7d6ba59b7a52b339901aed8e35b18f5a6f8cb81e06747e5cb05e5c7b"
+      },
+      "summary": {
+        "cases": {
+          "1": {
+            "paired_wall_ratios": [
+              5.534314128590602,
+              6.098211707397932,
+              5.72816617940343
+            ],
+            "paired_CPU_ns_per_region": [
+              1111.18807,
+              1143.013898,
+              1115.989228
+            ],
+            "paired_wall_ns_per_region": [
+              1111.515802,
+              1144.386344,
+              1116.690222
+            ],
+            "median_CPU_ns_per_region": 1115.989228,
+            "CPU_ns_per_region_sample_sd": 17.157443645229947
+          },
+          "6": {
+            "paired_wall_ratios": [
+              6.043617036555396,
+              5.844119235548467,
+              5.692506569316063
+            ],
+            "paired_CPU_ns_per_region": [
+              1172.5869826666667,
+              1178.4407993333334,
+              1170.4969786666666
+            ],
+            "paired_wall_ns_per_region": [
+              200.63862633333332,
+              199.75503633333332,
+              197.45520966666666
+            ],
+            "median_CPU_ns_per_region": 1172.5869826666667,
+            "CPU_ns_per_region_sample_sd": 4.117838694248983
+          }
+        },
+        "eligible": true,
+        "production_overhead_qualified": false,
+        "hardware_bottleneck_qualified": false,
+        "limits": "Same CpuTimeRegion API around fixed integer work; difference includes both clock reads, counter/exception bookkeeping, control-flow and scheduling/frequency variation. No pure clock-read latency, production overhead, linear-scaling bound or inference speedup. Six-thread wall differences are parallel batch costs, not additive CPU time."
+      },
+      "ownership_closed": true,
+      "accounting_rewrite_selected": false,
+      "evidence_tests": {
+        "source_commit": "227869de9",
+        "command": [
+          "python3",
+          "-B",
+          "tools/test_benchmark_evidence.py"
+        ],
+        "passed": 17,
+        "GPU_executed": false
+      },
+      "original_per_thread_vector_evidence": {
+        "commit": "1c35d2156",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+        "reason": "Keep useful individual batch timings/totals in the active index; original per-thread/checksum vectors remain recoverable from Git. The frozen external receipt is retained only for the active source auditor."
+      }
+    },
+    "calibration_source_audit": {
+      "classification": "decision support",
+      "schedulable_now": true,
+      "status": "research_running",
+      "prerequisite_evidence": "New immutable calibration source227869de9;17 evidence tests and12 closed CPU-only batches; original production bundle gate failed. Scope is source/interpretation audit of this new calibrator, distinct from older ExpertPool fixture audit and general methods survey.",
+      "source_commit": "227869de9743a53be76d2dbb13734ef9389b80de",
+      "original_result_commit": "1c35d2156d14ecc830b2962510be01fd64398f97",
+      "frozen_receipt": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-region-calibration-v1/record.json",
+        "sha256": "2a0d7a82f332e333c2a0922493ffc61d2fa29ec69f6d7c4655f280d4bfda9ace"
+      },
+      "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/cpu-region-calibration-source-audit.md",
+      "maximum_report_bytes": 16000,
+      "task_id": "task_53308486ffab",
+      "dispatch_id": "ctx_4fd2e0d6349c",
+      "terminal_handle": "term_42babf4b-e0b6-4ec1-a51e-c16acaad3403",
+      "terminal_incarnation": "afe33f4e-fd6f-4c67-bf16-0e2cbfeb79ff",
+      "collector_model_requested": "gpt-6-luna",
+      "worker_ownership_closed": false,
+      "consumer": "Main uses only native Luna-max review digest to decide whether calibration/gate corrections are required; no model optimization adopted.",
+      "next_review": "After accepted worker_done, delegate native Luna-max review; preserve frozen source/receipt until that review and retire ended raw/build consumers after original inputs are reachable from default."
+    }
   },
   "sycl_host_affinity_runtime_contract_scope": {
     "classification": "decision support",

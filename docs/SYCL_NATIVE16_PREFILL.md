@@ -1416,9 +1416,19 @@ bottleneck. Do not compensate profiles by dividing by the observed geomean.
 The reducer recovered all115 original benchmark inputs; all six predecessor
 receipt hashes were also checked against their original Git blobs.
 
-Next isolate the cost of the actual CPU-clock/counter region in a bounded
-CPU-only control comparison before choosing lighter accounting. This is a
-diagnostic, not an inference optimization or a production-overhead estimate.
+The isolated CPU-region calibration then passed all12 batches in six owned
+off/on/on/off/off/on processes at source`227869de9`. Each process ran one and
+six physical cores,500000 regions per thread and256 fixed integer operations
+per region. Actual checks cover independent process identities,50ms batch
+floors, exact integer results/counts, CPU clocks, affinity and restored masks.
+Paired additional scheduled CPU time per region was1111.19/1143.01/1115.99ns
+with one thread and1172.59/1178.44/1170.50ns with six; the medians are1115.99
+and1172.59ns. This includes both CPU-clock reads and bookkeeping/control costs.
+It is a local differential microbenchmark, not a production-overhead bound or
+evidence of a syscall/vDSO path. Do not linearly correct model wall time from it.
+No lighter-accounting rewrite is selected from these values. Next compare the
+retained old/new engines without observers on the same runtime, and collect
+bounded thread/resource attribution before selecting an inference optimization.
 A separate read-only placement observation found the native leader on CPU0,
 expert workers on CPUs1–5,19 earlier threads allowed on0–11 and five later
 threads on0. Their roles/activity and any latency effect remain unknown.

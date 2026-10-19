@@ -12,6 +12,7 @@ import os
 from pathlib import Path
 import re
 import math
+import statistics
 import subprocess
 import sys
 
@@ -23,6 +24,7 @@ P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
 INDEX = P / 'bench/results/2026-10-15-pr6-recovery-audit/research-index.json'
 BASELINE = INDEX.with_name('decode-long-generation-current.json')
+REGION_ARMS = ('off', 'on', 'on', 'off', 'off', 'on')
 
 
 def git(root, *args):
@@ -411,12 +413,162 @@ def run(native=False):
     return 0 if record['passed'] else 1
 
 
+def region_calibration_summary(rows, plan):
+    """Preserve signs/individual batches; this is not production perturbation."""
+    arms = plan['arms']
+    guards.require(tuple(arms) == REGION_ARMS, 'wrong calibration process order')
+    guards.require(len(rows) == 2 * len(arms), 'twelve calibration batches required')
+    jobs, steps, minimum = plan['jobs_per_thread'], plan['body_steps'], plan['minimum_batch_wall_ns']
+    modulus, a = 1 << 64, 6364136223846793005
+
+    def series(n):
+        if n == 0:
+            return 1, 0
+        p, s = series(n // 2)
+        p2, s2 = p * p % modulus, s * (1 + p) % modulus
+        return ((p2 * a) % modulus, (s2 + p2) % modulus) if n % 2 else (p2, s2)
+
+    power, total = series(jobs * steps)
+    for i, arm in enumerate(arms):
+        cases = rows[2*i:2*i+2]
+        guards.require([r['threads'] for r in cases] == ([6, 1] if i % 2 else [1, 6]),
+                       'wrong calibration thread-count order')
+        for r in cases:
+            n = r['threads']
+            guards.require(all(type(r[k]) is int for k in
+                ('sequence', 'threads', 'jobs_per_thread', 'body_steps', 'wall_ns', 'errors')),
+                'invalid calibration scalar type')
+            guards.require(r['sequence'] == i and r['enabled'] is (arm == 'on') and
+                r['jobs_per_thread'] == jobs and r['body_steps'] == steps and r['errors'] == 0 and
+                type(r['wall_ns']) is int and r['wall_ns'] >= minimum, 'invalid/short calibration batch')
+            for key in ('thread_cpu_ns', 'region_cpu_ns', 'region_calls', 'checksum'):
+                guards.require(isinstance(r[key], list) and len(r[key]) == n and
+                    all(type(v) is int and v >= 0 for v in r[key]), 'invalid calibration vector: ' + key)
+            guards.require(r['checksum'] == [((id + 19) * power + total) % modulus for id in range(n)] and
+                r['region_calls'] == [jobs if arm == 'on' else 0] * n and
+                all(t > 0 and 0 <= c <= t and (c > 0 if arm == 'on' else c == 0)
+                    for t, c in zip(r['thread_cpu_ns'], r['region_cpu_ns'])),
+                'calibration work/counter conservation failed')
+    summary = {}
+    for n in (1, 6):
+        ratios, cpu_ns, wall_ns = [], [], []
+        for i in range(3):
+            pair = {arms[r['sequence']]: r for r in rows if r['threads'] == n and r['sequence'] // 2 == i}
+            off, on = pair['off'], pair['on']
+            count = n * jobs
+            ratios.append(on['wall_ns'] / off['wall_ns'])
+            cpu_ns.append((sum(on['thread_cpu_ns']) - sum(off['thread_cpu_ns'])) / count)
+            wall_ns.append((on['wall_ns'] - off['wall_ns']) / count)
+        summary[str(n)] = dict(paired_wall_ratios=ratios, paired_CPU_ns_per_region=cpu_ns,
+            paired_wall_ns_per_region=wall_ns, median_CPU_ns_per_region=statistics.median(cpu_ns),
+            CPU_ns_per_region_sample_sd=statistics.stdev(cpu_ns))
+    return dict(cases=summary, eligible=True, production_overhead_qualified=False,
+        hardware_bottleneck_qualified=False,
+        limits='Same CpuTimeRegion API around fixed integer work; difference includes both clock reads, '
+               'counter/exception bookkeeping, control-flow and scheduling/frequency variation. '
+               'No pure clock-read latency, production overhead, linear-scaling bound or inference speedup. '
+               'Six-thread wall differences are parallel batch costs, not additive CPU time.')
+
+
+def calibrate_regions():
+    index, baseline = committed(INDEX), committed(BASELINE)
+    scope = index['cpu_observer_overhead_methods_scope']
+    guards.require('isolated_region_calibration' not in scope and baseline['complete'] and
+        baseline['ownership_closed'] and not baseline['active'] and
+        baseline['observer_overhead_summary']['original_benchmark_inputs_recovered'] == 115,
+        'close the original comparison and do not repeat a recorded calibration')
+    plan = scope['isolated_region_calibration_plan']
+    revision = git(P, 'rev-parse', 'HEAD').decode().strip()
+    pins = {}
+    for name in plan['source_paths']:
+        data = git(P, 'show', revision + ':' + name)
+        guards.require((P / name).read_bytes() == data, 'commit calibration input: ' + name)
+        pins[name] = hashlib.sha256(data).hexdigest()
+    compiler = plan['compiler']
+    guards.require(digest(compiler['path']) == compiler['sha256'], 'calibration compiler changed')
+    for path, expected in plan['runtime_elfs'].items():
+        guards.require(digest(path) == expected, 'calibration runtime changed: ' + path)
+    cores = [Path('/sys/devices/system/cpu') / ('cpu' + str(i)) / 'topology' for i in range(6)]
+    topology = [(p.joinpath('physical_package_id').read_text().strip(),
+                 p.joinpath('core_id').read_text().strip()) for p in cores]
+    guards.require(len(set(topology)) == 6, 'calibration needs six distinct physical cores0..5')
+    root = Path(plan['output_root'])
+    guards.require(root.parent == B and not root.exists(), 'never overwrite/retry a calibration root')
+    guards.no_model_owners([])
+    root.mkdir(mode=0o700)
+    (root / 'tmp').mkdir(mode=0o700)
+    record = dict(source_commit=revision, source_sha256=pins, plan=plan, samples=[],
+                  kernel=os.uname().release, boot_id=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
+                  complete=False, passed=False, active=False, GPU_executed=False)
+    owner = None
+
+    def persist():
+        record['active'] = bool(owner and owner.active is not None)
+        (root / 'record.json').write_text(json.dumps(dict(record,
+            commands=owner.commands if owner else []), indent=2) + '\n')
+
+    owner = supervision.Owner(root / 'owned', persist)
+    persist()
+    try:
+        env = dict(PATH='/usr/bin:/bin', LANG='C.UTF-8', LC_ALL='C.UTF-8', TMPDIR=str(root / 'tmp'))
+        executable = root / 'cpu_clock_calibration'
+        command = [compiler['path'], *plan['compiler_flags'], '-I', str(P / 'include'),
+                   str(P / 'tools/sycl/cpu_clock_calibration.cpp'), '-o', str(executable)]
+        budget = plan['budgets']
+
+        def run_one(label, argv, environment):
+            entry, out, _ = owner.run(label, argv, environment, P, wall=budget['wall_seconds'],
+                cpu=budget['cpu_seconds'], rss_cap=budget['rss_bytes'], text_cap=budget['raw_bytes'],
+                file_cap=budget['raw_bytes'], total_cap=budget['raw_bytes'])
+            guards.require(supervision.closed(entry) and entry.get('exit_code') == 0, label + ' failed')
+            return entry, out
+
+        run_one('compile', command, env)
+        record['binary'] = dict(path=str(executable), sha256=digest(executable))
+        _, linked = run_one('linked-runtime', ['/usr/bin/ldd', str(executable)], env)
+        paths = re.findall(r'(?:=>\s+|^\s*)(/\S+)\s+\(0x', linked.read_text(), re.M)
+        guards.require({str(Path(p).resolve()) for p in paths} == set(plan['runtime_elfs']),
+                       'calibration linked runtime differs from pinned dependencies')
+        identities = set()
+        for i, arm in enumerate(plan['arms']):
+            arm_env = dict(env)
+            if arm == 'on':
+                arm_env['STRATA_DECODE_CPU_PROFILE'] = '1'
+            entry, output = run_one('process-' + str(i), [str(executable), str(i), arm], arm_env)
+            identity = entry['direct_identity']
+            identities.add((identity['pid'], identity['start_ticks']))
+            record['samples'].extend(json.loads(line) for line in output.read_text().splitlines())
+            persist()
+        guards.require(len(identities) == 6, 'calibration processes are not independent')
+        for name, expected in pins.items():
+            guards.require(digest(P / name) == expected, 'calibration input changed: ' + name)
+        guards.require(digest(compiler['path']) == compiler['sha256'], 'compiler changed during calibration')
+        for path, expected in plan['runtime_elfs'].items():
+            guards.require(digest(path) == expected, 'runtime changed during calibration: ' + path)
+        guards.require(record['boot_id'] == Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
+                       'boot changed during calibration')
+        record['summary'] = region_calibration_summary(record['samples'], plan)
+        record['passed'] = True
+    except BaseException as error:
+        record['error'] = str(error)
+    finally:
+        record['ownership_closed'] = owner.active is None and all(supervision.closed(c) for c in owner.commands)
+        record['complete'] = record['ownership_closed']
+        record['passed'] = bool(record['passed'] and record['ownership_closed'])
+        persist()
+        scope['isolated_region_calibration'] = {k: v for k, v in record.items() if k not in ('active', 'plan')}
+        INDEX.write_text(json.dumps(index, indent=2) + '\n')
+    print(json.dumps({k: record.get(k) for k in ('complete', 'passed', 'ownership_closed', 'summary', 'error')}))
+    return 0 if record['passed'] else 1
+
+
 if __name__ == '__main__':
-    guards.require(sys.argv[1:] in ([], ['native'], ['smoke'], ['runtime-reference'], ['runtime-device'], ['runtime-bank']),
-                   'use check_decode_cpu.py [native|smoke|runtime-reference|runtime-device|runtime-bank]')
+    guards.require(sys.argv[1:] in ([], ['native'], ['smoke'], ['runtime-reference'], ['runtime-device'], ['runtime-bank'], ['calibrate']),
+                   'use check_decode_cpu.py [native|smoke|runtime-reference|runtime-device|runtime-bank|calibrate]')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        sys.exit(runtime_smoke(old_engine=sys.argv[1:] == ['runtime-reference'], bank=sys.argv[1:] == ['runtime-device'],
+        sys.exit(calibrate_regions() if sys.argv[1:] == ['calibrate'] else
+                 runtime_smoke(old_engine=sys.argv[1:] == ['runtime-reference'], bank=sys.argv[1:] == ['runtime-device'],
                                full_bank=sys.argv[1:] == ['runtime-bank'])
                  if sys.argv[1:] in (['smoke'], ['runtime-reference'], ['runtime-device'], ['runtime-bank'])
                  else run(native=sys.argv[1:] == ['native']))
