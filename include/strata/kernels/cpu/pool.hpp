@@ -29,7 +29,9 @@
 
 #include "strata/kernels/cpu/expert.hpp"
 #include "strata/kernels/cpu/native_expert.hpp"
+#include "strata/core/cpu_clock.hpp"
 
+#include <array>
 #include <atomic>
 #include <cstdio>
 #include <memory>
@@ -159,6 +161,19 @@ public:
     double ms_multi_gu = 0, ms_multi_q = 0, ms_multi_down = 0;
     int64_t multi_bytes = 0;
 
+    struct CpuProfile {
+        bool enabled = false, quiescent = false;
+        // Modes0..6 match drain();7 records an unexpected mode without an OOB access.
+        std::array<core::CpuTimeCounter, 8> worker_jobs{}, host_jobs{};
+        core::CpuTimeCounter native_quant;
+        uint64_t worker_thread_ns = 0, read_errors = 0;
+        core::CpuTimeReading main_thread, process;
+    };
+    /// Calling-thread only, between completed dispatches with no concurrent
+    /// publisher. Read slots only after done/park synchronization. Thread CPU
+    /// outside job scopes includes park/spin and is not expert arithmetic.
+    CpuProfile cpu_profile();
+
     /// Total `_mm_pause` iterations spent waiting, over all workers, is no longer counted - see the note on the
     /// atomics below.  It was a LOCKED read-modify-write in the park loop, so measuring the contention added to
     /// it.
@@ -205,6 +220,12 @@ private:
 
     int n_ = 0;
     bool host_works_ = true;
+    bool cpu_profile_enabled_ = false;
+    struct alignas(64) CpuProfileSlot {
+        std::array<core::CpuTimeCounter, 8> jobs{};
+    };
+    std::unique_ptr<CpuProfileSlot[]> cpu_profile_slots_; // one writer per worker + host
+    core::CpuTimeCounter native_quant_cpu_;
     ExpertJob* jobs_ = nullptr;
     int njobs_ = 0;
     /// The host's own scratch when `host_works_`.  A separate object rather than a share of `scratch_[i]`,
