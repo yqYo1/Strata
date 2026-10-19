@@ -10,6 +10,7 @@ import json
 import os
 from pathlib import Path
 import re
+import math
 import subprocess
 import sys
 
@@ -37,6 +38,138 @@ def committed(path):
 def digest(path):
     with Path(path).open('rb') as stream:
         return hashlib.file_digest(stream, 'sha256').hexdigest()
+
+
+def runtime_smoke():
+    """Small native-protocol diagnostic; throughput evidence still uses bench.sh."""
+    committed_source = git(P, 'show', 'HEAD:' + str(Path(__file__).relative_to(P)))
+    guards.require(Path(__file__).read_bytes() == committed_source, 'commit smoke controller first')
+    index = committed(INDEX)
+    scope = index['current_decode_mtp_verifier_reuse_source_audit']['cpu_observer_source_audit']
+    cpu = scope['native_cpu_qualification']
+    plan = scope['runtime_smoke_plan']
+    build = committed(INDEX.with_name('native-gdn-engine-build.json'))
+    full = json.loads((B / 'main-native-gdn-engine/record.json').read_text())
+    from bench_engine import compact_build_record
+    guards.require(cpu['passed'] and cpu['complete'] and cpu['ownership_closed'] and
+                   cpu['source_commit'] == build['source_commit'] == plan['build_source_commit'] and
+                   build['passed'] and build['ownership_closed'] and compact_build_record(full) == build,
+                   'passed same-build CPU gate and exact native receipt required')
+    for group in [full['project'], *full['dependencies']]:
+        for name, expected in group['source_sha256'].items():
+            guards.require(digest(Path(group['root']) / name) == expected, 'native smoke input changed: ' + name)
+    guards.require(digest(plan['command'][0]) == build['binary']['sha256'], 'native engine changed')
+    settings = committed(P / 'tools/sycl/measurement_environment.json')
+    for name, item in settings['runtime_elfs'].items():
+        guards.require(digest(name) == item['sha256'], 'runtime asset changed: ' + name)
+    profile = plan['expert_profile']
+    guards.require(digest(profile['path']) == profile['sha256'], 'expert profile changed')
+    guards.no_model_owners([])
+    guards.driver_guard()
+    root = Path(plan['output_root'])
+    guards.require(root.parent == B and not root.exists(), 'never overwrite/retry a runtime smoke root')
+    root.mkdir(mode=0o700)
+    for name in ('tmp', 'cache'):
+        (root / name).mkdir(mode=0o700)
+    boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+    before = subprocess.check_output(['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True)
+    cursor = next(s.split(': ', 1)[1] for s in before.splitlines() if s.startswith('-- cursor: '))
+    record = dict(source_commit=git(P, 'rev-parse', 'HEAD').decode().strip(),
+                  build_source_commit=build['source_commit'], binary=build['binary'], plan=plan,
+                  complete=False, passed=False, active=False, requests=[])
+    owner = None
+
+    def persist():
+        record['active'] = bool(owner and owner.active is not None)
+        (root / 'record.json').write_text(json.dumps(dict(record, commands=owner.commands if owner else []), indent=2) + '\n')
+
+    def interact(io, entry):
+        for _ in range(64):
+            line = io.line(600)
+            guards.require(not line.startswith('ERR'), line)
+            if line.startswith('READY '):
+                record['ready'] = line
+                break
+        else:
+            raise RuntimeError('bounded startup protocol did not reach READY')
+        for ids in plan['input_ids']:
+            io.send(('GEN ' + str(plan['max_new']) + ' ' + ','.join(map(str, ids)) + '\n').encode())
+            tokens = []
+            for _ in range(plan['max_new'] + 64):
+                line = io.line(180)
+                guards.require(not line.startswith('ERR'), line)
+                if line.startswith('T '):
+                    tokens.append(int(line.split()[1]))
+                elif line.startswith('DONE '):
+                    fields = line.split()
+                    guards.require(len(fields) == 15 and int(fields[1]) == len(tokens) and
+                        0 < len(tokens) <= plan['max_new'] and int(fields[2]) == len(ids) and
+                        fields[5] in ('stop', 'length') and int(fields[8]) == 0 and int(fields[14]) == len(ids),
+                        'smoke DONE/request counts or completion differ')
+                    record['requests'].append(dict(input_tokens=len(ids), generated_tokens=len(tokens),
+                        finish_reason=fields[5], decode_ms=float(fields[4]),
+                        output_ids_sha256=hashlib.sha256(json.dumps(tokens).encode()).hexdigest()))
+                    break
+                else:
+                    guards.require(line.startswith('P '), 'unexpected native request protocol: ' + line)
+            else:
+                raise RuntimeError('bounded request protocol lacks DONE')
+        io.send(b'QUIT\n')
+        io.proc.stdin.close()
+        io.exit(60)
+
+    owner = supervision.Owner(root / 'owned', persist)
+    try:
+        entry, out, err = owner.run('native-smoke', plan['command'], plan['environment'], P,
+            interaction=interact, **plan['budgets'])
+        record['exit_code'] = entry.get('exit_code')
+        if entry.get('direct_identity'):
+            record['native_identity'] = {k: entry['direct_identity'][k] for k in ('pid', 'start_ticks', 'sid')}
+        guards.require(supervision.closed(entry) and entry.get('exit_code') == 0, 'native smoke ownership/exit failed')
+        text = err.read_text(errors='replace')
+        guards.require(not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|retirement failed|Strata SYCL cleanup:', text),
+                       'native runtime failure; inspect the original bounded diagnostic')
+        observations = [json.loads(s.partition(': ')[2]) for s in text.splitlines() if s.startswith('strata decode cpu: ')]
+        guards.require(len(record['requests']) == len(plan['input_ids']) == len(observations),
+                       'attempted/completed/CPU-record counts do not reconcile')
+        for request, observation in zip(record['requests'], observations):
+            guards.require(observation['schema'] == 1 and all(observation.get(k) is True for k in
+                ('valid', 'single_stage', 'clock_deltas_valid', 'quiescent', 'worker_jobs_fit', 'main_subsets_fit')) and
+                all(type(observation.get(k)) is int and observation[k] == 0 for k in
+                    ('counter_errors', 'unwound', 'snapshot_read_errors', 'unexpected_mode_tasks')) and
+                observation['input_tokens'] == request['input_tokens'] and
+                observation['generated_tokens'] == request['generated_tokens'] and observation['windows'] > 0 and
+                all(type(observation.get(k)) is int and observation[k] > 0 for k in
+                    ('worker_job_calls', 'native_quant_calls', 'sync_calls', 'main_thread_ns', 'native_process_ns')) and
+                math.isfinite(observation['wall_through_commit_ms']) and observation['wall_through_commit_ms'] > 0,
+                'invalid or mismatched CPU observation')
+        record['observations'] = observations
+        record['passed'] = True
+    except BaseException as error:
+        record['error'] = str(error)
+    finally:
+        record['ownership_closed'] = owner.active is None and all(supervision.closed(c) for c in owner.commands)
+        record['complete'] = record['ownership_closed']
+        record['boot_unchanged'] = boot == Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+        after = subprocess.check_output(['journalctl', '-k', '-b', '--after-cursor', cursor, '--no-pager'], text=True)
+        record['fresh_faults'] = [s for s in after.splitlines() if re.search(
+            r'(?i)(gpu.*(?:hang|fault|reset|wedg)|xe.*(?:error|fault|reset|timeout))', s)]
+        try:
+            record['driver_after'] = guards.driver_guard()
+        except Exception as error:
+            record['driver_error'] = str(error)
+            record['passed'] = False
+        record['passed'] = bool(record['passed'] and record['ownership_closed'] and
+                                record['boot_unchanged'] and not record['fresh_faults'])
+        persist()
+        compact = {k: v for k, v in record.items() if k not in ('plan', 'driver_after')}
+        compact['GPU_executed'] = bool(owner.commands and owner.commands[0].get('pid'))
+        compact['limits'] = 'Two tiny native-protocol requests through final commit; tracing/CPU observation enabled. No performance, overhead, quality, IQ numerical, full-context or RESTORE qualification.'
+        scope['runtime_smoke'] = compact
+        scope['revised_candidate']['native_runtime_tested'] = compact['GPU_executed']
+        INDEX.write_text(json.dumps(index, indent=2) + '\n')
+    print(json.dumps({k: compact.get(k) for k in ('complete', 'passed', 'ownership_closed', 'error')}))
+    return 0 if record['passed'] else 1
 
 
 def run(native=False):
@@ -152,7 +285,7 @@ def run(native=False):
 
 
 if __name__ == '__main__':
-    guards.require(sys.argv[1:] in ([], ['native']), 'use check_decode_cpu.py [native]')
+    guards.require(sys.argv[1:] in ([], ['native'], ['smoke']), 'use check_decode_cpu.py [native|smoke]')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        sys.exit(run(native=sys.argv[1:] == ['native']))
+        sys.exit(runtime_smoke() if sys.argv[1:] == ['smoke'] else run(native=sys.argv[1:] == ['native']))

@@ -105,8 +105,9 @@ separately qualified profiling-event path outside capture. Leave both observer
 variables absent in clean processes; setting either to `0` still enables it.
 
 `STRATA_DECODE_CPU_PROFILE` is a separate opt-in Linux CPU observer under
-validation. Its CPU-only accounting tests pass; the SYCL engine containing it
-has not yet been built or checked. It records thread CPU inside
+validation. Its CPU-only accounting tests pass, including all four tests from
+the compiled SYCL build. Native request and overhead checks remain pending.
+It records thread CPU inside
 expert row tasks, native hidden quantization and selected verifier sync calls,
 plus whole worker/main/native-process CPU intervals. Worker task writes precede
 their existing completion publication; snapshots require completed dispatches
