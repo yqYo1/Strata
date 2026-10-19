@@ -1592,11 +1592,24 @@ two thinking-enabled small inputs,16 generated tokens each, actual one-worker
 plus host marker, normal owned closure and no fresh GPU fault. The generator
 uses Strata's actual tokenizer/template; an earlier optional-tokenizers import
 failed during preparation before any native launch and was corrected.
-The six clean long processes remain pending the independent Orca source audit
-and native Luna-max review. This diagnostic can test CPU-pool capacity
-sensitivity, not distinguish arithmetic from RAM limits or prove saturation at
-the baseline. Small-check success establishes neither task quality nor a speed
-gain. Keep earlier clean speeds and all failed comparison gates separate; see
+The independent Orca audit and native Luna-max review are now closed, with no
+execution safety blocker. They require model/expert/MTP byte identity,
+cross-process boot/kernel/guarded-runtime equality and evidence of CPU-pool work
+during the timed request before a performance interpretation. The unlaunched v1
+clean plan was explicitly cancelled, preserving its successful small check.
+V2 keeps the original six-process order, all original work keys and the10%
+directional gate. It hashes model inputs before the cohort and after its last
+request, with device/inode/size/mtime/ctime guards before and after each native
+run. Hash I/O stays outside measured execution. Existing completion footers
+provide decode-cache-miss evidence: original DONE cache counters start after
+prefill, and at pcie-frac0 refused native rows enter the CPU pool. This adds no
+timed observer and does not count exact routes or physical bytes. Ten offline
+negative-evidence tests passed; the revised one-worker check and all six long
+processes remain pending.
+This diagnostic can test CPU-pool capacity sensitivity, not distinguish
+arithmetic from RAM limits or prove saturation at the baseline. Small-check
+success establishes neither task quality nor a speed gain. Keep earlier clean
+speeds and all failed comparison gates separate; see
 the [current plan/check](../bench/results/2026-10-15-pr6-recovery-audit/decode-cpu-capacity-current.json).
 Actual unprivileged perf `cycles` and `task-clock` command probes at`dea283917`
 both exited1 with the access-limited diagnostic under`perf_event_paranoid=4`.

@@ -13,6 +13,7 @@ import socket
 import statistics
 import subprocess
 import sys
+import time
 
 sys.dont_write_bytecode = True
 import generation_engine as gen
@@ -27,6 +28,83 @@ SOURCE_KEYS = ('binary', 'build_source_commit', 'source_build_record', 'fallback
                'runtime_asset_delta', 'original_native_inputs_recovered')
 WORK_KEYS = ('request_sha256', 'read_tokens', 'prompt_tokens', 'reused_tokens',
              'generated_tokens', 'drafts_offered', 'drafts_accepted')
+VERSION = 2
+
+
+def file_identity(path):
+    s = Path(path).stat()
+    return dict(realpath=str(Path(path).resolve()), dev=s.st_dev, ino=s.st_ino,
+                bytes=s.st_size, mtime_ns=s.st_mtime_ns, ctime_ns=s.st_ctime_ns)
+
+
+def model_paths(config):
+    flags = config['args']
+    roots = [Path(flags[flags.index('--pack')+1]), Path(flags[flags.index('--mtp')+1])]
+    native = Path(flags[flags.index('--native')+1])
+    paths = list(native.parent.glob('*.gguf'))
+    guards.require(native in paths and paths, 'native model shard absent')
+    for root in roots:
+        for path in root.rglob('*'):
+            if path.is_file(): paths.append(path)
+            guards.require(len(paths) <= 256, 'model input inventory budget')
+    return sorted(set(paths))
+
+
+def model_pins(config, expected=None, full=False):
+    """Full digest before the cohort and after its last request; stat guard per run.
+
+    Digest I/O is outside native execution. Identity includes ctime, so restoring
+    an old mtime after an ordinary write does not hide a mutation.
+    """
+    paths = model_paths(config)
+    if expected is not None:
+        guards.require(set(map(str, paths)) == set(expected), 'model input inventory changed')
+    result = {}; deadline = time.monotonic()+300
+    for path in paths:
+        before = file_identity(path)
+        if expected is not None:
+            guards.require(before == expected[str(path)]['identity'], 'model asset identity changed: '+str(path))
+        if full:
+            h = hashlib.sha256()
+            with path.open('rb', buffering=0) as stream:
+                while block := stream.read(8<<20):
+                    guards.require(time.monotonic() < deadline, 'whole-model digest300s budget')
+                    h.update(block)
+            digest = h.hexdigest()
+            guards.require(file_identity(path) == before, 'model asset changed during digest')
+            if expected is not None:
+                guards.require(digest == expected[str(path)]['sha256'], 'model asset bytes changed')
+            print('Hashed model asset '+path.name+' ('+str(before['bytes'])+' bytes)', flush=True)
+        else:
+            guards.require(expected is not None, 'initial model pins require full digests')
+            digest = expected[str(path)]['sha256']
+        result[str(path)] = dict(identity=before, sha256=digest)
+    return result
+
+
+def fingerprint(value):
+    return hashlib.sha256(json.dumps(value, sort_keys=True).encode()).hexdigest()
+
+
+def machine_identity():
+    settings = json.loads(gen.SETTINGS.read_text())
+    actual = {name: gen.common.digest(name) for name in settings['runtime_elfs']}
+    return dict(boot_id=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
+        device=guards.driver_guard(), guarded_runtime_sha256=fingerprint(actual))
+
+
+def request_pool_evidence(log, row, config):
+    flags = config['args']
+    guards.require(flags[flags.index('--pcie-frac')+1] == '0' and
+        '--no-pool' not in flags and '--no-host-worker' not in flags,
+        'cache misses cannot be assigned to the configured CPU pool')
+    matches = re.findall(r'^\[strata\] done: (\d+) tokens in [^\n]*, expert cache (\d+(?:\.\d+)?)% hit$', log, re.M)
+    selected = [(int(n), float(hit)) for n, hit in matches if int(n) == row['generated_tokens']]
+    guards.require(len(selected) == 1 and 0 <= selected[0][1] < 100,
+        'missing or ambiguous timed-request decode cache-miss evidence')
+    return dict(observed_decode_misses=True, generated_tokens=selected[0][0],
+        rounded_cache_hit_percent=selected[0][1],
+        basis='Existing request-completion footer. Original native DONE hits/lookups begin after prefill; with pcie-frac0 and pool enabled, refused expert rows enter run_split_multi_native. No added observer or exact route/physical-byte count.')
 
 
 def check_prompts(config, environment):
@@ -56,7 +134,7 @@ print(json.dumps([t.encode(template.render([dict(role='user',content=q)],enable_
 def comparison_plan():
     return dict(order=list(ORDER), pairs=[[0, 1], [3, 2], [4, 5]],
         question='Does CPU expert-pool capacity affect critical-path generation on this configured MTP4 route?',
-        eligibility='All six independent clean processes, four successful official warmups each, same fresh request, output/draft work counters, startup placement and runtime. No internal or external observers. Preserve every sample, including failed/ineligible runs; no automatic retry.',
+        eligibility='All six independent clean processes, four successful official warmups each, same model/expert/MTP bytes, boot/kernel/guarded runtime, fresh request, output/draft WORK_KEYS and startup placement. Require existing timed-request decode-cache-miss evidence of pool execution. No added internal/external observer. Preserve every sample, including failed/ineligible runs; no automatic retry.',
         decision='Let R be one-worker/five-worker decode latency per emitted token in each pair. Support reduced-capacity sensitivity only if all three R>1 and geometric mean R>1.10; support the opposite direction only if all R<1 and geometric mean R<1/1.10. Otherwise inconclusive. Partial, mismatched-work or failed cohorts cannot decide.',
         threshold=1.10,
         limits='CPU capacity changes scheduling, partition sizes, polling, cache/reuse and RAM demand together. Sensitivity does not isolate arithmetic from RAM or prove the five-worker baseline is saturated. One MTP-friendly request is diagnostic, not model quality, strong/weak adoption or70tok/s qualification.')
@@ -67,9 +145,12 @@ def summarize_processes(rows):
         [r['workers'] for r in rows] == list(ORDER), 'complete frozen six-process order required')
     identities = [(r['native_identity']['pid'], r['native_identity']['start_ticks']) for r in rows]
     guards.require(len(set(identities)) == 6, 'native process identity reused')
+    for key in ('machine_identity','model_assets_fingerprint','source_commit','binary_sha256','benchmark_sha256'):
+        guards.require(all(row[key] == rows[0][key] for row in rows), 'cross-process identity differs: '+key)
     guards.require(all(r['passed'] and r['ownership_closed'] and not r['fresh_faults'] and
         r['warmups']['successful_warmups'] == 4 and r['runtime_pool_confirmed'] and
-        r['observer_records_absent'] and gen.sample_eligible(r['request']) for r in rows),
+        r['observer_records_absent'] and r['pool_execution_evidence']['observed_decode_misses'] and
+        gen.sample_eligible(r['request']) for r in rows),
         'incomplete, observed, failed or ineligible process')
     matching = all(all(r['request'][k] == rows[0]['request'][k] for k in WORK_KEYS) for r in rows)
     if not matching:
@@ -103,7 +184,12 @@ def prepare(stage, cohort):
     check = stage == 'check'
     previous = gen.committed(RESULT) if RESULT.exists() else None
     if check:
-        guards.require(previous is None, 'no automatic retry of an existing capacity experiment')
+        guards.require(previous and previous.get('plan_cancellation', {}).get('complete') and
+            previous['plan_cancellation']['native_launched'] is False and
+            previous['plan_cancellation']['raw_root_absent'] and previous['stage'] == 'clean' and
+            previous['cohort'] == 0 and not previous['processes'] and previous['check_evidence']['passed'] and
+            previous.get('experiment_version', 1) == 1,
+            'v2 requires explicit closure of the unlaunched v1 plan; no automatic retry')
         base = gen.committed(resources.RESULT)
         guards.require(base['complete'] and base['passed'] and base['ownership_closed'] and
             base['resource_admission_qualified'] and base['artifact_retirement']['complete'] and
@@ -114,6 +200,7 @@ def prepare(stage, cohort):
         completed, qualification = [], None
     else:
         guards.require(previous and previous['complete'] and previous['passed'] and
+            previous['experiment_version'] == VERSION and
             previous['ownership_closed'] and not previous['active'] and not previous['fresh_faults'] and
             previous['plan'] == comparison_plan() and
             ((cohort == 0 and previous['stage'] == 'check') or
@@ -127,9 +214,9 @@ def prepare(stage, cohort):
         qualification = previous['check_evidence']
         guards.require(len(completed) == cohort and qualification['passed'], 'missing small qualification')
     workers = 1 if check else ORDER[cohort]
-    root = B / ('decode-cpu-capacity-v1-check' if check else f'decode-cpu-capacity-v1-{cohort}')
+    root = B / (f'decode-cpu-capacity-v{VERSION}-check' if check else f'decode-cpu-capacity-v{VERSION}-{cohort}')
     record = {k: copy.deepcopy(base[k]) for k in SOURCE_KEYS}
-    record.update(schema=1, mode='pool-capacity', stage=stage, cohort=cohort, workers=workers,
+    record.update(schema=1, experiment_version=VERSION, mode='pool-capacity', stage=stage, cohort=cohort, workers=workers,
         source_commit=source, reference=reference, plan=comparison_plan(), processes=completed,
         check_evidence=qualification, complete=False, passed=False, active=False,
         performance_eligible=False, hardware_saturation_qualified=False, model_quality_qualified=False)
@@ -138,6 +225,14 @@ def prepare(stage, cohort):
     pins = gen.benchmark_pins(source)
     settings = gen.committed(gen.SETTINGS)
     guards.require(not root.exists(), 'never overwrite/retry a process root')
+    assets = model_pins(base['config'], None if check else previous['model_assets'], full=check)
+    machine = machine_identity()
+    if not check:
+        guards.require(machine == previous['machine_identity'], 'boot/kernel/driver/runtime changed between processes')
+    record.update(model_assets=assets, model_assets_fingerprint=fingerprint(assets), machine_identity=machine)
+    if check:
+        record['supersedes'] = dict(commit=gen.git('log','-1','--format=%H','--',str(RESULT.relative_to(P))).decode().strip(),
+            path=str(RESULT.relative_to(P)), sha256=gen.common.digest(RESULT))
     tokenizer_assets = {str(Path(base['config']['tokenizer'])/name):
         gen.common.digest(Path(base['config']['tokenizer'])/name)
         for name in ('vocab.json','merges.txt','token_type.json','chat_template.jinja')}
@@ -209,6 +304,8 @@ def run():
         guards.require(gen.common.digest(path) == expected, 'measurement input changed: '+str(path))
     guards.require(resources.source_proof(record) == record['original_native_inputs_recovered'], 'native proof changed')
     gen.runtime_assets_unchanged(record)
+    guards.require(model_pins(record['config'], record['model_assets']) == record['model_assets'] and
+        machine_identity() == record['machine_identity'], 'frozen model/platform changed before launch')
     check = record['stage'] == 'check'
     for name, expected in record['tokenizer_assets'].items():
         guards.require(gen.common.digest(name) == expected, 'tokenizer asset changed: '+name)
@@ -259,10 +356,15 @@ def run():
                 native['args'] == ['--serve', *record['config']['args']] and
                 'resource_collector' not in native, 'native launch or observer differs')
             record['native_identity'] = native['native']
+            server_log, = (root/'tmp').glob('strata-bench-*.log')
+            record['pool_execution_evidence'] = request_pool_evidence(server_log.read_text(errors='replace'), rows[0], record['config'])
             guards.require('strata decode cpu: ' not in log and 'strata decode timing: ' not in log,
                            'clean run emitted observer records')
             record['observer_records_absent'] = True
-        gen.runtime_assets_unchanged(record); record['passed'] = True
+        gen.runtime_assets_unchanged(record)
+        guards.require(machine_identity() == record['machine_identity'], 'platform changed during run')
+        model_pins(record['config'], record['model_assets'], full=not check and record['cohort'] == 5)
+        record['passed'] = True
     except BaseException as error:
         record['error'] = str(error)
         if not check:
@@ -286,11 +388,14 @@ def run():
         if check:
             record['check_evidence'] = dict(source_commit=record['source_commit'], binary=record['binary'],
                 workers=1, passed=record['passed'], requests=record.get('small_requests', []),
+                machine_identity=record['machine_identity'], model_assets_fingerprint=record['model_assets_fingerprint'],
                 ownership_closed=record['ownership_closed'], fresh_faults=record['fresh_faults'],
                 limits='Tiny native-protocol safety/configuration check only; no quality, numerical parity, throughput or full-context qualification.')
         else:
             record['processes'].append({k: record.get(k) for k in ('cohort','workers','passed','ownership_closed',
-                'fresh_faults','warmups','native_identity','runtime_pool_confirmed','observer_records_absent')})
+                'fresh_faults','warmups','native_identity','runtime_pool_confirmed','observer_records_absent',
+                'machine_identity','model_assets_fingerprint','source_commit','pool_execution_evidence')})
+            record['processes'][-1].update(binary_sha256=record['binary']['sha256'], benchmark_sha256=record['source_aggregate_sha256'])
             requests = record.get('requests', [])
             record['processes'][-1]['request'] = requests[0] if requests else {}
             if record['passed'] and record['cohort'] == 5:
