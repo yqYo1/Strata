@@ -1481,6 +1481,14 @@ engine as the speed reference. It also completed the passive diagnostic below.
 The newer extra build has since been retired after source recovery and consumer
 migration; see the current [build decision](../bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json).
 No new inference optimization or runtime-baseline adoption follows.
+After the CPU-capacity comparison closed, the unused internal CPU observer's
+production hooks, header, two CPU fixtures and build mode were retired to
+`d50d31347cc8505a40181db8308735bfa0058427`. Before independent copy-safety changes,
+all maintained native/build files were restored byte-for-byte to the selected
+`396d0c91f301` source; only that observer delta existed in those paths.
+The external collector, original failed gates and compact observations remain
+distinct. This removes an unqualified experiment from the next candidate's
+baseline; it is not a new build, speed measurement or observer-overhead result.
 During process0, a read-only capability check of the owned native client's
 `/proc/<pid>/fdinfo` exposed xe `drm-cycles-ccs`, `drm-total-cycles-ccs` and
 memory residency fields on kernel7.0.0-38-generic. This is field availability,
@@ -1655,6 +1663,56 @@ enqueue result and require checked retirement or fail-stop with owners alive:
 current fetch ignores submit errors, and a query error is not completion.
 The [reviewed source requirements](../bench/results/2026-10-15-pr6-recovery-audit/research-index.json)
 do not qualify enabling the route or predict a gain.
+
+The independent verifier correction checks every copy submission, refuses
+invalid staging extents and drains earlier copies even after a later submission
+fails. An error from a stream query no longer counts as completion. All SYCL
+verifier teardown now requires checked drains before releasing borrowed owners;
+if sticky runtime errors prevent that proof, the process stops with owners
+alive. The redundant queued flag callback is removed from the SYCL path.
+This change still leaves the ordinary-Arena nonresident GPU route closed.
+Before execution, the committed plan is to build with
+`python3 tools/sycl/build_engine.py build-copy-safety`, commit its build result,
+then run `python3 tools/sycl/check_verifier_retirement.py`. The prospective gate
+requires all ten existing submission cases plus six isolated production-verifier
+cases (valid copy, partial submission failure, bounds, query error, destructor
+failure and copy-drain failure), normal owned closure, unchanged source/runtime
+and no fresh GPU fault. The last two cases must exit1 before unwind or atexit;
+they inject only a host-task exception, never an invalid GPU address or stalled
+kernel. The small traced/validated check explicitly admits the already observed
+driver.16/libudev.18 diagnostic delta without changing the shared runtime
+baseline. Source changes, build receipt, small-check execution and any future
+model-route/performance decision remain separate gates. The source396 known-good
+engine and its five fixtures remain the fallback for this immediate comparison;
+the second generation must be selected or retired at qualification closure.
+Source`d20736c36290` compiled successfully. Both same-build fixtures passed all
+ten submission and six verifier cases under the traced/validated environment;
+the two fail-stop cases exited1 with only their pre-stop markers, without
+unwind/atexit markers. Source/runtime hashes remained unchanged, all owned
+processes closed, the boot stayed unchanged and no fresh GPU fault appeared.
+See the [small-check result](../bench/results/2026-10-15-pr6-recovery-audit/verifier-copy-safety-current.json).
+The independent delta audit identified a public failed-object reuse/output gap:
+the server exits on run failure, but the object did not itself refuse another
+window or old logits. It also noted early flag-B publication for an empty
+batch, although SYCL's next graph segment already waits for checked retirement.
+The follow-up latches failed copy submission as terminal and refuses subsequent
+run/commit/logits/logprobs/residual access; it publishes flagB only after checked
+retirement, including empty batches. The revised prospective gate adds a seventh
+isolated empty-batch case and strengthens the partial-failure case to exercise
+public reuse and output refusal. Build with
+`python3 tools/sycl/build_engine.py rebuild-copy-safety`, commit the build result,
+then run the same check controller with its fresh v2 root. All17 cases, source/
+runtime/boot identity, ownership and fault checks must pass; the original16-case
+pass remains a result of the earlier source only. Source`cd81dcd133e7` rebuilt
+successfully and all17 revised cases passed, with normal owned closure,
+unchanged source/runtime/boot and no fresh GPU fault. The separate native
+Luna-max review confirms that existing callers abort after run failure and
+earlyB cannot bypass the checked SYCL segment barrier; the public failed-object
+reuse gap was not a demonstrated current-caller or GPU-hang mechanism. The
+small follow-up closes that API gap. Its source and17-case result are distinct
+from the independent audit ofd207. These component results do not enable the
+ordinary-Arena route, establish model correctness/nonregression or add speed.
+Return to the bounded explicit-copy/CPU-share comparison next.
 
 A conditional complete-blob copy budget also constrains that candidate.
 With at most2 resident experts per layer, top10 routing and at most4 emitted

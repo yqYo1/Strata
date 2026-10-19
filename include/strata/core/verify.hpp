@@ -23,8 +23,6 @@
 // selection, native indexer) and a profile-filled VRAM expert tier with its residency table on the device.
 #pragma once
 
-#include "strata/core/cpu_clock.hpp"
-
 #include <cstdio>
 #include "strata/core/watchdog_lifecycle.hpp"
 
@@ -135,9 +133,6 @@ public:
     /// The next stage: `run` and `commit` continue into it (its pool calls get `next_user`); sampling settings
     /// and `final_R` are the last stage's.
     void set_next(Verifier* next, void* next_user) { next_ = next; next_user_ = next_user; }
-    /// Head-only CPU sync counters do not include downstream stages, even when
-    /// those stages use the same physical GPU. Observation must reject them.
-    bool cpu_profile_single_stage() const noexcept { return next_ == nullptr; }
     /// floats per token in a hand-off buffer
     static int64_t handoff_floats(const ModelGeometry& g) { return (int64_t) g.hc * g.n_embd + g.n_embd + g.hc; }
 
@@ -163,7 +158,9 @@ public:
 
     /// Token t's residual after the last layer, (hc, n_embd) on the device, valid until the next `run`.
     const float* final_R(int t) const;
-    const float* final_R_all() const { return next_ ? next_->final_R_all() : R_; }
+    const float* final_R_all() const {
+        return released_.load() ? nullptr : next_ ? next_->final_R_all() : R_;
+    }
 
     /// The GPU plan the pool writes each layer (VRAM hits + the PCIe share of the misses); give it to the
     /// dispatch (`ExpertDispatch::plan`) before the first `run`.
@@ -186,10 +183,6 @@ public:
     /// the pool never plans a PCIe share (--pcie-frac 0): the window skips that path.  Before the first run.
 
     double ms_wait = 0, ms_pool = 0, ms_host = 0, ms_commit = 0;
-    // Calling-thread CPU inside selected run/commit synchronization calls.
-    // This is a subset of main-thread CPU, not GPU elapsed time. Main reads it
-    // between completed windows; cleanup/watchdog paths do not update it.
-    CpuTimeCounter cpu_sync_calls;
 #ifdef STRATA_ENABLE_SYCL
     int64_t work_ready_at_pool_return = 0, work_pending_at_pool_return = 0;
 #endif
@@ -261,6 +254,10 @@ private:
     cudaEvent_t work_done_ = nullptr;
     bool overlap_gpu_ = true, work_launched_ = false;
     cudaError_t work_status_ = cudaSuccess;
+    cudaError_t copy_submit_status_ = cudaSuccess;
+    size_t staging_blob_bytes_ = 0;
+    bool finish_expert_copies(std::string& err);
+    friend struct VerifierRetirementTestAccess;
     std::atomic<uint32_t> reached_{0};
     bool end_segment(int T, std::string& err, bool work = false);
     void launch_work();
