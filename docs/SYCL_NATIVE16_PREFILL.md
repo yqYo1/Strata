@@ -1882,26 +1882,34 @@ extent, fresh-event replay, and refusal of mismatched or unrecorded inputs.
 The separate `sycl_verifier_retirement_test --early` entry has six cases:
 small,16 largest blobs, empty, fresh-event replay, mismatched plan and unrecorded
 event. It uses production publication/fetch/launch/retirement with guarded device
-payloads and a resident-produced dependency byte. The small case holds the copy
-queue with a test-only host task, with a two-second automatic release counted
-as failure. Prewarmed resident work must complete while the gate is held;
-copied completion must remain not-ready for50ms and a separate queue must see
-untouched output before release. Both graph writes and the concurrent probe use
-32-bit device atomics, so a missing wait does not make the assertion a data race.
-The gate captures only standard C++ state, calls no runtime API and releases
-before checked owner destruction, following the
-[SYCL host-task contract](https://github.khronos.org/SYCL_Reference/iface/host-task-basic.html).
-These cases exercise queue/owner behavior, not native projection math or
-production overlap; retain the existing16 native projection cases. Source
-`246415bfc` compiled, and the same-build provider/submission/retirement/grouped
-checks passed all51 existing cases. The first new case then failed because
-copy submission did not return before the host gate's two-second deadline.
-The trace has an approximately two-second gap before the first UR memcpy
-enqueue; this does not prove a production-path or GPU failure. The owner closed
-normally, with unchanged boot and no fresh GPU fault. Preserve this failed gate
-in the [compact result](../bench/results/2026-10-15-pr6-recovery-audit/verifier-copy-safety-current.json).
-Replace the unsuitable host-task gate under a new committed bounded plan while
-preserving pending-completion, untouched-output and lifetime assertions.
+payloads and a resident-produced dependency byte. The existing16 native
+projection cases remain required; synthetic graphs do not replace their math.
+
+Source`246415bfc` compiled and passed all51 existing cases. Its first early case
+failed: submission reached the first UR memcpy only after the test-only host
+task's two-second deadline. The owner closed normally, with unchanged boot and
+no fresh GPU fault. That outcome remains in the original committed
+[failed gate](https://github.com/yqYo1/Strata/blob/b9a13287c/bench/results/2026-10-15-pr6-recovery-audit/verifier-copy-safety-current.json).
+It does not establish a production deadlock or a GPU failure. Native review of
+the two runtime-contract reports recommends finite ordinary DMA first; imported
+unsignalled Level Zero events would need separate qualification.
+
+The fresh v7 plan replaces only that test mechanism. On the same in-order copy
+queue, prewarm64MiB host-USM/device scratch, then enqueue32 copies (2GiB logical
+work,128MiB scratch total). Both the gate enqueue and production fetch must
+return within100ms. Independent resident work must finish while the gate remains
+pending. Copied completion must stay NotReady for50ms, and a separate queue must
+atomically observe every output word unchanged before the finite DMA ends.
+Then let DMA finish naturally and check copied completion, exact payloads,
+source retirement and outer guards. Both graph writes and the concurrent probe
+use32-bit device atomics. A short gate, delayed submission or missing progress
+fails this plan without resizing or retrying it. The gate owner drains the copy
+queue before freeing scratch and before verifier teardown, including partial
+submission and exception paths. No host task, external signal, device spin or
+runtime safety-setting change is introduced. The
+[SYCL queue contract](https://github.khronos.org/SYCL_Reference/iface/queue.html)
+supplies ordering and checked completion; timely API return and cross-queue
+progress remain measured requirements rather than assumed guarantees.
 Model execution remains blocked until the complete57-case gate passes.
 After all57 passes, use `tools/sycl/early_pcie.py prepare`, commit the generated
 plan, then `run`: two thinking-template requests with16 generated tokens each,
