@@ -1623,9 +1623,20 @@ the same work and no fresh fault:651.9 prefill tok/s,8.3 decode tok/s and
 the same work and no fresh fault:652.9 prefill tok/s,11.2 decode tok/s and
 260639.1 decode ms. The fifth process (five workers plus the host) also passed
 with unchanged work and no fresh fault:652.4 prefill tok/s,10.1 decode tok/s
-and290587.5 decode ms. The final one-worker process and final model digest
-remain; preserve the five-worker spread and wait for all three pairs before the
-sensitivity decision. This does not isolate CPU arithmetic versus RAM limits.
+and290587.5 decode ms. The final one-worker process passed at642.6 prefill
+tok/s,8.1 decode tok/s and362645.0 decode ms, with the same work and no fresh
+fault. All six owners closed normally; final hashes of all15 model inputs
+(85989955827 bytes) match the initial model fingerprint. The frozen reducer
+and an independent replay agree: one/five per-token latency ratios are
+1.684906196,1.352426401 and1.247971781; geomean1.416765734. Every pair is slower
+with reduced capacity, exceeding the unchanged1.10 directional gate.
+The result supports CPU expert-pool capacity sensitivity for this request.
+Keep the individual five-worker14.6/11.2/10.1 and one-worker8.7/8.3/8.1tok/s
+samples: medians11.2/8.3 do not erase the substantial baseline spread.
+This does not isolate arithmetic from RAM/scheduling or prove baseline saturation,
+model quality, strong/weak adoption or70tok/s. A bounded explicit-copy candidate
+can reduce both CPU arithmetic and RAM demand; it still needs the separate
+source/submission/retirement gates below and measured total-path improvement.
 After PR144 preserved the original controller and result commits on the fork
 default, Main verified closure and useful evidence, recovered the temporary
 native source views from396d0c91f301, and retired187 closed raw/audit files
