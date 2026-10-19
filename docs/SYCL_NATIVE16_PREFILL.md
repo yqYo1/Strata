@@ -1617,8 +1617,10 @@ The second process (one worker plus the host) also completed all four warmups,
 with identical fresh input,2931 generated tokens and2105/2481 accepted drafts.
 It measured647.6 prefill tok/s and8.7 decode tok/s, with normal native/benchmark
 closure and no fresh fault. The first one/five per-token decode latency ratio
-is1.684906196. Four independent processes remain; the first pair alone cannot
-decide the frozen three-pair sensitivity gate or CPU arithmetic versus RAM limits.
+is1.684906196. The third process (one worker plus the host) also passed with
+the same work and no fresh fault:651.9 prefill tok/s,8.3 decode tok/s and
+352495.2 decode ms. Three processes remain; the first pair and a second reduced
+sample cannot decide the frozen three-pair gate or CPU arithmetic versus RAM limits.
 After PR144 preserved the original controller and result commits on the fork
 default, Main verified closure and useful evidence, recovered the temporary
 native source views from396d0c91f301, and retired187 closed raw/audit files

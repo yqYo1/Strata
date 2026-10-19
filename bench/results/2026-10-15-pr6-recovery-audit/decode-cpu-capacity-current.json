@@ -276,6 +276,107 @@
         "workload": "regular-code",
         "controller_eligible": true
       }
+    },
+    {
+      "cohort": 2,
+      "workers": 1,
+      "passed": true,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "warmups": {
+        "successful_warmups": 4,
+        "successful_long_requests": 1,
+        "phase_order": [
+          "warm-up/chat",
+          "calibration",
+          "calibration",
+          "warm-up/prompt",
+          "long-generation/regular-code"
+        ],
+        "request_sha256": [
+          "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+          "48af7fbebcd5728e30cb2d9a1077477a8bba53ac3af17ee75e8450380ed2e346",
+          "3f92f8a68c7c71cec1f50355d30fb97744f44099673e8de1dabd46d12a61d7b6",
+          "f0d7df4ffaaf67dbf3ae26f8d77f0811d2bed00bbd2ed92912fd9d0649347eae",
+          "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9"
+        ],
+        "journal_sha256": "c811adc16d1573d4d6c64a68ca08a82d15d4ef3d9665d2a25d0f9ec3ebf8d64e",
+        "journal_state_sha256": "c5a990954e081332b05143e90d092f24eb0c286c509e645f90d02e27c3e400fb"
+      },
+      "native_identity": {
+        "pid": 614124,
+        "start_ticks": 77392455,
+        "sid": 614099
+      },
+      "runtime_pool_confirmed": true,
+      "observer_records_absent": true,
+      "machine_identity": {
+        "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+        "device": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "guarded_runtime_sha256": "2c3a74d4e12b576218cbafc80adda3452a6ae1c22f1cfbf88f1ec32094621a8e"
+      },
+      "model_assets_fingerprint": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e",
+      "source_commit": "7d9dce79a91b68dfc8b16d91f19ee6043df8b562",
+      "pool_execution_evidence": {
+        "observed_decode_misses": true,
+        "generated_tokens": 2931,
+        "rounded_cache_hit_percent": 2.0,
+        "basis": "Existing request-completion footer. Original native DONE hits/lookups begin after prefill; with pcie-frac0 and pool enabled, refused expert rows enter run_split_multi_native. No added observer or exact route/physical-byte count."
+      },
+      "binary_sha256": "570b65ddfd88e3955b58634b361bb13e12a4bd713ac6e5ae396d47265a76fd46",
+      "benchmark_sha256": "b701d129b41d2785a74721ba40da1685d6030af3ccc28c48f4acd48c6bff801e",
+      "request": {
+        "ok": true,
+        "err": null,
+        "ttft_s": 51.291,
+        "total_s": 403.61,
+        "prompt_tokens": 33211,
+        "reused_tokens": 0,
+        "read_tokens": 33211,
+        "generated_tokens": 2931,
+        "prompt_tps": 651.9,
+        "prompt_tps_source": "engine",
+        "decode_tps": 8.3,
+        "decode_tps_source": "engine",
+        "prompt_ms": 50948.3,
+        "decode_ms": 352495.2,
+        "drafts_offered": 2481,
+        "drafts_accepted": 2105,
+        "finish_reason": "stop",
+        "request_sha256": "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9",
+        "stream_complete": true,
+        "truncated": false,
+        "generated_tokens_source": "usage",
+        "client_interval": {
+          "request_begin_monotonic_ns": 774049867416997,
+          "first_output_monotonic_ns": 774101158263759,
+          "request_end_monotonic_ns": 774453478023664
+        },
+        "eligible": true,
+        "agreement_eligible": true,
+        "speed_eligible": true,
+        "speed_ineligible_reasons": [],
+        "ineligible_reasons": [],
+        "acceptance_rate": 0.8484482063683998,
+        "usage_generated_tokens": 2931,
+        "completion_includes_thinking": true,
+        "run": 0,
+        "order": 0,
+        "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
+        "reasoning_sha256": "c8661b9154a620a9ece19a429798939eb8ecc01da7ac261878e4494d6be0f340",
+        "output_chars": 5578,
+        "reasoning_chars": 2783,
+        "reasoning_tokens": null,
+        "workload": "regular-code",
+        "controller_eligible": true
+      }
     }
   ],
   "check_evidence": {
@@ -316,8 +417,8 @@
     "fresh_faults": [],
     "limits": "Tiny native-protocol safety/configuration check only; no quality, numerical parity, throughput or full-context qualification."
   },
-  "complete": false,
-  "passed": false,
+  "complete": true,
+  "passed": true,
   "active": false,
   "performance_eligible": false,
   "hardware_saturation_qualified": false,
@@ -681,5 +782,97 @@
     "text_cap": 67108864,
     "file_cap": 67108864,
     "total_cap": 67108864
+  },
+  "exit_code": 0,
+  "runtime_pool_confirmed": true,
+  "requests": [
+    {
+      "ok": true,
+      "err": null,
+      "ttft_s": 51.291,
+      "total_s": 403.61,
+      "prompt_tokens": 33211,
+      "reused_tokens": 0,
+      "read_tokens": 33211,
+      "generated_tokens": 2931,
+      "prompt_tps": 651.9,
+      "prompt_tps_source": "engine",
+      "decode_tps": 8.3,
+      "decode_tps_source": "engine",
+      "prompt_ms": 50948.3,
+      "decode_ms": 352495.2,
+      "drafts_offered": 2481,
+      "drafts_accepted": 2105,
+      "finish_reason": "stop",
+      "request_sha256": "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9",
+      "stream_complete": true,
+      "truncated": false,
+      "generated_tokens_source": "usage",
+      "client_interval": {
+        "request_begin_monotonic_ns": 774049867416997,
+        "first_output_monotonic_ns": 774101158263759,
+        "request_end_monotonic_ns": 774453478023664
+      },
+      "eligible": true,
+      "agreement_eligible": true,
+      "speed_eligible": true,
+      "speed_ineligible_reasons": [],
+      "ineligible_reasons": [],
+      "acceptance_rate": 0.8484482063683998,
+      "usage_generated_tokens": 2931,
+      "completion_includes_thinking": true,
+      "run": 0,
+      "order": 0,
+      "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
+      "reasoning_sha256": "c8661b9154a620a9ece19a429798939eb8ecc01da7ac261878e4494d6be0f340",
+      "output_chars": 5578,
+      "reasoning_chars": 2783,
+      "reasoning_tokens": null,
+      "workload": "regular-code",
+      "controller_eligible": true
+    }
+  ],
+  "warmups": {
+    "successful_warmups": 4,
+    "successful_long_requests": 1,
+    "phase_order": [
+      "warm-up/chat",
+      "calibration",
+      "calibration",
+      "warm-up/prompt",
+      "long-generation/regular-code"
+    ],
+    "request_sha256": [
+      "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+      "48af7fbebcd5728e30cb2d9a1077477a8bba53ac3af17ee75e8450380ed2e346",
+      "3f92f8a68c7c71cec1f50355d30fb97744f44099673e8de1dabd46d12a61d7b6",
+      "f0d7df4ffaaf67dbf3ae26f8d77f0811d2bed00bbd2ed92912fd9d0649347eae",
+      "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9"
+    ],
+    "journal_sha256": "c811adc16d1573d4d6c64a68ca08a82d15d4ef3d9665d2a25d0f9ec3ebf8d64e",
+    "journal_state_sha256": "c5a990954e081332b05143e90d092f24eb0c286c509e645f90d02e27c3e400fb"
+  },
+  "native_identity": {
+    "pid": 614124,
+    "start_ticks": 77392455,
+    "sid": 614099
+  },
+  "pool_execution_evidence": {
+    "observed_decode_misses": true,
+    "generated_tokens": 2931,
+    "rounded_cache_hit_percent": 2.0,
+    "basis": "Existing request-completion footer. Original native DONE hits/lookups begin after prefill; with pcie-frac0 and pool enabled, refused expert rows enter run_split_multi_native. No added observer or exact route/physical-byte count."
+  },
+  "observer_records_absent": true,
+  "ownership_closed": true,
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
   }
 }
