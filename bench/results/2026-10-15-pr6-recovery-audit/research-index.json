@@ -4064,5 +4064,53 @@
       "main_read_original_body": false
     },
     "pending_gate": "Compile exact corrected source and explicitly run51 existing plus6 early cases; source review is not compilation, runtime validation, speed or adoption."
+  },
+  "decode_moe_projection_payload_collection_scope": {
+    "classification": "knowledge collection",
+    "question": "Compare concrete CPU/GPU MoE offload designs that reduce GPU-bound bytes below a complete expert blob: gate/up versus down placement, projection/row/column partitioning, and activation/intermediate traffic. Focus on batch1..8 decode with CPU-resident quantized experts. Use vLLM/SGLang and other original implementations/papers/HPC methods where applicable. Do not repeat speculative acceptance/cache/window surveys; compare when projection partitioning wins or loses and what numerical/state contract changes. Current measured complete-blob candidate requests642680908800 logical bytes for3177 emitted tokens, about202MB/token. At unchanged work70TPS would request14.16GB/s; this is not measured wire traffic or saturation. Identify architectures capable of changing that logical-byte term and their additional CPU/GPU/RAM cost, rather than predicting a local gain.",
+    "source_commit": "5133b245d88acfb7a3d0d57d9e5a0309833cbc1c",
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/decode-moe-payload-sharding-report.md",
+    "report_budget_bytes": 12288,
+    "schedulable_now": false,
+    "prerequisites": [
+      {
+        "met": true,
+        "evidence": "Actual complete-blob transfer work conserved in32K+ model; earlier work/byte, cache and speculative-method surveys indexed."
+      },
+      {
+        "met": true,
+        "evidence": "New bounded projection-placement or actual native-format dispatch question, with no build/model prerequisite; read-only source paths remain frozen until this report settles."
+      }
+    ],
+    "status": "dispatched_read_only_research",
+    "consumer": "Review novelty and applicability via native Luna-max; retrieve only for the concrete next decode architecture decision.",
+    "task_id": "task_76ba4afa6b1a",
+    "dispatch_id": "ctx_6536c3df04b3",
+    "terminal": "term_1672cef1-790a-47c6-88b0-9937c81def34",
+    "process_incarnation": "5fe4e8ac-0321-449b-b256-ff777e405f1b::/home/yayoi/orca/workspaces/Strata/sycl@@d46105c3:105571b7-067f-4ef7-ac13-8ccd34a1001a"
+  },
+  "native_cpu_format_dispatch_source_scope": {
+    "classification": "decision support",
+    "question": "Audit the current target-verifier CPU native-format dispatch on this Zen3 machine: canonical versus native providers, activation quantizers and GU/Down routes for actual model-format families, single-row versus grouped1..4/8 tokens, AVX2 versus scalar/unsupported AVX512 paths, and useful existing multirow helpers reachable or unreachable from production. Do not repeat the previous zen3_small_multirow_mtp_kernel_methods_collection_scope survey or assume an IQ3_S down helper applies to a model whose down type differs. Explain native Q2_0/type42 versus canonical layouts precisely: an earlier canonical Q2_0 host fixture SIGILLed on AVX512 before GPU execution, whereas the actual long model runs normally. Identify concrete source-level performance or safety gaps, plus counterevidence where current dispatch is already optimized. No proposal code and no claim that CPU arithmetic or RAM saturation is established. Source inputs and hashes are in /home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/native-cpu-format-inputs.json; read those paths directly and hash-check them before/after, without Git. Avoid whole model assets and unrelated research bodies.",
+    "source_commit": "5133b245d88acfb7a3d0d57d9e5a0309833cbc1c",
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/native-cpu-format-dispatch-report.md",
+    "report_budget_bytes": 12288,
+    "schedulable_now": false,
+    "prerequisites": [
+      {
+        "met": true,
+        "evidence": "Actual complete-blob transfer work conserved in32K+ model; earlier work/byte, cache and speculative-method surveys indexed."
+      },
+      {
+        "met": true,
+        "evidence": "New bounded projection-placement or actual native-format dispatch question, with no build/model prerequisite; read-only source paths remain frozen until this report settles."
+      }
+    ],
+    "status": "dispatched_read_only_research",
+    "consumer": "Review novelty and applicability via native Luna-max; retrieve only for the concrete next decode architecture decision.",
+    "task_id": "task_9f0db0aa3a00",
+    "dispatch_id": "ctx_80e589e29840",
+    "terminal": "term_a757dd41-f973-40da-bba0-03a8e38029f4",
+    "process_incarnation": "5fe4e8ac-0321-449b-b256-ff777e405f1b::/home/yayoi/orca/workspaces/Strata/sycl@@e5d472ad:1c33b907-76c1-4846-865f-a1d5a825e61d"
   }
 }
