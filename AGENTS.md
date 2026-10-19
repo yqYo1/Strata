@@ -308,8 +308,11 @@ integration and testing.
   it completely, tail/boundary cases, prefill-to-decode state and RESTORE paths.
   No output room at a completely full context is expected; crashes, invalid
   accesses and corrupted state are not. A smaller configured context or a
-  successful component test does not establish this qualification. Generated
-  text need not be identical; use the numerical/task policy above.
+  successful component test does not establish this qualification. Distinguish
+  API/CLI admission, which can reserve output room, from the engine's physical
+  capacity: an admission rejection does not exercise the final context slots.
+  Record the entrypoint and actual processed extent for a full-context check.
+  Generated text need not be identical; use the numerical/task policy above.
 - Main serializes builds, tests, GPU jobs, profiling and cleanup. Launch owned
   processes with finite time/output budgets. A tool observation timeout does
   not establish that its process stopped: inspect the existing handle and
@@ -326,6 +329,12 @@ integration and testing.
   `setenv`/`unsetenv` while runtime or collector threads may read the environment.
   Review legacy fixtures that switch variables before reusing them. Floating-point
   state operations such as `std::fesetenv` are separate from process environment variables.
+- Preserve the current workstation's qualified runtime safety settings from
+  [the shared measurement environment](tools/sycl/measurement_environment.json),
+  including copy-offload avoidance, disabled direct submission and the qualified
+  queue configuration. Clean speed runs may remove observers, not these safety
+  settings. A change needs a separately committed, bounded safety qualification;
+  follow [the diagnostic policy](docs/ARTIFACT_RETENTION.md#temporary-diagnostic-collection).
 - Before rerunning code implicated in a GPU hang, audit its bounds, USM/context
   lifetime, queue/event dependencies, collective participation and graph replay
   assumptions against the actual SYCL/Level Zero contract. Correct or isolate
