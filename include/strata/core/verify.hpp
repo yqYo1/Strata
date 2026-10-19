@@ -34,6 +34,7 @@
 #include <cuda_runtime.h>
 
 #include <atomic>
+#include <array>
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -196,6 +197,18 @@ public:
     };
     bool early_pcie_enabled() const { return early_pcie_; }
     EarlyPcieStats early_pcie_stats() const { return early_pcie_stats_; }
+    enum class QueryPoint : size_t { resident_launch, resident_pool_return, pcie_launch, pcie_pool_return, count };
+    struct QueryStats {
+        uint64_t calls = 0, ready = 0, pending = 0, errors = 0, clock_errors = 0;
+        uint64_t wall_ns = 0, max_wall_ns = 0;
+    };
+    using QueryProfile = std::array<QueryStats, static_cast<size_t>(QueryPoint::count)>;
+    // Host-only wrapper wall time, read/reset at serialized request boundaries.
+    // Includes registry checks and the wrapper's completed-event wait; it is
+    // neither device service time nor CPU arithmetic time.
+    bool query_profile_enabled() const { return query_profile_enabled_; }
+    QueryProfile query_profile() const { return query_profile_; }
+    void reset_query_profile() { query_profile_ = {}; }
 #endif
     int64_t windows = 0;
     /// STRATA_VERIFY_PROFILE=1 - GPU stage times of the windows since the last call (ms per
@@ -275,6 +288,9 @@ private:
     cudaError_t copy_submit_status_ = cudaSuccess;
     size_t staging_blob_bytes_ = 0;
     ExpertCopyStats copy_stats_;
+    bool query_profile_enabled_ = false;
+    QueryProfile query_profile_{};
+    cudaError_t query_event(cudaEvent_t event, QueryPoint point);
     uint64_t pending_copy_blobs_ = 0, pending_copy_bytes_ = 0;
     bool finish_expert_copies(std::string& err);
     friend struct VerifierRetirementTestAccess;

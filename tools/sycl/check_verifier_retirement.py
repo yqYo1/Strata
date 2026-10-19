@@ -37,7 +37,10 @@ def digest(path):
 
 
 def main():
-    guards.require(len(sys.argv) == 1, 'no options; inspect a closed run before any retry')
+    profile = sys.argv[1:] == ['--query-profile']
+    guards.require(len(sys.argv) == 1 or profile, 'use no options or --query-profile; never retry a closed root')
+    root = B / 'decode-query-profile-component-v1' if profile else ROOT
+    result = A / 'decode-query-profile-component-current.json' if profile else RESULT
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
@@ -80,10 +83,10 @@ def main():
         previous_reference = dict(commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip(),
             path=str(RESULT.relative_to(P)),sha256=hashlib.sha256(previous).hexdigest(),
             outcome='Original v6 host-task gate failed after51 existing passes; this new finite-DMA plan does not change that outcome.')
-        guards.require(not ROOT.exists(), 'inspect/close the existing owned check; no automatic retry')
-        ROOT.mkdir(mode=0o700)
-        for name in ('tmp', 'cache'): (ROOT / name).mkdir()
-        env = dict(settings['environment'], TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'))
+        guards.require(not root.exists(), 'inspect/close the existing owned check; no automatic retry')
+        root.mkdir(mode=0o700)
+        for name in ('tmp', 'cache'): (root / name).mkdir()
+        env = dict(settings['environment'], TMPDIR=str(root / 'tmp'), XDG_CACHE_HOME=str(root / 'cache'))
         boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
         journal = subprocess.check_output(['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True)
         cursor = next(x.split(': ', 1)[1] for x in journal.splitlines() if x.startswith('-- cursor: '))
@@ -97,13 +100,17 @@ def main():
             consumer='Prerequisite for the default-off event-gated early copied-expert model check. Retire normal traces after compact results are verified and committed.',
             gate='Same-build native provider17, submission10, verifier8, staged grouped-arithmetic16 and early copied-graph6 cases. The first early case uses32 warmed64MiB host-USM-to-device copies on the same in-order copy queue (2GiB total,128MiB scratch). Gate enqueue and production fetch must each return within100ms; independent resident work must finish, copied completion stay NotReady for50ms and an atomic probe see untouched output while the finite gate remains pending. Then require natural completion and full payload/guard/retirement checks. No resize/retry on a short gate. Require exact unchanged-Q8_1 arithmetic against separate GPU projections, finite/nonzero reference outputs, full-window/row mapping, checked owners and unchanged boot/runtime/source, no fresh GPU fault. Any failure blocks advancement.',
             limits='The six early cases check real-queue synthetic ordering, replay, source retirement and refusal, not native projection equivalence or model overlap. Grouped component covers all seven current model GU/Down pairs plus supported IQ4_XS/Q2_0 at H2560/FF640, windows1/4, groups10/16 and entries10/40, using two distinct blobs repeated in metadata. The oracle shares native scalar projection primitives; it isolates copy/grouping from separate execution, not common-mode projection defects or model quality. No invalid GPU address, stalled kernel, model, physical262144/session/RESTORE or throughput qualification.')
+        if profile:
+            record.update(mode='normal-route-query-profile-components', model_route_executed=False,
+                gate='Same-build provider17, submission10, normal verifier retirement8, grouped arithmetic16 and one completed-event query observer case. Observer must preserve results, separate all four categories, conserve counts/times and leave counters zero when disabled/reset. Original failed early51+6 result stays unchanged. No early route, queue configuration or model/speed qualification.',
+                consumer='Prerequisite for the default-route query observer tiny model check; normal51+observer only, never admission of early PCIe scheduling.')
         owner = None
 
         def persist():
             record['active'] = bool(owner and owner.active is not None)
-            (ROOT / 'record.json').write_text(json.dumps(dict(record, commands=owner.commands if owner else []), indent=2) + '\n')
+            (root / 'record.json').write_text(json.dumps(dict(record, commands=owner.commands if owner else []), indent=2) + '\n')
 
-        owner = supervision.Owner(ROOT / 'owned', persist)
+        owner = supervision.Owner(root / 'owned', persist)
         persist()
         try:
             for label, name, args in [
@@ -111,7 +118,8 @@ def main():
                     ('submission', 'sycl_submission_test', ['--submission']),
                     ('retirement', 'sycl_verifier_retirement_test', []),
                     ('grouped', 'sycl_mmvq_test', ['--arena-grouped']),
-                    ('early', 'sycl_verifier_retirement_test', ['--early'])]:
+                    (('query-profile', 'sycl_verifier_retirement_test', ['--query-profile']) if profile else
+                     ('early', 'sycl_verifier_retirement_test', ['--early']))]:
                 fixture = build['fixtures'][name]
                 command = [fixture['path'], *args]
                 entry, out, err = owner.run(label, command, env, P, wall=180, cpu=600,
@@ -132,6 +140,13 @@ def main():
                     guards.require(len(cases) == 10 and 'fixture_status=PASS mode=submission' in stdout and
                         not re.search('UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed', stderr),
                         'submission contracts failed: ' + (stdout + stderr)[-8192:])
+                elif name == 'sycl_verifier_retirement_test' and args == ['--query-profile']:
+                    cases = [x for x in stdout.splitlines() if x.startswith('case=')]
+                    guards.require(cases == ['case=profile expected_exit=0 markers=R PASS'] and
+                        'query_profile_fixture_status=PASS cases=1' in stdout and
+                        not re.search('UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed', stderr),
+                        'query observer contract failed: ' + (stdout + stderr)[-8192:])
+                    record['query_profile_contract_passed'] = True
                 elif name == 'sycl_verifier_retirement_test' and args == ['--early']:
                     cases = [x for x in stdout.splitlines() if x.startswith('case=')]
                     expected = [('early','F'), ('early-large','G'), ('early-empty','H'),
@@ -182,7 +197,7 @@ def main():
                 record.update(driver_guard_error=str(error), passed=False)
             record['passed'] = bool(record['passed'] and record['ownership_closed'] and
                 record['boot_unchanged'] and not record['fresh_faults'])
-            persist(); RESULT.write_text(json.dumps(record, indent=2) + '\n')
+            persist(); result.write_text(json.dumps(record, indent=2) + '\n')
         print(json.dumps({k: record.get(k) for k in ('complete', 'passed', 'ownership_closed', 'error')}))
         return 0 if record['passed'] else 1
 

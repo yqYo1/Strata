@@ -1994,6 +1994,21 @@ profiling-off NOT_READY samples also do not identify a scheduling cause. A new
 committed no-gate/held-gate diagnostic with joined query-thread and actual signal
 timestamps is a possible next discriminator; production query cost and the
 complete57-case/model gates remain separate unresolved questions.
+The next production diagnostic uses `STRATA_SYCL_QUERY_PROFILE=1` on the
+existing default route. It times the complete compatibility query wrapper at
+resident launch/pool-return and early-PCIe launch/pool-return, without adding
+queries or changing their status handling, arithmetic, queue properties or
+safety environment. Counters reset after prefill and report four constant-size
+rows after decode; disabled calls read no clock. Wrapper wall time includes
+registry/preflight checks and any completed-event wait, and is not device
+service time, CPU arithmetic or proof of resource saturation. The new
+`check_verifier_retirement.py --query-profile` result requires the normal51
+cases plus an isolated real completed-event observer check. It does not modify
+the failed early57-case outcome or admit early/arena-copy execution. Next gates
+are a committed, bounded two-request default-route model check, followed by a
+separate32K+ thinking-enabled diagnostic and independent observer-overhead
+qualification. No throughput improvement or new model validation is established
+by adding the observer.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.

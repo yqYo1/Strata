@@ -54,6 +54,16 @@ struct VerifierRetirementTestAccess {
     static void shift_stage(Verifier& v, intptr_t offset) {
         v.sink_.staging = reinterpret_cast<uintptr_t>(v.staging_) + offset;
     }
+    static void prepare_query(Verifier& v) {
+        if (cudaEventCreateWithFlags(&v.work_done_, cudaEventDisableTiming) != cudaSuccess ||
+            cudaEventRecord(v.work_done_, v.cs_) != cudaSuccess ||
+            cudaEventSynchronize(v.work_done_) != cudaSuccess)
+            throw std::runtime_error("query observer event admission");
+    }
+    static void query_profile(Verifier& v, bool enabled) { v.query_profile_enabled_ = enabled; }
+    static cudaError_t query(Verifier& v, Verifier::QueryPoint point) {
+        return v.query_event(v.work_done_, point);
+    }
     static void prepare_early(Verifier& v, int count, size_t bytes, uint8_t* result) {
         if (bytes % sizeof(uint32_t))
             throw std::runtime_error("early test word alignment");
@@ -368,6 +378,41 @@ void early_case(const std::string& mode) {
         else if(mode=="early-plan")mark('J');
         else if(mode=="early-unrecorded")mark('K');
         else throw std::runtime_error("unknown early case");
+    } else if (mode == "profile") {
+        Access::prepare_query(*verifier);
+        const auto empty = [&] {
+            for (const auto& stats : verifier->query_profile())
+                need(stats.calls == 0 && stats.ready == 0 && stats.pending == 0 && stats.errors == 0 &&
+                     stats.clock_errors == 0 && stats.wall_ns == 0 && stats.max_wall_ns == 0,
+                     "disabled/reset query observer wrote counters");
+        };
+        need(!verifier->query_profile_enabled(), "query observer not initially disabled");
+        need(Access::query(*verifier, V::QueryPoint::resident_launch) == cudaSuccess,
+             "disabled query observer changed completed status");
+        empty();
+        Access::query_profile(*verifier, true);
+        for (size_t i = 0; i < static_cast<size_t>(V::QueryPoint::count); ++i)
+            for (size_t j = 0; j <= i; ++j)
+                need(Access::query(*verifier, static_cast<V::QueryPoint>(i)) == cudaSuccess,
+                     "enabled query observer changed completed status");
+        const auto profile = verifier->query_profile();
+        uint64_t total_ns = 0;
+        for (size_t i = 0; i < profile.size(); ++i) {
+            const auto& q = profile[i];
+            need(q.calls == i+1 && q.ready == q.calls && q.pending == 0 && q.errors == 0 &&
+                 q.clock_errors == 0 && q.max_wall_ns <= q.wall_ns,
+                 "query observer category/count/time conservation");
+            total_ns += q.wall_ns;
+        }
+        need(total_ns > 0, "enabled query observer recorded no wall time");
+        verifier->reset_query_profile();
+        empty();
+        Access::query_profile(*verifier, false);
+        need(Access::query(*verifier, V::QueryPoint::resident_pool_return) == cudaSuccess,
+             "disabled query observer after reset changed status");
+        empty();
+        verifier.reset();
+        mark('R');
     } else if (mode == "success") {
         Access::submit(*verifier, inputs, 2, 64);
         need(Access::status(*verifier) == cudaSuccess, "valid copies refused");
@@ -485,6 +530,11 @@ void isolated(const char* mode, const char* expected, int exit_code) {
 int main(int argc, char** argv) {
     try {
         if (argc == 4 && std::string(argv[1]) == "--case") child(argv[2], std::stoi(argv[3]));
+        if (argc == 2 && std::string(argv[1]) == "--query-profile") {
+            isolated("profile", "R", 0);
+            std::puts("query_profile_fixture_status=PASS cases=1");
+            return 0;
+        }
         if(argc==2 && std::string(argv[1])=="--early") {
             isolated("early", "F", 0);
             isolated("early-large", "G", 0);
@@ -495,7 +545,7 @@ int main(int argc, char** argv) {
             std::puts("early_fixture_status=PASS cases=6");
             return 0;
         }
-        need(argc == 1, "usage: sycl_verifier_retirement_test [--early]");
+        need(argc == 1, "usage: sycl_verifier_retirement_test [--early|--query-profile]");
         // The coordinator initializes no SYCL runtime before fork+exec.
         isolated("success", "S", 0);
         isolated("large", "L", 0);
