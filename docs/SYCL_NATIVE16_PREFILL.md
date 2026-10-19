@@ -1714,6 +1714,77 @@ from the independent audit ofd207. These component results do not enable the
 ordinary-Arena route, establish model correctness/nonregression or add speed.
 Return to the bounded explicit-copy/CPU-share comparison next.
 
+The ordinary-Arena candidate is independently authored against this Strata
+provider/planner and verifier. `STRATA_SYCL_VERIFY_ARENA_COPY=1`, set before
+native exec, permits only explicit mode0 copies from the existing immutable
+private-Arena layer view. It rechecks expert count, stride, full size and
+address extent; shared/file/transient providers gain no new promise. Existing
+pin and device-alias predicates retain their meaning. The default remains off.
+The existing `pcie-frac` still selects a bounded share of distinct missed
+experts; this changes neither prefill placement nor model/KV precision.
+It uses the existing16-slot staging allocation, with exact admitted staging and
+window-arena bytes logged on opt-in, and adds no resident weight bank.
+Request-footer counters separate submitted/completed copy payload and blobs,
+immutable-view groups, GPU miss groups and CPU expert jobs/entries. These are
+requested/retired logical bytes, never measured physical PCIe traffic. Partial
+submissions count only accepted copies, including rejected draft work.
+
+Before any model launch, build with
+`python3 tools/sycl/build_engine.py rebuild-arena-copy`, commit its build result,
+then run `python3 tools/sycl/check_verifier_retirement.py`. The frozen component
+gate requires17 native-variable-stride provider/planner/pool cases covering grouping, share/capacity,
+disabled/direct modes, file/shared fallback, missing callbacks and malformed view refusal;10
+existing submission cases; and8 verifier cases, including all16 largest-model
+blobs (2662400B each) from ordinary RAM, payload/outer guards and copy counters.
+Require normal owned closure, unchanged source/runtime/boot and no fresh fault;
+retain the source396 validated fallback during this comparison. No component
+speed threshold is imposed: this is a capability/safety prerequisite, not a
+kernel-optimization claim. A separate committed model check must establish
+actual GPU expert dispatch before32K+ thinking-enabled strong/weak generation
+comparisons. Default/model/physical262144/session/RESTORE qualification and70
+tok/s remain pending. This candidate targets measured CPU-pool capacity
+sensitivity; it does not assume CPU arithmetic rather than RAM is saturated.
+The initial component attempt at`189e5163d` stopped in the new host fixture with
+SIGILL, before any model launch, with no fresh GPU fault. It incorrectly chose
+the canonical Q2_0 CPU path: its quantizer is compiled with AVX512 flags and the
+actual binary contains unconditional ZMM instructions, while this CPU reports
+no AVX512F/VNNI/VBMI. Preserve that failure at`6352c2c3f`. The corrected fixture
+uses the actual native IQ3_XXS/IQ2_S GU and IQ4_NL Down formats on two differently
+sized layers, retaining all grouping/fallback/refusal assertions. The revised
+17+10+8 gate uses a fresh v4 root; the native engine code is unchanged by this
+fixture/controller correction. This is not canonical-pack support or a GPU fix.
+At`3ef95537a398`, the rebuilt native provider17, submission10 and verifier8 cases
+all passed, including the16 largest-size copies and byte/outer-guard checks.
+All owners closed normally; source/runtime/boot stayed unchanged and no fresh
+GPU fault appeared. Engine bytes remained those of`189e5163d`; only the fixture
+and controller were corrected. Independent Orca producer/consumer review and
+native Luna-max review found no verified source blocker; grouped arithmetic/output
+qualification remains separate from the35 component cases.
+The next bounded model gate uses `python3 tools/sycl/arena_copy.py prepare`,
+then a committed generated plan before `run`. It pins the current engine and
+all component bytes, recovers the original build inputs, hashes all model inputs
+before preparation and checks their identities before/after execution. Keep
+pool5,131072 context/resident INT8 KV and the previous8192 prefill settings;
+set the new opt-in before exec andpcie-frac0.25. One owned process serves two
+thinking-template questions with at most16 output tokens each. Both must show
+nonzero immutable-view GPU miss groups, equal submitted/completed blob and byte
+counts, remaining CPU work, normal closure and no fresh fault. Use parameter
+validation and stage progress, not the full model API trace. The driver.16 delta
+is admitted only for this named diagnostic, without updating the shared runtime.
+This check does not compare speed, numerical/task quality or physical262144/
+RESTORE. Long-generation strong/weak comparisons require their own committed
+order, repetitions and decision criteria after actual route admission.
+The frozen check on controller source`9feb1dbb1` then passed both requests:
+66/64 input tokens and16 generated tokens each. Actual mode0 GPU miss groups
+were1309/1534, with2684518400/3143577600 logical payload bytes respectively;
+all submitted blobs/bytes completed. CPU work remained positive in both requests.
+The native owner exited normally with unchanged boot and no fresh GPU fault.
+See the [compact route result and original frozen-plan reference](../bench/results/2026-10-15-pr6-recovery-audit/decode-arena-copy-current.json).
+This is execution/copy-conservation evidence, not native-output or task-quality
+qualification or a speed gain. Validate dispatched mixed-format expert outputs
+before advancing a long-generation candidate. Preserve the source396 fallback
+and default-off candidate for that imminent comparison.
+
 A conditional complete-blob copy budget also constrains that candidate.
 With at most2 resident experts per layer, top10 routing and at most4 emitted
 tokens/window, even identical routes and perfect acceptance require at least

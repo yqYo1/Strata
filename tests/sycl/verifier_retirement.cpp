@@ -7,28 +7,34 @@
 #include <cstdlib>
 #include <cstring>
 #include <memory>
+#include <limits>
 #include <stdexcept>
 #include <string>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <vector>
 
 namespace strata::core {
 // Access only to install small real queue/USM owners without loading a model.
 // The tested submit, finish, query and destruction methods are production code.
 struct VerifierRetirementTestAccess {
     static constexpr size_t arena_bytes = 16 * 64;
-    static void prepare(Verifier& v) {
+    static void prepare(Verifier& v, size_t slot_bytes = 64, int slots = 2) {
+        if (!slot_bytes || slot_bytes > (std::numeric_limits<size_t>::max()-128)/16)
+            throw std::runtime_error("test extent overflow");
         if (cudaStreamCreate(&v.copy_) != cudaSuccess ||
             cudaStreamCreate(&v.cs_) != cudaSuccess ||
-            cudaMalloc(&v.arena_, arena_bytes) != cudaSuccess ||
+            cudaMalloc(&v.arena_, 16*slot_bytes+128) != cudaSuccess ||
             cudaMallocHost(reinterpret_cast<void**>(&v.h_flagB_), sizeof(uint32_t)) != cudaSuccess)
             throw std::runtime_error("test owner admission");
-        v.staging_ = static_cast<uint8_t*>(v.arena_);
-        v.staging_blob_bytes_ = 64;
+        if (cudaMemset(v.arena_,0xa5,16*slot_bytes+128)!=cudaSuccess)
+            throw std::runtime_error("test device guards");
+        v.staging_ = static_cast<uint8_t*>(v.arena_)+64;
+        v.staging_blob_bytes_ = slot_bytes;
         v.sink_.staging = reinterpret_cast<uintptr_t>(v.staging_);
-        v.sink_.staging_cap = 2;
-        v.head_logits_ = reinterpret_cast<float*>(v.arena_);
-        v.R_ = reinterpret_cast<float*>(v.arena_);
+        v.sink_.staging_cap = slots;
+        v.head_logits_ = reinterpret_cast<float*>(v.staging_);
+        v.R_ = reinterpret_cast<float*>(v.staging_);
         v.n_vocab_ = 16;
         v.max_t_ = 2;
         v.last_t_ = 1;
@@ -70,6 +76,29 @@ void need(bool condition, const char* message) {
 void check(cudaError_t code) { need(code == cudaSuccess, cudaGetErrorString(code)); }
 void mark(char value) { need(write(marker_fd, &value, 1) == 1, "marker write"); }
 
+void large_copy_case() {
+    constexpr size_t slot=2662400, total=16*slot;
+    std::vector<uint8_t> source(total), output(total);
+    for(size_t i=0;i<total;++i)source[i]=uint8_t(i*3+7+(i>>8)+(i/slot)*29);
+    std::array<const uint8_t*,16> inputs{};
+    for(size_t i=0;i<inputs.size();++i)inputs[i]=source.data()+i*slot;
+    // All borrowed ordinary host bytes outlive the production verifier owner.
+    auto verifier=std::make_unique<V>();Access::prepare(*verifier,slot,16);
+    Access::submit(*verifier,inputs.data(),16,slot);
+    need(Access::status(*verifier)==cudaSuccess && Access::flag(*verifier)==0,"large submit/refusal");
+    std::string error;need(Access::finish(*verifier,error),"large retirement");
+    check(cudaMemcpy(output.data(),Access::stage(*verifier),total,cudaMemcpyDeviceToHost));
+    need(output==source && Access::flag(*verifier)==1,"large payload or completion differs");
+    const auto stats=verifier->expert_copy_stats();
+    need(stats.submitted_blobs==16 && stats.completed_blobs==16 &&
+         stats.submitted_bytes==total && stats.completed_bytes==total,"large copy accounting differs");
+    std::array<uint8_t,128> guards{};
+    auto* stage=static_cast<uint8_t*>(Access::stage(*verifier));
+    check(cudaMemcpy(guards.data(),stage-64,64,cudaMemcpyDeviceToHost));
+    check(cudaMemcpy(guards.data()+64,stage+total,64,cudaMemcpyDeviceToHost));
+    for(auto value:guards)need(value==0xa5,"large copy changed outer guards");
+}
+
 [[noreturn]] void child(const std::string& mode, int fd) {
     marker_fd = fd;
     need(std::atexit([] { (void)write(marker_fd, "X", 1); }) == 0, "atexit hook");
@@ -93,6 +122,8 @@ void mark(char value) { need(write(marker_fd, &value, 1) == 1, "marker write"); 
         need(output == source, "ordinary source copy payload/guards differ");
         verifier.reset();
         mark('S');
+    } else if (mode == "large") {
+        verifier.reset();large_copy_case();mark('L');
     } else if (mode == "empty") {
         Access::submit(*verifier, nullptr, 0, 0);
         need(Access::status(*verifier) == cudaSuccess && Access::flag(*verifier) == 0,
@@ -111,6 +142,9 @@ void mark(char value) { need(write(marker_fd, &value, 1) == 1, "marker write"); 
         need(Access::flag(*verifier) == 0, "failed batch published completion");
         check(cudaMemcpy(output.data(), Access::stage(*verifier), 64, cudaMemcpyDeviceToHost));
         need(std::memcmp(output.data(), source.data(), 64) == 0, "earlier copy not retired");
+        const auto stats=verifier->expert_copy_stats();
+        need(stats.submitted_blobs==1 && stats.completed_blobs==1 &&
+             stats.submitted_bytes==64 && stats.completed_bytes==64,"partial copy accounting differs");
         need(Access::failed(*verifier), "failed copy did not latch terminal state");
         std::array<float, 16> logits; logits.fill(42.0f);
         need(!verifier->copy_logits(0, logits.data()), "failed window exposed old logits");
@@ -198,13 +232,14 @@ int main(int argc, char** argv) {
         need(argc == 1, "usage: sycl_verifier_retirement_test");
         // The coordinator initializes no SYCL runtime before fork+exec.
         isolated("success", "S", 0);
+        isolated("large", "L", 0);
         isolated("empty", "Z", 0);
         isolated("partial", "P", 0);
         isolated("bounds", "B", 0);
         isolated("query", "Q", 0);
         isolated("destructor", "D", EXIT_FAILURE);
         isolated("copy-error", "E", EXIT_FAILURE);
-        std::puts("fixture_status=PASS cases=7");
+        std::puts("fixture_status=PASS cases=8");
         return 0;
     } catch (const std::exception& error) {
         std::fprintf(stderr, "%s\n", error.what());

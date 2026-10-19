@@ -1,6 +1,7 @@
 #include "strata/core/expert_source.hpp"
 #include "strata/kernels/cpu/expert.hpp"
 #include "strata/kernels/cpu/expert_layout.hpp"
+#include "strata/kernels/cpu/pool.hpp"
 
 #if defined(STRATA_NATIVE_EXPERTS)
 #include "strata/kernels/cpu/native_expert.hpp"
@@ -8,9 +9,11 @@
 #endif
 
 #include <algorithm>
+#include <array>
 #include <chrono>
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -351,6 +354,133 @@ void test_arena_resident_layer() {
               << " blob_identity=PASS bounds=PASS close_reopen=PASS\n";
 }
 
+#if defined(STRATA_ENABLE_SYCL) && defined(STRATA_NATIVE_EXPERTS)
+// Exercise the production planner and CPU pool. The sink is a host byte reader:
+// no GPU kernels, mapped aliases or invalid device addresses are involved.
+void test_arena_copy_dispatch() {
+    using namespace strata::core;
+    using namespace strata::kernels::cpu;
+    constexpr int64_t experts = 3;
+    TempDirectory dir;
+    std::string error;
+    NativeFmt first, second;
+    require(native_fmt(GGML_TYPE_IQ3_XXS,GGML_TYPE_IQ4_NL,H,FF,first,error),error);
+    require(native_fmt(GGML_TYPE_IQ2_S,GGML_TYPE_IQ4_NL,H,FF,second,error),error);
+    require(first.bytes!=second.bytes,"native dispatch needs variable blob sizes");
+    const uint64_t next=uint64_t(experts)*first.bytes;
+    {
+        std::ofstream metadata(dir.path/"native_experts.txt");
+        metadata<<"0 "<<GGML_TYPE_IQ3_XXS<<' '<<GGML_TYPE_IQ4_NL<<" 0 "<<first.bytes<<'\n';
+        metadata<<"1 "<<GGML_TYPE_IQ2_S<<' '<<GGML_TYPE_IQ4_NL<<' '<<next<<' '<<second.bytes<<'\n';
+        require(bool(metadata),"native dispatch metadata write");
+    }
+    create_pack(dir.path,next+uint64_t(experts)*second.bytes,
+                {{0,'A'},{uint64_t(first.bytes),'B'},{uint64_t(2)*first.bytes,'C'},
+                 {next,'D'},{next+second.bytes,'E'},{next+uint64_t(2)*second.bytes,'F'}});
+    require(expert_layout_load(dir.path.string(), 2, experts, error), error);
+    ArenaExpertSource arena;
+    require(arena.open(dir.path.string(), 2, experts, 2, error), error);
+    ExpertPool pool(1, false, true);
+    const std::array<int32_t,6> ids{0,1,2,2,1,0}, residency{-1,-1,-1,-1,-1,-1};
+    const std::vector<float> activation(2*H, 0.0f);
+    int cases = 0;
+    auto run = [&](ExpertSource& source, bool enabled, int mode, int fraction, int capacity, int expected,
+                   int missing_callback=0,int layer=0) {
+        const size_t blob=expert_layout().blob_bytes(layer);
+        struct Probe {
+            bool published = false;
+            int copied = 0;
+            int capacity;
+            size_t blob;
+            std::array<const uint8_t*,3> sources{};
+            std::vector<uint8_t> stage;
+        } probe{false,0,capacity,blob,{},std::vector<uint8_t>(3*blob,0x5a)};
+        std::array<int32_t,4> counts{};
+        std::array<int32_t,7> start{}, start2{};
+        std::array<int32_t,6> dst{}, tok{};
+        std::array<unsigned long long,6> ptr{}, ptr2{};
+        GpuPlanSink sink;
+        sink.counts=counts.data();sink.start=start.data();sink.start2=start2.data();
+        sink.dst=dst.data();sink.tok=tok.data();sink.ptr=ptr.data();sink.ptr2=ptr2.data();
+        sink.staging=reinterpret_cast<uintptr_t>(probe.stage.data());sink.staging_cap=capacity;sink.cap=6;
+        sink.host_layer_copy=enabled;sink.pcie_mode=mode;sink.ctx=&probe;
+        sink.publish=[](void* context){static_cast<Probe*>(context)->published=true;};
+        sink.fetch=[](void* context,const uint8_t* const* sources,int n,size_t bytes){
+            auto& p=*static_cast<Probe*>(context);
+            require((n==0 || p.published) && n>=0 && n<=p.capacity && n<=3 && bytes==p.blob,"invalid published copy plan");
+            p.copied=n;
+            for(int q=0;q<n;++q){
+                require(sources[q]!=nullptr,"null planned source");p.sources[q]=sources[q];
+                std::memcpy(p.stage.data()+size_t(q)*bytes,sources[q],bytes);
+            }
+        };
+        if(missing_callback==1)sink.fetch=nullptr;
+        if(missing_callback==2)sink.publish=nullptr;
+        ExpertDispatch dispatch;
+        dispatch.pool=&pool;dispatch.src=&source;dispatch.n_expert=experts;
+        dispatch.layers=layer;
+        dispatch.host_res=residency.data();dispatch.plan=&sink;dispatch.pcie_num=fraction;
+        std::vector<float> output(6*H,123.0f);
+        expert_pool_dispatch_multi(dispatch,activation.data(),ids.data(),2,3,output.data());
+        require(!dispatch.failed && probe.published==(sink.publish!=nullptr) &&
+                probe.copied==expected && counts[2]==expected &&
+                counts[0]==0 && counts[1]==2*expected,
+                "ordinary-Arena dispatch/fallback differed");
+        require(dispatch.host_layer_copy_groups==expected && dispatch.pcie_experts==expected &&
+                dispatch.multi_misses==3-expected && dispatch.multi_entries==2*(3-expected),
+                "CPU/GPU work conservation differed");
+        std::array<bool,6> covered{};
+        for(int q=0;q<expected;++q){
+            require(ptr2[q]==sink.staging+uint64_t(q)*blob && start2[q+1]-start2[q]==2,
+                    "staging/group extents differ");
+            require(std::memcmp(probe.stage.data()+size_t(q)*blob,probe.sources[q],blob)==0,
+                    "immutable source changed while CPU pool read other experts");
+            const auto view=source.resident_layer(layer);
+            const int64_t expert=(probe.sources[q]-view.data)/static_cast<ptrdiff_t>(blob);
+            for(int j=start2[q];j<start2[q+1];++j){
+                const int index=dst[j];
+                require(index>=0 && index<6 && !covered[index] && tok[j]==index/3 && ids[index]==expert,
+                        "group lost or duplicated a routed row");covered[index]=true;
+            }
+        }
+        for(float value:output)require(value==0.0f,"zero-activation CPU/fetched rows changed");
+        ++cases;
+    };
+    run(arena,true,0,256,3,3);
+    run(arena,false,0,256,3,0);
+    run(arena,true,1,256,3,0);
+    run(arena,true,2,256,3,0);
+    run(arena,true,0,128,3,1);
+    run(arena,true,0,256,1,1);
+    run(arena,true,0,256,3,0,1);
+    run(arena,true,0,256,3,0,2);
+    run(arena,true,0,256,3,3,0,1);
+    run(arena,false,0,256,3,0,0,1);
+    run(arena,true,0,128,3,1,0,1);
+    struct BadView final : ExpertSource {
+        ArenaExpertSource& source;int kind;
+        BadView(ArenaExpertSource& s,int k):source(s),kind(k){}
+        const uint8_t* blob(int64_t l,int64_t e)override{return source.blob(l,e);}
+        ResidentExpertLayer resident_layer(int64_t l)const override{
+            auto v=source.resident_layer(l);
+            if(kind==0)++v.stride;
+            if(kind==1)--v.bytes;
+            if(kind==2)++v.experts;
+            if(kind==3)v.data=reinterpret_cast<const uint8_t*>(std::numeric_limits<uintptr_t>::max()-15);
+            return v;
+        }
+    };
+    for(int kind=0;kind<4;++kind){BadView bad(arena,kind);run(bad,true,0,256,3,0);}
+    FileExpertSource file;require(file.open(dir.path.string(),2,experts,error),error);
+    run(file,true,0,256,3,0);
+    arena.close();
+    require(arena.open(dir.path.string(),2,experts,2,error,0,(dir.path/"shared-copy-arena.bin").string()),error);
+    run(arena,true,0,256,3,0);
+    require(cases==17,"incomplete dispatch cases");
+    std::cout<<"arena_copy_dispatch_test cases=17 native_variable_stride=PASS source_bounds=PASS grouping=PASS limits=PASS cpu_fallback=PASS alias_exclusion=PASS callbacks=PASS\n";
+}
+#endif
+
 int main() {
     try {
         test_complement_plan();
@@ -362,6 +492,9 @@ int main() {
         test_native_variable_layout();
 #endif
         test_arena_resident_layer();
+#if defined(STRATA_ENABLE_SYCL) && defined(STRATA_NATIVE_EXPERTS)
+        test_arena_copy_dispatch();
+#endif
         std::cout << "file_expert_source_test: PASS\n";
         return 0;
     } catch (const std::exception& error) {

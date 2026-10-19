@@ -1,18 +1,22 @@
 {
-  "source_commit": "cd81dcd133e7cf024b591201fda636b0129817e6",
+  "source_commit": "3ef95537a398dd6bb7cd8bed4d15ef147b672f84",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
     "bytes": 22075256,
-    "sha256": "648f14bcc3c177a038520ec8d227ec70cd54825a62d779dd6bfeb71eaf73846a"
+    "sha256": "c20bb02ada0f84a23ad620211a5e53541a23776ac0d8d63c73ee133a482b0e52"
   },
   "fixtures": {
     "sycl_verifier_retirement_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_verifier_retirement_test",
-      "sha256": "f3288436b15a5022e5ae50b2352e945cd2bf29d341f944fe7663ff38f0b93711"
+      "sha256": "174fa1ce4fc3e3ef0b9c4f3ff4909bcc91662ab9fccb8e43a7bcd3d3f3c07fea"
     },
     "sycl_submission_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_submission_test",
       "sha256": "3582ff3453f0e757cb2f2ac20a194180dcb3553e15b65f0c174ae5ed1f20d0cd"
+    },
+    "file_expert_source_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/file_expert_source_test",
+      "sha256": "e7e06781856b10cd45fb5e5d281d2a18a34b7cf7b1756caf97ed9dea9226d950"
     }
   },
   "environment_reference": "tools/sycl/measurement_environment.json",
@@ -28,6 +32,17 @@
     }
   },
   "checks": [
+    {
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/file_expert_source_test"
+      ],
+      "cases": [
+        "arena_copy_dispatch_test cases=17 native_variable_stride=PASS source_bounds=PASS grouping=PASS limits=PASS cpu_fallback=PASS alias_exclusion=PASS callbacks=PASS"
+      ],
+      "passed": true,
+      "stdout_sha256": "525c53f5832c332c7e503c860dcbcdaa77583c5ccba8ca187bb5bade0e6229dc",
+      "stderr_sha256": "96cd9605779b5c9cd8b24a55d4742becdedd168f603a9f10a07d15cd6a0aca90"
+    },
     {
       "command": [
         "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_submission_test",
@@ -47,7 +62,7 @@
       ],
       "passed": true,
       "stdout_sha256": "dadad801d8022f3b40ad3bdab3e29f65fc13e1f61d60b219406f04e9881bb5be",
-      "stderr_sha256": "7e425c811148849900caa73c43c8e8a641657c656a77510d53a9c9e01dd597ac"
+      "stderr_sha256": "c4c02da37d8ede9f40b557c5b648cf1c6ed6cf62cc1291a5c4fe02ec8d2e9a52"
     },
     {
       "command": [
@@ -55,6 +70,7 @@
       ],
       "cases": [
         "case=success expected_exit=0 markers=S PASS",
+        "case=large expected_exit=0 markers=L PASS",
         "case=empty expected_exit=0 markers=Z PASS",
         "case=partial expected_exit=0 markers=P PASS",
         "case=bounds expected_exit=0 markers=B PASS",
@@ -63,8 +79,8 @@
         "case=copy-error expected_exit=1 markers=E PASS"
       ],
       "passed": true,
-      "stdout_sha256": "2cf3a74991736ce17861a6c6ee813eea273703a030b98c7dd4a733935c4fddac",
-      "stderr_sha256": "8aaae9730054f914c7e82797bfd7887ffa3f32284f50a88f4bc5691d621b5d3f"
+      "stdout_sha256": "148fbcc509e40ad207cfca2a47f0180d4a42c61ceee417648974ff573e3ba20c",
+      "stderr_sha256": "1a40d60513f106a5c4610974a969d002e7d1178049937122f19ed3433bc61c8e"
     }
   ],
   "complete": true,
@@ -72,10 +88,21 @@
   "active": false,
   "model_performance_measured": false,
   "model_quality_qualified": false,
-  "nonresident_gpu_route_enabled": false,
-  "consumer": "Prerequisite for an ordinary-Arena explicit-copy prototype. Retire normal traces after compact results are verified and committed.",
-  "gate": "Same-build submission10 cases and verifier7 isolated cases (including empty-batch ordering and failed-window reuse/output refusal), checked owners and unchanged boot/runtime/source, no fresh GPU fault. Any failure blocks advancement.",
-  "limits": "Synthetic bounded copies and intentional host-only async failures. No invalid GPU address or stalled kernel. No model, physical262144/session/RESTORE or throughput qualification.",
+  "model_route_executed": false,
+  "ordinary_arena_copy_default_enabled": false,
+  "consumer": "Prerequisite for the default-off ordinary-Arena explicit-copy model check. Retire normal traces after compact results are verified and committed.",
+  "gate": "Same-build native-variable-stride provider17 cases, submission10 cases and verifier8 isolated cases (including16 largest-size ordinary-host copies with outer guards and accounting), checked owners and unchanged boot/runtime/source, no fresh GPU fault. Any failure blocks advancement.",
+  "limits": "Production host planner/CPU fallback with a host-reader sink, bounded real queue copies and intentional host-only async failures. Malformed host views are refused before copying. No invalid GPU address, stalled kernel, GPU expert arithmetic, model, physical262144/session/RESTORE or throughput qualification.",
+  "last_fixture": {
+    "name": "sycl_verifier_retirement_test",
+    "command": [
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_verifier_retirement_test"
+    ],
+    "exit_code": 0,
+    "ownership_closed": true,
+    "stdout_sha256": "148fbcc509e40ad207cfca2a47f0180d4a42c61ceee417648974ff573e3ba20c",
+    "stderr_sha256": "1a40d60513f106a5c4610974a969d002e7d1178049937122f19ed3433bc61c8e"
+  },
   "ownership_closed": true,
   "fresh_faults": [],
   "boot_unchanged": true,
@@ -86,25 +113,5 @@
     "device": "0xe20c",
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
-  },
-  "source_audit": {
-    "audited_source_commit": "d20736c3629046c48512a20d5e673db06b585f20",
-    "report_sha256": "73606475c9b92f6bcd74f92e5ecf824b1889d9c387dd458cf09fe7d98ca6da4b",
-    "native_review_sha256": "76da7858f46ce5332e74bbdedeab70b5ce8bd973b1f908dfe0e5d0269b5a5d96",
-    "findings": "Submit/drain/query corrections hold. Existing callers abort on run failure; early flagB cannot bypass the checked SYCL segment barrier. Public failed-object reuse could expose stale state, a preexisting API contract gap. The follow-up latches failed copy submission and the strengthened partial case refuses run/commit/logits/logprobs/residual access; empty publication is deferred until drain. No new hang was observed or attributed to these public-API gaps.",
-    "correction_source_commit": "cd81dcd133e7cf024b591201fda636b0129817e6",
-    "worker_ownership_closed": true,
-    "limits": "Independent source review targets d207; Main reviewed the follow-up diff and executed its17 bounded cases. Ordinary-Arena route and model/performance gates remain separate."
-  },
-  "artifact_retirement": {
-    "complete": true,
-    "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-verifier-copy-diagnostics-20261020.jsonl",
-    "manifest_sha256": "9e1eac6e7ea0dffe76649e0d1bedcede3e1a5d34e7b51e62c14eeaef5839b461",
-    "files": 39,
-    "bytes": 2628184,
-    "evidence_commit": "6a8ec5c0d56c8c0533c3536e6d7b01c8b26879fa",
-    "default_merge_commit": "54576961b71c617fff0ac9e63c1b039ce1b1226c",
-    "original_outcomes_unchanged": true,
-    "consumer_ended": "Both small checks and source review closed; useful individual case outcomes and corrections retained. Keep the current candidate build for the imminent ordinary-Arena copy comparison and source396/fivefixtures fallback."
   }
 }

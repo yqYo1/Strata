@@ -185,6 +185,12 @@ public:
     double ms_wait = 0, ms_pool = 0, ms_host = 0, ms_commit = 0;
 #ifdef STRATA_ENABLE_SYCL
     int64_t work_ready_at_pool_return = 0, work_pending_at_pool_return = 0;
+    struct ExpertCopyStats {
+        uint64_t submitted_blobs = 0, submitted_bytes = 0;
+        uint64_t completed_blobs = 0, completed_bytes = 0;
+    };
+    // Read at a serialized request boundary; counters include rejected drafts.
+    ExpertCopyStats expert_copy_stats() const { return copy_stats_; }
 #endif
     int64_t windows = 0;
     /// STRATA_VERIFY_PROFILE=1 - GPU stage times of the windows since the last call (ms per
@@ -256,6 +262,8 @@ private:
     cudaError_t work_status_ = cudaSuccess;
     cudaError_t copy_submit_status_ = cudaSuccess;
     size_t staging_blob_bytes_ = 0;
+    ExpertCopyStats copy_stats_;
+    uint64_t pending_copy_blobs_ = 0, pending_copy_bytes_ = 0;
     bool finish_expert_copies(std::string& err);
     friend struct VerifierRetirementTestAccess;
     std::atomic<uint32_t> reached_{0};

@@ -1,0 +1,76 @@
+{
+  "mode": "arena-copy-check",
+  "source_commit": "9feb1dbb15a05b99ba30b1afac4edb42cd08cd85",
+  "build_source_commit": "3ef95537a398dd6bb7cd8bed4d15ef147b672f84",
+  "binary_origin_source_commit": "189e5163d6aae138235ed1d8c16f7e65c885b2e7",
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 22075256,
+    "sha256": "c20bb02ada0f84a23ad620211a5e53541a23776ac0d8d63c73ee133a482b0e52"
+  },
+  "complete": true,
+  "passed": true,
+  "active": false,
+  "ownership_closed": true,
+  "actual_host_copy_route_confirmed": true,
+  "model_quality_qualified": false,
+  "model_performance_measured": false,
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  },
+  "plan": {
+    "commit": "d72f9f03ee22fa53232672653796182ef152570a",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/decode-arena-copy-current.json",
+    "sha256": "a6a77bcec7fddb58d1545f5e3336a91f20c033592826a40e25eebb282228be94"
+  },
+  "original_build_inputs_recovered": 9821,
+  "component_result": {
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/verifier-copy-safety-current.json",
+    "sha256": "ddddd5b168d09c99ab3050766fd38fca878c7ad0601370526d6b81eaec090e1a"
+  },
+  "model_assets_fingerprint": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e",
+  "model_runtime_and_controller_identity_checks_passed": true,
+  "requests": [
+    {
+      "input_tokens": 66,
+      "generated_tokens": 16,
+      "finish_reason": "length",
+      "output_sha256": "5d8477a38a285d9e59a9799e80e913b705bc3b1832da936b7ca77ddc0677bd0c",
+      "submitted_blobs": 1309,
+      "submitted_bytes": 2684518400,
+      "completed_blobs": 1309,
+      "completed_bytes": 2684518400,
+      "host_view_groups": 1309,
+      "gpu_miss_groups": 1309,
+      "cpu_unique_misses": 4285,
+      "cpu_entries": 6456
+    },
+    {
+      "input_tokens": 64,
+      "generated_tokens": 16,
+      "finish_reason": "length",
+      "output_sha256": "8930a67a5f29564d4cc6984edf20c3c20c83bdb4696089c6b4d8b74b71d28230",
+      "submitted_blobs": 1534,
+      "submitted_bytes": 3143577600,
+      "completed_blobs": 1534,
+      "completed_bytes": 3143577600,
+      "host_view_groups": 1534,
+      "gpu_miss_groups": 1534,
+      "cpu_unique_misses": 5062,
+      "cpu_entries": 8087
+    }
+  ],
+  "staging_bytes": 42598400,
+  "window_arena_bytes": 66420992,
+  "runtime_qualification": "Named diagnostic with libze-intel-gpu26.31.39395.16/libudev.18; shared qualified baseline remains unchanged.",
+  "limits": "Tiny safety/actual-route check only. No task quality, speed comparison, physical PCIe bytes, saturation, physical262144/session/RESTORE or70tok/s qualification.",
+  "next_action": "Qualify dispatched native mixed-format expert outputs; then commit32K+ thinking-enabled strong/weak bench.sh comparison order, repetitions and advancement gates. Candidate remains default-off; retain source396 fallback and this candidate for that comparison.",
+  "raw_retirement": "Pending compact-result integration; retire successful model/component traces, JIT caches and consumed source-review transactions after source recovery and ownership checks."
+}

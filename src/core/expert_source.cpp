@@ -1925,10 +1925,27 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
                     !(d.peer != nullptr && d.peer->has(d.layers, e))) ++nmiss;
             }
         }
+        GpuPlanSink& P = *d.plan;
+        const uint64_t bb = lay.blob_bytes(d.layers);
+#ifdef STRATA_ENABLE_SYCL
+        ResidentExpertLayer host_layer;
+        if (d.pcie_num > 0 && P.host_layer_copy && P.pcie_mode == 0 &&
+            P.publish && P.fetch && P.staging && P.staging_cap > 0) {
+            const auto view = d.src->resident_layer(d.layers);
+            // Only the audited private Arena publishes this stable view.
+            // Validate the loaded geometry and full address extent again;
+            // neither a transient blob nor a MAP_SHARED/file source qualifies.
+            if (view.experts == d.n_expert && view.stride == bb) {
+                auto checked = ResidentExpertLayer::make(view.data, view.bytes, 0, d.n_expert, bb);
+                if (checked.data && checked.bytes == view.bytes) host_layer = checked;
+            }
+        }
+        const bool pcie_ok = d.pcie_num > 0 && (host_layer.data || d.src->pcie_layer(d.layers));
+#else
         const bool pcie_ok = d.pcie_num > 0 && d.src->pcie_layer(d.layers);
+#endif
         const int m = pcie_ok ? (nmiss * d.pcie_num) >> 8 : 0;
         int miss_rank = 0, groups = 0, entries = 0, fetches = 0;
-        GpuPlanSink& P = *d.plan;
         const uint8_t* dma_src[64];
         int64_t pcie_i0[64];
         for (int q = 0; q < nd; ++q) {
@@ -1947,6 +1964,12 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
                 } else {
                     if (miss_rank >= nmiss - m && fetches < P.staging_cap && fetches < 64) {
                         const uint8_t* src = d.src->pinned(d.layers, e) ? d.src->blob(d.layers, e) : nullptr;
+#ifdef STRATA_ENABLE_SYCL
+                        if (!src && host_layer.data) {
+                            src = host_layer.data + uint64_t(e) * host_layer.stride;
+                            ++d.host_layer_copy_groups;
+                        }
+#endif
                         if (src != nullptr) {
                             kd = 1;
                             dma_src[fetches] = src;
@@ -1971,7 +1994,6 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
             ++groups;
         }
         P.start[groups] = entries;
-        const uint64_t bb = lay.blob_bytes(d.layers);
         for (int q = 0; q < fetches; ++q) {       // the PCIe groups: staging slot q, entries after the VRAM ones
             const int64_t i0 = pcie_i0[q];
             P.ptr2[q] = P.pcie_mode != 0 ? (unsigned long long) d.src->device_alias(d.layers, ids[i0])

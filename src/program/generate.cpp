@@ -6325,6 +6325,10 @@ int main(int argc, char** argv) {
             consumed.reserve((size_t) (n + max_new + S));
             for (int64_t i = 0; i < n - 1; ++i) consumed.push_back((int32_t) ids[(size_t) i]);
             const char* finish = "length";
+#ifdef STRATA_ENABLE_SYCL
+            const auto copy0 = ver.expert_copy_stats();
+            const auto host_copy_groups0 = drive.d.host_layer_copy_groups;
+#endif
             const Clock::time_point d0 = Clock::now();
             // STRATA_DECODE_TIMING=1: where a request's decode time goes (one line per request)
             static const bool dec_timing = std::getenv("STRATA_DECODE_TIMING") != nullptr;
@@ -6618,8 +6622,22 @@ int main(int argc, char** argv) {
                          prompt_ms > 0 ? 1000.0 * read_n / prompt_ms : 0.0, (long long) produced_n, decode_ms,
                          decode_ms > 0 ? 1000.0 * produced_n / decode_ms : 0.0, (long long) draft_accepted,
                          (long long) draft_offered, checks.size(), cancelled ? " (cancelled)" : "");
-            // the VRAM share of the experts the pool looked up while decoding; experts it sent over PCIe for the GPU
-            // to read (--pcie-frac) are in neither count
+#ifdef STRATA_ENABLE_SYCL
+            const auto copy1 = ver.expert_copy_stats();
+            std::fprintf(stderr, "strata serve: SYCL_EXPERT_COPY submitted_blobs=%llu submitted_bytes=%llu "
+                                 "completed_blobs=%llu completed_bytes=%llu host_view_groups=%lld "
+                                 "gpu_miss_groups=%lld cpu_unique_misses=%lld cpu_entries=%lld\n",
+                         (unsigned long long)(copy1.submitted_blobs-copy0.submitted_blobs),
+                         (unsigned long long)(copy1.submitted_bytes-copy0.submitted_bytes),
+                         (unsigned long long)(copy1.completed_blobs-copy0.completed_blobs),
+                         (unsigned long long)(copy1.completed_bytes-copy0.completed_bytes),
+                         (long long)(drive.d.host_layer_copy_groups-host_copy_groups0),
+                         (long long)(drive.d.pcie_experts-ds0.pcie),
+                         (long long)(drive.d.multi_misses-ds0.misses),
+                         (long long)(drive.d.multi_entries-ds0.entries));
+#endif
+            // the VRAM share of the experts the pool looked up while decoding;
+            // experts sent over PCIe for the GPU (--pcie-frac) are in neither count
             if (req_look > 0) {
                 std::fprintf(stderr, "strata serve: decode expert cache hit rate: %.1f%% (%lld hits / %lld lookups)\n",
                              100.0 * (double) req_hits / (double) req_look,

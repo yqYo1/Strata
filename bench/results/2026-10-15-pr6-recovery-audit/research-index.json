@@ -3929,5 +3929,38 @@
       "result": "bench/results/2026-10-15-pr6-recovery-audit/verifier-copy-safety-current.json",
       "limits": "Source/fixture gate only; ordinary-Arena GPU admission and model/performance remain pending."
     }
+  },
+  "sycl_arena_copy_positive_route_source_scope": {
+    "classification": "decision support",
+    "question": "Audit the newly reachable immutable-Arena copy producer and actual native grouped GPU miss consumer, bounds/lifetime/queue/capture assumptions and logical copy counters.",
+    "source_commit": "3ef95537a398dd6bb7cd8bed4d15ef147b672f84",
+    "source_view": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/arena-copy-source-3ef95537a",
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/arena-copy-positive-route-source-review.md",
+    "schedulable_now": false,
+    "eligibility": [
+      {
+        "met": true,
+        "evidence": "189e5163d adds the default-off producer and counter path;3ef95537a provides native variable-stride provider cases. Twenty hashed source views include actual GPU consumers."
+      },
+      {
+        "met": true,
+        "evidence": "Original error retirement/caller guards passed17 cases oncd81dcd133e7; no new generic driver/CPU survey is required."
+      },
+      {
+        "met": true,
+        "evidence": "Prior reports audit old refusal/error paths, not the now-positive native grouped staging consumer. Source review requires no new hardware counters or completed model timing."
+      }
+    ],
+    "status": "bounded_positive_route_passed_output_and_performance_pending",
+    "report_budget_bytes": 12288,
+    "consumer": "Native-output qualification and32K+ long-generation comparison decision; retire consumed source-review snapshots and transactions at this closed model-check boundary.",
+    "task_id": "task_22d67cf9d191",
+    "dispatch_id": "ctx_4194f8ff3408",
+    "terminal": "term_a2b4485e-7f3c-4728-b10e-971dd769b55e",
+    "process_incarnation": "c91292af-e4ae-4be5-b8dd-fe9d53cfa276",
+    "report_sha256": "0ad1aea7388efff168d4ba1d61d2201bc810f29548678117fa1d485783ddcedf",
+    "native_review_sha256": "22efc99d81b1870ea9d3f6f45550195432ff26cbb02f88ac6ffbea4faecbd4d4",
+    "review_digest": "No verified source blocker. Private-Arena geometry, mode0 explicit copy, staging bounds and checked queue retirement agree with the native consumer. Correct stale component-pending claim:17 provider+10 submission+8 verifier cases passed on3ef95537a. Positive model dispatch, numerical/task quality and clean throughput remain separate gates.",
+    "model_route_result": "bench/results/2026-10-15-pr6-recovery-audit/decode-arena-copy-current.json"
   }
 }
