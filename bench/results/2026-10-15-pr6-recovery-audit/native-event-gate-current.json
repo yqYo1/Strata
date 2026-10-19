@@ -1,6 +1,6 @@
 {
-  "mode": "native-event-gate-resident-query-diagnostic",
-  "source_commit": "174911063739da076ce8c41713c297c5fc7280a9",
+  "mode": "native-event-gate-compute-profiling-diagnostic",
+  "source_commit": "51864e3790fde8fd8b0a1ad63ca02dd1040cc2ac",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
     "bytes": 22079432,
@@ -8,13 +8,13 @@
   },
   "qualification_eligible": false,
   "previous_result_reference": {
-    "commit": "299ddc542e688a45e28f6e7928823c4bcf4f6c81",
+    "commit": "893c472051db516bdc9b4efb1902cd6d94c48cd3",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/native-event-gate-current.json",
-    "sha256": "2998a7eafcc2f053c9eb648e07222c6e9c33f1440b04c176bfafa7ca93ece96d"
+    "sha256": "7775d3bff3528ad03efcba239d4af8095dc907585a83787300d5f18e59104390"
   },
   "fixture": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_host_event_gate_test",
-    "sha256": "eb61d4101666bd49aa4eef714714a16afd437cfa9644d532565c718b11ccad10"
+    "sha256": "121e751c0b242c9ce5967e7ad3a324522c56bfb81e6f9f809388caed4ed3488b"
   },
   "fixture_external_headers": {
     "/usr/include/level_zero/ze_api.h": "095a0eb442ae21946f29147c209f270b93dd0eb5b12a2d0c67e5f4138b533712",
@@ -40,46 +40,77 @@
       "candidate_sha256": "0d6934adafb2ef3c640382440c14d6bd60f391e688c000796ffcea0c72849269"
     }
   },
-  "complete": false,
-  "passed": false,
+  "complete": true,
+  "passed": true,
   "active": false,
-  "cases": [],
+  "cases": [
+    {
+      "mode": "copy-query",
+      "passed": true,
+      "stdout_sha256": "40548849e654fcd9e83a1d77a0984e4be27d29ae6ee8c1141ad7dd19f47509f6",
+      "stderr_sha256": "a6e1d9be297520472dc9caa0db4f56a0335fa2fd6906fe91fbd73b058148ad3c"
+    }
+  ],
   "model_executed": false,
   "model_quality_qualified": false,
-  "consumer": "Identify the v3 bounded-window failure using flushed begin/end observations around each existing gate-held/native-resident status query, without extra native calls or changed enqueue order/bounds/safety settings. Record the aggregate window even on failure. Native-handle retrieval and text observers may affect timing; this diagnostic never qualifies the replacement gate or model route. Preserve previous failures.",
+  "consumer": "Contrast the committed v4 slow profiled native-query control by disabling only compute queue profiling in this test. Copy/probe properties, enqueue order, bounds, fallback, native calls, tracing and safety environment stay unchanged. Queue-property output is required. This explicit test-only queue-setting contrast never qualifies the replacement gate or a production/model route; preserve the profiled control failure.",
   "gate": "One fresh copy-query process. Arm a2s fallback before import. Import/dependent submits/native-handle materialization each within100ms. Query the resident native event at most20 times5ms apart while gate is held, with a200ms observation cap. If unready, release gate before SYCL event wait; if ready, wait with gate held. Record exact branch, wait time, gate state and post-wait marker; check payload and all owner drains. Never read the marker before checked completion. Diagnostic cannot qualify a model or57-case replacement gate even if it passes.",
   "limits": "Test-only runtime progress observation. No qualification of the replacement gate, production projection math, physical wire traffic, model correctness, overlap gain or throughput.",
+  "observed_queue_configuration": {
+    "copy_profiling": 1,
+    "compute_profiling": 0,
+    "probe_profiling": 0,
+    "all_in_order": 1
+  },
   "query_call_observation": {
-    "started": 2,
-    "completed": 2,
+    "started": 41,
+    "completed": 41,
     "by_call": {
-      "held-before-query": {
+      "held-after-window": {
         "completed": 1,
         "max_us": 5,
         "last_result": 1
       },
+      "held-before-query": {
+        "completed": 20,
+        "max_us": 6,
+        "last_result": 1
+      },
       "resident-query": {
-        "completed": 1,
-        "max_us": 1998861,
-        "last_result": 0
+        "completed": 20,
+        "max_us": 3,
+        "last_result": 1
       }
     },
     "longest": {
-      "name": "resident-query",
-      "index": 1,
-      "offset_us": 1998879,
-      "elapsed_us": 1998861,
-      "result": 0
+      "name": "held-before-query",
+      "index": 5,
+      "offset_us": 25335,
+      "elapsed_us": 6,
+      "result": 1
     },
     "window": {
-      "query_us": 1998885,
-      "queries": 1,
-      "native_ready": 1
+      "query_us": 101429,
+      "queries": 20,
+      "native_ready": 0
     },
-    "stdout_sha256": "253f749a883cbdec3382009d3c9a517bfbea0bddd7180c0ca0dbefc39ed58074",
-    "stderr_sha256": "49638d35f4857f01818159391adc02e1f05c787fe8056172a50ef2e85bce10f4"
+    "stdout_sha256": "40548849e654fcd9e83a1d77a0984e4be27d29ae6ee8c1141ad7dd19f47509f6",
+    "stderr_sha256": "a6e1d9be297520472dc9caa0db4f56a0335fa2fd6906fe91fbd73b058148ad3c"
   },
-  "error": "copy-query: first resident zeEventQueryStatus took1998861us and returnedSUCCESS; the200ms diagnostic observation bound failed",
+  "native_query_observation": {
+    "native_ready": 0,
+    "queries": 20,
+    "import_us": 56,
+    "submit_us": 997,
+    "handle_us": 24,
+    "query_us": 101429,
+    "wait_us": 52,
+    "held_before_wait": 0,
+    "held_after_wait": 0,
+    "released_before_wait": 1,
+    "marker": 60,
+    "release": "manual"
+  },
   "ownership_closed": true,
   "fresh_faults": [],
   "boot_unchanged": true,
@@ -91,44 +122,13 @@
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
   },
-  "controller_error_excerpt_sha256": "9f319a288ce885088b4e99948b4257f3ce78f729181dfc57fb8d20f088bd7043",
-  "first_failed_case": "copy-query",
-  "not_executed": [
-    "completed bounded native readiness observation",
-    "57-case replacement gate",
-    "model execution"
-  ],
-  "queue_configuration": {
-    "copy": {
-      "in_order": true,
-      "profiling": true
-    },
-    "compute": {
-      "in_order": true,
-      "profiling": true
-    },
-    "probe": {
-      "in_order": true,
-      "profiling": false
-    },
-    "source": "src/sycl/runtime.cpp::Runtime::make_queue(bool profiling); the argument selects profiling, not in-order behavior"
-  },
-  "diagnostic": {
-    "files": [
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-event-gate-v4/owned/copy-query.stdout",
-        "bytes": 392,
-        "sha256": "253f749a883cbdec3382009d3c9a517bfbea0bddd7180c0ca0dbefc39ed58074"
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-event-gate-v4/owned/copy-query.stderr",
-        "bytes": 27706,
-        "sha256": "49638d35f4857f01818159391adc02e1f05c787fe8056172a50ef2e85bce10f4"
-      }
-    ],
-    "owner": "Main",
-    "byte_budget": 262144,
-    "consumer": "Test why the profiled resident native event query itself blocks, including the NEO counter-based timestamp-completion path. Next contrast changes only compute queue profiling in a diagnostic; exact installed NEO source mapping remains unverified.",
-    "next_review": "After the next profiled/unprofiled query comparison and source review; retire superseded native-query traces once useful evidence is recorded"
+  "decision": "Diagnostic completed; disabling only compute profiling made all20resident native queries returnNOT_READY within3us. No resident completion was observed while the external gate was held, so no replacement-gate,57-case,production queue or model qualification follows.",
+  "next_question": "Check original NEO/UR support for preserving profiling while avoiding implicit counter-event timestamp waits, then commit a separate bounded configuration diagnostic. Keep production queue properties/safety settings unchanged until qualification.",
+  "candidate_key_presence": {
+    "path": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+    "sha256": "50adb6b727d027309039803033d41efeae4b248589ee363f321c0d538c7de3ff",
+    "key": "EnableImplicitConvertionToCounterBasedEvents",
+    "present": true,
+    "source": "Nonexecuting exact ELF byte-string check plus compatible original NEO debug registry. Presence does not prove that the installed runtime consumes the key or identify its exact source."
   }
 }

@@ -34,7 +34,7 @@
   "whole_function_ledger_complete": false,
   "required_function_port_complete": false,
   "new_inference_components_adopted": [],
-  "current_engine_source_commit": "172b9f1e96e6bf290793cd22555d27e1fdf76eea",
+  "current_engine_source_commit": "246415bfc3f8d68242b067ca49723c23c3e96be7",
   "current_engine_sha256": "1c84da96dfcbcb35efaaef8ce4bccc1d078f58bc36e697dd82b3485fcdab6d11",
   "current_engine_changed_by_check": false,
   "next_check_utc": "2026-10-21T21:24:52.909428+00:00",
@@ -210,7 +210,7 @@
       },
       {
         "feature": "metadata_only_gguf_shard_preflight",
-        "status": "implemented_awaiting_serialized_focused_tests",
+        "status": "ported_focused_and_caller_tests_passed",
         "meaning": "Accept fully parsed metadata-only shards without alignment padding in both check_shards and whole_shard; refuse truncated real tensor data and excessive single-tensor trailing payload while allowing a larger declared GGUF alignment.",
         "target_tests": [
           "tools/test_setup_shard_check.py::ShardCheck.test_metadata_only_shard_without_padding_is_whole",
@@ -232,7 +232,7 @@
           "license": "MIT, identical retained root LICENSE checked before port",
           "local_complement": "Main applies the extent policy to whole_shard copied-file recognition, respects max(64, general.alignment) for the upstream one-tensor tail check, and adds malformed/header/extent/alignment boundary coverage with automatic temporary-file cleanup. No XeStrata source."
         },
-        "validation": "Seven new shard checks and35choices tests passed. Unsloth module initially failed one unmocked builder case; preserve the failed attempt, commit the test-only mock correction, then rerun Unsloth and the planned golden-config module. No native GPU job or package change.",
+        "validation": "7shard+35choices+37Unsloth+4golden cases passed (83total), preserving the earlier failed37-case attempt and its test-only builder mock correction. No GPU/download/native build was part of these setup tests. Broader setup/app/API/native functionality remains pending.",
         "validation_plan": [
           "python3 -B tools/test_setup_shard_check.py",
           "python3 -B tools/test_setup_choices.py",
@@ -241,30 +241,46 @@
         ],
         "validation_attempts": [
           {
-            "source_commit": "158d1cd60",
-            "command": "timeout120s python3 -B tools/test_setup_shard_check.py",
+            "source_commit": "158d1cd600c695b42841c59e4d328f4a948c2a6e",
+            "command": "timeout 120s python3 -B tools/test_setup_shard_check.py",
             "tests": 7,
             "seconds": 0.008,
             "exit_code": 0
           },
           {
-            "source_commit": "158d1cd60",
-            "command": "timeout120s python3 -B tools/test_setup_choices.py",
+            "source_commit": "158d1cd600c695b42841c59e4d328f4a948c2a6e",
+            "command": "timeout 120s python3 -B tools/test_setup_choices.py",
             "tests": 35,
             "seconds": 0.042,
             "exit_code": 0,
             "limits": "Existing setup.py:414 unclosed /proc/cpuinfo ResourceWarning; unrelated to this port."
           },
           {
-            "source_commit": "158d1cd60",
-            "command": "timeout120s python3 -B tools/test_setup_unsloth.py",
+            "source_commit": "158d1cd600c695b42841c59e4d328f4a948c2a6e",
+            "command": "timeout 120s python3 -B tools/test_setup_unsloth.py",
             "tests": 37,
             "seconds": 0.076,
             "exit_code": 1,
             "errors": 1,
             "error": "test_amd_is_not_asked reached the unmocked build_engine_hip -> rocm_root; PermissionError writing /usr/.strata-rocm.json. Shared test harness mock gap, identified by source inspection; no HIP inference/build validation claimed."
+          },
+          {
+            "source_commit": "166eed94e7cec7fe447866caeb913ba6e7dabb2f",
+            "command": "timeout 120s python3 -B tools/test_setup_unsloth.py",
+            "tests": 37,
+            "seconds": 0.076,
+            "exit_code": 0
+          },
+          {
+            "source_commit": "166eed94e7cec7fe447866caeb913ba6e7dabb2f",
+            "command": "timeout 120s python3 -B tools/test_setup_golden.py",
+            "tests": 4,
+            "seconds": 0.111,
+            "exit_code": 0
           }
-        ]
+        ],
+        "implementation_source_commit": "158d1cd600c695b42841c59e4d328f4a948c2a6e",
+        "test_mock_correction_commit": "166eed94e7cec7fe447866caeb913ba6e7dabb2f"
       },
       {
         "feature": "benchmark_readiness_configured_host",
@@ -310,8 +326,10 @@
     "host_ui_review_sha256": "2238c4922862c9cedbf623542faae49850cd5afbc8d7ae33e7a19c24fb63a895",
     "whole_function_ledger_complete": false,
     "performance_evaluation_complete": false,
-    "first_port": "Metadata-only GGUF shards: check_shards() and whole_shard() plus truncated real tensor regression coverage; then incremental tokenization. No implementation/test is qualified by the reports.",
+    "first_port": "Shard extent validation ported in158d1cd60 with test-only isolation correction166eed94e;83focused/caller tests passed. Next required host feature remains incremental tokenization; full feature ledger/vanilla performance remain incomplete.",
     "required_ui": "Desktop/terminal user-visible functions require integration through an Arc-compatible route; NVIDIA-only upstream packaging does not make shared functionality optional.",
-    "source_scope": "Current native inference/protocol report still awaits separate review; no Niko inference source adopted."
-  }
+    "source_scope": "All370native review paths matched the current manifest. BGEN/BGENI/BSTOP and disk SAVE/RESTORE handlers remain required native protocol ports; snapshot calls alone do not supply them. ESIMD/TQ held for provenance. No upstream inference adopted.",
+    "native_review_sha256": "f76037e7b855e0ed82498e99e7d40ccf77da53aebc5400069ca0e8126d99c4ee"
+  },
+  "current_comparison_build_source_commit": "51864e3790fde8fd8b0a1ad63ca02dd1040cc2ac"
 }
