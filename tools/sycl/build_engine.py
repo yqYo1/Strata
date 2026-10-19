@@ -2,13 +2,15 @@
 """Build the current comparison engine from verified Git inputs; Main only.
 
 Uses the known-good engine's committed configure recipe, changing only the
-output directory. No engine/GPU execution. An explicit rebuild reuses a closed
-comparison's cache only after verifying its original inputs from Git.
+output directory. The decode observer build also enables its CPU-only tests.
+No engine/GPU execution. An explicit rebuild reuses a closed comparison's cache
+only after verifying its original inputs from Git.
 """
 import fcntl
 import hashlib
 import json
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 
@@ -80,10 +82,69 @@ def pin(root, prefixes):
     return dict(root=str(root), revision=revision, count=len(pins), source_sha256=pins, aggregate_sha256=aggregate)
 
 
+def retain_current():
+    """Preserve the validated generation before a native cache is overwritten."""
+    raw = RESULT.read_bytes()
+    guards.require(raw == git(P, 'show', 'HEAD:' + str(RESULT.relative_to(P))), 'commit current build identity first')
+    compact = json.loads(raw)
+    full_path = ROOT / 'record.json'
+    old = json.loads(full_path.read_bytes())
+    guards.require(old['passed'] and old['complete'] and old['ownership_closed'] and not old['active'] and
+                   old['source_commit'] == compact['source_commit'] and old['binary'] == compact['binary'],
+                   'current validated build identity/ownership differs')
+    evidence = {}
+    for name in ('prefill-long-input-current.json', 'decode-long-generation-current.json'):
+        path = RESULT.with_name(name)
+        value = json.loads(path.read_bytes())
+        guards.require(path.read_bytes() == git(P, 'show', 'HEAD:' + str(path.relative_to(P))) and
+                       value['passed'] and value['complete'] and value['ownership_closed'] and not value['active'] and
+                       value['binary']['sha256'] == old['binary']['sha256'] and not value['fresh_faults'],
+                       'closed current model evidence required: ' + name)
+        evidence[name] = git(P, 'log', '-1', '--format=%H', '--', str(path.relative_to(P))).decode().strip()
+    recovered = 0
+    for source in [old['project'], *old['dependencies']]:
+        for name, data in blobs(Path(source['root']), source['revision'], source['source_sha256']):
+            guards.require(hashlib.sha256(data).hexdigest() == source['source_sha256'][name], 'original source not recovered')
+            recovered += 1
+    recipe = old['recipe_reference']
+    guards.require(hashlib.sha256(git(Path(old['project']['root']), 'show',
+                   old['project']['revision'] + ':' + recipe['path'])).hexdigest() == recipe['sha256'],
+                   'original recipe not recovered')
+    prior = compact.get('retained_validation_reference', {})
+    guards.require(not prior or not Path(prior['binary']['path']).exists(),
+                   'retire the previous completed fallback before retaining another generation')
+    target = B / ('known-good-' + old['source_commit'][:12])
+    guards.require(not target.exists(), 'never overwrite a retained generation')
+    original = dict(strata=old['binary'], **old['fixtures'])
+    for item in original.values():
+        guards.require(digest(item['path']) == item['sha256'], 'current build artifact changed')
+    target.mkdir(mode=0o700)
+    copies = {}
+    for name, item in original.items():
+        path = target / name
+        shutil.copy2(item['path'], path)
+        guards.require(digest(path) == item['sha256'], 'fallback copy differs')
+        copies[name] = dict(path=str(path), bytes=path.stat().st_size, sha256=item['sha256'])
+    receipt = target / 'source-build.json'
+    shutil.copy2(full_path, receipt)
+    guards.require(receipt.read_bytes() == full_path.read_bytes(), 'fallback source receipt differs')
+    compact['retained_validation_reference'] = dict(source_commit=old['source_commit'],
+        binary_origin_source_commit=old.get('binary_origin_source_commit', old['source_commit']),
+        binary=copies.pop('strata'), fixtures=copies,
+        source_build_record=dict(path=str(receipt), sha256=digest(receipt)), recipe_reference=recipe,
+        original_source_blobs_recovered_and_verified=recovered, model_evidence_commits=evidence,
+        qualification='Current opt-in engine passed component checks, repeated117K prefill and three independent long-generation processes without fresh GPU faults. Broad quality,physical262144/RESTORE and70tok/s remain unqualified.',
+        consumer='Fallback for immediate decode CPU observer native build, bounded runtime and observer-overhead qualification; select the validated generation and retire the extra at closure.')
+    RESULT.write_text(json.dumps(compact, indent=2) + '\n')
+    print(json.dumps(dict(retained_source=old['source_commit'], artifacts=len(original), recovered_inputs=recovered,
+                         fallback=str(target), GPU_executed=False)))
+    return 0
+
+
 def main():
     guards.require(len(sys.argv) == 1 or sys.argv[1:] in
-                   (['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn'], ['rebuild-down'], ['rebuild-ordered'], ['rebuild-submission'], ['rebuild-gu'], ['rebuild-mixed'], ['rebuild-expert-bank']),
-                   'use build_engine.py [rebuild|rebuild-attention|rebuild-gemm|rebuild-gdn|rebuild-down|rebuild-ordered|rebuild-submission|rebuild-gu|rebuild-mixed|rebuild-expert-bank]')
+                   (['retain-current'], ['rebuild-decode-cpu'], ['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn'], ['rebuild-down'], ['rebuild-ordered'], ['rebuild-submission'], ['rebuild-gu'], ['rebuild-mixed'], ['rebuild-expert-bank']),
+                   'use build_engine.py retain-current or a named rebuild mode')
     rebuild = len(sys.argv) == 2
     attention = sys.argv[1:] == ['rebuild-attention']
     targets = ['strata']
@@ -111,9 +172,16 @@ def main():
         targets += ['sycl_moe_accum_test', 'sycl_moe_gu_swiglu_bench', 'sycl_moe_down_scatter_bench']
     if sys.argv[1:] == ['rebuild-expert-bank']:
         targets += ['sycl_expert_bank_test', 'file_expert_source_test']
+    if sys.argv[1:] == ['rebuild-decode-cpu']:
+        targets += ['sycl_moe_accum_test', 'sycl_moe_gu_swiglu_bench', 'sycl_moe_down_scatter_bench',
+                    'sycl_expert_bank_test', 'file_expert_source_test', 'cpu_clock_test', 'pool_cpu_clock_test']
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
+        if sys.argv[1:] == ['retain-current']:
+            guards.require(Path(__file__).read_bytes() == git(P, 'show', 'HEAD:tools/sycl/build_engine.py'),
+                           'commit exact fallback controller first')
+            return retain_current()
         device = guards.driver_guard()
         boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
         guards.require(ROOT.exists() == rebuild, 'use rebuild only for the closed comparison cache')
@@ -175,6 +243,8 @@ def main():
         baseline = json.loads(BASELINE.read_text())
         argv = list(baseline['configure_argv'])
         argv[argv.index('-B') + 1] = str(ROOT / 'build')
+        if sys.argv[1:] == ['rebuild-decode-cpu']:
+            argv = [a.split('=', 1)[0] + '=ON' if a.startswith('-DSTRATA_BUILD_TESTS') else a for a in argv]
         dependencies = []
         for prefix in ('-DSTRATA_GGML_DIR:PATH=', '-DSYCL_TLA_SOURCE_DIR='):
             root = Path(next(a[len(prefix):] for a in argv if a.startswith(prefix)))

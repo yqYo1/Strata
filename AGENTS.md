@@ -376,6 +376,10 @@ integration and testing.
   into trivial fact lookups or fill reports with known context. Treat report
   length as a working budget, allowing enough room for substantive findings;
   review novelty and depth after completion before choosing the next scope.
+  Before dispatch, verify that the worker's startup permissions allow its named
+  report directory. For a report outside its workspace, pass that directory as
+  an additional writable root at launch; do not rely on a later save approval.
+  Preserve the normal filesystem protections and report-only task scope.
   Apply scope corrections to new tasks, without steering running researchers.
   Research may write only its named report, with sources, applicability and evidence
   limits; it must not run builds, tests, GPU jobs, profilers, process inspection,

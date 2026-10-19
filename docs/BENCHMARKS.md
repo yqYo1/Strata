@@ -104,6 +104,46 @@ because device global-timer stamps are unsupported. GPU attribution needs a
 separately qualified profiling-event path outside capture. Leave both observer
 variables absent in clean processes; setting either to `0` still enables it.
 
+`STRATA_DECODE_CPU_PROFILE` is a separate opt-in Linux CPU observer under
+validation. Its CPU-only accounting tests pass, including all four tests from
+the compiled SYCL build. The bounded native request check passes with two
+completed requests and two valid observations; observer-overhead and long-generation attribution checks
+remain pending.
+It records thread CPU inside
+expert row tasks, native hidden quantization and selected verifier sync calls,
+plus whole worker/main/native-process CPU intervals. Worker task writes precede
+their existing completion publication; snapshots require completed dispatches
+and parked workers. No counter is added to the park loop. One JSON line per
+successfully completed request includes clock/counter failures, unexpected modes,
+quiescence and containment checks; error returns can have no line. A consumer
+must reconcile attempted, successful and failed requests and require one valid
+line for every successful request; a failed request or missing line is ineligible.
+Head-only sync counters support one verifier stage. A downstream stage, including
+a split on the same device, sets `single_stage=false` and `valid=false` rather
+than silently undercounting. An invalid observation cannot support attribution.
+The interval extends through the final commit wait. Job/quant/sync times are
+subsets of thread/process CPU, and CPU time includes stalls while scheduled.
+This observer does not measure physical RAM/PCIe traffic or GPU service and
+does not establish CPU arithmetic or RAM saturation. Before use require the
+clock negative cases, pool completion/output checks, bounded same-build small
+runtime check and an observer-overhead comparison. Keep it out of clean timing.
+
+The prepared CPU-only `cpu_clock_off/on` and `pool_cpu_clock_off/on` CTests
+run enablement arms in separate processes. The real-pool fixture uses finite
+synthetic Q8_0 inputs, serial full-output references, one/two-worker and
+two-worker host-off/on dispatches, sleep/wake repeats, single/multi-token
+and 97-expert batch boundaries. It additionally exercises the legacy Q2_0
+inline/split paths only when their required AVX512 features are present;
+those paths are explicitly unqualified on this Ryzen5600X. It checks task/quantization counts, clock errors
+and CPU subset containment, and reports actual host participation. This is
+accounting coverage, not IQ-kernel/model qualification or a speed benchmark.
+All four tests passed on Ryzen5600X at source`5f91e79ec`, with observed host
+participation in the enabled parallel-host arm. The new engine passed the bounded
+native request check on the explicitly proposed runtime assets at`69888d181`, with zero clock/counter errors. Observer
+overhead and longer workload attribution remain unqualified; see the current
+CPU observer entry in
+`bench/results/2026-10-15-pr6-recovery-audit/research-index.json`.
+
 For a prefill-only screen, `bench.sh --prefill-only --prefill-tokens N` accepts
 32768,65536,98304 or131072 as the minimum **actual prompt and read tokens**.
 Thinking stays on and output is capped at24 tokens; this does not qualify

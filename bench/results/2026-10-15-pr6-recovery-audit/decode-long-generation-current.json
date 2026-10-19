@@ -356,14 +356,162 @@
     ],
     "limits": "Logical target expert lookup outcomes, not physical RAM/PCIe bytes, CPU computation time or proof of a limiting hardware resource. Draft/MTP weights have separate ownership."
   },
-  "pending_analysis": {
-    "command": "python3 tools/sycl/generation_engine.py summarize",
-    "attempt_exit_code": 1,
-    "reason": "Existing pre-analysis ownership guard found external llama-bench PID3641219; no reducer executed. Do not disturb that process or launch tests/builds while ownership guard remains occupied.",
-    "our_measurement_finished_utc": "2026-10-19T08:12:03.346930+00:00",
-    "external_process_start_ticks": 74632308,
-    "external_process_started_utc_approx": "2026-10-19T08:12:38.080000+00:00",
-    "timing_scope": "This observed external process began about35 seconds after our measurement closed; it does not overlap the third sample. Original successful process/request outcomes are unchanged.",
-    "next_action": "Verify current owners, then run the unchanged committed reducer; keep benchmark inputs frozen until it closes."
+  "independent_process_summary": {
+    "analyzer_source_commit": "f0417e51533a0046ce82ebf33685574a316ee065",
+    "processes": [
+      {
+        "mode": "check",
+        "cohort": 0,
+        "receipt_commit": "40f7038bef20c85ce3c48cd917bdaf86176b71e0",
+        "source_commit": "1e84026f8f9562ba73f0167f8f0dbdd01524a1c3",
+        "samples": [
+          {
+            "workload": "regular-code",
+            "generated_tokens": 2931,
+            "decode_tps": 14.6,
+            "decode_ms": 200606.8,
+            "total_s": 255.462,
+            "drafts_offered": 2481,
+            "drafts_accepted": 2105,
+            "acceptance_rate": 0.8484482063683998
+          },
+          {
+            "workload": "varied-prose",
+            "generated_tokens": 10805,
+            "decode_tps": 9.5,
+            "decode_ms": 1139014.7,
+            "total_s": 1181.718,
+            "drafts_offered": 14736,
+            "drafts_accepted": 5892,
+            "acceptance_rate": 0.3998371335504886
+          }
+        ]
+      },
+      {
+        "mode": "clean",
+        "cohort": 0,
+        "receipt_commit": "e388edff4ebc46a00c5fc133cf67674311e6a552",
+        "source_commit": "40f7038bef20c85ce3c48cd917bdaf86176b71e0",
+        "samples": [
+          {
+            "workload": "regular-code",
+            "generated_tokens": 2931,
+            "decode_tps": 14.6,
+            "decode_ms": 200238.7,
+            "total_s": 251.219,
+            "drafts_offered": 2481,
+            "drafts_accepted": 2105,
+            "acceptance_rate": 0.8484482063683998
+          },
+          {
+            "workload": "varied-prose",
+            "generated_tokens": 10805,
+            "decode_tps": 9.5,
+            "decode_ms": 1134065.8,
+            "total_s": 1176.797,
+            "drafts_offered": 14736,
+            "drafts_accepted": 5892,
+            "acceptance_rate": 0.3998371335504886
+          }
+        ]
+      },
+      {
+        "mode": "clean",
+        "cohort": 1,
+        "receipt_commit": "e3c64e305404352bd4e1a22700511db053e7e3b2",
+        "source_commit": "e388edff4ebc46a00c5fc133cf67674311e6a552",
+        "samples": [
+          {
+            "workload": "regular-code",
+            "generated_tokens": 2931,
+            "decode_tps": 14.7,
+            "decode_ms": 199744.1,
+            "total_s": 250.858,
+            "drafts_offered": 2481,
+            "drafts_accepted": 2105,
+            "acceptance_rate": 0.8484482063683998
+          },
+          {
+            "workload": "varied-prose",
+            "generated_tokens": 10805,
+            "decode_tps": 9.5,
+            "decode_ms": 1135064.9,
+            "total_s": 1177.761,
+            "drafts_offered": 14736,
+            "drafts_accepted": 5892,
+            "acceptance_rate": 0.3998371335504886
+          }
+        ]
+      },
+      {
+        "mode": "clean",
+        "cohort": 2,
+        "receipt_commit": "0a5fe7302553a081e6903bc439c8ed909e02d3b5",
+        "source_commit": "e3c64e305404352bd4e1a22700511db053e7e3b2",
+        "samples": [
+          {
+            "workload": "regular-code",
+            "generated_tokens": 2931,
+            "decode_tps": 14.6,
+            "decode_ms": 200915.7,
+            "total_s": 252.005,
+            "drafts_offered": 2481,
+            "drafts_accepted": 2105,
+            "acceptance_rate": 0.8484482063683998
+          },
+          {
+            "workload": "varied-prose",
+            "generated_tokens": 10805,
+            "decode_tps": 9.4,
+            "decode_ms": 1146291.4,
+            "total_s": 1189.169,
+            "drafts_offered": 14736,
+            "drafts_accepted": 5892,
+            "acceptance_rate": 0.3998371335504886
+          }
+        ]
+      }
+    ],
+    "workloads": {
+      "regular-code": {
+        "independent_process_tps": [
+          14.6,
+          14.7,
+          14.6
+        ],
+        "median_tps": 14.6,
+        "sample_sd_tps": 0.05773502691896237,
+        "acceptance_rates": [
+          0.8484482063683998,
+          0.8484482063683998,
+          0.8484482063683998
+        ],
+        "proposed_regime_confirmed": true,
+        "decode70_speed_target_passed": false
+      },
+      "varied-prose": {
+        "independent_process_tps": [
+          9.5,
+          9.5,
+          9.4
+        ],
+        "median_tps": 9.5,
+        "sample_sd_tps": 0.05773502691896237,
+        "acceptance_rates": [
+          0.3998371335504886,
+          0.3998371335504886,
+          0.3998371335504886
+        ],
+        "proposed_regime_confirmed": true,
+        "decode70_speed_target_passed": false
+      }
+    },
+    "strong_weak_pair_confirmed": true,
+    "decode70_speed_target_passed": false,
+    "check_excluded_from_clean_statistics": true,
+    "original_benchmark_inputs_recovered": 114,
+    "GPU_executed": false,
+    "original_outcomes_unchanged": true,
+    "limits": "Three independent clean processes, one request per workload in each after standard client warmup/calibration; not three subsequent same-workload requests. No MTP speedup attribution without a matched no-MTP arm. Broad quality,agent-session,physical262144 and RESTORE remain separate unqualified gates."
   }
 }

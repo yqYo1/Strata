@@ -1455,7 +1455,8 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
 #ifdef STRATA_ENABLE_SYCL
         // The graph submission's event covers all payload stores; the host
         // never races a device-written mapped sequence word.
-        const cudaError_t es = cudaEventSynchronize(layer_done_);
+        const cudaError_t es = observe_cpu_call(decode_cpu_profile_enabled() ? &cpu_sync_calls : nullptr,
+            [&] { return cudaEventSynchronize(layer_done_); });
         if (es != cudaSuccess) {
             err = std::string("verify: layer completion: ") + cudaGetErrorString(es);
             return false;
@@ -1536,7 +1537,8 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
 #ifdef STRATA_ENABLE_SYCL
         // DMA callbacks and staging sources must finish before the next graph
         // consumes them or the next CPU layer can reuse its transient storage.
-        const cudaError_t copies = cudaStreamSynchronize(copy_);
+        const cudaError_t copies = observe_cpu_call(decode_cpu_profile_enabled() ? &cpu_sync_calls : nullptr,
+            [&] { return cudaStreamSynchronize(copy_); });
         if (copies != cudaSuccess) {
             err = std::string("verify: expert copies: ") + cudaGetErrorString(copies);
             return false;
@@ -1559,10 +1561,12 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
     // spin kernel outlives the process - the case that left Windows GPUs "lost" until a power cycle.  The wait
     // itself stays a blocking sync: a cudaStreamQuery poll here cost IQ3_S ~3% decode (a core calling the driver
     // beside the expert workers).
-    const cudaError_t se = cudaStreamSynchronize(cs_);
+    const cudaError_t se = observe_cpu_call(decode_cpu_profile_enabled() ? &cpu_sync_calls : nullptr,
+        [&] { return cudaStreamSynchronize(cs_); });
     if (se != cudaSuccess) { err = std::string("verify: ") + cudaGetErrorString(se); return false; }
     progress_at("verify window: waiting for the expert copies", (int64_t) T);
-    const cudaError_t copy_status = cudaStreamSynchronize(copy_); // Host callbacks cannot reach the next window.
+    const cudaError_t copy_status = observe_cpu_call(decode_cpu_profile_enabled() ? &cpu_sync_calls : nullptr,
+        [&] { return cudaStreamSynchronize(copy_); }); // Callbacks cannot reach the next window.
     if (copy_status != cudaSuccess) { err = std::string("verify: copies: ") + cudaGetErrorString(copy_status); return false; }
     window_scope.drained(); // Both stage streams completed; sampling below has no mapped spin waits.
     if (prof_on_ && G == 1) {       // the window's GPU stage stamps
@@ -1612,7 +1616,8 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
         SamplerParams sp = sampling_;
         sp.counter = (uint64_t) pos0;
         sample_tokens(head_logits_, T, (int) n_vocab_, hist_d_, hist_len_, sp, m_out_, cs_);
-        if (cudaStreamSynchronize(cs_) != cudaSuccess) {   // m_out_ is the mapped h_out_: synced, it is readable
+        if (observe_cpu_call(decode_cpu_profile_enabled() ? &cpu_sync_calls : nullptr,
+                [&] { return cudaStreamSynchronize(cs_); }) != cudaSuccess) { // mapped output is readable
             err = "verify: the head sampling failed";
             return false;
         }
@@ -1811,7 +1816,8 @@ bool Verifier::commit(int n_keep, std::string& err) {
     // stream) reads only this window's final rows and its own K/V. h_commit_ is next written after the next window's
     // results are read, i.e. after this graph has run.  Everything else waits on commit_done_ (wait_commit).
     if (!g_commit_async || next_ != nullptr) {
-        const cudaError_t se = cudaStreamSynchronize(cs_);
+        const cudaError_t se = observe_cpu_call(decode_cpu_profile_enabled() ? &cpu_sync_calls : nullptr,
+            [&] { return cudaStreamSynchronize(cs_); });
         if (se != cudaSuccess) { err = std::string("verify: commit: ") + cudaGetErrorString(se); return false; }
     } else {
 #ifndef STRATA_ENABLE_SYCL
@@ -1833,7 +1839,8 @@ bool Verifier::wait_commit(std::string& err) {
     if (commit_pending_) {
         const OnDevice on_device(device_);
         commit_pending_ = false;
-        const cudaError_t se = cudaEventSynchronize(commit_done_);
+        const cudaError_t se = observe_cpu_call(decode_cpu_profile_enabled() ? &cpu_sync_calls : nullptr,
+            [&] { return cudaEventSynchronize(commit_done_); });
         if (se != cudaSuccess) { err = std::string("verify: commit: ") + cudaGetErrorString(se); return false; }
     }
     return next_ == nullptr || next_->wait_commit(err);

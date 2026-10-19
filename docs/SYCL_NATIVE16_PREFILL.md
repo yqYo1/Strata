@@ -1368,13 +1368,36 @@ dispatch/work conservation and matched request/configuration identities. See
 Retain selective Down as an opt-in for further qualification. Default adoption,
 broad quality,physical262144/session/RESTORE and sustained70tok/s decode remain
 unqualified;24 output tokens do not establish sustained generation speed.
-The next measurement consumer is an owned `bench.sh --long-generation-only
---think --runs 1` screen on this selected engine, followed by independent clean
-processes if the workload is eligible. Commit its complete plan and finite
-budgets before launch. Reuse the reviewed current MTP call-chain and context
-gate maps; measure actual acceptance and resource use before selecting a decode
-change. Follow [the benchmark contract](BENCHMARKS.md) for the strong/weak
-classification, answer/output-length gates and required agent-session evidence.
+The selected engine completed the official thinking-enabled long-generation
+check and three independent clean processes, with actual fresh inputs33211 and
+33285 tokens. Regular-code generated2931 tokens at14.6/14.7/14.6tok/s;
+varied-prose generated10805 at9.5/9.5/9.4tok/s. Observed MTP acceptance was
+84.84% and39.98%, confirming the intended strong/weak pair. All owners closed
+normally without fresh GPU faults. The existing reducer recovered114 original
+benchmark inputs and the four-process result chain, excluding the traced check
+from clean statistics. See the [individual samples and limits](../bench/results/2026-10-15-pr6-recovery-audit/decode-long-generation-current.json).
+This is a baseline, with no measured gain or70tok/s qualification. Logical
+target expert-cache hit rates were2.0% and1.0%; these do not establish physical
+RAM/PCIe traffic or CPU arithmetic as the limiting resource. The next consumer
+is qualification of the CPU-time observer before resource attribution. Its four
+CPU clock/pool tests passed both standalone and in the native build, including
+output parity and enabled/disabled accounting. The new engine passed two bounded
+native requests with one valid CPU record per completed request, zero clock/
+counter errors and normal ownership/fault closure at`69888d181`; the old engine
+also passed two requests on the proposed assets at`d2ec0ec93`. These tiny checks
+do not measure observer overhead or qualify long-generation attribution. The
+clean speeds above used libze-intel-gpu1 package26.31.39395.14; the system subsequently installed
+26.31.39395.16 and updated libudev. These assets need explicit qualification;
+the shared qualified runtime pins remain unchanged. Six small bank upload/guard/
+unwind cases passed with full API trace on the proposed assets at`db11be131`.
+The earlier full-model check hit its64MiB API-trace budget and remains incomplete,
+with no fresh driver fault. Both closed model checks used parameter validation
+and stage progress.
+The next gate is explicit runtime adoption and a committed matched observer-
+overhead plan, followed by long-generation resource attribution. No current-
+runtime throughput or limiting hardware resource is established.
+Keep model quality,agent-session,physical262144/session/RESTORE and matched
+no-MTP attribution as separate pending checks.
 
 The maintained model controller now provides `prepare|run qsa-long-input-check`
 and `prepare|run qsa-long-input [0|1|2]`. Its prospective screen holds131072
