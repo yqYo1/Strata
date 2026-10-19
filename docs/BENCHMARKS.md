@@ -65,6 +65,12 @@ JSONL hash chain; interrupted requests remain pending/incomplete. Agent
 statistics use complete six-turn sessions only, while all partial rows remain.
 Full successful response traces are unnecessary after these facts are recorded.
 
+For a focused diagnostic, add `--long-generation-workload regular-code` or
+`--long-generation-workload varied-prose` to `--long-generation-only`. It keeps
+the same warmup, prompt, thinking and output budget, records the selected subset
+and leaves the other case unrun. Even three subset runs do not qualify the MTP
+pair. The default still executes both workloads.
+
 Use the same pinned unmodified Niko client on both engines for existing standard
 results, and the same pinned extended client for added decode tests. Distinguish
 warm-server requests from independent fresh-server repetitions, and prefill
