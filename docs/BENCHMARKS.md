@@ -161,6 +161,18 @@ CPU clocks and wall timing stay enabled. This does not qualify observer overhead
 clean speed or a hardware bottleneck. The earlier clean baseline remains
 recoverable at commit`8fe6b1af6` from the same result path.
 
+`generation_engine.py prepare|run cpu-overhead N` uses the same observer engine
+and explicitly proposed runtime for six independent regular-code processes in
+the fixed off/on/on/off/off/on order. Commit each plan before execution and each
+outcome before preparing the next process. Both arms keep the qualified safety
+settings; only the complete CPU/wall/parameter-validation observer bundle changes.
+`summarize cpu-overhead` checks the original source/history chain, independent
+owners, matched configuration, request identity and bounded generation/MTP work
+before reporting three paired per-token latency ratios. The prospective observed
+overhead gate is geomean<=1.05 and every pair<=1.10; failed gates remain failures.
+This single-workload diagnostic does not qualify the strong/weak pair, physical
+hardware saturation, runtime-baseline adoption or the70tok/s target.
+
 For a prefill-only screen, `bench.sh --prefill-only --prefill-tokens N` accepts
 32768,65536,98304 or131072 as the minimum **actual prompt and read tokens**.
 Thinking stays on and output is capped at24 tokens; this does not qualify

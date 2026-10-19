@@ -28,6 +28,51 @@ def raw(body="answer", offered=300):
 
 
 class EvidenceTests(unittest.TestCase):
+    def test_overhead_requires_independent_matched_work_and_preserves_failed_speed_gate(self):
+        records = []
+        for i, arm in enumerate(generation.OVERHEAD_ARMS):
+            sample = lg.sample_eligibility(raw(body='a'*512), b.digest(raw(body='a'*512)))
+            row = dict(b.digest(raw(body='a'*512)), **sample, workload='regular-code',
+                order=0, run=0, output_chars=512, reasoning_chars=16)
+            row['eligible'] = True
+            row['acceptance_rate'] = .75
+            row['drafts_offered'], row['drafts_accepted'] = 400, 300
+            row['decode_ms'] = 1000. * (1.02 if arm == 'on' else 1.)
+            row['decode_tps'] = row['generated_tokens'] * 1000 / row['decode_ms']
+            env = dict(STRATA_MEASUREMENT_ROOT='/r/'+str(i), EnableDirectSubmission='0')
+            if arm == 'on': env.update(STRATA_DECODE_CPU_PROFILE='1', STRATA_DECODE_TIMING='1')
+            record = dict(mode='cpu-overhead', cohort=i, observer_arm=arm,
+                observer_comparison_plan=generation.overhead_plan(), complete=True, passed=True,
+                ownership_closed=True, active=False, exit_code=0, engine_exit_code=0,
+                fresh_faults=[], boot_unchanged=True, request_journal=dict(valid=True, complete=True),
+                native_identity=dict(pid=100+i,start_ticks=10+i), environment=env, command=['bench','--port',str(i)],
+                binary='same', build_source_commit='same', config={}, profile_sha256='same',
+                runtime_asset_delta={}, source_aggregate_sha256='same', qualification_files={},
+                source_commit='same', requests=[row])
+            if arm == 'on':
+                record.update(cpu_record_reconciliation=dict(successful_requests=5, valid_CPU_records=5,
+                    warmup_and_calibration_records_excluded=4, all_request_counts_reconciled=True),
+                    cpu_observations=[dict(valid=True)])
+            else: record['observer_records_absent'] = True
+            records.append(('receipt'+str(i),record))
+        result = generation.overhead_statistics(records)
+        self.assertTrue(result['observed_overhead_gate_passed'])
+        self.assertAlmostEqual(result['paired_latency_ratio_geomean'],1.02)
+        slow = copy.deepcopy(records)
+        for _, r in slow:
+            if r['observer_arm']=='on': r['requests'][0]['decode_ms']*=1.2
+        self.assertFalse(generation.overhead_statistics(slow)['observed_overhead_gate_passed'])
+        for variant in ('duplicate_process','safety_change','different_work','wrong_order','incomplete_accounting'):
+            with self.subTest(variant=variant):
+                changed=copy.deepcopy(records)
+                r=changed[1][1]
+                if variant=='duplicate_process': r['native_identity']=changed[0][1]['native_identity']
+                if variant=='safety_change': r['environment']['EnableDirectSubmission']='1'
+                if variant=='different_work': r['requests'][0]['drafts_offered']=800;r['requests'][0]['drafts_accepted']=600
+                if variant=='wrong_order': r['cohort']=2
+                if variant=='incomplete_accounting': r['cpu_record_reconciliation']['valid_CPU_records']=4
+                with self.assertRaises(RuntimeError): generation.overhead_statistics(changed)
+
     def test_CPU_observation_reconciliation_rejects_missing_invalid_and_mismatched_requests(self):
         phases = ['warm-up/chat', 'calibration', 'calibration', 'warm-up/prompt',
                   'long-generation/regular-code', 'long-generation/varied-prose']
@@ -67,6 +112,11 @@ class EvidenceTests(unittest.TestCase):
                     with self.assertRaises(RuntimeError): observe(changed)
             changed = copy.deepcopy(entries); changed[-1]['phase'] = 'unexpected'
             with self.assertRaises(RuntimeError): observe(values, changed)
+            journal.write_text('\n'.join(json.dumps(e) for e in entries[:-1])+'\n')
+            log='\n'.join('strata decode cpu: '+json.dumps(v) for v in values[:-1])
+            selected,counts=generation.cpu_observations(root,log,rows[:1])
+            self.assertEqual(len(selected),1)
+            self.assertEqual(counts['valid_CPU_records'],5)
 
     def test_incomplete_standard_response_cannot_enter_speed_summary(self):
         for change in ({"usage": {}}, {"done_received": False}, {"finish_reason": None}):
