@@ -147,7 +147,7 @@
       "candidate_path": "bench/results/2026-10-15-pr6-recovery-audit/own-qsa-kpitch-v1",
       "decision": "Reuse the existing source-audited pitch proposal after the current comparison; no new duplicate survey. Recheck immutable source/provenance and wire maintained API/tests before compiling.",
       "candidate": "Fixed score33,Cells32,WG128,SG16; K36/V260 shared tile needs9216 BF16 values,30272B requested local payload,34368B admission minimum. No hardware occupancy/bank map or performance result.",
-      "do_not_repeat": "Old global K span256 schedule regressed10.35–29.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
+      "do_not_repeat": "Old global K span256 schedule regressed10.35\u201329.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
     },
     "reviewed_base_source_sha256": "fa505d02e2b24f7cb6948033921fa697c8aeb58e6f4df6d873f13e5a7918e36b",
     "source_sha256": "c3ad8326f097050ff9ab1859e116f2cad3709a8464162143f752bc294cbe1e01",
@@ -208,7 +208,7 @@
         "bytes": 19144,
         "source_commit": "fbc7f56d7b0ddb5db5f3722ef33ca044c3f8a5c8",
         "reason": "Its conditional consumer is a selected-cell stable-reduction split. The closed QSA screen and pending pitch candidate select no split or reduction bottleneck.",
-        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report’s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
+        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report\u2019s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
       },
       {
         "path": "bench/results/2026-10-15-pr6-recovery-audit/research-matrix-register-reuse-20261018.md",
@@ -1379,8 +1379,8 @@
         "Retrieval map for a later concrete question"
       ],
       "paper_sections": [
-        "SyclKittens §§3.2–3.3 and Appendix D for operand layouts, subgroup prefetch and the measured ablation.",
-        "Xe-Forge §§IV–V, VI-A, VI-D–VI-E for search/validation workflow, hardware, baseline and kernel results."
+        "SyclKittens \u00a7\u00a73.2\u20133.3 and Appendix D for operand layouts, subgroup prefetch and the measured ablation.",
+        "Xe-Forge \u00a7\u00a7IV\u2013V, VI-A, VI-D\u2013VI-E for search/validation workflow, hardware, baseline and kernel results."
       ]
     }
   },
@@ -2103,7 +2103,7 @@
   },
   "sycl_command_submission_amortization_collection_scope": {
     "classification": "knowledge collection",
-    "question": "For repeated same-queue SYCL/oneAPI kernel and copy command streams, compare mechanisms that amortize host submission work: per-command submission, supported command batching/list execution, and replayable command graphs with parameter updates. Using official Khronos/Intel/Unified Runtime sources and transferable non-LLM SYCL/HPC examples, determine what each mechanism actually amortizes, how it handles dynamic pointers/maps/shapes, dependencies, asynchronous errors, capture restrictions and replay/update costs, and where measured benefits fail to transfer. Map applicability to Strata’s repeated GEMM/upload submit pattern without proposing code or claiming local performance.",
+    "question": "For repeated same-queue SYCL/oneAPI kernel and copy command streams, compare mechanisms that amortize host submission work: per-command submission, supported command batching/list execution, and replayable command graphs with parameter updates. Using official Khronos/Intel/Unified Runtime sources and transferable non-LLM SYCL/HPC examples, determine what each mechanism actually amortizes, how it handles dynamic pointers/maps/shapes, dependencies, asynchronous errors, capture restrictions and replay/update costs, and where measured benefits fail to transfer. Map applicability to Strata\u2019s repeated GEMM/upload submit pattern without proposing code or claiming local performance.",
     "schedulable_now": false,
     "status": "native_reviewed_retrieval_reference",
     "eligibility_review": {
@@ -2713,14 +2713,21 @@
     "next_review": "At frozen Down cohort closure review realistic retrieval need. New local transient-operand work requires production-shaped resource evidence, target support and prospectively committed precision/performance criteria; no adoption from this report.",
     "report_bytes": 14502,
     "report_sha256": "e48862c0696562926f284c573514038e29bbe1a5ed4d73c91ffb3daec1910761",
-    "native_review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/transient-moe-operand-quant-native-review.json",
     "worker_closure": "Succeeded worker_done accepted; Main-owned external terminal retained by release, original incarnation/idle verified, closed ptyKilled=true, delivery acknowledged. Main did not read collection body.",
     "native_review_sha256": "13a24d88e967bea180765ece42426e0bfd8fd970c06bd4175c34ec2d4d52879c",
-    "review_digest": "This is a substantive, nonduplicated reference for transient MoE operand quantization, not a result or adoption case. The four Strata source files match their pinned hashes. Intel documents BMG joint_matrix INT8, but the B70 runtime-query failure was on oneAPI 2025.3.3 and a maintainer points to newer BMG support; it does not settle B570. A version-specific correction: vLLM-XPU v0.1.15 defaults oneDNN to an rls-v3.13 commit, whose Xe2 FP8 table marks compute as conversion to higher precision. Its grouped MoE path still consumes high-precision A; the oneDNN FP8 wrapper is separate. Direct native B570 FP8 remains unresolved. Keep the report indexed, schedulable_now=false until the live Down cohort closes and production-shaped evidence selects this bottleneck; no precision or kernel adoption follows. Reconcile collection ownership separately."
+    "review_digest": "This is a substantive, nonduplicated reference for transient MoE operand quantization, not a result or adoption case. The four Strata source files match their pinned hashes. Intel documents BMG joint_matrix INT8, but the B70 runtime-query failure was on oneAPI 2025.3.3 and a maintainer points to newer BMG support; it does not settle B570. A version-specific correction: vLLM-XPU v0.1.15 defaults oneDNN to an rls-v3.13 commit, whose Xe2 FP8 table marks compute as conversion to higher precision. Its grouped MoE path still consumes high-precision A; the oneDNN FP8 wrapper is separate. Direct native B570 FP8 remains unresolved. Keep the report indexed, schedulable_now=false until the live Down cohort closes and production-shaped evidence selects this bottleneck; no precision or kernel adoption follows. Reconcile collection ownership separately.",
+    "transaction_retirement": {
+      "manifest_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/closed-down-B0-and-review-transactions-20261019.json",
+      "sha256": "daec1262fda06fe322a88b9a0caafab9c7079b9cd247b05e2a51eb5009471744",
+      "files": 74,
+      "bytes": 12859112,
+      "source_blobs_recovered": 9925,
+      "original_outcomes_unchanged": true
+    }
   },
   "b570_pcie_wire_byte_measurement_methods_scope": {
     "classification": "knowledge collection",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "question": "For the Arc B570 on the Ryzen 5 5600X system, compare defensible ways to measure actual PCIe traffic for the existing discrete-GPU copy path: GPU/driver counters, host root-port or PCIe PMU counters, and controlled transfer calibration. Pin the metric source/version, direction, scope, units, sampling and access requirements; distinguish payload bytes from link overhead/retries and requested API bytes. Identify counter disagreement and unavailable-counter cases, and state what each method can and cannot establish about critical-path transfer. Keep this a literature/documentation collection; propose no code or local measurement and do not change copy-offload settings.",
     "novelty_exclusions": [
       "staged_copy_resource_contract_scope: already explains the possible runtime copy branches and generic engine-busy limits; do not repeat that analysis.",
@@ -2747,15 +2754,22 @@
       "maximum_bytes": 22528
     },
     "eligibility_basis": "All collection prerequisites are already recorded: large logical copy totals, no physical-link measurement, and the exact host/device class. This scope compares documented methods and counterevidence without requiring an absent local metric or changing the active comparison.",
-    "status": "eligible_dispatch_pending",
+    "status": "orca_collection_running",
     "policy_revision": "038d79eb5eee602a39eb28938b99584741aa798e",
     "scope_review_sha256": "18903c6a0017ee9d5e81e80981ed6f51da1752a23c13372e1828ccc0e1af010e",
     "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/b570-pcie-wire-measurement-methods.md",
-    "next_review": "On settlement native Codex gpt-6-luna max reviews depth, novelty, source/version limits and retrieval metadata; Main reads the short digest only."
+    "next_review": "On settlement native Codex gpt-6-luna max reviews depth, novelty, source/version limits and retrieval metadata; Main reads the short digest only.",
+    "task_id": "task_97278052b9be",
+    "dispatch_id": "ctx_1b36d8690a56",
+    "run_id": "run_fb41872974e9",
+    "terminal_handle": "term_73a14881-d5de-417b-8158-9a9beff2b175",
+    "terminal_incarnation": "753f65b1-af21-447d-8242-681f25fb0afb",
+    "collector_model_observed": "gpt-6-luna",
+    "worker_ownership_closed": false
   },
   "xe2_device_translation_tlb_methods_scope": {
     "classification": "knowledge collection",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "question": "For large GPU-resident or physically backed tensors with long-context and irregular access, compare methods that change GPU-side virtual-address translation pressure: mapping/allocation granularity, sparse versus dense backing, access locality and reuse, and large-page tradeoffs where supported. Use Intel Xe2 primary sources plus transferable non-LLM GPU/HPC evidence. Separate device TLB/page-walk behavior from host-page pinning, system-memory DMA, cache capacity, and VMM pointer/graph lifetime. Give counterevidence and identify which observable counters or workload signatures could distinguish a translation effect from bandwidth, cache or occupancy limits on B570. Make no claim that translation is currently limiting and propose no implementation.",
     "novelty_exclusions": [
       "vmm_graph_lifetime_scope covers stable virtual pointers, mapping replacement and graph/owner lifetime, not translation-performance effects.",
@@ -2783,10 +2797,17 @@
       "maximum_bytes": 22528
     },
     "eligibility_basis": "The 262,144-token requirement, concrete QSA dimensions and existing separate VMM/host-page references are recorded. This independent methods collection needs no device-side TLB measurement and does not presume the resource is limiting.",
-    "status": "eligible_dispatch_pending",
+    "status": "orca_collection_running",
     "policy_revision": "038d79eb5eee602a39eb28938b99584741aa798e",
     "scope_review_sha256": "18903c6a0017ee9d5e81e80981ed6f51da1752a23c13372e1828ccc0e1af010e",
     "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/xe2-device-translation-tlb-methods.md",
-    "next_review": "On settlement native Codex gpt-6-luna max reviews depth, novelty, source/version limits and retrieval metadata; Main reads the short digest only."
+    "next_review": "On settlement native Codex gpt-6-luna max reviews depth, novelty, source/version limits and retrieval metadata; Main reads the short digest only.",
+    "task_id": "task_6c4e94f37f43",
+    "dispatch_id": "ctx_80681d7d9560",
+    "run_id": "run_fb41872974e9",
+    "terminal_handle": "term_ecb03efb-a94e-4356-a71e-d161e550b400",
+    "terminal_incarnation": "abb6b2cf-a882-4f23-af13-e24ce3367a46",
+    "collector_model_observed": "gpt-6-luna",
+    "worker_ownership_closed": false
   }
 }
