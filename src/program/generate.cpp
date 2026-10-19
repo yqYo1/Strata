@@ -16,6 +16,7 @@
 
 #include "strata/core/device.hpp"
 #include "strata/core/expert_cache.hpp"
+#include "strata/core/residency_publication.hpp"
 #ifdef STRATA_ENABLE_SYCL
 #include "strata/core/expert_slot_sizes.hpp"
 #endif
@@ -4524,6 +4525,19 @@ int main(int argc, char** argv) {
         std::fprintf(stderr, "strata generate: token graph hit path: %lld resident experts, decided on the device\n",
                      (long long) resident);
     }
+    // Lend/refill/adapt all change the same host snapshot. A failed copy can
+    // leave a device with stale slot ownership; every caller must stop before
+    // submitting dependent work, including after a partially completed split.
+    auto res_upload = [&](const char* phase, std::string& e) -> bool {
+        const size_t main_tables = d_res != nullptr ? 1 : 0;
+        return strata::core::publish_residency_tables(main_tables + stages.size(), phase, [&](size_t table) {
+            if (table < main_tables)
+                return cudaMemcpy(d_res, host_res.data(), host_res.size() * sizeof(int32_t), cudaMemcpyHostToDevice);
+            auto& st = stages[table - main_tables];
+            const strata::core::OnDevice on(st->dev);
+            return cudaMemcpy(st->d_res, host_res.data(), host_res.size() * sizeof(int32_t), cudaMemcpyHostToDevice);
+        }, e);
+    };
     if (!o.no_capture && !o.no_token_graph && layer_dump == nullptr && half_dump == nullptr &&
         (hit_fn == nullptr || thits.on()) && !native_pack && !multi_gpu) {   // a split's token graph cannot span stages
         if (!strata::core::session_capture_token(wt, g, ss, d_parts, loop_scratch.y_miss, loop_scratch.parts_bytes,
@@ -5046,11 +5060,9 @@ int main(int argc, char** argv) {
                              (long long) (p.cache->slots() - first_s), (long long) S, (long long) n);
             }
             if (evicted > 0) {
-                if (d_res != nullptr)
-                    cudaMemcpy(d_res, host_res.data(), host_res.size() * sizeof(int32_t), cudaMemcpyHostToDevice);
-                for (auto& st : stages) {
-                    const strata::core::OnDevice on(st->dev);
-                    cudaMemcpy(st->d_res, host_res.data(), host_res.size() * sizeof(int32_t), cudaMemcpyHostToDevice);
+                if (!res_upload("serve small-prompt reservation", err)) {
+                    std::fprintf(stderr, "strata serve: %s\n", err.c_str());
+                    return 1;
                 }
             }
         }
@@ -5383,16 +5395,7 @@ int main(int argc, char** argv) {
             std::fprintf(stderr, "strata serve: cannot create the refill event\n");
             return 1;
         }
-        // a layer split's later stages keep a copy of the residency table on their devices, and swap on their own
-        auto res_upload = [&]() {
-            if (d_res != nullptr)
-                cudaMemcpy(d_res, host_res.data(), host_res.size() * sizeof(int32_t), cudaMemcpyHostToDevice);
-            for (auto& st : stages) {
-                const strata::core::OnDevice on(st->dev);
-                cudaMemcpy(st->d_res, host_res.data(), host_res.size() * sizeof(int32_t), cudaMemcpyHostToDevice);
-            }
-        };
-        auto apply_pending = [&](bool wait) -> bool {
+        auto apply_pending = [&](bool wait, std::string& e) -> bool {
 #ifdef STRATA_ENABLE_SYCL
             // Commit scheduled refills at a fixed window boundary. Otherwise
             // copy timing chooses which windows use CPU or GPU arithmetic.
@@ -5403,20 +5406,19 @@ int main(int argc, char** argv) {
             if (pending.empty()) return true;
             const cudaError_t status = wait ? cudaEventSynchronize(adapt_ev) : cudaEventQuery(adapt_ev);
             if (!wait && status == cudaErrorNotReady) return true;
-            if (status != cudaSuccess) return false;
+            if (status != cudaSuccess) { e = "adaptive refill completion failed"; return false; }
             for (auto& st : stages)
                 if (st->adapt_live) {
                     const cudaError_t stage_status = wait ? cudaEventSynchronize(st->adapt_ev)
                                                          : cudaEventQuery(st->adapt_ev);
                     if (!wait && stage_status == cudaErrorNotReady) return true;
-                    if (stage_status != cudaSuccess) return false;
+                    if (stage_status != cudaSuccess) { e = "stage adaptive refill completion failed"; return false; }
                 }
             for (auto& st : stages) st->adapt_live = false;
             src.commit_exchanges();   // the resident RAM mode: the evicted experts take their places in RAM
             for (const auto& [i, slot] : pending) host_res[(size_t) i] = slot;
             pending.clear();
-            res_upload();
-            return true;
+            return res_upload("serve adaptive refill", e);
         };
         // the VRAM tier follows the conversation (the same rule as the speculative loop below)
         auto adapt = [&]() -> bool {
@@ -6139,7 +6141,7 @@ int main(int argc, char** argv) {
                     for (PfPart& p : pf_parts)
                         if (!p.lent.empty() && !refill_one(p, e)) return false;
                 }
-                if (n_parts > 0) res_upload();
+                if (n_parts > 0 && !res_upload("serve cache refill", e)) return false;
                 if (trace && n_parts > 0) {
                     std::fprintf(stderr, "strata trace: refilled %lld slots on %lld stage(s) in %.1f ms\n",
                                  (long long) n_lent, (long long) n_parts,
@@ -6191,7 +6193,7 @@ int main(int argc, char** argv) {
                         }
                     p.lent_chunk = want;
                 }
-                if (any) res_upload();
+                if (any && !res_upload("serve cache lend", e)) return false;
                 if (trace) {
                     int64_t n_lent = 0;
                     for (const PfPart& p : pf_parts) n_lent += (int64_t) p.lent.size();
@@ -6201,8 +6203,8 @@ int main(int argc, char** argv) {
                 }
                 return true;
             };
-            if (!apply_pending(true)) {
-                std::printf("ERR adaptive refill event failed\n");
+            if (!apply_pending(true, err)) {
+                std::printf("ERR %s\n", err.c_str());
                 return 1;
             }
             // per-request sampling for the verify window's head (greedy when temperature is absent)
@@ -6379,8 +6381,8 @@ int main(int argc, char** argv) {
                 drive.d.layers = 0;
                 drive.d.experts = 0;
                 drive.d.failed = false;
-                if (!apply_pending(!adapt_nowait())) {
-                    std::printf("ERR adaptive refill event failed\n");
+                if (!apply_pending(!adapt_nowait(), err)) {
+                    std::printf("ERR %s\n", err.c_str());
                     return 1;
                 }
                 if (hist_n > 0) {
@@ -6793,7 +6795,10 @@ int main(int argc, char** argv) {
                         lent.emplace_back((int32_t) i, host_res[i]);
                         host_res[i] = strata::core::kNotResident;
                     }
-                cudaMemcpy(d_res, host_res.data(), host_res.size() * sizeof(int32_t), cudaMemcpyHostToDevice);
+                if (!res_upload("standalone cache lend", err)) {
+                    std::fprintf(stderr, "strata generate: %s\n", err.c_str());
+                    return 1;
+                }
                 borrow = xcache.device_slot(first);
                 borrow_bytes = xcache.slot_offsets() ? (uint64_t) (xcache.bytes() - (int64_t) xcache.slot_offsets()[first])
                                                      : (uint64_t) k * (uint64_t) blob;
@@ -6968,7 +6973,10 @@ int main(int argc, char** argv) {
                 std::fprintf(stderr, "strata generate: refilling the lent slots failed: %s\n", err.c_str());
                 return 1;
             }
-            cudaMemcpy(d_res, host_res.data(), host_res.size() * sizeof(int32_t), cudaMemcpyHostToDevice);
+            if (!res_upload("standalone cache refill", err)) {
+                std::fprintf(stderr, "strata generate: %s\n", err.c_str());
+                return 1;
+            }
             std::fprintf(stderr, "strata generate: %zu lent slots refilled in %.1f ms\n", lent.size(),
                          std::chrono::duration<double, std::milli>(Clock::now() - tr).count());
         }
@@ -7290,7 +7298,7 @@ int main(int argc, char** argv) {
             return 1;
         }
         int64_t adapt_rounds = 0;
-        auto apply_pending = [&](bool wait) -> bool {
+        auto apply_pending = [&](bool wait, std::string& e) -> bool {
             if (pending.empty()) return true;
 #ifdef STRATA_ENABLE_SYCL
             const char* sync = std::getenv("STRATA_SYCL_ADAPT_SYNC");
@@ -7298,13 +7306,11 @@ int main(int argc, char** argv) {
 #endif
             const cudaError_t status = wait ? cudaEventSynchronize(adapt_ev) : cudaEventQuery(adapt_ev);
             if (!wait && status == cudaErrorNotReady) return true;
-            if (status != cudaSuccess) return false;
+            if (status != cudaSuccess) { e = "adaptive refill completion failed"; return false; }
             src.commit_exchanges();   // the resident RAM mode: the evicted experts take their places in RAM
             for (const auto& [i, slot] : pending) host_res[(size_t) i] = slot;
             pending.clear();
-            if (d_res != nullptr)
-                cudaMemcpy(d_res, host_res.data(), host_res.size() * sizeof(int32_t), cudaMemcpyHostToDevice);
-            return true;
+            return res_upload("standalone adaptive refill", e);
         };
         // Plan v0.3 P6: the VRAM tier follows the conversation.  Candidates are missing experts routed at least
         // twice (decayed); each is paired with its layer's least-routed resident expert and swapped when it was
@@ -7437,8 +7443,8 @@ int main(int argc, char** argv) {
             drive.d.layers = 0;
             drive.d.experts = 0;
             drive.d.failed = false;
-            if (!apply_pending(!adapt_nowait())) {
-                std::fprintf(stderr, "strata generate: adaptive refill event failed\n");
+            if (!apply_pending(!adapt_nowait(), err)) {
+                std::fprintf(stderr, "strata generate: %s\n", err.c_str());
                 return 1;
             }
             if (!ver.run(T, window.data(), p, &drive_pool_multi, &drive, outv.data(), err)) {

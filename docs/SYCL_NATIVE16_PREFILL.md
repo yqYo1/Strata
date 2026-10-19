@@ -2056,6 +2056,24 @@ reset does not establish spare decode VRAM. Review the existing borrowing path
 and actual variable-size cache/MTP/graph owners before a larger-cache trial;
 static sizes and the2% hit rate alone establish neither memory admission nor a
 speed gain. Keep context/session/RESTORE state and cached graph readers intact.
+The closed Orca source review and native Luna-max review found a concrete
+safety prerequisite before borrowing: lend/refill/adapt discarded residency
+upload errors, so failed publication could leave device slot ownership stale.
+No such copy failure was observed in the no-borrow diagnostic, and this is not
+an established cause of the earlier hangs. The current source change checks
+all post-initialization publications, including standalone and small-prompt
+reservations, and propagates failure before dependent prompt/verify work.
+The new host-only fixture injects first/middle/last-device failures for lend
+and refill, checks exact snapshots and stops fanout; it does not inject GPU
+faults. Newly authored helper and tests use no external implementation.
+The committed next check is a rebuild in the existing current-build cache,
+preserving the named qualified fallback, then normal51+query-observer1+
+residency-publication9 cases in a fresh v2 component root. Compilation or host
+failure-injection success alone does not exercise actual borrowing. A later
+bounded serve check must prove a positive loan, two different rounded prompt
+layouts, same-slot refill and verification after refill before any32K+ cache
+comparison. Actual admission and CPU-math/RAM/GPU resource attribution remain
+unknown; physical262144/session/RESTORE and clean speed remain separate gates.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.

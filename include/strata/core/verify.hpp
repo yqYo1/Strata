@@ -204,7 +204,7 @@ public:
     };
     using QueryProfile = std::array<QueryStats, static_cast<size_t>(QueryPoint::count)>;
     // Host-only wrapper wall time, read/reset at serialized request boundaries.
-    // Includes registry checks and the wrapper's completed-event wait; it is
+    // Includes runtime checks, event-state locking and the completed-event wait; it is
     // neither device service time nor CPU arithmetic time.
     bool query_profile_enabled() const { return query_profile_enabled_; }
     QueryProfile query_profile() const { return query_profile_; }
