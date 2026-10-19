@@ -1828,6 +1828,18 @@ neither establishes wire traffic or saturation. This screen cannot adopt a
 candidate: weak-MTP, agent-session, broader task quality, long-prefill
 nonregression and physical262144/session/RESTORE checks remain pending.
 
+The frozen long route diagnostic then passed33,211 fresh input tokens and3,177
+thinking-plus-answer tokens, with four successful official warmups, normal native
+and owner exits, unchanged boot and no fresh fault. MTP accepted2253/2775 drafts
+(81.19%); answer/thinking bodies contain5571/3730 characters. All314831 requested
+expert blobs completed, totaling642680908800 logical bytes, with1010725 remaining
+CPU unique misses and1410855 CPU entries. This is202291756 requested bytes per
+emitted token. At unchanged traffic,70tok/s would request14.16GB/s; a hypothetical
+6GB/s payload link would permit29.66tok/s if every byte crosses it. These are
+conditional requested-payload calculations, not wire measurements or saturation.
+The11.4tok/s diagnostic reading includes validation/progress output and is excluded
+from clean speed. Continue the unchanged six-process screen; no adoption follows.
+
 A conditional complete-blob copy budget also constrains that candidate.
 With at most2 resident experts per layer, top10 routing and at most4 emitted
 tokens/window, even identical routes and perfect acceptance require at least
