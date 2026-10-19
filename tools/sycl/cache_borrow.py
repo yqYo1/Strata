@@ -163,10 +163,13 @@ def run():
         (ROOT/'record.json').write_text(json.dumps(dict(record,owned_commands=owner.commands if owner else []),indent=2)+'\n')
     def interact(io,entry):
         while not io.line().startswith('READY '): pass
+        record['native_identity']={k:entry['direct_identity'][k] for k in ('pid','start_ticks','sid')}
+        record['native_ready']=True
         for prompt in values:
             io.send(('GEN 16 '+','.join(map(str,prompt))+'\n').encode()); tokens=[]
             while True:
                 line=io.line();guards.require(not line.startswith('ERR'),line)
+                if line.startswith(('PP ','T ')): record['model_route_executed']=True
                 if line.startswith('T '): tokens.append(int(line.split()[1]))
                 if line.startswith('DONE '):
                     fields=line.split();guards.require(int(fields[1])==len(tokens)==16 and

@@ -2083,8 +2083,13 @@ resident expert against its immutable RAM bytes. It records actual loan bytes,
 chunk, offset and free VRAM without retaining tensor dumps. The helper, audit,
 fixture and controller are Main-authored from this fork's Strata path, with no
 external implementation or XeStrata source.
-Rebuild in the existing current cache, preserving the qualified fallback, then
-require the normal51+observer1+publication9+tail10 cases in a fresh v3 root.
+The rebuild at native source`1dc52b068` reused the current cache and preserved
+the qualified fallback. Engine SHA256 is
+`2fce2d79fc5f6eebf8829b65d0de863d99d697a0c4c013ad9c25d28cae9fc917`.
+All normal51+observer1+publication9+tail10 cases passed in the fresh v3 root;
+ten offline evidence/runtime tests passed. All owned processes closed, no
+fresh driver fault occurred and boot/runtime remained unchanged. These are
+component/admission prerequisites, not a borrower model result.
 `tools/sycl/cache_borrow.py prepare` then freezes the1280-slot hypothesis,
 8194/257-token thinking-template inputs and qualified runtime/safety settings;
 commit its plan before `run`. It requires positive loans at two distinct
