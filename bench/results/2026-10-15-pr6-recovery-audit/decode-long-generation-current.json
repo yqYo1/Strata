@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "mode": "cpu-overhead",
-  "cohort": 4,
-  "source_commit": "805df158a04a75f9f1719af5d040d837f599bd5c",
+  "cohort": 5,
+  "source_commit": "34d0b0a1cb619796ff6aa9be64d50a9d79956413",
   "source_count": 115,
   "source_aggregate_sha256": "fdd3f00d1e27544b1e412173d8a7461a02d24d4b495ba3bf8c921c00343cd385",
   "binary": {
@@ -47,7 +47,7 @@
       "--expert-cache",
       "128",
       "--expert-profile",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v3-cpu-overhead-4/expert-profile.bin",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v3-cpu-overhead-5/expert-profile.bin",
       "--expert-cache-per-layer",
       "--pool-workers",
       "5",
@@ -86,7 +86,7 @@
       "strata"
     ],
     "host": "127.0.0.1",
-    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v3-cpu-overhead-4/engine.stderr",
+    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v3-cpu-overhead-5/engine.stderr",
     "engine_silence_s": 480,
     "parallel": 1,
     "open_browser": false,
@@ -146,7 +146,7 @@
     "STRATA_SYCL_SELECT_CYCLIC": "0",
     "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
     "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v3-cpu-overhead-4/cache",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v3-cpu-overhead-5/cache",
     "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
     "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
     "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
@@ -159,8 +159,8 @@
     "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
     "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
     "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v3-cpu-overhead-4/tmp",
-    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v3-cpu-overhead-4",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v3-cpu-overhead-5/tmp",
+    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v3-cpu-overhead-5",
     "ZES_ENABLE_SYSMAN": "0",
     "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
     "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
@@ -168,15 +168,22 @@
     "STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW": "1",
     "STRATA_SYCL_PREFILL_DOWN_SCATTER": "large",
     "STRATA_SYCL_PREFILL_MIXED_SCRATCH": "1",
-    "STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS": "384"
+    "STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS": "384",
+    "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+    "STRATA_TRACE": "1",
+    "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+    "STRATA_DECODE_CPU_PROFILE": "1",
+    "STRATA_DECODE_TIMING": "1"
   },
   "command": [
     "/bin/sh",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
     "--config",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v3-cpu-overhead-4/config.json",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v3-cpu-overhead-5/config.json",
     "--port",
-    "57273",
+    "39631",
     "--long-generation-only",
     "--think",
     "--runs",
@@ -187,21 +194,21 @@
     "--ready-timeout",
     "600",
     "--out",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v3-cpu-overhead-4/bench",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-long-generation-v3-cpu-overhead-5/bench",
     "--long-generation-workload",
     "regular-code"
   ],
-  "config_sha256": "8bddffbdeebddb7fa4e9d93c4b89c9ef5a1e5998e68bb7c1b287d1d551decc6a",
+  "config_sha256": "89aad6d724b2cefad51ef3af99aa371714b3bfd2f2b22210c4002255bb42ec34",
   "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
   "prefill_reference": {
-    "commit": "805df158a04a75f9f1719af5d040d837f599bd5c",
+    "commit": "34d0b0a1cb619796ff6aa9be64d50a9d79956413",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json",
     "sha256": "207062c425b88f4a40a7f9d72338e2cbb20506da8e90b2ca5ff4c312f994f443"
   },
   "preceding_generation_result": {
-    "commit": "805df158a04a75f9f1719af5d040d837f599bd5c",
+    "commit": "34d0b0a1cb619796ff6aa9be64d50a9d79956413",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/decode-long-generation-current.json",
-    "sha256": "14fa5b4fe3f99a812cb30a1ccc8dda320fae3131f036061a96ae2628d37e96b8"
+    "sha256": "a256b08754a9dda3d869c43fce9a086211e9cafb2d7ddf4b93cf7c4bc39582c1"
   },
   "budgets": {
     "wall": 1800,
@@ -211,8 +218,8 @@
     "file_cap": 67108864,
     "total_cap": 67108864
   },
-  "complete": true,
-  "passed": true,
+  "complete": false,
+  "passed": false,
   "active": false,
   "performance_adopted": false,
   "sustained_decode70_qualified": false,
@@ -245,7 +252,7 @@
     "provider_checks_passed": true,
     "full_bank_cases": 6
   },
-  "observer_arm": "off",
+  "observer_arm": "on",
   "observer_comparison_plan": {
     "arms": [
       "off",
@@ -264,86 +271,5 @@
     "maximum_acceptance_delta": 0.02,
     "minimum_strong_acceptance": 0.6,
     "scope": "Complete CPU/wall/parameter-validation observer bundle, same engine/runtime. Single-workload diagnostic; no strong/weak adoption, hardware saturation or70tok/s qualification."
-  },
-  "exit_code": 0,
-  "requests": [
-    {
-      "ok": true,
-      "err": null,
-      "ttft_s": 52.065,
-      "total_s": 378.983,
-      "prompt_tokens": 33211,
-      "reused_tokens": 0,
-      "read_tokens": 33211,
-      "generated_tokens": 2931,
-      "prompt_tps": 642.4,
-      "prompt_tps_source": "engine",
-      "decode_tps": 9.0,
-      "decode_tps_source": "engine",
-      "prompt_ms": 51699.8,
-      "decode_ms": 327094.1,
-      "drafts_offered": 2481,
-      "drafts_accepted": 2105,
-      "finish_reason": "stop",
-      "request_sha256": "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9",
-      "stream_complete": true,
-      "truncated": false,
-      "generated_tokens_source": "usage",
-      "eligible": true,
-      "agreement_eligible": true,
-      "speed_eligible": true,
-      "speed_ineligible_reasons": [],
-      "ineligible_reasons": [],
-      "acceptance_rate": 0.8484482063683998,
-      "usage_generated_tokens": 2931,
-      "completion_includes_thinking": true,
-      "run": 0,
-      "order": 0,
-      "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
-      "reasoning_sha256": "c8661b9154a620a9ece19a429798939eb8ecc01da7ac261878e4494d6be0f340",
-      "output_chars": 5578,
-      "reasoning_chars": 2783,
-      "reasoning_tokens": null,
-      "workload": "regular-code",
-      "controller_eligible": true
-    }
-  ],
-  "client_classification": {
-    "qualified": false,
-    "strong_case_confirmed": false,
-    "weak_case_confirmed": false,
-    "minimum_runs": 3,
-    "strong_min_acceptance": 0.6,
-    "weak_max_acceptance": 0.4,
-    "scope": "Observed draft agreement only; prompts do not guarantee an MTP regime or prove speedup."
-  },
-  "client_failures": [],
-  "request_journal": {
-    "valid": true,
-    "complete": true,
-    "complete_prefix_rows": 11,
-    "last_sha256": "aed38f90327c388f626e95f8ad468a4f304155f659462c61d5658140f69ea4af",
-    "pending": [],
-    "errors": []
-  },
-  "engine_exit_code": 0,
-  "native_identity": {
-    "pid": 4116218,
-    "start_ticks": 75747373,
-    "sid": 4116163
-  },
-  "observer_records_absent": true,
-  "observer_overhead_qualified": false,
-  "hardware_bottleneck_qualified": false,
-  "ownership_closed": true,
-  "fresh_faults": [],
-  "boot_unchanged": true,
-  "driver_after": {
-    "pci": "/sys/bus/pci/devices/0000:05:00.0",
-    "driver": "xe",
-    "vendor": "0x8086",
-    "device": "0xe20c",
-    "kernel": "7.0.0-38-generic",
-    "devcoredump": false
   }
 }
