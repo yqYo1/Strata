@@ -230,8 +230,13 @@ std::vector<uint8_t> quantize(const std::vector<float> &x) {
   return out;
 }
 void grouped(Format f, int n, int ff, bool scale_edges = false,
-             const Format *down_format = nullptr) {
-  constexpr int G = 3, E = 15, T = 3;
+             const Format *down_format = nullptr, bool ordinary_copy = false,
+             int window = 3) {
+  const int T = ordinary_copy ? window : 3;
+  const int E = ordinary_copy ? T * 10 : 15;
+  const int G = ordinary_copy ? std::min(16, E) : 3;
+  const int active_groups = ordinary_copy ? G : 2;
+  const int filled = ordinary_copy ? E : 13;
   const Format down = down_format ? *down_format : f;
   const auto L = native_expert_layout(f.type, down.type, n, ff);
   auto gw = weights(f, n, ff), dw = weights(down, ff, n);
@@ -264,17 +269,36 @@ void grouped(Format f, int n, int ff, bool scale_edges = false,
     std::copy_n(dw.begin() + size_t(n - 1 - row) * L.d_row, L.d_row,
                 other.begin() + L.down_off + size_t(row) * L.d_row);
   Buffer<uint8_t> b0(L.bytes);
-  sycl_backend::Allocation b1(runtime, L.bytes, sycl_backend::MemoryKind::Host);
+  constexpr size_t copy_guard = 256;
+  sycl_backend::Allocation b1(
+      runtime, L.bytes + (ordinary_copy ? 2 * copy_guard : 0),
+      ordinary_copy ? sycl_backend::MemoryKind::Device
+                    : sycl_backend::MemoryKind::Host);
   b0.upload(blob);
-  std::memcpy(b1.data(), other.data(), other.size());
+  auto *other_weights = b1.as<uint8_t>() + (ordinary_copy ? copy_guard : 0);
+  if (ordinary_copy) {
+    runtime->wait(runtime->compute().memset(b1.data(), 0x5c, b1.size()));
+    // Ordinary vector storage stays owned through checked transfer completion;
+    // the following compute submissions consume only the device payload.
+    runtime->wait(runtime->transfer().memcpy(other_weights, other.data(), other.size()));
+  } else {
+    std::memcpy(other_weights, other.data(), other.size());
+  }
   Buffer<unsigned long long> pointers(G);
-  pointers.upload({reinterpret_cast<unsigned long long>(b0.data()),
-                   reinterpret_cast<unsigned long long>(b1.data()), 0});
+  std::vector<unsigned long long> host_pointers(G, 0);
+  std::vector<int32_t> host_starts(G + 1, filled);
+  for (int group = 0; group < active_groups; ++group) {
+    host_pointers[group] = reinterpret_cast<unsigned long long>(
+        group % 2 ? other_weights : b0.data());
+    host_starts[group] = ordinary_copy ? filled * group / active_groups
+                                     : (group == 0 ? 0 : 2);
+  }
+  pointers.upload(host_pointers);
   Buffer<int32_t> starts(G + 1), count(1), dst(E), token(E);
-  starts.upload({0, 2, 13, 13});
-  count.upload({2});
+  starts.upload(host_starts);
+  count.upload({active_groups});
   std::vector<int32_t> destinations(E, -1), tokens(E, -1);
-  for (int e = 0; e < 13; ++e) {
+  for (int e = 0; e < filled; ++e) {
     destinations[e] = (e * 7) % E;
     tokens[e] = e % T;
   }
@@ -293,8 +317,10 @@ void grouped(Format f, int n, int ff, bool scale_edges = false,
   auto *q = &runtime->compute();
   native_quantize_q8_1(input.data(), xq.data(), n, T, q);
   std::vector<float> expected(size_t(E) * n + 1, -777);
-  for (int entry = 0; entry < 13; ++entry) {
-    auto p = entry < 2 ? b0.data() : b1.as<uint8_t>();
+  for (int entry = 0; entry < filled; ++entry) {
+    const int group = int(std::upper_bound(host_starts.begin(), host_starts.end(), entry)
+                          - host_starts.begin()) - 1;
+    auto p = group % 2 ? other_weights : b0.data();
     auto x = xq.data() + size_t(tokens[entry]) * native_q8_1_bytes(n);
     native_mmvq(f.type, p, x, gate.data(), n, ff, 1, q);
     native_mmvq(f.type, p + L.up_off, x, up.data(), n, ff, 1, q);
@@ -306,6 +332,11 @@ void grouped(Format f, int n, int ff, bool scale_edges = false,
     native_quantize_q8_1(h.data(), hq.data(), ff, 1, q);
     native_mmvq(down.type, p + L.down_off, hq.data(), one.data(), ff, n, 1, q);
     const auto ref = one.read();
+    check(std::all_of(ref.begin(), ref.end(), [](float v) { return std::isfinite(v); }),
+          "nonfinite separate-projection reference");
+    if (ordinary_copy)
+      check(std::any_of(ref.begin(), ref.end(), [](float v) { return v != 0.f; }),
+            "empty separate-projection reference");
     std::copy(ref.begin(), ref.end(),
               expected.begin() + size_t(destinations[entry]) * n);
   }
@@ -358,6 +389,19 @@ void grouped(Format f, int n, int ff, bool scale_edges = false,
                     [](float v) { return v == -777; }),
         "zero group count wrote output");
   iq_set_old_kernels(false);
+  if (ordinary_copy) {
+    std::vector<uint8_t> copied(b1.size());
+    runtime->wait(runtime->compute().memcpy(copied.data(), b1.data(), copied.size()));
+    check(std::equal(other.begin(), other.end(), copied.begin() + copy_guard),
+          "ordinary host copy payload changed");
+    check(std::all_of(copied.begin(), copied.begin() + copy_guard,
+                      [](uint8_t v) { return v == 0x5c; }) &&
+          std::all_of(copied.end() - copy_guard, copied.end(),
+                      [](uint8_t v) { return v == 0x5c; }), "ordinary host copy outer guards");
+    std::cout << "arena_grouped gu=" << f.type << " down=" << down.type
+              << " window=" << T << " groups=" << active_groups << " entries=" << filled
+              << " separate_projection=PASS finite=PASS payload=PASS guards=PASS\n";
+  }
   std::cout << "native grouped type " << f.type << " " << n << "x" << ff
             << (scale_edges ? " FP16 scale edges" : "")
             << " passed both entry tiles\n";
@@ -591,6 +635,19 @@ template <typename F> void rejects(F f) {
 int main(int argc, char **argv) {
   try {
     std::fesetenv(FE_DFL_ENV);
+    if (argc == 2 && std::string(argv[1]) == "--arena-grouped") {
+      runtime = sycl_backend::runtime_for();
+      native_mmvq_set_multi_exact(true);
+      // Seven actual model pairs, plus supported IQ4_XS/Q2_0. This checks
+      // unchanged Q8_1 GPU arithmetic, not identity of generated model text.
+      for (const auto gu : {formats[11], formats[10], formats[12], formats[8]})
+        for (const auto down : {formats[7], formats[9]})
+          for (int window : {1, 4})
+            grouped(gu, 2560, 640, false, &down, true, window);
+      runtime->wait();
+      std::cout << "arena_grouped_fixture cases=16 status=PASS\n";
+      return 0;
+    }
 #ifdef STRATA_SYCL_GGML_ORACLE
     // Initialize ggml's FP16 lookup table before calling its independent
     // IQ3_S dequantizer. No tensor or model allocation is needed.

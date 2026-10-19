@@ -1736,6 +1736,20 @@ gate requires17 native-variable-stride provider/planner/pool cases covering grou
 disabled/direct modes, file/shared fallback, missing callbacks and malformed view refusal;10
 existing submission cases; and8 verifier cases, including all16 largest-model
 blobs (2662400B each) from ordinary RAM, payload/outer guards and copy counters.
+The v5 gate additionally requires16 grouped-output cases from the existing
+`sycl_mmvq_test --arena-grouped` fixture. It covers GU18/21/22/23 crossed with
+Down20/42 at H2560/FF640 and windows1/4 (groups10/16, entries10/40): all seven
+actual model pairs plus supported IQ4_XS/Q2_0. An ordinary host vector is copied
+on the transfer queue into a guarded device payload, retired before compute,
+and mixed with a separately uploaded resident expert. Check both entry tiles,
+invalid-token zeroing, empty groups, finite/nonzero references, copied bytes
+and outer guards. Grouped output must equal separate GPU projections using the
+same unchanged Q8_1 contract. This checks transfer/grouping, not generated-text
+identity or an independently implemented projection oracle; common-mode native
+projection errors and model/task quality remain separate. Two distinct weight
+blobs repeat across group metadata; the original verifier case separately covers
+16 distinct largest-size copy payloads. This is a Main-authored extension of
+this fork's existing fixture, with no XeStrata source or proposal input.
 Require normal owned closure, unchanged source/runtime/boot and no fresh fault;
 retain the source396 validated fallback during this comparison. No component
 speed threshold is imposed: this is a capability/safety prerequisite, not a

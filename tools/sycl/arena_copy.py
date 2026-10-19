@@ -37,9 +37,10 @@ def current_build():
     guards.require(component['passed'] and component['complete'] and component['ownership_closed'] and
         not component['active'] and not component['fresh_faults'] and component['binary']==full['binary'] and
         component['fixtures']==full['fixtures'] and component['source_commit']==full['source_commit'] and
-        len(component['checks'])==3 and 'cases=17 native_variable_stride=PASS' in component['checks'][0]['cases'][0]
-        and len(component['checks'][1]['cases'])==10 and len(component['checks'][2]['cases'])==8,
-        'matching passed native provider/submission/verifier component gates required')
+        len(component['checks'])==4 and 'cases=17 native_variable_stride=PASS' in component['checks'][0]['cases'][0]
+        and len(component['checks'][1]['cases'])==10 and len(component['checks'][2]['cases'])==8
+        and len(component['checks'][3]['cases'])==16 and component.get('grouped_copy_projection_contract_passed') is True,
+        'matching passed provider/submission/verifier/grouped-output component gates required')
     count = 0
     for source in [full['project'], *full['dependencies']]:
         recovered = {n:hashlib.sha256(data).hexdigest() for n,data in

@@ -183,7 +183,7 @@ def main():
     if sys.argv[1:] in (['build-copy-safety'], ['rebuild-copy-safety'], ['rebuild-arena-copy']):
         targets += ['sycl_verifier_retirement_test', 'sycl_submission_test']
     if sys.argv[1:] == ['rebuild-arena-copy']:
-        targets += ['file_expert_source_test']
+        targets += ['file_expert_source_test', 'sycl_mmvq_test']
     if attention:
         targets += ['sycl_qsa_bf16_late_flags_test', 'sycl_qsa_bf16_prefix_optimized_test',
                     'sycl_qsa_bf16_prefix_qcache_test', 'sycl_qsa_bf16_prefix_kvec4_test',
