@@ -1,0 +1,89 @@
+{
+  "source_commit": "d20736c3629046c48512a20d5e673db06b585f20",
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 22075256,
+    "sha256": "dd132d595d06f971238a6f4efbaab873678d98892b9381a9955dc396ffd4dbb4"
+  },
+  "fixtures": {
+    "sycl_verifier_retirement_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_verifier_retirement_test",
+      "sha256": "db8a106834536960b4c0527f771447cce9723cd24bbae20c06870e00f85484f5"
+    },
+    "sycl_submission_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_submission_test",
+      "sha256": "3582ff3453f0e757cb2f2ac20a194180dcb3553e15b65f0c174ae5ed1f20d0cd"
+    }
+  },
+  "environment_reference": "tools/sycl/measurement_environment.json",
+  "environment_sha256": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
+  "runtime_asset_delta": {
+    "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395": {
+      "qualified_sha256": "dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c",
+      "candidate_sha256": "50adb6b727d027309039803033d41efeae4b248589ee363f321c0d538c7de3ff"
+    },
+    "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8": {
+      "qualified_sha256": "4298228175fa62a36af88b1afd4406cdd8b1bf166621f957d0dbbde45a698fe5",
+      "candidate_sha256": "0d6934adafb2ef3c640382440c14d6bd60f391e688c000796ffcea0c72849269"
+    }
+  },
+  "checks": [
+    {
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_submission_test",
+        "--submission"
+      ],
+      "cases": [
+        "case stream_copy_ordering=PASS",
+        "case explicit_stream_profiling=PASS",
+        "case default_stream_profiling=PASS",
+        "case queued_kernels=1 numerical=PASS guards=PASS event_timing=PASS kernel_profiling=PASS",
+        "case queued_kernels=119 numerical=PASS guards=PASS event_timing=PASS kernel_profiling=PASS",
+        "case queued_kernels=120 numerical=PASS guards=PASS event_timing=PASS kernel_profiling=PASS",
+        "case queued_kernels=121 numerical=PASS guards=PASS event_timing=PASS kernel_profiling=PASS",
+        "case queued_kernels=241 numerical=PASS guards=PASS event_timing=PASS kernel_profiling=PASS",
+        "case ordinary_host_roundtrips=3 status=PASS",
+        "case teardown=PASS"
+      ],
+      "passed": true,
+      "stdout_sha256": "dadad801d8022f3b40ad3bdab3e29f65fc13e1f61d60b219406f04e9881bb5be",
+      "stderr_sha256": "12c03431668efcd12091ca07987973f09f3a67048fe799725c046db1e03814dd"
+    },
+    {
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_verifier_retirement_test"
+      ],
+      "cases": [
+        "case=success expected_exit=0 markers=S PASS",
+        "case=partial expected_exit=0 markers=P PASS",
+        "case=bounds expected_exit=0 markers=B PASS",
+        "case=query expected_exit=0 markers=Q PASS",
+        "case=destructor expected_exit=1 markers=D PASS",
+        "case=copy-error expected_exit=1 markers=E PASS"
+      ],
+      "passed": true,
+      "stdout_sha256": "ac399df0c3752b60d33adc1a3988806edd3b639a478c040b990687b5a0835fa0",
+      "stderr_sha256": "850bda30865b260da82ebd09f92c82c0450a82212499f5b773196d6f88a9acd7"
+    }
+  ],
+  "complete": true,
+  "passed": true,
+  "active": false,
+  "model_performance_measured": false,
+  "model_quality_qualified": false,
+  "nonresident_gpu_route_enabled": false,
+  "consumer": "Prerequisite for an ordinary-Arena explicit-copy prototype. Retire normal traces after compact results are verified and committed.",
+  "gate": "Same-build submission10 cases and verifier6 isolated cases, checked owners and unchanged boot/runtime/source, no fresh GPU fault. Any failure blocks advancement.",
+  "limits": "Synthetic bounded copies and intentional host-only async failures. No invalid GPU address or stalled kernel. No model, physical262144/session/RESTORE or throughput qualification.",
+  "ownership_closed": true,
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  }
+}

@@ -3923,5 +3923,35 @@
       "bytes": 18105,
       "retained_consumer": "Main source/error-retirement implementation after the frozen capacity result; audit6016B, review7252B and 12 original source views remain. Review after source correction and smallest bounded checks."
     }
+  },
+  "verifier_copy_error_retirement_source_review_d207": {
+    "classification": "decision support",
+    "question": "At immutable source commit d20736c3629046c48512a20d5e673db06b585f20, review only the changed SYCL Verifier::fetch_dma / finish_expert_copies path, its caller boundary, and tests/sycl/verifier_retirement.cpp. Check the bounds and offset arithmetic, validation before submission, sticky first-error behavior after partial submission, checked drain before flag publication or return, fail-stop when retirement is unprovable, and whether the caller can advance into another segment or expose output after failure. Map the six isolated fixture cases to those production invariants and identify source-level gaps. Compare only against the prior ordinary-Arena audit's specific enqueue/drain/query findings; do not repeat provider reachability or pin/alias analysis. Read-only source review: no controller execution, builds, tests, Git/process inspection, code changes, model trial, or performance claim.",
+    "schedulable_now": false,
+    "eligibility": [
+      {
+        "evidence": "Main pins the candidate build/source at d20736c3629046c48512a20d5e673db06b585f20; the changed production methods and tests/sycl/verifier_retirement.cpp are present in the read-only workspace.",
+        "met": true
+      },
+      {
+        "evidence": "The indexed ordinary-Arena source audit and native review identify the specific prior error-retirement defects and remain available for a narrow delta check.",
+        "met": true
+      },
+      {
+        "evidence": "Six fixture cases call production Verifier methods; Main retains execution and runtime qualification ownership. Source-level review requires no execution or missing device counters.",
+        "met": true
+      }
+    ],
+    "status": "dispatched_source_review",
+    "source_commit": "d20736c3629046c48512a20d5e673db06b585f20",
+    "source_view": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/verifier-copy-retirement-source-d20736c36290",
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/verifier-copy-error-retirement-d207.md",
+    "report_budget_bytes": 12288,
+    "consumer": "Independent audit of the new verifier copy/error-retirement prerequisite before a positive ordinary-Arena copy candidate; review source views/report after this correction gate closes.",
+    "task_id": "task_b573e1f54cf1",
+    "dispatch_id": "ctx_262878eae7b4",
+    "terminal": "term_f3534be6-7cfd-4a4b-aefd-5d3476b5d049",
+    "process_incarnation": "04a8f3a2-eb97-4511-9a5d-5cb922bffef6",
+    "prompt": "input_accepted; no duplicate dispatch or steering"
   }
 }

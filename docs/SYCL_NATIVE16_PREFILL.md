@@ -1685,7 +1685,15 @@ baseline. Source changes, build receipt, small-check execution and any future
 model-route/performance decision remain separate gates. The source396 known-good
 engine and its five fixtures remain the fallback for this immediate comparison;
 the second generation must be selected or retired at qualification closure.
-Compilation and these new verifier cases are pending; this is no speed result.
+Source`d20736c36290` compiled successfully. Both same-build fixtures passed all
+ten submission and six verifier cases under the traced/validated environment;
+the two fail-stop cases exited1 with only their pre-stop markers, without
+unwind/atexit markers. Source/runtime hashes remained unchanged, all owned
+processes closed, the boot stayed unchanged and no fresh GPU fault appeared.
+See the [small-check result](../bench/results/2026-10-15-pr6-recovery-audit/verifier-copy-safety-current.json).
+Independent delta source review remains pending. These component results do not
+enable the ordinary-Arena route, establish model correctness/nonregression or
+add a speed result.
 
 A conditional complete-blob copy budget also constrains that candidate.
 With at most2 resident experts per layer, top10 routing and at most4 emitted
