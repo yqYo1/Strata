@@ -1469,6 +1469,10 @@ accepted2105 of2481 drafts, with normal closure and no fresh GPU faults. The
 new/old per-token latency ratio1.115806577 exceeds the unchanged1.10 per-pair
 limit. Preserve this slower sample and finish the two remaining planned pairs;
 one pair does not establish the cause or qualify an engine choice.
+The next independent new-engine process closed at14.4tok/s (`4de041ebb`),
+with the same33211/2931 token work and2105/2481 drafts, successful warmups and
+normal fault-free closure. Its adjacent old-engine partner remains pending;
+the11.8-to14.4 spread already shows why the original repetitions are needed.
 During process0, a read-only capability check of the owned native client's
 `/proc/<pid>/fdinfo` exposed xe `drm-cycles-ccs`, `drm-total-cycles-ccs` and
 memory residency fields on kernel7.0.0-38-generic. This is field availability,
@@ -1480,6 +1484,15 @@ and [xe implementation contract](https://www.kernel.org/doc/html/next/gpu/xe/xe-
 describe these counters. Engine busy fraction still does not measure arithmetic
 efficiency, VRAM bandwidth or physical PCIe bytes. Preserve unknowns rather
 than converting the earlier GPU-reach wall percentage into device utilization.
+The independent [client resource reader](../bench/sycl/client_resources.py)
+at`3625c5f7b` passed all8 synthetic CPU-only tests with
+`python3 -B tests/core/test_client_resources.py`. It rechecks PID/start/SID,
+deduplicates descriptors, preserves raw cycle counters and recovery spans,
+rejects impossible deltas and reads scheduled CPU ticks. The CLI has a900s/
+32MiB bound and opens no GPU device. No live collection has been qualified;
+its next consumer is the bounded resource diagnostic after this frozen cohort.
+Recovered spans must fit the selected request interval. CPU ticks include
+polling, and a shared DRM client's counters are not exclusive process usage.
 Keep model quality,agent-session,physical262144/session/RESTORE and matched
 no-MTP attribution as separate pending checks.
 
