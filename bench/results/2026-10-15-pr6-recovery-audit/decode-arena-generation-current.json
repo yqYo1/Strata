@@ -1,8 +1,8 @@
 {
   "mode": "arena-generation-screen",
   "stage": "clean",
-  "cohort": 0,
-  "arm": 0,
+  "cohort": 1,
+  "arm": 1,
   "source_commit": "ecda3c9ec4366211382cbf1ff11a3efd1c94fae6",
   "build_source_commit": "218561fc07e5778503f141e234cb81ca32eeeb15",
   "binary": {
@@ -23,7 +23,7 @@
   "original_native_inputs_recovered": 9821,
   "component_result_sha256": "2e4e32f898916bb551e54f8266095e26a8314bb75849f16b381a79ae5f2d92fb",
   "tiny_model_qualification": {
-    "commit": "f1bcc82116b89509289b99f83917a3b53dd61ca4",
+    "commit": "742aa37b1890681a6840fc41eafd37c52e00e5d6",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/decode-arena-copy-current.json",
     "sha256": "15eb9e18f2c64eb96dd25ac5b840da89e6ce3b88d2fa99d87e696ed6d68d9757"
   },
@@ -45,7 +45,7 @@
       "candidate_sha256": "0d6934adafb2ef3c640382440c14d6bd60f391e688c000796ffcea0c72849269"
     }
   },
-  "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-arena-generation-v1-0",
+  "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-arena-generation-v1-1",
   "environment": {
     "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
     "HOME": "/home/yayoi",
@@ -100,7 +100,7 @@
     "STRATA_SYCL_SELECT_CYCLIC": "0",
     "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
     "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
-    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-arena-generation-v1-0/cache",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-arena-generation-v1-1/cache",
     "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
     "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
     "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
@@ -113,8 +113,8 @@
     "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
     "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
     "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
-    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-arena-generation-v1-0/tmp",
-    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-arena-generation-v1-0",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-arena-generation-v1-1/tmp",
+    "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-arena-generation-v1-1",
     "ZES_ENABLE_SYSMAN": "0",
     "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
     "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
@@ -123,7 +123,7 @@
     "STRATA_SYCL_PREFILL_DOWN_SCATTER": "large",
     "STRATA_SYCL_PREFILL_MIXED_SCRATCH": "1",
     "STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS": "384",
-    "STRATA_SYCL_VERIFY_ARENA_COPY": "0"
+    "STRATA_SYCL_VERIFY_ARENA_COPY": "1"
   },
   "config": {
     "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
@@ -141,7 +141,7 @@
       "--expert-cache",
       "128",
       "--expert-profile",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-arena-generation-v1-0/expert-profile.bin",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-arena-generation-v1-1/expert-profile.bin",
       "--expert-cache-per-layer",
       "--pool-workers",
       "5",
@@ -180,7 +180,7 @@
       "strata"
     ],
     "host": "127.0.0.1",
-    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-arena-generation-v1-0/engine.stderr",
+    "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-arena-generation-v1-1/engine.stderr",
     "engine_silence_s": 480,
     "parallel": 1,
     "open_browser": false,
@@ -190,9 +190,9 @@
     "/bin/sh",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
     "--config",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-arena-generation-v1-0/config.json",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-arena-generation-v1-1/config.json",
     "--port",
-    "47979",
+    "47851",
     "--long-generation-only",
     "--think",
     "--runs",
@@ -203,7 +203,7 @@
     "--ready-timeout",
     "600",
     "--out",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-arena-generation-v1-0/bench",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-arena-generation-v1-1/bench",
     "--long-generation-workload",
     "regular-code"
   ],
@@ -394,7 +394,7 @@
     "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
   },
   "profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
-  "config_sha256": "0be7f377121187120856ffe54d30dba385c394a220b8870344712be31bdd4a9e",
+  "config_sha256": "e8d3d88225268e69b4076459bf714c7f70ebfe6982fcda4396440f526432853f",
   "settings_sha256": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
   "source_count": 118,
   "source_aggregate_sha256": "6bc368357b3be4fd86d4b04a74d83399a4977e4aafd1bc32f953ca810dcda0cb",
@@ -563,12 +563,12 @@
     },
     "fresh_faults": []
   },
-  "complete": true,
-  "passed": true,
+  "complete": false,
+  "passed": false,
   "active": false,
   "model_quality_qualified": false,
   "adoption_qualified": false,
-  "clean_speed_measured": true,
+  "clean_speed_measured": false,
   "budgets": {
     "wall": 1800,
     "cpu": 54000,
@@ -577,100 +577,5 @@
     "file_cap": 67108864,
     "total_cap": 67108864
   },
-  "consumer": "Determine whether25% ordinary-Arena copy sharing warrants weak-MTP and agent-session validation; retire normal traces after useful samples/counters are committed.",
-  "exit_code": 0,
-  "requests": [
-    {
-      "ok": true,
-      "err": null,
-      "ttft_s": 51.105,
-      "total_s": 259.402,
-      "prompt_tokens": 33211,
-      "reused_tokens": 0,
-      "read_tokens": 33211,
-      "generated_tokens": 2931,
-      "prompt_tps": 653.2,
-      "prompt_tps_source": "engine",
-      "decode_tps": 14.1,
-      "decode_tps_source": "engine",
-      "prompt_ms": 50843.9,
-      "decode_ms": 208390.2,
-      "drafts_offered": 2481,
-      "drafts_accepted": 2105,
-      "finish_reason": "stop",
-      "request_sha256": "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9",
-      "stream_complete": true,
-      "truncated": false,
-      "generated_tokens_source": "usage",
-      "client_interval": {
-        "request_begin_monotonic_ns": 784758171885241,
-        "first_output_monotonic_ns": 784809277349793,
-        "request_end_monotonic_ns": 785017573532216
-      },
-      "eligible": true,
-      "agreement_eligible": true,
-      "speed_eligible": true,
-      "speed_ineligible_reasons": [],
-      "ineligible_reasons": [],
-      "acceptance_rate": 0.8484482063683998,
-      "usage_generated_tokens": 2931,
-      "completion_includes_thinking": true,
-      "run": 0,
-      "order": 0,
-      "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
-      "reasoning_sha256": "c8661b9154a620a9ece19a429798939eb8ecc01da7ac261878e4494d6be0f340",
-      "output_chars": 5578,
-      "reasoning_chars": 2783,
-      "reasoning_tokens": null,
-      "workload": "regular-code",
-      "controller_eligible": true
-    }
-  ],
-  "warmups": {
-    "successful_warmups": 4,
-    "successful_long_requests": 1,
-    "phase_order": [
-      "warm-up/chat",
-      "calibration",
-      "calibration",
-      "warm-up/prompt",
-      "long-generation/regular-code"
-    ],
-    "request_sha256": [
-      "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
-      "48af7fbebcd5728e30cb2d9a1077477a8bba53ac3af17ee75e8450380ed2e346",
-      "3f92f8a68c7c71cec1f50355d30fb97744f44099673e8de1dabd46d12a61d7b6",
-      "f0d7df4ffaaf67dbf3ae26f8d77f0811d2bed00bbd2ed92912fd9d0649347eae",
-      "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9"
-    ],
-    "journal_sha256": "d80e74799890331804b5e14e3b8dcb42564691e9d8035e9c07c986fd86c8c77d",
-    "journal_state_sha256": "707269fe09ed2f68564f0089a3632df1da196b67710d44cfa0b3d8c3e35925ba"
-  },
-  "copy_evidence": {
-    "submitted_blobs": 0,
-    "submitted_bytes": 0,
-    "completed_blobs": 0,
-    "completed_bytes": 0,
-    "host_view_groups": 0,
-    "gpu_miss_groups": 0,
-    "cpu_unique_misses": 1205698,
-    "cpu_entries": 1556213,
-    "logical_copy_bytes_per_emitted_token": 0.0
-  },
-  "native_identity": {
-    "pid": 1035683,
-    "start_ticks": 78463745,
-    "sid": 1035652
-  },
-  "ownership_closed": true,
-  "fresh_faults": [],
-  "boot_unchanged": true,
-  "driver_after": {
-    "pci": "/sys/bus/pci/devices/0000:05:00.0",
-    "driver": "xe",
-    "vendor": "0x8086",
-    "device": "0xe20c",
-    "kernel": "7.0.0-38-generic",
-    "devcoredump": false
-  }
+  "consumer": "Determine whether25% ordinary-Arena copy sharing warrants weak-MTP and agent-session validation; retire normal traces after useful samples/counters are committed."
 }
