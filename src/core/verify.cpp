@@ -1869,7 +1869,7 @@ void Verifier::launch_pcie(int groups) {
     if (!early_pcie_ || released_.load() || pcie_launched_ || !pcie_copy_recorded_ ||
         !pcie_copy_ready_ || !pcie_done_ || !sink_.counts || groups <= 0 ||
         groups > sink_.staging_cap || groups != sink_.counts[2] ||
-        last_t_ < 1 || last_t_ > max_t_ || last_t_ > kVerifyMaxT || index >= pcie_work_[last_t_].size() ||
+        last_t_ < 1 || last_t_ > max_t_ || last_t_ > strata::kernels::kVerifyMaxT || index >= pcie_work_[last_t_].size() ||
         !work_launched_ || work_status_ != cudaSuccess) {
         pcie_status_ = cudaErrorInvalidValue;
         return;
