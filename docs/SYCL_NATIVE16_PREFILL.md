@@ -1604,8 +1604,10 @@ run. Hash I/O stays outside measured execution. Existing completion footers
 provide decode-cache-miss evidence: original DONE cache counters start after
 prefill, and at pcie-frac0 refused native rows enter the CPU pool. This adds no
 timed observer and does not count exact routes or physical bytes. Ten offline
-negative-evidence tests passed; the revised one-worker check and all six long
-processes remain pending.
+negative-evidence tests passed. V2 source`7d9dce79a` pinned all15 model inputs
+(85989955827 bytes) and passed the revised one-worker check: both16-token
+requests, unchanged model/platform identity, normal owned closure and no fresh
+GPU fault. All six clean long processes remain pending.
 This diagnostic can test CPU-pool capacity sensitivity, not distinguish
 arithmetic from RAM limits or prove saturation at the baseline. Small-check
 success establishes neither task quality nor a speed gain. Keep earlier clean

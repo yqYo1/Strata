@@ -75,9 +75,46 @@
     "limits": "CPU capacity changes scheduling, partition sizes, polling, cache/reuse and RAM demand together. Sensitivity does not isolate arithmetic from RAM or prove the five-worker baseline is saturated. One MTP-friendly request is diagnostic, not model quality, strong/weak adoption or70tok/s qualification."
   },
   "processes": [],
-  "check_evidence": null,
-  "complete": false,
-  "passed": false,
+  "check_evidence": {
+    "source_commit": "7d9dce79a91b68dfc8b16d91f19ee6043df8b562",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-396d0c91f301/strata",
+      "bytes": 22079288,
+      "sha256": "570b65ddfd88e3955b58634b361bb13e12a4bd713ac6e5ae396d47265a76fd46"
+    },
+    "workers": 1,
+    "passed": true,
+    "requests": [
+      {
+        "done": "DONE 16 66 25661.6 6699.5 length 12 12 0 294 8160 0 0 0.0 66",
+        "generated": 16,
+        "output_sha256": "5d8477a38a285d9e59a9799e80e913b705bc3b1832da936b7ca77ddc0677bd0c"
+      },
+      {
+        "done": "DONE 16 64 4847.8 1884.4 length 13 15 0 351 10080 0 0 0.0 64",
+        "generated": 16,
+        "output_sha256": "8930a67a5f29564d4cc6984edf20c3c20c83bdb4696089c6b4d8b74b71d28230"
+      }
+    ],
+    "machine_identity": {
+      "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "device": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "guarded_runtime_sha256": "2c3a74d4e12b576218cbafc80adda3452a6ae1c22f1cfbf88f1ec32094621a8e"
+    },
+    "model_assets_fingerprint": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e",
+    "ownership_closed": true,
+    "fresh_faults": [],
+    "limits": "Tiny native-protocol safety/configuration check only; no quality, numerical parity, throughput or full-context qualification."
+  },
+  "complete": true,
+  "passed": true,
   "active": false,
   "performance_eligible": false,
   "hardware_saturation_qualified": false,
@@ -614,5 +651,30 @@
     "text_cap": 67108864,
     "file_cap": 67108864,
     "total_cap": 67108864
+  },
+  "small_requests": [
+    {
+      "done": "DONE 16 66 25661.6 6699.5 length 12 12 0 294 8160 0 0 0.0 66",
+      "generated": 16,
+      "output_sha256": "5d8477a38a285d9e59a9799e80e913b705bc3b1832da936b7ca77ddc0677bd0c"
+    },
+    {
+      "done": "DONE 16 64 4847.8 1884.4 length 13 15 0 351 10080 0 0 0.0 64",
+      "generated": 16,
+      "output_sha256": "8930a67a5f29564d4cc6984edf20c3c20c83bdb4696089c6b4d8b74b71d28230"
+    }
+  ],
+  "exit_code": 0,
+  "runtime_pool_confirmed": true,
+  "ownership_closed": true,
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
   }
 }
