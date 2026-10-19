@@ -123,6 +123,14 @@ before launch, and stop if evidence is missing or inconsistent. Scope this check
 to the complete measurement inputs; unrelated worktree edits need not be added
 to that commit. Do not update hashes to make an inconsistent run pass admission.
 
+Keep the original native-source revision separate from a later controller-only
+admission revision. Reusing qualification requires proof that the relevant
+native inputs, recipe, executable and every required fixture match the
+qualified build. Preserve that proof in the existing compact build/result
+record; matching the engine alone does not qualify changed fixture bytes.
+A controller-only update does not establish a new native build or new GPU
+validation, and it does not reset the retained generation's consumer or quota.
+
 Before removing an old build, verify that its measured source and recipe can be
 retrieved from the recorded commits and that no current comparison needs the
 executable. Match the exact final binary and all required build inputs. A

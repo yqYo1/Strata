@@ -81,10 +81,12 @@ historical logs or the research library wholesale.
 | Build | Commit the exact engine, benchmark, controller, generated inputs and recipe first; pin compiler, dependencies and environment. Identify retained generations across worktrees and preserve the validated fallback before overwriting it. | [Measurement](#measurement-and-gpu-execution), [artifacts](#measurement-and-diagnostic-artifacts) |
 | Run or compare | Verify committed inputs against the build record and actual executable hash. Check job ownership and the frozen comparison plan; keep first-use, subsequent-request and independent-process samples distinct. | [Measurement](#measurement-and-gpu-execution), [artifacts](#measurement-and-diagnostic-artifacts) |
 | Integrate | Check provenance and decide inference parts individually, including prefill and decode. Preserve required non-inference functions. History preservation and component success alone do not qualify a model route. | [Scope](#this-forks-scope), [integration](#git-integration-and-tuning) |
+| Check upstream | Compare the last actual check with the approximately 48-hour cadence, then use the project-only skill. Evaluate unmodified, hardware-tuned Niko upstream and record required functional imports and component decisions. | [Integration](#git-integration-and-tuning), [upstream sync skill](.agents/skills/strata-upstream-sync/SKILL.md) |
 | Delegate research | Check scope eligibility, available capacity, the required Orca/model choice, report budget and previous-report index. Pass the current rules and keep Main's work moving. | [Parallel research](#parallel-research) |
 | Receive research | Check its classification and delegate review to native Codex gpt-6-luna with max reasoning. Main reads the short review digest; retrieve collection-report sections only for a concrete question. | [Parallel research](#parallel-research) |
 | Write or retain a result/build | Decide the realistic next consumer, required fields and review point before producing permanent output; check reachable Git history first. Keep one validated build, with another only for a named imminent comparison. Preserve useful individual samples without automatically retaining their raw logs or reports. | [Artifacts](#measurement-and-diagnostic-artifacts), [retention policy](docs/ARTIFACT_RETENTION.md) |
 | Delete artifacts | Confirm the consumer ended and useful evidence is preserved. For a build, retrieve and compare its original source/recipe from Git against the exact final executable's inputs. Check active ownership and the last required fixture. | [Artifacts](#measurement-and-diagnostic-artifacts), [deletion records](docs/ARTIFACT_RETENTION.md#cleanup-and-deletion-records) |
+| Report progress or advance a candidate | Verify the actual job state, original samples and each predeclared gate. Distinguish execution success, numerical correctness, performance eligibility, model qualification and the throughput target. State the current limiting resource and next unresolved check. | [Measurement](#measurement-and-gpu-execution) |
 | Close a work boundary | Commit and push useful changes; integrate completed work into feature/sycl and the fork default through a PR. Verify remote refs and pull the clean ghq default mirror. Check actual retained paths/generations, retire finished branches, comparison builds and raw output, and record concrete remaining holds. | [Git workflow](#git-integration-and-tuning), [artifacts](#measurement-and-diagnostic-artifacts) |
 
 An uncommitted measurement snapshot is not qualified retroactively by a later
@@ -123,6 +125,11 @@ the actual completed work before reporting completion. Carry pending validation,
 unfinished upstream ports and provenance holds forward in their existing
 maintained results with a concrete next action. A status request, policy edit or
 context compaction does not complete or abandon the ongoing tuning experiment.
+Answer an intervening question or apply its correction, then continue the
+authorized work. An explicit stop or restart request takes precedence: stop
+launching work, close or terminate owned jobs as appropriate and preserve the
+useful evidence. Do not treat a stop as permission to reset the GPU or disturb
+another application's processes.
 
 Preserve the distinction between a proposal, a tested component and a qualified
 model route when resuming or reporting. An unfinished experiment or research
@@ -275,6 +282,11 @@ integration and testing.
   plan, acceptance criteria and stopping rules. Assess the proposed mechanism's
   gain separately from the throughput target and broader correctness gates;
   preserve failed outcomes rather than changing criteria after seeing results.
+  A run's `passed` or `complete` field does not imply that its performance gate
+  permits advancement. Inspect the recorded decision and underlying samples;
+  do not start a gated model trial when its component performance gate failed.
+  A changed selection rule or acceptance threshold needs a new committed plan
+  and new evidence; keep the original outcome intact.
 - Qualify the advertised **262144-token physical context**, including filling
   it completely, tail/boundary cases, prefill-to-decode state and RESTORE paths.
   No output room at a completely full context is expected; crashes, invalid
@@ -429,6 +441,13 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   Include benchmark/controller changes and generated workloads in this check;
   committing them later does not retroactively qualify a different measured
   snapshot. Preserve and reconcile the original inputs when a mismatch is found.
+- Keep an executable's original native-source revision distinct from a later
+  controller-only admission revision. Reuse a previous build's qualification
+  only after proving that all relevant native inputs, recipe, executable and
+  required fixture bytes match that qualified build. A matching engine hash
+  alone does not qualify different fixtures or changed native inputs. Record
+  the scope of the reuse; a controller update does not establish a new native
+  build or a new GPU validation result.
 - Before overwriting a validated build's directory or filename, preserve and
   hash-check its executable and required same-build fixtures at a named external
   fallback path. Record their source/recipe and qualification consumer; count
