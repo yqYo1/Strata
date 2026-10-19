@@ -191,6 +191,11 @@ public:
     };
     // Read at a serialized request boundary; counters include rejected drafts.
     ExpertCopyStats expert_copy_stats() const { return copy_stats_; }
+    struct EarlyPcieStats {
+        uint64_t launches = 0, groups = 0, ready_at_pool_return = 0, pending_at_pool_return = 0;
+    };
+    bool early_pcie_enabled() const { return early_pcie_; }
+    EarlyPcieStats early_pcie_stats() const { return early_pcie_stats_; }
 #endif
     int64_t windows = 0;
     /// STRATA_VERIFY_PROFILE=1 - GPU stage times of the windows since the last call (ms per
@@ -256,6 +261,13 @@ private:
     // Shared experts, activation quantization and VRAM hits are submitted when
     // the CPU publishes its plan, before it computes the missed experts.
     std::vector<cudaGraphExec_t> work_[9];
+    // Enqueued after DMA submission, on cs_ after shared/resident work. The
+    // runtime barrier snapshots a freshly recorded copy event outside capture.
+    std::vector<cudaGraphExec_t> pcie_work_[9];
+    cudaEvent_t pcie_copy_ready_ = nullptr, pcie_done_ = nullptr;
+    bool early_pcie_ = false, early_pcie_audit_ = false, pcie_launched_ = false, pcie_copy_recorded_ = false;
+    cudaError_t pcie_status_ = cudaSuccess;
+    EarlyPcieStats early_pcie_stats_;
     cudaEvent_t layer_done_ = nullptr;
     cudaEvent_t work_done_ = nullptr;
     bool overlap_gpu_ = true, work_launched_ = false;
@@ -267,8 +279,10 @@ private:
     bool finish_expert_copies(std::string& err);
     friend struct VerifierRetirementTestAccess;
     std::atomic<uint32_t> reached_{0};
-    bool end_segment(int T, std::string& err, bool work = false);
+    enum class SegmentKind { layer, resident, pcie };
+    bool end_segment(int T, std::string& err, SegmentKind kind = SegmentKind::layer);
     void launch_work();
+    void launch_pcie(int groups);
 #endif
     cudaGraphExec_t commit_exec_ = nullptr;
 

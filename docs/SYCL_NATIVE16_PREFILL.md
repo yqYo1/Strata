@@ -1840,6 +1840,34 @@ conditional requested-payload calculations, not wire measurements or saturation.
 The11.4tok/s diagnostic reading includes validation/progress output and is excluded
 from clean speed. Continue the unchanged six-process screen; no adoption follows.
 
+The isolated Main-authored early-PCIe prototype starts from`52b9734b9` while
+that six-process screen remains frozen. It copies no XeStrata or other external
+implementation. `STRATA_SYCL_VERIFY_PCIE_EARLY=1` requires the native ordinary-Arena
+copy route, mode0 and existing shared/hit overlap. The unchanged copied-expert
+projection is captured separately. After DMA submission, a freshly recorded copy
+event gates its launch on the same compute queue, behind shared/resident work
+using the same scratch. CPU result staging and the merge remain after CPU return;
+checked host-source retirement and failure latching remain required. No future
+event or host-task wait is captured. Unrecorded copy events and plan/count
+mismatches must refuse submission. `STRATA_SYCL_VERIFY_PCIE_EARLY_AUDIT=1` adds
+ready/pending queries only for diagnostics; clean timing leaves it off. Its
+counters prove submissions/readiness observations, not hardware saturation or
+quantified overlap. Default behavior remains the existing schedule.
+
+Before build/run, commit all source, fixtures and updated controller/recipe.
+After the frozen screen closes and source review, require the existing51 gates
+plus the new real-queue early-enqueue fixture: ordinary host copies, resident-to-
+copied scratch ordering, payload/output/outer guards, empty input, maximum copy
+extent, fresh-event replay, and refusal of mismatched or unrecorded inputs.
+Run a small traced check and parameter-validated model check before clean speed.
+The model check needs32K+ fresh input,1024+ thinking-plus-answer tokens, positive
+actual early launches/groups matching completed copies, normal ownership and no
+fresh fault. Record audit readiness separately. A later committed six-process
+copy-enabled comparison changes only early0/1, with paired ratios>1 and geomean
+>1.02 required for a faster screen. Weak-MTP/agent-session, task quality,
+prefill nonregression and physical262144/session/RESTORE remain adoption gates.
+No build, test, performance gain or adoption is established by this source draft.
+
 A conditional complete-blob copy budget also constrains that candidate.
 With at most2 resident experts per layer, top10 routing and at most4 emitted
 tokens/window, even identical routes and perfect acceptance require at least
