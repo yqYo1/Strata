@@ -1341,9 +1341,29 @@ fresh read tokens, thinking on and24 generated tokens. All96 mixed windows
 retired; actual Down counters record7485 fused jobs/49290450 fused rows and
 29868 separate jobs. Native and benchmark owners closed normally, with no fresh
 fault. The profiled930.2tok/s is diagnostic; it is not a clean speed result.
-The next comparison keeps source-view enabled and changes only Down0/large
-across the frozen six-process order. Default adoption, broad quality,
-physical262144/session/RESTORE and sustained decode remain unqualified.
+The clean comparison kept source-view enabled and changed only Down0/large
+across the frozen six-process order. Each process completed four fresh117489-token
+requests, thinking on, with unchanged384-slot expert banking,117488 GPU residual
+rows,81920+35568 MoE windows and8192 operator chunks. All owners closed normally
+without fresh GPU faults. Each process's median of its three subsequent requests was:
+
+| Process pair | Down0 tok/s | Down-large tok/s | First use Down0 / Down-large tok/s |
+| --- | ---: | ---: | ---: |
+| 0 | 998.6 | 1005.8 | 926.2 / 933.1 |
+| 1 | 998.2 | 1005.8 | 925.9 / 931.0 |
+| 2 | 998.3 | 1005.5 | 925.6 / 933.2 |
+
+The three independent paired median ratios have geomean1.007345335
+(+0.7345%), passing the prospective>1.002 criterion with every pair faster.
+All three candidate medians exceed1000tok/s: this establishes the stated
+subsequent-request117K prefill speed milestone, with first-use costs separate.
+The committed reducer recovered9813 original native/dependency inputs and112
+frozen benchmark inputs, checked the original component gate, actual model
+dispatch/work conservation and matched request/configuration identities. See
+[all24 speed samples and the decision](../bench/results/2026-10-15-pr6-recovery-audit/prefill-long-input-current.json).
+Retain selective Down as an opt-in for further qualification. Default adoption,
+broad quality,physical262144/session/RESTORE and sustained70tok/s decode remain
+unqualified;24 output tokens do not establish sustained generation speed.
 
 The maintained model controller now provides `prepare|run qsa-long-input-check`
 and `prepare|run qsa-long-input [0|1|2]`. Its prospective screen holds131072
