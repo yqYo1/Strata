@@ -2105,6 +2105,11 @@ decode qualification resulted. The supervisor terminated/reaped the exact
 owned child on ERR; its original `ownership_closed=false`/incomplete validation
 remain recorded, with separate confirmed process closure, no fresh driver fault
 and unchanged boot. This was a configuration guard refusal, not a GPU hang.
+The controller now observes a native ERR through a bounded natural exit,
+instead of raising inside Owner and immediately signaling the process. Eleven
+offline tests, including a real CPU-only child that emits ERR and exits1,
+passed at controller source`81662a525`; no second request or cleanup signal
+was sent and the child/session closed. This does not revise the v1 outcome.
 Main missed this guard in the first preflight. Do not disable the fast mixed
 scratch/staged-bank path merely to obtain an admission pass: inspect its direct
 allocation assumptions and introduce checked borrower bounds/lifetime before a
