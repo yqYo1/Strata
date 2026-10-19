@@ -15,7 +15,7 @@ import measurement_owner as supervision
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
 ENGINE = B / 'main-native-gdn-engine'
-ROOT = B / 'verifier-copy-safety-v4'
+ROOT = B / 'verifier-copy-safety-v5'
 A = P / 'bench/results/2026-10-15-pr6-recovery-audit'
 SETTINGS = P / 'tools/sycl/measurement_environment.json'
 RESULT = A / 'verifier-copy-safety-current.json'
@@ -88,8 +88,8 @@ def main():
             checks=[], complete=False, passed=False, active=False, model_performance_measured=False,
             model_quality_qualified=False, model_route_executed=False, ordinary_arena_copy_default_enabled=False,
             consumer='Prerequisite for the default-off ordinary-Arena explicit-copy model check. Retire normal traces after compact results are verified and committed.',
-            gate='Same-build native-variable-stride provider17 cases, submission10 cases and verifier8 isolated cases (including16 largest-size ordinary-host copies with outer guards and accounting), checked owners and unchanged boot/runtime/source, no fresh GPU fault. Any failure blocks advancement.',
-            limits='Production host planner/CPU fallback with a host-reader sink, bounded real queue copies and intentional host-only async failures. Malformed host views are refused before copying. No invalid GPU address, stalled kernel, GPU expert arithmetic, model, physical262144/session/RESTORE or throughput qualification.')
+            gate='Same-build native provider17, submission10, verifier8 and staged grouped-arithmetic16 cases. Require exact unchanged-Q8_1 arithmetic against separate GPU projections, finite/nonzero reference outputs, full-window/row mapping, copy payload and outer guards. Checked owners and unchanged boot/runtime/source, no fresh GPU fault. Any failure blocks advancement.',
+            limits='Grouped component covers all seven current model GU/Down pairs plus supported IQ4_XS/Q2_0 at H2560/FF640, windows1/4, groups10/16 and entries10/40, using two distinct blobs repeated in metadata. The oracle shares native scalar projection primitives; it isolates copy/grouping from separate execution, not common-mode projection defects or model quality. No invalid GPU address, stalled kernel, model, physical262144/session/RESTORE or throughput qualification.')
         owner = None
 
         def persist():
@@ -99,7 +99,8 @@ def main():
         owner = supervision.Owner(ROOT / 'owned', persist)
         persist()
         try:
-            for name, args in [('file_expert_source_test', []), ('sycl_submission_test', ['--submission']), ('sycl_verifier_retirement_test', [])]:
+            for name, args in [('file_expert_source_test', []), ('sycl_submission_test', ['--submission']),
+                               ('sycl_verifier_retirement_test', []), ('sycl_mmvq_test', ['--arena-grouped'])]:
                 fixture = build['fixtures'][name]
                 command = [fixture['path'], *args]
                 entry, out, err = owner.run(name, command, env, P, wall=180, cpu=600,
@@ -120,12 +121,22 @@ def main():
                     guards.require(len(cases) == 10 and 'fixture_status=PASS mode=submission' in stdout and
                         not re.search('UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed', stderr),
                         'submission contracts failed: ' + (stdout + stderr)[-8192:])
-                else:
+                elif name == 'sycl_verifier_retirement_test':
                     cases = [x for x in stdout.splitlines() if x.startswith('case=')]
                     expected = [('success',0,'S'), ('large',0,'L'), ('empty',0,'Z'), ('partial',0,'P'), ('bounds',0,'B'),
                         ('query',0,'Q'), ('destructor',1,'D'), ('copy-error',1,'E')]
                     guards.require(cases == [f'case={n} expected_exit={e} markers={m} PASS' for n,e,m in expected]
                         and 'fixture_status=PASS cases=8' in stdout, 'verifier contracts failed: ' + (stdout + stderr)[-8192:])
+                else:
+                    cases = [x for x in stdout.splitlines() if x.startswith('arena_grouped gu=')]
+                    expected = [f'arena_grouped gu={gu} down={down} window={window} '
+                                f'groups={10 if window==1 else 16} entries={window*10} '
+                                'separate_projection=PASS finite=PASS payload=PASS guards=PASS'
+                                for gu in (18,21,22,23) for down in (20,42) for window in (1,4)]
+                    guards.require(cases == expected and 'arena_grouped_fixture cases=16 status=PASS' in stdout
+                        and not re.search('UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed', stderr),
+                        'staged grouped arithmetic failed: ' + (stdout + stderr)[-8192:])
+                    record['grouped_copy_projection_contract_passed'] = True
                 record['checks'].append(dict(command=command, cases=cases, passed=True,
                     stdout_sha256=digest(out), stderr_sha256=digest(err)))
             unchanged(); runtime_unchanged()

@@ -1736,6 +1736,20 @@ gate requires17 native-variable-stride provider/planner/pool cases covering grou
 disabled/direct modes, file/shared fallback, missing callbacks and malformed view refusal;10
 existing submission cases; and8 verifier cases, including all16 largest-model
 blobs (2662400B each) from ordinary RAM, payload/outer guards and copy counters.
+The v5 gate additionally requires16 grouped-output cases from the existing
+`sycl_mmvq_test --arena-grouped` fixture. It covers GU18/21/22/23 crossed with
+Down20/42 at H2560/FF640 and windows1/4 (groups10/16, entries10/40): all seven
+actual model pairs plus supported IQ4_XS/Q2_0. An ordinary host vector is copied
+on the transfer queue into a guarded device payload, retired before compute,
+and mixed with a separately uploaded resident expert. Check both entry tiles,
+invalid-token zeroing, empty groups, finite/nonzero references, copied bytes
+and outer guards. Grouped output must equal separate GPU projections using the
+same unchanged Q8_1 contract. This checks transfer/grouping, not generated-text
+identity or an independently implemented projection oracle; common-mode native
+projection errors and model/task quality remain separate. Two distinct weight
+blobs repeat across group metadata; the original verifier case separately covers
+16 distinct largest-size copy payloads. This is a Main-authored extension of
+this fork's existing fixture, with no XeStrata source or proposal input.
 Require normal owned closure, unchanged source/runtime/boot and no fresh fault;
 retain the source396 validated fallback during this comparison. No component
 speed threshold is imposed: this is a capability/safety prerequisite, not a
@@ -1784,6 +1798,35 @@ This is execution/copy-conservation evidence, not native-output or task-quality
 qualification or a speed gain. Validate dispatched mixed-format expert outputs
 before advancing a long-generation candidate. Preserve the source396 fallback
 and default-off candidate for that imminent comparison.
+At build source`218561fc0`, all51 v5 component cases passed, including the16
+staged grouped-output cases. Engine and prior three fixture bytes remained
+unchanged; the added fixture supplies the new arithmetic evidence. Owners closed
+normally with unchanged boot and no fresh fault. Independent native Luna-max
+review confirmed that the omitted generic MMQ/IQ-dequant environment flags do
+not affect this grouped route; its relevant defaults match the model. This is
+the fixed tested contract, not a claim of bit identity for every optimized path.
+
+The controller source`a6e9e4762` passed all six offline evidence tests, including
+copy-footer conservation and negative comparison cases; these do not execute a model.
+The next `arena_copy.py prepare check` uses official `bench.sh` for one
+parameter-validated, thinking-enabled regular-code request: at least32768 fresh
+input tokens,1024 generated tokens including thinking and actual answer body,
+with positive copied groups and exact copy conservation. Commit its generated
+plan before `run`. This is a diagnostic, not clean speed. After it closes, the
+same frozen source admits six independent clean processes via
+`arena_copy.py prepare clean N` for N0..5, each followed by a committed plan and
+`run`. Both arms use pool5/pcie-frac0.25 and the same binary, configuration and
+input; only `STRATA_SYCL_VERIFY_ARENA_COPY` changes in order0,1,1,0,0,1.
+Preserve qualified queue/safety settings, remove observers for clean speed and
+require strong MTP acceptance>=0.60. Generated text, output length and draft
+counts may differ; retain the actual values. Pairs0/1,3/2,4/5 signal faster only
+when all three candidate/base ratios exceed1 and their geomean exceeds1.02;
+signal slower only for the corresponding inverse condition, otherwise
+inconclusive. Stop on any failed or mismatched process without an automatic
+retry. Record completed logical bytes per emitted token and remaining CPU work;
+neither establishes wire traffic or saturation. This screen cannot adopt a
+candidate: weak-MTP, agent-session, broader task quality, long-prefill
+nonregression and physical262144/session/RESTORE checks remain pending.
 
 A conditional complete-blob copy budget also constrains that candidate.
 With at most2 resident experts per layer, top10 routing and at most4 emitted

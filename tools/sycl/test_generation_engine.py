@@ -61,5 +61,41 @@ class EvidenceTests(unittest.TestCase):
             require_complete_generation(generation, collect_samples(generation))
 
 
+class ArenaScreenTests(unittest.TestCase):
+    def test_actual_copy_footer_conservation_and_request_binding(self):
+        from arena_copy import copy_evidence
+        request=dict(prompt_tokens=66,read_tokens=66,usage_generated_tokens=16)
+        log=('ordinary-Arena copy enabled mode=0\n'
+             'strata serve: prompt 66 tokens = 0 reused + 66 read in 26062 ms (2.5 tok/s), '
+             '16 generated in 6220 ms (2.6 tok/s), drafts accepted 12 of 12, 0 checkpoints\n'
+             'strata serve: SYCL_EXPERT_COPY submitted_blobs=1309 submitted_bytes=2684518400 '
+             'completed_blobs=1309 completed_bytes=2684518400 host_view_groups=1309 '
+             'gpu_miss_groups=1309 cpu_unique_misses=4285 cpu_entries=6456\n')
+        self.assertEqual(copy_evidence(log,request,1)['logical_copy_bytes_per_emitted_token'],167782400)
+        for broken in (log+log,log.replace('completed_blobs=1309','completed_blobs=1308'),
+                       log.replace('cpu_entries=6456','cpu_entries=0'),log.replace('66 read','65 read')):
+            with self.assertRaises(RuntimeError):copy_evidence(broken,request,1)
+        with self.assertRaises(RuntimeError):copy_evidence(log,request,0)
+
+    def test_screen_repeats_without_requiring_identical_generated_lengths(self):
+        from arena_copy import screen
+        def rows(speeds):
+            return [dict(arm=arm,passed=True,ownership_closed=True,source_commit='a'*40,
+                binary_sha256='b'*64,request=dict(sample(),controller_eligible=True,
+                    request_sha256='c'*64,decode_tps=tps,decode_ms=1000*generated/tps,
+                    generated_tokens=generated,usage_generated_tokens=generated))
+                for arm,tps,generated in zip((0,1,1,0,0,1),speeds,(2048,3000,2500,2048,2048,4000))]
+        faster=rows((10,12,12,10,10,12))
+        self.assertEqual(screen(faster)['decision'],'candidate_faster_screen')
+        self.assertFalse(screen(faster)['adoption_qualified'])
+        self.assertEqual(screen(rows((12,10,10,12,12,10)))['decision'],'candidate_slower_screen')
+        self.assertEqual(screen(rows((10,12,9,10,10,12)))['decision'],'inconclusive')
+        for field,value in (('request_sha256','d'*64),('usage_generated_tokens',1),('decode_tps',float('nan'))):
+            altered=copy.deepcopy(faster);altered[1]['request'][field]=value
+            with self.assertRaises(RuntimeError):screen(altered)
+        altered=copy.deepcopy(faster);altered[1]['binary_sha256']='d'*64
+        with self.assertRaises(RuntimeError):screen(altered)
+
+
 if __name__ == '__main__':
     unittest.main()

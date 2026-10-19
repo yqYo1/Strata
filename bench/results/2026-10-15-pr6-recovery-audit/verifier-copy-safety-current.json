@@ -1,5 +1,5 @@
 {
-  "source_commit": "3ef95537a398dd6bb7cd8bed4d15ef147b672f84",
+  "source_commit": "218561fc07e5778503f141e234cb81ca32eeeb15",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
     "bytes": 22075256,
@@ -17,6 +17,10 @@
     "file_expert_source_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/file_expert_source_test",
       "sha256": "e7e06781856b10cd45fb5e5d281d2a18a34b7cf7b1756caf97ed9dea9226d950"
+    },
+    "sycl_mmvq_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_mmvq_test",
+      "sha256": "c320b9b6df08a52c2da2ca2c6eca49c1e37da8bca9a55556c0bf8b2fb718384d"
     }
   },
   "environment_reference": "tools/sycl/measurement_environment.json",
@@ -62,7 +66,7 @@
       ],
       "passed": true,
       "stdout_sha256": "dadad801d8022f3b40ad3bdab3e29f65fc13e1f61d60b219406f04e9881bb5be",
-      "stderr_sha256": "c4c02da37d8ede9f40b557c5b648cf1c6ed6cf62cc1291a5c4fe02ec8d2e9a52"
+      "stderr_sha256": "47944ba99ecd4f240b77838a0d2da5f1c39e211aaf2a135b07ddad693eac1975"
     },
     {
       "command": [
@@ -80,7 +84,34 @@
       ],
       "passed": true,
       "stdout_sha256": "148fbcc509e40ad207cfca2a47f0180d4a42c61ceee417648974ff573e3ba20c",
-      "stderr_sha256": "1a40d60513f106a5c4610974a969d002e7d1178049937122f19ed3433bc61c8e"
+      "stderr_sha256": "834b855fe43fc83a244b9dc24cbaf9ae720799d2ceb0a308dac42eb84103ed56"
+    },
+    {
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_mmvq_test",
+        "--arena-grouped"
+      ],
+      "cases": [
+        "arena_grouped gu=18 down=20 window=1 groups=10 entries=10 separate_projection=PASS finite=PASS payload=PASS guards=PASS",
+        "arena_grouped gu=18 down=20 window=4 groups=16 entries=40 separate_projection=PASS finite=PASS payload=PASS guards=PASS",
+        "arena_grouped gu=18 down=42 window=1 groups=10 entries=10 separate_projection=PASS finite=PASS payload=PASS guards=PASS",
+        "arena_grouped gu=18 down=42 window=4 groups=16 entries=40 separate_projection=PASS finite=PASS payload=PASS guards=PASS",
+        "arena_grouped gu=21 down=20 window=1 groups=10 entries=10 separate_projection=PASS finite=PASS payload=PASS guards=PASS",
+        "arena_grouped gu=21 down=20 window=4 groups=16 entries=40 separate_projection=PASS finite=PASS payload=PASS guards=PASS",
+        "arena_grouped gu=21 down=42 window=1 groups=10 entries=10 separate_projection=PASS finite=PASS payload=PASS guards=PASS",
+        "arena_grouped gu=21 down=42 window=4 groups=16 entries=40 separate_projection=PASS finite=PASS payload=PASS guards=PASS",
+        "arena_grouped gu=22 down=20 window=1 groups=10 entries=10 separate_projection=PASS finite=PASS payload=PASS guards=PASS",
+        "arena_grouped gu=22 down=20 window=4 groups=16 entries=40 separate_projection=PASS finite=PASS payload=PASS guards=PASS",
+        "arena_grouped gu=22 down=42 window=1 groups=10 entries=10 separate_projection=PASS finite=PASS payload=PASS guards=PASS",
+        "arena_grouped gu=22 down=42 window=4 groups=16 entries=40 separate_projection=PASS finite=PASS payload=PASS guards=PASS",
+        "arena_grouped gu=23 down=20 window=1 groups=10 entries=10 separate_projection=PASS finite=PASS payload=PASS guards=PASS",
+        "arena_grouped gu=23 down=20 window=4 groups=16 entries=40 separate_projection=PASS finite=PASS payload=PASS guards=PASS",
+        "arena_grouped gu=23 down=42 window=1 groups=10 entries=10 separate_projection=PASS finite=PASS payload=PASS guards=PASS",
+        "arena_grouped gu=23 down=42 window=4 groups=16 entries=40 separate_projection=PASS finite=PASS payload=PASS guards=PASS"
+      ],
+      "passed": true,
+      "stdout_sha256": "9066714b8b575e061109b08415161365b8f2eb8e185bee2ba01f6499319eb79b",
+      "stderr_sha256": "db079ad6871827631d54dfd3d03786bde06f5878bfa1e21d5bbfbec5e8288edd"
     }
   ],
   "complete": true,
@@ -91,18 +122,20 @@
   "model_route_executed": false,
   "ordinary_arena_copy_default_enabled": false,
   "consumer": "Prerequisite for the default-off ordinary-Arena explicit-copy model check. Retire normal traces after compact results are verified and committed.",
-  "gate": "Same-build native-variable-stride provider17 cases, submission10 cases and verifier8 isolated cases (including16 largest-size ordinary-host copies with outer guards and accounting), checked owners and unchanged boot/runtime/source, no fresh GPU fault. Any failure blocks advancement.",
-  "limits": "Production host planner/CPU fallback with a host-reader sink, bounded real queue copies and intentional host-only async failures. Malformed host views are refused before copying. No invalid GPU address, stalled kernel, GPU expert arithmetic, model, physical262144/session/RESTORE or throughput qualification.",
+  "gate": "Same-build native provider17, submission10, verifier8 and staged grouped-arithmetic16 cases. Require exact unchanged-Q8_1 arithmetic against separate GPU projections, finite/nonzero reference outputs, full-window/row mapping, copy payload and outer guards. Checked owners and unchanged boot/runtime/source, no fresh GPU fault. Any failure blocks advancement.",
+  "limits": "Grouped component covers all seven current model GU/Down pairs plus supported IQ4_XS/Q2_0 at H2560/FF640, windows1/4, groups10/16 and entries10/40, using two distinct blobs repeated in metadata. The oracle shares native scalar projection primitives; it isolates copy/grouping from separate execution, not common-mode projection defects or model quality. No invalid GPU address, stalled kernel, model, physical262144/session/RESTORE or throughput qualification.",
   "last_fixture": {
-    "name": "sycl_verifier_retirement_test",
+    "name": "sycl_mmvq_test",
     "command": [
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_verifier_retirement_test"
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_mmvq_test",
+      "--arena-grouped"
     ],
     "exit_code": 0,
     "ownership_closed": true,
-    "stdout_sha256": "148fbcc509e40ad207cfca2a47f0180d4a42c61ceee417648974ff573e3ba20c",
-    "stderr_sha256": "1a40d60513f106a5c4610974a969d002e7d1178049937122f19ed3433bc61c8e"
+    "stdout_sha256": "9066714b8b575e061109b08415161365b8f2eb8e185bee2ba01f6499319eb79b",
+    "stderr_sha256": "db079ad6871827631d54dfd3d03786bde06f5878bfa1e21d5bbfbec5e8288edd"
   },
+  "grouped_copy_projection_contract_passed": true,
   "ownership_closed": true,
   "fresh_faults": [],
   "boot_unchanged": true,
