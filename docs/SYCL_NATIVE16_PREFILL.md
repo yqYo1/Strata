@@ -1732,7 +1732,7 @@ submissions count only accepted copies, including rejected draft work.
 Before any model launch, build with
 `python3 tools/sycl/build_engine.py rebuild-arena-copy`, commit its build result,
 then run `python3 tools/sycl/check_verifier_retirement.py`. The frozen component
-gate requires14 real provider/planner/pool cases covering grouping, share/capacity,
+gate requires17 native-variable-stride provider/planner/pool cases covering grouping, share/capacity,
 disabled/direct modes, file/shared fallback, missing callbacks and malformed view refusal;10
 existing submission cases; and8 verifier cases, including all16 largest-model
 blobs (2662400B each) from ordinary RAM, payload/outer guards and copy counters.
@@ -1744,6 +1744,15 @@ actual GPU expert dispatch before32K+ thinking-enabled strong/weak generation
 comparisons. Default/model/physical262144/session/RESTORE qualification and70
 tok/s remain pending. This candidate targets measured CPU-pool capacity
 sensitivity; it does not assume CPU arithmetic rather than RAM is saturated.
+The initial component attempt at`189e5163d` stopped in the new host fixture with
+SIGILL, before any model launch, with no fresh GPU fault. It incorrectly chose
+the canonical Q2_0 CPU path: its quantizer is compiled with AVX512 flags and the
+actual binary contains unconditional ZMM instructions, while this CPU reports
+no AVX512F/VNNI/VBMI. Preserve that failure at`6352c2c3f`. The corrected fixture
+uses the actual native IQ3_XXS/IQ2_S GU and IQ4_NL Down formats on two differently
+sized layers, retaining all grouping/fallback/refusal assertions. The revised
+17+10+8 gate uses a fresh v4 root; the native engine code is unchanged by this
+fixture/controller correction. This is not canonical-pack support or a GPU fix.
 
 A conditional complete-blob copy budget also constrains that candidate.
 With at most2 resident experts per layer, top10 routing and at most4 emitted

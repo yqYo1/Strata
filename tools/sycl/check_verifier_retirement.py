@@ -15,7 +15,7 @@ import measurement_owner as supervision
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
 ENGINE = B / 'main-native-gdn-engine'
-ROOT = B / 'verifier-copy-safety-v3'
+ROOT = B / 'verifier-copy-safety-v4'
 A = P / 'bench/results/2026-10-15-pr6-recovery-audit'
 SETTINGS = P / 'tools/sycl/measurement_environment.json'
 RESULT = A / 'verifier-copy-safety-current.json'
@@ -88,7 +88,7 @@ def main():
             checks=[], complete=False, passed=False, active=False, model_performance_measured=False,
             model_quality_qualified=False, model_route_executed=False, ordinary_arena_copy_default_enabled=False,
             consumer='Prerequisite for the default-off ordinary-Arena explicit-copy model check. Retire normal traces after compact results are verified and committed.',
-            gate='Same-build provider14 cases, submission10 cases and verifier8 isolated cases (including16 largest-size ordinary-host copies with outer guards and accounting), checked owners and unchanged boot/runtime/source, no fresh GPU fault. Any failure blocks advancement.',
+            gate='Same-build native-variable-stride provider17 cases, submission10 cases and verifier8 isolated cases (including16 largest-size ordinary-host copies with outer guards and accounting), checked owners and unchanged boot/runtime/source, no fresh GPU fault. Any failure blocks advancement.',
             limits='Production host planner/CPU fallback with a host-reader sink, bounded real queue copies and intentional host-only async failures. Malformed host views are refused before copying. No invalid GPU address, stalled kernel, GPU expert arithmetic, model, physical262144/session/RESTORE or throughput qualification.')
         owner = None
 
@@ -105,10 +105,12 @@ def main():
                 entry, out, err = owner.run(name, command, env, P, wall=180, cpu=600,
                     rss_cap=4 << 30, file_cap=64 << 20, text_cap=64 << 20, total_cap=128 << 20)
                 stdout, stderr = out.read_text(errors='replace'), err.read_text(errors='replace')
+                record['last_fixture'] = dict(name=name,command=command,exit_code=entry.get('exit_code'),
+                    ownership_closed=supervision.closed(entry),stdout_sha256=digest(out),stderr_sha256=digest(err))
                 guards.require(supervision.closed(entry) and entry.get('exit_code') == 0,
                     'fixture failed: ' + (stdout + stderr)[-8192:])
                 if name == 'file_expert_source_test':
-                    expected = 'arena_copy_dispatch_test cases=14 source_bounds=PASS grouping=PASS limits=PASS cpu_fallback=PASS alias_exclusion=PASS callbacks=PASS'
+                    expected = 'arena_copy_dispatch_test cases=17 native_variable_stride=PASS source_bounds=PASS grouping=PASS limits=PASS cpu_fallback=PASS alias_exclusion=PASS callbacks=PASS'
                     guards.require(expected in stdout and 'file_expert_source_test: PASS' in stdout and
                         not re.search('UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed', stderr),
                         'Arena provider/planner contracts failed: ' + (stdout + stderr)[-8192:])
