@@ -1614,6 +1614,11 @@ benchmark owners closed normally, model/platform identities stayed unchanged,
 and no fresh fault occurred. Its existing completion footer reports2.0% decode
 expert-cache hits, establishing CPU-pool work under the configuredpcie-frac0.
 Five independent processes remain; this single sample cannot decide sensitivity.
+After PR144 preserved the original controller and result commits on the fork
+default, Main verified closure and useful evidence, recovered the temporary
+native source views from396d0c91f301, and retired187 closed raw/audit files
+totalling37592380 bytes. The deletion manifest is pinned in the current result.
+The selected engine and five same-build fixtures remain for the comparison.
 This diagnostic can test CPU-pool capacity sensitivity, not distinguish
 arithmetic from RAM limits or prove saturation at the baseline. Small-check
 success establishes neither task quality nor a speed gain. Keep earlier clean
