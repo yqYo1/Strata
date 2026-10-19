@@ -2489,7 +2489,7 @@
   "forced_compute_copy_overlap_collection_scope": {
     "classification": "knowledge collection",
     "schedulable_now": false,
-    "status": "orca_collection_running",
+    "status": "collection_returned_native_review_running",
     "question": "With UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD=1 and EnableDirectSubmission=0 retained, what overlap can explicit compute queues and command lists actually permit between host transfers, dequantization and XMX GEMM on Xe2? Compare documented UR/Level Zero engine selection, command-list execution, dependencies and possible serialization. Map safety requirements to the current same-in-order-queue expert bank without proposing a production change or claiming measured overlap.",
     "candidate_source": {
       "commit": "b432c30e758717ffb7aee0a7aa55f2f5bae8decd",
@@ -2525,12 +2525,16 @@
     "dispatch_id": "ctx_7457cc624229",
     "terminal_handle": "term_4c4d29aa-7648-495b-b45c-344379b70e17",
     "run_id": "run_fb41872974e9",
-    "collector_model_observed": "gpt-6-luna"
+    "collector_model_observed": "gpt-6-luna",
+    "report_bytes": 11089,
+    "report_sha256": "a081092cd4572e685b42a535a38ec0e82e00c15e3830bcd9f347ecc98eef56e9",
+    "worker_ownership_closed": true,
+    "native_review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/forced-compute-copy-overlap-native-review.json"
   },
   "expert_bank_future_admission_source_scope": {
     "classification": "decision support",
-    "schedulable_now": true,
-    "status": "ready_source_audit",
+    "schedulable_now": false,
+    "status": "orca_source_audit_running",
     "question": "Audit exact current routing/HC mixed-input availability across layer-major FFN windows. Can permanent383+scratch1 admission prefer experts reused in later windows while preserving actual expert execution and FP32 update order, without retaining a full additional mixed matrix? Compare first-seen residency, route precomputation/recomputation and bounded metadata options from actual source; derive data/lifetime/extra-work requirements and a discriminating compact counter plan. No generic cache/prefetch survey or implementation.",
     "candidate_source": {
       "commit": "e97393478a702c4e4db4029ec35c1c96d5ec4f0c",
@@ -2559,6 +2563,11 @@
       "maximum_bytes": 24576
     },
     "consumer": "Main decides whether a source-feasible routing/metadata discriminator merits selection after current timing. No candidate performance or adoption from source review.",
-    "next_review": "Native Luna-max reviews actual source/lifetime evidence; no implementation/tests/GPU delegated."
+    "next_review": "Native Luna-max reviews actual source/lifetime evidence; no implementation/tests/GPU delegated.",
+    "task_id": "task_e8afee0f9e0f",
+    "dispatch_id": "ctx_57bb71fa7ccb",
+    "terminal_handle": "term_df27d44f-834b-4855-ab17-28840953930d",
+    "run_id": "run_fb41872974e9",
+    "collector_model_observed": "gpt-6-luna"
   }
 }
