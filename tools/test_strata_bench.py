@@ -113,6 +113,32 @@ class BenchmarkTest(unittest.TestCase):
             row["acceptance_rate"] = .75
         self.assertFalse(lg.classify_pair(out["workloads"], 3)["qualified"])
 
+    def test_selected_long_generation_dispatch_keeps_thinking_and_cannot_qualify_pair(self):
+        for selected in lg.WORKLOADS:
+            with self.subTest(selected=selected):
+                suite = bench.Suite("http://localhost", "", 262144, 3, False, log=lambda _: None,
+                                    want_long_generation=True, long_generation_only=True,
+                                    generation_workload=selected, workload_id="cpu-overhead")
+                raw = response(accepted=1200 if selected == "regular-code" else 320)
+                with patch.object(bench, "chat", return_value=raw) as chat:
+                    suite.run_long_generation()
+                self.assertEqual(chat.call_count, 3)
+                for call in chat.call_args_list:
+                    self.assertIn(" " + selected + " run ", call.args[2][-1]["content"])
+                    self.assertEqual(call.args[3], lg.MAX_OUTPUT_TOKENS)
+                    self.assertIs(call.args[4], True)
+                    self.assertEqual(call.kwargs["request_overrides"], {
+                        "chat_template_kwargs": {"enable_thinking": True}, "reasoning_budget_tokens": 0})
+                out = suite.out["long_generation"]
+                self.assertEqual(out["selected_workloads"], [selected])
+                self.assertTrue(out["diagnostic_subset"])
+                self.assertEqual(out["workloads"][selected]["eligible_runs"], 3)
+                other = next(name for name in lg.WORKLOADS if name != selected)
+                self.assertEqual(out["workloads"][other]["requests"], [])
+                self.assertFalse(out["classification"]["qualified"])
+        with self.assertRaises(ValueError):
+            bench.Suite("http://localhost", "", 262144, 1, False, generation_workload="regular-code")
+
     def test_agent_replays_actual_model_answers(self):
         snapshots = []
 
