@@ -41,13 +41,15 @@ def digest(path):
         return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
-def runtime_smoke(old_engine=False, bank=False):
+def runtime_smoke(old_engine=False, bank=False, full_bank=False):
     """Small native-protocol diagnostic; throughput evidence still uses bench.sh."""
     committed_source = git(P, 'show', 'HEAD:' + str(Path(__file__).relative_to(P)))
     guards.require(Path(__file__).read_bytes() == committed_source, 'commit smoke controller first')
     index = committed(INDEX)
     scope = index['current_decode_mtp_verifier_reuse_source_audit']['cpu_observer_source_audit']
-    result_key = 'runtime_device_probe' if bank else 'runtime_reference' if old_engine else 'runtime_smoke'
+    bank = bank or full_bank
+    result_key = ('runtime_bank_validation' if full_bank else 'runtime_device_probe' if bank else
+                  'runtime_reference' if old_engine else 'runtime_smoke')
     guards.require(result_key not in scope,
                    'stage already has an outcome; preserve it in Git and commit a fresh plan before another run')
     cpu = scope['native_cpu_qualification']
@@ -56,7 +58,8 @@ def runtime_smoke(old_engine=False, bank=False):
     reference = json.loads(git(P, 'show', base['commit'] + ':' + base['path']))
     guards.require(reference['complete'] and reference['passed'] and reference['ownership_closed'],
                    'closed configuration reference required')
-    run_root = plan['bank_output_root'] if bank else plan['reference_output_root'] if old_engine else plan['output_root']
+    run_root = (plan['bank_validation_output_root'] if full_bank else plan['bank_output_root'] if bank else
+                plan['reference_output_root'] if old_engine else plan['output_root'])
     environment = {k: v.replace(reference['environment']['STRATA_MEASUREMENT_ROOT'], run_root)
                    for k, v in reference['environment'].items()}
     environment.update(plan['environment_overrides'])
@@ -85,6 +88,8 @@ def runtime_smoke(old_engine=False, bank=False):
     if bank:
         environment = {**settings['environment'], **plan['bank_environment_overrides'],
                        'TMPDIR': run_root + '/tmp', 'XDG_CACHE_HOME': run_root + '/cache'}
+        if full_bank:
+            environment.update(plan['bank_validation_environment_overrides'])
     delta = plan.get('runtime_asset_delta', {})
     guards.require(set(delta) <= set(settings['runtime_elfs']), 'unknown proposed runtime asset')
 
@@ -97,6 +102,13 @@ def runtime_smoke(old_engine=False, bank=False):
             guards.require(digest(name) == expected, 'runtime asset changed: ' + name)
 
     runtime_assets_unchanged()
+    if full_bank:
+        qualified = scope['runtime_device_probe']
+        guards.require(qualified['complete'] and qualified['passed'] and qualified['ownership_closed'] and
+                       qualified['runtime_asset_delta'] == delta, 'passed small bank probe required first')
+        provider = build['fixtures']['file_expert_source_test']
+        guards.require(provider['sha256'] == plan['provider_fixture_sha256'] and
+                       digest(provider['path']) == provider['sha256'], 'provider fixture changed')
     if delta and old_engine:
         qualified = scope['runtime_device_probe']
         guards.require(qualified['passed'] and qualified['ownership_closed'] and
@@ -113,7 +125,7 @@ def runtime_smoke(old_engine=False, bank=False):
     if '--serve' not in args:
         args.insert(0, '--serve')
     args[args.index('--expert-profile') + 1] = profile['path']
-    command = [binary['path'], '--smoke'] if bank else [binary['path'], *args]
+    command = [binary['path'], '--validate' if full_bank else '--smoke'] if bank else [binary['path'], *args]
     guards.no_model_owners([])
     guards.driver_guard()
     root = Path(run_root)
@@ -126,7 +138,8 @@ def runtime_smoke(old_engine=False, bank=False):
     cursor = next(s.split(': ', 1)[1] for s in before.splitlines() if s.startswith('-- cursor: '))
     record = dict(source_commit=git(P, 'rev-parse', 'HEAD').decode().strip(),
                   build_source_commit=build['retained_validation_reference']['source_commit'] if old_engine else build['source_commit'],
-                  binary=binary, plan=plan, reference_engine=old_engine, device_probe=bank, runtime_asset_delta=delta,
+                  binary=binary, plan=plan, reference_engine=old_engine, device_probe=bank,
+                  full_bank_validation=full_bank, runtime_asset_delta=delta,
                   complete=False, passed=False, active=False, requests=[])
     owner = None
 
@@ -183,8 +196,19 @@ def runtime_smoke(old_engine=False, bank=False):
 
     owner = supervision.Owner(root / 'owned', persist)
     try:
+        if full_bank:
+            record['provider_fixture'] = provider
+            entry, out, err = owner.run('arena-provider', [provider['path']], environment, P,
+                                       **plan['bank_validation_budgets'])
+            guards.require(supervision.closed(entry) and entry.get('exit_code') == 0 and
+                'arena_resident_layer_test private=PASS file_fallback=PASS shared_exclusion=PASS blob_identity=PASS bounds=PASS close_reopen=PASS'
+                in out.read_text() and 'file_expert_source_test: PASS' in out.read_text() and not re.search(
+                r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed', err.read_text()),
+                'real Arena provider check failed/incomplete')
+            record['provider_checks_passed'] = True
         entry, out, err = owner.run('native-smoke', command, environment, P,
-            interaction=None if bank else interact, **(plan['bank_budgets'] if bank else plan['budgets']))
+            interaction=None if bank else interact,
+            **(plan['bank_validation_budgets'] if full_bank else plan['bank_budgets'] if bank else plan['budgets']))
         record['exit_code'] = entry.get('exit_code')
         if entry.get('direct_identity'):
             record['native_identity'] = {k: entry['direct_identity'][k] for k in ('pid', 'start_ticks', 'sid')}
@@ -200,14 +224,22 @@ def runtime_smoke(old_engine=False, bank=False):
         if bank:
             cases = [dict(part.split('=', 1) for part in line.split()[1:])
                      for line in out.read_text().splitlines() if line.startswith('expert_bank_case ')]
-            actual = [(int(c['slots']), int(c['stride']), int(c['source_stride']), int(c['layers']),
-                       int(c['unwind'])) for c in cases]
-            guards.require(actual == [(4, 256, 256, 2, 0), (1, 256, 256, 1, 0),
-                                      (4, 256, 256, 1, 1), (4, 512, 256, 2, 0),
-                                      (1, 512, 256, 1, 0), (4, 512, 256, 1, 1)] and
-                'expert_bank_fixture PASS' in out.read_text() and all(
-                c['status'] == '0' and all(c[k] == 'PASS' for k in
-                ('immutable_slab', 'guards', 'private_map', 'checked_drain')) for c in cases), 'device probe failed/incomplete')
+            # Same original project fixture contract as check_expert_bank.py;
+            # full mode additionally exercises 383/384/512 slots and real blob strides.
+            expected = ([(383,256,512,1,642,382,2048,0), (384,256,512,2,1282,766,4096,0),
+                         (512,256,512,1,513,511,2048,0), (384,2662400,512,1,641,383,2048,0),
+                         (384,512,512,2,1282,766,4096,0), (384,2662400,512,1,641,383,2048,0)]
+                        if full_bank else [(4,256,6,2,18,6,48,0), (1,256,6,1,12,0,24,0),
+                         (4,256,6,1,5,0,10,1), (4,512,6,2,18,6,48,0),
+                         (1,512,6,1,12,0,24,0), (4,512,6,1,5,0,10,1)])
+            strides = [256,256,256,2662400,256,1382400] if full_bank else [256]*6
+            keys = ('slots','stride','experts','layers','uploads','hits','consumers','unwind')
+            guards.require(len(cases) == 6 and 'expert_bank_fixture PASS' in out.read_text(), 'missing bank cases')
+            for c, values, stride in zip(cases, expected, strides):
+                guards.require(tuple(int(c[k]) for k in keys) == values and int(c['source_stride']) == stride and
+                    int(c['admission_rejections']) == 7 + 2*(stride != int(c['stride'])) and c['status'] == '0' and
+                    all(c[k] == 'PASS' for k in ('immutable_slab', 'guards', 'private_map', 'checked_drain')),
+                    'device probe case failed/incomplete')
             record['device_cases_passed'] = len(cases)
         else:
             guards.require(len(record['requests']) == len(plan['input_ids']) and
@@ -255,6 +287,8 @@ def runtime_smoke(old_engine=False, bank=False):
         compact['limits'] = 'Two tiny native-protocol requests through final commit. Explicit runtime-delta diagnostic only; shared qualified runtime pins remain unchanged. No performance, overhead, quality, IQ numerical, long-context or RESTORE qualification.'
         if bank:
             compact['limits'] = 'Six small production upload/cache byte-reader cases with full API trace and parameter validation on proposed runtime assets. No model/throughput/quality/full-context qualification; shared runtime baseline remains unchanged.'
+        if full_bank:
+            compact['limits'] = 'Real private Arena provider checks plus six full upload/cache byte-reader cases, including 384 slots and real fixed/compact blob strides, on proposed runtime assets with parameter validation. No throughput/quality/full-context qualification; shared runtime baseline remains unchanged.'
         scope[result_key] = compact
         if not old_engine and not bank:
             scope['revised_candidate']['native_runtime_tested'] = compact['GPU_executed']
@@ -378,9 +412,11 @@ def run(native=False):
 
 
 if __name__ == '__main__':
-    guards.require(sys.argv[1:] in ([], ['native'], ['smoke'], ['runtime-reference'], ['runtime-device']),
-                   'use check_decode_cpu.py [native|smoke|runtime-reference|runtime-device]')
+    guards.require(sys.argv[1:] in ([], ['native'], ['smoke'], ['runtime-reference'], ['runtime-device'], ['runtime-bank']),
+                   'use check_decode_cpu.py [native|smoke|runtime-reference|runtime-device|runtime-bank]')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        sys.exit(runtime_smoke(old_engine=sys.argv[1:] == ['runtime-reference'], bank=sys.argv[1:] == ['runtime-device'])
-                 if sys.argv[1:] in (['smoke'], ['runtime-reference'], ['runtime-device']) else run(native=sys.argv[1:] == ['native']))
+        sys.exit(runtime_smoke(old_engine=sys.argv[1:] == ['runtime-reference'], bank=sys.argv[1:] == ['runtime-device'],
+                               full_bank=sys.argv[1:] == ['runtime-bank'])
+                 if sys.argv[1:] in (['smoke'], ['runtime-reference'], ['runtime-device'], ['runtime-bank'])
+                 else run(native=sys.argv[1:] == ['native']))

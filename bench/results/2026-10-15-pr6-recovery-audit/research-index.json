@@ -3346,7 +3346,23 @@
           "file_cap": 67108864,
           "total_cap": 100663296
         },
-        "runtime_gate_order": "Six exact small bank cases and normal ownership/fault closure before old-engine reference; two completed old-engine requests before candidate observer smoke. Commit each original result before starting the dependent stage. Shared qualified runtime hashes remain unchanged."
+        "runtime_gate_order": "Six exact small bank cases and normal ownership/fault closure before old-engine reference; two completed old-engine requests before candidate observer smoke. Commit each original result before starting the dependent stage. Shared qualified runtime hashes remain unchanged.",
+        "bank_validation_output_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-cpu-observer-runtime-bank-v1",
+        "bank_validation_environment_overrides": {
+          "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+          "UR_LOG_TRACING": "level:warning;flush:warning;output:stderr"
+        },
+        "bank_validation_budgets": {
+          "wall": 180,
+          "cpu": 600,
+          "rss_cap": 8589934592,
+          "file_cap": 67108864,
+          "text_cap": 67108864,
+          "total_cap": 134217728
+        },
+        "provider_fixture_sha256": "b43ef3253d9403136bfc9b5580dd17fdb8f8f7ef16f43c1ac0fed0e56d501bbf",
+        "bank_validation_command": "python3 tools/sycl/check_decode_cpu.py runtime-bank",
+        "bank_validation_acceptance": "Real Arena provider private/file/shared/bounds/reopen/blob checks and six exact full-size bank cases pass under parameter validation, with original input/executable/runtime hashes unchanged, normal exit and owner closure, no new fault. Current provider bytes differ from old fallback and need this actual check. No speed claim, baseline runtime hash update or automatic long-model launch."
       },
       "runtime_admission_failure": {
         "controller_commit": "6d683bcbe",
