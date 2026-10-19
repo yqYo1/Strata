@@ -72,6 +72,27 @@ from decode. About 1K generated tokens is a starting observation window. Increas
 independent repetitions or length when variation still prevents a decision.
 Do not pool the original 24-token decode with this new workload.
 
+For the selected SYCL native16 engine, Main uses
+`tools/sycl/generation_engine.py prepare check`, commits the prepared result,
+then uses `run check`. The controller preserves the qualified runtime safety
+settings, validates parameters and records progress without a full API trace.
+It allows5400 wall seconds,54000 CPU seconds,96GiB owned-session RSS and64MiB
+raw output for the two16K-cap requests. A deadline or size stop is incomplete.
+It verifies the official request journal and preserves completed partial rows
+if the suite cannot close.
+
+After an eligible check, `prepare clean N` and `run clean N` collect independent
+processes0,1,2 with observers off; commit every plan and result before advancing.
+Keep native inputs, controller, workloads and configuration frozen throughout.
+After committing process2, `summarize` recovers all four original receipts and
+checks matched request hashes, independent process identities and source pins.
+It reports all three clean samples and spread per workload, strong/weak
+acceptance separately from the70tok/s speed target, and excludes the diagnostic
+check from clean statistics. These are one request per workload per process
+after the standard client warmup/calibration, not repeated warm requests of the
+same workload. Source/plan commits precede execution; the controller does not
+build, retry an engine, adopt a default or qualify the broader model gates.
+
 For a prefill-only screen, `bench.sh --prefill-only --prefill-tokens N` accepts
 32768,65536,98304 or131072 as the minimum **actual prompt and read tokens**.
 Thinking stays on and output is capped at24 tokens; this does not qualify
