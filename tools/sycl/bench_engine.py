@@ -193,6 +193,52 @@ def extract_cpu_observers(log, expected_version=None):
     return dict(version=version, wait=wait, host=host, partition_qualified=True)
 
 
+def parse_counter_lines(log, prefix, fields):
+    """Reject ambiguous evidence instead of silently collapsing duplicate keys."""
+    rows = []
+    for line in log.splitlines():
+        if not line.startswith(prefix):
+            continue
+        guards.require(line.startswith(prefix + ' '), 'malformed counter prefix')
+        values = {}
+        for token in line[len(prefix):].split():
+            key, separator, value = token.partition('=')
+            guards.require(separator and key in fields and key not in values and
+                re.fullmatch(r'0|[1-9][0-9]*', value) is not None,
+                'duplicate, unknown or malformed counter')
+            values[key] = value
+        guards.require(set(values) == set(fields), 'incomplete counter fields')
+        rows.append(values)
+    return rows
+
+
+FUSION_FIELDS = ('fused_jobs', 'fused_rows', 'separate_jobs', 'min_rows')
+WINDOW_FIELDS = ('windows', 'dequants', 'jobs', 'source_H2D_bytes',
+                 'GPU_resident_windows_only', 'operator_max', 'maximum_rows')
+
+
+def validate_fusion_counts(counts, total_jobs, routed_rows):
+    fused, separate, rows = (int(counts[k]) for k in ('fused_jobs', 'separate_jobs', 'fused_rows'))
+    guards.require(min(fused, separate, rows) >= 0 and int(counts['min_rows']) == 2334 and
+        fused + separate == total_jobs and 2334*fused <= rows <= min(8192*fused, routed_rows),
+        'fusion/work counters do not conserve')
+
+
+def validate_window_work(work, gu, down, read_tokens, window_rows):
+    """Reconcile clean request totals without claiming per-job geometry proof."""
+    jobs, dequants = int(work['jobs']), int(work['dequants'])
+    routed_rows = (read_tokens-1)*48*10
+    guards.require(sum(window_rows) == read_tokens-1 and
+        int(work['windows']) == 48*len(window_rows) and
+        jobs <= routed_rows <= 8192*jobs and
+        0 < dequants <= min(jobs, 48*len(window_rows)*512) and
+        int(work['source_H2D_bytes']) == routed_rows*4 and
+        int(work['GPU_resident_windows_only']) == 1 and int(work['operator_max']) == 8192 and
+        int(work['maximum_rows']) == max(window_rows), 'window/work counters do not conserve')
+    validate_fusion_counts(gu, jobs, routed_rows)
+    validate_fusion_counts(down, jobs, routed_rows)
+
+
 def extract_resource_profile(log, phase_profile, command_profile, limits, cpu_version=None,
                              expected_window_pairs=None):
     """Validate one long-request interval; never aggregate across requests."""
@@ -228,20 +274,15 @@ def extract_resource_profile(log, phase_profile, command_profile, limits, cpu_ve
         window_count = len(record['planned_moe_windows'])
         expected = dict(zip(CPU_HOST_MOE, [window_count, window_count, 0, 0,
                                          total_jobs, total_jobs, total_jobs, window_count]))
-        gu = [dict(x.split('=', 1) for x in line.split(': ', 1)[1].split())
-              for line in log.splitlines() if line.startswith('strata MoE GU fusion:')]
+        gu = parse_counter_lines(log, 'strata MoE GU fusion:', FUSION_FIELDS)
         guards.require(len(gu) <= 1, 'duplicate request GU totals')
         if gu:
-            guards.require(int(gu[0]['fused_jobs']) + int(gu[0]['separate_jobs']) == total_jobs,
-                           'GU fusion/work census differs')
+            validate_fusion_counts(gu[0], total_jobs, total_rows*10)
             expected['moe_swiglu'] = int(gu[0]['separate_jobs'])
-        down = [dict(x.split('=', 1) for x in line.split(': ', 1)[1].split())
-                for line in log.splitlines() if line.startswith('strata MoE Down fusion:')]
+        down = parse_counter_lines(log, 'strata MoE Down fusion:', FUSION_FIELDS)
         guards.require(len(down) <= 1, 'duplicate request Down totals')
         if down:
-            guards.require(int(down[0]['fused_jobs']) >= 0 and int(down[0]['separate_jobs']) >= 0 and
-                int(down[0]['fused_jobs']) + int(down[0]['separate_jobs']) == total_jobs,
-                'Down fusion/work census differs')
+            validate_fusion_counts(down[0], total_jobs, total_rows*10)
             expected['moe_accumulate'] = int(down[0]['separate_jobs'])
         experts = sum(n for window in record['planned_moe_windows']
                       for m, n in window['jobs_per_expert_histogram'] if m > 0)
@@ -1287,8 +1328,7 @@ def main():
                 selected = [x for x in log.splitlines() if x.startswith('[native16-gu]')]
                 guards.require(selected == ['[native16-gu] fusion=' + ('large' if gu_candidate else '0') + ' min_rows=2334'],
                                'wrong GU startup selection')
-                counts = [dict(x.split('=',1) for x in line.split(': ',1)[1].split())
-                    for line in log.splitlines() if line.startswith('strata MoE GU fusion:')]
+                counts = parse_counter_lines(log, 'strata MoE GU fusion:', FUSION_FIELDS)
                 guards.require(len(counts) == request_count and all(int(c['min_rows']) == 2334 and
                     int(c['separate_jobs']) > 0 and (int(c['fused_jobs']) > 0 and int(c['fused_rows']) >= 2334 * int(c['fused_jobs'])
                         if gu_candidate else int(c['fused_jobs']) == int(c['fused_rows']) == 0) for c in counts),
@@ -1303,8 +1343,7 @@ def main():
                     guards.require(all(q['actual_read_tokens'] == bank_residual_rows + 1 for q in requests),
                         'single-window workload differs from the prospectively pinned78451-token shape')
                 selected = [x for x in log.splitlines() if x.startswith('[native16-down]')]
-                counts = [dict(x.split('=', 1) for x in line.split(': ', 1)[1].split())
-                    for line in log.splitlines() if line.startswith('strata MoE Down fusion:')]
+                counts = parse_counter_lines(log, 'strata MoE Down fusion:', FUSION_FIELDS)
                 guards.require(selected == ['[native16-down] fusion=' + ('large' if down_candidate else '0') + ' min_rows=2334'] and
                     len(counts) == request_count and all(int(c['min_rows']) == 2334 and
                         int(c['separate_jobs']) > 0 and (int(c['fused_jobs']) > 0 and
@@ -1345,6 +1384,14 @@ def main():
                             s['final_drain']=='checked' for s in totals), 'incomplete staged-bank model route/cost')
                         record['expert_bank_route'] = dict(selections=selections,per_request_totals=totals,
                             limits='Requested raw expert H2D payload, not measured PCIe wire traffic; helper/full-request checked drains qualify this bounded model route only.')
+                        if paired_long_trial:
+                            work = parse_counter_lines(log, 'strata MoE accumulator window:', WINDOW_FIELDS)
+                            guards.require(len(work) == request_count, 'missing completed request work totals')
+                            for w, g, d, request in zip(work, record['gu_route']['per_request_counts'],
+                                    record['down_route']['per_request_counts'], requests):
+                                validate_window_work(w, g, d, request['actual_read_tokens'], bank_window_rows)
+                            record['moe_window_work'] = dict(per_request_totals=work,
+                                limits='Completed aggregate job/row/source-map counts conserve; per-job threshold is enforced by the pinned native hook, not proved by an aggregate bound. Requested bytes are not physical traffic.')
                         if single_window:
                             work = [dict(t.split('=', 1) for t in line.split(': ', 1)[1].split())
                                 for line in log.splitlines() if line.startswith('strata MoE accumulator window:')]
