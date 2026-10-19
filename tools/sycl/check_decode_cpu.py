@@ -120,8 +120,8 @@ def run():
         compact['GPU_executed'] = False
         compact['limits'] = 'CPU observer accounting/output checks only; no IQ-kernel, GPU/runtime, overhead, model throughput, quality or physical-context qualification.'
         scope['cpu_only_qualification'] = compact
-        scope['revised_candidate']['built'] = any(c['label'] == 'build' and c.get('exit_code') == 0 for c in owner.commands)
-        scope['revised_candidate']['tested'] = any(c['label'] == 'test' for c in owner.commands)
+        scope['revised_candidate']['cpu_fixtures_built'] = any(c['label'] == 'build' and c.get('exit_code') == 0 for c in owner.commands)
+        scope['revised_candidate']['cpu_fixtures_tested'] = any(c['label'] == 'test' for c in owner.commands)
         INDEX.write_text(json.dumps(index, indent=2) + '\n')
     print(json.dumps(compact))
     return 0 if record['passed'] else 1
