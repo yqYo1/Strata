@@ -1,5 +1,5 @@
 {
-  "source_commit": "d50d31347cc8505a40181db8308735bfa0058427",
+  "source_commit": "d20736c3629046c48512a20d5e673db06b585f20",
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -18,7 +18,7 @@
     "-DMKL_DIR=/opt/intel/oneapi/mkl/2026.1/lib/cmake/mkl",
     "-DSTRATA_BUILD_CONVERSATION_TESTS:BOOL=OFF",
     "-DSTRATA_BUILD_PREFILL_HOST_TESTS:BOOL=ON",
-    "-DSTRATA_BUILD_TESTS:BOOL=ON",
+    "-DSTRATA_BUILD_TESTS:BOOL=OFF",
     "-DSTRATA_CPU_ARCH:STRING=znver3",
     "-DSTRATA_ENABLE_CUDA:BOOL=OFF",
     "-DSTRATA_ENABLE_HIP:BOOL=OFF",
@@ -79,28 +79,13 @@
   "GPU_executed": false,
   "production_selected": false,
   "model_quality_qualified": false,
-  "replaces": {
-    "source_commit": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
-    "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-      "bytes": 22079288,
-      "sha256": "570b65ddfd88e3955b58634b361bb13e12a4bd713ac6e5ae396d47265a76fd46"
-    },
-    "source_build_passed": true,
-    "retained_binary_source_commit": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
-    "reason": "Closed unused comparison engine; original source/recipe recovered from Git. Reuse its cache for the immediate corrected build, not a retained old generation."
-  },
+  "replaces": null,
   "targets": [
     "strata",
-    "sycl_moe_accum_test",
-    "sycl_moe_gu_swiglu_bench",
-    "sycl_moe_down_scatter_bench",
-    "sycl_expert_bank_test",
-    "file_expert_source_test",
-    "cpu_clock_test",
-    "pool_cpu_clock_test"
+    "sycl_verifier_retirement_test",
+    "sycl_submission_test"
   ],
-  "retention_consumer": "The newer comparison generation is retired after its failed nonregression gate. Keep only retained_validation_reference as the selected opt-in speed and resource reference; a new candidate requires a fresh committed build plan.",
+  "retention_consumer": "Current comparison engine and requested fixtures: strata, sycl_verifier_retirement_test, sycl_submission_test; select the validated generation and retire the extra after qualification/comparison closure.",
   "retained_validation_reference": {
     "source_commit": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
     "binary_origin_source_commit": "9b6db2661f6abb1ba560b466108cf60b2d594f4e",
@@ -308,76 +293,29 @@
   },
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-    "bytes": 22085200,
-    "sha256": "8c5d799fa1150b13f33a7e0ee416f67466ae26c74444ee7a6079db62830aa2e5"
+    "bytes": 22075256,
+    "sha256": "dd132d595d06f971238a6f4efbaab873678d98892b9381a9955dc396ffd4dbb4"
   },
-  "compile_database_sha256": "5abd406de615425cd30f660658fb9dd7f36e2c8b889c72bf132a7817ef75326e",
-  "configured_compile_entries": 240,
+  "compile_database_sha256": "bd3804d4413f8fbe65b46e51dea1a8180e4e2f2545287ebeeb470f7dd7244247",
+  "configured_compile_entries": 223,
   "fixtures": {
-    "sycl_moe_accum_test": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_accum_test",
-      "sha256": "35de609c81091c9ce2e87f9b28742466e5f21356570396cc45e7ee83e7b4432b"
+    "sycl_verifier_retirement_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_verifier_retirement_test",
+      "sha256": "db8a106834536960b4c0527f771447cce9723cd24bbae20c06870e00f85484f5"
     },
-    "sycl_moe_gu_swiglu_bench": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_gu_swiglu_bench",
-      "sha256": "7dc7b336b920e25b205d0f3f0b6fb5a08475ac3d08a7d7e71141ccb7d2bcc659"
-    },
-    "sycl_moe_down_scatter_bench": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_down_scatter_bench",
-      "sha256": "93248e2799e154b785e025cdd87ae03ab9f18d0700eb2b9cb13a747d8035b802"
-    },
-    "sycl_expert_bank_test": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_expert_bank_test",
-      "sha256": "d57bab3a858a6ee4f75cd4b6083f465f31f0b9c5838756e37ae69ba201374f53"
-    },
-    "file_expert_source_test": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/file_expert_source_test",
-      "sha256": "b43ef3253d9403136bfc9b5580dd17fdb8f8f7ef16f43c1ac0fed0e56d501bbf"
-    },
-    "cpu_clock_test": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/cpu_clock_test",
-      "sha256": "affbd6616bba8d1534e1b47857f5f2a8b143ee91e8a648b7d16008a0e491a961"
-    },
-    "pool_cpu_clock_test": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/pool_cpu_clock_test",
-      "sha256": "67ce52ccdaa42540655dfd7818a2e8f3c5448172c21d7a68aa3224c2ddb78ba1"
+    "sycl_submission_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_submission_test",
+      "sha256": "3582ff3453f0e757cb2f2ac20a194180dcb3553e15b65f0c174ae5ed1f20d0cd"
     }
   },
-  "binary_origin_source_commit": "d50d31347cc8505a40181db8308735bfa0058427",
-  "previous_output_comparison": {
-    "changed_project_inputs": [
-      "CMakeLists.txt",
-      "include/strata/core/cpu_clock.hpp",
-      "include/strata/core/verify.hpp",
-      "include/strata/kernels/cpu/pool.hpp",
-      "src/core/verify.cpp",
-      "src/kernels/cpu/pool.cpp",
-      "src/program/generate.cpp",
-      "tests/core/cpu_clock.cpp",
-      "tests/core/pool_cpu_clock.cpp",
-      "tools/sycl/build_engine.py"
-    ],
-    "native_and_recipe_inputs_match": false,
-    "engine_bytes_match": false,
-    "fixture_bytes_match": {
-      "sycl_moe_accum_test": true,
-      "sycl_moe_gu_swiglu_bench": true,
-      "sycl_moe_down_scatter_bench": true,
-      "sycl_expert_bank_test": true,
-      "file_expert_source_test": false,
-      "cpu_clock_test": false,
-      "pool_cpu_clock_test": false
-    },
-    "controller_only_admission": false,
-    "interpretation": "A real configure/build invocation admits the recorded inputs after original source/recipe recovery. Identical engine bytes preserve their known source identity even after fixture edits; qualification reuse separately requires the relevant native/recipe/fixture proof. No new speed result is implied."
-  },
+  "binary_origin_source_commit": "d20736c3629046c48512a20d5e673db06b585f20",
   "ownership_closed": true,
   "inputs": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "d50d31347cc8505a40181db8308735bfa0058427",
-      "count": 505,
-      "aggregate_sha256": "c6383703890abc447d817f787b5c06250f34a0b725f09e05360f246015f94b27"
+      "revision": "d20736c3629046c48512a20d5e673db06b585f20",
+      "count": 510,
+      "aggregate_sha256": "9d53c082ad380b8e385d4ddcd6eaae8231242d9b0373979c0e9d4a3237eefef5"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
@@ -391,34 +329,5 @@
       "count": 5703,
       "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
     }
-  ],
-  "retirement": {
-    "complete": true,
-    "completed_utc": "2026-10-19T14:06:05.064408+00:00",
-    "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-passive-capture-and-extra-engine-retirement-20261019.jsonl",
-    "manifest_sha256": "8967d86fde70e561cda7c7a8627730cdbce40cf58c276b9545d3c8a614bca31b",
-    "files": 356,
-    "bytes": 135356928,
-    "original_outcomes_unchanged": true,
-    "original_source_blobs_recovered_and_verified": 9816,
-    "original_recipe_recovered_and_verified": true,
-    "original_compile_database_verified": true,
-    "source_recovery_default_commit": "9a5fc5d1780a9c303295decee7a0f1603ad8c9ba",
-    "consumer_migration_source_commit": "cf658844eb4f81e2a9144a75c66e2f80c87a10fe",
-    "selection": "Keep source396d0c91f301 / engine570b65dd; retire source d50d3134 / engine8c5d799f after the original six-process gate failed. Do not reuse the newer provider/CPU fixtures as old-build qualification.",
-    "post_retirement_retained_reference_admission": {
-      "passed": true,
-      "source_inputs_recovered": 9813,
-      "original_five_fixtures_verified": true,
-      "GPU_executed": false
-    }
-  },
-  "internal_cpu_observer_source_retirement": {
-    "complete": true,
-    "archive_commit": "d50d31347cc8505a40181db8308735bfa0058427",
-    "selected_baseline_source": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
-    "decision": "Failed nonregression experiment has no current internal-observer consumer. Restore native/build inputs exactly to the selected baseline before independent verifier copy/error retirement corrections; remove orphan header, two CPU tests and named observer build mode. Original diagnostic outcomes and external collector remain.",
-    "native_and_build_bytes_match_selected_before_new_changes": true,
-    "new_build_or_gpu_check": false
-  }
+  ]
 }
