@@ -1758,7 +1758,10 @@ all passed, including the16 largest-size copies and byte/outer-guard checks.
 All owners closed normally; source/runtime/boot stayed unchanged and no fresh
 GPU fault appeared. Engine bytes remained those of`189e5163d`; only the fixture
 and controller were corrected. The positive grouped GPU model route is still
-unexecuted and the independent producer/consumer source review is pending.
+unexecuted. Independent Orca producer/consumer review and native Luna-max review
+found no verified source blocker; grouped arithmetic/output qualification remains
+separate from the35 component cases. The next model check establishes execution
+and logical copy conservation, without claiming numerical/task quality.
 The next bounded model gate uses `python3 tools/sycl/arena_copy.py prepare`,
 then a committed generated plan before `run`. It pins the current engine and
 all component bytes, recovers the original build inputs, hashes all model inputs
