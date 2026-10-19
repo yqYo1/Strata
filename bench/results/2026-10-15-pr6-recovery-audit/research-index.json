@@ -3374,160 +3374,7 @@
             "candidate_sha256": "0d6934adafb2ef3c640382440c14d6bd60f391e688c000796ffcea0c72849269"
           }
         },
-        "next_action": "Bounded old-engine reference on explicitly pinned proposed assets, then the observer engine on those same assets. Long validation and observer-overhead checks remain pending; no clean runtime qualification is inferred."
-      },
-      "runtime_reference_argument_failure": {
-        "source_commit": "21217d7dbc35c05a20a39114b7dd07a9accbd7e0",
-        "build_source_commit": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
-        "binary": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-396d0c91f301/strata",
-          "bytes": 22079288,
-          "sha256": "570b65ddfd88e3955b58634b361bb13e12a4bd713ac6e5ae396d47265a76fd46"
-        },
-        "reference_engine": true,
-        "runtime_asset_delta": {
-          "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395": {
-            "package": "libze-intel-gpu1:amd64",
-            "previous_version": "26.31.39395.14-1~24.04~ppa1",
-            "candidate_version": "26.31.39395.16-1~24.04~ppa1",
-            "upgrade_utc": "2026-10-19T08:32:29+00:00",
-            "qualified_sha256": "dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c",
-            "candidate_sha256": "50adb6b727d027309039803033d41efeae4b248589ee363f321c0d538c7de3ff"
-          },
-          "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8": {
-            "package": "libudev1:amd64",
-            "previous_version": "255.4-1ubuntu8.17",
-            "candidate_version": "255.4-1ubuntu8.18",
-            "upgrade_utc": "2026-10-19T08:31:15+00:00",
-            "qualified_sha256": "4298228175fa62a36af88b1afd4406cdd8b1bf166621f957d0dbbde45a698fe5",
-            "candidate_sha256": "0d6934adafb2ef3c640382440c14d6bd60f391e688c000796ffcea0c72849269"
-          }
-        },
-        "complete": false,
-        "passed": false,
-        "active": false,
-        "requests": [],
-        "exit_code": 2,
-        "native_identity": {
-          "pid": 3756351,
-          "start_ticks": 74865715,
-          "sid": 3756351
-        },
-        "error": "native smoke ownership/exit failed",
-        "ownership_closed": false,
-        "boot_unchanged": true,
-        "fresh_faults": [],
-        "GPU_executed": false,
-        "limits": "Two tiny native-protocol requests through final commit. Explicit runtime-delta diagnostic only; shared qualified runtime pins remain unchanged. No performance, overhead, quality, IQ numerical, long-context or RESTORE qualification.",
-        "native_process_started": true,
-        "native_owner_closed": true,
-        "diagnosis": "Controller omitted --serve, which serve/server.py prepends to config args. Native exited2 before device initialization, printing --tokens is required. The original failed/incomplete outcome is preserved; raw owner confirms reaped PID, empty session, no survivors or fresh driver fault."
-      },
-      "runtime_reference_protocol_failure": {
-        "source_commit": "50dd30344be0d3d06e178174962d44a32aef29f6",
-        "build_source_commit": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
-        "binary": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-396d0c91f301/strata",
-          "bytes": 22079288,
-          "sha256": "570b65ddfd88e3955b58634b361bb13e12a4bd713ac6e5ae396d47265a76fd46"
-        },
-        "reference_engine": true,
-        "runtime_asset_delta": {
-          "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395": {
-            "package": "libze-intel-gpu1:amd64",
-            "previous_version": "26.31.39395.14-1~24.04~ppa1",
-            "candidate_version": "26.31.39395.16-1~24.04~ppa1",
-            "upgrade_utc": "2026-10-19T08:32:29+00:00",
-            "qualified_sha256": "dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c",
-            "candidate_sha256": "50adb6b727d027309039803033d41efeae4b248589ee363f321c0d538c7de3ff"
-          },
-          "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8": {
-            "package": "libudev1:amd64",
-            "previous_version": "255.4-1ubuntu8.17",
-            "candidate_version": "255.4-1ubuntu8.18",
-            "upgrade_utc": "2026-10-19T08:31:15+00:00",
-            "qualified_sha256": "4298228175fa62a36af88b1afd4406cdd8b1bf166621f957d0dbbde45a698fe5",
-            "candidate_sha256": "0d6934adafb2ef3c640382440c14d6bd60f391e688c000796ffcea0c72849269"
-          }
-        },
-        "complete": false,
-        "passed": false,
-        "active": false,
-        "requests": [],
-        "ready": "READY 131072 stop",
-        "exit_code": -6,
-        "native_identity": {
-          "pid": 3764984,
-          "start_ticks": 74889285,
-          "sid": 3764984
-        },
-        "protocol_error": "RuntimeError('unexpected native request protocol: RESUME 0')",
-        "error": "native smoke protocol/exit failed: RuntimeError('unexpected native request protocol: RESUME 0'); exit=-6",
-        "ownership_closed": true,
-        "boot_unchanged": true,
-        "fresh_faults": [],
-        "native_process_started": true,
-        "GPU_executed": null,
-        "limits": "Two tiny native-protocol requests through final commit. Explicit runtime-delta diagnostic only; shared qualified runtime pins remain unchanged. No performance, overhead, quality, IQ numerical, long-context or RESTORE qualification.",
-        "GPU_initialization_observed": true,
-        "diagnosis": "The diagnostic harness rejected documented RESUME 0 after READY. Its owned cleanup sent SIGTERM; native exit was-6 with IGC termination-request text. No driver fault or surviving owner was observed. This is a failed/incomplete forced-stop diagnostic, not evidence of a runtime hang."
-      },
-      "runtime_reference_trace_budget_failure": {
-        "source_commit": "050e89c4e98f44a071c842f0680c13934dccce3c",
-        "build_source_commit": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
-        "binary": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-396d0c91f301/strata",
-          "bytes": 22079288,
-          "sha256": "570b65ddfd88e3955b58634b361bb13e12a4bd713ac6e5ae396d47265a76fd46"
-        },
-        "reference_engine": true,
-        "runtime_asset_delta": {
-          "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395": {
-            "package": "libze-intel-gpu1:amd64",
-            "previous_version": "26.31.39395.14-1~24.04~ppa1",
-            "candidate_version": "26.31.39395.16-1~24.04~ppa1",
-            "upgrade_utc": "2026-10-19T08:32:29+00:00",
-            "qualified_sha256": "dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c",
-            "candidate_sha256": "50adb6b727d027309039803033d41efeae4b248589ee363f321c0d538c7de3ff"
-          },
-          "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8": {
-            "package": "libudev1:amd64",
-            "previous_version": "255.4-1ubuntu8.17",
-            "candidate_version": "255.4-1ubuntu8.18",
-            "upgrade_utc": "2026-10-19T08:31:15+00:00",
-            "qualified_sha256": "4298228175fa62a36af88b1afd4406cdd8b1bf166621f957d0dbbde45a698fe5",
-            "candidate_sha256": "0d6934adafb2ef3c640382440c14d6bd60f391e688c000796ffcea0c72849269"
-          }
-        },
-        "complete": false,
-        "passed": false,
-        "active": false,
-        "requests": [
-          {
-            "input_tokens": 16,
-            "generated_tokens": 4,
-            "finish_reason": "length",
-            "decode_ms": 6227.9,
-            "output_ids_sha256": "b31b6ab6532df8a15be0d5ad4064c426c6241b5f50060b83785fb396d587203f"
-          }
-        ],
-        "ready": "READY 131072 stop",
-        "exit_code": -25,
-        "native_identity": {
-          "pid": 3773672,
-          "start_ticks": 74914500,
-          "sid": 3773672
-        },
-        "protocol_error": "RuntimeError('combined log cap')",
-        "error": "native smoke protocol/exit failed: RuntimeError('combined log cap'); exit=-25",
-        "ownership_closed": true,
-        "boot_unchanged": true,
-        "fresh_faults": [],
-        "native_process_started": true,
-        "GPU_initialization_observed": true,
-        "GPU_executed": true,
-        "limits": "Two tiny native-protocol requests through final commit. Explicit runtime-delta diagnostic only; shared qualified runtime pins remain unchanged. No performance, overhead, quality, IQ numerical, long-context or RESTORE qualification.",
-        "cause": "Full UR API polling trace reached the predeclared 64 MiB text/file budget; SIGXFSZ and incomplete second request. One completed request does not qualify the model/runtime. No fresh GPU fault; original failed status preserved."
+        "next_action": "Six device cases and both engines two tiny native requests subsequently passed on the explicit proposed assets. Shared qualified hashes remain unchanged; next prepare explicit runtime-adoption/long-validation and matched observer-overhead gates. No current-runtime clean speed or hardware bottleneck is qualified."
       },
       "runtime_device_probe": {
         "source_commit": "db11be1318fcbd4c0a607a66dc9fe95a4f80ec74",
@@ -3811,6 +3658,22 @@
           "retired_output_roots_remain_absent": true,
           "GPU_executed": false
         }
+      },
+      "closed_harness_failure_history": {
+        "commit": "14f73a1a65114498d0f7699e400023403c3c78ed",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+        "original_fields": [
+          "runtime_reference_argument_failure",
+          "runtime_reference_protocol_failure",
+          "runtime_reference_trace_budget_failure"
+        ],
+        "all_original_statuses": "failed/incomplete, preserved in reachable Git history",
+        "resolved_causes": [
+          "missing --serve",
+          "unhandled legitimate RESUME marker followed by owned termination",
+          "64MiB full API trace budget stop"
+        ],
+        "new_run_statuses_do_not_relabel_originals": true
       }
     }
   },
@@ -4009,7 +3872,7 @@
   },
   "level_zero_39395_16_runtime_delta_scope": {
     "classification": "decision_support",
-    "status": "running",
+    "status": "reviewed_conditional_runtime_reference",
     "schedulable_now": false,
     "prerequisite_evidence": "Exact libze-intel-gpu1 package14\u219216 and libudev17\u219218 identity/time delta recorded in cpu_observer_source_audit.runtime_smoke_plan; known byte-identical small bank fixture passed on proposed assets at db11be131. No unchanged-runtime assumption or retrospective speed claim.",
     "question": "Trace official release/package provenance of installed Intel compute-runtime26.31.39395.14\u2192.16, identify relevant changes to Level Zero queues/events/host polling/graphs/USM and distinguish observed package changes from inferred fixes. Compare potential CPU submission/poll overhead and compatibility with this project pinned UR v2/compiler/IGC and qualified safety settings. Provide bounded follow-up checks, counterevidence and unresolved facts; no optimization without measured attribution.",
@@ -4022,8 +3885,26 @@
     "dispatch_id": "ctx_91b9cbd5a602",
     "terminal_handle": "term_20bc2002-709d-4a04-8ce2-ec89f169ff69",
     "model_observed": "gpt-6-luna",
-    "worker_ownership_closed": false,
-    "report_saved": false,
-    "launch_permission": "Per-invocation workspace-write plus explicit --add-dir for the existing report directory; report-only task scope. Startup update check disabled per invocation, no global config change."
+    "worker_ownership_closed": true,
+    "report_saved": true,
+    "launch_permission": "Per-invocation workspace-write plus explicit --add-dir for the existing report directory; report-only task scope. Startup update check disabled per invocation, no global config change.",
+    "report_bytes": 11191,
+    "report_sha256": "30e72e4810f47273890ad55c8ccc622eb29af0a0991e7644a42ea4c1c5a91d4a",
+    "native_review_agent": "/root/review_runtime_39395_16_delta_20261019",
+    "lifecycle_limit": "Report exists and final agent turn ended, but claimed worker completion was not accepted by Orca; task was fenced abandoned after positive final-turn evidence. External terminal matched original incarnation and was proven idle, then closed by its Main owner. Release reports retained/identity_unproven after terminal removal; no accepted worker success is claimed.",
+    "native_review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/level-zero-package-39395-16-native-review.json",
+    "native_review_bytes": 6138,
+    "native_review_sha256": "a558a947568f8b699ba466f70bb0e8ade1c38fe860cc0572cc328403fc2f327c",
+    "review_digest": {
+      "novelty": "Specific .14\u2192.16 release/package provenance; decision support, not performance evidence.",
+      "corrections": [
+        "Upstream .16 tag changes kernels_bin as well as its IGC dependency metadata.",
+        "Installed IGC, DPC++ and UR remain unchanged; do not infer a local IGC upgrade or speed/fault effect.",
+        "The suggested tiny old/new engine request checks have already passed."
+      ],
+      "unresolved": "Exact Noble PPA source-build correspondence and current-runtime performance/observer overhead; keep shared qualified runtime hashes at old baseline.",
+      "lifecycle_reconciliation": "Native review used earlier pending-worker metadata. Main separately fenced the ended dispatch and verified the original idle terminal incarnation before closing it; no accepted worker success was fabricated."
+    },
+    "retention": "Keep source report and bounded native review for immediate explicit runtime admission and overhead-plan consumer; Main reads the short review digest only. Retire/reduce when that decision closes."
   }
 }
