@@ -4042,7 +4042,68 @@
     "next_review": "After the isolated calibration decides whether changing per-job accounting is warranted. Retire this report if no further concrete method is selected.",
     "report_bytes": 14023,
     "report_sha256": "3461c92a3b784de5642f52e028f3403d5e29d747fbef3e06549accdf503c583a",
-    "operational_digest": "The frozen six-process observer comparison failed its original overhead gate; off samples also vary and one pair reverses. Select only an isolated same-API CPU-region/control calibration as decomposition. Do not apply the report's2% proposal, infer production read-path/cost or use a constant throughput correction."
+    "operational_digest": "The frozen six-process observer comparison failed its original overhead gate; off samples also vary and one pair reverses. Select only an isolated same-API CPU-region/control calibration as decomposition. Do not apply the report's2% proposal, infer production read-path/cost or use a constant throughput correction.",
+    "isolated_region_calibration_plan": {
+      "classification": "CPU-only diagnostic; no engine rebuild or GPU execution",
+      "output_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-region-calibration-v1",
+      "arms": [
+        "off",
+        "on",
+        "on",
+        "off",
+        "off",
+        "on"
+      ],
+      "independent_processes": 6,
+      "thread_counts": [
+        1,
+        6
+      ],
+      "thread_count_order": "even process1,6; odd6,1",
+      "jobs_per_thread": 500000,
+      "body_steps": 256,
+      "minimum_batch_wall_ns": 50000000,
+      "affinity": "Worker i on CPU i, using six distinct physical cores0..5; restore parent mask after each case. Fail a denied/incorrect mask.",
+      "compiler": {
+        "path": "/usr/bin/x86_64-linux-gnu-g++-13",
+        "sha256": "1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769"
+      },
+      "compiler_flags": [
+        "-std=c++20",
+        "-O3",
+        "-DNDEBUG",
+        "-march=znver3",
+        "-mtune=znver3",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-pthread"
+      ],
+      "source_paths": [
+        "include/strata/core/cpu_clock.hpp",
+        "tools/sycl/cpu_clock_calibration.cpp",
+        "tools/sycl/check_decode_cpu.py",
+        "tools/sycl/measurement_owner.py",
+        "tools/sycl/measurement_guards.py"
+      ],
+      "budgets": {
+        "wall_seconds": 120,
+        "cpu_seconds": 120,
+        "rss_bytes": 1073741824,
+        "raw_bytes": 67108864
+      },
+      "gates": "All12 batches must exceed50ms, match their exact fixed integer work and counts, have valid CPU clocks/counters and checked affinity, with six independent normally closed processes. Preserve signs and every original sample; no throughput or production-overhead adoption gate.",
+      "provenance": "New Main-authored diagnostic around existing project CpuTimeRegion; no external implementation code.",
+      "retention_consumer": "Decide whether per-job CPU-region cost warrants lighter accounting. Commit useful individual samples/source/recipe; retire the transient standalone CPU executable and successful raw logs at closure. Existing two engine generations remain untouched.",
+      "next_review": "At calibration closure, then same-runtime observer-off old/new engine comparison and resource/thread attribution.",
+      "runtime_elfs": {
+        "/usr/lib/x86_64-linux-gnu/libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+        "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+        "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+        "/usr/lib/x86_64-linux-gnu/libm.so.6": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+        "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da"
+      }
+    }
   },
   "sycl_host_affinity_runtime_contract_scope": {
     "classification": "decision support",
