@@ -3030,6 +3030,75 @@
       "bytes": 12850520,
       "source_blobs_recovered": 9925,
       "original_outcomes_unchanged": true
+    },
+    "historical_harness_retrieval": {
+      "original_commit": "8063aacc6749d18089f7a53db5d3e47b745f348c",
+      "report_path": "bench/results/2026-10-15-pr6-recovery-audit/research-physical-model-context-harness-round698-v1.txt",
+      "report_sha256": "165afabc8ee004a32d42d1271fe07aeccff5f9714b4a09282887e3819eafce6d",
+      "review_path": "bench/results/2026-10-15-pr6-recovery-audit/main-review-round696-698.ja.md",
+      "review_sha256": "71a1a55ca5d10edaf64bda5cfc39277e9cc99c677351d0f1c0d85494b5a0bc1b",
+      "status": "native_review_running",
+      "native_review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/r698-current-harness-retrieval-review.json",
+      "question": "Reuse the predecessor harness comparison if sufficient; compare its relevant sections with current native source and corrected full-context gate map before any new collector or implementation. Main did not read the historical report bodies."
     }
+  },
+  "zen3_small_multirow_mtp_kernel_methods_collection_scope": {
+    "classification": "knowledge collection",
+    "question": "For quantized MoE on Zen3 AVX2, compare useful CPU kernels specifically at the single-row matvec versus small multirow MTP target-verification boundary. How do row batching, within-batch weight decode reuse, cache blocking and worker-pool scaling interact, and which designs plausibly transfer to Strata? State evidence needed before a local test.",
+    "status": "orca_collection_running",
+    "schedulable_now": false,
+    "source_revision": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
+    "policy_revision": "5d694d0b9",
+    "scope_review_sha256": "b02da84886ecbdff817eafeeb62d100d387043187fa78430f34bf5d7e26bd9a0",
+    "prior_scope_exclusions": [
+      "R590/R625/R634: exclude general IQ/Q8 arithmetic and representation.",
+      "R601/R603/cpu_gu_reuse/cpu_predecode: exclude cross-round/request cache residency; discuss only within-batch weight decode reuse.",
+      "R610/R752/cpu_rowpair_probe: exclude prefill-specific shapes and the prior synthetic row-pair candidate."
+    ],
+    "source_pins": [
+      [
+        "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
+        "src/kernels/cpu/expert.cpp",
+        "9bcf5d889818ef3cb9619df6536e8844d151714803ac8930eada115a61b62e48"
+      ],
+      [
+        "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
+        "src/kernels/cpu/pool.cpp",
+        "ff9287b125a9830fcbad823af99534a5e1c2fbba489c6a2f8d6d6173ae8042e0"
+      ],
+      [
+        "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
+        "src/core/expert_source.cpp",
+        "85fde09cdf17876157ae21ac2bcd5b4ad0aba8d43dc78f39ce3506a8c436e905"
+      ],
+      [
+        "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
+        "src/core/verify.cpp",
+        "4d14222687b0d470b213ce2c062ba157c80e47ca58a13a796b82e6171a3eaba3"
+      ]
+    ],
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/zen3-small-multirow-mtp-kernel-methods.md",
+    "report_budget": {
+      "target_words": [
+        1400,
+        2200
+      ],
+      "maximum_bytes": 22528
+    },
+    "realistic_consumer": "After qualifying long-generation CPU/provider attribution, retrieve kernel-specific sections before selecting a bounded CPU-path experiment.",
+    "next_review": "Native Codex gpt-6-luna max review on completion; Main reads only the digest and retrieves relevant sections if CPU expert compute is selected. Prune if no decision uses it.",
+    "task_id": "task_e853875053e8",
+    "dispatch_id": "ctx_c0f2f858625f",
+    "run_id": "run_fb41872974e9",
+    "terminal_handle": "term_8f9fd0f2-c84d-4f32-9136-1fcd12c813b3",
+    "terminal_incarnation": "1380d906-4983-4512-8b5e-8555accc9d27",
+    "collector_model_observed": "gpt-6-luna",
+    "worker_ownership_closed": false,
+    "scope_corrections": [
+      "Cache128 is the total target-cache slot count distributed across layers, not128 slots per layer.",
+      "--no-token-graph does not disable every verifier graph family; startup captures1/4 were logged.",
+      "--spec4 alone does not establish a draft count; derive actual window/draft parameters from their own fields."
+    ],
+    "limits": "Method collection only; actual CPU/provider/cache traffic, long-generation acceptance and limiting resource are not yet attributed. Main does not read the report body on arrival; native Luna-max reviews it first."
   }
 }
