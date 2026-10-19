@@ -2852,5 +2852,88 @@
       "source_blobs_recovered": 9925,
       "original_outcomes_unchanged": true
     }
+  },
+  "current_decode_mtp_verifier_reuse_source_audit": {
+    "classification": "decision support",
+    "question": "At the pinned source revision, trace the actual MTP proposal and target-verification call chain through routing, expert-provider selection, CPU/RAM source reads, GPU cache lookup or staging, expert execution, acceptance, and rejected-suffix retirement. Establish from source whether multi-position verification batches unique experts once or repeats expert reads/transfers, and how this differs for CPU/RAM-backed, host-offloaded, and GPU-resident experts. Identify the smallest source-grounded census boundaries and counters needed in a later proper long-generation benchmark to separate route/CPU work, host reads, requested transfer payload, cache hits, GPU work/waits, acceptance, and rollback. Do not infer a bottleneck, throughput effect, or accepted-token benefit from short samples.",
+    "available_prerequisite_evidence": [
+      "The exact current engine source revision and executable hash are supplied, so the audit can be pinned to an immutable implementation and route.",
+      "The indexed speculative_moe_offload_reuse_collection_scope is a reviewed general methods reference; its review specifically warns that reuse gains require repeated current-verifier reads and that existing multi-token batching may already fetch each unique expert once.",
+      "decode_vram_rebuild_scope traces decode-only owner/rebuild lifetimes and MTP graph families, but does not establish the verifier's per-round expert-fetch/batch semantics or the minimum runtime census.",
+      "B0/B1 subsequent medians of 1005.8 belong to the 117489-fresh-token Down comparison, and A1 remains live. Neither this nor any 24-token sample qualifies decode throughput or a reuse bottleneck."
+    ],
+    "prior_scope_ids": [
+      "speculative_moe_offload_reuse_collection_scope",
+      "decode_vram_rebuild_scope",
+      "gpu_moe_routing_collection_scope"
+    ],
+    "nonduplication_and_exclusions": "This is a pinned Strata source call-chain audit, not another paper/framework survey, cache design, decode-only allocation/rebuild inventory, or optimization proposal. Use the prior reports for general reuse counterevidence and owner lifetimes; retrieve them only to resolve a concrete point. Do not claim a repeated fetch until the current path proves it, and do not turn the census specification into a local run.",
+    "deliverable": "A concise call-chain map with source locations and distinct draft/target weight ownership; a table of batch, cache, CPU/RAM and transfer semantics by path; explicit uncertainty where runtime selection is dynamic; and a minimal future counter boundary list with units, attribution limits, and which observations must come from actual execution.",
+    "report_budget": {
+      "target_words": [
+        1400,
+        2200
+      ],
+      "maximum_bytes": 22528
+    },
+    "realistic_consumer": "After the prefill milestone and frozen cohort closure, Main can use the map to commit a qualifying >=1K-token decode comparison plan and its minimum instrumentation boundaries before any decode trial.",
+    "status": "eligible_dispatch_pending",
+    "schedulable_now": true,
+    "policy_revision": "65f2bc9e36c19036d83477ee1ef040f9901b2ae8",
+    "source_revision": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
+    "executable_sha256": "570b65ddfd88e3955b58634b361bb13e12a4bd713ac6e5ae396d47265a76fd46",
+    "server_controller_source_revision": "447bdcad8d4c82ce553fa05b4d699d18b6fe7daa",
+    "server_source_sha256": {
+      "serve/server.py": "b90e873308e5b5be74aecd2032e71dd4db1c83d0895d83a77e1c1d9d9c704dfc",
+      "serve/frontend.py": "1eaedd0f69cb59366060bff7fb782b64bcbc1d3721705be4013249730c1644e9",
+      "tools/conversation_cache_parity.py": "b85a67810870aa4974e4d542e494e37004bda72117726addc04f0235272e9c8d",
+      "tools/conversation_cache_growth.py": "14a76e3d5834c6910ee95f6bc64eaff788548fcfe99ecb79968a0199de6772fa"
+    },
+    "scope_review_sha256": "b147cf1179dd1cafdbd41c2855dddf411332a347218a2cc99fcfb961c7d123c0",
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/current-decode-mtp-verifier-reuse-source.md",
+    "next_review": "On settlement native Luna-max reviews source binding, novelty and concrete gate/resource limits. Main uses relevant sections only for the named post-cohort plan; review retention when that consumer closes."
+  },
+  "native16_full_context_session_gate_source_audit": {
+    "classification": "decision support",
+    "question": "At the pinned current source revision, audit the production Native16 long-prefill path end to end for the advertised 262144-token physical context: request/admission predicates, context and position bounds, window and final-tail handling, actual allocation/residency decisions, transition from prefill into decode, session RESTORE/reentry, and graph/queue/owner retirement on success and failure. Identify which existing validation entrypoints cover each source invariant and which end-to-end physical-context, tail, prefill-to-decode, or RESTORE gates remain absent. Treat this as source safety and gate mapping only; do not propose a layout change or claim qualification.",
+    "available_prerequisite_evidence": [
+      "The exact current engine source revision and executable hash are supplied; the durable policy requires filling the physical 262144-token context and exercising tail, prefill-to-decode, and RESTORE paths.",
+      "native16_scratch_two_bank_scope reviewed a proposed scratch/tail alias and listed relevant consumers and later gates, but it did not establish runtime ownership or qualify the current production route.",
+      "implemented_expert_bank_scope reports component/source checks while explicitly leaving production session, physical-262144, and RESTORE behavior unqualified; bounded_expert_window_staging_scope also records these as unresolved.",
+      "decode_vram_rebuild_scope distinguishes persistent QSA/GDN/session state from rebuildable weights; qsa_kv_cache_representation_long_context_scope specifies full-context/restore requirements without auditing the current end-to-end production route.",
+      "No full-model physical-262144, broad quality, or session/RESTORE qualification is supplied. The audit can map source and reusable entrypoints without weights, runtime inspection, a test, or a measurement."
+    ],
+    "prior_scope_ids": [
+      "native16_scratch_two_bank_scope",
+      "implemented_expert_bank_scope",
+      "bounded_expert_window_staging_scope",
+      "decode_vram_rebuild_scope",
+      "qsa_kv_cache_representation_long_context_scope"
+    ],
+    "nonduplication_and_exclusions": "This is an end-to-end audit of the current production request and session path. Do not repeat the two-bank alias design/test matrix, expert-bank component audit, QSA representation survey, or decode-owner census. Reuse their findings to focus on current dispatch/admission and state transitions, then name exact existing validation entrypoints and uncovered integration gates. Do not run or author tests, change code/settings, or treat this source report as model qualification.",
+    "deliverable": "A source-location map from request admission through Native16 prefill windows and final tail to decode/session RESTORE; a gate matrix linking each invariant to an existing reusable validation entrypoint or marking it missing; and a short list of concrete end-to-end gaps, with no speculative redesign.",
+    "report_budget": {
+      "target_words": [
+        1400,
+        2200
+      ],
+      "maximum_bytes": 22528
+    },
+    "realistic_consumer": "After the frozen cohort closes, Main can use the map to commit a single complete qualification plan and reuse existing focused entrypoints before the required physical-262144 model validation.",
+    "status": "eligible_dispatch_pending",
+    "schedulable_now": true,
+    "policy_revision": "65f2bc9e36c19036d83477ee1ef040f9901b2ae8",
+    "source_revision": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
+    "executable_sha256": "570b65ddfd88e3955b58634b361bb13e12a4bd713ac6e5ae396d47265a76fd46",
+    "server_controller_source_revision": "447bdcad8d4c82ce553fa05b4d699d18b6fe7daa",
+    "server_source_sha256": {
+      "serve/server.py": "b90e873308e5b5be74aecd2032e71dd4db1c83d0895d83a77e1c1d9d9c704dfc",
+      "serve/frontend.py": "1eaedd0f69cb59366060bff7fb782b64bcbc1d3721705be4013249730c1644e9",
+      "tools/conversation_cache_parity.py": "b85a67810870aa4974e4d542e494e37004bda72117726addc04f0235272e9c8d",
+      "tools/conversation_cache_growth.py": "14a76e3d5834c6910ee95f6bc64eaff788548fcfe99ecb79968a0199de6772fa"
+    },
+    "scope_review_sha256": "b147cf1179dd1cafdbd41c2855dddf411332a347218a2cc99fcfb961c7d123c0",
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/native16-full-context-session-gates-source.md",
+    "next_review": "On settlement native Luna-max reviews source binding, novelty and concrete gate/resource limits. Main uses relevant sections only for the named post-cohort plan; review retention when that consumer closes."
   }
 }
