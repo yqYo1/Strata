@@ -1381,16 +1381,21 @@ target expert-cache hit rates were2.0% and1.0%; these do not establish physical
 RAM/PCIe traffic or CPU arithmetic as the limiting resource. The next consumer
 is qualification of the CPU-time observer before resource attribution. Its four
 CPU clock/pool tests passed both standalone and in the native build, including
-output parity and enabled/disabled accounting. The new engine is built but its
-GPU request/observer and overhead gates remain pending. The clean speeds above
-used libze-intel-gpu1 package26.31.39395.14; the system subsequently installed
+output parity and enabled/disabled accounting. The new engine passed two bounded
+native requests with one valid CPU record per completed request, zero clock/
+counter errors and normal ownership/fault closure at`69888d181`; the old engine
+also passed two requests on the proposed assets at`d2ec0ec93`. These tiny checks
+do not measure observer overhead or qualify long-generation attribution. The
+clean speeds above used libze-intel-gpu1 package26.31.39395.14; the system subsequently installed
 26.31.39395.16 and updated libudev. These assets need explicit qualification;
 the shared qualified runtime pins remain unchanged. Six small bank upload/guard/
 unwind cases passed with full API trace on the proposed assets at`db11be131`.
 The earlier full-model check hit its64MiB API-trace budget and remains incomplete,
-with no fresh driver fault. The next old-engine model check uses parameter
-validation and stage progress, followed by the observer candidate only on success.
-No current-runtime throughput or limiting hardware resource is established.
+with no fresh driver fault. Both closed model checks used parameter validation
+and stage progress.
+The next gate is explicit runtime adoption and a committed matched observer-
+overhead plan, followed by long-generation resource attribution. No current-
+runtime throughput or limiting hardware resource is established.
 Keep model quality,agent-session,physical262144/session/RESTORE and matched
 no-MTP attribution as separate pending checks.
 

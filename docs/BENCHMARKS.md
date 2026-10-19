@@ -106,7 +106,9 @@ variables absent in clean processes; setting either to `0` still enables it.
 
 `STRATA_DECODE_CPU_PROFILE` is a separate opt-in Linux CPU observer under
 validation. Its CPU-only accounting tests pass, including all four tests from
-the compiled SYCL build. Native request and overhead checks remain pending.
+the compiled SYCL build. The bounded native request check passes with two
+completed requests and two valid observations; observer-overhead and long-generation attribution checks
+remain pending.
 It records thread CPU inside
 expert row tasks, native hidden quantization and selected verifier sync calls,
 plus whole worker/main/native-process CPU intervals. Worker task writes precede
@@ -136,8 +138,10 @@ those paths are explicitly unqualified on this Ryzen5600X. It checks task/quanti
 and CPU subset containment, and reports actual host participation. This is
 accounting coverage, not IQ-kernel/model qualification or a speed benchmark.
 All four tests passed on Ryzen5600X at source`5f91e79ec`, with observed host
-participation in the enabled parallel-host arm. Native runtime and observer
-overhead remain unqualified; see the current CPU observer entry in
+participation in the enabled parallel-host arm. The new engine passed the bounded
+native request check on the explicitly proposed runtime assets at`69888d181`, with zero clock/counter errors. Observer
+overhead and longer workload attribution remain unqualified; see the current
+CPU observer entry in
 `bench/results/2026-10-15-pr6-recovery-audit/research-index.json`.
 
 For a prefill-only screen, `bench.sh --prefill-only --prefill-tokens N` accepts
