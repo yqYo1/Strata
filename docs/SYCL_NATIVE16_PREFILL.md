@@ -1457,22 +1457,27 @@ optimization, runtime-baseline adoption or resource saturation follows from
 this single-workload comparison alone.
 Independent source audit and native Luna-max review found no technical reuse
 blocker. The automatic off-arm consumer lacks an explicit four-warmup phase
-assertion: process0/1's original journals contain all four successful warmups,
+assertion: process0–4's original journals contain all four successful warmups,
 but all six journals must pass that check before interpreting the comparison.
 Retain them for that closure check; `passed` alone does not satisfy it. Residual
 null-counter work is the intended old/new test subject, not proof of a defect.
 The audit worker is completed and its terminal is closed; the frozen research
 index will be reconciled after the comparison, without changing its input hash.
-The first old/new pair closed at13.1/11.8tok/s (original results`c1e33bdf0` and
-`b6e70064d`). Both read33211 fresh tokens, generated2931 including thinking and
-accepted2105 of2481 drafts, with normal closure and no fresh GPU faults. The
-new/old per-token latency ratio1.115806577 exceeds the unchanged1.10 per-pair
-limit. Preserve this slower sample and finish the two remaining planned pairs;
-one pair does not establish the cause or qualify an engine choice.
-The next independent new-engine process closed at14.4tok/s (`4de041ebb`),
-with the same33211/2931 token work and2105/2481 drafts, successful warmups and
-normal fault-free closure. Its adjacent old-engine partner remains pending;
-the11.8-to14.4 spread already shows why the original repetitions are needed.
+The first five processes closed with the same33211 fresh input tokens,
+2931 generated including thinking and2105 of2481 accepted drafts. All four
+warmups passed and native/benchmark owners closed normally without fresh faults.
+
+| Pair | Old tok/s | New tok/s |
+| --- | ---: | ---: |
+| 0 | 13.1 | 11.8 |
+| 1 | 11.5 | 14.4 |
+| 2 | 13.2 | pending |
+
+Original closed receipts remain in Git at`c1e33bdf0`,`b6e70064d`,`4de041ebb`,
+`8a76c139e` and the current result. Pair0's new/old per-token latency ratio
+1.115806577 exceeds the unchanged1.10 per-pair limit. Preserve this failed gate
+and complete the final planned process. Pair1 reverses the faster arm; neither
+direction establishes a constant engine cost or qualifies an engine choice.
 During process0, a read-only capability check of the owned native client's
 `/proc/<pid>/fdinfo` exposed xe `drm-cycles-ccs`, `drm-total-cycles-ccs` and
 memory residency fields on kernel7.0.0-38-generic. This is field availability,
@@ -1485,12 +1490,20 @@ describe these counters. Engine busy fraction still does not measure arithmetic
 efficiency, VRAM bandwidth or physical PCIe bytes. Preserve unknowns rather
 than converting the earlier GPU-reach wall percentage into device utilization.
 The independent [client resource reader](../bench/sycl/client_resources.py)
-at`3625c5f7b` passed all8 synthetic CPU-only tests with
-`python3 -B tests/core/test_client_resources.py`. It rechecks PID/start/SID,
+at`83c7d3c6e` passed all12 synthetic CPU-only tests with
+`python3 -B tests/core/test_client_resources.py`. It binds the original receipt
+to the current boot and rechecks PID/start/SID,
 deduplicates descriptors, preserves raw cycle counters and recovery spans,
-rejects impossible deltas and reads scheduled CPU ticks. The CLI has a900s/
+rejects impossible deltas and reads scheduled CPU ticks. Enumeration stops at
+the descriptor/thread budget before materializing an unbounded directory.
+Collector completion requires an explicit terminal and at least two samples
+with eligible CCS intervals; empty or unsupported clients cannot pass. A
+confirmed process exit can close this process-bounded collector, but planned
+model-phase completion and coverage remain separate checks. The CLI has a900s/
 32MiB bound and opens no GPU device. No live collection has been qualified;
 its next consumer is the bounded resource diagnostic after this frozen cohort.
+The frozen native wrapper lacks the required receipt boot ID; update it after
+the six-process comparison closes, before any live collection.
 Recovered spans must fit the selected request interval. CPU ticks include
 polling, and a shared DRM client's counters are not exclusive process usage.
 Keep model quality,agent-session,physical262144/session/RESTORE and matched

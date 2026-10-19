@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Synthetic proc/fdinfo contracts only; no real process, GPU or profiler."""
 from pathlib import Path
+from contextlib import contextmanager
 import sys
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
@@ -27,6 +29,62 @@ def sample(busy=100, total=1000, capacity=None, stamp=1):
 
 
 class ClientResourceTests(unittest.TestCase):
+    def test_pci_selector_is_validated_and_canonicalized(self):
+        upper = '0000:AB:1F.0'
+        rows = r.deduplicate_clients([(5,text().replace(PCI,upper))], upper.lower())
+        self.assertEqual(rows[0]['pci'], upper.lower())
+        for bad in ('05:00.0','0000:05:20.0','0000:05:00.8',PCI+' ',None):
+            with self.subTest(bad=bad),self.assertRaises(ValueError):
+                r.deduplicate_clients([],bad)
+
+    def test_receipt_binds_process_identity_to_original_boot(self):
+        boot = 'cfda0b6a-7c13-4fe2-bdf5-8f9202770840'
+        target = dict(pid=101,start_ticks=50,sid=99)
+        receipt = dict(boot_id=boot,native=target)
+        result = r.receipt_target(receipt,boot)
+        self.assertEqual(result,target)
+        target['pid'] += 1
+        self.assertEqual(result['pid'],101)
+        for changed in ({'native':target},dict(receipt,boot_id='another-boot'),
+                        dict(receipt,native=dict(target,pid=True))):
+            with self.subTest(changed=changed),self.assertRaises(ValueError):
+                r.receipt_target(changed,boot)
+
+    def test_directory_budget_stops_enumeration_before_materializing_all_entries(self):
+        consumed, closed = [], []
+        @contextmanager
+        def scan(path):
+            def entries():
+                for n in range(10000):
+                    consumed.append(n)
+                    yield SimpleNamespace(name=str(n),path=str(path / str(n)))
+            try: yield entries()
+            finally: closed.append(True)
+        with patch.object(r.os,'scandir',side_effect=scan),self.assertRaises(ValueError):
+            r.bounded_entries(Path('/synthetic/task'),'thread',limit=256)
+        self.assertEqual(len(consumed),257)
+        self.assertEqual(closed,[True])
+
+    def test_empty_missing_compute_and_single_interval_cannot_complete_collection(self):
+        evidence = r.CollectionEvidence()
+        for reason in ('deadline','target_exited'):
+            self.assertFalse(evidence.terminal(reason)['collection_complete'])
+        evidence.observe(dict(clients=[],engine_intervals=[]))
+        evidence.observe(dict(clients=[{}],engine_intervals=[dict(engine='bcs',eligible=True)]))
+        self.assertEqual(evidence.terminal('deadline')['eligible_samples'],0)
+        # Two clients in one sample still provide only one eligible time sample.
+        row = dict(clients=[{},{}],engine_intervals=[dict(engine='ccs',eligible=True)]*2)
+        evidence.observe(row)
+        self.assertFalse(evidence.terminal('target_exited')['collection_complete'])
+        evidence.observe(row)
+        for reason in ('deadline','target_exited'):
+            terminal = evidence.terminal(reason)
+            self.assertTrue(terminal['collection_complete'])
+            self.assertEqual(terminal['eligible_samples'],2)
+            self.assertEqual(terminal['eligible_intervals'],4)
+            self.assertFalse(terminal['model_phase_qualified'])
+        self.assertFalse(evidence.terminal('error','identity changed')['collection_complete'])
+
     def test_units_capacity_and_unsupported_counters(self):
         row=r.parse_fdinfo(text())
         self.assertEqual(row['engines']['ccs'],dict(busy=100,total=1000,capacity=1))
