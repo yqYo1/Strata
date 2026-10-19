@@ -15,10 +15,24 @@ import resource_engine as r
 
 class SourceProofTests(unittest.TestCase):
     def test_closed_diagnostic_cannot_restart_after_raw_root_retirement(self):
-        with patch.object(r,'RESULT') as result,patch.object(r.generation,'committed') as load:
-            result.exists.return_value=True
-            with self.assertRaisesRegex(RuntimeError,'closed diagnostic cannot be retried'):r.prepare()
-            load.assert_not_called()
+        import copy
+        previous=dict(mode='client-resources',diagnostic_version=1,complete=True,passed=True,
+            ownership_closed=True,active=False,fresh_faults=[],resource_admission_qualified=True,
+            artifact_retirement=dict(complete=True))
+        for variant in ('new_capture_exists','incomplete','failed','active','open_owner','fault',
+                        'unadmitted','raw_still_needed'):
+            with self.subTest(variant=variant):
+                changed=copy.deepcopy(previous)
+                if variant=='new_capture_exists':changed['diagnostic_version']=2
+                if variant=='incomplete':changed['complete']=False
+                if variant=='failed':changed['passed']=False
+                if variant=='active':changed['active']=True
+                if variant=='open_owner':changed['ownership_closed']=False
+                if variant=='fault':changed['fresh_faults']=['GPU fault']
+                if variant=='unadmitted':changed['resource_admission_qualified']=False
+                if variant=='raw_still_needed':changed['artifact_retirement']['complete']=False
+                with patch.object(r.generation,'committed',return_value=changed):
+                    with self.assertRaisesRegex(RuntimeError,'no automatic retry'):r.prepare()
 
     def test_result_clocks_and_work_must_equal_the_verified_journal(self):
         journal=[dict(workload='regular-code',request_sha256='a'*64,read_tokens=33000,

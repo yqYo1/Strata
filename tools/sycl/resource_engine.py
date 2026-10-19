@@ -20,7 +20,7 @@ from build_engine import blobs
 
 P, B, A = generation.P, generation.B, generation.A
 RESULT = A / 'client-resources-current.json'
-ROOT = B / 'decode-client-resources-v1'
+ROOT = B / 'decode-client-resources-v2'
 READER = P / 'bench/sycl/client_resources.py'
 sys.path.insert(0, str(READER.parent))
 import client_resources
@@ -60,7 +60,16 @@ def source_proof(record):
 
 
 def prepare():
-    guards.require(not RESULT.exists(), 'closed diagnostic cannot be retried; commit a new distinct plan')
+    previous = generation.committed(RESULT)
+    guards.require(previous.get('mode') == 'client-resources' and
+        previous.get('diagnostic_version', 1) == 1 and previous.get('complete') is True and
+        previous.get('passed') is True and previous.get('ownership_closed') is True and
+        not previous.get('active') and not previous.get('fresh_faults') and
+        previous.get('resource_admission_qualified') is True and
+        previous.get('artifact_retirement', {}).get('complete') is True,
+        'collector-only diagnostic requires the closed admitted first capture; no automatic retry')
+    previous_raw = RESULT.read_bytes()
+    previous_commit = generation.git('log','-1','--format=%H','--',str(RESULT.relative_to(P))).decode().strip()
     closed = generation.committed(generation.RESULT)
     summary = closed['engine_comparison_summary']
     guards.require(closed['complete'] and closed['passed'] and closed['ownership_closed'] and
@@ -73,7 +82,10 @@ def prepare():
     guards.require(old['complete'] and old['passed'] and old['ownership_closed'] and not old['fresh_faults'] and
         old['engine_arm'] == 'old' and old['observer_records_absent'], 'invalid selected old-engine qualification')
     receipt_path = B / 'known-good-396d0c91f301/source-build.json'
-    record = dict(schema=1, mode='client-resources', source_commit=generation.git('rev-parse', 'HEAD').decode().strip(),
+    record = dict(schema=1, mode='client-resources', diagnostic_version=2,
+        source_commit=generation.git('rev-parse', 'HEAD').decode().strip(),
+        previous_capture=dict(commit=previous_commit,path=str(RESULT.relative_to(P)),
+            sha256=hashlib.sha256(previous_raw).hexdigest()),
         reference=dict(commit=revision, path=path, sha256=hashlib.sha256(raw).hexdigest()),
         binary=old['binary'], build_source_commit=old['build_source_commit'],
         source_build_record=dict(path=str(receipt_path), sha256=old['engine_build_receipts'][str(receipt_path)]),
@@ -81,8 +93,8 @@ def prepare():
             sha256=old['engine_build_receipts'][str(generation.common.BUILD)]),
         runtime_asset_delta=old['runtime_asset_delta'], complete=False, passed=False, active=False,
         clean_speed_qualified=False, hardware_bottleneck_qualified=False, model_quality_qualified=False,
-        purpose='First bounded passive xe/client CPU collection; measure client generation intervals on the old speed reference.',
-        prospective_gates='Normal official regular-code request after four successful warmups, thinking enabled, at least32768 fresh inputs and1024 generated tokens, answer and engine clocks. Exact source/recipe/runtime/binary binding, reader exit0 and explicit terminal, recomputed eligible CCS intervals inside the observed first-output-to-response-end span. Preserve incomplete/no-data/fault outcomes. No clean speed, engine choice, physical traffic, saturation or70tok/s qualification.',
+        purpose='Confirm the first admitted resource observation with only the external collector: remove parameter validation/stage progress, use the same selected old engine and official workload. Scheduled CPU and CCS cycles do not isolate useful arithmetic or physical traffic.',
+        prospective_gates='One diagnostic process, no automatic retry. Normal official regular-code request after four successful warmups, thinking enabled, at least32768 fresh inputs and1024 generated tokens, answer and engine clocks. Exact source/recipe/runtime/binary binding, immutable collector-only environment preserving qualified safety settings, journal-bound work/client clocks, reader exit0 and explicit terminal, recomputed eligible CCS intervals inside observed request windows. Preserve incomplete/no-data/fault outcomes. No clean-speed/observer-overhead, engine-choice, physical-traffic, saturation or70tok/s qualification. Review the original and new samples separately; elapsed-time differences are not a matched overhead estimate.',
         budgets=dict(wall=1800,cpu=54000,rss_cap=96<<30,text_cap=64<<20,file_cap=64<<20,total_cap=64<<20))
     record['original_native_inputs_recovered'] = source_proof(record)
     generation.runtime_assets_unchanged(record)
@@ -91,10 +103,13 @@ def prepare():
     for name in ('cache', 'tmp'): (ROOT/name).mkdir()
     original_root = old['environment']['STRATA_MEASUREMENT_ROOT']
     env = {k:v.replace(original_root,str(ROOT)) for k,v in old['environment'].items()}
-    env.update(UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION', STRATA_TRACE='1')
     settings = generation.committed(generation.SETTINGS)
-    env.update({k:v for k,v in settings['environment'].items() if k.startswith('UR_LOG_') and k!='UR_LOG_TRACING'})
-    for key in ('STRATA_DECODE_CPU_PROFILE','STRATA_DECODE_TIMING'): guards.require(key not in env,'no internal CPU/wall observers')
+    for key in ('UR_ENABLE_LAYERS','UR_LOG_TRACING','STRATA_TRACE',
+                'STRATA_DECODE_CPU_PROFILE','STRATA_DECODE_TIMING'):
+        guards.require(key not in env,'collector-only environment contains an internal observer: '+key)
+    for key in ('UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD','NEOReadDebugKeys','EnableDirectSubmission',
+                'STRATA_SYCL_PREFILL_SAME_QUEUE'):
+        guards.require(env[key] == settings['environment'][key], 'qualified safety setting differs: '+key)
     config = copy.deepcopy(old['config'])
     config['args'][config['args'].index('--expert-profile')+1] = str(ROOT/'expert-profile.bin')
     config.update(log=str(ROOT/'engine.stderr'),env={})
@@ -163,7 +178,10 @@ def run():
         guards.require(not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|retirement failed|Strata SYCL cleanup:',log), 'runtime failure')
         samples=[json.loads(line) for line in (ROOT/'client-resources.jsonl').read_text().splitlines()]
         record['resources']=client_resources.summarize_capture(samples,end['native'],boot,rows[0]['client_interval'])
+        record['resource_evidence_sha256']=dict(official_result=generation.common.digest(result),
+            capture=generation.common.digest(ROOT/'client-resources.jsonl'))
         generation.runtime_assets_unchanged(record)
+        record['resource_admission_qualified']=True
         record['passed']=True
     except BaseException as error:
         record['error']=str(error)
