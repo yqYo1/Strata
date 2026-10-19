@@ -15,7 +15,7 @@ import measurement_owner as supervision
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
 ENGINE = B / 'main-native-gdn-engine'
-ROOT = B / 'verifier-copy-safety-v5'
+ROOT = B / 'verifier-copy-safety-v7'
 A = P / 'bench/results/2026-10-15-pr6-recovery-audit'
 SETTINGS = P / 'tools/sycl/measurement_environment.json'
 RESULT = A / 'verifier-copy-safety-current.json'
@@ -75,6 +75,11 @@ def main():
                 guards.require(digest(name) == expected, 'runtime asset changed: ' + name)
 
         runtime_unchanged()
+        previous = subprocess.check_output(['git', 'show', 'HEAD:' + str(RESULT.relative_to(P))], cwd=P)
+        guards.require(previous == RESULT.read_bytes(), 'commit the prior component outcome first')
+        previous_reference = dict(commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip(),
+            path=str(RESULT.relative_to(P)),sha256=hashlib.sha256(previous).hexdigest(),
+            outcome='Original v6 host-task gate failed after51 existing passes; this new finite-DMA plan does not change that outcome.')
         guards.require(not ROOT.exists(), 'inspect/close the existing owned check; no automatic retry')
         ROOT.mkdir(mode=0o700)
         for name in ('tmp', 'cache'): (ROOT / name).mkdir()
@@ -86,10 +91,12 @@ def main():
             environment_reference=str(SETTINGS.relative_to(P)), environment_sha256=digest(SETTINGS),
             runtime_asset_delta={n: dict(qualified_sha256=v[0], candidate_sha256=v[1]) for n,v in DELTA.items()},
             checks=[], complete=False, passed=False, active=False, model_performance_measured=False,
+            previous_result_reference=previous_reference,
+            per_fixture_budgets=dict(wall_seconds=180,cpu_seconds=600,rss_bytes=4<<30,text_bytes=64<<20,total_bytes=64<<20),
             model_quality_qualified=False, model_route_executed=False, ordinary_arena_copy_default_enabled=False,
-            consumer='Prerequisite for the default-off ordinary-Arena explicit-copy model check. Retire normal traces after compact results are verified and committed.',
-            gate='Same-build native provider17, submission10, verifier8 and staged grouped-arithmetic16 cases. Require exact unchanged-Q8_1 arithmetic against separate GPU projections, finite/nonzero reference outputs, full-window/row mapping, copy payload and outer guards. Checked owners and unchanged boot/runtime/source, no fresh GPU fault. Any failure blocks advancement.',
-            limits='Grouped component covers all seven current model GU/Down pairs plus supported IQ4_XS/Q2_0 at H2560/FF640, windows1/4, groups10/16 and entries10/40, using two distinct blobs repeated in metadata. The oracle shares native scalar projection primitives; it isolates copy/grouping from separate execution, not common-mode projection defects or model quality. No invalid GPU address, stalled kernel, model, physical262144/session/RESTORE or throughput qualification.')
+            consumer='Prerequisite for the default-off event-gated early copied-expert model check. Retire normal traces after compact results are verified and committed.',
+            gate='Same-build native provider17, submission10, verifier8, staged grouped-arithmetic16 and early copied-graph6 cases. The first early case uses32 warmed64MiB host-USM-to-device copies on the same in-order copy queue (2GiB total,128MiB scratch). Gate enqueue and production fetch must each return within100ms; independent resident work must finish, copied completion stay NotReady for50ms and an atomic probe see untouched output while the finite gate remains pending. Then require natural completion and full payload/guard/retirement checks. No resize/retry on a short gate. Require exact unchanged-Q8_1 arithmetic against separate GPU projections, finite/nonzero reference outputs, full-window/row mapping, checked owners and unchanged boot/runtime/source, no fresh GPU fault. Any failure blocks advancement.',
+            limits='The six early cases check real-queue synthetic ordering, replay, source retirement and refusal, not native projection equivalence or model overlap. Grouped component covers all seven current model GU/Down pairs plus supported IQ4_XS/Q2_0 at H2560/FF640, windows1/4, groups10/16 and entries10/40, using two distinct blobs repeated in metadata. The oracle shares native scalar projection primitives; it isolates copy/grouping from separate execution, not common-mode projection defects or model quality. No invalid GPU address, stalled kernel, model, physical262144/session/RESTORE or throughput qualification.')
         owner = None
 
         def persist():
@@ -99,12 +106,16 @@ def main():
         owner = supervision.Owner(ROOT / 'owned', persist)
         persist()
         try:
-            for name, args in [('file_expert_source_test', []), ('sycl_submission_test', ['--submission']),
-                               ('sycl_verifier_retirement_test', []), ('sycl_mmvq_test', ['--arena-grouped'])]:
+            for label, name, args in [
+                    ('provider', 'file_expert_source_test', []),
+                    ('submission', 'sycl_submission_test', ['--submission']),
+                    ('retirement', 'sycl_verifier_retirement_test', []),
+                    ('grouped', 'sycl_mmvq_test', ['--arena-grouped']),
+                    ('early', 'sycl_verifier_retirement_test', ['--early'])]:
                 fixture = build['fixtures'][name]
                 command = [fixture['path'], *args]
-                entry, out, err = owner.run(name, command, env, P, wall=180, cpu=600,
-                    rss_cap=4 << 30, file_cap=64 << 20, text_cap=64 << 20, total_cap=128 << 20)
+                entry, out, err = owner.run(label, command, env, P, wall=180, cpu=600,
+                    rss_cap=4 << 30, file_cap=64 << 20, text_cap=64 << 20, total_cap=64 << 20)
                 stdout, stderr = out.read_text(errors='replace'), err.read_text(errors='replace')
                 record['last_fixture'] = dict(name=name,command=command,exit_code=entry.get('exit_code'),
                     ownership_closed=supervision.closed(entry),stdout_sha256=digest(out),stderr_sha256=digest(err))
@@ -121,6 +132,23 @@ def main():
                     guards.require(len(cases) == 10 and 'fixture_status=PASS mode=submission' in stdout and
                         not re.search('UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed', stderr),
                         'submission contracts failed: ' + (stdout + stderr)[-8192:])
+                elif name == 'sycl_verifier_retirement_test' and args == ['--early']:
+                    cases = [x for x in stdout.splitlines() if x.startswith('case=')]
+                    expected = [('early','F'), ('early-large','G'), ('early-empty','H'),
+                                ('early-replay','I'), ('early-plan','J'), ('early-unrecorded','K')]
+                    guards.require(cases == [f'case={n} expected_exit=0 markers={m} PASS' for n,m in expected]
+                        and 'early_fixture_status=PASS cases=6' in stdout
+                        and not re.search('UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed', stderr),
+                        'early scheduling contracts failed: ' + (stdout + stderr)[-8192:])
+                    gate_rows=re.findall(r'^early_dma_gate bytes=(\d+) copies=(\d+) submit_us=(\d+) fetch_us=(\d+) pending_us=(\d+) resident=PASS output=PASS natural_completion=PASS$',stdout,re.M)
+                    guards.require(len(gate_rows)==1, 'missing or ambiguous finite DMA gate evidence')
+                    evidence=dict(zip(('bytes','copies','submit_us','fetch_us','pending_us'),map(int,gate_rows[0])))
+                    guards.require(evidence['bytes']==2<<30 and evidence['copies']==32 and
+                        evidence['submit_us']<=100000 and evidence['fetch_us']<=100000 and evidence['pending_us']>=50000,
+                        'finite DMA observation/submit budget failed')
+                    record['early_gate_evidence']=dict(evidence,kind='finite_dma',resident_progress=True,
+                        output_untouched=True,natural_completion=True)
+                    record['early_pcie_copy_contract_passed'] = True
                 elif name == 'sycl_verifier_retirement_test':
                     cases = [x for x in stdout.splitlines() if x.startswith('case=')]
                     expected = [('success',0,'S'), ('large',0,'L'), ('empty',0,'Z'), ('partial',0,'P'), ('bounds',0,'B'),

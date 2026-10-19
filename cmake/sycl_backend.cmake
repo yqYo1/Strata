@@ -130,6 +130,9 @@ target_link_libraries(strata_engine PUBLIC strata_core strata_kernels strata_ker
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   add_executable(sycl_verifier_retirement_test EXCLUDE_FROM_ALL tests/sycl/verifier_retirement.cpp)
   target_link_libraries(sycl_verifier_retirement_test PRIVATE strata_engine)
+  # Explicit native-event interop qualification only; never a production dependency.
+  add_executable(sycl_host_event_gate_test EXCLUDE_FROM_ALL tests/sycl/host_event_gate.cpp)
+  target_link_libraries(sycl_host_event_gate_test PRIVATE strata_sycl_runtime ze_loader)
 endif()
 
 set(MKL_LINK dynamic)

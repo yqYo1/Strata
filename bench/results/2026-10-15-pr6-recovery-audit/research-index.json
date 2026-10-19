@@ -4025,13 +4025,15 @@
       "sha256": "0337f51defd56a10886d1963691b9d8ec7063294c45fe38f341bbbfe14cc5285",
       "main_read_original_body": false
     },
-    "pending_gate": "Compile exact corrected source and explicitly run51 existing plus6 early cases; source review is not compilation, runtime validation, speed or adoption.",
+    "pending_gate": "Source246415bfc compiled and51 existing same-build cases passed; first new early case failed the finite host-task gate, with no GPU fault and normal closure. Replace the gate under a fresh committed plan and pass all57 before any small/long model execution.",
     "source_followups": {
       "namespace_fix": "b0db43721ec33935bf6ed0f7e807965baae8cae7",
       "controlled_gate_source": "2243e83fc26f74ab82d459a6c48753b2ad4a982b",
       "checked_release_source": "6bfebe2ebd9c02e8550c0be7dea354eb746144b3",
       "checked_release_correction": "Gate timeout and manual release checked under the same mutex; automatic release cannot pass between a held check and explicit release.",
-      "build_or_gpu_execution": false
+      "build_or_gpu_execution": true,
+      "capture_mode_fix": "246415bfc3f8d68242b067ca49723c23c3e96be7",
+      "model_execution": false
     }
   },
   "early_pcie_projection_fixture_source_scope": {
@@ -4063,7 +4065,7 @@
       "sha256": "0337f51defd56a10886d1963691b9d8ec7063294c45fe38f341bbbfe14cc5285",
       "main_read_original_body": false
     },
-    "pending_gate": "Compile exact corrected source and explicitly run51 existing plus6 early cases; source review is not compilation, runtime validation, speed or adoption."
+    "pending_gate": "Source246415bfc compiled and51 existing same-build cases passed; first new early case failed the finite host-task gate, with no GPU fault and normal closure. Replace the gate under a fresh committed plan and pass all57 before any small/long model execution."
   },
   "decode_moe_projection_payload_collection_scope": {
     "classification": "knowledge collection",
@@ -4082,12 +4084,18 @@
         "evidence": "New bounded projection-placement or actual native-format dispatch question, with no build/model prerequisite; read-only source paths remain frozen until this report settles."
       }
     ],
-    "status": "dispatched_read_only_research",
-    "consumer": "Review novelty and applicability via native Luna-max; retrieve only for the concrete next decode architecture decision.",
-    "task_id": "task_76ba4afa6b1a",
-    "dispatch_id": "ctx_6536c3df04b3",
-    "terminal": "term_1672cef1-790a-47c6-88b0-9937c81def34",
-    "process_incarnation": "5fe4e8ac-0321-449b-b256-ff777e405f1b::/home/yayoi/orca/workspaces/Strata/sycl@@d46105c3:105571b7-067f-4ef7-ac13-8ccd34a1001a"
+    "status": "curated_native_reviewed_workers_and_terminals_closed",
+    "consumer": "Conditional reusable design/source reference. Retrieve relevant sections only for an actual placement or future-format decision; no implementation gain/adoption follows from report completion.",
+    "worker_closed": true,
+    "terminal_closed": true,
+    "report_sha256": "a8421ebf8b2132092da62df118f5354192fccd154361781658ae734c33e11962",
+    "report_bytes": 10434,
+    "operational_digest": "Conditional placement/sharding reference, with activation/reduction/ownership tradeoffs and corrected optional SGLang KTransformers-wrapper context. Does not establish local speed or physical traffic.",
+    "native_review": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/decode-payload-cpu-native-review.json",
+      "sha256": "dbfba62d24a321a5b5ac44ac0be3088582b7d4720a6046ae391fa1aba4f60f08",
+      "main_read_original_body": false
+    }
   },
   "native_cpu_format_dispatch_source_scope": {
     "classification": "decision support",
@@ -4106,11 +4114,166 @@
         "evidence": "New bounded projection-placement or actual native-format dispatch question, with no build/model prerequisite; read-only source paths remain frozen until this report settles."
       }
     ],
+    "status": "curated_native_reviewed_workers_and_terminals_closed",
+    "consumer": "Conditional reusable design/source reference. Retrieve relevant sections only for an actual placement or future-format decision; no implementation gain/adoption follows from report completion.",
+    "worker_closed": true,
+    "terminal_closed": true,
+    "report_sha256": "bd622a8fa95de07e789ebfbf06b23d2da4268915acac4bb974cba9b85dc54571",
+    "report_bytes": 8463,
+    "operational_digest": "Curated correction: production pool.cpp uses q2_rows_any and AVX2 on Zen3 for native Q2_0 Down; current Down20/42 already have specialized paths. The proposed Q2_0 gap is false; IQ multirow Down applicability is future-model-only.",
+    "native_review": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/decode-payload-cpu-native-review.json",
+      "sha256": "dbfba62d24a321a5b5ac44ac0be3088582b7d4720a6046ae391fa1aba4f60f08",
+      "main_read_original_body": false
+    }
+  },
+  "sycl_pending_host_task_submission_scope": {
+    "classification": "decision support",
+    "question": "Explain the observed host submission stall from the actual SYCL/UR/LevelZero contract: in-order queue with an unresolved host_task, subsequent USM copies/barriers/command graphs and profiling enabled. Compare safe deterministic ordering-test gates based on finite normal DMA/compute work, host-task dependencies and externally signalled native events; identify what each actually proves and where runtime submission may legally block. Preserve the test requirement that independent resident work progresses, copied completion stays pending, output stays untouched and all owners drain. Do not repeat the already reviewed production DAG or implement code. Focus on forward progress and test mechanism validity; native-event factory details belong to the other scope.",
+    "source_commit": "53d22276e05a95146b6ef0c60fb2ed30cecf2384",
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/sycl-pending-host-task-submission-report.md",
+    "report_budget_bytes": 12288,
+    "schedulable_now": false,
+    "prerequisites": [
+      {
+        "met": true,
+        "evidence": "Compiled candidate passed51 same-build cases; first early case failed its bounded host gate before model execution, normal closure and no GPU fault."
+      },
+      {
+        "met": true,
+        "evidence": "Concrete runtime-contract/test-mechanism gap not covered by earlier source-only DAG audits; source hashes and representative failure trace available."
+      }
+    ],
+    "status": "native_reviewed_workers_and_terminals_closed",
+    "consumer": "Select a deterministic replacement gate before any early-scheduling model execution; native Luna-max reviews reports and source/API corrections.",
+    "report_sha256": "795282aeaa1e583481c09decbeacfb3a19f8eb81473ce96a82f8039d30e8e4f2",
+    "ownership_closed": true,
+    "worker_outcome": "succeeded",
+    "review": ".cache/strata-research/20261020/copy-gate-runtime-native-review.json",
+    "closure_evidence": "Accepted matching worker_done; release reported no_owned_resource. Exact original incarnation rechecked, tui-idle satisfied, operator-owned terminal closed with ptyKilled=true; delivery acknowledged.",
+    "review_sha256": "838cd4bb8c42631a30295bb76f64b0fd039c8f209de8e1a3f5f6733258455216",
+    "decision": "Implement a separate bounded finite-DMA v7 fixture first, preserving pending/output/progress/owner assertions. Native external-event gate remains conditional on separate runtime qualification. No model or throughput qualification."
+  },
+  "native_l0_host_event_gate_scope": {
+    "classification": "decision support",
+    "question": "Evaluate a bounded externally host-signalled LevelZero event imported into SYCL as a replacement test-only copy-queue gate. Establish exact supported get_native/make_event signatures, event pool/device/context matching, host-visible pool and event signal/wait scopes, ownership::keep versus transfer, barrier/graph dependency interoperability, event/pool/wrapper lifetime, link/dynamic-loader requirements and timer-thread/RAII release order. Would an initially unsignalled imported event cause host API blocking in this backend? Compare documented guarantees with unknowns and propose a safe bounded qualification order, without running APIs or writing code. The installed third-party Intel-LLVM header (not XeStrata implementation) is /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl/ext/oneapi/backend/level_zero.hpp; use only original Intel-LLVM compiler headers under that .tools/intel-llvm-v711/install/include directory and official LevelZero headers/docs. No XeStrata application sources. Compare installed header signatures with pinned official originals; no assumptions from newer APIs.",
+    "source_commit": "53d22276e05a95146b6ef0c60fb2ed30cecf2384",
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/native-l0-host-event-gate-report.md",
+    "report_budget_bytes": 12288,
+    "schedulable_now": false,
+    "prerequisites": [
+      {
+        "met": true,
+        "evidence": "Compiled candidate passed51 same-build cases; first early case failed its bounded host gate before model execution, normal closure and no GPU fault."
+      },
+      {
+        "met": true,
+        "evidence": "Concrete runtime-contract/test-mechanism gap not covered by earlier source-only DAG audits; source hashes and representative failure trace available."
+      }
+    ],
+    "status": "native_reviewed_workers_and_terminals_closed",
+    "consumer": "Select a deterministic replacement gate before any early-scheduling model execution; native Luna-max reviews reports and source/API corrections.",
+    "report_sha256": "e8b469c10c3977865fc3c11a9e0205568d41616fae53b902211fbb772dddadca",
+    "ownership_closed": true,
+    "worker_outcome": "succeeded",
+    "review": ".cache/strata-research/20261020/copy-gate-runtime-native-review.json",
+    "closure_evidence": "Accepted matching worker_done; release reported no_owned_resource. Exact original incarnation rechecked, tui-idle satisfied, operator-owned terminal closed with ptyKilled=true; delivery acknowledged.",
+    "review_sha256": "838cd4bb8c42631a30295bb76f64b0fd039c8f209de8e1a3f5f6733258455216",
+    "decision": "Implement a separate bounded finite-DMA v7 fixture first, preserving pending/output/progress/owner assertions. Native external-event gate remains conditional on separate runtime qualification. No model or throughput qualification."
+  },
+  "finite_dma_gate_source_audit_scope": {
+    "classification": "decision support",
+    "question": "Audit current finite-DMA fixture bounds, actual event/graph ordering, negative assertions, partial-submit/error retirement and queue owner lifetime; distinguish source blockers from runtime progress requirements.",
+    "source_manifest": ".cache/strata-research/20261020/finite-dma-gate-source-inputs.json",
+    "report": ".cache/strata-research/20261020/finite-dma-gate-source-audit-report.md",
+    "report_budget_bytes": 12288,
+    "schedulable_now": false,
+    "prerequisites": [
+      {
+        "met": true,
+        "evidence": "Named source manifest verified against actual files before launch; previous report index and corrected facts shared; concrete new source/inner-loop question."
+      }
+    ],
+    "status": "native_reviewed_workers_and_terminals_closed",
+    "consumer": "Native Luna-max report review; Main implements and owns all tests. Collection body is retrieved only for a concrete future kernel decision.",
+    "report_sha256": "1c21a8a3c47329f7c03cb7dd7cfa988956c6d82ec393604fd3a26a0dc798d7b9",
+    "ownership_closed": true,
+    "worker_outcome": "succeeded",
+    "review": ".cache/strata-research/20261020/finite-dma-gate-native-review.json",
+    "closure_evidence": "Accepted matching worker_done, release no_owned_resource; verified exact incarnation and tui-idle, closed operator-owned terminal with ptyKilled=true, then acknowledged delivery.",
+    "review_sha256": "dca96fb7539109c7d2df0d9eccff0e09070b2dbf7600868bffacf5caa960f75d",
+    "decision": "Source has no blocker; actual v7 first early admission failed because the fixed finite DMA was complete before observations. Preserve failure, no resize/retry; next isolated native-event qualification is separate from model admission."
+  },
+  "zen3_avx2_expert_instruction_collection_scope": {
+    "classification": "knowledge collection",
+    "question": "Compare actual current AVX2 quantized expert inner-loop instructions/load/dequantization/register reuse against original Zen3-compatible implementations, without repeating dispatch/batching surveys or assuming missing Q2 specialization.",
+    "source_manifest": ".cache/strata-research/20261020/native-cpu-format-inputs.json",
+    "report": ".cache/strata-research/20261020/zen3-avx2-expert-instruction-report.md",
+    "report_budget_bytes": 12288,
+    "schedulable_now": false,
+    "prerequisites": [
+      {
+        "met": true,
+        "evidence": "Named source manifest verified against actual files before launch; previous report index and corrected facts shared; concrete new source/inner-loop question."
+      }
+    ],
+    "status": "native_reviewed_workers_and_terminals_closed",
+    "consumer": "Native Luna-max report review; Main implements and owns all tests. Collection body is retrieved only for a concrete future kernel decision.",
+    "report_sha256": "a99ac674afc23f2871722e031bd274762f9500c30648fcb8c5c375ace1ac89ba",
+    "ownership_closed": true,
+    "worker_outcome": "succeeded",
+    "review": ".cache/strata-research/20261020/zen3-avx2-instruction-native-review.json",
+    "closure_evidence": "Accepted matching worker_done, release no_owned_resource; verified exact incarnation and tui-idle, closed operator-owned terminal with ptyKilled=true, then acknowledged delivery.",
+    "review_sha256": "5b35a798f980be056d09be344c6df0ce19681a717d613c3231123d48cbedf966",
+    "type_correction": "Assignment labels were wrong: native20=IQ4_NL,42=Q2_0,10=Q2_K. Current20/42 Down already have specialized routes; no missing-Q2 dispatch gap.",
+    "next_scope": {
+      "schedulable_now": false,
+      "prerequisites": [
+        "Qualified CPU critical-path attribution, observed group/row volumes and assembly/counter evidence must identify an instruction/load bottleneck before selecting a specific kernel candidate."
+      ]
+    }
+  },
+  "native_event_gate_qualification_source_scope": {
+    "classification": "decision support",
+    "question": "Audit newly authored native-event gate/import/copy/graph qualifier for actual API/capture/timer/ownership failure paths, preserving finite timing and pending/progress assertions.",
+    "source_manifest": ".cache/strata-research/20261020/native-event-gate-qualification-inputs.json",
+    "report": ".cache/strata-research/20261020/native-event-gate-qualification-source-report.md",
+    "report_budget_bytes": 12288,
+    "schedulable_now": false,
+    "prerequisites": [
+      {
+        "met": true,
+        "evidence": "New native-event fixture/controller committed394217504 after two distinct gate failures and native contract review; fixed six-file manifest checked before launch."
+      }
+    ],
+    "status": "native_reviewed_workers_and_terminals_closed",
+    "consumer": "Native Luna-max reviews source blockers before this test-only method can replace the production-verifier fixture gate; no model admission from source review.",
+    "report_sha256": "27cc2b44f506d0e0adf177f6570383ab49fed28a66d52de1874feb94489ff9f7",
+    "ownership_closed": true,
+    "worker_outcome": "succeeded",
+    "review": ".cache/strata-research/20261020/native-event-gate-source-native-review.json",
+    "closure_evidence": "Accepted matching worker_done, release no_owned_resource; exact incarnation and tui-idle verified, operator terminal closed with ptyKilled=true, delivery acknowledged.",
+    "review_sha256": "c5630dd6a3892e395a643b1b12f3cd0be7fe7d35c3fdf29f7de5678363d9c0c4",
+    "decision": "Native review rejects the claimed output race: both writer/probe use atomic_ref, setup/reset memset finishes beforehand. Actual compile blocker is the wrong graph include. Main uses graph.hpp from the installed original Intel LLVM v7.1.1 header and existing compat.cpp; corrected source needs a fresh build and runtime qualification."
+  },
+  "ur_v2_resident_event_wait_source_scope": {
+    "classification": "decision support",
+    "question": "Trace compatible original UR LevelZero-v2 EventWait/query event association and queue/engine scheduling for the concrete earlier-resident-event/later-pending-barrier failure. Distinguish host wait behavior, actual device progress and source-version mapping uncertainty; do not assume a driver bug.",
+    "source_manifest": ".cache/strata-research/20261020/ur-v2-resident-event-wait-inputs.json",
+    "report": ".cache/strata-research/20261020/ur-v2-resident-event-wait-report.md",
+    "report_budget_bytes": 12288,
+    "schedulable_now": false,
+    "prerequisites": [
+      {
+        "met": true,
+        "evidence": "Original native-event import passes; closed copy case fails its resident-progress criterion, with exact UR trace/enqueue order and pinned installed runtime identities. Previous reports do not trace this concrete UR EventWait implementation."
+      }
+    ],
     "status": "dispatched_read_only_research",
-    "consumer": "Review novelty and applicability via native Luna-max; retrieve only for the concrete next decode architecture decision.",
-    "task_id": "task_9f0db0aa3a00",
-    "dispatch_id": "ctx_80e589e29840",
-    "terminal": "term_a757dd41-f973-40da-bba0-03a8e38029f4",
-    "process_incarnation": "5fe4e8ac-0321-449b-b256-ff777e405f1b::/home/yayoi/orca/workspaces/Strata/sycl@@e5d472ad:1c33b907-76c1-4846-865f-a1d5a825e61d"
+    "consumer": "Select a source-supported next gate/observation method; preserve failed qualification and all negative assertions. Main owns serialized tests.",
+    "task_id": "task_bab6db1449e3",
+    "dispatch_id": "ctx_3ed5f0a2dc33",
+    "terminal": "term_d2f26270-e550-4acd-8696-20030c617c26",
+    "process_incarnation": "5fe4e8ac-0321-449b-b256-ff777e405f1b::/home/yayoi/orca/workspaces/Strata/sycl@@3c6af2a4:e47dd584-0ef0-4fae-b2df-63ff3d4b3f18"
   }
 }

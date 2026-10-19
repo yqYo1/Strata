@@ -175,15 +175,18 @@ def retain_current():
 
 def main():
     guards.require(len(sys.argv) == 1 or sys.argv[1:] in
-                   (['retain-current'], ['build-copy-safety'], ['rebuild-copy-safety'], ['rebuild-arena-copy'], ['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn'], ['rebuild-down'], ['rebuild-ordered'], ['rebuild-submission'], ['rebuild-gu'], ['rebuild-mixed'], ['rebuild-expert-bank']),
+                   (['retain-current'], ['build-copy-safety'], ['rebuild-copy-safety'], ['rebuild-arena-copy'], ['rebuild-event-gate'], ['rebuild'], ['rebuild-attention'], ['rebuild-gemm'], ['rebuild-gdn'], ['rebuild-down'], ['rebuild-ordered'], ['rebuild-submission'], ['rebuild-gu'], ['rebuild-mixed'], ['rebuild-expert-bank']),
                    'use build_engine.py retain-current or a named rebuild mode')
     rebuild = len(sys.argv) == 2 and sys.argv[1] != 'build-copy-safety'
     attention = sys.argv[1:] == ['rebuild-attention']
     targets = ['strata']
-    if sys.argv[1:] in (['build-copy-safety'], ['rebuild-copy-safety'], ['rebuild-arena-copy']):
+    event_gate=sys.argv[1:]==['rebuild-event-gate']
+    if sys.argv[1:] in (['build-copy-safety'], ['rebuild-copy-safety'], ['rebuild-arena-copy'], ['rebuild-event-gate']):
         targets += ['sycl_verifier_retirement_test', 'sycl_submission_test']
-    if sys.argv[1:] == ['rebuild-arena-copy']:
+    if sys.argv[1:] in (['rebuild-arena-copy'],['rebuild-event-gate']):
         targets += ['file_expert_source_test', 'sycl_mmvq_test']
+    if event_gate:
+        targets += ['sycl_host_event_gate_test']
     if attention:
         targets += ['sycl_qsa_bf16_late_flags_test', 'sycl_qsa_bf16_prefix_optimized_test',
                     'sycl_qsa_bf16_prefix_qcache_test', 'sycl_qsa_bf16_prefix_kvec4_test',
@@ -271,6 +274,7 @@ def main():
                           'tools/sycl/check_attention.py',
                           'tools/sycl/check_submission.py',
                           'tools/sycl/check_verifier_retirement.py',
+                          'tools/sycl/check_event_gate.py',
                           'tools/sycl/check_host_profile.py',
                           'tools/sycl/measure_gemm.py',
                           'tools/sycl/measure_gdn_columns.py',
@@ -290,6 +294,12 @@ def main():
         settings = json.loads(SETTINGS.read_text())
         compiler = Path(next(a.split('=', 1)[1] for a in argv if a.startswith('-DCMAKE_CXX_COMPILER=')))
         guards.require(digest(compiler) == settings['compiler_sha256'], 'compiler changed')
+        external_headers={}
+        if event_gate:
+            external_headers={str(path):digest(path) for path in (
+                Path('/usr/include/level_zero/ze_api.h'),
+                compiler.parent.parent/'include/sycl/ext/oneapi/backend/level_zero.hpp',
+                compiler.parent.parent/'include/sycl/ext/oneapi/backend/level_zero_ownership.hpp')}
         ROOT.mkdir(mode=0o700, exist_ok=rebuild)
         for name in ('tmp', 'cache'):
             (ROOT / name).mkdir(exist_ok=rebuild)
@@ -306,6 +316,11 @@ def main():
                       targets=targets,
                       retention_consumer='Current comparison engine and requested fixtures: ' + ', '.join(targets) +
                           '; select the validated generation and retire the extra after qualification/comparison closure.')
+        if external_headers:
+            record['fixture_external_headers']=external_headers
+            record['fixture_external_header_origin']=dict(level_zero='libze-dev installed v1.17-r1.17.24 header',
+                sycl='Installed original Intel LLVM v7.1.1 compiler headers; no XeStrata application source',
+                packages=subprocess.check_output(['dpkg-query','-W','-f=${Package} ${Version}\n','libze-dev','libze1'],text=True).splitlines())
         if retained_reference:
             record['retained_validation_reference'] = retained_reference
         if legacy_exception:
@@ -332,6 +347,8 @@ def main():
             for source in [project, *dependencies]:
                 for name, expected in source['source_sha256'].items():
                     guards.require(digest(Path(source['root']) / name) == expected, 'build input changed: ' + name)
+            for name,expected in external_headers.items():
+                guards.require(digest(name)==expected,'external fixture header changed: '+name)
             database = ROOT / 'build/compile_commands.json'
             entries = json.loads(database.read_text())
             roots = [P, ROOT, *(Path(d['root']) for d in dependencies)]

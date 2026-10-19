@@ -97,5 +97,68 @@ class ArenaScreenTests(unittest.TestCase):
         with self.assertRaises(RuntimeError):screen(altered)
 
 
+class EarlyPcieEvidenceTests(unittest.TestCase):
+    log = ('early PCIe expert graph enabled mode=0 audit=1\n'
+           'strata verify: captured the 1-token window\n'
+           'strata verify: captured the 4-token window\n'
+           'strata serve: SYCL_PCIE_EARLY launches=2 groups=16 '
+           'ready_at_pool_return=1 pending_at_pool_return=1\n'
+           'strata serve: SYCL_PCIE_EARLY launches=3 groups=20 '
+           'ready_at_pool_return=1 pending_at_pool_return=2\n')
+
+    def test_early_groups_bind_to_completed_copies_and_launch_audit(self):
+        from early_pcie import early_evidence
+        rows=early_evidence(self.log,[dict(completed_blobs=16),dict(completed_blobs=20)])
+        self.assertEqual([r['launches'] for r in rows],[2,3])
+        with self.assertRaises(RuntimeError):
+            early_evidence(self.log,[dict(completed_blobs=17),dict(completed_blobs=20)])
+
+    def test_missing_duplicated_or_unaccounted_early_work_is_rejected(self):
+        from early_pcie import early_evidence
+        copied=[dict(completed_blobs=16),dict(completed_blobs=20)]
+        for log in (self.log+self.log,self.log.replace('audit=1','audit=0'),
+                    self.log.replace('captured the 4-token window','capture not reached'),
+                    self.log.replace('pending_at_pool_return=2','pending_at_pool_return=0'),
+                    self.log.replace('launches=2','launches=0')):
+            with self.subTest(log=log):
+                with self.assertRaises(RuntimeError):early_evidence(log,copied)
+
+
+class EarlySchedulingScreenTests(unittest.TestCase):
+    def test_measured_footer_binding_and_clean_observer_exclusion(self):
+        from arena_copy import measured_early_evidence
+        request=dict(prompt_tokens=33211,read_tokens=33211,usage_generated_tokens=2931)
+        body=('strata serve: prompt 33211 tokens = 0 reused + 33211 read in 50 ms (1 tok/s), '
+              '2931 generated in 100 ms (1 tok/s), drafts accepted 5 of 6, 0 checkpoints\n'
+              'strata serve: SYCL_EXPERT_COPY submitted_blobs=16 submitted_bytes=32 completed_blobs=16 '
+              'completed_bytes=32 host_view_groups=16 gpu_miss_groups=16 cpu_unique_misses=40 cpu_entries=60\n'
+              'strata serve: SYCL_PCIE_EARLY launches=2 groups=16 ready_at_pool_return=0 pending_at_pool_return=0\n')
+        log='early PCIe expert graph enabled mode=0 audit=0\ncaptured the 1-token window\ncaptured the 4-token window\n'+body
+        self.assertEqual(measured_early_evidence(log,request,dict(completed_blobs=16),True,False)['groups'],16)
+        audited=log.replace('audit=0','audit=1').replace('pending_at_pool_return=0','pending_at_pool_return=2')
+        self.assertTrue(measured_early_evidence(audited,request,dict(completed_blobs=16),True,True)['audit'])
+        for broken in (log+body,log.replace('2931 generated','2930 generated'),
+                       log.replace('groups=16','groups=15'),log.replace('pending_at_pool_return=0','pending_at_pool_return=1'),
+                       log.replace('audit=0','audit=1')):
+            with self.assertRaises(RuntimeError):measured_early_evidence(broken,request,dict(completed_blobs=16),True,False)
+        self.assertEqual(measured_early_evidence('',request,{},False,False),dict(enabled=False))
+        with self.assertRaises(RuntimeError):measured_early_evidence(log,request,{},False,False)
+
+    def test_screen_requires_real_early_and_copy_evidence_in_each_arm(self):
+        from arena_copy import screen
+        rows=[dict(arm=arm,passed=True,ownership_closed=True,source_commit='a'*40,binary_sha256='b'*64,
+            request=dict(sample(),controller_eligible=True,request_sha256='c'*64,decode_tps=speed,decode_ms=2048000/speed),
+            copy_evidence=dict(completed_blobs=16),early_evidence=(dict(enabled=True,audit=False,launches=2,groups=16,
+                ready_at_pool_return=0,pending_at_pool_return=0) if arm else dict(enabled=False)))
+            for arm,speed in zip((0,1,1,0,0,1),(10,12,12,10,10,12))]
+        self.assertEqual(screen(rows,early=True)['decision'],'candidate_faster_screen')
+        for patch in (dict(enabled=False),dict(enabled=True,audit=True,launches=2,groups=16,
+                          ready_at_pool_return=0,pending_at_pool_return=2)):
+            altered=copy.deepcopy(rows);altered[1]['early_evidence']=patch
+            with self.assertRaises(RuntimeError):screen(altered,early=True)
+        altered=copy.deepcopy(rows);altered[0]['copy_evidence']={}
+        with self.assertRaises(RuntimeError):screen(altered,early=True)
+
+
 if __name__ == '__main__':
     unittest.main()

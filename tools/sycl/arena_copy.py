@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Main-owned long-generation Arena-copy check and six-process clean screen."""
+"""Main-owned long-generation copy/early-scheduling check and clean screen."""
 import argparse
 import copy
 import fcntl
@@ -32,7 +32,10 @@ COPY_KEYS = ('submitted_blobs','submitted_bytes','completed_blobs','completed_by
              'host_view_groups','gpu_miss_groups','cpu_unique_misses','cpu_entries')
 
 
-def current_build():
+def current_build(early=False):
+    if early:
+        from early_pcie import current_build as qualified_early_build
+        return qualified_early_build()
     compact, component = gen.committed(BUILD), gen.committed(COMPONENT)
     full = json.loads(BUILD_RECORD.read_text())
     guards.require(full['passed'] and full['complete'] and full['ownership_closed'] and
@@ -58,8 +61,9 @@ def current_build():
     return full, count
 
 
-def comparison_plan():
+def comparison_plan(early=False):
     return dict(version=1, order=list(ORDER), pairs=[[0,1],[3,2],[4,5]],
+        mechanism='early-scheduling0/1 with ordinary-Arena copy enabled in both arms' if early else 'ordinary-Arena copy0/1',
         workload='regular-code', minimum_input=32768, minimum_generated=1024,
         thinking=True, workers=5, pcie_frac=0.25, paired_ratio_threshold=1.02,
         stopping='One validated long candidate check, then six fresh clean processes only. Stop on any execution/input/fault/eligibility failure; no automatic retries or extra samples.',
@@ -87,7 +91,7 @@ def copy_evidence(log, sample, arm):
     return row
 
 
-def screen(rows):
+def screen(rows, early=False):
     guards.require(len(rows)==6 and [x['arm'] for x in rows]==list(ORDER) and
         all(x['passed'] and x['ownership_closed'] and x['request']['controller_eligible']
             and gen.sample_eligible(x['request']) for x in rows),
@@ -96,32 +100,74 @@ def screen(rows):
         'screen source/binary identities differ')
     guards.require(len({(x['request']['request_sha256'],x['request']['read_tokens']) for x in rows})==1,
         'screen prompts/input work differ')
-    ratios=[rows[b]['request']['decode_tps']/rows[a]['request']['decode_tps'] for a,b in comparison_plan()['pairs']]
+    if early:
+        for item in rows:
+            evidence=item.get('early_evidence') or {}
+            copied=item.get('copy_evidence') or {}
+            guards.require(evidence.get('enabled')==bool(item['arm']) and copied.get('completed_blobs',0)>0,
+                'early screen route/copy evidence missing')
+            if item['arm']:
+                guards.require(evidence.get('audit') is False and
+                    0<evidence.get('launches',0)<=evidence.get('groups',0)==copied['completed_blobs'] and
+                    evidence.get('ready_at_pool_return')==evidence.get('pending_at_pool_return')==0,
+                    'clean early screen contains missing, unaccounted or audited work')
+    ratios=[rows[b]['request']['decode_tps']/rows[a]['request']['decode_tps'] for a,b in comparison_plan(early)['pairs']]
     geo=math.exp(sum(map(math.log,ratios))/3)
     decision=('candidate_faster_screen' if all(r>1 for r in ratios) and geo>1.02 else
               'candidate_slower_screen' if all(r<1 for r in ratios) and geo<1/1.02 else 'inconclusive')
     return dict(paired_ratios=ratios,geomean_ratio=geo,decision=decision,adoption_qualified=False,
-        limits=comparison_plan()['limits'])
+        limits=comparison_plan(early)['limits'])
 
 
-def prepare(stage, cohort):
+def result_path(early):
+    return A/'decode-early-generation-current.json' if early else RESULT
+
+
+def measured_early_evidence(log, sample, copied, enabled, audit):
+    """Bind the early footer to the measured request, excluding warmups."""
+    if not enabled:
+        guards.require('early PCIe expert graph enabled' not in log and 'strata serve: SYCL_PCIE_EARLY ' not in log,
+            'control unexpectedly enabled early scheduling')
+        return dict(enabled=False)
+    guards.require(f'early PCIe expert graph enabled mode=0 audit={int(audit)}' in log and
+        all(f'captured the {n}-token window' in log for n in (1,4)), 'actual early route/capture/audit mode missing')
+    header=r'^strata serve: prompt (\d+) tokens = \d+ reused \+ (\d+) read[^\n]*, (\d+) generated[^\n]*\n'
+    copy_footer=r'strata serve: SYCL_EXPERT_COPY '+r' '.join(k+r'=\d+' for k in COPY_KEYS)+r'\n'
+    keys=('launches','groups','ready_at_pool_return','pending_at_pool_return')
+    footer=r'strata serve: SYCL_PCIE_EARLY '+r' '.join(k+r'=(\d+)' for k in keys)+r'$'
+    matches=[row for row in re.findall(header+copy_footer+footer,log,re.M)
+        if tuple(map(int,row[:3]))==(sample['prompt_tokens'],sample['read_tokens'],sample['usage_generated_tokens'])]
+    guards.require(len(matches)==1,'missing or ambiguous measured early footer')
+    row=dict(zip(keys,map(int,matches[0][3:])))
+    guards.require(0<row['launches']<=row['groups']==copied['completed_blobs'], 'early/copy group conservation failed')
+    observations=row['ready_at_pool_return']+row['pending_at_pool_return']
+    guards.require(observations==(row['launches'] if audit else 0),'early readiness audit differs from the declared mode')
+    return dict(row,enabled=True,audit=audit)
+
+
+def prepare(stage, cohort, early=False):
     check=stage=='check'
-    full,count=current_build()
-    positive=gen.committed(QUALIFIED)
+    result=result_path(early)
+    qualified=A/'decode-early-pcie-current.json' if early else QUALIFIED
+    full,count=current_build(early)
+    positive=gen.committed(qualified)
     guards.require(positive['passed'] and positive['complete'] and positive['ownership_closed'] and
         positive['actual_host_copy_route_confirmed'] and positive['binary']==full['binary'] and
         not positive['fresh_faults'], 'matching positive tiny model route required')
+    if early:
+        guards.require(positive.get('actual_early_route_confirmed') is True and
+            positive['component_result_sha256']==gen.common.digest(COMPONENT), 'matching tiny early route required')
     if check:
-        guards.require(not RESULT.exists(), 'inspect existing cohort; never overwrite or retry')
+        guards.require(not result.exists(), 'inspect existing cohort; never overwrite or retry')
         source=gen.git('rev-parse','HEAD').decode().strip()
         seed_ref=dict(commit=source,path=str(assets.RESULT.relative_to(P)),sha256=gen.common.digest(assets.RESULT))
         base=gen.committed(assets.RESULT)
         guards.require(base['passed'] and base['complete'] and base['ownership_closed'] and not base['active'], 'closed seed required')
         completed=[]; qualification=None
     else:
-        previous=gen.committed(RESULT)
+        previous=gen.committed(result)
         guards.require(previous['passed'] and previous['complete'] and previous['ownership_closed'] and
-            not previous['active'] and not previous['fresh_faults'] and previous['plan']==comparison_plan() and
+            not previous['active'] and not previous['fresh_faults'] and previous['plan']==comparison_plan(early) and
             ((cohort==0 and previous['stage']=='check') or (cohort>0 and previous['stage']=='clean' and previous['cohort']==cohort-1)),
             'close matching check/preceding clean process first')
         source=previous['source_commit'];seed_ref=previous['seed_reference']
@@ -132,10 +178,11 @@ def prepare(stage, cohort):
         guards.require(full['binary']==previous['binary'] and count==previous['original_native_inputs_recovered'] and
             gen.common.digest(BUILD_RECORD)==previous['source_build_record']['sha256'] and
             gen.common.digest(COMPONENT)==previous['component_result_sha256'] and
-            gen.common.digest(QUALIFIED)==previous['tiny_model_qualification']['sha256'] and
+            gen.common.digest(qualified)==previous['tiny_model_qualification']['sha256'] and
             gen.common.digest(gen.SETTINGS)==previous['settings_sha256'], 'frozen cohort qualification/build changed')
     arm=1 if check else ORDER[cohort]
-    root=B/('decode-arena-generation-v1-check' if check else f'decode-arena-generation-v1-{cohort}')
+    prefix='decode-early-generation-v1' if early else 'decode-arena-generation-v1'
+    root=B/(prefix+'-check' if check else f'{prefix}-{cohort}')
     guards.require(not root.exists(), 'owned root exists; no automatic retry')
     pins=gen.benchmark_pins(source);settings=gen.committed(gen.SETTINGS)
     config=copy.deepcopy(base['config']);flags=config['args']
@@ -145,7 +192,9 @@ def prepare(stage, cohort):
     old_root=base['environment']['STRATA_MEASUREMENT_ROOT']
     env={k:v.replace(old_root,str(root)) for k,v in base['environment'].items()}
     guards.require(not any(k=='STRATA_TRACE' or k.startswith('UR_LOG_') or k=='UR_ENABLE_LAYERS' for k in env), 'seed has observers')
-    env['STRATA_SYCL_VERIFY_ARENA_COPY']=str(arm)
+    env['STRATA_SYCL_VERIFY_ARENA_COPY']='1' if early else str(arm)
+    if early:
+        env.update(STRATA_SYCL_VERIFY_PCIE_EARLY=str(arm),STRATA_SYCL_VERIFY_PCIE_EARLY_AUDIT=str(int(check)))
     for name in ('UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD','NEOReadDebugKeys','EnableDirectSubmission','STRATA_SYCL_PREFILL_SAME_QUEUE'):
         guards.require(env[name]==settings['environment'][name], 'qualified safety setting changed')
     if check:
@@ -164,32 +213,38 @@ def prepare(stage, cohort):
         '--long-generation-only','--think','--runs','1','--workload-id',gen.WORKLOAD_ID,
         '--fail-fast-engine-error','--ready-timeout','600','--out',str(root/'bench'),
         '--long-generation-workload','regular-code']
-    record=dict(mode='arena-generation-check' if check else 'arena-generation-screen',stage=stage,cohort=cohort,arm=arm,
+    mode_prefix='early' if early else 'arena'
+    record=dict(mode=mode_prefix+('-generation-check' if check else '-generation-screen'),stage=stage,cohort=cohort,arm=arm,
+        comparison_kind='early-scheduling' if early else 'ordinary-copy',
         source_commit=source,build_source_commit=full['source_commit'],binary=full['binary'],
         binary_origin_source_commit=full['binary_origin_source_commit'],seed_reference=seed_ref,
         source_build_record=dict(path=str(BUILD_RECORD),sha256=gen.common.digest(BUILD_RECORD)),
         original_native_inputs_recovered=count,component_result_sha256=gen.common.digest(COMPONENT),
-        tiny_model_qualification=dict(commit=gen.git('rev-parse','HEAD').decode().strip(),path=str(QUALIFIED.relative_to(P)),sha256=gen.common.digest(QUALIFIED)),
+        tiny_model_qualification=dict(commit=gen.git('rev-parse','HEAD').decode().strip(),path=str(qualified.relative_to(P)),sha256=gen.common.digest(qualified)),
         runtime_asset_delta=base['runtime_asset_delta'],root=str(root),environment=env,config=config,command=command,
         model_assets=model,model_assets_fingerprint=assets.fingerprint(model),machine_identity=machine,
         tokenizer_assets={str(Path(config['tokenizer'])/n):gen.common.digest(Path(config['tokenizer'])/n)
             for n in ('vocab.json','merges.txt','token_type.json','chat_template.jinja')},
         profile_sha256=base['profile_sha256'],config_sha256=gen.common.digest(root/'config.json'),
         settings_sha256=gen.common.digest(gen.SETTINGS),source_count=len(pins),source_aggregate_sha256=assets.fingerprint(pins),
-        plan=comparison_plan(),processes=completed,check_evidence=qualification,
+        plan=comparison_plan(early),processes=completed,check_evidence=qualification,
         complete=False,passed=False,active=False,model_quality_qualified=False,adoption_qualified=False,
         clean_speed_measured=False,budgets=dict(wall=1800,cpu=54000,rss_cap=96<<30,text_cap=64<<20,file_cap=64<<20,total_cap=64<<20),
-        consumer='Determine whether25% ordinary-Arena copy sharing warrants weak-MTP and agent-session validation; retire normal traces after useful samples/counters are committed.')
+        consumer=('Determine whether earlier GPU scheduling improves the copy-enabled route' if early else
+            'Determine whether25% ordinary-Arena copy sharing improves decode')+
+            '; screen only, requiring later weak-MTP/agent-session and full adoption gates. Retire normal traces after useful samples/counters are committed.')
     gen.runtime_assets_unchanged(record)
-    (root/'plan.json').write_text(json.dumps(record,indent=2)+'\n');RESULT.write_text(json.dumps(record,indent=2)+'\n')
+    (root/'plan.json').write_text(json.dumps(record,indent=2)+'\n');result.write_text(json.dumps(record,indent=2)+'\n')
     print('Prepared '+stage+'; commit the exact generated plan before run.')
 
 
-def run():
-    record=gen.committed(RESULT);root=Path(record['root'])
+def run(early=False):
+    result=result_path(early)
+    record=gen.committed(result);root=Path(record['root'])
+    guards.require(record['comparison_kind']==('early-scheduling' if early else 'ordinary-copy'),'wrong comparison mode')
     guards.require(not record['complete'] and record==json.loads((root/'plan.json').read_text()) and
         not (root/'record.json').exists(), 'fresh frozen plan required; no automatic restart')
-    full,count=current_build()
+    full,count=current_build(early)
     guards.require(full['binary']==record['binary'] and count==record['original_native_inputs_recovered'] and
         gen.common.digest(BUILD_RECORD)==record['source_build_record']['sha256'] and
         gen.common.digest(COMPONENT)==record['component_result_sha256'], 'build/component proof changed')
@@ -221,9 +276,11 @@ def run():
         guards.require(native['exit_code']==0 and native['boot_id']==boot and native['binary']==record['binary'] and
             native['args']==['--serve',*record['config']['args']] and 'resource_collector' not in native,'native identity/closure differs')
         log=(root/'engine.stderr').read_text(errors='replace');assets.verify_pool(log,5)
-        record['copy_evidence']=copy_evidence(log,rows[0],record['arm'])
+        record['copy_evidence']=copy_evidence(log,rows[0],1 if early else record['arm'])
+        if early:
+            record['early_evidence']=measured_early_evidence(log,rows[0],record['copy_evidence'],record['arm'],record['stage']=='check')
         guards.require('strata decode cpu: ' not in log and 'strata decode timing: ' not in log,'unexpected observers')
-        current_build();gen.runtime_assets_unchanged(record)
+        current_build(early);gen.runtime_assets_unchanged(record)
         guards.require(gen.benchmark_pins(record['source_commit'])==pins and assets.machine_identity()==record['machine_identity'] and
             assets.model_pins(record['config'],record['model_assets'],full=record['stage']=='clean' and record['cohort']==5)==record['model_assets'],
             'model/controller/platform changed during run')
@@ -250,13 +307,14 @@ def run():
         sample=dict(arm=record['arm'],passed=record['passed'],ownership_closed=record['ownership_closed'],
             source_commit=record['source_commit'],binary_sha256=record['binary']['sha256'],
             request=(record.get('requests') or [{}])[0],copy_evidence=record.get('copy_evidence'),fresh_faults=record['fresh_faults'])
+        if early:sample['early_evidence']=record.get('early_evidence')
         if record['stage']=='check':record['check_evidence']=sample
         else:
             record['processes'].append(sample)
             if record['passed'] and record['cohort']==5:
-                try:record['screen_result']=screen(record['processes'])
+                try:record['screen_result']=screen(record['processes'],early)
                 except Exception as error:record.update(screen_error=str(error),passed=False)
-        persist();RESULT.write_text(json.dumps(record,indent=2)+'\n')
+        persist();result.write_text(json.dumps(record,indent=2)+'\n')
     print(json.dumps({k:record.get(k) for k in ('stage','cohort','arm','complete','passed','ownership_closed','error')}))
     return 0 if record['passed'] else 1
 
@@ -264,10 +322,11 @@ def run():
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('action',choices=('prepare','run'))
     parser.add_argument('stage',nargs='?',choices=('check','clean'),default='check');parser.add_argument('cohort',nargs='?',type=int,choices=range(6),default=0)
+    parser.add_argument('--early-scheduling',action='store_true',help='Compare early0/1 with ordinary-Arena copy enabled in both arms')
     args=parser.parse_args()
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);guards.no_model_owners([]);guards.driver_guard()
-        return prepare(args.stage,args.cohort) if args.action=='prepare' else run()
+        return prepare(args.stage,args.cohort,args.early_scheduling) if args.action=='prepare' else run(args.early_scheduling)
 
 
 if __name__=='__main__':sys.exit(main())

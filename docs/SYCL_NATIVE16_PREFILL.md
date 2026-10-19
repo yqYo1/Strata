@@ -1859,6 +1859,89 @@ conditional requested-payload calculations, not wire measurements or saturation.
 The11.4tok/s diagnostic reading includes validation/progress output and is excluded
 from clean speed. Continue the unchanged six-process screen; no adoption follows.
 
+The Main-authored early-PCIe prototype started from`52b9734b9` in an isolated
+child during that now-closed screen. Its original commits are merged into
+`feature/sycl` for qualification. It copies no XeStrata or other external
+implementation. `STRATA_SYCL_VERIFY_PCIE_EARLY=1` requires the native ordinary-Arena
+copy route, mode0 and existing shared/hit overlap. The unchanged copied-expert
+projection is captured separately. After DMA submission, a freshly recorded copy
+event gates its launch on the same compute queue, behind shared/resident work
+using the same scratch. CPU result staging and the merge remain after CPU return;
+checked host-source retirement and failure latching remain required. No future
+event or host-task wait is captured. Unrecorded copy events and plan/count
+mismatches must refuse submission. `STRATA_SYCL_VERIFY_PCIE_EARLY_AUDIT=1` adds
+ready/pending queries only for diagnostics; clean timing leaves it off. Its
+counters prove submissions/readiness observations, not hardware saturation or
+quantified overlap. Default behavior remains the existing schedule.
+
+Before build/run, commit all source, fixtures and updated controller/recipe.
+Following screen closure and source review, require the existing51 gates
+plus the new real-queue early-enqueue fixture: ordinary host copies, resident-to-
+copied scratch ordering, payload/output/outer guards, empty input, maximum copy
+extent, fresh-event replay, and refusal of mismatched or unrecorded inputs.
+The separate `sycl_verifier_retirement_test --early` entry has six cases:
+small,16 largest blobs, empty, fresh-event replay, mismatched plan and unrecorded
+event. They use production publication/fetch/launch/retirement with guarded device
+payloads and a resident-produced dependency byte. Retain all16 native projection
+cases: synthetic graph ordering does not replace their arithmetic checks.
+
+Two closed test mechanisms remain failed. Source`246415bfc` passed all51 existing
+cases, then its host-task gate delayed arrival at the first UR memcpy until the
+two-second deadline. Source`b41fecbb8` again passed51, then its fixed32x64MiB finite
+DMA was complete before the first pending observation. Neither failure admitted
+model execution or a resize/retry. Both owners closed normally without fresh GPU
+faults. The [current57-case result](../bench/results/2026-10-15-pr6-recovery-audit/verifier-copy-safety-current.json)
+and its original Git references preserve these distinct outcomes. They do not
+establish production deadlock or physical transfer bandwidth.
+
+The current isolated native-event method uses `tools/sycl/check_event_gate.py`
+and the manual `sycl_host_event_gate_test` target. Three fresh processes check
+import only (no dependent command/kernel), then copy/kernel dependencies, then
+command-graph replay. The selected context/device owns one regular host-visible
+event, imported with keep ownership and HOST scopes. A host signaller is armed
+before import; its two-second fallback counts as failure. Import and dependent
+submission each need to return within100ms. The pending/output/progress window
+is50ms. Cleanup signals and joins before draining consumers, dropping the SYCL
+wrapper, and destroying the native event then its pool. Loader/header inputs
+are pinned test-only dependencies; production linkage and safety settings stay
+unchanged. Source`1dd3eef34` passed native import in367us with50,100us pending,
+then failed the copy case's resident-progress assertion; graph was not run.
+The [native-event result](../bench/results/2026-10-15-pr6-recovery-audit/native-event-gate-current.json)
+preserves normal closure, unchanged boot and no fresh GPU fault.
+
+The next v2 run is a diagnostic with the same enqueue order and thresholds. It
+records the resident marker, whether the gate is still held, and host time in
+the resident event wait. This separates marker failure from deadline expiry;
+it cannot qualify a replacement gate even if it passes. Its source`7cb121367`
+again failed: dependent submits returned in578us; the resident wait took1,999,496us,
+the resulting marker was60 (the correct0x3c), and the gate was already released.
+Normal closure/boot and no fresh GPU fault were confirmed. This does not establish
+when the kernel actually ran; the remaining question is host wait semantics versus
+queue/engine progress. A source review traces that exact UR-v2 boundary. Only a
+later qualified mechanism permits a fresh complete51+6-case plan. Preserve all pending-completion,
+untouched-output, payload/guard and owner-lifetime requirements under that plan.
+Model execution remains blocked until the complete57-case gate passes.
+After all57 passes, use `tools/sycl/early_pcie.py prepare`, commit the generated
+plan, then `run`: two thinking-template requests with16 generated tokens each,
+G1/T4 capture reached, positive copied/early groups, per-request group/copy and
+ready/pending conservation. Preparation refuses an incomplete component gate.
+This uses parameter validation and stage progress; full API tracing remains in
+the component fixture. No clean speed or task quality comes from this small run.
+Run the separate parameter-validated long model check before clean speed.
+The model check needs32K+ fresh input,1024+ thinking-plus-answer tokens, positive
+actual early launches/groups matching completed copies, normal ownership and no
+fresh fault. Record audit readiness separately. A later committed six-process
+copy-enabled comparison uses `tools/sycl/arena_copy.py prepare check
+--early-scheduling` followed by its committed generated plan, then the six clean
+cohorts. It changes only early0/1; readiness queries are enabled in the diagnostic
+and disabled in clean timing. Every measured footer is bound to its actual input
+and generated work, and early groups must equal completed copied blobs. A faster
+screen requires paired ratios>1 and geomean
+>1.02 required for a faster screen. Weak-MTP/agent-session, task quality,
+prefill nonregression and physical262144/session/RESTORE remain adoption gates.
+Compilation and the51 existing passes do not qualify early model execution,
+performance gain or adoption.
+
 A conditional complete-blob copy budget also constrains that candidate.
 With at most2 resident experts per layer, top10 routing and at most4 emitted
 tokens/window, even identical routes and perfect acceptance require at least
