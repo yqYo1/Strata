@@ -28,6 +28,35 @@ def unsigned(value):
     return int(value)
 
 
+def canonical_pci(value):
+    require(isinstance(value, str) and
+        re.fullmatch(r'[0-9a-fA-F]{4}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}\.[0-7]', value) is not None,
+        'invalid PCI identity')
+    require(int(value[8:10], 16) < 32, 'invalid PCI device number')
+    return value.lower()
+
+
+def receipt_target(receipt, boot):
+    require(re.fullmatch(r'[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}', boot) is not None,
+        'invalid current boot identity')
+    require(receipt.get('boot_id') == boot, 'native receipt boot identity missing or changed')
+    target = receipt['native']
+    require(all(type(target.get(k)) is int and target[k] > 0 for k in ('pid', 'start_ticks', 'sid')),
+        'invalid native identity')
+    return {k: target[k] for k in ('pid', 'start_ticks', 'sid')}
+
+
+def bounded_entries(path, label, limit=256):
+    # Path.iterdir/listdir may materialize the entire directory before returning.
+    paths = []
+    with os.scandir(path) as entries:
+        for entry in entries:
+            require(len(paths) < limit, 'target ' + label + ' budget exceeded')
+            unsigned(entry.name)
+            paths.append(Path(entry.path))
+    return sorted(paths, key=lambda p: int(p.name))
+
+
 def parse_fdinfo(text):
     values = {}
     for line in text.splitlines():
@@ -39,8 +68,7 @@ def parse_fdinfo(text):
     if values.get('drm-driver') != 'xe':
         return None
     client = unsigned(values['drm-client-id'])
-    pci = values['drm-pdev']
-    require(re.fullmatch(r'[0-9a-fA-F]{4}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}\.[0-7]', pci), 'invalid PCI identity')
+    pci = canonical_pci(values['drm-pdev'])
     engines, memory = {}, {}
     for key, value in values.items():
         if key.startswith('drm-cycles-'):
@@ -55,11 +83,12 @@ def parse_fdinfo(text):
             require(match is not None, 'invalid memory counter')
             memory[key] = int(match[1]) * {None: 1, 'KiB': 1024, 'MiB': 1024**2}[match[2]]
     require(bool(engines), 'xe client exports no supported busy/total cycle pair')
-    return dict(driver='xe', pci=pci.lower(), client_id=client, engines=engines, memory_bytes=memory)
+    return dict(driver='xe', pci=pci, client_id=client, engines=engines, memory_bytes=memory)
 
 
 def deduplicate_clients(fdinfos, pci):
     """First descriptor per DRM client; repeated reads are not simultaneous."""
+    pci = canonical_pci(pci)
     clients = {}
     for fd, text in fdinfos:
         row = parse_fdinfo(text)
@@ -96,8 +125,7 @@ def snapshot(target, pci, proc=Path('/proc')):
 
     begin = time.monotonic_ns()
     checked_stat()
-    paths = sorted((root / 'fdinfo').iterdir(), key=lambda p: int(p.name))
-    require(len(paths) <= 256, 'target descriptor budget exceeded')
+    paths = bounded_entries(root / 'fdinfo', 'descriptor')
     fdinfos = []
     for path in paths:
         try:
@@ -108,8 +136,7 @@ def snapshot(target, pci, proc=Path('/proc')):
         except FileNotFoundError:
             continue  # A closed descriptor does not prove that the target exited.
     threads, lost = [], 0
-    paths = list((root / 'task').iterdir())
-    require(len(paths) <= 256, 'target thread budget exceeded')
+    paths = bounded_entries(root / 'task', 'thread')
     for path in paths:
         try:
             threads.append(dict(tid=int(path.name), **process_stat(path / 'stat')))
@@ -178,49 +205,76 @@ class CycleIntervals:
         return rows
 
 
-def main():
+class CollectionEvidence:
+    """Collector completion requires data; model/phase coverage is a separate gate."""
+    def __init__(self):
+        self.samples = self.client_samples = self.eligible_samples = self.eligible_intervals = 0
+
+    def observe(self, row):
+        self.samples += 1
+        self.client_samples += bool(row['clients'])
+        eligible = sum(item['eligible'] and item['engine'] == 'ccs' for item in row['engine_intervals'])
+        self.eligible_samples += bool(eligible)
+        self.eligible_intervals += eligible
+
+    def terminal(self, reason, error=None):
+        complete = reason in ('deadline', 'target_exited') and self.eligible_samples >= 2
+        return dict(kind='terminal', reason=reason, error=error, samples=self.samples,
+            client_samples=self.client_samples, expected_engine='ccs',
+            eligible_samples=self.eligible_samples, eligible_intervals=self.eligible_intervals,
+            minimum_eligible_samples=2, collection_complete=complete, model_phase_qualified=False,
+            limits='Process-bounded collection with a maximum deadline. Completion requires two samples with eligible CCS intervals; planned phase coverage must be checked separately.')
+
+
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('native_receipt', type=Path)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--seconds', type=float, required=True)
     parser.add_argument('--interval', type=float, default=1.)
     parser.add_argument('--pci', default='0000:05:00.0')
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     require(0 < args.seconds <= 900 and .2 <= args.interval <= 10, 'finite sampling budget required')
-    target = json.loads(args.native_receipt.read_text())['native']
-    require(all(type(target.get(k)) is int and target[k] > 0 for k in ('pid', 'start_ticks', 'sid')), 'invalid native identity')
+    pci = canonical_pci(args.pci)
+    boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+    target = receipt_target(json.loads(args.native_receipt.read_text()), boot)
     deadline, count = time.monotonic() + args.seconds, 0
     intervals = CycleIntervals()
-    boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+    evidence = CollectionEvidence()
+    reason, error = 'deadline', None
     with args.out.open('x') as stream:
-        stream.write(json.dumps(dict(kind='header', schema=1, target=target, pci=args.pci, boot_id=boot,
+        stream.write(json.dumps(dict(kind='header', schema=2, target=target, pci=pci, boot_id=boot,
             kernel=Path('/proc/sys/kernel/osrelease').read_text().strip(),
             ticks_per_second=os.sysconf('SC_CLK_TCK'), interval=args.interval, seconds=args.seconds,
             limits='Associated DRM-client busy cycles and scheduled CPU ticks; no stage alignment, FLOPs, VRAM bandwidth, PCIe bytes or throughput qualification.')) + '\n')
-        while time.monotonic() < deadline:
-            require(Path('/proc/sys/kernel/random/boot_id').read_text().strip() == boot, 'boot changed')
-            try:
-                row = snapshot(target, args.pci)
-            except (FileNotFoundError, TargetExited):
-                # Distinguish confirmed target loss from a transient missing proc entry.
+        try:
+            while time.monotonic() < deadline:
+                require(Path('/proc/sys/kernel/random/boot_id').read_text().strip() == boot, 'boot changed')
                 try:
-                    final = process_stat(Path('/proc', str(target['pid']), 'stat'))
-                except FileNotFoundError:
-                    final = None
-                require(final is None or (final['state'] == 'Z' and
-                    all(final[k] == target[k] for k in ('sid', 'start_ticks'))), 'incomplete proc snapshot or reused PID')
-                stream.write(json.dumps(dict(kind='target_exited', samples=count)) + '\n')
-                break
-            row.update(kind='sample', ordinal=count, ticks_per_second=os.sysconf('SC_CLK_TCK'),
-                       engine_intervals=intervals.update(row))
-            encoded = json.dumps(row) + '\n'
-            require(stream.tell() + len(encoded.encode()) + 256 <= 32 << 20, 'raw sample budget exceeded')
-            stream.write(encoded); stream.flush()
-            count += 1
-            time.sleep(min(args.interval, max(0, deadline-time.monotonic())))
-        else:
-            stream.write(json.dumps(dict(kind='deadline', samples=count)) + '\n')
-    return 0
+                    row = snapshot(target, pci)
+                except (FileNotFoundError, TargetExited):
+                    # Distinguish confirmed target loss from a transient missing proc entry.
+                    try:
+                        final = process_stat(Path('/proc', str(target['pid']), 'stat'))
+                    except FileNotFoundError:
+                        final = None
+                    require(final is None or (final['state'] == 'Z' and
+                        all(final[k] == target[k] for k in ('sid', 'start_ticks'))), 'incomplete proc snapshot or reused PID')
+                    reason = 'target_exited'
+                    break
+                row.update(kind='sample', ordinal=count, ticks_per_second=os.sysconf('SC_CLK_TCK'),
+                           engine_intervals=intervals.update(row))
+                encoded = json.dumps(row) + '\n'
+                require(stream.tell() + len(encoded.encode()) + 2048 <= 32 << 20, 'raw sample budget exceeded')
+                stream.write(encoded); stream.flush()
+                evidence.observe(row)
+                count += 1
+                time.sleep(min(args.interval, max(0, deadline-time.monotonic())))
+        except (OSError, ValueError, KeyError) as exc:
+            reason, error = 'error', (type(exc).__name__ + ': ' + str(exc))[:256]
+        terminal = evidence.terminal(reason, error)
+        stream.write(json.dumps(terminal) + '\n')
+    return 0 if terminal['collection_complete'] else 2
 
 
 if __name__ == '__main__':
