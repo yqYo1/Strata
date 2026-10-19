@@ -2032,6 +2032,30 @@ Use the separately committed official32K+ thinking-enabled regular-code
 diagnostic next, with only this narrow observer and the established validation/
 safety settings. Query intervals remain diagnostic until independent overhead
 qualification, and clean speed remains separate.
+That official diagnostic completed at controller source`06750114d`, native
+source`ce8dd0e94` and engine SHA256`51e97cbbd9d550d2c0d892bc2537faba5dfa07d6be25a202108865b0bd1d8307`.
+It processed33211 fresh inputs and2931 generated tokens, with2783 reasoning
+and5578 answer characters and2105/2481 accepted drafts. Four warmups and the
+timed request matched the official journal; all owners closed, boot unchanged
+and no fresh fault. The timed request made39744 queries at each resident point:
+launch150.074225ms (20ready/39724pending, max3.391505ms), pool-return354.337961ms
+(39713ready/31pending, max15.038424ms). Total504.412186ms is0.24208% of the
+208368ms rounded decode interval; both inactive PCIe categories remained zero.
+These four queries were not dominant in this observed production execution.
+The208368.1ms/14.1tok/s and651.3prefill tok/s include validation/progress and the
+query observer; they are diagnostic, not a new clean speed or overhead estimate.
+The run recorded1205698 unique CPU expert jobs,1556213 CPU entries and32107
+cache hits out of1588320 lookups (2.0% rounded). These are logical work counts,
+not measured DRAM or PCIe bytes, and do not distinguish CPU arithmetic from RAM.
+
+The next placement question corrects an earlier research assumption: the
+`prefill.reset()` before standalone token generation is outside `--serve`.
+Serve's `refill` returns lent cache slots without resetting the persistent
+owned `sp` workspace. The official benchmark uses serve, so the standalone
+reset does not establish spare decode VRAM. Review the existing borrowing path
+and actual variable-size cache/MTP/graph owners before a larger-cache trial;
+static sizes and the2% hit rate alone establish neither memory admission nor a
+speed gain. Keep context/session/RESTORE state and cached graph readers intact.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.
