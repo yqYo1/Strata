@@ -23,6 +23,7 @@ RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-curre
 SETTINGS = P / 'tools/sycl/measurement_environment.json'
 TARGET = 'sycl_moe_down_scatter_bench'
 PERF_ORDER = ((0, 0), (1, 0), (1, 1), (0, 1), (0, 2), (1, 2))
+MIN_TIMING_BATCH_MS = 2.0
 
 
 def digest(path):
@@ -60,6 +61,18 @@ def compact_result(record):
             row['event_totals'] = [[kind, status, count] for (kind, status), count in sorted(counts.items())]
             row['event_count'] = len(events)
             row['immutable_input_failures'] = sum(e.get('inputs_immutable') is False for e in events)
+            batches = [e for e in events if e.get('kind') == 'sample' and
+                       all(k in e for k in ('observed_fused_dispatches', 'repeat', 'queue_batch_ms'))]
+            if batches:
+                row['timed_dispatch_observations'] = dict(
+                    batches_including_warmup=len(batches),
+                    fused_calls=sum(e['observed_fused_dispatches'] for e in batches),
+                    fallback_calls=sum(e['repeat'] - e['observed_fused_dispatches'] for e in batches),
+                    route_mismatches=sum(e['observed_fused_dispatches'] !=
+                        (e['repeat'] if e['arm'] and e['rows'] >= 2334 else 0) for e in batches),
+                    minimum_batch_ms=min(e['queue_batch_ms'] for e in batches),
+                    ineligible_batches=sum(not math.isfinite(e['queue_batch_ms']) or
+                        e['queue_batch_ms'] < MIN_TIMING_BATCH_MS for e in batches))
             for event in events:
                 if (event.get('kind') == 'sample' and isinstance(event.get('round'), int)
                         and event['round'] >= 0):
@@ -89,14 +102,29 @@ def public_timing_samples(checks):
         routes = [e for e in check['events'] if e['kind'] == 'selected_route']
         guards.require(len(routes) == 14 and all(e['enabled'] == arm and
             e['selected'] == bool(arm and e['rows'] >= 2334) and e['false_route_no_write'] and
-            e['expected_mask'] == 0 for e in routes), 'wrong public startup route')
+            e['expected_mask'] == 0 and e['window_rows'] == 78451 and
+            0 <= e['source_first'] <= e['source_last'] < 78451 for e in routes) and
+            Counter((e['rows'], int(e['source_first'] != 0)) for e in routes) ==
+            Counter({(r,i): 1 for r in (64,160,2333,2334,2335,5963,8192) for i in (0,1)}),
+            'wrong public startup route or placement coverage')
         group = [e for e in check['events'] if e['kind'] == 'sample' and e['round'] >= 0]
         warm = [e for e in check['events'] if e['kind'] == 'sample' and e['round'] == -1]
         guards.require(len(check['events']) == 112 and len(warm) == 14 and
             {(e['rows'],e['irregular']) for e in warm} ==
             {(r,i) for r in (64,160,2333,2334,2335,5963,8192) for i in (0,1)} and
             len(group) == 84 and all(e['process'] == process and e['arm'] == arm
-            for e in group), 'public process/arm labels differ')
+            for e in group + warm), 'public process/arm labels differ')
+        guards.require(all(type(e['observed_fused_dispatches']) is int and
+            e['observed_fused_dispatches'] == (e['repeat'] if arm and e['rows'] >= 2334 else 0) and
+            e['public_dispatch'] == 1 and e['order'] == 0 and
+            e['fused_route'] == bool(arm and e['rows'] >= 2334) and
+            e['repeat'] == (256 if e['rows'] < 256 else 16) and
+            e['window_rows'] == 78451 and e['accumulator_bytes'] == 78451*2560*4 and
+            e['inputs_immutable'] and e['status'] == 'PASS' and
+            all(math.isfinite(e[k]) and e[k] > 0 for k in ('wall_ms','queue_interval_ms','queue_batch_ms')) and
+            e['queue_batch_ms'] >= MIN_TIMING_BATCH_MS and
+            math.isclose(e['queue_batch_ms'], e['queue_interval_ms'] * e['repeat'], rel_tol=1e-9, abs_tol=1e-9)
+            for e in group + warm), 'observed timed dispatch or minimum batch duration differs')
         samples.extend(group)
     guards.require(len(samples) == 504 and
         {(e['rows'], e['irregular'], e['process'], e['round'], e['arm']) for e in samples} ==
@@ -170,7 +198,7 @@ def main():
                 complete=False, passed=False, active=False, model_performance_adopted=False,
                 model_quality_qualified=False, physical262144_model_RESTORE_qualified=False,
                 consumer='One Down/scatter component comparison; retire raw logs/JIT after extracting samples.',
-                prospective_gates='New production-matched comparison; v6 and uniform failures remain unchanged.54 ownership,45 traced small,110 full correctness events required on this exact fixture. Six immutable startup0/large processes in A0,B0,B1,A1,A2,B2 order,6 rounds over14 shapes:504 used samples. Both arms call the public try hook and fallback, including control flag0. Repeat256 for64/160 rows,16 otherwise; one warmup round per process/shape. Unchanged advance gate: candidate/base geomean<=0.97, no shape>1.05 and every>=2334-row shape improves in each process pair. Component advance only.',
+                prospective_gates='New production-matched comparison; v6 and uniform failures remain unchanged.54 ownership,45 traced small,110 full correctness events required on this exact fixture. Six immutable startup0/large processes in A0,B0,B1,A1,A2,B2 order,6 rounds over14 shapes:504 used samples. Both arms call the public try hook and fallback, including control flag0. Repeat256 for64/160 rows,16 otherwise; one warmup round per process/shape. Every batch including warmup must observe exactly the expected repeat or zero fused hook returns and a marker-bracket duration>=2ms; a short batch invalidates the comparison and retry requires a new committed plan. This eligibility screen is not an accuracy/noise guarantee. Unchanged advance gate: candidate/base geomean<=0.97, no shape>1.05 and every>=2334-row shape improves in each process pair. Component advance only.',
                 limits='FP16 Down2560x640, BF16-round then explicit FP32 FMA. Fixed78451-token FP32 accumulator; contiguous/distributed maps. Actual production startup-selected hook in both arms, with public dense+accumulation fallback. Compact below128,wide otherwise; cached-wide only when enabled at>=2334. Marker intervals include submission gaps; no physical traffic, occupancy, saturation or model speed inferred. This corrects comparison methodology and does not establish an engine speedup from the old low-level baseline.',
                 previous_result=dict(commit=revision, path=str(RESULT.relative_to(P)),
                     sha256=hashlib.sha256(prior_bytes).hexdigest(), source_commit=prior['source_commit'],

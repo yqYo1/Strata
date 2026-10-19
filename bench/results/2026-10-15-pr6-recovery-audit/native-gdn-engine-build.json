@@ -1,5 +1,5 @@
 {
-  "source_commit": "9b6db2661f6abb1ba560b466108cf60b2d594f4e",
+  "source_commit": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -80,14 +80,14 @@
   "production_selected": false,
   "model_quality_qualified": false,
   "replaces": {
-    "source_commit": "bba952e333f0e0cf303f0e4d265ad7d50bd3504b",
+    "source_commit": "9b6db2661f6abb1ba560b466108cf60b2d594f4e",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-      "bytes": 22168048,
-      "sha256": "aba4d1ed08d41ad68e37a589e4e5940b3a5e9520c20fb874f9510e9cf903fd02"
+      "bytes": 22079288,
+      "sha256": "570b65ddfd88e3955b58634b361bb13e12a4bd713ac6e5ae396d47265a76fd46"
     },
     "source_build_passed": true,
-    "retained_binary_source_commit": "bba952e333f0e0cf303f0e4d265ad7d50bd3504b",
+    "retained_binary_source_commit": "9b6db2661f6abb1ba560b466108cf60b2d594f4e",
     "reason": "Closed unused comparison engine; original source/recipe recovered from Git. Reuse its cache for the immediate corrected build, not a retained old generation."
   },
   "targets": [
@@ -310,7 +310,7 @@
   "fixtures": {
     "sycl_moe_down_scatter_bench": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_down_scatter_bench",
-      "sha256": "cf54c1e590a2b7b5ee2a9f78a9a975235ec7d6669a7408fa13a612192fe4c22d"
+      "sha256": "93248e2799e154b785e025cdd87ae03ab9f18d0700eb2b9cb13a747d8035b802"
     },
     "sycl_moe_gu_swiglu_bench": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_moe_gu_swiglu_bench",
@@ -333,17 +333,11 @@
   "previous_output_comparison": {
     "changed_project_inputs": [
       "bench/sycl/moe_down_scatter.cpp",
-      "cmake/sycl_backend.cmake",
-      "include/strata/kernels/qsa_bf16_prefix.hpp",
-      "src/kernels/sycl/qsa_bf16_prefix.cpp",
-      "tests/sycl/qsa_bf16_prefix.cpp",
-      "tests/sycl/qsa_bf16_prefix_layout_bench.cpp",
       "tools/sycl/build_engine.py",
-      "tools/sycl/check_attention.py",
       "tools/sycl/measure_down_scatter.py"
     ],
     "native_and_recipe_inputs_match": false,
-    "engine_bytes_match": false,
+    "engine_bytes_match": true,
     "fixture_bytes_match": {
       "sycl_moe_down_scatter_bench": false,
       "sycl_moe_gu_swiglu_bench": true,
@@ -352,15 +346,15 @@
       "file_expert_source_test": true
     },
     "controller_only_admission": false,
-    "interpretation": "A real configure/build invocation admits the recorded inputs. Identical output bytes and unchanged native inputs preserve their original source identity; this does not claim fresh compilation or a new speed result."
+    "interpretation": "A real configure/build invocation admits the recorded inputs after original source/recipe recovery. Identical engine bytes preserve their known source identity even after fixture edits; qualification reuse separately requires the relevant native/recipe/fixture proof. No new speed result is implied."
   },
   "ownership_closed": true,
   "inputs": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "9b6db2661f6abb1ba560b466108cf60b2d594f4e",
+      "revision": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
       "count": 502,
-      "aggregate_sha256": "e76c9fef7387049ebf971d97211e4def9a98f2b2f88bbcce01e41bea308e3b54"
+      "aggregate_sha256": "76fbdbefbcd57031a47289f1ea0ae63ffc79cdfe21ea4825056bd2e096c7abc6"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",

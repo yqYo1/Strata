@@ -1296,16 +1296,31 @@ startup selectors, timing granularity, shape coverage and closure. Its offline
 negative cases cover partial/duplicate/reordered evidence, reused identities,
 a low-level control, the old small-batch size and the wrong startup route.
 Source`9b6db2661` compiled the fixture; the engine SHA matches the validated
-a576 engine. Independent source review calls for observing timed dispatch
-returns and a prospective batch-duration floor before clean timing. No v7 GPU
-execution has occurred; no model gain or adoption follows from correcting the
-benchmark. Keep the a576 fallback and
+a576 engine. Main's corrected source now records every timed hook return,
+requires exactly repeat or zero fused dispatches, checks the14 preflight
+row/placement cases and prospectively requires every marker bracket, including
+warmups, to last at least2ms. This screens granularity, not timer accuracy or
+noise. A shorter batch invalidates the comparison; retry requires a new
+committed plan. Main passed all16 offline fault/evidence tests at source7626a2fc5,
+including wrong timed-hook counts, duplicate preflight placement, warmup duration
+and inconsistent marker arithmetic. Source396d0c91f built the corrected fixture;
+the engine remains byte-identical570b65dd with native origin9b6db2661 preserved.
+Compilation does not reuse qualification for the changed Down fixture.
+The exact93248e27 fixture passed54 CPU ownership,45 traced smoke and110 full
+numerical/admission events, all owners closed and no fresh GPU fault. The frozen
+six-process clean timing is now running; correctness does not decide its speed
+gate. No model gain or adoption follows from correcting the benchmark.
+Keep the a576 fallback and
 reuse the closed QSA build cache for this named next comparison. The dedicated
 `bench_engine.py summarize-down` analyzer preserves the frozen>1.002 model
 criterion, while `summarize-source-view` keeps>1.005. It rechecks original
 component qualification, exact117489-token requests, six-process order, paired
 inputs and clean work conservation; first-use and the1000tok/s target remain
-separate. Its new negative cases are awaiting Main's offline test run.
+separate. Main passed all26 model statistics, work-counter and build-identity
+tests; these are offline checks, not end-to-end model qualification. Independent
+Orca source audit and separate native Luna-max review found no verified reducer
+defect. Receipt-chain wiring tests remain optional strengthening; actual eligible
+model evidence is still required before a cohort decision.
 
 The maintained model controller now provides `prepare|run qsa-long-input-check`
 and `prepare|run qsa-long-input [0|1|2]`. Its prospective screen holds131072
