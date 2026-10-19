@@ -47,6 +47,9 @@ def runtime_smoke(old_engine=False, bank=False):
     guards.require(Path(__file__).read_bytes() == committed_source, 'commit smoke controller first')
     index = committed(INDEX)
     scope = index['current_decode_mtp_verifier_reuse_source_audit']['cpu_observer_source_audit']
+    result_key = 'runtime_device_probe' if bank else 'runtime_reference' if old_engine else 'runtime_smoke'
+    guards.require(result_key not in scope,
+                   'stage already has an outcome; preserve it in Git and commit a fresh plan before another run')
     cpu = scope['native_cpu_qualification']
     plan = scope['runtime_smoke_plan']
     base = plan['configuration_reference']
@@ -252,7 +255,7 @@ def runtime_smoke(old_engine=False, bank=False):
         compact['limits'] = 'Two tiny native-protocol requests through final commit. Explicit runtime-delta diagnostic only; shared qualified runtime pins remain unchanged. No performance, overhead, quality, IQ numerical, long-context or RESTORE qualification.'
         if bank:
             compact['limits'] = 'Six small production upload/cache byte-reader cases with full API trace and parameter validation on proposed runtime assets. No model/throughput/quality/full-context qualification; shared runtime baseline remains unchanged.'
-        scope['runtime_device_probe' if bank else 'runtime_reference' if old_engine else 'runtime_smoke'] = compact
+        scope[result_key] = compact
         if not old_engine and not bank:
             scope['revised_candidate']['native_runtime_tested'] = compact['GPU_executed']
         INDEX.write_text(json.dumps(index, indent=2) + '\n')
@@ -270,6 +273,8 @@ def run(native=False):
                    not baseline['active'] and summary.get('original_benchmark_inputs_recovered') == 114,
                    'close the frozen generation cohort and reducer first')
     scope = index['current_decode_mtp_verifier_reuse_source_audit']['cpu_observer_source_audit']
+    guards.require(('native_cpu_qualification' if native else 'cpu_only_qualification') not in scope,
+                   'CPU qualification already has an outcome; commit a fresh plan before another run')
     plan = dict(scope['cpu_only_qualification_plan'])
     native_build = None
     if native:
