@@ -4281,7 +4281,7 @@
   "passive_generation_resource_capture_source_audit": {
     "classification": "decision support",
     "schedulable_now": false,
-    "status": "native_reviewed_capture_and_clock_binding_pending",
+    "status": "native_reviewed_clock_binding_fixed_capture_admitted",
     "source_commit": "d9ff684f1",
     "source_sha256": {
       "tools/sycl/resource_engine.py": "07769052c763b6dc649fdc8761644f7b75bcaea2ef1c7fea6e60d248744f0890",
@@ -4308,7 +4308,7 @@
     "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/passive-generation-resource-capture-source-audit.md",
     "maximum_report_bytes": 22528,
     "worker_ownership_closed": true,
-    "next_review": "After the frozen capture closes, Main binds official result clocks/work to the verified journal and tests the negative case; then retire consumed reports/transactions after findings are preserved.",
+    "next_review": "Retire consumed audit payload after the admitted capture/source is default-reachable; new research requires an actual unresolved causal question.",
     "task_id": "task_192eb6dce33c",
     "dispatch_id": "ctx_2acbfe53f735",
     "terminal_handle": "term_85288091-0c5f-46a5-ab30-fd20ccff2445",
@@ -4318,13 +4318,14 @@
     "report_sha256": "47cfe1097bfb98bf7eab03dbc75a3c43ae810b0f90644bee809ae8e11f56a691",
     "native_review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/passive-generation-resource-native-review.json",
     "native_review_sha256": "b9f43c9f3965d62992a3d73fdda96fd5becf878d73e2a7a849f1e0db5ce353a3",
-    "operational_digest": "Verified admission gap: result clocks are not directly matched to the hashed journal sample; no actual mismatch shown. Environment reassertion and expected device identity are conditional checks. Resolve admission after capture closure before interpreting resources; no further research is eligible yet.",
-    "worker_closure": "Accepted completed Task/Dispatch; released external terminal after exact incarnation and idle verification; terminal closed and delivery acknowledged."
+    "operational_digest": "The verified result-to-journal clock binding gap is fixed with a negative test. The post-closure analyzer matched original request clocks/work and reproduced all523-snapshot resource values without GPU execution or changing original outcomes. Environment/device reassertion remains conditional; no causal hardware bottleneck or clean speed follows.",
+    "worker_closure": "Accepted completed Task/Dispatch; released external terminal after exact incarnation and idle verification; terminal closed and delivery acknowledged.",
+    "corrected_source_commit": "7d5a11afb"
   },
   "retained_engine_consumer_migration_source_scope": {
     "classification": "decision support",
     "schedulable_now": false,
-    "status": "research_running",
+    "status": "completed_pending_native_review",
     "source_commit": "d9ff684f1",
     "prerequisites_met": [
       "All six actual old/new processes closed and the new-engine maximum-pair gate failed.",
@@ -4338,11 +4339,14 @@
     ],
     "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/retained-engine-consumer-migration-source.md",
     "maximum_report_bytes": 18432,
-    "worker_ownership_closed": false,
+    "worker_ownership_closed": true,
     "next_review": "Native Luna-max review after accepted report; Main owns migration and tests at a safe serialized boundary.",
     "task_id": "task_77bc84c4df96",
     "terminal_handle": "term_6ef4cfc1-8dd3-44b2-b862-d9fa8081acef",
     "terminal_incarnation": "863db3a5-1988-4bce-b0f3-394d30642983",
-    "dispatch_id": "ctx_fca6475e63f1"
+    "dispatch_id": "ctx_fca6475e63f1",
+    "report_bytes": 11270,
+    "report_sha256": "f5fab7d73417a79f8327d94575698d88159fb81287a0370532181d27ba101c8b",
+    "worker_closure": "Accepted completed Task/Dispatch; exact incarnation released/idle-verified and external terminal closed; delivery acknowledged."
   }
 }

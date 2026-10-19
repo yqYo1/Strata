@@ -103,5 +103,69 @@
   "fresh_faults": [],
   "boot_unchanged": true,
   "ptrace_scope_after": "1",
-  "decision": "Software collector refused launch under the observed ptrace policy; keep this failed qualification. Next use explicit existing CPU timing regions, without a profiler-permission change."
+  "decision": "Software collector refused launch under the observed ptrace policy; keep this failed qualification. Next use explicit existing CPU timing regions, without a profiler-permission change.",
+  "perf_event_capability": {
+    "source_commit": "dea28391704ef5b4bdfc2cc67745ced4a92d8a06",
+    "source_sha256": "7d653d3821588181123ab418cb8c306b7e191b7dff9bbd389f3946b4bc7f2ff1",
+    "perf": {
+      "path": "/usr/bin/perf",
+      "sha256": "2d0953085bf720a25efbe24f853e97d27b1f12f18a398255ff82cbafde254dad"
+    },
+    "target": {
+      "path": "/usr/bin/true",
+      "sha256": "8a63c98320173f79e263115e10cefc170155e47d1fd4b5a70e4429d2699cae28"
+    },
+    "perf_event_paranoid": "4",
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8"
+    },
+    "complete": true,
+    "model_executed": false,
+    "model_hardware_counters_qualified": false,
+    "events": [
+      {
+        "event": "cycles",
+        "command": [
+          "/usr/bin/perf",
+          "stat",
+          "--no-big-num",
+          "-x",
+          ";",
+          "-e",
+          "cycles",
+          "--",
+          "/usr/bin/true"
+        ],
+        "exit_code": 1,
+        "ownership_closed": true,
+        "stderr_excerpt": "Error:\nNo supported events found.\nAccess to performance monitoring and observability operations is limited.",
+        "stdout_excerpt": ""
+      },
+      {
+        "event": "task-clock",
+        "command": [
+          "/usr/bin/perf",
+          "stat",
+          "--no-big-num",
+          "-x",
+          ";",
+          "-e",
+          "task-clock",
+          "--",
+          "/usr/bin/true"
+        ],
+        "exit_code": 1,
+        "ownership_closed": true,
+        "stderr_excerpt": "Error:\nNo supported events found.\nAccess to performance monitoring and observability operations is limited.",
+        "stdout_excerpt": ""
+      }
+    ],
+    "ownership_closed": true,
+    "perf_event_paranoid_after": "4",
+    "limits": "Event permission/command capability only; no attached process, model profile or hardware bottleneck. Preserve each requested event outcome; change no sysctl or privilege.",
+    "decision": "Both actual event command probes refused access under perf_event_paranoid4. Keep model hardware counters unknown; change no host permissions. Use bounded passive/source attribution while identifying an independent CPU/RAM measurement."
+  }
 }
