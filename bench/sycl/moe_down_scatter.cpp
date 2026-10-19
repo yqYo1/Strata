@@ -345,28 +345,29 @@ void exception_unwind(sycl::queue &q, xe::ScatterLayout mapping) {
 }
 class Marker;
 sycl::event mark(sycl::queue &q) { return q.single_task<Marker>([] {}); }
-void benchmark(int process, sycl::queue &q) {
+void benchmark(int process, sycl::queue &q, int public_arm = -1) {
   for (int rows : {64, 160, 2333, 2334, 2335, 5963, 8192}) for (bool irregular : {false, true}) {
     const auto tile = rows < 128 ? xe::Tile::compact_16x64 : xe::Tile::wide_128x128;
     Case c(78451, irregular, false, q, rows);
     need(c.routes->jobs().front().rows == rows, "timing job shape");
     c.check(0, tile, xe::ScatterLayout::matrix);
     c.check(0, tile, xe::ScatterLayout::matrix_row_cache);
-    c.reset(); c.check_selected(true);
+    c.reset(); c.check_selected(public_arm != 0);
     const auto inputs = c.input_snapshot();
-    constexpr int repeat = 16;
-    for (int round = -1; round < 6; ++round) for (int order = 0; order < 2; ++order) {
-      const int arm = (process + round + 2 + order) % 2;
+    const int repeat = public_arm >= 0 && rows < 256 ? 256 : 16;
+    for (int round = -1; round < 6; ++round)
+      for (int order = 0; order < (public_arm >= 0 ? 1 : 2); ++order) {
+      const int arm = public_arm >= 0 ? public_arm : (process + round + 2 + order) % 2;
       c.reset();
       const auto start = mark(q);
       const auto wall = std::chrono::steady_clock::now();
       for (int i = 0; i < repeat; ++i)
-        if (arm) (void)c.selected_submit(0); else c.separate(0, tile);
+        if (public_arm >= 0 || arm) (void)c.selected_submit(0); else c.separate(0, tile);
       const auto end = mark(q); wait(q, end);
       const double wall_ms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - wall).count() / repeat;
       const double queue_ms = double(end.get_profiling_info<sycl::info::event_profiling::command_start>() -
           start.get_profiling_info<sycl::info::event_profiling::command_end>()) / 1e6 / repeat;
-      if (arm) {
+      if (public_arm >= 0 || arm) {
         for (int i = 0; i < repeat; ++i) c.separate(0, tile);
       } else {
         for (int i = 0; i < repeat; ++i) (void)c.selected_submit(0);
@@ -380,6 +381,7 @@ void benchmark(int process, sycl::queue &q) {
                 << ",\"source_first\":" << c.host_source.front() << ",\"source_last\":" << c.host_source[size_t(rows - 1)]
                 << ",\"irregular\":" << irregular << ",\"round\":" << round << ",\"order\":" << order
                 << ",\"arm\":" << arm << ",\"fused_route\":" << (arm && rows >= 2334)
+                << ",\"public_dispatch\":" << (public_arm >= 0)
                 << ",\"repeat\":" << repeat << ",\"wall_ms\":" << wall_ms
                 << ",\"queue_interval_ms\":" << queue_ms << ",\"inputs_immutable\":true,\"status\":\"PASS\"}\n";
     }
@@ -452,6 +454,13 @@ int main(int argc, char **argv) {
               Case c(2 * rows + 17, irregular, false, q, rows); c.check_selected(enabled);
             }
         }
+      } else if (mode == "--bench-public") {
+        need(argc == 4, "public bench process and arm required");
+        const int process = std::stoi(argv[2]), arm = std::stoi(argv[3]);
+        need(process >= 0 && process < 3 && (arm == 0 || arm == 1), "public bench process/arm");
+        const char *flag = std::getenv("STRATA_SYCL_PREFILL_DOWN_SCATTER");
+        need(flag && std::string(flag) == (arm ? "large" : "0"), "public arm must match startup environment");
+        benchmark(process, q, arm);
       } else if (mode == "--bench") { need(argc == 3, "bench process required"); benchmark(std::stoi(argv[2]), q); }
       else throw std::runtime_error("invalid mode");
       q.wait_and_throw(); runtime->check(); runtime->wait();

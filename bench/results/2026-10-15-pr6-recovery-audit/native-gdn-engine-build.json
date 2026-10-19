@@ -101,7 +101,7 @@
     "sycl_expert_bank_test",
     "file_expert_source_test"
   ],
-  "retention_consumer": "Current comparison engine and requested fixtures: strata, sycl_qsa_bf16_prefix_ordered_exp_test, sycl_qsa_bf16_prefix_parallel_sum_test, sycl_qsa_bf16_prefix_parallel_sum_bench, sycl_moe_down_scatter_bench, sycl_moe_gu_swiglu_bench, sycl_moe_accum_test, sycl_expert_bank_test, file_expert_source_test; select the validated generation and retire the extra after qualification/comparison closure.",
+  "retention_consumer": "Retain validated a576 fallback. Reuse this closed experimental engine cache for the immediately planned production-matched Down fixture; rejected QSA fixtures are removed.",
   "retained_validation_reference": {
     "source_commit": "a57611b9c52f5d1cf2f5281b3cc7eb4087b5cd12",
     "binary": {
@@ -390,5 +390,11 @@
       "count": 5703,
       "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
     }
-  ]
+  ],
+  "closed_QSA_fixture_retirement": {
+    "manifest": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/closed-parallel-sum-fixture-product-retirement-20261019.json",
+    "sha256": "92493f4fe723c880ae43aee91e03de5029dbe8fa1f352e44e56b5daf73df7dc4",
+    "files": 6,
+    "bytes": 4718288
+  }
 }

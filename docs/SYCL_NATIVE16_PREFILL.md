@@ -1276,6 +1276,29 @@ recipe gaps. Six obsolete unqualified native-product payloads were retired;
 their original small receipts and unique source evidence remain separate from
 qualified builds. This is no global-retirement or historical source-recovery claim.
 
+### Production-matched Down comparison
+
+The next fixture uses `--bench-public PROCESS ARM`. Both arms call the actual
+public try hook and fallback: a fresh process starts with Down0 or Down-large,
+which remains immutable through runtime initialization and all measurements.
+There is no engine math change. Six processes run A0,B0,B1,A1,A2,B2; each covers
+all14 fixed78451-window shapes, one warmup and six measured rounds. Use256
+repeated calls for64/160-row timing batches and16 otherwise, to reduce fixed
+marker/drain noise without removing small shapes. All504 used queue/wall
+samples and each native process identity/actual selector must be retained.
+
+The original v6 failure remains failed. This new comparison keeps the same
+<=0.97 geomean, <=1.05 worst-shape and per-pair>=2334-row improvement gates.
+A partial cohort cannot advance. Repeat54 ownership,45 traced small and110
+full correctness events on the exact new fixture before timing. The controller
+checks full process order, unique PID/start ticks, route markers, effective
+startup selectors, timing granularity, shape coverage and closure. Its offline
+negative cases cover partial/duplicate/reordered evidence, reused identities,
+a low-level control, the old small-batch size and the wrong startup route.
+Compilation and execution of this new fixture are pending; no model gain or
+adoption follows from correcting the benchmark. Keep the a576 fallback and
+reuse the closed QSA build cache for this named next comparison.
+
 The maintained model controller now provides `prepare|run qsa-long-input-check`
 and `prepare|run qsa-long-input [0|1|2]`. Its prospective screen holds131072
 context/resident INT8 KV,8192 chunks,GU-large,ordered-exp QSA and GDN columns4

@@ -17,11 +17,12 @@ import measurement_owner as supervision
 
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'moe-down-scatter-component-v6'
+ROOT = B / 'moe-down-scatter-component-v7'
 BUILD = B / 'main-native-gdn-engine/record.json'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json'
 SETTINGS = P / 'tools/sycl/measurement_environment.json'
 TARGET = 'sycl_moe_down_scatter_bench'
+PERF_ORDER = ((0, 0), (1, 0), (1, 1), (0, 1), (0, 2), (1, 2))
 
 
 def digest(path):
@@ -69,6 +70,46 @@ def compact_result(record):
         result.update(timing_sample_columns=list(columns), timing_samples=samples,
             timing_sample_scope='Every measured sample, including unsuccessful gates; warmup durations and repeated shape/guard fields omitted only after validation. Full raw output is temporary.')
     return result
+
+
+def public_timing_samples(checks):
+    """Require six real immutable-arm processes and the full frozen shape set."""
+    checks = [c for c in checks if c['mode'] == 'perf']
+    guards.require(len(checks) == 6 and [c['command'][-3:] for c in checks] ==
+        [['--bench-public', str(p), str(a)] for a, p in PERF_ORDER], 'public process order differs')
+    guards.require(all(c['passed'] and c['ownership_closed'] and c['exit_code'] == 0 and
+        all(isinstance(c['native_identity'][k], int) and c['native_identity'][k] > 0
+            for k in ('pid','start_ticks')) for c in checks) and
+        len({(c['native_identity']['pid'], c['native_identity']['start_ticks']) for c in checks}) == 6,
+        'six independent closed public timing processes required')
+    samples = []
+    for check, (arm, process) in zip(checks, PERF_ORDER):
+        guards.require(check['startup_down_selector'] == ('large' if arm else '0'),
+                       'effective startup environment differs from public arm')
+        routes = [e for e in check['events'] if e['kind'] == 'selected_route']
+        guards.require(len(routes) == 14 and all(e['enabled'] == arm and
+            e['selected'] == bool(arm and e['rows'] >= 2334) and e['false_route_no_write'] and
+            e['expected_mask'] == 0 for e in routes), 'wrong public startup route')
+        group = [e for e in check['events'] if e['kind'] == 'sample' and e['round'] >= 0]
+        warm = [e for e in check['events'] if e['kind'] == 'sample' and e['round'] == -1]
+        guards.require(len(check['events']) == 112 and len(warm) == 14 and
+            {(e['rows'],e['irregular']) for e in warm} ==
+            {(r,i) for r in (64,160,2333,2334,2335,5963,8192) for i in (0,1)} and
+            len(group) == 84 and all(e['process'] == process and e['arm'] == arm
+            for e in group), 'public process/arm labels differ')
+        samples.extend(group)
+    guards.require(len(samples) == 504 and
+        {(e['rows'], e['irregular'], e['process'], e['round'], e['arm']) for e in samples} ==
+        {(r, i, p, n, a) for r in (64, 160, 2333, 2334, 2335, 5963, 8192)
+         for i in (0, 1) for p in range(3) for n in range(6) for a in (0, 1)} and
+        all(e['public_dispatch'] == 1 and e['order'] == 0 and
+            e['fused_route'] == bool(e['arm'] and e['rows'] >= 2334) and
+            e['repeat'] == (256 if e['rows'] < 256 else 16) and
+            e['window_rows'] == 78451 and e['accumulator_bytes'] == 78451*2560*4 and
+            e['inputs_immutable'] and e['status'] == 'PASS' and
+            all(math.isfinite(e[k]) and e[k] > 0 for k in ('wall_ms','queue_interval_ms'))
+            for e in samples), 'public timing shape/coverage/granularity differs')
+    return samples
 
 
 def postchecks(record, boot, cursor):
@@ -129,8 +170,8 @@ def main():
                 complete=False, passed=False, active=False, model_performance_adopted=False,
                 model_quality_qualified=False, physical262144_model_RESTORE_qualified=False,
                 consumer='One Down/scatter component comparison; retire raw logs/JIT after extracting samples.',
-                prospective_gates='New selective candidate, not a revision of the rejected uniform gate:54 exhaustive host ownership cases;33 legacy traced smoke plus6 actual-route events in each of separate processes with flag0/large;78 legacy correctness plus16 selected-route cases per flag. Exact BF16 capture/FP32 FMA, inputs/guards/status, false-route no-write,2333/2334/2335 threshold, split8191/8192 and mixed invalid masks.3 independent clean processes,6 rotated two-arm rounds over14 shapes. Advance only with selected/separate geomean<=0.97, no shape>1.05 and every >=2334-row shape improves in every process. A3% component gain warrants only a subsequent same-workload model experiment.',
-                limits='FP16 Down2560x640, BF16-round then explicit FP32 FMA. Fixed78451-token FP32 accumulator; contiguous/distributed maps. Arm0 separate low-level dense+accumulation;1 actual production startup-selected hook plus its public dense+accumulation fallback. Both use compact below128,wide otherwise; hook uses cached-wide only at>=2334. The public wrapper adds binding/dispatch checks. Marker intervals include submission gaps; no physical traffic, occupancy, saturation or model speed inferred. No model route adoption.',
+                prospective_gates='New production-matched comparison; v6 and uniform failures remain unchanged.54 ownership,45 traced small,110 full correctness events required on this exact fixture. Six immutable startup0/large processes in A0,B0,B1,A1,A2,B2 order,6 rounds over14 shapes:504 used samples. Both arms call the public try hook and fallback, including control flag0. Repeat256 for64/160 rows,16 otherwise; one warmup round per process/shape. Unchanged advance gate: candidate/base geomean<=0.97, no shape>1.05 and every>=2334-row shape improves in each process pair. Component advance only.',
+                limits='FP16 Down2560x640, BF16-round then explicit FP32 FMA. Fixed78451-token FP32 accumulator; contiguous/distributed maps. Actual production startup-selected hook in both arms, with public dense+accumulation fallback. Compact below128,wide otherwise; cached-wide only when enabled at>=2334. Marker intervals include submission gaps; no physical traffic, occupancy, saturation or model speed inferred. This corrects comparison methodology and does not establish an engine speedup from the old low-level baseline.',
                 previous_result=dict(commit=revision, path=str(RESULT.relative_to(P)),
                     sha256=hashlib.sha256(prior_bytes).hexdigest(), source_commit=prior['source_commit'],
                     mode=prior['mode'], passed=prior['passed'], complete=prior['complete'],
@@ -179,7 +220,7 @@ def main():
         boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
         journal = subprocess.check_output(['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True)
         cursor = next(line.split(': ', 1)[1] for line in journal.splitlines() if line.startswith('-- cursor: '))
-        jobs = [['--bench', str(i)] for i in range(3)] if mode == 'perf' else [['--' + mode]]
+        jobs = [['--bench-public', str(p), str(a)] for a,p in PERF_ORDER] if mode == 'perf' else [['--' + mode]]
         if mode in ('smoke', 'validate'):
             jobs += [['--route-' + mode, str(flag)] for flag in (0, 1)]
         record.update(mode=mode, passed=False, complete=False, environment=env,
@@ -198,9 +239,13 @@ def main():
                 child_env = dict(env)
                 if args[0].startswith('--route-'):
                     child_env['STRATA_SYCL_PREFILL_DOWN_SCATTER'] = 'large' if args[1] == '1' else '0'
+                if args[0] == '--bench-public':
+                    child_env['STRATA_SYCL_PREFILL_DOWN_SCATTER'] = 'large' if args[2] == '1' else '0'
                 entry, out, err = owner.run(str(ordinal), command, child_env, P, wall=1200 if mode == 'perf' else 600, cpu=2400 if mode == 'perf' else 1800,
                     rss_cap=6 << 30, file_cap=64 << 20, text_cap=64 << 20, total_cap=128 << 20)
                 result = dict(mode=mode, command=command, exit_code=entry.get('exit_code'),
+                    startup_down_selector=child_env['STRATA_SYCL_PREFILL_DOWN_SCATTER'],
+                    native_identity={k: entry.get('direct_identity', {}).get(k) for k in ('pid','start_ticks')},
                     ownership_closed=supervision.closed(entry), events=[], passed=False,
                     closure=dict(observation_complete=entry.get('observation_complete'),
                         direct_child_reaped=entry.get('direct_child_reaped'), session_empty=entry.get('session_empty'),
@@ -216,7 +261,7 @@ def main():
                         r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed|CHECKED_DRAIN_FAILED', stderr),
                     'fixture failed: ' + (stderr or stdout)[-4096:])
                 routed = args[0].startswith('--route-')
-                expected = (6 if mode == 'smoke' else 16) if routed else {'ownership': 54, 'smoke': 33, 'validate': 78, 'perf': 210}[mode]
+                expected = (6 if mode == 'smoke' else 16) if routed else {'ownership': 54, 'smoke': 33, 'validate': 78, 'perf': 112}[mode]
                 guards.require(len(events) == expected and all(e['status'] == 'PASS' for e in events),
                                'incomplete fixture results')
                 if mode == 'ownership':
@@ -248,16 +293,7 @@ def main():
                                    ('correctness','invalid_map','sample','selected_route')), 'input immutability not checked')
                 result['passed'] = True; persist()
             if mode == 'perf':
-                samples = [e for c in record['checks'] if c['mode'] == 'perf' for e in c['events'] if e['kind'] == 'sample' and e['round'] >= 0]
-                guards.require(len(samples) == 504 and
-                    {(e['rows'], e['irregular'], e['process'], e['round'], e['arm']) for e in samples} ==
-                    {(r, i, p, n, a) for r in (64, 160, 2333, 2334, 2335, 5963, 8192)
-                     for i in (0, 1) for p in range(3) for n in range(6) for a in (0, 1)} and
-                    all(e['fused_route'] == bool(e['arm'] and e['rows'] >= 2334) and
-                        e['order'] in (0, 1) and e['arm'] == (e['process'] + e['round'] + 2 + e['order']) % 2 and
-                        e['repeat'] == 16 and all(math.isfinite(e[k]) and e[k] > 0
-                            for k in ('wall_ms', 'queue_interval_ms')) for e in samples),
-                    'selected timing/process/route coverage incomplete')
+                samples = public_timing_samples(record['checks'])
                 summary = []
                 for rows in (64, 160, 2333, 2334, 2335, 5963, 8192):
                     for irregular in (0, 1):
