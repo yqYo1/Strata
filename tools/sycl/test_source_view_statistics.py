@@ -1,12 +1,19 @@
 #!/usr/bin/env python3
 """Offline tests against pseudoreplication and altered source-view decisions."""
 import copy
+import hashlib
+import json
+from pathlib import Path
 import statistics
 import sys
+import tempfile
 import unittest
+from unittest.mock import patch
 
 sys.dont_write_bytecode = True
 from bench_engine import (FUSION_FIELDS, down_pair_statistics, expert_bank_reuse_scope,
+                          compact_build_record, committed_engine_build, expert_bank_qualified_record,
+                          recorded_files_unchanged,
                           parse_counter_lines, qualified_build_source_matches,
                           source_view_pair_statistics, validate_window_work)
 from build_engine import binary_origin_source
@@ -227,6 +234,62 @@ class ExpertBankReuseTests(unittest.TestCase):
 
     def proof(self):
         return expert_bank_reuse_scope('qualified', self.new, self.old)
+
+    def qualified(self):
+        return dict(build_source_commit='qualified', provider_checks_passed=True,
+            fixture=copy.deepcopy(self.old['fixtures']['sycl_expert_bank_test']),
+            provider_fixture=copy.deepcopy(self.old['fixtures']['file_expert_source_test']))
+
+    def test_exact_original_receipt_accepts_only_its_qualified_outputs(self):
+        gpu = self.qualified(); historical = compact_build_record(self.old)
+        expert_bank_qualified_record(gpu, historical, self.old)
+        for key in ('provider_checks_passed', 'provider_fixture', 'build_source_commit', 'fixture'):
+            saved = gpu.pop(key)
+            with self.subTest(key=key), self.assertRaises((RuntimeError, KeyError)):
+                expert_bank_qualified_record(gpu, historical, self.old)
+            gpu[key] = saved
+
+    def test_same_revision_rebuilt_receipt_cannot_substitute_for_original(self):
+        original = copy.deepcopy(self.old); historical = compact_build_record(original)
+        for key in ('binary', 'compiler', 'configure_argv', 'recipe_reference', 'dependencies'):
+            replaced = copy.deepcopy(original); replaced[key] = {'forged': 'same source revision'}
+            with self.subTest(key=key), self.assertRaises((RuntimeError, KeyError, TypeError)):
+                expert_bank_qualified_record(self.qualified(), historical, replaced)
+
+    def test_provider_failure_or_changed_fixture_cannot_use_same_source_shortcut(self):
+        for key, value in (('provider_checks_passed', False),
+                           ('provider_fixture', {'sha256': 'changed'})):
+            gpu = self.qualified(); gpu[key] = value
+            with self.subTest(key=key), self.assertRaises(RuntimeError):
+                expert_bank_qualified_record(gpu, compact_build_record(self.old), self.old)
+
+    def test_prepare_binds_committed_compact_and_full_receipts(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); state = root/'state'; (state/'main-native-gdn-engine').mkdir(parents=True)
+            build = root/'compact.json'; full = state/'main-native-gdn-engine/record.json'
+            full.write_text(json.dumps(self.old)); raw = json.dumps(compact_build_record(self.old)).encode()
+            build.write_bytes(raw)
+            with patch('bench_engine.P', root), patch('bench_engine.B', state), \
+                 patch('bench_engine.BUILD', build), patch('bench_engine.subprocess.check_output', return_value=raw):
+                admitted, receipts = committed_engine_build()
+                self.assertEqual(admitted, json.loads(raw)); self.assertEqual(set(receipts), {str(build), str(full)})
+                build.write_bytes(raw+b' ')
+                with self.assertRaisesRegex(RuntimeError, 'commit the exact'): committed_engine_build()
+                build.write_bytes(raw)
+                changed = copy.deepcopy(self.old); changed['binary']['sha256'] = 'other-engine'
+                full.write_text(json.dumps(changed))
+                with self.assertRaisesRegex(RuntimeError, 'full build differs'): committed_engine_build()
+
+    def test_launch_rejects_replaced_fallback_receipt_and_either_fixture(self):
+        with tempfile.TemporaryDirectory() as directory:
+            paths = [Path(directory)/name for name in ('fallback-receipt', 'bank', 'provider')]
+            for path in paths: path.write_bytes(path.name.encode())
+            inputs = {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
+            recorded_files_unchanged(inputs)
+            for path in paths:
+                raw = path.read_bytes(); path.write_bytes(b'replaced')
+                with self.subTest(path=path.name), self.assertRaises(RuntimeError): recorded_files_unchanged(inputs)
+                path.write_bytes(raw)
 
     def test_only_unchanged_bank_and_provider_are_qualified(self):
         proof = self.proof()
