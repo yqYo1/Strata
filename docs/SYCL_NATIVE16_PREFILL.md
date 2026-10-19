@@ -1892,8 +1892,17 @@ The gate captures only standard C++ state, calls no runtime API and releases
 before checked owner destruction, following the
 [SYCL host-task contract](https://github.khronos.org/SYCL_Reference/iface/host-task-basic.html).
 These cases exercise queue/owner behavior, not native projection math or
-production overlap; retain the existing16 native projection cases. They remain
-source only until Main compiles and executes them against the exact candidate.
+production overlap; retain the existing16 native projection cases. Source
+`246415bfc` compiled, and the same-build provider/submission/retirement/grouped
+checks passed all51 existing cases. The first new case then failed because
+copy submission did not return before the host gate's two-second deadline.
+The trace has an approximately two-second gap before the first UR memcpy
+enqueue; this does not prove a production-path or GPU failure. The owner closed
+normally, with unchanged boot and no fresh GPU fault. Preserve this failed gate
+in the [compact result](../bench/results/2026-10-15-pr6-recovery-audit/verifier-copy-safety-current.json).
+Replace the unsuitable host-task gate under a new committed bounded plan while
+preserving pending-completion, untouched-output and lifetime assertions.
+Model execution remains blocked until the complete57-case gate passes.
 Run a small traced check and parameter-validated model check before clean speed.
 The model check needs32K+ fresh input,1024+ thinking-plus-answer tokens, positive
 actual early launches/groups matching completed copies, normal ownership and no
@@ -1901,7 +1910,8 @@ fresh fault. Record audit readiness separately. A later committed six-process
 copy-enabled comparison changes only early0/1, with paired ratios>1 and geomean
 >1.02 required for a faster screen. Weak-MTP/agent-session, task quality,
 prefill nonregression and physical262144/session/RESTORE remain adoption gates.
-No build, test, performance gain or adoption is established by this source draft.
+Compilation and the51 existing passes do not qualify early model execution,
+performance gain or adoption.
 
 A conditional complete-blob copy budget also constrains that candidate.
 With at most2 resident experts per layer, top10 routing and at most4 emitted

@@ -1,14 +1,14 @@
 {
-  "source_commit": "218561fc07e5778503f141e234cb81ca32eeeb15",
+  "source_commit": "246415bfc3f8d68242b067ca49723c23c3e96be7",
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-    "bytes": 22075256,
-    "sha256": "c20bb02ada0f84a23ad620211a5e53541a23776ac0d8d63c73ee133a482b0e52"
+    "bytes": 22079432,
+    "sha256": "1c84da96dfcbcb35efaaef8ce4bccc1d078f58bc36e697dd82b3485fcdab6d11"
   },
   "fixtures": {
     "sycl_verifier_retirement_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_verifier_retirement_test",
-      "sha256": "174fa1ce4fc3e3ef0b9c4f3ff4909bcc91662ab9fccb8e43a7bcd3d3f3c07fea"
+      "sha256": "bb6c2777140c7377d3c3558876734157dd57101d3cea5f15a575682328d9c397"
     },
     "sycl_submission_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_submission_test",
@@ -66,7 +66,7 @@
       ],
       "passed": true,
       "stdout_sha256": "dadad801d8022f3b40ad3bdab3e29f65fc13e1f61d60b219406f04e9881bb5be",
-      "stderr_sha256": "47944ba99ecd4f240b77838a0d2da5f1c39e211aaf2a135b07ddad693eac1975"
+      "stderr_sha256": "f4cbe4e31b513fcd3f4e37121be7a49bab813d1366837833e36cc9a546905ab2"
     },
     {
       "command": [
@@ -84,7 +84,7 @@
       ],
       "passed": true,
       "stdout_sha256": "148fbcc509e40ad207cfca2a47f0180d4a42c61ceee417648974ff573e3ba20c",
-      "stderr_sha256": "834b855fe43fc83a244b9dc24cbaf9ae720799d2ceb0a308dac42eb84103ed56"
+      "stderr_sha256": "67a0ea013089f6bac3b53798202dc96b757c5265e4575582b63657b533e90f8f"
     },
     {
       "command": [
@@ -111,31 +111,39 @@
       ],
       "passed": true,
       "stdout_sha256": "9066714b8b575e061109b08415161365b8f2eb8e185bee2ba01f6499319eb79b",
-      "stderr_sha256": "db079ad6871827631d54dfd3d03786bde06f5878bfa1e21d5bbfbec5e8288edd"
+      "stderr_sha256": "b48c3ac03a490423ad42a996a6236ba9a7dc3b0f74ba7e9593a33994afdcd9ec"
     }
   ],
-  "complete": true,
-  "passed": true,
+  "complete": false,
+  "passed": false,
   "active": false,
   "model_performance_measured": false,
+  "per_fixture_budgets": {
+    "wall_seconds": 180,
+    "cpu_seconds": 600,
+    "rss_bytes": 4294967296,
+    "text_bytes": 67108864,
+    "total_bytes": 67108864
+  },
   "model_quality_qualified": false,
   "model_route_executed": false,
   "ordinary_arena_copy_default_enabled": false,
-  "consumer": "Prerequisite for the default-off ordinary-Arena explicit-copy model check. Retire normal traces after compact results are verified and committed.",
-  "gate": "Same-build native provider17, submission10, verifier8 and staged grouped-arithmetic16 cases. Require exact unchanged-Q8_1 arithmetic against separate GPU projections, finite/nonzero reference outputs, full-window/row mapping, copy payload and outer guards. Checked owners and unchanged boot/runtime/source, no fresh GPU fault. Any failure blocks advancement.",
-  "limits": "Grouped component covers all seven current model GU/Down pairs plus supported IQ4_XS/Q2_0 at H2560/FF640, windows1/4, groups10/16 and entries10/40, using two distinct blobs repeated in metadata. The oracle shares native scalar projection primitives; it isolates copy/grouping from separate execution, not common-mode projection defects or model quality. No invalid GPU address, stalled kernel, model, physical262144/session/RESTORE or throughput qualification.",
+  "consumer": "Prerequisite for the default-off event-gated early copied-expert model check. Retire normal traces after compact results are verified and committed.",
+  "gate": "Same-build native provider17, submission10, verifier8, staged grouped-arithmetic16 and early copied-graph6 cases. Require exact unchanged-Q8_1 arithmetic against separate GPU projections, finite/nonzero reference outputs, full-window/row mapping, copy payload and outer guards. Checked owners and unchanged boot/runtime/source, no fresh GPU fault. Any failure blocks advancement.",
+  "limits": "The six early cases check real-queue synthetic ordering, replay, source retirement and refusal, not native projection equivalence or model overlap. Grouped component covers all seven current model GU/Down pairs plus supported IQ4_XS/Q2_0 at H2560/FF640, windows1/4, groups10/16 and entries10/40, using two distinct blobs repeated in metadata. The oracle shares native scalar projection primitives; it isolates copy/grouping from separate execution, not common-mode projection defects or model quality. No invalid GPU address, stalled kernel, model, physical262144/session/RESTORE or throughput qualification.",
   "last_fixture": {
-    "name": "sycl_mmvq_test",
+    "name": "sycl_verifier_retirement_test",
     "command": [
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_mmvq_test",
-      "--arena-grouped"
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_verifier_retirement_test",
+      "--early"
     ],
-    "exit_code": 0,
+    "exit_code": 1,
     "ownership_closed": true,
-    "stdout_sha256": "9066714b8b575e061109b08415161365b8f2eb8e185bee2ba01f6499319eb79b",
-    "stderr_sha256": "db079ad6871827631d54dfd3d03786bde06f5878bfa1e21d5bbfbec5e8288edd"
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "7689a4076e6cb536130be30633a0789143c93214e738e578167c7a7b1fbd0852"
   },
   "grouped_copy_projection_contract_passed": true,
+  "error": "early submission blocked until the copy gate expired; first early child exited1",
   "ownership_closed": true,
   "fresh_faults": [],
   "boot_unchanged": true,
@@ -146,5 +154,15 @@
     "device": "0xe20c",
     "kernel": "7.0.0-38-generic",
     "devcoredump": false
+  },
+  "controller_error_excerpt_sha256": "03da8b6e04719b578f30894825f2249334a71bbdfad885c83a15d2551e793ea7",
+  "prior_component_cases_passed": 51,
+  "early_pcie_copy_contract_passed": false,
+  "diagnostic": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verifier-copy-safety-v6/owned/early.stderr",
+    "sha256": "7689a4076e6cb536130be30633a0789143c93214e738e578167c7a7b1fbd0852",
+    "bytes": 42141,
+    "consumer": "Resolve test-only host-task dependency blocking before first UR memcpy enqueue and replace the deterministic gate; no new model execution until a separately committed57-case gate passes.",
+    "limit": "Failure of the test gate is not proof of a production-path deadlock, wrong projection or GPU fault."
   }
 }
