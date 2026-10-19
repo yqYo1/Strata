@@ -164,10 +164,59 @@ def cpu_smoke():
             result.write_text(json.dumps(record, indent=2) + '\n')
         print(json.dumps({k: record.get(k) for k in
             ('mode', 'passed', 'complete', 'cpu_sampling_qualified', 'ownership_closed', 'error')}))
-        return 0 if record['passed'] else 1
+    return 0 if record['passed'] else 1
+
+
+def perf_smoke():
+    """Test actual perf event access without attaching or changing permissions."""
+    root=B/'cpu-perf-capability-v1'
+    result=P/'bench/results/2026-10-15-pr6-recovery-audit/cpu-profiler-current.json'
+    with (B/'owned-v0141-measurement.lock').open('a+') as lock:
+        fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);guards.no_model_owners([])
+        require_source=Path(__file__).read_bytes()
+        revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip()
+        guards.require(require_source==subprocess.check_output(['git','show',revision+':tools/sycl/profile_attention.py'],cwd=P),
+            'commit exact perf probe source first')
+        pins={}
+        for name in ('tools/sycl/profile_attention.py','tools/sycl/measurement_owner.py','tools/sycl/measurement_guards.py'):
+            data=subprocess.check_output(['git','show',revision+':'+name],cwd=P)
+            guards.require((P/name).read_bytes()==data,'uncommitted perf probe input: '+name)
+            pins[name]=hashlib.sha256(data).hexdigest()
+        original=result.read_bytes()
+        guards.require(original==subprocess.check_output(['git','show',revision+':'+str(result.relative_to(P))],cwd=P),
+            'commit the original profiler outcome first')
+        record=json.loads(original)
+        guards.require('perf_event_capability' not in record, 'closed event probe requires a new distinct committed plan')
+        guards.require(not root.exists(),'inspect existing perf capability result; no automatic retry')
+        root.mkdir(mode=0o700)
+        env=dict(PATH='/usr/bin:/bin',HOME='/home/yayoi',LANG='C.UTF-8',LC_ALL='C.UTF-8')
+        probe=dict(source_commit=revision,source_sha256=hashlib.sha256(require_source).hexdigest(),input_sha256=pins,
+            perf=dict(path='/usr/bin/perf',sha256=digest('/usr/bin/perf')),
+            target=dict(path='/usr/bin/true',sha256=digest('/usr/bin/true')),
+            perf_event_paranoid=Path('/proc/sys/kernel/perf_event_paranoid').read_text().strip(),
+            environment=env,complete=False,model_executed=False,model_hardware_counters_qualified=False,events=[])
+        owner=supervision.Owner(root/'owned')
+        for event in ('cycles','task-clock'):
+            command=['/usr/bin/perf','stat','--no-big-num','-x',';','-e',event,'--','/usr/bin/true']
+            entry,out,err=owner.run(event,command,env,P,wall=15,cpu=15,rss_cap=512<<20,
+                file_cap=256<<10,text_cap=256<<10,total_cap=1<<20)
+            probe['events'].append(dict(event=event,command=command,exit_code=entry.get('exit_code'),
+                ownership_closed=supervision.closed(entry),stderr_excerpt=err.read_text(errors='replace')[-2048:],
+                stdout_excerpt=out.read_text(errors='replace')[-512:]))
+        probe.update(complete=all(supervision.closed(c) for c in owner.commands),
+            ownership_closed=owner.active is None and all(supervision.closed(c) for c in owner.commands),
+            perf_event_paranoid_after=Path('/proc/sys/kernel/perf_event_paranoid').read_text().strip(),
+            limits='Event permission/command capability only; no attached process, model profile or hardware bottleneck. Preserve each requested event outcome; change no sysctl or privilege.')
+        record['perf_event_capability']=probe
+        (root/'record.json').write_text(json.dumps(dict(probe,owned_commands=owner.commands),indent=2)+'\n')
+        result.write_text(json.dumps(record,indent=2)+'\n')
+        print(json.dumps(probe))
+        return 0 if probe['complete'] and probe['ownership_closed'] else 1
 
 
 def main():
+    if sys.argv[1:] == ['perf-smoke']:
+        return perf_smoke()
     if sys.argv[1:] == ['cpu-smoke']:
         return cpu_smoke()
     guards.require(len(sys.argv) == 2 and sys.argv[1] in ('smoke', 'resources', 'isa', 'overview', 'memory'),

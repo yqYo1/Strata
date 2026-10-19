@@ -4281,7 +4281,7 @@
   "passive_generation_resource_capture_source_audit": {
     "classification": "decision support",
     "schedulable_now": false,
-    "status": "research_running",
+    "status": "native_reviewed_clock_binding_fixed_capture_admitted",
     "source_commit": "d9ff684f1",
     "source_sha256": {
       "tools/sycl/resource_engine.py": "07769052c763b6dc649fdc8761644f7b75bcaea2ef1c7fea6e60d248744f0890",
@@ -4307,12 +4307,46 @@
     ],
     "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/passive-generation-resource-capture-source-audit.md",
     "maximum_report_bytes": 22528,
-    "worker_ownership_closed": false,
-    "next_review": "At accepted report completion, native Luna-max review; Main keeps serialized measurement moving and does not steer the researcher.",
+    "worker_ownership_closed": true,
+    "next_review": "Retire consumed audit payload after the admitted capture/source is default-reachable; new research requires an actual unresolved causal question.",
     "task_id": "task_192eb6dce33c",
     "dispatch_id": "ctx_2acbfe53f735",
     "terminal_handle": "term_85288091-0c5f-46a5-ab30-fd20ccff2445",
     "terminal_incarnation": "54f4fe0f-1928-45b1-a74f-3de1c654d0e7",
-    "collector_model_requested": "gpt-6-luna"
+    "collector_model_requested": "gpt-6-luna",
+    "report_bytes": 13491,
+    "report_sha256": "47cfe1097bfb98bf7eab03dbc75a3c43ae810b0f90644bee809ae8e11f56a691",
+    "native_review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/passive-generation-resource-native-review.json",
+    "native_review_sha256": "b9f43c9f3965d62992a3d73fdda96fd5becf878d73e2a7a849f1e0db5ce353a3",
+    "operational_digest": "The verified result-to-journal clock binding gap is fixed with a negative test. The post-closure analyzer matched original request clocks/work and reproduced all523-snapshot resource values without GPU execution or changing original outcomes. Environment/device reassertion remains conditional; no causal hardware bottleneck or clean speed follows.",
+    "worker_closure": "Accepted completed Task/Dispatch; released external terminal after exact incarnation and idle verification; terminal closed and delivery acknowledged.",
+    "corrected_source_commit": "7d5a11afb"
+  },
+  "retained_engine_consumer_migration_source_scope": {
+    "classification": "decision support",
+    "schedulable_now": false,
+    "status": "completed_pending_native_review",
+    "source_commit": "d9ff684f1",
+    "prerequisites_met": [
+      "All six actual old/new processes closed and the new-engine maximum-pair gate failed.",
+      "Old fallback source/recipe9813 inputs and committed relocation are recovered.",
+      "The new passive resource controller uses the old build directly without depending on the new executable."
+    ],
+    "question": "Map the minimum safe migration of current build/qualification consumers to the retained old engine so the unused newer executable/build tree can be retired. Distinguish required fixture bytes from source receipts, historical references, and inactive closed command modes. Identify source/recipe/relocation/admission invariants and tests required; propose no code, build, benchmark or additional artifact archive.",
+    "prior_scope_ids": [
+      "retained_engine_comparison_source_audit",
+      "client_resource_reader_source_audit"
+    ],
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/retained-engine-consumer-migration-source.md",
+    "maximum_report_bytes": 18432,
+    "worker_ownership_closed": true,
+    "next_review": "Native Luna-max review after accepted report; Main owns migration and tests at a safe serialized boundary.",
+    "task_id": "task_77bc84c4df96",
+    "terminal_handle": "term_6ef4cfc1-8dd3-44b2-b862-d9fa8081acef",
+    "terminal_incarnation": "863db3a5-1988-4bce-b0f3-394d30642983",
+    "dispatch_id": "ctx_fca6475e63f1",
+    "report_bytes": 11270,
+    "report_sha256": "f5fab7d73417a79f8327d94575698d88159fb81287a0370532181d27ba101c8b",
+    "worker_closure": "Accepted completed Task/Dispatch; exact incarnation released/idle-verified and external terminal closed; delivery acknowledged."
   }
 }

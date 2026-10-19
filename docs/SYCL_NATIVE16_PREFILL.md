@@ -1505,7 +1505,7 @@ Collector completion requires an explicit terminal and at least two samples
 with eligible CCS intervals; empty or unsupported clients cannot pass. A
 confirmed process exit can close this process-bounded collector, but planned
 model-phase completion and coverage remain separate checks. The CLI has a900s/
-32MiB bound and opens no GPU device. No live collection has been qualified.
+32MiB bound and opens no GPU device.
 The [resource controller](../tools/sycl/resource_engine.py) at`d9ff684f1`
 prepares a bounded official regular-code diagnostic on the old engine, recovering
 its9813 original native/dependency inputs and recipe. The original build path
@@ -1524,6 +1524,34 @@ contained spans, and records the unsampled final edge without extrapolation.
 The immediate consumer is the committed900s/1s/32MiB collection plan, supervised
 inside the1800s/64MiB official benchmark budget. Source integration is under an
 independent Orca Luna audit; Main owns all tests and GPU work.
+The first live collection at`497311e01` then closed normally without a fresh GPU
+fault:33211 fresh inputs,2931 generated tokens and2105/2481 accepted drafts.
+Its8.5tok/s includes parameter validation, stage progress and the collector;
+retain the earlier clean speeds separately. All523 snapshots and both CPU/client
+windows passed replay/coverage checks, with no final unsampled response edge.
+Orca audit plus native Luna-max review identified a result-to-journal clock
+binding gap, with no actual mismatch. Main fixed it at`7d5a11afb`; both admission
+tests passed (42 relevant CPU tests total). The committed post-closure analyzer
+matched all work/clocks to the original hashed journal and reproduced every
+resource value, preserving the original execution outcome.
+
+| Observed client window | Contained CPU wall s | Process CPU core equivalents | CCS busy fraction |
+| --- | ---: | ---: | ---: |
+| Before first output | 50.160 | 0.943 | 0.830 |
+| After first output | 342.636 | 4.319 | 0.325 |
+
+The leading native thread stayed on CPU0 and used283.33 scheduled CPU seconds
+after first output. Five other busy threads on CPUs1–5 used232.83,233.71,256.55,
+240.39 and231.88 seconds. Scheduled time includes polling and memory stalls;
+CCS busy cycles include device stalls and are associated-client measurements.
+These observations do not show GPU arithmetic saturation or establish CPU
+arithmetic versus RAM/submission/synchronization as the limiting resource.
+Next confirm attribution with the lighter collector-only environment and resolve
+CPU/RAM work and transfer-counter availability before choosing an optimization.
+Actual unprivileged perf `cycles` and `task-clock` command probes at`dea283917`
+both exited1 with the access-limited diagnostic under`perf_event_paranoid=4`.
+This preserves the earlier VTune ptrace refusal as a separate result; no host
+permission was changed and model hardware counters remain unavailable.
 Recovered spans must fit the selected request interval. CPU ticks include
 polling, and a shared DRM client's counters are not exclusive process usage.
 Keep model quality,agent-session,physical262144/session/RESTORE and matched
