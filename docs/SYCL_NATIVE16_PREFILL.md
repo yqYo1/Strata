@@ -1307,9 +1307,13 @@ and inconsistent marker arithmetic. Source396d0c91f built the corrected fixture;
 the engine remains byte-identical570b65dd with native origin9b6db2661 preserved.
 Compilation does not reuse qualification for the changed Down fixture.
 The exact93248e27 fixture passed54 CPU ownership,45 traced smoke and110 full
-numerical/admission events, all owners closed and no fresh GPU fault. The frozen
-six-process clean timing is now running; correctness does not decide its speed
-gate. No model gain or adoption follows from correcting the benchmark.
+numerical/admission events, all owners closed and no fresh GPU fault. All six
+clean timing processes then closed normally, with504 eligible used samples,
+checked actual dispatch counts and no fresh fault. The candidate/base latency
+geomean is0.953898926 (4.61% shorter), the worst shape ratio is1.020361103,
+and every selected large shape improves in each of the three process pairs.
+The unchanged component gate permits the117K model comparison; it establishes
+neither a whole-model gain nor adoption. The original v6 failure stays failed.
 Keep the a576 fallback and
 reuse the closed QSA build cache for this named next comparison. The dedicated
 `bench_engine.py summarize-down` analyzer preserves the frozen>1.002 model
@@ -1317,7 +1321,11 @@ criterion, while `summarize-source-view` keeps>1.005. It rechecks original
 component qualification, exact117489-token requests, six-process order, paired
 inputs and clean work conservation; first-use and the1000tok/s target remain
 separate. Main passed all26 model statistics, work-counter and build-identity
-tests; these are offline checks, not end-to-end model qualification. Independent
+tests; these are offline checks, not end-to-end model qualification. The later
+bank/provider-scoped build-proof change at sourcec4583093b passed all32 model
+statistics/build-proof tests after timing closed; all16 Down evidence tests also
+passed again. Its receipt-chain source review is still pending Main resolution
+before any model plan. Independent
 Orca source audit and separate native Luna-max review found no verified reducer
 defect. Receipt-chain wiring tests remain optional strengthening; actual eligible
 model evidence is still required before a cohort decision.
