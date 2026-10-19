@@ -4281,7 +4281,7 @@
   "passive_generation_resource_capture_source_audit": {
     "classification": "decision support",
     "schedulable_now": false,
-    "status": "research_running",
+    "status": "native_reviewed_capture_and_clock_binding_pending",
     "source_commit": "d9ff684f1",
     "source_sha256": {
       "tools/sycl/resource_engine.py": "07769052c763b6dc649fdc8761644f7b75bcaea2ef1c7fea6e60d248744f0890",
@@ -4307,13 +4307,19 @@
     ],
     "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/passive-generation-resource-capture-source-audit.md",
     "maximum_report_bytes": 22528,
-    "worker_ownership_closed": false,
-    "next_review": "At accepted report completion, native Luna-max review; Main keeps serialized measurement moving and does not steer the researcher.",
+    "worker_ownership_closed": true,
+    "next_review": "After the frozen capture closes, Main binds official result clocks/work to the verified journal and tests the negative case; then retire consumed reports/transactions after findings are preserved.",
     "task_id": "task_192eb6dce33c",
     "dispatch_id": "ctx_2acbfe53f735",
     "terminal_handle": "term_85288091-0c5f-46a5-ab30-fd20ccff2445",
     "terminal_incarnation": "54f4fe0f-1928-45b1-a74f-3de1c654d0e7",
-    "collector_model_requested": "gpt-6-luna"
+    "collector_model_requested": "gpt-6-luna",
+    "report_bytes": 13491,
+    "report_sha256": "47cfe1097bfb98bf7eab03dbc75a3c43ae810b0f90644bee809ae8e11f56a691",
+    "native_review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/passive-generation-resource-native-review.json",
+    "native_review_sha256": "b9f43c9f3965d62992a3d73fdda96fd5becf878d73e2a7a849f1e0db5ce353a3",
+    "operational_digest": "Verified admission gap: result clocks are not directly matched to the hashed journal sample; no actual mismatch shown. Environment reassertion and expected device identity are conditional checks. Resolve admission after capture closure before interpreting resources; no further research is eligible yet.",
+    "worker_closure": "Accepted completed Task/Dispatch; released external terminal after exact incarnation and idle verification; terminal closed and delivery acknowledged."
   },
   "retained_engine_consumer_migration_source_scope": {
     "classification": "decision support",
