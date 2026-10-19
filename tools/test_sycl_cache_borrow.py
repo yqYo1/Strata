@@ -2,6 +2,7 @@
 """Offline rejection checks for actual cache-loan admission evidence."""
 from pathlib import Path
 import sys
+import tempfile
 import unittest
 
 sys.dont_write_bytecode=True
@@ -45,6 +46,25 @@ class LoanEvidence(unittest.TestCase):
                       log().replace('first=360','first=160'),
                       log().replace('phase=after-restore','phase=wrong')):
             with self.subTest(value=value),self.assertRaises(RuntimeError):c.loan_evidence(value)
+
+
+class RefusalClosure(unittest.TestCase):
+    def test_explicit_refusal_exits_without_signals_or_second_request(self):
+        script="import sys;print('READY 131072 stop',flush=True);assert sys.stdin.readline().startswith('GEN 16 ');print('ERR injected configuration refusal',flush=True);sys.exit(1)"
+        record=dict(small_requests=[],model_route_executed=False)
+        with tempfile.TemporaryDirectory(prefix='strata-loan-protocol-') as directory:
+            owner=c.supervision.Owner(Path(directory)/'owned')
+            entry,_,_=owner.run('refusal',[sys.executable,'-c',script],
+                dict(PATH='/usr/bin:/bin',PYTHONDONTWRITEBYTECODE='1'),c.P,
+                interaction=lambda io,e:c.interact_requests(io,e,record,[[1,2,3],[4,5]]),
+                wall=10,cpu=5,rss_cap=128<<20,total_cap=1<<20,text_cap=64<<10,file_cap=64<<10)
+            self.assertTrue(c.supervision.closed(entry),entry)
+            self.assertEqual(entry['exit_code'],1)
+            self.assertEqual(entry['cleanup'],[])
+            self.assertIsNone(owner.active)
+            self.assertEqual(record['native_error'],'ERR injected configuration refusal')
+            self.assertEqual(record['small_requests'],[])
+            self.assertFalse(record['model_route_executed'])
 
 
 if __name__=='__main__':unittest.main()

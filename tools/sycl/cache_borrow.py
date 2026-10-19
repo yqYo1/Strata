@@ -80,6 +80,30 @@ def loan_evidence(log):
     return dict(layouts=layouts,tables=tables,payloads=payloads,mtp_phases=phases)
 
 
+def interact_requests(io, entry, record, values):
+    while not io.line().startswith('READY '): pass
+    record['native_identity']={k:entry['direct_identity'][k] for k in ('pid','start_ticks','sid')}
+    record['native_ready']=True
+    for prompt in values:
+        io.send(('GEN 16 '+','.join(map(str,prompt))+'\n').encode()); tokens=[]
+        while True:
+            line=io.line()
+            if line.startswith('ERR'):
+                # An explicit refusal is a failed model check, not a reason to
+                # kill a normally exiting native process. Close its input and
+                # observe bounded exit; Owner still enforces every budget.
+                record['native_error']=line
+                io.proc.stdin.close();io.exit(60);return
+            if line.startswith(('PP ','T ')):record['model_route_executed']=True
+            if line.startswith('T '):tokens.append(int(line.split()[1]))
+            if line.startswith('DONE '):
+                fields=line.split();guards.require(int(fields[1])==len(tokens)==16 and
+                    fields[5] in ('length','stop','eos') and all(0<=x<248320 for x in tokens),'incomplete request')
+                record['small_requests'].append(dict(done=line,input_tokens=len(prompt),generated=len(tokens),
+                    output_sha256=assets.fingerprint(tokens)));break
+    io.send(b'QUIT\n');io.proc.stdin.close();io.exit(60)
+
+
 def prepare():
     full, count = q.current_build()
     base = gen.committed(assets.RESULT)
@@ -162,26 +186,13 @@ def run():
         record['active'] = bool(owner and owner.active is not None)
         (ROOT/'record.json').write_text(json.dumps(dict(record,owned_commands=owner.commands if owner else []),indent=2)+'\n')
     def interact(io,entry):
-        while not io.line().startswith('READY '): pass
-        record['native_identity']={k:entry['direct_identity'][k] for k in ('pid','start_ticks','sid')}
-        record['native_ready']=True
-        for prompt in values:
-            io.send(('GEN 16 '+','.join(map(str,prompt))+'\n').encode()); tokens=[]
-            while True:
-                line=io.line();guards.require(not line.startswith('ERR'),line)
-                if line.startswith(('PP ','T ')): record['model_route_executed']=True
-                if line.startswith('T '): tokens.append(int(line.split()[1]))
-                if line.startswith('DONE '):
-                    fields=line.split();guards.require(int(fields[1])==len(tokens)==16 and
-                        fields[5] in ('length','stop','eos') and all(0<=x<248320 for x in tokens),'incomplete request')
-                    record['small_requests'].append(dict(done=line,input_tokens=len(prompt),generated=len(tokens),
-                        output_sha256=assets.fingerprint(tokens)));break
-        io.send(b'QUIT\n');io.proc.stdin.close();io.exit(60)
+        interact_requests(io,entry,record,values)
     owner=supervision.Owner(ROOT/'owned',persist)
     try:
         entry,_,err=owner.run('check',record['command'],record['environment'],P,interaction=interact,**record['budgets'])
         record.update(complete=supervision.closed(entry),exit_code=entry.get('exit_code'))
-        guards.require(record['complete'] and entry['exit_code']==0,'owned command failed')
+        guards.require(record['complete'] and entry['exit_code']==0 and not record.get('native_error'),
+            record.get('native_error') or entry.get('error') or 'owned command failed')
         log=err.read_text(errors='replace');assets.verify_pool(log,5)
         guards.require(not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed',log),
             'runtime error in loan diagnostic')
