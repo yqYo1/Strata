@@ -1961,6 +1961,17 @@ compute queue to `make_queue(false)` while preserving the copy/probe queues,
 context/device, enqueue order, checks,2s fallback, tracing and safety settings.
 Queue profiling is a new explicit diagnostic variable; no production queue or
 model route is qualified by this comparison.
+That source`51864e379` contrast built and completed with verified queue
+properties, normal closure, unchanged boot and no fresh GPU fault. All20 raw
+resident queries returned NOT_READY in at most3us, across101,429us while the
+gate remained held. Manual release preceded a52us event wait and correct
+marker/payload. All41 observed calls started and returned. This is evidence of
+profiling-dependent native-query latency in the small fixture; no resident
+completion was observed during the held interval. It does not qualify the
+replacement gate, production queues, model performance or physical context.
+The next source/configuration decision is whether original NEO/UR offers a
+supported way to retain profiling without the implicit counter-event timestamp
+wait. Verify installed support before committing a separate bounded diagnostic.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.

@@ -4302,7 +4302,6 @@
   "upstream_e88_host_api_review_scope": {
     "classification": "decision support",
     "question": "Map the0.2 host/API compatibility migration and the required shared behavior still missing from this fork.",
-    "source_manifest": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/upstream-e88-review-inputs.json",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/upstream-e88-host-api-report.md",
     "report_budget_bytes": 16384,
     "schedulable_now": false,
@@ -4323,12 +4322,17 @@
       "sha256": "2238c4922862c9cedbf623542faae49850cd5afbc8d7ae33e7a19c24fb63a895",
       "main_read_original_body": false
     },
-    "corrections": "Fork tools/strata_tokenizer.py exists; incremental encoding/PromptEncoder wiring remain missing. Original report used a stale fork revision; source identity comes from the current manifest."
+    "corrections": "Fork tools/strata_tokenizer.py exists; incremental encoding/PromptEncoder wiring remain missing. Original report used a stale fork revision; source identity is pinned by source_reference, with410source inputs restored from Git and11derived bytecode entries excluded.",
+    "source_reference": {
+      "fork_commit": "84e864c577951d5c51d25103c0ba7c1e334b9b4d",
+      "upstream_commit": "e88ee39d1d6be6e3364183af3b39b62a7ed6f211",
+      "restorable_source_files": 410,
+      "derived_bytecode_not_source": 11
+    }
   },
   "upstream_e88_ui_cli_review_scope": {
     "classification": "decision support",
     "question": "Map new application/terminal and installer/launch/benchmark behavior required by the upstream update.",
-    "source_manifest": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/upstream-e88-review-inputs.json",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/upstream-e88-ui-cli-report.md",
     "report_budget_bytes": 16384,
     "schedulable_now": false,
@@ -4349,12 +4353,17 @@
       "sha256": "2238c4922862c9cedbf623542faae49850cd5afbc8d7ae33e7a19c24fb63a895",
       "main_read_original_body": false
     },
-    "corrections": "Desktop/terminal functions are required shared functionality. Shard validation also needs whole_shard() copied-file detection coverage. Configured benchmark-host behavior is an earlier obligation, not a newly introduced e88 feature."
+    "corrections": "Desktop/terminal functions are required shared functionality. Shard validation also needs whole_shard() copied-file detection coverage. Configured benchmark-host behavior is an earlier obligation, not a newly introduced e88 feature.",
+    "source_reference": {
+      "fork_commit": "84e864c577951d5c51d25103c0ba7c1e334b9b4d",
+      "upstream_commit": "e88ee39d1d6be6e3364183af3b39b62a7ed6f211",
+      "restorable_source_files": 410,
+      "derived_bytecode_not_source": 11
+    }
   },
   "upstream_e88_inference_boundaries_review_scope": {
     "classification": "decision support",
     "question": "Select original Niko SYCL/CPU component candidates and trace shared native CLI/protocol obligations without replacing faster fork inference.",
-    "source_manifest": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/upstream-e88-review-inputs.json",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/upstream-e88-inference-boundaries-report.md",
     "report_budget_bytes": 16384,
     "schedulable_now": false,
@@ -4364,21 +4373,28 @@
         "evidence": "Actual upstream fetch/ls-remote confirmede88ee39d; unchanged detached source worktree is available. New interval789commits/1284paths; prior function obligations remain recorded. No active Main model/build/test."
       }
     ],
-    "status": "report_complete_worker_and_terminal_closed_native_review_pending",
+    "status": "native_reviewed_workers_and_terminals_closed",
     "consumer": "Current Niko-only functionality/component integration and next unchanged upstream performance evaluation; Main implements/tests.",
     "launch_limit": "Three Orca Luna workers plus Main; no new6.1-sol worker. Custom argv is required for report-writing sandbox and network permission that worker-start cannot express; operator owns terminal cleanup.",
-    "task_id": "task_1e394f99e030",
-    "terminal": "term_1e16abf1-61bf-4423-bd34-121f73b6b468",
-    "dispatch_id": "ctx_b0a139ea1c88",
     "worker_closed": true,
     "terminal_closed": true,
     "report_sha256": "0cd789f0f5523eca561729db4180ebac53faa971e6e11a7182cde0109d113275",
-    "native_review_pending": "Verify manifest-mismatch allegation: Main recomputed all421fork hashes with no mismatch. Distinguish stale prior function_review hashes from the current source manifest."
+    "native_review": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/upstream-e88-inference-native-review.json",
+      "sha256": "f76037e7b855e0ed82498e99e7d40ccf77da53aebc5400069ca0e8126d99c4ee",
+      "main_read_original_body": false
+    },
+    "corrections": "All370in-scope fork hashes match; the original mismatch claim used stale prior-status hashes. Current Arc entrypoint has no nativeBGEN/BGENI/BSTOP or diskSAVE/RESTORE protocol; snapshot restore calls do not qualify these. ESIMD/TQ provenance remains unresolved; no inference source adopted.",
+    "source_reference": {
+      "fork_commit": "84e864c577951d5c51d25103c0ba7c1e334b9b4d",
+      "upstream_commit": "e88ee39d1d6be6e3364183af3b39b62a7ed6f211",
+      "restorable_source_files": 410,
+      "derived_bytecode_not_source": 11
+    }
   },
   "neo_profiled_native_query_source_scope": {
     "classification": "decision support",
     "question": "Explain the measured2s raw native query on a profiled event and identify a bounded configuration contrast preserving safety/timing semantics.",
-    "source_manifest": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/native-query-v4-view-inputs.json",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/neo-profiled-native-query-report.md",
     "report_budget_bytes": 12288,
     "schedulable_now": false,
@@ -4388,10 +4404,42 @@
         "evidence": "Committed v4 raw-query measurement at79eb60594, exact source view174911063, validated host closure/no fault; profiled counter-event timestamp synchronization is a concrete version-qualified source hypothesis."
       }
     ],
-    "status": "dispatched_read_only_research",
+    "status": "native_reviewed_workers_and_terminals_closed",
     "consumer": "Current queue-profiling query diagnostic and original NEO/UR configuration safety decision; Main implements/tests.",
-    "task_id": "task_2cbe0cf2ea8e",
-    "terminal": "term_fc587ad7-fc5a-4319-9187-330776d165f9",
-    "dispatch_id": "ctx_e21d355332d5"
+    "worker_closed": true,
+    "terminal_closed": true,
+    "report_sha256": "7bf7e53461fe270e68492405dd43009c5b6f6d0a8f290c3bd40e90461232a545",
+    "native_review": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/neo-profiled-native-query-native-review.json",
+      "sha256": "b697af40671f2106bad1b79513052443d7b31b46e75b9b52c14b14d0646d8b62",
+      "main_read_original_body": false
+    },
+    "accepted_digest": "Profiled counter-event timestamp completion is a compatible-source hypothesis; exact installed .16 mapping remains unverified. Profiling-off queries returnedNOT_READY throughout held window. cf34poll/yield changes do not resolve timestamp completion. Next candidate requires original-key/DSO evidence and a committed isolated test; no model or full-gate qualification.",
+    "next_candidate": {
+      "flag": "EnableImplicitConvertionToCounterBasedEvents",
+      "value": "0",
+      "schedulable_now": false,
+      "prerequisites": [
+        {
+          "met": true,
+          "evidence": "Actual pinned installed DSO contains the exact key; compatible original26.31.39395.14 debug registry documents0=disable implicit regular-event to counter-event conversion."
+        },
+        {
+          "met": false,
+          "evidence": "Commit a separate profiled-compute diagnostic, original control/source proof and immutable per-process environment before execution; current controller/rootv5must not be rerun."
+        }
+      ]
+    },
+    "source_reference": {
+      "source_commit": "174911063739da076ce8c41713c297c5fc7280a9",
+      "result_commit": "79eb60594a40d4915041d18d53286d3944064aa4",
+      "result_path": "bench/results/2026-10-15-pr6-recovery-audit/native-event-gate-current.json",
+      "source_files": 7
+    },
+    "closed_transaction_retirement": {
+      "result_reference": "native-event-gate-current.json::artifact_retirement",
+      "files": 44,
+      "bytes": 275197
+    }
   }
 }

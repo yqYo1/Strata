@@ -12,7 +12,7 @@ import measurement_guards as guards
 import measurement_owner as supervision
 from check_verifier_retirement import DELTA, P, B, A, SETTINGS, digest
 
-ROOT=B/'native-event-gate-v4'
+ROOT=B/'native-event-gate-v5'
 RESULT=A/'native-event-gate-current.json'
 BUILD=A/'native-gdn-engine-build.json'
 
@@ -49,6 +49,9 @@ def main():
         guards.require(previous['ownership_closed'] and not previous['active'] and not previous['passed'] and
             previous.get('first_failed_case')=='copy-query' and previous.get('qualification_eligible') is False,
             'closed previous native query diagnostic failure required')
+        prior_query=previous.get('query_call_observation',{}).get('longest',{})
+        guards.require(prior_query.get('name')=='resident-query' and prior_query.get('elapsed_us',0)>200000,
+            'committed slow native-query control required before the queue-profiling contrast')
         previous_reference=dict(commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip(),
             path=str(RESULT.relative_to(P)),sha256=digest(RESULT))
         settings=committed(SETTINGS)
@@ -60,14 +63,14 @@ def main():
                     old,expected=DELTA[name]
                     guards.require(old==item['sha256'],'original runtime baseline differs')
                 guards.require(digest(name)==expected,'runtime asset changed: '+name)
-        record=dict(mode='native-event-gate-resident-query-diagnostic',source_commit=full['source_commit'],binary=full['binary'],
+        record=dict(mode='native-event-gate-compute-profiling-diagnostic',source_commit=full['source_commit'],binary=full['binary'],
             qualification_eligible=False,previous_result_reference=previous_reference,
             fixture=full['fixtures']['sycl_host_event_gate_test'],fixture_external_headers=full['fixture_external_headers'],
             environment_reference=str(SETTINGS.relative_to(P)),environment_sha256=digest(SETTINGS),
             per_case_budgets=dict(wall_seconds=30,cpu_seconds=60,rss_bytes=1<<30,text_bytes=64<<20,total_bytes=64<<20),
             runtime_asset_delta={n:dict(qualified_sha256=v[0],candidate_sha256=v[1]) for n,v in DELTA.items()},
             complete=False,passed=False,active=False,cases=[],model_executed=False,model_quality_qualified=False,
-            consumer='Identify the v3 bounded-window failure using flushed begin/end observations around each existing gate-held/native-resident status query, without extra native calls or changed enqueue order/bounds/safety settings. Record the aggregate window even on failure. Native-handle retrieval and text observers may affect timing; this diagnostic never qualifies the replacement gate or model route. Preserve previous failures.',
+            consumer='Contrast the committed v4 slow profiled native-query control by disabling only compute queue profiling in this test. Copy/probe properties, enqueue order, bounds, fallback, native calls, tracing and safety environment stay unchanged. Queue-property output is required. This explicit test-only queue-setting contrast never qualifies the replacement gate or a production/model route; preserve the profiled control failure.',
             gate='One fresh copy-query process. Arm a2s fallback before import. Import/dependent submits/native-handle materialization each within100ms. Query the resident native event at most20 times5ms apart while gate is held, with a200ms observation cap. If unready, release gate before SYCL event wait; if ready, wait with gate held. Record exact branch, wait time, gate state and post-wait marker; check payload and all owner drains. Never read the marker before checked completion. Diagnostic cannot qualify a model or57-case replacement gate even if it passes.',
             limits='Test-only runtime progress observation. No qualification of the replacement gate, production projection math, physical wire traffic, model correctness, overlap gain or throughput.')
         runtime_unchanged()
@@ -87,6 +90,9 @@ def main():
                 entry,out,err=owner.run(mode,[record['fixture']['path'],mode],env,P,
                     wall=30,cpu=60,rss_cap=1<<30,text_cap=64<<20,file_cap=64<<20,total_cap=64<<20)
                 stdout,stderr=out.read_text(errors='replace'),err.read_text(errors='replace')
+                queue_rows=re.findall(r'^event_gate_queue copy_profiling=(\d+) compute_profiling=(\d+) probe_profiling=(\d+) in_order=(\d+)$',stdout,re.M)
+                guards.require(queue_rows==[('1','0','0','1')],'actual diagnostic queue properties differ')
+                record['observed_queue_configuration']=dict(zip(('copy_profiling','compute_profiling','probe_profiling','all_in_order'),map(int,queue_rows[0])))
                 starts=re.findall(r'^event_gate_call phase=begin name=([a-z-]+) index=(\d+) offset_us=(\d+)$',stdout,re.M)
                 ends=re.findall(r'^event_gate_call phase=end name=([a-z-]+) index=(\d+) offset_us=(\d+) elapsed_us=(\d+) result=(\d+)$',stdout,re.M)
                 windows=re.findall(r'^event_gate_window query_us=(\d+) queries=(\d+) native_ready=(\d+)$',stdout,re.M)

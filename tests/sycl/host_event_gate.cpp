@@ -38,7 +38,18 @@ int main(int argc,char** argv) {
                 import_us,pending_us);
             return 0;
         }
-        auto copy=runtime->make_queue(true), compute=runtime->make_queue(true), probe=runtime->make_queue(false);
+        // Only the query diagnostic changes compute profiling. Original
+        // import/copy/graph qualification modes retain their queue properties.
+        auto copy=runtime->make_queue(true), compute=runtime->make_queue(mode!="copy-query"), probe=runtime->make_queue(false);
+        if(mode=="copy-query") {
+            const bool ordered=copy.has_property<sycl::property::queue::in_order>() &&
+                compute.has_property<sycl::property::queue::in_order>() &&
+                probe.has_property<sycl::property::queue::in_order>();
+            std::printf("event_gate_queue copy_profiling=%d compute_profiling=%d probe_profiling=%d in_order=%d\n",
+                int(copy.has_property<sycl::property::queue::enable_profiling>()),
+                int(compute.has_property<sycl::property::queue::enable_profiling>()),
+                int(probe.has_property<sycl::property::queue::enable_profiling>()),int(ordered));std::fflush(stdout);
+        }
         using strata::sycl_backend::Allocation;
         using strata::sycl_backend::MemoryKind;
         // All host/device bytes outlive the gate and every dependent command.
