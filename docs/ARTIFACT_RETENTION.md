@@ -172,8 +172,15 @@ comparison, but extract them from routine logs and discard the logs after
 verification. A different extension does not make generated output source.
 
 Set SYCL, Level Zero, driver, profiler and experiment variables before native
-`exec`. Keep them immutable after runtime initialization. For a small first
-check use the qualified tracing and validation settings:
+`exec`. Keep them immutable after runtime initialization. Use the pinned
+[shared measurement environment](../tools/sycl/measurement_environment.json)
+as this workstation's qualified baseline, checking its runtime identities before
+reuse. Preserve `UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD=1`,
+`NEOReadDebugKeys=1`, `EnableDirectSubmission=0` and the qualified queue settings
+when removing observers for clean timing. A changed runtime, driver or proposed
+safety-setting change needs its own committed, bounded qualification before
+long model execution. For a small first check use the qualified tracing and
+validation settings:
 
 ```sh
 UR_ENABLE_LAYERS=UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION
