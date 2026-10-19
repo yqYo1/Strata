@@ -18,11 +18,14 @@ class PublicComparisonTests(unittest.TestCase):
             for rows in (64,160,2333,2334,2335,5963,8192):
                 for irregular in (0,1):
                     events.append(dict(kind='selected_route',enabled=arm,rows=rows,
+                        source_first=irregular,source_last=rows,window_rows=78451,
                         selected=bool(arm and rows>=2334),false_route_no_write=True,expected_mask=0))
                     for round in range(-1,6):
                         events.append(dict(kind='sample',rows=rows,irregular=irregular,process=process,
                             round=round,arm=arm,order=0,public_dispatch=1,fused_route=bool(arm and rows>=2334),
                             repeat=256 if rows<256 else 16,window_rows=78451,accumulator_bytes=78451*2560*4,
+                            observed_fused_dispatches=(256 if rows<256 else 16) if arm and rows>=2334 else 0,
+                            queue_batch_ms=.9*(256 if rows<256 else 16),
                             inputs_immutable=True,status='PASS',wall_ms=1.,queue_interval_ms=.9))
             self.checks.append(dict(mode='perf',command=['fixture','--bench-public',str(process),str(arm)],
                 startup_down_selector='large' if arm else '0',
@@ -60,6 +63,39 @@ class PublicComparisonTests(unittest.TestCase):
     def test_wrong_startup_route_is_rejected(self):
         self.checks[0]['events'][0]['enabled']=1
         with self.assertRaises(RuntimeError):down.public_timing_samples(self.checks)
+
+    def test_duplicate_preflight_route_placement_is_rejected(self):
+        routes=[e for e in self.checks[0]['events'] if e['kind']=='selected_route']
+        routes[1]['source_first']=0
+        with self.assertRaises(RuntimeError):down.public_timing_samples(self.checks)
+
+    def test_actual_timed_hook_returns_must_match_the_arm(self):
+        sample=next(e for e in self.checks[1]['events'] if e['kind']=='sample' and e['rows']==2334 and e['round']==0)
+        for observed in (0,sample['repeat']-1,sample['repeat']+1):
+            sample['observed_fused_dispatches']=observed
+            with self.assertRaises(RuntimeError):down.public_timing_samples(self.checks)
+
+    def test_duration_floor_includes_warmup_and_checks_marker_interval(self):
+        sample=next(e for e in self.checks[0]['events'] if e['kind']=='sample')
+        sample['queue_batch_ms']=down.MIN_TIMING_BATCH_MS
+        sample['queue_interval_ms']=sample['queue_batch_ms']/sample['repeat']
+        self.assertEqual(len(down.public_timing_samples(self.checks)),504)
+        sample['queue_batch_ms']=down.MIN_TIMING_BATCH_MS-1e-6
+        sample['queue_interval_ms']=sample['queue_batch_ms']/sample['repeat']
+        with self.assertRaises(RuntimeError):down.public_timing_samples(self.checks)
+        sample['queue_batch_ms']=3.;sample['queue_interval_ms']=1.
+        with self.assertRaises(RuntimeError):down.public_timing_samples(self.checks)
+
+    def test_compaction_retains_observed_route_and_granularity_totals(self):
+        record=dict(checks=self.checks)
+        result=down.compact_result(record)
+        for check,(arm,_) in zip(result['checks'],down.PERF_ORDER):
+            observed=check['timed_dispatch_observations']
+            self.assertEqual(observed['batches_including_warmup'],98)
+            self.assertEqual(observed['fused_calls'],896 if arm else 0)
+            self.assertEqual(observed['fused_calls']+observed['fallback_calls'],8288)
+            self.assertEqual(observed['route_mismatches'],0)
+            self.assertEqual(observed['ineligible_batches'],0)
 
 
 class EvidenceTests(unittest.TestCase):

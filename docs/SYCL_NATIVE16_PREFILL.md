@@ -1296,9 +1296,13 @@ startup selectors, timing granularity, shape coverage and closure. Its offline
 negative cases cover partial/duplicate/reordered evidence, reused identities,
 a low-level control, the old small-batch size and the wrong startup route.
 Source`9b6db2661` compiled the fixture; the engine SHA matches the validated
-a576 engine. Independent source review calls for observing timed dispatch
-returns and a prospective batch-duration floor before clean timing. No v7 GPU
-execution has occurred; no model gain or adoption follows from correcting the
+a576 engine. Main's corrected source now records every timed hook return,
+requires exactly repeat or zero fused dispatches, checks the14 preflight
+row/placement cases and prospectively requires every marker bracket, including
+warmups, to last at least2ms. This screens granularity, not timer accuracy or
+noise. A shorter batch invalidates the comparison; retry requires a new
+committed plan. The new negative tests and corrected fixture rebuild are pending.
+No v7 GPU execution has occurred; no model gain or adoption follows from correcting the
 benchmark. Keep the a576 fallback and
 reuse the closed QSA build cache for this named next comparison. The dedicated
 `bench_engine.py summarize-down` analyzer preserves the frozen>1.002 model

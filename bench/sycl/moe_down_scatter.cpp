@@ -9,6 +9,7 @@
 #include <cmath>
 #include <cstring>
 #include <cstdlib>
+#include <iomanip>
 #include <iostream>
 #include <memory>
 #include <numeric>
@@ -359,14 +360,19 @@ void benchmark(int process, sycl::queue &q, int public_arm = -1) {
       for (int order = 0; order < (public_arm >= 0 ? 1 : 2); ++order) {
       const int arm = public_arm >= 0 ? public_arm : (process + round + 2 + order) % 2;
       c.reset();
+      int fused_dispatches = 0;
       const auto start = mark(q);
       const auto wall = std::chrono::steady_clock::now();
       for (int i = 0; i < repeat; ++i)
-        if (public_arm >= 0 || arm) (void)c.selected_submit(0); else c.separate(0, tile);
+        if (public_arm >= 0 || arm) fused_dispatches += c.selected_submit(0); else c.separate(0, tile);
       const auto end = mark(q); wait(q, end);
       const double wall_ms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - wall).count() / repeat;
-      const double queue_ms = double(end.get_profiling_info<sycl::info::event_profiling::command_start>() -
-          start.get_profiling_info<sycl::info::event_profiling::command_end>()) / 1e6 / repeat;
+      const auto begin_ns = start.get_profiling_info<sycl::info::event_profiling::command_end>();
+      const auto end_ns = end.get_profiling_info<sycl::info::event_profiling::command_start>();
+      need(end_ns > begin_ns, "unordered timing markers");
+      const double queue_batch_ms = double(end_ns - begin_ns) / 1e6;
+      const double queue_ms = queue_batch_ms / repeat;
+      need(fused_dispatches == (arm && rows >= 2334 ? repeat : 0), "timed dispatch differs from selected arm");
       if (public_arm >= 0 || arm) {
         for (int i = 0; i < repeat; ++i) c.separate(0, tile);
       } else {
@@ -380,9 +386,11 @@ void benchmark(int process, sycl::queue &q, int public_arm = -1) {
                 << ",\"window_rows\":" << c.routes->rows() << ",\"accumulator_bytes\":" << c.reference.n * sizeof(float)
                 << ",\"source_first\":" << c.host_source.front() << ",\"source_last\":" << c.host_source[size_t(rows - 1)]
                 << ",\"irregular\":" << irregular << ",\"round\":" << round << ",\"order\":" << order
-                << ",\"arm\":" << arm << ",\"fused_route\":" << (arm && rows >= 2334)
+                << ",\"arm\":" << arm << ",\"fused_route\":" << (fused_dispatches != 0)
                 << ",\"public_dispatch\":" << (public_arm >= 0)
+                << ",\"observed_fused_dispatches\":" << fused_dispatches
                 << ",\"repeat\":" << repeat << ",\"wall_ms\":" << wall_ms
+                << ",\"queue_batch_ms\":" << queue_batch_ms
                 << ",\"queue_interval_ms\":" << queue_ms << ",\"inputs_immutable\":true,\"status\":\"PASS\"}\n";
     }
   }
@@ -391,6 +399,7 @@ void benchmark(int process, sycl::queue &q, int public_arm = -1) {
 
 int main(int argc, char **argv) {
   std::cout.setf(std::ios::unitbuf);
+  std::cout << std::setprecision(12);
   try {
     need(argc >= 2, "use --ownership|--smoke|--validate|--bench PROCESS");
     const std::string mode = argv[1];
