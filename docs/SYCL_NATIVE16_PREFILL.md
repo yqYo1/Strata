@@ -1759,6 +1759,20 @@ All owners closed normally; source/runtime/boot stayed unchanged and no fresh
 GPU fault appeared. Engine bytes remained those of`189e5163d`; only the fixture
 and controller were corrected. The positive grouped GPU model route is still
 unexecuted and the independent producer/consumer source review is pending.
+The next bounded model gate uses `python3 tools/sycl/arena_copy.py prepare`,
+then a committed generated plan before `run`. It pins the current engine and
+all component bytes, recovers the original build inputs, hashes all model inputs
+before preparation and checks their identities before/after execution. Keep
+pool5,131072 context/resident INT8 KV and the previous8192 prefill settings;
+set the new opt-in before exec andpcie-frac0.25. One owned process serves two
+thinking-template questions with at most16 output tokens each. Both must show
+nonzero immutable-view GPU miss groups, equal submitted/completed blob and byte
+counts, remaining CPU work, normal closure and no fresh fault. Use parameter
+validation and stage progress, not the full model API trace. The driver.16 delta
+is admitted only for this named diagnostic, without updating the shared runtime.
+This check does not compare speed, numerical/task quality or physical262144/
+RESTORE. Long-generation strong/weak comparisons require their own committed
+order, repetitions and decision criteria after actual route admission.
 
 A conditional complete-blob copy budget also constrains that candidate.
 With at most2 resident experts per layer, top10 routing and at most4 emitted
