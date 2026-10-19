@@ -17,7 +17,6 @@ import strata_bench as b
 import long_generation_bench as lg
 sys.path.insert(0, str(Path(__file__).resolve().parent / 'sycl'))
 import generation_engine as generation
-import check_decode_cpu as cpu_observer
 
 
 def raw(body="answer", offered=300):
@@ -29,39 +28,6 @@ def raw(body="answer", offered=300):
 
 
 class EvidenceTests(unittest.TestCase):
-    def test_region_calibration_rejects_missing_work_bad_counters_and_short_batches(self):
-        plan = dict(arms=list(cpu_observer.REGION_ARMS), jobs_per_thread=2,
-                    body_steps=2, minimum_batch_wall_ns=50000000)
-        rows = []
-        for i, arm in enumerate(plan['arms']):
-            for n in ([6, 1] if i % 2 else [1, 6]):
-                values = []
-                for id in range(n):
-                    value = id + 19
-                    for _ in range(4):
-                        value = (value * 6364136223846793005 + 1) % (1 << 64)
-                    values.append(value)
-                rows.append(dict(sequence=i, enabled=arm == 'on', threads=n, jobs_per_thread=2,
-                    body_steps=2, wall_ns=100000000 + (1000000 if arm == 'on' else 0), errors=0,
-                    thread_cpu_ns=[1200 if arm == 'on' else 1000]*n,
-                    region_cpu_ns=[10 if arm == 'on' else 0]*n,
-                    region_calls=[2 if arm == 'on' else 0]*n, checksum=values))
-        result = cpu_observer.region_calibration_summary(rows, plan)
-        self.assertTrue(result['eligible'])
-        self.assertFalse(result['production_overhead_qualified'])
-        self.assertEqual(result['cases']['6']['median_CPU_ns_per_region'], 100.)
-        for variant in ('missing', 'wrong_checksum', 'wrong_calls', 'bad_clock', 'short', 'wrong_order', 'invalid_affinity'):
-            with self.subTest(variant=variant):
-                changed = copy.deepcopy(rows)
-                if variant == 'missing': changed.pop()
-                if variant == 'wrong_checksum': changed[2]['checksum'][0] += 1
-                if variant == 'wrong_calls': changed[2]['region_calls'][0] -= 1
-                if variant == 'bad_clock': changed[2]['region_cpu_ns'][0] = 999999
-                if variant == 'short': changed[2]['wall_ns'] = 49999999
-                if variant == 'wrong_order': changed[2]['sequence'] = 5
-                if variant == 'invalid_affinity': changed[2]['errors'] = 1
-                with self.assertRaises(RuntimeError): cpu_observer.region_calibration_summary(changed, plan)
-
     def test_overhead_requires_independent_matched_work_and_preserves_failed_speed_gate(self):
         records = []
         for i, arm in enumerate(generation.OVERHEAD_ARMS):

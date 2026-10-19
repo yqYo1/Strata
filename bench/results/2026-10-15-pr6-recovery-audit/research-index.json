@@ -2952,7 +2952,6 @@
       "revised_candidate": {
         "commit": "5f91e79eca6af861e9d7001389d1e283d7dc5fd2",
         "branch": "feature/decode-cpu-profile",
-        "source_root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-decode-cpu-profile",
         "changes": [
           "Reject multi-stage CPU evidence using single_stage=false and valid=false, including same-device splits.",
           "Document successful completed requests and require consumer count reconciliation; failed/missing observations are ineligible.",
@@ -2963,12 +2962,13 @@
         "native_engine_built": true,
         "native_runtime_tested": true,
         "integration_commit": "7e272c0e9",
-        "native_engine_build_source": "d50d31347cc8505a40181db8308735bfa0058427"
+        "native_engine_build_source": "d50d31347cc8505a40181db8308735bfa0058427",
+        "branch_retirement": "Original source reachable on default; child/worktree retired after independent review. Configure commands below are historical, not a runnable current plan."
       },
       "remaining_gates": [
-        "Commit and run a matched observer-off/on comparison on the same new engine and proposed runtime; the old package14 clean baseline does not isolate overhead.",
-        "Select physical resource attribution from measured GPU service, RAM/PCIe traffic and compatible hardware ceilings; CPU time and stage percentages alone do not identify saturation.",
-        "Keep explicit runtime-baseline adoption, agent-session, quality, physical262144 and RESTORE qualification separate; the source-fixture auditor remains pending its original report-save approval."
+        "The six-process observer-bundle comparison closed and failed its original overhead gate; preserve that result. Isolated calibration closed without an accounting rewrite.",
+        "Compare retained old/new engines observer-off on the same proposed runtime before choosing a build or adopting runtime pins.",
+        "Measure actual host work, polling/wait and resource traffic before claiming a limiting CPU/RAM/PCIe/GPU resource. Broad quality, physical262144/session/RESTORE and70tok/s remain unqualified."
       ],
       "realistic_consumer": "Matched observer-overhead and subsequent long-generation hardware attribution.",
       "next_review": "Isolated CPU-region calibration, then low-overhead resource/thread attribution and same-runtime observer-off old/new engine comparison. Original CPU fixture source audit remains pending; keep its child source immutable.",
@@ -3050,48 +3050,29 @@
       },
       "cpu_pool_fixture_source_review": {
         "classification": "decision support",
-        "status": "report_write_approval_pending",
-        "schedulable_now": false,
+        "status": "recovered_artifact_independently_reviewed",
         "source_commit": "5f91e79eca6af861e9d7001389d1e283d7dc5fd2",
-        "source_root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-decode-cpu-profile",
-        "source_sha256": {
-          "tests/core/pool_cpu_clock.cpp": "14b61575a812a3674e30732522d328d0cc966dcb1ee910728db218e6f20d4260",
-          "tests/core/cpu_clock.cpp": "677037e46ffbcc57512ba2705ab40313d796be5c004f95a78fd0212e933a8c3c",
-          "include/strata/core/cpu_clock.hpp": "6ce276314635c0b4adfa7ec507e5cb3134387240a408172c7fd1f611e4069bdf",
-          "include/strata/kernels/cpu/pool.hpp": "0122bead288ed6d783c8a93a16208c5613ebc985061c477670841641a0d8af04",
-          "src/kernels/cpu/pool.cpp": "c7fad11e48a0ce52a031a5b149b33a34f3a0daa7427be95ce88e0f738558ec16",
-          "src/kernels/cpu/native_expert.cpp": "fcb4a7c74ba45a13da162eed832860f9644f4544d3f269b9c8588f01b40fb106",
-          "src/kernels/cpu/expert.cpp": "9bcf5d889818ef3cb9619df6536e8844d151714803ac8930eada115a61b62e48",
-          "CMakeLists.txt": "a81c51a58b55c740b37afc94a5f753b9205913a33baa2704622963317e668050"
-        },
-        "question": "Audit the newly authored real ExpertPool CPU-clock fixture for valid synthetic inputs, Zen3 versus AVX512 execution safety, output/accounting conservation, sleep/wake and 97-expert batching coverage. Identify false-pass or unsupported qualification claims before Main executes the committed CPU-only plan.",
-        "prerequisites_met": [
-          "The 218-line real-pool fixture is new committed source; the previous audit covered its absence at 91a44ece7, not these bytes.",
-          "No build or CPU-critical-path measurement is needed for this source/test-contract audit; Main retains all execution ownership.",
-          "All 89 prior Orca tasks are settled; no active source reader or dispatch owns this scope."
+        "source_inputs_verified": 8,
+        "original_source_details_commit": "c5ec37e8ace3aee228c10bbb8a80c98ade3a26fa",
+        "collector_attempt_outcome": "failed; exact terminal exited, no accepted worker_done; independently reviewed artifact does not change the failed Orca Task",
+        "recovered_report_sha256": "d2c47fb37fda44f6d2f270b20be609ebeae571383da7128906232e9c440b4978",
+        "native_review_sha256": "2cf83a454845079432c943cae74926489745ba56cdade0a80207c6eee0b26bca",
+        "worker_ownership_closed": true,
+        "operational_digest": "All eight pinned sources match. No production source defect found.97 identical expert inputs cannot detect expert-index permutations; host-enabled evidence may contain zero host jobs; deterministic sleep/wake is not proved. These coverage limits remain separate from passed accounting checks and do not qualify production overhead.",
+        "coverage_limits": [
+          "Expert-index permutation detection is weak with identical blobs.",
+          "Host participation is observed but not required in every host-enabled case.",
+          "Sleep/wake behavior is not deterministically exercised."
         ],
-        "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/decode-cpu-pool-fixture-source-review.md",
-        "maximum_report_bytes": 12288,
-        "consumer": "Main qualification of the new observer after the frozen clean-generation cohort/reducer; native Luna max reviews the report first.",
-        "next_review": "Await this same active Dispatch without steering. Native Codex Luna max reviews its report; Main reads only the short actionable digest. Source5f91 in child stays unchanged through closure.",
-        "task_id": "task_35164b0712b3",
-        "dispatch_id": "ctx_108b21beacc2",
-        "worker_ownership_closed": false,
-        "attempt_outcome": "Orca positively reported failed at agent_readiness: Agent startup blocked: agent-update-prompt. Task never ran. Exact failed Dispatch released with state=released and processAction=closed_agent_terminal; no report or researcher execution exists.",
-        "launch_readiness": {
-          "terminal": "term_e78da67f-e8a9-49ca-812c-6df2d7b1743f",
-          "incarnation": "6132e9b4-a604-4f86-9fd4-8c4b06da6446",
-          "tui_idle_verified": true,
-          "model_observed": "GPT-6-Luna xhigh",
-          "command": "codex --model gpt-6-luna -c check_for_update_on_startup=false",
-          "configuration_scope": "Command invocation only; no global config or CLI update. The previous failed Dispatch remains released.",
-          "setting_source": "https://learn.chatgpt.com/docs/config-file/config-reference#check_for_update_on_startup"
+        "source_child_retirement": {
+          "branch": "feature/decode-cpu-profile",
+          "original_head": "5f91e79eca6af861e9d7001389d1e283d7dc5fd2",
+          "all_commits_reachable_from_default": true,
+          "original_source_inputs_recovered_and_matched": 8,
+          "worktree_local_and_remote_branch_removed": true,
+          "reason": "All source readers/reviewers ended; no outstanding branch commits, active terminals, dirty or ignored files, open PR or live script consumer."
         },
-        "active_dispatch_id": "ctx_165fd1470aed",
-        "collector_model_observed": "gpt-6-luna",
-        "report_saved": false,
-        "operational_issue": "Live Dispatch reached its report-write tool call; terminal explicitly shows Yes, proceed approval for the named report outside the worker workspace. No report exists yet, no completion is claimed and Main did not steer or interrupt the worker.",
-        "future_launch": "Pass the report directory through --add-dir before a fresh Task; keep report-only mutation scope. Do not change the running worker or forge its report/receipt."
+        "next_review": "Strengthen these fixture coverage points before relying on them to qualify the corresponding behavior. No pending source reader needs the child; model/hardware gates remain separate."
       },
       "cpu_only_qualification": {
         "source_commit": "5f91e79eca6af861e9d7001389d1e283d7dc5fd2",
@@ -3152,7 +3133,8 @@
           }
         },
         "GPU_executed": false,
-        "limits": "CPU observer accounting/output checks only; no IQ-kernel, GPU/runtime, overhead, model throughput, quality or physical-context qualification."
+        "limits": "CPU observer accounting/output checks only; no IQ-kernel, GPU/runtime, overhead, model throughput, quality or physical-context qualification.",
+        "historical_plan_restore": "Restore original5f91 source from default before reproducing this already-closed historical child build plan; no current worktree dependency."
       },
       "native_build_plan": {
         "fallback_command": "python3 tools/sycl/build_engine.py retain-current",
@@ -4031,88 +4013,11 @@
   "cpu_observer_overhead_methods_scope": {
     "classification": "decision support",
     "schedulable_now": false,
-    "status": "isolated_calibration_passed_production_variation_unresolved",
-    "prerequisite_evidence": "Current long CPU check passed with1.19million worker jobs in regular-code and6.99million in varied-prose; per-job thread CPU clocks and whole-thread accounting are present. Overhead is unknown. This question does not require CPU-critical-path evidence.",
-    "novelty": "Compare clock-read calibration, whole-observer perturbation, amortized burst accounting and stratified sampling; exclude existing clock/source audits and expert-kernel optimization.",
-    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/cpu-observer-overhead-methods.md",
-    "maximum_report_bytes": 20480,
-    "collector_model_observed": "gpt-6-luna",
-    "worker_ownership_closed": true,
-    "consumer": "Reference for the pending independent source/interpretation audit and any later accounting change; isolated region cost does not qualify production perturbation.",
-    "next_review": "After independent calibration review and the same-runtime observer-off old/new engine comparison. Retire report/code transaction artifacts when these consumers end.",
-    "report_bytes": 14023,
-    "report_sha256": "3461c92a3b784de5642f52e028f3403d5e29d747fbef3e06549accdf503c583a",
-    "operational_digest": "The frozen six-process observer comparison failed its original overhead gate; off samples also vary and one pair reverses. Select only an isolated same-API CPU-region/control calibration as decomposition. Do not apply the report's2% proposal, infer production read-path/cost or use a constant throughput correction.",
-    "isolated_region_calibration_plan": {
-      "classification": "CPU-only diagnostic; no engine rebuild or GPU execution",
-      "output_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-region-calibration-v1",
-      "arms": [
-        "off",
-        "on",
-        "on",
-        "off",
-        "off",
-        "on"
-      ],
-      "independent_processes": 6,
-      "thread_counts": [
-        1,
-        6
-      ],
-      "thread_count_order": "even process1,6; odd6,1",
-      "jobs_per_thread": 500000,
-      "body_steps": 256,
-      "minimum_batch_wall_ns": 50000000,
-      "affinity": "Worker i on CPU i, using six distinct physical cores0..5; restore parent mask after each case. Fail a denied/incorrect mask.",
-      "compiler": {
-        "path": "/usr/bin/x86_64-linux-gnu-g++-13",
-        "sha256": "1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769"
-      },
-      "compiler_flags": [
-        "-std=c++20",
-        "-O3",
-        "-DNDEBUG",
-        "-march=znver3",
-        "-mtune=znver3",
-        "-Wall",
-        "-Wextra",
-        "-Werror",
-        "-pthread"
-      ],
-      "source_paths": [
-        "include/strata/core/cpu_clock.hpp",
-        "tools/sycl/cpu_clock_calibration.cpp",
-        "tools/sycl/check_decode_cpu.py",
-        "tools/sycl/measurement_owner.py",
-        "tools/sycl/measurement_guards.py"
-      ],
-      "budgets": {
-        "wall_seconds": 120,
-        "cpu_seconds": 120,
-        "rss_bytes": 1073741824,
-        "raw_bytes": 67108864
-      },
-      "gates": "All12 batches must exceed50ms, match their exact fixed integer work and counts, have valid CPU clocks/counters and checked affinity, with six independent normally closed processes. Preserve signs and every original sample; no throughput or production-overhead adoption gate.",
-      "provenance": "New Main-authored diagnostic around existing project CpuTimeRegion; no external implementation code.",
-      "retention_consumer": "Decide whether per-job CPU-region cost warrants lighter accounting. Commit useful individual samples/source/recipe; retire the transient standalone CPU executable and successful raw logs at closure. Existing two engine generations remain untouched.",
-      "next_review": "At calibration closure, then same-runtime observer-off old/new engine comparison and resource/thread attribution.",
-      "runtime_elfs": {
-        "/usr/lib/x86_64-linux-gnu/libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
-        "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
-        "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
-        "/usr/lib/x86_64-linux-gnu/libm.so.6": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
-        "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da"
-      }
-    },
+    "status": "closed_isolated_calibration_no_accounting_rewrite",
+    "operational_digest": "Independent review finds no calibration reuse blocker. The observed delta is active CpuTimeRegion cost over a null-counter wrapper control; it is not a production upper bound, pure clock latency, a speed correction or a CPU bottleneck. Keep accounting unchanged and compare old/new engines observer-off on the same runtime with separate host/wait attribution.",
+    "original_plan_and_source_details_commit": "c5ec37e8ace3aee228c10bbb8a80c98ade3a26fa",
     "isolated_region_calibration": {
       "source_commit": "227869de9743a53be76d2dbb13734ef9389b80de",
-      "source_sha256": {
-        "include/strata/core/cpu_clock.hpp": "6ce276314635c0b4adfa7ec507e5cb3134387240a408172c7fd1f611e4069bdf",
-        "tools/sycl/cpu_clock_calibration.cpp": "81a116d44b6eb9798ade8176bad214220acd2da793b4b7dea10449c4811fc0b3",
-        "tools/sycl/check_decode_cpu.py": "4875fa2dc9b063d7947ae4632a5e0c2954d5fb4dfef8856115ff0faa594800eb",
-        "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
-        "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8"
-      },
       "samples": [
         {
           "sequence": 0,
@@ -4235,15 +4140,9 @@
           "errors": 0
         }
       ],
-      "kernel": "7.0.0-38-generic",
-      "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
       "complete": true,
       "passed": true,
       "GPU_executed": false,
-      "binary": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-region-calibration-v1/cpu_clock_calibration",
-        "sha256": "fef5d9ea7d6ba59b7a52b339901aed8e35b18f5a6f8cb81e06747e5cb05e5c7b"
-      },
       "summary": {
         "cases": {
           "1": {
@@ -4305,30 +4204,34 @@
       "original_per_thread_vector_evidence": {
         "commit": "1c35d2156",
         "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
-        "reason": "Keep useful individual batch timings/totals in the active index; original per-thread/checksum vectors remain recoverable from Git. The frozen external receipt is retained only for the active source auditor."
+        "reason": "Useful batch totals remain here; restore original per-thread/checksum vectors from Git for a concrete comparison. Closed source/review consumers ended and raw output was retired."
       }
     },
-    "calibration_source_audit": {
-      "classification": "decision support",
-      "schedulable_now": true,
-      "status": "research_running",
-      "prerequisite_evidence": "New immutable calibration source227869de9;17 evidence tests and12 closed CPU-only batches; original production bundle gate failed. Scope is source/interpretation audit of this new calibrator, distinct from older ExpertPool fixture audit and general methods survey.",
+    "reviewed_source_audit": {
       "source_commit": "227869de9743a53be76d2dbb13734ef9389b80de",
-      "original_result_commit": "1c35d2156d14ecc830b2962510be01fd64398f97",
-      "frozen_receipt": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-region-calibration-v1/record.json",
-        "sha256": "2a0d7a82f332e333c2a0922493ffc61d2fa29ec69f6d7c4655f280d4bfda9ace"
-      },
-      "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/cpu-region-calibration-source-audit.md",
-      "maximum_report_bytes": 16000,
-      "task_id": "task_53308486ffab",
-      "dispatch_id": "ctx_4fd2e0d6349c",
-      "terminal_handle": "term_42babf4b-e0b6-4ec1-a51e-c16acaad3403",
-      "terminal_incarnation": "afe33f4e-fd6f-4c67-bf16-0e2cbfeb79ff",
-      "collector_model_requested": "gpt-6-luna",
-      "worker_ownership_closed": false,
-      "consumer": "Main uses only native Luna-max review digest to decide whether calibration/gate corrections are required; no model optimization adopted.",
-      "next_review": "After accepted worker_done, delegate native Luna-max review; preserve frozen source/receipt until that review and retire ended raw/build consumers after original inputs are reachable from default."
+      "report_sha256": "243a46192f1cf230eea28da1ff59bed8a21a34b192894349466971d3a974b9ce",
+      "native_review_sha256": "ecb5b73aee9c37b28245007beabea7ad80e224c53ca4c3b9ee968197a687a430",
+      "worker_ownership_closed": true
+    },
+    "closed_artifact_retirement": {
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-cpu-calibration-and-audit-retirement-20261019.jsonl",
+      "sha256": "9d6a4f0b01938de13b80c1d517825e91b80cec215987bec67ffe44d2c3dafd0d",
+      "files": 26,
+      "bytes": 108052,
+      "original_source_inputs_recovered": 5,
+      "original_recipe_recovered": true,
+      "original_outcomes_unchanged": true
+    },
+    "next_review": "Next same-runtime observer-off old/new engine comparison and thread/resource attribution. No additional clock-methods research or accounting rewrite is selected.",
+    "post_retirement_evidence_tests": {
+      "source_commit": "0ff56f0ec",
+      "command": [
+        "python3",
+        "-B",
+        "tools/test_benchmark_evidence.py"
+      ],
+      "passed": 16,
+      "GPU_executed": false
     }
   },
   "sycl_host_affinity_runtime_contract_scope": {
