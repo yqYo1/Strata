@@ -13,6 +13,7 @@ import sys
 sys.dont_write_bytecode = True
 import measurement_guards as guards
 import measurement_owner as supervision
+from measure_down_scatter import postchecks
 
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
@@ -32,14 +33,20 @@ def digest(path):
 
 
 def main():
-    guards.require(len(sys.argv) in (2, 3) and sys.argv[1] in ('smoke', 'component', 'perf') and sys.argv[2:] in ([], ['ordered-exp']),
-                   'use check_attention.py smoke|component|perf [ordered-exp]')
+    guards.require(len(sys.argv) in (2, 3) and sys.argv[1] in ('smoke', 'component', 'perf') and sys.argv[2:] in ([], ['ordered-exp'], ['parallel-sum']),
+                   'use check_attention.py smoke|component|perf [ordered-exp|parallel-sum]')
     mode = sys.argv[1]
     ordered = sys.argv[2:] == ['ordered-exp']
+    parallel = sys.argv[2:] == ['parallel-sum']
     root = B / 'qsa-ordered-exp-component-v2' if ordered else ROOT
     result_path = P / 'bench/results/2026-10-15-pr6-recovery-audit/qsa-ordered-exp-current.json' if ordered else RESULT
     targets = ('sycl_qsa_bf16_prefix_kvvec4_test', 'sycl_qsa_bf16_prefix_ordered_exp_test') if ordered else TARGETS
     bench = 'sycl_qsa_bf16_prefix_ordered_exp_bench' if ordered else BENCH
+    if parallel:
+        root = B / 'qsa-cached-parallel-sum-component-v1'
+        result_path = P / 'bench/results/2026-10-15-pr6-recovery-audit/qsa-parallel-sum-current.json'
+        targets = ('sycl_qsa_bf16_prefix_ordered_exp_test', 'sycl_qsa_bf16_prefix_parallel_sum_test')
+        bench = 'sycl_qsa_bf16_prefix_parallel_sum_bench'
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
@@ -65,9 +72,14 @@ def main():
                           prospective_gate='For ordered-exp:3 independent processes,6 rotated samples per arm/shape. Geomean candidate/base<=0.95 across3 matched shapes; no shape>1.05; each process improves for both cap2051 patterns. Component advance only, no model or decode adoption.',
                           limits='Complete wrapper wall includes admission, pack, attention and checked drain. No hardware saturation, physical traffic, occupancy or model speed inference.',
                           previous_attempt=dict(commit='963d387698f8b30b8fff9229449775000bdef4b8', path=str(result_path.relative_to(P)), passed=False, reason='Initial fixture case4 pointed at legal leading guard rather than actual output; corrected overlap address, unchanged numerical/admission gates.') if ordered else None)
+            if parallel:
+                record.update(baseline='qsa_bf16_prefix_ordered_exp_batch',
+                    candidate='qsa_bf16_prefix_parallel_sum_batch',
+                    prospective_gate='New cached-Q/KVvec4 parallel FP32 sum candidate; same exp2/max/alpha/BF16 probability storage. Baseline exact-bit/state tests unchanged. Candidate finite synthetic outputs within1BF16 ULP+2e-6; exact maximum/alpha, gamma31-based tile-sum and online recurrence bounds, unchanged guards/diagnostics/inputs and physical262144 addressing. Three independent clean processes,6 rotated rounds per arm/shape,108 timings. Advance only with latency geomean<=0.95 across cap33 gathered/cap2051 gathered/clustered, no shape>1.05 and every cap2051 shape faster in each process. No model adoption.',
+                    numerical_scope='These are prospective component bounds on the named finite fixtures, not a general quality tolerance or proof of a particular SGLang reduction tree. Old ordered-exp bit/state requirements and historical failures remain unchanged.')
         else:
             record = json.loads(result_path.read_text())
-            if ordered:
+            if ordered or parallel:
                 committed = subprocess.check_output(['git', 'show', 'HEAD:' + str(result_path.relative_to(P))], cwd=P)
                 guards.require(committed == result_path.read_bytes(), 'commit preceding result first')
             guards.require(record['passed'] and record['ownership_closed'] and record['source_commit'] ==
@@ -101,11 +113,11 @@ def main():
 
         owner = supervision.Owner(root / ('owned-' + mode), persist)
         try:
-            jobs = [(bench, i) for i in range(3 if ordered else 1)] if mode == 'perf' else [
+            jobs = [(bench, i) for i in range(3 if ordered or parallel else 1)] if mode == 'perf' else [
                 (name, 0) for name in ((*targets, bench) if mode == 'smoke' else targets)]
             for name, process in jobs:
                 command = [fixtures[name]['path'], '--component' if mode == 'perf' else '--' + mode]
-                if ordered and mode == 'perf': command.append(str(process))
+                if (ordered or parallel) and mode == 'perf': command.append(str(process))
                 entry, out, err = owner.run(name + ('-' + str(process) if mode == 'perf' else ''), command, env, P, wall=180, cpu=360,
                     rss_cap=4 << 30, file_cap=64 << 20, text_cap=64 << 20, total_cap=64 << 20)
                 stdout = out.read_text(errors='replace')
@@ -120,7 +132,7 @@ def main():
                     samples=[dict(token.split('=', 1) for token in x.split()[1:])
                              for x in stdout.splitlines() if x.startswith('sample ')]))
                 guards.require(passed, name + ': ' + (stderr or stdout)[-8192:])
-                if ordered:
+                if ordered or parallel:
                     lines = stdout.splitlines()
                     if name == bench:
                         samples = record['checks'][-1]['samples']
@@ -134,7 +146,13 @@ def main():
                             guards.require(sum(x.startswith('case exact_FP32_online_state=PASS') for x in lines) == count and
                                 sum(x.startswith('case exact_prefix33_bits=PASS') for x in lines) == count and
                                 'case state_admission_rejections=9 status=PASS' in lines, 'incomplete state/admission gates')
-            if ordered and mode == 'perf':
+                        if name.endswith('parallel_sum_test'):
+                            guards.require(sum(x.startswith('case parallel_FP32_state_bound=PASS') for x in lines) == count and
+                                sum(x.startswith('case parallel_BF16_output_bound=PASS') for x in lines) == count and
+                                'case state_admission_rejections=9 status=PASS' in lines and
+                                'case parallel_state_admission_rejections=9 status=PASS' in lines,
+                                'incomplete parallel state/admission gates')
+            if (ordered or parallel) and mode == 'perf':
                 measured = [dict(sample, process=check['process']) for check in record['checks']
                             if check['mode'] == 'perf' for sample in check['samples']]
                 guards.require(len(measured) == 108, 'incomplete3-process samples')
@@ -161,17 +179,7 @@ def main():
             record['error'] = str(error)
         finally:
             record['ownership_closed'] = owner.active is None and all(supervision.closed(c) for c in owner.commands)
-            after = subprocess.check_output(['journalctl', '-k', '-b', '--after-cursor', cursor, '--no-pager'], text=True)
-            record['fresh_faults'] = [x for x in after.splitlines() if re.search(
-                r'(?i)(gpu.*(?:hang|fault|reset|wedg)|xe.*(?:error|fault|reset|timeout))', x)]
-            record['boot_unchanged'] = boot == Path('/proc/sys/kernel/random/boot_id').read_text().strip()
-            try:
-                record['driver_after'] = guards.driver_guard()
-            except Exception as error:
-                record['driver_guard_error'] = str(error)
-                record['passed'] = False
-            record['passed'] = bool(record['passed'] and record['ownership_closed'] and
-                                    record['boot_unchanged'] and not record['fresh_faults'])
+            postchecks(record, boot, cursor)
             persist()
             result_path.write_text(json.dumps(record, indent=2) + '\n')
         print(json.dumps({k: record.get(k) for k in ('mode', 'passed', 'complete', 'ownership_closed', 'error')}))

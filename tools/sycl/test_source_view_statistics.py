@@ -5,7 +5,8 @@ import sys
 import unittest
 
 sys.dont_write_bytecode = True
-from bench_engine import qualified_build_source_matches, source_view_pair_statistics
+from bench_engine import (FUSION_FIELDS, parse_counter_lines, qualified_build_source_matches,
+                          source_view_pair_statistics, validate_window_work)
 
 
 def arms(base, candidate):
@@ -60,6 +61,58 @@ class ProcessStatisticsTests(unittest.TestCase):
         data[-1]['label'] = 'B0'
         with self.assertRaisesRegex(RuntimeError, 'six unique'):
             source_view_pair_statistics(data)
+
+
+class WorkCounterTests(unittest.TestCase):
+    def setUp(self):
+        self.prefix = 'strata MoE Down fusion:'
+        self.valid = self.prefix+' fused_jobs=0 fused_rows=0 separate_jobs=10000 min_rows=2334'
+        self.work = dict(windows='96', dequants='1000', jobs='10000',
+            source_H2D_bytes=str(117488*48*10*4), GPU_resident_windows_only='1',
+            operator_max='8192', maximum_rows='81920')
+        self.gu = dict(fused_jobs='1000', fused_rows='5000000', separate_jobs='9000', min_rows='2334')
+        self.down = dict(fused_jobs='0', fused_rows='0', separate_jobs='10000', min_rows='2334')
+
+    def check_work(self):
+        validate_window_work(self.work, self.gu, self.down, 117489, (81920,35568))
+
+    def test_valid_disabled_and_selective_paths(self):
+        counts = parse_counter_lines(self.valid, self.prefix, FUSION_FIELDS)
+        self.assertEqual(counts, [self.down])
+        self.check_work()
+        self.down.update(fused_jobs='500', fused_rows='2000000', separate_jobs='9500')
+        self.check_work()
+
+    def test_duplicate_unknown_missing_and_malformed_fields_are_rejected(self):
+        for text in (self.valid+' fused_jobs=1', self.valid+' surprise=1',
+                     self.valid.replace(' fused_rows=0',''), self.valid.replace('jobs=0','jobs=-1'),
+                     self.valid.replace('rows=0','rows=0.0'), self.valid.replace(': ',':'),
+                     self.valid+' bare-token'):
+            with self.subTest(text=text), self.assertRaises(RuntimeError):
+                parse_counter_lines(text, self.prefix, FUSION_FIELDS)
+
+    def test_gu_and_down_job_conservation_are_independent(self):
+        for route in (self.gu,self.down):
+            original=route['separate_jobs'];route['separate_jobs']=str(int(original)-1)
+            with self.assertRaises(RuntimeError):self.check_work()
+            route['separate_jobs']=original
+
+    def test_fused_row_bounds_do_not_accept_impossible_totals(self):
+        for rows in ('2333999','8192001',str(117488*48*10+1)):
+            with self.subTest(rows=rows), self.assertRaises(RuntimeError):
+                self.gu['fused_rows']=rows;self.check_work()
+
+    def test_window_transfer_and_geometry_mismatches_are_rejected(self):
+        for key in self.work:
+            original=self.work[key]
+            self.work[key]='0'
+            with self.subTest(key=key), self.assertRaises(RuntimeError):self.check_work()
+            self.work[key]=original
+
+    def test_impossible_total_job_capacity_is_rejected(self):
+        self.work['jobs']='1000';self.gu.update(fused_jobs='0',fused_rows='0',separate_jobs='1000')
+        self.down['separate_jobs']='1000'
+        with self.assertRaises(RuntimeError):self.check_work()
 
 
 class BuildQualificationTests(unittest.TestCase):

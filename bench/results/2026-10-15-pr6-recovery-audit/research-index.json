@@ -2300,7 +2300,7 @@
   "selective_down_model_controller_scope": {
     "classification": "decision support",
     "schedulable_now": false,
-    "status": "source_report_returned_native_review_running",
+    "status": "source_and_native_review_complete_performance_gate_failed",
     "question": "Audit the matched117K selective Down model controller, native-origin qualification reuse, actual Down/CPU/work counters and prospective process-order/acceptance gates. Identify concrete source bugs before model execution.",
     "candidate_source": {
       "commit": "c8b1553becb0d1e0197b2e2018179e014ef19512",
@@ -2326,7 +2326,7 @@
       "maximum_bytes": 20480
     },
     "consumer": "Main-owned model trial only if the current Down component passes unchanged gates; no engine code or GPU work delegated.",
-    "next_review": "Before any Down model plan/launch; native Luna-max review then Main fixes/tests. Retire consumed review transaction at decision closure.",
+    "next_review": "Main can prepare offline analysis independently; do not freeze or launch Down model arms unless a new component qualification passes.",
     "tests_executed_by_Main": {
       "command": "python3 tools/sycl/test_source_view_statistics.py",
       "passed": 11,
@@ -2336,12 +2336,16 @@
     "report_sha256": "53ff104bdeffa2924203c291bfb1ce8bca6b0cf3f95ce55e320fa16fcfa42af8",
     "collector_model_observed": "gpt-6-luna",
     "native_review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/selective-down-model-controller-native-review.json",
-    "worker_ownership_closed": true
+    "worker_ownership_closed": true,
+    "native_review_bytes": 14282,
+    "native_review_sha256": "ae6852f00d9dfc64c26415bc9d72ab8c7602b0a19cc621d9bfe2198cbfd61e28",
+    "review_digest": "Before any future cohort, add a Down reducer with its own>1.002 criterion and strengthen clean-arm counter conservation/duplicate-key rejection. Exact117489-token guard already exists; aggregate threshold counts do not prove per-job geometry. Current component fails advancement, so no model trial.",
+    "main_followup": "Clean GU/Down/work conservation and duplicate/unknown counter rejection implemented at f88a0a86d. Main ran17 offline tests successfully after QSA GPU closure. Dedicated Down reducer remains pending before any model cohort; current Down performance gate still fails."
   },
   "qsa_cached_parallel_sum_contract_scope": {
     "classification": "decision support",
-    "schedulable_now": true,
-    "status": "eligible_exact_reduction_candidate_contract",
+    "schedulable_now": false,
+    "status": "component_closed_failed_performance_gate",
     "question": "For one new cached-Q,K/Vvec4 QSA variant, replace only ascending FP32 sum of32 probabilities by p0+p1 plus SIMD16 reduction. Pin actual SGLang/Triton reduction contract, derive finite state/output error checks and compare legal reduction schedules without copying code or assuming a speedup.",
     "candidate_source": {
       "commit": "b9f4c36ffbbbe8923b8ed0d4ef3545275a373de4",
@@ -2366,6 +2370,57 @@
       "maximum_bytes": 24576
     },
     "consumer": "Main selects a separately named component candidate and prospective numerical/performance gates after frozen Down timing; old ordered-exp and historical failures remain unchanged.",
-    "next_review": "Before new kernel implementation/compilation; native Luna-max review. No repeated generic reduction/native-exp2 survey or missing-lowering-only task."
+    "next_review": "Retire consumed report/spec/review after compact decision/source evidence is committed; next mechanism is the separately reviewed production-matched Down comparison.",
+    "task_id": "task_1a468b74c373",
+    "dispatch_id": "ctx_e665e3e97b2b",
+    "terminal_handle": "term_bed63e18-3648-453a-8f8b-7e76e52bca60",
+    "run_id": "run_fb41872974e9",
+    "collector_model_observed": "gpt-6-luna",
+    "worker_ownership_closed": true,
+    "report_bytes": 14061,
+    "report_sha256": "99a0ad91bc78c238e0344f52f5f53a6fe842852e12992ed41de1d1d77c389f42",
+    "native_review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/qsa-cached-parallel-sum-native-review.json",
+    "native_review_bytes": 8514,
+    "native_review_sha256": "f1bacecfccd1079e85184d94ae10fd01aaa8b7f047ef6611a8df411a611ef329",
+    "review_digest": "Accepted with source corrections: lane+lane16 pairing and single FP32 FMA normalizer update; require empty-zero/nonempty-positive finite state, prospective numerical/performance bounds. Sum order unspecified; no speed/adoption established.",
+    "decision": "All component numerical/admission gates pass;108 clean timings give latency geomean0.993646>0.95. No model trial or adoption. Do not repeat the same isolated sum question.",
+    "component_result": "bench/results/2026-10-15-pr6-recovery-audit/qsa-parallel-sum-current.json"
+  },
+  "down_fallback_comparison_contract_scope": {
+    "classification": "decision support",
+    "schedulable_now": false,
+    "status": "reviewed_next_production_comparison_deferred_during_QSA_component",
+    "question": "Audit the exact production Down0/large host call chains versus the component reference/candidate. Decide whether low-level/public fallback mismatch or insufficient timing granularity can explain the64-row regression, and propose a production-equivalent bounded comparison without rewriting the failed gate.",
+    "candidate_source": {
+      "commit": "14e95463144dce6ea7618682d49c4ba171e3d804",
+      "source_sha256": {
+        "bench/sycl/moe_down_scatter.cpp": "2be41d0daaa389781d29e8dbd78248de7f04b73016239ae892afcffa7e605d0d",
+        "src/prefill/sycl/gemm16.cpp": "9e25396467e1e130a636931bc81c1d29261f420ecb36545c3dba087fe30ac467",
+        "src/prefill/moe_window.inc": "adb7e0c8f308abe5636a22191f53efee92d97b45e4ef3738efb58467ac6aeff9",
+        "tools/sycl/measure_down_scatter.py": "5c5fb137b4424536f2fdc603526ab4adb2af02788f7cf088ebfb5ad92d9a1336"
+      }
+    },
+    "prerequisite_evidence": "v6 is terminal:54 ownership,45 smoke,110 full correct;3 clean processes/504 used timings. Geomean0.937848 passes<=.97,64 contiguous1.095345 fails<=1.05; all>=2334 shapes improve in each process. Actual production calls try_down_scatter16 then public f16_out16+moe_accumulate; fixture arm0 calls low-level separate while arm1 uses public selected/fallback. No fresh fault. Shape-specific causes remain unproven.",
+    "prior_scopes": [
+      "current_down_controller_candidate_scope",
+      "selective_down_model_controller_scope"
+    ],
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/down-fallback-comparison-contract.md",
+    "report_budget": {
+      "target_words": [
+        1100,
+        1800
+      ],
+      "maximum_bytes": 18432
+    },
+    "consumer": "Main chooses a genuinely matched component comparison or source change; preserve original failure and predeclare unchanged>=3%/no>5% regression gate for any fresh comparison.",
+    "next_review": "After current QSA component closure, decide whether a fresh production-matched Down comparison is still the next mechanism. Do not reinterpret v6 or launch gated Down model arms.",
+    "report_bytes": 8909,
+    "report_sha256": "507d64e933e6a9e7e4e6b4d9520e114a3a5ed930a4a943d40bf7ed8aa5e80616",
+    "worker_ownership_closed": true,
+    "native_review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/down-fallback-comparison-native-review.json",
+    "native_review_bytes": 8136,
+    "native_review_sha256": "a5feefa2bb7648c989845910832641c356535e20851ffe9122834d9c19e2dcb9",
+    "review_digest": "A new reference must also call the production try hook even when fusion is disabled. Use immutable startup0/large processes, full14 shapes/3processes per arm/6 rounds and unchanged gate; partial diagnostics cannot qualify. Low-level/public mismatch is demonstrated, its timing contribution is unproven."
   }
 }

@@ -1251,13 +1251,22 @@ without a fresh fault. The component wall-time geomean is0.952777; the existing
 >=2334 selector still excludes the slower160-row shape. Selective Down timing
 remains pending; no new model speed or adoption is claimed.
 
-The current source-view build's Down fixture differs from the source45 fixture
-that passed those checks. Its old receipt cannot qualify the new executable.
-The frozen source-view comparison has closed. Prepare a fresh committed
-current-fixture plan and repeat ownership, traced small and full selected-route
-checks before the three-process selective timing, using the unchanged gate
-above. Keep the original validation and unrun timing status intact. Retain useful
-individual queue/wall samples and checked totals, rather than full parser events.
+The current source-view build's Down fixture differs from the source45 fixture;
+its old receipt does not qualify the new executable. A fresh plan at
+`1dff76365` repeated54 ownership,45 traced smoke and110 full correctness events
+successfully. All three clean timing processes then exited normally, with504
+used queue/wall samples, complete ownership closure, unchanged boot and no
+fresh driver fault. The selected/separate latency geomean was0.937848,
+but64 contiguous rows regressed9.53% (ratio1.095345), exceeding the unchanged
+1.05 per-shape limit. Every>=2334-row shape improved in each process.
+**The selective candidate fails its advancement gate; do not run its gated
+model comparison.** This neither changes source45's original unrun timing
+status nor qualifies model speed, quality, sustained decode or full context.
+The next source question is whether the low-level separate reference and
+public-wrapper candidate measure the same host dispatch work at fallback
+shapes. Any corrected comparison needs a separately committed plan and evidence;
+the current failure and all individual timing samples remain in the
+[current component result](../bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json).
 The validated a576 engine and its same-build fixtures are hash-checked at
 `known-good-before-selective-down-v1` before reusing the build cache. The old1222
 fallback's9812 original source blobs and recipe were recovered before retirement.
@@ -1558,3 +1567,56 @@ not measure wire traffic or assign the speed gain to transfers alone: the
 remaining FFN window also changes from16384 plus host chunks to35568 GPU rows.
 Physical262144, production failure/session/RESTORE and default adoption remain
 unqualified; this bounded screen does not establish sustained decode speed.
+
+
+## Cached-Q/KVvec4 parallel FP32 sum candidate
+
+This new component-only export retains the ordered-exp path's cached Q,
+vector K/V staging, maximum, ordinary `sycl::exp2`, alpha, BF16 probability
+operand and FP32 FMA normalizer update. Each SIMD16 lane adds probabilities
+for cells `lane` and `lane+16`; `reduce_over_group` then replaces the32 ordered
+indexed exchanges. It adds no model dispatch or default selection. The
+[SYCL group algorithm contract](https://github.khronos.org/SYCL_Reference/iface/group-algorithms-library.html)
+does not fix a floating-point reduction order. The pinned
+[SGLang QSA source](https://github.com/sgl-project/sglang/blob/877be2974aa151a984e52822c028276c2b1e9303/python/sglang/srt/layers/attention/qsa/sparse_attn.py)
+uses an FP32 sum without specifying that order. No external implementation
+code is copied. Existing ordered-exp bit/state requirements remain unchanged.
+
+Before execution, the new fixture fixes exact maximum/alpha checks, nonnegative
+finite sums/state, zero empty-prefix and positive nonempty-prefix normalizers,
+a conservative gamma31 bound for any32-term association and a recurrence bound
+for the single FP32 FMA update. Finite synthetic outputs must remain within
+one BF16 ULP plus2e-6 of the ordered reference and pass the independent tensor
+oracle. These are component-fixture limits, not a general task-quality tolerance.
+Both probe variants must reproduce their own normal output and reject invalid
+state spans; guards, diagnostics, input immutability, partial/missing/duplicate
+rows, padded heads and physical262144 addressing remain required.
+
+After small traced and full parameter-validated checks, use three clean processes
+with six rotated rounds for cap33 gathered and cap2051 gathered/clustered:
+108 timing samples. Advance only if candidate/base latency geomean<=0.95,
+no shape>1.05 and both cap2051 patterns improve in each process. Complete
+wrapper wall time includes admission, prefix preparation and checked drain;
+it does not prove arithmetic saturation or physical VRAM traffic. The proposed
+mechanism reduces subgroup dependency/exchange work, with unchanged PCIe
+payload. Source`bba952e33` compiled successfully. The initial traced small check passed
+both two-case numerical fixtures and the small timing-fixture sanity check,
+including state-span rejection checks, with normal closure and no fresh fault.
+Both full11-case numerical fixtures subsequently passed, including the
+physical262144 addressing cases, with normal ownership closure and no fresh
+fault. All three clean timing processes then completed without a fresh fault.
+Candidate/base latency ratios were0.995263 for cap33 gathered,0.995479 for
+cap2051 gathered and0.990206 for cap2051 clustered. All cap2051 process medians
+improved, but the geomean0.993646 misses the prospective0.95 gate.
+**This candidate does not advance to a model trial.** The full108 samples remain
+in [the current component result](../bench/results/2026-10-15-pr6-recovery-audit/qsa-parallel-sum-current.json).
+This is evidence that this isolated reduction change has a small effect in
+these shapes, not a physical-bandwidth or occupancy measurement. Physical-context
+model qualification remains separate from the component checks.
+The a576 validated engine/fixtures remain the fallback while the new native
+build uses the existing comparison cache. Commands are
+`build_engine.py rebuild-parallel-sum`, followed by
+`check_attention.py smoke|component|perf parallel-sum`, committing each phase
+before the next. Native fixtures and all controlling inputs must be committed
+before the build. The exact current result is written to
+`bench/results/2026-10-15-pr6-recovery-audit/qsa-parallel-sum-current.json`.

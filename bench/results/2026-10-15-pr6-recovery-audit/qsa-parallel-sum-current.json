@@ -1,0 +1,1594 @@
+{
+  "source_commit": "bba952e333f0e0cf303f0e4d265ad7d50bd3504b",
+  "fixtures": {
+    "sycl_qsa_bf16_prefix_ordered_exp_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_ordered_exp_test",
+      "sha256": "c7ac62fe53d4a913a7626cf52398fb705f62bf62c938bfe2279c44c6f8ac8e40"
+    },
+    "sycl_qsa_bf16_prefix_parallel_sum_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_parallel_sum_test",
+      "sha256": "19e23e03f10268c02b0a44a7623e1e9b34f7276c3ad56ee00ec88e30f34f479f"
+    },
+    "sycl_qsa_bf16_prefix_parallel_sum_bench": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_parallel_sum_bench",
+      "sha256": "be9137609c6407043bd0645b6f9296ef5c4bf7965a1114d0eff2b18b1445c82a"
+    }
+  },
+  "checks": [
+    {
+      "mode": "smoke",
+      "target": "sycl_qsa_bf16_prefix_ordered_exp_test",
+      "process": 0,
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_ordered_exp_test",
+        "--smoke"
+      ],
+      "binary_sha256": "c7ac62fe53d4a913a7626cf52398fb705f62bf62c938bfe2279c44c6f8ac8e40",
+      "passed": true,
+      "exit_code": 0,
+      "ownership_closed": true,
+      "cases": [
+        "case explicit_duplicate_ids=PASS aliased_physical_pages=PASS first_later_KV_diagnostics=PASS status=PASS",
+        "case state_admission_rejections=9 status=PASS",
+        "case cells=97 live_cells=49 active_rows=128 cap=33 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case exact_FP32_online_state=PASS real_padded_heads=PASS state_guards=PASS cells=97 cap=33",
+        "case exact_prefix33_bits=PASS cells=97 cap=33 queries=1",
+        "case cells=97 live_cells=71 active_rows=160 cap=33 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case exact_FP32_online_state=PASS real_padded_heads=PASS state_guards=PASS cells=97 cap=33",
+        "case exact_prefix33_bits=PASS cells=97 cap=33 queries=3",
+        "fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED"
+      ]
+    },
+    {
+      "mode": "smoke",
+      "target": "sycl_qsa_bf16_prefix_parallel_sum_test",
+      "process": 0,
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_parallel_sum_test",
+        "--smoke"
+      ],
+      "binary_sha256": "19e23e03f10268c02b0a44a7623e1e9b34f7276c3ad56ee00ec88e30f34f479f",
+      "passed": true,
+      "exit_code": 0,
+      "ownership_closed": true,
+      "cases": [
+        "case explicit_duplicate_ids=PASS aliased_physical_pages=PASS first_later_KV_diagnostics=PASS status=PASS",
+        "case state_admission_rejections=9 status=PASS",
+        "case parallel_state_admission_rejections=9 status=PASS",
+        "case cells=97 live_cells=49 active_rows=128 cap=33 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case parallel_FP32_state_bound=PASS exact_max_alpha=PASS real_padded_heads=PASS state_guards=PASS cells=97 cap=33",
+        "case parallel_BF16_output_bound=PASS cells=97 cap=33 queries=1",
+        "case cells=97 live_cells=71 active_rows=160 cap=33 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case parallel_FP32_state_bound=PASS exact_max_alpha=PASS real_padded_heads=PASS state_guards=PASS cells=97 cap=33",
+        "case parallel_BF16_output_bound=PASS cells=97 cap=33 queries=3",
+        "fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED"
+      ]
+    },
+    {
+      "mode": "smoke",
+      "target": "sycl_qsa_bf16_prefix_parallel_sum_bench",
+      "process": 0,
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_parallel_sum_bench",
+        "--smoke"
+      ],
+      "binary_sha256": "be9137609c6407043bd0645b6f9296ef5c4bf7965a1114d0eff2b18b1445c82a",
+      "passed": true,
+      "exit_code": 0,
+      "ownership_closed": true,
+      "cases": [
+        "case cells=97 queries=3 cap=33 pattern=gather samples=12 BF16_output_bound=PASS guards=PASS inputs=PASS status=PASS",
+        "fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED"
+      ]
+    },
+    {
+      "mode": "component",
+      "target": "sycl_qsa_bf16_prefix_ordered_exp_test",
+      "process": 0,
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_ordered_exp_test",
+        "--component"
+      ],
+      "binary_sha256": "c7ac62fe53d4a913a7626cf52398fb705f62bf62c938bfe2279c44c6f8ac8e40",
+      "passed": true,
+      "exit_code": 0,
+      "ownership_closed": true,
+      "cases": [
+        "case explicit_duplicate_ids=PASS aliased_physical_pages=PASS first_later_KV_diagnostics=PASS status=PASS",
+        "case state_admission_rejections=9 status=PASS",
+        "case cells=97 live_cells=49 active_rows=128 cap=33 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case exact_FP32_online_state=PASS real_padded_heads=PASS state_guards=PASS cells=97 cap=33",
+        "case exact_prefix33_bits=PASS cells=97 cap=33 queries=1",
+        "case cells=97 live_cells=71 active_rows=160 cap=33 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case exact_FP32_online_state=PASS real_padded_heads=PASS state_guards=PASS cells=97 cap=33",
+        "case exact_prefix33_bits=PASS cells=97 cap=33 queries=3",
+        "case cells=2113 live_cells=2113 active_rows=4256 cap=1 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case exact_FP32_online_state=PASS real_padded_heads=PASS state_guards=PASS cells=2113 cap=1",
+        "case exact_prefix33_bits=PASS cells=2113 cap=1 queries=3",
+        "case cells=2113 live_cells=2113 active_rows=4256 cap=17 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case exact_FP32_online_state=PASS real_padded_heads=PASS state_guards=PASS cells=2113 cap=17",
+        "case exact_prefix33_bits=PASS cells=2113 cap=17 queries=3",
+        "case cells=2113 live_cells=2113 active_rows=4256 cap=31 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case exact_FP32_online_state=PASS real_padded_heads=PASS state_guards=PASS cells=2113 cap=31",
+        "case exact_prefix33_bits=PASS cells=2113 cap=31 queries=3",
+        "case cells=2113 live_cells=2113 active_rows=4256 cap=32 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case exact_FP32_online_state=PASS real_padded_heads=PASS state_guards=PASS cells=2113 cap=32",
+        "case exact_prefix33_bits=PASS cells=2113 cap=32 queries=3",
+        "case cells=2113 live_cells=2113 active_rows=4256 cap=63 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case exact_FP32_online_state=PASS real_padded_heads=PASS state_guards=PASS cells=2113 cap=63",
+        "case exact_prefix33_bits=PASS cells=2113 cap=63 queries=3",
+        "case cells=2113 live_cells=2113 active_rows=4256 cap=65 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case exact_FP32_online_state=PASS real_padded_heads=PASS state_guards=PASS cells=2113 cap=65",
+        "case exact_prefix33_bits=PASS cells=2113 cap=65 queries=3",
+        "case cells=2113 live_cells=2113 active_rows=4256 cap=2051 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case exact_FP32_online_state=PASS real_padded_heads=PASS state_guards=PASS cells=2113 cap=2051",
+        "case exact_prefix33_bits=PASS cells=2113 cap=2051 queries=3",
+        "case cells=262144 live_cells=262144 active_rows=524288 cap=2051 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case exact_FP32_online_state=PASS real_padded_heads=PASS state_guards=PASS cells=262144 cap=2051",
+        "case exact_prefix33_bits=PASS cells=262144 cap=2051 queries=1",
+        "case cells=262144 live_cells=13 active_rows=32 cap=33 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case exact_FP32_online_state=PASS real_padded_heads=PASS state_guards=PASS cells=262144 cap=33",
+        "case exact_prefix33_bits=PASS cells=262144 cap=33 queries=1",
+        "fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED"
+      ]
+    },
+    {
+      "mode": "component",
+      "target": "sycl_qsa_bf16_prefix_parallel_sum_test",
+      "process": 0,
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_parallel_sum_test",
+        "--component"
+      ],
+      "binary_sha256": "19e23e03f10268c02b0a44a7623e1e9b34f7276c3ad56ee00ec88e30f34f479f",
+      "passed": true,
+      "exit_code": 0,
+      "ownership_closed": true,
+      "cases": [
+        "case explicit_duplicate_ids=PASS aliased_physical_pages=PASS first_later_KV_diagnostics=PASS status=PASS",
+        "case state_admission_rejections=9 status=PASS",
+        "case parallel_state_admission_rejections=9 status=PASS",
+        "case cells=97 live_cells=49 active_rows=128 cap=33 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case parallel_FP32_state_bound=PASS exact_max_alpha=PASS real_padded_heads=PASS state_guards=PASS cells=97 cap=33",
+        "case parallel_BF16_output_bound=PASS cells=97 cap=33 queries=1",
+        "case cells=97 live_cells=71 active_rows=160 cap=33 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case parallel_FP32_state_bound=PASS exact_max_alpha=PASS real_padded_heads=PASS state_guards=PASS cells=97 cap=33",
+        "case parallel_BF16_output_bound=PASS cells=97 cap=33 queries=3",
+        "case cells=2113 live_cells=2113 active_rows=4256 cap=1 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case parallel_FP32_state_bound=PASS exact_max_alpha=PASS real_padded_heads=PASS state_guards=PASS cells=2113 cap=1",
+        "case parallel_BF16_output_bound=PASS cells=2113 cap=1 queries=3",
+        "case cells=2113 live_cells=2113 active_rows=4256 cap=17 queries=3 masked=1 compared=18432 max_abs=6.103515625e-05 max_budget_ratio=0.9682716738 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case parallel_FP32_state_bound=PASS exact_max_alpha=PASS real_padded_heads=PASS state_guards=PASS cells=2113 cap=17",
+        "case parallel_BF16_output_bound=PASS cells=2113 cap=17 queries=3",
+        "case cells=2113 live_cells=2113 active_rows=4256 cap=31 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case parallel_FP32_state_bound=PASS exact_max_alpha=PASS real_padded_heads=PASS state_guards=PASS cells=2113 cap=31",
+        "case parallel_BF16_output_bound=PASS cells=2113 cap=31 queries=3",
+        "case cells=2113 live_cells=2113 active_rows=4256 cap=32 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case parallel_FP32_state_bound=PASS exact_max_alpha=PASS real_padded_heads=PASS state_guards=PASS cells=2113 cap=32",
+        "case parallel_BF16_output_bound=PASS cells=2113 cap=32 queries=3",
+        "case cells=2113 live_cells=2113 active_rows=4256 cap=63 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case parallel_FP32_state_bound=PASS exact_max_alpha=PASS real_padded_heads=PASS state_guards=PASS cells=2113 cap=63",
+        "case parallel_BF16_output_bound=PASS cells=2113 cap=63 queries=3",
+        "case cells=2113 live_cells=2113 active_rows=4256 cap=65 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case parallel_FP32_state_bound=PASS exact_max_alpha=PASS real_padded_heads=PASS state_guards=PASS cells=2113 cap=65",
+        "case parallel_BF16_output_bound=PASS cells=2113 cap=65 queries=3",
+        "case cells=2113 live_cells=2113 active_rows=4256 cap=2051 queries=3 masked=1 compared=18432 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case parallel_FP32_state_bound=PASS exact_max_alpha=PASS real_padded_heads=PASS state_guards=PASS cells=2113 cap=2051",
+        "case parallel_BF16_output_bound=PASS cells=2113 cap=2051 queries=3",
+        "case cells=262144 live_cells=262144 active_rows=524288 cap=2051 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case parallel_FP32_state_bound=PASS exact_max_alpha=PASS real_padded_heads=PASS state_guards=PASS cells=262144 cap=2051",
+        "case parallel_BF16_output_bound=PASS cells=262144 cap=2051 queries=1",
+        "case cells=262144 live_cells=13 active_rows=32 cap=33 queries=1 masked=0 compared=6144 max_abs=0 max_budget_ratio=0 oracle=BF16_operands_FP32_online packed_guard_elements=17 packed_k_mod8=2 packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS",
+        "case parallel_FP32_state_bound=PASS exact_max_alpha=PASS real_padded_heads=PASS state_guards=PASS cells=262144 cap=33",
+        "case parallel_BF16_output_bound=PASS cells=262144 cap=33 queries=1",
+        "fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED"
+      ]
+    },
+    {
+      "mode": "perf",
+      "target": "sycl_qsa_bf16_prefix_parallel_sum_bench",
+      "process": 0,
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_parallel_sum_bench",
+        "--component",
+        "0"
+      ],
+      "binary_sha256": "be9137609c6407043bd0645b6f9296ef5c4bf7965a1114d0eff2b18b1445c82a",
+      "passed": true,
+      "exit_code": 0,
+      "ownership_closed": true,
+      "cases": [
+        "case cells=78453 queries=8192 cap=33 pattern=gather samples=12 BF16_output_bound=PASS guards=PASS inputs=PASS status=PASS",
+        "case cells=78453 queries=8192 cap=2051 pattern=gather samples=12 BF16_output_bound=PASS guards=PASS inputs=PASS status=PASS",
+        "case cells=78453 queries=8192 cap=2051 pattern=clustered samples=12 BF16_output_bound=PASS guards=PASS inputs=PASS status=PASS",
+        "fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED"
+      ],
+      "timing_sample_count": 36
+    },
+    {
+      "mode": "perf",
+      "target": "sycl_qsa_bf16_prefix_parallel_sum_bench",
+      "process": 1,
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_parallel_sum_bench",
+        "--component",
+        "1"
+      ],
+      "binary_sha256": "be9137609c6407043bd0645b6f9296ef5c4bf7965a1114d0eff2b18b1445c82a",
+      "passed": true,
+      "exit_code": 0,
+      "ownership_closed": true,
+      "cases": [
+        "case cells=78453 queries=8192 cap=33 pattern=gather samples=12 BF16_output_bound=PASS guards=PASS inputs=PASS status=PASS",
+        "case cells=78453 queries=8192 cap=2051 pattern=gather samples=12 BF16_output_bound=PASS guards=PASS inputs=PASS status=PASS",
+        "case cells=78453 queries=8192 cap=2051 pattern=clustered samples=12 BF16_output_bound=PASS guards=PASS inputs=PASS status=PASS",
+        "fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED"
+      ],
+      "timing_sample_count": 36
+    },
+    {
+      "mode": "perf",
+      "target": "sycl_qsa_bf16_prefix_parallel_sum_bench",
+      "process": 2,
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_qsa_bf16_prefix_parallel_sum_bench",
+        "--component",
+        "2"
+      ],
+      "binary_sha256": "be9137609c6407043bd0645b6f9296ef5c4bf7965a1114d0eff2b18b1445c82a",
+      "passed": true,
+      "exit_code": 0,
+      "ownership_closed": true,
+      "cases": [
+        "case cells=78453 queries=8192 cap=33 pattern=gather samples=12 BF16_output_bound=PASS guards=PASS inputs=PASS status=PASS",
+        "case cells=78453 queries=8192 cap=2051 pattern=gather samples=12 BF16_output_bound=PASS guards=PASS inputs=PASS status=PASS",
+        "case cells=78453 queries=8192 cap=2051 pattern=clustered samples=12 BF16_output_bound=PASS guards=PASS inputs=PASS status=PASS",
+        "fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED"
+      ],
+      "timing_sample_count": 36
+    }
+  ],
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "model_performance_measured": false,
+  "model_quality_qualified": false,
+  "physical262144_model_RESTORE_qualified": false,
+  "baseline": "qsa_bf16_prefix_ordered_exp_batch",
+  "candidate": "qsa_bf16_prefix_parallel_sum_batch",
+  "consumer": "Immediate same-binary component comparison; preserve individual samples and retire raw checks after closure.",
+  "prospective_gate": "New cached-Q/KVvec4 parallel FP32 sum candidate; same exp2/max/alpha/BF16 probability storage. Baseline exact-bit/state tests unchanged. Candidate finite synthetic outputs within1BF16 ULP+2e-6; exact maximum/alpha, gamma31-based tile-sum and online recurrence bounds, unchanged guards/diagnostics/inputs and physical262144 addressing. Three independent clean processes,6 rotated rounds per arm/shape,108 timings. Advance only with latency geomean<=0.95 across cap33 gathered/cap2051 gathered/clustered, no shape>1.05 and every cap2051 shape faster in each process. No model adoption.",
+  "limits": "Complete wrapper wall includes admission, pack, attention and checked drain. No hardware saturation, physical traffic, occupancy or model speed inference.",
+  "previous_attempt": null,
+  "numerical_scope": "These are prospective component bounds on the named finite fixtures, not a general quality tolerance or proof of a particular SGLang reduction tree. Old ordered-exp bit/state requirements and historical failures remain unchanged.",
+  "ownership_closed": true,
+  "mode": "perf",
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+    "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "ZES_ENABLE_SYSMAN": "0",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cached-parallel-sum-component-v1/tmp",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cached-parallel-sum-component-v1/cache"
+  },
+  "GPU_executed": true,
+  "postchecks_complete": true,
+  "postcheck_errors": [],
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  },
+  "retention": "Small-check timing samples are diagnostic and unused by the performance gate; omit them. Keep numerical case/error evidence and all later used clean timing samples; retire raw traces/JIT after comparison closure.",
+  "component_summary": {
+    "shapes": [
+      {
+        "cap": 33,
+        "pattern": "gather",
+        "arms": [
+          {
+            "arm": 0,
+            "count": 18,
+            "median_ms": 9.865492,
+            "sample_sd_ms": 0.037100534321857406,
+            "process_medians_ms": [
+              9.8608635,
+              9.885774999999999,
+              9.859805999999999
+            ]
+          },
+          {
+            "arm": 1,
+            "count": 18,
+            "median_ms": 9.8187635,
+            "sample_sd_ms": 0.036976183753472745,
+            "process_medians_ms": [
+              9.823082,
+              9.814310500000001,
+              9.823983
+            ]
+          }
+        ],
+        "ratio": 0.9952634394716452
+      },
+      {
+        "cap": 2051,
+        "pattern": "gather",
+        "arms": [
+          {
+            "arm": 0,
+            "count": 18,
+            "median_ms": 230.119141,
+            "sample_sd_ms": 2.0969234642347154,
+            "process_medians_ms": [
+              231.5067265,
+              230.222709,
+              229.02022499999998
+            ]
+          },
+          {
+            "arm": 1,
+            "count": 18,
+            "median_ms": 229.07868050000002,
+            "sample_sd_ms": 1.5403989526577726,
+            "process_medians_ms": [
+              230.411098,
+              229.197928,
+              228.1897055
+            ]
+          }
+        ],
+        "ratio": 0.995478600800096
+      },
+      {
+        "cap": 2051,
+        "pattern": "clustered",
+        "arms": [
+          {
+            "arm": 0,
+            "count": 18,
+            "median_ms": 146.68980499999998,
+            "sample_sd_ms": 0.2580377616194161,
+            "process_medians_ms": [
+              146.7489415,
+              146.6594525,
+              146.6623525
+            ]
+          },
+          {
+            "arm": 1,
+            "count": 18,
+            "median_ms": 145.253126,
+            "sample_sd_ms": 0.3390452640405891,
+            "process_medians_ms": [
+              145.342096,
+              145.2130975,
+              145.2882085
+            ]
+          }
+        ],
+        "ratio": 0.9902060064774101
+      }
+    ],
+    "geometric_mean_latency_ratio": 0.993646358496099,
+    "advance_to_model": false
+  },
+  "timing_sample_columns": [
+    "process",
+    "cells",
+    "queries",
+    "cap",
+    "pattern",
+    "round",
+    "order",
+    "variant",
+    "milliseconds"
+  ],
+  "timing_samples": [
+    [
+      0,
+      78453,
+      8192,
+      33,
+      "gather",
+      0,
+      0,
+      0,
+      9.8774
+    ],
+    [
+      0,
+      78453,
+      8192,
+      33,
+      "gather",
+      0,
+      1,
+      1,
+      9.842654
+    ],
+    [
+      0,
+      78453,
+      8192,
+      33,
+      "gather",
+      1,
+      0,
+      1,
+      9.80351
+    ],
+    [
+      0,
+      78453,
+      8192,
+      33,
+      "gather",
+      1,
+      1,
+      0,
+      9.85637
+    ],
+    [
+      0,
+      78453,
+      8192,
+      33,
+      "gather",
+      2,
+      0,
+      0,
+      9.860538
+    ],
+    [
+      0,
+      78453,
+      8192,
+      33,
+      "gather",
+      2,
+      1,
+      1,
+      9.794894
+    ],
+    [
+      0,
+      78453,
+      8192,
+      33,
+      "gather",
+      3,
+      0,
+      1,
+      9.844798
+    ],
+    [
+      0,
+      78453,
+      8192,
+      33,
+      "gather",
+      3,
+      1,
+      0,
+      9.862952
+    ],
+    [
+      0,
+      78453,
+      8192,
+      33,
+      "gather",
+      4,
+      0,
+      0,
+      9.861189
+    ],
+    [
+      0,
+      78453,
+      8192,
+      33,
+      "gather",
+      4,
+      1,
+      1,
+      9.845089
+    ],
+    [
+      0,
+      78453,
+      8192,
+      33,
+      "gather",
+      5,
+      0,
+      1,
+      9.798431
+    ],
+    [
+      0,
+      78453,
+      8192,
+      33,
+      "gather",
+      5,
+      1,
+      0,
+      9.84038
+    ],
+    [
+      0,
+      78453,
+      8192,
+      2051,
+      "gather",
+      0,
+      0,
+      0,
+      228.228036
+    ],
+    [
+      0,
+      78453,
+      8192,
+      2051,
+      "gather",
+      0,
+      1,
+      1,
+      227.722433
+    ],
+    [
+      0,
+      78453,
+      8192,
+      2051,
+      "gather",
+      1,
+      0,
+      1,
+      226.68072
+    ],
+    [
+      0,
+      78453,
+      8192,
+      2051,
+      "gather",
+      1,
+      1,
+      0,
+      228.791798
+    ],
+    [
+      0,
+      78453,
+      8192,
+      2051,
+      "gather",
+      2,
+      0,
+      0,
+      231.377629
+    ],
+    [
+      0,
+      78453,
+      8192,
+      2051,
+      "gather",
+      2,
+      1,
+      1,
+      230.304267
+    ],
+    [
+      0,
+      78453,
+      8192,
+      2051,
+      "gather",
+      3,
+      0,
+      1,
+      230.648766
+    ],
+    [
+      0,
+      78453,
+      8192,
+      2051,
+      "gather",
+      3,
+      1,
+      0,
+      231.664418
+    ],
+    [
+      0,
+      78453,
+      8192,
+      2051,
+      "gather",
+      4,
+      0,
+      0,
+      231.940809
+    ],
+    [
+      0,
+      78453,
+      8192,
+      2051,
+      "gather",
+      4,
+      1,
+      1,
+      230.620712
+    ],
+    [
+      0,
+      78453,
+      8192,
+      2051,
+      "gather",
+      5,
+      0,
+      1,
+      230.517929
+    ],
+    [
+      0,
+      78453,
+      8192,
+      2051,
+      "gather",
+      5,
+      1,
+      0,
+      231.635824
+    ],
+    [
+      0,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      0,
+      0,
+      0,
+      145.981427
+    ],
+    [
+      0,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      0,
+      1,
+      1,
+      145.276989
+    ],
+    [
+      0,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      1,
+      0,
+      1,
+      145.522711
+    ],
+    [
+      0,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      1,
+      1,
+      0,
+      146.91756
+    ],
+    [
+      0,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      2,
+      0,
+      0,
+      146.662749
+    ],
+    [
+      0,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      2,
+      1,
+      1,
+      145.051695
+    ],
+    [
+      0,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      3,
+      0,
+      1,
+      145.443612
+    ],
+    [
+      0,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      3,
+      1,
+      0,
+      146.835134
+    ],
+    [
+      0,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      4,
+      0,
+      0,
+      146.34461
+    ],
+    [
+      0,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      4,
+      1,
+      1,
+      144.867307
+    ],
+    [
+      0,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      5,
+      0,
+      1,
+      145.407203
+    ],
+    [
+      0,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      5,
+      1,
+      0,
+      147.106595
+    ],
+    [
+      1,
+      78453,
+      8192,
+      33,
+      "gather",
+      0,
+      0,
+      1,
+      9.820392
+    ],
+    [
+      1,
+      78453,
+      8192,
+      33,
+      "gather",
+      0,
+      1,
+      0,
+      9.917385
+    ],
+    [
+      1,
+      78453,
+      8192,
+      33,
+      "gather",
+      1,
+      0,
+      0,
+      9.847082
+    ],
+    [
+      1,
+      78453,
+      8192,
+      33,
+      "gather",
+      1,
+      1,
+      1,
+      9.800134
+    ],
+    [
+      1,
+      78453,
+      8192,
+      33,
+      "gather",
+      2,
+      0,
+      1,
+      9.88309
+    ],
+    [
+      1,
+      78453,
+      8192,
+      33,
+      "gather",
+      2,
+      1,
+      0,
+      9.895172
+    ],
+    [
+      1,
+      78453,
+      8192,
+      33,
+      "gather",
+      3,
+      0,
+      0,
+      9.886737
+    ],
+    [
+      1,
+      78453,
+      8192,
+      33,
+      "gather",
+      3,
+      1,
+      1,
+      9.837304
+    ],
+    [
+      1,
+      78453,
+      8192,
+      33,
+      "gather",
+      4,
+      0,
+      1,
+      9.808229
+    ],
+    [
+      1,
+      78453,
+      8192,
+      33,
+      "gather",
+      4,
+      1,
+      0,
+      9.884813
+    ],
+    [
+      1,
+      78453,
+      8192,
+      33,
+      "gather",
+      5,
+      0,
+      0,
+      9.868764
+    ],
+    [
+      1,
+      78453,
+      8192,
+      33,
+      "gather",
+      5,
+      1,
+      1,
+      9.804141
+    ],
+    [
+      1,
+      78453,
+      8192,
+      2051,
+      "gather",
+      0,
+      0,
+      1,
+      227.522267
+    ],
+    [
+      1,
+      78453,
+      8192,
+      2051,
+      "gather",
+      0,
+      1,
+      0,
+      228.147645
+    ],
+    [
+      1,
+      78453,
+      8192,
+      2051,
+      "gather",
+      1,
+      0,
+      0,
+      227.91644
+    ],
+    [
+      1,
+      78453,
+      8192,
+      2051,
+      "gather",
+      1,
+      1,
+      1,
+      227.406098
+    ],
+    [
+      1,
+      78453,
+      8192,
+      2051,
+      "gather",
+      2,
+      0,
+      1,
+      228.186338
+    ],
+    [
+      1,
+      78453,
+      8192,
+      2051,
+      "gather",
+      2,
+      1,
+      0,
+      228.82984
+    ],
+    [
+      1,
+      78453,
+      8192,
+      2051,
+      "gather",
+      3,
+      0,
+      0,
+      231.930641
+    ],
+    [
+      1,
+      78453,
+      8192,
+      2051,
+      "gather",
+      3,
+      1,
+      1,
+      230.336078
+    ],
+    [
+      1,
+      78453,
+      8192,
+      2051,
+      "gather",
+      4,
+      0,
+      1,
+      230.707908
+    ],
+    [
+      1,
+      78453,
+      8192,
+      2051,
+      "gather",
+      4,
+      1,
+      0,
+      231.706299
+    ],
+    [
+      1,
+      78453,
+      8192,
+      2051,
+      "gather",
+      5,
+      0,
+      0,
+      231.615578
+    ],
+    [
+      1,
+      78453,
+      8192,
+      2051,
+      "gather",
+      5,
+      1,
+      1,
+      230.209518
+    ],
+    [
+      1,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      0,
+      0,
+      1,
+      144.577666
+    ],
+    [
+      1,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      0,
+      1,
+      0,
+      146.746973
+    ],
+    [
+      1,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      1,
+      0,
+      0,
+      146.54374
+    ],
+    [
+      1,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      1,
+      1,
+      1,
+      145.229263
+    ],
+    [
+      1,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      2,
+      0,
+      1,
+      145.665886
+    ],
+    [
+      1,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      2,
+      1,
+      0,
+      146.772942
+    ],
+    [
+      1,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      3,
+      0,
+      0,
+      146.571932
+    ],
+    [
+      1,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      3,
+      1,
+      1,
+      145.196932
+    ],
+    [
+      1,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      4,
+      0,
+      1,
+      145.344981
+    ],
+    [
+      1,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      4,
+      1,
+      0,
+      146.903047
+    ],
+    [
+      1,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      5,
+      0,
+      0,
+      146.403826
+    ],
+    [
+      1,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      5,
+      1,
+      1,
+      144.852873
+    ],
+    [
+      2,
+      78453,
+      8192,
+      33,
+      "gather",
+      0,
+      0,
+      0,
+      9.732937
+    ],
+    [
+      2,
+      78453,
+      8192,
+      33,
+      "gather",
+      0,
+      1,
+      1,
+      9.830831
+    ],
+    [
+      2,
+      78453,
+      8192,
+      33,
+      "gather",
+      1,
+      0,
+      1,
+      9.837965
+    ],
+    [
+      2,
+      78453,
+      8192,
+      33,
+      "gather",
+      1,
+      1,
+      0,
+      9.869364
+    ],
+    [
+      2,
+      78453,
+      8192,
+      33,
+      "gather",
+      2,
+      0,
+      0,
+      9.85158
+    ],
+    [
+      2,
+      78453,
+      8192,
+      33,
+      "gather",
+      2,
+      1,
+      1,
+      9.781558
+    ],
+    [
+      2,
+      78453,
+      8192,
+      33,
+      "gather",
+      3,
+      0,
+      1,
+      9.817135
+    ],
+    [
+      2,
+      78453,
+      8192,
+      33,
+      "gather",
+      3,
+      1,
+      0,
+      9.85124
+    ],
+    [
+      2,
+      78453,
+      8192,
+      33,
+      "gather",
+      4,
+      0,
+      0,
+      9.868032
+    ],
+    [
+      2,
+      78453,
+      8192,
+      33,
+      "gather",
+      4,
+      1,
+      1,
+      9.937913
+    ],
+    [
+      2,
+      78453,
+      8192,
+      33,
+      "gather",
+      5,
+      0,
+      1,
+      9.805393
+    ],
+    [
+      2,
+      78453,
+      8192,
+      33,
+      "gather",
+      5,
+      1,
+      0,
+      9.873201
+    ],
+    [
+      2,
+      78453,
+      8192,
+      2051,
+      "gather",
+      0,
+      0,
+      0,
+      228.474332
+    ],
+    [
+      2,
+      78453,
+      8192,
+      2051,
+      "gather",
+      0,
+      1,
+      1,
+      228.26621
+    ],
+    [
+      2,
+      78453,
+      8192,
+      2051,
+      "gather",
+      1,
+      0,
+      1,
+      226.75313
+    ],
+    [
+      2,
+      78453,
+      8192,
+      2051,
+      "gather",
+      1,
+      1,
+      0,
+      229.085103
+    ],
+    [
+      2,
+      78453,
+      8192,
+      2051,
+      "gather",
+      2,
+      0,
+      0,
+      231.153179
+    ],
+    [
+      2,
+      78453,
+      8192,
+      2051,
+      "gather",
+      2,
+      1,
+      1,
+      230.305612
+    ],
+    [
+      2,
+      78453,
+      8192,
+      2051,
+      "gather",
+      3,
+      0,
+      1,
+      229.891151
+    ],
+    [
+      2,
+      78453,
+      8192,
+      2051,
+      "gather",
+      3,
+      1,
+      0,
+      231.575655
+    ],
+    [
+      2,
+      78453,
+      8192,
+      2051,
+      "gather",
+      4,
+      0,
+      0,
+      224.256265
+    ],
+    [
+      2,
+      78453,
+      8192,
+      2051,
+      "gather",
+      4,
+      1,
+      1,
+      228.113201
+    ],
+    [
+      2,
+      78453,
+      8192,
+      2051,
+      "gather",
+      5,
+      0,
+      1,
+      227.107806
+    ],
+    [
+      2,
+      78453,
+      8192,
+      2051,
+      "gather",
+      5,
+      1,
+      0,
+      228.955347
+    ],
+    [
+      2,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      0,
+      0,
+      0,
+      146.716861
+    ],
+    [
+      2,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      0,
+      1,
+      1,
+      144.52947
+    ],
+    [
+      2,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      1,
+      0,
+      1,
+      145.475351
+    ],
+    [
+      2,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      1,
+      1,
+      0,
+      146.55252
+    ],
+    [
+      2,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      2,
+      0,
+      0,
+      146.727822
+    ],
+    [
+      2,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      2,
+      1,
+      1,
+      144.958106
+    ],
+    [
+      2,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      3,
+      0,
+      1,
+      145.480571
+    ],
+    [
+      2,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      3,
+      1,
+      0,
+      146.607844
+    ],
+    [
+      2,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      4,
+      0,
+      0,
+      146.420452
+    ],
+    [
+      2,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      4,
+      1,
+      1,
+      145.101066
+    ],
+    [
+      2,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      5,
+      0,
+      1,
+      145.635874
+    ],
+    [
+      2,
+      78453,
+      8192,
+      2051,
+      "clustered",
+      5,
+      1,
+      0,
+      146.840343
+    ]
+  ],
+  "timing_sample_scope": "All108 used clean timings; omit repeated PASS/shape fields already checked against the frozen fixture. Original failed performance gate is unchanged."
+}
