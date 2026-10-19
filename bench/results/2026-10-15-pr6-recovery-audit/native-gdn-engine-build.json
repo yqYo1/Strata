@@ -1,5 +1,5 @@
 {
-  "source_commit": "126eda33482204e8082fedf929d245c8e95b66f6",
+  "source_commit": "1dc52b068a92eb5b8917b55640102b1615908c48",
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -80,14 +80,14 @@
   "production_selected": false,
   "model_quality_qualified": false,
   "replaces": {
-    "source_commit": "ce8dd0e94c15238793d1149c0c72bd4685fdeb40",
+    "source_commit": "126eda33482204e8082fedf929d245c8e95b66f6",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-      "bytes": 22083640,
-      "sha256": "51e97cbbd9d550d2c0d892bc2537faba5dfa07d6be25a202108865b0bd1d8307"
+      "bytes": 22087944,
+      "sha256": "5b10303034666b8e25b8c625511534a1e04ffddd0419e7221af90cb20b3d7708"
     },
     "source_build_passed": true,
-    "retained_binary_source_commit": "ce8dd0e94c15238793d1149c0c72bd4685fdeb40",
+    "retained_binary_source_commit": "126eda33482204e8082fedf929d245c8e95b66f6",
     "reason": "Closed unused comparison engine; original source/recipe recovered from Git. Reuse its cache for the immediate corrected build, not a retained old generation."
   },
   "targets": [
@@ -96,9 +96,10 @@
     "sycl_submission_test",
     "file_expert_source_test",
     "sycl_mmvq_test",
-    "residency_publication_host_test"
+    "residency_publication_host_test",
+    "cache_tail_host_test"
   ],
-  "retention_consumer": "Current comparison engine and requested fixtures: strata, sycl_verifier_retirement_test, sycl_submission_test, file_expert_source_test, sycl_mmvq_test, residency_publication_host_test; select the validated generation and retire the extra after qualification/comparison closure.",
+  "retention_consumer": "Current comparison engine and requested fixtures: strata, sycl_verifier_retirement_test, sycl_submission_test, file_expert_source_test, sycl_mmvq_test, residency_publication_host_test, cache_tail_host_test; select the validated generation and retire the extra after qualification/comparison closure.",
   "retained_validation_reference": {
     "source_commit": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
     "binary_origin_source_commit": "9b6db2661f6abb1ba560b466108cf60b2d594f4e",
@@ -306,11 +307,11 @@
   },
   "binary": {
     "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-    "bytes": 22087944,
-    "sha256": "5b10303034666b8e25b8c625511534a1e04ffddd0419e7221af90cb20b3d7708"
+    "bytes": 22088152,
+    "sha256": "2fce2d79fc5f6eebf8829b65d0de863d99d697a0c4c013ad9c25d28cae9fc917"
   },
-  "compile_database_sha256": "9ae0409a674ac9f7eeba280a91e182e753e0bccb4f83562e4c9e70368f764919",
-  "configured_compile_entries": 225,
+  "compile_database_sha256": "43113a44081b4eddf19cfdd4dad303dfff4ef8461d330cce5ee340e6bb2e5cdc",
+  "configured_compile_entries": 226,
   "fixtures": {
     "sycl_verifier_retirement_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_verifier_retirement_test",
@@ -331,16 +332,19 @@
     "residency_publication_host_test": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/residency_publication_host_test",
       "sha256": "7583677b558b9263501a447c0bfbcdf587c5e5cdbfe5d624ef5560035761e0fb"
+    },
+    "cache_tail_host_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/cache_tail_host_test",
+      "sha256": "e458ae29db1a8d9704c5bc5dcddfbb9ab619531e3a3a8233844cc006746ed3dd"
     }
   },
-  "binary_origin_source_commit": "126eda33482204e8082fedf929d245c8e95b66f6",
+  "binary_origin_source_commit": "1dc52b068a92eb5b8917b55640102b1615908c48",
   "previous_output_comparison": {
     "changed_project_inputs": [
       "CMakeLists.txt",
-      "include/strata/core/residency_publication.hpp",
-      "include/strata/core/verify.hpp",
+      "include/strata/core/expert_slot_sizes.hpp",
       "src/program/generate.cpp",
-      "tests/core/residency_publication_test.cpp",
+      "tests/core/cache_tail_test.cpp",
       "tools/sycl/build_engine.py",
       "tools/sycl/check_verifier_retirement.py"
     ],
@@ -351,7 +355,8 @@
       "sycl_submission_test": true,
       "file_expert_source_test": true,
       "sycl_mmvq_test": true,
-      "residency_publication_host_test": false
+      "residency_publication_host_test": true,
+      "cache_tail_host_test": false
     },
     "controller_only_admission": false,
     "interpretation": "A real configure/build invocation admits the recorded inputs after original source/recipe recovery. Identical engine bytes preserve their known source identity even after fixture edits; qualification reuse separately requires the relevant native/recipe/fixture proof. No new speed result is implied."
@@ -360,9 +365,9 @@
   "inputs": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "126eda33482204e8082fedf929d245c8e95b66f6",
-      "count": 515,
-      "aggregate_sha256": "ab99020be2e2b36f334eab91ca375f7c1f6de9f2ecce4ba7e0694dbc00aa9eb2"
+      "revision": "1dc52b068a92eb5b8917b55640102b1615908c48",
+      "count": 516,
+      "aggregate_sha256": "48e5a8320fc262eb07a102d1ccf06b5dc5fae7b8be5a575f4b6a29c4d2a23dc7"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
