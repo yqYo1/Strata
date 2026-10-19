@@ -147,7 +147,7 @@
       "candidate_path": "bench/results/2026-10-15-pr6-recovery-audit/own-qsa-kpitch-v1",
       "decision": "Reuse the existing source-audited pitch proposal after the current comparison; no new duplicate survey. Recheck immutable source/provenance and wire maintained API/tests before compiling.",
       "candidate": "Fixed score33,Cells32,WG128,SG16; K36/V260 shared tile needs9216 BF16 values,30272B requested local payload,34368B admission minimum. No hardware occupancy/bank map or performance result.",
-      "do_not_repeat": "Old global K span256 schedule regressed10.35\u201329.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
+      "do_not_repeat": "Old global K span256 schedule regressed10.35–29.48%; span4 was mixed. These are separate from local pitch and must not be relabeled as pitch results."
     },
     "reviewed_base_source_sha256": "fa505d02e2b24f7cb6948033921fa697c8aeb58e6f4df6d873f13e5a7918e36b",
     "source_sha256": "c3ad8326f097050ff9ab1859e116f2cad3709a8464162143f752bc294cbe1e01",
@@ -208,7 +208,7 @@
         "bytes": 19144,
         "source_commit": "fbc7f56d7b0ddb5db5f3722ef33ca044c3f8a5c8",
         "reason": "Its conditional consumer is a selected-cell stable-reduction split. The closed QSA screen and pending pitch candidate select no split or reduction bottleneck.",
-        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report\u2019s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
+        "retrieval_trigger": "Main measures and selects a split, and pins the reached SGLang/vLLM contract and same-input route. Resolve report’s unverified surrounding-source pin 2a5ba71b first; it has no Strata/B570 speed result."
       },
       {
         "path": "bench/results/2026-10-15-pr6-recovery-audit/research-matrix-register-reuse-20261018.md",
@@ -1379,8 +1379,8 @@
         "Retrieval map for a later concrete question"
       ],
       "paper_sections": [
-        "SyclKittens \u00a7\u00a73.2\u20133.3 and Appendix D for operand layouts, subgroup prefetch and the measured ablation.",
-        "Xe-Forge \u00a7\u00a7IV\u2013V, VI-A, VI-D\u2013VI-E for search/validation workflow, hardware, baseline and kernel results."
+        "SyclKittens §§3.2–3.3 and Appendix D for operand layouts, subgroup prefetch and the measured ablation.",
+        "Xe-Forge §§IV–V, VI-A, VI-D–VI-E for search/validation workflow, hardware, baseline and kernel results."
       ]
     }
   },
@@ -2103,7 +2103,7 @@
   },
   "sycl_command_submission_amortization_collection_scope": {
     "classification": "knowledge collection",
-    "question": "For repeated same-queue SYCL/oneAPI kernel and copy command streams, compare mechanisms that amortize host submission work: per-command submission, supported command batching/list execution, and replayable command graphs with parameter updates. Using official Khronos/Intel/Unified Runtime sources and transferable non-LLM SYCL/HPC examples, determine what each mechanism actually amortizes, how it handles dynamic pointers/maps/shapes, dependencies, asynchronous errors, capture restrictions and replay/update costs, and where measured benefits fail to transfer. Map applicability to Strata\u2019s repeated GEMM/upload submit pattern without proposing code or claiming local performance.",
+    "question": "For repeated same-queue SYCL/oneAPI kernel and copy command streams, compare mechanisms that amortize host submission work: per-command submission, supported command batching/list execution, and replayable command graphs with parameter updates. Using official Khronos/Intel/Unified Runtime sources and transferable non-LLM SYCL/HPC examples, determine what each mechanism actually amortizes, how it handles dynamic pointers/maps/shapes, dependencies, asynchronous errors, capture restrictions and replay/update costs, and where measured benefits fail to transfer. Map applicability to Strata’s repeated GEMM/upload submit pattern without proposing code or claiming local performance.",
     "schedulable_now": false,
     "status": "native_reviewed_retrieval_reference",
     "eligibility_review": {
@@ -3369,7 +3369,7 @@
       "source": "src/kernels/cpu/iq_single_avx2.cpp",
       "reference": "docs/SYCL_IMPLEMENTATION.md:2475",
       "prior_evidence_commit": "8063aacc6749d18089f7a53db5d3e47b745f348c",
-      "prior_scope": "Short128-token,512-context tests on this machine; IQ3_XXS/IQ2_S opt-in improved decode medians1.13\u20132.20%, later IQ3_S addition had about0.20% aggregate effect. Not current32K evidence.",
+      "prior_scope": "Short128-token,512-context tests on this machine; IQ3_XXS/IQ2_S opt-in improved decode medians1.13–2.20%, later IQ3_S addition had about0.20% aggregate effect. Not current32K evidence.",
       "provenance": "Main-authored Zen3 adaptation of MIT GGML x86 quants, dated2026-10-04 before XeStrata evaluation; no XeStrata source used by this proposal.",
       "current_build_observation": "Selected original recipe sets Clang and STRATA_CPU_ARCH=znver3; actual engine exports a371-byte iq256_single_gu_rows symbol. This does not prove invocation or current numerical/performance qualification.",
       "prerequisite": "Resolve CPU pool-capacity diagnostic and qualify exact production source/dispatch and applicable parity before a separate immutable flag0/1 long-generation comparison. Do not alter the current six-process plan.",
@@ -3381,7 +3381,7 @@
     "status": "reviewed_conditional_runtime_reference",
     "schedulable_now": false,
     "prerequisite_evidence": "Exact libze-intel-gpu1 package14 to16 and libudev17 to18 identities are retained in client-resources-current.json runtime_asset_delta; the original smoke plan is recoverable at9a5fc5d17. The byte-identical small bank fixture passed on proposed assets at db11be131. This is neither unchanged-runtime evidence nor a retrospective speed claim.",
-    "question": "Trace official release/package provenance of installed Intel compute-runtime26.31.39395.14\u2192.16, identify relevant changes to Level Zero queues/events/host polling/graphs/USM and distinguish observed package changes from inferred fixes. Compare potential CPU submission/poll overhead and compatibility with this project pinned UR v2/compiler/IGC and qualified safety settings. Provide bounded follow-up checks, counterevidence and unresolved facts; no optimization without measured attribution.",
+    "question": "Trace official release/package provenance of installed Intel compute-runtime26.31.39395.14→.16, identify relevant changes to Level Zero queues/events/host polling/graphs/USM and distinguish observed package changes from inferred fixes. Compare potential CPU submission/poll overhead and compatibility with this project pinned UR v2/compiler/IGC and qualified safety settings. Provide bounded follow-up checks, counterevidence and unresolved facts; no optimization without measured attribution.",
     "novelty": "Newly observed package transition after closed clean model cohort, not a repeat of historical GPU-hang or general SYCL submission surveys.",
     "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/level-zero-package-39395-16-runtime-delta-review.md",
     "report_budget_bytes": 12288,
@@ -3402,7 +3402,7 @@
     "native_review_bytes": 6138,
     "native_review_sha256": "a558a947568f8b699ba466f70bb0e8ade1c38fe860cc0572cc328403fc2f327c",
     "review_digest": {
-      "novelty": "Specific .14\u2192.16 release/package provenance; decision support, not performance evidence.",
+      "novelty": "Specific .14→.16 release/package provenance; decision support, not performance evidence.",
       "corrections": [
         "Upstream .16 tag changes kernels_bin as well as its IGC dependency metadata.",
         "Installed IGC, DPC++ and UR remain unchanged; do not infer a local IGC upgrade or speed/fault effect.",
@@ -3881,7 +3881,6 @@
     "classification": "decision support",
     "question": "Audit the production grouped native expert arithmetic and a minimal staged-copy numerical fixture for current IQ3_XXS/IQ3_S/IQ2_S/IQ4_XS GU plus IQ4_NL/Q2_0 Down at H2560 FF640; establish valid reference dispatch/rounding and coverage, without repeating the finished pointer-copy/lifetime review.",
     "source_commit": "db3fa5ff0708cc3ca9a1cf4ee600d536536db260",
-    "source_view": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/decode-grouped-contract-source-db3fa5ff0",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/decode-grouped-output-contract.md",
     "schedulable_now": false,
     "prerequisites": [
@@ -3896,7 +3895,7 @@
     ],
     "report_budget_bytes": 12288,
     "status": "reviewed_worker_and_terminal_closed",
-    "consumer": "Retrieve only for a concrete dispatch/output question during the current frozen model screen; retire this report after the screen closes. Source view and transaction/review paperwork are consumed once this digest is committed.",
+    "consumer": "Report retained only for a concrete dispatch/output question during the current model screen; retire after screen closure. Source snapshot and transaction/review paperwork deleted after digest/default integration.",
     "native_review": {
       "model": "gpt-6-luna",
       "reasoning": "max",
@@ -3910,8 +3909,6 @@
     "classification": "decision support",
     "question": "Audit allocations live during decode after short/long prefill, distinguishing verifier/cache/shared operators from prompt-only scratch/banks; assess bounded placement/reuse alternatives that reduce ordinary-Arena transfer demand without changing quantization or physical-context capacity.",
     "source_commit": "db3fa5ff0708cc3ca9a1cf4ee600d536536db260",
-    "source_view": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/decode-grouped-contract-source-db3fa5ff0",
-    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/decode-prefill-owner-cache-budget.md",
     "schedulable_now": false,
     "prerequisites": [
       {
@@ -3924,8 +3921,8 @@
       }
     ],
     "report_budget_bytes": 12288,
-    "status": "reviewed_worker_and_terminal_closed",
-    "consumer": "Digest consumed; retire duplicate report/source view/transaction paperwork after this decision is on the fork default. Reuse decode_vram_rebuild_scope prerequisites for a concrete future placement decision.",
+    "status": "reviewed_duplicate_report_retired",
+    "consumer": "No current body consumer. Retrieve the short reset/no-borrow finding here; require actual MTP/cache source plus a concrete placement question before a fresh owner census.",
     "native_review": {
       "model": "gpt-6-luna",
       "reasoning": "max",
@@ -3934,5 +3931,55 @@
     "ownership_closed": true,
     "report_sha256": "cbf8f12704eb2702e0ef50df93b4a5c277487b5d7aff8436b23a599eba0277aa",
     "finding": "Mostly duplicates prior cache audit. With --no-prefill-borrow, prompt workspace resets before decode. Missing MTP/cache census proves no reclaimable budget. A future exact owner question must include actual MTP/cache implementations."
+  },
+  "decode_copy_cpu_gpu_dag_scope": {
+    "classification": "decision support",
+    "question": "Audit new ordinary-Arena target-verifier CPU/GPU dependency DAG",
+    "source_commit": "ecda3c9ec4366211382cbf1ff11a3efd1c94fae6",
+    "source_view": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/decode-copy-dag-cache-source-ecda3c9ec",
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/decode-copy-dag-report.md",
+    "report_budget_bytes": 16384,
+    "schedulable_now": false,
+    "prerequisites": [
+      {
+        "met": true,
+        "evidence": "New ordinary-Arena positive GPU copy route and passed51 component cases; CPU pool capacity affects32K+ generation."
+      },
+      {
+        "met": true,
+        "evidence": "Current immutable source includes actual target verifier, host planner, CPU pool, MTP and expert-cache implementations; prior grouped/owner reviews indexed. Specific missing dependency/reader census, no live tests or edits."
+      }
+    ],
+    "status": "native_reviewed_workers_and_terminals_closed",
+    "consumer": "Retrieve relevant report sections only for the post-screen scheduling/cache decision. Retire closed transaction/review paperwork after this digest is committed; recover source view from its original commit before retirement.",
+    "ownership_closed": true,
+    "report_sha256": "47efe676e03322c3575347002a6730ed355aba7508a20623d616253b3c15702e",
+    "native_review_sha256": "607345ee87c32ef7233ecaa2a381328472607f99d2a1b3f06b90086d30a66c16",
+    "finding": "Current captured path defers PCIe-assigned GPU miss compute until CPU pool completion; an earlier event-gated enqueue requires router completion, plan publication and DMA submission. Existing shared/resident GPU work and copies already overlap CPU. No runtime overlap or speed claim."
+  },
+  "decode_cache_reader_census_scope": {
+    "classification": "decision support",
+    "question": "Audit actual target/MTP cache owners and captured readers",
+    "source_commit": "ecda3c9ec4366211382cbf1ff11a3efd1c94fae6",
+    "source_view": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/decode-copy-dag-cache-source-ecda3c9ec",
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/decode-cache-reader-census-report.md",
+    "report_budget_bytes": 16384,
+    "schedulable_now": false,
+    "prerequisites": [
+      {
+        "met": true,
+        "evidence": "New ordinary-Arena positive GPU copy route and passed51 component cases; CPU pool capacity affects32K+ generation."
+      },
+      {
+        "met": true,
+        "evidence": "Current immutable source includes actual target verifier, host planner, CPU pool, MTP and expert-cache implementations; prior grouped/owner reviews indexed. Specific missing dependency/reader census, no live tests or edits."
+      }
+    ],
+    "status": "native_reviewed_workers_and_terminals_closed",
+    "consumer": "Retrieve relevant report sections only for the post-screen scheduling/cache decision. Retire closed transaction/review paperwork after this digest is committed; recover source view from its original commit before retirement.",
+    "ownership_closed": true,
+    "report_sha256": "b949856d0736cba4c1cd6dbe65fd5a60c23f9bd54af1d57ce307fde64144bb18",
+    "native_review_sha256": "607345ee87c32ef7233ecaa2a381328472607f99d2a1b3f06b90086d30a66c16",
+    "finding": "Actual MTP/cache sources add owner facts. Total128 slots with48 per-layer quotas yields2 for layers0-46 and34 for the last; variable native slots use open_sized and summed aligned layer sizes, not necessarily slots*max_blob. MTP vram_bytes omits head_logits and pf_dev. Static source proves neither free VRAM nor useful cache expansion; require actual allocation/profile/residency/reader census."
   }
 }
