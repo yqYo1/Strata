@@ -231,7 +231,7 @@ def cpu_check_qualification(build):
 
 def runtime_assets_unchanged(record):
     delta = record.get('runtime_asset_delta', {})
-    guards.require(not delta or record['mode'] in ('cpu-check', 'cpu-overhead', 'engine-compare'), 'proposed runtime is diagnostic-only')
+    guards.require(not delta or record['mode'] in ('cpu-check', 'cpu-overhead', 'engine-compare', 'client-resources'), 'proposed runtime is diagnostic-only')
     settings = json.loads(SETTINGS.read_text())
     guards.require(set(delta) <= set(settings['runtime_elfs']), 'unknown proposed runtime asset')
     for name, item in settings['runtime_elfs'].items():

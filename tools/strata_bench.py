@@ -155,7 +155,9 @@ def chat(base: str, key: str, messages: list, max_tokens: int, think: bool = Fal
     req = urllib.request.Request(base + "/v1/chat/completions", data=payload,
                                  headers={"Content-Type": "application/json",
                                           **({"Authorization": "Bearer " + key} if key else {})})
+    request_begin_monotonic_ns = time.monotonic_ns()
     t0 = time.perf_counter()
+    first_output_monotonic_ns = None
     first, text, usage, timings, err, pieces = None, [], None, None, None, 0
     reasoning, finish_reason, done_received = [], None, False
     interrupted = None
@@ -184,6 +186,7 @@ def chat(base: str, key: str, messages: list, max_tokens: int, think: bool = Fal
                     if piece:
                         if first is None:
                             first = time.perf_counter() - t0
+                            first_output_monotonic_ns = time.monotonic_ns()
                         pieces += 1
                         text.append(dl.get("content") or "")
                         reasoning.append(dl.get("reasoning_content") or "")
@@ -201,7 +204,10 @@ def chat(base: str, key: str, messages: list, max_tokens: int, think: bool = Fal
     total = time.perf_counter() - t0
     return {"first": first, "total": total, "text": "".join(text), "usage": usage, "timings": timings, "err": err,
             "pieces": pieces, "reasoning_text": "".join(reasoning), "finish_reason": finish_reason,
-            "done_received": done_received, "_interrupted": interrupted, "request_sha256": hashlib.sha256(payload).hexdigest()}
+            "done_received": done_received, "_interrupted": interrupted, "request_sha256": hashlib.sha256(payload).hexdigest(),
+            "client_interval": dict(request_begin_monotonic_ns=request_begin_monotonic_ns,
+                first_output_monotonic_ns=first_output_monotonic_ns,
+                request_end_monotonic_ns=time.monotonic_ns())}
 
 
 def digest(r: dict) -> dict:
@@ -236,7 +242,8 @@ def digest(r: dict) -> dict:
             "drafts_offered": t.get("draft_n"), "drafts_accepted": t.get("draft_n_accepted"),
             "finish_reason": r.get("finish_reason"), "request_sha256": r.get("request_sha256"),
             "stream_complete": stream_complete, "truncated": r.get("finish_reason") == "length",
-            "generated_tokens_source": "usage" if u.get("completion_tokens") is not None else "stream_pieces"}
+            "generated_tokens_source": "usage" if u.get("completion_tokens") is not None else "stream_pieces",
+            "client_interval": r.get("client_interval")}
 
 
 # ----------------------------------------------------------------------------------------------------- statistics

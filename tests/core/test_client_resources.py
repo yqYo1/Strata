@@ -2,6 +2,7 @@
 """Synthetic proc/fdinfo contracts only; no real process, GPU or profiler."""
 from pathlib import Path
 from contextlib import contextmanager
+import copy
 import sys
 import tempfile
 from types import SimpleNamespace
@@ -29,6 +30,49 @@ def sample(busy=100, total=1000, capacity=None, stamp=1):
 
 
 class ClientResourceTests(unittest.TestCase):
+    def capture(self):
+        target=dict(pid=101,start_ticks=50,sid=99)
+        header=dict(kind='header',schema=2,target=target,pci=PCI,
+            boot_id='synthetic-boot',ticks_per_second=100,interval=1)
+        intervals=r.CycleIntervals();evidence=r.CollectionEvidence();records=[header]
+        for i in range(8):
+            row=sample(100+40*i,1000+100*i,stamp=i*10**9)
+            row.update(kind='sample',ordinal=i,ticks_per_second=100,
+                process=dict(start_ticks=50,sid=99,cpu_ticks=100*i),
+                threads=[dict(tid=101,start_ticks=50,sid=99,cpu_ticks=100*i,processor=0)])
+            row['engine_intervals']=intervals.update(row);evidence.observe(row);records.append(row)
+        records.append(dict(evidence.terminal('target_exited'),end_monotonic_ns=8*10**9))
+        window=dict(request_begin_monotonic_ns=500000000,first_output_monotonic_ns=3500000000,
+            request_end_monotonic_ns=7500000000)
+        return records,target,window
+
+    def test_capture_separates_client_windows_and_does_not_extrapolate_exit_gap(self):
+        records,target,window=self.capture()
+        result=r.summarize_capture(records,target,'synthetic-boot',window)
+        self.assertTrue(result['request_coverage_verified'])
+        self.assertAlmostEqual(result['final_sample_to_response_end_seconds'],.499999999)
+        before,after=result['before_first_output'],result['after_first_output']
+        self.assertEqual(before['contained_CPU_wall_seconds'],2.)
+        self.assertEqual(after['contained_CPU_wall_seconds'],3.)
+        self.assertEqual(after['process_cpu_core_equivalents'],1.)
+        self.assertEqual(after['engines'][0]['busy_fraction'],.4)
+        self.assertEqual(after['engines'][0]['eligible_intervals'],3)
+
+    def test_capture_rejects_wrong_identity_missing_terminal_stale_clocks_and_forged_intervals(self):
+        original,target,window=self.capture()
+        for variant in ('boot','target','terminal','clock','coverage','counter','cpu_rollback','count'):
+            with self.subTest(variant=variant):
+                rows=copy.deepcopy(original);identity=dict(target);span=dict(window)
+                if variant=='boot':rows[0]['boot_id']='other'
+                if variant=='target':identity['start_ticks']+=1
+                if variant=='terminal':rows.pop()
+                if variant=='clock':span['first_output_monotonic_ns']=None
+                if variant=='coverage':span['request_end_monotonic_ns']=11*10**9
+                if variant=='counter':rows[3]['engine_intervals'][0]['busy_fraction']=.9
+                if variant=='cpu_rollback':rows[6]['process']['cpu_ticks']=0
+                if variant=='count':rows[-1]['eligible_samples']+=1
+                with self.assertRaises(ValueError):r.summarize_capture(rows,identity,'synthetic-boot',span)
+
     def test_pci_selector_is_validated_and_canonicalized(self):
         upper = '0000:AB:1F.0'
         rows = r.deduplicate_clients([(5,text().replace(PCI,upper))], upper.lower())

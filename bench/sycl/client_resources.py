@@ -226,6 +226,86 @@ class CollectionEvidence:
             limits='Process-bounded collection with a maximum deadline. Completion requires two samples with eligible CCS intervals; planned phase coverage must be checked separately.')
 
 
+def summarize_window(samples, begin, end, ticks_per_second):
+    """Use only wholly contained observation spans; never extrapolate gaps."""
+    engines, threads, cpu_ticks, wall, missing = {}, {}, 0, 0., 0
+    for sample in samples:
+        for interval in sample['engine_intervals']:
+            if not interval['eligible'] or not (begin <= interval['span_begin']['begin_monotonic_ns'] and
+                    interval['span_end']['end_monotonic_ns'] <= end):
+                continue
+            key=(interval['pci'],interval['client_id'],interval['engine'])
+            value=engines.setdefault(key,dict(pci=key[0],client_id=key[1],engine=key[2],
+                eligible_intervals=0,busy_cycles=0,capacity_total_cycles=0))
+            value['eligible_intervals']+=1
+            value['busy_cycles']+=interval['busy_cycles']
+            value['capacity_total_cycles']+=interval['total_cycles']*interval['capacity']
+    for first,last in zip(samples,samples[1:]):
+        if not (begin <= first['begin_monotonic_ns'] and last['end_monotonic_ns'] <= end):continue
+        elapsed=((last['begin_monotonic_ns']+last['end_monotonic_ns'])-
+                 (first['begin_monotonic_ns']+first['end_monotonic_ns']))/2e9
+        require(elapsed>0,'nonadvancing CPU observation interval')
+        delta=last['process']['cpu_ticks']-first['process']['cpu_ticks']
+        require(delta>=0,'process CPU counter decreased')
+        cpu_ticks+=delta;wall+=elapsed
+        previous={(v['tid'],v['start_ticks']):v for v in first['threads']}
+        for row in last['threads']:
+            key=(row['tid'],row['start_ticks'])
+            if key not in previous:
+                missing+=1;continue
+            delta=row['cpu_ticks']-previous[key]['cpu_ticks']
+            require(delta>=0,'thread CPU counter decreased')
+            value=threads.setdefault(key,dict(tid=key[0],start_ticks=key[1],cpu_ticks=0,observed_last_cpus=set()))
+            value['cpu_ticks']+=delta;value['observed_last_cpus'].add(row['processor'])
+    require(wall>0 and any(v['engine']=='ccs' and v['eligible_intervals']>=2 for v in engines.values()),
+        'insufficient contained CPU/CCS observation spans for the client interval')
+    for value in engines.values():
+        value['busy_fraction']=value['busy_cycles']/value['capacity_total_cycles']
+    top=[]
+    for value in sorted(threads.values(),key=lambda v:(-v['cpu_ticks'],v['tid']))[:8]:
+        top.append(dict(value,observed_last_cpus=sorted(value['observed_last_cpus']),
+            cpu_seconds=value['cpu_ticks']/ticks_per_second))
+    return dict(window_begin_monotonic_ns=begin,window_end_monotonic_ns=end,
+        contained_CPU_wall_seconds=wall,process_cpu_seconds=cpu_ticks/ticks_per_second,
+        process_cpu_core_equivalents=cpu_ticks/ticks_per_second/wall,
+        top_scheduled_threads=top,unmatched_thread_intervals=missing,
+        engines=sorted(engines.values(),key=lambda v:(v['pci'],v['client_id'],v['engine'])))
+
+
+def summarize_capture(records, target, boot, client_interval):
+    require(len(records)>=5 and records[0].get('kind')=='header' and records[-1].get('kind')=='terminal',
+        'missing resource header or explicit terminal')
+    header,terminal=records[0],records[-1]
+    require(header['schema']==2 and header['target']==target and header['boot_id']==boot and
+        header['pci']==canonical_pci(header['pci']) and type(header['ticks_per_second']) is int and
+        header['ticks_per_second']>0,'resource header identity or clock differs')
+    samples=records[1:-1];intervals=CycleIntervals();evidence=CollectionEvidence()
+    for i,row in enumerate(samples):
+        require(row.get('kind')=='sample' and row['ordinal']==i and row['target']==target and
+            row['ticks_per_second']==header['ticks_per_second'] and
+            row['process']['start_ticks']==target['start_ticks'] and row['process']['sid']==target['sid'],
+            'resource sample identity, order or clock differs')
+        require(intervals.update(row)==row['engine_intervals'],'resource cycle interval recomputation differs')
+        evidence.observe(row)
+    require({k:v for k,v in terminal.items() if k!='end_monotonic_ns'}==
+        evidence.terminal(terminal['reason'],terminal.get('error')) and
+        terminal['collection_complete'],'resource collection is incomplete')
+    keys=('request_begin_monotonic_ns','first_output_monotonic_ns','request_end_monotonic_ns')
+    require(isinstance(client_interval,dict) and all(type(client_interval.get(k)) is int for k in keys),
+        'missing exact client interval clocks')
+    begin,first,end=(client_interval[k] for k in keys)
+    require(0<=begin<first<end,'invalid client output interval')
+    require(type(terminal.get('end_monotonic_ns')) is int and terminal['end_monotonic_ns']>=end and
+        samples[0]['begin_monotonic_ns']<=begin and
+        end-samples[-1]['end_monotonic_ns'] <= 2*header['interval']*1e9,
+        'collector does not cover the completed client request')
+    return dict(collector_complete=True,request_coverage_verified=True,samples=len(samples),
+        final_sample_to_response_end_seconds=max(0,end-samples[-1]['end_monotonic_ns'])/1e9,
+        before_first_output=summarize_window(samples,begin,first,header['ticks_per_second']),
+        after_first_output=summarize_window(samples,first,end,header['ticks_per_second']),
+        limits='Client observation windows, not native kernel-stage boundaries. Scheduled CPU includes polling/stalls. Associated DRM clients may be shared; cycle busy fraction is not arithmetic efficiency, VRAM bandwidth, physical PCIe traffic or hardware saturation.')
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('native_receipt', type=Path)
@@ -273,6 +353,7 @@ def main(argv=None):
         except (OSError, ValueError, KeyError) as exc:
             reason, error = 'error', (type(exc).__name__ + ': ' + str(exc))[:256]
         terminal = evidence.terminal(reason, error)
+        terminal['end_monotonic_ns'] = time.monotonic_ns()
         stream.write(json.dumps(terminal) + '\n')
     return 0 if terminal['collection_complete'] else 2
 
