@@ -1251,13 +1251,22 @@ without a fresh fault. The component wall-time geomean is0.952777; the existing
 >=2334 selector still excludes the slower160-row shape. Selective Down timing
 remains pending; no new model speed or adoption is claimed.
 
-The current source-view build's Down fixture differs from the source45 fixture
-that passed those checks. Its old receipt cannot qualify the new executable.
-The frozen source-view comparison has closed. Prepare a fresh committed
-current-fixture plan and repeat ownership, traced small and full selected-route
-checks before the three-process selective timing, using the unchanged gate
-above. Keep the original validation and unrun timing status intact. Retain useful
-individual queue/wall samples and checked totals, rather than full parser events.
+The current source-view build's Down fixture differs from the source45 fixture;
+its old receipt does not qualify the new executable. A fresh plan at
+`1dff76365` repeated54 ownership,45 traced smoke and110 full correctness events
+successfully. All three clean timing processes then exited normally, with504
+used queue/wall samples, complete ownership closure, unchanged boot and no
+fresh driver fault. The selected/separate latency geomean was0.937848,
+but64 contiguous rows regressed9.53% (ratio1.095345), exceeding the unchanged
+1.05 per-shape limit. Every>=2334-row shape improved in each process.
+**The selective candidate fails its advancement gate; do not run its gated
+model comparison.** This neither changes source45's original unrun timing
+status nor qualifies model speed, quality, sustained decode or full context.
+The next source question is whether the low-level separate reference and
+public-wrapper candidate measure the same host dispatch work at fallback
+shapes. Any corrected comparison needs a separately committed plan and evidence;
+the current failure and all individual timing samples remain in the
+[current component result](../bench/results/2026-10-15-pr6-recovery-audit/moe-down-scatter-current.json).
 The validated a576 engine and its same-build fixtures are hash-checked at
 `known-good-before-selective-down-v1` before reusing the build cache. The old1222
 fallback's9812 original source blobs and recipe were recovered before retirement.
