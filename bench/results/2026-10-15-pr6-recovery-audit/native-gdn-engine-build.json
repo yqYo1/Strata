@@ -1,5 +1,5 @@
 {
-  "source_commit": "2328f47540c072d8dbd93828724b81acb178e437",
+  "source_commit": "246415bfc3f8d68242b067ca49723c23c3e96be7",
   "compiler": {
     "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
     "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
@@ -73,21 +73,21 @@
     "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-score-gemm-entry-engine-build-v2.json",
     "sha256": "9b7734387f0fc56f36afe9d7bca75e5f0bedcef479271e982025abe1d4334a1a"
   },
-  "complete": false,
-  "passed": false,
+  "complete": true,
+  "passed": true,
   "active": false,
   "GPU_executed": false,
   "production_selected": false,
   "model_quality_qualified": false,
   "replaces": {
-    "source_commit": "218561fc07e5778503f141e234cb81ca32eeeb15",
+    "source_commit": "2328f47540c072d8dbd93828724b81acb178e437",
     "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-      "bytes": 22075256,
-      "sha256": "c20bb02ada0f84a23ad620211a5e53541a23776ac0d8d63c73ee133a482b0e52"
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/known-good-396d0c91f301/strata",
+      "bytes": 22079288,
+      "sha256": "570b65ddfd88e3955b58634b361bb13e12a4bd713ac6e5ae396d47265a76fd46"
     },
-    "source_build_passed": true,
-    "retained_binary_source_commit": "218561fc07e5778503f141e234cb81ca32eeeb15",
+    "source_build_passed": false,
+    "retained_binary_source_commit": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
     "reason": "Closed unused comparison engine; original source/recipe recovered from Git. Reuse its cache for the immediate corrected build, not a retained old generation."
   },
   "targets": [
@@ -303,14 +303,39 @@
       "next_review": "At selective Down comparison closure, review these remaining unique provenance receipts/source against realistic retrieval need; retire redundant transaction details without claiming source recovery."
     }
   },
-  "error": "compile-link failed: [1/7] Building CXX object CMakeFiles/sycl_verifier_retirement_test.dir/tests/sycl/verifier_retirement.cpp.o\nFAILED: CMakeFiles/sycl_verifier_retirement_test.dir/tests/sycl/verifier_retirement.cpp.o \n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++ -DSTRATA_ENABLE_SYCL=1 -DSTRATA_NATIVE_EXPERTS=1 -DSTRATA_VERSION=\\\"0.1.38\\\" -I/home/yayoi/orca/workspaces/Strata/sycl/include -I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat -I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include -O3 -DNDEBUG -std=c++20 -fsycl -fsycl-id-queries-range=size_t -Wall -Wextra -Werror -MD -MT CMakeFiles/sycl_verifier_retirement_test.dir/tests/sycl/verifier_retirement.cpp.o -MF CMakeFiles/sycl_verifier_retirement_test.dir/tests/sycl/verifier_retirement.cpp.o.d -o CMakeFiles/sycl_verifier_retirement_test.dir/tests/sycl/verifier_retirement.cpp.o -c /home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/verifier_retirement.cpp\n/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/verifier_retirement.cpp:81:43: error: use of undeclared identifier 'cudaStreamCaptureModeRelaxed'\n   81 |         if (cudaStreamBeginCapture(v.cs_, cudaStreamCaptureModeRelaxed) != cudaSuccess)\n      |                                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~\n/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/verifier_retirement.cpp:86:43: error: use of undeclared identifier 'cudaStreamCaptureModeRelaxed'\n   86 |         if (cudaStreamBeginCapture(v.cs_, cudaStreamCaptureModeRelaxed) != cudaSuccess)\n      |                                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~\n2 errors generated.\n[2/7] Building CXX object CMakeFiles/strata_engine.dir/src/core/verify.cpp.o\n[3/7] Building CXX object CMakeFiles/strata.dir/src/program/generate.cpp.o\nninja: build stopped: subcommand failed.\n",
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 22079432,
+    "sha256": "1c84da96dfcbcb35efaaef8ce4bccc1d078f58bc36e697dd82b3485fcdab6d11"
+  },
+  "compile_database_sha256": "bd3804d4413f8fbe65b46e51dea1a8180e4e2f2545287ebeeb470f7dd7244247",
+  "configured_compile_entries": 223,
+  "fixtures": {
+    "sycl_verifier_retirement_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_verifier_retirement_test",
+      "sha256": "bb6c2777140c7377d3c3558876734157dd57101d3cea5f15a575682328d9c397"
+    },
+    "sycl_submission_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_submission_test",
+      "sha256": "3582ff3453f0e757cb2f2ac20a194180dcb3553e15b65f0c174ae5ed1f20d0cd"
+    },
+    "file_expert_source_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/file_expert_source_test",
+      "sha256": "e7e06781856b10cd45fb5e5d281d2a18a34b7cf7b1756caf97ed9dea9226d950"
+    },
+    "sycl_mmvq_test": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_mmvq_test",
+      "sha256": "c320b9b6df08a52c2da2ca2c6eca49c1e37da8bca9a55556c0bf8b2fb718384d"
+    }
+  },
+  "binary_origin_source_commit": "246415bfc3f8d68242b067ca49723c23c3e96be7",
   "ownership_closed": true,
   "inputs": [
     {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "2328f47540c072d8dbd93828724b81acb178e437",
+      "revision": "246415bfc3f8d68242b067ca49723c23c3e96be7",
       "count": 510,
-      "aggregate_sha256": "0c7ca38506ae91064ce7f7a2af16b9bdc86978ed33c4b58da9b5cc5abc257e38"
+      "aggregate_sha256": "1067db133c8a2e9f05b644030b1982f5177de4fc846231a8d7850e114dfa4ed1"
     },
     {
       "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
