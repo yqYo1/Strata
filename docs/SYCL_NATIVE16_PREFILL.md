@@ -1336,6 +1336,15 @@ Orca source audit and separate native Luna-max review found no verified reducer
 defect. Receipt-chain wiring tests remain optional strengthening; actual eligible
 model evidence is still required before a cohort decision.
 
+The first parameter-validated Down-large model request then passed at117489
+fresh read tokens, thinking on and24 generated tokens. All96 mixed windows
+retired; actual Down counters record7485 fused jobs/49290450 fused rows and
+29868 separate jobs. Native and benchmark owners closed normally, with no fresh
+fault. The profiled930.2tok/s is diagnostic; it is not a clean speed result.
+The next comparison keeps source-view enabled and changes only Down0/large
+across the frozen six-process order. Default adoption, broad quality,
+physical262144/session/RESTORE and sustained decode remain unqualified.
+
 The maintained model controller now provides `prepare|run qsa-long-input-check`
 and `prepare|run qsa-long-input [0|1|2]`. Its prospective screen holds131072
 context/resident INT8 KV,8192 chunks,GU-large,ordered-exp QSA and GDN columns4

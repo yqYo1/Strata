@@ -2356,7 +2356,7 @@
   "down_fallback_comparison_contract_scope": {
     "classification": "decision support",
     "schedulable_now": false,
-    "status": "Main_production_matched_fixture_and_controller_prepared_UNRUN",
+    "status": "source_review_closed_main_corrections_and_component_timing_passed",
     "question": "Audit the exact production Down0/large host call chains versus the component reference/candidate. Decide whether low-level/public fallback mismatch or insufficient timing granularity can explain the64-row regression, and propose a production-equivalent bounded comparison without rewriting the failed gate.",
     "candidate_source": {
       "commit": "14e95463144dce6ea7618682d49c4ba171e3d804",
@@ -2372,7 +2372,6 @@
       "current_down_controller_candidate_scope",
       "selective_down_model_controller_scope"
     ],
-    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/down-fallback-comparison-contract.md",
     "report_budget": {
       "target_words": [
         1100,
@@ -2381,20 +2380,20 @@
       "maximum_bytes": 18432
     },
     "consumer": "Main chooses a genuinely matched component comparison or source change; preserve original failure and predeclare unchanged>=3%/no>5% regression gate for any fresh comparison.",
-    "next_review": "Run committed offline negative cases, build exact fixture, then fresh qualification. Preserve original source/review snapshots; a model trial still needs a passing component and the missing dedicated model reducer.",
+    "next_review": "Reopen only for a concrete new source/correctness question; no pending review-body consumer.",
     "report_bytes": 8909,
     "report_sha256": "507d64e933e6a9e7e4e6b4d9520e114a3a5ed930a4a943d40bf7ed8aa5e80616",
     "worker_ownership_closed": true,
-    "native_review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/down-fallback-comparison-native-review.json",
     "native_review_bytes": 8136,
     "native_review_sha256": "a5feefa2bb7648c989845910832641c356535e20851ffe9122834d9c19e2dcb9",
     "review_digest": "A new reference must also call the production try hook even when fusion is disabled. Use immutable startup0/large processes, full14 shapes/3processes per arm/6 rounds and unchanged gate; partial diagnostics cannot qualify. Low-level/public mismatch is demonstrated, its timing contribution is unproven.",
-    "main_followup": "Both arms now call the real hook/fallback in immutable startup0/large processes A0,B0,B1,A1,A2,B2. Full14 shapes/504 timings, repeat256 for64/160 rows otherwise16, same advancement gate; PID/start ticks and effective selector checked. Fresh same-build54/45/110 gates precede timing. Originalv6 failure unchanged."
+    "main_followup": "Both arms now call the real hook/fallback in immutable startup0/large processes A0,B0,B1,A1,A2,B2. Full14 shapes/504 timings, repeat256 for64/160 rows otherwise16, same advancement gate; PID/start ticks and effective selector checked. Fresh same-build54/45/110 gates precede timing. Originalv6 failure unchanged.",
+    "report_retirement": "Completed review transaction retired after committed tested corrections and504-sample component decision; retrieve relevant measured source/results from Git, use retained short digest for scope exclusion."
   },
   "production_down_v7_source_audit_scope": {
     "classification": "decision support",
     "schedulable_now": false,
-    "status": "main_corrections_qualified_timing_running",
+    "status": "source_review_closed_main_corrections_and_component_timing_passed",
     "question": "Audit the new actual v7 production-matched fixture/controller against the previous review: immutable0/large processes, exact real hook/fallback,6 owned process order/identity,504 used samples/warmups/repeat granularity and unchanged gates. Find bugs in the implementation, not another generic methodology survey.",
     "candidate_source": {
       "commit": "292da921f3fb7e0c7a46e29eb94ba8fbf415343c",
@@ -2411,7 +2410,6 @@
       "down_fallback_comparison_contract_scope",
       "selective_down_model_controller_scope"
     ],
-    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/production-down-v7-source-audit.md",
     "report_budget": {
       "target_words": [
         1100,
@@ -2420,7 +2418,7 @@
       "maximum_bytes": 18432
     },
     "consumer": "Main resolves source bugs before six-process timing; builds and allGPU/tests remain Main-owned. Component success only permits a later gated model trial.",
-    "next_review": "Close the original six-process public timing plan with all504 samples and unchanged gates. Never infer performance eligibility from correctness or build success.",
+    "next_review": "Reopen only for a concrete new source/correctness question; no pending review-body consumer.",
     "task_id": "task_914858394480",
     "dispatch_id": "ctx_9d29ea9ac880",
     "terminal_handle": "term_f8592550-ffba-42fa-addf-ee3cce595550",
@@ -2429,7 +2427,6 @@
     "worker_ownership_closed": true,
     "report_bytes": 8296,
     "report_sha256": "2e78a2196ba2959c88d4864d2c8d4c9b89091b453e9a97dc72ad77f04ce037a0",
-    "native_review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/production-down-v7-native-review.json",
     "native_review_sha256": "18f64e5a0fe51cf80fd2921734107f223be58115b2c7969e2fb610e3cdcd0313",
     "main_digest": "No demonstrated runtime routing/fairness bug. Before timing, observe every actual hook return, require repeat or zero fused calls and a predeclared >=2ms marker bracket including warmups. Duration is eligibility, not accuracy guarantee. Validate preflight shape/placement multiset. Original gate and v6 failure stay unchanged.",
     "main_resolution": {
@@ -2442,12 +2439,13 @@
       "full_validation_events": 110,
       "GPU_faults": [],
       "ownership_closed_before_timing": true
-    }
+    },
+    "report_retirement": "Completed review transaction retired after committed tested corrections and504-sample component decision; retrieve relevant measured source/results from Git, use retained short digest for scope exclusion."
   },
   "down_model_reducer_postfix_audit_scope": {
     "classification": "decision support",
     "schedulable_now": false,
-    "status": "reviewed_no_verified_source_defect",
+    "status": "source_review_closed_no_verified_reducer_defect",
     "question": "Audit actual fixed Down/source-view model reducers and unchanged original-engine identity handling, not generic methodology. Check distinct>1.002/>1.005 gates, all3 paired process medians, separate1000 target, complete original input/work/fault/owner evidence and component advance gating; identify concrete false acceptance/rejection or missing regressions.",
     "candidate_source": {
       "commit": "9ed33036e4178d33e4be94f47c4150b7d0aed10a",
@@ -2463,7 +2461,6 @@
       "selective_down_model_controller_scope",
       "source_view_analysis_candidate_scope"
     ],
-    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/down-model-reducer-postfix-audit.md",
     "report_budget": {
       "target_words": [
         1200,
@@ -2472,7 +2469,7 @@
       "maximum_bytes": 20480
     },
     "consumer": "Main resolves concrete reducer gaps before a gated model trial; Main tests/builds/GPU only.",
-    "next_review": "Use when a full eligible Down model cohort exists. Main passed26 offline checks; do not repeat this source survey without changed source or a concrete new gap. Retire raw/superseded review transactions at the next serialized cleanup boundary.",
+    "next_review": "Reopen only for a concrete new source/correctness question; no pending review-body consumer.",
     "task_id": "task_1ded11e8340e",
     "dispatch_id": "ctx_ab9cfcd603ac",
     "terminal_handle": "term_4674fcf8-44e1-465d-94da-9833b9ad2d4f",
@@ -2481,10 +2478,10 @@
     "worker_outcome": "succeeded",
     "report_bytes": 9713,
     "report_sha256": "be6f26acb36e805933797e5d836534b3599b2b6f73146dac7fa3f25f1b8af4e6",
-    "native_review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/down-model-reducer-postfix-native-review.json",
     "worker_ownership_closed": true,
     "native_review_sha256": "5141ba8b804baf97ff1b000a7c62cfcbeb8bb55f5bbf953d515317fd94584ef1",
-    "main_digest": "Orca and independent native Luna-max review found no verified post-fix reducer defect. Distinct strict>1.002 Down/>1.005 source-view gates, all3 paired process medians, separate1000 target, original build/input recovery, component advancement, ownership/fault evidence and work conservation are enforced. Optional receipt-chain wiring tests do not replace actual cohort evidence. No execution, speed or adoption established."
+    "main_digest": "Orca and independent native Luna-max review found no verified post-fix reducer defect. Distinct strict>1.002 Down/>1.005 source-view gates, all3 paired process medians, separate1000 target, original build/input recovery, component advancement, ownership/fault evidence and work conservation are enforced. Optional receipt-chain wiring tests do not replace actual cohort evidence. No execution, speed or adoption established.",
+    "report_retirement": "Completed review transaction retired after committed tested corrections and504-sample component decision; retrieve relevant measured source/results from Git, use retained short digest for scope exclusion."
   },
   "forced_compute_copy_overlap_collection_scope": {
     "classification": "knowledge collection",
@@ -2591,7 +2588,6 @@
       }
     },
     "question": "Audit source/recipe/output receipt-chain admission for unchanged production bank/provider gates while the independent Down fixture changes; no weakened global qualification.",
-    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/expert-bank-scoped-reuse-audit.md",
     "report_budget_bytes": 8192,
     "task_id": "task_7f02c2ded44b",
     "dispatch_id": "ctx_0803fa652f45",
@@ -2600,11 +2596,10 @@
     "worker_ownership_closed": true,
     "launch": "Main-created codex --model gpt-6-luna -c check_for_update_on_startup=false; ready and turn started. The ordinary launcher failed before running the task at its update prompt; that failed terminal was released/closed.",
     "consumer": "Main must complete tests and resolve concrete audit defects before model preparation; no new native or GPU qualification.",
-    "next_review": "After matched Down model-plan admission, retire this completed audit/review/spec/launch transaction output; retain source/tests and this short resolution, not a research-library duplicate.",
+    "next_review": "Closed source-review transaction; current source/tests and frozen model plan carry Main resolution. Reopen only for a concrete changed admission contract.",
     "collector_model_observed": "gpt-6-luna",
     "report_bytes": 7123,
     "report_sha256": "50d6aad20ab3801e17746fbf8437f23c56881a9ba2754917291c78aa7d6b6ac5",
-    "native_review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/expert-bank-scoped-reuse-native-review.json",
     "native_review_sha256": "835853b708c34c6f53e9899218cbb57a135fa51e4a08b617e74814c7aa2041c5",
     "review_digest": "Three original admission gaps: same-source shortcut bypassed complete build/provider identity; prepare did not bind the committed compact/full/original qualification receipt; launch did not recheck fallback receipt/required fixtures. Keep the separate504-sample Down gate unchanged.",
     "worker_lifecycle": "Report written/hash verified, but sandboxed collector could not reach Orca for check/worker_done. Provider turn was done and exact terminal idle. Dispatch explicitly abandoned, no worker success receipt invented. Release retained an unproven identity; Main separately verified its own original terminal incarnation unchanged and closed that exact terminal, ptyKilled=true.",
@@ -2620,6 +2615,49 @@
         9813
       ],
       "limits": "Main fixes tested offline and exact historical receipt reconstructed; no new GPU validation, model speed or native implementation adoption."
+    },
+    "retired_transaction_artifacts": {
+      "manifest_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/closed-research-transactions-20261019.json",
+      "sha256": "55c54d9a78f7380dd6008bd1d7f228e5c4673a64ea2615c21c1ed084f881b248",
+      "files": 16,
+      "bytes": 83528
     }
+  },
+  "xe2_register_spill_collection_scope": {
+    "classification": "knowledge collection",
+    "schedulable_now": false,
+    "status": "orca_collection_running",
+    "question": "Compare Xe2 register pressure, GRF modes, spills and subgroup/workgroup geometry in XMX GEMM and gather-heavy attention; identify compiler/ISA evidence and what register counts cannot establish. Compare primary SYCL/Intel/compiler sources and transferable non-LLM cases, without another roofline/profiler/tiling survey.",
+    "candidate_source": {
+      "commit": "5bbfb6dc8",
+      "source_sha256": {
+        "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp": "84fb1251c2f9f93bd7774fb2a5a6c928df9ac8e86d1c7f6cf1a6cec058403fa6",
+        "src/prefill/sycl/vllm_xe2/native16.cpp": "2a6b9b4532f9be50a2bb697cd120fc31f84d2c200fa5ed81f77d4b5f152af684",
+        "src/kernels/sycl/qsa_bf16_prefix.cpp": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192"
+      }
+    },
+    "prerequisite_evidence": "Independent knowledge collection needs no new metric or device run. Current hardware saturation is unqualified; existing source/ISA ceilings do not identify GRF/spill consequences. No implementation selection implied.",
+    "prior_scopes": [
+      "intel_tile_programming_collection_scope",
+      "resident_ceiling_methods_scope",
+      "moe_native16_traffic_scope",
+      "current_operation_ceiling_scope"
+    ],
+    "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/xe2-register-spill-methods.md",
+    "report_budget": {
+      "target_words": [
+        1200,
+        2000
+      ],
+      "maximum_bytes": 18432
+    },
+    "task_id": "task_30734bfcbf17",
+    "dispatch_id": "ctx_e8e47f6e2ea0",
+    "terminal_handle": "term_529cc5bd-5aeb-4880-990a-50700f58bf16",
+    "run_id": "run_fb41872974e9",
+    "collector_model_observed": "gpt-6-luna",
+    "worker_ownership_closed": false,
+    "consumer": "Native Luna-max review/index only on arrival; Main retrieves relevant sections for a later concrete register/spill question.",
+    "next_review": "After report settlement, native Codex gpt-6-luna max checks novelty/depth/source support and scope eligibility. No steering, GPU work or source edits."
   }
 }
