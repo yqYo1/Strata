@@ -1621,9 +1621,11 @@ is1.684906196. The third process (one worker plus the host) also passed with
 the same work and no fresh fault:651.9 prefill tok/s,8.3 decode tok/s and
 352495.2 decode ms. The fourth process (five workers plus the host) passed with
 the same work and no fresh fault:652.9 prefill tok/s,11.2 decode tok/s and
-260639.1 decode ms. Two processes remain; preserve the five-worker spread and
-wait for all three pairs before the sensitivity decision. This does not isolate
-CPU arithmetic versus RAM limits.
+260639.1 decode ms. The fifth process (five workers plus the host) also passed
+with unchanged work and no fresh fault:652.4 prefill tok/s,10.1 decode tok/s
+and290587.5 decode ms. The final one-worker process and final model digest
+remain; preserve the five-worker spread and wait for all three pairs before the
+sensitivity decision. This does not isolate CPU arithmetic versus RAM limits.
 After PR144 preserved the original controller and result commits on the fork
 default, Main verified closure and useful evidence, recovered the temporary
 native source views from396d0c91f301, and retired187 closed raw/audit files
