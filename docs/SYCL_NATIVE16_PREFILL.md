@@ -1253,11 +1253,19 @@ remains pending; no new model speed or adoption is claimed.
 
 The current source-view build's Down fixture differs from the source45 fixture
 that passed those checks. Its old receipt cannot qualify the new executable.
-After the frozen source-view comparison closes, prepare a fresh committed
+The frozen source-view comparison has closed. Prepare a fresh committed
 current-fixture plan and repeat ownership, traced small and full selected-route
 checks before the three-process selective timing, using the unchanged gate
 above. Keep the original validation and unrun timing status intact. Retain useful
 individual queue/wall samples and checked totals, rather than full parser events.
+The validated a576 engine and its same-build fixtures are hash-checked at
+`known-good-before-selective-down-v1` before reusing the build cache. The old1222
+fallback's9812 original source blobs and recipe were recovered before retirement.
+A bounded lookup of3074 local source files and2307 Git blobs found both old
+controllers and one old source override, but left original source/dependency
+recipe gaps. Six obsolete unqualified native-product payloads were retired;
+their original small receipts and unique source evidence remain separate from
+qualified builds. This is no global-retirement or historical source-recovery claim.
 
 The maintained model controller now provides `prepare|run qsa-long-input-check`
 and `prepare|run qsa-long-input [0|1|2]`. Its prospective screen holds131072

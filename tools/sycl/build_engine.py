@@ -106,6 +106,7 @@ def main():
         boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
         guards.require(ROOT.exists() == rebuild, 'use rebuild only for the closed comparison cache')
         previous = None
+        old = None
         retained_reference = None
         legacy_exception = None
         if rebuild:
@@ -224,8 +225,33 @@ def main():
             record['fixtures'] = {
                 name: dict(path=str(ROOT / 'build' / name), sha256=digest(ROOT / 'build' / name))
                 for name in targets if name != 'strata'}
+            record['binary_origin_source_commit'] = project['revision']
+            if old and old['passed']:
+                old_pins = old['project']['source_sha256']
+                new_pins = project['source_sha256']
+                changed = sorted(name for name in set(old_pins) | set(new_pins)
+                                 if old_pins.get(name) != new_pins.get(name))
+                native_match = (all(name.startswith('tools/sycl/') and name.endswith('.py')
+                                    for name in changed) and
+                    len(dependencies) == len(old['dependencies']) and all(
+                        a['root'] == b['root'] and a['source_sha256'] == b['source_sha256']
+                        for a, b in zip(dependencies, old['dependencies'])) and
+                    all(record[k] == old[k] for k in
+                        ('compiler', 'configure_argv', 'environment', 'recipe_reference',
+                         'compile_database_sha256', 'targets')))
+                binary_match = record['binary']['sha256'] == old['binary']['sha256']
+                fixture_matches = {name: info['sha256'] == old.get('fixtures', {}).get(name, {}).get('sha256')
+                                   for name, info in record['fixtures'].items()}
+                record['previous_output_comparison'] = dict(changed_project_inputs=changed,
+                    native_and_recipe_inputs_match=native_match, engine_bytes_match=binary_match,
+                    fixture_bytes_match=fixture_matches,
+                    controller_only_admission=bool(native_match and binary_match and all(fixture_matches.values())),
+                    interpretation='A real configure/build invocation admits the recorded inputs. Identical output bytes and unchanged native inputs preserve their original source identity; this does not claim fresh compilation or a new speed result.')
+                if native_match and binary_match:
+                    record['binary_origin_source_commit'] = old.get('binary_origin_source_commit', old['source_commit'])
         except BaseException as error:
             record['error'] = str(error)
+            record['passed'] = False
         finally:
             record['ownership_closed'] = owner.active is None and all(supervision.closed(c) for c in owner.commands)
             if not record['ownership_closed']:
