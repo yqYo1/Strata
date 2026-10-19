@@ -807,5 +807,45 @@
     "root_files": 71,
     "root_bytes": 15862191,
     "root_absent": true
+  },
+  "hypothetical_decode_copy_budget": {
+    "kind": "Post-closure static calculation while separate unchanged CPU-capacity cohort runs; not a measurement or a changed original diagnostic.",
+    "source_commit": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
+    "source_basis": [
+      "src/core/expert_source.cpp expert_pool_dispatch_multi and complete-blob P.fetch byte count",
+      "src/program/generate.cpp configured per-layer cache and spec width",
+      "src/core/verify.cpp staging reused between layers; no extra persistent miss-expert cache"
+    ],
+    "model_metadata_sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d",
+    "configuration_reference": {
+      "commit": "27dee49d9e8ed9be126dc6a90b5422434c95daf5",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/decode-cpu-capacity-current.json"
+    },
+    "assumptions": [
+      "Hypothetical future explicit-copy route computes every nonresident target expert on GPU; selected ordinary-Arena offload gate is currently closed.",
+      "At most two resident target experts per layer under the configured 128-slot R4.2g per-layer policy; top10 routing, at least8 nonresident distinct experts in every layer/window.",
+      "Each miss copies its complete packed blob; no persistence of missed weights across layer/window reuse of staging, extra compression, selective projection copy or larger persistent cache.",
+      "Each verify window emits at most4 tokens; assume perfect draft acceptance and identical expert IDs across its rows. Budget is for steady generation serviced by verifier windows; exclude any one-time token emitted by prefill.",
+      "Encoding-only observed upstream x4 ceiling is a conditional payload budget, excluding protocol/shared traffic. The earlier approximate6GB/s value below is illustrative, not a newly verified compatible small-copy result."
+    ],
+    "one_expert_per_layer_sum_bytes": 98227200,
+    "top_k": 10,
+    "resident_experts_per_layer_upper": 2,
+    "maximum_emitted_per_window": 4,
+    "minimum_full_gpu_miss_requested_bytes_per_window": 785817600,
+    "minimum_full_gpu_miss_requested_bytes_per_emitted_token": 196454400.0,
+    "formula": "(10-2) *98227200 /4 =196454400 requested bytes/emitted token",
+    "target_emitted_tokens_per_second": 70,
+    "encoding_budget_reference": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-hardware-profile-current.json",
+      "observed_utc": "2026-10-19T03:44:42.678726+00:00",
+      "bytes_per_second": 7876923076.923078
+    },
+    "conditional_encoding_budget_tokens_per_second": 40.095427116537365,
+    "conditional_6GBps_tokens_per_second": 30.541438623924943,
+    "encoding_budget_bytes_per_emitted_at_target": 112527472.52747254,
+    "conditional_full_gpu_payload_reduction_needed_at_target": 0.42720818404946626,
+    "decision": "Under these assumptions, moving all current misses to GPU alone cannot reach70tok/s even at the optimistic observed encoding budget. Evaluate CPU/GPU sharing, larger resident reuse or wider effective windows; this neither rejects a bounded partial-copy candidate nor proves a hardware bottleneck.",
+    "limits": "Requested-payload model only: not actual unique routes, physical PCIe traffic/bandwidth, arithmetic saturation, a hybrid throughput ceiling, speed gain or quality/adoption evidence. Real acceptance, additional distinct experts and copy/compute overhead can worsen the full-copy case. CPU unchanged-work scaling is unmeasured, so do not add observed CPU tok/s as a physical ceiling. Recompute for a changed cache/window/source-copy architecture."
   }
 }

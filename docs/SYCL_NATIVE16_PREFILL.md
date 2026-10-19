@@ -1617,8 +1617,15 @@ The second process (one worker plus the host) also completed all four warmups,
 with identical fresh input,2931 generated tokens and2105/2481 accepted drafts.
 It measured647.6 prefill tok/s and8.7 decode tok/s, with normal native/benchmark
 closure and no fresh fault. The first one/five per-token decode latency ratio
-is1.684906196. Four independent processes remain; the first pair alone cannot
-decide the frozen three-pair sensitivity gate or CPU arithmetic versus RAM limits.
+is1.684906196. The third process (one worker plus the host) also passed with
+the same work and no fresh fault:651.9 prefill tok/s,8.3 decode tok/s and
+352495.2 decode ms. The fourth process (five workers plus the host) passed with
+the same work and no fresh fault:652.9 prefill tok/s,11.2 decode tok/s and
+260639.1 decode ms. The fifth process (five workers plus the host) also passed
+with unchanged work and no fresh fault:652.4 prefill tok/s,10.1 decode tok/s
+and290587.5 decode ms. The final one-worker process and final model digest
+remain; preserve the five-worker spread and wait for all three pairs before the
+sensitivity decision. This does not isolate CPU arithmetic versus RAM limits.
 After PR144 preserved the original controller and result commits on the fork
 default, Main verified closure and useful evidence, recovered the temporary
 native source views from396d0c91f301, and retired187 closed raw/audit files
@@ -1629,6 +1636,26 @@ arithmetic from RAM limits or prove saturation at the baseline. Small-check
 success establishes neither task quality nor a speed gain. Keep earlier clean
 speeds and all failed comparison gates separate; see
 the [current plan/check](../bench/results/2026-10-15-pr6-recovery-audit/decode-cpu-capacity-current.json).
+A separate original-source audit finds the selected SYCL ordinary Arena provider
+cannot admit nonresident GPU experts through the existing alias/pin gate,
+although SYCL forces explicit mode0 copy. A host-USM FileExpertSource complement
+is a separate conditional route. Before a new copy capability, check every
+enqueue result and require checked retirement or fail-stop with owners alive:
+current fetch ignores submit errors, and a query error is not completion.
+The [reviewed source requirements](../bench/results/2026-10-15-pr6-recovery-audit/research-index.json)
+do not qualify enabling the route or predict a gain.
+
+A conditional complete-blob copy budget also constrains that candidate.
+With at most2 resident experts per layer, top10 routing and at most4 emitted
+tokens/window, even identical routes and perfect acceptance require at least
+`(10-2)*98227200/4=196454400` requested miss bytes per emitted token if all misses
+go to GPU. At the observed upstream encoding-only7.877GB/s budget this corresponds
+to40.095tok/s; illustrative6GB/s gives30.541tok/s. This optimistic scenario is
+below70tok/s, so full miss offload alone under this placement cannot supply
+the target. CPU/GPU sharing, larger resident reuse and wider effective windows
+remain distinct possibilities. The [calculation](../bench/results/2026-10-15-pr6-recovery-audit/client-resources-current.json)
+records its assumptions; it is neither measured wire traffic nor a hybrid
+throughput ceiling, and unchanged-work CPU scaling is not established.
 Actual unprivileged perf `cycles` and `task-clock` command probes at`dea283917`
 both exited1 with the access-limited diagnostic under`perf_event_paranoid=4`.
 This preserves the earlier VTune ptrace refusal as a separate result; no host
