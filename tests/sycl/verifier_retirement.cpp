@@ -78,12 +78,12 @@ struct VerifierRetirementTestAccess {
                 throw std::runtime_error("early test graph finalization");
             target.push_back(exec);
         };
-        if (cudaStreamBeginCapture(v.cs_, cudaStreamCaptureModeRelaxed) != cudaSuccess)
+        if (cudaStreamBeginCapture(v.cs_, cudaStreamCaptureModeThreadLocal) != cudaSuccess)
             throw std::runtime_error("early resident capture");
         // Models resident work sharing the copied kernel's queue/scratch.
         v.cs_->single_task([=] { result[bytes] = uint8_t(0x3c); });
         finalize(v.work_[1]);
-        if (cudaStreamBeginCapture(v.cs_, cudaStreamCaptureModeRelaxed) != cudaSuccess)
+        if (cudaStreamBeginCapture(v.cs_, cudaStreamCaptureModeThreadLocal) != cudaSuccess)
             throw std::runtime_error("early copied capture");
         auto* stage = v.staging_;
         v.cs_->parallel_for(sycl::range<1>(bytes/sizeof(uint32_t)), [=](sycl::id<1> i) {
