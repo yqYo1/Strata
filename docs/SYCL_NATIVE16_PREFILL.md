@@ -1602,7 +1602,10 @@ mechanism reduces subgroup dependency/exchange work, with unchanged PCIe
 payload. Source`bba952e33` compiled successfully. The initial traced small check passed
 both two-case numerical fixtures and the small timing-fixture sanity check,
 including state-span rejection checks, with normal closure and no fresh fault.
-Full boundary validation and clean speed remain unrun.
+Both full11-case numerical fixtures subsequently passed, including the
+physical262144 addressing cases, with normal ownership closure and no fresh
+fault. Clean speed remains unrun; physical-context model qualification is
+separate from these component checks.
 The a576 validated engine/fixtures remain the fallback while the new native
 build uses the existing comparison cache. Commands are
 `build_engine.py rebuild-parallel-sum`, followed by
