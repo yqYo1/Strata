@@ -252,7 +252,11 @@ class ExpertBankReuseTests(unittest.TestCase):
     def test_same_revision_rebuilt_receipt_cannot_substitute_for_original(self):
         original = copy.deepcopy(self.old); historical = compact_build_record(original)
         for key in ('binary', 'compiler', 'configure_argv', 'recipe_reference', 'dependencies'):
-            replaced = copy.deepcopy(original); replaced[key] = {'forged': 'same source revision'}
+            replaced = copy.deepcopy(original)
+            if key == 'dependencies':
+                replaced[key][0]['revision'] = 'different-dependency'
+            else:
+                replaced[key] = {'forged': 'same source revision'}
             with self.subTest(key=key), self.assertRaises((RuntimeError, KeyError, TypeError)):
                 expert_bank_qualified_record(self.qualified(), historical, replaced)
 
