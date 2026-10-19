@@ -4302,7 +4302,6 @@
   "upstream_e88_host_api_review_scope": {
     "classification": "decision support",
     "question": "Map the0.2 host/API compatibility migration and the required shared behavior still missing from this fork.",
-    "source_manifest": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/upstream-e88-review-inputs.json",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/upstream-e88-host-api-report.md",
     "report_budget_bytes": 16384,
     "schedulable_now": false,
@@ -4323,12 +4322,17 @@
       "sha256": "2238c4922862c9cedbf623542faae49850cd5afbc8d7ae33e7a19c24fb63a895",
       "main_read_original_body": false
     },
-    "corrections": "Fork tools/strata_tokenizer.py exists; incremental encoding/PromptEncoder wiring remain missing. Original report used a stale fork revision; source identity comes from the current manifest."
+    "corrections": "Fork tools/strata_tokenizer.py exists; incremental encoding/PromptEncoder wiring remain missing. Original report used a stale fork revision; source identity is pinned by source_reference, with410source inputs restored from Git and11derived bytecode entries excluded.",
+    "source_reference": {
+      "fork_commit": "84e864c577951d5c51d25103c0ba7c1e334b9b4d",
+      "upstream_commit": "e88ee39d1d6be6e3364183af3b39b62a7ed6f211",
+      "restorable_source_files": 410,
+      "derived_bytecode_not_source": 11
+    }
   },
   "upstream_e88_ui_cli_review_scope": {
     "classification": "decision support",
     "question": "Map new application/terminal and installer/launch/benchmark behavior required by the upstream update.",
-    "source_manifest": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/upstream-e88-review-inputs.json",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/upstream-e88-ui-cli-report.md",
     "report_budget_bytes": 16384,
     "schedulable_now": false,
@@ -4349,12 +4353,17 @@
       "sha256": "2238c4922862c9cedbf623542faae49850cd5afbc8d7ae33e7a19c24fb63a895",
       "main_read_original_body": false
     },
-    "corrections": "Desktop/terminal functions are required shared functionality. Shard validation also needs whole_shard() copied-file detection coverage. Configured benchmark-host behavior is an earlier obligation, not a newly introduced e88 feature."
+    "corrections": "Desktop/terminal functions are required shared functionality. Shard validation also needs whole_shard() copied-file detection coverage. Configured benchmark-host behavior is an earlier obligation, not a newly introduced e88 feature.",
+    "source_reference": {
+      "fork_commit": "84e864c577951d5c51d25103c0ba7c1e334b9b4d",
+      "upstream_commit": "e88ee39d1d6be6e3364183af3b39b62a7ed6f211",
+      "restorable_source_files": 410,
+      "derived_bytecode_not_source": 11
+    }
   },
   "upstream_e88_inference_boundaries_review_scope": {
     "classification": "decision support",
     "question": "Select original Niko SYCL/CPU component candidates and trace shared native CLI/protocol obligations without replacing faster fork inference.",
-    "source_manifest": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/upstream-e88-review-inputs.json",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/upstream-e88-inference-boundaries-report.md",
     "report_budget_bytes": 16384,
     "schedulable_now": false,
@@ -4375,12 +4384,17 @@
       "sha256": "f76037e7b855e0ed82498e99e7d40ccf77da53aebc5400069ca0e8126d99c4ee",
       "main_read_original_body": false
     },
-    "corrections": "All370in-scope fork hashes match; the original mismatch claim used stale prior-status hashes. Current Arc entrypoint has no nativeBGEN/BGENI/BSTOP or diskSAVE/RESTORE protocol; snapshot restore calls do not qualify these. ESIMD/TQ provenance remains unresolved; no inference source adopted."
+    "corrections": "All370in-scope fork hashes match; the original mismatch claim used stale prior-status hashes. Current Arc entrypoint has no nativeBGEN/BGENI/BSTOP or diskSAVE/RESTORE protocol; snapshot restore calls do not qualify these. ESIMD/TQ provenance remains unresolved; no inference source adopted.",
+    "source_reference": {
+      "fork_commit": "84e864c577951d5c51d25103c0ba7c1e334b9b4d",
+      "upstream_commit": "e88ee39d1d6be6e3364183af3b39b62a7ed6f211",
+      "restorable_source_files": 410,
+      "derived_bytecode_not_source": 11
+    }
   },
   "neo_profiled_native_query_source_scope": {
     "classification": "decision support",
     "question": "Explain the measured2s raw native query on a profiled event and identify a bounded configuration contrast preserving safety/timing semantics.",
-    "source_manifest": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/native-query-v4-view-inputs.json",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/neo-profiled-native-query-report.md",
     "report_budget_bytes": 12288,
     "schedulable_now": false,
@@ -4415,6 +4429,17 @@
           "evidence": "Commit a separate profiled-compute diagnostic, original control/source proof and immutable per-process environment before execution; current controller/rootv5must not be rerun."
         }
       ]
+    },
+    "source_reference": {
+      "source_commit": "174911063739da076ce8c41713c297c5fc7280a9",
+      "result_commit": "79eb60594a40d4915041d18d53286d3944064aa4",
+      "result_path": "bench/results/2026-10-15-pr6-recovery-audit/native-event-gate-current.json",
+      "source_files": 7
+    },
+    "closed_transaction_retirement": {
+      "result_reference": "native-event-gate-current.json::artifact_retirement",
+      "files": 44,
+      "bytes": 275197
     }
   }
 }
