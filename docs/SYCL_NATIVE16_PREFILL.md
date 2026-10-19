@@ -1375,7 +1375,7 @@ varied-prose generated10805 at9.5/9.5/9.4tok/s. Observed MTP acceptance was
 84.84% and39.98%, confirming the intended strong/weak pair. All owners closed
 normally without fresh GPU faults. The existing reducer recovered114 original
 benchmark inputs and the four-process result chain, excluding the traced check
-from clean statistics. See the [individual samples and limits](../bench/results/2026-10-15-pr6-recovery-audit/decode-long-generation-current.json).
+from clean statistics. See the [clean samples at8fe6b1af6](https://github.com/yqYo1/Strata/blob/8fe6b1af6cd9a7c86411143dfc9f98d9209bc1e8/bench/results/2026-10-15-pr6-recovery-audit/decode-long-generation-current.json).
 This is a baseline, with no measured gain or70tok/s qualification. Logical
 target expert-cache hit rates were2.0% and1.0%; these do not establish physical
 RAM/PCIe traffic or CPU arithmetic as the limiting resource. The next consumer
@@ -1393,9 +1393,21 @@ unwind cases passed with full API trace on the proposed assets at`db11be131`.
 The earlier full-model check hit its64MiB API-trace budget and remains incomplete,
 with no fresh driver fault. Both closed model checks used parameter validation
 and stage progress.
-The next gate is explicit runtime adoption and a committed matched observer-
-overhead plan, followed by long-generation resource attribution. No current-
-runtime throughput or limiting hardware resource is established.
+The same-build provider and six full expert-bank cases then passed on the
+proposed assets at`f5561c265`. The official long-generation CPU observation at
+`26d0f4bd6` completed both workloads:33211/33285 fresh inputs and2931/10805
+generated tokens. All six CPU records matched the four warmup/calibration and
+two long requests, with zero clock/counter errors, normal native/benchmark
+closure and no fresh GPU faults. See the [current diagnostic and two CPU observations](../bench/results/2026-10-15-pr6-recovery-audit/decode-long-generation-current.json).
+Its13.0/7.2tok/s readings include CPU/wall observers and parameter validation;
+they are not clean speed or a matched observer-overhead comparison. Worker CPU
+time includes scheduled memory stalls and pool polling; GPU-reach wall time
+does not isolate device service. No limiting hardware resource is established.
+The next gate is a committed matched observer-overhead plan on this same engine
+and runtime, with explicit runtime-baseline adoption still pending. The shared
+qualified asset hashes remain unchanged. The new single-workload benchmark
+selector permits shorter diagnostic repetitions; it does not replace the required
+strong/weak workload pair for adoption.
 Keep model quality,agent-session,physical262144/session/RESTORE and matched
 no-MTP attribution as separate pending checks.
 
