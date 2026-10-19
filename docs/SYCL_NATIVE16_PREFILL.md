@@ -1368,6 +1368,13 @@ dispatch/work conservation and matched request/configuration identities. See
 Retain selective Down as an opt-in for further qualification. Default adoption,
 broad quality,physical262144/session/RESTORE and sustained70tok/s decode remain
 unqualified;24 output tokens do not establish sustained generation speed.
+The next measurement consumer is an owned `bench.sh --long-generation-only
+--think --runs 1` screen on this selected engine, followed by independent clean
+processes if the workload is eligible. Commit its complete plan and finite
+budgets before launch. Reuse the reviewed current MTP call-chain and context
+gate maps; measure actual acceptance and resource use before selecting a decode
+change. Follow [the benchmark contract](BENCHMARKS.md) for the strong/weak
+classification, answer/output-length gates and required agent-session evidence.
 
 The maintained model controller now provides `prepare|run qsa-long-input-check`
 and `prepare|run qsa-long-input [0|1|2]`. Its prospective screen holds131072
