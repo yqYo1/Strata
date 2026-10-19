@@ -56,7 +56,8 @@ class BenchmarkTest(unittest.TestCase):
                   {"choices": [{"delta": {}, "finish_reason": "length"}],
                    "usage": response()["usage"], "timings": response()["timings"]}]
         wire = b"".join(b"data: " + json.dumps(e).encode() + b"\n\n" for e in events) + b"data: [DONE]\n\n"
-        with patch.object(bench.urllib.request, "urlopen", return_value=io.BytesIO(wire)) as request:
+        with patch.object(bench.urllib.request, "urlopen", return_value=io.BytesIO(wire)) as request, \
+             patch.object(bench.time, "monotonic_ns", side_effect=[10,20,30]):
             raw = bench.chat("http://localhost", "", [{"role": "user", "content": "task"}], lg.MAX_OUTPUT_TOKENS, True,
                              request_overrides={"chat_template_kwargs": {"enable_thinking": True},
                                                 "reasoning_budget_tokens": 0})
@@ -67,6 +68,8 @@ class BenchmarkTest(unittest.TestCase):
         self.assertEqual(raw["reasoning_text"], "thinking")
         self.assertEqual(bench.digest(raw)["generated_tokens"], 1152)
         self.assertTrue(lg.sample_eligibility(raw, bench.digest(raw))["eligible"])
+        self.assertEqual(bench.digest(raw)['client_interval'],dict(request_begin_monotonic_ns=10,
+            first_output_monotonic_ns=20,request_end_monotonic_ns=30))
 
     def test_short_missing_usage_counters_and_truncated_stream_are_ineligible(self):
         for change in ({"usage": {}}, {"done_received": False}, {"finish_reason": "tool_calls"}, {"text": ""}):
