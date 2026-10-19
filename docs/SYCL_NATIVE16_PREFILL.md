@@ -1980,6 +1980,13 @@ checks,2s fallback and all runtime safety settings; require actual1/1/0 profilin
 and in-order queues. Keep the same20x5ms/200ms window and record unsuccessful
 status/latency observations. This single fresh v6 process remains diagnostic,
 with no model, replacement-gate or production configuration qualification.
+Source`44253b63b` built and the new diagnostic failed its unchanged200ms
+window: the gate-held check took4us and the first resident native query took
+1,999,034us, returning SUCCESS. Actual profiling was1/1/0 and all queues were
+in-order. Both calls returned, ownership closed and no fresh fault occurred.
+The override did not avoid the wait; installed key consumption and explicit UR
+counter-event selection remain unverified. Review the original UR event creation
+and native gate scheduling before another configuration or model experiment.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.
