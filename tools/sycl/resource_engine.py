@@ -30,8 +30,14 @@ def source_proof(record):
     receipt = record['source_build_record']
     guards.require(generation.common.digest(receipt['path']) == receipt['sha256'], 'original source receipt changed')
     full = json.loads(Path(receipt['path']).read_text())
-    guards.require(full['source_commit'] == record['build_source_commit'] and
-        full['binary'] == record['binary'], 'original build source/binary differs')
+    reference = record['fallback_reference']
+    raw = generation.git('show', reference['commit'] + ':' + reference['path'])
+    guards.require(hashlib.sha256(raw).hexdigest()==reference['sha256'], 'original fallback reference changed')
+    retained = json.loads(raw)['retained_validation_reference']
+    guards.require(full['source_commit'] == record['build_source_commit'] == retained['source_commit'] and
+        all(full['binary'][k] == record['binary'][k] for k in ('bytes','sha256')) and
+        retained['binary'] == record['binary'] and retained['source_build_record'] == receipt,
+        'original build source/binary or committed relocation differs')
     count = 0
     for source in [full['project'], *full['dependencies']]:
         pins = source['source_sha256']
@@ -63,6 +69,8 @@ def prepare():
         reference=dict(commit=revision, path=path, sha256=hashlib.sha256(raw).hexdigest()),
         binary=old['binary'], build_source_commit=old['build_source_commit'],
         source_build_record=dict(path=str(receipt_path), sha256=old['engine_build_receipts'][str(receipt_path)]),
+        fallback_reference=dict(commit=revision,path=str(generation.common.BUILD.relative_to(P)),
+            sha256=old['engine_build_receipts'][str(generation.common.BUILD)]),
         runtime_asset_delta=old['runtime_asset_delta'], complete=False, passed=False, active=False,
         clean_speed_qualified=False, hardware_bottleneck_qualified=False, model_quality_qualified=False,
         purpose='First bounded passive xe/client CPU collection; measure client generation intervals on the old speed reference.',
