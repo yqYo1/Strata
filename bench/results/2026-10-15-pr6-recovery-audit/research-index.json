@@ -4000,7 +4000,6 @@
     "classification": "decision support",
     "question": "Review early PCIe queue/event and failure ownership contract",
     "source_commit": "d096cffbebb19d5f95c30809c87c31e488e9e28a",
-    "source_view": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/early-pcie-source-d096cffbe",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/early-pcie-events-report.md",
     "report_budget_bytes": 12288,
     "schedulable_now": false,
@@ -4015,7 +4014,7 @@
       }
     ],
     "status": "native_reviewed_workers_and_terminals_closed",
-    "consumer": "Immediate source correction and early-copy component/model qualification; review external source snapshots and transaction output after source commits reach fork default and readers close.",
+    "consumer": "Historical source assessment is recoverable with its exact original Git source; no duplicate source snapshot or completed worker transaction remains. Current qualification uses maintained tests/source.",
     "report_sha256": "d39d8c04fbc35b3d071ba5ac75e41b8b81e8832504c6b3e35c5577703183f313",
     "worker_closed": true,
     "terminal_closed": true,
@@ -4034,13 +4033,18 @@
       "build_or_gpu_execution": true,
       "capture_mode_fix": "246415bfc3f8d68242b067ca49723c23c3e96be7",
       "model_execution": false
+    },
+    "source_reference": {
+      "commit": "d096cffbebb19d5f95c30809c87c31e488e9e28a",
+      "restore": "git show <commit>:<repository-relative-path>",
+      "verified_source_files": 21,
+      "reachable_from_main": "5e8866a12523a007d6a546a1464c89b76a9471d9"
     }
   },
   "early_pcie_projection_fixture_source_scope": {
     "classification": "decision support",
     "question": "Review unchanged copied projections and source fixture coverage",
     "source_commit": "d096cffbebb19d5f95c30809c87c31e488e9e28a",
-    "source_view": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/early-pcie-source-d096cffbe",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261020/early-pcie-projections-report.md",
     "report_budget_bytes": 12288,
     "schedulable_now": false,
@@ -4055,7 +4059,7 @@
       }
     ],
     "status": "native_reviewed_workers_and_terminals_closed",
-    "consumer": "Immediate source correction and early-copy component/model qualification; review external source snapshots and transaction output after source commits reach fork default and readers close.",
+    "consumer": "Historical source assessment is recoverable with its exact original Git source; no duplicate source snapshot or completed worker transaction remains. Current qualification uses maintained tests/source.",
     "report_sha256": "0266f644dd2809e27a31434f089e2867180b04fa37acc3aa7c55a68807551d63",
     "worker_closed": true,
     "terminal_closed": true,
@@ -4065,7 +4069,13 @@
       "sha256": "0337f51defd56a10886d1963691b9d8ec7063294c45fe38f341bbbfe14cc5285",
       "main_read_original_body": false
     },
-    "pending_gate": "Source246415bfc compiled and51 existing same-build cases passed; first new early case failed the finite host-task gate, with no GPU fault and normal closure. Replace the gate under a fresh committed plan and pass all57 before any small/long model execution."
+    "pending_gate": "Source246415bfc compiled and51 existing same-build cases passed; first new early case failed the finite host-task gate, with no GPU fault and normal closure. Replace the gate under a fresh committed plan and pass all57 before any small/long model execution.",
+    "source_reference": {
+      "commit": "d096cffbebb19d5f95c30809c87c31e488e9e28a",
+      "restore": "git show <commit>:<repository-relative-path>",
+      "verified_source_files": 21,
+      "reachable_from_main": "5e8866a12523a007d6a546a1464c89b76a9471d9"
+    }
   },
   "decode_moe_projection_payload_collection_scope": {
     "classification": "knowledge collection",
@@ -4269,11 +4279,24 @@
         "evidence": "Original native-event import passes; closed copy case fails its resident-progress criterion, with exact UR trace/enqueue order and pinned installed runtime identities. Previous reports do not trace this concrete UR EventWait implementation."
       }
     ],
-    "status": "dispatched_read_only_research",
-    "consumer": "Select a source-supported next gate/observation method; preserve failed qualification and all negative assertions. Main owns serialized tests.",
-    "task_id": "task_bab6db1449e3",
-    "dispatch_id": "ctx_3ed5f0a2dc33",
-    "terminal": "term_d2f26270-e550-4acd-8696-20030c617c26",
-    "process_incarnation": "5fe4e8ac-0321-449b-b256-ff777e405f1b::/home/yayoi/orca/workspaces/Strata/sycl@@3c6af2a4:e47dd584-0ef0-4fae-b2df-63ff3d4b3f18"
+    "status": "native_reviewed_workers_and_terminals_closed",
+    "consumer": "Current copy-query diagnostic separates native readiness from host wait latency. Retrieve original report only for a concrete source-mapping question; review after this bounded diagnostic. No model or57-case qualification follows.",
+    "worker_closed": true,
+    "terminal_closed": true,
+    "report_sha256": "68dc18da6d230e78b3e64615df450bb2f3131fa8bbf74743fb85266719517971",
+    "native_review": {
+      "path": ".cache/strata-research/20261020/ur-v2-resident-event-native-review.json",
+      "sha256": "bc331b26c5a92442c4f2d8bf96d786cd83fd480ef0b32d90ccecbc94bb36c1c9",
+      "main_read_original_body": false
+    },
+    "accepted_digest": "Version-aligned official Intel LLVMv7.1.1 UR-v2 waits on the target native event. Installed DSO exact-source mapping remains unverified. Correct post-wait marker does not locate earlier device progress. Diagnose the same resident native event before host wait; do not assume host atomic support or change safety settings."
+  },
+  "closed_source_transaction_retirement": {
+    "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-early-source-and-transactions-20261020.jsonl",
+    "sha256": "81528a70cdc417a827314a490b7d2220ab1b31c0b6cb9004a718845e4333917a",
+    "files": 66,
+    "bytes": 1334625,
+    "complete": true,
+    "scope": "D096 duplicate snapshot plus namespace followup, five closed source/research worker transactions, eight closed build outputs and four successful import outputs. Current reports/manifests/reviews and distinct failed diagnostics remain; no active source input or binary removed."
   }
 }
