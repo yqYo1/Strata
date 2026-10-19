@@ -1917,6 +1917,20 @@ GPU fault. No amount/budget adjustment or retry is admitted from that failure.
 The [current component result](../bench/results/2026-10-15-pr6-recovery-audit/verifier-copy-safety-current.json)
 preserves it. The next mechanism requires a separate bounded native-event
 import/submission/progress/teardown qualification before replacing the gate.
+The next isolated qualification uses `tools/sycl/check_event_gate.py` and the
+manual `sycl_host_event_gate_test` target. Three fresh processes check native
+import only (no dependent command or kernel), then a copy/kernel dependency,
+then command-graph replay. The same selected native context/device owns one
+regular host-visible event, imported with keep ownership and HOST scopes. A
+host signaller is armed before import, with a two-second fallback counted as
+failure. Import and dependent submission each need to return within100ms;
+copy/graph cases require resident/probe progress,50ms pending completion,
+untouched atomic output, explicit release and exact post-release output.
+Cleanup signals and joins before draining consumers, dropping the SYCL wrapper,
+and destroying the native event then its pool. The three tests must pass before
+any separately committed replacement of the six early cases. This test-only
+loader/header dependency is pinned in the build and does not change production
+linkage or runtime safety settings.
 Model execution remains blocked until the complete57-case gate passes.
 After all57 passes, use `tools/sycl/early_pcie.py prepare`, commit the generated
 plan, then `run`: two thinking-template requests with16 generated tokens each,
