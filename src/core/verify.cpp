@@ -255,6 +255,8 @@ bool Verifier::retire_prefill_dense(std::string& err) {
     for(auto& e:exec_) destroy(e);
     for(auto& v:segments_) { for(auto& e:v) destroy(e); v.clear(); }
     for(auto& v:work_) { for(auto& e:v) destroy(e); v.clear(); }
+    for(auto& v:pcie_work_) { for(auto& e:v) destroy(e); v.clear(); }
+    pcie_launched_=false;pcie_copy_recorded_=false;pcie_status_=cudaSuccess;
     work_launched_=false; work_status_=cudaSuccess; reached_.store(0);
     // wait_commit completed. commit_exec_ contains state copies only.
     return true;
@@ -330,6 +332,8 @@ bool Verifier::retire_prefill_head(const NativeHead& head,std::string& err) {
     for(auto& e:exec_)destroy(e);
     for(auto& v:segments_){for(auto& e:v)destroy(e);v.clear();}
     for(auto& v:work_){for(auto& e:v)destroy(e);v.clear();}
+    for(auto& v:pcie_work_){for(auto& e:v)destroy(e);v.clear();}
+    pcie_launched_=false;pcie_copy_recorded_=false;pcie_status_=cudaSuccess;
     work_launched_=false;work_status_=cudaSuccess;reached_.store(0);
     // commit_exec_ contains only state commit operations, no output head. Its
     // event has completed; keeping it avoids destroying session-owned storage.
@@ -358,6 +362,9 @@ Verifier::~Verifier() {
         for(auto e:exec_)if(e)checked(cudaGraphExecDestroy(e));
         for(auto& window:segments_)for(auto e:window)if(e)checked(cudaGraphExecDestroy(e));
         for(auto& window:work_)for(auto e:window)if(e)checked(cudaGraphExecDestroy(e));
+        for(auto& window:pcie_work_)for(auto e:window)if(e)checked(cudaGraphExecDestroy(e));
+        if(pcie_copy_ready_)checked(cudaEventDestroy(pcie_copy_ready_));
+        if(pcie_done_)checked(cudaEventDestroy(pcie_done_));
         if(commit_exec_)checked(cudaGraphExecDestroy(commit_exec_));
         if(layer_done_)checked(cudaEventDestroy(layer_done_));
         if(work_done_)checked(cudaEventDestroy(work_done_));
@@ -378,6 +385,10 @@ Verifier::~Verifier() {
         for (auto e : window) cudaGraphExecDestroy(e);
     for (auto& window : work_)
         for (auto e : window) cudaGraphExecDestroy(e);
+    for (auto& window : pcie_work_)
+        for (auto e : window) if (e) cudaGraphExecDestroy(e);
+    if (pcie_copy_ready_) cudaEventDestroy(pcie_copy_ready_);
+    if (pcie_done_) cudaEventDestroy(pcie_done_);
     if (layer_done_) cudaEventDestroy(layer_done_);
     if (work_done_) cudaEventDestroy(work_done_);
 #endif
@@ -584,6 +595,24 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
 #ifdef STRATA_ENABLE_SYCL
     const char* overlap = std::getenv("STRATA_SYCL_VERIFY_OVERLAP");
     overlap_gpu_ = overlap == nullptr || std::strcmp(overlap, "0") != 0;
+    const char* early = std::getenv("STRATA_SYCL_VERIFY_PCIE_EARLY");
+    early_pcie_ = early && std::strcmp(early, "1") == 0;
+    const char* audit = std::getenv("STRATA_SYCL_VERIFY_PCIE_EARLY_AUDIT");
+    early_pcie_audit_ = audit && std::strcmp(audit, "1") == 0;
+    if (early_pcie_) {
+        if (!overlap_gpu_ || !sink_.host_layer_copy || !strata::kernels::cpu::expert_layout().native ||
+            sink_.pcie_mode != 0) {
+            err = "verify: early PCIe requires native ordinary-Arena copies and shared/hit overlap";
+            return false;
+        }
+        if (cudaEventCreateWithFlags(&pcie_copy_ready_, cudaEventDisableTiming) != cudaSuccess ||
+            cudaEventCreateWithFlags(&pcie_done_, cudaEventDisableTiming) != cudaSuccess) {
+            err = "verify: early PCIe event create failed";
+            return false;
+        }
+        std::fprintf(stderr, "strata verify: early PCIe expert graph enabled mode=0 audit=%d\n",
+                     int(early_pcie_audit_));
+    }
     if (cudaEventCreateWithFlags(&layer_done_, cudaEventDisableTiming) != cudaSuccess ||
         cudaEventCreateWithFlags(&work_done_, cudaEventDisableTiming) != cudaSuccess) {
         err = "verify: layer completion event create failed";
@@ -1049,6 +1078,9 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
             wait_flag_ge(m_flagB_, ring, cs);                 // the PCIe share is in staging (DMA) or mapped
 #endif
         }
+#ifdef STRATA_ENABLE_SYCL
+        if (!early_pcie_) {
+#endif
         if (sink_.pcie_mode == 2) {                            // stage it with a copy kernel, then point at staging
             const int64_t per = G == 2 ? kStagingBlobs / 2 : kStagingBlobs;
             uint8_t* stage = staging_ + (size_t) (grp * per) * lay.max_blob;
@@ -1060,6 +1092,9 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
         // pcie_frac 0), so its launch is kPcieGroupRows block rows striding over the groups, not cap of them
         grouped(p_ptr2, p_start2, p_counts + 2, kPcieGroupRows);
         stamp(l, 22, grp);
+#ifdef STRATA_ENABLE_SYCL
+        }
+#endif
         if (device_plan_) {   // no CPU share when the device planned the group: its rows are zeros
             wait_flag_ge_or(m_flag_, ring, skip_ + grp, cs);
             copy_or_zero_from_mapped(parts_ + (size_t) tb * K * N, m_ymiss_ + (size_t) tb * K * N, (long long) n * K * N,
@@ -1115,7 +1150,18 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
                 const int64_t capx = (int64_t) max_t_ * K;
                 const int64_t ptr_off = ((4 + (capx + 1) + 2 * capx) + 1) & ~1ll;
                 project_group(l, grp, (const unsigned long long*) (pl + ptr_off), pl + 4, pl);
-                if (!end_segment(T, err, true)) return false;
+                if (!end_segment(T, err, SegmentKind::resident)) return false;
+                if (early_pcie_) {
+                    if (begin_verify_capture(cs, T) != cudaSuccess) {
+                        err = "verify: begin PCIe expert capture failed";
+                        return false;
+                    }
+                    // The same projection and scratch as post(), serialized
+                    // behind resident work on cs_. Only its enqueue moves.
+                    project_group(l, grp, (const unsigned long long*) (pl + ptr_off) + capx,
+                                  pl + ptr_off + 4 * capx, pl + 2, kPcieGroupRows);
+                    if (!end_segment(T, err, SegmentKind::pcie)) return false;
+                }
             }
             if (begin_verify_capture(cs, T) != cudaSuccess) {
                 err = "verify: begin layer segment capture failed";
@@ -1198,7 +1244,7 @@ std::string Verifier::profile_report() {
 }
 
 #ifdef STRATA_ENABLE_SYCL
-bool Verifier::end_segment(int T, std::string& err, bool work) {
+bool Verifier::end_segment(int T, std::string& err, SegmentKind kind) {
     cudaGraph_t graph = nullptr;
     const cudaError_t ce = cudaStreamEndCapture(cs_, &graph);
     if (ce != cudaSuccess) {
@@ -1215,7 +1261,9 @@ bool Verifier::end_segment(int T, std::string& err, bool work) {
         err = std::string("verify: instantiate segment: ") + cudaGetErrorString(ie);
         return false;
     }
-    (work ? work_[T] : segments_[T]).push_back(exec);
+    auto& target = kind == SegmentKind::pcie ? pcie_work_[T] :
+                   kind == SegmentKind::resident ? work_[T] : segments_[T];
+    target.push_back(exec);
     return true;
 }
 #endif
@@ -1242,6 +1290,10 @@ bool Verifier::capture(int T, std::string& err) try {
         segments_[T].clear();
         for (auto e : work_[T]) cudaGraphExecDestroy(e);
         work_[T].clear();
+        for (auto e : pcie_work_[T])
+            if (cudaGraphExecDestroy(e) != cudaSuccess)
+                strata::sycl_backend::cleanup_fail_stop("verify incomplete PCIe capture retirement");
+        pcie_work_[T].clear();
         return false;
     }
     std::fprintf(stderr, "strata verify: captured the %d-token window in %zu event-completed segments\n",
@@ -1520,6 +1572,9 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
         work_status_ = cudaSuccess;
         copy_submit_status_ = cudaSuccess;
         pending_copy_blobs_ = pending_copy_bytes_ = 0;
+        pcie_launched_ = false;
+        pcie_copy_recorded_ = false;
+        pcie_status_ = cudaSuccess;
 #endif
         const int tb = gtb[grp], n = gte[grp] - gtb[grp];
         progress_at("verify window: the CPU experts of layer", l);
@@ -1532,6 +1587,12 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
             if (status == cudaSuccess) ++work_ready_at_pool_return;
             else if (status == cudaErrorNotReady) ++work_pending_at_pool_return;
             else work_status_ = status;
+        }
+        if (early_pcie_audit_ && pcie_launched_ && pcie_status_ == cudaSuccess) {
+            const auto status = cudaEventQuery(pcie_done_);
+            if (status == cudaSuccess) ++early_pcie_stats_.ready_at_pool_return;
+            else if (status == cudaErrorNotReady) ++early_pcie_stats_.pending_at_pool_return;
+            else pcie_status_ = status;
         }
 #endif
         VDBG("layer %lld served\n", (long long) l);
@@ -1562,6 +1623,13 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
         // DMA callbacks and staging sources must finish before the next graph
         // consumes them or the next CPU layer can reuse its transient storage.
         if (!finish_expert_copies(err)) return false;
+        if (early_pcie_ && sink_.counts[2] > 0 && !pcie_launched_ && pcie_status_ == cudaSuccess)
+            pcie_status_ = cudaErrorInvalidValue;
+        if (pcie_status_ != cudaSuccess) {
+            err = std::string("verify: early PCIe launch: ") + cudaGetErrorString(pcie_status_) +
+                  released_note(release_gpu_waits(5000));
+            return false;
+        }
         if (work_status_ != cudaSuccess) {
             err = std::string("verify: shared/hit launch: ") + cudaGetErrorString(work_status_) +
                   released_note(release_gpu_waits(5000));
@@ -1722,6 +1790,9 @@ void Verifier::fetch_dma(void* ctx, const uint8_t* const* src, int n, size_t byt
     if (v->copy_submit_status_ != cudaSuccess) return;
     auto invalid = [&] { v->copy_submit_status_ = cudaErrorInvalidValue; };
     if (n < 0 || n > v->sink_.staging_cap || n > kStagingBlobs) { invalid(); return; }
+    if (v->early_pcie_ && (!v->sink_.counts || n != v->sink_.counts[2] || v->pcie_launched_)) {
+        invalid(); return;
+    }
     if (n == 0) return; // Even an empty batch publishes only after a checked drain.
     if (!src || !bytes || !v->copy_ || !v->staging_ || !v->staging_blob_bytes_ ||
         v->staging_blob_bytes_ > std::numeric_limits<size_t>::max() / kStagingBlobs ||
@@ -1742,6 +1813,11 @@ void Verifier::fetch_dma(void* ctx, const uint8_t* const* src, int n, size_t byt
         v->copy_stats_.submitted_bytes += bytes;
         ++v->pending_copy_blobs_;
         v->pending_copy_bytes_ += bytes;
+    }
+    if (v->early_pcie_) {
+        v->pcie_status_ = cudaEventRecord(v->pcie_copy_ready_, v->copy_);
+        v->pcie_copy_recorded_ = v->pcie_status_ == cudaSuccess;
+        if (v->pcie_copy_recorded_) v->launch_pcie(n);
     }
     // SYCL's next segment is gated by finish_expert_copies(), not a GPU spin
     // on flag B. Do not queue a host task borrowing an embedded FlagSet.
@@ -1788,6 +1864,32 @@ void Verifier::publish_plan(void* ctx) {
 }
 
 #ifdef STRATA_ENABLE_SYCL
+void Verifier::launch_pcie(int groups) {
+    const size_t index = cur_layer_.load();
+    if (!early_pcie_ || released_.load() || pcie_launched_ || !pcie_copy_recorded_ ||
+        !pcie_copy_ready_ || !pcie_done_ || !sink_.counts || groups <= 0 ||
+        groups > sink_.staging_cap || groups != sink_.counts[2] ||
+        last_t_ < 1 || last_t_ > max_t_ || last_t_ > strata::kernels::kVerifyMaxT || index >= pcie_work_[last_t_].size() ||
+        !work_launched_ || work_status_ != cudaSuccess) {
+        pcie_status_ = cudaErrorInvalidValue;
+        return;
+    }
+    // Record on copy_ precedes this call. Snapshot that event outside capture:
+    // no future event, host-task wait or device spin is added to either graph.
+    // cs_ orders resident then copied expert kernels sharing hit_scratch_.
+    pcie_status_ = cudaStreamWaitEvent(cs_, pcie_copy_ready_);
+    if (pcie_status_ != cudaSuccess) return;
+    pcie_status_ = strata::sycl_backend::compat::graph_launch_with_completion(
+        pcie_work_[last_t_][index], cs_, pcie_done_);
+    if (pcie_status_ == cudaSuccess) {
+        pcie_launched_ = true;
+        ++early_pcie_stats_.launches;
+        early_pcie_stats_.groups += static_cast<uint64_t>(groups);
+        const auto status = cudaEventQuery(pcie_done_); // flush before CPU experts
+        if (status != cudaSuccess && status != cudaErrorNotReady) pcie_status_ = status;
+    }
+}
+
 void Verifier::launch_work() {
     const size_t index = cur_layer_.load();
     if (released_.load() || work_launched_ || last_t_ < 1 || last_t_ > max_t_ ||

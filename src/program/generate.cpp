@@ -6327,6 +6327,7 @@ int main(int argc, char** argv) {
             const char* finish = "length";
 #ifdef STRATA_ENABLE_SYCL
             const auto copy0 = ver.expert_copy_stats();
+            const auto early_pcie0 = ver.early_pcie_stats();
             const auto host_copy_groups0 = drive.d.host_layer_copy_groups;
 #endif
             const Clock::time_point d0 = Clock::now();
@@ -6635,6 +6636,15 @@ int main(int argc, char** argv) {
                          (long long)(drive.d.pcie_experts-ds0.pcie),
                          (long long)(drive.d.multi_misses-ds0.misses),
                          (long long)(drive.d.multi_entries-ds0.entries));
+            if (ver.early_pcie_enabled()) {
+                const auto early = ver.early_pcie_stats();
+                std::fprintf(stderr, "strata serve: SYCL_PCIE_EARLY launches=%llu groups=%llu "
+                                     "ready_at_pool_return=%llu pending_at_pool_return=%llu\n",
+                             (unsigned long long)(early.launches-early_pcie0.launches),
+                             (unsigned long long)(early.groups-early_pcie0.groups),
+                             (unsigned long long)(early.ready_at_pool_return-early_pcie0.ready_at_pool_return),
+                             (unsigned long long)(early.pending_at_pool_return-early_pcie0.pending_at_pool_return));
+            }
 #endif
             // the VRAM share of the experts the pool looked up while decoding;
             // experts sent over PCIe for the GPU (--pcie-frac) are in neither count
