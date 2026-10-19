@@ -4031,15 +4031,15 @@
   "cpu_observer_overhead_methods_scope": {
     "classification": "decision support",
     "schedulable_now": false,
-    "status": "native_reviewed_isolated_region_calibration_selected",
+    "status": "isolated_calibration_passed_production_variation_unresolved",
     "prerequisite_evidence": "Current long CPU check passed with1.19million worker jobs in regular-code and6.99million in varied-prose; per-job thread CPU clocks and whole-thread accounting are present. Overhead is unknown. This question does not require CPU-critical-path evidence.",
     "novelty": "Compare clock-read calibration, whole-observer perturbation, amortized burst accounting and stratified sampling; exclude existing clock/source audits and expert-kernel optimization.",
     "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/cpu-observer-overhead-methods.md",
     "maximum_report_bytes": 20480,
     "collector_model_observed": "gpt-6-luna",
     "worker_ownership_closed": true,
-    "consumer": "Main's next bounded CPU-only clock/counter calibration; preserve raw batches and disabled controls, with separate one/six-thread cases. No model speedup or hardware saturation follows from the microbenchmark.",
-    "next_review": "After the isolated calibration decides whether changing per-job accounting is warranted. Retire this report if no further concrete method is selected.",
+    "consumer": "Reference for the pending independent source/interpretation audit and any later accounting change; isolated region cost does not qualify production perturbation.",
+    "next_review": "After independent calibration review and the same-runtime observer-off old/new engine comparison. Retire report/code transaction artifacts when these consumers end.",
     "report_bytes": 14023,
     "report_sha256": "3461c92a3b784de5642f52e028f3403d5e29d747fbef3e06549accdf503c583a",
     "operational_digest": "The frozen six-process observer comparison failed its original overhead gate; off samples also vary and one pair reverses. Select only an isolated same-API CPU-region/control calibration as decomposition. Do not apply the report's2% proposal, infer production read-path/cost or use a constant throughput correction.",
@@ -4102,6 +4102,457 @@
         "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
         "/usr/lib/x86_64-linux-gnu/libm.so.6": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
         "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da"
+      }
+    },
+    "isolated_region_calibration": {
+      "source_commit": "227869de9743a53be76d2dbb13734ef9389b80de",
+      "source_sha256": {
+        "include/strata/core/cpu_clock.hpp": "6ce276314635c0b4adfa7ec507e5cb3134387240a408172c7fd1f611e4069bdf",
+        "tools/sycl/cpu_clock_calibration.cpp": "81a116d44b6eb9798ade8176bad214220acd2da793b4b7dea10449c4811fc0b3",
+        "tools/sycl/check_decode_cpu.py": "4875fa2dc9b063d7947ae4632a5e0c2954d5fb4dfef8856115ff0faa594800eb",
+        "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+        "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8"
+      },
+      "samples": [
+        {
+          "sequence": 0,
+          "enabled": false,
+          "threads": 1,
+          "jobs_per_thread": 500000,
+          "body_steps": 256,
+          "wall_ns": 122567137,
+          "errors": 0,
+          "thread_cpu_ns": [
+            122254853
+          ],
+          "region_cpu_ns": [
+            0
+          ],
+          "region_calls": [
+            0
+          ],
+          "checksum": [
+            12683599479743569939
+          ]
+        },
+        {
+          "sequence": 0,
+          "enabled": false,
+          "threads": 6,
+          "jobs_per_thread": 500000,
+          "body_steps": 256,
+          "wall_ns": 119342106,
+          "errors": 0,
+          "thread_cpu_ns": [
+            117957466,
+            117040978,
+            118828720,
+            118516583,
+            118296341,
+            118175094
+          ],
+          "region_cpu_ns": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "region_calls": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "checksum": [
+            12683599479743569939,
+            12190331669382848532,
+            11697063859022127125,
+            11203796048661405718,
+            10710528238300684311,
+            10217260427939962904
+          ]
+        },
+        {
+          "sequence": 1,
+          "enabled": true,
+          "threads": 6,
+          "jobs_per_thread": 500000,
+          "body_steps": 256,
+          "wall_ns": 721257985,
+          "errors": 0,
+          "thread_cpu_ns": [
+            718832595,
+            712053878,
+            701529142,
+            704615121,
+            689668741,
+            699876653
+          ],
+          "region_cpu_ns": [
+            416055461,
+            411670127,
+            405236211,
+            407392721,
+            397999577,
+            403026340
+          ],
+          "region_calls": [
+            500000,
+            500000,
+            500000,
+            500000,
+            500000,
+            500000
+          ],
+          "checksum": [
+            12683599479743569939,
+            12190331669382848532,
+            11697063859022127125,
+            11203796048661405718,
+            10710528238300684311,
+            10217260427939962904
+          ]
+        },
+        {
+          "sequence": 1,
+          "enabled": true,
+          "threads": 1,
+          "jobs_per_thread": 500000,
+          "body_steps": 256,
+          "wall_ns": 678325038,
+          "errors": 0,
+          "thread_cpu_ns": [
+            677848888
+          ],
+          "region_cpu_ns": [
+            392235268
+          ],
+          "region_calls": [
+            500000
+          ],
+          "checksum": [
+            12683599479743569939
+          ]
+        },
+        {
+          "sequence": 2,
+          "enabled": true,
+          "threads": 1,
+          "jobs_per_thread": 500000,
+          "body_steps": 256,
+          "wall_ns": 684427266,
+          "errors": 0,
+          "thread_cpu_ns": [
+            683713001
+          ],
+          "region_cpu_ns": [
+            395093168
+          ],
+          "region_calls": [
+            500000
+          ],
+          "checksum": [
+            12683599479743569939
+          ]
+        },
+        {
+          "sequence": 2,
+          "enabled": true,
+          "threads": 6,
+          "jobs_per_thread": 500000,
+          "body_steps": 256,
+          "wall_ns": 722974927,
+          "errors": 0,
+          "thread_cpu_ns": [
+            700624355,
+            721147790,
+            718456911,
+            694591900,
+            703791464,
+            712275663
+          ],
+          "region_cpu_ns": [
+            402379452,
+            413847816,
+            412199016,
+            402055746,
+            407426548,
+            412113412
+          ],
+          "region_calls": [
+            500000,
+            500000,
+            500000,
+            500000,
+            500000,
+            500000
+          ],
+          "checksum": [
+            12683599479743569939,
+            12190331669382848532,
+            11697063859022127125,
+            11203796048661405718,
+            10710528238300684311,
+            10217260427939962904
+          ]
+        },
+        {
+          "sequence": 3,
+          "enabled": false,
+          "threads": 6,
+          "jobs_per_thread": 500000,
+          "body_steps": 256,
+          "wall_ns": 123709818,
+          "errors": 0,
+          "thread_cpu_ns": [
+            123641265,
+            118955388,
+            118441444,
+            118439890,
+            117869132,
+            118218566
+          ],
+          "region_cpu_ns": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "region_calls": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "checksum": [
+            12683599479743569939,
+            12190331669382848532,
+            11697063859022127125,
+            11203796048661405718,
+            10710528238300684311,
+            10217260427939962904
+          ]
+        },
+        {
+          "sequence": 3,
+          "enabled": false,
+          "threads": 1,
+          "jobs_per_thread": 500000,
+          "body_steps": 256,
+          "wall_ns": 112234094,
+          "errors": 0,
+          "thread_cpu_ns": [
+            112206052
+          ],
+          "region_cpu_ns": [
+            0
+          ],
+          "region_calls": [
+            0
+          ],
+          "checksum": [
+            12683599479743569939
+          ]
+        },
+        {
+          "sequence": 4,
+          "enabled": false,
+          "threads": 1,
+          "jobs_per_thread": 500000,
+          "body_steps": 256,
+          "wall_ns": 118089147,
+          "errors": 0,
+          "thread_cpu_ns": [
+            118080768
+          ],
+          "region_cpu_ns": [
+            0
+          ],
+          "region_calls": [
+            0
+          ],
+          "checksum": [
+            12683599479743569939
+          ]
+        },
+        {
+          "sequence": 4,
+          "enabled": false,
+          "threads": 6,
+          "jobs_per_thread": 500000,
+          "body_steps": 256,
+          "wall_ns": 126236505,
+          "errors": 0,
+          "thread_cpu_ns": [
+            122644996,
+            119101852,
+            119876506,
+            118507328,
+            118906596,
+            126196615
+          ],
+          "region_cpu_ns": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "region_calls": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "checksum": [
+            12683599479743569939,
+            12190331669382848532,
+            11697063859022127125,
+            11203796048661405718,
+            10710528238300684311,
+            10217260427939962904
+          ]
+        },
+        {
+          "sequence": 5,
+          "enabled": true,
+          "threads": 6,
+          "jobs_per_thread": 500000,
+          "body_steps": 256,
+          "wall_ns": 718602134,
+          "errors": 0,
+          "thread_cpu_ns": [
+            717396562,
+            717057887,
+            704746502,
+            702257954,
+            699597867,
+            695668057
+          ],
+          "region_cpu_ns": [
+            414798200,
+            414367107,
+            407498905,
+            406152945,
+            403177625,
+            401059963
+          ],
+          "region_calls": [
+            500000,
+            500000,
+            500000,
+            500000,
+            500000,
+            500000
+          ],
+          "checksum": [
+            12683599479743569939,
+            12190331669382848532,
+            11697063859022127125,
+            11203796048661405718,
+            10710528238300684311,
+            10217260427939962904
+          ]
+        },
+        {
+          "sequence": 5,
+          "enabled": true,
+          "threads": 1,
+          "jobs_per_thread": 500000,
+          "body_steps": 256,
+          "wall_ns": 676434258,
+          "errors": 0,
+          "thread_cpu_ns": [
+            676075382
+          ],
+          "region_cpu_ns": [
+            390767636
+          ],
+          "region_calls": [
+            500000
+          ],
+          "checksum": [
+            12683599479743569939
+          ]
+        }
+      ],
+      "kernel": "7.0.0-38-generic",
+      "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "complete": true,
+      "passed": true,
+      "GPU_executed": false,
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-region-calibration-v1/cpu_clock_calibration",
+        "sha256": "fef5d9ea7d6ba59b7a52b339901aed8e35b18f5a6f8cb81e06747e5cb05e5c7b"
+      },
+      "summary": {
+        "cases": {
+          "1": {
+            "paired_wall_ratios": [
+              5.534314128590602,
+              6.098211707397932,
+              5.72816617940343
+            ],
+            "paired_CPU_ns_per_region": [
+              1111.18807,
+              1143.013898,
+              1115.989228
+            ],
+            "paired_wall_ns_per_region": [
+              1111.515802,
+              1144.386344,
+              1116.690222
+            ],
+            "median_CPU_ns_per_region": 1115.989228,
+            "CPU_ns_per_region_sample_sd": 17.157443645229947
+          },
+          "6": {
+            "paired_wall_ratios": [
+              6.043617036555396,
+              5.844119235548467,
+              5.692506569316063
+            ],
+            "paired_CPU_ns_per_region": [
+              1172.5869826666667,
+              1178.4407993333334,
+              1170.4969786666666
+            ],
+            "paired_wall_ns_per_region": [
+              200.63862633333332,
+              199.75503633333332,
+              197.45520966666666
+            ],
+            "median_CPU_ns_per_region": 1172.5869826666667,
+            "CPU_ns_per_region_sample_sd": 4.117838694248983
+          }
+        },
+        "eligible": true,
+        "production_overhead_qualified": false,
+        "hardware_bottleneck_qualified": false,
+        "limits": "Same CpuTimeRegion API around fixed integer work; difference includes both clock reads, counter/exception bookkeeping, control-flow and scheduling/frequency variation. No pure clock-read latency, production overhead, linear-scaling bound or inference speedup. Six-thread wall differences are parallel batch costs, not additive CPU time."
+      },
+      "ownership_closed": true,
+      "accounting_rewrite_selected": false,
+      "evidence_tests": {
+        "source_commit": "227869de9",
+        "command": [
+          "python3",
+          "-B",
+          "tools/test_benchmark_evidence.py"
+        ],
+        "passed": 17,
+        "GPU_executed": false
       }
     }
   },
