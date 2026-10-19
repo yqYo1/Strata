@@ -252,7 +252,8 @@ def prepare(mode, cohort, root):
     config = dict(reference['config'])
     flags = list(config['args'])
     flags[flags.index('--expert-profile') + 1] = str(root / 'expert-profile.bin')
-    config.update(exe=build['binary']['path'], args=flags, log=str(root / 'engine.stderr'), env={})
+    guards.require(config['exe'] == str(P / 'tools/sycl/engine_once.py'), 'preserve one-launch ownership wrapper')
+    config.update(args=flags, log=str(root / 'engine.stderr'), env={})
     config_path = root / 'config.json'
     config_path.write_text(json.dumps(config, indent=2) + '\n')
     import socket
