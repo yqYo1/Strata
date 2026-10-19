@@ -1569,6 +1569,11 @@ counter capability check failed. No permission setting changed. Keep physical
 PCIe traffic unknown and do not repeat the same probe under unchanged access;
 the [compact denial result](../bench/results/2026-10-15-pr6-recovery-audit/sysman-pcie-capability-current.json)
 preserves its source, actual assets, command and outcome.
+After PR141 made the original source/results default-reachable, Main verified
+the closed captures, probe recipe/assets and original hashes, then retired85
+raw/transaction files totalling15929917 bytes. Both closed raw roots are absent.
+The consumed probe source/mode is retired to`dc4acc8f8`; the selected engine
+and its five same-build fixtures remain. This changes no original outcome.
 
 A static audit of the actual3304-byte`native_experts.txt` found Down weights
 IQ4_NL in39 layers and Q2_0 in9, with no IQ3_S Down. Gate/up uses17 IQ3_XXS,
