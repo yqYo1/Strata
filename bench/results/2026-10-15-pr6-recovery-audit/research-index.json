@@ -3051,7 +3051,7 @@
   "zen3_small_multirow_mtp_kernel_methods_collection_scope": {
     "classification": "knowledge collection",
     "question": "For quantized MoE on Zen3 AVX2, compare useful CPU kernels specifically at the single-row matvec versus small multirow MTP target-verification boundary. How do row batching, within-batch weight decode reuse, cache blocking and worker-pool scaling interact, and which designs plausibly transfer to Strata? State evidence needed before a local test.",
-    "status": "report_received_native_review_running",
+    "status": "reviewed_conditional_reference_not_implemented",
     "schedulable_now": false,
     "source_revision": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
     "policy_revision": "5d694d0b9",
@@ -3084,31 +3084,34 @@
       ]
     ],
     "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/zen3-small-multirow-mtp-kernel-methods.md",
-    "report_budget": {
-      "target_words": [
-        1400,
-        2200
-      ],
-      "maximum_bytes": 22528
-    },
     "realistic_consumer": "After qualifying long-generation CPU/provider attribution, retrieve kernel-specific sections before selecting a bounded CPU-path experiment.",
-    "next_review": "Native Codex gpt-6-luna max review on completion; Main reads only the digest and retrieves relevant sections if CPU expert compute is selected. Prune if no decision uses it.",
-    "task_id": "task_e853875053e8",
-    "dispatch_id": "ctx_c0f2f858625f",
-    "run_id": "run_fb41872974e9",
-    "terminal_handle": "term_8f9fd0f2-c84d-4f32-9136-1fcd12c813b3",
-    "terminal_incarnation": "1380d906-4983-4512-8b5e-8555accc9d27",
+    "next_review": "Closure of live long-generation CPU/provider attribution, before choosing a CPU experiment.",
     "collector_model_observed": "gpt-6-luna",
     "worker_ownership_closed": true,
-    "scope_corrections": [
-      "Cache128 is the total target-cache slot count distributed across layers, not128 slots per layer.",
-      "--no-token-graph does not disable every verifier graph family; startup captures1/4 were logged.",
-      "--spec4 alone does not establish a draft count; derive actual window/draft parameters from their own fields."
-    ],
-    "limits": "Method collection only; actual CPU/provider/cache traffic, long-generation acceptance and limiting resource are not yet attributed. Main does not read the report body on arrival; native Luna-max reviews it first.",
+    "limits": "Conditional method reference only. CPU critical-path attribution, throughput gain, numerical/task qualification and implementation adoption remain unestablished. Main read only the short native review metadata.",
     "report_bytes": 11339,
     "report_sha256": "05eac6cf752d15198da3778e10126e6dc2195616f96f20b152f60d38e2843413",
     "native_review_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/zen3-small-multirow-mtp-native-review.json",
-    "worker_closure": "Succeeded worker_done matched exact Task/Dispatch; report bytes/hash verified without Main reading body. Release retained external process; Main verified original terminal incarnation and idle, then closed exact handle with ptyKilled=true."
+    "worker_closure": "Succeeded; report identity verified; original external terminal closed; delivery acknowledged. No active collector remains.",
+    "native_review_sha256": "b094230786b88497ac2a90f84116198e07de492e17f8c95dd226140cc8038218",
+    "native_review_bytes": 8585,
+    "operational_digest": "Keep as a substantive, nonduplicative conditional reference. Retrieve kernel and worker sections only if live long-generation attribution puts CPU expert math on the critical path. Source confirms per-dispatch expert-ID grouping and AVX2 multi-token IQ3_S gate/up. Production IQ3_S down still uses per-token ggml vec_dot, but a generic AVX2 multi-token row helper already handles IQ3_S and is exercised by native_expert_parity: the gap is production dispatch and down-shape qualification, not a missing kernel. No bottleneck, throughput gain or adoption is established. Correct the down exceptions and make row-volume claims depend on actual H/FF dimensions.",
+    "review_corrections": [
+      "IQ3_S down has an existing multi-token iq256_rows() helper exercised by native_expert_parity; production dispatch and down-shape qualification are missing, not the primitive. Down exceptions are IQ4_NL by default and opt-in Q5_1/Q8_0 via STRATA_KQ256.",
+      "Down/GU row-volume comparisons require actual H/FF. Resolve the pinned IQ3_S vec_dot callee before using the general quants.c citation to explain fallback."
+    ],
+    "retrieval": {
+      "sections": [
+        "Findings from the pinned Strata source",
+        "Comparable method families",
+        "Worker scaling, traffic, and evidence for a later test"
+      ],
+      "trigger": "Qualified long-generation attribution selects CPU expert math on the critical path.",
+      "retirement": "At attribution closure, prune the report/index row unless CPU expert compute is selected."
+    },
+    "next_scope_eligibility": {
+      "schedulable_now": false,
+      "prerequisite": "Actual long-generation CPU critical-path attribution; no follow-on scope is currently justified."
+    }
   }
 }
