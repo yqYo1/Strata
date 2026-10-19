@@ -1859,6 +1859,12 @@ After the frozen screen closes and source review, require the existing51 gates
 plus the new real-queue early-enqueue fixture: ordinary host copies, resident-to-
 copied scratch ordering, payload/output/outer guards, empty input, maximum copy
 extent, fresh-event replay, and refusal of mismatched or unrecorded inputs.
+The separate `sycl_verifier_retirement_test --early` entry has six cases:
+small,16 largest blobs, empty, fresh-event replay, mismatched plan and unrecorded
+event. It uses production publication/fetch/launch/retirement with guarded device
+payloads and a resident-produced dependency byte. It proves queue/owner behavior,
+not native projection math or production overlap; retain the existing16 native
+projection cases. These new cases are source only until Main executes them.
 Run a small traced check and parameter-validated model check before clean speed.
 The model check needs32K+ fresh input,1024+ thinking-plus-answer tokens, positive
 actual early launches/groups matching completed copies, normal ownership and no
