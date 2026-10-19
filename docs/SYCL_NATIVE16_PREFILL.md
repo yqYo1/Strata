@@ -1937,6 +1937,12 @@ gate-status check consumed that interval. No raw status/time sample exists to
 resolve this yet. The child closed, boot was unchanged and no fresh GPU fault
 was recorded. A new observation needs separate call timings; this failed run
 must not be relabelled as a device fault or a qualified gate.
+The next v4 observation adds flushed begin/end timestamps around the existing
+gate-held checks and resident native queries, plus a window summary printed
+before the failure check. Enqueue order, native call count,20x5ms observation,
+200ms window,2s fallback and safety settings stay unchanged. Keep per-call
+counts/maxima and the last window even on failure. These text observers can
+change timing and provide no throughput or gate qualification.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.

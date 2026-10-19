@@ -12,7 +12,7 @@ import measurement_guards as guards
 import measurement_owner as supervision
 from check_verifier_retirement import DELTA, P, B, A, SETTINGS, digest
 
-ROOT=B/'native-event-gate-v3'
+ROOT=B/'native-event-gate-v4'
 RESULT=A/'native-event-gate-current.json'
 BUILD=A/'native-gdn-engine-build.json'
 
@@ -47,7 +47,8 @@ def main():
         guards.require(not ROOT.exists(),'inspect existing qualification; no automatic retry')
         previous=committed(RESULT)
         guards.require(previous['ownership_closed'] and not previous['active'] and not previous['passed'] and
-            previous.get('first_failed_case')=='copy','closed original copy failure required')
+            previous.get('first_failed_case')=='copy-query' and previous.get('qualification_eligible') is False,
+            'closed previous native query diagnostic failure required')
         previous_reference=dict(commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip(),
             path=str(RESULT.relative_to(P)),sha256=digest(RESULT))
         settings=committed(SETTINGS)
@@ -66,7 +67,7 @@ def main():
             per_case_budgets=dict(wall_seconds=30,cpu_seconds=60,rss_bytes=1<<30,text_bytes=64<<20,total_bytes=64<<20),
             runtime_asset_delta={n:dict(qualified_sha256=v[0],candidate_sha256=v[1]) for n,v in DELTA.items()},
             complete=False,passed=False,active=False,cases=[],model_executed=False,model_quality_qualified=False,
-            consumer='Separate native event completion from host EventWait latency under the unchanged enqueue order and safety settings. Native-handle retrieval may flush/materialize an event: this is diagnostic evidence, not unchanged-work speed or replacement-gate qualification. Preserve original v1/v2 failures; no model execution.',
+            consumer='Identify the v3 bounded-window failure using flushed begin/end observations around each existing gate-held/native-resident status query, without extra native calls or changed enqueue order/bounds/safety settings. Record the aggregate window even on failure. Native-handle retrieval and text observers may affect timing; this diagnostic never qualifies the replacement gate or model route. Preserve previous failures.',
             gate='One fresh copy-query process. Arm a2s fallback before import. Import/dependent submits/native-handle materialization each within100ms. Query the resident native event at most20 times5ms apart while gate is held, with a200ms observation cap. If unready, release gate before SYCL event wait; if ready, wait with gate held. Record exact branch, wait time, gate state and post-wait marker; check payload and all owner drains. Never read the marker before checked completion. Diagnostic cannot qualify a model or57-case replacement gate even if it passes.',
             limits='Test-only runtime progress observation. No qualification of the replacement gate, production projection math, physical wire traffic, model correctness, overlap gain or throughput.')
         runtime_unchanged()
@@ -86,6 +87,19 @@ def main():
                 entry,out,err=owner.run(mode,[record['fixture']['path'],mode],env,P,
                     wall=30,cpu=60,rss_cap=1<<30,text_cap=64<<20,file_cap=64<<20,total_cap=64<<20)
                 stdout,stderr=out.read_text(errors='replace'),err.read_text(errors='replace')
+                starts=re.findall(r'^event_gate_call phase=begin name=([a-z-]+) index=(\d+) offset_us=(\d+)$',stdout,re.M)
+                ends=re.findall(r'^event_gate_call phase=end name=([a-z-]+) index=(\d+) offset_us=(\d+) elapsed_us=(\d+) result=(\d+)$',stdout,re.M)
+                windows=re.findall(r'^event_gate_window query_us=(\d+) queries=(\d+) native_ready=(\d+)$',stdout,re.M)
+                if starts or ends or windows:
+                    calls=[dict(name=n,index=int(i),offset_us=int(o),elapsed_us=int(e),result=int(r)) for n,i,o,e,r in ends]
+                    summary={name:dict(completed=sum(c['name']==name for c in calls),
+                        max_us=max(c['elapsed_us'] for c in calls if c['name']==name),
+                        last_result=next(c['result'] for c in reversed(calls) if c['name']==name))
+                        for name in sorted({c['name'] for c in calls})}
+                    record['query_call_observation']=dict(started=len(starts),completed=len(ends),by_call=summary,
+                        longest=max(calls,key=lambda c:c['elapsed_us']) if calls else None,
+                        window=dict(zip(('query_us','queries','native_ready'),map(int,windows[0]))) if len(windows)==1 else None,
+                        stdout_sha256=digest(out),stderr_sha256=digest(err))
                 observed=re.findall(r'^event_gate_resident value=(\d+) held=(\d+) wait_us=(\d+) submit_us=(\d+)$',stdout,re.M)
                 if observed:
                     guards.require(len(observed)==1,'ambiguous resident diagnostic')

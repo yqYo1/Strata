@@ -1,15 +1,16 @@
 {
   "schema": "strata-upstream-status-v3",
-  "queried_utc": "2026-10-17T21:18:59.594534+00:00",
+  "queried_utc": "2026-10-19T21:24:52.909428+00:00",
   "sole_upstream": "Niko1221/Strata",
   "skill": ".claude/skills/strata-upstream-sync/SKILL.md",
   "previous_observation": {
-    "revision": "256399b2493b9cefc900d72dbb6a0b1f599120d4",
-    "path": "bench/results/2026-10-15-pr6-recovery-audit/upstream-observed-20261016-v1.json",
-    "observed_sha": "296b59d2f73c8f04a805df29c2fa97655adace78",
-    "queried_utc": "2026-10-16T01:12:02.319531+00:00"
+    "revision": "84e864c577951d5c51d25103c0ba7c1e334b9b4d",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/upstream-status.json",
+    "observed_sha": "477ac13cbe8e582c20484871ce459d20d82df09d",
+    "queried_utc": "2026-10-17T21:18:59.594534+00:00",
+    "sha256": "4992eecdad91822d7650763bf7a2389e9a4ee64b8a8bcfba9b64aa3168d3f2f8"
   },
-  "observed_sha": "477ac13cbe8e582c20484871ce459d20d82df09d",
+  "observed_sha": "e88ee39d1d6be6e3364183af3b39b62a7ed6f211",
   "changed_since_previous_observation": true,
   "source_fetched": true,
   "fetch_command": [
@@ -20,24 +21,24 @@
     "refs/heads/main:refs/remotes/origin/main"
   ],
   "remote_check": [
-    "477ac13cbe8e582c20484871ce459d20d82df09d\tHEAD",
-    "477ac13cbe8e582c20484871ce459d20d82df09d\trefs/heads/main"
+    "e88ee39d1d6be6e3364183af3b39b62a7ed6f211\tHEAD",
+    "e88ee39d1d6be6e3364183af3b39b62a7ed6f211\trefs/heads/main"
   ],
   "new_interval": {
-    "commits": 264,
-    "changed_paths": 267,
-    "shortstat": "267 files changed, 30785 insertions(+), 1289 deletions(-)"
+    "commits": 789,
+    "changed_paths": 1284,
+    "shortstat": "1284 files changed, 220159 insertions(+), 3181 deletions(-)"
   },
   "integrated_upstream_target": "7695859aa13afb248bdb4d36f9b2e95707db079d",
   "unmodified_upstream_performance_evaluation_complete": false,
   "whole_function_ledger_complete": false,
   "required_function_port_complete": false,
   "new_inference_components_adopted": [],
-  "current_engine_source_commit": "a8aa3345dc095894f45ce5559a4fe640adca290d",
-  "current_engine_sha256": "1e7bf1cb5a7a8ec9b91e46bedbc2d7b7de3f0f7cbddbeeddecee80461a688b26",
+  "current_engine_source_commit": "172b9f1e96e6bf290793cd22555d27e1fdf76eea",
+  "current_engine_sha256": "1c84da96dfcbcb35efaaef8ce4bccc1d078f58bc36e697dd82b3485fcdab6d11",
   "current_engine_changed_by_check": false,
-  "next_check_utc": "2026-10-19T21:18:59.594534+00:00",
-  "pending": "Close the current independent GDN qualification, then evaluate the unchanged upstream target with tuned settings and official bench.sh; enumerate mandatory non-inference/CLI functions and select inference changes per component. Previous296b59d2 obligations remain pending; fetch/history retention is not integration.",
+  "next_check_utc": "2026-10-21T21:24:52.909428+00:00",
+  "pending": "Review the new477ac13c..e88ee39d interval and the existing7695859..477ac13c obligations. Port required non-inference functionality; select inference per component and prefill/decode separately. Unmodified hardware-tuned upstream official-bench performance remains unmeasured; current diagnostic does not qualify a model or complete synchronization.",
   "legacy_upstream_clone_root": "Divergent checkout left untouched; fetch updates origin/main only. No root checkout, reset, commit or pull performed.",
   "function_review": {
     "fork_revision": "21ad950a4cde54f57ab5f78d9318cca57631df91",
@@ -247,5 +248,12 @@
       "optional_inference": "CPU pool affinity and prefill-pipe scheduling require separate component measurements and native capability; short2048/8192 calibration reads do not qualify long-input adoption.",
       "license_gate": "Niko-only source evidence; check applicable per-file licensing before copying source/tests. No XeStrata source."
     }
+  },
+  "validated_reference_source_commit": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
+  "unmodified_evaluation_source": {
+    "root": "/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/eval-upstream-e88ee39d",
+    "revision": "e88ee39d1d6be6e3364183af3b39b62a7ed6f211",
+    "modified": false,
+    "consumer": "Current read-only functionality/component review and next unchanged upstream benchmark after closing the native-gate comparison cache; no upstream build generation exists yet."
   }
 }
