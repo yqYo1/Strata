@@ -1969,9 +1969,17 @@ marker/payload. All41 observed calls started and returned. This is evidence of
 profiling-dependent native-query latency in the small fixture; no resident
 completion was observed during the held interval. It does not qualify the
 replacement gate, production queues, model performance or physical context.
-The next source/configuration decision is whether original NEO/UR offers a
-supported way to retain profiling without the implicit counter-event timestamp
-wait. Verify installed support before committing a separate bounded diagnostic.
+The next bounded diagnostic restores the original profiled compute queue and
+sets `EnableImplicitConvertionToCounterBasedEvents=0` before native exec. The
+original NEO26.31.39395.14 registry documents the key and the actual pinned
+installed DSO contains its exact name; neither proves effective consumption or
+the installed DSO's exact source mapping. Compare with the committed profiled
+v4 control, rather than attributing the difference from unprofiled v5 solely to
+the key. A new `copy-query-profiled` mode preserves enqueue order, observers,
+checks,2s fallback and all runtime safety settings; require actual1/1/0 profiling
+and in-order queues. Keep the same20x5ms/200ms window and record unsuccessful
+status/latency observations. This single fresh v6 process remains diagnostic,
+with no model, replacement-gate or production configuration qualification.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.

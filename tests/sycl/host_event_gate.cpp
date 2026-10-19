@@ -18,9 +18,10 @@ void require_pending(const sycl::event& event) {
 
 int main(int argc,char** argv) {
     try {
-        event_need(argc==2,"usage: sycl_host_event_gate_test import|copy|graph|copy-query");
+        event_need(argc==2,"usage: sycl_host_event_gate_test import|copy|graph|copy-query|copy-query-profiled");
         const std::string mode=argv[1];
-        event_need(mode=="import" || mode=="copy" || mode=="graph" || mode=="copy-query","unknown native event gate case");
+        const bool query=mode=="copy-query" || mode=="copy-query-profiled";
+        event_need(mode=="import" || mode=="copy" || mode=="graph" || query,"unknown native event gate case");
         auto runtime=strata::sycl_backend::runtime_for();
         if(mode=="import") {
             // First qualification creates/imports only: no dependent command,
@@ -38,10 +39,11 @@ int main(int argc,char** argv) {
                 import_us,pending_us);
             return 0;
         }
-        // Only the query diagnostic changes compute profiling. Original
-        // import/copy/graph qualification modes retain their queue properties.
+        // copy-query is the unprofiled contrast; copy-query-profiled restores
+        // the original profiled control for an isolated process-environment test.
+        // Original import/copy/graph modes retain their queue properties.
         auto copy=runtime->make_queue(true), compute=runtime->make_queue(mode!="copy-query"), probe=runtime->make_queue(false);
-        if(mode=="copy-query") {
+        if(query) {
             const bool ordered=copy.has_property<sycl::property::queue::in_order>() &&
                 compute.has_property<sycl::property::queue::in_order>() &&
                 probe.has_property<sycl::property::queue::in_order>();
@@ -94,7 +96,7 @@ int main(int argc,char** argv) {
             else done=compute.single_task(kernel);
             submit_us=micros(begin);
             event_need(submit_us<=100000 && gate.held(),"native dependent submit exceeded100ms or timer expired");
-            if(mode=="copy-query") {
+            if(query) {
                 // Diagnostic only: query the earlier event without reading its
                 // non-atomic host payload or changing the production queue flags.
                 const auto handle_begin=Clock::now();
