@@ -442,5 +442,54 @@
   },
   "gate": "One process;1280 actual slots; two thinking-template requests8194/257 with16 generated tokens each. Positive tail loans at distinct chunks/offsets; GPU residency equals host after each lend/refill; full resident payload including unlent prefix equals immutable RAM; same slots restored; configured MTP detach/restore once; G1/T4 reached; no protocol/runtime/fresh-driver fault; source/model/runtime/boot unchanged. No retry.",
   "limits": "Diagnostic admission only. Readback audit adds work; no clean speed, task quality, hardware saturation, full physical262144/session/RESTORE or70tok/s qualification.",
-  "consumer": "Prerequisite for matched owned/borrowed capacity and32K+ long-generation comparisons. Retire successful raw output after compact evidence is committed."
+  "consumer": "Prerequisite for matched owned/borrowed capacity and32K+ long-generation comparisons. Retire successful raw output after compact evidence is committed.",
+  "native_identity": {
+    "pid": 1752865,
+    "start_ticks": 80166478,
+    "sid": 1752865
+  },
+  "native_ready": true,
+  "exit_code": -15,
+  "error": "owned command failed",
+  "error_excerpt": "rata mtp: draft layer loaded, 834 MiB of VRAM (experts 675, dense 111), files read in 3.24 s (242 MiB/s)\nstrata generate: GPU 0: Intel(R) Arc(TM) B570 Graphics (SYCL)\nstrata generate: expert arena read through the file cache (buffered (not Windows))\nstrata generate: expert arena: mlock failed (raise ulimit -l); SYCL ordinary host arena; MAP_HUGETLB unavailable (needed 23983 2 MiB pages, vm.nr_hugepages=0); using 4 KB pages\nstrata generate: loaded 46.84 GiB at 1.13 GiB/s\nstrata trace: 3764 MiB free after the weights, the session and the drafter\nstrata generate: experimental native Q5_K head, 521472000 bytes\nstrata generate: expert cache 1280 slots, 2.46 GiB of VRAM; policy is\nstrata trace: 750 MiB free after opening the expert cache\nstrata generate: SYCL cached experts use native Q8_1 arithmetic; logits can differ from CPU experts.\n                 R4.2g PER-LAYER: each layer owns 26 slots (0..25).\nstrata trace: 750 MiB free after the profile fill\nstrata generate: pre-filled 1280 of 1280 slots from the profile; slot 0 verified\nstrata generate: native GPU hit kernels captured at session setup\nstrata trace: 736 MiB free after the R4 hit path\nstrata generate: R4 hit path ON - resident experts are computed on the GPU\nstrata generate: 5 expert-pool workers + the host thread\nstrata trace: 736 MiB free after the expert cache and the graphs\nstrata generate: session is up (engine 0.1.38)\nstrata generate: token graph hit path: 1280 resident experts, decided on the device\nstrata serve: the prompt path borrows 1115 CUDA0 cache slots (2.16 GiB)\n[native16-route] engine=bf16 backend=vllm tile=auto(T<128:compact;else:wide) aot=bmg-g21-a0 isolated=1 experimental\n[native16-gu] fusion=large min_rows=2334\n[native16-down] fusion=large min_rows=2334\nstrata prefill: FP16 MoE compact requested=1 effective=1, chunk=8192, scratch rows=8192, accounted=2311569920, shared region=1180698624 bytes\nstrata trace: 736 MiB free after the head and the prompt path\nstrata verify: window up to 4 tokens, 63.3 MiB of device buffers\nstrata mtp: draft head over 106299 tokens (212.9 MiB)\nstrata trace: 455 MiB free after the verifier and the drafter's binding\nstrata serve: 455 MiB of VRAM free with everything loaded\nstrata trace: request 8194 0\nstrata trace: prompt start 8193 -1\nstrata loan audit: phase=layout chunk=8192 first=165 slots=1280 bytes=2320512000 need=2319958528 lent=1115 mask_match=1\nstrata loan audit: phase=lend table_entries=24576 table_match=1 free_bytes=477712384 total_bytes=10666115072\nstrata trace: lent 1115 slots for 8192 tokens in 0.9 ms\nstrata prefill dense: phase=retired residency=Full activations=0 full_bytes=2116951040 bank_bytes=50918400 snapshot_bytes=2116951040 overlay_rows=0 session_recapture=0 verifier=1 free_bytes=311631872 total_bytes=10666115072\nstrata prefill dense: phase=bank residency=Bank activations=0 full_bytes=2116951040 bank_bytes=50918400 snapshot_bytes=2116951040 overlay_rows=0 session_recapture=0 verifier=1 free_bytes=3932884992 total_bytes=10666115072\nstrata mtp: prompt expert phase=before-detach free_bytes=3932884992 total_bytes=10666115072\nstrata mtp: prompt expert phase=after-detach free_bytes=4640677888 total_bytes=10666115072\nstrata prefill: GDN columns=4 workgroups=192 lanes=128 epilogue=GPU_FP32_same_order scratch=existing_y\nstrata mtp: prompt expert phase=after-prompt-before-restore free_bytes=4640677888 total_bytes=10666115072\nstrata mtp: expert source original=0 bytes=707788800 source=owned-RAM\nstrata mtp: experts restored bytes=707788800, cumulative detach=0.371 ms reload=123.581 ms decode graph recapture=0.000 ms (lazy, later captures accumulate)\nstrata mtp: prompt expert phase=after-restore free_bytes=3930517504 total_bytes=10666115072\nstrata prefill dense: phase=restored residency=Full activations=0 full_bytes=2116951040 bank_bytes=50918400 snapshot_bytes=2116951040 overlay_rows=0 session_recapture=0 verifier=1 free_bytes=475271168 total_bytes=10666115072\nstrata trace: read 8193 tokens (batched) in 1076.0 ms\nstrata serve: prefill mixed scratch: requires mode10 native16, owned chunk8192 scratch and one queue\n",
+  "ownership_closed": false,
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  },
+  "failure_mechanism": "Existing layer_major.inc mixed-scratch guard requires owned allocations; current m.borrowed=true is refused before prefill math. No outputs or refill/decode qualification.",
+  "allocation_and_first_loan": {
+    "cache_slots": 1280,
+    "cache_bytes": 2639104000,
+    "chunk": 8192,
+    "first_slot": 165,
+    "loan_bytes": 2320512000,
+    "required_bytes": 2319958528,
+    "lent_slots": 1115,
+    "table_entries": 24576,
+    "device_map_matches_host": true,
+    "free_bytes": 477712384,
+    "total_bytes": 10666115072
+  },
+  "post_run_process_closure": {
+    "verified": true,
+    "direct_child_reaped": true,
+    "session_empty": true,
+    "survivors": 0,
+    "original_controller_ownership_closed": false,
+    "reason": "Owner aborted on the native ERR protocol, sent TERM/KILL to its exact owned process and reaped it. observation_complete stayed false. Preserve original failed closure/validation status; subsequent pinned-identity reads show no live owner."
+  },
+  "native_failure": {
+    "error": "RuntimeError('ERR prefill mixed scratch: requires mode10 native16, owned chunk8192 scratch and one queue')",
+    "exit_code": -15,
+    "stderr_sha256": "dc7e81ef595959c2180f4062d207c8eba92f350364ccf0f4a375dd2ec0e4aa29",
+    "stdout_sha256": "7aa4878415309971861608c9d4f587f1c234e9533a01b918fed4a6bbd73c7735"
+  },
+  "next_action": "Audit and represent borrowed scratch bounds/lifetime so mode10/mixed/staged-bank fast prefill can be preserved. Do not silently disable it or reuse this closed root. New committed source/components/plan required before another model check."
 }

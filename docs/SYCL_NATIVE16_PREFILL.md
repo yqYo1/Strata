@@ -2096,8 +2096,21 @@ commit its plan before `run`. It requires positive loans at two distinct
 rounded chunks/offsets, exact GPU maps and full resident payload agreement,
 same-slot refill, G1/T4 decode and configured MTP expert detach/restore. The
 readback audit is diagnostic work, not clean speed or a quality benchmark.
-Actual admission and CPU-math/RAM/GPU resource attribution remain unknown;
-physical262144/session/RESTORE and clean speed remain separate gates.
+The v1 check allocated1280 slots/2639104000bytes (about2.458GiB), and lent
+1115 slots from165 for chunk8192:2320512000bytes available versus2319958528
+required. The24576-entry device map matched the host, with477712384bytes free.
+It then refused before prefill math: `layer_major.inc` requires owned scratch
+for the mode10 mixed accumulator. No generated token, refill/payload check or
+decode qualification resulted. The supervisor terminated/reaped the exact
+owned child on ERR; its original `ownership_closed=false`/incomplete validation
+remain recorded, with separate confirmed process closure, no fresh driver fault
+and unchanged boot. This was a configuration guard refusal, not a GPU hang.
+Main missed this guard in the first preflight. Do not disable the fast mixed
+scratch/staged-bank path merely to obtain an admission pass: inspect its direct
+allocation assumptions and introduce checked borrower bounds/lifetime before a
+new component/model plan. The original v1 root is closed and cannot be retried.
+CPU-math/RAM/GPU resource attribution remains unknown; physical262144/session/
+RESTORE, model quality and clean speed remain separate gates.
 Only a later qualified mechanism permits a
 fresh complete51+6-case plan. Preserve all pending-completion,
 untouched-output, payload/guard and owner-lifetime requirements under that plan.
