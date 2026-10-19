@@ -29,6 +29,8 @@ SETTINGS = common.SETTINGS
 WORKLOAD_ID = 'native16_decode_long_20261019'
 RESEARCH = A / 'research-index.json'
 OVERHEAD_ARMS = ('off', 'on', 'on', 'off', 'off', 'on')
+ENGINE_ARMS = ('old', 'new', 'new', 'old', 'old', 'new')
+OBSERVER_KEYS = ('UR_ENABLE_LAYERS', 'STRATA_TRACE', 'STRATA_DECODE_CPU_PROFILE', 'STRATA_DECODE_TIMING')
 
 
 def overhead_plan():
@@ -38,6 +40,44 @@ def overhead_plan():
         maximum_acceptance_delta=.02, minimum_strong_acceptance=.60,
         scope='Complete CPU/wall/parameter-validation observer bundle, same engine/runtime. '
               'Single-workload diagnostic; no strong/weak adoption, hardware saturation or70tok/s qualification.')
+
+
+def engine_plan():
+    plan = overhead_plan()
+    plan.update(arms=list(ENGINE_ARMS),
+        scope='Observer-off retained old/new engine comparison on the same proposed runtime; '
+              'regular-code only. No runtime adoption, hardware bottleneck, strong/weak or70tok/s qualification.')
+    return plan
+
+
+def engine_comparison_builds(build, reference, delta):
+    """Bind the retained fallback to original source, recipe and runtime checks."""
+    old = build['retained_validation_reference']
+    receipt = old['source_build_record']
+    guards.require(common.digest(receipt['path']) == receipt['sha256'], 'fallback build receipt changed')
+    full = json.loads(Path(receipt['path']).read_text())
+    guards.require(full['source_commit'] == old['source_commit'] and full['binary']['sha256'] == old['binary']['sha256'] and
+        reference['binary']['sha256'] == old['binary']['sha256'], 'fallback source/binary identity differs')
+    recovered = 0
+    for source in [full['project'], *full['dependencies']]:
+        pins = source['source_sha256']
+        actual = {n: hashlib.sha256(data).hexdigest() for n, data in
+                  blobs(Path(source['root']), source['revision'], list(pins))}
+        guards.require(actual == pins, 'original fallback source cannot be recovered')
+        recovered += len(actual)
+    recipe = full['recipe_reference']
+    guards.require(git('show', full['source_commit'] + ':' + recipe['path']) == (P / recipe['path']).read_bytes() and
+        common.digest(P / recipe['path']) == recipe['sha256'], 'original fallback recipe differs')
+    scope = committed(RESEARCH)['current_decode_mtp_verifier_reuse_source_audit']['cpu_observer_source_audit']
+    smoke = scope['runtime_reference']
+    guards.require(smoke['complete'] and smoke['passed'] and smoke['ownership_closed'] and
+        smoke['binary'] == old['binary'] and smoke['runtime_asset_delta'] == delta,
+        'old engine lacks bounded qualification on the same proposed runtime')
+    for item in (old['binary'], build['binary']):
+        guards.require(common.digest(item['path']) == item['sha256'], 'comparison executable changed')
+    return dict(old=dict(binary=old['binary'], build_source_commit=old['source_commit']),
+                new=dict(binary=build['binary'], build_source_commit=build['source_commit'])), {
+                    receipt['path']: receipt['sha256']}, recovered
 
 
 def git(*args):
@@ -157,7 +197,7 @@ def cpu_check_qualification(build):
 
 def runtime_assets_unchanged(record):
     delta = record.get('runtime_asset_delta', {})
-    guards.require(not delta or record['mode'] in ('cpu-check', 'cpu-overhead'), 'proposed runtime is diagnostic-only')
+    guards.require(not delta or record['mode'] in ('cpu-check', 'cpu-overhead', 'engine-compare'), 'proposed runtime is diagnostic-only')
     settings = json.loads(SETTINGS.read_text())
     guards.require(set(delta) <= set(settings['runtime_elfs']), 'unknown proposed runtime asset')
     for name, item in settings['runtime_elfs'].items():
@@ -213,7 +253,19 @@ def prepare(mode, cohort, root):
         summary['prefill1000_target_passed'], 'selected prefill cohort must close first')
     previous = committed(RESULT) if RESULT.exists() else None
     cpu_check, overhead = mode == 'cpu-check', mode == 'cpu-overhead'
+    comparison = mode == 'engine-compare'
     observed = cpu_check or (overhead and OVERHEAD_ARMS[cohort] == 'on')
+    if comparison:
+        guards.require(previous and previous['complete'] and previous['passed'] and
+            previous['ownership_closed'] and not previous['active'], 'close preceding process first')
+        if cohort == 0:
+            guards.require(previous['mode'] == 'cpu-overhead' and previous['cohort'] == 5 and
+                'observer_overhead_summary' in previous and
+                committed(RESEARCH)['cpu_observer_overhead_methods_scope']['status'] ==
+                'closed_isolated_calibration_no_accounting_rewrite', 'close original overhead decision/calibration first')
+        else:
+            guards.require(previous['mode'] == mode and previous['cohort'] == cohort - 1 and
+                previous['engine_comparison_plan'] == engine_plan(), 'wrong engine comparison order/plan')
     if overhead:
         guards.require(previous and previous['complete'] and previous['passed'] and
             previous['ownership_closed'] and not previous['active'], 'close the preceding observation/process first')
@@ -235,7 +287,7 @@ def prepare(mode, cohort, root):
             previous['cohort'] == (0 if cohort == 0 else cohort - 1),
             'a completed eligible check/preceding clean process is required')
     build, build_receipts = common.committed_engine_build()
-    if cpu_check or overhead:
+    if cpu_check or overhead or comparison:
         delta, proof = cpu_check_qualification(build)
     else:
         guards.require(build['binary'] == reference['binary'], 'selected engine changed')
@@ -243,8 +295,12 @@ def prepare(mode, cohort, root):
         proof = common.expert_bank_build_proof(component['gpu'], build)
     committed(SETTINGS)
     qualifications = {str(SETTINGS): common.digest(SETTINGS)}
-    if cpu_check or overhead:
+    if cpu_check or overhead or comparison:
         qualifications[str(RESEARCH)] = common.digest(RESEARCH)
+    comparison_builds, recovered = None, None
+    if comparison:
+        comparison_builds, old_receipts, recovered = engine_comparison_builds(build, reference, delta)
+        build_receipts.update(old_receipts)
     for key in ('ordered_exp_qualification', 'gu_qualification', 'mixed_qualification',
                 'expert_bank_qualification', 'down_qualification'):
         item = reference[key]
@@ -291,11 +347,11 @@ def prepare(mode, cohort, root):
     command = ['/bin/sh', str(P / 'bench.sh'), '--config', str(config_path), '--port', str(port),
         '--long-generation-only', '--think', '--runs', '1', '--workload-id', WORKLOAD_ID,
         '--fail-fast-engine-error', '--ready-timeout', '600', '--out', str(root / 'bench')]
-    if overhead:
+    if overhead or comparison:
         command += ['--long-generation-workload', 'regular-code']
     revision = git('rev-parse', 'HEAD').decode().strip()
     pins = benchmark_pins(revision)
-    if mode == 'clean' or (overhead and cohort > 0):
+    if mode == 'clean' or ((overhead or comparison) and cohort > 0):
         guards.require(hashlib.sha256(json.dumps(pins, sort_keys=True).encode()).hexdigest() ==
             previous['source_aggregate_sha256'], 'freeze benchmark sources across check and clean processes')
     plan = dict(schema=1, mode=mode, cohort=cohort, source_commit=revision,
@@ -327,6 +383,21 @@ def prepare(mode, cohort, root):
             purpose='Matched observer-bundle overhead on the same new engine/runtime; three adjacent independent-process pairs in a frozen order.',
             prospective_gates='One regular-code request after the unchanged four warmup/calibration requests; actual fresh input>=32768 and generated tokens>=1024, thinking/answer/engine clocks/normal SSE required. On arms need exactly five valid CPU records; off arms must emit no CPU/wall observer records. Reconcile every request and preserve failures. After all six processes, verify matched inputs and work within the committed plan limits before computing three paired per-token latency ratios.',
             limits=overhead_plan()['scope'] + ' An individual process does not qualify overhead. No comparison to old-runtime speeds; runtime-baseline adoption, physical traffic and broad model/context/RESTORE qualification remain pending.')
+        plan['budgets']['wall'] = 1800
+    if comparison:
+        selected = comparison_builds[ENGINE_ARMS[cohort]]
+        guards.require(not any(k in env for k in OBSERVER_KEYS) and
+            not any(k.startswith('UR_LOG_') for k in env), 'comparison observers must be absent, not set to zero')
+        if cohort:
+            guards.require(previous['comparison_builds'] == comparison_builds and
+                previous['runtime_asset_delta'] == delta, 'comparison engines/runtime changed')
+        plan.update(**selected, engine_arm=ENGINE_ARMS[cohort], comparison_builds=comparison_builds,
+            engine_comparison_plan=engine_plan(), runtime_asset_delta=delta,
+            original_fallback_source_inputs_recovered=recovered,
+            same_build_bank_qualification={k: v for k, v in proof.items() if k != 'live_inputs'},
+            purpose='Separate disabled-observer engine changes from run-to-run/runtime variation with three adjacent old/new process pairs.',
+            prospective_gates='Six independent processes in old/new/new/old/old/new order. Same regular-code request and four official warmups; thinking on, fresh input>=32768, generated>=1024, answer and native clocks required. No internal observers. Match request hashes/read tokens; generated and offered-per-token ratios within10%, acceptance delta<=2 percentage points. New/old per-token latency geomean<=1.05 and maximum pair<=1.10 for the diagnostic nonregression decision. Preserve failures and spread; no gate changes or restarts.',
+            limits=engine_plan()['scope'])
         plan['budgets']['wall'] = 1800
     (root / 'plan.json').write_text(json.dumps(dict(plan, source_sha256=pins), indent=2) + '\n')
     RESULT.write_text(json.dumps(plan, indent=2) + '\n')
@@ -378,7 +449,7 @@ def run(mode, cohort, root):
         end = json.loads((root / 'engine-exit.json').read_text())
         record.update(engine_exit_code=end['exit_code'], native_identity=end['native'])
         require_complete_generation(generation, record['requests'],
-            ('regular-code',) if mode == 'cpu-overhead' else ('regular-code', 'varied-prose'))
+            ('regular-code',) if mode in ('cpu-overhead', 'engine-compare') else ('regular-code', 'varied-prose'))
         guards.require(entry.get('exit_code') == end['exit_code'] == 0, 'benchmark/native process failed')
         log = (root / 'engine.stderr').read_text(errors='replace')
         guards.require(not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|retirement failed|Strata SYCL cleanup:', log), 'runtime failure')
@@ -386,7 +457,7 @@ def run(mode, cohort, root):
             observations, counts = cpu_observations(root, log, record['requests'])
             record.update(cpu_observations=observations, cpu_record_reconciliation=counts,
                           observer_overhead_qualified=False, hardware_bottleneck_qualified=False)
-        elif mode == 'cpu-overhead':
+        elif mode in ('cpu-overhead', 'engine-compare'):
             guards.require('strata decode cpu: ' not in log and 'strata decode timing: ' not in log,
                            'off arm emitted enabled observer records')
             record.update(observer_records_absent=True, observer_overhead_qualified=False,
@@ -502,14 +573,18 @@ def summarize():
     return 0
 
 
-def overhead_statistics(records):
+def overhead_statistics(records, engine_compare=False):
     """Reject mismatched work before interpreting the paired observer cost."""
-    guards.require(len(records) == len(OVERHEAD_ARMS), 'six independent overhead processes required')
+    arms = ENGINE_ARMS if engine_compare else OVERHEAD_ARMS
+    mode = 'engine-compare' if engine_compare else 'cpu-overhead'
+    arm_key = 'engine_arm' if engine_compare else 'observer_arm'
+    plan_key = 'engine_comparison_plan' if engine_compare else 'observer_comparison_plan'
+    guards.require(len(records) == len(arms), 'six independent comparison processes required')
     identities, rows, common_identity = set(), [], None
-    plan = overhead_plan()
+    plan = engine_plan() if engine_compare else overhead_plan()
     for i, (revision, record) in enumerate(records):
-        guards.require(record['mode'] == 'cpu-overhead' and record['cohort'] == i and
-            record['observer_arm'] == OVERHEAD_ARMS[i] and record['observer_comparison_plan'] == plan and
+        guards.require(record['mode'] == mode and record['cohort'] == i and
+            record[arm_key] == arms[i] and record[plan_key] == plan and
             record['complete'] and record['passed'] and record['ownership_closed'] and not record['active'] and
             record['exit_code'] == record['engine_exit_code'] == 0 and not record['fresh_faults'] and
             record['boot_unchanged'] and record['request_journal']['valid'] and
@@ -535,6 +610,14 @@ def overhead_statistics(records):
             config=canonical(record['config']), environment=canonical(record['environment']),
             profile=record['profile_sha256'], command=command, runtime_delta=record['runtime_asset_delta'],
             benchmark_inputs=record['source_aggregate_sha256'], qualifications=record['qualification_files'])
+        if engine_compare:
+            selected = record['comparison_builds'][record[arm_key]]
+            guards.require(record['binary'] == selected['binary'] and
+                record['build_source_commit'] == selected['build_source_commit'], 'wrong engine selected')
+            guards.require(record['comparison_builds']['old']['binary']['sha256'] !=
+                record['comparison_builds']['new']['binary']['sha256'], 'comparison needs two distinct engines')
+            identity.pop('binary'); identity.pop('source')
+            identity['comparison_builds'] = record['comparison_builds']
         common_identity = identity if common_identity is None else common_identity
         guards.require(identity == common_identity, 'overhead configuration/source/runtime differs')
         guards.require(len(record['requests']) == 1 and sample_eligible(record['requests'][0]) and
@@ -542,7 +625,7 @@ def overhead_statistics(records):
         sample = record['requests'][0]
         guards.require(sample['acceptance_rate'] >= plan['minimum_strong_acceptance'],
                        'overhead request no longer has strong draft agreement')
-        if record['observer_arm'] == 'on':
+        if not engine_compare and record['observer_arm'] == 'on':
             reconciliation = record['cpu_record_reconciliation']
             guards.require(reconciliation == dict(successful_requests=5, valid_CPU_records=5,
                 warmup_and_calibration_records_excluded=4, all_request_counts_reconciled=True) and
@@ -551,7 +634,10 @@ def overhead_statistics(records):
         else:
             guards.require(record['observer_records_absent'] is True and not record.get('cpu_observations'),
                            'off arm contains CPU observations')
-        rows.append(dict(cohort=i, arm=record['observer_arm'], receipt_commit=revision,
+            guards.require(not any(k in record['environment'] for k in OBSERVER_KEYS) and
+                not any(k.startswith('UR_LOG_') for k in record['environment']),
+                'off-arm observer environment must be absent, including zero-valued flags')
+        rows.append(dict(cohort=i, arm=record[arm_key], receipt_commit=revision,
             source_commit=record['source_commit'], **{k: sample[k] for k in
             ('request_sha256', 'prompt_tokens', 'read_tokens', 'generated_tokens', 'decode_ms', 'decode_tps',
              'drafts_offered', 'drafts_accepted', 'acceptance_rate')}))
@@ -559,7 +645,7 @@ def overhead_statistics(records):
     ratios = []
     for i in range(3):
         pair = {r['arm']: r for r in rows[2*i:2*i+2]}
-        off, on = pair['off'], pair['on']
+        off, on = (pair['old'], pair['new']) if engine_compare else (pair['off'], pair['on'])
         guards.require(all(off[k] == on[k] for k in ('request_sha256', 'prompt_tokens', 'read_tokens')),
                        'paired overhead requests differ')
         generated_ratio = on['generated_tokens'] / off['generated_tokens']
@@ -572,23 +658,35 @@ def overhead_statistics(records):
         ratios.append((on['decode_ms'] / on['generated_tokens']) /
                       (off['decode_ms'] / off['generated_tokens']))
     geomean = math.exp(statistics.mean(math.log(r) for r in ratios))
-    return dict(processes=rows, paired_per_token_latency_ratios=ratios,
+    result = dict(processes=rows, paired_per_token_latency_ratios=ratios,
         paired_latency_ratio_geomean=geomean, paired_ratio_sample_sd=statistics.stdev(ratios),
-        observed_overhead_gate_passed=geomean <= plan['paired_latency_geomean_limit'] and
-            max(ratios) <= plan['maximum_pair_latency_ratio'],
+        observed_overhead_gate_passed=geomean <= plan['paired_latency_geomean_limit'] and max(ratios) <= plan['maximum_pair_latency_ratio'],
         clean_tps=[r['decode_tps'] for r in rows if r['arm'] == 'off'],
         observed_tps=[r['decode_tps'] for r in rows if r['arm'] == 'on'],
         limits='Three adjacent process pairs on regular-code only; observed bundle overhead, not a statistical upper bound or physical-resource attribution. No strong/weak pair adoption or current-runtime weak-workload clean speed.')
+    if engine_compare:
+        result['diagnostic_nonregression_gate_passed'] = result.pop('observed_overhead_gate_passed')
+        result.pop('clean_tps'); result.pop('observed_tps')
+        result['limits'] = plan['scope']
+        result['arm_statistics'] = {}
+        for arm in ('old', 'new'):
+            speeds = [r['decode_tps'] for r in rows if r['arm'] == arm]
+            result['arm_statistics'][arm] = dict(independent_process_tps=speeds,
+                median_tps=statistics.median(speeds), sample_sd_tps=statistics.stdev(speeds))
+    return result
 
 
-def summarize_overhead():
+def summarize_overhead(engine_compare=False):
     head = git('rev-parse', 'HEAD').decode().strip()
     current = committed(RESULT)
     records, revision = [], head
     for expected in reversed(range(len(OVERHEAD_ARMS))):
         record = json.loads(git('show', revision + ':' + str(RESULT.relative_to(P))))
-        guards.require(record['mode'] == 'cpu-overhead' and record['cohort'] == expected,
+        guards.require(record['mode'] == ('engine-compare' if engine_compare else 'cpu-overhead') and record['cohort'] == expected,
                        'wrong overhead history chain')
+        link = record['preceding_generation_result']
+        guards.require(hashlib.sha256(git('show', link['commit'] + ':' + link['path'])).hexdigest() ==
+            link['sha256'], 'predecessor result differs from original committed bytes')
         pins = benchmark_pins(record['source_commit'])
         guards.require(len(pins) == record['source_count'] and
             hashlib.sha256(json.dumps(pins, sort_keys=True).encode()).hexdigest() ==
@@ -596,31 +694,34 @@ def summarize_overhead():
         records.append((revision, record))
         revision = record['preceding_generation_result']['commit']
     records.reverse()
-    current['observer_overhead_summary'] = dict(analyzer_source_commit=head,
-        **overhead_statistics(records), original_benchmark_inputs_recovered=len(pins),
+    key = 'engine_comparison_summary' if engine_compare else 'observer_overhead_summary'
+    current[key] = dict(analyzer_source_commit=head,
+        **overhead_statistics(records, engine_compare), original_benchmark_inputs_recovered=len(pins),
         GPU_executed=False, original_outcomes_unchanged=True)
-    current['observer_overhead_qualified'] = current['observer_overhead_summary']['observed_overhead_gate_passed']
+    if not engine_compare:
+        current['observer_overhead_qualified'] = current[key]['observed_overhead_gate_passed']
     RESULT.write_text(json.dumps(current, indent=2) + '\n')
-    print(json.dumps(current['observer_overhead_summary']))
+    print(json.dumps(current[key]))
     return 0
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('action', choices=('prepare', 'run', 'summarize'))
-    parser.add_argument('mode', choices=('check', 'clean', 'cpu-check', 'cpu-overhead'), nargs='?', default='check')
+    parser.add_argument('mode', choices=('check', 'clean', 'cpu-check', 'cpu-overhead', 'engine-compare'), nargs='?', default='check')
     parser.add_argument('cohort', type=int, choices=range(6), nargs='?', default=0)
     args = parser.parse_args()
-    guards.require(args.mode == 'cpu-overhead' or (args.mode == 'clean' and args.cohort < 3) or
+    guards.require(args.mode in ('cpu-overhead', 'engine-compare') or (args.mode == 'clean' and args.cohort < 3) or
                    args.cohort == 0, 'unsupported process cohort')
-    root = B / (('decode-long-generation-v3-' if args.mode == 'cpu-overhead' else
+    root = B / (('decode-long-generation-v4-' if args.mode == 'engine-compare' else
+                'decode-long-generation-v3-' if args.mode == 'cpu-overhead' else
                 'decode-long-generation-v2-' if args.mode == 'cpu-check' else 'decode-long-generation-v1-') +
                 args.mode + '-' + str(args.cohort))
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
         if args.action == 'summarize':
-            return summarize_overhead() if args.mode == 'cpu-overhead' else summarize()
+            return summarize_overhead(args.mode == 'engine-compare') if args.mode in ('cpu-overhead', 'engine-compare') else summarize()
         guards.driver_guard()
         if args.action == 'prepare':
             prepare(args.mode, args.cohort, root)

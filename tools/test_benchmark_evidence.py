@@ -28,6 +28,48 @@ def raw(body="answer", offered=300):
 
 
 class EvidenceTests(unittest.TestCase):
+    def test_engine_comparison_rejects_wrong_build_observers_and_unmatched_work(self):
+        builds = {arm: dict(binary=dict(path='/engines/'+arm, sha256=arm), build_source_commit=arm)
+                  for arm in ('old', 'new')}
+        records = []
+        for i, arm in enumerate(generation.ENGINE_ARMS):
+            payload = raw(body='a'*512)
+            row = dict(b.digest(payload), **lg.sample_eligibility(payload, b.digest(payload)),
+                workload='regular-code', order=0, run=0, output_chars=512, reasoning_chars=16)
+            row.update(eligible=True, acceptance_rate=.75, drafts_offered=400, drafts_accepted=300)
+            row['decode_ms'] = 1000. * (1.01 if arm == 'new' else 1.)
+            row['decode_tps'] = row['generated_tokens'] * 1000 / row['decode_ms']
+            records.append(('receipt'+str(i), dict(mode='engine-compare', cohort=i, engine_arm=arm,
+                engine_comparison_plan=generation.engine_plan(), comparison_builds=builds,
+                **builds[arm], complete=True, passed=True, ownership_closed=True, active=False,
+                exit_code=0, engine_exit_code=0, fresh_faults=[], boot_unchanged=True,
+                request_journal=dict(valid=True, complete=True), native_identity=dict(pid=100+i,start_ticks=10+i),
+                environment=dict(STRATA_MEASUREMENT_ROOT='/r/'+str(i), EnableDirectSubmission='0'),
+                command=['bench','--port',str(i)], config={}, profile_sha256='same', runtime_asset_delta={},
+                source_aggregate_sha256='same', qualification_files={}, source_commit='same', requests=[row],
+                observer_records_absent=True)))
+        result = generation.overhead_statistics(records, engine_compare=True)
+        self.assertTrue(result['diagnostic_nonregression_gate_passed'])
+        self.assertAlmostEqual(result['paired_latency_ratio_geomean'],1.01)
+        self.assertEqual(len(result['arm_statistics']['old']['independent_process_tps']),3)
+        slow = copy.deepcopy(records)
+        for _, r in slow:
+            if r['engine_arm']=='new': r['requests'][0]['decode_ms']*=1.2
+        self.assertFalse(generation.overhead_statistics(slow, True)['diagnostic_nonregression_gate_passed'])
+        for variant in ('wrong_binary','wrong_source','zero_flag','validation_layer','runtime_change',
+                        'same_engine','work_change','duplicate_process'):
+            with self.subTest(variant=variant):
+                changed=copy.deepcopy(records); r=changed[1][1]
+                if variant=='wrong_binary': r['binary']=changed[0][1]['binary']
+                if variant=='wrong_source': r['build_source_commit']='other'
+                if variant=='zero_flag': r['environment']['STRATA_DECODE_CPU_PROFILE']='0'
+                if variant=='validation_layer': r['environment']['UR_ENABLE_LAYERS']='UR_LAYER_PARAMETER_VALIDATION'
+                if variant=='runtime_change': r['runtime_asset_delta']={'other':'runtime'}
+                if variant=='same_engine': r['comparison_builds']['new']=r['comparison_builds']['old']
+                if variant=='work_change': r['requests'][0]['request_sha256']='b'*64
+                if variant=='duplicate_process': r['native_identity']=changed[0][1]['native_identity']
+                with self.assertRaises(RuntimeError): generation.overhead_statistics(changed, True)
+
     def test_overhead_requires_independent_matched_work_and_preserves_failed_speed_gate(self):
         records = []
         for i, arm in enumerate(generation.OVERHEAD_ARMS):
