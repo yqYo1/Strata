@@ -2958,12 +2958,12 @@
           "Document successful completed requests and require consumer count reconciliation; failed/missing observations are ineligible.",
           "Prepare invalid clock ID and real-pool CPU-only off/on accounting/output checks. Native Q8_0 modes5/6 run on this CPU; legacy Q2 modes0..4 require AVX512 and remain explicitly unqualified here."
         ],
-        "built": false,
-        "tested": false
+        "built": true,
+        "tested": true
       },
       "remaining_gates": [
         "Frozen third process and reducer closed normally; original114 benchmark inputs and check/clean0/1/2 chain recovered at analyzer f0417e51533a0046ce82ebf33685574a316ee065. Proceed with committed bounded CPU-only qualification.",
-        "Commit exact revised inputs, pinned CPU-only recipe and bounded qualification plan before execution.",
+        "CPU-only controller/recipe and exact5f91 child inputs committed before execution; all4 clock/real-pool CTests passed under controller e77aab191. Native engine integration/build, small traced runtime and overhead qualification remain pending.",
         "Complete CPU clock and real-pool output/accounting checks; qualify revised same-build SYCL small request and final commit.",
         "Reconcile attempted/succeeded/failed requests and one valid CPU record per success. Predeclare and measure observer overhead in independent off/on processes."
       ],
@@ -3047,8 +3047,8 @@
       },
       "cpu_pool_fixture_source_review": {
         "classification": "decision support",
-        "status": "not_started_agent_readiness_failed",
-        "schedulable_now": false,
+        "status": "eligible_retry_after_launch_readiness_verified",
+        "schedulable_now": true,
         "source_commit": "5f91e79eca6af861e9d7001389d1e283d7dc5fd2",
         "source_root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feature-decode-cpu-profile",
         "source_sha256": {
@@ -3070,11 +3070,81 @@
         "report_path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/decode-cpu-pool-fixture-source-review.md",
         "maximum_report_bytes": 12288,
         "consumer": "Main qualification of the new observer after the frozen clean-generation cohort/reducer; native Luna max reviews the report first.",
-        "next_review": "Do not duplicate or claim an audit pass. After launch readiness is resolved, retry this same failed Task with retry-of; Main can still manage the independent CPU-only qualification after the frozen cohort closes.",
+        "next_review": "Retry the same failed Task/Dispatch lineage on the proven idle Luna terminal. Child source remains5f91; CPU qualification has since passed and is indexed here. Audit new test coverage before native model/attribution use; no implementation or test ownership is delegated.",
         "task_id": "task_35164b0712b3",
         "dispatch_id": "ctx_108b21beacc2",
         "worker_ownership_closed": true,
-        "attempt_outcome": "Orca positively reported failed at agent_readiness: Agent startup blocked: agent-update-prompt. Task never ran. Exact failed Dispatch released with state=released and processAction=closed_agent_terminal; no report or researcher execution exists."
+        "attempt_outcome": "Orca positively reported failed at agent_readiness: Agent startup blocked: agent-update-prompt. Task never ran. Exact failed Dispatch released with state=released and processAction=closed_agent_terminal; no report or researcher execution exists.",
+        "launch_readiness": {
+          "terminal": "term_e78da67f-e8a9-49ca-812c-6df2d7b1743f",
+          "incarnation": "6132e9b4-a604-4f86-9fd4-8c4b06da6446",
+          "tui_idle_verified": true,
+          "model_observed": "GPT-6-Luna xhigh",
+          "command": "codex --model gpt-6-luna -c check_for_update_on_startup=false",
+          "configuration_scope": "Command invocation only; no global config or CLI update. The previous failed Dispatch remains released.",
+          "setting_source": "https://learn.chatgpt.com/docs/config-file/config-reference#check_for_update_on_startup"
+        }
+      },
+      "cpu_only_qualification": {
+        "source_commit": "5f91e79eca6af861e9d7001389d1e283d7dc5fd2",
+        "controller_source_commit": "e77aab191dbe848776f4f4f678909d612dcefcfe",
+        "plan_commit": "e77aab191dbe848776f4f4f678909d612dcefcfe",
+        "complete": true,
+        "passed": true,
+        "ownership_closed": true,
+        "phases": [
+          {
+            "label": "configure",
+            "exit_code": 0,
+            "elapsed_seconds": 1.263066743966192,
+            "error": null
+          },
+          {
+            "label": "build",
+            "exit_code": 0,
+            "elapsed_seconds": 26.87622064293828,
+            "error": null
+          },
+          {
+            "label": "test",
+            "exit_code": 0,
+            "elapsed_seconds": 1.382418481982313,
+            "error": null
+          }
+        ],
+        "tests": [
+          "cpu_clock_off",
+          "cpu_clock_on",
+          "pool_cpu_clock_off",
+          "pool_cpu_clock_on"
+        ],
+        "test_evidence": [
+          "cpu_clock: 0 failures",
+          "cpu_clock: 0 failures",
+          "pool_cpu_clock: native modes5/6 enabled; Q2 modes0..4=unsupported AVX512, not qualified",
+          "pool_cpu_clock: workers=1 host_works=0 observed_host_calls=0",
+          "pool_cpu_clock: workers=2 host_works=0 observed_host_calls=0",
+          "pool_cpu_clock: workers=2 host_works=1 observed_host_calls=0",
+          "pool_cpu_clock: passed",
+          "pool_cpu_clock: native modes5/6 enabled; Q2 modes0..4=unsupported AVX512, not qualified",
+          "pool_cpu_clock: workers=1 host_works=0 observed_host_calls=0",
+          "pool_cpu_clock: workers=2 host_works=0 observed_host_calls=0",
+          "pool_cpu_clock: workers=2 host_works=1 observed_host_calls=36",
+          "pool_cpu_clock: passed"
+        ],
+        "last_test_log_sha256": "461c5f744b0e629428d0d32859dabf1eef3c8e7e3d04111220f78d68fc5e7300",
+        "binaries": {
+          "cpu_clock_test": {
+            "sha256": "affbd6616bba8d1534e1b47857f5f2a8b143ee91e8a648b7d16008a0e491a961",
+            "bytes": 17304
+          },
+          "pool_cpu_clock_test": {
+            "sha256": "67ce52ccdaa42540655dfd7818a2e8f3c5448172c21d7a68aa3224c2ddb78ba1",
+            "bytes": 2476400
+          }
+        },
+        "GPU_executed": false,
+        "limits": "CPU observer accounting/output checks only; no IQ-kernel, GPU/runtime, overhead, model throughput, quality or physical-context qualification."
       }
     }
   },
