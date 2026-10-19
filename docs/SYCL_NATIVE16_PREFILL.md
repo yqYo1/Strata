@@ -1324,8 +1324,14 @@ separate. Main passed all26 model statistics, work-counter and build-identity
 tests; these are offline checks, not end-to-end model qualification. The later
 bank/provider-scoped build-proof change at sourcec4583093b passed all32 model
 statistics/build-proof tests after timing closed; all16 Down evidence tests also
-passed again. Its receipt-chain source review is still pending Main resolution
-before any model plan. Independent
+passed again. Independent receipt-chain review found three admission gaps.
+Main fixed the same-source shortcut, committed/full-receipt binding and launch
+rechecks in93257a29a; all37 offline tests passed at0c1632b10. The original GPU
+controller commit78a119cf7 contains the exact compact build receipt corresponding
+to the retained full a576 record. Both9813-input source inventories and original
+recipes were recovered, and current bank/provider bytes matched. This reuses
+only those component gates, without changing their original status or claiming
+a new GPU check. The Down fixture remains separately qualified. Independent
 Orca source audit and separate native Luna-max review found no verified reducer
 defect. Receipt-chain wiring tests remain optional strengthening; actual eligible
 model evidence is still required before a cohort decision.
