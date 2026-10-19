@@ -93,5 +93,12 @@
     "passed_cases": 51,
     "finding": "Same engine, all16 staged grouped-output cases pass the committed final-output gate. Generic MMQ/IQ-dequant flags do not affect this grouped route; relevant defaults match the model. Fixed fixture equality is not a general bitwise or model-quality contract.",
     "review_sha256": "a6d401c5ca3c9cb375d13984a5ca16101a991650a3612d26743641dffb92b2a4"
+  },
+  "long_controller_offline_gate": {
+    "source_commit": "a6e9e4762a562ecb480da087642045554779fecc",
+    "command": "timeout 60s python3 -B tools/sycl/test_generation_engine.py",
+    "tests": 6,
+    "passed": true,
+    "covers": "Failed/short/thinking-only requests, invalid clocks/draft acceptance, missing workloads, copy-footer identity/conservation, repeated speed decisions and mismatched prompts/binary. No GPU or model run."
   }
 }

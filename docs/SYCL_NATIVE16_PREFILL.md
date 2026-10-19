@@ -1806,6 +1806,8 @@ review confirmed that the omitted generic MMQ/IQ-dequant environment flags do
 not affect this grouped route; its relevant defaults match the model. This is
 the fixed tested contract, not a claim of bit identity for every optimized path.
 
+The controller source`a6e9e4762` passed all six offline evidence tests, including
+copy-footer conservation and negative comparison cases; these do not execute a model.
 The next `arena_copy.py prepare check` uses official `bench.sh` for one
 parameter-validated, thinking-enabled regular-code request: at least32768 fresh
 input tokens,1024 generated tokens including thinking and actual answer body,
